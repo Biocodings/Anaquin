@@ -67,6 +67,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\aligner.hpp" />
+    <ClInclude Include="..\src\alignment.hpp" />
     <ClInclude Include="..\src\sam_reader.hpp" />
     <ClInclude Include="..\src\types.hpp" />
   </ItemGroup>

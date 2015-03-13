@@ -22,8 +22,8 @@ AlignerStatistics Aligner::analyze(const std::string &file)
 		stats.n++;
 	});
 
-	stats.p_si = stats.n_si / stats.n;
-	stats.p_sa = stats.n_sa / stats.n;
+	stats.p_si = static_cast<Percentage>(stats.n_si / stats.n);
+	stats.p_sa = static_cast<Percentage>(stats.n_sa / stats.n);
 	stats.dilution = static_cast<Percentage>(stats.n_si / stats.n_sa);
 
 	return stats;
