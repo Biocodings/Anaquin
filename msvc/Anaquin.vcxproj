@@ -68,12 +68,15 @@
   <ItemGroup>
     <ClInclude Include="..\src\aligner.hpp" />
     <ClInclude Include="..\src\alignment.hpp" />
+    <ClInclude Include="..\src\sequence.hpp" />
+    <ClInclude Include="..\src\reader_fa.hpp" />
     <ClInclude Include="..\src\sam_reader.hpp" />
     <ClInclude Include="..\src\types.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\aligner.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\reader_fa.cpp" />
     <ClCompile Include="..\src\sam_reader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,5 +1,8 @@
+#include <map>
+#include <assert.h> 
 #include "types.hpp"
 #include "aligner.hpp"
+#include "reader_fa.hpp"
 #include "sam_reader.hpp"
 
 using namespace std;
@@ -8,18 +11,53 @@ AlignerStatistics Aligner::analyze(const std::string &file)
 {
 	AlignerStatistics stats;
 
+	Reads tp = 0;
+	Reads tn = 0;
+	Reads fp = 0;
+	Reads fn = 0;
+
+	std::map<ID, Sequence> seqs;
+
+	ReaderFA::read("C:\\Sources\\QA\\data\\sequins\\RNAsequins.fa", [&](const Sequence &s)
+	{
+		seqs[s.id] = s;
+	});
+
+	/*
+	 * For each alignment, we'd want to know if it's aligned with a sequin. If it's, check whether this is really
+	 * a correct alignment. If it's not aligned with a sequin, we'd still need to check if it's supposed to be
+	 * aligned.
+	 */
+
 	SAMReader::read(file, [&](const Alignment &align)
 	{
-		if (align.name == "chrT")
+		if (align.mapped)
 		{
-			stats.n_si++;
-		}
-		else
-		{
-			stats.n_sa++;
-		}
+			// Aligned to a sequin
+			if (align.name == "chrT")
+			{
+				/*
+				 * Is this a correct alignment? Assume it's for now...
+				 */
 
-		stats.n++;
+				tp++;
+
+				// if not -> fp++
+
+				stats.n_si++;
+			}
+
+			// Aligned to a real sample
+			else
+			{
+				// if really sequin then fn++
+				// if really NOT sequin then tn++
+
+				stats.n_sa++;
+			}
+
+			stats.n++;
+		}
 	});
 
 	stats.p_si = static_cast<Percentage>(stats.n_si / stats.n);

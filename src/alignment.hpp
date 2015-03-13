@@ -9,6 +9,8 @@ struct Alignment
 
     // Whether this alignment is mapped
     bool mapped;
+
+	std::string seq;
 };
 
 #endif

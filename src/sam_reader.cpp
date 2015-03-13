@@ -41,6 +41,7 @@ bool SAMReader::read(const std::string &file, std::function<void(const Alignment
         align.mapped = !(stoi(tokens[1]) & (1 << 2));
         
         align.name = tokens[2];
+		align.seq = tokens[9];
 
 		x(align);
 	}
