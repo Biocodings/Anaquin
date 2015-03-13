@@ -37,7 +37,7 @@ AlignerStatistics Aligner::analyze(const std::string &file)
 			if (align.name == "chrT")
 			{
 				/*
-				 * Is this a correct alignment? Assume it's for now...
+				 * Is this a correct alignment? Assume it's for now... Most likely need to compare with the raw DNA sequence!
 				 */
 
 				tp++;
