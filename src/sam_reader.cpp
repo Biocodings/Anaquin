@@ -26,12 +26,12 @@ std::vector<std::string> split(const std::string &s, char delim)
     return elems;
 }
 
-void SAMReader::read(const std::string &file, SAMUser &user)
+bool SAMReader::read(const std::string &file, std::function<void(const Alignment &alignment)> x)
 {
     std::string line;
     std::ifstream in(file);
 
-    SAMAlignment align;
+    Alignment align;
     
     while (std::getline(in, line))
     {
@@ -40,8 +40,10 @@ void SAMReader::read(const std::string &file, SAMUser &user)
         // It's unmapped if the bit is 1
         align.mapped = !(stoi(tokens[1]) & (1 << 2));
         
-        align.rname = tokens[2];
-    }
+        align.name = tokens[2];
+
+		x(align);
+	}
     
-    user.process(align);
+	return true;
 }

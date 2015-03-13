@@ -66,11 +66,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\align.hpp" />
+    <ClInclude Include="..\src\aligner.hpp" />
     <ClInclude Include="..\src\sam_reader.hpp" />
+    <ClInclude Include="..\src\types.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\align.cpp" />
+    <ClCompile Include="..\src\aligner.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\sam_reader.cpp" />
   </ItemGroup>

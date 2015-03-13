@@ -1,9 +1,9 @@
-#include "align.hpp"
+#include "aligner.hpp"
 
 int main(int argc, char * const argv[])
 {
     
-    AlignAnalyzer::analyze("accepted_hits.sam");
+    Aligner::analyze("C:\\Sources\\QA\\data\\test.sam");
    
     
 
