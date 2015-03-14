@@ -6,6 +6,8 @@
 #include "SillicoFactory.hpp"
 #include "AlignerAnalyst.hpp"
 
+#include <iostream>
+
 using namespace std;
 
 AlignerStats AlignerAnalyst::analyze(const std::string &file)
@@ -23,10 +25,12 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
 	 * Extract the name of the in-sillico chromosome. Assume only a single chromosome in the file.
 	 */
 
-	ParserFA::parse("C:\\Sources\\QA\\data\\standards\\ChrT.5.10.fa", [&](const Sequence &s)
+	ParserFA::parse("/Users/user1/Sources/ABCD/standards/ChrT.5.10.fa", [&](const Sequence &s)
 	{
 		sillico = s;
 	});
+    
+    const auto features = SillicoFactory::features();
 
 	/*
 	 * Calculate the sensitivity and specificity for the experiment. Sensitivity and specificity are statistical measures
@@ -43,29 +47,43 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
 			// A sequin fails to be mapped
 			if (align.id == sillico.id)
 			{
+                stats.n_si++;
+                
 				// It's a false-negative because the mapping fails but it shouldn't
 				fn++;
 			}
-
-			// 
 			else
 			{
+                stats.n_sa++;
+                
 				// It's a true-negative because the read doesn't belong to the sequins
 				tn++;
 			}
-
-			stats.n_sa++;
 		}
+        else
+        {
+            if (align.id == sillico.id)
+            {
+                stats.n_si++;
+                
+                if (features.count(align.pos))
+                {
+                    // True-positive because the alignment to chromosome is correct
+                    tp++;
+                }
+                else
+                {
+                    stats.n_sa++;
+                    
+                    // Negative-positive because the alignment to chromosome is incorrect
+                    fp++;
+                }
+            }
+        }
+        
+        stats.n++;
 	});
-
-	/*
-	 * ????
-	 */
-
-	ParserFA::parse("C:\\Sources\\QA\\Data\\Standards\\RNAsequins.fa", [&](const Sequence &s)
-	{
-	});
-
+    
 	stats.p_si = static_cast<Percentage>(stats.n_si / stats.n);
 	stats.p_sa = static_cast<Percentage>(stats.n_sa / stats.n);
 	stats.dilution = static_cast<Percentage>(stats.n_si / stats.n_sa);

@@ -17,7 +17,7 @@ bool ParserSAM::read(const std::string &file, std::function<void(const Alignment
     
     while (std::getline(in, line))
     {
-		if (line.empty())
+		if (line.empty() || line[0] == '@')
 		{
 			continue;
 		}
@@ -29,6 +29,7 @@ bool ParserSAM::read(const std::string &file, std::function<void(const Alignment
         
         align.id  = tokens[2];
 		align.seq = tokens[9];
+        align.pos = stoi(tokens[3]);
 
 		x(align);
 	}

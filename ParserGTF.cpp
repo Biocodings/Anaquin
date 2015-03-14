@@ -6,7 +6,7 @@
 
 using namespace std;
 
-bool ParserGTF::parse(const std::string &file, ReaderGTF &reader)
+bool ParserGTF::parse(const std::string &file, FeatureReader &reader)
 {
     std::string line;
     std::ifstream in(file);
@@ -30,12 +30,15 @@ bool ParserGTF::parse(const std::string &file, ReaderGTF &reader)
 
     while (std::getline(in, line))
     {
-        const auto tokens = split(line, '\t');
+        const auto tokens = split(line, '\t');        
+        f.pos = stoi(tokens[3]);
         
 		if (tokens[2] == "exon")
 		{
 			reader.exon(f);
 		}
+
+        reader.all(f);
 	}
     
 	return true;

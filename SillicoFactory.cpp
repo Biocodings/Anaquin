@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "ParserFA.hpp"
+#include "ParserGTF.hpp"
 #include "SillicoFactory.hpp"
 
 using namespace std;
@@ -25,3 +26,31 @@ std::shared_ptr<Sequence> SillicoFactory::sequence()
 	assert(seq);
 	return seq;
 }
+
+FeatureMap SillicoFactory::features()
+{
+    FeatureMap mapper;
+    
+    struct PrivateReader : public FeatureReader
+    {
+        void all(const Feature &f)
+        {
+            (*mapper)[f.pos] = f;
+            (*mapper)[f.pos+1] = f; // Hack?
+            (*mapper)[f.pos-1] = f; // Hack?
+        }
+        
+        FeatureMap *mapper;
+    };
+    
+    PrivateReader reader;
+    reader.mapper = &mapper;
+    ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", reader);
+
+    return mapper;
+}
+
+
+
+
+

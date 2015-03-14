@@ -9,6 +9,9 @@ typedef std::string ID;
 typedef long long Reads;
 typedef float Percentage;
 
+// For example, 388488 from the first matching base
+typedef long long Position;
+
 inline std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems)
 {
 	std::stringstream ss(s);

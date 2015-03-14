@@ -1,7 +1,7 @@
 #ifndef AS_ALIGNMENT_HPP
 #define AS_ALIGNMENT_HPP
 
-#include <string>
+#include "Types.hpp"
 
 /*
  * This class represents a sequencing alignment.
@@ -18,6 +18,8 @@ struct Alignment
 
     bool mapped;
 
+    Position pos;
+    
 	std::string seq;
 };
 

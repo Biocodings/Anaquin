@@ -13,13 +13,8 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file)
 	 * Read for the assembled transcript
 	 */
 
-	struct TranscriptReader : public ReaderGTF
+	struct TranscriptReader : public FeatureReader
 	{
-		void exon(const Feature &f) override
-		{
-
-		}
-
 		AssemblyStats *stats;
 	};
 
@@ -30,9 +25,9 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file)
 	 * Check for the features in the in-sillico chromosome, have they been assembled?
 	 */
 
-	struct SillicoReader : public ReaderGTF
+	struct SillicoReader : public FeatureReader
 	{
-		void exon(const Feature &f) override
+		void exon(const Feature &f)
 		{
 			/*
 			 * Check if the known exon has been assembled
