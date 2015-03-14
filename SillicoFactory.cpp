@@ -7,7 +7,7 @@ using namespace std;
 
 std::string SillicoFactory::transGTF()
 {
-	return "C:\\Sources\\QA\\data\\standards\\RNAstandards.gtf";
+	return "/Users/user1/Sources/ABCD/standards/RNAstandards.gtf";
 }
 
 std::shared_ptr<Sequence> SillicoFactory::sequence()

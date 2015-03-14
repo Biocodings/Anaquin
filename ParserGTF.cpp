@@ -32,6 +32,7 @@ bool ParserGTF::parse(const std::string &file, FeatureReader &reader)
     {
         const auto tokens = split(line, '\t');        
         f.pos = stoi(tokens[3]);
+        f.id = tokens[0];
         
 		if (tokens[2] == "exon")
 		{
