@@ -4,6 +4,11 @@
 #include <memory>
 #include "Sequence.hpp"
 
+/*
+ * This factory class provides support for the in-sillico chromosome developed by
+ * Gavian Institute of Medical Research.
+ */
+
 struct SillicoFactory
 {
 	static std::string transGTF();

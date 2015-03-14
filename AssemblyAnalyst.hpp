@@ -1,10 +1,10 @@
-#ifndef AS_ASSEMBLY_COMPARE_HPP
-#define AS_ASSEMBLY_COMPARE_HPP
+#ifndef AS_ASSEMBLY_ANALYST_HPP
+#define AS_ASSEMBLY_ANALYST_HPP
 
 #include <string>
 #include "types.hpp"
 
-struct AssemblyStatistics
+struct AssemblyStats
 {
 	/*
 	 * Metrics for the base-level
@@ -19,9 +19,9 @@ struct AssemblyStatistics
 	Percentage e_fp, e_tp, e_fn, e_tn;
 };
 
-struct AssemblyCompare
+struct AssemblyAnalyst
 {
-	static AssemblyStatistics analyze(const std::string &file);
+	static AssemblyStats analyze(const std::string &file);
 };
 
 #endif

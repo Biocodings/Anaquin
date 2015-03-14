@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../AlignerCompare.hpp"
+#include "AlignerAnalyst.hpp"
 
 using namespace std;
 
@@ -9,7 +9,7 @@ TEST(CufflinkExample, AlignerStatsTest)
 	 * The sample file was taken from Cufflink's source code. It's obviously independent to the standards.
 	 */
 
-	const auto stats = AlignerCompare::analyze("C:\\Sources\\QA\\Tests\\Data\\CufflinksTest.sam");
+	const auto stats = AlignerAnalyst::analyze("C:\\Sources\\QA\\Tests\\Data\\CufflinksTest.sam");
 
 	/*
 	 * There shouldn't be any match to the in-silico chromosome. Sensivitiy is zero because our experiment

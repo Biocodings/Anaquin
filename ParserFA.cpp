@@ -22,7 +22,11 @@ bool ParserFA::parse(const std::string &file, std::function<void(const Sequence 
 			}
 
 			auto tokens = split(line, '|');
-			s.id = tokens[0];
+
+			// Remove the '<' prefix			
+			s.id = tokens[0].substr(1, tokens[0].size());
+
+			// Reset for the next sequence
 			s.value.clear();
 		}
 		else

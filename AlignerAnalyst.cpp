@@ -3,13 +3,14 @@
 #include "types.hpp"
 #include "ParserFA.hpp"
 #include "ParserSAM.hpp"
-#include "AlignerCompare.hpp"
+#include "SillicoFactory.hpp"
+#include "AlignerAnalyst.hpp"
 
 using namespace std;
 
-AlignerStatistics AlignerCompare::analyze(const std::string &file)
+AlignerStats AlignerAnalyst::analyze(const std::string &file)
 {
-	AlignerStatistics stats;
+	AlignerStats stats;
 
 	Reads tp = 0;
 	Reads tn = 0;
@@ -33,40 +34,36 @@ AlignerStatistics AlignerCompare::analyze(const std::string &file)
 	 * actual positives which are correctly identified as such (eg: the percentage of reads aligned to in-sillico correctly).
 	 * Specificity (also known as true negative rate) measures the proportion of negatives which are correctly identified as
 	 * such (eg: the percentage of reads fails to aligned to in-sillico while those reads come from the real-sample).
-	 *
-	 * In this context, positive refers to alignments mapped to the in-sillico chromosome, negative refers to alignments
-	 * mapped but not to the in-sillico chromosome.
 	 */
 
 	ParserSAM::read(file, [&](const Alignment &align)
 	{
-		if (align.mapped)
+		if (!align.mapped)
 		{
-			// Mapped to the in-sillico chromosome
+			// A sequin fails to be mapped
 			if (align.id == sillico.id)
 			{
-				/*
-				 * Is this a correct alignment? Assume it's for now...
-				 */
-
-				tp++;
-
-				// if not -> fp++
-
-				stats.n_si++;
+				// It's a false-negative because the mapping fails but it shouldn't
+				fn++;
 			}
 
-			// Not mapped to the chromosome (not necessarily mapped to the real-samples)
+			// 
 			else
 			{
-				// if really sequin then fn++
-				// if really NOT sequin then tn++
-
-				stats.n_sa++;
+				// It's a true-negative because the read doesn't belong to the sequins
+				tn++;
 			}
 
-			stats.n++;
+			stats.n_sa++;
 		}
+	});
+
+	/*
+	 * ????
+	 */
+
+	ParserFA::parse("C:\\Sources\\QA\\Data\\Standards\\RNAsequins.fa", [&](const Sequence &s)
+	{
 	});
 
 	stats.p_si = static_cast<Percentage>(stats.n_si / stats.n);

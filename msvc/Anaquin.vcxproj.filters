@@ -14,9 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AlignerStats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Anaquin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,17 +29,20 @@
     <ClCompile Include="..\Tests\AlignerStatsTest.cpp">
       <Filter>Source Files\Tests</Filter>
     </ClCompile>
-    <ClCompile Include="..\ExpressionCompare.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AssemblyCompare.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\SillicoFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\SillicoFactory.hpp">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="..\Tests\AssemblyCompareTest.cpp">
+      <Filter>Source Files\Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AssemblyAnalyst.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlignerAnalyst.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ExpressionAnalyst.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -67,13 +67,16 @@
     <ClInclude Include="..\Types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AssemblyCompare.hpp">
+    <ClInclude Include="..\AssemblyAnalyst.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AlignerCompare.hpp">
+    <ClInclude Include="..\SillicoFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ExpressionCompare.hpp">
+    <ClInclude Include="..\AlignerAnalyst.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ExpressionAnalyst.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

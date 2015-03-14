@@ -1,10 +1,10 @@
-#ifndef AS_ALIGNER_COMPARE_HPP
-#define AS_ALIGNER_COMPARE_HPP
+#ifndef AS_ALIGNER_ANALYST_HPP
+#define AS_ALIGNER_ANALYST_HPP
 
 #include <string>
 #include "types.hpp"
 
-struct AlignerStatistics
+struct AlignerStats
 {
 	// Percentage of reads aligned with the silico
 	Percentage p_si;
@@ -24,13 +24,9 @@ struct AlignerStatistics
 	Percentage dilution;
 };
 
-struct AlignerCompare
+struct AlignerAnalyst
 {
-    /*
-     * Analyze sequence alignments for sequins given a given SAM file.
-     */
-    
-	static AlignerStatistics analyze(const std::string &file);
+	static AlignerStats analyze(const std::string &file);
 };
 
 #endif

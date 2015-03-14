@@ -11,27 +11,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AlignerStats.cpp" />
+    <ClCompile Include="..\AlignerAnalyst.cpp" />
     <ClCompile Include="..\Anaquin.cpp" />
-    <ClCompile Include="..\AssemblyCompare.cpp" />
-    <ClCompile Include="..\ExpressionCompare.cpp" />
+    <ClCompile Include="..\AssemblyAnalyst.cpp" />
+    <ClCompile Include="..\ExpressionAnalyst.cpp" />
     <ClCompile Include="..\ParserFA.cpp" />
     <ClCompile Include="..\ParserGTF.cpp" />
     <ClCompile Include="..\ParserSAM.cpp" />
     <ClCompile Include="..\SillicoFactory.cpp" />
-    <ClCompile Include="..\SillicoFactory.hpp" />
     <ClCompile Include="..\Tests\AlignerStatsTest.cpp" />
+    <ClCompile Include="..\Tests\AssemblyCompareTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\AlignerCompare.hpp" />
+    <ClInclude Include="..\AlignerAnalyst.hpp" />
     <ClInclude Include="..\Alignment.hpp" />
-    <ClInclude Include="..\AssemblyCompare.hpp" />
-    <ClInclude Include="..\ExpressionCompare.hpp" />
+    <ClInclude Include="..\AssemblyAnalyst.hpp" />
+    <ClInclude Include="..\ExpressionAnalyst.hpp" />
     <ClInclude Include="..\Feature.hpp" />
     <ClInclude Include="..\ParserFA.hpp" />
     <ClInclude Include="..\ParserGTF.hpp" />
     <ClInclude Include="..\ParserSAM.hpp" />
     <ClInclude Include="..\Sequence.hpp" />
+    <ClInclude Include="..\SillicoFactory.hpp" />
     <ClInclude Include="..\Types.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -68,7 +69,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files\gtest-1.7.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\gtest-1.7.0\include;C:\Sources\QA;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
