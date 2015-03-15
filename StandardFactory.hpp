@@ -1,5 +1,5 @@
-#ifndef AS_SILLICO_FACTORY_HPP
-#define AS_SILLICO_FACTORY_HPP
+#ifndef AS_STANDARD_FACTORY_HPP
+#define AS_STANDARD_FACTORY_HPP
 
 #include <map>
 #include <memory>
@@ -8,14 +8,12 @@
 
 typedef std::map<Position, Feature> FeatureMap;
 
-/*
- * This factory class provides support for the in-sillico chromosome developed by
- * Gavian Institute of Medical Research.
- */
-
-struct SillicoFactory
+struct StandardFactory
 {
 	static std::string transGTF();
+
+	// Returns name of the in-sillico chromosome
+	static std::string chromoName();
 
     // Returns the features for the chromosome indexed with a mapping
     static FeatureMap features();

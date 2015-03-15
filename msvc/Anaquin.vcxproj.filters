@@ -29,9 +29,6 @@
     <ClCompile Include="..\Tests\AlignerStatsTest.cpp">
       <Filter>Source Files\Tests</Filter>
     </ClCompile>
-    <ClCompile Include="..\SillicoFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Tests\AssemblyCompareTest.cpp">
       <Filter>Source Files\Tests</Filter>
     </ClCompile>
@@ -43,6 +40,12 @@
     </ClCompile>
     <ClCompile Include="..\ExpressionAnalyst.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StandardFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Tests\StandardFactoryTest.cpp">
+      <Filter>Source Files\Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,13 +73,13 @@
     <ClInclude Include="..\AssemblyAnalyst.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SillicoFactory.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\AlignerAnalyst.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\ExpressionAnalyst.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StandardFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

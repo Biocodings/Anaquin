@@ -18,9 +18,10 @@
     <ClCompile Include="..\ParserFA.cpp" />
     <ClCompile Include="..\ParserGTF.cpp" />
     <ClCompile Include="..\ParserSAM.cpp" />
-    <ClCompile Include="..\SillicoFactory.cpp" />
+    <ClCompile Include="..\StandardFactory.cpp" />
     <ClCompile Include="..\Tests\AlignerStatsTest.cpp" />
     <ClCompile Include="..\Tests\AssemblyCompareTest.cpp" />
+    <ClCompile Include="..\Tests\StandardFactoryTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AlignerAnalyst.hpp" />
@@ -32,7 +33,7 @@
     <ClInclude Include="..\ParserGTF.hpp" />
     <ClInclude Include="..\ParserSAM.hpp" />
     <ClInclude Include="..\Sequence.hpp" />
-    <ClInclude Include="..\SillicoFactory.hpp" />
+    <ClInclude Include="..\StandardFactory.hpp" />
     <ClInclude Include="..\Types.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

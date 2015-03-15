@@ -1,16 +1,29 @@
+#include <fstream>
 #include <assert.h>
 #include "ParserFA.hpp"
 #include "ParserGTF.hpp"
-#include "SillicoFactory.hpp"
+#include "StandardFactory.hpp"
 
 using namespace std;
 
-std::string SillicoFactory::transGTF()
+std::string StandardFactory::chromoName()
+{
+	std::ifstream in("C:/Sources/QA/Data/Standards/ChrT.5.10.fa");
+	std::string line;
+
+	// Assume the first line contains only the name of the chromosome
+	std::getline(in, line);
+
+	// Remove the '<' prefix
+	return line.substr(1, line.size());
+}
+
+std::string StandardFactory::transGTF()
 {
 	return "/Users/user1/Sources/ABCD/standards/RNAstandards.gtf";
 }
 
-std::shared_ptr<Sequence> SillicoFactory::sequence()
+std::shared_ptr<Sequence> StandardFactory::sequence()
 {
 	std::shared_ptr<Sequence> seq;
 
@@ -27,7 +40,7 @@ std::shared_ptr<Sequence> SillicoFactory::sequence()
 	return seq;
 }
 
-FeatureMap SillicoFactory::features()
+FeatureMap StandardFactory::features()
 {
     FeatureMap mapper;
     

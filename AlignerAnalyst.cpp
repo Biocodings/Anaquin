@@ -3,8 +3,8 @@
 #include "types.hpp"
 #include "ParserFA.hpp"
 #include "ParserSAM.hpp"
-#include "SillicoFactory.hpp"
 #include "AlignerAnalyst.hpp"
+#include "StandardFactory.hpp"
 
 #include <iostream>
 
@@ -30,7 +30,7 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
 		sillico = s;
 	});
     
-    const auto features = SillicoFactory::features();
+	const auto features = StandardFactory::features();
 
 	/*
 	 * Calculate the sensitivity and specificity for the experiment. Sensitivity and specificity are statistical measures

@@ -1,8 +1,8 @@
 #include <set>
 #include <iostream>
 #include "ParserGTF.hpp"
-#include "SillicoFactory.hpp"
 #include "AssemblyAnalyst.hpp"
+#include "StandardFactory.hpp"
 
 using namespace std;
 
@@ -74,7 +74,7 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file)
     sReader.pos_2 = &pos_2;
     
 	// Check the features listed in the sillico transcripts
-	ParserGTF::parse(SillicoFactory::transGTF(), sReader);
+	ParserGTF::parse(StandardFactory::transGTF(), sReader);
 
 
     int n = pos_2.size();
