@@ -14,7 +14,6 @@
 		7FC5571E1AB473C00085C090 /* ParserFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570B1AB473C00085C090 /* ParserFA.cpp */; };
 		7FC5571F1AB473C00085C090 /* ParserGTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570C1AB473C00085C090 /* ParserGTF.cpp */; };
 		7FC557201AB473C00085C090 /* ParserSAM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570D1AB473C00085C090 /* ParserSAM.cpp */; };
-		7FC557211AB473C00085C090 /* SillicoFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570E1AB473C00085C090 /* SillicoFactory.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,7 +37,6 @@
 		7FC5570B1AB473C00085C090 /* ParserFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserFA.cpp; path = ../ParserFA.cpp; sourceTree = "<group>"; };
 		7FC5570C1AB473C00085C090 /* ParserGTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserGTF.cpp; path = ../ParserGTF.cpp; sourceTree = "<group>"; };
 		7FC5570D1AB473C00085C090 /* ParserSAM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserSAM.cpp; path = ../ParserSAM.cpp; sourceTree = "<group>"; };
-		7FC5570E1AB473C00085C090 /* SillicoFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SillicoFactory.cpp; path = ../SillicoFactory.cpp; sourceTree = "<group>"; };
 		7FC5570F1AB473C00085C090 /* AlignerAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AlignerAnalyst.hpp; path = ../AlignerAnalyst.hpp; sourceTree = "<group>"; };
 		7FC557101AB473C00085C090 /* Alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Alignment.hpp; path = ../Alignment.hpp; sourceTree = "<group>"; };
 		7FC557111AB473C00085C090 /* AssemblyAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AssemblyAnalyst.hpp; path = ../AssemblyAnalyst.hpp; sourceTree = "<group>"; };
@@ -48,7 +46,6 @@
 		7FC557151AB473C00085C090 /* ParserGTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserGTF.hpp; path = ../ParserGTF.hpp; sourceTree = "<group>"; };
 		7FC557161AB473C00085C090 /* ParserSAM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserSAM.hpp; path = ../ParserSAM.hpp; sourceTree = "<group>"; };
 		7FC557171AB473C00085C090 /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequence.hpp; path = ../Sequence.hpp; sourceTree = "<group>"; };
-		7FC557181AB473C00085C090 /* SillicoFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = SillicoFactory.hpp; path = ../SillicoFactory.hpp; sourceTree = "<group>"; };
 		7FC557191AB473C00085C090 /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Types.hpp; path = ../Types.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,7 +86,6 @@
 				7FC5570B1AB473C00085C090 /* ParserFA.cpp */,
 				7FC5570C1AB473C00085C090 /* ParserGTF.cpp */,
 				7FC5570D1AB473C00085C090 /* ParserSAM.cpp */,
-				7FC5570E1AB473C00085C090 /* SillicoFactory.cpp */,
 				7FC5570F1AB473C00085C090 /* AlignerAnalyst.hpp */,
 				7FC557101AB473C00085C090 /* Alignment.hpp */,
 				7FC557111AB473C00085C090 /* AssemblyAnalyst.hpp */,
@@ -99,7 +95,6 @@
 				7FC557151AB473C00085C090 /* ParserGTF.hpp */,
 				7FC557161AB473C00085C090 /* ParserSAM.hpp */,
 				7FC557171AB473C00085C090 /* Sequence.hpp */,
-				7FC557181AB473C00085C090 /* SillicoFactory.hpp */,
 				7FC557191AB473C00085C090 /* Types.hpp */,
 			);
 			name = Sources;
@@ -163,7 +158,6 @@
 			files = (
 				7FC5571A1AB473C00085C090 /* AlignerAnalyst.cpp in Sources */,
 				7FC5571B1AB473C00085C090 /* Anaquin.cpp in Sources */,
-				7FC557211AB473C00085C090 /* SillicoFactory.cpp in Sources */,
 				7FC5571D1AB473C00085C090 /* ExpressionAnalyst.cpp in Sources */,
 				7FC5571E1AB473C00085C090 /* ParserFA.cpp in Sources */,
 				7FC5571F1AB473C00085C090 /* ParserGTF.cpp in Sources */,
