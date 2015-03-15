@@ -3,7 +3,7 @@
 
 using namespace std;
 
-TEST(CufflinkExample, AlignerStatsTest)
+TEST(Cufflink, AlignerStatsTest)
 {
 	/*
 	 * The sample file was taken from Cufflink's source code. It's obviously independent to the standards.

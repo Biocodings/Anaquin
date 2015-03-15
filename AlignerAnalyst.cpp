@@ -47,14 +47,14 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
 			// A sequin fails to be mapped
 			if (align.id == sillico.id)
 			{
-                stats.n_si++;
+				stats.n_chromo++;
                 
 				// It's a false-negative because the mapping fails but it shouldn't
 				fn++;
 			}
 			else
 			{
-                stats.n_sa++;
+				stats.n_sample++;
                 
 				// It's a true-negative because the read doesn't belong to the sequins
 				tn++;
@@ -64,7 +64,7 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
         {
             if (align.id == sillico.id)
             {
-                stats.n_si++;
+				stats.n_chromo++;
                 
                 if (features.count(align.pos))
                 {
@@ -73,7 +73,7 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
                 }
                 else
                 {
-                    stats.n_sa++;
+					stats.n_sample++;
                     
                     // Negative-positive because the alignment to chromosome is incorrect
                     fp++;
@@ -84,9 +84,9 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
         stats.n++;
 	});
     
-	stats.p_si = static_cast<Percentage>(stats.n_si / stats.n);
-	stats.p_sa = static_cast<Percentage>(stats.n_sa / stats.n);
-	stats.dilution = static_cast<Percentage>(stats.n_si / stats.n_sa);
+	stats.n_chromo = static_cast<Percentage>(stats.n_chromo / stats.n);
+	stats.n_sample = static_cast<Percentage>(stats.n_sample / stats.n);
+	stats.dilution = static_cast<Percentage>(stats.n_chromo / stats.n_sample);
 
 	return stats;
 }

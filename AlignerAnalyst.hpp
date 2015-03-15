@@ -7,19 +7,19 @@
 struct AlignerStats
 {
 	// Percentage of reads aligned with the silico
-	Percentage p_si;
+	Percentage p_chromo;
 
 	// Percentage of reads aligned with the real samples
-	Percentage p_sa;
+	Percentage p_sample;
 
 	// Total number of reads aligned
 	Reads n = 0;
 
-	// Number of reads aligned to the silico chromosome
-	Reads n_si = 0;
+	// Number of reads aligned to the chromosome
+	Reads n_chromo = 0;
 
 	// Number of reads aligned to the real sample
-	Reads n_sa = 0;
+	Reads n_sample = 0;
 
 	Percentage dilution;
 };
