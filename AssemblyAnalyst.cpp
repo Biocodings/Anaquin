@@ -77,11 +77,6 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file)
 	ParserGTF::parse(StandardFactory::transGTF(), sReader);
 
 
-    int n = pos_2.size();
-//    std::cout << n << std::endl;
-    
-    
-    
     
     struct TranscriptReader_2 : public FeatureReader
     {
@@ -123,8 +118,3 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file)
     
 	return stats;
 }
-
-
-
-
-
