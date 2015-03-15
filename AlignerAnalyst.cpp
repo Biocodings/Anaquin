@@ -6,30 +6,15 @@
 #include "AlignerAnalyst.hpp"
 #include "StandardFactory.hpp"
 
-#include <iostream>
-
 using namespace std;
 
 AlignerStats AlignerAnalyst::analyze(const std::string &file)
 {
 	AlignerStats stats;
 
-	Reads tp = 0;
-	Reads tn = 0;
-	Reads fp = 0;
-	Reads fn = 0;
+	// Nmae of the chromosome, we'll nee the name for comparison
+	const auto chromo = StandardFactory::chromoName();
 
-	Sequence sillico;
-
-	/*
-	 * Extract the name of the in-sillico chromosome. Assume only a single chromosome in the file.
-	 */
-
-	ParserFA::parse("/Users/user1/Sources/ABCD/standards/ChrT.5.10.fa", [&](const Sequence &s)
-	{
-		sillico = s;
-	});
-    
 	const auto features = StandardFactory::features();
 
 	/*
@@ -45,47 +30,54 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
 		if (!align.mapped)
 		{
 			// A sequin fails to be mapped
-			if (align.id == sillico.id)
+			if (align.id == chromo)
 			{
 				stats.n_chromo++;
                 
 				// It's a false-negative because the mapping fails but it shouldn't
-				fn++;
+				stats.fn++;
 			}
 			else
 			{
 				stats.n_sample++;
                 
 				// It's a true-negative because the read doesn't belong to the sequins
-				tn++;
+				stats.tn++;
 			}
 		}
         else
         {
-            if (align.id == sillico.id)
+			if (align.id == chromo)
             {
 				stats.n_chromo++;
                 
                 if (features.count(align.pos))
                 {
                     // True-positive because the alignment to chromosome is correct
-                    tp++;
+					stats.tp++;
                 }
                 else
                 {
 					stats.n_sample++;
                     
                     // Negative-positive because the alignment to chromosome is incorrect
-                    fp++;
+					stats.fp++;
                 }
             }
+			else
+			{
+				stats.n_sample++;
+			}
         }
         
         stats.n++;
 	});
-    
-	stats.n_chromo = static_cast<Percentage>(stats.n_chromo / stats.n);
-	stats.n_sample = static_cast<Percentage>(stats.n_sample / stats.n);
+
+	stats.sp = (stats.tp + stats.fn) ? static_cast<Percentage>(stats.tp / (stats.tp + stats.fn)) : NAN;
+	stats.sn = (stats.fp + stats.tn) ? static_cast<Percentage>(stats.tn / (stats.fp + stats.tn)) : NAN;
+
+	stats.p_chromo = static_cast<Percentage>(stats.n_chromo / stats.n);
+	stats.p_sample = static_cast<Percentage>(stats.n_sample / stats.n);
 	stats.dilution = static_cast<Percentage>(stats.n_chromo / stats.n_sample);
 
 	return stats;

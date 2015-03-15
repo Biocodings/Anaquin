@@ -8,7 +8,7 @@ using namespace std;
 
 std::string StandardFactory::chromoName()
 {
-	std::ifstream in("C:/Sources/QA/Data/Standards/ChrT.5.10.fa");
+	std::ifstream in("../Data/Standards/ChrT.5.10.fa");
 	std::string line;
 
 	// Assume the first line contains only the name of the chromosome

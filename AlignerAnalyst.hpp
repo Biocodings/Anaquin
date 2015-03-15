@@ -21,6 +21,14 @@ struct AlignerStats
 	// Number of reads aligned to the real sample
 	Reads n_sample = 0;
 
+	Reads tp = 0; // Reads that are true-positive
+	Reads tn = 0; // Reads that are true-negative
+	Reads fp = 0; // Reads that are false-positive
+	Reads fn = 0; // Reads that are false-negative
+
+	Percentage sp; // Sensitivity
+	Percentage sn; // Specificity
+
 	Percentage dilution;
 };
 
