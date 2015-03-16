@@ -47,7 +47,7 @@ static bool matchAlignWithRef(const Chromosome &r, const Alignment &align)
 
 AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n)
 {
-	AlignerStats stats;
+    AlignerStats stats;
 
     // The reference chromosome
     const auto r = StandardFactory::reference();
