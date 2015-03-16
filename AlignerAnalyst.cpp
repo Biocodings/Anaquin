@@ -97,14 +97,6 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n
     
     assert(stats.n);
     
-    std::cout << "Total reads: " << stats.n << std::endl;
-    std::cout << "Reference reads: " << stats.nr << std::endl;
-    std::cout << "Query reads: " << stats.nq << std::endl;
-    
-	std::cout << "TP: " << stats.m.tp << std::endl;
-	std::cout << "FN: " << stats.m.fn << std::endl;
-	std::cout << "FP: " << stats.m.fp << std::endl;
-
 	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
     stats.dilution = stats.nq ? static_cast<Percentage>(stats.nr / stats.nq) : 1;

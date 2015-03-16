@@ -18,7 +18,7 @@ struct Feature
 
 	Locus end;
 	Locus start;
-	BasePair length;
+	Locus length;
 
     FeatureType type;
 };
