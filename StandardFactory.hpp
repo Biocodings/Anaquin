@@ -9,12 +9,11 @@ typedef std::map<std::string, Sequence> SequinMap;
 
 struct StandardFactory
 {
+    // Returns the in-sillico chromosome constructed from sequins
     static Chromosome reference();
 
+    // Returns list of sequins mixed with a sample
     static SequinMap sequins();
-
-	// Returns a in-sillico sequence
-	static std::shared_ptr<Sequence> sequence();
 };
 
 #endif

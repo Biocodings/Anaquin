@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-
 #include "AlignerAnalyst.hpp"
 #include "AssemblyAnalyst.hpp"
 

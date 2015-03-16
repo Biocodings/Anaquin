@@ -38,20 +38,3 @@ SequinMap StandardFactory::sequins()
 
     return sm;
 }
-
-std::shared_ptr<Sequence> StandardFactory::sequence()
-{
-	std::shared_ptr<Sequence> seq;
-
-	/*
-	 * Extract the name of the in-sillico chromosome. Assume only a single chromosome in the file.
-	 */
-
-	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa", [&](const Sequence &s)
-	{
-		seq = std::shared_ptr<Sequence>(new Sequence());
-	});
-
-	assert(seq);
-	return seq;
-}
