@@ -14,8 +14,9 @@ struct Alignment
     // If this field is false, no assumption can be made to other fields
     bool mapped;
 
-    // The starting position of the alignment
-    Position start;
+	Locus end;
+	Locus start;
+	BasePair length;
     
 	std::string seq;
 };

@@ -33,6 +33,7 @@
     <ClInclude Include="..\ParserGTF.hpp" />
     <ClInclude Include="..\ParserSAM.hpp" />
     <ClInclude Include="..\Sequence.hpp" />
+    <ClInclude Include="..\Sequins.hpp" />
     <ClInclude Include="..\StandardFactory.hpp" />
     <ClInclude Include="..\Types.hpp" />
   </ItemGroup>

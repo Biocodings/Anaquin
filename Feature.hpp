@@ -5,21 +5,20 @@
 
 enum FeatureType
 {
+	CDS,
     Exon,
     Intron,
-    Junction
+    Junction,
+	StartCodon
 };
-
-/*
- * This class represents a biological feature, such as CDS, exon and intron.
- */
 
 struct Feature
 {
 	std::string id;
 
-    Position start;
-    Position end;
+	Locus end;
+	Locus start;
+	BasePair length;
 
     FeatureType type;
 };

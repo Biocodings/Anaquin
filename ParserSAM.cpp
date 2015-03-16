@@ -28,6 +28,8 @@ bool ParserSAM::read(const std::string &file, std::function<bool (const Alignmen
         align.id  = tokens[2];
 		align.seq = tokens[9];
         align.start = stoi(tokens[3]);
+		align.length = static_cast<BasePair>(tokens[9].size());
+		align.end = align.start + align.length;
 
 		if (!x(align))
         {

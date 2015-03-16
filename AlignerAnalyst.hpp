@@ -21,13 +21,16 @@ struct AlignerStats
 	// Number of reads aligned to the real sample
 	Reads nq = 0;
 
-    // Number of perfectly aligned reads (true positives)
+    // Number of perfectly aligned reads (true-positives)
 	Reads tp = 0;
 
-    // Number of reads that have been aligned incorrectly
+	// Number of incorrectly aligned reads (false-positive)
 	Reads fp = 0;
 
-    // Number of reads that are in the chromosome but failed to align
+    // Number of reads that are not aligned to the chromosome correctly (true-negative)
+	Reads tn = 0;
+
+    // Number of reads that are not aligned to the chromosome incorrectly (false-negative)
     Reads fn = 0;
 
     // Sensitivity, the ability of the experiment to detect positively
