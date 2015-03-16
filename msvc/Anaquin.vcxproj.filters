@@ -85,5 +85,8 @@
     <ClInclude Include="..\Sequins.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\ConfusionMatrix.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

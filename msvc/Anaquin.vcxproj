@@ -27,6 +27,7 @@
     <ClInclude Include="..\AlignerAnalyst.hpp" />
     <ClInclude Include="..\Alignment.hpp" />
     <ClInclude Include="..\AssemblyAnalyst.hpp" />
+    <ClInclude Include="..\ConfusionMatrix.hpp" />
     <ClInclude Include="..\ExpressionAnalyst.hpp" />
     <ClInclude Include="..\Feature.hpp" />
     <ClInclude Include="..\ParserFA.hpp" />

@@ -16,12 +16,12 @@ TEST(Cufflink, AlignerStatsTest)
      * power to detect anything.
 	 */
 
-	ASSERT_TRUE(isnan(stats.sp));
-	ASSERT_EQ(1, stats.sn);
-	ASSERT_EQ(0, stats.tp);
-	ASSERT_EQ(0, stats.fp);
-	ASSERT_EQ(0, stats.fn);
-	ASSERT_EQ(3271, stats.tn);
+	ASSERT_TRUE(isnan(stats.m.sp()));
+	ASSERT_EQ(1, stats.m.sn());
+	ASSERT_EQ(0, stats.m.tp);
+	ASSERT_EQ(0, stats.m.fp);
+	ASSERT_EQ(0, stats.m.fn);
+	ASSERT_EQ(3271, stats.m.tn);
 	ASSERT_EQ(0, stats.nr);
     ASSERT_EQ(0, stats.dilution);
 	ASSERT_EQ(3307, stats.nq);

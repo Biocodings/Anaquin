@@ -1,8 +1,7 @@
 #ifndef AS_ASSEMBLY_ANALYST_HPP
 #define AS_ASSEMBLY_ANALYST_HPP
 
-#include <string>
-#include "types.hpp"
+#include "ConfusionMatrix.hpp"
 
 struct AssemblyStats
 {

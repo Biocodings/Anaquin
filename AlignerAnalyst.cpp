@@ -67,27 +67,27 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n
 				{
 					if (matchGeneBoundary(r, align))
 					{
-						stats.tp++;
+						stats.m.tp++;
 					}
 					else
 					{
-						stats.fp++;
+						stats.m.fp++;
 					}
 				}
 				else
 				{
-					stats.fp++;
+					stats.m.fp++;
 				}
 			}
 			else
 			{
 				if (matchChromoBoundary(r, align))
 				{
-					stats.fn++;
+					stats.m.fn++;
 				}
 				else
 				{
-					stats.tn++;
+					stats.m.tn++;
 				}
 			}
 		}
@@ -96,16 +96,13 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n
         return true;
     });
     
-	stats.sp = (stats.tp + stats.fn) ? stats.tp / (stats.tp + stats.fn) : NAN;
-	stats.sn = (stats.fp + stats.tn) ? stats.tn / (stats.fp + stats.tn) : NAN;
-
     std::cout << "Total reads: " << stats.n << std::endl;
     std::cout << "Reference reads: " << stats.nr << std::endl;
     std::cout << "Query reads: " << stats.nq << std::endl;
     
-    std::cout << "TP: " << stats.tp << std::endl;
-    std::cout << "FN: " << stats.fn << std::endl;
-    std::cout << "FP: " << stats.fp << std::endl;
+	std::cout << "TP: " << stats.m.tp << std::endl;
+	std::cout << "FN: " << stats.m.fn << std::endl;
+	std::cout << "FP: " << stats.m.fp << std::endl;
 
 	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
