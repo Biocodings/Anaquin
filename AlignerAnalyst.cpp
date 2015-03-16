@@ -1,7 +1,6 @@
 #include <map>
 #include <math.h>
 #include <iostream>
-#include <assert.h> 
 #include "ParserSAM.hpp"
 #include "AlignerAnalyst.hpp"
 #include "StandardFactory.hpp"
