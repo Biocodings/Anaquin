@@ -37,6 +37,7 @@
 /* Begin PBXFileReference section */
 		7F2B8E301AB6B9FC0069D607 /* Chromosome.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Chromosome.hpp; path = ../Chromosome.hpp; sourceTree = "<group>"; };
 		7F2B8E311AB6BA570069D607 /* Sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequins.hpp; path = ../Sequins.hpp; sourceTree = "<group>"; };
+		7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ConfusionMatrix.hpp; path = ../ConfusionMatrix.hpp; sourceTree = "<group>"; };
 		7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StandardFactory.cpp; path = ../StandardFactory.cpp; sourceTree = "<group>"; };
 		7F6E0C7D1AB6526300C9E3E0 /* StandardFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StandardFactory.hpp; path = ../StandardFactory.hpp; sourceTree = "<group>"; };
 		7F6E0C841AB653AC00C9E3E0 /* AlignerStatsTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AlignerStatsTest.cpp; sourceTree = "<group>"; };
@@ -110,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				7F6E0C831AB653AC00C9E3E0 /* Tests */,
+				7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */,
 				7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */,
 				7FC557081AB473C00085C090 /* Anaquin.cpp */,
 				7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */,

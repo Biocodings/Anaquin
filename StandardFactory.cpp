@@ -9,8 +9,8 @@ using namespace std;
 
 Chromosome StandardFactory::reference()
 {
-	//std::ifstream in("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa");
-	std::ifstream in("C://Sources//QA//Data//Standards//ChrT.5.10.fa");
+	std::ifstream in("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa");
+	//std::ifstream in("C://Sources//QA//Data//Standards//ChrT.5.10.fa");
 	std::string line;
 
 	// Assume that the first line contains only the name of the chromosome
@@ -24,16 +24,16 @@ Chromosome StandardFactory::reference()
 	c.end = std::numeric_limits<Locus>::min();
 	c.start = std::numeric_limits<Locus>::max();
 
-    //ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
-	ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
+    ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
+	//ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
 	{
 		c.end = std::max(c.end, f.end);
 		c.start = std::min(c.start, f.start);
         c.fs.push_back(f);
     });
 
-	//ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/RNAsequins.fa", [&](const Sequence &s)
-	ParserFA::parse("C://Sources//QA//Data//Standards//RNAsequins.fa", [&](const Sequence &s)
+	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/RNAsequins.fa", [&](const Sequence &s)
+	//ParserFA::parse("C://Sources//QA//Data//Standards//RNAsequins.fa", [&](const Sequence &s)
 	{
 		c.sequins[s.id] = s;
 	});

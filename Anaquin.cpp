@@ -9,7 +9,6 @@ int main(int argc, char ** argv)
 //    AlignerAnalyst::analyze("/Users/user1/Sources/ABCD/aligned_output/accepted_hits.sam", 1000);
     
 
-    ///Users/user1/Sources/ABCD/aligned_output/accepted_hits.sam
     
 //    AssemblyAnalyst::analyze("/Users/user1/Sources/ABCD/transcripts/transcripts.gtf");
     

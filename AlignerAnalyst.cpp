@@ -1,6 +1,7 @@
 #include <map>
 #include <math.h>
 #include <iostream>
+#include <assert.h>
 #include "ParserSAM.hpp"
 #include "AlignerAnalyst.hpp"
 #include "StandardFactory.hpp"
@@ -44,12 +45,11 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n
     
     ParserSAM::read(file, [&](const Alignment &align)
     {
-        if (i++ > n)
+        if (++i > n)
         {
             return false;
         }
-        
-        if (align.id == r.id)
+        else if (align.id == r.id)
         {
             stats.nr++;
         }
@@ -95,6 +95,8 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n
         return true;
     });
     
+    assert(stats.n);
+    
     std::cout << "Total reads: " << stats.n << std::endl;
     std::cout << "Reference reads: " << stats.nr << std::endl;
     std::cout << "Query reads: " << stats.nq << std::endl;
@@ -105,7 +107,7 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n
 
 	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
-	stats.dilution = static_cast<Percentage>(stats.nr / stats.nq);
+    stats.dilution = stats.nq ? static_cast<Percentage>(stats.nr / stats.nq) : 1;
 
 	return stats;
 }
