@@ -10,6 +10,24 @@ typedef std::map<std::string, Sequence> SequinMap;
 
 struct Chromosome
 {
+	inline bool matchChromo(const Feature &q) const
+	{
+		return (q.start >= start && q.end <= end);
+	}
+
+	inline bool matchFeature(const Feature &q) const
+	{
+		for (auto r : fs)
+		{
+			if (r.type == q.type && q.start >= r.start && q.end <= r.end)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
     std::string id;
     std::vector<Feature> fs;
     
