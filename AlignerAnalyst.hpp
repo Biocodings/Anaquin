@@ -1,7 +1,8 @@
 #ifndef AS_ALIGNER_ANALYST_HPP
 #define AS_ALIGNER_ANALYST_HPP
 
-#include "types.hpp"
+#include "Types.hpp"
+#include "Sequins.hpp"
 
 struct AlignerStats
 {
@@ -40,7 +41,7 @@ struct AlignerStats
 
 struct AlignerAnalyst
 {
-    static AlignerStats analyze(const std::string &file, Reads n = std::numeric_limits<Reads>::max());
+    static AlignerStats analyze(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
 };
 
 #endif

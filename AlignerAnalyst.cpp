@@ -45,7 +45,7 @@ static bool matchAlignWithRef(const Chromosome &r, const Alignment &align)
     return false;
 }
 
-AlignerStats AlignerAnalyst::analyze(const std::string &file, Reads n)
+AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n)
 {
 	AlignerStats stats;
 
