@@ -1,7 +1,7 @@
 #ifndef AS_CONFUSION_MATRIX_HPP
 #define AS_CONFUSION_MATRIX_HPP
 
-#include <string>
+#include <math.h>
 #include "Types.hpp"
 
 struct ConfusionMatrix
