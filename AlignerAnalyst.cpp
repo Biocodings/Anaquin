@@ -99,10 +99,6 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Reads n)
                 stats.fn++;
             }
         }
-        else if (align.mapped)
-        {
-            stats.fn++;
-        }
         
         stats.n++;        
         return true;

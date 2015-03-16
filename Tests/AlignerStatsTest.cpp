@@ -20,5 +20,6 @@ TEST(Cufflink, AlignerStatsTest)
 	ASSERT_EQ(0, stats.fp);
 	ASSERT_EQ(0, stats.fn);
 	ASSERT_EQ(0, stats.nr);
+    ASSERT_EQ(0, stats.dilution);
 	ASSERT_EQ(3307, stats.nq);
 }
