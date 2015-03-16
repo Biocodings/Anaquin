@@ -6,7 +6,7 @@
 
 struct ParserSAM
 {
-	static bool read(const std::string &file, std::function<void(const Alignment &)> x);
+	static bool read(const std::string &file, std::function<bool (const Alignment &)> x);
 };
 
 #endif

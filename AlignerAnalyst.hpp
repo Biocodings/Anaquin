@@ -6,19 +6,19 @@
 struct AlignerStats
 {
 	// Percentage of reads aligned with the reference chromosome
-	Percentage p_r;
+	Percentage pr;
 
 	// Percentage of reads aligned with the query samples
-	Percentage p_q;
+	Percentage pq;
 
 	// Total number of reads aligned
 	Reads n = 0;
 
 	// Number of reads aligned to the chromosome
-	Reads n_r = 0;
+	Reads nr = 0;
 
 	// Number of reads aligned to the real sample
-	Reads n_q = 0;
+	Reads nq = 0;
 
     // Number of perfectly aligned reads (true positives)
 	Reads tp = 0;
@@ -40,7 +40,7 @@ struct AlignerStats
 
 struct AlignerAnalyst
 {
-	static AlignerStats analyze(const std::string &file);
+    static AlignerStats analyze(const std::string &file, Reads n = std::numeric_limits<Reads>::max());
 };
 
 #endif

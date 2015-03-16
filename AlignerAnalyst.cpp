@@ -1,5 +1,6 @@
 #include <map>
 #include <math.h>
+#include <iostream>
 #include <assert.h> 
 #include "ParserSAM.hpp"
 #include "AlignerAnalyst.hpp"
@@ -20,7 +21,7 @@ static bool matchAlignWithRef(const Chromosome &r, const Alignment &align)
     return false;
 }
 
-AlignerStats AlignerAnalyst::analyze(const std::string &file)
+AlignerStats AlignerAnalyst::analyze(const std::string &file, Reads n)
 {
 	AlignerStats stats;
 
@@ -38,15 +39,22 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
      * for more details.
      */
     
+    Reads i = 0;
+    
     ParserSAM::read(file, [&](const Alignment &align)
     {
+        if (i++ > n)
+        {
+            return false;
+        }
+        
         if (align.id == r.id)
         {
-            stats.n_r++;
+            stats.nr++;
         }
         else
         {
-            stats.n_q++;
+            stats.nq++;
         }
         
         if (align.id == r.id)
@@ -59,7 +67,7 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
                 }
                 else
                 {
-                    stats.fn++;
+                    stats.tp = stats.tp;
                 }
             }
             else
@@ -67,17 +75,30 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file)
                 stats.fn++;
             }
         }
+        else if (align.mapped)
+        {
+            stats.fn++;
+        }
         
-        stats.n++;
+        stats.n++;        
+        return true;
     });
     
-    stats.fp = stats.n_r - stats.tp;
+    stats.fp = stats.nr - stats.tp;
     stats.sp = (stats.tp + stats.fp) ? stats.tp / (stats.tp + stats.fp) : NAN;
     stats.sn = (stats.tp + stats.fn) ? stats.tp / (stats.tp + stats.fn) : NAN;
 
-	stats.p_r = static_cast<Percentage>(stats.n_r / stats.n);
-	stats.p_q = static_cast<Percentage>(stats.n_q / stats.n);
-	stats.dilution = static_cast<Percentage>(stats.n_r / stats.n_q);
+    std::cout << "Total reads: " << stats.n << std::endl;
+    std::cout << "Reference reads: " << stats.nr << std::endl;
+    std::cout << "Query reads: " << stats.nq << std::endl;
+    
+    std::cout << "TP: " << stats.tp << std::endl;
+    std::cout << "FN: " << stats.fn << std::endl;
+    std::cout << "FP: " << stats.fp << std::endl;
+
+	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
+	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
+	stats.dilution = static_cast<Percentage>(stats.nr / stats.nq);
 
 	return stats;
 }

@@ -20,11 +20,23 @@ Chromosome StandardFactory::reference()
 	c.id = line.substr(1, line.size());
     
     ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
-                     {
-                         c.fs.push_back(f);
-                     });
-    
+    {
+        c.fs.push_back(f);
+    });
+
     return c;
+}
+
+SequinMap StandardFactory::sequins()
+{
+    SequinMap sm;
+    
+    ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/RNAsequins.fa", [&](const Sequence &s)
+    {
+        sm[s.id] = s;
+    });
+
+    return sm;
 }
 
 std::shared_ptr<Sequence> StandardFactory::sequence()
@@ -32,8 +44,8 @@ std::shared_ptr<Sequence> StandardFactory::sequence()
 	std::shared_ptr<Sequence> seq;
 
 	/*
-	* Extract the name of the in-sillico chromosome. Assume only a single chromosome in the file.
-	*/
+	 * Extract the name of the in-sillico chromosome. Assume only a single chromosome in the file.
+	 */
 
 	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa", [&](const Sequence &s)
 	{

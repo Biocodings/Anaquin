@@ -6,9 +6,7 @@
 
 using namespace std;
 
-#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
-
-bool ParserSAM::read(const std::string &file, std::function<void(const Alignment &)> x)
+bool ParserSAM::read(const std::string &file, std::function<bool (const Alignment &)> x)
 {
     std::string line;
     std::ifstream in(file);
@@ -22,16 +20,19 @@ bool ParserSAM::read(const std::string &file, std::function<void(const Alignment
 			continue;
 		}
 
-        auto tokens = split(line, '\t');
-        
+        const auto tokens = split(line, '\t');
+
         // It's unmapped if the bit is 1
         align.mapped = !(stoi(tokens[1]) & (1 << 2));
-        
+
         align.id  = tokens[2];
 		align.seq = tokens[9];
-        align.pos = stoi(tokens[3]);
+        align.start = stoi(tokens[3]);
 
-		x(align);
+		if (!x(align))
+        {
+            break;
+        }
 	}
     
 	return true;
