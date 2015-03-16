@@ -2,16 +2,11 @@
 #define AS_PARSER_GTF_HPP
 
 #include "Feature.hpp"
-
-struct FeatureReader
-{
-    virtual void all(const Feature &)  {}
-    virtual void exon(const Feature &) {}
-};
+#include <functional>
 
 struct ParserGTF
 {
-	static bool parse(const std::string &file, FeatureReader &reader);
+    static bool parse(const std::string &file, std::function<void(const Feature &)>);
 };
 
 #endif

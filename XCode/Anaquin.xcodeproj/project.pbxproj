@@ -35,6 +35,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7F2B8E2F1AB698130069D607 /* Chromosome.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Chromosome.hpp; sourceTree = "<group>"; };
 		7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StandardFactory.cpp; path = ../StandardFactory.cpp; sourceTree = "<group>"; };
 		7F6E0C7D1AB6526300C9E3E0 /* StandardFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StandardFactory.hpp; path = ../StandardFactory.hpp; sourceTree = "<group>"; };
 		7F6E0C841AB653AC00C9E3E0 /* AlignerStatsTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AlignerStatsTest.cpp; sourceTree = "<group>"; };
@@ -116,6 +117,7 @@
 				7FC5570C1AB473C00085C090 /* ParserGTF.cpp */,
 				7FC5570D1AB473C00085C090 /* ParserSAM.cpp */,
 				7FC5570F1AB473C00085C090 /* AlignerAnalyst.hpp */,
+				7F2B8E2F1AB698130069D607 /* Chromosome.hpp */,
 				7FC557101AB473C00085C090 /* Alignment.hpp */,
 				7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */,
 				7F6E0C7D1AB6526300C9E3E0 /* StandardFactory.hpp */,

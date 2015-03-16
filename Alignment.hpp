@@ -11,14 +11,11 @@ struct Alignment
 {
     std::string id;
 
-	/*
-	 * It's important to note that not every alignment is mapped. If this field is false, no assumption
-	 * can be made to other fields.
-	 */
-
+    // If this field is false, no assumption can be made to other fields
     bool mapped;
 
-    Position pos;
+    // The starting position of the alignment
+    Position start;
     
 	std::string seq;
 };

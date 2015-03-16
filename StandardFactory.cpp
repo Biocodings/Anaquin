@@ -6,21 +6,25 @@
 
 using namespace std;
 
-std::string StandardFactory::chromoName()
+Chromosome StandardFactory::reference()
 {
 	std::ifstream in("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa");
 	std::string line;
 
-	// Assume the first line contains only the name of the chromosome
+	// Assume that the first line contains only the name of the chromosome
 	std::getline(in, line);
 
+    Chromosome c;
+    
 	// Remove the '<' prefix
-	return line.substr(1, line.size());
-}
-
-std::string StandardFactory::transGTF()
-{
-	return "/Users/user1/Sources/ABCD/standards/RNAstandards.gtf";
+	c.id = line.substr(1, line.size());
+    
+    ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
+                     {
+                         c.fs.push_back(f);
+                     });
+    
+    return c;
 }
 
 std::shared_ptr<Sequence> StandardFactory::sequence()
@@ -39,31 +43,3 @@ std::shared_ptr<Sequence> StandardFactory::sequence()
 	assert(seq);
 	return seq;
 }
-
-FeatureMap StandardFactory::features()
-{
-    FeatureMap mapper;
-    
-    struct PrivateReader : public FeatureReader
-    {
-        void all(const Feature &f)
-        {
-            (*mapper)[f.pos] = f;
-            (*mapper)[f.pos+1] = f; // Hack?
-            (*mapper)[f.pos-1] = f; // Hack?
-        }
-        
-        FeatureMap *mapper;
-    };
-    
-    PrivateReader reader;
-    reader.mapper = &mapper;
-    ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", reader);
-
-    return mapper;
-}
-
-
-
-
-

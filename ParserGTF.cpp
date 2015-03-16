@@ -1,18 +1,18 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include "types.hpp"
+#include "Types.hpp"
 #include "ParserGTF.hpp"
 
 using namespace std;
 
-bool ParserGTF::parse(const std::string &file, FeatureReader &reader)
+bool ParserGTF::parse(const std::string &file, std::function<void(const Feature &)> x)
 {
     std::string line;
     std::ifstream in(file);
 
     Feature f;
-    
+
 	/*
 	 * Fields must be tab-separated. Also, all but the final field in each feature line must contain a value;
 	 * "empty" columns should be denoted with a '.'. Please refer to the online documentation for more details.
@@ -31,15 +31,17 @@ bool ParserGTF::parse(const std::string &file, FeatureReader &reader)
     while (std::getline(in, line))
     {
         const auto tokens = split(line, '\t');        
-        f.pos = stoi(tokens[3]);
-        f.id = tokens[0];
-        
+
+        f.id    = tokens[0];
+        f.start = stoi(tokens[3]);
+        f.end   = stoi(tokens[4]);
+
 		if (tokens[2] == "exon")
 		{
-			reader.exon(f);
+            f.type = Exon;
 		}
 
-        reader.all(f);
+        x(f);
 	}
     
 	return true;
