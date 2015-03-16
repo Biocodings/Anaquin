@@ -13,6 +13,7 @@
 		7F6E0C8D1AB6585500C9E3E0 /* AssemblyCompareTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C851AB653AC00C9E3E0 /* AssemblyCompareTest.cpp */; };
 		7F6E0C8F1AB6586A00C9E3E0 /* StandardFactoryTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C891AB653AC00C9E3E0 /* StandardFactoryTest.cpp */; };
 		7F6E0C911AB6590100C9E3E0 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F6E0C901AB6590100C9E3E0 /* libgtest.a */; };
+		7F82266E1AB7A1C100BDCFC7 /* ParserBED.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */; };
 		7FC5571A1AB473C00085C090 /* AlignerAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */; };
 		7FC5571B1AB473C00085C090 /* Anaquin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC557081AB473C00085C090 /* Anaquin.cpp */; };
 		7FC5571C1AB473C00085C090 /* AssemblyAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */; };
@@ -46,6 +47,8 @@
 		7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = gtest.framework; sourceTree = "<group>"; };
 		7F6E0C901AB6590100C9E3E0 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgtest.a; sourceTree = "<group>"; };
 		7F7C70521AB4726E00C6EE36 /* Anaquin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anaquin; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserBED.cpp; path = ../ParserBED.cpp; sourceTree = "<group>"; };
+		7F82266D1AB7A1C100BDCFC7 /* ParserBED.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserBED.hpp; path = ../ParserBED.hpp; sourceTree = "<group>"; };
 		7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignerAnalyst.cpp; path = ../AlignerAnalyst.cpp; sourceTree = "<group>"; };
 		7FC557081AB473C00085C090 /* Anaquin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Anaquin.cpp; path = ../Anaquin.cpp; sourceTree = "<group>"; };
 		7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssemblyAnalyst.cpp; path = ../AssemblyAnalyst.cpp; sourceTree = "<group>"; };
@@ -111,6 +114,8 @@
 			isa = PBXGroup;
 			children = (
 				7F6E0C831AB653AC00C9E3E0 /* Tests */,
+				7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */,
+				7F82266D1AB7A1C100BDCFC7 /* ParserBED.hpp */,
 				7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */,
 				7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */,
 				7FC557081AB473C00085C090 /* Anaquin.cpp */,
@@ -203,6 +208,7 @@
 				7FC5571F1AB473C00085C090 /* ParserGTF.cpp in Sources */,
 				7F6E0C7E1AB6526300C9E3E0 /* StandardFactory.cpp in Sources */,
 				7FC557201AB473C00085C090 /* ParserSAM.cpp in Sources */,
+				7F82266E1AB7A1C100BDCFC7 /* ParserBED.cpp in Sources */,
 				7FC5571C1AB473C00085C090 /* AssemblyAnalyst.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

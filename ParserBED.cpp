@@ -1,10 +1,10 @@
 #include <fstream>
 #include <assert.h>
-#include "ParserGTF.hpp"
+#include "ParserBED.hpp"
 
 using namespace std;
 
-bool ParserGTF::parse(const std::string &file, std::function<void(const Feature &)> x)
+bool ParserBED::parse(const std::string &file, std::function<void(const Feature &)> x)
 {
     std::string line;
     std::ifstream in(file);
@@ -31,24 +31,11 @@ bool ParserGTF::parse(const std::string &file, std::function<void(const Feature 
         const auto tokens = split(line, '\t');        
 
         f.id     = tokens[0];
-        f.start  = stoi(tokens[3]);
-        f.end    = stoi(tokens[4]);
+        f.start  = stoi(tokens[1]);
+        f.end    = stoi(tokens[2]);
 		f.length = f.end - f.start;
 
 		assert(f.end > f.start);
-
-		if (tokens[2] == "exon")
-		{
-            f.type = Exon;
-		}
-		else if (tokens[2] == "CDS")
-		{
-			f.type = CDS;
-		}
-		else if (tokens[2] == "start_codon")
-		{
-			f.type = StartCodon;
-		}
 
         x(f);
 	}
