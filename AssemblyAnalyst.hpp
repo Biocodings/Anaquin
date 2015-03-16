@@ -1,26 +1,19 @@
 #ifndef AS_ASSEMBLY_ANALYST_HPP
 #define AS_ASSEMBLY_ANALYST_HPP
 
+#include "Sequins.hpp"
 #include "ConfusionMatrix.hpp"
 
 struct AssemblyStats
 {
-	/*
-	 * Metrics for the base-level
-	 */
-
-	Percentage fp, tp, fn, tn;
-
-	/*
-	 * Metrics for exons
-	 */
-
-	Percentage e_fp, e_tp, e_fn, e_tn;
+	ConfusionMatrix base;
+	ConfusionMatrix exon;
+	ConfusionMatrix intron;
 };
 
 struct AssemblyAnalyst
 {
-	static AssemblyStats analyze(const std::string &file);
+	static AssemblyStats analyze(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
 };
 
 #endif

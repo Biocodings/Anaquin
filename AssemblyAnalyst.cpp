@@ -6,7 +6,7 @@
 
 using namespace std;
 
-AssemblyStats AssemblyAnalyst::analyze(const std::string &file)
+AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads n)
 {
 	AssemblyStats stats;
 //    std::set<Position> pos;
