@@ -8,6 +8,30 @@
 
 using namespace std;
 
+/*
+ * Reference from Cuffcompare.cpp:
+ *
+ *   bool exon_match(GXSeg& r, GXSeg& q, uint fuzz=0) {
+ *       uint sd = (r.start>q.start) ? r.start-q.start : q.start-r.start;
+ *       uint ed = (r.end>q.end) ? r.end-q.end : q.end-r.end;
+ *       uint ex_range=exonEndRange;
+ *       if (ex_range<=fuzz) ex_range=fuzz;
+ *       if ((r.flags&1) && (q.flags&1)) {
+ * 	         if (sd>ex_range) return false;
+ *       }
+ *       else {
+ * 	         if (sd>fuzz) return false;
+ *       }
+ *       if ((r.flags&2) && (q.flags&2)) {
+ * 	         if (ed>ex_range) return false;
+ *       }
+ *       else {
+ * 	         if (ed>fuzz) return false;
+ *       }
+ *       return true;
+ *   }
+ */
+
 static bool matchAlignWithRef(const Chromosome &r, const Alignment &align)
 {
     for (auto f: r.fs)
