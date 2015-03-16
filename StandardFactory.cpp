@@ -8,7 +8,7 @@ using namespace std;
 
 std::string StandardFactory::chromoName()
 {
-	std::ifstream in("../Data/Standards/ChrT.5.10.fa");
+	std::ifstream in("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa");
 	std::string line;
 
 	// Assume the first line contains only the name of the chromosome
@@ -31,7 +31,7 @@ std::shared_ptr<Sequence> StandardFactory::sequence()
 	* Extract the name of the in-sillico chromosome. Assume only a single chromosome in the file.
 	*/
 
-	ParserFA::parse("C:\\Sources\\QA\\data\\standards\\ChrT.5.10.fa", [&](const Sequence &s)
+	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa", [&](const Sequence &s)
 	{
 		seq = std::shared_ptr<Sequence>(new Sequence());
 	});

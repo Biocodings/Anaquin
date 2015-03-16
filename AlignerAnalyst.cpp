@@ -1,4 +1,5 @@
 #include <map>
+#include <math.h>
 #include <assert.h> 
 #include "types.hpp"
 #include "ParserFA.hpp"

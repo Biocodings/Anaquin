@@ -57,6 +57,13 @@
             ReferencedContainer = "container:Anaquin.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "DYLD_FRAMEWORK_PATH"
+            value = "/Users/user1/Library/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug/"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
