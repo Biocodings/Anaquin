@@ -116,5 +116,5 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file)
 //    
 //    
     
-	return stats;
+return AssemblyStats();
 }
