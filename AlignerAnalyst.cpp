@@ -50,7 +50,7 @@ AlignerStats AlignerAnalyst::analyze(const std::string &file, Sequins s, Reads n
 	AlignerStats stats;
 
     // The reference chromosome
-	const auto r = StandardFactory::reference();
+    const auto r = StandardFactory::reference();
 
     /*
      * Calculate the sensitivity and specificity for the experiment. They are statistical measures of the performance
