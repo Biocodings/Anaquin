@@ -13,11 +13,16 @@ enum FeatureType
 	StartCodon
 };
 
-typedef std::map<std::string, std::string> Options;
+typedef std::string FeatureID;
+typedef std::string OptionID;
+typedef std::string OptionValue;
+
+// Eg: "exons": "my_exon_name"
+typedef std::map<OptionID, OptionValue> Options;
 
 struct Feature
 {
-	std::string id;
+	FeatureID id;
 
 	Locus end;
 	Locus start;
