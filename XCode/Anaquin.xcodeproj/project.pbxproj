@@ -37,7 +37,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7F2B8E301AB6B9FC0069D607 /* Chromosome.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Chromosome.hpp; path = ../Chromosome.hpp; sourceTree = "<group>"; };
+		7F2B8E301AB6B9FC0069D607 /* Standard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Standard.hpp; path = ../Standard.hpp; sourceTree = "<group>"; };
 		7F2B8E311AB6BA570069D607 /* Sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequins.hpp; path = ../Sequins.hpp; sourceTree = "<group>"; };
 		7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ConfusionMatrix.hpp; path = ../ConfusionMatrix.hpp; sourceTree = "<group>"; };
 		7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StandardFactory.cpp; path = ../StandardFactory.cpp; sourceTree = "<group>"; };
@@ -131,7 +131,7 @@
 				7FC557101AB473C00085C090 /* Alignment.hpp */,
 				7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */,
 				7F6E0C7D1AB6526300C9E3E0 /* StandardFactory.hpp */,
-				7F2B8E301AB6B9FC0069D607 /* Chromosome.hpp */,
+				7F2B8E301AB6B9FC0069D607 /* Standard.hpp */,
 				7F2B8E311AB6BA570069D607 /* Sequins.hpp */,
 				7FC557111AB473C00085C090 /* AssemblyAnalyst.hpp */,
 				7FC557121AB473C00085C090 /* ExpressionAnalyst.hpp */,

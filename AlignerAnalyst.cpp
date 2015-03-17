@@ -8,7 +8,7 @@
 
 using namespace std;
 
-static bool matchGeneBoundary(const Chromosome &r, const Alignment &align)
+static bool matchGeneBoundary(const Standard &r, const Alignment &align)
 {
     for (auto f: r.fs)
     {
@@ -21,7 +21,7 @@ static bool matchGeneBoundary(const Chromosome &r, const Alignment &align)
     return false;
 }
 
-static bool matchChromoBoundary(const Chromosome &r, const Alignment &align)
+static bool matchChromoBoundary(const Standard &r, const Alignment &align)
 {
 	return (align.start >= r.start && align.end <= r.end);
 }

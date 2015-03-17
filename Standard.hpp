@@ -1,14 +1,15 @@
-#ifndef AS_CHROMOSOME_HPP
-#define AS_CHROMOSOME_HPP
+#ifndef AS_STANDARD_HPP
+#define AS_STANDARD_HPP
 
 #include <map>
 #include <list>
 #include "Types.hpp"
 #include "Feature.hpp"
+#include "Sequence.hpp"
 
 typedef std::map<std::string, Sequence> SequinMap;
 
-struct Chromosome
+struct Standard
 {
 	inline bool matchChromo(const Feature &q) const
 	{

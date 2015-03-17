@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Chromosome StandardFactory::reference()
+Standard StandardFactory::reference()
 {
 	std::ifstream in("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa");
 	//std::ifstream in("C://Sources//QA//Data//Standards//ChrT.5.10.fa");
@@ -16,20 +16,20 @@ Chromosome StandardFactory::reference()
 	// Assume that the first line contains only the name of the chromosome
 	std::getline(in, line);
 
-    Chromosome c;
+    Standard r;
     
 	// Remove the '<' prefix
-	c.id = line.substr(1, line.size());
+	r.id = line.substr(1, line.size());
     
-	c.end = std::numeric_limits<Locus>::min();
-	c.start = std::numeric_limits<Locus>::max();
+	r.end = std::numeric_limits<Locus>::min();
+	r.start = std::numeric_limits<Locus>::max();
 
     ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
 	//ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
 	{
-		c.end = std::max(c.end, f.end);
-		c.start = std::min(c.start, f.start);
-        c.fs.push_back(f);
+		r.end = std::max(r.end, f.end);
+		r.start = std::min(r.start, f.start);
+        r.fs.push_back(f);
     });
 
     /*
@@ -42,8 +42,8 @@ Chromosome StandardFactory::reference()
 	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/RNAsequins.fa", [&](const Sequence &s)
 	//ParserFA::parse("C://Sources//QA//Data//Standards//RNAsequins.fa", [&](const Sequence &s)
 	{
-		c.sequins[s.id] = s;
+		r.sequins[s.id] = s;
 	});
 
-    return c;
+    return r;
 }
