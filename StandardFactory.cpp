@@ -131,6 +131,9 @@ Standard StandardFactory::reference()
                 // Junction (intron) is a region between exons that have been spliced
                 j.l = Locus(f.blocks[i - 1].end, f.blocks[i].start);
 
+                // TODO: Fix this
+                r.introns.push_back(j);
+                
                 iter->js.push_back(j);
             }
         }

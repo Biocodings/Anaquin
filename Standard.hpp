@@ -8,6 +8,7 @@
 #include "Locus.hpp"
 #include "Feature.hpp"
 #include "Sequence.hpp"
+#include "ConfusionMatrix.hpp"
 
 typedef std::string GeneID;
 typedef std::string TranscriptID;
@@ -29,7 +30,7 @@ struct Gene
 struct Standard
 {
     typedef std::map<std::string, Sequence> SequinMap;
-    
+
 	inline bool matchFeature(const Feature &q) const
 	{
 		for (auto r : fs)
@@ -42,7 +43,7 @@ struct Standard
 
 		return false;
 	}
-
+ 
     std::string id;
 
     // The location of the standard
@@ -53,9 +54,12 @@ struct Standard
     
     // List of sequins added to the experiment
     SequinMap sequins;
-    
-    // List of known features
+
+    // List of known features (??? wrong ???)
     std::list<Feature> fs;
+
+    // List of known junctions
+    std::vector<Feature> introns;
 };
 
 #endif

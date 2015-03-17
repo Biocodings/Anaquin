@@ -1,12 +1,12 @@
-#include <map>
 #include <math.h>
 #include <iostream>
 #include <assert.h>
+#include "Biology.hpp"
+#include "ParserBED.hpp"
 #include "ParserSAM.hpp"
+#include "Statistics.hpp"
 #include "AlignerAnalyst.hpp"
 #include "StandardFactory.hpp"
-
-using namespace std;
 
 static bool matchGeneBoundary(const Standard &r, const Alignment &align)
 {
@@ -26,21 +26,32 @@ static bool matchChromoBoundary(const Standard &r, const Alignment &align)
     return r.l.contains(align.l);
 }
 
-template<typename T> void abcd()
-{
-
-}
-
 AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n)
 {
-    return AlignerStats();
+    AlignerStats stats;
+    const auto r = StandardFactory::reference();
+
+    ParserBED::parse(file, [&](const BedFeature &f)
+    {
+        /*
+         * The parser simply reports whatever in the file. It doesn't know anything about introns.
+         */
+        
+        Feature t = f;
+        
+        exonsToIntrons(f.blocks, [&](BasePair start, BasePair end)
+        {
+            t.l.set(start, end);
+            binaryClassify(r.introns, r, t, stats.m);
+        });
+    });
+
+    return stats;
 }
 
 AlignerStats AlignerAnalyst::base(const std::string &file, Sequins s, Reads n)
 {
     AlignerStats stats;
-
-    // The reference silico chromosome
     const auto r = StandardFactory::reference();
 
     /*

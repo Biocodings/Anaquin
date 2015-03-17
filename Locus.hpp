@@ -9,10 +9,10 @@ struct Locus
     Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
     ~Locus() {}
 
-    inline void update(BasePair start, BasePair end)
+    inline void set(BasePair start, BasePair end)
     {
         this->start = start; this->end = end;
-        assert(this->end > start);
+        assert(this->end > this->start);
     }
 
     inline BasePair length() const { return (end - start); }

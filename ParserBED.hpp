@@ -8,7 +8,7 @@
 struct BedFeature : public Feature
 {
     std::string name;
-    
+
     // Locations of the sorted blocks
     std::vector<Locus> blocks;
 };

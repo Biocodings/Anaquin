@@ -31,7 +31,12 @@ bool ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
     while (std::getline(in, line))
     {
         boost::split(tokens, line, boost::is_any_of("\t"));
-     
+
+        if (tokens.size() < 9)
+        {
+            continue;
+        }
+        
         // Clear previous blocks
         f.blocks.clear();
         
@@ -40,8 +45,8 @@ bool ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
         
         // Name of the BED line (eg: gene)
         f.name = tokens[3];
-
-        f.l.update(stod(tokens[1]), stod(tokens[2]));
+        
+        f.l.set(stod(tokens[1]), stod(tokens[2]));
 
         boost::split(sizes,  tokens[10], boost::is_any_of(","));
         boost::split(starts, tokens[11], boost::is_any_of(","));
