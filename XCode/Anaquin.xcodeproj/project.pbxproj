@@ -326,6 +326,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"/Users/user1/Sources/googletest-read-only/include",
 					/Users/user1/Sources/boost155/1.55.0/include,
+					/usr/local/Cellar/boost155/1.55.0/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -352,6 +353,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"/Users/user1/Sources/googletest-read-only/include",
 					/Users/user1/Sources/boost155/1.55.0/include,
+					/usr/local/Cellar/boost155/1.55.0/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
