@@ -13,9 +13,9 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads
 
 	auto assign = [&](const Feature &f, ConfusionMatrix &m)
 	{
-		if (f.id == r.id)
+		if (f.chromo == r.id)
 		{
-			if (r.matchChromo(f))
+			if (r.loc.contains(f.loc))
 			{
 				if (r.matchFeature(f))
 				{
@@ -33,7 +33,7 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads
 		}
 		else
 		{
-			if (r.matchChromo(f))
+			if (r.loc.contains(f.loc))
 			{
 				m.fn++;
 			}

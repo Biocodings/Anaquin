@@ -2,6 +2,7 @@
 #define AS_ALIGNMENT_HPP
 
 #include "Types.hpp"
+#include "Locus.hpp"
 
 /*
  * This class represents a sequencing alignment.
@@ -14,10 +15,7 @@ struct Alignment
     // If this field is false, no assumption can be made to other fields
     bool mapped;
 
-	Locus end;
-	Locus start;
-	BasePair length;
-    
+    Locus loc;
 	std::string seq;
 };
 

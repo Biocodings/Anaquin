@@ -2,7 +2,7 @@
 #define AS_FEATURE_HPP
 
 #include <map>
-#include "Types.hpp"
+#include "Locus.hpp"
 
 enum FeatureType
 {
@@ -22,12 +22,9 @@ typedef std::map<OptionID, OptionValue> Options;
 
 struct Feature
 {
-	FeatureID id;
+	FeatureID chromo;
 
-	Locus end;
-	Locus start;
-	Locus length;
-
+    Locus loc;
     FeatureType type;
 
     // Optional field such as "gene_id" and "transcript_id"

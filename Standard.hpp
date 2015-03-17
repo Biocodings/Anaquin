@@ -5,7 +5,7 @@
 #include <map>
 #include <list>
 #include <vector>
-#include "Types.hpp"
+#include "Locus.hpp"
 #include "Feature.hpp"
 #include "Sequence.hpp"
 
@@ -16,9 +16,8 @@ struct Gene
 {
     GeneID id;
     
-    Locus end;
-    Locus start;
-
+    Locus loc;
+    
     // List of exons in this gene sorted by positions
     std::vector<Feature> exons;
 
@@ -30,16 +29,16 @@ struct Standard
 {
     typedef std::map<std::string, Sequence> SequinMap;
     
-	inline bool matchChromo(const Feature &q) const
-	{
-		return (q.start >= start && q.end <= end);
-	}
+	//inline bool matchChromo(const Feature &q) const
+	//{
+    //    return loc.contains(q.loc);
+	//}
 
 	inline bool matchFeature(const Feature &q) const
 	{
 		for (auto r : fs)
 		{
-			if (r.type == q.type && q.start >= r.start && q.end <= r.end)
+			if (r.type == q.type && r.loc.contains(q.loc))
 			{
 				return true;
 			}
@@ -50,8 +49,7 @@ struct Standard
 
     std::string id;
     
-	Locus end;
-	Locus start;
+    Locus loc;
 
     // List of genes mixed in the standard sorted by positions
     std::vector<Gene> genes;

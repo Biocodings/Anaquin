@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "ParserFA.hpp"
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -11,6 +12,7 @@ bool ParserFA::parse(const std::string &file, std::function<void(const Sequence 
     std::ifstream in(file);
 
     Sequence s;
+    std::vector<std::string> tokens;
     
     while (std::getline(in, line))
     {
@@ -20,8 +22,8 @@ bool ParserFA::parse(const std::string &file, std::function<void(const Sequence 
 			{
 				x(s);
 			}
-
-			auto tokens = split(line, '|');
+            
+            boost::split(tokens, line, boost::is_any_of("|"));
 
 			// Remove the '<' prefix			
 			s.id = tokens[0].substr(1, tokens[0].size());

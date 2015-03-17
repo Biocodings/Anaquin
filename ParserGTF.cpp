@@ -27,17 +27,17 @@ bool ParserGTF::parse(const std::string &file, std::function<void(const Feature 
 	 *    8. frame
 	 *    9. attribute
 	 */
+    
+    std::vector<std::string> tokens;
+    std::vector<std::string> options;
+    std::vector<std::string> nameValue;
 
     while (std::getline(in, line))
     {
-        const auto tokens = split(line, '\t');        
+        boost::split(tokens, line, boost::is_any_of("\t"));
 
-        f.id     = tokens[0];
-        f.start  = stoi(tokens[3]);
-        f.end    = stoi(tokens[4]);
-		f.length = f.end - f.start;
-
-		assert(f.end > f.start);
+        f.chromo = tokens[0];
+        f.loc.update(stoi(tokens[3]), stoi(tokens[4]));
 
 		if (tokens[2] == "exon")
 		{
@@ -56,16 +56,18 @@ bool ParserGTF::parse(const std::string &file, std::function<void(const Feature 
          * Eg: "gene_id "R_5_3_R"; transcript_id "R_5_3_R";"
          */
         
-        for (auto option : split(tokens[8], ';'))
+        boost::split(options, tokens[8], boost::is_any_of(";"));
+        
+        for (auto option : options)
         {
             if (!option.empty())
             {
                 boost::trim(option);
-                const auto t = split(option, ' ');
-                
-                if (t.size() == 2)
+                boost::split(nameValue, option, boost::is_any_of(" "));
+
+                if (nameValue.size() == 2)
                 {
-                    f.options[t[0]] = t[1];
+                    f.options[nameValue[0]] = nameValue[1];
                 }
             }
         }
