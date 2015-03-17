@@ -30,11 +30,6 @@ struct Standard
 {
     typedef std::map<std::string, Sequence> SequinMap;
     
-	//inline bool matchChromo(const Feature &q) const
-	//{
-    //    return loc.contains(q.loc);
-	//}
-
 	inline bool matchFeature(const Feature &q) const
 	{
 		for (auto r : fs)

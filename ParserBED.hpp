@@ -1,13 +1,16 @@
 #ifndef AS_PARSER_BED_HPP
 #define AS_PARSER_BED_HPP
 
-#include "Feature.hpp"
+#include <vector>
 #include <functional>
+#include "Feature.hpp"
 
 struct BedFeature : public Feature
 {
+    std::string name;
     
-    
+    // Locations of the sorted blocks
+    std::vector<Locus> blocks;
 };
 
 struct ParserBED

@@ -67,6 +67,9 @@ bool ParserGTF::parse(const std::string &file, std::function<void(const Feature 
 
                 if (nameValue.size() == 2)
                 {
+                    // Make sure that silly characters are removed
+                    nameValue[1].erase(std::remove(nameValue[1].begin(), nameValue[1].end(), '\"'), nameValue[1].end());
+                    
                     f.options[nameValue[0]] = nameValue[1];
                 }
             }

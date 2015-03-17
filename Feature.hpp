@@ -13,8 +13,8 @@ enum FeatureType
 	StartCodon
 };
 
-typedef std::string FeatureID;
 typedef std::string OptionID;
+typedef std::string FeatureID;
 typedef std::string OptionValue;
 
 // Eg: "exons": "my_exon_name"
@@ -24,7 +24,7 @@ struct Feature
 {
 	FeatureID chromo;
 
-    // The location of the feature
+    // The location of the feature relative to the chromosome
     Locus l;
 
     FeatureType type;

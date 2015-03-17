@@ -3,8 +3,6 @@
 #include "ParserBED.hpp"
 #include <boost/algorithm/string.hpp>
 
-using namespace std;
-
 bool ParserBED::parse(const std::string &file, std::function<void(const BedFeature &)> x)
 {
     std::string line;
@@ -28,63 +26,36 @@ bool ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
      *       The number of items in this list should correspond to blockCount.
      */
     
-    std::vector<std::string> tokens;
-    std::vector<std::string> options;
-    std::vector<std::string> nameValue;
+    std::vector<std::string> sizes, starts, tokens;
     
     while (std::getline(in, line))
     {
         boost::split(tokens, line, boost::is_any_of("\t"));
+     
+        // Clear previous blocks
+        f.blocks.clear();
         
+        // Name of the chromosome
         f.chromo = tokens[0];
+        
+        // Name of the BED line (eg: gene)
+        f.name = tokens[3];
+
         f.l.update(stod(tokens[1]), stod(tokens[2]));
+
+        boost::split(sizes,  tokens[10], boost::is_any_of(","));
+        boost::split(starts, tokens[11], boost::is_any_of(","));
+        assert(sizes.size() == starts.size());
         
         // For each block...
         for (auto i = 0; i < stod(tokens[9]); i++)
         {
-            if (i)
-            {
-                
-                
-            }
+            const BasePair start = stod(starts[i]);
+            const BasePair size  = stod(sizes[i]);
+            
+            f.blocks.push_back(Locus(f.l.start + start, f.l.start + start + size));
         }
 
-        f.chromo = tokens[0];
-        f.l.update(stoi(tokens[3]), stoi(tokens[4]));
-
-        if (tokens[2] == "exon")
-        {
-            f.type = Exon;
-        }
-        else if (tokens[2] == "CDS")
-        {
-            f.type = CDS;
-        }
-        else if (tokens[2] == "start_codon")
-        {
-            f.type = StartCodon;
-        }
-        
-        boost::split(options, tokens[8], boost::is_any_of(";"));
-        
-        /*
-         * Eg: "gene_id "R_5_3_R"; transcript_id "R_5_3_R";"
-         */
-        
-        for (auto option : options)
-        {
-            if (!option.empty())
-            {
-                boost::trim(option);
-                const auto &t = boost::split(nameValue, option, boost::is_any_of(" "));
-
-                if (t.size() == 2)
-                {
-                    f.options[t[0]] = t[1];
-                }
-            }
-        }
-        
         x(f);
     }
     

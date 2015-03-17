@@ -6,6 +6,9 @@
 
 struct Locus
 {
+    Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
+    ~Locus() {}
+
     inline void update(BasePair start, BasePair end)
     {
         this->start = start; this->end = end;

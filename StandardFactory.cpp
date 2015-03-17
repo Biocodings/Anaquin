@@ -1,11 +1,11 @@
 #include <fstream>
+#include <iostream>
 #include <assert.h>
 #include <algorithm>
 #include "ParserFA.hpp"
+#include "ParserBED.hpp"
 #include "ParserGTF.hpp"
 #include "StandardFactory.hpp"
-#include <iostream>
-using namespace std;
 
 Standard StandardFactory::reference()
 {
@@ -32,8 +32,7 @@ Standard StandardFactory::reference()
      * Data-structures required to build up the chromosome. Orders of the features are not guarenteed.
      */
     
-    std::set<GeneID> g_ids;
-    std::map<TranscriptID, GeneID> t_ids;
+    std::set<GeneID> gids;
 
     ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
 	//ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
@@ -50,20 +49,18 @@ Standard StandardFactory::reference()
         Options t = f.options;
         
         const auto gid = t["gene_id"];
-        
-        g_ids.insert(gid);
-        t_ids[gid] = gid;
+        gids.insert(gid);
     });
 
     /*
      * Construct the data-structure for each gene.
      */
 
-    for (auto g_id : g_ids)
+    for (auto gid : gids)
     {
         Gene g;
         
-        g.id = g_id;
+        g.id = gid;
         g.l.end = std::numeric_limits<BasePair>::min();
         g.l.start = std::numeric_limits<BasePair>::max();
 
@@ -104,41 +101,47 @@ Standard StandardFactory::reference()
     {
         return (x.l.start < y.l.start);
     });
-    
+
     /*
-     * Create data-structure for each junction between exons. Only possible once the exons
-     * have created and sorted.
+     * Create data-structure for the known junctions between exons.
      */
-/*
-    std::for_each(r.genes.begin(), r.genes.end(), [&](Gene &g)
+
+    ParserBED::parse("/Users/user1/Sources/QA/Data/Standards/RNAstandards.bed", [&](const BedFeature &f)
     {
-        for (auto i = 0; i < g.exons.size(); i++)
+        /*
+         * In this context, a block is simply an exon. The name of a BED line would be the name of the gene.
+         */
+        
+        const auto iter = std::find_if(r.genes.begin(), r.genes.end(), [&](const Gene &g)
+        {
+            return (g.id == f.name);
+        });
+
+        assert(iter != r.genes.end());
+        
+        for (std::size_t i = 0; i < f.blocks.size(); i++)
         {
             if (i)
             {
-                const auto p = g.exons[i - 1];
-                const auto e = g.exons[i];
-                
-                // Assume the exons have been sorted
-                assert(p.loc.end < e.loc.start);
-                
                 Feature j;
-                
-                j.update(p.end, p.)
-                
-                j.start = p.end;
-                j.end = e.start;
+
+                j.chromo = r.id;
                 j.type = Junction;
-                j.length = j.end - j.start;
-                
-                assert(j.end > j.start);
-                g.js.push_back(j);
+
+                // Junction (intron) is a region between exons that have been spliced
+                j.l = Locus(f.blocks[i - 1].end, f.blocks[i].start);
+
+                iter->js.push_back(j);
             }
         }
 
-        assert(g.js.size() == g.exons.size() - 1);
+        assert(iter->exons.size() == iter->js.size() + 1);
     });
-*/
+
+    /*
+     * Create data-structure for the known sequins.
+     */
+    
 	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/RNAsequins.fa", [&](const Sequence &s)
 	//ParserFA::parse("C://Sources//QA//Data//Standards//RNAsequins.fa", [&](const Sequence &s)
 	{
