@@ -37,7 +37,7 @@ bool ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
         boost::split(tokens, line, boost::is_any_of("\t"));
         
         f.chromo = tokens[0];
-        f.loc.update(stod(tokens[1]), stod(tokens[2]));
+        f.l.update(stod(tokens[1]), stod(tokens[2]));
         
         // For each block...
         for (auto i = 0; i < stod(tokens[9]); i++)
@@ -50,7 +50,7 @@ bool ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
         }
 
         f.chromo = tokens[0];
-        f.loc.update(stoi(tokens[3]), stoi(tokens[4]));
+        f.l.update(stoi(tokens[3]), stoi(tokens[4]));
 
         if (tokens[2] == "exon")
         {

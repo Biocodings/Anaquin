@@ -26,12 +26,6 @@ struct AlignerStats
 	Percentage dilution;
 };
 
-enum AlignStatsMode
-{
-    BaseAlign,
-    SplicedAlign,
-};
-
 struct AlignerAnalyst
 {
     // Analyze the aligner for the base-level

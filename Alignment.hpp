@@ -15,8 +15,10 @@ struct Alignment
     // If this field is false, no assumption can be made to other fields
     bool mapped;
 
-    Locus loc;
-	std::string seq;
+    // Location of the alignment relative to the chromosome
+    Locus l;
+
+    std::string seq;
 };
 
 #endif

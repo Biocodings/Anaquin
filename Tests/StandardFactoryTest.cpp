@@ -18,29 +18,29 @@ TEST(TestJunction, StandardFactoryTest)
     ASSERT_EQ(9, g.exons.size());
     ASSERT_EQ(8, g.js.size());
 
-    ASSERT_EQ(388626, g.js[0].loc.start());
-    ASSERT_EQ(447005, g.js[0].loc.end());
+    ASSERT_EQ(388626, g.js[0].l.start);
+    ASSERT_EQ(447005, g.js[0].l.end);
 
-    ASSERT_EQ(447068, g.js[1].loc.start());
-    ASSERT_EQ(480183, g.js[1].loc.end());
+    ASSERT_EQ(447068, g.js[1].l.start);
+    ASSERT_EQ(480183, g.js[1].l.end);
 
-    ASSERT_EQ(480429, g.js[2].loc.start());
-    ASSERT_EQ(524943, g.js[2].loc.end());
+    ASSERT_EQ(480429, g.js[2].l.start);
+    ASSERT_EQ(524943, g.js[2].l.end);
     
-    ASSERT_EQ(525182, g.js[3].loc.start());
-    ASSERT_EQ(527936, g.js[3].loc.end());
+    ASSERT_EQ(525182, g.js[3].l.start);
+    ASSERT_EQ(527936, g.js[3].l.end);
 
-    ASSERT_EQ(528162, g.js[4].loc.start());
-    ASSERT_EQ(538413, g.js[4].loc.end());
+    ASSERT_EQ(528162, g.js[4].l.start);
+    ASSERT_EQ(538413, g.js[4].l.end);
 
-    ASSERT_EQ(538493, g.js[5].loc.start());
-    ASSERT_EQ(539348, g.js[5].loc.end());
+    ASSERT_EQ(538493, g.js[5].l.start);
+    ASSERT_EQ(539348, g.js[5].l.end);
 
-    ASSERT_EQ(539742, g.js[6].loc.start());
-    ASSERT_EQ(540365, g.js[6].loc.end());
+    ASSERT_EQ(539742, g.js[6].l.start);
+    ASSERT_EQ(540365, g.js[6].l.end);
 
-    ASSERT_EQ(540493, g.js[7].loc.start());
-    ASSERT_EQ(542286, g.js[7].loc.end());
+    ASSERT_EQ(540493, g.js[7].l.start);
+    ASSERT_EQ(542286, g.js[7].l.end);
 }
 
 TEST(TestSequins, StandardFactoryTest)

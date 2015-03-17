@@ -25,8 +25,8 @@ Standard StandardFactory::reference()
      * The region occupied by the chromosome is the smallest area contains all the features.
      */
     
-	r.loc.end = std::numeric_limits<BasePair>::min();
-	r.loc.start = std::numeric_limits<BasePair>::max();
+	r.l.end = std::numeric_limits<BasePair>::min();
+	r.l.start = std::numeric_limits<BasePair>::max();
 
     /*
      * Data-structures required to build up the chromosome. Orders of the features are not guarenteed.
@@ -38,8 +38,8 @@ Standard StandardFactory::reference()
     ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
 	//ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
 	{
-		r.loc.end = std::max(r.loc.end, f.loc.end);
-		r.loc.start = std::min(r.loc.start, f.loc.start);
+		r.l.end = std::max(r.l.end, f.l.end);
+		r.l.start = std::min(r.l.start, f.l.start);
         r.fs.push_back(f);
         
         assert(f.options.size() == 2);
@@ -64,8 +64,8 @@ Standard StandardFactory::reference()
         Gene g;
         
         g.id = g_id;
-        g.loc.end = std::numeric_limits<BasePair>::min();
-        g.loc.start = std::numeric_limits<BasePair>::max();
+        g.l.end = std::numeric_limits<BasePair>::min();
+        g.l.start = std::numeric_limits<BasePair>::max();
 
         /*
          * Add all features for this gene.
@@ -75,8 +75,8 @@ Standard StandardFactory::reference()
         {
             if (f.options["gene_id"] == g.id)
             {
-                g.loc.end = std::max(g.loc.end, f.loc.end);
-                g.loc.start = std::min(g.loc.start, f.loc.start);
+                g.l.end = std::max(g.l.end, f.l.end);
+                g.l.start = std::min(g.l.start, f.l.start);
                 
                 if (f.type == Exon)
                 {
@@ -85,12 +85,12 @@ Standard StandardFactory::reference()
             }
         }
         
-        assert(g.loc.end > g.loc.start);
+        assert(g.l.end > g.l.start);
         
         // Sort the exons by starting positions
         std::sort(g.exons.begin(), g.exons.end(), [](const Feature& x, const Feature& y)
         {
-            return (x.loc.start < y.loc.start);
+            return (x.l.start < y.l.start);
         });
         
         assert(!g.exons.empty());
@@ -102,7 +102,7 @@ Standard StandardFactory::reference()
     // Sort the genes by starting positions
     std::sort(r.genes.begin(), r.genes.end(), [](const Gene& x, const Gene& y)
     {
-        return (x.loc.start < y.loc.start);
+        return (x.l.start < y.l.start);
     });
     
     /*

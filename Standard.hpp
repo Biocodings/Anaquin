@@ -16,7 +16,8 @@ struct Gene
 {
     GeneID id;
     
-    Locus loc;
+    // Location of the gene relative to the chromosome
+    Locus l;
     
     // List of exons in this gene sorted by positions
     std::vector<Feature> exons;
@@ -38,7 +39,7 @@ struct Standard
 	{
 		for (auto r : fs)
 		{
-			if (r.type == q.type && r.loc.contains(q.loc))
+			if (r.type == q.type && r.l.contains(q.l))
 			{
 				return true;
 			}
@@ -48,8 +49,9 @@ struct Standard
 	}
 
     std::string id;
-    
-    Locus loc;
+
+    // The location of the standard
+    Locus l;
 
     // List of genes mixed in the standard sorted by positions
     std::vector<Gene> genes;

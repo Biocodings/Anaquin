@@ -15,7 +15,7 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads
 	{
 		if (f.chromo == r.id)
 		{
-			if (r.loc.contains(f.loc))
+			if (r.l.contains(f.l))
 			{
 				if (r.matchFeature(f))
 				{
@@ -33,7 +33,7 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads
 		}
 		else
 		{
-			if (r.loc.contains(f.loc))
+			if (r.l.contains(f.l))
 			{
 				m.fn++;
 			}

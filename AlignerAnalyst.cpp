@@ -12,7 +12,7 @@ static bool matchGeneBoundary(const Standard &r, const Alignment &align)
 {
     for (auto f: r.fs)
     {
-        if (r.loc.contains(align.loc))
+        if (r.l.contains(align.l))
         {
             return true;
         }
@@ -23,7 +23,7 @@ static bool matchGeneBoundary(const Standard &r, const Alignment &align)
 
 static bool matchChromoBoundary(const Standard &r, const Alignment &align)
 {
-    return r.loc.contains(align.loc);
+    return r.l.contains(align.l);
 }
 
 template<typename T> void abcd()

@@ -24,7 +24,9 @@ struct Feature
 {
 	FeatureID chromo;
 
-    Locus loc;
+    // The location of the feature
+    Locus l;
+
     FeatureType type;
 
     // Optional field such as "gene_id" and "transcript_id"
