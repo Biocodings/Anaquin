@@ -8,8 +8,6 @@
 AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads n)
 {
     AssemblyStats stats;
-    
-    // Reference standards
     const auto r = StandardFactory::reference();
 
 	ParserGTF::parse(file, [&](const Feature &f, ParserProgress &p)
