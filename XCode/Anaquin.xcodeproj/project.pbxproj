@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7F5CFB951AB7D72200B0E53F /* ParserBEDTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F5CFB941AB7D72200B0E53F /* ParserBEDTest.cpp */; };
+		7F5CFB9E1AB82CDC00B0E53F /* BuilderGTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */; };
 		7F6E0C7E1AB6526300C9E3E0 /* StandardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */; };
 		7F6E0C8B1AB6554500C9E3E0 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */; };
 		7F6E0C8C1AB6584E00C9E3E0 /* AlignerStatsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C841AB653AC00C9E3E0 /* AlignerStatsTest.cpp */; };
@@ -45,6 +46,8 @@
 		7F5CFB981AB7DB6000B0E53F /* Locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Locus.hpp; path = ../Locus.hpp; sourceTree = "<group>"; };
 		7F5CFB9A1AB8135E00B0E53F /* Biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Biology.hpp; path = ../Biology.hpp; sourceTree = "<group>"; };
 		7F5CFB9B1AB814E700B0E53F /* Statistics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Statistics.hpp; path = ../Statistics.hpp; sourceTree = "<group>"; };
+		7F5CFB9C1AB82CD300B0E53F /* BuilderGTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = BuilderGTF.hpp; path = ../BuilderGTF.hpp; sourceTree = "<group>"; };
+		7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BuilderGTF.cpp; path = ../BuilderGTF.cpp; sourceTree = "<group>"; };
 		7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StandardFactory.cpp; path = ../StandardFactory.cpp; sourceTree = "<group>"; };
 		7F6E0C7D1AB6526300C9E3E0 /* StandardFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StandardFactory.hpp; path = ../StandardFactory.hpp; sourceTree = "<group>"; };
 		7F6E0C841AB653AC00C9E3E0 /* AlignerStatsTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AlignerStatsTest.cpp; sourceTree = "<group>"; };
@@ -128,6 +131,8 @@
 				7FC557101AB473C00085C090 /* Alignment.hpp */,
 				7FC557081AB473C00085C090 /* Anaquin.cpp */,
 				7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */,
+				7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */,
+				7F5CFB9C1AB82CD300B0E53F /* BuilderGTF.hpp */,
 				7FC557111AB473C00085C090 /* AssemblyAnalyst.hpp */,
 				7F5CFB9A1AB8135E00B0E53F /* Biology.hpp */,
 				7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */,
@@ -224,6 +229,7 @@
 				7F82266E1AB7A1C100BDCFC7 /* ParserBED.cpp in Sources */,
 				7F5CFB951AB7D72200B0E53F /* ParserBEDTest.cpp in Sources */,
 				7FC5571C1AB473C00085C090 /* AssemblyAnalyst.cpp in Sources */,
+				7F5CFB9E1AB82CDC00B0E53F /* BuilderGTF.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

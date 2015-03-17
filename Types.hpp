@@ -11,6 +11,9 @@ typedef long long Reads;
 // Number of lines in a file (most likely a large file)
 typedef long long Lines;
 
+typedef std::string GeneID;
+typedef std::string TranscriptID;
+
 typedef float Percentage;
 
 // Eg: 388488 from the first matching base

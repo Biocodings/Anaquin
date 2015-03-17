@@ -10,9 +10,6 @@
 #include "Sequence.hpp"
 #include "ConfusionMatrix.hpp"
 
-typedef std::string GeneID;
-typedef std::string TranscriptID;
-
 struct Gene
 {
     GeneID id;

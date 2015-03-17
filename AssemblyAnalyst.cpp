@@ -1,6 +1,7 @@
 #include <iostream>
 #include "ParserGTF.hpp"
 #include "Statistics.hpp"
+#include "BuilderGTF.hpp"
 #include "AssemblyAnalyst.hpp"
 #include "StandardFactory.hpp"
 
@@ -23,9 +24,8 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads
             
             switch (f.type)
             {
-                case Exon:   { classify(r.fs, r, f, stats.exon);   break; }
-                case Intron: { classify(r.fs, r, f, stats.intron); break; }
-                default:     { break; }
+                case Exon: { classify(r.fs, r, f, stats.exon);   break; }
+                default:   { break; }
             }
         }
 	});

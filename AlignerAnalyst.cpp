@@ -39,7 +39,7 @@ AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n
         
         Feature t = f;
         
-        exonsToIntrons(f.blocks, [&](BasePair start, BasePair end)
+        extractIntrons(f.blocks, [&](BasePair start, BasePair end)
         {
             t.l.set(start, end);
             classify(r.introns, r, t, stats.m);
