@@ -32,6 +32,13 @@ Chromosome StandardFactory::reference()
         c.fs.push_back(f);
     });
 
+    /*
+     * Extract junctions. Only possible after the whole file has been parsed because the fearures might not be sorted.
+     */
+    
+    
+    
+    
 	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/RNAsequins.fa", [&](const Sequence &s)
 	//ParserFA::parse("C://Sources//QA//Data//Standards//RNAsequins.fa", [&](const Sequence &s)
 	{

@@ -1,6 +1,8 @@
 #include <fstream>
 #include <assert.h>
 #include "ParserGTF.hpp"
+#include <iostream>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -49,7 +51,25 @@ bool ParserGTF::parse(const std::string &file, std::function<void(const Feature 
 		{
 			f.type = StartCodon;
 		}
-
+        
+        /*
+         * Eg: "gene_id "R_5_3_R"; transcript_id "R_5_3_R";"
+         */
+        
+        for (auto option : split(tokens[8], ';'))
+        {
+            if (!option.empty())
+            {
+                boost::trim(option);
+                const auto t = split(option, ' ');
+                
+                if (t.size() == 2)
+                {
+                    f.options[t[0]] = t[1];
+                }
+            }
+        }
+        
         x(f);
 	}
     

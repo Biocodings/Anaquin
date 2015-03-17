@@ -1,6 +1,7 @@
 #ifndef AS_FEATURE_HPP
 #define AS_FEATURE_HPP
 
+#include <map>
 #include "Types.hpp"
 
 enum FeatureType
@@ -12,6 +13,8 @@ enum FeatureType
 	StartCodon
 };
 
+typedef std::map<std::string, std::string> Options;
+
 struct Feature
 {
 	std::string id;
@@ -21,6 +24,9 @@ struct Feature
 	Locus length;
 
     FeatureType type;
+
+    // Optional field such as "gene_id" and "transcript_id"
+    Options options;
 };
 
 #endif

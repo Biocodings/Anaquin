@@ -2,7 +2,7 @@
 #define AS_CHROMOSOME_HPP
 
 #include <map>
-#include <vector>
+#include <list>
 #include "Types.hpp"
 #include "Feature.hpp"
 
@@ -29,13 +29,18 @@ struct Chromosome
 	}
 
     std::string id;
-    std::vector<Feature> fs;
     
 	Locus end;
 	Locus start;
 
-    // The list of sequins added to the experiment
+    // List of sequins added to the experiment
     SequinMap sequins;
+    
+    // List of known spliced junctions
+    std::list<Feature> js;
+
+    // List of known features
+    std::list<Feature> fs;
 };
 
 #endif
