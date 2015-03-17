@@ -55,7 +55,7 @@ struct Standard
     // List of sequins added to the experiment
     SequinMap sequins;
 
-    // List of known features (??? wrong ???)
+    // List of known features (exons, introns etc)
     std::list<Feature> fs;
 
     // List of known junctions

@@ -3,9 +3,11 @@
 
 using namespace std;
 
-TEST(CufflinkExample, AssemblyCompareTest)
+TEST(Generated, AssemblyCompareTest)
 {
-	//const auto stats = AssemblyAnalyst::analyze("C:\\Sources\\QA\\Tests\\Data\\CufflinksTest.sam");
-
+    const auto r = AssemblyAnalyst::analyze("/Users/user1/Sources/ABCD/transcripts/transcripts.gtf");
+    
+    std::cout << r.exon.tp << std::endl;
+    std::cout << r.exon.fp << std::endl;
 
 }

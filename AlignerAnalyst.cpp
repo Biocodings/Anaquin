@@ -42,7 +42,7 @@ AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n
         exonsToIntrons(f.blocks, [&](BasePair start, BasePair end)
         {
             t.l.set(start, end);
-            binaryClassify(r.introns, r, t, stats.m);
+            classify(r.introns, r, t, stats.m);
         });
     });
 

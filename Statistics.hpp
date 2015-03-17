@@ -20,11 +20,12 @@ template <typename T, typename Iter> bool contains(const Iter &iter, const T &t)
  * Conduce a binary classification test. Refer to http://en.wikipedia.org/wiki/Sensitivity_and_specificity for more details.
  */
 
-template <typename Iter, typename R, typename T> void binaryClassify(const Iter &iter, const R &r, const T &t, ConfusionMatrix &m)
+template <typename Iter, typename R, typename T> void classify(const Iter &iter, const R &r, const T &t, ConfusionMatrix &m)
 {
     assert(!iter.empty());
     
-    if (t.chromo == r.id)
+    // Positive if the query is classified with the references
+    if (r.id == t.chromo)
     {
         if (contains(iter, t))
         {

@@ -1,13 +1,21 @@
 #include <fstream>
 #include <assert.h>
 #include "ParserGTF.hpp"
-#include <iostream>
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
 
-bool ParserGTF::parse(const std::string &file, std::function<void(const Feature &)> x)
+bool ParserGTF::parse(const std::string &file, std::function<void (const Feature &, ParserProgress &)> x)
 {
+    std::map<std::string, FeatureType> mapper =
+    {
+        { "exon", Exon },
+        { "CDS",  CDS  },
+        { "start_codon", StartCodon },
+        { "stop_codon",  StopCodon  },
+        { "transcript",  Transcript }
+    };
+
     std::string line;
     std::ifstream in(file);
 
@@ -32,26 +40,23 @@ bool ParserGTF::parse(const std::string &file, std::function<void(const Feature 
     std::vector<std::string> options;
     std::vector<std::string> nameValue;
 
+    ParserProgress p;
+    
     while (std::getline(in, line))
     {
+        p.i++;
         boost::split(tokens, line, boost::is_any_of("\t"));
 
         f.chromo = tokens[0];
         f.l.set(stoi(tokens[3]), stoi(tokens[4]));
 
-		if (tokens[2] == "exon")
-		{
-            f.type = Exon;
-		}
-		else if (tokens[2] == "CDS")
-		{
-			f.type = CDS;
-		}
-		else if (tokens[2] == "start_codon")
-		{
-			f.type = StartCodon;
-		}
+        if (!mapper.count(tokens[2]))
+        {
+            throw std::runtime_error("Unknown feature type: " + tokens[2]);
+        }
         
+        f.type = mapper[tokens[2]];
+
         /*
          * Eg: "gene_id "R_5_3_R"; transcript_id "R_5_3_R";"
          */
@@ -74,8 +79,13 @@ bool ParserGTF::parse(const std::string &file, std::function<void(const Feature 
                 }
             }
         }
+
+        x(f, p);
         
-        x(f);
+        if (p.terminate)
+        {
+            break;
+        }
 	}
     
 	return true;

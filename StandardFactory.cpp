@@ -34,7 +34,7 @@ Standard StandardFactory::reference()
     
     std::set<GeneID> gids;
 
-    ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f)
+    ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f, ParserProgress &p)
 	//ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
 	{
 		r.l.end = std::max(r.l.end, f.l.end);

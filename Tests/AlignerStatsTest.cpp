@@ -3,7 +3,7 @@
 
 using namespace std;
 
-TEST(Spliced_1000, AlignerStatsTest)
+TEST(GeneratedSpliced_1000, AlignerStatsTest)
 {
     const auto stats = AlignerAnalyst::spliced("/Users/user1/Sources/ABCD/aligned_output/junctions.bed", Sequins(), 1000);
 
@@ -11,7 +11,7 @@ TEST(Spliced_1000, AlignerStatsTest)
     ASSERT_EQ(0, stats.m.sn());
 }
 
-TEST(Base_1000, AlignerStatsTest)
+TEST(GeneratedBase_1000, AlignerStatsTest)
 {
     const auto stats = AlignerAnalyst::base("/Users/user1/Sources/ABCD/aligned_output/accepted_hits.sam", Sequins(), 1000);
 

@@ -10,7 +10,9 @@ enum FeatureType
     Exon,
     Intron,
     Junction,
-	StartCodon
+    StopCodon,
+	StartCodon,
+    Transcript,
 };
 
 typedef std::string OptionID;
