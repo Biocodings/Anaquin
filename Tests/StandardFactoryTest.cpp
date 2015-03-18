@@ -44,7 +44,7 @@ TEST(TestJunction, StandardFactoryTest)
 TEST(TestSequins, StandardFactoryTest)
 {
 	const auto r = StandardFactory::reference();
-	ASSERT_EQ(29, r.mixA.size());
+	ASSERT_EQ(32, r.mixA.size());
 
     const auto ids = { "R_1_1_R",  "R_1_1_V",  "R_1_2_R",
                        "R_1_2_V",  "R_1_3_R",  "R_1_3_V",

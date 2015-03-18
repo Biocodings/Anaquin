@@ -14,7 +14,6 @@
 		7F6E0C8C1AB6584E00C9E3E0 /* AlignerAnalystTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C841AB653AC00C9E3E0 /* AlignerAnalystTest.cpp */; };
 		7F6E0C8D1AB6585500C9E3E0 /* AssemblyAnalystTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C851AB653AC00C9E3E0 /* AssemblyAnalystTest.cpp */; };
 		7F6E0C8F1AB6586A00C9E3E0 /* StandardFactoryTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C891AB653AC00C9E3E0 /* StandardFactoryTest.cpp */; };
-		7F6E0C911AB6590100C9E3E0 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F6E0C901AB6590100C9E3E0 /* libgtest.a */; };
 		7F82266E1AB7A1C100BDCFC7 /* ParserBED.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */; };
 		7F8226701AB7A5B400BDCFC7 /* ParserGTFTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F82266F1AB7A5B400BDCFC7 /* ParserGTFTest.cpp */; };
 		7FC5571A1AB473C00085C090 /* AlignerAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */; };
@@ -59,7 +58,6 @@
 		7F6E0C851AB653AC00C9E3E0 /* AssemblyAnalystTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AssemblyAnalystTest.cpp; sourceTree = "<group>"; };
 		7F6E0C891AB653AC00C9E3E0 /* StandardFactoryTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StandardFactoryTest.cpp; sourceTree = "<group>"; };
 		7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = gtest.framework; sourceTree = "<group>"; };
-		7F6E0C901AB6590100C9E3E0 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgtest.a; sourceTree = "<group>"; };
 		7F7C70521AB4726E00C6EE36 /* Anaquin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anaquin; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserBED.cpp; path = ../ParserBED.cpp; sourceTree = "<group>"; };
 		7F82266D1AB7A1C100BDCFC7 /* ParserBED.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserBED.hpp; path = ../ParserBED.hpp; sourceTree = "<group>"; };
@@ -97,7 +95,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F6E0C8B1AB6554500C9E3E0 /* gtest.framework in Frameworks */,
-				7F6E0C911AB6590100C9E3E0 /* libgtest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,7 +119,6 @@
 		7F7C70491AB4726E00C6EE36 = {
 			isa = PBXGroup;
 			children = (
-				7F6E0C901AB6590100C9E3E0 /* libgtest.a */,
 				7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */,
 				7FC557061AB473A90085C090 /* Sources */,
 				EFFC9F061AB8F62C00928CB5 /* Resources */,
@@ -375,8 +371,9 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"/Users/user1/Sources/googletest-read-only/include",
-					/Users/user1/Sources/boost155/1.55.0/include,
 					/usr/local/Cellar/boost155/1.55.0/include,
+					/Users/tedwong/Sources/QQ/Headers,
+					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -402,8 +399,9 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"/Users/user1/Sources/googletest-read-only/include",
-					/Users/user1/Sources/boost155/1.55.0/include,
 					/usr/local/Cellar/boost155/1.55.0/include,
+					/Users/tedwong/Sources/QQ/Headers,
+					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
