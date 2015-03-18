@@ -4,8 +4,6 @@
 #include "ParserFA.hpp"
 #include <boost/algorithm/string.hpp>
 
-using namespace std;
-
 bool ParserFA::parse(const std::string &file, std::function<void(const Sequence &)> x)
 {
     std::string line;

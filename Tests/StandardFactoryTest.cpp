@@ -2,8 +2,6 @@
 #include "gtest/gtest.h"
 #include "StandardFactory.hpp"
 
-using namespace std;
-
 TEST(TestID, StandardFactoryTest)
 {
     const auto r = StandardFactory::reference();

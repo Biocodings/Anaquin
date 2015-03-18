@@ -10,6 +10,8 @@ typedef std::string GeneID;
 
 typedef long long Reads;
 
+typedef float FPKM;
+
 // Number of lines in a file (most likely a large file)
 typedef long long Lines;
 

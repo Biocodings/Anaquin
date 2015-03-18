@@ -51,6 +51,12 @@ struct Standard
 
 		return false;
 	}
+    
+    // Whether the given gene is a part of the standard
+    bool knownGene(const GeneID &id) const;
+    
+    // Returns the concentration for a given gene. Throws an exception if the gene is not found.
+    Concentration concent(const GeneID &id) const;
 
     ChromoID id;
 

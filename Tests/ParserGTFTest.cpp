@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 #include "ParserGTF.hpp"
 
-using namespace std;
-
 TEST(Options, ParserGTFTest)
 {
     ParserGTF::parse("/Users/tedwong/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f, ParserProgress &p)

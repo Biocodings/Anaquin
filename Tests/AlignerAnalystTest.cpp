@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 #include "AlignerAnalyst.hpp"
 
-using namespace std;
-
 TEST(GeneratedSpliced_1000, AlignerStatsTest)
 {
     const auto stats = AlignerAnalyst::spliced("/Users/tedwong/Sources/ABCD/aligned_output/junctions.bed", Sequins(), 1000);
