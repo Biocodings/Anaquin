@@ -5,11 +5,12 @@
 #include "ParserFA.hpp"
 #include "ParserBED.hpp"
 #include "ParserGTF.hpp"
+#include "ParserCSV.hpp"
 #include "StandardFactory.hpp"
 
 Standard StandardFactory::reference()
 {
-	std::ifstream in("/Users/user1/Sources/QA/Data/Standards/ChrT.5.10.fa");
+	std::ifstream in("/Users/tedwong/Sources/QA/Data/RNA/ChrT.5.10.fa");
 	//std::ifstream in("C://Sources//QA//Data//Standards//ChrT.5.10.fa");
 	std::string line;
 
@@ -34,7 +35,7 @@ Standard StandardFactory::reference()
     
     std::set<GeneID> gids;
 
-    ParserGTF::parse("/Users/user1/Sources/ABCD/standards/RNAstandards.gtf", [&](const Feature &f, ParserProgress &p)
+    ParserGTF::parse("/Users/tedwong/Sources/QA/Data/RNA/RNAstandards.gtf", [&](const Feature &f, ParserProgress &p)
 	//ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
 	{
 		r.l.end = std::max(r.l.end, f.l.end);
@@ -106,7 +107,7 @@ Standard StandardFactory::reference()
      * Create data-structure for the known junctions between exons.
      */
 
-    ParserBED::parse("/Users/user1/Sources/QA/Data/Standards/RNAstandards.bed", [&](const BedFeature &f)
+    ParserBED::parse("/Users/tedwong/Sources/QA/Data/RNA/RNAstandards.bed", [&](const BedFeature &f)
     {
         /*
          * In this context, a block is simply an exon. The name of a BED line would be the name of the gene.
@@ -142,14 +143,32 @@ Standard StandardFactory::reference()
     });
 
     /*
-     * Create data-structure for the known sequins.
+     * Read concentration for each sequin in each of the mix. Refer to the user-manual for more details.
      */
     
-	ParserFA::parse("/Users/user1/Sources/QA/Data/Standards/RNAsequins.fa", [&](const Sequence &s)
-	//ParserFA::parse("C://Sources//QA//Data//Standards//RNAsequins.fa", [&](const Sequence &s)
-	{
-		r.sequins[s.id] = s;
-	});
-
+    MixturePair p;
+    
+    ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/MixA.csv", [&](const std::vector<std::string> &fields)
+    {
+        if (fields[0] == "1")
+        {
+            p.x.id = fields[1];
+            p.x.amounts = stoi(fields[2]);
+        }
+        else
+        {
+            p.y.id = fields[1];
+            p.y.amounts = stoi(fields[2]);
+            r.mixA.push_back(p);
+        }
+    });
+    
     return r;
 }
+
+
+
+
+
+
+

@@ -64,7 +64,7 @@ AlignerStats AlignerAnalyst::base(const std::string &file, Sequins s, Reads n)
     
     Reads i = 0;
     
-    ParserSAM::read(file, [&](const Alignment &align)
+    ParserSAM::parse(file, [&](const Alignment &align)
     {
         if (++i > n)
         {

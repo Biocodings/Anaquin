@@ -7,7 +7,7 @@
 
 using namespace std;
 
-bool ParserSAM::read(const std::string &file, std::function<bool (const Alignment &)> x)
+bool ParserSAM::parse(const std::string &file, std::function<bool (const Alignment &)> x)
 {
     std::string line;
     std::ifstream in(file);

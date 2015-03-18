@@ -5,11 +5,16 @@
 #include <vector>
 #include <sstream>
 
-typedef std::string ID;
+typedef std::string ChromoID;
+typedef std::string GeneID;
+
 typedef long long Reads;
 
 // Number of lines in a file (most likely a large file)
 typedef long long Lines;
+
+// The amount added to a sample
+typedef long Amount;
 
 typedef std::string GeneID;
 typedef std::string TranscriptID;

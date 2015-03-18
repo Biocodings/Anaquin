@@ -13,7 +13,7 @@
 struct Gene
 {
     GeneID id;
-    
+
     // Location of the gene relative to the chromosome
     Locus l;
     
@@ -24,10 +24,21 @@ struct Gene
     std::vector<Feature> js;
 };
 
+struct Concentration
+{
+    GeneID id;
+    
+    // Amount of concentration be added
+    Amount amounts;
+};
+
+struct MixturePair
+{
+    Concentration x, y;
+};
+
 struct Standard
 {
-    typedef std::map<std::string, Sequence> SequinMap;
-
 	inline bool matchFeature(const Feature &q) const
 	{
 		for (auto r : fs)
@@ -40,22 +51,22 @@ struct Standard
 
 		return false;
 	}
- 
-    std::string id;
 
-    // The location of the standard
+    ChromoID id;
+
+    // The location of the chromosome
     Locus l;
 
-    // List of genes mixed in the standard sorted by positions
+    // Genes mixed in the standard sorted by positions
     std::vector<Gene> genes;
-    
-    // List of sequins added to the experiment
-    SequinMap sequins;
 
-    // List of known features (exons, introns etc)
-    std::list<Feature> fs;
+    // Sequins added for mixture A
+    std::list<MixturePair> mixA;
 
-    // List of known junctions
+    // Known features (exons, introns etc)
+    std::vector<Feature> fs;
+
+    // Known introns (also known as junctions)
     std::vector<Feature> introns;
 };
 

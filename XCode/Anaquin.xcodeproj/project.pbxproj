@@ -24,6 +24,7 @@
 		7FC5571E1AB473C00085C090 /* ParserFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570B1AB473C00085C090 /* ParserFA.cpp */; };
 		7FC5571F1AB473C00085C090 /* ParserGTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570C1AB473C00085C090 /* ParserGTF.cpp */; };
 		7FC557201AB473C00085C090 /* ParserSAM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570D1AB473C00085C090 /* ParserSAM.cpp */; };
+		EFFC9F0C1AB8F96800928CB5 /* ParserCSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F0A1AB8F96800928CB5 /* ParserCSV.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -76,6 +77,8 @@
 		7FC557161AB473C00085C090 /* ParserSAM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserSAM.hpp; path = ../ParserSAM.hpp; sourceTree = "<group>"; };
 		7FC557171AB473C00085C090 /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequence.hpp; path = ../Sequence.hpp; sourceTree = "<group>"; };
 		7FC557191AB473C00085C090 /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Types.hpp; path = ../Types.hpp; sourceTree = "<group>"; };
+		EFFC9F0A1AB8F96800928CB5 /* ParserCSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserCSV.cpp; path = ../ParserCSV.cpp; sourceTree = "<group>"; };
+		EFFC9F0B1AB8F96800928CB5 /* ParserCSV.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserCSV.hpp; path = ../ParserCSV.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +113,7 @@
 				7F6E0C901AB6590100C9E3E0 /* libgtest.a */,
 				7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */,
 				7FC557061AB473A90085C090 /* Sources */,
+				EFFC9F061AB8F62C00928CB5 /* Resources */,
 				7F7C70531AB4726E00C6EE36 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,10 +135,10 @@
 				7FC557101AB473C00085C090 /* Alignment.hpp */,
 				7FC557081AB473C00085C090 /* Anaquin.cpp */,
 				7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */,
-				7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */,
-				7F5CFB9C1AB82CD300B0E53F /* BuilderGTF.hpp */,
 				7FC557111AB473C00085C090 /* AssemblyAnalyst.hpp */,
 				7F5CFB9A1AB8135E00B0E53F /* Biology.hpp */,
+				7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */,
+				7F5CFB9C1AB82CD300B0E53F /* BuilderGTF.hpp */,
 				7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */,
 				7FC5570A1AB473C00085C090 /* ExpressionAnalyst.cpp */,
 				7FC557121AB473C00085C090 /* ExpressionAnalyst.hpp */,
@@ -142,6 +146,8 @@
 				7F5CFB981AB7DB6000B0E53F /* Locus.hpp */,
 				7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */,
 				7F82266D1AB7A1C100BDCFC7 /* ParserBED.hpp */,
+				EFFC9F0A1AB8F96800928CB5 /* ParserCSV.cpp */,
+				EFFC9F0B1AB8F96800928CB5 /* ParserCSV.hpp */,
 				7FC5570B1AB473C00085C090 /* ParserFA.cpp */,
 				7FC557141AB473C00085C090 /* ParserFA.hpp */,
 				7FC5570C1AB473C00085C090 /* ParserGTF.cpp */,
@@ -157,6 +163,13 @@
 				7FC557191AB473C00085C090 /* Types.hpp */,
 			);
 			name = Sources;
+			sourceTree = "<group>";
+		};
+		EFFC9F061AB8F62C00928CB5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -222,6 +235,7 @@
 				7F8226701AB7A5B400BDCFC7 /* ParserGTFTest.cpp in Sources */,
 				7FC5571B1AB473C00085C090 /* Anaquin.cpp in Sources */,
 				7FC5571D1AB473C00085C090 /* ExpressionAnalyst.cpp in Sources */,
+				EFFC9F0C1AB8F96800928CB5 /* ParserCSV.cpp in Sources */,
 				7FC5571E1AB473C00085C090 /* ParserFA.cpp in Sources */,
 				7FC5571F1AB473C00085C090 /* ParserGTF.cpp in Sources */,
 				7F6E0C7E1AB6526300C9E3E0 /* StandardFactory.cpp in Sources */,
