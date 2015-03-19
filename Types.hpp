@@ -11,12 +11,12 @@ typedef std::string GeneID;
 typedef long long Reads;
 
 typedef float FPKM;
+typedef float Expression;
 
 // Number of lines in a file (most likely a large file)
 typedef long long Lines;
 
-// The amount added to a sample
-typedef long Amount;
+typedef float Fold;
 
 typedef std::string GeneID;
 typedef std::string TranscriptID;

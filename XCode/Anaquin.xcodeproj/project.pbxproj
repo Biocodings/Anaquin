@@ -86,7 +86,7 @@
 		EFFC9F101AB92CDC00928CB5 /* ParserCTracking.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserCTracking.hpp; path = ../ParserCTracking.hpp; sourceTree = "<group>"; };
 		EFFC9F121AB9346400928CB5 /* ParserCTrackingTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserCTrackingTest.cpp; sourceTree = "<group>"; };
 		EFFC9F151AB9386D00928CB5 /* Standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Standard.cpp; path = ../Standard.cpp; sourceTree = "<group>"; };
-		EFFC9F191AB93F2100928CB5 /* MixA.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = MixA.csv; path = ../Data/RNA/MixA.csv; sourceTree = "<group>"; };
+		EFFC9F191AB93F2100928CB5 /* Standard_A.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = Standard_A.csv; path = ../Data/RNA/Standard_A.csv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,7 +195,7 @@
 		EFFC9F181AB93F1400928CB5 /* RNA */ = {
 			isa = PBXGroup;
 			children = (
-				EFFC9F191AB93F2100928CB5 /* MixA.csv */,
+				EFFC9F191AB93F2100928CB5 /* Standard_A.csv */,
 			);
 			name = RNA;
 			sourceTree = "<group>";

@@ -18,6 +18,7 @@ AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads
         }
         else
         {
+            // Binary classification for the base-level
             classify(r.fs, r, f, stats.base);
             
             switch (f.type)

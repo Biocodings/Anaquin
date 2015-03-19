@@ -1,5 +1,4 @@
 #include <fstream>
-#include <assert.h>
 #include "ParserCSV.hpp"
 #include <boost/algorithm/string.hpp>
 

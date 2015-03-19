@@ -16,9 +16,15 @@ struct ExpressionStats
     double slope;
 };
 
+enum ExpressionMode
+{
+    Gene,
+    Isoforms,
+};
+
 struct ExpressionAnalyst
 {
-	static ExpressionStats analyze(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
+	static ExpressionStats analyze(const std::string &file, ExpressionMode mode, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
 };
 
 #endif

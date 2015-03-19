@@ -5,20 +5,25 @@
 
 using namespace QQ;
 
-ExpressionStats ExpressionAnalyst::analyze(const std::string &file, Sequins s, Reads n)
+ExpressionStats ExpressionAnalyst::analyze(const std::string &file, ExpressionMode mode, Sequins s, Reads n)
 {
     const auto r = StandardFactory::reference();
 
     // Values for the x-axis and y-axis
-    std::vector<float> x, y;
-    
+    std::vector<double> x, y;
+
     ParserCTracking::parse(file, [&](const CTracking &t)
     {
-        assert(r.knownGene(t.geneID));
-        const auto c = r.concent(t.geneID);
+        assert(r.known(t.geneID));
+
         
-        x.push_back(c.amounts);
-        y.push_back(t.fpkm);
+        //const auto c = r.concent(t.geneID);
+        
+
+        
+        
+       // x.push_back(c.amounts);
+       // y.push_back(t.fpkm);
     });
     
     const auto lm = linearModel(y, x);
@@ -40,5 +45,7 @@ ExpressionStats ExpressionAnalyst::analyze(const std::string &file, Sequins s, R
     // Estimated change in the expected value for to a 1-unit increase
     stats.slope = lm.coeffs[1].value;
 
+    std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+    
 	return stats;
 }

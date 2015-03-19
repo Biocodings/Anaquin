@@ -10,7 +10,7 @@
 
 static bool matchGeneBoundary(const Standard &r, const Alignment &align)
 {
-    for (auto f: r.fs)
+    for (auto f: r.fs) // TODO: Double check no intron is here.... // TODO: Check spliced reads
     {
         if (r.l.contains(align.l))
         {
@@ -70,6 +70,8 @@ AlignerStats AlignerAnalyst::base(const std::string &file, Sequins s, Reads n)
         {
             return false;
         }
+        
+        // If it's aligned to the reference
         else if (align.id == r.id)
         {
             stats.nr++;
@@ -85,6 +87,7 @@ AlignerStats AlignerAnalyst::base(const std::string &file, Sequins s, Reads n)
 			{
 				if (matchChromoBoundary(r, align))
 				{
+                    // TODO: Rename to feature
 					if (matchGeneBoundary(r, align))
 					{
 						stats.m.tp++;

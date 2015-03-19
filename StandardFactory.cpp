@@ -142,24 +142,50 @@ Standard StandardFactory::reference()
         assert(iter->exons.size() == iter->js.size() + 1);
     });
 
+    std::map<std::string, Group> gs =
+    {
+        { "A", A }, { "B", B }, { "C", C }, { "D", D }
+    };
+
     /*
-     * Read concentration for each sequin in each of the mix. Refer to the user-manual for more details.
+     * Read concentration for each sequin in each of the mix. Refer to user-manual for more details.
      */
     
-    MixturePair p;
+    GMixture g;
     
-    ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/MixA.csv", [&](const std::vector<std::string> &fields)
+    ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/Standard_A.csv", [&](const std::vector<std::string> &fields)
     {
+        /*
+         * Eg: 1,B,R_2_3,R_2_3_R,3,468750
+         *     2,B,R_2_3,R_2_3_V,1,156250
+         */
+
         if (fields[0] == "1")
         {
-            p.x.id = fields[1];
-            p.x.amounts = stoi(fields[2]);
+            g.gr     = gs[fields[1]];
+            g.id     = fields[2];
+            g.r.id   = fields[3];
+            g.r.exp  = stod(fields[5]);
+            g.r.fold = stoi(fields[4]);
+            
+            assert(g.id != g.r.id);
         }
         else
         {
-            p.y.id = fields[1];
-            p.y.amounts = stoi(fields[2]);
-            r.mixA.push_back(p);
+            assert(g.id == fields[2]);
+            assert(g.gr == gs[fields[1]]);
+            
+            g.v.id   = fields[3];
+            g.v.exp  = stod(fields[5]);
+            g.v.fold = stoi(fields[4]);
+
+            const auto fold  = g.r.fold + g.v.fold;
+            const auto total = g.r.exp  + g.v.exp;
+            
+            assert((g.r.fold / fold * total) == g.r.exp);
+            assert((g.v.fold / fold * total) == g.v.exp);
+            
+            r.mixA[g.id] = g;
         }
     });
     

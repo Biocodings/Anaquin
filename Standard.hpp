@@ -10,6 +10,14 @@
 #include "Sequence.hpp"
 #include "ConfusionMatrix.hpp"
 
+enum Group
+{
+    A,
+    B,
+    C,
+    D
+};
+
 struct Gene
 {
     GeneID id;
@@ -24,17 +32,30 @@ struct Gene
     std::vector<Feature> js;
 };
 
-struct Concentration
+struct TMixture
 {
-    GeneID id;
+    TranscriptID id;
     
-    // Amount of concentration be added
-    Amount amounts;
+    // Fold ratio relative to the pair
+    Fold fold;
+    
+    // Level of expression added to the sample for this mixture
+    Expression exp;
 };
 
-struct MixturePair
+struct GMixture
 {
-    Concentration x, y;
+    Group gr;
+    GeneID id;
+    
+    // Reference mixture
+    TMixture r;
+    
+    // Variant mixture
+    TMixture v;
+    
+    // Total level of expression
+    Expression exp;
 };
 
 struct Standard
@@ -53,11 +74,8 @@ struct Standard
 	}
     
     // Whether the given gene is a part of the standard
-    bool knownGene(const GeneID &id) const;
+    bool known(const GeneID &id) const;
     
-    // Returns the concentration for a given gene. Throws an exception if the gene is not found.
-    Concentration concent(const GeneID &id) const;
-
     ChromoID id;
 
     // The location of the chromosome
@@ -66,8 +84,8 @@ struct Standard
     // Genes mixed in the standard sorted by positions
     std::vector<Gene> genes;
 
-    // Sequins added for mixture A
-    std::list<MixturePair> mixA;
+    std::map<GeneID, GMixture> mixA;
+    std::set<GeneID, GMixture> mixB;
 
     // Known features (exons, introns etc)
     std::vector<Feature> fs;

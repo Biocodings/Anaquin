@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "Standard.hpp"
 
-bool Standard::knownGene(const GeneID &id) const
+bool Standard::known(const GeneID &id) const
 {
     return std::find_if(genes.begin(), genes.end(), [&](const Gene &g)
                  {
@@ -9,6 +9,7 @@ bool Standard::knownGene(const GeneID &id) const
                  }) != genes.end();
 }
 
+/*
 Concentration Standard::concent(const GeneID &id) const
 {
     const auto iter = std::find_if(mixA.begin(), mixA.end(), [&](const MixturePair &p)
@@ -19,3 +20,4 @@ Concentration Standard::concent(const GeneID &id) const
 
     return (iter->x.id == id) ? iter->x : iter->y;
 }
+*/
