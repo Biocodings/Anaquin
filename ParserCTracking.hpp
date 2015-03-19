@@ -14,7 +14,8 @@ typedef std::string TrackID;
 
 struct CTracking
 {
-    TrackID id;
+    TrackID trackID;
+    TrackID geneID;
 
     FPKM fpkm;
     FPKM lFPKM;

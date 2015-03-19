@@ -1,12 +1,12 @@
 #include "gtest/gtest.h"
 #include "ExpressionAnalyst.hpp"
 
-TEST(CufflinksGenes_1, ExpressionAnalystTest)
+TEST(D1_Isoforms, ExpressionAnalystTest)
 {
-    //const auto r = ExpressionAnalyst::analyze("/Users/tedwong/Sources/ABCD/NewTranscripts/genes.fpkm_tracking", ExpressionMode::Gene);
+    const auto r = ExpressionAnalyst::analyze("/Users/tedwong/Sources/QA/Tests/Data/D1/isoforms.fpkm_tracking", ExpressionMode::IsoformExpress);
 }
 
-TEST(CufflinksIsoforms_1, ExpressionAnalystTest)
+TEST(D1_Gene, ExpressionAnalystTest)
 {
-    //const auto r = ExpressionAnalyst::analyze("/Users/tedwong/Sources/ABCD/NewTranscripts/isoforms.fpkm_tracking", ExpressionMode::Isoforms);
+    const auto r = ExpressionAnalyst::analyze("/Users/tedwong/Sources/QA/Tests/Data/D1/genes.fpkm_tracking", ExpressionMode::GeneExpress);
 }

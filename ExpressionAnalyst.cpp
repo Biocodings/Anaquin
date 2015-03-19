@@ -7,21 +7,21 @@ using namespace QQ;
 
 ExpressionStats ExpressionAnalyst::analyze(const std::string &file, ExpressionMode mode, Sequins s, Reads n)
 {
-    auto r = StandardFactory::reference();
+    const auto r = StandardFactory::reference();
 
     // Values for the x-axis and y-axis
     std::vector<double> x, y;
 
     ParserCTracking::parse(file, [&](const CTracking &t)
     {
-        assert(r.known(t.id));
-        assert(r.mixA.count(t.id));
+        assert(r.known(t.geneID));
+        assert(r.mixA.count(t.geneID));
 
         switch (mode)
         {
             case GeneExpress:
             {
-                const auto &a = r.mixA[t.id];
+                const auto &a = r.mixA.at(t.geneID);
 
                 /*
                  * The x-axis would be the known concentration for each gene, the y-axis would be the expression
@@ -37,11 +37,10 @@ ExpressionStats ExpressionAnalyst::analyze(const std::string &file, ExpressionMo
                 break;
             }
 
-            case IsoformsExpress:
+            case IsoformExpress:
             {
-                assert(r.isoA.count(t.id));
-                
-                const auto &i = r.isoA[t.id];
+                assert(r.isoA.count(t.trackID));
+                const auto &i = r.isoA.at(t.trackID);
                 
                 // The x-value is our known concentration
                 x.push_back(i.exp);
@@ -67,10 +66,10 @@ ExpressionStats ExpressionAnalyst::analyze(const std::string &file, ExpressionMo
     
     stats.r2 = lm.ar2;
     
-    // Bounded correlation between the two variables
+    // Dependency between the two variables
     stats.r = cor(x, y);
     
-    // Estimated change in the expected value for to a 1-unit increase
+    // Linear relationship between the two variables
     stats.slope = lm.coeffs[1].value;
 
     std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;

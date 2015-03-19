@@ -29,7 +29,7 @@ bool ParserCTracking::parse(const std::string &file, std::function<void (const C
        
         /*
          * tracking_id  code  nearest_ref  gene_id  gene_short  tss_id  locus  length  coverage  FPKM  FPKM_conf_lo  FPKM_conf_hi  FPKM_status
-         *  R_9_1_V      -        -        R_9_1_V      -         -       -       -        -     1188     1131          1244           OK
+         *   R_9_1_V     -        -        R_9_1_V      -         -       -       -        -     1188     1131          1244           OK
          */
 
         if (!mapper.count(tokens[12]))
@@ -43,13 +43,17 @@ bool ParserCTracking::parse(const std::string &file, std::function<void (const C
         assert(!tokens[11].empty());
         assert(!tokens[12].empty());
 
-        t.geneID = tokens[3];
-        t.fpkm   = stof(tokens[9]);
-        t.lFPKM  = stof(tokens[10]);
-        t.uFPKM  = stof(tokens[11]);
-        t.status = mapper[tokens[12]];
+        t.geneID  = tokens[3];
+        t.fpkm    = stof(tokens[9]);
+        t.lFPKM   = stof(tokens[10]);
+        t.uFPKM   = stof(tokens[11]);
+        t.trackID = tokens[0];
+        t.status  = mapper[tokens[12]];
 
-        f(t);
+        if (t.status != CTrackingStatus::HIData)
+        {
+            f(t);
+        }
     }
     
     return true;

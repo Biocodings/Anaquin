@@ -156,17 +156,28 @@ Standard StandardFactory::reference()
     ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/Standard_A.csv", [&](const Fields &fields)
     {
         /*
-         * Eg: 1,B,R_2_3,R_2_3_R,3,468750
-         *     2,B,R_2_3,R_2_3_V,1,156250
+         * Create data-structure for the isoform
+         */
+        
+        IMixture i;
+        
+        i.id   = fields[3];
+        i.fold = stoi(fields[4]);
+        i.exp  = stod(fields[5]);
+
+        r.isoA[i.id] = i;
+        
+        /*
+         * Create data-structure for the gene
          */
 
         if (fields[0] == "1")
         {
             g.gr     = gs[fields[1]];
             g.id     = fields[2];
-            g.r.id   = fields[3];
-            g.r.exp  = stod(fields[5]);
-            g.r.fold = stoi(fields[4]);
+            g.r.id   = i.id;
+            g.r.exp  = i.exp;
+            g.r.fold = i.fold;
             
             assert(g.id != g.r.id);
         }
@@ -175,9 +186,9 @@ Standard StandardFactory::reference()
             assert(g.id == fields[2]);
             assert(g.gr == gs[fields[1]]);
             
-            g.v.id   = fields[3];
-            g.v.exp  = stod(fields[5]);
-            g.v.fold = stoi(fields[4]);
+            g.v.id   = i.id;
+            g.v.exp  = i.exp;
+            g.v.fold = i.fold;
 
             const auto fold  = g.r.fold + g.v.fold;
             const auto total = g.r.exp  + g.v.exp;
