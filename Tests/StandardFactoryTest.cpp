@@ -10,6 +10,7 @@ TEST(TestID, StandardFactoryTest)
 
 TEST(TestJunction, StandardFactoryTest)
 {
+/*
     const auto r  = StandardFactory::reference();
     const auto &g = r.genes[0];
     
@@ -39,9 +40,10 @@ TEST(TestJunction, StandardFactoryTest)
 
     ASSERT_EQ(540493, g.js[7].l.start);
     ASSERT_EQ(542285, g.js[7].l.end);
+*/
 }
 
-TEST(TestSequins, StandardFactoryTest)
+TEST(TestIsoforms, StandardFactoryTest)
 {
 	const auto r = StandardFactory::reference();
 	ASSERT_EQ(32, r.mixA.size());
@@ -69,16 +71,9 @@ TEST(TestSequins, StandardFactoryTest)
                        "R_9_2_R",  "R_9_2_V",  "R_9_3_R",
                        "R_9_3_V"
                     };
-
-/*
+    
     for (auto id : ids)
     {
-        const auto iter = std::find_if(r.mixA.begin(), r.mixA.end(), [&](const MixturePair &p) {
-            return (p.x.id == id || p.y.id == id);
-        });
-
-        ASSERT_TRUE(iter != r.mixA.end());
+        ASSERT_TRUE(r.isoA.count(id));
     }
-*/
 }
-
