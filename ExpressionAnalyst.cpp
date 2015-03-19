@@ -7,32 +7,60 @@ using namespace QQ;
 
 ExpressionStats ExpressionAnalyst::analyze(const std::string &file, ExpressionMode mode, Sequins s, Reads n)
 {
-    const auto r = StandardFactory::reference();
+    auto r = StandardFactory::reference();
 
     // Values for the x-axis and y-axis
     std::vector<double> x, y;
 
     ParserCTracking::parse(file, [&](const CTracking &t)
     {
-        assert(r.known(t.geneID));
+        assert(r.known(t.id));
+        assert(r.mixA.count(t.id));
 
-        
-        //const auto c = r.concent(t.geneID);
-        
+        switch (mode)
+        {
+            case GeneExpress:
+            {
+                const auto &a = r.mixA[t.id];
 
-        
-        
-       // x.push_back(c.amounts);
-       // y.push_back(t.fpkm);
+                /*
+                 * The x-axis would be the known concentration for each gene, the y-axis would be the expression
+                 * (RPKM) reported.
+                 */
+
+                // The concentration for the gene is the sum of each isoform
+                x.push_back(a.r.exp + a.v.exp);
+                
+                // The y-value is whatever reported
+                y.push_back(t.fpkm);
+                
+                break;
+            }
+
+            case IsoformsExpress:
+            {
+                assert(r.isoA.count(t.id));
+                
+                const auto &i = r.isoA[t.id];
+                
+                // The x-value is our known concentration
+                x.push_back(i.exp);
+                
+                // The y-value is whatever reported
+                y.push_back(t.fpkm);
+                
+                break;
+            }
+        }
     });
     
     const auto lm = linearModel(y, x);
 
     /*
-     * In our analysis, the dependent variable is expression (FPKM) while the independent
-     * variable is known concentraion.
+     * In our analysis, the dependent variable is expression while the independent
+     * variable is the known concentraion.
      *
-     *      expression = constant + slope * concentraion
+     *     expression = constant + slope * concentraion
      */
     
     ExpressionStats stats;

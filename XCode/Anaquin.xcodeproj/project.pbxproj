@@ -79,6 +79,7 @@
 		7FC557161AB473C00085C090 /* ParserSAM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserSAM.hpp; path = ../ParserSAM.hpp; sourceTree = "<group>"; };
 		7FC557171AB473C00085C090 /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequence.hpp; path = ../Sequence.hpp; sourceTree = "<group>"; };
 		7FC557191AB473C00085C090 /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Types.hpp; path = ../Types.hpp; sourceTree = "<group>"; };
+		EF6BF7011ABA8A0F0025AB9B /* RNAstandards.gtf */ = {isa = PBXFileReference; lastKnownFileType = text; name = RNAstandards.gtf; path = ../Data/RNA/RNAstandards.gtf; sourceTree = "<group>"; };
 		EFFC9F0A1AB8F96800928CB5 /* ParserCSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserCSV.cpp; path = ../ParserCSV.cpp; sourceTree = "<group>"; };
 		EFFC9F0B1AB8F96800928CB5 /* ParserCSV.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserCSV.hpp; path = ../ParserCSV.hpp; sourceTree = "<group>"; };
 		EFFC9F0D1AB9255100928CB5 /* ExpressionAnalystTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionAnalystTest.cpp; sourceTree = "<group>"; };
@@ -195,6 +196,7 @@
 		EFFC9F181AB93F1400928CB5 /* RNA */ = {
 			isa = PBXGroup;
 			children = (
+				EF6BF7011ABA8A0F0025AB9B /* RNAstandards.gtf */,
 				EFFC9F191AB93F2100928CB5 /* Standard_A.csv */,
 			);
 			name = RNA;

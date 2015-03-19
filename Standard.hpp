@@ -32,10 +32,10 @@ struct Gene
     std::vector<Feature> js;
 };
 
-struct TMixture
+struct IMixture
 {
-    TranscriptID id;
-    
+    IsoformID id;
+
     // Fold ratio relative to the pair
     Fold fold;
     
@@ -49,10 +49,10 @@ struct GMixture
     GeneID id;
     
     // Reference mixture
-    TMixture r;
+    IMixture r;
     
     // Variant mixture
-    TMixture v;
+    IMixture v;
     
     // Total level of expression
     Expression exp;
@@ -85,7 +85,10 @@ struct Standard
     std::vector<Gene> genes;
 
     std::map<GeneID, GMixture> mixA;
-    std::set<GeneID, GMixture> mixB;
+    std::map<GeneID, GMixture> mixB;
+
+    std::map<IsoformID, IMixture> isoA;
+    std::map<IsoformID, IMixture> isoB;
 
     // Known features (exons, introns etc)
     std::vector<Feature> fs;

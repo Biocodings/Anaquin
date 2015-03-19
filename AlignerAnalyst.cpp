@@ -31,20 +31,20 @@ AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n
     AlignerStats stats;
     const auto r = StandardFactory::reference();
 
-    ParserBED::parse(file, [&](const BedFeature &f)
-    {
+//    ParserBED::parse(file, [&](const BedFeature &f)
+  //  {
         /*
          * The parser simply reports whatever in the file. It doesn't know anything about introns.
          */
         
-        Feature t = f;
+    //    Feature t = f;
         
-        extractIntrons(f.blocks, [&](BasePair start, BasePair end)
-        {
-            t.l.set(start, end);
-            classify(r.introns, r, t, stats.m);
-        });
-    });
+      //  extractIntrons(f.blocks, [&](BasePair start, BasePair end)
+        //{
+          //  t.l.set(start, end);
+            //classify(r.introns, r, t, stats.m);
+       // });
+    //});
 
     return stats;
 }

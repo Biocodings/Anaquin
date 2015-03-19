@@ -56,7 +56,7 @@ bool ParserGTF::parse(const std::string &file, std::function<void (const Feature
         f.type = mapper[tokens[2]];
 
         /*
-         * Eg: "gene_id "R_5_3_R"; transcript_id "R_5_3_R";"
+         * Eg: "gene_id "R_5_3"; transcript_id "R_5_3_R";"
          */
         
         boost::split(options, tokens[8], boost::is_any_of(";"));
@@ -75,11 +75,16 @@ bool ParserGTF::parse(const std::string &file, std::function<void (const Feature
                     
                     if (nameValue[0] == "gene_id")
                     {
-                        f.geneID = nameValue[0];
+                        f.geneID = nameValue[1];
                     }
-                    else if (nameValue[1] == "transcript_id")
+                    else if (nameValue[0] == "transcript_id")
                     {
-                        f.transID = nameValue[0];
+                        f.iID = nameValue[1];
+                    }
+                    
+                    if (!f.geneID.empty() && !f.iID.empty())
+                    {
+                        assert(f.geneID != f.iID);
                     }
                     
                     f.options[nameValue[0]] = nameValue[1];

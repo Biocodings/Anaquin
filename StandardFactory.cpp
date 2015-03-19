@@ -113,12 +113,12 @@ Standard StandardFactory::reference()
          * In this context, a block is simply an exon. The name of a BED line would be the name of the gene.
          */
         
-        const auto iter = std::find_if(r.genes.begin(), r.genes.end(), [&](const Gene &g)
-        {
-            return (g.id == f.name);
-        });
+        //const auto iter = std::find_if(r.genes.begin(), r.genes.end(), [&](const Gene &g)
+        //{
+        //    return (g.id == f.name);
+        //});
 
-        assert(iter != r.genes.end());
+        //assert(iter != r.genes.end());
         
         for (std::size_t i = 0; i < f.blocks.size(); i++)
         {
@@ -135,11 +135,11 @@ Standard StandardFactory::reference()
                 // TODO: Fix this
                 r.introns.push_back(j);
                 
-                iter->js.push_back(j);
+                //iter->js.push_back(j);
             }
         }
 
-        assert(iter->exons.size() == iter->js.size() + 1);
+        //assert(iter->exons.size() == iter->js.size() + 1);
     });
 
     std::map<std::string, Group> gs =
@@ -148,12 +148,12 @@ Standard StandardFactory::reference()
     };
 
     /*
-     * Read concentration for each sequin in each of the mix. Refer to user-manual for more details.
+     * Create data-structure for the sequins in each of the mix. Refer to user-manual for more details.
      */
     
     GMixture g;
     
-    ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/Standard_A.csv", [&](const std::vector<std::string> &fields)
+    ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/Standard_A.csv", [&](const Fields &fields)
     {
         /*
          * Eg: 1,B,R_2_3,R_2_3_R,3,468750
@@ -191,10 +191,3 @@ Standard StandardFactory::reference()
     
     return r;
 }
-
-
-
-
-
-
-

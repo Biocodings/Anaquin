@@ -18,8 +18,8 @@ struct ExpressionStats
 
 enum ExpressionMode
 {
-    Gene,
-    Isoforms,
+    GeneExpress,
+    IsoformsExpress,
 };
 
 struct ExpressionAnalyst

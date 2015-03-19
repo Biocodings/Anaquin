@@ -19,7 +19,7 @@ typedef long long Lines;
 typedef float Fold;
 
 typedef std::string GeneID;
-typedef std::string TranscriptID;
+typedef std::string IsoformID;
 
 typedef float Percentage;
 

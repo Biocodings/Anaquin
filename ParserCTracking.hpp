@@ -10,9 +10,11 @@ enum CTrackingStatus
     HIData
 };
 
+typedef std::string TrackID;
+
 struct CTracking
 {
-    GeneID geneID;
+    TrackID id;
 
     FPKM fpkm;
     FPKM lFPKM;

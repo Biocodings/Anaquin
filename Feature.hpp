@@ -35,7 +35,7 @@ struct Feature
     GeneID geneID;
     
     // Empty if the information is not available
-    TranscriptID transID;
+    IsoformID iID;
     
     // Optional field such as "gene_id" and "transcript_id"
     Options options;
