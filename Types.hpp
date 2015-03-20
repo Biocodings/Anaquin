@@ -2,11 +2,10 @@
 #define AS_TYPES_HPP
 
 #include <string>
-#include <vector>
-#include <sstream>
 
-typedef std::string ChromoID;
 typedef std::string GeneID;
+typedef std::string ChromoID;
+typedef std::string FeatureName;
 
 typedef long long Reads;
 

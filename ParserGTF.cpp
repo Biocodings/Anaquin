@@ -1,3 +1,4 @@
+#include <vector>
 #include <fstream>
 #include <assert.h>
 #include "ParserGTF.hpp"
@@ -45,7 +46,7 @@ bool ParserGTF::parse(const std::string &file, std::function<void (const Feature
         p.i++;
         boost::split(tokens, line, boost::is_any_of("\t"));
 
-        f.chromo = tokens[0];
+        f.id = tokens[0];
         f.l.set(stoi(tokens[3]), stoi(tokens[4]));
 
         if (!mapper.count(tokens[2]))

@@ -41,7 +41,7 @@ bool ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
         f.blocks.clear();
         
         // Name of the chromosome
-        f.chromo = tokens[0];
+        f.id = tokens[0];
         
         // Name of the BED line (eg: gene)
         f.name = tokens[3];

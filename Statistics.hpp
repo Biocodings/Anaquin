@@ -3,7 +3,7 @@
 
 #include "ConfusionMatrix.hpp"
 
-template <typename T, typename Iter> bool contains(const Iter &iter, const T &t)
+template <typename T, typename Iter> bool contains_(const Iter &iter, const T &t)
 {
     for (auto i: iter)
     {
@@ -25,9 +25,9 @@ template <typename Iter, typename R, typename T> void classify(const Iter &iter,
     assert(!iter.empty());
     
     // Positive if the query is classified with the references
-    if (r.id == t.chromo)
+    if (r.id == t.id)
     {
-        if (contains(iter, t))
+        if (contains_(iter, t))
         {
             if (r.l.contains(t.l))
             {
@@ -45,7 +45,7 @@ template <typename Iter, typename R, typename T> void classify(const Iter &iter,
     }
     else
     {
-        if (contains(iter, t))
+        if (contains_(iter, t))
         {
             m.fn++;
         }

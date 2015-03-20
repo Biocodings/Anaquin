@@ -3,7 +3,8 @@
 
 TEST(GeneratedSpliced_1000, AlignerStatsTest)
 {
-    const auto stats = AlignerAnalyst::spliced("/Users/tedwong/Sources/ABCD/aligned_output/junctions.bed", Sequins(), 1000);
+    //const auto stats = AlignerAnalyst::spliced("/Users/tedwong/Sources/ABCD/aligned_output/junctions.bed", Sequins(), 1000);
+    const auto stats = AlignerAnalyst::spliced("/Users/tedwong/Sources/ABCD/aligned_output/accepted_hits.sam", Sequins(), 1000);
 
     ASSERT_EQ(1, stats.m.sp());
     ASSERT_EQ(0, stats.m.sn());

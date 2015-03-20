@@ -5,6 +5,8 @@
 #include "ParserSAM.hpp"
 #include <boost/algorithm/string.hpp>
 
+#include <boost/algorithm/string/regex.hpp>
+
 bool ParserSAM::parse(const std::string &file, std::function<bool (const Alignment &)> x)
 {
     std::string line;
@@ -28,13 +30,35 @@ bool ParserSAM::parse(const std::string &file, std::function<bool (const Alignme
         align.id  = tokens[2];
 		align.seq = tokens[9];
 
-        const auto len = static_cast<BasePair>(tokens[9].size());
-        const auto start = stoi(tokens[3]);
+        const auto cigar = tokens[5];        
         
-        align.l.set(start, start + len);
-        assert(len == align.l.length());
+        // Eg: 100M58378N1M
+        align.spliced = (cigar.find('N') != std::string::npos);
         
-		if (!x(align))
+        if (align.spliced)
+        {
+            char const* delims = "MN";
+            
+            std::vector<std::string> result;
+            boost::algorithm::split(result, cigar, boost::is_any_of(delims));
+            
+            const auto r1 = stoi(result[0]);
+            const auto r2 = stoi(result[1]);
+            const auto r3 = stoi(result[2]);
+
+            const auto start = stoi(tokens[3]);
+            align.l.set(start, start + r1 + r2 + r3);
+        }
+        else
+        {
+            const auto len = static_cast<BasePair>(tokens[9].size());
+            const auto start = stoi(tokens[3]);
+            
+            align.l.set(start, start + len);
+            assert(len == align.l.length());
+        }
+        
+        if (!x(align))
         {
             break;
         }

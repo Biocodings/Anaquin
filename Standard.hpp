@@ -24,12 +24,9 @@ struct Gene
 
     // Location of the gene relative to the chromosome
     Locus l;
-    
-    // List of exons in this gene sorted by positions
-    std::vector<Feature> exons;
 
-    // List of known spliced junctions
-    std::vector<Feature> js;
+    std::vector<Feature> exons;
+    std::vector<Feature> introns;
 };
 
 struct IMixture
@@ -81,19 +78,24 @@ struct Standard
     // The location of the chromosome
     Locus l;
 
-    // Genes mixed in the standard sorted by positions
-    std::vector<Gene> genes;
-
     std::map<GeneID, GMixture> mixA;
     std::map<GeneID, GMixture> mixB;
 
     std::map<IsoformID, IMixture> isoA;
     std::map<IsoformID, IMixture> isoB;
 
-    // Known features (exons, introns etc)
+    std::map<IsoformID, GeneID> iso2Gene;
+    
+    // Known genes
+    std::vector<Gene> genes;
+
+    // Known features
     std::vector<Feature> fs;
 
-    // Known introns (also known as junctions)
+    // Known exons
+    std::vector<Feature> exons;
+
+    // Known introns (spliced junctions)
     std::vector<Feature> introns;
 };
 

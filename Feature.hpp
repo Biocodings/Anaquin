@@ -24,7 +24,7 @@ typedef std::map<OptionID, OptionValue> Options;
 
 struct Feature
 {
-	FeatureID chromo;
+	FeatureID id;
 
     // The location of the feature relative to the chromosome
     Locus l;

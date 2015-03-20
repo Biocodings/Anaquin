@@ -28,23 +28,107 @@ static bool matchChromoBoundary(const Standard &r, const Alignment &align)
 
 AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n)
 {
-    AlignerStats stats;
     const auto r = StandardFactory::reference();
 
-//    ParserBED::parse(file, [&](const BedFeature &f)
-  //  {
+
+    
+    
+    
+    
+    
+    
+    AlignerStats stats;
+    
+    Reads i = 0;
+    
+    // Check whether a spliced-alignment is correct
+    auto f = [&](const Alignment &align)
+    {
         /*
-         * The parser simply reports whatever in the file. It doesn't know anything about introns.
+         * An spliced alignment is correct if it aligns to two consecutive exons
          */
+     
+        for (auto i = 0; i < r.exons.size(); i++)
+        {
+            const auto &exon_1 = r.exons[i];
+
+            // Check if it starts inside exon_1
+            if (align.l.start >= exon_1.l.start && align.l.start < exon_1.l.end && align.l.end > exon_1.l.end
+                    && i != r.exons.size() - 1)
+            {
+                // Any ... ?
+                
+                for (auto j = i + 1; j < r.exons.size(); j++)
+                {
+                    const auto exon_2 = r.exons[j];
+                    
+                    if (exon_1.iID == exon_2.iID)
+                    {
+                        // Check if it ends inside exon_2
+                        if (align.l.start < exon_2.l.start && align.l.end > exon_2.l.start && align.l.end < exon_2.l.end)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         
-    //    Feature t = f;
+        return false;
+    };
+
+    ParserSAM::parse(file, [&](const Alignment &align)
+    {
+        if (++i > n)
+        {
+            return false;
+        }
+        else if (align.id == r.id)
+        {
+            stats.nr++;
+        }
+        else
+        {
+            stats.nq++;
+        }
         
-      //  extractIntrons(f.blocks, [&](BasePair start, BasePair end)
-        //{
-          //  t.l.set(start, end);
-            //classify(r.introns, r, t, stats.m);
-       // });
-    //});
+        if (align.mapped && align.spliced)
+        {
+            if (align.id == r.id)
+            {
+                if (contains__(r, align))
+                {
+                    if (f(align))
+                    {
+                        stats.m.tp++;
+                    }
+                    else
+                    {
+                        stats.m.fp++;
+                    }
+                }
+                else
+                {
+                    stats.m.fp++;
+                }
+            }
+            else
+            {
+                if (matchChromoBoundary(r, align))
+                {
+                    stats.m.fn++;
+                }
+                else
+                {
+                    stats.m.tn++;
+                }
+            }
+
+            stats.n++;
+        }
+        
+        return true;
+    });
 
     return stats;
 }
@@ -70,8 +154,6 @@ AlignerStats AlignerAnalyst::base(const std::string &file, Sequins s, Reads n)
         {
             return false;
         }
-        
-        // If it's aligned to the reference
         else if (align.id == r.id)
         {
             stats.nr++;

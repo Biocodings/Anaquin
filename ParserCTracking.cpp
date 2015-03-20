@@ -1,5 +1,6 @@
 #include <map>
 #include <fstream>
+#include <vector>
 #include <assert.h>
 #include "ParserCTracking.hpp"
 #include <boost/algorithm/string.hpp>

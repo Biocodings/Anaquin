@@ -34,27 +34,26 @@ Standard StandardFactory::reference()
      */
     
     std::set<GeneID> gids;
+    std::set<IsoformID> iids;
 
     ParserGTF::parse("/Users/tedwong/Sources/QA/Data/RNA/RNAstandards.gtf", [&](const Feature &f, ParserProgress &p)
-	//ParserGTF::parse("C://Sources//QA//Data//Standards//RNAstandards.gtf", [&](const Feature &f)
 	{
 		r.l.end = std::max(r.l.end, f.l.end);
 		r.l.start = std::min(r.l.start, f.l.start);
         r.fs.push_back(f);
         
-        assert(f.options.size() == 2);
-        assert(f.options.count("gene_id"));
-        assert(f.options.count("transcript_id"));
+        assert(!f.iID.empty());
+        assert(!f.geneID.empty());
 
-        // TODO: Linking error in Xcode
-        Options t = f.options;
+        iids.insert(f.iID);
+        gids.insert(f.geneID);
         
-        const auto gid = t["gene_id"];
-        gids.insert(gid);
+        // Construct a mapping between isoformID to geneID
+        r.iso2Gene[f.iID] = f.geneID;
     });
 
     /*
-     * Construct the data-structure for each gene.
+     * Construct the data-structure for genes
      */
 
     for (auto gid : gids)
@@ -66,12 +65,12 @@ Standard StandardFactory::reference()
         g.l.start = std::numeric_limits<BasePair>::max();
 
         /*
-         * Add all features for this gene.
+         * Add all features for this gene
          */
         
         for (auto f : r.fs)
         {
-            if (f.options["gene_id"] == g.id)
+            if (f.geneID == g.id)
             {
                 g.l.end = std::max(g.l.end, f.l.end);
                 g.l.start = std::min(g.l.start, f.l.start);
@@ -79,67 +78,63 @@ Standard StandardFactory::reference()
                 if (f.type == Exon)
                 {
                     g.exons.push_back(f);
+                    r.exons.push_back(f);
                 }
             }
         }
-        
+
         assert(g.l.end > g.l.start);
-        
-        // Sort the exons by starting positions
-        std::sort(g.exons.begin(), g.exons.end(), [](const Feature& x, const Feature& y)
-        {
-            return (x.l.start < y.l.start);
-        });
-        
-        assert(!g.exons.empty());
+
+        assert(!r.exons.empty());
         r.genes.push_back(g);
     }
     
     assert(!r.genes.empty());
-    
-    // Sort the genes by starting positions
+
+    // Sort the exons by starting position
+    std::sort(r.exons.begin(), r.exons.end(), [](const Feature& x, const Feature& y)
+    {
+        return (x.l.start < y.l.start);
+    });
+
+    // Sort the genes by starting position
     std::sort(r.genes.begin(), r.genes.end(), [](const Gene& x, const Gene& y)
     {
         return (x.l.start < y.l.start);
     });
 
     /*
-     * Create data-structure for the known junctions between exons.
+     * Create data-structure for known introns
      */
 
-    ParserBED::parse("/Users/tedwong/Sources/QA/Data/RNA/RNAstandards.bed", [&](const BedFeature &f)
+    ParserBED::parse("/Users/tedwong/Sources/QA/Data/RNA/RNAstandards.bed", [&](const BedFeature &t)
     {
         /*
-         * In this context, a block is simply an exon. The name of a BED line would be the name of the gene.
+         * In this context, we're given a transcript. Each block in the transcript is an exon.
          */
-        
-        //const auto iter = std::find_if(r.genes.begin(), r.genes.end(), [&](const Gene &g)
-        //{
-        //    return (g.id == f.name);
-        //});
 
-        //assert(iter != r.genes.end());
-        
-        for (std::size_t i = 0; i < f.blocks.size(); i++)
+        Feature j;
+
+        for (auto i = 0; i < t.blocks.size(); i++)
         {
             if (i)
             {
-                Feature j;
-
-                j.chromo = r.id;
+                j.id = r.id;
                 j.type = Junction;
 
-                // Junction (intron) is a region between exons that have been spliced
-                j.l = Locus(f.blocks[i - 1].end, f.blocks[i].start);
+                // Intron is a region between exons that have been spliced
+                j.l = Locus(t.blocks[i - 1].end, t.blocks[i].start);
 
-                // TODO: Fix this
                 r.introns.push_back(j);
-                
-                //iter->js.push_back(j);
             }
         }
 
-        //assert(iter->exons.size() == iter->js.size() + 1);
+        const auto iter = std::find_if(r.genes.begin(), r.genes.end(), [&](const Gene &g)
+        {
+            return (g.id == r.iso2Gene[t.name]);
+        });
+        
+        assert(iter != r.genes.end());
     });
 
     std::map<std::string, Group> gs =
@@ -156,7 +151,7 @@ Standard StandardFactory::reference()
     ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/Standard_A.csv", [&](const Fields &fields)
     {
         /*
-         * Create data-structure for the isoform
+         * Create data-structure for isoforms
          */
         
         IMixture i;
@@ -168,7 +163,7 @@ Standard StandardFactory::reference()
         r.isoA[i.id] = i;
         
         /*
-         * Create data-structure for the gene
+         * Create data-structure for genes
          */
 
         if (fields[0] == "1")

@@ -2,12 +2,16 @@
 #define AS_PARSER_BED_HPP
 
 #include <vector>
+#include "Locus.hpp"
 #include <functional>
-#include "Feature.hpp"
 
-struct BedFeature : public Feature
+struct BedFeature
 {
-    std::string name;
+    ChromoID id;
+    
+    Locus l;
+    
+    FeatureName name;
 
     // Locations of the sorted blocks
     std::vector<Locus> blocks;
