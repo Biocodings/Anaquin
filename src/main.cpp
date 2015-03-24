@@ -5,12 +5,13 @@
 #endif
 #include "AlignerAnalyst.hpp"
 #include "AssemblyAnalyst.hpp"
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/options_description.hpp>
+//#include <boost/program_options/parsers.hpp>
+//#include <boost/program_options/variables_map.hpp>
+//#include <boost/program_options/options_description.hpp>
 
 int main(int argc, char ** argv)
 {
+	std::cout << "Hello World" << std::endl;
 	return 0;
 /*
     namespace po = boost::program_options;
