@@ -1,14 +1,14 @@
 #include "gtest/gtest.h"
 #include "AlignerAnalyst.hpp"
 
-TEST(GeneratedBase_1000, AlignerStatsTest)
+TEST(D1_Base_1000, AlignerStatsTest)
 {
     /*
      * Since the SAM file comes from a simulation of the reference chromosome, it's not surprising that
      * the sensitivity is 100% (from the first 1000 reads).
      */
     
-    const auto stats = AlignerAnalyst::base("/Users/tedwong/Sources/ABCD/aligned_output/accepted_hits.sam", Sequins(), 1000);
+    const auto stats = AlignerAnalyst::base("/Users/tedwong/Sources/QA/tests/data/d1/accepted_hits.sam", Sequins(), 1000);
 
     ASSERT_EQ(1, stats.m.sp());
     ASSERT_TRUE(isnan(stats.m.sn()));
@@ -21,24 +21,23 @@ TEST(GeneratedBase_1000, AlignerStatsTest)
     ASSERT_EQ(0, stats.nq);
 }
 
-TEST(GeneratedSpliced_1000, AlignerStatsTest)
+TEST(D1_Splice_1000, AlignerStatsTest)
 {
     /*
      * Since the SAM file comes from a simulation of the reference chromosome, it's not surprising that
      * the sensitivity is 100% (from the first 1000 reads).
      */
     
-    const auto stats = AlignerAnalyst::spliced("/Users/tedwong/Sources/ABCD/aligned_output/accepted_hits.sam", Sequins(), 1000);
+    const auto stats = AlignerAnalyst::spliced("/Users/tedwong/Sources/QA/tests/data/d1/accepted_hits.sam", Sequins(), 1000);
     
     ASSERT_EQ(1, stats.m.sp());
     ASSERT_EQ(0, stats.m.sn());
 }
 
-TEST(Cufflink, AlignerStatsTest)
+TEST(D2_Base, AlignerStatsTest)
 {
 	// The sample file was taken from Cufflink's source distribution. It's obviously independent to the standards.
 	const auto stats = AlignerAnalyst::base("/Users/tedwong/Sources/QA/Tests/Data/CufflinksTest.sam");
-	//const auto stats = AlignerAnalyst::analyze("C://Sources//QA//Tests//Data//CufflinksTest.sam");
 
 	/*
 	 * There shouldn't be any match. Both sensivity and specificity are NAN because the experiement gives no
