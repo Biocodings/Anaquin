@@ -1,3 +1,4 @@
+#include <limits>
 #include <iostream>
 #include "ParserGTF.hpp"
 #include "Statistics.hpp"

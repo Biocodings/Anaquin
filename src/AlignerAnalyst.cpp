@@ -1,6 +1,7 @@
 #include <math.h>
 #include <iostream>
 #include <assert.h>
+#include <limits>
 #include "Biology.hpp"
 #include "ParserBED.hpp"
 #include "ParserSAM.hpp"

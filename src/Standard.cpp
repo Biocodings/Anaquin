@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <algorithm>
 #include "Standard.hpp"
 
 bool Standard::known(const GeneID &id) const

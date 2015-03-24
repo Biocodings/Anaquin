@@ -1,9 +1,9 @@
 #ifndef AS_READER_FA_HPP
 #define AS_READER_FA_HPP
 
-#include "types.hpp"
+#include "Types.hpp"
 #include <functional>
-#include "sequence.hpp"
+#include "Sequence.hpp"
 
 struct ParserFA
 {
