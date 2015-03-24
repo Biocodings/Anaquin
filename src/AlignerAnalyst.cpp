@@ -30,13 +30,6 @@ AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n
 {
     const auto r = StandardFactory::reference();
 
-
-    
-    
-    
-    
-    
-    
     AlignerStats stats;
     
     Reads i = 0;
@@ -207,5 +200,11 @@ AlignerStats AlignerAnalyst::base(const std::string &file, Sequins s, Reads n)
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
     stats.dilution = stats.nq ? static_cast<Percentage>(stats.nr / stats.nq) : 1;
 
+    std::cout << "Dilution: " << stats.dilution << std::endl;
+    std::cout << "TP: " << stats.m.tp << std::endl;
+    std::cout << "TN: " << stats.m.tn << std::endl;
+    std::cout << "FP: " << stats.m.fp << std::endl;
+    std::cout << "FN: " << stats.m.fn << std::endl;
+    
 	return stats;
 }
