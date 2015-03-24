@@ -363,6 +363,11 @@
 					"/Users/user1/Library/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
 					"/Users/user1/Library/Developer/Xcode/DerivedData/Anaquin-guakbmsmdzxsaiajegaxnvtohszp/Build/Products/Debug/Anaquin",
 				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					UNIT_TESTING,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

@@ -1,4 +1,6 @@
+#ifdef UNIT_TESTING
 #include "gtest/gtest.h"
+#endif
 #include "AlignerAnalyst.hpp"
 #include "AssemblyAnalyst.hpp"
 #include <boost/program_options/parsers.hpp>
@@ -28,8 +30,10 @@ int main(int argc, char ** argv)
         }
         else if (vm.count("test"))
         {
+#ifdef UNIT_TESTING
             ::testing::InitGoogleTest(&argc, argv);
             return RUN_ALL_TESTS();
+#endif
         }
         else if (vm.count("align"))
         {
