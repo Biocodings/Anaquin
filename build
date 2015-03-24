@@ -1,4 +1,1 @@
-g++ -std=c++11 -I ../LL/boost_1_57_0 src/*.cpp
-
-
-g++ -std=c++11 -I ../LL/boost_1_57_0 -L"/home/tedwong/Sources/LL/boost_1_57_0/stage/lib" -lboost_program_options -o abcd src/*.cpp
+g++ -std=c++11 -I ../LL/boost_1_57_0 -I libs/tclap-1.2.1/include/ src/*.cpp
