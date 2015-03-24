@@ -8,26 +8,27 @@
 
 /* Begin PBXBuildFile section */
 		7F5CFB951AB7D72200B0E53F /* ParserBEDTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F5CFB941AB7D72200B0E53F /* ParserBEDTest.cpp */; };
-		7F5CFB9E1AB82CDC00B0E53F /* BuilderGTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */; };
-		7F6E0C7E1AB6526300C9E3E0 /* StandardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */; };
 		7F6E0C8B1AB6554500C9E3E0 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */; };
 		7F6E0C8C1AB6584E00C9E3E0 /* AlignerAnalystTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C841AB653AC00C9E3E0 /* AlignerAnalystTest.cpp */; };
 		7F6E0C8D1AB6585500C9E3E0 /* AssemblyAnalystTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C851AB653AC00C9E3E0 /* AssemblyAnalystTest.cpp */; };
 		7F6E0C8F1AB6586A00C9E3E0 /* StandardFactoryTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6E0C891AB653AC00C9E3E0 /* StandardFactoryTest.cpp */; };
-		7F82266E1AB7A1C100BDCFC7 /* ParserBED.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */; };
 		7F8226701AB7A5B400BDCFC7 /* ParserGTFTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F82266F1AB7A5B400BDCFC7 /* ParserGTFTest.cpp */; };
-		7FC5571A1AB473C00085C090 /* AlignerAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */; };
-		7FC5571B1AB473C00085C090 /* Anaquin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC557081AB473C00085C090 /* Anaquin.cpp */; };
-		7FC5571C1AB473C00085C090 /* AssemblyAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */; };
-		7FC5571D1AB473C00085C090 /* ExpressionAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570A1AB473C00085C090 /* ExpressionAnalyst.cpp */; };
-		7FC5571E1AB473C00085C090 /* ParserFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570B1AB473C00085C090 /* ParserFA.cpp */; };
-		7FC5571F1AB473C00085C090 /* ParserGTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570C1AB473C00085C090 /* ParserGTF.cpp */; };
-		7FC557201AB473C00085C090 /* ParserSAM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7FC5570D1AB473C00085C090 /* ParserSAM.cpp */; };
-		EFFC9F0C1AB8F96800928CB5 /* ParserCSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F0A1AB8F96800928CB5 /* ParserCSV.cpp */; };
+		EF2290561AC0E58000CE76BF /* AlignerAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290321AC0E58000CE76BF /* AlignerAnalyst.cpp */; };
+		EF2290571AC0E58000CE76BF /* Anaquin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* Anaquin.cpp */; };
+		EF2290581AC0E58000CE76BF /* AssemblyAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290361AC0E58000CE76BF /* AssemblyAnalyst.cpp */; };
+		EF2290591AC0E58000CE76BF /* BuilderGTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290391AC0E58000CE76BF /* BuilderGTF.cpp */; };
+		EF22905A1AC0E58000CE76BF /* ExpressionAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF22903C1AC0E58000CE76BF /* ExpressionAnalyst.cpp */; };
+		EF22905B1AC0E58000CE76BF /* ParserBED.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290401AC0E58000CE76BF /* ParserBED.cpp */; };
+		EF22905C1AC0E58000CE76BF /* ParserCSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290421AC0E58000CE76BF /* ParserCSV.cpp */; };
+		EF22905D1AC0E58000CE76BF /* ParserCTracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290441AC0E58000CE76BF /* ParserCTracking.cpp */; };
+		EF22905E1AC0E58000CE76BF /* ParserFA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290461AC0E58000CE76BF /* ParserFA.cpp */; };
+		EF22905F1AC0E58000CE76BF /* ParserGTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290481AC0E58000CE76BF /* ParserGTF.cpp */; };
+		EF2290601AC0E58000CE76BF /* ParserSAM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF22904A1AC0E58000CE76BF /* ParserSAM.cpp */; };
+		EF2290611AC0E58000CE76BF /* RNAAnalyst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF22904C1AC0E58000CE76BF /* RNAAnalyst.cpp */; };
+		EF2290621AC0E58000CE76BF /* Standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290501AC0E58000CE76BF /* Standard.cpp */; };
+		EF2290631AC0E58000CE76BF /* StandardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290521AC0E58000CE76BF /* StandardFactory.cpp */; };
 		EFFC9F0E1AB9255100928CB5 /* ExpressionAnalystTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F0D1AB9255100928CB5 /* ExpressionAnalystTest.cpp */; };
-		EFFC9F111AB92CDC00928CB5 /* ParserCTracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F0F1AB92CDC00928CB5 /* ParserCTracking.cpp */; };
 		EFFC9F131AB9346400928CB5 /* ParserCTrackingTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F121AB9346400928CB5 /* ParserCTrackingTest.cpp */; };
-		EFFC9F161AB9386D00928CB5 /* Standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F151AB9386D00928CB5 /* Standard.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,51 +44,51 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7F2B8E301AB6B9FC0069D607 /* Standard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Standard.hpp; path = ../Standard.hpp; sourceTree = "<group>"; };
-		7F2B8E311AB6BA570069D607 /* Sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequins.hpp; path = ../Sequins.hpp; sourceTree = "<group>"; };
-		7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ConfusionMatrix.hpp; path = ../ConfusionMatrix.hpp; sourceTree = "<group>"; };
 		7F5CFB941AB7D72200B0E53F /* ParserBEDTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserBEDTest.cpp; sourceTree = "<group>"; };
-		7F5CFB981AB7DB6000B0E53F /* Locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Locus.hpp; path = ../Locus.hpp; sourceTree = "<group>"; };
-		7F5CFB9A1AB8135E00B0E53F /* Biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Biology.hpp; path = ../Biology.hpp; sourceTree = "<group>"; };
-		7F5CFB9B1AB814E700B0E53F /* Statistics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Statistics.hpp; path = ../Statistics.hpp; sourceTree = "<group>"; };
-		7F5CFB9C1AB82CD300B0E53F /* BuilderGTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = BuilderGTF.hpp; path = ../BuilderGTF.hpp; sourceTree = "<group>"; };
-		7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BuilderGTF.cpp; path = ../BuilderGTF.cpp; sourceTree = "<group>"; };
-		7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StandardFactory.cpp; path = ../StandardFactory.cpp; sourceTree = "<group>"; };
-		7F6E0C7D1AB6526300C9E3E0 /* StandardFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StandardFactory.hpp; path = ../StandardFactory.hpp; sourceTree = "<group>"; };
 		7F6E0C841AB653AC00C9E3E0 /* AlignerAnalystTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AlignerAnalystTest.cpp; sourceTree = "<group>"; };
 		7F6E0C851AB653AC00C9E3E0 /* AssemblyAnalystTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AssemblyAnalystTest.cpp; sourceTree = "<group>"; };
 		7F6E0C891AB653AC00C9E3E0 /* StandardFactoryTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = StandardFactoryTest.cpp; sourceTree = "<group>"; };
 		7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = gtest.framework; sourceTree = "<group>"; };
 		7F7C70521AB4726E00C6EE36 /* Anaquin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anaquin; sourceTree = BUILT_PRODUCTS_DIR; };
-		7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserBED.cpp; path = ../ParserBED.cpp; sourceTree = "<group>"; };
-		7F82266D1AB7A1C100BDCFC7 /* ParserBED.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserBED.hpp; path = ../ParserBED.hpp; sourceTree = "<group>"; };
 		7F82266F1AB7A5B400BDCFC7 /* ParserGTFTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserGTFTest.cpp; sourceTree = "<group>"; };
-		7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignerAnalyst.cpp; path = ../AlignerAnalyst.cpp; sourceTree = "<group>"; };
-		7FC557081AB473C00085C090 /* Anaquin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Anaquin.cpp; path = ../Anaquin.cpp; sourceTree = "<group>"; };
-		7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssemblyAnalyst.cpp; path = ../AssemblyAnalyst.cpp; sourceTree = "<group>"; };
-		7FC5570A1AB473C00085C090 /* ExpressionAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExpressionAnalyst.cpp; path = ../ExpressionAnalyst.cpp; sourceTree = "<group>"; };
-		7FC5570B1AB473C00085C090 /* ParserFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserFA.cpp; path = ../ParserFA.cpp; sourceTree = "<group>"; };
-		7FC5570C1AB473C00085C090 /* ParserGTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserGTF.cpp; path = ../ParserGTF.cpp; sourceTree = "<group>"; };
-		7FC5570D1AB473C00085C090 /* ParserSAM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserSAM.cpp; path = ../ParserSAM.cpp; sourceTree = "<group>"; };
-		7FC5570F1AB473C00085C090 /* AlignerAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AlignerAnalyst.hpp; path = ../AlignerAnalyst.hpp; sourceTree = "<group>"; };
-		7FC557101AB473C00085C090 /* Alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Alignment.hpp; path = ../Alignment.hpp; sourceTree = "<group>"; };
-		7FC557111AB473C00085C090 /* AssemblyAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AssemblyAnalyst.hpp; path = ../AssemblyAnalyst.hpp; sourceTree = "<group>"; };
-		7FC557121AB473C00085C090 /* ExpressionAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ExpressionAnalyst.hpp; path = ../ExpressionAnalyst.hpp; sourceTree = "<group>"; };
-		7FC557131AB473C00085C090 /* Feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Feature.hpp; path = ../Feature.hpp; sourceTree = "<group>"; };
-		7FC557141AB473C00085C090 /* ParserFA.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserFA.hpp; path = ../ParserFA.hpp; sourceTree = "<group>"; };
-		7FC557151AB473C00085C090 /* ParserGTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserGTF.hpp; path = ../ParserGTF.hpp; sourceTree = "<group>"; };
-		7FC557161AB473C00085C090 /* ParserSAM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserSAM.hpp; path = ../ParserSAM.hpp; sourceTree = "<group>"; };
-		7FC557171AB473C00085C090 /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequence.hpp; path = ../Sequence.hpp; sourceTree = "<group>"; };
-		7FC557191AB473C00085C090 /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Types.hpp; path = ../Types.hpp; sourceTree = "<group>"; };
-		EF6BF7011ABA8A0F0025AB9B /* RNAstandards.gtf */ = {isa = PBXFileReference; lastKnownFileType = text; name = RNAstandards.gtf; path = ../Data/RNA/RNAstandards.gtf; sourceTree = "<group>"; };
-		EFFC9F0A1AB8F96800928CB5 /* ParserCSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserCSV.cpp; path = ../ParserCSV.cpp; sourceTree = "<group>"; };
-		EFFC9F0B1AB8F96800928CB5 /* ParserCSV.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserCSV.hpp; path = ../ParserCSV.hpp; sourceTree = "<group>"; };
+		EF2290321AC0E58000CE76BF /* AlignerAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignerAnalyst.cpp; path = ../src/AlignerAnalyst.cpp; sourceTree = "<group>"; };
+		EF2290331AC0E58000CE76BF /* AlignerAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AlignerAnalyst.hpp; path = ../src/AlignerAnalyst.hpp; sourceTree = "<group>"; };
+		EF2290341AC0E58000CE76BF /* Alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Alignment.hpp; path = ../src/Alignment.hpp; sourceTree = "<group>"; };
+		EF2290351AC0E58000CE76BF /* Anaquin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Anaquin.cpp; path = ../src/Anaquin.cpp; sourceTree = "<group>"; };
+		EF2290361AC0E58000CE76BF /* AssemblyAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssemblyAnalyst.cpp; path = ../src/AssemblyAnalyst.cpp; sourceTree = "<group>"; };
+		EF2290371AC0E58000CE76BF /* AssemblyAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = AssemblyAnalyst.hpp; path = ../src/AssemblyAnalyst.hpp; sourceTree = "<group>"; };
+		EF2290381AC0E58000CE76BF /* Biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Biology.hpp; path = ../src/Biology.hpp; sourceTree = "<group>"; };
+		EF2290391AC0E58000CE76BF /* BuilderGTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BuilderGTF.cpp; path = ../src/BuilderGTF.cpp; sourceTree = "<group>"; };
+		EF22903A1AC0E58000CE76BF /* BuilderGTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = BuilderGTF.hpp; path = ../src/BuilderGTF.hpp; sourceTree = "<group>"; };
+		EF22903B1AC0E58000CE76BF /* ConfusionMatrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ConfusionMatrix.hpp; path = ../src/ConfusionMatrix.hpp; sourceTree = "<group>"; };
+		EF22903C1AC0E58000CE76BF /* ExpressionAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExpressionAnalyst.cpp; path = ../src/ExpressionAnalyst.cpp; sourceTree = "<group>"; };
+		EF22903D1AC0E58000CE76BF /* ExpressionAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ExpressionAnalyst.hpp; path = ../src/ExpressionAnalyst.hpp; sourceTree = "<group>"; };
+		EF22903E1AC0E58000CE76BF /* Feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Feature.hpp; path = ../src/Feature.hpp; sourceTree = "<group>"; };
+		EF22903F1AC0E58000CE76BF /* Locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Locus.hpp; path = ../src/Locus.hpp; sourceTree = "<group>"; };
+		EF2290401AC0E58000CE76BF /* ParserBED.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserBED.cpp; path = ../src/ParserBED.cpp; sourceTree = "<group>"; };
+		EF2290411AC0E58000CE76BF /* ParserBED.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserBED.hpp; path = ../src/ParserBED.hpp; sourceTree = "<group>"; };
+		EF2290421AC0E58000CE76BF /* ParserCSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserCSV.cpp; path = ../src/ParserCSV.cpp; sourceTree = "<group>"; };
+		EF2290431AC0E58000CE76BF /* ParserCSV.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserCSV.hpp; path = ../src/ParserCSV.hpp; sourceTree = "<group>"; };
+		EF2290441AC0E58000CE76BF /* ParserCTracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserCTracking.cpp; path = ../src/ParserCTracking.cpp; sourceTree = "<group>"; };
+		EF2290451AC0E58000CE76BF /* ParserCTracking.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserCTracking.hpp; path = ../src/ParserCTracking.hpp; sourceTree = "<group>"; };
+		EF2290461AC0E58000CE76BF /* ParserFA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserFA.cpp; path = ../src/ParserFA.cpp; sourceTree = "<group>"; };
+		EF2290471AC0E58000CE76BF /* ParserFA.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserFA.hpp; path = ../src/ParserFA.hpp; sourceTree = "<group>"; };
+		EF2290481AC0E58000CE76BF /* ParserGTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserGTF.cpp; path = ../src/ParserGTF.cpp; sourceTree = "<group>"; };
+		EF2290491AC0E58000CE76BF /* ParserGTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserGTF.hpp; path = ../src/ParserGTF.hpp; sourceTree = "<group>"; };
+		EF22904A1AC0E58000CE76BF /* ParserSAM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserSAM.cpp; path = ../src/ParserSAM.cpp; sourceTree = "<group>"; };
+		EF22904B1AC0E58000CE76BF /* ParserSAM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserSAM.hpp; path = ../src/ParserSAM.hpp; sourceTree = "<group>"; };
+		EF22904C1AC0E58000CE76BF /* RNAAnalyst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RNAAnalyst.cpp; path = ../src/RNAAnalyst.cpp; sourceTree = "<group>"; };
+		EF22904D1AC0E58000CE76BF /* RNAAnalyst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = RNAAnalyst.hpp; path = ../src/RNAAnalyst.hpp; sourceTree = "<group>"; };
+		EF22904E1AC0E58000CE76BF /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequence.hpp; path = ../src/Sequence.hpp; sourceTree = "<group>"; };
+		EF22904F1AC0E58000CE76BF /* Sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequins.hpp; path = ../src/Sequins.hpp; sourceTree = "<group>"; };
+		EF2290501AC0E58000CE76BF /* Standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Standard.cpp; path = ../src/Standard.cpp; sourceTree = "<group>"; };
+		EF2290511AC0E58000CE76BF /* Standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Standard.hpp; path = ../src/Standard.hpp; sourceTree = "<group>"; };
+		EF2290521AC0E58000CE76BF /* StandardFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StandardFactory.cpp; path = ../src/StandardFactory.cpp; sourceTree = "<group>"; };
+		EF2290531AC0E58000CE76BF /* StandardFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StandardFactory.hpp; path = ../src/StandardFactory.hpp; sourceTree = "<group>"; };
+		EF2290541AC0E58000CE76BF /* Statistics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Statistics.hpp; path = ../src/Statistics.hpp; sourceTree = "<group>"; };
+		EF2290551AC0E58000CE76BF /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Types.hpp; path = ../src/Types.hpp; sourceTree = "<group>"; };
 		EFFC9F0D1AB9255100928CB5 /* ExpressionAnalystTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionAnalystTest.cpp; sourceTree = "<group>"; };
-		EFFC9F0F1AB92CDC00928CB5 /* ParserCTracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserCTracking.cpp; path = ../ParserCTracking.cpp; sourceTree = "<group>"; };
-		EFFC9F101AB92CDC00928CB5 /* ParserCTracking.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserCTracking.hpp; path = ../ParserCTracking.hpp; sourceTree = "<group>"; };
 		EFFC9F121AB9346400928CB5 /* ParserCTrackingTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserCTrackingTest.cpp; sourceTree = "<group>"; };
-		EFFC9F151AB9386D00928CB5 /* Standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Standard.cpp; path = ../Standard.cpp; sourceTree = "<group>"; };
-		EFFC9F191AB93F2100928CB5 /* Standard_A.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = Standard_A.csv; path = ../Data/RNA/Standard_A.csv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,8 +121,8 @@
 		7F7C70491AB4726E00C6EE36 = {
 			isa = PBXGroup;
 			children = (
-				7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */,
 				7FC557061AB473A90085C090 /* Sources */,
+				7F6E0C831AB653AC00C9E3E0 /* Tests */,
 				EFFC9F061AB8F62C00928CB5 /* Resources */,
 				7F7C70531AB4726E00C6EE36 /* Products */,
 			);
@@ -138,68 +139,60 @@
 		7FC557061AB473A90085C090 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				EFFC9F171AB93F0800928CB5 /* Data */,
-				7F6E0C831AB653AC00C9E3E0 /* Tests */,
-				7FC557071AB473C00085C090 /* AlignerAnalyst.cpp */,
-				7FC5570F1AB473C00085C090 /* AlignerAnalyst.hpp */,
-				7FC557101AB473C00085C090 /* Alignment.hpp */,
-				7FC557081AB473C00085C090 /* Anaquin.cpp */,
-				7FC557091AB473C00085C090 /* AssemblyAnalyst.cpp */,
-				7FC557111AB473C00085C090 /* AssemblyAnalyst.hpp */,
-				7F5CFB9A1AB8135E00B0E53F /* Biology.hpp */,
-				7F5CFB9D1AB82CDC00B0E53F /* BuilderGTF.cpp */,
-				7F5CFB9C1AB82CD300B0E53F /* BuilderGTF.hpp */,
-				7F2B8E321AB79EBC0069D607 /* ConfusionMatrix.hpp */,
-				7FC5570A1AB473C00085C090 /* ExpressionAnalyst.cpp */,
-				7FC557121AB473C00085C090 /* ExpressionAnalyst.hpp */,
-				7FC557131AB473C00085C090 /* Feature.hpp */,
-				7F5CFB981AB7DB6000B0E53F /* Locus.hpp */,
-				7F82266C1AB7A1C100BDCFC7 /* ParserBED.cpp */,
-				7F82266D1AB7A1C100BDCFC7 /* ParserBED.hpp */,
-				EFFC9F0A1AB8F96800928CB5 /* ParserCSV.cpp */,
-				EFFC9F0B1AB8F96800928CB5 /* ParserCSV.hpp */,
-				EFFC9F0F1AB92CDC00928CB5 /* ParserCTracking.cpp */,
-				EFFC9F101AB92CDC00928CB5 /* ParserCTracking.hpp */,
-				7FC5570B1AB473C00085C090 /* ParserFA.cpp */,
-				7FC557141AB473C00085C090 /* ParserFA.hpp */,
-				7FC5570C1AB473C00085C090 /* ParserGTF.cpp */,
-				7FC557151AB473C00085C090 /* ParserGTF.hpp */,
-				7FC5570D1AB473C00085C090 /* ParserSAM.cpp */,
-				7FC557161AB473C00085C090 /* ParserSAM.hpp */,
-				7FC557171AB473C00085C090 /* Sequence.hpp */,
-				7F2B8E311AB6BA570069D607 /* Sequins.hpp */,
-				EFFC9F151AB9386D00928CB5 /* Standard.cpp */,
-				7F2B8E301AB6B9FC0069D607 /* Standard.hpp */,
-				7F6E0C7C1AB6526300C9E3E0 /* StandardFactory.cpp */,
-				7F6E0C7D1AB6526300C9E3E0 /* StandardFactory.hpp */,
-				7F5CFB9B1AB814E700B0E53F /* Statistics.hpp */,
-				7FC557191AB473C00085C090 /* Types.hpp */,
+				EF2290321AC0E58000CE76BF /* AlignerAnalyst.cpp */,
+				EF2290331AC0E58000CE76BF /* AlignerAnalyst.hpp */,
+				EF2290341AC0E58000CE76BF /* Alignment.hpp */,
+				EF2290351AC0E58000CE76BF /* Anaquin.cpp */,
+				EF2290361AC0E58000CE76BF /* AssemblyAnalyst.cpp */,
+				EF2290371AC0E58000CE76BF /* AssemblyAnalyst.hpp */,
+				EF2290381AC0E58000CE76BF /* Biology.hpp */,
+				EF2290391AC0E58000CE76BF /* BuilderGTF.cpp */,
+				EF22903A1AC0E58000CE76BF /* BuilderGTF.hpp */,
+				EF22903B1AC0E58000CE76BF /* ConfusionMatrix.hpp */,
+				EF22903C1AC0E58000CE76BF /* ExpressionAnalyst.cpp */,
+				EF22903D1AC0E58000CE76BF /* ExpressionAnalyst.hpp */,
+				EF22903E1AC0E58000CE76BF /* Feature.hpp */,
+				EF22903F1AC0E58000CE76BF /* Locus.hpp */,
+				EF2290401AC0E58000CE76BF /* ParserBED.cpp */,
+				EF2290411AC0E58000CE76BF /* ParserBED.hpp */,
+				EF2290421AC0E58000CE76BF /* ParserCSV.cpp */,
+				EF2290431AC0E58000CE76BF /* ParserCSV.hpp */,
+				EF2290441AC0E58000CE76BF /* ParserCTracking.cpp */,
+				EF2290451AC0E58000CE76BF /* ParserCTracking.hpp */,
+				EF2290461AC0E58000CE76BF /* ParserFA.cpp */,
+				EF2290471AC0E58000CE76BF /* ParserFA.hpp */,
+				EF2290481AC0E58000CE76BF /* ParserGTF.cpp */,
+				EF2290491AC0E58000CE76BF /* ParserGTF.hpp */,
+				EF22904A1AC0E58000CE76BF /* ParserSAM.cpp */,
+				EF22904B1AC0E58000CE76BF /* ParserSAM.hpp */,
+				EF22904C1AC0E58000CE76BF /* RNAAnalyst.cpp */,
+				EF22904D1AC0E58000CE76BF /* RNAAnalyst.hpp */,
+				EF22904E1AC0E58000CE76BF /* Sequence.hpp */,
+				EF22904F1AC0E58000CE76BF /* Sequins.hpp */,
+				EF2290501AC0E58000CE76BF /* Standard.cpp */,
+				EF2290511AC0E58000CE76BF /* Standard.hpp */,
+				EF2290521AC0E58000CE76BF /* StandardFactory.cpp */,
+				EF2290531AC0E58000CE76BF /* StandardFactory.hpp */,
+				EF2290541AC0E58000CE76BF /* Statistics.hpp */,
+				EF2290551AC0E58000CE76BF /* Types.hpp */,
 			);
 			name = Sources;
+			sourceTree = "<group>";
+		};
+		EF2290641AC0E5A500CE76BF /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */,
+			);
+			name = Framework;
 			sourceTree = "<group>";
 		};
 		EFFC9F061AB8F62C00928CB5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				EF2290641AC0E5A500CE76BF /* Framework */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
-		};
-		EFFC9F171AB93F0800928CB5 /* Data */ = {
-			isa = PBXGroup;
-			children = (
-				EFFC9F181AB93F1400928CB5 /* RNA */,
-			);
-			name = Data;
-			sourceTree = "<group>";
-		};
-		EFFC9F181AB93F1400928CB5 /* RNA */ = {
-			isa = PBXGroup;
-			children = (
-				EF6BF7011ABA8A0F0025AB9B /* RNAstandards.gtf */,
-				EFFC9F191AB93F2100928CB5 /* Standard_A.csv */,
-			);
-			name = RNA;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,25 +252,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F6E0C8F1AB6586A00C9E3E0 /* StandardFactoryTest.cpp in Sources */,
+				EF22905E1AC0E58000CE76BF /* ParserFA.cpp in Sources */,
+				EF2290621AC0E58000CE76BF /* Standard.cpp in Sources */,
+				EF22905C1AC0E58000CE76BF /* ParserCSV.cpp in Sources */,
+				EF2290591AC0E58000CE76BF /* BuilderGTF.cpp in Sources */,
+				EF2290561AC0E58000CE76BF /* AlignerAnalyst.cpp in Sources */,
+				EF22905B1AC0E58000CE76BF /* ParserBED.cpp in Sources */,
+				EF2290611AC0E58000CE76BF /* RNAAnalyst.cpp in Sources */,
 				7F6E0C8D1AB6585500C9E3E0 /* AssemblyAnalystTest.cpp in Sources */,
-				EFFC9F161AB9386D00928CB5 /* Standard.cpp in Sources */,
 				7F6E0C8C1AB6584E00C9E3E0 /* AlignerAnalystTest.cpp in Sources */,
-				7FC5571A1AB473C00085C090 /* AlignerAnalyst.cpp in Sources */,
+				EF2290581AC0E58000CE76BF /* AssemblyAnalyst.cpp in Sources */,
+				EF2290571AC0E58000CE76BF /* Anaquin.cpp in Sources */,
+				EF2290601AC0E58000CE76BF /* ParserSAM.cpp in Sources */,
 				7F8226701AB7A5B400BDCFC7 /* ParserGTFTest.cpp in Sources */,
 				EFFC9F0E1AB9255100928CB5 /* ExpressionAnalystTest.cpp in Sources */,
-				EFFC9F111AB92CDC00928CB5 /* ParserCTracking.cpp in Sources */,
-				7FC5571B1AB473C00085C090 /* Anaquin.cpp in Sources */,
-				7FC5571D1AB473C00085C090 /* ExpressionAnalyst.cpp in Sources */,
-				EFFC9F0C1AB8F96800928CB5 /* ParserCSV.cpp in Sources */,
-				7FC5571E1AB473C00085C090 /* ParserFA.cpp in Sources */,
-				7FC5571F1AB473C00085C090 /* ParserGTF.cpp in Sources */,
-				7F6E0C7E1AB6526300C9E3E0 /* StandardFactory.cpp in Sources */,
-				7FC557201AB473C00085C090 /* ParserSAM.cpp in Sources */,
-				7F82266E1AB7A1C100BDCFC7 /* ParserBED.cpp in Sources */,
+				EF22905D1AC0E58000CE76BF /* ParserCTracking.cpp in Sources */,
+				EF2290631AC0E58000CE76BF /* StandardFactory.cpp in Sources */,
 				7F5CFB951AB7D72200B0E53F /* ParserBEDTest.cpp in Sources */,
+				EF22905F1AC0E58000CE76BF /* ParserGTF.cpp in Sources */,
+				EF22905A1AC0E58000CE76BF /* ExpressionAnalyst.cpp in Sources */,
 				EFFC9F131AB9346400928CB5 /* ParserCTrackingTest.cpp in Sources */,
-				7FC5571C1AB473C00085C090 /* AssemblyAnalyst.cpp in Sources */,
-				7F5CFB9E1AB82CDC00B0E53F /* BuilderGTF.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
