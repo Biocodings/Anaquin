@@ -11,6 +11,8 @@
 
 int main(int argc, char ** argv)
 {
+	return 0;
+/*
     namespace po = boost::program_options;
     po::options_description desc("Allowed options");
 
@@ -51,4 +53,5 @@ int main(int argc, char ** argv)
     }
 
     return 0;
+*/
 }
