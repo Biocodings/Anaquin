@@ -26,7 +26,6 @@
 		EF2290601AC0E58000CE76BF /* ParserSAM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF22904A1AC0E58000CE76BF /* ParserSAM.cpp */; };
 		EF2290621AC0E58000CE76BF /* Standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290501AC0E58000CE76BF /* Standard.cpp */; };
 		EF2290631AC0E58000CE76BF /* StandardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290521AC0E58000CE76BF /* StandardFactory.cpp */; };
-		EF2290661AC0ECE600CE76BF /* libboost_program_options.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF2290651AC0ECE600CE76BF /* libboost_program_options.a */; };
 		EF2290671AC0EE0500CE76BF /* Anaquin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7F7C70521AB4726E00C6EE36 /* Anaquin */; };
 		EFFC9F0E1AB9255100928CB5 /* ExpressionAnalystTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F0D1AB9255100928CB5 /* ExpressionAnalystTest.cpp */; };
 		EFFC9F131AB9346400928CB5 /* ParserCTrackingTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F121AB9346400928CB5 /* ParserCTrackingTest.cpp */; };
@@ -87,7 +86,6 @@
 		EF2290531AC0E58000CE76BF /* StandardFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StandardFactory.hpp; path = ../src/StandardFactory.hpp; sourceTree = "<group>"; };
 		EF2290541AC0E58000CE76BF /* Statistics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Statistics.hpp; path = ../src/Statistics.hpp; sourceTree = "<group>"; };
 		EF2290551AC0E58000CE76BF /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Types.hpp; path = ../src/Types.hpp; sourceTree = "<group>"; };
-		EF2290651AC0ECE600CE76BF /* libboost_program_options.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_program_options.a; path = /usr/local/Cellar/boost155/1.55.0/lib/libboost_program_options.a; sourceTree = "<absolute>"; };
 		EFFC9F0D1AB9255100928CB5 /* ExpressionAnalystTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionAnalystTest.cpp; sourceTree = "<group>"; };
 		EFFC9F121AB9346400928CB5 /* ParserCTrackingTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserCTrackingTest.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,7 +95,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF2290661AC0ECE600CE76BF /* libboost_program_options.a in Frameworks */,
 				7F6E0C8B1AB6554500C9E3E0 /* gtest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -182,7 +179,6 @@
 		EF2290641AC0E5A500CE76BF /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-				EF2290651AC0ECE600CE76BF /* libboost_program_options.a */,
 				7F6E0C8A1AB6554500C9E3E0 /* gtest.framework */,
 			);
 			name = Framework;
@@ -375,12 +371,12 @@
 					/usr/local/Cellar/boost155/1.55.0/include,
 					/Users/tedwong/Sources/QQ/Headers,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
+					"/Users/tedwong/Sources/QA/libs/tclap-1.2.1/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
 					"$(PROJECT_DIR)",
-					/usr/local/Cellar/boost155/1.55.0/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -404,12 +400,12 @@
 					/usr/local/Cellar/boost155/1.55.0/include,
 					/Users/tedwong/Sources/QQ/Headers,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
+					"/Users/tedwong/Sources/QA/libs/tclap-1.2.1/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
 					"$(PROJECT_DIR)",
-					/usr/local/Cellar/boost155/1.55.0/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
