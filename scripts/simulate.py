@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import sys
 import subprocess
 
 def d1_path():
@@ -15,11 +16,23 @@ def d1_read_path():
 def d1_rna_mix_a_path():
     return '../data/RNA/Standard_A.csv'
 
+def d_sequins():
+    return '../data/DNA/DNA.tab.fa'
+
+def r_sequins():
+    return '../data/RNA/RNA.tab.fa'
+
+def d_standards():
+    return '../data/DNA/DNA_Standards_Analysis.txt'
+
+def r_standards():
+    return '../data/RNA/RNA_Standards_Analysis.txt'
+
 # Split a file of sequin into individual sequins
-def split_sequins():
+def split_sequins(file):
     os.system('mkdir -p ' + d1_seq_path())
 
-    with open('../data/RNA/RNAsequins.fa') as f:
+    with open(file) as f:
         while True:
             l1 = f.readline()
             l2 = f.readline()
@@ -48,35 +61,30 @@ def csv_to_stand(ts):
 def read_standards(file):
     ps = {}
     with open(file) as f:
+        l = f.readline()
         while True:
-            l1 = f.readline()
-            l2 = f.readline()
-            
-            if (not l1 or not l2):
+            l = f.readline()
+            if (not l):
                 break
             
-            t1 = csv_to_stand(l1.split(','))
-            t2 = csv_to_stand(l2.split(','))
-            
-            ps[t1['ts']] = t1
-            ps[t2['ts']] = t2
+            tokens = l.split('\t')
+            ps[tokens[1]] = { 'id': tokens[1],
+                              'con_a': float(tokens[3]),
+                              'con_b': float(tokens[4]) }
 
     return ps
 
 # Generate simulated reads for each sequin
 def simulate_reads(file):
     os.system('mkdir -p ' + d1_read_path())
-
     ps = read_standards(file)
-    
+
     for f in os.listdir(d1_seq_path()):
         # Name of the transcript
         ts = f.split('.')[0]
         
-        print ts + ' found'
-
         if ts in ps:
-            amount = ps[ts]['amount']
+            amount = ps[ts]['con_a']
             
             # Just to make sure ...
             n = amount + 10000
@@ -95,6 +103,22 @@ def simulate_reads(file):
 
             os.system(cmd)
 
+    print('Merging the individual simulations...')
+    os.system('cat ' + d1_seq_path() + '*.fq > simulated.fq')
+
 if __name__ == '__main__':
-    split_sequins()
-    simulate_reads(d1_rna_mix_a_path())
+    if (len(sys.argv) != 2):
+        print 'Usage: python simulate.py RNA|DNA'
+    elif (sys.argv[1] == 'DNA'):
+        split_sequins(d_sequins())
+        simulate_reads(d_standards())
+    elif (sys.argv[1] == 'RNA'):
+        split_sequins(r_sequins())
+        simulate_reads(r_standards())
+    else:
+        print 'Usage: python simulate.py RNA|DNA'
+
+
+
+
+
