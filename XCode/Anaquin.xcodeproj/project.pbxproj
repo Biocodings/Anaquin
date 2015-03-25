@@ -362,7 +362,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
-					UNIT_TESTING,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
