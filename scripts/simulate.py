@@ -104,7 +104,7 @@ def simulate_reads(file):
             os.system(cmd)
 
     print('Merging the individual simulations...')
-    os.system('cat ' + d1_seq_path() + '*.fq > ' + d1_seq_path() + 'simulated.fq')
+    os.system('cat ' + d1_seq_path() + '*.fa > ' + d1_seq_path() + 'simulated.fq')
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
