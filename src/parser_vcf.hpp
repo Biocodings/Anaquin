@@ -40,7 +40,7 @@ typedef std::function<void (const VCFVariant &)> VCFVariantF;
 
 struct ParserVCF
 {
-    static void parse(const std::string &file, VCFHeaderF &, VCFVariantF &);
+    static void parse(const std::string &file, std::function<void (const VCFHeader &)>, std::function<void (const VCFVariant &)>);
 };
 
 #endif

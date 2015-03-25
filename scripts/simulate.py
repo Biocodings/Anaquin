@@ -104,7 +104,7 @@ def simulate_reads(file):
             os.system(cmd)
 
     print('Merging the individual simulations...')
-    os.system('cat ' + d1_seq_path() + '*.fa > ' + d1_seq_path() + 'simulated.fq')
+    os.system('cat ' + d1_seq_path() + '*.fa > ' + d1_read_path() + 'simulated.fq')
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
@@ -118,6 +118,19 @@ if __name__ == '__main__':
     else:
         print 'Usage: python simulate.py RNA|DNA'
 
+    # Reads have been simulated and written to simulated.fq.
+    #
+    # Build an index for bowtie:
+    #    --> bowtie2-build -f ../RNA/ChrT.5.10.fa D1
+    #
+    # Example workflow for RNA:
+    #
+    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned D1 seqs/simulated.fq
+    #
+    # Example workflow for DNA:
+    #
+    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned D1 seqs/simulated.fq
+    #
 
 
 
