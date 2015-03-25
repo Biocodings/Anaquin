@@ -1,11 +1,14 @@
-#ifndef AS_TYPES_HPP
-#define AS_TYPES_HPP
+#ifndef GI_TYPES_HPP
+#define GI_TYPES_HPP
 
 #include <string>
 
 typedef std::string GeneID;
 typedef std::string ChromoID;
+typedef std::string VariantID;
 typedef std::string FeatureName;
+
+typedef std::string Sequence;
 
 typedef long long Reads;
 

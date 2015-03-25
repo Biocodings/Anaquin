@@ -7,7 +7,7 @@
 #include <vector>
 #include "Locus.hpp"
 #include "Feature.hpp"
-#include "Sequence.hpp"
+//#include "Sequence.hpp"
 #include "ConfusionMatrix.hpp"
 
 enum Group

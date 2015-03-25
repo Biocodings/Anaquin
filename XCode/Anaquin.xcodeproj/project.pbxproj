@@ -27,6 +27,7 @@
 		EF2290621AC0E58000CE76BF /* Standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290501AC0E58000CE76BF /* Standard.cpp */; };
 		EF2290631AC0E58000CE76BF /* StandardFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290521AC0E58000CE76BF /* StandardFactory.cpp */; };
 		EF2290671AC0EE0500CE76BF /* Anaquin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7F7C70521AB4726E00C6EE36 /* Anaquin */; };
+		EFB2BFD71AC27E1E0017AA05 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB2BFD51AC27E1E0017AA05 /* parser_vcf.cpp */; };
 		EFFC9F0E1AB9255100928CB5 /* ExpressionAnalystTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F0D1AB9255100928CB5 /* ExpressionAnalystTest.cpp */; };
 		EFFC9F131AB9346400928CB5 /* ParserCTrackingTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC9F121AB9346400928CB5 /* ParserCTrackingTest.cpp */; };
 /* End PBXBuildFile section */
@@ -78,7 +79,6 @@
 		EF2290491AC0E58000CE76BF /* ParserGTF.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserGTF.hpp; path = ../src/ParserGTF.hpp; sourceTree = "<group>"; };
 		EF22904A1AC0E58000CE76BF /* ParserSAM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParserSAM.cpp; path = ../src/ParserSAM.cpp; sourceTree = "<group>"; };
 		EF22904B1AC0E58000CE76BF /* ParserSAM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ParserSAM.hpp; path = ../src/ParserSAM.hpp; sourceTree = "<group>"; };
-		EF22904E1AC0E58000CE76BF /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequence.hpp; path = ../src/Sequence.hpp; sourceTree = "<group>"; };
 		EF22904F1AC0E58000CE76BF /* Sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Sequins.hpp; path = ../src/Sequins.hpp; sourceTree = "<group>"; };
 		EF2290501AC0E58000CE76BF /* Standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Standard.cpp; path = ../src/Standard.cpp; sourceTree = "<group>"; };
 		EF2290511AC0E58000CE76BF /* Standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Standard.hpp; path = ../src/Standard.hpp; sourceTree = "<group>"; };
@@ -86,6 +86,8 @@
 		EF2290531AC0E58000CE76BF /* StandardFactory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = StandardFactory.hpp; path = ../src/StandardFactory.hpp; sourceTree = "<group>"; };
 		EF2290541AC0E58000CE76BF /* Statistics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Statistics.hpp; path = ../src/Statistics.hpp; sourceTree = "<group>"; };
 		EF2290551AC0E58000CE76BF /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Types.hpp; path = ../src/Types.hpp; sourceTree = "<group>"; };
+		EFB2BFD51AC27E1E0017AA05 /* parser_vcf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_vcf.cpp; path = ../src/parser_vcf.cpp; sourceTree = "<group>"; };
+		EFB2BFD61AC27E1E0017AA05 /* parser_vcf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_vcf.hpp; path = ../src/parser_vcf.hpp; sourceTree = "<group>"; };
 		EFFC9F0D1AB9255100928CB5 /* ExpressionAnalystTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExpressionAnalystTest.cpp; sourceTree = "<group>"; };
 		EFFC9F121AB9346400928CB5 /* ParserCTrackingTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserCTrackingTest.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -141,7 +143,6 @@
 				EF2290321AC0E58000CE76BF /* AlignerAnalyst.cpp */,
 				EF2290331AC0E58000CE76BF /* AlignerAnalyst.hpp */,
 				EF2290341AC0E58000CE76BF /* Alignment.hpp */,
-				EF2290351AC0E58000CE76BF /* main.cpp */,
 				EF2290361AC0E58000CE76BF /* AssemblyAnalyst.cpp */,
 				EF2290371AC0E58000CE76BF /* AssemblyAnalyst.hpp */,
 				EF2290381AC0E58000CE76BF /* Biology.hpp */,
@@ -152,6 +153,9 @@
 				EF22903D1AC0E58000CE76BF /* ExpressionAnalyst.hpp */,
 				EF22903E1AC0E58000CE76BF /* Feature.hpp */,
 				EF22903F1AC0E58000CE76BF /* Locus.hpp */,
+				EF2290351AC0E58000CE76BF /* main.cpp */,
+				EFB2BFD51AC27E1E0017AA05 /* parser_vcf.cpp */,
+				EFB2BFD61AC27E1E0017AA05 /* parser_vcf.hpp */,
 				EF2290401AC0E58000CE76BF /* ParserBED.cpp */,
 				EF2290411AC0E58000CE76BF /* ParserBED.hpp */,
 				EF2290421AC0E58000CE76BF /* ParserCSV.cpp */,
@@ -164,7 +168,6 @@
 				EF2290491AC0E58000CE76BF /* ParserGTF.hpp */,
 				EF22904A1AC0E58000CE76BF /* ParserSAM.cpp */,
 				EF22904B1AC0E58000CE76BF /* ParserSAM.hpp */,
-				EF22904E1AC0E58000CE76BF /* Sequence.hpp */,
 				EF22904F1AC0E58000CE76BF /* Sequins.hpp */,
 				EF2290501AC0E58000CE76BF /* Standard.cpp */,
 				EF2290511AC0E58000CE76BF /* Standard.hpp */,
@@ -262,6 +265,7 @@
 				EF2290601AC0E58000CE76BF /* ParserSAM.cpp in Sources */,
 				7F8226701AB7A5B400BDCFC7 /* ParserGTFTest.cpp in Sources */,
 				EFFC9F0E1AB9255100928CB5 /* ExpressionAnalystTest.cpp in Sources */,
+				EFB2BFD71AC27E1E0017AA05 /* parser_vcf.cpp in Sources */,
 				EF22905D1AC0E58000CE76BF /* ParserCTracking.cpp in Sources */,
 				EF2290631AC0E58000CE76BF /* StandardFactory.cpp in Sources */,
 				7F5CFB951AB7D72200B0E53F /* ParserBEDTest.cpp in Sources */,

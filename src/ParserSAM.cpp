@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "ParserSAM.hpp"
 #include <boost/algorithm/string.hpp>
-
 #include <boost/algorithm/string/regex.hpp>
 
 bool ParserSAM::parse(const std::string &file, std::function<bool (const Alignment &)> x)

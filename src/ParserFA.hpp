@@ -1,13 +1,18 @@
-#ifndef AS_READER_FA_HPP
-#define AS_READER_FA_HPP
+#ifndef GI_READER_FA_HPP
+#define GI_READER_FA_HPP
 
-#include "Types.hpp"
 #include <functional>
-#include "Sequence.hpp"
+#include "types.hpp"
+
+struct FASequence
+{
+    std::string id;
+    Sequence value;
+};
 
 struct ParserFA
 {
-	static bool parse(const std::string &file, std::function<void(const Sequence &)> x);
+	static void parse(const std::string &file, std::function<void (const FASequence &)>);
 };
 
 #endif
