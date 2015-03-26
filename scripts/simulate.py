@@ -90,15 +90,15 @@ def simulate_reads(file, seq_path, read_path):
             if (math.fabs(ratio - ps[ts]['logr']) > 0.5):
                 raise Exception('Inconsistence mixture ratio: ' + ps[ts]['id'])
 
-            scale = 350
+            scale = 500
 				
             # Multiply the concentration by a constant
-            na = (scale * na) + 350
+            na = (scale * na) + 500
             
             print '------------------ ' + ts + ' ------------------'
             print 'Generating: ' + str(na)
             
-            # Command: wgsim -d 400 -N 10000 -1 101 -2 101 ${X} ${X}.R1.fq ${X}.R2.fq
+            # Command: wgsim -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fq ${X}.R2.fq
             
             i  = seq_path  + ts + '.fa'
             o1 = read_path + ts + '.R1.fq'
@@ -111,7 +111,8 @@ def simulate_reads(file, seq_path, read_path):
             os.system(cmd)
 
     print('Merging the individual simulations...')
-    os.system('cat ' + seq_path + '*.fa > ' + read_path + 'simulated.fq')
+    os.system('cat ' + read_path + '*R1.fq > ' + read_path + 'simulated_1.fq')
+    os.system('cat ' + read_path + '*R2.fq > ' + read_path + 'simulated_2.fq')
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
