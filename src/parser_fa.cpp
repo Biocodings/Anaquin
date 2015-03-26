@@ -1,7 +1,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include "ParserFA.hpp"
+#include "parser_fa.hpp"
 #include <boost/algorithm/string.hpp>
 
 void ParserFA::parse(const std::string &file, std::function<void (const FASequence &)> f)

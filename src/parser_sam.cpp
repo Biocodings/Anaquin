@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <assert.h>
-#include "ParserSAM.hpp"
+#include "parser_sam.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/regex.hpp>
 

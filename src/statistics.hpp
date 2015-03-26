@@ -1,7 +1,7 @@
-#ifndef AS_STATISTICS_HPP
-#define AS_STATISTICS_HPP
+#ifndef GI_STATISTICS_HPP
+#define GI_STATISTICS_HPP
 
-#include "ConfusionMatrix.hpp"
+#include "confusion_matrix.hpp"
 
 template <typename T, typename Iter> bool contains_(const Iter &iter, const T &t)
 {

@@ -1,7 +1,7 @@
 #include <vector>
 #include <fstream>
 #include <assert.h>
-#include "ParserGTF.hpp"
+#include "parser_gtf.hpp"
 #include <boost/algorithm/string.hpp>
 
 bool ParserGTF::parse(const std::string &file, std::function<void (const Feature &, ParserProgress &)> x)

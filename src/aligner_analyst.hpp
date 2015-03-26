@@ -1,8 +1,8 @@
-#ifndef AS_ALIGNER_ANALYST_HPP
-#define AS_ALIGNER_ANALYST_HPP
+#ifndef GI_ALIGNER_ANALYST_HPP
+#define GI_ALIGNER_ANALYST_HPP
 
-#include "Sequins.hpp"
-#include "ConfusionMatrix.hpp"
+#include "sequins.hpp"
+#include "confusion_matrix.hpp"
 
 struct AlignerStats
 {

@@ -1,10 +1,9 @@
 #include <limits>
 #include <iostream>
-#include "ParserGTF.hpp"
-#include "Statistics.hpp"
-#include "BuilderGTF.hpp"
-#include "AssemblyAnalyst.hpp"
-#include "StandardFactory.hpp"
+#include "parser_gtf.hpp"
+#include "statistics.hpp"
+#include "assembly_analyst.hpp"
+#include "standard_factory.hpp"
 
 AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads n)
 {

@@ -2,11 +2,11 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
-#include "ParserFA.hpp"
-#include "ParserBED.hpp"
-#include "ParserGTF.hpp"
-#include "ParserCSV.hpp"
-#include "StandardFactory.hpp"
+#include "parser_fa.hpp"
+#include "parser_bed.hpp"
+#include "parser_gtf.hpp"
+#include "parser_csv.hpp"
+#include "standard_factory.hpp"
 
 Standard StandardFactory::reference()
 {

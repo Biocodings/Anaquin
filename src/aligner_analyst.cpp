@@ -2,12 +2,12 @@
 #include <iostream>
 #include <assert.h>
 #include <limits>
-#include "Biology.hpp"
-#include "ParserBED.hpp"
-#include "ParserSAM.hpp"
-#include "Statistics.hpp"
-#include "AlignerAnalyst.hpp"
-#include "StandardFactory.hpp"
+#include "biology.hpp"
+#include "parser_bed.hpp"
+#include "parser_sam.hpp"
+#include "statistics.hpp"
+#include "aligner_analyst.hpp"
+#include "standard_factory.hpp"
 
 static bool matchGeneBoundary(const Standard &r, const Alignment &align)
 {

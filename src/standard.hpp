@@ -5,10 +5,9 @@
 #include <map>
 #include <list>
 #include <vector>
-#include "Locus.hpp"
-#include "Feature.hpp"
-//#include "Sequence.hpp"
-#include "ConfusionMatrix.hpp"
+#include "locus.hpp"
+#include "feature.hpp"
+#include "confusion_matrix.hpp"
 
 enum Group
 {
