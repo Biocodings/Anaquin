@@ -59,18 +59,10 @@ Standard StandardFactory::reference()
      * Create data-structure for mutation and variations
      */
     
-    ParserVCF::parse(VARIANT_FILE, [&](const VCFHeader &h)
-                     {
-                         // Empty Implementation
+    ParserVCF::parse(VARIANT_FILE, [&] (const VCFVariant &v)
+    {
                          
-                     }, [&] (const VCFVariant &v)
-                     {
-                         
-                         
-                         
-                         
-                         
-                     });
+    });
     
     /*
      * Construct the data-structure for genes

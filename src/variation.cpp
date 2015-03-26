@@ -6,6 +6,10 @@ VariationStats Variation::analyze(const std::string &file)
 {
     const auto r = StandardFactory::reference();
 
+    ParserVCF::parse("/Users/tedwong/Sources/QA/data/DNA/variant.ChrT51.vcf", [&](const VCFVariant &v)
+                     {
+                         
+                     });
 
     
     

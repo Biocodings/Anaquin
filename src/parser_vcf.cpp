@@ -27,7 +27,7 @@ static std::map<std::string, AlleleType> alleleParser =
     { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
 };
 
-void ParserVCF::parse(const std::string &file, VCFHeaderF fh, VCFVariantF fv)
+void ParserVCF::parse(const std::string &file, VCFVariantF fv)
 {
     std::string line;
     std::ifstream in(file);
