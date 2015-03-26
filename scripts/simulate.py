@@ -2,6 +2,7 @@
 
 import os
 import sys
+import math
 import subprocess
 
 def d1_path():
@@ -48,16 +49,6 @@ def split_sequins(file):
             w.write(l1)
             w.write(l2)
 
-def csv_to_stand(ts):
-    x = {
-        'gene': ts[2],
-        'ts': ts[3],
-        'amount': float(ts[5]),
-        'ratio': ts[4]
-    }
-
-    return x
-
 def read_standards(file):
     ps = {}
     with open(file) as f:
@@ -68,9 +59,12 @@ def read_standards(file):
                 break
             
             tokens = l.split('\t')
-            ps[tokens[1]] = { 'id': tokens[1],
+            ps[tokens[1]] = { 'id':    tokens[1],
+                              'group': tokens[2],
                               'con_a': float(tokens[3]),
-                              'con_b': float(tokens[4]) }
+                              'con_b': float(tokens[4]),
+                              'ratio': float(tokens[5]),
+                              'logr' : float(tokens[6]) }
 
     return ps
 
@@ -80,26 +74,30 @@ def simulate_reads(file):
     ps = read_standards(file)
 
     for f in os.listdir(d1_seq_path()):
-        # Name of the transcript
         ts = f.split('.')[0]
         
         if ts in ps:
-            amount = ps[ts]['con_a']
+            na = ps[ts]['con_a']
+            nb = ps[ts]['con_b']
+            ratio = math.log(na / nb, 2)
             
-            # Just to make sure ...
-            n = amount + 10000
+            if (math.fabs(ratio - ps[ts]['logr']) > 0.5):
+                raise Exception('Inconsistence mixture ratio: ' + ps[ts]['id'])
+
+            # Multiply the concentration by a constant
+            na = (1000 * na) + 1000
             
             print '------------------ ' + ts + ' ------------------'
-            print 'Generating: ' + str(n)
-
-            # Command: [wgsim -d 400 -N 10000 -1 101 -2 101 ${X} ${X}.R1.fq ${X}.R2.fq]
+            print 'Generating: ' + str(na)
+            
+            # Command: wgsim -d 400 -N 10000 -1 101 -2 101 ${X} ${X}.R1.fq ${X}.R2.fq
             
             i  = d1_seq_path()  + ts + '.fa'
             o1 = d1_read_path() + ts + '.R1.fq'
             o2 = d1_read_path() + ts + '.R2.fq'
 
             # Simulate reads from a given sequin
-            cmd = 'wgsim -d 400 -N ' + str(n) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+            cmd = 'wgsim -d 400 -N ' + str(na) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
             os.system(cmd)
 
@@ -131,7 +129,3 @@ if __name__ == '__main__':
     #
     #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned D1 seqs/simulated.fq
     #
-
-
-
-
