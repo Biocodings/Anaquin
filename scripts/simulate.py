@@ -5,17 +5,14 @@ import sys
 import math
 import subprocess
 
-def d1_path():
-    return '../data/d1/'
+def dna_path():
+    return '../data/dna_sim/'
 
-def d1_seq_path():
-    return d1_path() + 'seqs/'
+def dna_seq_path():
+    return dna_path() + 'seqs/'
 
-def d1_read_path():
-    return d1_path() + 'reads/'
-
-def d1_rna_mix_a_path():
-    return '../data/RNA/Standard_A.csv'
+def dna_read_path():
+    return dna_path() + 'reads/'
 
 def d_sequins():
     return '../data/DNA/DNA.tab.fa'
@@ -30,8 +27,8 @@ def r_standards():
     return '../data/RNA/RNA_Standards_Analysis.txt'
 
 # Split a file of sequin into individual sequins
-def split_sequins(file):
-    os.system('mkdir -p ' + d1_seq_path())
+def split_sequins(file, seq_path):
+    os.system('mkdir -p ' + seq_path)
 
     with open(file) as f:
         while True:
@@ -45,7 +42,7 @@ def split_sequins(file):
             file = file.replace("?","")
             file = file.replace("\n","")
             
-            w = open(d1_seq_path() + file + '.fa', 'w')
+            w = open(seq_path + file + '.fa', 'w')
             w.write(l1)
             w.write(l2)
 
@@ -69,11 +66,11 @@ def read_standards(file):
     return ps
 
 # Generate simulated reads for each sequin
-def simulate_reads(file):
-    os.system('mkdir -p ' + d1_read_path())
+def simulate_reads(file, seq_path, read_path):
+    os.system('mkdir -p ' + read_path)
     ps = read_standards(file)
 
-    for f in os.listdir(d1_seq_path()):
+    for f in os.listdir(seq_path):
         ts = f.split('.')[0]
         
         if ts in ps:
@@ -92,9 +89,9 @@ def simulate_reads(file):
             
             # Command: wgsim -d 400 -N 10000 -1 101 -2 101 ${X} ${X}.R1.fq ${X}.R2.fq
             
-            i  = d1_seq_path()  + ts + '.fa'
-            o1 = d1_read_path() + ts + '.R1.fq'
-            o2 = d1_read_path() + ts + '.R2.fq'
+            i  = seq_path  + ts + '.fa'
+            o1 = read_path + ts + '.R1.fq'
+            o2 = read_path + ts + '.R2.fq'
 
             # Simulate reads from a given sequin
             cmd = 'wgsim -d 400 -N ' + str(na) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
@@ -102,14 +99,14 @@ def simulate_reads(file):
             os.system(cmd)
 
     print('Merging the individual simulations...')
-    os.system('cat ' + d1_seq_path() + '*.fa > ' + d1_read_path() + 'simulated.fq')
+    os.system('cat ' + seq_path + '*.fa > ' + read_path + 'simulated.fq')
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print 'Usage: python simulate.py RNA|DNA'
     elif (sys.argv[1] == 'DNA'):
-        split_sequins(d_sequins())
-        simulate_reads(d_standards())
+        split_sequins(d_sequins(), dna_seq_path())
+        simulate_reads(d_standards(), dna_seq_path(), dna_read_path())
     elif (sys.argv[1] == 'RNA'):
         split_sequins(r_sequins())
         simulate_reads(r_standards())
@@ -119,7 +116,7 @@ if __name__ == '__main__':
     # Reads have been simulated and written to simulated.fq.
     #
     # Build an index for bowtie:
-    #    --> bowtie2-build -f ../RNA/ChrT.5.10.fa D1
+    #    --> bowtie2-build -f ../chromo/ChrT.5.10.fa D1
     #
     # Example workflow for RNA:
     #
