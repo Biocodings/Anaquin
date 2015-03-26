@@ -90,8 +90,10 @@ def simulate_reads(file, seq_path, read_path):
             if (math.fabs(ratio - ps[ts]['logr']) > 0.5):
                 raise Exception('Inconsistence mixture ratio: ' + ps[ts]['id'])
 
+			scale = 500
+				
             # Multiply the concentration by a constant
-            na = (1000 * na) + 1000
+            na = (scale * na) + 500
             
             print '------------------ ' + ts + ' ------------------'
             print 'Generating: ' + str(na)
