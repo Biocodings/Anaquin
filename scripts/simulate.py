@@ -103,7 +103,7 @@ def simulate_reads(file, seq_path, read_path):
             o2 = read_path + ts + '.R2.fq'
 
             # Simulate reads from a given sequin
-            cmd = 'wgsim -d 400 -N ' + str(na) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+            cmd = 'wgsim -d 400 -N ' + str(int(na)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
             os.system(cmd)
 
