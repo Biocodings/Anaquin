@@ -1,6 +1,6 @@
 #include <vector>
 #include "gtest/gtest.h"
-#include "StandardFactory.hpp"
+#include "standard_factory.hpp"
 
 TEST(TestID, StandardFactoryTest)
 {

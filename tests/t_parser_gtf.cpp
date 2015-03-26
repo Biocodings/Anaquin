@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "ParserGTF.hpp"
+#include "parser_gtf.hpp"
 
 TEST(Options, ParserGTFTest)
 {

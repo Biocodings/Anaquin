@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "ParserBED.hpp"
+#include "parser_bed.hpp"
 
 TEST(Options, ParserBEDTest)
 {
