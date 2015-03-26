@@ -1,11 +1,11 @@
 #include <limits>
 #include <iostream>
+#include "assembly.hpp"
 #include "parser_gtf.hpp"
 #include "statistics.hpp"
-#include "assembly_analyst.hpp"
 #include "standard_factory.hpp"
 
-AssemblyStats AssemblyAnalyst::analyze(const std::string &file, Sequins s, Reads n)
+AssemblyStats Assembly::analyze(const std::string &file, Sequins s, Reads n)
 {
     AssemblyStats stats;
     const auto r = StandardFactory::reference();

@@ -13,7 +13,7 @@ typedef std::string Sequence;
 typedef long long Reads;
 
 typedef float FPKM;
-typedef float Expression;
+typedef float Concentration;
 
 // Number of lines in a file (most likely a large file)
 typedef long long Lines;

@@ -1,5 +1,5 @@
-#ifndef GI_ALIGNER_ANALYST_HPP
-#define GI_ALIGNER_ANALYST_HPP
+#ifndef GI_ALIGNER_HPP
+#define GI_ALIGNER_HPP
 
 #include "sequins.hpp"
 #include "confusion_matrix.hpp"
@@ -26,7 +26,7 @@ struct AlignerStats
 	Percentage dilution;
 };
 
-struct AlignerAnalyst
+struct Aligner
 {
     // Analyze the aligner for the base-level
     static AlignerStats base(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());

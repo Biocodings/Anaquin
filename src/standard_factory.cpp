@@ -6,7 +6,10 @@
 #include "parser_bed.hpp"
 #include "parser_gtf.hpp"
 #include "parser_csv.hpp"
+#include "parser_vcf.hpp"
 #include "standard_factory.hpp"
+
+const std::string VARIANT_FILE = "/Users/tedwong/Sources/QA/Data/RNA/variant.ChrT51.vcf";
 
 Standard StandardFactory::reference()
 {
@@ -52,6 +55,23 @@ Standard StandardFactory::reference()
         r.iso2Gene[f.iID] = f.geneID;
     });
 
+    /*
+     * Create data-structure for mutation and variations
+     */
+    
+    ParserVCF::parse(VARIANT_FILE, [&](const VCFHeader &h)
+                     {
+                         // Empty Implementation
+                         
+                     }, [&] (const VCFVariant &v)
+                     {
+                         
+                         
+                         
+                         
+                         
+                     });
+    
     /*
      * Construct the data-structure for genes
      */

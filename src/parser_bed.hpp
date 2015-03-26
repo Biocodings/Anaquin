@@ -1,5 +1,5 @@
-#ifndef AS_PARSER_BED_HPP
-#define AS_PARSER_BED_HPP
+#ifndef GI_PARSER_BED_HPP
+#define GI_PARSER_BED_HPP
 
 #include <vector>
 #include "Locus.hpp"

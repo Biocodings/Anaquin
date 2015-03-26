@@ -2,11 +2,11 @@
 #include <iostream>
 #include <assert.h>
 #include <limits>
+#include "aligner.hpp"
 #include "biology.hpp"
 #include "parser_bed.hpp"
 #include "parser_sam.hpp"
 #include "statistics.hpp"
-#include "aligner_analyst.hpp"
 #include "standard_factory.hpp"
 
 static bool matchGeneBoundary(const Standard &r, const Alignment &align)
@@ -27,7 +27,7 @@ static bool matchChromoBoundary(const Standard &r, const Alignment &align)
     return r.l.contains(align.l);
 }
 
-AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n)
+AlignerStats Aligner::spliced(const std::string &file, Sequins s, Reads n)
 {
     const auto r = StandardFactory::reference();
 
@@ -127,7 +127,7 @@ AlignerStats AlignerAnalyst::spliced(const std::string &file, Sequins s, Reads n
     return stats;
 }
 
-AlignerStats AlignerAnalyst::base(const std::string &file, Sequins s, Reads n)
+AlignerStats Aligner::base(const std::string &file, Sequins s, Reads n)
 {
     AlignerStats stats;
     const auto r = StandardFactory::reference();

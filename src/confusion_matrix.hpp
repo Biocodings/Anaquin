@@ -1,8 +1,8 @@
-#ifndef AS_CONFUSION_MATRIX_HPP
-#define AS_CONFUSION_MATRIX_HPP
+#ifndef GI_CONFUSION_MATRIX_HPP
+#define GI_CONFUSION_MATRIX_HPP
 
 #include <math.h>
-#include "Types.hpp"
+#include "types.hpp"
 
 struct ConfusionMatrix
 {

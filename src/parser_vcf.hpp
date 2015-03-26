@@ -7,6 +7,14 @@
 
 enum VCFVariantInfo
 {
+    AC, // Allele frequency 
+};
+
+enum AlleleType
+{
+    Heterzygous,
+    HomozygousRef,
+    HomozygousAlt,
 };
 
 struct VCFVariant
@@ -25,9 +33,10 @@ struct VCFVariant
     
     // Reference base - alternate non-reference alleles called on at least one of the samples.
     std::set<Sequence> alts;
+
+    AlleleType type;
     
-    // Whether this variant has been filtered
-    bool filtered;
+    inline bool snp() const { return alts.size() == 1; }
 };
 
 struct VCFHeader

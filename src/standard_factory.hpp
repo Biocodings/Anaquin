@@ -1,7 +1,7 @@
-#ifndef AS_STANDARD_FACTORY_HPP
-#define AS_STANDARD_FACTORY_HPP
+#ifndef GI_STANDARD_FACTORY_HPP
+#define GI_STANDARD_FACTORY_HPP
 
-#include "Standard.hpp"
+#include "standard.hpp"
 
 struct StandardFactory
 {

@@ -1,8 +1,8 @@
-#ifndef AS_EXPRESSION_ANALYST_HPP
-#define AS_EXPRESSION_ANALYST_HPP
+#ifndef GI_EXPRESSION_HPP
+#define GI_EXPRESSION_HPP
 
-#include "Types.hpp"
-#include "Sequins.hpp"
+#include "types.hpp"
+#include "sequins.hpp"
 
 struct ExpressionStats
 {
@@ -22,7 +22,7 @@ enum ExpressionMode
     IsoformExpress,
 };
 
-struct ExpressionAnalyst
+struct Expression
 {
 	static ExpressionStats analyze(const std::string &file, ExpressionMode mode, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
 };

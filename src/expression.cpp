@@ -1,13 +1,13 @@
 #include <limits>
 #include <iostream>
+#include "expression.hpp"
 #include "standard_factory.hpp"
 #include "parser_ctracking.hpp"
-#include "expression_analyst.hpp"
 #include <Stats/Regression/LinearRegression.hpp>
 
 using namespace QQ;
 
-ExpressionStats ExpressionAnalyst::analyze(const std::string &file, ExpressionMode mode, Sequins s, Reads n)
+ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode, Sequins s, Reads n)
 {
     const auto r = StandardFactory::reference();
 

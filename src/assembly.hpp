@@ -11,7 +11,7 @@ struct AssemblyStats
 	ConfusionMatrix intron;
 };
 
-struct AssemblyAnalyst
+struct Assembly
 {
 	static AssemblyStats analyze(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
 };

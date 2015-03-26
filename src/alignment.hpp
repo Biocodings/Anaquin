@@ -1,7 +1,7 @@
-#ifndef AS_ALIGNMENT_HPP
-#define AS_ALIGNMENT_HPP
+#ifndef GI_ALIGNMENT_HPP
+#define GI_ALIGNMENT_HPP
 
-#include "Types.hpp"
+#include "types.hpp"
 #include "Locus.hpp"
 
 /*

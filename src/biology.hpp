@@ -1,5 +1,5 @@
-#ifndef AS_BIOLOGY_HPP
-#define AS_BIOLOGY_HPP
+#ifndef GI_BIOLOGY_HPP
+#define GI_BIOLOGY_HPP
 
 template <typename T1, typename T2> bool contains__(const T1 &t1, const T2 &t2)
 {

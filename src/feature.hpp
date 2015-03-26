@@ -1,5 +1,5 @@
-#ifndef AS_FEATURE_HPP
-#define AS_FEATURE_HPP
+#ifndef GI_FEATURE_HPP
+#define GI_FEATURE_HPP
 
 #include <map>
 #include "Locus.hpp"

@@ -1,5 +1,5 @@
-#ifndef AS_STANDARD_HPP
-#define AS_STANDARD_HPP
+#ifndef GI_STANDARD_HPP
+#define GI_STANDARD_HPP
 
 #include <set>
 #include <map>
@@ -36,7 +36,7 @@ struct IMixture
     Fold fold;
     
     // Level of expression added to the sample for this mixture
-    Expression exp;
+    Concentration exp;
 };
 
 struct GMixture
@@ -51,7 +51,7 @@ struct GMixture
     IMixture v;
     
     // Total level of expression
-    Expression exp;
+    Concentration exp;
 };
 
 struct Standard

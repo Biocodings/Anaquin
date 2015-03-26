@@ -1,5 +1,5 @@
-#ifndef AS_PARSER_SAM_HPP
-#define AS_PARSER_SAM_HPP
+#ifndef GI_PARSER_SAM_HPP
+#define GI_PARSER_SAM_HPP
 
 #include <functional>
 #include "Alignment.hpp"

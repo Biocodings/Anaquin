@@ -1,9 +1,9 @@
 #include <limits>
 #include <iostream>
-#include "gtest/gtest.h"
-#include "AlignerAnalyst.hpp"
-#include "AssemblyAnalyst.hpp"
 #include <tclap/CmdLine.h>
+#include "gtest/gtest.h"
+#include "aligner.hpp"
+#include "assembly.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -26,7 +26,7 @@ int main(int argc, char ** argv)
         }
         else if (!a.getValue().empty())
         {
-            AlignerAnalyst::base(a.getValue(), Sequins(), 1000);
+            Aligner::base(a.getValue(), Sequins(), 1000);
         }
     }
     catch (TCLAP::ArgException &e)

@@ -1,8 +1,8 @@
-#ifndef AS_LOCUS_HPP
-#define AS_LOCUS_HPP
+#ifndef GI_LOCUS_HPP
+#define GI_LOCUS_HPP
 
 #include <assert.h>
-#include "Types.hpp"
+#include "types.hpp"
 
 struct Locus
 {
