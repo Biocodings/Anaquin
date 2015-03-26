@@ -105,6 +105,7 @@ def simulate_reads(file, seq_path, read_path):
             # Simulate reads from a given sequin
             cmd = 'wgsim -d 400 -N ' + str(int(na)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
+            print cmd
             os.system(cmd)
 
     print('Merging the individual simulations...')
