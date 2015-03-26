@@ -14,11 +14,20 @@ def dna_seq_path():
 def dna_read_path():
     return dna_path() + 'reads/'
 
-def d_sequins():
-    return '../data/DNA/DNA.tab.fa'
+def rna_path():
+    return '../data/rna_sim/'
+
+def rna_seq_path():
+    return rna_path() + 'seqs/'
+
+def rna_read_path():
+    return rna_path() + 'reads/'
 
 def r_sequins():
     return '../data/RNA/RNA.tab.fa'
+
+def d_sequins():
+    return '../data/DNA/DNA.tab.fa'
 
 def d_standards():
     return '../data/DNA/DNA_Standards_Analysis.txt'
@@ -108,21 +117,21 @@ if __name__ == '__main__':
         split_sequins(d_sequins(), dna_seq_path())
         simulate_reads(d_standards(), dna_seq_path(), dna_read_path())
     elif (sys.argv[1] == 'RNA'):
-        split_sequins(r_sequins())
-        simulate_reads(r_standards())
+        split_sequins(r_sequins(), rna_seq_path())
+        simulate_reads(r_standards(), rna_seq_path(), rna_read_path())
     else:
         print 'Usage: python simulate.py RNA|DNA'
 
     # Reads have been simulated and written to simulated.fq.
     #
     # Build an index for bowtie:
-    #    --> bowtie2-build -f ../chromo/ChrT.5.10.fa D1
+    #    --> bowtie2-build -f ../chromo/ChrT.5.10.fa index
     #
     # Example workflow for RNA:
     #
-    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned D1 seqs/simulated.fq
+    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned index seqs/simulated.fq
     #
     # Example workflow for DNA:
     #
-    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned D1 seqs/simulated.fq
+    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned index seqs/simulated.fq
     #
