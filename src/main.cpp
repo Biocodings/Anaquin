@@ -1,9 +1,12 @@
 #include <limits>
 #include <iostream>
 #include <tclap/CmdLine.h>
-#include "gtest/gtest.h"
 #include "aligner.hpp"
 #include "assembly.hpp"
+
+#ifdef UNIT_TESTING
+#include "gtest/gtest.h"
+#endif
 
 int main(int argc, char ** argv)
 {
@@ -21,8 +24,10 @@ int main(int argc, char ** argv)
 
         if (t.getValue())
         {
+			#ifdef UNIT_TESTING
             ::testing::InitGoogleTest(&argc, argv);
             return RUN_ALL_TESTS();
+			#endif
         }
         else if (!a.getValue().empty())
         {
