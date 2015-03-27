@@ -120,7 +120,7 @@ def simulate_reads(file, seq_path, read_path, min, max):
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print 'Usage: python simulate.py RNA|DNA'
-    else (sys.argv[1] == 'DNA_T'):
+    elif (sys.argv[1] == 'DNA_T'):
         split_sequins(d_sequins(), dna_seq_path())
         simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 50, 50)
     elif (sys.argv[1] == 'DNA'):
