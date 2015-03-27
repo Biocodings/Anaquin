@@ -75,7 +75,7 @@ def read_standards(file):
     return ps
 
 # Generate simulated reads for each sequin
-def simulate_reads(file, seq_path, read_path, min, max):
+def simulate_reads(file, seq_path, read_path, min_, max_):
     os.system('mkdir -p ' + read_path)
     ps = read_standards(file)
 
@@ -95,8 +95,8 @@ def simulate_reads(file, seq_path, read_path, min, max):
             # Multiply the concentration by a constant (applies to all sequins)
             na = (scale * na) + 100
 
-            na = math.max(min, na)
-            na = math.min(max, na)
+            na = max(min_, na)
+            na = min(max_, na)
             
             print '------------------ ' + ts + ' ------------------'
             print 'Generating: ' + str(na)
@@ -119,7 +119,7 @@ def simulate_reads(file, seq_path, read_path, min, max):
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
-        print 'Usage: python simulate.py RNA|DNA'
+        print 'Usage: python simulate.py RNA|DNA|DNA_T'
     elif (sys.argv[1] == 'DNA_T'):
         split_sequins(d_sequins(), dna_seq_path())
         simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 50, 50)
