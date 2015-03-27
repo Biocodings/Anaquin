@@ -6,16 +6,16 @@ import math
 import subprocess
 
 def dna_path():
-    return '../data/dna_sim/'
+    return '~/Projects/DNA_Simulate'
+
+def rna_path():
+    return '~/Projects/RNA_Simulate'
 
 def dna_seq_path():
     return dna_path() + 'seqs/'
 
 def dna_read_path():
     return dna_path() + 'reads/'
-
-def rna_path():
-    return '../data/rna_sim/'
 
 def rna_seq_path():
     return rna_path() + 'seqs/'
