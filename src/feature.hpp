@@ -2,7 +2,7 @@
 #define GI_FEATURE_HPP
 
 #include <map>
-#include "Locus.hpp"
+#include "locus.hpp"
 
 enum FeatureType
 {

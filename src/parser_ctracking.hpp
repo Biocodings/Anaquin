@@ -1,7 +1,7 @@
-#ifndef AS_PARSER_C_TRACKING_HPP
-#define AS_PARSER_C_TRACKING_HPP
+#ifndef GI_PARSER_C_TRACKING_HPP
+#define GI_PARSER_C_TRACKING_HPP
 
-#include "Types.hpp"
+#include "types.hpp"
 #include <functional>
 
 enum CTrackingStatus

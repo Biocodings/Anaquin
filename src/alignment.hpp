@@ -2,7 +2,7 @@
 #define GI_ALIGNMENT_HPP
 
 #include "types.hpp"
-#include "Locus.hpp"
+#include "locus.hpp"
 
 /*
  * This class represents a sequencing alignment.

@@ -1,7 +1,7 @@
 #ifndef GI_PARSER_GTF_HPP
 #define GI_PARSER_GTF_HPP
 
-#include "Feature.hpp"
+#include "feature.hpp"
 #include <functional>
 
 struct ParserProgress

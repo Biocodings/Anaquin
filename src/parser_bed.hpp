@@ -2,7 +2,7 @@
 #define GI_PARSER_BED_HPP
 
 #include <vector>
-#include "Locus.hpp"
+#include "locus.hpp"
 #include <functional>
 
 struct BedFeature

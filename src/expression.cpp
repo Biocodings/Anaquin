@@ -3,9 +3,9 @@
 #include "expression.hpp"
 #include "standard_factory.hpp"
 #include "parser_ctracking.hpp"
-#include <Stats/Regression/LinearRegression.hpp>
+//#include <Stats/Regression/LinearRegression.hpp>
 
-using namespace QQ;
+//using namespace QQ;
 
 ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode, Sequins s, Reads n)
 {
@@ -55,7 +55,7 @@ ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode
         }
     });
     
-    const auto lm = linearModel(y, x);
+    //const auto lm = linearModel(y, x);
 
     /*
      * In our analysis, the dependent variable is expression while the independent
@@ -66,15 +66,15 @@ ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode
     
     ExpressionStats stats;
     
-    stats.r2 = lm.ar2;
+    //stats.r2 = lm.ar2;
     
     // Dependency between the two variables
-    stats.r = cor(x, y);
+    //stats.r = cor(x, y);
     
     // Linear relationship between the two variables
-    stats.slope = lm.coeffs[1].value;
+    //stats.slope = lm.coeffs[1].value;
 
-    std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
     
     return stats;
 }

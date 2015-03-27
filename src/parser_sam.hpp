@@ -2,7 +2,7 @@
 #define GI_PARSER_SAM_HPP
 
 #include <functional>
-#include "Alignment.hpp"
+#include "alignment.hpp"
 
 struct ParserSAM
 {
