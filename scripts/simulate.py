@@ -122,7 +122,7 @@ if __name__ == '__main__':
         print 'Usage: python simulate.py RNA|DNA|DNA_T'
     elif (sys.argv[1] == 'DNA_T'):
         split_sequins(d_sequins(), dna_seq_path())
-        simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 2000, 2000)
+        simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 4000, 4000)
     elif (sys.argv[1] == 'DNA'):
         split_sequins(d_sequins(), dna_seq_path())
         simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 0, sys.maxint)
