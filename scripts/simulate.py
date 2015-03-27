@@ -6,10 +6,10 @@ import math
 import subprocess
 
 def dna_path():
-    return '~/Projects/DNA_Simulate'
+    return '~/Projects/DNA_Simulate/'
 
 def rna_path():
-    return '~/Projects/RNA_Simulate'
+    return '~/Projects/RNA_Simulate/'
 
 def dna_seq_path():
     return dna_path() + 'seqs/'
@@ -137,5 +137,4 @@ if __name__ == '__main__':
     #
     # Example workflow for DNA:
     #
-    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned index seqs/simulated.fq
     #
