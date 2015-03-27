@@ -101,8 +101,8 @@ def simulate_reads(file, seq_path, read_path):
             # Command: wgsim -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fq ${X}.R2.fq
             
             i  = seq_path  + ts + '.fa'
-            o1 = read_path + ts + '.R1.fq'
-            o2 = read_path + ts + '.R2.fq'
+            o1 = read_path + ts + '.R1.fastq'
+            o2 = read_path + ts + '.R2.fastq'
 
             # Simulate reads from a given sequin
             cmd = 'wgsim -d 400 -N ' + str(int(na)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
