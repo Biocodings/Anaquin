@@ -75,7 +75,7 @@ def read_standards(file):
     return ps
 
 # Generate simulated reads for each sequin
-def simulate_reads(file, seq_path, read_path):
+def simulate_reads(file, seq_path, read_path, min, max):
     os.system('mkdir -p ' + read_path)
     ps = read_standards(file)
 
@@ -90,15 +90,18 @@ def simulate_reads(file, seq_path, read_path):
             if (math.fabs(ratio - ps[ts]['logr']) > 0.5):
                 raise Exception('Inconsistence mixture ratio: ' + ps[ts]['id'])
 
-            scale = 500
-				
-            # Multiply the concentration by a constant
-            na = (scale * na) + 500
+            scale = 100
+
+            # Multiply the concentration by a constant (applies to all sequins)
+            na = (scale * na) + 100
+
+            na = math.max(min, na)
+            na = math.min(max, na)
             
             print '------------------ ' + ts + ' ------------------'
             print 'Generating: ' + str(na)
             
-            # Command: wgsim -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fq ${X}.R2.fq
+            # Command: wgsim -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq
             
             i  = seq_path  + ts + '.fa'
             o1 = read_path + ts + '.R1.fastq'
@@ -111,20 +114,23 @@ def simulate_reads(file, seq_path, read_path):
             os.system(cmd)
 
     print('Merging the individual simulations...')
-    os.system('cat ' + read_path + '*R1.fq > ' + read_path + 'simulated_1.fq')
-    os.system('cat ' + read_path + '*R2.fq > ' + read_path + 'simulated_2.fq')
+    os.system('cat ' + read_path + '*R1.fastq > ' + read_path + 'simulated_1.fastq')
+    os.system('cat ' + read_path + '*R2.fastq > ' + read_path + 'simulated_2.fastq')
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print 'Usage: python simulate.py RNA|DNA'
+    else (sys.argv[1] == 'DNA_T'):
+        split_sequins(d_sequins(), dna_seq_path())
+        simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 50, 50)
     elif (sys.argv[1] == 'DNA'):
         split_sequins(d_sequins(), dna_seq_path())
-        simulate_reads(d_standards(), dna_seq_path(), dna_read_path())
+        simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 0, sys.maxint)
     elif (sys.argv[1] == 'RNA'):
         split_sequins(r_sequins(), rna_seq_path())
-        simulate_reads(r_standards(), rna_seq_path(), rna_read_path())
+        simulate_reads(r_standards(), rna_seq_path(), rna_read_path(), 0, sys.maxint)
     else:
-        print 'Usage: python simulate.py RNA|DNA'
+        print 'Usage: python simulate.py RNA|DNA|DNA_T'
 
     # Reads have been simulated and written to simulated.fq.
     #
