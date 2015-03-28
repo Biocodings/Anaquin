@@ -1,4 +1,4 @@
-#!/bin.bash
+echo "Running the script..."
 
 rm -rf /home/tedwon/Projects/Temp
 
