@@ -11,32 +11,52 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AlignerAnalyst.cpp" />
-    <ClCompile Include="..\Anaquin.cpp" />
-    <ClCompile Include="..\AssemblyAnalyst.cpp" />
-    <ClCompile Include="..\ExpressionAnalyst.cpp" />
-    <ClCompile Include="..\ParserFA.cpp" />
-    <ClCompile Include="..\ParserGTF.cpp" />
-    <ClCompile Include="..\ParserSAM.cpp" />
-    <ClCompile Include="..\StandardFactory.cpp" />
-    <ClCompile Include="..\Tests\AlignerStatsTest.cpp" />
-    <ClCompile Include="..\Tests\AssemblyCompareTest.cpp" />
-    <ClCompile Include="..\Tests\StandardFactoryTest.cpp" />
+    <ClInclude Include="..\src\aligner.hpp" />
+    <ClInclude Include="..\src\alignment.hpp" />
+    <ClInclude Include="..\src\assembly.hpp" />
+    <ClInclude Include="..\src\biology.hpp" />
+    <ClInclude Include="..\src\confusion_matrix.hpp" />
+    <ClInclude Include="..\src\expression.hpp" />
+    <ClInclude Include="..\src\feature.hpp" />
+    <ClInclude Include="..\src\locus.hpp" />
+    <ClInclude Include="..\src\parser_bed.hpp" />
+    <ClInclude Include="..\src\parser_csv.hpp" />
+    <ClInclude Include="..\src\parser_ctracking.hpp" />
+    <ClInclude Include="..\src\parser_fa.hpp" />
+    <ClInclude Include="..\src\parser_gtf.hpp" />
+    <ClInclude Include="..\src\parser_sam.hpp" />
+    <ClInclude Include="..\src\parser_vcf.hpp" />
+    <ClInclude Include="..\src\sequins.hpp" />
+    <ClInclude Include="..\src\standard.hpp" />
+    <ClInclude Include="..\src\standard_factory.hpp" />
+    <ClInclude Include="..\src\statistics.hpp" />
+    <ClInclude Include="..\src\types.hpp" />
+    <ClInclude Include="..\src\variation.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\AlignerAnalyst.hpp" />
-    <ClInclude Include="..\Alignment.hpp" />
-    <ClInclude Include="..\AssemblyAnalyst.hpp" />
-    <ClInclude Include="..\ConfusionMatrix.hpp" />
-    <ClInclude Include="..\ExpressionAnalyst.hpp" />
-    <ClInclude Include="..\Feature.hpp" />
-    <ClInclude Include="..\ParserFA.hpp" />
-    <ClInclude Include="..\ParserGTF.hpp" />
-    <ClInclude Include="..\ParserSAM.hpp" />
-    <ClInclude Include="..\Sequence.hpp" />
-    <ClInclude Include="..\Sequins.hpp" />
-    <ClInclude Include="..\StandardFactory.hpp" />
-    <ClInclude Include="..\Types.hpp" />
+    <ClCompile Include="..\src\aligner.cpp" />
+    <ClCompile Include="..\src\assembly.cpp" />
+    <ClCompile Include="..\src\expression.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\parser_bed.cpp" />
+    <ClCompile Include="..\src\parser_csv.cpp" />
+    <ClCompile Include="..\src\parser_ctracking.cpp" />
+    <ClCompile Include="..\src\parser_fa.cpp" />
+    <ClCompile Include="..\src\parser_gtf.cpp" />
+    <ClCompile Include="..\src\parser_sam.cpp" />
+    <ClCompile Include="..\src\parser_vcf.cpp" />
+    <ClCompile Include="..\src\standard.cpp" />
+    <ClCompile Include="..\src\standard_factory.cpp" />
+    <ClCompile Include="..\src\variation.cpp" />
+    <ClCompile Include="..\tests\t_aligner.cpp" />
+    <ClCompile Include="..\tests\t_assembly.cpp" />
+    <ClCompile Include="..\tests\t_expression.cpp" />
+    <ClCompile Include="..\tests\t_parser_bed.cpp" />
+    <ClCompile Include="..\tests\t_parser_ctracking.cpp" />
+    <ClCompile Include="..\tests\t_parser_gtf.cpp" />
+    <ClCompile Include="..\tests\t_parser_vcf.cpp" />
+    <ClCompile Include="..\tests\t_standard_factory.cpp" />
+    <ClCompile Include="..\tests\t_variation.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3E059FA7-F2F5-41AE-BC41-5D5F5B8EC22D}</ProjectGuid>
@@ -72,7 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files\gtest-1.7.0\include;C:\Sources\QA;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\gtest-1.7.0\include;C:\Sources\QA\src;C:\Program Files\boost_1_55_0;C:\Sources\QA\libs\tclap-1.2.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
