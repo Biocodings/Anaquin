@@ -1,10 +1,10 @@
-#include "gtest/gtest.h"
+#include <catch.hpp>
 #include "assembly.hpp"
 
-TEST(Generated, AssemblyTest)
+TEST_CASE("Generated")
 {
     const auto r = Assembly::analyze("/Users/tedwong/Sources/ABCD/transcripts/transcripts.gtf");
 
-    ASSERT_EQ(355, r.exon.tp);
-    ASSERT_EQ(21, r.exon.fp);
+    REQUIRE(r.exon.tp == 355);
+    REQUIRE(r.exon.fp == 21);
 }

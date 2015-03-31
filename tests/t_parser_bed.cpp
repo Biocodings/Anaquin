@@ -1,7 +1,7 @@
-#include "gtest/gtest.h"
+#include <catch.hpp>
 #include "parser_bed.hpp"
 
-TEST(Options, ParserBEDTest)
+TEST_CASE("ParserBEDTest")
 {
     
     

@@ -1,7 +1,7 @@
-#include "gtest/gtest.h"
+#include <catch.hpp>
 #include "aligner.hpp"
 
-TEST(D1_Base_1000, AlignerTest)
+TEST_CASE("D1_Base_1000")
 {
     /*
      * Since the SAM file comes from a simulation of the reference chromosome, it's not surprising that
@@ -10,18 +10,18 @@ TEST(D1_Base_1000, AlignerTest)
     
     const auto stats = Aligner::base("/Users/tedwong/Sources/QA/tests/data/d1/accepted_hits.sam", Sequins(), 1000);
 
-    ASSERT_EQ(1, stats.m.sp());
-    ASSERT_TRUE(isnan(stats.m.sn()));
-    ASSERT_EQ(1000, stats.m.tp);
-    ASSERT_EQ(0, stats.m.fp);
-    ASSERT_EQ(0, stats.m.fn);
-    ASSERT_EQ(0, stats.m.tn);
-    ASSERT_EQ(1000, stats.nr);
-    ASSERT_EQ(1, stats.dilution);
-    ASSERT_EQ(0, stats.nq);
+    REQUIRE(1 == stats.m.sp());
+    REQUIRE(isnan(stats.m.sn()));
+    REQUIRE(1000 == stats.m.tp);
+    REQUIRE(0 == stats.m.fp);
+    REQUIRE(0 == stats.m.fn);
+    REQUIRE(0 == stats.m.tn);
+    REQUIRE(1000 == stats.nr);
+    REQUIRE(1 == stats.dilution);
+    REQUIRE(0 == stats.nq);
 }
 
-TEST(D1_Splice_1000, AlignerTest)
+TEST_CASE("D1_Splice_1000")
 {
     /*
      * Since the SAM file comes from a simulation of the reference chromosome, it's not surprising that
@@ -30,11 +30,11 @@ TEST(D1_Splice_1000, AlignerTest)
     
     const auto stats = Aligner::spliced("/Users/tedwong/Sources/QA/tests/data/d1/accepted_hits.sam", Sequins(), 1000);
     
-    ASSERT_EQ(1, stats.m.sp());
-    ASSERT_EQ(0, stats.m.sn());
+    REQUIRE(1 == stats.m.sp());
+    REQUIRE(0 == stats.m.sn());
 }
 
-TEST(D2_Base, AlignerTest)
+TEST_CASE("D2_Base")
 {
 	// The sample file was taken from Cufflink's source distribution. It's obviously independent to the standards.
 	const auto stats = Aligner::base("/Users/tedwong/Sources/QA/Tests/Data/CufflinksTest.sam");
@@ -44,13 +44,13 @@ TEST(D2_Base, AlignerTest)
      * power to detect anything.
 	 */
 
-    ASSERT_TRUE(isnan(stats.m.sp()));
-    ASSERT_EQ(1, stats.m.sn());
-    ASSERT_EQ(0, stats.m.tp);
-    ASSERT_EQ(0, stats.m.fp);
-    ASSERT_EQ(0, stats.m.fn);
-    ASSERT_EQ(3271, stats.m.tn);
-    ASSERT_EQ(0, stats.nr);
-    ASSERT_EQ(0, stats.dilution);
-    ASSERT_EQ(3307, stats.nq);
+    REQUIRE(isnan(stats.m.sp()));
+    REQUIRE(1 == stats.m.sn());
+    REQUIRE(0 == stats.m.tp);
+    REQUIRE(0 == stats.m.fp);
+    REQUIRE(0 == stats.m.fn);
+    REQUIRE(3271 == stats.m.tn);
+    REQUIRE(0 == stats.nr);
+    REQUIRE(0 == stats.dilution);
+    REQUIRE(3307 == stats.nq);
 }

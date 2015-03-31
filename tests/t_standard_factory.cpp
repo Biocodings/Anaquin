@@ -1,14 +1,14 @@
 #include <vector>
-#include "gtest/gtest.h"
+#include <catch.hpp>
 #include "standard_factory.hpp"
 
-TEST(TestID, StandardFactoryTest)
+TEST_CASE("TestID")
 {
     const auto r = StandardFactory::reference();
-	ASSERT_EQ("chrT", r.id);
+	REQUIRE("chrT" == r.id);
 }
 
-TEST(TestJunction, StandardFactoryTest)
+TEST_CASE("TestJunction")
 {
 /*
     const auto r  = StandardFactory::reference();
@@ -43,10 +43,10 @@ TEST(TestJunction, StandardFactoryTest)
 */
 }
 
-TEST(TestIsoforms, StandardFactoryTest)
+TEST_CASE("TestIsoforms")
 {
 	const auto r = StandardFactory::reference();
-	ASSERT_EQ(32, r.mixA.size());
+	REQUIRE(r.mixA.size() == 32);
 
     const auto ids = { "R_1_1_R",  "R_1_1_V",  "R_1_2_R",
                        "R_1_2_V",  "R_1_3_R",  "R_1_3_V",
@@ -74,6 +74,6 @@ TEST(TestIsoforms, StandardFactoryTest)
     
     for (auto id : ids)
     {
-        ASSERT_TRUE(r.isoA.count(id));
+        REQUIRE(r.isoA.count(id));
     }
 }
