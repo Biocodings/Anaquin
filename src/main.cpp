@@ -13,6 +13,8 @@ int main(int argc, char ** argv)
     typedef TCLAP::SwitchArg SArg;
     typedef TCLAP::ValueArg<std::string> VArg;
     
+	std::cout << "Spike!\n" << std::endl;
+
     try
     {
         TCLAP::CmdLine cmd("", ' ', "1.0");
