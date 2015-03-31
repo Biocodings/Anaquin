@@ -14,7 +14,7 @@
 		<string>https://github.com/student-t/Anaquin/trunk</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>XCode/Anaquin.xcodeproj</string>
+	<string>xcode/Anaquin.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>1754a112-b80e-1970-4a7e-ce57b7db7bff++505</key>
@@ -26,7 +26,7 @@
 		<string>https://github.com/student-t/Anaquin</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/student-t/Anaquin/trunk/XCode/Anaquin.xcodeproj</string>
+	<string>https://github.com/student-t/Anaquin/trunk/xcode/Anaquin.xcodeproj</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
