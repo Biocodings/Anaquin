@@ -383,6 +383,7 @@
 					../include,
 					../../include,
 					"../include/tclap-1.2.1/include",
+					/Users/tedwong/Sources/QS/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -414,6 +415,7 @@
 					../include,
 					../../include,
 					"../include/tclap-1.2.1/include",
+					/Users/tedwong/Sources/QS/include,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
