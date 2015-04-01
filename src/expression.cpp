@@ -4,7 +4,7 @@
 #include "standard_factory.hpp"
 #include "parser_ctracking.hpp"
 #include <sstats/stats.hpp>
-#include <sstats/regression/linear.hpp>
+#include <sstats/regression/linear_model.hpp>
 
 using namespace SS;
 
