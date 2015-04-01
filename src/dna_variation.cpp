@@ -29,22 +29,50 @@ VariationStats DNAVariation::analyze(const std::string &file)
     unsigned n = 0;
     unsigned nt = 0;
     
-    bool mTrue;
+    bool mTrue = false;
+    
+    unsigned tp = 0;
+    unsigned fp = 0;
+    unsigned fn = 0;
+    unsigned tn = 0;
     
     ParserVCF::parse("tests/data/simulation/DNA.flat.chrT.vcf", [&](const VCFVariant &v)
     {
-        if (find(r.vars, v, mTrue))
+        if (v.chID == r.id)
         {
-            n++;
-            
-            if (mTrue)
+            if (find(r.vars, v, mTrue))
             {
-                nt++;
+                n++;
+                
+                if (mTrue)
+                {
+                    tp++;
+                    nt++;
+                }
+                else
+                {
+                    fp++;
+                }
+            }
+            else
+            {
+                n++;
+                fp++;
             }
         }
         else
         {
-            
+            if (find(r.vars, v, mTrue))
+            {
+                //if (mTrue)
+                {
+                    fn++;
+                }
+            }
+            else
+            {
+                tn++;
+            }
         }
     });
 
