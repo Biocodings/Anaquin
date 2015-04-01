@@ -3,8 +3,10 @@
 
 TEST_CASE("DNA_Variant")
 {
-    ParserVCF::parse("data/DNA/variant.ChrT51.vcf", [&](const VCFVariant &v)
+    ParserVCF::parse("tests/data/simulation/DNA.flat.chrT.vcf", [&](const VCFVariant &v)
     {
+        
+        
     });
 
     //ASSERT_EQ(0, i);

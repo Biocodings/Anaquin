@@ -2,6 +2,7 @@
 #define GI_PARSER_VCF_HPP
 
 #include <set>
+#include <vector>
 #include <functional>
 #include "types.hpp"
 
@@ -32,7 +33,7 @@ struct VCFVariant
     Sequence ref;
     
     // Reference base - alternate non-reference alleles called on at least one of the samples.
-    std::set<Sequence> alts;
+    std::vector<Sequence> alts;
 
     AlleleType type;
     

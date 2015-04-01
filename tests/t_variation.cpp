@@ -3,5 +3,9 @@
 
 TEST_CASE("D1_Isssdsdadoforms")
 {
-//    const auto r = Variation::analyze("tests/Data/d1/isoforms.fpkm_tracking");
+
+    
+    //    const auto r = Variation::analyze("tests/Data/simulation/DNA.flat.chrT.vcf");
+
+
 }

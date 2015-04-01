@@ -1,8 +1,8 @@
 #include <map>
-#include <vector>
-#include <fstream>
+#include <assert.h>
+#include "file.hpp"
+#include "tokens.hpp"
 #include "parser_vcf.hpp"
-#include <boost/algorithm/string.hpp>
 
 /*
  * Refer to http://samtools.github.io/hts-specs/VCFv4.1.pdf for more details
@@ -30,21 +30,22 @@ static std::map<std::string, AlleleType> alleleParser =
 void ParserVCF::parse(const std::string &file, VCFVariantF fv)
 {
     std::string line;
-    std::ifstream in(file);
+    File f(file);
 
     VCFVariant v;
+
     std::vector<std::string> t1;
     std::vector<std::string> t2;
     std::vector<std::string> t3;
 
-    while (std::getline(in, line))
+    while (f.nextLine(line))
     {
 		if (line.empty() || line[0] == '#')
 		{
 			continue;
 		}
-
-        boost::split(t1, line, boost::is_any_of("\t"));
+        
+        Tokens::split(line, "\t", t1);
 
         v.chromoID = t1[CHROMO];
         v.pos = stod(t1[POS]);
@@ -58,7 +59,7 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
          */
         
         v.alts.clear();
-        boost::split(v.alts, t1[ALT], boost::is_any_of(","));
+        Tokens::split(t1[ALT], ",", v.alts);
 
         /*
          * Example:
@@ -67,7 +68,7 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
          */
         
         t2.clear();
-        boost::split(t2, t1[FORMAT], boost::is_any_of(":"));
+        Tokens::split(t1[FORMAT], ":", t2);
         
         /*
          * Example:
@@ -76,7 +77,7 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
          */
         
         t3.clear();
-        boost::split(t3, t1[FORMAT_DATA_1], boost::is_any_of(":"));
+        Tokens::split(t1[FORMAT_DATA_1], ":", t3);
 
         assert(t2.size() == t3.size());
         
