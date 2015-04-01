@@ -36,7 +36,7 @@ VariationStats DNAVariation::analyze(const std::string &file)
     unsigned fn = 0;
     unsigned tn = 0;
     
-    ParserVCF::parse("tests/data/simulation/DNA.flat.chrT.vcf", [&](const VCFVariant &v)
+    ParserVCF::parse("tests/data/dna_sims/DNA.flat.chrT.vcf", [&](const VCFVariant &v)
     {
         if (v.chID == r.id)
         {

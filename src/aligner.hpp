@@ -26,13 +26,22 @@ struct AlignerStats
 	Percentage dilution;
 };
 
+struct AlignerOptions
+{
+    AlignerOptions() {}
+    AlignerOptions(Reads n) : n(n) {}
+
+    // The number of reads to be analyzed
+    Reads n = std::numeric_limits<Reads>::max();
+};
+
 struct Aligner
 {
     // Analyze the aligner for the base-level
-    static AlignerStats base(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
+    static AlignerStats analyze(const std::string &file, AlignerOptions options = AlignerOptions());
 
     // Analyze for the aligner for the spliced-junction level
-    static AlignerStats spliced(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
+    static AlignerStats spliced(const std::string &file, AlignerOptions options = AlignerOptions());
 };
 
 #endif

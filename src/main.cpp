@@ -1,8 +1,6 @@
-#include <limits>
 #include <iostream>
 #include <tclap/CmdLine.h>
 #include "aligner.hpp"
-#include "assembly.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
@@ -12,7 +10,7 @@ int main(int argc, char ** argv)
     typedef TCLAP::SwitchArg SArg;
     typedef TCLAP::ValueArg<std::string> VArg;
 
-	std::cout << "Anquin by Garvan Institute - Chromosome data-analysis tool\n" << std::endl;
+	std::cout << "Anquin by Garvan Institute - sequin data-analysis tool\n" << std::endl;
 
     try
     {
@@ -29,7 +27,7 @@ int main(int argc, char ** argv)
         }
         else if (!a.getValue().empty())
         {
-            Aligner::base(a.getValue(), Sequins(), 1000);
+            Aligner::analyze(a.getValue());
         }
     }
     catch (TCLAP::ArgException &e)

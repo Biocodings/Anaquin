@@ -27,7 +27,7 @@ static bool matchChromoBoundary(const Standard &r, const Alignment &align)
     return r.l.contains(align.l);
 }
 
-AlignerStats Aligner::spliced(const std::string &file, Sequins s, Reads n)
+AlignerStats Aligner::spliced(const std::string &file, AlignerOptions options)
 {
     const auto r = StandardFactory::reference();
 
@@ -73,7 +73,7 @@ AlignerStats Aligner::spliced(const std::string &file, Sequins s, Reads n)
 
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if (++i > n)
+        if (++i > options.n)
         {
             return false;
         }
@@ -127,7 +127,7 @@ AlignerStats Aligner::spliced(const std::string &file, Sequins s, Reads n)
     return stats;
 }
 
-AlignerStats Aligner::base(const std::string &file, Sequins s, Reads n)
+AlignerStats Aligner::analyze(const std::string &file, AlignerOptions options)
 {
     AlignerStats stats;
     const auto r = StandardFactory::reference();
@@ -144,7 +144,7 @@ AlignerStats Aligner::base(const std::string &file, Sequins s, Reads n)
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if (++i > n)
+        if (++i > options.n)
         {
             return false;
         }
