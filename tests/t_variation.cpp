@@ -1,7 +1,7 @@
 #include <catch.hpp>
-#include "variation.hpp"
+#include "dna_variation.hpp"
 
-TEST_CASE("D1_Isoforms")
+TEST_CASE("D1_Isssdsdadoforms")
 {
-    const auto r = Variation::analyze("/Users/tedwong/Sources/QA/Tests/Data/d1/isoforms.fpkm_tracking");
+//    const auto r = Variation::analyze("tests/Data/d1/isoforms.fpkm_tracking");
 }

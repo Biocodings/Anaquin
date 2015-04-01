@@ -17,6 +17,14 @@ enum Group
     D
 };
 
+struct Variation
+{
+    GeneID id;
+    Locus l;
+    std::string r;
+    std::string m;
+};
+
 struct Gene
 {
     GeneID id;
@@ -77,6 +85,8 @@ struct Standard
     // The location of the chromosome
     Locus l;
 
+    std::vector<Variation> vars;
+    
     std::map<GeneID, GMixture> mixA;
     std::map<GeneID, GMixture> mixB;
 

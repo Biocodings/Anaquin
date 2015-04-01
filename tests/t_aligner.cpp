@@ -8,7 +8,7 @@ TEST_CASE("D1_Base_1000")
      * the sensitivity is 100% (from the first 1000 reads).
      */
     
-    const auto stats = Aligner::base("/Users/tedwong/Sources/QA/tests/data/d1/accepted_hits.sam", Sequins(), 1000);
+    const auto stats = Aligner::base("tests/data/d1/accepted_hits.sam", Sequins(), 1000);
 
     REQUIRE(1 == stats.m.sp());
     REQUIRE(isnan(stats.m.sn()));
@@ -28,7 +28,7 @@ TEST_CASE("D1_Splice_1000")
      * the sensitivity is 100% (from the first 1000 reads).
      */
     
-    const auto stats = Aligner::spliced("/Users/tedwong/Sources/QA/tests/data/d1/accepted_hits.sam", Sequins(), 1000);
+    const auto stats = Aligner::spliced("tests/data/d1/accepted_hits.sam", Sequins(), 1000);
     
     REQUIRE(1 == stats.m.sp());
     REQUIRE(0 == stats.m.sn());
@@ -37,7 +37,7 @@ TEST_CASE("D1_Splice_1000")
 TEST_CASE("D2_Base")
 {
 	// The sample file was taken from Cufflink's source distribution. It's obviously independent to the standards.
-	const auto stats = Aligner::base("/Users/tedwong/Sources/QA/Tests/Data/CufflinksTest.sam");
+	const auto stats = Aligner::base("tests/Data/CufflinksTest.sam");
 
 	/*
 	 * There shouldn't be any match. Both sensivity and specificity are NAN because the experiement gives no

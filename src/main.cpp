@@ -11,8 +11,8 @@ int main(int argc, char ** argv)
 {
     typedef TCLAP::SwitchArg SArg;
     typedef TCLAP::ValueArg<std::string> VArg;
-    
-	std::cout << "Spike!\n" << std::endl;
+
+	std::cout << "Anquin by Garvan Institute - Chromosome data-analysis tool\n" << std::endl;
 
     try
     {
@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
 
         if (t.getValue())
         {
-            return Catch::Session().run(argc, argv);
+            return Catch::Session().run(1, argv);
         }
         else if (!a.getValue().empty())
         {

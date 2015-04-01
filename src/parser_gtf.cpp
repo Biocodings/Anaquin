@@ -88,7 +88,7 @@ bool ParserGTF::parse(const std::string &file, std::function<void (const Feature
                         assert(f.geneID != f.iID);
                     }
                     
-                    f.options[nameValue[0]] = nameValue[1];
+                    //f.options[nameValue[0]] = nameValue[1];
                 }
             }
         }

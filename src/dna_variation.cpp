@@ -1,12 +1,12 @@
-#include "variation.hpp"
 #include "parser_vcf.hpp"
+#include "dna_variation.hpp"
 #include "standard_factory.hpp"
 
-VariationStats Variation::analyze(const std::string &file)
+VariationStats DNAVariation::analyze(const std::string &file)
 {
     const auto r = StandardFactory::reference();
 
-    ParserVCF::parse("/Users/tedwong/Sources/QA/data/DNA/variant.ChrT51.vcf", [&](const VCFVariant &v)
+    ParserVCF::parse("data/DNA/variant.ChrT51.vcf", [&](const VCFVariant &v)
                      {
                          
                      });

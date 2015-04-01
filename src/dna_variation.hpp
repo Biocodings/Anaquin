@@ -1,5 +1,5 @@
-#ifndef GI_VARIATION_HPP
-#define GI_VARIATION_HPP
+#ifndef GI_DNA_VARIATION_HPP
+#define GI_DNA_VARIATION_HPP
 
 #include "types.hpp"
 #include "sequins.hpp"
@@ -8,7 +8,7 @@ struct VariationStats
 {
 };
 
-struct Variation
+struct DNAVariation
 {
 	static VariationStats analyze(const std::string &file);
 };

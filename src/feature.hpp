@@ -38,7 +38,7 @@ struct Feature
     IsoformID iID;
     
     // Optional field such as "gene_id" and "transcript_id"
-    Options options;
+    //Options options;
 };
 
 #endif

@@ -1,7 +1,10 @@
+#include <vector>
 #include <fstream>
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
+#include "file.hpp"
+#include "tokens.hpp"
 #include "parser_fa.hpp"
 #include "parser_bed.hpp"
 #include "parser_gtf.hpp"
@@ -9,13 +12,16 @@
 #include "parser_vcf.hpp"
 #include "standard_factory.hpp"
 
-const std::string VARIANT_FILE = "/Users/tedwong/Sources/QA/Data/RNA/variant.ChrT51.vcf";
-
 Standard StandardFactory::reference()
 {
-	std::ifstream in("/Users/tedwong/Sources/QA/Data/RNA/ChrT.5.10.fa");
-	//std::ifstream in("C://Sources//QA//Data//Standards//ChrT.5.10.fa");
+	std::ifstream in("data/silico/silico.fa");
 	std::string line;
+
+    if (!in.good())
+    {
+        std::cerr << "Error: Failed to load the reference chromosome" << std::endl;
+        throw std::runtime_error("Error: Failed to load the reference chromosome");
+    }
 
 	// Assume that the first line contains only the name of the chromosome
 	std::getline(in, line);
@@ -35,11 +41,11 @@ Standard StandardFactory::reference()
     /*
      * Data-structures required to build up the chromosome. Orders of the features are not guarenteed.
      */
-    
+
     std::set<GeneID> gids;
     std::set<IsoformID> iids;
 
-    ParserGTF::parse("/Users/tedwong/Sources/QA/Data/RNA/RNAstandards.gtf", [&](const Feature &f, ParserProgress &p)
+    ParserGTF::parse("data/silico/RNA/standards.gtf", [&](const Feature &f, ParserProgress &p)
 	{
 		r.l.end = std::max(r.l.end, f.l.end);
 		r.l.start = std::min(r.l.start, f.l.start);
@@ -55,13 +61,28 @@ Standard StandardFactory::reference()
         r.iso2Gene[f.iID] = f.geneID;
     });
 
+    assert(!r.iso2Gene.empty());
+    std::vector<std::string> ts;
+
     /*
-     * Create data-structure for mutation and variations
+     * Create data-structure for DNA mutations & variations
      */
     
-    ParserVCF::parse(VARIANT_FILE, [&] (const VCFVariant &v)
+    ParserBED::parse("data/silico/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
     {
-                         
+        ts.clear();
+
+        Variation v;
+        v.l = f.l;
+        
+        /*
+         * Example: D_3_3_R_C/A
+         */
+        
+        Tokens::split(f.name, "_/", ts);
+
+        v.r = ts[ts.size() - 2];
+        v.m = ts[ts.size() - 1];
     });
     
     /*
@@ -119,7 +140,7 @@ Standard StandardFactory::reference()
      * Create data-structure for known introns
      */
 
-    ParserBED::parse("/Users/tedwong/Sources/QA/Data/RNA/RNAstandards.bed", [&](const BedFeature &t)
+    ParserBED::parse("data/silico/RNA/standards.bed", [&](const BedFeature &t)
     {
         /*
          * In this context, we're given a transcript. Each block in the transcript is an exon.
@@ -160,7 +181,7 @@ Standard StandardFactory::reference()
     
     GMixture g;
     
-    ParserCSV::parse("/Users/tedwong/Sources/QA/Data/RNA/Standard_A.csv", [&](const Fields &fields)
+    ParserCSV::parse("data/RNA/Standard_A.csv", [&](const Fields &fields)
     {
         /*
          * Create data-structure for isoforms
