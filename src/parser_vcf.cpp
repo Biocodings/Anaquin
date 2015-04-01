@@ -22,9 +22,9 @@ enum VCFField
     FORMAT_DATA_1
 };
 
-static std::map<std::string, AlleleType> alleleParser =
+static std::map<std::string, Zygosity> alleleParser =
 {
-    { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
+    { "0/0", Homozygous } , { "1/1", Homozygous } , { "0/1", Heterzygous }
 };
 
 void ParserVCF::parse(const std::string &file, VCFVariantF fv)
@@ -47,10 +47,10 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
         
         Tokens::split(line, "\t", t1);
 
-        v.chromoID = t1[CHROMO];
-        v.pos = stod(t1[POS]);
+        v.chID  = t1[CHROMO];
+        v.pos   = stod(t1[POS]);
         v.varID = t1[ID];
-        v.ref = t1[REF];
+        v.ref   = t1[REF];
 
         /*
          * Example:
@@ -85,7 +85,7 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
         {
             if (t2[i] == "GT")
             {
-                v.type = alleleParser.at(t3[i]);
+                v.zy = alleleParser.at(t3[i]);
             }
         }
         

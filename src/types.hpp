@@ -3,6 +3,8 @@
 
 #include <string>
 
+typedef double Percentage;
+
 typedef std::string GeneID;
 typedef std::string ChromoID;
 typedef std::string VariantID;
@@ -22,8 +24,6 @@ typedef float Fold;
 
 typedef std::string GeneID;
 typedef std::string IsoformID;
-
-typedef float Percentage;
 
 // Eg: 388488 from the first matching base
 typedef long long BasePair;

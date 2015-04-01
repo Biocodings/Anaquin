@@ -6,6 +6,8 @@
 
 struct VariationStats
 {
+    Percentage covered;
+    Percentage efficiency;
 };
 
 struct DNAVariation

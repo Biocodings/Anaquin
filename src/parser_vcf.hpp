@@ -11,18 +11,17 @@ enum VCFVariantInfo
     AC, // Allele frequency 
 };
 
-enum AlleleType
+enum Zygosity
 {
+    Homozygous,
     Heterzygous,
-    HomozygousRef,
-    HomozygousAlt,
 };
 
 struct VCFVariant
 {
     // An identifier from the reference genome
-    ChromoID chromoID;
-    
+    ChromoID chID;
+
     // The reference position, with the 1st base having position 1.
     BasePair pos;
     
@@ -35,17 +34,9 @@ struct VCFVariant
     // Reference base - alternate non-reference alleles called on at least one of the samples.
     std::vector<Sequence> alts;
 
-    AlleleType type;
-    
-    inline bool snp() const { return alts.size() == 1; }
+    Zygosity zy;
 };
 
-struct VCFHeader
-{
-    
-};
-
-typedef std::function<void (const VCFHeader &)> VCFHeaderF;
 typedef std::function<void (const VCFVariant &)> VCFVariantF;
 
 struct ParserVCF

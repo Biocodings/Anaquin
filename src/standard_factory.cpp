@@ -83,7 +83,11 @@ Standard StandardFactory::reference()
 
         v.r = ts[ts.size() - 2];
         v.m = ts[ts.size() - 1];
+        
+        r.vars.push_back(v);
     });
+
+    assert(!r.vars.empty());
     
     /*
      * Construct the data-structure for genes
