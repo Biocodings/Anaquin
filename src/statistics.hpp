@@ -1,6 +1,7 @@
 #ifndef GI_STATISTICS_HPP
 #define GI_STATISTICS_HPP
 
+#include <assert.h>
 #include "confusion_matrix.hpp"
 
 namespace Spike

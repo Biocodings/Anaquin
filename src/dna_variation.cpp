@@ -1,6 +1,6 @@
-#include "parser_vcf.hpp"
 #include "dna_variation.hpp"
 #include "standard_factory.hpp"
+#include "parsers/parser_vcf.hpp"
 
 using namespace Spike;
 

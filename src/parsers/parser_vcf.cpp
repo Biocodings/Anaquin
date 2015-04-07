@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "file.hpp"
 #include "tokens.hpp"
-#include "parser_vcf.hpp"
+#include "parsers/parser_vcf.hpp"
 
 using namespace Spike;
 
