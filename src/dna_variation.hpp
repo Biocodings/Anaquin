@@ -4,15 +4,18 @@
 #include "types.hpp"
 #include "sequins.hpp"
 
-struct VariationStats
+namespace Spike
 {
-    Percentage covered;
-    Percentage efficiency;
-};
-
-struct DNAVariation
-{
-	static VariationStats analyze(const std::string &file);
-};
+    struct VariationStats
+    {
+        Percentage covered;
+        Percentage efficiency;
+    };
+    
+    struct DNAVariation
+    {
+        static VariationStats analyze(const std::string &file);
+    };    
+}
 
 #endif
