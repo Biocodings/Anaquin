@@ -3,11 +3,32 @@
 
 using namespace Spike;
 
+TEST_CASE("RNA_Simulation_No_Intron")
+{
+    AlignerOptions options;
+    
+    // We're not interested in intron in this test
+    options.spliced = false;
+    
+    const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits.sam", options);
+    
+    REQUIRE(stats.n == 5762);
+    REQUIRE(stats.m.sp() == 1);
+    REQUIRE(isnan(stats.m.sn()));
+    REQUIRE(stats.m.tp == 5762);
+    REQUIRE(stats.m.fp == 0);
+    REQUIRE(stats.m.fn == 0);
+    REQUIRE(stats.m.tn == 0);
+    REQUIRE(stats.nr == 5762);
+    REQUIRE(stats.dilution == 1);
+    REQUIRE(stats.nq == 0);
+}
+
 TEST_CASE("RNA_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution. It's obviously independent to the standards.
     const auto stats = Aligner::analyze("tests/data/cufflinks_test.sam");
-    
+
     REQUIRE(isnan(stats.m.sp()));
     REQUIRE(1 == stats.m.sn());
     REQUIRE(0 == stats.m.tp);
@@ -17,26 +38,6 @@ TEST_CASE("RNA_Cufflinks")
     REQUIRE(0 == stats.nr);
     REQUIRE(3307 == stats.nq);
     REQUIRE(0 == stats.dilution);
-}
-
-TEST_CASE("RNA_Simulation_Base")
-{
-    /*
-     * Since the SAM file comes from a simulation, it's not surprising that sensitivity is perfect.
-     */
-    
-    const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits.sam");
-
-    REQUIRE(stats.n == 9997);
-    REQUIRE(stats.m.sp() == 1);
-    REQUIRE(isnan(stats.m.sn()));
-    REQUIRE(stats.m.tp == 9997);
-    REQUIRE(stats.m.fp == 0);
-    REQUIRE(stats.m.fn == 0);
-    REQUIRE(stats.m.tn == 0);
-    REQUIRE(stats.nr == 9997);
-    REQUIRE(stats.dilution == 1);
-    REQUIRE(stats.nq == 0);
 }
 
 TEST_CASE("RNA_Simulation_Splicing")

@@ -24,6 +24,7 @@
 		EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E31AD3783A0062D246 /* parser_vcf.cpp */; };
 		EF5D84C41AC39701009DFB9C /* dna_variation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5D84C21AC39701009DFB9C /* dna_variation.cpp */; };
 		EFD36E9D1ACB912700F6F098 /* file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD36E9C1ACB912700F6F098 /* file.cpp */; };
+		EFE9A0201AD3B2C600557829 /* writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE9A01F1AD3B2C600557829 /* writer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -82,6 +83,8 @@
 		EFD36E9B1ACB90D400F6F098 /* file.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = file.hpp; path = ../src/file.hpp; sourceTree = "<group>"; };
 		EFD36E9C1ACB912700F6F098 /* file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file.cpp; path = ../src/file.cpp; sourceTree = "<group>"; };
 		EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/tokens.hpp; sourceTree = "<group>"; };
+		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
+		EFE9A01F1AD3B2C600557829 /* writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = writer.cpp; path = ../src/writers/writer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +129,7 @@
 		7FC557061AB473A90085C090 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				EFE9A01D1AD3B10900557829 /* Writers */,
 				EF3860D41AD3765B0062D246 /* Exceptions */,
 				EF3860D61AD378190062D246 /* Parsers */,
 				EF2290321AC0E58000CE76BF /* aligner.cpp */,
@@ -191,6 +195,15 @@
 			children = (
 			);
 			name = Data;
+			sourceTree = "<group>";
+		};
+		EFE9A01D1AD3B10900557829 /* Writers */ = {
+			isa = PBXGroup;
+			children = (
+				EFE9A01F1AD3B2C600557829 /* writer.cpp */,
+				EFE9A01E1AD3B11F00557829 /* writer.hpp */,
+			);
+			name = Writers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -265,6 +278,7 @@
 				EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */,
 				EF3860E61AD3783A0062D246 /* parser_bed.cpp in Sources */,
 				EF22905A1AC0E58000CE76BF /* expression.cpp in Sources */,
+				EFE9A0201AD3B2C600557829 /* writer.cpp in Sources */,
 				EF3860E91AD3783A0062D246 /* parser_fa.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,10 +366,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
 					"$(PROJECT_DIR)",
-					"/Users/user1/Library/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
-					"/Users/user1/Library/Developer/Xcode/DerivedData/Anaquin-guakbmsmdzxsaiajegaxnvtohszp/Build/Products/Debug/Anaquin",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -378,7 +389,6 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_NAME = Spike;
@@ -391,10 +401,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
 					"$(PROJECT_DIR)",
-					"/Users/user1/Library/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
-					"/Users/user1/Library/Developer/Xcode/DerivedData/Anaquin-guakbmsmdzxsaiajegaxnvtohszp/Build/Products/Debug/Anaquin",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -413,7 +420,6 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/gtest-cbzpefqbkfowxoeublrrueggjjvh/Build/Products/Debug",
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_NAME = Spike;

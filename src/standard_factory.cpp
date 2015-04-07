@@ -187,7 +187,7 @@ Standard StandardFactory::reference()
     
     GMixture g;
     
-    ParserCSV::parse("data/RNA/Standard_A.csv", [&](const Fields &fields)
+    ParserCSV::parse("data/silico/RNA/Standard_A.csv", [&](const Fields &fields)
     {
         /*
          * Create data-structure for isoforms

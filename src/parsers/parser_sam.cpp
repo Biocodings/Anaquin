@@ -54,10 +54,12 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
             const auto len = static_cast<BasePair>(tokens[9].size());
             const auto start = stoi(tokens[3]);
             
-            align.l.set(start, start + len);
-            assert(len == align.l.length());
-        }
+            align.l.set(start, start + len - 1);
 
+            // Don't forget the minus one, since we're "counting fenceposts"
+            assert(len == align.l.length() + 1);
+        }
+        
         x(align);
-	}
+    }
 }

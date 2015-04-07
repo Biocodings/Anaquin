@@ -1,35 +1,16 @@
-#include <math.h>
 #include <iostream>
 #include <assert.h>
-#include <limits>
 #include "aligner.hpp"
 #include "biology.hpp"
 #include "parser_bed.hpp"
 #include "parser_sam.hpp"
-#include "statistics.hpp"
+#include <boost/format.hpp>
+#include "writers/writer.hpp"
 #include "standard_factory.hpp"
 
 using namespace Spike;
 
-static bool matchGeneBoundary(const Standard &r, const Alignment &align)
-{
-    for (auto f: r.fs) // TODO: Double check no intron is here.... // TODO: Check spliced reads
-    {
-        if (r.l.contains(align.l))
-        {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-static bool matchChromoBoundary(const Standard &r, const Alignment &align)
-{
-    return r.l.contains(align.l);
-}
-
-AlignerStats Aligner::spliced(const std::string &file, const ParserOptions &options)
+AlignerStats Aligner::spliced(const std::string &file, const AlignerOptions &options)
 {
     const auto r = StandardFactory::reference();
 
@@ -86,7 +67,7 @@ AlignerStats Aligner::spliced(const std::string &file, const ParserOptions &opti
         {
             if (align.id == r.id)
             {
-                if (contains__(r, align))
+                if (contains(r, align))
                 {
                     if (f(align))
                     {
@@ -104,11 +85,11 @@ AlignerStats Aligner::spliced(const std::string &file, const ParserOptions &opti
             }
             else
             {
-                if (matchChromoBoundary(r, align))
+                //if (matchChromoBoundary(r, align))
                 {
                     stats.m.fn++;
                 }
-                else
+                //else
                 {
                     stats.m.tn++;
                 }
@@ -121,22 +102,18 @@ AlignerStats Aligner::spliced(const std::string &file, const ParserOptions &opti
     return stats;
 }
 
-AlignerStats Aligner::analyze(const std::string &file, const ParserOptions &options)
+AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &options)
 {
     AlignerStats stats;
     const auto r = StandardFactory::reference();
 
-    /*
-     * Calculate the sensitivity and specificity for the experiment. They are statistical measures of the performance
-     * of a binary test. Sensitivity (also known true-positive rate) measures the proportion of actual positives which
-     * are correctly identified as such (eg: the percentage of reads aligned to the reference correctly). Specificity
-     * (also known as true-negative rate) measures the proportion of negatives which are correctly identified as such
-     * (eg: the percentage of reads fails to align to the reference incorrectly).
-     */
-    
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if (align.id == r.id)
+        if (!options.spliced && align.spliced)
+        {
+            return;
+        }
+        else if (align.id == r.id)
         {
             stats.nr++;
         }
@@ -149,10 +126,9 @@ AlignerStats Aligner::analyze(const std::string &file, const ParserOptions &opti
 		{
 			if (align.id == r.id)
 			{
-				if (matchChromoBoundary(r, align))
+				if (contains(r, align))
 				{
-                    // TODO: Rename to feature
-					if (matchGeneBoundary(r, align))
+					if (contains(r.fs.begin(), r.fs.end(), align))
 					{
 						stats.m.tp++;
 					}
@@ -168,7 +144,7 @@ AlignerStats Aligner::analyze(const std::string &file, const ParserOptions &opti
 			}
 			else
 			{
-				if (matchChromoBoundary(r, align))
+				if (contains(r, align))
 				{
 					stats.m.fn++;
 				}
@@ -178,28 +154,22 @@ AlignerStats Aligner::analyze(const std::string &file, const ParserOptions &opti
 				}
 			}
 		}
-        else
-        {
-            stats.n++;
-        }
 
         stats.n++;        
     });
 
     assert(stats.nr + stats.nq == stats.n);
     
-    std::cout << stats.nr << std::endl;
-    std::cout << stats.nq << std::endl;
-    
 	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
+    
+    // Proportion of the reads from the reference
     stats.dilution = stats.nq ? static_cast<Percentage>(stats.nr / stats.nq) : 1;
 
-    std::cout << "Dilution: " << stats.dilution << std::endl;
-    std::cout << "TP: " << stats.m.tp << std::endl;
-    std::cout << "TN: " << stats.m.tn << std::endl;
-    std::cout << "FP: " << stats.m.fp << std::endl;
-    std::cout << "FN: " << stats.m.fn << std::endl;
+    Writer w("align.csv");
+ 
+    w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % "diluation" % "tp" % "tn" % "fp" % "fn").str());
+    w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn).str());
     
 	return stats;
 }
