@@ -4,13 +4,13 @@
 
 using namespace Spike;
 
-TEST_CASE("TestID")
+TEST_CASE("Standard_ID")
 {
     const auto r = StandardFactory::reference();
 	REQUIRE("chrT" == r.id);
 }
 
-TEST_CASE("TestJunction")
+TEST_CASE("Standard_Junctions")
 {
 /*
     const auto r  = StandardFactory::reference();
@@ -45,7 +45,7 @@ TEST_CASE("TestJunction")
 */
 }
 
-TEST_CASE("TestIsoforms")
+TEST_CASE("Standard_Isoforms")
 {
 	const auto r = StandardFactory::reference();
 	REQUIRE(r.mixA.size() == 32);
