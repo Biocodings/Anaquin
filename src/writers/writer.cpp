@@ -15,7 +15,7 @@ Writer::Writer(const std::string &file)
     
     if (!_impl->o->good())
     {
-        throw std::runtime_error("ds.sd.ds");
+        throw std::runtime_error("Failed to open: " + file);
     }
 }
 
