@@ -3,23 +3,18 @@
 
 using namespace Spike;
 
-TEST_CASE("RNA_Simulation_Splicing")
+TEST_CASE("RNA_Simulation_Base")
 {
-    AlignerOptions options;
+    const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits.sam");
     
-    // We're only interested in splicing in this test
-    options.mode = SpliceAlign;
-    
-    const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits.sam", options);
-    
-    REQUIRE(stats.n == 4235);
+    REQUIRE(stats.n == 9997);
     REQUIRE(stats.m.sp() == 1);
     REQUIRE(isnan(stats.m.sn()));
-    REQUIRE(stats.m.tp == 4235);
+    REQUIRE(stats.m.tp == 9997);
     REQUIRE(stats.m.fp == 0);
     REQUIRE(stats.m.fn == 0);
     REQUIRE(stats.m.tn == 0);
-    REQUIRE(stats.nr == 4235);
+    REQUIRE(stats.nr == 9997);
     REQUIRE(stats.dilution == 1);
     REQUIRE(stats.nq == 0);
 }
