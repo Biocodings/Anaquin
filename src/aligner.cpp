@@ -32,10 +32,6 @@ static bool checkSplice(const Standard &r, const Alignment &align)
                 
                 if (exon_1.iID == exon_2.iID)
                 {
-                    auto a = align.l.start < exon_2.l.start;
-                    auto b = align.l.end > exon_2.l.start ;
-                    auto c = align.l.end < exon_2.l.end;
-                    
                     // Check if it ends inside exon_2
                     if (align.l.start < exon_2.l.start && align.l.end >= exon_2.l.start && align.l.end <= exon_2.l.end)
                     {
