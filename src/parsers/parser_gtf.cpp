@@ -1,8 +1,10 @@
 #include <vector>
 #include <fstream>
 #include <assert.h>
+#include "tokens.hpp"
 #include "parser_gtf.hpp"
-#include <boost/algorithm/string.hpp>
+
+using namespace Spike;
 
 bool ParserGTF::parse(const std::string &file, std::function<void (const Feature &, ParserProgress &)> x)
 {

@@ -2,11 +2,17 @@
 #define GI_TOKENS_HPP
 
 #include <string>
-#include <vector>
+#include <boost/algorithm/string.hpp>
 
-struct Tokens
+namespace Spike
 {
-    static void split(const std::string &, const std::string &, std::vector<std::string> &);
-};
+    struct Tokens
+    {
+        template <typename T> static void split(const std::string &str, const std::string &d, T &r)
+        {
+            boost::split(r, str, boost::is_any_of(d));
+        }
+    };
+}
 
 #endif

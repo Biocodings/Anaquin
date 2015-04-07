@@ -7,6 +7,7 @@
 #include <sstats/regression/linear_model.hpp>
 
 using namespace SS;
+using namespace Spike;
 
 ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode, Sequins s, Reads n)
 {

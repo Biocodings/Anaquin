@@ -5,6 +5,8 @@
 #include "statistics.hpp"
 #include "standard_factory.hpp"
 
+using namespace Spike;
+
 AssemblyStats Assembly::analyze(const std::string &file, Sequins s, Reads n)
 {
     AssemblyStats stats;

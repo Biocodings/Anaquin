@@ -1,15 +1,12 @@
 #include <catch.hpp>
 #include "aligner.hpp"
 
+using namespace Spike;
+
 TEST_CASE("RNA_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution. It's obviously independent to the standards.
     const auto stats = Aligner::analyze("tests/data/cufflinks_test.sam");
-    
-    /*
-     * There shouldn't be any match. Both sensivity and specificity are NAN because the experiement gives no
-     * power to detect anything.
-     */
     
     REQUIRE(isnan(stats.m.sp()));
     REQUIRE(1 == stats.m.sn());
@@ -18,8 +15,8 @@ TEST_CASE("RNA_Cufflinks")
     REQUIRE(0 == stats.m.fn);
     REQUIRE(3271 == stats.m.tn);
     REQUIRE(0 == stats.nr);
-    REQUIRE(0 == stats.dilution);
     REQUIRE(3307 == stats.nq);
+    REQUIRE(0 == stats.dilution);
 }
 
 TEST_CASE("RNA_Simulation_Base")

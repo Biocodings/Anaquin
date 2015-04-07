@@ -12,6 +12,8 @@
 #include "parser_vcf.hpp"
 #include "standard_factory.hpp"
 
+using namespace Spike;
+
 Standard StandardFactory::reference()
 {
 	std::ifstream in("data/silico/silico.fa");

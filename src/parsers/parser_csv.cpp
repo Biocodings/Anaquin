@@ -1,6 +1,8 @@
 #include <fstream>
+#include "tokens.hpp"
 #include "parser_csv.hpp"
-#include <boost/algorithm/string.hpp>
+
+using namespace Spike;
 
 bool ParserCSV::parse(const std::string &file, std::function<void (const std::vector<std::string> &)> x)
 {
@@ -16,7 +18,7 @@ bool ParserCSV::parse(const std::string &file, std::function<void (const std::ve
 
     while (std::getline(i, line))
     {
-        boost::split(tokens, line, boost::is_any_of(","));
+        Tokens::split(line, ",", tokens);
         x(tokens);
     }
 

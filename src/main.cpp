@@ -5,6 +5,8 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 
+using namespace Spike;
+
 int main(int argc, char ** argv)
 {
     typedef TCLAP::SwitchArg SArg;

@@ -1,8 +1,10 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include "tokens.hpp"
 #include "parser_fa.hpp"
-#include <boost/algorithm/string.hpp>
+
+using namespace Spike;
 
 void ParserFA::parse(const std::string &file, std::function<void (const FASequence &)> f)
 {
@@ -21,7 +23,7 @@ void ParserFA::parse(const std::string &file, std::function<void (const FASequen
 				f(s);
 			}
             
-            boost::split(tokens, line, boost::is_any_of("|"));
+            Tokens::split(line, "|", tokens);
 
 			// Remove the '<' prefix			
 			s.id = tokens[0].substr(1, tokens[0].size());

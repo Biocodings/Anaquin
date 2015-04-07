@@ -4,9 +4,10 @@
 #include <assert.h>
 #include "parser_sam.hpp"
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
 
-bool ParserSAM::parse(const std::string &file, std::function<bool (const Alignment &)> x)
+using namespace Spike;
+
+void ParserSAM::parse(const std::string &file, std::function<void (const Alignment &)> x)
 {
     std::string line;
     std::ifstream in(file);
@@ -56,12 +57,7 @@ bool ParserSAM::parse(const std::string &file, std::function<bool (const Alignme
             align.l.set(start, start + len);
             assert(len == align.l.length());
         }
-        
-        if (!x(align))
-        {
-            break;
-        }
+
+        x(align);
 	}
-    
-	return true;
 }

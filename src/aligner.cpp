@@ -9,6 +9,8 @@
 #include "statistics.hpp"
 #include "standard_factory.hpp"
 
+using namespace Spike;
+
 static bool matchGeneBoundary(const Standard &r, const Alignment &align)
 {
     for (auto f: r.fs) // TODO: Double check no intron is here.... // TODO: Check spliced reads
@@ -27,13 +29,11 @@ static bool matchChromoBoundary(const Standard &r, const Alignment &align)
     return r.l.contains(align.l);
 }
 
-AlignerStats Aligner::spliced(const std::string &file, AlignerOptions options)
+AlignerStats Aligner::spliced(const std::string &file, const ParserOptions &options)
 {
     const auto r = StandardFactory::reference();
 
     AlignerStats stats;
-    
-    Reads i = 0;
     
     // Check whether a spliced-alignment is correct
     auto f = [&](const Alignment &align)
@@ -73,11 +73,7 @@ AlignerStats Aligner::spliced(const std::string &file, AlignerOptions options)
 
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if (++i > options.n)
-        {
-            return false;
-        }
-        else if (align.id == r.id)
+        if (align.id == r.id)
         {
             stats.nr++;
         }
@@ -120,14 +116,12 @@ AlignerStats Aligner::spliced(const std::string &file, AlignerOptions options)
 
             stats.n++;
         }
-        
-        return true;
     });
 
     return stats;
 }
 
-AlignerStats Aligner::analyze(const std::string &file, AlignerOptions options)
+AlignerStats Aligner::analyze(const std::string &file, const ParserOptions &options)
 {
     AlignerStats stats;
     const auto r = StandardFactory::reference();
@@ -140,15 +134,9 @@ AlignerStats Aligner::analyze(const std::string &file, AlignerOptions options)
      * (eg: the percentage of reads fails to align to the reference incorrectly).
      */
     
-    Reads i = 0;
-    
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if (++i > options.n)
-        {
-            return false;
-        }
-        else if (align.id == r.id)
+        if (align.id == r.id)
         {
             stats.nr++;
         }
@@ -190,12 +178,18 @@ AlignerStats Aligner::analyze(const std::string &file, AlignerOptions options)
 				}
 			}
 		}
+        else
+        {
+            stats.n++;
+        }
 
         stats.n++;        
-        return true;
     });
+
+    assert(stats.nr + stats.nq == stats.n);
     
-    assert(stats.n);
+    std::cout << stats.nr << std::endl;
+    std::cout << stats.nq << std::endl;
     
 	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);

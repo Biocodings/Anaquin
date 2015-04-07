@@ -3,6 +3,8 @@
 #include "parser_bed.hpp"
 #include <boost/algorithm/string.hpp>
 
+using namespace Spike;
+
 bool ParserBED::parse(const std::string &file, std::function<void(const BedFeature &)> x)
 {
     File f(file);

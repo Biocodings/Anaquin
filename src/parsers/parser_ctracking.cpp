@@ -2,8 +2,11 @@
 #include <fstream>
 #include <vector>
 #include <assert.h>
+#include "tokens.hpp"
 #include "parser_ctracking.hpp"
 #include <boost/algorithm/string.hpp>
+
+using namespace Spike;
 
 bool ParserCTracking::parse(const std::string &file, std::function<void (const CTracking &)> f)
 {
@@ -26,7 +29,7 @@ bool ParserCTracking::parse(const std::string &file, std::function<void (const C
     
     while (std::getline(i, line))
     {
-        boost::split(tokens, line, boost::is_any_of("\t"));
+        Tokens::split(line, "\t", tokens);
        
         /*
          * tracking_id  code  nearest_ref  gene_id  gene_short  tss_id  locus  length  coverage  FPKM  FPKM_conf_lo  FPKM_conf_hi  FPKM_status

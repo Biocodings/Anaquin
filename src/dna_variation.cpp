@@ -2,6 +2,8 @@
 #include "dna_variation.hpp"
 #include "standard_factory.hpp"
 
+using namespace Spike;
+
 static bool find(const std::vector<Variation> &vs, VCFVariant x, bool &mTrue)
 {
     mTrue = false;

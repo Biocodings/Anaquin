@@ -4,6 +4,8 @@
 #include "tokens.hpp"
 #include "parser_vcf.hpp"
 
+using namespace Spike;
+
 /*
  * Refer to http://samtools.github.io/hts-specs/VCFv4.1.pdf for more details
  */
