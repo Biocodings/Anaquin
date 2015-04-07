@@ -4,9 +4,12 @@
 #include <vector>
 #include <string>
 
-struct Sequins
+namespace Spike
 {
-    std::vector<std::string> ids;
-};
+    struct Sequins
+    {
+        std::vector<std::string> ids;
+    };
+}
 
 #endif

@@ -4,25 +4,28 @@
 #include <assert.h>
 #include "types.hpp"
 
-struct Locus
+namespace Spike
 {
-    Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
-    ~Locus() {}
-
-    inline void set(BasePair start, BasePair end)
+    struct Locus
     {
-        this->start = start; this->end = end;
-        assert(this->end > this->start);
-    }
-
-    inline BasePair length() const { return (end - start); }
-
-    inline bool contains(const Locus &q) const
-    {
-        return (q.start >= start && q.end <= end);
-    }
-
-    BasePair start, end;
-};
+        Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
+        ~Locus() {}
+        
+        inline void set(BasePair start, BasePair end)
+        {
+            this->start = start; this->end = end;
+            assert(this->end > this->start);
+        }
+        
+        inline BasePair length() const { return (end - start); }
+        
+        inline bool contains(const Locus &q) const
+        {
+            return (q.start >= start && q.end <= end);
+        }
+        
+        BasePair start, end;
+    };    
+}
 
 #endif

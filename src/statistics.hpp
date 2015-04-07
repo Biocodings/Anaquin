@@ -3,35 +3,42 @@
 
 #include "confusion_matrix.hpp"
 
-template <typename T, typename Iter> bool contains_(const Iter &iter, const T &t)
+namespace Spike
 {
-    for (auto i: iter)
+    template <typename T, typename Iter> bool contains_(const Iter &iter, const T &t)
     {
-        if (i.l.contains(t.l))
+        for (auto i: iter)
         {
-            return true;
+            if (i.l.contains(t.l))
+            {
+                return true;
+            }
         }
+        
+        return false;
     }
     
-    return false;
-}
-
-/*
- * Conduce a binary classification test. Refer to http://en.wikipedia.org/wiki/Sensitivity_and_specificity for more details.
- */
-
-template <typename Iter, typename R, typename T> void classify(const Iter &iter, const R &r, const T &t, ConfusionMatrix &m)
-{
-    assert(!iter.empty());
+    /*
+     * Conduce a binary classification test. Refer to http://en.wikipedia.org/wiki/Sensitivity_and_specificity for more details.
+     */
     
-    // Positive if the query is classified with the references
-    if (r.id == t.id)
+    template <typename Iter, typename R, typename T> void classify(const Iter &iter, const R &r, const T &t, ConfusionMatrix &m)
     {
-        if (contains_(iter, t))
+        assert(!iter.empty());
+        
+        // Positive if the query is classified with the references
+        if (r.id == t.id)
         {
-            if (r.l.contains(t.l))
+            if (contains_(iter, t))
             {
-                m.tp++;
+                if (r.l.contains(t.l))
+                {
+                    m.tp++;
+                }
+                else
+                {
+                    m.fp++;
+                }
             }
             else
             {
@@ -40,18 +47,14 @@ template <typename Iter, typename R, typename T> void classify(const Iter &iter,
         }
         else
         {
-            m.fp++;
-        }
-    }
-    else
-    {
-        if (contains_(iter, t))
-        {
-            m.fn++;
-        }
-        else
-        {
-            m.tn++;
+            if (contains_(iter, t))
+            {
+                m.fn++;
+            }
+            else
+            {
+                m.tn++;
+            }
         }
     }
 }

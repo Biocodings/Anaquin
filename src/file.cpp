@@ -4,7 +4,9 @@
 #include "file.hpp"
 #include <boost/algorithm/string.hpp>
 
-struct FileInternal
+using namespace Spike;
+
+struct Spike::FileInternal
 {
     std::string t;
     std::shared_ptr<std::ifstream> f;
