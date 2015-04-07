@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <assert.h>
-#include "parser_sam.hpp"
+#include "parsers/parser_sam.hpp"
 #include <boost/algorithm/string.hpp>
 
 using namespace Spike;

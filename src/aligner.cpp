@@ -2,11 +2,11 @@
 #include <assert.h>
 #include "aligner.hpp"
 #include "biology.hpp"
-#include "parser_bed.hpp"
-#include "parser_sam.hpp"
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
 #include "standard_factory.hpp"
+#include "parsers/parser_bed.hpp"
+#include "parsers/parser_sam.hpp"
 
 using namespace Spike;
 

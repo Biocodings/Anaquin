@@ -1,6 +1,6 @@
 #include <assert.h>
 #include "file.hpp"
-#include "parser_bed.hpp"
+#include "parsers/parser_bed.hpp"
 #include <boost/algorithm/string.hpp>
 
 using namespace Spike;
