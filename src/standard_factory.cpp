@@ -5,12 +5,12 @@
 #include <algorithm>
 #include "file.hpp"
 #include "tokens.hpp"
-#include "parser_fa.hpp"
-#include "parser_bed.hpp"
-#include "parser_gtf.hpp"
-#include "parser_csv.hpp"
-#include "parser_vcf.hpp"
 #include "standard_factory.hpp"
+#include "parsers/parser_fa.hpp"
+#include "parsers/parser_bed.hpp"
+#include "parsers/parser_csv.hpp"
+#include "parsers/parser_vcf.hpp"
+#include "parsers/parser_gtf.hpp"
 
 using namespace Spike;
 

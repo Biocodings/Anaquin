@@ -1,8 +1,8 @@
 #ifndef GI_ALIGNER_HPP
 #define GI_ALIGNER_HPP
 
-#include "parser.hpp"
 #include "sequins.hpp"
+#include "parsers/parser.hpp"
 #include "confusion_matrix.hpp"
 
 namespace Spike

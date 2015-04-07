@@ -20,7 +20,7 @@ int main(int argc, char ** argv)
         
         SArg t("t", "test", "Internal testing", cmd, false);
         VArg a("a", "align", "Assess alignment", false, "", "string", cmd);
-        
+
         cmd.parse(argc, argv);
 
         if (t.getValue())

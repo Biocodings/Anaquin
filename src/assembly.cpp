@@ -1,9 +1,9 @@
 #include <limits>
 #include <iostream>
 #include "assembly.hpp"
-#include "parser_gtf.hpp"
 #include "statistics.hpp"
 #include "standard_factory.hpp"
+#include "parsers/parser_gtf.hpp"
 
 using namespace Spike;
 

@@ -2,7 +2,7 @@
 #include <fstream>
 #include <assert.h>
 #include "tokens.hpp"
-#include "parser_gtf.hpp"
+#include "parsers/parser_gtf.hpp"
 
 using namespace Spike;
 
