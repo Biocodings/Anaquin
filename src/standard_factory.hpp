@@ -3,9 +3,12 @@
 
 #include "standard.hpp"
 
-struct StandardFactory
+namespace Spike
 {
-    static Standard reference();
-};
+    struct StandardFactory
+    {
+        static Standard reference();
+    };    
+}
 
 #endif

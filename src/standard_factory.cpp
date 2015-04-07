@@ -51,6 +51,7 @@ Standard StandardFactory::reference()
 	{
 		r.l.end = std::max(r.l.end, f.l.end);
 		r.l.start = std::min(r.l.start, f.l.start);
+        
         r.fs.push_back(f);
         
         assert(!f.iID.empty());

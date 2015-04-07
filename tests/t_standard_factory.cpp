@@ -2,6 +2,8 @@
 #include <catch.hpp>
 #include "standard_factory.hpp"
 
+using namespace Spike;
+
 TEST_CASE("TestID")
 {
     const auto r = StandardFactory::reference();

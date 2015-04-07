@@ -29,19 +29,21 @@ namespace Spike
         Percentage dilution;
     };
 
+    enum AlignerMode
+    {
+        BaseAlign,
+        ExonAlign,
+        SpliceAlign,
+    };
+    
     struct AlignerOptions : public ParserOptions
     {
-        // Whether alternative splicing is included
-        bool spliced = true;
+        AlignerMode mode;
     };
     
     struct Aligner
     {
-        // Analyze the aligner for the base-level
         static AlignerStats analyze(const std::string &file, const AlignerOptions &options = AlignerOptions());
-        
-        // Analyze for the aligner for the spliced-junction level
-        static AlignerStats spliced(const std::string &file, const AlignerOptions &options = AlignerOptions());
     };
 }
 

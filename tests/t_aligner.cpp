@@ -3,13 +3,55 @@
 
 using namespace Spike;
 
-TEST_CASE("RNA_Simulation_No_Intron")
+TEST_CASE("RNA_Simulation_Splicing")
 {
     AlignerOptions options;
     
-    // We're not interested in intron in this test
-    options.spliced = false;
+    // We're only interested in splicing in this test
+    options.mode = SpliceAlign;
     
+    const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits.sam", options);
+    
+    REQUIRE(stats.n == 4235);
+    REQUIRE(stats.m.sp() == 1);
+    REQUIRE(isnan(stats.m.sn()));
+    REQUIRE(stats.m.tp == 4235);
+    REQUIRE(stats.m.fp == 0);
+    REQUIRE(stats.m.fn == 0);
+    REQUIRE(stats.m.tn == 0);
+    REQUIRE(stats.nr == 4235);
+    REQUIRE(stats.dilution == 1);
+    REQUIRE(stats.nq == 0);
+}
+
+TEST_CASE("RNA_Simulation_Splicing")
+{
+    AlignerOptions options;
+    
+    // We're only interested in splicing in this test
+    options.mode = SpliceAlign;
+    
+    const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits.sam", options);
+
+    REQUIRE(stats.n == 4235);
+    REQUIRE(stats.m.sp() == 1);
+    REQUIRE(isnan(stats.m.sn()));
+    REQUIRE(stats.m.tp == 4235);
+    REQUIRE(stats.m.fp == 0);
+    REQUIRE(stats.m.fn == 0);
+    REQUIRE(stats.m.tn == 0);
+    REQUIRE(stats.nr == 4235);
+    REQUIRE(stats.dilution == 1);
+    REQUIRE(stats.nq == 0);
+}
+
+TEST_CASE("RNA_Simulation_Exon")
+{
+    AlignerOptions options;
+    
+    // We're not interested in introns in this test
+    options.mode = ExonAlign;
+
     const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits.sam", options);
     
     REQUIRE(stats.n == 5762);
@@ -38,17 +80,4 @@ TEST_CASE("RNA_Cufflinks")
     REQUIRE(0 == stats.nr);
     REQUIRE(3307 == stats.nq);
     REQUIRE(0 == stats.dilution);
-}
-
-TEST_CASE("RNA_Simulation_Splicing")
-{
-    /*
-     * Since the SAM file comes from a simulation of the reference chromosome, it's not surprising that
-     * the sensitivity is 100% (from the first 1000 reads).
-     */
-    
-    //const auto stats = Aligner::spliced("tests/data/rna_sims/accepted_hits.sam", AlignerOptions(1000));
-
-    //REQUIRE(1 == stats.m.sp());
-    //REQUIRE(0 == stats.m.sn());
 }

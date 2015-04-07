@@ -10,96 +10,43 @@
 
 using namespace Spike;
 
-AlignerStats Aligner::spliced(const std::string &file, const AlignerOptions &options)
+static bool checkSplice(const Standard &r, const Alignment &align)
 {
-    const auto r = StandardFactory::reference();
+    assert(align.spliced);
 
-    AlignerStats stats;
-    
-    // Check whether a spliced-alignment is correct
-    auto f = [&](const Alignment &align)
+    /*
+     * A spliced alignment is correct if it aligns to two consecutive exons
+     */
+        
+    for (auto i = 0; i < r.exons.size(); i++)
     {
-        /*
-         * An spliced alignment is correct if it aligns to two consecutive exons
-         */
-     
-        for (auto i = 0; i < r.exons.size(); i++)
+        const auto &exon_1 = r.exons[i];
+        
+        // Check if it starts inside exon_1
+        if (align.l.start >= exon_1.l.start && align.l.start <= exon_1.l.end && align.l.end > exon_1.l.end
+            && i != r.exons.size() - 1)
         {
-            const auto &exon_1 = r.exons[i];
-
-            // Check if it starts inside exon_1
-            if (align.l.start >= exon_1.l.start && align.l.start < exon_1.l.end && align.l.end > exon_1.l.end
-                    && i != r.exons.size() - 1)
+            for (auto j = i + 1; j < r.exons.size(); j++)
             {
-                // Any ... ?
+                const auto exon_2 = r.exons[j];
                 
-                for (auto j = i + 1; j < r.exons.size(); j++)
+                if (exon_1.iID == exon_2.iID)
                 {
-                    const auto exon_2 = r.exons[j];
+                    auto a = align.l.start < exon_2.l.start;
+                    auto b = align.l.end > exon_2.l.start ;
+                    auto c = align.l.end < exon_2.l.end;
                     
-                    if (exon_1.iID == exon_2.iID)
+                    // Check if it ends inside exon_2
+                    if (align.l.start < exon_2.l.start && align.l.end >= exon_2.l.start && align.l.end <= exon_2.l.end)
                     {
-                        // Check if it ends inside exon_2
-                        if (align.l.start < exon_2.l.start && align.l.end > exon_2.l.start && align.l.end < exon_2.l.end)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
         }
-        
-        return false;
-    };
-
-    ParserSAM::parse(file, [&](const Alignment &align)
-    {
-        if (align.id == r.id)
-        {
-            stats.nr++;
-        }
-        else
-        {
-            stats.nq++;
-        }
-        
-        if (align.mapped && align.spliced)
-        {
-            if (align.id == r.id)
-            {
-                if (contains(r, align))
-                {
-                    if (f(align))
-                    {
-                        stats.m.tp++;
-                    }
-                    else
-                    {
-                        stats.m.fp++;
-                    }
-                }
-                else
-                {
-                    stats.m.fp++;
-                }
-            }
-            else
-            {
-                //if (matchChromoBoundary(r, align))
-                {
-                    stats.m.fn++;
-                }
-                //else
-                {
-                    stats.m.tn++;
-                }
-            }
-
-            stats.n++;
-        }
-    });
-
-    return stats;
+    }
+    
+    return false;
 }
 
 AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &options)
@@ -109,7 +56,8 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if (!options.spliced && align.spliced)
+        if ((options.mode == ExonAlign   && align.spliced) ||
+            (options.mode == SpliceAlign && !align.spliced))
         {
             return;
         }
@@ -124,17 +72,20 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
         
 		if (align.mapped)
 		{
+            const bool detected = (align.spliced && checkSplice(r, align)) || (!align.spliced && contains(r, align));
+
 			if (align.id == r.id)
 			{
 				if (contains(r, align))
 				{
-					if (contains(r.fs.begin(), r.fs.end(), align))
+					if (detected)
 					{
 						stats.m.tp++;
 					}
 					else
 					{
 						stats.m.fp++;
+                        checkSplice(r, align);
 					}
 				}
 				else
@@ -144,7 +95,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 			}
 			else
 			{
-				if (contains(r, align))
+				if (detected)
 				{
 					stats.m.fn++;
 				}

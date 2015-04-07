@@ -47,7 +47,8 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
             const auto r3 = stoi(result[2]);
 
             const auto start = stoi(tokens[3]);
-            align.l.set(start, start + r1 + r2 + r3);
+            
+            align.l.set(start, start + r1 + r2 + r3 - 1);
         }
         else
         {
