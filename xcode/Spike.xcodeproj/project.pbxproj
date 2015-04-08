@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		EF13716B1ACADFEB006B0DE2 /* t_standard_factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF13716A1ACADFEB006B0DE2 /* t_standard_factory.cpp */; };
 		EF1371751ACAE0B8006B0DE2 /* t_aligner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF13716C1ACAE0B8006B0DE2 /* t_aligner.cpp */; };
+		EF150F4F1AD5060A0004E613 /* libhts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF150F4E1AD5060A0004E613 /* libhts.a */; };
+		EF150F511AD531D10004E613 /* t_parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF150F501AD531D10004E613 /* t_parser_sam.cpp */; };
 		EF2290561AC0E58000CE76BF /* aligner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290321AC0E58000CE76BF /* aligner.cpp */; };
 		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; };
 		EF2290581AC0E58000CE76BF /* assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290361AC0E58000CE76BF /* assembly.cpp */; };
@@ -43,6 +45,8 @@
 		7F7C70521AB4726E00C6EE36 /* Spike */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Spike; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF13716A1ACADFEB006B0DE2 /* t_standard_factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_standard_factory.cpp; path = ../tests/t_standard_factory.cpp; sourceTree = "<group>"; };
 		EF13716C1ACAE0B8006B0DE2 /* t_aligner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_aligner.cpp; path = ../tests/t_aligner.cpp; sourceTree = "<group>"; };
+		EF150F4E1AD5060A0004E613 /* libhts.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libhts.a; path = ../../HT/libhts.a; sourceTree = "<group>"; };
+		EF150F501AD531D10004E613 /* t_parser_sam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_sam.cpp; path = ../tests/t_parser_sam.cpp; sourceTree = "<group>"; };
 		EF2290321AC0E58000CE76BF /* aligner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = aligner.cpp; path = ../src/aligner.cpp; sourceTree = "<group>"; };
 		EF2290331AC0E58000CE76BF /* aligner.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = aligner.hpp; path = ../src/aligner.hpp; sourceTree = "<group>"; };
 		EF2290341AC0E58000CE76BF /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/alignment.hpp; sourceTree = "<group>"; };
@@ -92,6 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF150F4F1AD5060A0004E613 /* libhts.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				EF13716C1ACAE0B8006B0DE2 /* t_aligner.cpp */,
+				EF150F501AD531D10004E613 /* t_parser_sam.cpp */,
 				EF13716A1ACADFEB006B0DE2 /* t_standard_factory.cpp */,
 			);
 			name = Tests;
@@ -114,6 +120,7 @@
 				EFD36E9A1ACB775B00F6F098 /* Data */,
 				7FC557061AB473A90085C090 /* Sources */,
 				7F6E0C831AB653AC00C9E3E0 /* Tests */,
+				EF150F4D1AD505D50004E613 /* Framework */,
 				7F7C70531AB4726E00C6EE36 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -158,6 +165,14 @@
 				EF2290551AC0E58000CE76BF /* types.hpp */,
 			);
 			name = Sources;
+			sourceTree = "<group>";
+		};
+		EF150F4D1AD505D50004E613 /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				EF150F4E1AD5060A0004E613 /* libhts.a */,
+			);
+			name = Framework;
 			sourceTree = "<group>";
 		};
 		EF3860D41AD3765B0062D246 /* Exceptions */ = {
@@ -267,6 +282,7 @@
 				EF5D84C41AC39701009DFB9C /* dna_variation.cpp in Sources */,
 				EF1371751ACAE0B8006B0DE2 /* t_aligner.cpp in Sources */,
 				EF2290561AC0E58000CE76BF /* aligner.cpp in Sources */,
+				EF150F511AD531D10004E613 /* t_parser_sam.cpp in Sources */,
 				EF2290581AC0E58000CE76BF /* assembly.cpp in Sources */,
 				EF13716B1ACADFEB006B0DE2 /* t_standard_factory.cpp in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
@@ -382,14 +398,16 @@
 					../include,
 					../../include,
 					"../include/tclap-1.2.1/include",
-					/Users/tedwong/Sources/SS/include,
+					/Users/tedwong/Sources/QS/include,
 					../../src,
 					../src,
 					src,
+					/Users/tedwong/Sources/HT,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					/Users/tedwong/Sources/HT,
 				);
 				PRODUCT_NAME = Spike;
 			};
@@ -413,14 +431,16 @@
 					../include,
 					../../include,
 					"../include/tclap-1.2.1/include",
-					/Users/tedwong/Sources/SS/include,
+					/Users/tedwong/Sources/QS/include,
 					../../src,
 					../src,
 					src,
+					/Users/tedwong/Sources/HT,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					/Users/tedwong/Sources/HT,
 				);
 				PRODUCT_NAME = Spike;
 			};

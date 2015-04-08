@@ -16,8 +16,8 @@ namespace Spike
             this->start = start; this->end = end;
             assert(this->end > this->start);
         }
-        
-        inline BasePair length() const { return (end - start); }
+
+        inline BasePair length() const { return (end - start + 1); }
         
         inline bool contains(const Locus &q) const
         {

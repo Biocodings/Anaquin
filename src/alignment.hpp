@@ -21,8 +21,6 @@ namespace Spike
         
         // Only valid if the alignment is spliced
         BasePair skipped;
-        
-        std::string seq;
     };    
 }
 
