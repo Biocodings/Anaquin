@@ -113,10 +113,12 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
     // Proportion of the reads from the reference
     stats.dilution = stats.nq ? static_cast<Percentage>(stats.nr / stats.nq) : 1;
 
-    Writer w("align.csv");
- 
-    w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % "diluation" % "tp" % "tn" % "fp" % "fn").str());
-    w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn).str());
-    
+    if (options.output == OutputMode::CSVFile)
+    {
+        Writer w("align.csv");
+        w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % "diluation" % "tp" % "tn" % "fp" % "fn").str());
+        w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn).str());
+    }
+
 	return stats;
 }

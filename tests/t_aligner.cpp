@@ -8,7 +8,7 @@ static std::string exts[] = { "sam", "bam" };
 TEST_CASE("RNA_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution. It's obviously independent to the standards.
-    const auto stats = Aligner::analyze("tests/data/cufflinks_test.sam");
+    const auto stats = Aligner::analyze("tests/data/cufflinks_test.sam", Aligner::OutputMode::None);
     
     REQUIRE(isnan(stats.m.sp()));
     REQUIRE(1 == stats.m.sn());
@@ -25,7 +25,7 @@ TEST_CASE("RNA_Simulation_Base")
 {
     for (auto ex : exts)
     {
-        const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex);
+        const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, Aligner::OutputMode::None);
 
         REQUIRE(stats.n == 9997);
         REQUIRE(stats.m.tp == 9997);
@@ -42,10 +42,10 @@ TEST_CASE("RNA_Simulation_Splicing")
 {
     for (auto ex : exts)
     {
-        AlignerOptions options;
-        
-        // We're only interested in splicing in this test
-        options.mode = SpliceAlign;
+        Aligner::AlignerOptions options;
+
+        options.output = Aligner::OutputMode::None;
+        options.mode = Aligner::SpliceAlign;
         
         const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
         
@@ -66,10 +66,10 @@ TEST_CASE("RNA_Simulation_Exon")
 {
     for (auto ex : exts)
     {
-        AlignerOptions options;
-        
-        // We're not interested in introns in this test
-        options.mode = ExonAlign;
+        Aligner::AlignerOptions options;
+
+        options.output = Aligner::OutputMode::None;        
+        options.mode = Aligner::ExonAlign;
         
         const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
         

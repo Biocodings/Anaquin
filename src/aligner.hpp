@@ -29,20 +29,34 @@ namespace Spike
         Percentage dilution;
     };
 
-    enum AlignerMode
-    {
-        BaseAlign,
-        ExonAlign,
-        SpliceAlign,
-    };
-    
-    struct AlignerOptions : public ParserOptions
-    {
-        AlignerMode mode;
-    };
-    
     struct Aligner
     {
+        enum OutputMode
+        {
+            CSVFile,
+            None,
+        };
+
+        enum AlignerMode
+        {
+            BaseAlign,
+            ExonAlign,
+            SpliceAlign,
+        };
+        
+        struct AlignerOptions : public ParserOptions
+        {
+            OutputMode output;
+            AlignerMode mode;
+        };
+        
+        inline static AlignerStats analyze(const std::string &file, enum OutputMode output)
+        {
+            AlignerOptions os;
+            os.output = output;
+            return Aligner::analyze(file, os);
+        }
+
         static AlignerStats analyze(const std::string &file, const AlignerOptions &options = AlignerOptions());
     };
 }
