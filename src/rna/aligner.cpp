@@ -75,12 +75,11 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 
 		if (align.mapped)
 		{
-            // Whether the read has mapped to the reference (by checking via the locus)
-            const bool ref_mapped = contains(r, align);
+            const bool mapped = contains(r, align);
 
 			if (align.id == r.id)
 			{
-				if (ref_mapped)
+				if (mapped)
 				{
                     /*
                      * It's not enough that the read is mapped, it must also be mapped correctly.
@@ -110,7 +109,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 			}
 			else
 			{
-				if (ref_mapped)
+				if (mapped)
 				{
 					stats.m.fn++;
 				}

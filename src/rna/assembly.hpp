@@ -1,6 +1,7 @@
 #ifndef GI_ASSEMBLY_HPP
 #define GI_ASSEMBLY_HPP
 
+#include "parsers/parser.hpp"
 #include "confusion_matrix.hpp"
 
 namespace Spike
@@ -11,10 +12,15 @@ namespace Spike
         ConfusionMatrix exon;
         ConfusionMatrix intron;
     };
-    
+
     struct Assembly
     {
-        static AssemblyStats analyze(const std::string &file);
+        struct AssemblyOptions : public ParserOptions
+        {
+            // Empty Implementation
+        };
+        
+        static AssemblyStats analyze(const std::string &file, const AssemblyOptions &options = AssemblyOptions());
     };
 }
 

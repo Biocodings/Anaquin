@@ -41,7 +41,7 @@ namespace Spike
         {
             AlignerMode mode;
         };
-        
+
         static AlignerStats analyze(const std::string &file, const AlignerOptions &options = AlignerOptions());
     };
 }

@@ -1,12 +1,12 @@
 #ifndef GI_STATISTICS_HPP
 #define GI_STATISTICS_HPP
 
-#include <assert.h>
+#include "standard.hpp"
 #include "confusion_matrix.hpp"
 
 namespace Spike
 {
-    template <typename T, typename Iter> bool contains_(const Iter &iter, const T &t)
+    template <typename Iter, typename T> bool find(const Iter &iter, const T &t)
     {
         for (auto i: iter)
         {
@@ -15,24 +15,19 @@ namespace Spike
                 return true;
             }
         }
-        
+
         return false;
     }
-    
-    /*
-     * Conduce a binary classification test. Refer to http://en.wikipedia.org/wiki/Sensitivity_and_specificity for more details.
-     */
-    
-    template <typename Iter, typename R, typename T> void classify(const Iter &iter, const R &r, const T &t, ConfusionMatrix &m)
+
+    template <typename T, typename F> void classify(const Standard &r, const T &t, ConfusionMatrix &m, F f)
     {
-        assert(!iter.empty());
-        
-        // Positive if the query is classified with the references
+        const bool mapped = r.l.contains(t.l);
+
         if (r.id == t.id)
         {
-            if (contains_(iter, t))
+            if (mapped)
             {
-                if (r.l.contains(t.l))
+                if (f(t))
                 {
                     m.tp++;
                 }
@@ -48,7 +43,7 @@ namespace Spike
         }
         else
         {
-            if (contains_(iter, t))
+            if (mapped)
             {
                 m.fn++;
             }
