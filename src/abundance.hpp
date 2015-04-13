@@ -7,30 +7,38 @@ namespace Spike
 {
     struct Abdunance
     {
-        template <typename T1, typename T2> struct AbdunanceResults
+        template <typename T> struct AbdunanceResults
         {
-            T1 min_k;
-            T2 min_v;
+            T limit_key;
+
+            // The value of the limit of sensitivity
+            unsigned limit_count;
         };
-        
-        template <typename T1, typename T2> static AbdunanceResults<T1, T2> analyze(const std::map<T1, T2> &t)
+
+        template <typename T> static AbdunanceResults<T> analyze(const std::map<T, unsigned> &t)
         {
-            AbdunanceResults<T1, T2> r;
+            AbdunanceResults<T> r;
 
             if (!t.size()) { return r; }
-            
-            r.min_v = std::numeric_limits<T2>::max();
-            
+
+            // The lowest count must be zero becaust it can't be negative
+            r.limit_count = std::numeric_limits<unsigned>::max();
+
             for (auto iter = t.begin(); iter != t.end(); iter++)
             {
-                if ( iter->second && iter->second < r.min_v)
+                if (iter->second && iter->second < r.limit_count)
                 {
-                    r.min_k = iter->first;
-                    r.min_v = iter->second;
+                    r.limit_key = iter->first;
+                    r.limit_count = iter->second;
                 }
             }
 
-            assert(r.min_v);
+            if (r.limit_count == std::numeric_limits<unsigned>::max())
+            {
+                // There's nothing that has a single count
+                r.limit_count = 0;
+            }
+            
             return r;
         }
     };

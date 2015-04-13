@@ -146,10 +146,12 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
      */
 
     const auto cr = Abdunance::analyze(counts);
-    assert(r.seqs_iA.count(cr.min_k));
+    
+    // Either the samples are independent or the least detectable-abundant sequin is known
+    assert(!cr.limit_count || r.seqs_iA.count(cr.limit_key));
 
     // The least abdunance while still detectable in this experiment
-    const auto limit_sensitivity = r.seqs_iA.at(cr.min_k).reads;
+    const auto limit_sensitivity = cr.limit_count ? r.seqs_iA.at(cr.limit_key).reads : NAN;
 
     if (options.writer)
     {
