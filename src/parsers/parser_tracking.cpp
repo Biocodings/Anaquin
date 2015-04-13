@@ -1,33 +1,29 @@
 #include <map>
-#include <fstream>
-#include <vector>
+//#include <vector>
 #include <assert.h>
+#include "file.hpp"
 #include "tokens.hpp"
 #include <boost/algorithm/string.hpp>
-#include "parsers/parser_ctracking.hpp"
+#include "parsers/parser_tracking.hpp"
 
 using namespace Spike;
 
-bool ParserCTracking::parse(const std::string &file, std::function<void (const CTracking &)> f)
+bool ParserCTracking::parse(const std::string &file, std::function<void (const Tracking &)> f)
 {
-    std::string line;
-    std::ifstream i(file);
-    
-    if (!i)
-    {
-        return false;
-    }
-    
+    File i(file);
+
     std::map<std::string, CTrackingStatus> mapper =
     {
         { "OK", OK },
         { "HIDATA", HIData }
     };
 
-    CTracking t;
+    Tracking t;
+    
+    std::string line;
     std::vector<std::string> tokens;
     
-    while (std::getline(i, line))
+    while (i.nextLine(line))
     {
         Tokens::split(line, "\t", tokens);
        

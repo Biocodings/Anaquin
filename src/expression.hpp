@@ -1,13 +1,13 @@
-#ifndef GI_ABUNDANCE_HPP
-#define GI_ABUNDANCE_HPP
+#ifndef GI_EXPRESSION_HPP
+#define GI_EXPRESSION_HPP
 
 #include <map>
 
 namespace Spike
 {
-    struct Abdunance
+    struct Expression
     {
-        template <typename T> struct AbdunanceResults
+        template <typename T> struct ExpressionResults
         {
             T limit_key;
 
@@ -15,13 +15,13 @@ namespace Spike
             unsigned limit_count;
         };
 
-        template <typename T> static AbdunanceResults<T> analyze(const std::map<T, unsigned> &t)
+        template <typename T> static ExpressionResults<T> analyze(const std::map<T, unsigned> &t)
         {
-            AbdunanceResults<T> r;
+            ExpressionResults<T> r;
 
             if (!t.size()) { return r; }
 
-            // The lowest count must be zero becaust it can't be negative
+            // The lowest count must be zero because it can't be negative
             r.limit_count = std::numeric_limits<unsigned>::max();
 
             for (auto iter = t.begin(); iter != t.end(); iter++)

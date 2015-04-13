@@ -1,9 +1,7 @@
 #ifndef GI_STANDARD_HPP
 #define GI_STANDARD_HPP
 
-#include <set>
 #include <map>
-#include <list>
 #include <vector>
 #include "locus.hpp"
 #include "feature.hpp"
@@ -11,13 +9,7 @@
 
 namespace Spike
 {
-    enum Group
-    {
-        A,
-        B,
-        C,
-        D
-    };
+    enum Group { A, B, C, D };
     
     struct Variation
     {
@@ -62,27 +54,11 @@ namespace Spike
     
     struct Standard
     {
-        inline bool matchFeature(const Feature &q) const
-        {
-            for (auto r : fs)
-            {
-                if (r.type == q.type && r.l.contains(q.l))
-                {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-        
-        // Whether the given gene is a part of the standard
-        bool known(const GeneID &id) const;
-        
         ChromoID id;
         
         // The location of the chromosome
         Locus l;
-        
+
         std::vector<Variation> vars;
         
         std::map<GeneID, Sequins> seqs_gA;

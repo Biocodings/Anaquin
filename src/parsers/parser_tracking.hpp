@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_C_TRACKING_HPP
-#define GI_PARSER_C_TRACKING_HPP
+#ifndef GI_PARSER_TRACKING_HPP
+#define GI_PARSER_TRACKING_HPP
 
 #include "types.hpp"
 #include <functional>
@@ -11,10 +11,10 @@ namespace Spike
         OK,
         HIData
     };
-    
+
     typedef std::string TrackID;
     
-    struct CTracking
+    struct Tracking
     {
         TrackID trackID;
         TrackID geneID;
@@ -28,7 +28,7 @@ namespace Spike
     
     struct ParserCTracking
     {
-        static bool parse(const std::string &file, std::function<void (const CTracking &)>);
+        static bool parse(const std::string &file, std::function<void (const Tracking &)>);
     };    
 }
 

@@ -1,14 +1,13 @@
-#include <limits>
 #include <iostream>
-#include "expression.hpp"
+#include "abundance.hpp"
 #include "standard_factory.hpp"
-#include "parsers/parser_ctracking.hpp"
+#include "parsers/parser_tracking.hpp"
 #include <ss/regression/linear_model.hpp>
 
 using namespace SS;
 using namespace Spike;
 
-ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode)
+AbundanceStats Abundance::analyze(const std::string &file, const Abundance::AbundanceOptions &options)
 {
     const auto r = StandardFactory::reference();
 
@@ -65,12 +64,12 @@ ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode
      *     expression = constant + slope * concentraion
      */
     
-    ExpressionStats stats;
+    AbundanceStats stats;
     
     stats.r2 = lm.ar2;
     
     // Dependency between the two variables
-    stats.r = cor(x, y);
+    stats.r = pearson(x, y);
     
     // Linear relationship between the two variables
     stats.slope = lm.coeffs[1].value;

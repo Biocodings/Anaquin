@@ -13,19 +13,20 @@
 		EF150F511AD531D10004E613 /* t_parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF150F501AD531D10004E613 /* t_parser_sam.cpp */; };
 		EF224B541ADB5B8900B989A8 /* aligner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B4E1ADB5B8900B989A8 /* aligner.cpp */; };
 		EF224B551ADB5B8900B989A8 /* assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B501ADB5B8900B989A8 /* assembly.cpp */; };
-		EF224B561ADB5B8900B989A8 /* expression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B521ADB5B8900B989A8 /* expression.cpp */; };
 		EF224B5A1ADB5E3C00B989A8 /* variation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B581ADB5E3C00B989A8 /* variation.cpp */; };
 		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; };
-		EF2290621AC0E58000CE76BF /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290501AC0E58000CE76BF /* standard.cpp */; };
 		EF2290631AC0E58000CE76BF /* standard_factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290521AC0E58000CE76BF /* standard_factory.cpp */; };
 		EF3860E61AD3783A0062D246 /* parser_bed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860D71AD3783A0062D246 /* parser_bed.cpp */; };
 		EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860D91AD3783A0062D246 /* parser_csv.cpp */; };
-		EF3860E81AD3783A0062D246 /* parser_ctracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DB1AD3783A0062D246 /* parser_ctracking.cpp */; };
+		EF3860E81AD3783A0062D246 /* parser_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DB1AD3783A0062D246 /* parser_tracking.cpp */; };
 		EF3860E91AD3783A0062D246 /* parser_fa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DD1AD3783A0062D246 /* parser_fa.cpp */; };
 		EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DF1AD3783A0062D246 /* parser_gtf.cpp */; };
 		EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E11AD3783A0062D246 /* parser_sam.cpp */; };
 		EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E31AD3783A0062D246 /* parser_vcf.cpp */; };
 		EF76C91E1ADBD59F003D45F9 /* file_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C91B1ADBD59F003D45F9 /* file_writer.cpp */; };
+		EF76C9241ADC083C003D45F9 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C9231ADC083C003D45F9 /* t_assembly.cpp */; };
+		EF76C9291ADC09FD003D45F9 /* abundance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C9251ADC09FD003D45F9 /* abundance.cpp */; };
+		EF76C92A1ADC09FD003D45F9 /* differential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C9271ADC09FD003D45F9 /* differential.cpp */; };
 		EFD36E9D1ACB912700F6F098 /* file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD36E9C1ACB912700F6F098 /* file.cpp */; };
 /* End PBXBuildFile section */
 
@@ -52,8 +53,6 @@
 		EF224B4F1ADB5B8900B989A8 /* aligner.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = aligner.hpp; path = ../src/rna/aligner.hpp; sourceTree = "<group>"; };
 		EF224B501ADB5B8900B989A8 /* assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = assembly.cpp; path = ../src/rna/assembly.cpp; sourceTree = "<group>"; };
 		EF224B511ADB5B8900B989A8 /* assembly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = assembly.hpp; path = ../src/rna/assembly.hpp; sourceTree = "<group>"; };
-		EF224B521ADB5B8900B989A8 /* expression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = expression.cpp; path = ../src/rna/expression.cpp; sourceTree = "<group>"; };
-		EF224B531ADB5B8900B989A8 /* expression.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = expression.hpp; path = ../src/rna/expression.hpp; sourceTree = "<group>"; };
 		EF224B581ADB5E3C00B989A8 /* variation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = variation.cpp; path = ../src/dna/variation.cpp; sourceTree = "<group>"; };
 		EF224B591ADB5E3C00B989A8 /* variation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = variation.hpp; path = ../src/dna/variation.hpp; sourceTree = "<group>"; };
 		EF224B5D1ADB653900B989A8 /* mixture_A.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mixture_A.csv; path = ../data/RNA/mixture_A.csv; sourceTree = "<group>"; };
@@ -64,19 +63,18 @@
 		EF22903B1AC0E58000CE76BF /* confusion_matrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = confusion_matrix.hpp; path = ../src/confusion_matrix.hpp; sourceTree = "<group>"; };
 		EF22903E1AC0E58000CE76BF /* feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = feature.hpp; path = ../src/feature.hpp; sourceTree = "<group>"; };
 		EF22903F1AC0E58000CE76BF /* locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/locus.hpp; sourceTree = "<group>"; };
-		EF2290501AC0E58000CE76BF /* standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = standard.cpp; path = ../src/standard.cpp; sourceTree = "<group>"; };
 		EF2290511AC0E58000CE76BF /* standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = standard.hpp; path = ../src/standard.hpp; sourceTree = "<group>"; };
 		EF2290521AC0E58000CE76BF /* standard_factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = standard_factory.cpp; path = ../src/standard_factory.cpp; sourceTree = "<group>"; };
 		EF2290531AC0E58000CE76BF /* standard_factory.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = standard_factory.hpp; path = ../src/standard_factory.hpp; sourceTree = "<group>"; };
-		EF2290541AC0E58000CE76BF /* statistics.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = statistics.hpp; path = ../src/statistics.hpp; sourceTree = "<group>"; };
+		EF2290541AC0E58000CE76BF /* classify.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = classify.hpp; path = ../src/classify.hpp; sourceTree = "<group>"; };
 		EF2290551AC0E58000CE76BF /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../src/types.hpp; sourceTree = "<group>"; };
 		EF3860D51AD3769B0062D246 /* invalid_extension.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = invalid_extension.hpp; path = ../src/exceptions/invalid_extension.hpp; sourceTree = "<group>"; };
 		EF3860D71AD3783A0062D246 /* parser_bed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_bed.cpp; path = ../src/parsers/parser_bed.cpp; sourceTree = "<group>"; };
 		EF3860D81AD3783A0062D246 /* parser_bed.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_bed.hpp; path = ../src/parsers/parser_bed.hpp; sourceTree = "<group>"; };
 		EF3860D91AD3783A0062D246 /* parser_csv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_csv.cpp; path = ../src/parsers/parser_csv.cpp; sourceTree = "<group>"; };
 		EF3860DA1AD3783A0062D246 /* parser_csv.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_csv.hpp; path = ../src/parsers/parser_csv.hpp; sourceTree = "<group>"; };
-		EF3860DB1AD3783A0062D246 /* parser_ctracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_ctracking.cpp; path = ../src/parsers/parser_ctracking.cpp; sourceTree = "<group>"; };
-		EF3860DC1AD3783A0062D246 /* parser_ctracking.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_ctracking.hpp; path = ../src/parsers/parser_ctracking.hpp; sourceTree = "<group>"; };
+		EF3860DB1AD3783A0062D246 /* parser_tracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tracking.cpp; path = ../src/parsers/parser_tracking.cpp; sourceTree = "<group>"; };
+		EF3860DC1AD3783A0062D246 /* parser_tracking.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tracking.hpp; path = ../src/parsers/parser_tracking.hpp; sourceTree = "<group>"; };
 		EF3860DD1AD3783A0062D246 /* parser_fa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_fa.cpp; path = ../src/parsers/parser_fa.cpp; sourceTree = "<group>"; };
 		EF3860DE1AD3783A0062D246 /* parser_fa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_fa.hpp; path = ../src/parsers/parser_fa.hpp; sourceTree = "<group>"; };
 		EF3860DF1AD3783A0062D246 /* parser_gtf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_gtf.cpp; path = ../src/parsers/parser_gtf.cpp; sourceTree = "<group>"; };
@@ -91,7 +89,12 @@
 		EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mock_writer.hpp; path = ../src/writers/mock_writer.hpp; sourceTree = "<group>"; };
 		EF76C9201ADBE1D8003D45F9 /* standards.bed */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = standards.bed; path = ../data/RNA/standards.bed; sourceTree = "<group>"; };
 		EF76C9211ADBE1D8003D45F9 /* standards.gtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = standards.gtf; path = ../data/RNA/standards.gtf; sourceTree = "<group>"; };
-		EF76C9221ADBE82F003D45F9 /* abundance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = abundance.hpp; path = ../src/abundance.hpp; sourceTree = "<group>"; };
+		EF76C9221ADBE82F003D45F9 /* expression.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = expression.hpp; path = ../src/expression.hpp; sourceTree = "<group>"; };
+		EF76C9231ADC083C003D45F9 /* t_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_assembly.cpp; path = ../tests/t_assembly.cpp; sourceTree = "<group>"; };
+		EF76C9251ADC09FD003D45F9 /* abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = abundance.cpp; path = ../src/rna/abundance.cpp; sourceTree = "<group>"; };
+		EF76C9261ADC09FD003D45F9 /* abundance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = abundance.hpp; path = ../src/rna/abundance.hpp; sourceTree = "<group>"; };
+		EF76C9271ADC09FD003D45F9 /* differential.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = differential.cpp; path = ../src/rna/differential.cpp; sourceTree = "<group>"; };
+		EF76C9281ADC09FD003D45F9 /* differential.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = differential.hpp; path = ../src/rna/differential.hpp; sourceTree = "<group>"; };
 		EFD36E9B1ACB90D400F6F098 /* file.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = file.hpp; path = ../src/file.hpp; sourceTree = "<group>"; };
 		EFD36E9C1ACB912700F6F098 /* file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file.cpp; path = ../src/file.cpp; sourceTree = "<group>"; };
 		EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/tokens.hpp; sourceTree = "<group>"; };
@@ -114,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				EF13716C1ACAE0B8006B0DE2 /* t_aligner.cpp */,
+				EF76C9231ADC083C003D45F9 /* t_assembly.cpp */,
 				EF150F501AD531D10004E613 /* t_parser_sam.cpp */,
 				EF13716A1ACADFEB006B0DE2 /* t_standard_factory.cpp */,
 			);
@@ -149,7 +153,7 @@
 				EFE9A01D1AD3B10900557829 /* Writers */,
 				EF3860D41AD3765B0062D246 /* Exceptions */,
 				EF3860D61AD378190062D246 /* Parsers */,
-				EF76C9221ADBE82F003D45F9 /* abundance.hpp */,
+				EF76C9221ADBE82F003D45F9 /* expression.hpp */,
 				EF2290341AC0E58000CE76BF /* alignment.hpp */,
 				EF2290381AC0E58000CE76BF /* biology.hpp */,
 				EF22903B1AC0E58000CE76BF /* confusion_matrix.hpp */,
@@ -160,9 +164,8 @@
 				EF2290351AC0E58000CE76BF /* main.cpp */,
 				EF2290521AC0E58000CE76BF /* standard_factory.cpp */,
 				EF2290531AC0E58000CE76BF /* standard_factory.hpp */,
-				EF2290501AC0E58000CE76BF /* standard.cpp */,
 				EF2290511AC0E58000CE76BF /* standard.hpp */,
-				EF2290541AC0E58000CE76BF /* statistics.hpp */,
+				EF2290541AC0E58000CE76BF /* classify.hpp */,
 				EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */,
 				EF2290551AC0E58000CE76BF /* types.hpp */,
 			);
@@ -180,12 +183,14 @@
 		EF224B4D1ADB5B7C00B989A8 /* RNA */ = {
 			isa = PBXGroup;
 			children = (
+				EF76C9251ADC09FD003D45F9 /* abundance.cpp */,
+				EF76C9261ADC09FD003D45F9 /* abundance.hpp */,
 				EF224B4E1ADB5B8900B989A8 /* aligner.cpp */,
 				EF224B4F1ADB5B8900B989A8 /* aligner.hpp */,
 				EF224B501ADB5B8900B989A8 /* assembly.cpp */,
 				EF224B511ADB5B8900B989A8 /* assembly.hpp */,
-				EF224B521ADB5B8900B989A8 /* expression.cpp */,
-				EF224B531ADB5B8900B989A8 /* expression.hpp */,
+				EF76C9271ADC09FD003D45F9 /* differential.cpp */,
+				EF76C9281ADC09FD003D45F9 /* differential.hpp */,
 			);
 			name = RNA;
 			sourceTree = "<group>";
@@ -233,8 +238,8 @@
 				EF3860D81AD3783A0062D246 /* parser_bed.hpp */,
 				EF3860D91AD3783A0062D246 /* parser_csv.cpp */,
 				EF3860DA1AD3783A0062D246 /* parser_csv.hpp */,
-				EF3860DB1AD3783A0062D246 /* parser_ctracking.cpp */,
-				EF3860DC1AD3783A0062D246 /* parser_ctracking.hpp */,
+				EF3860DB1AD3783A0062D246 /* parser_tracking.cpp */,
+				EF3860DC1AD3783A0062D246 /* parser_tracking.hpp */,
 				EF3860DD1AD3783A0062D246 /* parser_fa.cpp */,
 				EF3860DE1AD3783A0062D246 /* parser_fa.hpp */,
 				EF3860DF1AD3783A0062D246 /* parser_gtf.cpp */,
@@ -324,23 +329,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */,
-				EF2290621AC0E58000CE76BF /* standard.cpp in Sources */,
 				EF224B5A1ADB5E3C00B989A8 /* variation.cpp in Sources */,
 				EF1371751ACAE0B8006B0DE2 /* t_aligner.cpp in Sources */,
 				EF150F511AD531D10004E613 /* t_parser_sam.cpp in Sources */,
 				EF13716B1ACADFEB006B0DE2 /* t_standard_factory.cpp in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
-				EF224B561ADB5B8900B989A8 /* expression.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
 				EF224B541ADB5B8900B989A8 /* aligner.cpp in Sources */,
+				EF76C9241ADC083C003D45F9 /* t_assembly.cpp in Sources */,
+				EF76C9291ADC09FD003D45F9 /* abundance.cpp in Sources */,
 				EFD36E9D1ACB912700F6F098 /* file.cpp in Sources */,
 				EF2290631AC0E58000CE76BF /* standard_factory.cpp in Sources */,
 				EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */,
 				EF224B551ADB5B8900B989A8 /* assembly.cpp in Sources */,
-				EF3860E81AD3783A0062D246 /* parser_ctracking.cpp in Sources */,
+				EF3860E81AD3783A0062D246 /* parser_tracking.cpp in Sources */,
 				EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */,
 				EF76C91E1ADBD59F003D45F9 /* file_writer.cpp in Sources */,
 				EF3860E61AD3783A0062D246 /* parser_bed.cpp in Sources */,
+				EF76C92A1ADC09FD003D45F9 /* differential.cpp in Sources */,
 				EF3860E91AD3783A0062D246 /* parser_fa.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

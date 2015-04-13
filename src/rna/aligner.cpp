@@ -3,7 +3,7 @@
 #include <assert.h>
 #include "aligner.hpp"
 #include "biology.hpp"
-#include "abundance.hpp"
+#include "expression.hpp"
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
 #include "standard_factory.hpp"
@@ -144,7 +144,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
      * The counts for each sequin is needed to calculate the limit of sensitivity.
      */
 
-    const auto cr = Abdunance::analyze(counts);
+    const auto cr = Expression::analyze(counts);
     
     // Either the samples are independent or the least detectable-abundant sequin is known
     assert(!cr.limit_count || r.seqs_iA.count(cr.limit_key));
