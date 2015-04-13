@@ -14,8 +14,8 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
     // Values for the x-axis and y-axis
     std::vector<double> x, y;
 
-//    ParserCTracking::parse(file, [&](const CTracking &t)
-//    {
+    ParserTracking::parse(file, [&](const Tracking &t)
+    {
 //        assert(r.known(t.geneID));
 //        assert(r.mix_gA.count(t.geneID));
 //
@@ -53,7 +53,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
 //                break;
 //            }
 //        }
-//    });
+    });
     
     const auto lm = linearModel(y, x);
 

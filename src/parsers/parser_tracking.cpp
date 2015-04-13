@@ -8,11 +8,11 @@
 
 using namespace Spike;
 
-bool ParserCTracking::parse(const std::string &file, std::function<void (const Tracking &)> f)
+bool ParserTracking::parse(const std::string &file, std::function<void (const Tracking &)> f)
 {
     File i(file);
 
-    std::map<std::string, CTrackingStatus> mapper =
+    std::map<std::string, TrackingStatus> mapper =
     {
         { "OK", OK },
         { "HIDATA", HIData }
@@ -50,7 +50,7 @@ bool ParserCTracking::parse(const std::string &file, std::function<void (const T
         t.trackID = tokens[0];
         t.status  = mapper[tokens[12]];
 
-        if (t.status != CTrackingStatus::HIData)
+        if (t.status != TrackingStatus::HIData)
         {
             f(t);
         }

@@ -6,7 +6,7 @@
 
 namespace Spike
 {
-    enum CTrackingStatus
+    enum TrackingStatus
     {
         OK,
         HIData
@@ -23,10 +23,10 @@ namespace Spike
         FPKM lFPKM;
         FPKM uFPKM;
         
-        CTrackingStatus status;
+        TrackingStatus status;
     };
     
-    struct ParserCTracking
+    struct ParserTracking
     {
         static bool parse(const std::string &file, std::function<void (const Tracking &)>);
     };    
