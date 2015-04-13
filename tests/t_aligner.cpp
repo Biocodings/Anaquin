@@ -5,6 +5,11 @@ using namespace Spike;
 
 static std::string exts[] = { "sam", "bam" };
 
+TEST_CASE("RNA_Simulation_2")
+{
+    const auto stats = Aligner::analyze("tests/data/rna_sims_2/aligned/accepted_hits.bam");
+}
+
 TEST_CASE("RNA_Simulation_Exon")
 {
     for (auto ex : exts)

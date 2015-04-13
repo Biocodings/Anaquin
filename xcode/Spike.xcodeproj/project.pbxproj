@@ -89,6 +89,9 @@
 		EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_writer.hpp; path = ../src/writers/file_writer.hpp; sourceTree = "<group>"; };
 		EF76C91B1ADBD59F003D45F9 /* file_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_writer.cpp; path = ../src/writers/file_writer.cpp; sourceTree = "<group>"; };
 		EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mock_writer.hpp; path = ../src/writers/mock_writer.hpp; sourceTree = "<group>"; };
+		EF76C9201ADBE1D8003D45F9 /* standards.bed */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = standards.bed; path = ../data/RNA/standards.bed; sourceTree = "<group>"; };
+		EF76C9211ADBE1D8003D45F9 /* standards.gtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = standards.gtf; path = ../data/RNA/standards.gtf; sourceTree = "<group>"; };
+		EF76C9221ADBE82F003D45F9 /* abundance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = abundance.hpp; path = ../src/abundance.hpp; sourceTree = "<group>"; };
 		EFD36E9B1ACB90D400F6F098 /* file.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = file.hpp; path = ../src/file.hpp; sourceTree = "<group>"; };
 		EFD36E9C1ACB912700F6F098 /* file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file.cpp; path = ../src/file.cpp; sourceTree = "<group>"; };
 		EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/tokens.hpp; sourceTree = "<group>"; };
@@ -146,6 +149,7 @@
 				EFE9A01D1AD3B10900557829 /* Writers */,
 				EF3860D41AD3765B0062D246 /* Exceptions */,
 				EF3860D61AD378190062D246 /* Parsers */,
+				EF76C9221ADBE82F003D45F9 /* abundance.hpp */,
 				EF2290341AC0E58000CE76BF /* alignment.hpp */,
 				EF2290381AC0E58000CE76BF /* biology.hpp */,
 				EF22903B1AC0E58000CE76BF /* confusion_matrix.hpp */,
@@ -208,6 +212,8 @@
 			children = (
 				EF224B5D1ADB653900B989A8 /* mixture_A.csv */,
 				EF224B5E1ADB653900B989A8 /* mixture_B.csv */,
+				EF76C9201ADBE1D8003D45F9 /* standards.bed */,
+				EF76C9211ADBE1D8003D45F9 /* standards.gtf */,
 			);
 			name = RNA;
 			sourceTree = "<group>";

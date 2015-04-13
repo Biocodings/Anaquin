@@ -3,7 +3,7 @@
 #include <assert.h>
 #include "aligner.hpp"
 #include "biology.hpp"
-#include <ss/stats.hpp>
+#include "abundance.hpp"
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
 #include "standard_factory.hpp"
@@ -54,8 +54,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
     AlignerStats stats;
     const auto r = StandardFactory::reference();
 
-    // Used for alternative splicing
-    Feature e1, e2;
+    Feature f1, f2;
     
     std::map<TranscriptID, unsigned> counts;
     std::for_each(r.seqs_iA.begin(), r.seqs_iA.end(), [&](const std::pair<TranscriptID, Sequin> &p)
@@ -83,40 +82,20 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 			{
 				if (ref_mapped)
 				{
-                    const bool detected = !align.spliced || (align.spliced && checkSplice(r, align, e1, e2));
+                    /*
+                     * It's not enough that the read is mapped, it must also be mapped correctly.
+                     * If the read maps to an exon, check whether it's mapped to an exon in the
+                     * reference. Otherwise the read is spliced, and check whether it maps to
+                     * a junction in the reference.
+                     */
+                    
+                    const bool correct = (!align.spliced && find(r.fs.begin(), r.fs.end(), align, f1)) ||
+                                         (align.spliced && checkSplice(r, align, f1, f2));
 
-					if (detected)
+					if (correct)
 					{
-                        Feature f;
-                        
-                        if (!align.spliced && !find(r.fs.begin(), r.fs.end(), align, f))
-                        {
-                            throw std::runtime_error("Not splicing, not found????");
-                        }
-                                                
-                        if (align.spliced)
-                        {
-                            f = e1;
-                        }
-                        
-                        if (!counts.count(f.iID))
-                        {
-                            if (f.iID == "R_5_3_V")
-                            {
-                                assert(counts.count("R_5_3_R"));
-                                counts["R_5_3_R"]++;
-                            }
-                            else
-                            {
-                                throw std::runtime_error("Not splicing, not found????");
-                            }
-                        }
-                        else
-                        {
-                            assert(counts.count(f.iID));
-                            counts[f.iID]++;
-                        }
-                        
+                        assert(counts.count(f1.iID));
+                        counts[f1.iID]++;
 						stats.m.tp++;
 					}
 					else
@@ -166,17 +145,17 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
      * The counts for each sequin is needed to calculate the limit of sensitivity.
      */
 
-    const auto cr = SS::analyze(counts);
+    const auto cr = Abdunance::analyze(counts);
     assert(r.seqs_iA.count(cr.min_k));
-    
+
     // The least abdunance while still detectable in this experiment
     const auto limit_sensitivity = r.seqs_iA.at(cr.min_k).reads;
-    
+
     if (options.writer)
     {
         options.writer->write(
             (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-                % "diluation" % "tp" % "tn" % "fp" % "fn" % "detection").str());
+                % "diluation" % "tp" % "tn" % "fp" % "fn" % "limit_sensitivity").str());
         options.writer->write(
             (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
                 % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn

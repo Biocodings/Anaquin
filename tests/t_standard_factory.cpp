@@ -14,7 +14,7 @@ TEST_CASE("Standard_Isoforms")
 {
     const auto r = StandardFactory::reference();
     
-    REQUIRE(r.seqs_iA.size() == 61);
+    REQUIRE(r.seqs_iA.size() == 62);
     REQUIRE(r.seqs_iB.size() == 61);
 
     const auto ids =
