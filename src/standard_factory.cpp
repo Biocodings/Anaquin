@@ -16,7 +16,7 @@ using namespace Spike;
 
 Standard StandardFactory::reference()
 {
-	std::ifstream in("data/silico/silico.fa");
+	std::ifstream in("data/silico.fa");
 	std::string line;
 
     if (!in.good())
@@ -47,7 +47,7 @@ Standard StandardFactory::reference()
     std::set<GeneID> gids;
     std::set<IsoformID> iids;
 
-    ParserGTF::parse("data/silico/RNA/standards.gtf", [&](const Feature &f, ParserProgress &p)
+    ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f, ParserProgress &p)
 	{
 		r.l.end = std::max(r.l.end, f.l.end);
 		r.l.start = std::min(r.l.start, f.l.start);
@@ -71,7 +71,7 @@ Standard StandardFactory::reference()
      * Create data-structure for DNA mutations & variations
      */
     
-    ParserBED::parse("data/silico/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
+    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
     {
         ts.clear();
 
@@ -147,7 +147,7 @@ Standard StandardFactory::reference()
      * Create data-structure for known introns
      */
 
-    ParserBED::parse("data/silico/RNA/standards.bed", [&](const BedFeature &t)
+    ParserBED::parse("data/RNA/standards.bed", [&](const BedFeature &t)
     {
         /*
          * In this context, we're given a transcript. Each block in the transcript is an exon.
@@ -191,8 +191,16 @@ Standard StandardFactory::reference()
         GMixture gm;
         IMixture im;
 
+        int n = 0;
+        int n2 = 0;
+        
         ParserCSV::parse(file, [&](const Fields &fields)
         {
+            if (!n++)
+            {
+                return;
+            }
+
             /*
              * REF, VAR, Grp, REF length, VAR length, AIM, RATIO, RATIO, CON, CON, CON_READ, CON_READ, PER KB, ROUND, ROUND
              */
@@ -207,24 +215,31 @@ Standard StandardFactory::reference()
             
             im.fold  = stoi(fields[6]);
             im.reads = stof(fields[10]);
-            gm.r = im;
+            
+            assert(ig.count(im.tranID) == 0);
+            ig[im.tranID] = (gm.r = im);
             
             /*
              * Create data-structure for the variant mixture
              */
-            
-            im.fold  = stoi(fields[7]);
-            im.reads = stof(fields[11]);
-            gm.v = im;
+
+            if (!fields[11].empty())
+            {
+                im.fold   = stoi(fields[7]);
+                im.reads  = stof(fields[11]);
+                im.tranID = fields[1];
+                
+                assert(ig.count(im.tranID) == 0);
+                ig[im.tranID] = (gm.v = im);
+                assert(gm.r.tranID != gm.v.tranID);
+            }
             
             mg[gm.geneID]   = gm;
-            ig[gm.r.tranID] = gm.r;
-            ig[gm.v.tranID] = gm.v;
         });
     };
     
-    read_mixture("data/RNA/mixtue_A.csv", r.mix_gA, r.mix_iA);
-    read_mixture("data/RNA/mixtue_B.csv", r.mix_gB, r.mix_iB);
+    read_mixture("data/RNA/mixture_A.csv", r.mix_gA, r.mix_iA);
+    read_mixture("data/RNA/mixture_B.csv", r.mix_gB, r.mix_iB);
     
     return r;
 }
