@@ -25,7 +25,7 @@ namespace Spike
     typedef float Fold;
     
     typedef std::string GeneID;
-    typedef std::string IsoformID;
+    typedef std::string TranscriptID;
     
     // Eg: 388488 from the first matching base
     typedef long long BasePair;    

@@ -1,3 +1,4 @@
+#include <map>
 #include <iostream>
 #include <assert.h>
 #include "aligner.hpp"
@@ -65,15 +66,27 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
         {
             stats.nq++;
         }
+
+        std::map<TranscriptID, unsigned> counts;        
+        std::for_each(r.seqs_iA.begin(), r.seqs_iA.end(), [&](const std::pair<TranscriptID, Sequin> &p)
+        {
+            counts[p.first] = 0;
+        });
+        
+        // Make sure we have an entry for each protein isoform
+        assert(counts.size() == r.seqs_iA.size());
         
 		if (align.mapped)
 		{
-            const bool detected = (align.spliced && checkSplice(r, align)) || (!align.spliced && contains(r, align));
+            // Whether the read has mapped to the reference (by checking via the locus)
+            const bool ref_mapped = contains(r, align);
 
 			if (align.id == r.id)
 			{
-				if (contains(r, align))
+				if (ref_mapped)
 				{
+                    const bool detected = !align.spliced || (align.spliced && checkSplice(r, align));
+
 					if (detected)
 					{
 						stats.m.tp++;
@@ -81,7 +94,6 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 					else
 					{
 						stats.m.fp++;
-                        checkSplice(r, align);
 					}
 				}
 				else
@@ -91,7 +103,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 			}
 			else
 			{
-				if (detected)
+				if (ref_mapped)
 				{
 					stats.m.fn++;
 				}

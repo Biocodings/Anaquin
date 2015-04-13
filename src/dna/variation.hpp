@@ -2,7 +2,6 @@
 #define GI_DNA_VARIATION_HPP
 
 #include "types.hpp"
-#include "sequins.hpp"
 
 namespace Spike
 {

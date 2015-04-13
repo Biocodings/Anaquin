@@ -14,8 +14,8 @@ TEST_CASE("Standard_Isoforms")
 {
     const auto r = StandardFactory::reference();
     
-    REQUIRE(r.mix_iA.size() == 61);
-    REQUIRE(r.mix_iB.size() == 61);
+    REQUIRE(r.seqs_iA.size() == 61);
+    REQUIRE(r.seqs_iB.size() == 61);
 
     const auto ids =
     {
@@ -34,6 +34,6 @@ TEST_CASE("Standard_Isoforms")
 
     for (auto id : ids)
     {
-        REQUIRE(r.mix_iA.count(id));
+        REQUIRE(r.seqs_iA.count(id));
     }
 }

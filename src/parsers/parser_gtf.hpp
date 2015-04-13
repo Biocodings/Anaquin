@@ -9,9 +9,6 @@ namespace Spike
     struct ParserProgress
     {
         Lines i = 0;
-        
-        // Whether parsing should be stopped
-        bool terminate = false;
     };
     
     struct ParserGTF

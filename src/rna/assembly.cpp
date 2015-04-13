@@ -7,16 +7,15 @@
 
 using namespace Spike;
 
-AssemblyStats Assembly::analyze(const std::string &file, Sequins s, Reads n)
+AssemblyStats Assembly::analyze(const std::string &file)
 {
     AssemblyStats stats;
     const auto r = StandardFactory::reference();
 
 	ParserGTF::parse(file, [&](const Feature &f, ParserProgress &p)
 	{
-        if (p.i > n)
+        if (false /*p.i > n*/)
         {
-            p.terminate = true;
         }
         else
         {

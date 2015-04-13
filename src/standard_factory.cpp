@@ -45,7 +45,7 @@ Standard StandardFactory::reference()
      */
 
     std::set<GeneID> gids;
-    std::set<IsoformID> iids;
+    std::set<TranscriptID> iids;
 
     ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f, ParserProgress &p)
 	{
@@ -186,13 +186,12 @@ Standard StandardFactory::reference()
      * Create data-structure for the sequins. Refer to the documentation for more details.
      */
     
-    auto read_mixture = [&](const std::string &file, std::map<GeneID, GMixture> &mg, std::map<IsoformID, IMixture> &ig)
+    auto read_mixture = [&](const std::string &file, std::map<GeneID, Sequins> &mg, std::map<TranscriptID, Sequin> &ig)
     {
-        GMixture gm;
-        IMixture im;
+        Sequin  seq;
+        Sequins seqs;
 
         int n = 0;
-        int n2 = 0;
         
         ParserCSV::parse(file, [&](const Fields &fields)
         {
@@ -205,19 +204,19 @@ Standard StandardFactory::reference()
              * REF, VAR, Grp, REF length, VAR length, AIM, RATIO, RATIO, CON, CON, CON_READ, CON_READ, PER KB, ROUND, ROUND
              */
 
-            gm.grp = gs[fields[2]];
-            gm.geneID = fields[0].substr(0, fields[0].length() - 2);
-            im.tranID = fields[0];
+            seq.id      = fields[0];
+            seqs.grp    = gs[fields[2]];
+            seqs.geneID = fields[0].substr(0, fields[0].length() - 2);
 
             /*
              * Create data-structure for the reference mixture
              */
             
-            im.fold  = stoi(fields[6]);
-            im.reads = stof(fields[10]);
+            seq.fold  = stoi(fields[6]);
+            seq.reads = stof(fields[10]);
             
-            assert(ig.count(im.tranID) == 0);
-            ig[im.tranID] = (gm.r = im);
+            assert(ig.count(seq.id) == 0);
+            ig[seq.id] = (seqs.r = seq);
             
             /*
              * Create data-structure for the variant mixture
@@ -225,21 +224,21 @@ Standard StandardFactory::reference()
 
             if (!fields[11].empty())
             {
-                im.fold   = stoi(fields[7]);
-                im.reads  = stof(fields[11]);
-                im.tranID = fields[1];
+                seq.id    = fields[1];
+                seq.fold  = stoi(fields[7]);
+                seq.reads = stof(fields[11]);
                 
-                assert(ig.count(im.tranID) == 0);
-                ig[im.tranID] = (gm.v = im);
-                assert(gm.r.tranID != gm.v.tranID);
+                assert(ig.count(seq.id) == 0);
+                ig[seq.id] = (seqs.v = seq);
+                assert(seqs.r.id != seqs.v.id);
             }
-            
-            mg[gm.geneID]   = gm;
+
+            mg[seqs.geneID] = seqs;
         });
     };
     
-    read_mixture("data/RNA/mixture_A.csv", r.mix_gA, r.mix_iA);
-    read_mixture("data/RNA/mixture_B.csv", r.mix_gB, r.mix_iB);
-    
+    read_mixture("data/RNA/mixture_A.csv", r.seqs_gA, r.seqs_iA);
+    read_mixture("data/RNA/mixture_B.csv", r.seqs_gB, r.seqs_iB);
+
     return r;
 }

@@ -1,7 +1,6 @@
 #ifndef GI_ALIGNER_HPP
 #define GI_ALIGNER_HPP
 
-#include "sequins.hpp"
 #include "parsers/parser.hpp"
 #include "confusion_matrix.hpp"
 
@@ -46,6 +45,9 @@ namespace Spike
         
         struct AlignerOptions : public ParserOptions
         {
+            // Whether sequence name of a
+            bool name = false;
+            
             OutputMode output;
             AlignerMode mode;
         };

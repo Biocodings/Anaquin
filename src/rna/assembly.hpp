@@ -1,7 +1,6 @@
 #ifndef GI_ASSEMBLY_HPP
 #define GI_ASSEMBLY_HPP
 
-#include "sequins.hpp"
 #include "confusion_matrix.hpp"
 
 namespace Spike
@@ -15,7 +14,7 @@ namespace Spike
     
     struct Assembly
     {
-        static AssemblyStats analyze(const std::string &file, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
+        static AssemblyStats analyze(const std::string &file);
     };
 }
 

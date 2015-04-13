@@ -64,7 +64,6 @@
 		EF22903B1AC0E58000CE76BF /* confusion_matrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = confusion_matrix.hpp; path = ../src/confusion_matrix.hpp; sourceTree = "<group>"; };
 		EF22903E1AC0E58000CE76BF /* feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = feature.hpp; path = ../src/feature.hpp; sourceTree = "<group>"; };
 		EF22903F1AC0E58000CE76BF /* locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/locus.hpp; sourceTree = "<group>"; };
-		EF22904F1AC0E58000CE76BF /* sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sequins.hpp; path = ../src/sequins.hpp; sourceTree = "<group>"; };
 		EF2290501AC0E58000CE76BF /* standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = standard.cpp; path = ../src/standard.cpp; sourceTree = "<group>"; };
 		EF2290511AC0E58000CE76BF /* standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = standard.hpp; path = ../src/standard.hpp; sourceTree = "<group>"; };
 		EF2290521AC0E58000CE76BF /* standard_factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = standard_factory.cpp; path = ../src/standard_factory.cpp; sourceTree = "<group>"; };
@@ -153,7 +152,6 @@
 				EFD36E9B1ACB90D400F6F098 /* file.hpp */,
 				EF22903F1AC0E58000CE76BF /* locus.hpp */,
 				EF2290351AC0E58000CE76BF /* main.cpp */,
-				EF22904F1AC0E58000CE76BF /* sequins.hpp */,
 				EF2290521AC0E58000CE76BF /* standard_factory.cpp */,
 				EF2290531AC0E58000CE76BF /* standard_factory.hpp */,
 				EF2290501AC0E58000CE76BF /* standard.cpp */,

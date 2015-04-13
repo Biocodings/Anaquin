@@ -2,7 +2,6 @@
 #define GI_EXPRESSION_HPP
 
 #include "types.hpp"
-#include "sequins.hpp"
 
 namespace Spike
 {
@@ -26,7 +25,7 @@ namespace Spike
     
     struct Expression
     {
-        static ExpressionStats analyze(const std::string &file, ExpressionMode mode, Sequins s = Sequins(), Reads n = std::numeric_limits<Reads>::max());
+        static ExpressionStats analyze(const std::string &file, ExpressionMode mode);
     };    
 }
 

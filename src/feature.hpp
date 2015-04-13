@@ -37,7 +37,7 @@ namespace Spike
         GeneID geneID;
         
         // Empty if the information is unavailable
-        IsoformID iID;
+        TranscriptID iID;
     };    
 }
 

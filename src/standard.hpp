@@ -38,10 +38,10 @@ namespace Spike
         std::vector<Feature> introns;
     };
     
-    struct IMixture
+    struct Sequin
     {
-        IsoformID tranID;
-        
+        TranscriptID id;
+
         // Fold ratio relative to the other mixture
         Fold fold;
 
@@ -49,7 +49,7 @@ namespace Spike
         Concentration reads;
     };
 
-    struct GMixture
+    struct Sequins
     {
         Group grp;
 
@@ -57,7 +57,7 @@ namespace Spike
         GeneID geneID;
 
         // Reference and variant mixtures
-        IMixture r, v;
+        Sequin r, v;
     };
     
     struct Standard
@@ -85,13 +85,13 @@ namespace Spike
         
         std::vector<Variation> vars;
         
-        std::map<GeneID, GMixture> mix_gA;
-        std::map<GeneID, GMixture> mix_gB;
+        std::map<GeneID, Sequins> seqs_gA;
+        std::map<GeneID, Sequins> seqs_gB;
 
-        std::map<IsoformID, IMixture> mix_iA;
-        std::map<IsoformID, IMixture> mix_iB;
+        std::map<TranscriptID, Sequin> seqs_iA;
+        std::map<TranscriptID, Sequin> seqs_iB;
 
-        std::map<IsoformID, GeneID> iso2Gene;
+        std::map<TranscriptID, GeneID> iso2Gene;
         
         // Known genes
         std::vector<Gene> genes;
