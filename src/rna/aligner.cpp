@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "aligner.hpp"
 #include "biology.hpp"
+#include <ss/stats.hpp>
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
 #include "standard_factory.hpp"
@@ -11,7 +12,7 @@
 
 using namespace Spike;
 
-static bool checkSplice(const Standard &r, const Alignment &align)
+static bool checkSplice(const Standard &r, const Alignment &align, Feature &e1, Feature &e2)
 {
     assert(align.spliced);
 
@@ -36,6 +37,8 @@ static bool checkSplice(const Standard &r, const Alignment &align)
                     // Check if it ends inside exon_2
                     if (align.l.start < exon_2.l.start && align.l.end >= exon_2.l.start && align.l.end <= exon_2.l.end)
                     {
+                        e1 = exon_1;
+                        e2 = exon_2;
                         return true;
                     }
                 }
@@ -51,6 +54,18 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
     AlignerStats stats;
     const auto r = StandardFactory::reference();
 
+    // Used for alternative splicing
+    Feature e1, e2;
+    
+    std::map<TranscriptID, unsigned> counts;
+    std::for_each(r.seqs_iA.begin(), r.seqs_iA.end(), [&](const std::pair<TranscriptID, Sequin> &p)
+    {
+        counts[p.first] = 0;
+    });
+    
+    // Make sure we have an entry for each protein isoform
+    assert(counts.size() == r.seqs_iA.size());
+
     ParserSAM::parse(file, [&](const Alignment &align)
     {
         if ((options.mode == ExonAlign   && align.spliced) ||
@@ -58,24 +73,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
         {
             return;
         }
-        else if (align.id == r.id)
-        {
-            stats.nr++;
-        }
-        else
-        {
-            stats.nq++;
-        }
 
-        std::map<TranscriptID, unsigned> counts;        
-        std::for_each(r.seqs_iA.begin(), r.seqs_iA.end(), [&](const std::pair<TranscriptID, Sequin> &p)
-        {
-            counts[p.first] = 0;
-        });
-        
-        // Make sure we have an entry for each protein isoform
-        assert(counts.size() == r.seqs_iA.size());
-        
 		if (align.mapped)
 		{
             // Whether the read has mapped to the reference (by checking via the locus)
@@ -85,10 +83,40 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 			{
 				if (ref_mapped)
 				{
-                    const bool detected = !align.spliced || (align.spliced && checkSplice(r, align));
+                    const bool detected = !align.spliced || (align.spliced && checkSplice(r, align, e1, e2));
 
 					if (detected)
 					{
+                        Feature f;
+                        
+                        if (!align.spliced && !find(r.fs.begin(), r.fs.end(), align, f))
+                        {
+                            throw std::runtime_error("Not splicing, not found????");
+                        }
+                                                
+                        if (align.spliced)
+                        {
+                            f = e1;
+                        }
+                        
+                        if (!counts.count(f.iID))
+                        {
+                            if (f.iID == "R_5_3_V")
+                            {
+                                assert(counts.count("R_5_3_R"));
+                                counts["R_5_3_R"]++;
+                            }
+                            else
+                            {
+                                throw std::runtime_error("Not splicing, not found????");
+                            }
+                        }
+                        else
+                        {
+                            assert(counts.count(f.iID));
+                            counts[f.iID]++;
+                        }
+                        
 						stats.m.tp++;
 					}
 					else
@@ -114,6 +142,15 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 			}
 		}
 
+        if (align.id == r.id)
+        {
+            stats.nr++;
+        }
+        else
+        {
+            stats.nq++;
+        }
+        
         stats.n++;        
     });
 
@@ -125,11 +162,25 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
     // Proportion of the reads from the reference
     stats.dilution = stats.nq ? static_cast<Percentage>(stats.nr / stats.nq) : 1;
 
-    if (options.output == OutputMode::CSVFile)
+    /*
+     * The counts for each sequin is needed to calculate the limit of sensitivity.
+     */
+
+    const auto cr = SS::analyze(counts);
+    assert(r.seqs_iA.count(cr.min_k));
+    
+    // The least abdunance while still detectable in this experiment
+    const auto limit_sensitivity = r.seqs_iA.at(cr.min_k).reads;
+    
+    if (options.writer)
     {
-        Writer w("align.csv");
-        w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % "diluation" % "tp" % "tn" % "fp" % "fn").str());
-        w.write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%") % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn).str());
+        options.writer->write(
+            (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
+                % "diluation" % "tp" % "tn" % "fp" % "fn" % "detection").str());
+        options.writer->write(
+            (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
+                % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn
+                    % limit_sensitivity).str());
     }
 
 	return stats;

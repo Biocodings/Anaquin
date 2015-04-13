@@ -25,8 +25,8 @@
 		EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DF1AD3783A0062D246 /* parser_gtf.cpp */; };
 		EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E11AD3783A0062D246 /* parser_sam.cpp */; };
 		EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E31AD3783A0062D246 /* parser_vcf.cpp */; };
+		EF76C91E1ADBD59F003D45F9 /* file_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C91B1ADBD59F003D45F9 /* file_writer.cpp */; };
 		EFD36E9D1ACB912700F6F098 /* file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD36E9C1ACB912700F6F098 /* file.cpp */; };
-		EFE9A0201AD3B2C600557829 /* writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE9A01F1AD3B2C600557829 /* writer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -86,11 +86,13 @@
 		EF3860E31AD3783A0062D246 /* parser_vcf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_vcf.cpp; path = ../src/parsers/parser_vcf.cpp; sourceTree = "<group>"; };
 		EF3860E41AD3783A0062D246 /* parser_vcf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_vcf.hpp; path = ../src/parsers/parser_vcf.hpp; sourceTree = "<group>"; };
 		EF3860E51AD3783A0062D246 /* parser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
+		EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_writer.hpp; path = ../src/writers/file_writer.hpp; sourceTree = "<group>"; };
+		EF76C91B1ADBD59F003D45F9 /* file_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file_writer.cpp; path = ../src/writers/file_writer.cpp; sourceTree = "<group>"; };
+		EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mock_writer.hpp; path = ../src/writers/mock_writer.hpp; sourceTree = "<group>"; };
 		EFD36E9B1ACB90D400F6F098 /* file.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = file.hpp; path = ../src/file.hpp; sourceTree = "<group>"; };
 		EFD36E9C1ACB912700F6F098 /* file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = file.cpp; path = ../src/file.cpp; sourceTree = "<group>"; };
 		EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/tokens.hpp; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
-		EFE9A01F1AD3B2C600557829 /* writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = writer.cpp; path = ../src/writers/writer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -251,7 +253,9 @@
 		EFE9A01D1AD3B10900557829 /* Writers */ = {
 			isa = PBXGroup;
 			children = (
-				EFE9A01F1AD3B2C600557829 /* writer.cpp */,
+				EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */,
+				EF76C91B1ADBD59F003D45F9 /* file_writer.cpp */,
+				EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */,
 				EFE9A01E1AD3B11F00557829 /* writer.hpp */,
 			);
 			name = Writers;
@@ -329,8 +333,8 @@
 				EF224B551ADB5B8900B989A8 /* assembly.cpp in Sources */,
 				EF3860E81AD3783A0062D246 /* parser_ctracking.cpp in Sources */,
 				EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */,
+				EF76C91E1ADBD59F003D45F9 /* file_writer.cpp in Sources */,
 				EF3860E61AD3783A0062D246 /* parser_bed.cpp in Sources */,
-				EFE9A0201AD3B2C600557829 /* writer.cpp in Sources */,
 				EF3860E91AD3783A0062D246 /* parser_fa.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

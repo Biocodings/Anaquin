@@ -10,8 +10,6 @@ TEST_CASE("RNA_Simulation_Exon")
     for (auto ex : exts)
     {
         Aligner::AlignerOptions options;
-        
-        options.output = Aligner::OutputMode::None;
         options.mode = Aligner::ExonAlign;
         
         const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
@@ -31,9 +29,9 @@ TEST_CASE("RNA_Simulation_Exon")
 
 TEST_CASE("RNA_Cufflinks")
 {
-    // The sample file was taken from Cufflink's source distribution. It's obviously independent to the standards.
-    const auto stats = Aligner::analyze("tests/data/cufflinks_test.sam", Aligner::OutputMode::None);
-    
+    // The sample file was taken from Cufflink's source distribution. It's obviously independent.
+    const auto stats = Aligner::analyze("tests/data/cufflinks_test.sam");
+
     REQUIRE(isnan(stats.m.sp()));
     REQUIRE(1 == stats.m.sn());
     REQUIRE(0 == stats.m.tp);
@@ -49,7 +47,7 @@ TEST_CASE("RNA_Simulation_Base")
 {
     for (auto ex : exts)
     {
-        const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, Aligner::OutputMode::None);
+        const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex);
 
         REQUIRE(stats.n == 9997);
         REQUIRE(stats.m.tp == 9997);
@@ -67,8 +65,6 @@ TEST_CASE("RNA_Simulation_Splicing")
     for (auto ex : exts)
     {
         Aligner::AlignerOptions options;
-
-        options.output = Aligner::OutputMode::None;
         options.mode = Aligner::SpliceAlign;
         
         const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);

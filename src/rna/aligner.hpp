@@ -30,12 +30,6 @@ namespace Spike
 
     struct Aligner
     {
-        enum OutputMode
-        {
-            CSVFile,
-            None,
-        };
-
         enum AlignerMode
         {
             BaseAlign,
@@ -45,20 +39,9 @@ namespace Spike
         
         struct AlignerOptions : public ParserOptions
         {
-            // Whether sequence name of a
-            bool name = false;
-            
-            OutputMode output;
             AlignerMode mode;
         };
         
-        inline static AlignerStats analyze(const std::string &file, enum OutputMode output)
-        {
-            AlignerOptions os;
-            os.output = output;
-            return Aligner::analyze(file, os);
-        }
-
         static AlignerStats analyze(const std::string &file, const AlignerOptions &options = AlignerOptions());
     };
 }
