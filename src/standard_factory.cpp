@@ -183,57 +183,48 @@ Standard StandardFactory::reference()
     };
 
     /*
-     * Create data-structure for the sequins in each of the mix. Refer to user-manual for more details.
+     * Create data-structure for the sequins. Refer to the documentation for more details.
      */
     
-    GMixture g;
-    
-    ParserCSV::parse("data/silico/RNA/Standard_A.csv", [&](const Fields &fields)
+    auto read_mixture = [&](const std::string &file, std::map<GeneID, GMixture> &mg, std::map<IsoformID, IMixture> &ig)
     {
-        /*
-         * Create data-structure for isoforms
-         */
-        
-        IMixture i;
-        
-        i.id   = fields[3];
-        i.fold = stoi(fields[4]);
-        i.exp  = stod(fields[5]);
+        GMixture gm;
+        IMixture im;
 
-        r.isoA[i.id] = i;
-        
-        /*
-         * Create data-structure for genes
-         */
-
-        if (fields[0] == "1")
+        ParserCSV::parse(file, [&](const Fields &fields)
         {
-            g.gr     = gs[fields[1]];
-            g.id     = fields[2];
-            g.r.id   = i.id;
-            g.r.exp  = i.exp;
-            g.r.fold = i.fold;
-            
-            assert(g.id != g.r.id);
-        }
-        else
-        {
-            assert(g.id == fields[2]);
-            assert(g.gr == gs[fields[1]]);
-            
-            g.v.id   = i.id;
-            g.v.exp  = i.exp;
-            g.v.fold = i.fold;
+            /*
+             * REF, VAR, Grp, REF length, VAR length, AIM, RATIO, RATIO, CON, CON, CON_READ, CON_READ, PER KB, ROUND, ROUND
+             */
 
-            const auto fold  = g.r.fold + g.v.fold;
-            const auto total = g.r.exp  + g.v.exp;
+            gm.grp = gs[fields[2]];
+            gm.geneID = fields[0].substr(0, fields[0].length() - 2);
+            im.tranID = fields[0];
+
+            /*
+             * Create data-structure for the reference mixture
+             */
             
-            assert((g.r.fold / fold * total) == g.r.exp);
-            assert((g.v.fold / fold * total) == g.v.exp);
+            im.fold  = stoi(fields[6]);
+            im.reads = stof(fields[10]);
+            gm.r = im;
             
-            r.mixA[g.id] = g;
-        }
-    });
+            /*
+             * Create data-structure for the variant mixture
+             */
+            
+            im.fold  = stoi(fields[7]);
+            im.reads = stof(fields[11]);
+            gm.v = im;
+            
+            mg[gm.geneID]   = gm;
+            ig[gm.r.tranID] = gm.r;
+            ig[gm.v.tranID] = gm.v;
+        });
+    };
+    
+    read_mixture("data/RNA/mixtue_A.csv", r.mix_gA, r.mix_iA);
+    read_mixture("data/RNA/mixtue_B.csv", r.mix_gB, r.mix_iB);
     
     return r;
 }

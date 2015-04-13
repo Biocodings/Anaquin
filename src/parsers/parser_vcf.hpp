@@ -2,6 +2,7 @@
 #define GI_PARSER_VCF_HPP
 
 #include <set>
+#include <string>
 #include <vector>
 #include <functional>
 #include "types.hpp"
@@ -18,7 +19,9 @@ namespace Spike
         Homozygous,
         Heterzygous,
     };
-    
+
+    typedef std::string Sequence;
+
     struct VCFVariant
     {
         // An identifier from the reference genome

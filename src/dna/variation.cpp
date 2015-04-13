@@ -1,4 +1,4 @@
-#include "dna_variation.hpp"
+#include "dna/variation.hpp"
 #include "standard_factory.hpp"
 #include "parsers/parser_vcf.hpp"
 

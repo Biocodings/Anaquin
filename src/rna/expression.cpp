@@ -18,13 +18,13 @@ ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode
     ParserCTracking::parse(file, [&](const CTracking &t)
     {
         assert(r.known(t.geneID));
-        assert(r.mixA.count(t.geneID));
+        assert(r.mix_gA.count(t.geneID));
 
         switch (mode)
         {
             case GeneExpress:
             {
-                const auto &a = r.mixA.at(t.geneID);
+                const auto &a = r.mix_gA.at(t.geneID);
 
                 /*
                  * The x-axis would be the known concentration for each gene, the y-axis would be the expression
@@ -32,7 +32,7 @@ ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode
                  */
 
                 // The concentration for the gene is the sum of each isoform
-                x.push_back(a.r.exp + a.v.exp);
+                //x.push_back(a.r.exp + a.v.exp);
                 
                 // The y-value is whatever reported
                 y.push_back(t.fpkm);
@@ -42,11 +42,11 @@ ExpressionStats Expression::analyze(const std::string &file, ExpressionMode mode
 
             case IsoformExpress:
             {
-                assert(r.isoA.count(t.trackID));
-                const auto &i = r.isoA.at(t.trackID);
+                assert(r.mix_iA.count(t.trackID));
+                const auto &i = r.mix_iA.at(t.trackID);
                 
                 // The x-value is our known concentration
-                x.push_back(i.exp);
+                //x.push_back(i.exp);
                 
                 // The y-value is whatever reported
                 y.push_back(t.fpkm);

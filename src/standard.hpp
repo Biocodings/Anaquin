@@ -40,28 +40,24 @@ namespace Spike
     
     struct IMixture
     {
-        IsoformID id;
+        IsoformID tranID;
         
-        // Fold ratio relative to the pair
+        // Fold ratio relative to the other mixture
         Fold fold;
-        
-        // Level of expression added to the sample for this mixture
-        Concentration exp;
+
+        // Amount of abundance for this mixture
+        Concentration reads;
     };
-    
+
     struct GMixture
     {
-        Group gr;
-        GeneID id;
-        
-        // Reference mixture
-        IMixture r;
-        
-        // Variant mixture
-        IMixture v;
-        
-        // Total level of expression
-        Concentration exp;
+        Group grp;
+
+        // Each mixture represents a transcript for a gene
+        GeneID geneID;
+
+        // Reference and variant mixtures
+        IMixture r, v;
     };
     
     struct Standard
@@ -89,12 +85,12 @@ namespace Spike
         
         std::vector<Variation> vars;
         
-        std::map<GeneID, GMixture> mixA;
-        std::map<GeneID, GMixture> mixB;
-        
-        std::map<IsoformID, IMixture> isoA;
-        std::map<IsoformID, IMixture> isoB;
-        
+        std::map<GeneID, GMixture> mix_gA;
+        std::map<GeneID, GMixture> mix_gB;
+
+        std::map<IsoformID, IMixture> mix_iA;
+        std::map<IsoformID, IMixture> mix_iB;
+
         std::map<IsoformID, GeneID> iso2Gene;
         
         // Known genes
