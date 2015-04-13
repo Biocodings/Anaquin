@@ -1,10 +1,9 @@
 #include <limits>
 #include <iostream>
 #include "expression.hpp"
-#include <sstats/stats.hpp>
 #include "standard_factory.hpp"
 #include "parsers/parser_ctracking.hpp"
-#include <sstats/regression/linear_model.hpp>
+#include <ss/regression/linear_model.hpp>
 
 using namespace SS;
 using namespace Spike;
