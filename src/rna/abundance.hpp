@@ -1,13 +1,18 @@
 #ifndef GI_ABUNDANCE_HPP
 #define GI_ABUNDANCE_HPP
 
-#include "types.hpp"
-#include "parsers/parser.hpp"
+#include "analyzer.hpp"
+#include "sensitivity.hpp"
+#include "confusion_matrix.hpp"
 
 namespace Spike
 {
-    struct AbundanceStats
+    struct AbundanceStats : public AnalyzerStats
     {
+        ConfusionMatrix m_base;
+
+        Sensitivity s_base;
+        
         // Correlation for the samples
         double r;
         
@@ -20,7 +25,7 @@ namespace Spike
     
     struct Abundance
     {
-        struct AbundanceOptions : public ParserOptions
+        struct AbundanceOptions : public AnalyzerOptions
         {
             // Empty Implementation
         };

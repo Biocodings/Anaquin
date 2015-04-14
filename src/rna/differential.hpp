@@ -1,13 +1,18 @@
 #ifndef GI_DIFFERENTIAL_HPP
 #define GI_DIFFERENTIAL_HPP
 
-#include "types.hpp"
-#include "parsers/parser.hpp"
+#include "analyzer.hpp"
+#include "sensitivity.hpp"
+#include "confusion_matrix.hpp"
 
 namespace Spike
 {
-    struct DifferentialStats
+    struct DifferentialStats : public AnalyzerStats
     {
+        ConfusionMatrix m_base;
+        
+        Sensitivity s_base;
+        
         // Correlation for the samples
         double r;
         
@@ -20,7 +25,7 @@ namespace Spike
     
     struct Differential
     {
-        struct DifferentialOptions : public ParserOptions
+        struct DifferentialOptions : public AnalyzerOptions
         {
             // Empty Implementation
         };

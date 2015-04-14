@@ -1,13 +1,13 @@
 #ifndef GI_ALIGNER_HPP
 #define GI_ALIGNER_HPP
 
+#include "analyzer.hpp"
 #include "sensitivity.hpp"
-#include "parsers/parser.hpp"
 #include "confusion_matrix.hpp"
 
 namespace Spike
 {
-    struct AlignerStats : public ParserStats
+    struct AlignerStats : public AnalyzerStats
     {
         // The lowest detectable abundance in the experiment
         Sensitivity sens;
@@ -24,7 +24,7 @@ namespace Spike
             SpliceAlign,
         };
         
-        struct AlignerOptions : public ParserOptions
+        struct AlignerOptions : public AnalyzerOptions
         {
             AlignerMode mode;
         };

@@ -11,6 +11,12 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
 {
     const auto r = StandardFactory::reference();
 
+    
+    
+    
+    
+    
+    
     // Values for the x-axis and y-axis
     std::vector<double> x, y;
 

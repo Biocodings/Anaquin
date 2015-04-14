@@ -38,6 +38,20 @@ namespace Spike
         return cond;
     }
 
+    template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
+    {
+        Feature in;
+        
+        for (auto i = 0; i < exons.size(); i++)
+        {
+            if (i)
+            {
+                in.l = Locus(exons[i - 1].l.end, exons[i].l.start);                
+                f(exons[i - 1], exons[i], in);
+            }
+        }
+    }
+    
     template <typename Iter, typename T> bool find(const Iter &iter, const T &t)
     {
         for (auto i: iter)
@@ -51,6 +65,11 @@ namespace Spike
         return false;
     }
 
+    /*
+     * Define a generic algorithm for experimental classification. The caller is
+     * expected to provide a functor for positive and negative match.
+     */
+    
     template <typename T, typename Stats, typename Positive, typename Negative>
     void classify(const Standard &r, Stats &stats, const T &t, Positive p, Negative n)
     {

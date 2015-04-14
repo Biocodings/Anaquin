@@ -1,5 +1,5 @@
 //#include <catch.hpp>
-//#include "aligner.hpp"
+//#include "rna/aligner.hpp"
 //
 //using namespace Spike;
 //

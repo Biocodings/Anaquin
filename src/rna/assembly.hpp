@@ -1,13 +1,13 @@
 #ifndef GI_ASSEMBLY_HPP
 #define GI_ASSEMBLY_HPP
 
+#include "analyzer.hpp"
 #include "sensitivity.hpp"
-#include "parsers/parser.hpp"
 #include "confusion_matrix.hpp"
 
 namespace Spike
 {
-    struct AssemblyStats : public ParserStats
+    struct AssemblyStats : public AnalyzerStats
     {
         ConfusionMatrix m_base;
         ConfusionMatrix m_exon;
@@ -22,7 +22,7 @@ namespace Spike
 
     struct Assembly
     {
-        struct AssemblyOptions : public ParserOptions
+        struct AssemblyOptions : public AnalyzerOptions
         {
             // Empty Implementation
         };

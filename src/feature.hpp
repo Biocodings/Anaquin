@@ -10,7 +10,6 @@ namespace Spike
     {
         CDS,
         Exon,
-        Intron,
         Junction,
         StopCodon,
         StartCodon,

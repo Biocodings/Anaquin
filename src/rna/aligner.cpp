@@ -160,7 +160,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
     {
         options.writer->write(
             (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-                % "diluation" % "tp" % "tn" % "fp" % "fn" % "sensitivity").str());
+                % "diluation" % "sn" % "sp" % "sensitivity").str());
         options.writer->write(
             (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
                 % stats.dilution() % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn

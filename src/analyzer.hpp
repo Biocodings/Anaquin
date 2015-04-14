@@ -1,13 +1,13 @@
-#ifndef GI_PARSER_HPP
-#define GI_PARSER_HPP
+#ifndef GI_ANALYZER_HPP
+#define GI_ANALYZER_HPP
 
 #include <memory>
+#include "types.hpp"
 #include "writers/writer.hpp"
-#include "exceptions/invalid_extension.hpp"
 
 namespace Spike
 {
-    struct ParserStats
+    struct AnalyzerStats
     {
         // Percentage of reads aligned with the reference chromosome
         Percentage pr;
@@ -30,7 +30,7 @@ namespace Spike
         }
     };
     
-    struct ParserOptions
+    struct AnalyzerOptions
     {
         std::shared_ptr<Writer> writer;
     };

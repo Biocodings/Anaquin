@@ -170,7 +170,7 @@ Standard StandardFactory::reference()
                 j.type = Junction;
 
                 // Intron is a region between exons that have been spliced
-                j.l = Locus(t.blocks[i - 1].end, t.blocks[i].start);
+                j.l = Locus(t.blocks[i - 1].end - 1, t.blocks[i].start); // ????
 
                 r.introns.push_back(j);
             }
@@ -184,6 +184,13 @@ Standard StandardFactory::reference()
         assert(iter != r.genes.end());
     });
 
+    assert(!r.introns.empty());
+
+//    for (auto i = 0; i < r.introns.size(); i++)
+  //  {
+    //    std::cout << r.introns[i].l.start << " " << r.introns[i].l.end << std::endl;
+    //}
+    
     static std::map<std::string, Group> gs =
     {
         { "A", A }, { "B", B }, { "C", C }, { "D", D }
