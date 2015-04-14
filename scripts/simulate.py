@@ -90,16 +90,16 @@ def simulate_reads(file, seq_path, read_path, min_, max_):
             if (math.fabs(ratio - ps[ts]['logr']) > 0.5):
                 raise Exception('Inconsistence mixture ratio: ' + ps[ts]['id'])
 
-            scale = 100
+            s = 1
+            c = 0
 
             # Multiply the concentration by a constant (applies to all sequins)
-            na = (scale * na) + 100
+            na = (s * na) + c
 
             na = max(min_, na)
             na = min(max_, na)
             
-            print '------------------ ' + ts + ' ------------------'
-            print 'Generating: ' + str(na)
+            print '\n------------------ ' + ts + ' ------------------'
             
             # Command: wgsim -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq
             
@@ -107,11 +107,15 @@ def simulate_reads(file, seq_path, read_path, min_, max_):
             o1 = read_path + ts + '.R1.fastq'
             o2 = read_path + ts + '.R2.fastq'
 
-            # Simulate reads from a given sequin
-            cmd = 'wgsim -d 400 -N ' + str(int(na)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+            # Don't bother if the abundance is too low
+            if (int(na) > 5):
+                print 'Generating: ' + str(na)
+                
+                # Simulate reads from a given sequin
+                cmd = 'wgsim -d 400 -N ' + str(int(na)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
-            print cmd
-            os.system(cmd)
+                print cmd
+                os.system(cmd)
 
     print('Merging the individual simulations...')
     os.system('cat ' + read_path + '*R1.fastq > ' + read_path + 'simulated_1.fastq')
