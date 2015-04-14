@@ -7,30 +7,12 @@
 
 namespace Spike
 {
-    struct AlignerStats
+    struct AlignerStats : public ParserStats
     {
-        // Percentage of reads aligned with the reference chromosome
-        Percentage pr;
-        
-        // Percentage of reads aligned with the query samples
-        Percentage pq;
-        
-        // Total number of reads aligned
-        Reads n = 0;
-        
-        // Number of reads aligned to the chromosome
-        Reads nr = 0;
-        
-        // Number of reads aligned to the real sample
-        Reads nq = 0;
-
         // The lowest detectable abundance in the experiment
         Sensitivity sens;
 
-        // Amount of sequins detected
-        Percentage dilution;
-        
-        ConfusionMatrix m;        
+        ConfusionMatrix m;
     };
 
     struct Aligner

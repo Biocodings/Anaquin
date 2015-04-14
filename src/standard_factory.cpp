@@ -67,30 +67,30 @@ Standard StandardFactory::reference()
     assert(!r.iso2Gene.empty());
     std::vector<std::string> ts;
 
-    /*
-     * Create data-structure for DNA mutations & variations
-     */
-    
-    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
-    {
-        ts.clear();
-
-        Variation v;
-        v.l = f.l;
-        
-        /*
-         * Example: D_3_3_R_C/A
-         */
-        
-        Tokens::split(f.name, "_/", ts);
-
-        v.r = ts[ts.size() - 2];
-        v.m = ts[ts.size() - 1];
-        
-        r.vars.push_back(v);
-    });
-
-    assert(!r.vars.empty());
+//    /*
+//     * Create data-structure for DNA mutations & variations
+//     */
+//
+//    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
+//    {
+//        ts.clear();
+//
+//        Variation v;
+//        v.l = f.l;
+//        
+//        /*
+//         * Example: D_3_3_R_C/A
+//         */
+//        
+//        Tokens::split(f.name, "_/", ts);
+//
+//        v.r = ts[ts.size() - 2];
+//        v.m = ts[ts.size() - 1];
+//        
+//        r.vars.push_back(v);
+//    });
+//
+//    assert(!r.vars.empty());
     
     /*
      * Construct the data-structure for genes
@@ -144,11 +144,18 @@ Standard StandardFactory::reference()
     });
 
     /*
-     * Create data-structure for known introns
+     * Create data-structure for RNA standards. An identical GTF file has already been
+     * parsed. For simplistic, we prefer to directly extract the locus from a BED file.
      */
+
+    // Required while reading mixtures
+    std::map<IsoformID, Locus> temp;
 
     ParserBED::parse("data/RNA/standards.bed", [&](const BedFeature &t)
     {
+        // How easy this is, we'd have to perform unions from a GTF file
+        temp[t.name] = t.l;
+        
         /*
          * In this context, we're given a transcript. Each block in the transcript is an exon.
          */
@@ -177,22 +184,42 @@ Standard StandardFactory::reference()
         assert(iter != r.genes.end());
     });
 
-    std::map<std::string, Group> gs =
+    static std::map<std::string, Group> gs =
     {
         { "A", A }, { "B", B }, { "C", C }, { "D", D }
     };
-
+    
     /*
-     * Create data-structure for the sequins. Refer to the documentation for more details.
+     * Create data-structure for sequins. Refer to the documentation for more details.
      */
+
+    auto create_sequin = [&](const IsoformID &id, Group grp, Fold fold, Concentration abundance, std::map<IsoformID, Sequin> &ig)
+    {
+        Sequin seq;
+        
+        seq.id = id;
+        
+        // Make sure the sequin is known
+        assert(temp.count(seq.id));
+        
+        // The BED file has given out the position for the sequin
+        seq.l = temp[seq.id];
+        
+        seq.fold = fold;
+        seq.abundance = abundance;
+        
+        assert(ig.count(seq.id) == 0);
+        assert(seq.l.start != 0 || seq.l.end != 0);
+        
+        return (ig[seq.id] = seq);
+    };
     
     auto read_mixture = [&](const std::string &file, std::map<GeneID, Sequins> &mg, std::map<TranscriptID, Sequin> &ig)
     {
-        Sequin  seq;
         Sequins seqs;
 
-        int n = 0;
-        
+        unsigned n = 0;
+
         ParserCSV::parse(file, [&](const Fields &fields)
         {
             if (!n++)
@@ -201,22 +228,11 @@ Standard StandardFactory::reference()
             }
 
             /*
-             * REF, VAR, Grp, REF length, VAR length, AIM, RATIO, RATIO, CON, CON, CON_READ, CON_READ, PER KB, ROUND, ROUND
+             * REF, VAR, Grp, REF_lEN, VAR_LEN, AIM, RATIO, RATIO, CON, CON, CON_READ, CON_READ, PER_KB
              */
 
-            seq.id      = fields[0];
-            seqs.grp    = gs[fields[2]];
             seqs.geneID = fields[0].substr(0, fields[0].length() - 2);
-
-            /*
-             * Create data-structure for the reference mixture
-             */
-            
-            seq.fold  = stoi(fields[6]);
-            seq.reads = stof(fields[10]);
-            
-            assert(ig.count(seq.id) == 0);
-            ig[seq.id] = (seqs.r = seq);
+            seqs.r = create_sequin(fields[0], gs[fields[2]], stoi(fields[6]), stof(fields[10]), ig);
             
             /*
              * Create data-structure for the variant mixture
@@ -224,13 +240,7 @@ Standard StandardFactory::reference()
 
             if (!fields[11].empty())
             {
-                seq.id    = fields[1];
-                seq.fold  = stoi(fields[7]);
-                seq.reads = stof(fields[11]);
-                
-                assert(ig.count(seq.id) == 0);
-                ig[seq.id] = (seqs.v = seq);
-                assert(seqs.r.id != seqs.v.id);
+                seqs.v = create_sequin(fields[1], gs[fields[2]], stoi(fields[7]), stof(fields[11]), ig);
             }
 
             mg[seqs.geneID] = seqs;

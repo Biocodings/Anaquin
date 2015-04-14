@@ -23,22 +23,23 @@ namespace Spike
     {
         GeneID id;
         
-        // Location of the gene relative to the chromosome
+        // 1-indexed locus relative to the chromosome
         Locus l;
-        
+
         std::vector<Feature> exons;
         std::vector<Feature> introns;
     };
     
     struct Sequin
     {
-        TranscriptID id;
+        IsoformID id;        
+        Locus l;
 
-        // Fold ratio relative to the other mixture
+        // Fold ratio relative to the other sequin
         Fold fold;
 
-        // Amount of abundance for this mixture
-        Concentration reads;
+        // Amount of abundance for this sequin
+        Concentration abundance;
     };
 
     struct Sequins
@@ -51,15 +52,23 @@ namespace Spike
         // Reference and variant mixtures
         Sequin r, v;
     };
-    
+
     struct Standard
     {
         ChromoID id;
-        
+
         // The location of the chromosome
         Locus l;
 
+        /*
+         * DNA sequins
+         */
+        
         std::vector<Variation> vars;
+        
+        /*
+         * RNA sequins
+         */
         
         std::map<GeneID, Sequins> seqs_gA;
         std::map<GeneID, Sequins> seqs_gB;
@@ -69,16 +78,16 @@ namespace Spike
 
         std::map<TranscriptID, GeneID> iso2Gene;
         
-        // Known genes
+        // Reference genes
         std::vector<Gene> genes;
         
-        // Known features
+        // Reference features
         std::vector<Feature> fs;
         
-        // Known exons
+        // Reference exons
         std::vector<Feature> exons;
         
-        // Known introns (spliced junctions)
+        // Reference introns (spliced junctions)
         std::vector<Feature> introns;
     };    
 }

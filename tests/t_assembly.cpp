@@ -1,9 +1,14 @@
 #include <catch.hpp>
 #include "assembly.hpp"
 
-TEST_CASE("Generated")
+using namespace Spike;
+
+TEST_CASE("Assembly_RNA_Simulation_2")
 {
-//    const auto r = Assembly::analyze("/Users/tedwong/Sources/ABCD/transcripts/transcripts.gtf");
-  //  REQUIRE(r.exon.tp == 355);
-    //REQUIRE(r.exon.fp == 21);
+    const auto r = Assembly::analyze("tests/data/rna_sims_2/assembled/transcripts.gtf");
+
+    REQUIRE(r.m_trans.tp == 62);
+    REQUIRE(r.m_trans.tn == 0);
+    REQUIRE(r.m_trans.fp == 0);
+    REQUIRE(r.m_trans.fn == 0);
 }

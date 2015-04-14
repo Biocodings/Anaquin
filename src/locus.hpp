@@ -9,7 +9,6 @@ namespace Spike
     struct Locus
     {
         Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
-        ~Locus() {}
         
         inline void set(BasePair start, BasePair end)
         {
@@ -24,6 +23,11 @@ namespace Spike
             return (q.start >= start && q.end <= end);
         }
         
+        bool operator==(const Locus &x) const
+        {
+            return start == x.start && end == x.end;
+        }
+
         BasePair start, end;
     };    
 }

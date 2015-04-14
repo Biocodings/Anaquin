@@ -1,5 +1,7 @@
 #include "assembly.hpp"
 #include "classify.hpp"
+#include "expression.hpp"
+#include <boost/format.hpp>
 #include "standard_factory.hpp"
 #include "parsers/parser_gtf.hpp"
 
@@ -10,22 +12,45 @@ AssemblyStats Assembly::analyze(const std::string &file, const AssemblyOptions &
     AssemblyStats stats;
     const auto r = StandardFactory::reference();
 
+    /*
+     * Create counters for various levels. The number of counts will give out the
+     * distribution.
+     */
+    
+    #define DEFINE_COUNTER(x) std::map<SequinID, Counts> x; std::for_each(r.seqs_iA.begin(), r.seqs_iA.end(), [&](const std::pair<GeneID, Sequin> &p) { x[p.first] = 0; }); assert(x.size() == r.seqs_iA.size());
+
+    DEFINE_COUNTER(c_base);
+    DEFINE_COUNTER(c_trans);
+    DEFINE_COUNTER(c_exons);
+    
 	ParserGTF::parse(file, [&](const Feature &f, ParserProgress &p)
 	{
-        classify(r, f,
-                 [&]() // Positive
+        classify(r, stats, f,
+                 [&]() // Is this positively correct?
                  {
                      switch (f.type)
                      {
-                         case Exon:
-                         {
-                             verifytPositive(find(r.exons, f), &stats.base, &stats.exon);
-                             break;
-                         }
-                             
                          case Transcript:
                          {
-                             // TODO: Need information for the transcript...
+                             assert(r.seqs_iA.count(f.iID));
+                             const auto &seq = r.seqs_iA.at(f.iID);
+
+                             assert(c_base.count(f.iID));
+                             assert(c_trans.count(f.iID));
+
+                             // It's a true-positive if the locus match
+                             if (tfp(seq.l == f.l, &stats.m_base, &stats.m_trans))
+                             {
+                                 c_base[f.iID]++;
+                                 c_trans[f.iID]++;
+                             }
+
+                             break;
+                         }
+
+                         case Exon:
+                         {
+                             tfp(find(r.exons, f), &stats.m_base, &stats.m_exon);
                              break;
                          }
 
@@ -35,19 +60,36 @@ AssemblyStats Assembly::analyze(const std::string &file, const AssemblyOptions &
                          }
                      }
                  },
-                 [&](bool mapped) // Negative
+                 
+                 [&](bool mapped) // Is this negatively correct?
                  {
-                     verifyNegative(mapped, &stats.base, &stats.exon);
+                     tfn(mapped, &stats.m_base, &stats.m_exon);
                  });
 	});
 
-    /*
-     * Reports various statistics related to the "accuracy" of the transcripts in each sample
-     * when compared to the reference silico data. The typical gene finding measures of "sensitivity"
-     * and "specificity" are calculated at various levels (nucleotide, exon, intron, transcript,
-     * gene) for the input file. The Sn and Sp columns show specificity and sensitivity values at each
-     * level.
-     */
+    #define DEFINE_COUNTS(x,y) const auto y = Expression::analyze(x); assert(!y.limit_count || r.seqs_iA.count(y.limit_key));
     
+    DEFINE_COUNTS(c_base,  base_r);
+    DEFINE_COUNTS(c_trans, trans_r);
+    
+    stats.sens_base  = Sensitivity(r, base_r);
+    stats.sens_trans = Sensitivity(r, trans_r);
+
+    assert(stats.n && stats.nr + stats.nq == stats.n);
+    
+    /*
+     * Reports various statistics related to the "accuracy" of the transcripts in each sample when
+     * compared to the reference silico data. The typical gene finding measures of "sensitivity" and
+     * "specificity" are calculated at various levels (nucleotide, exon, intron, transcript, gene) for
+     * for the input file. The Sn and Sp columns show specificity and sensitivity values at each level.
+     */
+
+    if (options.writer)
+    {
+        options.writer->write(
+                (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
+                      % "diluation" % "tp" % "tn" % "fp" % "fn" % "sensitivity").str());
+    }
+
 	return stats;
 }

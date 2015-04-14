@@ -97,10 +97,8 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 
 					if (correct)
 					{
-                        
                         assert(r.iso2Gene.count(f1.iID));
                         counts[r.iso2Gene.at(f1.iID)]++;
-                        
 						stats.m.tp++;
 					}
 					else
@@ -143,15 +141,10 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
     
-    // Proportion of the reads from the reference
-    stats.dilution = stats.nq ? static_cast<Percentage>(stats.nr / stats.nq) : 1;
-
     /*
      * The counts for each sequin is needed to calculate the limit of sensitivity.
      */
 
-    Expression::print(counts);    
-    
     const auto cr = Expression::analyze(counts);
     
     // Either the samples are independent or the least detectable-abundant sequin is known
@@ -160,7 +153,8 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
     stats.sens.id = cr.limit_key;
     stats.sens.counts = cr.limit_count;
     stats.sens.abundance = cr.limit_count
-                         ? r.seqs_gA.at(cr.limit_key).r.reads + r.seqs_gA.at(cr.limit_key).v.reads: NAN;
+                              ? r.seqs_gA.at(cr.limit_key).r.abundance +
+                                 r.seqs_gA.at(cr.limit_key).v.abundance: NAN;
 
     if (options.writer)
     {
@@ -169,7 +163,7 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
                 % "diluation" % "tp" % "tn" % "fp" % "fn" % "sensitivity").str());
         options.writer->write(
             (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-                % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn
+                % stats.dilution() % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn
                     % stats.sens.abundance).str());
     }
 

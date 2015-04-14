@@ -6,7 +6,7 @@
 
 namespace Spike
 {
-    void verifytPositive(bool cond, ConfusionMatrix *m1, ConfusionMatrix *m2 = NULL)
+    bool tfp(bool cond, ConfusionMatrix *m1, ConfusionMatrix *m2 = NULL)
     {
         if (cond)
         {
@@ -18,9 +18,11 @@ namespace Spike
             if (m1) { m1->tn++; }
             if (m2) { m2->tn++; }
         }
+
+        return cond;
     }
 
-    void verifyNegative(bool cond, ConfusionMatrix *m1, ConfusionMatrix *m2 = NULL)
+    bool tfn(bool cond, ConfusionMatrix *m1, ConfusionMatrix *m2 = NULL)
     {
         if (cond)
         {
@@ -32,6 +34,8 @@ namespace Spike
             if (m1) { m1->fn++; }
             if (m2) { m2->fn++; }
         }
+
+        return cond;
     }
 
     template <typename Iter, typename T> bool find(const Iter &iter, const T &t)
@@ -47,9 +51,20 @@ namespace Spike
         return false;
     }
 
-    template <typename T, typename Positive, typename Negative>
-    void classify(const Standard &r, const T &t, Positive p, Negative n)
+    template <typename T, typename Stats, typename Positive, typename Negative>
+    void classify(const Standard &r, Stats &stats, const T &t, Positive p, Negative n)
     {
+        if (t.id == r.id)
+        {
+            stats.nr++;
+        }
+        else
+        {
+            stats.nq++;
+        }
+        
+        stats.n++;
+
         // Whether it's been mapped to the reference
         const bool mapped = r.l.contains(t.l);
 

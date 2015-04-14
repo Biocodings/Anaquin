@@ -24,6 +24,7 @@ namespace Spike
     typedef std::string GeneID;
     typedef std::string ChromoID;
     typedef std::string SequinID;
+    typedef std::string IsoformID;
     typedef std::string VariantID;
     typedef std::string FeatureName;
     typedef std::string TranscriptID;

@@ -43,7 +43,7 @@ bool ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
         bf.id = tokens[0];
 
         // Position of the feature in standard chromosomal coordinates
-        bf.l.set(stod(tokens[1]), stod(tokens[2]));
+        bf.l.set(stod(tokens[1]) + 1, stod(tokens[2]));
     
         if (tokens.size() >= 4)
         {
