@@ -23,12 +23,6 @@ namespace Spike
                 std::cout << iter->first << "  " << iter->second << std::endl;
             }
         }
-        
-        /*
-         * Analyze a count table of sequins and report various statistics.
-         *
-         *    - Limit of sensitivity
-         */
 
         template <typename T> static ExpressionResults<T> analyze(const std::map<T, unsigned> &t)
         {

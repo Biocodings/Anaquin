@@ -29,13 +29,18 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
                 c[t.geneID]++;
                 const auto &m = r.seqs_gA.at(t.geneID);
                 
-                /*
-                 * The x-axis would be the known concentration for each gene,
-                 * the y-axis would be the expression (RPKM) reported.
-                 */
-                
-                x.push_back(m.r.exp + m.v.exp);
-                y.push_back(t.fpkm);
+                if (t.fpkm)
+                {
+                    /*
+                     * The x-axis would be the known concentration for each gene,
+                     * the y-axis would be the expression (RPKM) reported.
+                     */
+                    
+                    x.push_back(m.r.exp + m.v.exp);
+                    y.push_back(t.fpkm);
+                    
+                    std::cout << (m.r.exp + m.v.exp) << " " << t.fpkm << std::endl;
+                }
                 
                 break;
             }
@@ -54,9 +59,10 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
             }
         }
     });
+
+    const auto er = Expression::analyze(c);
     
-    ANALYZE_COUNTS(c, cr);
-    
+    // Perform a linear-model to the abundance
     const auto lm = linearModel(y, x);
 
     /*
@@ -74,13 +80,9 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
     // Linear relationship between the two variables
     stats.slope = lm.coeffs[1].value;
 
-   // options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-     //                      % "diluation" % "sn" % "sp" % "sensitivity").str());
-
-    
-    std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
-    
-    
+    // options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
+    //                      % "diluation" % "sn" % "sp" % "sensitivity").str());
+    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
     
     return stats;
 }
