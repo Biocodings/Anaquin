@@ -9,7 +9,7 @@
 //{
 //    for (auto ex : exts)
 //    {
-//        const auto r = Aligner::analyze("tests/data/rna_sims_2/aligned/accepted_hits." + ex);
+//        const auto r = Aligner::analyze("tests/data/rna_sims_2/align/accepted_hits." + ex);
 //
 //        REQUIRE(r.n == 98041);
 //        REQUIRE(r.sens.id == "R_5_2");
@@ -25,7 +25,7 @@
 //        Aligner::AlignerOptions options;
 //        options.mode = Aligner::ExonAlign;
 //        
-//        const auto r = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
+//        const auto r = Aligner::analyze("tests/data/rna_sims/align/accepted_hits." + ex, options);
 //        
 //        REQUIRE(r.n == 5762);
 //        REQUIRE(r.m.tp == 5762);
@@ -60,7 +60,7 @@
 //{
 //    for (auto ex : exts)
 //    {
-//        const auto r = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex);
+//        const auto r = Aligner::analyze("tests/data/rna_sims/align/accepted_hits." + ex);
 //
 //        REQUIRE(r.n == 9997);
 //        REQUIRE(r.m.tp == 9997);
@@ -80,7 +80,7 @@
 //        Aligner::AlignerOptions options;
 //        options.mode = Aligner::SpliceAlign;
 //        
-//        const auto r = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
+//        const auto r = Aligner::analyze("tests/data/rna_sims/align/accepted_hits." + ex, options);
 //        
 //        REQUIRE(r.n == 4235);
 //        REQUIRE(r.m.sp() == 1);

@@ -2,15 +2,14 @@
 #define GI_DIFFERENTIAL_HPP
 
 #include "analyzer.hpp"
+//#include "confusion.hpp"
 #include "sensitivity.hpp"
-#include "confusion_matrix.hpp"
 
 namespace Spike
 {
     struct DifferentialStats : public AnalyzerStats
     {
-        ConfusionMatrix m_base;
-        
+        //Confusion m_base;
         Sensitivity s_base;
         
         // Correlation for the samples
@@ -30,7 +29,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static DifferentialStats analyze(const std::string &file, const DifferentialOptions &options = DifferentialOptions());
+//        static DifferentialStats analyze(const std::string &file, const DifferentialOptions &options);
     };    
 }
 

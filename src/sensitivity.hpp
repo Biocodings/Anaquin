@@ -14,16 +14,13 @@ namespace Spike
         {
             id = r.limit_key;
             counts = r.limit_count;
-            abundance = r.limit_count
-                            ? s.seqs_iA.at(r.limit_key).abundance +
-                                s.seqs_iA.at(r.limit_key).abundance: NAN;
+            exp = r.limit_count ? s.seqs_iA.at(r.limit_key).exp +
+                                  s.seqs_iA.at(r.limit_key).exp: NAN;
         }
 
         SequinID id;
-        
         Counts counts;
-        
-        Concentration abundance;
+        Concentration exp;
     };
 }
 

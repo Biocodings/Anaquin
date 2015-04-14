@@ -200,7 +200,7 @@ Standard StandardFactory::reference()
      * Create data-structure for sequins. Refer to the documentation for more details.
      */
 
-    auto create_sequin = [&](const IsoformID &id, Group grp, Fold fold, Concentration abundance, std::map<IsoformID, Sequin> &ig)
+    auto create_sequin = [&](const IsoformID &id, Group grp, Fold fold, Concentration exp, std::map<IsoformID, Sequin> &ig)
     {
         Sequin seq;
         
@@ -212,8 +212,8 @@ Standard StandardFactory::reference()
         // The BED file has given out the position for the sequin
         seq.l = temp[seq.id];
         
+        seq.exp  = exp;
         seq.fold = fold;
-        seq.abundance = abundance;
         
         assert(ig.count(seq.id) == 0);
         assert(seq.l.start != 0 || seq.l.end != 0);

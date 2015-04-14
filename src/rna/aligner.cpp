@@ -152,20 +152,14 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 
     stats.sens.id = cr.limit_key;
     stats.sens.counts = cr.limit_count;
-    stats.sens.abundance = cr.limit_count
-                              ? r.seqs_gA.at(cr.limit_key).r.abundance +
-                                 r.seqs_gA.at(cr.limit_key).v.abundance: NAN;
+    stats.sens.exp = cr.limit_count ? r.seqs_gA.at(cr.limit_key).r.exp +
+                                      r.seqs_gA.at(cr.limit_key).v.exp: NAN;
 
-    if (options.writer)
-    {
-        options.writer->write(
-            (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-                % "diluation" % "sn" % "sp" % "sensitivity").str());
-        options.writer->write(
-            (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-                % stats.dilution() % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn
-                    % stats.sens.abundance).str());
-    }
+    options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
+                           % "diluation" % "sn" % "sp" % "sensitivity").str());
+    options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
+                           % stats.dilution() % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn
+                           % stats.sens.exp).str());
 
 	return stats;
 }

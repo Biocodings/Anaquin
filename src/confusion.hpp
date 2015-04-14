@@ -1,12 +1,12 @@
-#ifndef GI_CONFUSION_MATRIX_HPP
-#define GI_CONFUSION_MATRIX_HPP
+#ifndef GI_CONFUSION_HPP
+#define GI_CONFUSION_HPP
 
 #include <math.h>
 #include "types.hpp"
 
 namespace Spike
 {
-    struct ConfusionMatrix
+    struct Confusion
     {
         Percentage fp = 0;
         Percentage tp = 0;

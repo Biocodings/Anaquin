@@ -18,7 +18,7 @@ namespace Spike
     {
         TrackID trackID;
         TrackID geneID;
-        
+
         FPKM fpkm;
         FPKM lFPKM;
         FPKM uFPKM;

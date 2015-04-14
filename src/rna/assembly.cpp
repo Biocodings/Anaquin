@@ -16,13 +16,11 @@ AssemblyStats Assembly::analyze(const std::string &file, const AssemblyOptions &
      * Create counters for various levels. The number of counts will give out the
      * distribution.
      */
-    
-    #define DEFINE_COUNTER(x) std::map<SequinID, Counts> x; std::for_each(r.seqs_iA.begin(), r.seqs_iA.end(), [&](const std::pair<GeneID, Sequin> &p) { x[p.first] = 0; }); assert(x.size() == r.seqs_iA.size());
 
-    DEFINE_COUNTER(c_base);
-    DEFINE_COUNTER(c_trans);
-    DEFINE_COUNTER(c_exons);
-    DEFINE_COUNTER(c_introns);
+    INIT_COUNTER(c_base);
+    INIT_COUNTER(c_trans);
+    INIT_COUNTER(c_exons);
+    INIT_COUNTER(c_introns);
     
     std::vector<Feature> exons;
     
@@ -78,12 +76,10 @@ AssemblyStats Assembly::analyze(const std::string &file, const AssemblyOptions &
         tfp(find(r.introns, in), &stats.m_base, &stats.m_intron);
     });
 
-    #define DEFINE_COUNTS(x,y) const auto y = Expression::analyze(x); assert(!y.limit_count || r.seqs_iA.count(y.limit_key));
-    
-    DEFINE_COUNTS(c_base,base_r);
-    DEFINE_COUNTS(c_trans, trans_r);
-    DEFINE_COUNTS(c_exons, exon_r);
-    DEFINE_COUNTS(c_introns, intron_r);
+    ANALYZE_COUNTS(c_base,base_r);
+    ANALYZE_COUNTS(c_trans, trans_r);
+    ANALYZE_COUNTS(c_exons, exon_r);
+    ANALYZE_COUNTS(c_introns, intron_r);
 
     stats.sens_base   = Sensitivity(r, base_r);
     stats.sens_trans  = Sensitivity(r, trans_r);
@@ -99,12 +95,8 @@ AssemblyStats Assembly::analyze(const std::string &file, const AssemblyOptions &
      * for the input file. The Sn and Sp columns show specificity and sensitivity values at each level.
      */
 
-    if (options.writer)
-    {
-        options.writer->write(
-                (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-                      % "diluation" % "sn" % "sp" % "sensitivity").str());
-    }
+    //options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
+    //                           % "diluation" % "sn" % "sp" % "sensitivity").str());
 
 	return stats;
 }

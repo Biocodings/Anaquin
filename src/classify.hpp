@@ -2,11 +2,11 @@
 #define GI_CLASSIFY_HPP
 
 #include "standard.hpp"
-#include "confusion_matrix.hpp"
+#include "confusion.hpp"
 
 namespace Spike
 {
-    bool tfp(bool cond, ConfusionMatrix *m1, ConfusionMatrix *m2 = NULL)
+    inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
     {
         if (cond)
         {
@@ -22,7 +22,7 @@ namespace Spike
         return cond;
     }
 
-    bool tfn(bool cond, ConfusionMatrix *m1, ConfusionMatrix *m2 = NULL)
+    inline bool tfn(bool cond, Confusion *m1, Confusion *m2 = NULL)
     {
         if (cond)
         {

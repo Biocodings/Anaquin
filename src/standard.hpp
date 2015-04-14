@@ -5,7 +5,7 @@
 #include <vector>
 #include "locus.hpp"
 #include "feature.hpp"
-#include "confusion_matrix.hpp"
+#include "confusion.hpp"
 
 namespace Spike
 {
@@ -39,7 +39,7 @@ namespace Spike
         Fold fold;
 
         // Amount of abundance for this sequin
-        Concentration abundance;
+        Concentration exp;
     };
 
     struct Sequins

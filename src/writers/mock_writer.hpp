@@ -10,10 +10,10 @@ namespace Spike
     {
         inline void write(const std::string &line) override
         {
-            lines.push_back(line);
+            //lines.push_back(line);
         }
 
-        std::vector<std::string> lines;
+        //std::vector<std::string> lines;
     };
 }
 

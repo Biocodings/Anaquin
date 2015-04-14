@@ -2,8 +2,8 @@
 #define GI_ALIGNER_HPP
 
 #include "analyzer.hpp"
+#include "confusion.hpp"
 #include "sensitivity.hpp"
-#include "confusion_matrix.hpp"
 
 namespace Spike
 {
@@ -12,7 +12,7 @@ namespace Spike
         // The lowest detectable abundance in the experiment
         Sensitivity sens;
 
-        ConfusionMatrix m;
+        Confusion m;
     };
 
     struct Aligner

@@ -2,17 +2,17 @@
 #define GI_ASSEMBLY_HPP
 
 #include "analyzer.hpp"
+#include "confusion.hpp"
 #include "sensitivity.hpp"
-#include "confusion_matrix.hpp"
 
 namespace Spike
 {
     struct AssemblyStats : public AnalyzerStats
     {
-        ConfusionMatrix m_base;
-        ConfusionMatrix m_exon;
-        ConfusionMatrix m_trans;
-        ConfusionMatrix m_intron;
+        Confusion m_base;
+        Confusion m_exon;
+        Confusion m_trans;
+        Confusion m_intron;
         
         Sensitivity sens_base;
         Sensitivity sens_exon;

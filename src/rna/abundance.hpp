@@ -2,14 +2,14 @@
 #define GI_ABUNDANCE_HPP
 
 #include "analyzer.hpp"
+#include "confusion.hpp"
 #include "sensitivity.hpp"
-#include "confusion_matrix.hpp"
 
 namespace Spike
 {
     struct AbundanceStats : public AnalyzerStats
     {
-        ConfusionMatrix m_base;
+        Confusion m_base_;
 
         Sensitivity s_base;
         
@@ -25,12 +25,20 @@ namespace Spike
     
     struct Abundance
     {
-        struct AbundanceOptions : public AnalyzerOptions
+        enum AbdunanceMode
         {
-            // Empty Implementation
+            AbdunanceGene,
+            AbdunanceIsoform
         };
         
-        static AbundanceStats analyze(const std::string &file, const AbundanceOptions &options = AbundanceOptions());
+        struct AbundanceOptions : public AnalyzerOptions
+        {
+            AbundanceOptions(AbdunanceMode mode) : mode(mode) {}
+
+            AbdunanceMode mode;
+        };
+
+        static AbundanceStats analyze(const std::string &file, const AbundanceOptions &options);
     };    
 }
 
