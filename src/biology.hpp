@@ -26,7 +26,7 @@ namespace Spike
         
         return false;
     }
-    
+
     /*
      * Intron is a sequence within a gene that is removed by RNA splicing. This function calculates
      * the gaps between the given exons and assume them be introns (also known as spliced junctions).

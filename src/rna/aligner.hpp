@@ -1,6 +1,7 @@
 #ifndef GI_ALIGNER_HPP
 #define GI_ALIGNER_HPP
 
+#include "sensitivity.hpp"
 #include "parsers/parser.hpp"
 #include "confusion_matrix.hpp"
 
@@ -22,10 +23,14 @@ namespace Spike
         
         // Number of reads aligned to the real sample
         Reads nq = 0;
-        
-        ConfusionMatrix m;
-        
+
+        // The lowest detectable abundance in the experiment
+        Sensitivity sens;
+
+        // Amount of sequins detected
         Percentage dilution;
+        
+        ConfusionMatrix m;        
     };
 
     struct Aligner

@@ -7,7 +7,17 @@ static std::string exts[] = { "sam", "bam" };
 
 TEST_CASE("RNA_Simulation_2")
 {
-    const auto r = Aligner::analyze("tests/data/rna_sims_2/aligned/accepted_hits.bam");
+    for (auto ex : exts)
+    {
+        const auto r = Aligner::analyze("tests/data/rna_sims_2/aligned/accepted_hits." + ex);
+
+        REQUIRE(r.n == 98041);
+        
+        std::cout << r.sens.id << std::endl;
+        std::cout << r.sens.counts << std::endl;
+        std::cout << r.sens.abundance << std::endl;
+        
+    }
 }
 
 TEST_CASE("RNA_Simulation_Exon")
@@ -17,51 +27,51 @@ TEST_CASE("RNA_Simulation_Exon")
         Aligner::AlignerOptions options;
         options.mode = Aligner::ExonAlign;
         
-        const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
+        const auto r = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
         
-        REQUIRE(stats.n == 5762);
-        REQUIRE(stats.m.tp == 5762);
-        REQUIRE(stats.m.fp == 0);
-        REQUIRE(stats.m.fn == 0);
-        REQUIRE(stats.m.tn == 0);
-        REQUIRE(stats.nr == 5762);
-        REQUIRE(stats.dilution == 1);
-        REQUIRE(stats.nq == 0);
-        REQUIRE(stats.m.sp() == 1);
-        REQUIRE(isnan(stats.m.sn()));
+        REQUIRE(r.n == 5762);
+        REQUIRE(r.m.tp == 5762);
+        REQUIRE(r.m.fp == 0);
+        REQUIRE(r.m.fn == 0);
+        REQUIRE(r.m.tn == 0);
+        REQUIRE(r.nr == 5762);
+        REQUIRE(r.dilution == 1);
+        REQUIRE(r.nq == 0);
+        REQUIRE(r.m.sp() == 1);
+        REQUIRE(isnan(r.m.sn()));
     }
 }
 
 TEST_CASE("RNA_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution. It's obviously independent.
-    const auto stats = Aligner::analyze("tests/data/cufflinks_test.sam");
+    const auto r = Aligner::analyze("tests/data/cufflinks_test.sam");
 
-    REQUIRE(isnan(stats.m.sp()));
-    REQUIRE(1 == stats.m.sn());
-    REQUIRE(0 == stats.m.tp);
-    REQUIRE(0 == stats.m.fp);
-    REQUIRE(0 == stats.m.fn);
-    REQUIRE(3271 == stats.m.tn);
-    REQUIRE(0 == stats.nr);
-    REQUIRE(3307 == stats.nq);
-    REQUIRE(0 == stats.dilution);
+    REQUIRE(isnan(r.m.sp()));
+    REQUIRE(1 == r.m.sn());
+    REQUIRE(0 == r.m.tp);
+    REQUIRE(0 == r.m.fp);
+    REQUIRE(0 == r.m.fn);
+    REQUIRE(3271 == r.m.tn);
+    REQUIRE(0 == r.nr);
+    REQUIRE(3307 == r.nq);
+    REQUIRE(0 == r.dilution);
 }
 
 TEST_CASE("RNA_Simulation_Base")
 {
     for (auto ex : exts)
     {
-        const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex);
+        const auto r = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex);
 
-        REQUIRE(stats.n == 9997);
-        REQUIRE(stats.m.tp == 9997);
-        REQUIRE(stats.m.fp == 0);
-        REQUIRE(stats.m.fn == 0);
-        REQUIRE(stats.m.tn == 0);
-        REQUIRE(stats.nr == 9997);
-        REQUIRE(stats.dilution == 1);
-        REQUIRE(stats.nq == 0);
+        REQUIRE(r.n == 9997);
+        REQUIRE(r.m.tp == 9997);
+        REQUIRE(r.m.fp == 0);
+        REQUIRE(r.m.fn == 0);
+        REQUIRE(r.m.tn == 0);
+        REQUIRE(r.nr == 9997);
+        REQUIRE(r.dilution == 1);
+        REQUIRE(r.nq == 0);
     }
 }
 
@@ -72,17 +82,17 @@ TEST_CASE("RNA_Simulation_Splicing")
         Aligner::AlignerOptions options;
         options.mode = Aligner::SpliceAlign;
         
-        const auto stats = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
+        const auto r = Aligner::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
         
-        REQUIRE(stats.n == 4235);
-        REQUIRE(stats.m.sp() == 1);
-        REQUIRE(isnan(stats.m.sn()));
-        REQUIRE(stats.m.tp == 4235);
-        REQUIRE(stats.m.fp == 0);
-        REQUIRE(stats.m.fn == 0);
-        REQUIRE(stats.m.tn == 0);
-        REQUIRE(stats.nr == 4235);
-        REQUIRE(stats.dilution == 1);
-        REQUIRE(stats.nq == 0);
+        REQUIRE(r.n == 4235);
+        REQUIRE(r.m.sp() == 1);
+        REQUIRE(isnan(r.m.sn()));
+        REQUIRE(r.m.tp == 4235);
+        REQUIRE(r.m.fp == 0);
+        REQUIRE(r.m.fn == 0);
+        REQUIRE(r.m.tn == 0);
+        REQUIRE(r.nr == 4235);
+        REQUIRE(r.dilution == 1);
+        REQUIRE(r.nq == 0);
     }
 }

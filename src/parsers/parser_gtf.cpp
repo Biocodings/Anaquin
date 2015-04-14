@@ -96,11 +96,6 @@ bool ParserGTF::parse(const std::string &file, std::function<void (const Feature
         }
 
         x(f, p);
-        
-        if (p.terminate)
-        {
-            break;
-        }
 	}
     
 	return true;

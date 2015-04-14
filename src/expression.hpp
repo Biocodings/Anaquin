@@ -2,6 +2,7 @@
 #define GI_EXPRESSION_HPP
 
 #include <map>
+#include <iostream>
 
 namespace Spike
 {
@@ -14,6 +15,20 @@ namespace Spike
             // The value of the limit of sensitivity
             unsigned limit_count;
         };
+
+        template <typename T> static void print(const std::map<T, unsigned> &m)
+        {
+            for (auto iter = m.begin(); iter != m.end(); iter++)
+            {
+                std::cout << iter->first << "  " << iter->second << std::endl;
+            }
+        }
+        
+        /*
+         * Analyze a count table of sequins and report various statistics.
+         *
+         *    - Limit of sensitivity
+         */
 
         template <typename T> static ExpressionResults<T> analyze(const std::map<T, unsigned> &t)
         {

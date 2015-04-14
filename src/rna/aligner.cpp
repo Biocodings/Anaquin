@@ -56,15 +56,19 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
 
     Feature f1, f2;
     
-    std::map<TranscriptID, unsigned> counts;
-    std::for_each(r.seqs_iA.begin(), r.seqs_iA.end(), [&](const std::pair<TranscriptID, Sequin> &p)
+    /*
+     * At the alignment, we're only interested in counting for the gene-level.
+     * Isoform-level is another possibiltiy but there wouldn't be information
+     * to distinguish ambiguous reads from alternative splicing.
+     */
+    
+    std::map<GeneID, Counts> counts;
+
+    std::for_each(r.seqs_gA.begin(), r.seqs_gA.end(), [&](const std::pair<GeneID, Sequins> &p)
     {
         counts[p.first] = 0;
     });
     
-    // Make sure we have an entry for each protein isoform
-    assert(counts.size() == r.seqs_iA.size());
-
     ParserSAM::parse(file, [&](const Alignment &align)
     {
         if ((options.mode == ExonAlign   && align.spliced) ||
@@ -84,17 +88,19 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
                     /*
                      * It's not enough that the read is mapped, it must also be mapped correctly.
                      * If the read maps to an exon, check whether it's mapped to an exon in the
-                     * reference. Otherwise the read is spliced, and check whether it maps to
-                     * a junction in the reference.
+                     * reference. Otherwise the read is spliced, check whether it maps to a
+                     * junction in the reference.
                      */
-                    
+
                     const bool correct = (!align.spliced && find(r.fs.begin(), r.fs.end(), align, f1)) ||
-                                         (align.spliced && checkSplice(r, align, f1, f2));
+                                          (align.spliced && checkSplice(r, align, f1, f2));
 
 					if (correct)
 					{
-                        assert(counts.count(f1.iID));
-                        counts[f1.iID]++;
+                        
+                        assert(r.iso2Gene.count(f1.iID));
+                        counts[r.iso2Gene.at(f1.iID)]++;
+                        
 						stats.m.tp++;
 					}
 					else
@@ -144,23 +150,27 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
      * The counts for each sequin is needed to calculate the limit of sensitivity.
      */
 
+    Expression::print(counts);    
+    
     const auto cr = Expression::analyze(counts);
     
     // Either the samples are independent or the least detectable-abundant sequin is known
-    assert(!cr.limit_count || r.seqs_iA.count(cr.limit_key));
+    assert(!cr.limit_count || r.seqs_gA.count(cr.limit_key));
 
-    // The least abdunance while still detectable in this experiment
-    const auto limit_sensitivity = cr.limit_count ? r.seqs_iA.at(cr.limit_key).reads : NAN;
+    stats.sens.id = cr.limit_key;
+    stats.sens.counts = cr.limit_count;
+    stats.sens.abundance = cr.limit_count
+                         ? r.seqs_gA.at(cr.limit_key).r.reads + r.seqs_gA.at(cr.limit_key).v.reads: NAN;
 
     if (options.writer)
     {
         options.writer->write(
             (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-                % "diluation" % "tp" % "tn" % "fp" % "fn" % "limit_sensitivity").str());
+                % "diluation" % "tp" % "tn" % "fp" % "fn" % "sensitivity").str());
         options.writer->write(
             (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
                 % stats.dilution % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn
-                    % limit_sensitivity).str());
+                    % stats.sens.abundance).str());
     }
 
 	return stats;

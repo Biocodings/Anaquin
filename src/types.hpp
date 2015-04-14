@@ -5,15 +5,12 @@
 
 namespace Spike
 {
+    typedef unsigned Counts;
     typedef double Percentage;
-    
-    typedef std::string GeneID;
-    typedef std::string ChromoID;
-    typedef std::string VariantID;
-    typedef std::string FeatureName;
     
     typedef std::string Sequence;
     
+    // Defined as long long because there could be many reads
     typedef long long Reads;
     
     typedef float FPKM;
@@ -25,8 +22,12 @@ namespace Spike
     typedef float Fold;
     
     typedef std::string GeneID;
+    typedef std::string ChromoID;
+    typedef std::string SequinID;
+    typedef std::string VariantID;
+    typedef std::string FeatureName;
     typedef std::string TranscriptID;
-    
+
     // Eg: 388488 from the first matching base
     typedef long long BasePair;    
 }
