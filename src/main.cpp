@@ -12,11 +12,19 @@
 
 using namespace Spike;
 
+static void printManual()
+{
+    std::cout << std::ifstream("docs/manual.txt").rdbuf() << std::endl;
+}
+
 int main(int argc, char ** argv)
 {
     typedef TCLAP::SwitchArg SArg;
     typedef TCLAP::ValueArg<std::string> VArg;
 
+    printManual();
+    return 0;
+    
 	std::cout << "Anquin by Garvan Institute - sequin data-analysis tool\n" << std::endl;
 
     try
