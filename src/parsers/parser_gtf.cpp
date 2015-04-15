@@ -6,7 +6,7 @@
 
 using namespace Spike;
 
-bool ParserGTF::parse(const std::string &file, std::function<void (const Feature &, ParserProgress &)> x)
+void ParserGTF::parse(const std::string &file, std::function<void (const Feature &, ParserProgress &)> x)
 {
     std::map<std::string, FeatureType> mapper =
     {
@@ -97,6 +97,4 @@ bool ParserGTF::parse(const std::string &file, std::function<void (const Feature
 
         x(f, p);
 	}
-    
-	return true;
 }

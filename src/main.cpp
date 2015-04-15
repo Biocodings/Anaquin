@@ -1,6 +1,11 @@
 #include <iostream>
 #include <tclap/CmdLine.h>
-#include "aligner.hpp"
+#include <unistd.h>
+
+#include "rna/aligner.hpp"
+#include "rna/assembly.hpp"
+#include "rna/abundance.hpp"
+#include "rna/differential.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
