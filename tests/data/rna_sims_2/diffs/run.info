@@ -1,5 +1,0 @@
-param	value
-cmd_line	cuffdiff ../../../../data/RNA/standards.gtf ../align/accepted_hits.sam ../align/accepted_hits.sam 
-version	2.2.1
-SVN_revision	4237
-boost_version	105300
