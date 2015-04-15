@@ -100,7 +100,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     // Linear relationship between the two variables
     stats.slope = lr.coeffs[1].value;
 
-    std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
     
     return stats;
 }

@@ -84,7 +84,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
 
     // options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
     //                      % "diluation" % "sn" % "sp" % "sensitivity").str());
-    std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
-    
+    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+
     return stats;
 }
