@@ -21,7 +21,7 @@ namespace Spike
     
     struct ParserBED
     {
-        static bool parse(const std::string &file, std::function<void(const BedFeature &)>);
+        static void parse(const std::string &file, std::function<void(const BedFeature &)>);
     };
 }
 

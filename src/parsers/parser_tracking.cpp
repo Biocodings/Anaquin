@@ -15,7 +15,7 @@ enum TrackingField
     T_Status  = 12,
 };
 
-bool ParserTracking::parse(const std::string &file, std::function<void (const Tracking &)> f)
+void ParserTracking::parse(const std::string &file, std::function<void (const Tracking &)> f)
 {
     File i(file);
 
@@ -61,8 +61,6 @@ bool ParserTracking::parse(const std::string &file, std::function<void (const Tr
             f(t);
         }
     }
-    
-    return true;
 }
 
 

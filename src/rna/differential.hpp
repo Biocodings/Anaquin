@@ -24,14 +24,21 @@ namespace Spike
 
     struct Differential
     {
-        struct DifferentialOptions : public AnalyzerOptions
+        enum DifferentialMode
         {
-            // Empty Implementation
+            DiffGene,
+            DiffIsoform
         };
 
-        static DifferentialStats analyze(const std::string &s1,
-                                         const std::string &s2,
-                                         const DifferentialOptions &options);
+        struct DifferentialOptions : public AnalyzerOptions
+        {
+            DifferentialOptions(DifferentialMode mode) : mode(mode) {}
+            
+            // Whether it's done at the gene or isoform level
+            DifferentialMode mode;
+        };
+
+        static DifferentialStats analyze(const std::string &f, const DifferentialOptions &options);
     };
 }
 

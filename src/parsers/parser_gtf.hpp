@@ -13,7 +13,7 @@ namespace Spike
     
     struct ParserGTF
     {
-        static bool parse(const std::string &file, std::function<void (const Feature &, ParserProgress &p)>);
+        static void parse(const std::string &file, std::function<void (const Feature &, ParserProgress &p)>);
     };
 }
 

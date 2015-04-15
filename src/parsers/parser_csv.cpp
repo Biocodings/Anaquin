@@ -4,15 +4,10 @@
 
 using namespace Spike;
 
-bool ParserCSV::parse(const std::string &file, std::function<void (const std::vector<std::string> &)> x)
+void ParserCSV::parse(const std::string &file, std::function<void (const std::vector<std::string> &)> x)
 {
     std::string line;
     std::ifstream i(file);
-
-    if (!i)
-    {
-        return false;
-    }
 
     std::vector<std::string> tokens;
 
@@ -21,6 +16,4 @@ bool ParserCSV::parse(const std::string &file, std::function<void (const std::ve
         Tokens::split(line, ",", tokens);
         x(tokens);
     }
-
-    return true;
 }

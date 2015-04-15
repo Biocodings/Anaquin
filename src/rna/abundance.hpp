@@ -35,6 +35,7 @@ namespace Spike
         {
             AbundanceOptions(AbdunanceMode mode) : mode(mode) {}
 
+            // Whether it's done at the gene or isoform level
             AbdunanceMode mode;
         };
 

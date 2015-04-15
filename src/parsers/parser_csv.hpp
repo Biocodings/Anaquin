@@ -10,7 +10,7 @@ namespace Spike
     
     struct ParserCSV
     {
-        static bool parse(const std::string &file, std::function<void (const Fields &)>);
+        static void parse(const std::string &file, std::function<void (const Fields &)>);
     };    
 }
 

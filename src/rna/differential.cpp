@@ -1,17 +1,30 @@
 #include "classify.hpp"
 #include "differential.hpp"
 #include "standard_factory.hpp"
-//#include "parsers/parser_tracking.hpp"
-//#include <ss/regression/linear_model.hpp>
+#include "parsers/parser_cdiffs.hpp"
+#include <ss/regression/linear_model.hpp>
 
-//using namespace SS;
+using namespace SS;
 using namespace Spike;
 
-/*
-DifferentialStats Differential::analyze(const std::string &file, const Differential::DifferentialOptions &options)
+DifferentialStats Differential::analyze(const std::string &f, const Differential::DifferentialOptions &options)
 {
     DifferentialStats stats;
-//    const auto r = StandardFactory::reference();
+    const auto r = StandardFactory::reference();
+
+    ParserCDiffs::parse(f, [&](const TrackingDiffs &t)
+    {
+        /*
+         * In a differential-expression experiment
+         *
+         *
+         *
+         */
+        
+                            
+    });
+    
+
 //
 //    // Values for the x-axis and y-axis
 //    std::vector<double> x, y;
@@ -89,6 +102,5 @@ DifferentialStats Differential::analyze(const std::string &file, const Different
 //
 //    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
 //    
-  //  return stats;
-//}
-
+    return stats;
+}
