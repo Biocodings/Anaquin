@@ -19,17 +19,17 @@ namespace Spike
     {
         enum AlignerMode
         {
-            BaseAlign,
-            ExonAlign,
-            SpliceAlign,
-        };
-        
-        struct AlignerOptions : public AnalyzerOptions
-        {
-            AlignerMode mode;
+            AlignBase,
+            AlignExon,
+            AlignSplice,
         };
 
-        static AlignerStats analyze(const std::string &file, const AlignerOptions &options = AlignerOptions());
+        struct Options : public AnalyzerOptions<AlignerMode>
+        {
+            // Empty Implementation
+        };
+
+        static AlignerStats analyze(const std::string &file, const Aligner::Options &options = Aligner::Options());
     };
 }
 

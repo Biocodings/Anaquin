@@ -30,17 +30,14 @@ namespace Spike
             AbdunanceGene,
             AbdunanceIsoform
         };
-        
-        struct AbundanceOptions : public AnalyzerOptions
-        {
-            AbundanceOptions(AbdunanceMode mode) : mode(mode) {}
 
-            // Whether it's done at the gene or isoform level
-            AbdunanceMode mode;
+        struct Options : public AnalyzerOptions<AbdunanceMode>
+        {
+            // Empty Implementation
         };
 
-        static AbundanceStats analyze(const std::string &file, const AbundanceOptions &options);
-    };    
+        static AbundanceStats analyze(const std::string &file, const Abundance::Options &options = Abundance::Options());
+    };
 }
 
 #endif

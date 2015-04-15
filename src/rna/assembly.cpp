@@ -7,7 +7,7 @@
 
 using namespace Spike;
 
-AssemblyStats Assembly::analyze(const std::string &file, const AssemblyOptions &options)
+AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options &options)
 {
     AssemblyStats stats;
     const auto r = StandardFactory::reference();

@@ -8,7 +8,7 @@ using namespace SS;
 using namespace SS::R;
 using namespace Spike;
 
-DifferentialStats Differential::analyze(const std::string &f, const Differential::DifferentialOptions &options)
+DifferentialStats Differential::analyze(const std::string &f, const Differential::Options &options)
 {
     DifferentialStats stats;
     const auto r = StandardFactory::reference();

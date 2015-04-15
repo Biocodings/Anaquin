@@ -49,7 +49,7 @@ static bool checkSplice(const Standard &r, const Alignment &align, Feature &e1, 
     return false;
 }
 
-AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &options)
+AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &options)
 {
     AlignerStats stats;
     const auto r = StandardFactory::reference();
@@ -71,8 +71,8 @@ AlignerStats Aligner::analyze(const std::string &file, const AlignerOptions &opt
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if ((options.mode == ExonAlign   && align.spliced) ||
-            (options.mode == SpliceAlign && !align.spliced))
+        if ((options.mode == AlignExon   && align.spliced) ||
+            (options.mode == AlignSplice && !align.spliced))
         {
             return;
         }

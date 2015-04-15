@@ -22,12 +22,17 @@ namespace Spike
 
     struct Assembly
     {
-        struct AssemblyOptions : public AnalyzerOptions
+        enum AssemblyMode
+        {
+            Assembly_Base,
+        };
+
+        struct Options : public AnalyzerOptions<AssemblyMode>
         {
             // Empty Implementation
         };
-        
-        static AssemblyStats analyze(const std::string &file, const AssemblyOptions &options = AssemblyOptions());
+
+        static AssemblyStats analyze(const std::string &file, const Assembly::Options &options = Assembly::Options());
     };
 }
 

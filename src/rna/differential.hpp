@@ -30,15 +30,12 @@ namespace Spike
             DiffIsoform
         };
 
-        struct DifferentialOptions : public AnalyzerOptions
+        struct Options : public AnalyzerOptions<DifferentialMode>
         {
-            DifferentialOptions(DifferentialMode mode) : mode(mode) {}
-            
-            // Whether it's done at the gene or isoform level
-            DifferentialMode mode;
+            // Empty Implementation
         };
 
-        static DifferentialStats analyze(const std::string &f, const DifferentialOptions &options);
+        static DifferentialStats analyze(const std::string &f, const Differential::Options &options = Differential::Options());
     };
 }
 
