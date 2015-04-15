@@ -3,7 +3,7 @@
 
 using namespace Spike;
 
-TEST_CASE("Assembly_RNA_Simulation_2")
+TEST_CASE("Assembly_RNA_Sims_2")
 {
     const auto r = Assembly::analyze("tests/data/rna_sims_2/assembly/transcripts.gtf");
 

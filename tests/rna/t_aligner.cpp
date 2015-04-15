@@ -5,7 +5,7 @@
 //
 //static std::string exts[] = { "sam", "bam" };
 //
-//TEST_CASE("Align_RNA_Simulation_2")
+//TEST_CASE("Align_RNA_Sims_2")
 //{
 //    for (auto ex : exts)
 //    {
@@ -18,7 +18,7 @@
 //    }
 //}
 //
-//TEST_CASE("Align_RNA_Simulation_Exon")
+//TEST_CASE("Align_RNA_Sims_Exon")
 //{
 //    for (auto ex : exts)
 //    {
@@ -56,7 +56,7 @@
 //    REQUIRE(0 == r.dilution);
 //}
 //
-//TEST_CASE("Align_RNA_Simulation_Base")
+//TEST_CASE("Align_RNA_Sims_Base")
 //{
 //    for (auto ex : exts)
 //    {
@@ -73,7 +73,7 @@
 //    }
 //}
 //
-//TEST_CASE("Align_RNA_Simulation_Splicing")
+//TEST_CASE("Align_RNA_Sims_Splicing")
 //{
 //    for (auto ex : exts)
 //    {

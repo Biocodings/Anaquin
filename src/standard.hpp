@@ -44,6 +44,8 @@ namespace Spike
 
     struct Sequins
     {
+        inline Concentration exp() const { return r.exp + v.exp; }
+        
         Group grp;
 
         // Each mixture represents a transcript for a gene

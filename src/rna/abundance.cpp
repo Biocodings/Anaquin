@@ -6,6 +6,7 @@
 #include <ss/regression/linear_model.hpp>
 
 using namespace SS;
+using namespace SS::R;
 using namespace Spike;
 
 AbundanceStats Abundance::analyze(const std::string &file, const Abundance::AbundanceOptions &options)
@@ -38,8 +39,6 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
                     
                     x.push_back(m.r.exp + m.v.exp);
                     y.push_back(t.fpkm);
-                    
-                    std::cout << (m.r.exp + m.v.exp) << " " << t.fpkm << std::endl;
                 }
                 
                 break;
@@ -63,7 +62,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
     const auto er = Expression::analyze(c);
     
     // Perform a linear-model to the abundance
-    const auto lm = linearModel(y, x);
+    const auto m = lm(y, x);
 
     /*
      * In our analysis, the dependent variable is expression while the independent
@@ -71,18 +70,18 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
      *
      *     expression = constant + slope * concentraion
      */
-    
-    stats.r2 = lm.ar2;
+
+    stats.r2 = m.ar2;
     
     // Dependency between the two variables
-    stats.r = pearson(x, y);
+    stats.r = cor(x, y);
     
     // Linear relationship between the two variables
-    stats.slope = lm.coeffs[1].value;
+    stats.slope = m.coeffs[1].value;
 
     // options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
     //                      % "diluation" % "sn" % "sp" % "sensitivity").str());
-    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+    std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
     
     return stats;
 }
