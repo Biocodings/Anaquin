@@ -26,7 +26,7 @@ namespace Spike
     struct Feature
     {
         FeatureID id;
-        
+
         // The location of the feature relative to the chromosome
         Locus l;
         
