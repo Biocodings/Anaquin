@@ -9,15 +9,17 @@ namespace Spike
     enum TrackingStatus
     {
         OK,
-        HIData
+        HIData,
+        NoTest
     };
 
     typedef std::string TrackID;
-    
+
     static const std::map<TrackID, TrackingStatus> tok2Status =
     {
         { "OK", OK },
-        { "HIDATA", HIData }
+        { "HIDATA", HIData },
+        { "NOTEST", NoTest }
     };
 }
 

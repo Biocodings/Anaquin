@@ -48,11 +48,14 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Abun
             {
                 c[t.trackID]++;
                 assert(r.seqs_iA.count(t.trackID));
-
-                const auto &i = r.seqs_iA.at(t.trackID);
-
-                x.push_back(i.exp);
-                y.push_back(t.fpkm);
+                
+                if (t.fpkm)
+                {
+                    const auto &i = r.seqs_iA.at(t.trackID);
+                    
+                    x.push_back(i.exp);
+                    y.push_back(t.fpkm);                    
+                }
                 
                 break;
             }

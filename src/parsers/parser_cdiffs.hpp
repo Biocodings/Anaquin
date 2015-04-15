@@ -23,7 +23,7 @@ namespace Spike
 
         TrackingStatus status;
     };
-    
+
     struct ParserCDiffs
     {
         static void parse(const std::string &file, std::function<void (const TrackingDiffs &)>);

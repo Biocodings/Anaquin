@@ -43,12 +43,17 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                 assert(r.seqs_gA.count(t.geneID));
                 assert(r.seqs_gB.count(t.geneID));
 
-                // Calculate the known fold-change between B and A
-                known = r.seqs_gB.at(t.geneID).exp() / r.seqs_gA.at(t.geneID).exp();
-                
-                // Calculate the measured fold-change between B and A
-                measured = t.fpkm_2 / t.fpkm_1;
-                
+                if (t.status != NoTest)
+                {
+                    assert(t.fpkm_1);
+                    
+                    // Calculate the known fold-change between B and A
+                    known = r.seqs_gB.at(t.geneID).exp() / r.seqs_gA.at(t.geneID).exp();
+                    
+                    // Calculate the measured fold-change between B and A
+                    measured = t.fpkm_2 / t.fpkm_1;
+                }
+
                 break;
             }
 
@@ -56,13 +61,16 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
             {
                 assert(r.seqs_iA.count(t.testID));
                 assert(r.seqs_iB.count(t.testID));
-                
-                // Calculate the known fold-change between B and A
-                known = r.seqs_iB.at(t.testID).exp / r.seqs_iA.at(t.testID).exp;
-                
-                // Calculate the measured fold-change between B and A
-                measured = t.fpkm_2 / t.fpkm_1;
-                
+
+                if (t.status != NoTest)
+                {
+                    // Calculate the known fold-change between B and A
+                    known = r.seqs_iB.at(t.testID).exp / r.seqs_iA.at(t.testID).exp;
+
+                    // Calculate the measured fold-change between B and A
+                    measured = t.fpkm_2 / t.fpkm_1;
+                }
+
                 break;
             }
         }
@@ -81,7 +89,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
      *
      *     expression = constant + slope * concentraion
      */
-
+    
     const auto lr = lm(y, x);
 
     stats.r2 = lr.ar2;
@@ -92,7 +100,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     // Linear relationship between the two variables
     stats.slope = lr.coeffs[1].value;
 
-    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+    std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
     
     return stats;
 }
