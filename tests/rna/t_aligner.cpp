@@ -24,7 +24,7 @@ TEST_CASE("Align_RNA_Sims_Exon")
     {
         Aligner::Options options;
         options.mode = Aligner::AlignExon;
-        const auto r = Aligner::analyze("tests/data/rna_sims/align/accepted_hits." + ex, options);
+        const auto r = Aligner::analyze("tests/data/rna_sims_1/align/accepted_hits." + ex, options);
         
         REQUIRE(r.n == 5762);
         REQUIRE(r.m.tp == 5762);
@@ -59,7 +59,7 @@ TEST_CASE("Align_RNA_Sims_Base")
 {
     for (auto ex : exts)
     {
-        const auto r = Aligner::analyze("tests/data/rna_sims/align/accepted_hits." + ex);
+        const auto r = Aligner::analyze("tests/data/rna_sims_1/align/accepted_hits." + ex);
 
         REQUIRE(r.n == 9997);
         REQUIRE(r.m.tp == 9997);
@@ -78,7 +78,7 @@ TEST_CASE("Align_RNA_Sims_Splicing")
     {
         Aligner::Options options;
         options.mode = Aligner::AlignSplice;
-        const auto r = Aligner::analyze("tests/data/rna_sims/align/accepted_hits." + ex, options);
+        const auto r = Aligner::analyze("tests/data/rna_sims_1/align/accepted_hits." + ex, options);
         
         REQUIRE(r.n == 4235);
         REQUIRE(r.m.sp() == 1);

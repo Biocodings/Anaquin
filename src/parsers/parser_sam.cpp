@@ -11,6 +11,12 @@ using namespace Spike;
 void ParserSAM::parse(const std::string &file, std::function<void (const Alignment &)> x)
 {
     auto f = sam_open(file.c_str(), "r");
+    
+    if (!f)
+    {
+        throw std::runtime_error("Failed to open: " + file);
+    }
+
     auto h = sam_hdr_read(f);
     auto t = bam_init1();
 
