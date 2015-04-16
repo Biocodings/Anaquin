@@ -39,9 +39,6 @@ namespace Spike
     {
         Mode mode;
 
-        // The directory to which the results are written
-        std::string output;
-
         // How the results are written
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
     };

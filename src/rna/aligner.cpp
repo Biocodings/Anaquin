@@ -3,10 +3,10 @@
 #include <assert.h>
 #include "aligner.hpp"
 #include "biology.hpp"
+#include "standard.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
-#include "standard_factory.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_sam.hpp"
 
@@ -52,22 +52,17 @@ static bool checkSplice(const Standard &r, const Alignment &align, Feature &e1, 
 AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &options)
 {
     AlignerStats stats;
-    const auto r = StandardFactory::reference();
+    const auto &r = Standard::instance();
 
     Feature f1, f2;
-    
+
     /*
      * At the alignment, we're only interested in counting for the gene-level.
      * Isoform-level is another possibiltiy but there wouldn't be information
      * to distinguish ambiguous reads from alternative splicing.
      */
     
-    std::map<GeneID, Counts> counts;
-
-    std::for_each(r.seqs_gA.begin(), r.seqs_gA.end(), [&](const std::pair<GeneID, Sequins> &p)
-    {
-        counts[p.first] = 0;
-    });
+    INIT_COUNTER(c);
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {
@@ -98,7 +93,7 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
 					if (correct)
 					{
                         assert(r.iso2Gene.count(f1.iID));
-                        counts[r.iso2Gene.at(f1.iID)]++;
+                        c[r.iso2Gene.at(f1.iID)]++;
 						stats.m.tp++;
 					}
 					else
@@ -145,8 +140,8 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
      * The counts for each sequin is needed to calculate the limit of sensitivity.
      */
 
-    const auto cr = Expression::analyze(counts);
-    
+    const auto cr = Expression::analyze(c);
+
     // Either the samples are independent or the least detectable-abundant sequin is known
     assert(!cr.limit_count || r.seqs_gA.count(cr.limit_key));
 

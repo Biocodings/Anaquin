@@ -1,19 +1,19 @@
 #include <vector>
 #include <catch.hpp>
-#include "standard_factory.hpp"
+#include "standard.hpp"
 
 using namespace Spike;
 
 TEST_CASE("Standard_ID")
 {
-    const auto r = StandardFactory::reference();
+    const auto &r = Standard::instance();
 	REQUIRE("chrT" == r.id);
 }
 
 TEST_CASE("Standard_Isoforms")
 {
-    const auto r = StandardFactory::reference();
-    
+    const auto &r = Standard::instance();
+
     REQUIRE(r.seqs_iA.size() == 62);
     REQUIRE(r.seqs_iB.size() == 62);
 

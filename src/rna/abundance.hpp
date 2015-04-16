@@ -25,13 +25,13 @@ namespace Spike
     
     struct Abundance
     {
-        enum AbdunanceMode
+        enum Mode
         {
             AbdunanceGene,
             AbdunanceIsoform
         };
 
-        struct Options : public AnalyzerOptions<AbdunanceMode>
+        struct Options : public AnalyzerOptions<Abundance::Mode>
         {
             // Empty Implementation
         };

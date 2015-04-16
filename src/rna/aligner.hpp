@@ -17,14 +17,14 @@ namespace Spike
 
     struct Aligner
     {
-        enum AlignerMode
+        enum Mode
         {
             AlignBase,
             AlignExon,
             AlignSplice,
         };
 
-        struct Options : public AnalyzerOptions<AlignerMode>
+        struct Options : public AnalyzerOptions<Aligner::Mode>
         {
             // Empty Implementation
         };

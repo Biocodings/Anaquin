@@ -1,7 +1,7 @@
 #include <iostream>
+#include "standard.hpp"
 #include "classify.hpp"
 #include "abundance.hpp"
-#include "standard_factory.hpp"
 #include "parsers/parser_tracking.hpp"
 #include <ss/regression/linear_model.hpp>
 
@@ -12,7 +12,7 @@ using namespace Spike;
 AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Options &options)
 {
     AbundanceStats stats;
-    const auto r = StandardFactory::reference();
+    const auto &r = Standard::instance();
 
     INIT_COUNTER(c);
     

@@ -1,8 +1,8 @@
 #include "assembly.hpp"
 #include "classify.hpp"
+#include "standard.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
-#include "standard_factory.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Spike;
@@ -10,7 +10,7 @@ using namespace Spike;
 AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options &options)
 {
     AssemblyStats stats;
-    const auto r = StandardFactory::reference();
+    const auto &r = Standard::instance();
 
     /*
      * Create counters for various levels. The number of counts will give out the

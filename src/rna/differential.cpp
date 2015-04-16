@@ -1,6 +1,6 @@
 #include "classify.hpp"
+#include "standard.hpp"
 #include "differential.hpp"
-#include "standard_factory.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <ss/regression/linear_model.hpp>
 
@@ -11,7 +11,7 @@ using namespace Spike;
 DifferentialStats Differential::analyze(const std::string &f, const Differential::Options &options)
 {
     DifferentialStats stats;
-    const auto r = StandardFactory::reference();
+    const auto &r = Standard::instance();
 
     INIT_COUNTER(c);
 

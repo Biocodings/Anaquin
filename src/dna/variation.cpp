@@ -1,5 +1,5 @@
+#include "standard.hpp"
 #include "dna/variation.hpp"
-#include "standard_factory.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Spike;
@@ -26,7 +26,7 @@ static bool find(const std::vector<Variation> &vs, VCFVariant x, bool &mTrue)
 
 VariationStats DNAVariation::analyze(const std::string &file)
 {
-    const auto r = StandardFactory::reference();
+    const auto &r = Standard::instance();
 
     unsigned n = 0;
     unsigned nt = 0;

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "file.hpp"
 #include "tokens.hpp"
-#include "standard_factory.hpp"
+#include "standard.hpp"
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_csv.hpp"
@@ -14,7 +14,7 @@
 
 using namespace Spike;
 
-Standard StandardFactory::reference()
+Standard::Standard()
 {
 	std::ifstream in("data/silico.fa");
 	std::string line;
@@ -28,17 +28,15 @@ Standard StandardFactory::reference()
 	// Assume that the first line contains only the name of the chromosome
 	std::getline(in, line);
 
-    Standard r;
-    
 	// Remove the '<' prefix
-	r.id = line.substr(1, line.size());
+	id = line.substr(1, line.size());
     
     /*
      * The region occupied by the chromosome is the smallest area contains all the features.
      */
     
-	r.l.end = std::numeric_limits<BasePair>::min();
-	r.l.start = std::numeric_limits<BasePair>::max();
+	l.end = std::numeric_limits<BasePair>::min();
+	l.start = std::numeric_limits<BasePair>::max();
 
     /*
      * Data-structures required to build up the chromosome. Orders of the features are not guarenteed.
@@ -49,10 +47,10 @@ Standard StandardFactory::reference()
 
     ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f, ParserProgress &p)
 	{
-		r.l.end = std::max(r.l.end, f.l.end);
-		r.l.start = std::min(r.l.start, f.l.start);
+		l.end = std::max(l.end, f.l.end);
+		l.start = std::min(l.start, f.l.start);
         
-        r.fs.push_back(f);
+        fs.push_back(f);
         
         assert(!f.iID.empty());
         assert(!f.geneID.empty());
@@ -61,10 +59,10 @@ Standard StandardFactory::reference()
         gids.insert(f.geneID);
         
         // Construct a mapping between isoformID to geneID
-        r.iso2Gene[f.iID] = f.geneID;
+        iso2Gene[f.iID] = f.geneID;
     });
 
-    assert(!r.iso2Gene.empty());
+    assert(!iso2Gene.empty());
     std::vector<std::string> ts;
 
 //    /*
@@ -108,7 +106,7 @@ Standard StandardFactory::reference()
          * Add all features for this gene
          */
         
-        for (auto f : r.fs)
+        for (auto f : fs)
         {
             if (f.geneID == g.id)
             {
@@ -118,27 +116,27 @@ Standard StandardFactory::reference()
                 if (f.type == Exon)
                 {
                     g.exons.push_back(f);
-                    r.exons.push_back(f);
+                    exons.push_back(f);
                 }
             }
         }
 
         assert(g.l.end > g.l.start);
 
-        assert(!r.exons.empty());
-        r.genes.push_back(g);
+        assert(!exons.empty());
+        genes.push_back(g);
     }
     
-    assert(!r.genes.empty());
+    assert(!genes.empty());
 
     // Sort the exons by starting position
-    std::sort(r.exons.begin(), r.exons.end(), [](const Feature& x, const Feature& y)
+    std::sort(exons.begin(), exons.end(), [](const Feature& x, const Feature& y)
     {
         return (x.l.start < y.l.start);
     });
 
     // Sort the genes by starting position
-    std::sort(r.genes.begin(), r.genes.end(), [](const Gene& x, const Gene& y)
+    std::sort(genes.begin(), genes.end(), [](const Gene& x, const Gene& y)
     {
         return (x.l.start < y.l.start);
     });
@@ -166,25 +164,25 @@ Standard StandardFactory::reference()
         {
             if (i)
             {
-                j.id = r.id;
+                j.id = id;
                 j.type = Junction;
 
                 // Intron is a region between exons that have been spliced
                 j.l = Locus(t.blocks[i - 1].end - 1, t.blocks[i].start); // ????
 
-                r.introns.push_back(j);
+                introns.push_back(j);
             }
         }
 
-        const auto iter = std::find_if(r.genes.begin(), r.genes.end(), [&](const Gene &g)
+        const auto iter = std::find_if(genes.begin(), genes.end(), [&](const Gene &g)
         {
-            return (g.id == r.iso2Gene[t.name]);
+            return (g.id == iso2Gene[t.name]);
         });
-        
-        assert(iter != r.genes.end());
+
+        assert(iter != genes.end());
     });
 
-    assert(!r.introns.empty());
+    assert(!introns.empty());
 
 //    for (auto i = 0; i < r.introns.size(); i++)
   //  {
@@ -253,9 +251,7 @@ Standard StandardFactory::reference()
             mg[seqs.geneID] = seqs;
         });
     };
-    
-    read_mixture("data/RNA/mixture_A.csv", r.seqs_gA, r.seqs_iA);
-    read_mixture("data/RNA/mixture_B.csv", r.seqs_gB, r.seqs_iB);
 
-    return r;
+    read_mixture("data/RNA/mixture_A.csv", seqs_gA, seqs_iA);
+    read_mixture("data/RNA/mixture_B.csv", seqs_gB, seqs_iB);
 }
