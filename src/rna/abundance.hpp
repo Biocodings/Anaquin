@@ -9,9 +9,7 @@ namespace Spike
 {
     struct AbundanceStats : public AnalyzerStats
     {
-        Confusion m_base_;
-
-        Sensitivity s_base;
+        Sensitivity s;
         
         // Correlation for the samples
         double r;

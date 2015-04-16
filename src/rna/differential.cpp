@@ -52,6 +52,11 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                     
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
+                    
+                    c[r.seqs_gA.at(t.geneID).r.id]++;
+                    c[r.seqs_gA.at(t.geneID).v.id]++;
+                    c[r.seqs_gB.at(t.geneID).r.id]++;
+                    c[r.seqs_gB.at(t.geneID).v.id]++;
                 }
 
                 break;
@@ -69,16 +74,23 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
 
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
+
+                    c[r.seqs_iA.at(t.testID).id]++;
+                    c[r.seqs_iB.at(t.testID).id]++;
                 }
 
                 break;
             }
         }
 
-        x.push_back(known);
-        y.push_back(measured);
+        if (t.status != NoTest)
+        {
+            x.push_back(known);
+            y.push_back(measured);
+        }
     });
 
+    assert(!c.empty());
     assert(!x.empty() && x.size() == y.size());
 
     const auto er = Expression::analyze(c);
@@ -90,17 +102,28 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
      *     expression = constant + slope * concentraion
      */
     
-    const auto lr = lm(y, x);
+    const auto m = lm(y, x);
 
-    stats.r2 = lr.ar2;
+    stats.r2 = m.ar2;
     
     // Dependency between the two variables
     stats.r = cor(x, y);
 
     // Linear relationship between the two variables
-    stats.slope = lr.coeffs[1].value;
-
-    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+    stats.slope = m.coeffs[1].value;
     
+    stats.s = Sensitivity(er.limit_key, er.limit_count,
+                          std::min(r.seqs_iA.at(er.limit_key).exp,
+                                   r.seqs_iB.at(er.limit_key).exp));
+
+    const std::string format = "%1%\t%2%\t%3%";
+
+    options.writer->open("base.stats");
+    options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
+    options.writer->write((boost::format(format) % stats.r2
+                                                 % stats.slope
+                                                 % stats.s.exp).str());
+    options.writer->close();
+
     return stats;
 }

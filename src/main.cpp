@@ -5,9 +5,9 @@
 #include "rna/aligner.hpp"
 #include "rna/assembly.hpp"
 #include "rna/abundance.hpp"
-#include "parser_sequins.hpp"
 #include "rna/differential.hpp"
 #include "writers/path_writer.hpp"
+#include "parsers/parser_sequins.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
@@ -138,7 +138,19 @@ static int parse_options(int argc, char ** argv)
 
             case O_RNA_DIFFERENTIAL:
             {
-                analyze<Differential>(optarg, Differential::Mode::DiffIsoform);
+                const auto s = std::string(optarg);
+                
+                if (s.find("isoform") != std::string::npos)
+                {
+                    std::cout << "Isoform mode detected" << std::endl;
+                    analyze<Differential>(optarg, Differential::Mode::DiffIsoform);
+                }
+                else
+                {
+                    std::cout << "Gene mode detected" << std::endl;
+                    analyze<Differential>(optarg, Differential::Mode::DiffGene);
+                }
+                
                 break;
             }
 

@@ -63,7 +63,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     });
 
     const auto er = Expression::analyze(c);
-    
+
     // Perform a linear-model to the abundance
     const auto m = lm(y, x);
 
@@ -82,9 +82,20 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     // Linear relationship between the two variables
     stats.slope = m.coeffs[1].value;
 
-    // options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-    //                      % "diluation" % "sn" % "sp" % "sensitivity").str());
-    //std::cout << stats.r2 << " " << stats.r << " " << stats.slope << std::endl;
+    // Calcualte the limit-of-sensitivity
+    stats.s = options.mode == AbdunanceGene ?
+                Sensitivity(er.limit_key, er.limit_count,
+                                r.seqs_gA.at(er.limit_key).r.exp + r.seqs_gA.at(er.limit_key).v.exp) :
+                Sensitivity(er.limit_key, er.limit_count, r.seqs_iA.at(er.limit_key).exp);
+
+    const std::string format = "%1%\t%2%\t%3%";
+    
+    options.writer->open("base.stats");
+    options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
+    options.writer->write((boost::format(format) % stats.r2
+                                                 % stats.slope
+                                                 % stats.s.exp).str());
+    options.writer->close();
 
     return stats;
 }

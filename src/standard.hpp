@@ -74,14 +74,18 @@ namespace Spike
              */
         
             std::vector<Variation> vars;
-        
+
+            /*
+             * Metagenomic sequins
+             */
+
             /*
              * RNA sequins
              */
-        
+
             std::map<GeneID, Sequins> seqs_gA;
             std::map<GeneID, Sequins> seqs_gB;
-        
+
             std::map<TranscriptID, Sequin> seqs_iA;
             std::map<TranscriptID, Sequin> seqs_iB;
         
@@ -92,7 +96,7 @@ namespace Spike
         
             // Reference features
             std::vector<Feature> fs;
-        
+
             // Reference exons
             std::vector<Feature> exons;
         
