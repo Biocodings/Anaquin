@@ -76,7 +76,7 @@ namespace Spike
             std::vector<Variation> vars;
         
             /*
-            * RNA sequins
+             * RNA sequins
              */
         
             std::map<GeneID, Sequins> seqs_gA;

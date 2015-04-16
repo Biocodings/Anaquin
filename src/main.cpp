@@ -5,6 +5,7 @@
 #include "rna/aligner.hpp"
 #include "rna/assembly.hpp"
 #include "rna/abundance.hpp"
+#include "parser_sequins.hpp"
 #include "rna/differential.hpp"
 #include "writers/path_writer.hpp"
 
@@ -24,6 +25,9 @@ using namespace Spike;
 
 // The path that output files are written
 static std::string output;
+
+// The sequins that have been restricted
+static std::vector<SequinID> filtered;
 
 /*
  * Argument options
@@ -50,6 +54,14 @@ static const struct option long_options[] =
     { "abundance",    required_argument, 0, O_RNA_ABUNDANCE    },
     { "df",           required_argument, 0, O_RNA_DIFFERENTIAL },
     { "differential", required_argument, 0, O_RNA_DIFFERENTIAL },
+
+    /*
+     * DNA options
+     */
+
+    /*
+     * Metagenomics options
+     */
 
     {0,  0, 0,  0 }
 };
@@ -98,6 +110,7 @@ static int parse_options(int argc, char ** argv)
 
             case 'r':
             {
+                filtered = ParserSequins::parse(optarg);
                 break;
             }
 
