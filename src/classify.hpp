@@ -15,8 +15,8 @@ namespace Spike
         }
         else
         {
-            if (m1) { m1->tn++; }
-            if (m2) { m2->tn++; }
+            if (m1) { m1->fp++; }
+            if (m2) { m2->fp++; }
         }
 
         return cond;
@@ -26,8 +26,8 @@ namespace Spike
     {
         if (cond)
         {
-            if (m1) { m1->fp++; }
-            if (m2) { m2->fp++; }
+            if (m1) { m1->tn++; }
+            if (m2) { m2->tn++; }
         }
         else
         {
@@ -81,7 +81,7 @@ namespace Spike
         {
             stats.nq++;
         }
-        
+
         stats.n++;
 
         // Whether it's been mapped to the reference

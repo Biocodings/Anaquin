@@ -27,7 +27,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
 	ParserGTF::parse(file, [&](const Feature &f, ParserProgress &p)
 	{
         classify(r, stats, f,
-                 [&]() // Is this positively correct?
+                 [&]()
                  {
                      switch (f.type)
                      {
@@ -63,19 +63,45 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
                      }
                  },
 
-                 [&](bool mapped) // Is this negatively correct?
+                 [&](bool mapped)
                  {
-                     tfn(mapped, &stats.m_base, &stats.m_exon);
+                     switch (f.type)
+                     {
+                         case Transcript:
+                         {
+                             tfn(mapped, &stats.m_base, &stats.m_trans);
+                             break;
+                         }
+
+                         case Exon:
+                         {
+                             tfn(mapped, &stats.m_base, &stats.m_exon);
+                             break;
+                         }
+
+                         default: { throw std::runtime_error("Unknown assembly type!"); };
+                     }
                  });
 	});
 
     assert(!r.introns.empty());
-    
-    extractIntrons(exons, [&](const Feature &e1, const Feature &e2, const Feature &in)
-    {
-        tfp(find(r.introns, in), &stats.m_base, &stats.m_intron);
-    });
 
+    
+    extractIntrons(exons, [&](const Feature &, const Feature &, Feature &f)
+    {
+        f.id = "chrT"; // TODO: Fix it later...
+        
+        classify(r, stats, f,
+                 [&]()
+                 {
+                     tfp(find(r.introns, f), &stats.m_base, &stats.m_intron);
+                 },
+                 [&](bool mapped)
+                 {
+                     tfn(mapped, &stats.m_base, &stats.m_intron);
+                 });
+    });
+    
     ANALYZE_COUNTS(c_base,base_r);
     ANALYZE_COUNTS(c_trans, trans_r);
     ANALYZE_COUNTS(c_exons, exon_r);
@@ -90,13 +116,44 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
     
     /*
      * Reports various statistics related to the "accuracy" of the transcripts in each sample when
-     * compared to the reference silico data. The typical gene finding measures of "sensitivity" and
+     * compared to the reference silico-data. The typical gene finding measures of "sensitivity" and
      * "specificity" are calculated at various levels (nucleotide, exon, intron, transcript, gene) for
      * for the input file. The Sn and Sp columns show specificity and sensitivity values at each level.
      */
 
-    //options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-    //                           % "diluation" % "sn" % "sp" % "sensitivity").str());
+    const std::string format = "%1%\t%2%\t%3%\t%4%";
 
+    options.writer->open("base.stats");
+    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+    options.writer->write((boost::format(format) % stats.dilution()
+                                                 % stats.m_base.sp()
+                           % (stats.m_base.sn() == NAN ? 99 : 1)
+                                                 % stats.sens_base.exp).str());
+    options.writer->close();
+
+    options.writer->open("exons.stats");
+    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+    options.writer->write((boost::format(format) % stats.dilution()
+                                                 % stats.m_exon.sp()
+                                                 % stats.m_exon.sn()
+                                                 % stats.sens_exon.exp).str());
+    options.writer->close();
+
+    options.writer->open("intron.stats");
+    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+    options.writer->write((boost::format(format) % stats.dilution()
+                                                 % stats.m_intron.sp()
+                                                 % stats.m_intron.sn()
+                                                 % stats.sens_intron.exp).str());
+    options.writer->close();
+    
+    options.writer->open("transcripts.stats");
+    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+    options.writer->write((boost::format(format) % stats.dilution()
+                                                 % stats.m_trans.sp()
+                                                 % stats.m_trans.sn()
+                                                 % stats.sens_trans.exp).str());
+    options.writer->close();
+    
 	return stats;
 }

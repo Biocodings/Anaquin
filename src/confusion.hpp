@@ -17,7 +17,7 @@ namespace Spike
         {
             return (tp + fn) ? tp / (tp + fn) : NAN;
         }
-        
+
         inline Percentage sn() const
         {
             return (fp + tn) ? tn / (fp + tn) : NAN;

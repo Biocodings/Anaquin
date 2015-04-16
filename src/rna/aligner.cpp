@@ -74,17 +74,16 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
 
 		if (align.mapped)
 		{
-            const bool mapped = contains(r, align);
+            const bool detected = contains(r, align);
 
 			if (align.id == r.id)
 			{
-				if (mapped)
+				if (detected)
 				{
                     /*
                      * It's not enough that the read is mapped, it must also be mapped correctly.
-                     * If the read maps to an exon, check whether it's mapped to an exon in the
-                     * reference. Otherwise the read is spliced, check whether it maps to a
-                     * junction in the reference.
+                     * If the read maps to an exon, check whether it's mapped within a boundary.
+                     * Otherwise the read is spliced, check whether it maps to a spliced-junction.
                      */
 
                     const bool correct = (!align.spliced && find(r.fs.begin(), r.fs.end(), align, f1)) ||
@@ -108,7 +107,7 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
 			}
 			else
 			{
-				if (mapped)
+				if (detected)
 				{
 					stats.m.fn++;
 				}
@@ -136,10 +135,6 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
 	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
 	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
     
-    /*
-     * The counts for each sequin is needed to calculate the limit of sensitivity.
-     */
-
     const auto cr = Expression::analyze(c);
 
     // Either the samples are independent or the least detectable-abundant sequin is known
@@ -150,11 +145,15 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
     stats.sens.exp = cr.limit_count ? r.seqs_gA.at(cr.limit_key).r.exp +
                                       r.seqs_gA.at(cr.limit_key).v.exp: NAN;
 
-   // options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-     //                      % "diluation" % "sn" % "sp" % "sensitivity").str());
-    //options.writer->write((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%")
-      //                     % stats.dilution() % stats.m.tp % stats.m.tn % stats.m.fp % stats.m.fn
-        //                   % stats.sens.exp).str());
+    const std::string format = "%1%\t%2%\t%3%\t%4%";
+    
+    options.writer->open("align.stats");
+    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+    options.writer->write((boost::format(format) % stats.dilution()
+                                                 % stats.m.sp()
+                                                 % stats.m.sn()
+                                                 % stats.sens.exp).str());
+    options.writer->close();
 
 	return stats;
 }

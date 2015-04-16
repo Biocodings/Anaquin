@@ -29,6 +29,8 @@ namespace Spike
             // Empty Implementation
         };
 
+        inline static std::string name() { return "align"; }
+
         static AlignerStats analyze(const std::string &file, const Aligner::Options &options = Aligner::Options());
     };
 }

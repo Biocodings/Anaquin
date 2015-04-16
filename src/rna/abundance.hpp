@@ -36,6 +36,8 @@ namespace Spike
             // Empty Implementation
         };
 
+        inline static std::string name() { return "abundance"; }
+
         static AbundanceStats analyze(const std::string &file, const Abundance::Options &options = Abundance::Options());
     };
 }

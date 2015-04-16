@@ -35,6 +35,8 @@ namespace Spike
             // Empty Implementation
         };
 
+        inline static std::string name() { return "differential"; }
+
         static DifferentialStats analyze(const std::string &f, const Differential::Options &options = Differential::Options());
     };
 }

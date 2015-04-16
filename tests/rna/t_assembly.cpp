@@ -12,4 +12,5 @@ TEST_CASE("Assembly_RNA_Sims_2")
     REQUIRE(r.m_trans.fp == 0);
     REQUIRE(r.m_trans.fn == 0);
     REQUIRE(r.m_trans.sp() == 1.0);
+    REQUIRE(isnan(r.m_trans.sn()));
 }

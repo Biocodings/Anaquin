@@ -71,7 +71,12 @@ template <typename Analyzer> void analyze(const std::string &file, typename Anal
     // If nothing is provided, default directory (empty string) will be used
     o.writer = std::shared_ptr<PathWriter>(new PathWriter(output));
 
-    Analyzer::analyze(file);
+    std::cout << "-----------------------------------------" << std::endl;
+    std::cout << "Analyze " << Analyzer::name() << " data-analyzer..." << std::endl;
+
+    Analyzer::analyze(file, o);
+
+    std::cout << "Completed." << std::endl;
 }
 
 static int parse_options(int argc, char ** argv)
@@ -93,9 +98,7 @@ static int parse_options(int argc, char ** argv)
 
             case 'r':
             {
-                
-                
-                
+                break;
             }
 
             /*
