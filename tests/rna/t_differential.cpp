@@ -12,5 +12,5 @@ TEST_CASE("Differential_Isoforms_RNA_Sims_2")
 {
     Differential::Options o;
     o.mode = Differential::DiffIsoform;
-    const auto r = Differential::analyze("tests/data/rna_sims_1/diffs/isoform_exp.diff", o);
+    //const auto r = Differential::analyze("tests/data/rna_sims_1/diffs/isoform_exp.diff", o);
 }

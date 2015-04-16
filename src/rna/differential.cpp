@@ -57,6 +57,9 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                     c[r.seqs_gA.at(t.geneID).v.id]++;
                     c[r.seqs_gB.at(t.geneID).r.id]++;
                     c[r.seqs_gB.at(t.geneID).v.id]++;
+                    
+                    x.push_back(known);
+                    y.push_back(measured);
                 }
 
                 break;
@@ -77,16 +80,13 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
 
                     c[r.seqs_iA.at(t.testID).id]++;
                     c[r.seqs_iB.at(t.testID).id]++;
+
+                    x.push_back(known);
+                    y.push_back(measured);
                 }
 
                 break;
             }
-        }
-
-        if (t.status != NoTest)
-        {
-            x.push_back(known);
-            y.push_back(measured);
         }
     });
 
