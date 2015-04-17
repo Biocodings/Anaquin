@@ -21,7 +21,7 @@ File::File(const std::string &file)
         std::cerr << "Failed to load " << file << std::endl;
         throw std::runtime_error("Failed to load " + file);
     }
-   
+
     _imp = new FileInternal();
     _imp->f = f;
 }

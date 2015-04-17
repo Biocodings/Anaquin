@@ -73,7 +73,7 @@
 		EF2290521AC0E58000CE76BF /* standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = standard.cpp; path = ../src/standard.cpp; sourceTree = "<group>"; };
 		EF2290541AC0E58000CE76BF /* classify.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = classify.hpp; path = ../src/classify.hpp; sourceTree = "<group>"; };
 		EF2290551AC0E58000CE76BF /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../src/types.hpp; sourceTree = "<group>"; };
-		EF3860D51AD3769B0062D246 /* invalid_extension.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = invalid_extension.hpp; path = ../src/exceptions/invalid_extension.hpp; sourceTree = "<group>"; };
+		EF3860D51AD3769B0062D246 /* invalid_file.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = invalid_file.hpp; path = ../src/exceptions/invalid_file.hpp; sourceTree = "<group>"; };
 		EF3860D71AD3783A0062D246 /* parser_bed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_bed.cpp; path = ../src/parsers/parser_bed.cpp; sourceTree = "<group>"; };
 		EF3860D81AD3783A0062D246 /* parser_bed.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_bed.hpp; path = ../src/parsers/parser_bed.hpp; sourceTree = "<group>"; };
 		EF3860D91AD3783A0062D246 /* parser_csv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_csv.cpp; path = ../src/parsers/parser_csv.cpp; sourceTree = "<group>"; };
@@ -245,7 +245,7 @@
 		EF3860D41AD3765B0062D246 /* Exceptions */ = {
 			isa = PBXGroup;
 			children = (
-				EF3860D51AD3769B0062D246 /* invalid_extension.hpp */,
+				EF3860D51AD3769B0062D246 /* invalid_file.hpp */,
 			);
 			name = Exceptions;
 			sourceTree = "<group>";
