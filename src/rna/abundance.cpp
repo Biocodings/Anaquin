@@ -2,6 +2,7 @@
 #include "standard.hpp"
 #include "classify.hpp"
 #include "abundance.hpp"
+#include "writers/r_writer.hpp"
 #include "parsers/parser_tracking.hpp"
 #include <ss/regression/linear_model.hpp>
 
@@ -97,5 +98,9 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
                                                  % stats.s.exp).str());
     options.writer->close();
 
+    options.writer->open("scripts.R");
+    options.writer->write(RWriter::write(y, x));
+    options.writer->close();
+    
     return stats;
 }

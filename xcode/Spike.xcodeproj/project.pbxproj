@@ -96,6 +96,7 @@
 		EF4BD9B01ADE4054007BE6AB /* t_parser_gtf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_gtf.cpp; path = ../tests/parsers/t_parser_gtf.cpp; sourceTree = "<group>"; };
 		EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_sam.cpp; path = ../tests/parsers/t_parser_sam.cpp; sourceTree = "<group>"; };
 		EF4BD9B21ADE4054007BE6AB /* t_parser_vcf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_vcf.cpp; path = ../tests/parsers/t_parser_vcf.cpp; sourceTree = "<group>"; };
+		EF5180E41AE09A56007010F3 /* r_writer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_writer.hpp; path = ../src/writers/r_writer.hpp; sourceTree = "<group>"; };
 		EF76C91A1ADBD59F003D45F9 /* path_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = path_writer.hpp; path = ../src/writers/path_writer.hpp; sourceTree = "<group>"; };
 		EF76C91B1ADBD59F003D45F9 /* path_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = path_writer.cpp; path = ../src/writers/path_writer.cpp; sourceTree = "<group>"; };
 		EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mock_writer.hpp; path = ../src/writers/mock_writer.hpp; sourceTree = "<group>"; };
@@ -299,9 +300,10 @@
 		EFE9A01D1AD3B10900557829 /* Writers */ = {
 			isa = PBXGroup;
 			children = (
-				EF76C91A1ADBD59F003D45F9 /* path_writer.hpp */,
-				EF76C91B1ADBD59F003D45F9 /* path_writer.cpp */,
 				EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */,
+				EF76C91B1ADBD59F003D45F9 /* path_writer.cpp */,
+				EF76C91A1ADBD59F003D45F9 /* path_writer.hpp */,
+				EF5180E41AE09A56007010F3 /* r_writer.hpp */,
 				EFE9A01E1AD3B11F00557829 /* writer.hpp */,
 			);
 			name = Writers;
