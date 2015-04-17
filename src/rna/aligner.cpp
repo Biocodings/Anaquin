@@ -109,7 +109,7 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
 			{
 				if (detected)
 				{
-					stats.m.fn++;
+					stats.m.fn++; // We can't find this!
 				}
 				else
 				{

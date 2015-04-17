@@ -118,7 +118,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
 
     const std::string format = "%1%\t%2%\t%3%";
 
-    options.writer->open("base.stats");
+    options.writer->open("base.stats"); // Name???
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
     options.writer->write((boost::format(format) % stats.r2
                                                  % stats.slope

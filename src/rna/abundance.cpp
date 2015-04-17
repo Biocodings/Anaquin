@@ -54,7 +54,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
                 {
                     const auto &i = r.seqs_iA.at(t.trackID);
 
-                    x.push_back(i.raw);
+                    x.push_back(i.fpkm);
                     y.push_back(t.fpkm);                    
                 }
                 
@@ -68,7 +68,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     const auto er = Expression::analyze(c);
     
     // Perform a linear-model to the abundance
-    const auto m = lm(y, x);
+    const auto m = lm(y, x); // correction bug
 
     /*
      * In our analysis, the dependent variable is expression while the independent
@@ -93,7 +93,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
 
     const std::string format = "%1%\t%2%\t%3%";
     
-    options.writer->open("base.stats");
+    options.writer->open("base.stats"); // should be named as gene_exp.stat or isoform_exp.stats
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
     options.writer->write((boost::format(format) % stats.r2
                                                  % stats.slope
