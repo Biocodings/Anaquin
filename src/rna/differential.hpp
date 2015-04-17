@@ -24,13 +24,7 @@ namespace Spike
 
     struct Differential
     {
-        enum Mode
-        {
-            DiffGene,
-            DiffIsoform
-        };
-
-        struct Options : public AnalyzerOptions<Differential::Mode>
+        struct Options : public AnalyzerOptions<RNALevel>
         {
             // Empty Implementation
         };

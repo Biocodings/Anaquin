@@ -38,14 +38,18 @@ namespace Spike
         // Fold ratio relative to the other sequin
         Fold fold;
 
-        // Amount of abundance for this sequin
-        Concentration exp;
+        // Amount of abundance
+        Concentration raw;
+
+        // Amount of abundance after normalization
+        Concentration fpkm;
     };
 
     struct Sequins
     {
-        inline Concentration exp() const { return r.exp + v.exp; }
-        
+        inline Concentration raw() const  { return r.raw + v.raw;   }
+        inline Concentration fpkm() const { return r.fpkm + v.fpkm; }
+
         Group grp;
 
         // Each mixture represents a transcript for a gene

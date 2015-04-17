@@ -35,9 +35,15 @@ namespace Spike
         }
     };
 
-    template <typename Mode> struct AnalyzerOptions
+    enum RNALevel
     {
-        Mode mode;
+        LevelGene,
+        LevelIsoform,
+    };
+
+    template <typename Level> struct AnalyzerOptions
+    {
+        Level level;
 
         // How the results are written
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());

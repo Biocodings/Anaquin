@@ -66,8 +66,8 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if ((options.mode == AlignExon   && align.spliced) ||
-            (options.mode == AlignSplice && !align.spliced))
+        if ((options.level == LevelExon   && align.spliced) ||
+            (options.level == LevelSplice && !align.spliced))
         {
             return;
         }
@@ -142,8 +142,8 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
 
     stats.sens.id = cr.limit_key;
     stats.sens.counts = cr.limit_count;
-    stats.sens.exp = cr.limit_count ? r.seqs_gA.at(cr.limit_key).r.exp +
-                                      r.seqs_gA.at(cr.limit_key).v.exp: NAN;
+    stats.sens.exp = cr.limit_count ? r.seqs_gA.at(cr.limit_key).r.raw +
+                                      r.seqs_gA.at(cr.limit_key).v.raw: NAN;
 
     const std::string format = "%1%\t%2%\t%3%\t%4%";
     

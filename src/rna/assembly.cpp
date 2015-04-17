@@ -109,20 +109,20 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
 
     stats.sens_base.id     = base_r.limit_key;
     stats.sens_base.counts = base_r.limit_count;
-    stats.sens_base.exp    = base_r.limit_count ? r.seqs_iA.at(base_r.limit_key).exp +
-                                                  r.seqs_iA.at(base_r.limit_key).exp: NAN;
+    stats.sens_base.exp    = base_r.limit_count ? r.seqs_iA.at(base_r.limit_key).raw +
+                                                  r.seqs_iA.at(base_r.limit_key).raw: NAN;
     stats.sens_trans.id     = trans_r.limit_key;
     stats.sens_trans.counts = trans_r.limit_count;
-    stats.sens_trans.exp    = trans_r.limit_count ? r.seqs_iA.at(trans_r.limit_key).exp +
-                                                    r.seqs_iA.at(trans_r.limit_key).exp: NAN;
+    stats.sens_trans.exp    = trans_r.limit_count ? r.seqs_iA.at(trans_r.limit_key).raw +
+                                                    r.seqs_iA.at(trans_r.limit_key).raw: NAN;
     stats.sens_exon.id      = exon_r.limit_key;
     stats.sens_exon.counts  = exon_r.limit_count;
-    stats.sens_exon.exp     = exon_r.limit_count ? r.seqs_iA.at(exon_r.limit_key).exp +
-                                                   r.seqs_iA.at(exon_r.limit_key).exp: NAN;
+    stats.sens_exon.exp     = exon_r.limit_count ? r.seqs_iA.at(exon_r.limit_key).raw +
+                                                   r.seqs_iA.at(exon_r.limit_key).raw: NAN;
     stats.sens_intron.id      = intron_r.limit_key;
     stats.sens_intron.counts  = intron_r.limit_count;
-    stats.sens_intron.exp     = intron_r.limit_count ? r.seqs_iA.at(intron_r.limit_key).exp +
-                                                       r.seqs_iA.at(intron_r.limit_key).exp: NAN;
+    stats.sens_intron.exp     = intron_r.limit_count ? r.seqs_iA.at(intron_r.limit_key).raw +
+                                                       r.seqs_iA.at(intron_r.limit_key).raw: NAN;
     
     assert(stats.n && stats.nr + stats.nq == stats.n);
     

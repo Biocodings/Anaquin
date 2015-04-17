@@ -5,7 +5,7 @@
 #include "writers/r_writer.hpp"
 #include "parsers/parser_tracking.hpp"
 #include <ss/regression/linear_model.hpp>
-
+#include <iostream>
 using namespace SS;
 using namespace SS::R;
 using namespace Spike;
@@ -23,10 +23,10 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     ParserTracking::parse(file, [&](const Tracking &t)
     {
         assert(r.seqs_gA.count(t.geneID));
-     
-        switch (options.mode)
+
+        switch (options.level)
         {
-            case AbdunanceGene:
+            case LevelGene:
             {
                 c[t.geneID]++;
                 const auto &m = r.seqs_gA.at(t.geneID);
@@ -38,14 +38,14 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
                      * the y-axis would be the expression (RPKM) reported.
                      */
                     
-                    x.push_back(m.r.exp + m.v.exp);
+                    x.push_back(m.fpkm());
                     y.push_back(t.fpkm);
                 }
                 
                 break;
             }
 
-            case AbdunanceIsoform:
+            case LevelIsoform:
             {
                 c[t.trackID]++;
                 assert(r.seqs_iA.count(t.trackID));
@@ -53,8 +53,8 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
                 if (t.fpkm)
                 {
                     const auto &i = r.seqs_iA.at(t.trackID);
-                    
-                    x.push_back(i.exp);
+
+                    x.push_back(i.raw);
                     y.push_back(t.fpkm);                    
                 }
                 
@@ -63,8 +63,10 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
         }
     });
 
+    assert(!x.empty() && !y.empty());
+    
     const auto er = Expression::analyze(c);
-
+    
     // Perform a linear-model to the abundance
     const auto m = lm(y, x);
 
@@ -83,11 +85,11 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     // Linear relationship between the two variables
     stats.slope = m.coeffs[1].value;
 
-    // Calcualte the limit-of-sensitivity
-    stats.s = options.mode == AbdunanceGene ?
-                Sensitivity(er.limit_key, er.limit_count,
-                                r.seqs_gA.at(er.limit_key).r.exp + r.seqs_gA.at(er.limit_key).v.exp) :
-                Sensitivity(er.limit_key, er.limit_count, r.seqs_iA.at(er.limit_key).exp);
+    // Calculate the limit-of-sensitivity
+    stats.s = options.level == LevelGene ?
+                  Sensitivity(er.limit_key, er.limit_count,
+                                r.seqs_gA.at(er.limit_key).r.raw + r.seqs_gA.at(er.limit_key).v.raw) :
+                  Sensitivity(er.limit_key, er.limit_count, r.seqs_iA.at(er.limit_key).raw);
 
     const std::string format = "%1%\t%2%\t%3%";
     

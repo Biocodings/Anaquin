@@ -19,9 +19,9 @@ namespace Spike
     {
         enum Mode
         {
-            AlignBase,
-            AlignExon,
-            AlignSplice,
+            LevelBase,
+            LevelExon,
+            LevelSplice,
         };
 
         struct Options : public AnalyzerOptions<Aligner::Mode>

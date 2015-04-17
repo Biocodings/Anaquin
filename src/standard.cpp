@@ -198,7 +198,7 @@ Standard::Standard()
      * Create data-structure for sequins. Refer to the documentation for more details.
      */
 
-    auto create_sequin = [&](const IsoformID &id, Group grp, Fold fold, Concentration exp, std::map<IsoformID, Sequin> &ig)
+    auto create_sequin = [&](const IsoformID &id, Group grp, Fold fold, Concentration raw, Concentration fpkm, std::map<IsoformID, Sequin> &ig)
     {
         Sequin seq;
         
@@ -210,7 +210,8 @@ Standard::Standard()
         // The BED file has given out the position for the sequin
         seq.l = temp[seq.id];
         
-        seq.exp  = exp;
+        seq.raw  = raw;
+        seq.fpkm = fpkm;
         seq.fold = fold;
         
         assert(ig.count(seq.id) == 0);
@@ -237,7 +238,7 @@ Standard::Standard()
              */
 
             seqs.geneID = fields[0].substr(0, fields[0].length() - 2);
-            seqs.r = create_sequin(fields[0], gs[fields[2]], stoi(fields[6]), stof(fields[10]), ig);
+            seqs.r = create_sequin(fields[0], gs[fields[2]], stoi(fields[6]), stof(fields[10]), stof(fields[12]), ig);
             
             /*
              * Create data-structure for the variant mixture
@@ -245,7 +246,7 @@ Standard::Standard()
 
             if (!fields[11].empty())
             {
-                seqs.v = create_sequin(fields[1], gs[fields[2]], stoi(fields[7]), stof(fields[11]), ig);
+                seqs.v = create_sequin(fields[1], gs[fields[2]], stoi(fields[7]), stof(fields[11]), stof(fields[13]), ig);
             }
 
             mg[seqs.geneID] = seqs;

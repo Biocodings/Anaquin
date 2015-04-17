@@ -76,19 +76,45 @@ static void print_version()
     std::cout << "Version 1.0. Garvan Institute, copyright 2015" << std::endl;
 }
 
-template <typename Analyzer> void analyze(const std::string &file, typename Analyzer::Mode mode)
+template <typename Analyzer, typename Level> void analyze(const std::string &file, Level lv)
 {
     typename Analyzer::Options o;
 
     // If nothing is provided, default directory (empty string) will be used
     o.writer = std::shared_ptr<PathWriter>(new PathWriter(output));
 
+    o.level = lv;
+    
     std::cout << "-----------------------------------------" << std::endl;
     std::cout << "Analyze " << Analyzer::name() << " data-analyzer..." << std::endl;
 
     Analyzer::analyze(file, o);
 
     std::cout << "Completed." << std::endl;
+}
+
+/*
+ * Some commands such as RNA-abdunance takes an input file at the gene-level or isoform-level.
+ * If the purpose isn't explicity specified, maybe we can automatically detect its usage.
+ */
+
+static RNALevel detect(const std::string &file)
+{
+    const bool found_gene = file.find("gene") != std::string::npos;
+    const bool found_isoform = file.find("isoform") != std::string::npos;
+    
+    if (found_gene && !found_isoform)
+    {
+        std::cout << "Gene input detected" << std::endl;
+        return LevelGene;
+    }
+    else if (!found_gene && found_isoform)
+    {
+        std::cout << "Isoform input detected" << std::endl;
+        return LevelIsoform;
+    }
+
+    throw std::runtime_error("Unknown file usage");
 }
 
 static int parse_options(int argc, char ** argv)
@@ -120,7 +146,7 @@ static int parse_options(int argc, char ** argv)
 
             case O_RNA_ALIGN:
             {
-                analyze<Aligner>(optarg, Aligner::Mode::AlignBase);
+                analyze<Aligner>(optarg, Aligner::LevelBase);
                 break;
             }
 
@@ -132,25 +158,13 @@ static int parse_options(int argc, char ** argv)
 
             case O_RNA_ABUNDANCE:
             {
-                analyze<Abundance>(optarg, Abundance::Mode::AbdunanceGene);
+                analyze<Abundance>(optarg, detect(optarg));
                 break;
             }
 
             case O_RNA_DIFFERENTIAL:
             {
-                const auto s = std::string(optarg);
-                
-                if (s.find("isoform") != std::string::npos)
-                {
-                    std::cout << "Isoform mode detected" << std::endl;
-                    analyze<Differential>(optarg, Differential::Mode::DiffIsoform);
-                }
-                else
-                {
-                    std::cout << "Gene mode detected" << std::endl;
-                    analyze<Differential>(optarg, Differential::Mode::DiffGene);
-                }
-                
+                analyze<Differential>(optarg, detect(optarg));
                 break;
             }
 

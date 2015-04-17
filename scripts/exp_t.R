@@ -6,4 +6,4 @@ x <- c(%1%)
 
 y <- c(%2%)
 
-plot(x,y)
+plot(x, y, xlab='Known Abundance', ylab='Measured Abundance')

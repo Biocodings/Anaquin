@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF13716B1ACADFEB006B0DE2 /* t_standard_factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF13716A1ACADFEB006B0DE2 /* t_standard_factory.cpp */; };
+		EF13716B1ACADFEB006B0DE2 /* t_standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF13716A1ACADFEB006B0DE2 /* t_standard.cpp */; };
 		EF150F4F1AD5060A0004E613 /* libhts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF150F4E1AD5060A0004E613 /* libhts.a */; };
 		EF224B541ADB5B8900B989A8 /* aligner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B4E1ADB5B8900B989A8 /* aligner.cpp */; };
 		EF224B551ADB5B8900B989A8 /* assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B501ADB5B8900B989A8 /* assembly.cpp */; };
@@ -52,7 +52,7 @@
 
 /* Begin PBXFileReference section */
 		7F7C70521AB4726E00C6EE36 /* Spike */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Spike; sourceTree = BUILT_PRODUCTS_DIR; };
-		EF13716A1ACADFEB006B0DE2 /* t_standard_factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_standard_factory.cpp; path = ../tests/t_standard_factory.cpp; sourceTree = "<group>"; };
+		EF13716A1ACADFEB006B0DE2 /* t_standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_standard.cpp; path = ../tests/t_standard.cpp; sourceTree = "<group>"; };
 		EF150F4E1AD5060A0004E613 /* libhts.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libhts.a; path = ../../HT/libhts.a; sourceTree = "<group>"; };
 		EF224B4C1ADB5B0000B989A8 /* manual.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = manual.txt; path = ../docs/manual.txt; sourceTree = "<group>"; };
 		EF224B4E1ADB5B8900B989A8 /* aligner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = aligner.cpp; path = ../src/rna/aligner.cpp; sourceTree = "<group>"; };
@@ -138,7 +138,7 @@
 			children = (
 				EF4BD9AD1ADE4035007BE6AB /* Parsers */,
 				EFF4FB021ADD24840008FD04 /* RNA */,
-				EF13716A1ACADFEB006B0DE2 /* t_standard_factory.cpp */,
+				EF13716A1ACADFEB006B0DE2 /* t_standard.cpp */,
 			);
 			name = Tests;
 			path = ../Tests;
@@ -380,7 +380,7 @@
 				EF4BD9AB1ADDFB92007BE6AB /* parser_cdiffs.cpp in Sources */,
 				EF224B5A1ADB5E3C00B989A8 /* variation.cpp in Sources */,
 				EF4BD9B31ADE4054007BE6AB /* t_parser_bed.cpp in Sources */,
-				EF13716B1ACADFEB006B0DE2 /* t_standard_factory.cpp in Sources */,
+				EF13716B1ACADFEB006B0DE2 /* t_standard.cpp in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
 				EF224B541ADB5B8900B989A8 /* aligner.cpp in Sources */,

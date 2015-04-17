@@ -36,9 +36,9 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
          * in the experiment. Please refer to the documentation for more details.
          */
 
-        switch (options.mode)
+        switch (options.level)
         {
-            case DiffGene:
+            case LevelGene:
             {
                 assert(r.seqs_gA.count(t.geneID));
                 assert(r.seqs_gB.count(t.geneID));
@@ -48,7 +48,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                     assert(t.fpkm_1);
                     
                     // Calculate the known fold-change between B and A
-                    known = r.seqs_gB.at(t.geneID).exp() / r.seqs_gA.at(t.geneID).exp();
+                    known = r.seqs_gB.at(t.geneID).raw() / r.seqs_gA.at(t.geneID).raw();
                     
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
@@ -65,7 +65,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                 break;
             }
 
-            case DiffIsoform:
+            case LevelIsoform:
             {
                 assert(r.seqs_iA.count(t.testID));
                 assert(r.seqs_iB.count(t.testID));
@@ -73,7 +73,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                 if (t.status != NoTest)
                 {
                     // Calculate the known fold-change between B and A
-                    known = r.seqs_iB.at(t.testID).exp / r.seqs_iA.at(t.testID).exp;
+                    known = r.seqs_iB.at(t.testID).raw / r.seqs_iA.at(t.testID).raw;
 
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
@@ -113,8 +113,8 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     stats.slope = m.coeffs[1].value;
     
     stats.s = Sensitivity(er.limit_key, er.limit_count,
-                          std::min(r.seqs_iA.at(er.limit_key).exp,
-                                   r.seqs_iB.at(er.limit_key).exp));
+                          std::min(r.seqs_iA.at(er.limit_key).raw,
+                                   r.seqs_iB.at(er.limit_key).raw));
 
     const std::string format = "%1%\t%2%\t%3%";
 
