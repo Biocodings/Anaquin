@@ -1,10 +1,6 @@
 #ifndef GI_PARSER_VCF_HPP
 #define GI_PARSER_VCF_HPP
 
-#include <set>
-#include <string>
-#include <vector>
-#include <functional>
 #include "types.hpp"
 
 namespace Spike
