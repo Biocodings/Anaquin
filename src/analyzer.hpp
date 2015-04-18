@@ -14,21 +14,25 @@ namespace Spike
 
     struct AnalyzerStats
     {
-        // Percentage of reads aligned with the reference chromosome
-        Percentage pr;
-        
-        // Percentage of reads aligned with the query samples
-        Percentage pq;
-        
         // Total number of reads aligned
-        Reads n = 0;
+        Counts n = 0;
         
         // Number of reads aligned to the chromosome
-        Reads nr = 0;
+        Counts nr = 0;
         
         // Number of reads aligned to the real sample
-        Reads nq = 0;
-        
+        Counts nq = 0;
+
+        inline Percentage pr() const
+        {
+            return nr / n;
+        }
+
+        inline Percentage pq() const
+        {
+            return nq / n;
+        }
+
         inline Percentage dilution() const
         {
             return nq ? static_cast<Percentage>(nr / nq) : 1;

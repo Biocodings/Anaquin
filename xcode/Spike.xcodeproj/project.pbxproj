@@ -11,7 +11,7 @@
 		EF150F4F1AD5060A0004E613 /* libhts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF150F4E1AD5060A0004E613 /* libhts.a */; };
 		EF224B541ADB5B8900B989A8 /* aligner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B4E1ADB5B8900B989A8 /* aligner.cpp */; };
 		EF224B551ADB5B8900B989A8 /* assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B501ADB5B8900B989A8 /* assembly.cpp */; };
-		EF224B5A1ADB5E3C00B989A8 /* variation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B581ADB5E3C00B989A8 /* variation.cpp */; };
+		EF224B5A1ADB5E3C00B989A8 /* structural.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B581ADB5E3C00B989A8 /* structural.cpp */; };
 		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; };
 		EF2290631AC0E58000CE76BF /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290521AC0E58000CE76BF /* standard.cpp */; };
 		EF3860E61AD3783A0062D246 /* parser_bed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860D71AD3783A0062D246 /* parser_bed.cpp */; };
@@ -59,8 +59,8 @@
 		EF224B4F1ADB5B8900B989A8 /* aligner.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = aligner.hpp; path = ../src/rna/aligner.hpp; sourceTree = "<group>"; };
 		EF224B501ADB5B8900B989A8 /* assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = assembly.cpp; path = ../src/rna/assembly.cpp; sourceTree = "<group>"; };
 		EF224B511ADB5B8900B989A8 /* assembly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = assembly.hpp; path = ../src/rna/assembly.hpp; sourceTree = "<group>"; };
-		EF224B581ADB5E3C00B989A8 /* variation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = variation.cpp; path = ../src/dna/variation.cpp; sourceTree = "<group>"; };
-		EF224B591ADB5E3C00B989A8 /* variation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = variation.hpp; path = ../src/dna/variation.hpp; sourceTree = "<group>"; };
+		EF224B581ADB5E3C00B989A8 /* structural.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = structural.cpp; path = ../src/dna/structural.cpp; sourceTree = "<group>"; };
+		EF224B591ADB5E3C00B989A8 /* structural.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = structural.hpp; path = ../src/dna/structural.hpp; sourceTree = "<group>"; };
 		EF224B5D1ADB653900B989A8 /* mixture_A.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mixture_A.csv; path = ../data/RNA/mixture_A.csv; sourceTree = "<group>"; };
 		EF224B5E1ADB653900B989A8 /* mixture_B.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mixture_B.csv; path = ../data/RNA/mixture_B.csv; sourceTree = "<group>"; };
 		EF2290341AC0E58000CE76BF /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/alignment.hpp; sourceTree = "<group>"; };
@@ -218,8 +218,8 @@
 		EF224B571ADB5E3300B989A8 /* DNA */ = {
 			isa = PBXGroup;
 			children = (
-				EF224B581ADB5E3C00B989A8 /* variation.cpp */,
-				EF224B591ADB5E3C00B989A8 /* variation.hpp */,
+				EF224B581ADB5E3C00B989A8 /* structural.cpp */,
+				EF224B591ADB5E3C00B989A8 /* structural.hpp */,
 			);
 			name = DNA;
 			sourceTree = "<group>";
@@ -378,7 +378,7 @@
 			files = (
 				EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */,
 				EF4BD9AB1ADDFB92007BE6AB /* parser_cdiffs.cpp in Sources */,
-				EF224B5A1ADB5E3C00B989A8 /* variation.cpp in Sources */,
+				EF224B5A1ADB5E3C00B989A8 /* structural.cpp in Sources */,
 				EF4BD9B31ADE4054007BE6AB /* t_parser_bed.cpp in Sources */,
 				EF13716B1ACADFEB006B0DE2 /* t_standard.cpp in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,

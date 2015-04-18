@@ -10,6 +10,7 @@ namespace Spike
     {
         template <typename T> static void split(const std::string &str, const std::string &d, T &r)
         {
+            r.clear();
             boost::split(r, str, boost::is_any_of(d));
         }
     };

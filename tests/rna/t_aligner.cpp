@@ -30,7 +30,6 @@ TEST_CASE("Align_RNA_Sims_Exon")
         REQUIRE(r.m.tp == 5762);
         REQUIRE(r.m.fp == 0);
         REQUIRE(r.m.fn == 0);
-        REQUIRE(r.m.tn == 0);
         REQUIRE(r.nr == 5762);
         REQUIRE(r.dilution() == 1);
         REQUIRE(r.nq == 0);
@@ -49,7 +48,7 @@ TEST_CASE("Align_RNA_Cufflinks")
     REQUIRE(0 == r.m.tp);
     REQUIRE(0 == r.m.fp);
     REQUIRE(0 == r.m.fn);
-    REQUIRE(3271 == r.m.tn);
+    //REQUIRE(3271 == r.m.tn);
     REQUIRE(0 == r.nr);
     REQUIRE(3307 == r.nq);
     REQUIRE(0 == r.dilution());
@@ -65,7 +64,6 @@ TEST_CASE("Align_RNA_Sims_Base")
         REQUIRE(r.m.tp == 9997);
         REQUIRE(r.m.fp == 0);
         REQUIRE(r.m.fn == 0);
-        REQUIRE(r.m.tn == 0);
         REQUIRE(r.nr == 9997);
         REQUIRE(r.dilution() == 1);
         REQUIRE(r.nq == 0);
@@ -86,7 +84,6 @@ TEST_CASE("Align_RNA_Sims_Splicing")
         REQUIRE(r.m.tp == 4235);
         REQUIRE(r.m.fp == 0);
         REQUIRE(r.m.fn == 0);
-        REQUIRE(r.m.tn == 0);
         REQUIRE(r.nr == 4235);
         REQUIRE(r.dilution() == 1);
         REQUIRE(r.nq == 0);

@@ -10,13 +10,21 @@
 namespace Spike
 {
     enum Group { A, B, C, D };
+
+    enum Zygosity
+    {
+        Homozygous,
+        Heterzygous,
+    };
     
+    typedef std::string Sequence;
+
     struct Variation
     {
-        GeneID id;
-        Locus l;
-        std::string r;
-        std::string m;
+        GeneID id;        
+        BasePair pos;
+        Zygosity zy;
+        Sequence r, m;
     };
     
     struct Gene
@@ -74,9 +82,9 @@ namespace Spike
             Locus l;
         
             /*
-             * DNA sequins
+             * Structural variations
              */
-        
+
             std::vector<Variation> vars;
 
             /*

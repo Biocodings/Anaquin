@@ -6,16 +6,24 @@
 #include "rna/assembly.hpp"
 #include "rna/abundance.hpp"
 #include "rna/differential.hpp"
+
+#include "dna/structural.hpp"
+
 #include "writers/path_writer.hpp"
 #include "parsers/parser_sequins.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 
-#define O_RNA_ALIGN        265
-#define O_RNA_ASSEMBLY     266
-#define O_RNA_ABUNDANCE    267
-#define O_RNA_DIFFERENTIAL 268
+#define O_RNA          265
+#define O_DNA          266
+#define O_META         267
+#define O_SEQUENCING   268
+#define O_ALIGN        269
+#define O_ASSEMBLY     270
+#define O_ABUNDANCE    271
+#define O_DIFFERENTIAL 272
+#define O_VARIATION    273
 
 using namespace Spike;
 
@@ -28,6 +36,9 @@ static std::string output;
 
 // The sequins that have been restricted
 static std::vector<SequinID> filtered;
+
+// O_RNA, O_DNA or O_META
+static int mode = 0;
 
 /*
  * Argument options
@@ -42,22 +53,20 @@ static const struct option long_options[] =
 
     { "restrict", required_argument, 0, 'r' },
 
-    /*
-     * RNA options
-     */
-    
-    { "al",           required_argument, 0, O_RNA_ALIGN        },
-    { "align",        required_argument, 0, O_RNA_ALIGN        },
-    { "as",           required_argument, 0, O_RNA_ASSEMBLY     },
-    { "assembly",     required_argument, 0, O_RNA_ASSEMBLY     },
-    { "ab",           required_argument, 0, O_RNA_ABUNDANCE    },
-    { "abundance",    required_argument, 0, O_RNA_ABUNDANCE    },
-    { "df",           required_argument, 0, O_RNA_DIFFERENTIAL },
-    { "differential", required_argument, 0, O_RNA_DIFFERENTIAL },
+    { "rna",          required_argument, 0, O_RNA  },
+    { "dna",          required_argument, 0, O_DNA  },
+    { "meta",         required_argument, 0, O_META },
 
-    /*
-     * DNA options
-     */
+    { "al",           required_argument, 0, O_ALIGN        },
+    { "align",        required_argument, 0, O_ALIGN        },
+    { "as",           required_argument, 0, O_ASSEMBLY     },
+    { "assembly",     required_argument, 0, O_ASSEMBLY     },
+    { "ab",           required_argument, 0, O_ABUNDANCE    },
+    { "abundance",    required_argument, 0, O_ABUNDANCE    },
+    { "df",           required_argument, 0, O_DIFFERENTIAL },
+    { "differential", required_argument, 0, O_DIFFERENTIAL },
+    { "var",          required_argument, 0, O_VARIATION    },
+    { "variation",    required_argument, 0, O_VARIATION    },
 
     /*
      * Metagenomics options
@@ -139,30 +148,41 @@ static int parse_options(int argc, char ** argv)
                 filtered = ParserSequins::parse(optarg);
                 break;
             }
+                
+            case O_RNA:
+            {
+                if (mode != 0)
+                {
+                    throw std::runtime_error("Unknown command");
+                }
+
+                mode = next;
+                break;
+            }
 
             /*
              * RNA options
              */
 
-            case O_RNA_ALIGN:
+            case O_ALIGN:
             {
                 analyze<Aligner>(optarg, Aligner::LevelBase);
                 break;
             }
 
-            case O_RNA_ASSEMBLY:
+            case O_ASSEMBLY:
             {
                 analyze<Assembly>(optarg, Assembly::Mode::Assembly_Base);
                 break;
             }
 
-            case O_RNA_ABUNDANCE:
+            case O_ABUNDANCE:
             {
                 analyze<Abundance>(optarg, detect(optarg));
                 break;
             }
 
-            case O_RNA_DIFFERENTIAL:
+            case O_DIFFERENTIAL:
             {
                 analyze<Differential>(optarg, detect(optarg));
                 break;
@@ -171,6 +191,12 @@ static int parse_options(int argc, char ** argv)
             /*
              * DNA options
              */
+
+            case O_VARIATION:
+            {
+                analyze<Structural>(optarg, Structural::LevelBase);
+                break;
+            }
 
             /*
              * Metagenomics options
