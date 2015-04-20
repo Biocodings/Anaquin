@@ -50,10 +50,10 @@ namespace Spike
     struct AnalyzerStats
     {
         // Binary classification at the base level
-        Confusion m_base;
+        Confusion mb;
         
         // Limit of sensitivity at the base level
-        Sensitivity s_base;
+        Sensitivity sb;
 
         // Total number of reads aligned
         Counts n = 0;
@@ -105,19 +105,17 @@ namespace Spike
             
             writer->close();
         }
-        
-        template <typename Stats> static void reportSens(const std::string &name,
-                                                         const Stats &stats,
-                                                         std::shared_ptr<Writer> writer)
+
+        template <typename Stats> static void reportSS(const std::string &name, const Stats &stats, std::shared_ptr<Writer> writer)
         {
             const std::string format = "%1%\t%2%\t%3%\t%4%";
             
             writer->open(name);
             writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
             writer->write((boost::format(format) % stats.dilution()
-                                                 % stats.m_base.sp()
-                                                 % stats.m_base.sn()
-                                                 % stats.s_base.abund).str());
+                                                 % stats.mb.sp()
+                                                 % stats.mb.sn()
+                                                 % stats.sb.abund).str());
             writer->close();
         }
     };

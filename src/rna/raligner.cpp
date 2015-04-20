@@ -58,8 +58,8 @@ RAlignerStats RAligner::analyze(const std::string &file, const RAligner::Options
      * but there wouldn't be information to distinguish ambiguous reads from alternative splicing.
      */
     
-    auto c_base = countsForGenes();
-    auto c_exon = countsForGenes();
+    auto cb = countsForGenes();
+    auto ce = countsForGenes();
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {
@@ -78,8 +78,8 @@ RAlignerStats RAligner::analyze(const std::string &file, const RAligner::Options
                 {
                     assert(r.iso2Gene.count(f1.iID));
                     
-                    c_exon[r.iso2Gene.at(f1.iID)]++;
-                    c_base[r.iso2Gene.at(f1.iID)]++;
+                    ce[r.iso2Gene.at(f1.iID)]++;
+                    cb[r.iso2Gene.at(f1.iID)]++;
 
                     return true;
                 }
@@ -93,18 +93,18 @@ RAlignerStats RAligner::analyze(const std::string &file, const RAligner::Options
 
     assert(stats.nr + stats.nq == stats.n);
     
-    const auto r_base = Expression::analyze(c_base);
-    const auto r_exon = Expression::analyze(c_exon);
+    const auto rb = Expression::analyze(cb);
+    const auto re = Expression::analyze(ce);
 
-    stats.s_base = r_base.sens(r.r_seqs_gA);
-    stats.s_exon = r_exon.sens(r.r_seqs_gA);
+    stats.sb = rb.sens(r.r_seqs_gA);
+    stats.se = re.sens(r.r_seqs_gA);
 
     /*
      * Base-level statistics
      */
 
-    AnalyzeReporter::reportSens("base.stats", stats, options.writer);
-    
+    AnalyzeReporter::reportSS("align.stats", stats, options.writer);
+
     /*
      * Exon-level statistics
      */
@@ -113,12 +113,8 @@ RAlignerStats RAligner::analyze(const std::string &file, const RAligner::Options
      * Counting statistics
      */
     
-    AnalyzeReporter::reportCounts("sequins_base.counts", c_base, options.writer);
-    AnalyzeReporter::reportCounts("sequins_exon.counts", c_exon, options.writer);
-
-    /*
-     * ROC curve for the classification
-     */
+    AnalyzeReporter::reportCounts("base.counts", cb, options.writer);
+    AnalyzeReporter::reportCounts("exon.counts", ce, options.writer);
 
 	return stats;
 }

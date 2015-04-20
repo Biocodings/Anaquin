@@ -8,18 +8,18 @@ namespace Spike
 {
     struct AssemblyStats : public AnalyzerStats
     {
-        Confusion m_exon;
-        Confusion m_trans;
-        Confusion m_intron;
+        Confusion me;
+        Confusion mt;
+        Confusion mi;
 
-        Sensitivity s_exon;
-        Sensitivity s_trans;
-        Sensitivity s_intron;
+        Sensitivity se;
+        Sensitivity st;
+        Sensitivity si;
     };
 
     struct Assembly
     {
-        enum Mode
+        enum Level
         {
             Base,
             Exon,
@@ -27,7 +27,7 @@ namespace Spike
             Transcripts,
         };
 
-        struct Options : public AnalyzerOptions<Assembly::Mode>
+        struct Options : public AnalyzerOptions<Assembly::Level>
         {
             // Empty Implementation
         };

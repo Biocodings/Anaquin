@@ -53,7 +53,7 @@ namespace Spike
     {
         static const Standard &r = Standard::instance();
 
-        SS::classify(stats.m_base, t,
+        SS::classify(stats.mb, t,
             [&](const T &)  // Classifier
             {
                 return (t.id == r.id && r.l.contains(t.l));

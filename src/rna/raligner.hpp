@@ -8,7 +8,7 @@ namespace Spike
 {
     struct RAlignerStats : public AnalyzerStats
     {
-        Sensitivity s_exon;
+        Sensitivity se;
     };
 
     struct RAligner
