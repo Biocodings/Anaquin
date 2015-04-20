@@ -11,7 +11,7 @@ namespace Spike
         Counts counts;
 
         // The lowest abundance that is still detectable
-        Concentration exp;
+        Concentration abund;
     };
 }
 

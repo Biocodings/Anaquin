@@ -39,6 +39,11 @@ namespace Spike
     
     struct Sequin
     {
+        inline Concentration abund(bool norm) const
+        {
+            return norm ? fpkm : raw;
+        }
+
         IsoformID id;        
         Locus l;
 
@@ -54,9 +59,11 @@ namespace Spike
 
     struct Sequins
     {
-        inline Concentration raw() const  { return r.raw + v.raw;   }
-        inline Concentration fpkm() const { return r.fpkm + v.fpkm; }
-
+        inline Concentration abund(bool norm) const
+        {
+            return r.abund(norm) + v.abund(norm);
+        }
+        
         Group grp;
 
         // Each mixture represents a transcript for a gene
@@ -81,27 +88,27 @@ namespace Spike
             Locus l;
         
             /*
-             * Structural variations
+             * RNA sequins
              */
 
-            std::vector<Variation> vars;
+            std::map<GeneID, Sequins> r_seqs_gA;
+            std::map<GeneID, Sequins> r_seqs_gB;
 
+            std::map<TranscriptID, Sequin> r_seqs_iA;
+            std::map<TranscriptID, Sequin> r_seqs_iB;
+        
+            /*
+             * DNA sequins
+             */
+        
+            std::vector<Variation> vars;
+        
             /*
              * Metagenomic sequins
              */
 
-            /*
-             * RNA sequins
-             */
-
-            std::map<GeneID, Sequins> seqs_gA;
-            std::map<GeneID, Sequins> seqs_gB;
-
-            std::map<TranscriptID, Sequin> seqs_iA;
-            std::map<TranscriptID, Sequin> seqs_iB;
-        
             std::map<TranscriptID, GeneID> iso2Gene;
-        
+
             // Reference genes
             std::vector<Gene> genes;
         

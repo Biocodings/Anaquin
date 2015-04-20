@@ -7,6 +7,20 @@
 
 using namespace Spike;
 
+template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
+{
+    Feature in;
+    
+    for (auto i = 0; i < exons.size(); i++)
+    {
+        if (i)
+        {
+            in.l = Locus(exons[i - 1].l.end, exons[i].l.start);
+            f(exons[i - 1], exons[i], in);
+        }
+    }
+}
+
 AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options &options)
 {
     AssemblyStats stats;
@@ -33,8 +47,8 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
                      {
                          case Transcript:
                          {
-                             assert(r.seqs_iA.count(f.iID));
-                             const auto &seq = r.seqs_iA.at(f.iID);
+                             assert(r.r_seqs_iA.count(f.iID));
+                             const auto &seq = r.r_seqs_iA.at(f.iID);
                              
                              assert(c.count(f.iID) && c_trans.count(f.iID));
                              
@@ -101,6 +115,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
                  });
     });
 
+    /*
     ANALYZE_COUNTS(c, base_r);
     ANALYZE_COUNTS(c_trans, trans_r);
     ANALYZE_COUNTS(c_exons, exon_r);
@@ -110,7 +125,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
     stats.s_trans  = trans_r.sens();
     stats.s_exon   = exon_r.sens();
     stats.s_intron = intron_r.sens();
-        
+       */ 
     assert(stats.n && stats.nr + stats.nq == stats.n);
     
     /*
@@ -121,38 +136,38 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
      */
 
     const std::string format = "%1%\t%2%\t%3%\t%4%";
-
-    options.writer->open("base.stats");
-    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
-    options.writer->write((boost::format(format) % stats.dilution()
-                                                 % stats.m.sp()
-                                                 % (stats.m.sn() == NAN ? 99 : 1)
-                                                 % stats.s.exp).str());
-    options.writer->close();
-
-    options.writer->open("exons.stats");
-    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
-    options.writer->write((boost::format(format) % stats.dilution()
-                                                 % stats.m_exon.sp()
-                                                 % stats.m_exon.sn()
-                                                 % stats.s.exp).str());
-    options.writer->close();
-
-    options.writer->open("intron.stats");
-    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
-    options.writer->write((boost::format(format) % stats.dilution()
-                                                 % stats.m_intron.sp()
-                                                 % stats.m_intron.sn()
-                                                 % stats.s.exp).str());
-    options.writer->close();
-    
-    options.writer->open("transcripts.stats");
-    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
-    options.writer->write((boost::format(format) % stats.dilution()
-                                                 % stats.m_trans.sp()
-                                                 % stats.m_trans.sn()
-                                                 % stats.s.exp).str());
-    options.writer->close();
+//
+//    options.writer->open("base.stats");
+//    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+//    options.writer->write((boost::format(format) % stats.dilution()
+//                                                 % stats.m.sp()
+//                                                 % (stats.m.sn() == NAN ? 99 : 1)
+//                                                 % stats.s.exp).str());
+//    options.writer->close();
+//
+//    options.writer->open("exons.stats");
+//    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+//    options.writer->write((boost::format(format) % stats.dilution()
+//                                                 % stats.m_exon.sp()
+//                                                 % stats.m_exon.sn()
+//                                                 % stats.s.exp).str());
+//    options.writer->close();
+//
+//    options.writer->open("intron.stats");
+//    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+//    options.writer->write((boost::format(format) % stats.dilution()
+//                                                 % stats.m_intron.sp()
+//                                                 % stats.m_intron.sn()
+//                                                 % stats.s.exp).str());
+//    options.writer->close();
+//    
+//    options.writer->open("transcripts.stats");
+//    options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
+//    options.writer->write((boost::format(format) % stats.dilution()
+//                                                 % stats.m_trans.sp()
+//                                                 % stats.m_trans.sn()
+//                                                 % stats.s.exp).str());
+//    options.writer->close();
 
 	return stats;
 }

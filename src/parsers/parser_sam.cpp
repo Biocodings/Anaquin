@@ -53,9 +53,9 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
                 }
             }
             
-            // 1-based leftmost coordinate is assumed in the softwares
-            align.l.set(t->core.pos + 1, t->core.pos + n);
-            
+            // 1-based leftmost coordinate is assumed
+            align.l.set(t->core.pos, t->core.pos + n - 1);
+
             assert(n == align.l.length());
         }
 

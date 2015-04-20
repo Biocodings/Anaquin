@@ -70,24 +70,24 @@ Standard::Standard()
      * Create data-structure for DNA mutations & variations
      */
 
-    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
-    {
-        Variation v;
-        v.pos = f.l.start;
-
-        /*
-         * Example: D_3_3_R_C/A
-         */
-        
-        Tokens::split(f.name, "_/", toks);
-
-        v.r = toks[toks.size() - 2];
-        v.m = toks[toks.size() - 1];
-        
-        vars.push_back(v);
-    });
-
-    assert(!vars.empty());
+//    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
+//    {
+//        Variation v;
+//        v.pos = f.l.start;
+//
+//        /*
+//         * Example: D_3_3_R_C/A
+//         */
+//        
+//        Tokens::split(f.name, "_/", toks);
+//
+//        v.r = toks[toks.size() - 2];
+//        v.m = toks[toks.size() - 1];
+//        
+//        vars.push_back(v);
+//    });
+//
+//    assert(!vars.empty());
 
     /*
      * Construct the data-structure for genes
@@ -218,7 +218,7 @@ Standard::Standard()
         
         return (ig[seq.id] = seq);
     };
-    
+
     auto read_mixture = [&](const std::string &file, std::map<GeneID, Sequins> &mg, std::map<TranscriptID, Sequin> &ig)
     {
         Sequins seqs;
@@ -252,6 +252,6 @@ Standard::Standard()
         });
     };
 
-    read_mixture("data/RNA/mixture_A.csv", seqs_gA, seqs_iA);
-    read_mixture("data/RNA/mixture_B.csv", seqs_gB, seqs_iB);
+    read_mixture("data/RNA/mixture_A.csv", r_seqs_gA, r_seqs_iA);
+    read_mixture("data/RNA/mixture_B.csv", r_seqs_gB, r_seqs_iB);
 }

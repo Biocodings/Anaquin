@@ -40,23 +40,23 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
         {
             case LevelGene:
             {
-                assert(r.seqs_gA.count(t.geneID));
-                assert(r.seqs_gB.count(t.geneID));
+                assert(r.r_seqs_gA.count(t.geneID));
+                assert(r.r_seqs_gB.count(t.geneID));
 
                 if (t.status != NoTest)
                 {
                     assert(t.fpkm_1);
                     
                     // Calculate the known fold-change between B and A
-                    known = r.seqs_gB.at(t.geneID).raw() / r.seqs_gA.at(t.geneID).raw();
+                    //known = r.r_seqs_gB.at(t.geneID).abund() / r.r_seqs_gA.at(t.geneID).abund();
                     
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
                     
-                    c[r.seqs_gA.at(t.geneID).r.id]++;
-                    c[r.seqs_gA.at(t.geneID).v.id]++;
-                    c[r.seqs_gB.at(t.geneID).r.id]++;
-                    c[r.seqs_gB.at(t.geneID).v.id]++;
+                    c[r.r_seqs_gA.at(t.geneID).r.id]++;
+                    c[r.r_seqs_gA.at(t.geneID).v.id]++;
+                    c[r.r_seqs_gB.at(t.geneID).r.id]++;
+                    c[r.r_seqs_gB.at(t.geneID).v.id]++;
                     
                     x.push_back(known);
                     y.push_back(measured);
@@ -67,19 +67,19 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
 
             case LevelIsoform:
             {
-                assert(r.seqs_iA.count(t.testID));
-                assert(r.seqs_iB.count(t.testID));
+                assert(r.r_seqs_iA.count(t.testID));
+                assert(r.r_seqs_iB.count(t.testID));
 
                 if (t.status != NoTest)
                 {
                     // Calculate the known fold-change between B and A
-                    known = r.seqs_iB.at(t.testID).raw / r.seqs_iA.at(t.testID).raw;
+                    known = r.r_seqs_iB.at(t.testID).raw / r.r_seqs_iA.at(t.testID).raw;
 
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
 
-                    c[r.seqs_iA.at(t.testID).id]++;
-                    c[r.seqs_iB.at(t.testID).id]++;
+                    c[r.r_seqs_iA.at(t.testID).id]++;
+                    c[r.r_seqs_iB.at(t.testID).id]++;
 
                     x.push_back(known);
                     y.push_back(measured);
@@ -112,7 +112,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     // Linear relationship between the two variables
     stats.slope = m.coeffs[1].value;
     
-    stats.s = er.sens();
+//    stats.s = er.s();
 
     const std::string format = "%1%\t%2%\t%3%";
 
@@ -120,7 +120,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
     options.writer->write((boost::format(format) % stats.r2
                                                  % stats.slope
-                                                 % stats.s.exp).str());
+                                                 % stats.s.abund).str());
     options.writer->close();
 
     return stats;

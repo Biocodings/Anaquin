@@ -18,10 +18,10 @@ SequinList ParserSequins::parse(const std::string &file)
     {
         boost::trim(line);
 
-        if (std::find_if(s.seqs_iA.begin(), s.seqs_iA.end(), [&](const std::pair<SequinID, Sequin> &p)
+        if (std::find_if(s.r_seqs_iA.begin(), s.r_seqs_iA.end(), [&](const std::pair<SequinID, Sequin> &p)
         {
             return p.first == line;
-        }) != s.seqs_iA.end())
+        }) != s.r_seqs_iA.end())
         {
             throw std::runtime_error("Unknown sequin: " + line);
         }

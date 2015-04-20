@@ -32,8 +32,6 @@ namespace Spike
             // Empty Implementation
         };
 
-        inline static std::string name() { return "assembly"; }
-
         static AssemblyStats analyze(const std::string &file, const Assembly::Options &options = Assembly::Options());
     };
 }

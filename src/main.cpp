@@ -2,11 +2,12 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include "rna/aligner.hpp"
+#include "rna/raligner.hpp"
 #include "rna/assembly.hpp"
 #include "rna/abundance.hpp"
 #include "rna/differential.hpp"
 
+#include "dna/daligner.hpp"
 #include "dna/structural.hpp"
 
 #include "writers/path_writer.hpp"
@@ -95,7 +96,7 @@ template <typename Analyzer, typename Level> void analyze(const std::string &fil
     o.level = lv;
     
     std::cout << "-----------------------------------------" << std::endl;
-    std::cout << "Analyze " << Analyzer::name() << " data-analyzer..." << std::endl;
+    //std::cout << "Analyze " << Analyzer::name() << " data-analyzer..." << std::endl;
 
     Analyzer::analyze(file, o);
 
@@ -166,7 +167,7 @@ static int parse_options(int argc, char ** argv)
 
             case O_ALIGN:
             {
-                analyze<Aligner>(optarg, Aligner::LevelBase);
+                analyze<RAligner>(optarg, RAligner::Base);
                 break;
             }
 

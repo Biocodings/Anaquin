@@ -1,7 +1,6 @@
 #ifndef GI_FEATURE_HPP
 #define GI_FEATURE_HPP
 
-#include <map>
 #include "locus.hpp"
 
 namespace Spike
@@ -16,12 +15,7 @@ namespace Spike
         Transcript,
     };
     
-    typedef std::string OptionID;
     typedef std::string FeatureID;
-    typedef std::string OptionValue;
-    
-    // Eg: "exons": "my_exon_name"
-    typedef std::map<OptionID, OptionValue> Options;
     
     struct Feature
     {
@@ -34,7 +28,7 @@ namespace Spike
         
         // Empty if the information is unavailable
         GeneID geneID;
-        
+
         // Empty if the information is unavailable
         TranscriptID iID;
     };    

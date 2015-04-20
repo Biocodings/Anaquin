@@ -1,8 +1,6 @@
 #ifndef GI_EXPRESSION_HPP
 #define GI_EXPRESSION_HPP
 
-#include <map>
-#include <iostream>
 #include "standard.hpp"
 #include "sensitivity.hpp"
 
@@ -12,25 +10,25 @@ namespace Spike
     {
         template <typename T> struct ExpressionResults
         {
-            T limit_key;
+            // Name of a sequin or a gene
+            T key;
 
-            // The value of the limit of sensitivity
-            unsigned limit_count;
+            // The counts for the sensitivity
+            Counts counts;
 
-            inline Sensitivity sens() const
+            template <typename ID, typename S> Sensitivity sens(const std::map<ID, S> &m) const
             {
-                static const auto &r = Standard::instance();
-
                 Sensitivity s;
                 
-                s.id     = limit_key;
-                s.counts = limit_count;
-                s.exp    = limit_count ? r.seqs_iA.at(limit_key).raw +
-                                         r.seqs_iA.at(limit_key).raw: NAN;
+                s.id     = key;
+                s.counts = counts;
+                s.abund  = counts ? m.at(key).abund(false) : NAN;
+
                 return s;
             }
         };
 
+#ifdef DEBUG_
         template <typename T> static void print(const std::map<T, unsigned> &m)
         {
             for (auto iter = m.begin(); iter != m.end(); iter++)
@@ -38,29 +36,29 @@ namespace Spike
                 std::cout << iter->first << "  " << iter->second << std::endl;
             }
         }
+#endif
 
-        template <typename T> static ExpressionResults<T> analyze(const std::map<T, unsigned> &t)
+        template <typename T> static ExpressionResults<T> analyze(const std::map<T, Counts> &c)
         {
             ExpressionResults<T> r;
 
-            if (!t.size()) { return r; }
+            if (!c.size()) { return r; }
 
             // The lowest count must be zero because it can't be negative
-            r.limit_count = std::numeric_limits<unsigned>::max();
+            r.counts = std::numeric_limits<unsigned>::max();
 
-            for (auto iter = t.begin(); iter != t.end(); iter++)
+            for (auto iter = c.begin(); iter != c.end(); iter++)
             {
-                if (iter->second && iter->second < r.limit_count)
+                if (iter->second && iter->second < r.counts)
                 {
-                    r.limit_key = iter->first;
-                    r.limit_count = iter->second;
+                    r.key = iter->first;
+                    r.counts = iter->second;
                 }
             }
 
-            if (r.limit_count == std::numeric_limits<unsigned>::max())
+            if (r.counts == std::numeric_limits<unsigned>::max())
             {
-                // There's nothing that has a single count
-                r.limit_count = 0;
+                r.counts = 0;
             }
             
             return r;

@@ -23,14 +23,14 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
 
     ParserTracking::parse(file, [&](const Tracking &t)
     {
-        assert(r.seqs_gA.count(t.geneID));
+        assert(r.r_seqs_gA.count(t.geneID));
 
         switch (options.level)
         {
             case LevelGene:
             {
                 c[t.geneID]++;
-                const auto &m = r.seqs_gA.at(t.geneID);
+                const auto &m = r.r_seqs_gA.at(t.geneID);
                 
                 if (t.fpkm)
                 {
@@ -39,7 +39,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
                      * the y-axis would be the expression (RPKM) reported.
                      */
                     
-                    x.push_back(m.fpkm());
+                    x.push_back(m.abund(true));
                     y.push_back(t.fpkm);
                 }
                 
@@ -49,13 +49,13 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
             case LevelIsoform:
             {
                 c[t.trackID]++;
-                assert(r.seqs_iA.count(t.trackID));
+                assert(r.r_seqs_iA.count(t.trackID));
                 
                 if (t.fpkm)
                 {
-                    const auto &i = r.seqs_iA.at(t.trackID);
+                    const auto &i = r.r_seqs_iA.at(t.trackID);
 
-                    x.push_back(i.fpkm);
+                    x.push_back(i.abund(true));
                     y.push_back(t.fpkm);                    
                 }
                 
@@ -90,8 +90,8 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     // Calculate the limit-of-sensitivity
     stats.s = options.level == LevelGene ?
                   Sensitivity(er.limit_key, er.limit_count,
-                                r.seqs_gA.at(er.limit_key).r.raw + r.seqs_gA.at(er.limit_key).v.raw) :
-                  Sensitivity(er.limit_key, er.limit_count, r.seqs_iA.at(er.limit_key).raw);
+                                r.r_seqs_gA.at(er.limit_key).r.raw + r.r_seqs_gA.at(er.limit_key).v.raw) :
+                  Sensitivity(er.limit_key, er.limit_count, r.r_seqs_iA.at(er.limit_key).raw);
      */
     
     const std::string format = "%1%\t%2%\t%3%";
@@ -100,7 +100,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
     options.writer->write((boost::format(format) % stats.r2
                                                  % stats.slope
-                                                 % stats.s.exp).str());
+                                                 % stats.s.abund).str());
     options.writer->close();
 
     options.writer->open("scripts.R");

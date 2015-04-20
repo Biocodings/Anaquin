@@ -8,7 +8,10 @@ namespace Spike
 {
     struct Confusion : public SS::Confusion
     {
-        
+        inline Percentage sp() const
+        {
+            return (tp + fp) ? tp / (tp + fp) : NAN;
+        }
     };
     
     inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
@@ -27,20 +30,6 @@ namespace Spike
         return cond;
     }
 
-    template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
-    {
-        Feature in;
-        
-        for (auto i = 0; i < exons.size(); i++)
-        {
-            if (i)
-            {
-                in.l = Locus(exons[i - 1].l.end, exons[i].l.start);                
-                f(exons[i - 1], exons[i], in);
-            }
-        }
-    }
-    
     template <typename Iter, typename T> bool find(const Iter &iter, const T &t)
     {
         for (auto i: iter)
@@ -64,23 +53,21 @@ namespace Spike
     {
         static const Standard &r = Standard::instance();
 
-        SS::classify(stats.m, t,
+        SS::classify(stats.m_base, t,
             [&](const T &)  // Classifier
             {
-                return (t.id == r.id);
+                return (t.id == r.id && r.l.contains(t.l));
             },
-            [&](const T &t) // Positive
+            [&](const T &t) // Positive (reference detected)
             {
                 stats.n++;
                 stats.nr++;
                 return p(t);
             },
-            [&](const T &t) // Negative
+            [&](const T &t) // Negative (query detected)
             {
                 stats.n++;
                 stats.nq++;
-
-                // It doesn't matter what to return because it's not being used
                 return false;
             });
        }
