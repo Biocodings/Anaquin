@@ -108,7 +108,7 @@ template <typename Analyzer, typename Level> void analyze(const std::string &fil
  * If the purpose isn't explicity specified, maybe we can automatically detect its usage.
  */
 
-static RNALevel detect(const std::string &file)
+template <typename Level> static Level detect(const std::string &file)
 {
     const bool found_gene = file.find("gene") != std::string::npos;
     const bool found_isoform = file.find("isoform") != std::string::npos;
@@ -116,12 +116,12 @@ static RNALevel detect(const std::string &file)
     if (found_gene && !found_isoform)
     {
         std::cout << "Gene input detected" << std::endl;
-        return LevelGene;
+        return Level::Gene;
     }
     else if (!found_gene && found_isoform)
     {
         std::cout << "Isoform input detected" << std::endl;
-        return LevelIsoform;
+        return Level::Isoform;
     }
 
     throw std::runtime_error("Unknown file usage");
@@ -179,13 +179,13 @@ static int parse_options(int argc, char ** argv)
 
             case O_ABUNDANCE:
             {
-                analyze<Abundance>(optarg, detect(optarg));
+                analyze<Abundance>(optarg, detect<Abundance::Level>(optarg));
                 break;
             }
 
             case O_DIFFERENTIAL:
             {
-                analyze<Differential>(optarg, detect(optarg));
+                analyze<Differential>(optarg, detect<Differential::Level>(optarg));
                 break;
             }
 

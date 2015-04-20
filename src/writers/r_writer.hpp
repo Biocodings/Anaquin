@@ -12,7 +12,7 @@ namespace Spike
 {
     struct RWriter
     {
-        template <typename Iter> static std::string write(Iter &y, Iter &x)
+        template <typename Iter> static std::string write(Iter &x, Iter &y)
         {
             using boost::algorithm::join;
             using boost::adaptors::transformed;
@@ -22,9 +22,8 @@ namespace Spike
 
             const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", " );
             const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", " );
-            const auto s  = (boost::format(ss.str()) % xs % ys).str();
-  
-            return s;
+    
+            return (boost::format(ss.str()) % xs % ys).str();
         }
     };
 }

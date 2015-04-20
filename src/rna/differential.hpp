@@ -9,9 +9,6 @@ namespace Spike
 {
     struct DifferentialStats : public AnalyzerStats
     {
-        Confusion m;
-        Sensitivity s;
-
         // Correlation for the samples
         double r;
 
@@ -24,12 +21,16 @@ namespace Spike
 
     struct Differential
     {
-        struct Options : public AnalyzerOptions<RNALevel>
+        enum Level
+        {
+            Gene,
+            Isoform,
+        };
+
+        struct Options : public AnalyzerOptions<Differential::Level>
         {
             // Empty Implementation
         };
-
-        inline static std::string name() { return "differential"; }
 
         static DifferentialStats analyze(const std::string &f, const Differential::Options &options = Differential::Options());
     };

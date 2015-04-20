@@ -8,8 +8,6 @@ namespace Spike
 {
     struct AbundanceStats : public AnalyzerStats
     {
-        Sensitivity s;
-        
         // Correlation for the samples
         double r;
         
@@ -22,7 +20,13 @@ namespace Spike
     
     struct Abundance
     {
-        struct Options : public AnalyzerOptions<RNALevel>
+        enum Level
+        {
+            Gene,
+            Isoform,
+        };
+
+        struct Options : public AnalyzerOptions<Abundance::Level>
         {
             // Empty Implementation
         };

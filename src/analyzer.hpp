@@ -11,8 +11,6 @@
 
 namespace Spike
 {
-    #define INIT_COUNTER(x) std::map<SequinID, Counts> x; std::for_each(r.r_seqs_iA.begin(), r.r_seqs_iA.end(), [&](const std::pair<GeneID, Sequin> &p) { x[p.first] = 0; }); assert(x.size() == r.r_seqs_iA.size());
-
     #define ANALYZE_COUNTS(x,y) const auto y = Expression::analyze(x); assert(!y.limit_count || r.r_seqs_iA.count(y.limit_key));
 
     inline std::map<SequinID, Counts> countsForSequins()
@@ -55,13 +53,13 @@ namespace Spike
         // Limit of sensitivity at the base level
         Sensitivity sb;
 
-        // Total number of reads aligned
+        // Total number of samples
         Counts n = 0;
         
-        // Number of reads aligned to the chromosome
+        // Number of samples aligned to the chromosome
         Counts nr = 0;
         
-        // Number of reads aligned to the real sample
+        // Number of samples aligned to the real sample
         Counts nq = 0;
 
         inline Percentage pr() const { return nr / n; }
@@ -71,12 +69,6 @@ namespace Spike
         {
             return n ? static_cast<Percentage>(nr) / n : 1.0;
         }
-    };
-
-    enum RNALevel
-    {
-        LevelGene,
-        LevelIsoform,
     };
 
     template <typename Level> struct AnalyzerOptions

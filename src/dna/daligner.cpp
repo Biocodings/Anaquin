@@ -22,7 +22,7 @@ DAlignerStats DAligner::analyze(const std::string &file, const DAligner::Options
      * to distinguish ambiguous reads from alternative splicing.
      */
     
-    INIT_COUNTER(c);
+    auto c = countsForGenes();
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {

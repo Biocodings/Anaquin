@@ -16,7 +16,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     AbundanceStats stats;
     const auto &r = Standard::instance();
 
-    INIT_COUNTER(c);
+    auto c = options.level == Gene ? countsForGenes() : countsForSequins();
     
     // Values for the x-axis and y-axis
     std::vector<double> x, y;
@@ -27,7 +27,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
 
         switch (options.level)
         {
-            case LevelGene:
+            case Gene:
             {
                 c[t.geneID]++;
                 const auto &m = r.r_seqs_gA.at(t.geneID);
@@ -42,11 +42,11 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
                     x.push_back(m.abund(true));
                     y.push_back(t.fpkm);
                 }
-                
+
                 break;
             }
 
-            case LevelIsoform:
+            case Isoform:
             {
                 c[t.trackID]++;
                 assert(r.r_seqs_iA.count(t.trackID));
@@ -66,7 +66,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
 
     assert(!x.empty() && !y.empty());
     
-    const auto er = Expression::analyze(c);
+    const auto cr = Expression::analyze(c);
     
     // Perform a linear-model to the abundance
     const auto m = lm(y, x); // correction bug
@@ -86,26 +86,54 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     // Linear relationship between the two variables
     stats.slope = m.coeffs[1].value;
 
-    /*
+    if (options.level == Gene)
+    {
+        stats.sb = cr.sens(r.r_seqs_gA);
+    }
+    else
+    {
+        stats.sb = cr.sens(r.r_seqs_iA);
+    }
+
     // Calculate the limit-of-sensitivity
-    stats.s = options.level == LevelGene ?
-                  Sensitivity(er.limit_key, er.limit_count,
-                                r.r_seqs_gA.at(er.limit_key).r.raw + r.r_seqs_gA.at(er.limit_key).v.raw) :
-                  Sensitivity(er.limit_key, er.limit_count, r.r_seqs_iA.at(er.limit_key).raw);
-     */
+    stats.sb = options.level == Gene ? cr.sens(r.r_seqs_gA) : cr.sens(r.r_seqs_iA);
     
     const std::string format = "%1%\t%2%\t%3%";
     
-    options.writer->open("base.stats"); // should be named as gene_exp.stat or isoform_exp.stats
+    /*
+     * Base-level statistics
+     */
+    
+    if (options.level == Gene)
+    {
+        options.writer->open("abundance.genes.stats");
+    }
+    else
+    {
+        options.writer->open("abundance.isoform.stats");
+    }
+
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
     options.writer->write((boost::format(format) % stats.r2
                                                  % stats.slope
-                                                 % stats.s.abund).str());
+                                                 % stats.sb.abund).str());
     options.writer->close();
 
-    options.writer->open("scripts.R");
-    options.writer->write(RWriter::write(y, x));
+    /*
+     * Generate a plot for the fold-change relationship
+     */
+
+    if (options.level == Gene)
+    {
+        options.writer->open("abundance.genes.R");
+    }
+    else
+    {
+        options.writer->open("abundance.isoform.R");
+    }
+
+    options.writer->write(RWriter::write(x, y));
     options.writer->close();
-    
+
     return stats;
 }

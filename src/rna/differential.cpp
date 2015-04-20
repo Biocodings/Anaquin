@@ -1,6 +1,7 @@
 #include "classify.hpp"
 #include "expression.hpp"
 #include "differential.hpp"
+#include "writers/r_writer.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <ss/regression/linear_model.hpp>
 
@@ -13,7 +14,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     DifferentialStats stats;
     const auto &r = Standard::instance();
 
-    INIT_COUNTER(c);
+    auto c = options.level == Gene ? countsForGenes() : countsForSequins();
 
     // Values for the coordinates
     std::vector<Concentration> x, y;
@@ -38,7 +39,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
 
         switch (options.level)
         {
-            case LevelGene:
+            case Gene:
             {
                 assert(r.r_seqs_gA.count(t.geneID));
                 assert(r.r_seqs_gB.count(t.geneID));
@@ -46,17 +47,17 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                 if (t.status != NoTest)
                 {
                     assert(t.fpkm_1);
-                    
+                    assert(c.count(r.r_seqs_gA.at(t.geneID).geneID));
+                    assert(c.count(r.r_seqs_gB.at(t.geneID).geneID));
+
                     // Calculate the known fold-change between B and A
-                    //known = r.r_seqs_gB.at(t.geneID).abund() / r.r_seqs_gA.at(t.geneID).abund();
-                    
+                    known = r.r_seqs_gB.at(t.geneID).abund(true) / r.r_seqs_gA.at(t.geneID).abund(true);
+
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
                     
-                    c[r.r_seqs_gA.at(t.geneID).r.id]++;
-                    c[r.r_seqs_gA.at(t.geneID).v.id]++;
-                    c[r.r_seqs_gB.at(t.geneID).r.id]++;
-                    c[r.r_seqs_gB.at(t.geneID).v.id]++;
+                    c[r.r_seqs_gA.at(t.geneID).geneID]++;
+                    c[r.r_seqs_gB.at(t.geneID).geneID]++;
                     
                     x.push_back(known);
                     y.push_back(measured);
@@ -65,7 +66,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
                 break;
             }
 
-            case LevelIsoform:
+            case Isoform:
             {
                 assert(r.r_seqs_iA.count(t.testID));
                 assert(r.r_seqs_iB.count(t.testID));
@@ -93,7 +94,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     assert(!c.empty());
     assert(!x.empty() && x.size() == y.size());
 
-    const auto er = Expression::analyze(c);
+    const auto cr = Expression::analyze(c);
 
     /*
      * In our analysis, the dependent variable is expression while the independent
@@ -112,15 +113,50 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     // Linear relationship between the two variables
     stats.slope = m.coeffs[1].value;
     
-//    stats.s = er.s();
+    if (options.level == Gene)
+    {
+        stats.sb = cr.sens(r.r_seqs_gA); // TODO: Do we have to report for mixture B as well?
+    }
+    else
+    {
+        stats.sb = cr.sens(r.r_seqs_iA);
+    }
 
+    /*
+     * Base-level statistics
+     */
+    
     const std::string format = "%1%\t%2%\t%3%";
 
-    options.writer->open("base.stats"); // Name???
+    if (options.level == Gene)
+    {
+        options.writer->open("diffs.genes.stats");
+    }
+    else
+    {
+        options.writer->open("diffs.isoform.stats");
+    }
+    
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
     options.writer->write((boost::format(format) % stats.r2
                                                  % stats.slope
-                                                 % stats.s.abund).str());
+                                                 % stats.sb.abund).str());
+    options.writer->close();
+
+    /*
+     * Generate a plot for the fold-change relationship
+     */
+    
+    if (options.level == Gene)
+    {
+        options.writer->open("diffs.genes.R");
+    }
+    else
+    {
+        options.writer->open("diffs.isoform.R");
+    }
+
+    options.writer->write(RWriter::write(x, y));
     options.writer->close();
 
     return stats;
