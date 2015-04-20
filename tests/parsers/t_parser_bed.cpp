@@ -4,5 +4,4 @@
 TEST_CASE("ParserBEDTest")
 {
     
-    
 }
