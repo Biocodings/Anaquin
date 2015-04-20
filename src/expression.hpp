@@ -1,6 +1,7 @@
 #ifndef GI_EXPRESSION_HPP
 #define GI_EXPRESSION_HPP
 
+#include <math.h>
 #include <iostream>
 #include "standard.hpp"
 #include "sensitivity.hpp"

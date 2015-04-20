@@ -10,6 +10,7 @@
 #include "dna/daligner.hpp"
 #include "dna/structural.hpp"
 
+#include "parser_csv.hpp"
 #include "writers/path_writer.hpp"
 #include "parsers/parser_sequins.hpp"
 
@@ -49,6 +50,7 @@ static const char *short_options = "o:";
 
 static const struct option long_options[] =
 {
+    { "l",       no_argument, 0, 'l' },
     { "test",    no_argument, 0, 't' },
     { "version", no_argument, 0, 'v' },
 
@@ -84,6 +86,28 @@ static void print_usage()
 static void print_version()
 {
     std::cout << "Version 1.0. Garvan Institute, copyright 2015" << std::endl;
+}
+
+static void print_sequins(const std::string &file)
+{
+    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%  %7%  %8%";
+
+    std::cout << (boost::format(format) % "r_name"
+                                        % "v_name"
+                                        % "r_ratio"
+                                        % "v_ratio"
+                                        % "r_con"
+                                        % "v_con").str() << std::endl;
+
+    ParserCSV::parse(file, [&](const Fields &fields)
+    {
+        std::cout << (boost::format(format) % fields[0]
+                                            % fields[3]
+                                            % fields[8]
+                                            % fields[9]
+                                            % fields[11]
+                                            % fields[12]).str() << std::endl;
+    });
 }
 
 template <typename Analyzer, typename Level> void analyze(const std::string &file, Level lv)
@@ -149,7 +173,13 @@ static int parse_options(int argc, char ** argv)
                 filtered = ParserSequins::parse(optarg);
                 break;
             }
-                
+
+            case 'l':
+            {
+                print_sequins("data/RNA/mixture_A.csv");
+                break;
+            }
+
             case O_RNA:
             {
                 if (mode != 0)
@@ -160,9 +190,9 @@ static int parse_options(int argc, char ** argv)
                 mode = next;
                 break;
             }
-
+                
             /*
-             * RNA options
+             * Shared options
              */
 
             case O_ALIGN:
@@ -170,6 +200,10 @@ static int parse_options(int argc, char ** argv)
                 analyze<RAligner>(optarg, RAligner::Base);
                 break;
             }
+
+            /*
+             * RNA options
+             */
 
             case O_ASSEMBLY:
             {
@@ -195,7 +229,7 @@ static int parse_options(int argc, char ** argv)
 
             case O_VARIATION:
             {
-                analyze<Structural>(optarg, Structural::LevelBase);
+                analyze<Structural>(optarg, Structural::Base);
                 break;
             }
 

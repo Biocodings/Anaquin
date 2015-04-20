@@ -1,3 +1,4 @@
+#include "expression.hpp"
 #include "dna/structural.hpp"
 #include "parsers/parser_vcf.hpp"
 
@@ -24,7 +25,7 @@ static bool find(const std::vector<Variation> &vs, const VCFVariant &q, VariantS
 {
     for (auto &v : vs)
     {
-        if (v.pos == q.pos)
+        if (v.pos == q.l.start)
         {
             r.zy   = (v.zy == r.zy);
             r.seq  = (v.r == q.r);
@@ -43,31 +44,46 @@ StructuralStats Structural::analyze(const std::string &file, const Structural::O
 
     StructuralStats stats;
     VariantSearch vs;
+    
+    auto cb = countsForGenes();
 
     ParserVCF::parse(file, [&](const VCFVariant &v)
     {
-        stats.n++;
-
-        if (v.id == r.id)
+        classify(stats, v, [&](const VCFVariant &)
         {
-            stats.nr++;
-
             if (find(r.vars, v, vs) && vs.zy && vs.seq && vs.alts)
             {
-                stats.m.tp++;
+                cb[vs.ref->id]++;
+                return true;
             }
             else
             {
-                stats.m.fp++;
+                return false;
             }
-        }
-        else
-        {
-            stats.nq++;
-        }
+        });
     });
 
-    stats.m.fn = stats.nr - stats.m.tp;
+    stats.mb.fn = stats.nr - stats.mb.tp;
+
+    /*
+     * Calculate the limit of sensitivity
+     */
+    
+    const auto rb = Expression::analyze(cb);
+    
+    stats.sb = rb.sens(r.r_seqs_gA);
+
+    /*
+     * Base-level statistics
+     */
+    
+    AnalyzeReporter::reportSS("structural.stats", stats, options.writer);
+
+    /*
+     * Counting statistics
+     */
+    
+    AnalyzeReporter::reportCounts("base.counts", cb, options.writer);
     
     return stats;
 }

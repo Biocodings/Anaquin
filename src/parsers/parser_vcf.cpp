@@ -49,10 +49,11 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
         
         Tokens::split(line, "\t", t1);
 
-        v.r     = t1[REF];
-        v.id    = t1[CHROMO];
-        v.pos   = stod(t1[POS]);
-        v.varID = t1[ID];
+        v.r       = t1[REF];
+        v.id      = t1[CHROMO];
+        v.varID   = t1[ID];
+        v.l.end   = v.l.start;
+        v.l.start = stod(t1[POS]);
 
         /*
          * Example:

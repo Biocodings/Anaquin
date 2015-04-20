@@ -18,7 +18,7 @@ namespace Spike
         ChromoID id;
 
         // The reference position, with the 1st base having position 1
-        BasePair pos;
+        Locus l;
 
         // Semi-colon separated list of unique identifiers where available
         VariantID varID;

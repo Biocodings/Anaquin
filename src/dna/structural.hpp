@@ -8,7 +8,6 @@ namespace Spike
 {
     struct StructuralStats : public AnalyzerStats
     {
-        Confusion m;
         Percentage covered;
         Percentage efficiency;
     };
@@ -17,9 +16,9 @@ namespace Spike
     {
         enum StructuralLevel
         {
-            LevelBase,
-            LevelHomozygous,
-            LevelHeterzygous
+            Base,
+            Homozygous,
+            Heterzygous
         };
 
         struct Options : public AnalyzerOptions<StructuralLevel>
