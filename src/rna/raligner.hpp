@@ -13,14 +13,14 @@ namespace Spike
 
     struct RAligner
     {
-        enum Mode
+        enum Level
         {
             Base,
             Exon,
             Splice,
         };
 
-        struct Options : public AnalyzerOptions<RAligner::Mode>
+        struct Options : public AnalyzerOptions<RAligner::Level>
         {
             // Empty Implementation
         };

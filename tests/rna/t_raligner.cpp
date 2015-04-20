@@ -26,13 +26,13 @@ TEST_CASE("RAlign_Simulations_1")
         REQUIRE(r.nr == 98040);
         REQUIRE(r.nq == 1);
 
-        REQUIRE(r.s_base.id == "R_5_2");
-        REQUIRE(r.s_base.counts == 14);
-        REQUIRE(r.s_base.abund == 9765.0);
+        REQUIRE(r.sb.id == "R_5_2");
+        REQUIRE(r.sb.counts == 14);
+        REQUIRE(r.sb.abund == 9765.0);
         
-        REQUIRE(r.s_exon.id == "R_5_2");
-        REQUIRE(r.s_exon.counts == 14);
-        REQUIRE(r.s_exon.abund == 9765.0);
+        REQUIRE(r.se.id == "R_5_2");
+        REQUIRE(r.se.counts == 14);
+        REQUIRE(r.se.abund == 9765.0);
     }
 }
 
@@ -48,8 +48,8 @@ TEST_CASE("RAlign_Simulations_1_Exon")
         REQUIRE(r.nr == 52359);
         REQUIRE(r.nq == 1);
 
-        REQUIRE(r.m_base.fn == 1);
-        REQUIRE(r.m_base.tp == 51919);
-        REQUIRE(r.m_base.fp == 440);
+        REQUIRE(r.mb.fn == 1);
+        REQUIRE(r.mb.tp == 51919);
+        REQUIRE(r.mb.fp == 440);
     }
 }

@@ -173,7 +173,7 @@ static int parse_options(int argc, char ** argv)
 
             case O_ASSEMBLY:
             {
-                analyze<Assembly>(optarg, Assembly::Mode::Base);
+                analyze<Assembly>(optarg, Assembly::Base);
                 break;
             }
 
