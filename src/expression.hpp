@@ -1,6 +1,7 @@
 #ifndef GI_EXPRESSION_HPP
 #define GI_EXPRESSION_HPP
 
+#include <iostream>
 #include "standard.hpp"
 #include "sensitivity.hpp"
 
@@ -28,7 +29,6 @@ namespace Spike
             }
         };
 
-#ifdef DEBUG_
         template <typename T> static void print(const std::map<T, unsigned> &m)
         {
             for (auto iter = m.begin(); iter != m.end(); iter++)
@@ -36,7 +36,6 @@ namespace Spike
                 std::cout << iter->first << "  " << iter->second << std::endl;
             }
         }
-#endif
 
         template <typename T> static ExpressionResults<T> analyze(const std::map<T, Counts> &c)
         {

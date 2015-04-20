@@ -31,6 +31,15 @@ namespace Spike
 
         // Empty if the information is unavailable
         TranscriptID iID;
+
+        void operator=(const Feature &f)
+        {
+            l  = f.l;
+            id = f.id;
+            type = f.type;
+            iID  = f.iID;
+            geneID = f.geneID;
+        }
     };    
 }
 

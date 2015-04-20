@@ -5,18 +5,20 @@
 #include <boost/format.hpp>
 #include "parsers/parser_gtf.hpp"
 
+#include <iostream>
 using namespace Spike;
 
 template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
 {
-    Feature in;
+    Feature intr;
     
     for (auto i = 0; i < exons.size(); i++)
     {
         if (i)
         {
-            in.l = Locus(exons[i - 1].l.end, exons[i].l.start);
-            f(exons[i - 1], exons[i], in);
+            intr = exons[i];
+            intr.l = Locus(exons[i - 1].l.end, exons[i].l.start);
+            f(exons[i - 1], exons[i], intr);
         }
     }
 }
@@ -91,16 +93,15 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
 
     assert(!r.introns.empty());
     
-    extractIntrons(exons, [&](const Feature &, const Feature &, Feature &f)
+    extractIntrons(exons, [&](const Feature &, const Feature &, Feature &i)
     {
-        f.id = r.id;
-
-        classify(stats, f,
+        classify(stats, i,
                  [&](const Feature &)
                  {
-                     if (tfp(find(r.introns, f), &stats.mi))
+                     if (tfp(find(r.introns, i), &stats.mi))
                      {
-                         ci[f.iID]++;
+                         assert(ci.count(i.iID));
+                         ci[i.iID]++;
                          return true;
                      }
                      else
@@ -111,16 +112,17 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
     });
 
     assert(stats.n && stats.nr + stats.nq == stats.n);
+
     
     const auto rb = Expression::analyze(cb);
     const auto re = Expression::analyze(ce);
     const auto rt = Expression::analyze(ct);
-    //const auto ri = Expression::analyze(ci);
+    const auto ri = Expression::analyze(ci);
     
     stats.sb = rb.sens(r.r_seqs_iA);
     stats.se = re.sens(r.r_seqs_iA);
     stats.st = rt.sens(r.r_seqs_iA);
-    //stats.si = ri.sens(r.r_seqs_iA);
+    stats.si = ri.sens(r.r_seqs_iA);
 
     /*
      * Base-level statistics
