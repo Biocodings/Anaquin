@@ -15,7 +15,7 @@ namespace Spike
     struct VCFVariant
     {
         // An identifier from the reference genome
-        ChromoID chID;
+        ChromoID id;
 
         // The reference position, with the 1st base having position 1
         BasePair pos;

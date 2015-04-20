@@ -1,5 +1,5 @@
 #include "classify.hpp"
-#include "standard.hpp"
+#include "expression.hpp"
 #include "differential.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <ss/regression/linear_model.hpp>
@@ -112,9 +112,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Differential
     // Linear relationship between the two variables
     stats.slope = m.coeffs[1].value;
     
-    stats.s = Sensitivity(er.limit_key, er.limit_count,
-                          std::min(r.seqs_iA.at(er.limit_key).raw,
-                                   r.seqs_iB.at(er.limit_key).raw));
+    stats.s = er.sens();
 
     const std::string format = "%1%\t%2%\t%3%";
 

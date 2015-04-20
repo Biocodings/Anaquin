@@ -46,7 +46,7 @@ Standard::Standard()
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
 
-    ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f, ParserProgress &p)
+    ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f)
 	{
 		l.end = std::max(l.end, f.l.end);
 		l.start = std::min(l.start, f.l.start);

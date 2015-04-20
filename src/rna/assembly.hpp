@@ -1,30 +1,30 @@
 #ifndef GI_ASSEMBLY_HPP
 #define GI_ASSEMBLY_HPP
 
+#include "classify.hpp"
 #include "analyzer.hpp"
-#include "confusion.hpp"
-#include "sensitivity.hpp"
 
 namespace Spike
 {
     struct AssemblyStats : public AnalyzerStats
     {
-        Confusion m_base;
         Confusion m_exon;
         Confusion m_trans;
         Confusion m_intron;
-        
-        Sensitivity sens_base;
-        Sensitivity sens_exon;
-        Sensitivity sens_trans;
-        Sensitivity sens_intron;
+
+        Sensitivity s_exon;
+        Sensitivity s_trans;
+        Sensitivity s_intron;
     };
 
     struct Assembly
     {
         enum Mode
         {
-            Assembly_Base,
+            Base,
+            Exon,
+            Intron,
+            Transcripts,
         };
 
         struct Options : public AnalyzerOptions<Assembly::Mode>

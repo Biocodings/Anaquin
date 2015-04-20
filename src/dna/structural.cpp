@@ -47,8 +47,8 @@ StructuralStats Structural::analyze(const std::string &file, const Structural::O
     ParserVCF::parse(file, [&](const VCFVariant &v)
     {
         stats.n++;
-        
-        if (v.chID == r.id)
+
+        if (v.id == r.id)
         {
             stats.nr++;
 

@@ -2,10 +2,15 @@
 #define GI_CLASSIFY_HPP
 
 #include "standard.hpp"
-#include "confusion.hpp"
+#include <ss/ml/classify.hpp>
 
 namespace Spike
 {
+    struct Confusion : public SS::Confusion
+    {
+        
+    };
+    
     inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
     {
         if (cond)
@@ -17,22 +22,6 @@ namespace Spike
         {
             if (m1) { m1->fp++; }
             if (m2) { m2->fp++; }
-        }
-
-        return cond;
-    }
-
-    inline bool tfn(bool cond, Confusion *m1, Confusion *m2 = NULL)
-    {
-        if (cond)
-        {
-            if (m1) { m1->tn++; }
-            if (m2) { m2->tn++; }
-        }
-        else
-        {
-            if (m1) { m1->fn++; }
-            if (m2) { m2->fn++; }
         }
 
         return cond;
@@ -66,36 +55,35 @@ namespace Spike
     }
 
     /*
-     * Define a generic algorithm for experimental classification. The caller is
-     * expected to provide a functor for positive and negative match.
+     * Specalised binary-classification for the project. Negativity isn't required because in a typical
+     * experiment the dilution would be so low that true-negative dominates false-positive.
      */
     
-    template <typename T, typename Stats, typename Positive, typename Negative>
-    void classify(const Standard &r, Stats &stats, const T &t, Positive p, Negative n)
+    template <typename T, typename Stats, typename Positive>
+    void classify(Stats &stats, const T &t, Positive p)
     {
-        if (t.id == r.id)
-        {
-            stats.nr++;
-        }
-        else
-        {
-            stats.nq++;
-        }
+        static const Standard &r = Standard::instance();
 
-        stats.n++;
+        SS::classify(stats.m, t,
+            [&](const T &)  // Classifier
+            {
+                return (t.id == r.id);
+            },
+            [&](const T &t) // Positive
+            {
+                stats.n++;
+                stats.nr++;
+                return p(t);
+            },
+            [&](const T &t) // Negative
+            {
+                stats.n++;
+                stats.nq++;
 
-        // Whether it's been mapped to the reference
-        const bool mapped = r.l.contains(t.l);
-
-        if (r.id == t.id && mapped)
-        {
-            p();
-        }
-        else
-        {
-            n(mapped);
-        }
-    }
+                // It doesn't matter what to return because it's not being used
+                return false;
+            });
+       }
 }
 
 #endif

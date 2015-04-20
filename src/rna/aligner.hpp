@@ -2,7 +2,7 @@
 #define GI_ALIGNER_HPP
 
 #include "analyzer.hpp"
-#include "confusion.hpp"
+#include "classify.hpp"
 #include "sensitivity.hpp"
 
 namespace Spike
@@ -12,16 +12,16 @@ namespace Spike
         // The lowest detectable abundance in the experiment
         Sensitivity sens;
 
-        Confusion m;
+        SS::Confusion m;
     };
 
     struct Aligner
     {
         enum Mode
         {
-            LevelBase,
-            LevelExon,
-            LevelSplice,
+            Base,
+            Exon,
+            Splice,
         };
 
         struct Options : public AnalyzerOptions<Aligner::Mode>

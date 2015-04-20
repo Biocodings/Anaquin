@@ -5,7 +5,6 @@
 #include <vector>
 #include "locus.hpp"
 #include "feature.hpp"
-#include "confusion.hpp"
 
 namespace Spike
 {

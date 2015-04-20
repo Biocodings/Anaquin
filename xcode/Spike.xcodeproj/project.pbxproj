@@ -66,7 +66,6 @@
 		EF2290341AC0E58000CE76BF /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/alignment.hpp; sourceTree = "<group>"; };
 		EF2290351AC0E58000CE76BF /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
 		EF2290381AC0E58000CE76BF /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/biology.hpp; sourceTree = "<group>"; };
-		EF22903B1AC0E58000CE76BF /* confusion.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = confusion.hpp; path = ../src/confusion.hpp; sourceTree = "<group>"; };
 		EF22903E1AC0E58000CE76BF /* feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = feature.hpp; path = ../src/feature.hpp; sourceTree = "<group>"; };
 		EF22903F1AC0E58000CE76BF /* locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/locus.hpp; sourceTree = "<group>"; };
 		EF2290511AC0E58000CE76BF /* standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = standard.hpp; path = ../src/standard.hpp; sourceTree = "<group>"; };
@@ -175,7 +174,6 @@
 				EF76C9221ADBE82F003D45F9 /* expression.hpp */,
 				EF2290341AC0E58000CE76BF /* alignment.hpp */,
 				EF2290381AC0E58000CE76BF /* biology.hpp */,
-				EF22903B1AC0E58000CE76BF /* confusion.hpp */,
 				EF22903E1AC0E58000CE76BF /* feature.hpp */,
 				EFD36E9C1ACB912700F6F098 /* file.cpp */,
 				EFD36E9B1ACB90D400F6F098 /* file.hpp */,

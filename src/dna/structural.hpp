@@ -2,7 +2,7 @@
 #define GI_STRUCTURAL_HPP
 
 #include "analyzer.hpp"
-#include "confusion.hpp"
+#include "classify.hpp"
 
 namespace Spike
 {

@@ -2,7 +2,6 @@
 #define GI_ABUNDANCE_HPP
 
 #include "analyzer.hpp"
-#include "confusion.hpp"
 #include "sensitivity.hpp"
 
 namespace Spike

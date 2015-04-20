@@ -66,8 +66,8 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if ((options.level == LevelExon   && align.spliced) ||
-            (options.level == LevelSplice && !align.spliced))
+        if ((options.level == Exon   && align.spliced) ||
+            (options.level == Splice && !align.spliced))
         {
             return;
         }
@@ -131,9 +131,6 @@ AlignerStats Aligner::analyze(const std::string &file, const Aligner::Options &o
     });
 
     assert(stats.nr + stats.nq == stats.n);
-    
-	stats.pr = static_cast<Percentage>(stats.nr / stats.n);
-	stats.pq = static_cast<Percentage>(stats.nq / stats.n);
     
     const auto cr = Expression::analyze(c);
 

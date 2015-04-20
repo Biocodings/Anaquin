@@ -3,6 +3,8 @@
 
 #include <map>
 #include <iostream>
+#include "standard.hpp"
+#include "sensitivity.hpp"
 
 namespace Spike
 {
@@ -14,6 +16,19 @@ namespace Spike
 
             // The value of the limit of sensitivity
             unsigned limit_count;
+
+            inline Sensitivity sens() const
+            {
+                static const auto &r = Standard::instance();
+
+                Sensitivity s;
+                
+                s.id     = limit_key;
+                s.counts = limit_count;
+                s.exp    = limit_count ? r.seqs_iA.at(limit_key).raw +
+                                         r.seqs_iA.at(limit_key).raw: NAN;
+                return s;
+            }
         };
 
         template <typename T> static void print(const std::map<T, unsigned> &m)

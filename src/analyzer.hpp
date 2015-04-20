@@ -4,6 +4,8 @@
 #include <map>
 #include <memory>
 #include "types.hpp"
+#include "classify.hpp"
+#include "sensitivity.hpp"
 #include "writers/mock_writer.hpp"
 
 namespace Spike
@@ -14,6 +16,9 @@ namespace Spike
 
     struct AnalyzerStats
     {
+        Confusion m;
+        Sensitivity s;
+
         // Total number of reads aligned
         Counts n = 0;
         

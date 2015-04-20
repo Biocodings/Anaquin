@@ -2,18 +2,15 @@
 #define GI_SENSITIVITY_HPP
 
 #include "types.hpp"
-#include "expression.hpp"
 
 namespace Spike
 {
     struct Sensitivity
     {
-        Sensitivity() {}
-        Sensitivity(SequinID id, Counts counts, Concentration exp)
-                : id(id), counts(counts), exp(exp) {}
-
         SequinID id;
         Counts counts;
+
+        // The lowest abundance that is still detectable
         Concentration exp;
     };
 }

@@ -2,10 +2,11 @@
 #include "standard.hpp"
 #include "classify.hpp"
 #include "abundance.hpp"
+#include "expression.hpp"
 #include "writers/r_writer.hpp"
 #include "parsers/parser_tracking.hpp"
 #include <ss/regression/linear_model.hpp>
-#include <iostream>
+
 using namespace SS;
 using namespace SS::R;
 using namespace Spike;
@@ -85,12 +86,14 @@ AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Opti
     // Linear relationship between the two variables
     stats.slope = m.coeffs[1].value;
 
+    /*
     // Calculate the limit-of-sensitivity
     stats.s = options.level == LevelGene ?
                   Sensitivity(er.limit_key, er.limit_count,
                                 r.seqs_gA.at(er.limit_key).r.raw + r.seqs_gA.at(er.limit_key).v.raw) :
                   Sensitivity(er.limit_key, er.limit_count, r.seqs_iA.at(er.limit_key).raw);
-
+     */
+    
     const std::string format = "%1%\t%2%\t%3%";
     
     options.writer->open("base.stats"); // should be named as gene_exp.stat or isoform_exp.stats

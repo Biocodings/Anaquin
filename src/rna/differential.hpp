@@ -2,7 +2,7 @@
 #define GI_DIFFERENTIAL_HPP
 
 #include "analyzer.hpp"
-#include "confusion.hpp"
+#include "classify.hpp"
 #include "sensitivity.hpp"
 
 namespace Spike

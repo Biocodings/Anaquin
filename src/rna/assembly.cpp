@@ -17,17 +17,17 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
      * distribution.
      */
 
-    INIT_COUNTER(c_base);
+    INIT_COUNTER(c);
     INIT_COUNTER(c_trans);
     INIT_COUNTER(c_exons);
     INIT_COUNTER(c_introns);
     
     std::vector<Feature> exons;
     
-	ParserGTF::parse(file, [&](const Feature &f, ParserProgress &p)
+	ParserGTF::parse(file, [&](const Feature &f)
 	{
-        classify(r, stats, f,
-                 [&]()
+        classify(stats, f,
+                 [&](const Feature &) // Positive
                  {
                      switch (f.type)
                      {
@@ -35,24 +35,40 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
                          {
                              assert(r.seqs_iA.count(f.iID));
                              const auto &seq = r.seqs_iA.at(f.iID);
-
-                             assert(c_base.count(f.iID));
-                             assert(c_trans.count(f.iID));
-
-                             // It's a true-positive if the locus match
-                             if (tfp(seq.l == f.l, &stats.m_base, &stats.m_trans))
+                             
+                             assert(c.count(f.iID) && c_trans.count(f.iID));
+                             
+                             // True if the locus match
+                             if (tfp(seq.l == f.l, &stats.m_trans))
                              {
-                                 c_base[f.iID]++;
+                                 c[f.iID]++;
                                  c_trans[f.iID]++;
+                                 return true;
                              }
-
+                             else
+                             {
+                                 return false;
+                             }
+                             
                              break;
                          }
 
                          case Exon:
                          {
                              exons.push_back(f);
-                             tfp(find(r.exons, f), &stats.m_base, &stats.m_exon);
+                             assert(c.count(f.iID) && c_exons.count(f.iID));
+
+                             if (tfp(find(r.exons, f), &stats.m_exon))
+                             {
+                                 c[f.iID]++;
+                                 c_exons[f.iID]++;
+                                 return true;
+                             }
+                             else
+                             {
+                                 return false;
+                             }
+                             
                              break;
                          }
 
@@ -61,69 +77,40 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
                              throw std::runtime_error("Unknown assembly type!");
                          }
                      }
-                 },
-
-                 [&](bool mapped)
-                 {
-                     switch (f.type)
-                     {
-                         case Transcript:
-                         {
-                             tfn(mapped, &stats.m_base, &stats.m_trans);
-                             break;
-                         }
-
-                         case Exon:
-                         {
-                             tfn(mapped, &stats.m_base, &stats.m_exon);
-                             break;
-                         }
-
-                         default: { throw std::runtime_error("Unknown assembly type!"); };
-                     }
                  });
 	});
 
     assert(!r.introns.empty());
-
     
     extractIntrons(exons, [&](const Feature &, const Feature &, Feature &f)
     {
         f.id = "chrT"; // TODO: Fix it later...
         
-        classify(r, stats, f,
-                 [&]()
+        classify(stats, f,
+                 [&](const Feature &)
                  {
-                     tfp(find(r.introns, f), &stats.m_base, &stats.m_intron);
-                 },
-                 [&](bool mapped)
-                 {
-                     tfn(mapped, &stats.m_base, &stats.m_intron);
+                     if (tfp(find(r.introns, f), &stats.m_intron))
+                     {
+                         c_introns[f.iID]++;
+                         return true;
+                     }
+                     else
+                     {
+                         return false;
+                     }
                  });
     });
-    
-    ANALYZE_COUNTS(c_base,base_r);
+
+    ANALYZE_COUNTS(c, base_r);
     ANALYZE_COUNTS(c_trans, trans_r);
     ANALYZE_COUNTS(c_exons, exon_r);
     ANALYZE_COUNTS(c_introns, intron_r);
 
-    stats.sens_base.id     = base_r.limit_key;
-    stats.sens_base.counts = base_r.limit_count;
-    stats.sens_base.exp    = base_r.limit_count ? r.seqs_iA.at(base_r.limit_key).raw +
-                                                  r.seqs_iA.at(base_r.limit_key).raw: NAN;
-    stats.sens_trans.id     = trans_r.limit_key;
-    stats.sens_trans.counts = trans_r.limit_count;
-    stats.sens_trans.exp    = trans_r.limit_count ? r.seqs_iA.at(trans_r.limit_key).raw +
-                                                    r.seqs_iA.at(trans_r.limit_key).raw: NAN;
-    stats.sens_exon.id      = exon_r.limit_key;
-    stats.sens_exon.counts  = exon_r.limit_count;
-    stats.sens_exon.exp     = exon_r.limit_count ? r.seqs_iA.at(exon_r.limit_key).raw +
-                                                   r.seqs_iA.at(exon_r.limit_key).raw: NAN;
-    stats.sens_intron.id      = intron_r.limit_key;
-    stats.sens_intron.counts  = intron_r.limit_count;
-    stats.sens_intron.exp     = intron_r.limit_count ? r.seqs_iA.at(intron_r.limit_key).raw +
-                                                       r.seqs_iA.at(intron_r.limit_key).raw: NAN;
-    
+    stats.s        = base_r.sens();
+    stats.s_trans  = trans_r.sens();
+    stats.s_exon   = exon_r.sens();
+    stats.s_intron = intron_r.sens();
+        
     assert(stats.n && stats.nr + stats.nq == stats.n);
     
     /*
@@ -138,9 +125,9 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
     options.writer->open("base.stats");
     options.writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
     options.writer->write((boost::format(format) % stats.dilution()
-                                                 % stats.m_base.sp()
-                           % (stats.m_base.sn() == NAN ? 99 : 1)
-                                                 % stats.sens_base.exp).str());
+                                                 % stats.m.sp()
+                                                 % (stats.m.sn() == NAN ? 99 : 1)
+                                                 % stats.s.exp).str());
     options.writer->close();
 
     options.writer->open("exons.stats");
@@ -148,7 +135,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
     options.writer->write((boost::format(format) % stats.dilution()
                                                  % stats.m_exon.sp()
                                                  % stats.m_exon.sn()
-                                                 % stats.sens_exon.exp).str());
+                                                 % stats.s.exp).str());
     options.writer->close();
 
     options.writer->open("intron.stats");
@@ -156,7 +143,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
     options.writer->write((boost::format(format) % stats.dilution()
                                                  % stats.m_intron.sp()
                                                  % stats.m_intron.sn()
-                                                 % stats.sens_intron.exp).str());
+                                                 % stats.s.exp).str());
     options.writer->close();
     
     options.writer->open("transcripts.stats");
@@ -164,8 +151,8 @@ AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options
     options.writer->write((boost::format(format) % stats.dilution()
                                                  % stats.m_trans.sp()
                                                  % stats.m_trans.sn()
-                                                 % stats.sens_trans.exp).str());
+                                                 % stats.s.exp).str());
     options.writer->close();
-    
+
 	return stats;
 }
