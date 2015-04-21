@@ -183,11 +183,6 @@ Standard::Standard()
 
     assert(!introns.empty());
 
-//    for (auto i = 0; i < r.introns.size(); i++)
-  //  {
-    //    std::cout << r.introns[i].l.start << " " << r.introns[i].l.end << std::endl;
-    //}
-    
     static std::map<std::string, Group> gs =
     {
         { "A", A }, { "B", B }, { "C", C }, { "D", D }
