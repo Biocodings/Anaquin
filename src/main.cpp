@@ -20,20 +20,20 @@
 #define RNA_MIX_PATH "data/RNA"
 #define DNA_MIX_PATH "data/DNA"
 
-#define MODE_VER   'v'
-#define MODE_TEST  265
-#define MODE_RNA   266
-#define MODE_DNA   267
-#define MODE_META  268
+#define CMD_VER   'v'
+#define CMD_TEST  't'
+#define CMD_RNA   265
+#define CMD_DNA   266
+#define CMD_META  267
 
-#define CMD_RESTRICTS    280
-#define CMD_SEQS         281
-#define CMD_SEQUENCING   282
-#define CMD_ALIGN        283
-#define CMD_ASSEMBLY     284
-#define CMD_ABUNDANCE    285
-#define CMD_DIFFERENTIAL 286
-#define CMD_VARIATION    287
+#define MODE_RESTRICTS    280
+#define MODE_SEQS         281
+#define MODE_SEQUENCING   282
+#define MODE_ALIGN        283
+#define MODE_ASSEMBLY     284
+#define MODE_ABUNDANCE    285
+#define MODE_DIFFERENTIAL 286
+#define MODE_VARIATION    287
 
 using namespace Spike;
 
@@ -47,42 +47,53 @@ static std::string _output;
 // The sequins that have been restricted
 static std::vector<SequinID> filtered;
 
-// The mode for the command such as RNA and DNA
+static int _cmd  = 0;
 static int _mode = 0;
 
-// The command for the specified mode
-static int _cmd = 0;
+// The operand for _cmd
+static std::string _opt;
 
 /*
  * Argument options
  */
 
-static const char *short_options = "o:";
+static const char *short_options = "o";
 
 static const struct option long_options[] =
 {
-    { "test",         no_argument,       0, MODE_TEST },
-    { "version",      no_argument,       0, MODE_VER  },
-    { "rna",          required_argument, 0, MODE_DNA  },
-    { "dna",          required_argument, 0, MODE_RNA  },
-    { "meta",         required_argument, 0, MODE_META },
+    { "t",    no_argument,       0, CMD_TEST },
+    { "v",    no_argument,       0, CMD_VER  },
+    { "rna",  required_argument, 0, CMD_DNA  },
+    { "dna",  required_argument, 0, CMD_RNA  },
+    { "meta", required_argument, 0, CMD_META },
 
-    { "restrict",     required_argument, 0, CMD_RESTRICTS    },
-    { "l",            no_argument,       0, CMD_SEQS         },
-    { "seqs",         no_argument,       0, CMD_SEQS         },
-    { "al",           required_argument, 0, CMD_ALIGN        },
-    { "align",        required_argument, 0, CMD_ALIGN        },
-    { "as",           required_argument, 0, CMD_ASSEMBLY     },
-    { "assembly",     required_argument, 0, CMD_ASSEMBLY     },
-    { "ab",           required_argument, 0, CMD_ABUNDANCE    },
-    { "abundance",    required_argument, 0, CMD_ABUNDANCE    },
-    { "df",           required_argument, 0, CMD_DIFFERENTIAL },
-    { "differential", required_argument, 0, CMD_DIFFERENTIAL },
-    { "var",          required_argument, 0, CMD_VARIATION    },
-    { "variation",    required_argument, 0, CMD_VARIATION    },
+    { "f",    required_argument, 0, MODE_RESTRICTS    },
+    { "l",    no_argument,       0, MODE_SEQS         },
+    { "seqs", required_argument, 0, MODE_SEQS         },
+    { "al",   required_argument, 0, MODE_ALIGN        },
+    { "as",   required_argument, 0, MODE_ASSEMBLY     },
+    { "ab",   required_argument, 0, MODE_ABUNDANCE    },
+    { "df",   required_argument, 0, MODE_DIFFERENTIAL },
+    { "var",  required_argument, 0, MODE_VARIATION    },
 
     {0,  0, 0,  0 }
 };
+
+typedef int Command;
+
+static void invalidCmd(Command cmd)
+{
+    const std::map<Command, std::string> mapper =
+    {
+        { CMD_TEST,  "-t"    },
+        { CMD_VER,   "-v"    },
+        { CMD_RNA,   "-rna"  },
+        { CMD_DNA,   "-dna"  },
+        { CMD_META,  "-meta" },
+    };
+
+    std::cerr << "Invalid command: " << mapper.at(cmd) << std::endl;
+}
 
 static void print_usage()
 {
@@ -159,123 +170,124 @@ static int parse_options(int argc, char ** argv)
 {
     int next, index;
 
-    do
+    while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
-        switch (next = getopt_long_only(argc, argv, short_options, long_options, &index))
+        switch (next)
         {
             case 'o': { _output = optarg; break; }
 
-            case MODE_VER:
-            case MODE_DNA:
-            case MODE_RNA:
-            case MODE_META:
-            case MODE_TEST:
+            case CMD_VER:
+            case CMD_DNA:
+            case CMD_RNA:
+            case CMD_META:
+            case CMD_TEST:
             {
-                _mode = next;
+                if (_cmd != 0)
+                {
+                    std::cerr << "Ambiguous command. Please check the usage and try again." << std::endl;
+                    return 1;
+                }
+                
+                _opt = optarg ? optarg : _opt;
+                _cmd = next;
+
                 break;
             }
-
+                
             default:
             {
                 _cmd = _cmd == 0 ? next : _cmd;
                 break;
             }
         }
-    } while (next != -1);
+    }
 
-    /*
-     * The arguments have been parsed. It's time to check if it's a valid command.
-     */
-    
-    // It's an error to provide anything for a void mode
-    if ((_mode == MODE_TEST || _mode == MODE_VER) && (_output.empty()))
+    if (_cmd == 0)
     {
         print_usage();
     }
+    else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opt.empty()))
+    {
+        invalidCmd(_cmd);
+    }
     else
     {
-        if (_cmd == 0)
+        switch (_cmd)
         {
-            print_usage();
-        }
-        else
-        {
-            switch (_mode)
+            case CMD_TEST:
             {
-                case MODE_TEST:
+                return Catch::Session().run(1, argv);
+            }
+
+            case CMD_VER:
+            {
+                print_version();
+                break;
+            }
+                
+            case CMD_RNA:
+            {
+                if (_cmd != MODE_SEQUENCING &&
+                    _cmd != MODE_ALIGN      &&
+                    _cmd != MODE_ASSEMBLY   &&
+                    _cmd != MODE_ABUNDANCE  &&
+                    _cmd != MODE_DIFFERENTIAL)
                 {
-                    return Catch::Session().run(1, argv);
+                    print_usage();
                 }
-                    
-                case MODE_VER:
+                else
                 {
-                    print_version();
-                    break;
-                }
-                    
-                case MODE_RNA:
-                {
-                    if (_cmd != CMD_SEQUENCING &&
-                        _cmd != CMD_ALIGN      &&
-                        _cmd != CMD_ASSEMBLY   &&
-                        _cmd != CMD_ABUNDANCE  &&
-                        _cmd != CMD_DIFFERENTIAL)
+                    switch (_cmd)
                     {
-                        print_usage();
-                    }
-                    else
-                    {
-                        switch (_cmd)
+                        case MODE_SEQS:      { print_sequins(RNA_MIX_PATH);             break; }
+                        case MODE_ALIGN:     { analyze<RAlign>(_opt, RAlign::Base);     break; }
+                        case MODE_ASSEMBLY:  { analyze<Assembly>(_opt, Assembly::Base); break; }
+
+                        case MODE_ABUNDANCE:
                         {
-                            case CMD_SEQS:         { print_sequins(RNA_MIX_PATH);                   break; }
-                            case CMD_ALIGN:        { analyze<RAlign>(optarg, RAlign::Base);     break; }
-                            case CMD_ASSEMBLY:     { analyze<Assembly>(optarg, Assembly::Base);     break; }
-                            case CMD_ABUNDANCE:
-                            {
-                                analyze<Abundance>(optarg, detect<Abundance::Level>(optarg));
-                                break;
-                            }
-                                
-                            case CMD_DIFFERENTIAL:
-                            {
-                                analyze<Differential>(optarg, detect<Differential::Level>(optarg));
-                                break;
-                            }
+                            analyze<Abundance>(optarg, detect<Abundance::Level>(_opt));
+                            break;
+                        }
+
+                        case MODE_DIFFERENTIAL:
+                        {
+                            analyze<Differential>(optarg, detect<Differential::Level>(_opt));
+                            break;
                         }
                     }
-                    
-                    break;
                 }
-                    
-                case MODE_DNA:
+                
+                break;
+            }
+                
+            case CMD_DNA:
+            {
+                if (_cmd != MODE_SEQUENCING &&
+                    _cmd != MODE_ALIGN      &&
+                    _cmd != MODE_VARIATION)
                 {
-                    if (_cmd != CMD_SEQUENCING &&
-                        _cmd != CMD_ALIGN      &&
-                        _cmd != CMD_VARIATION)
-                    {
-                        print_usage();
-                    }
-                    else
-                    {
-                        switch (_cmd)
-                        {
-                            case CMD_SEQS:      { print_sequins(RNA_MIX_PATH);                   break; }
-                            case CMD_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
-                            case CMD_VARIATION: { analyze<Structural>(optarg, Structural::Base); break; }
-                        }
-                    }
-                    
-                    break;
+                    print_usage();
                 }
-                    
-                default:
+                else
                 {
-                    assert(false);
+                    switch (_cmd)
+                    {
+                        case MODE_SEQS:      { print_sequins(RNA_MIX_PATH);                   break; }
+                        case MODE_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
+                        case MODE_VARIATION: { analyze<Structural>(optarg, Structural::Base); break; }
+                    }
                 }
+                
+                break;
+            }
+                
+            default:
+            {
+                assert(false);
             }
         }
     }
-SV_INTERRUPT
+
     return 0;
 }
 
