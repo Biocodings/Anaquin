@@ -177,7 +177,7 @@ static int parse_options(int argc, char ** argv)
 
             default:
             {
-                _cmd = next;
+                _cmd = _cmd == 0 ? next : _cmd;
                 break;
             }
         }
@@ -194,81 +194,88 @@ static int parse_options(int argc, char ** argv)
     }
     else
     {
-        switch (_mode)
+        if (_cmd == 0)
         {
-            case MODE_TEST:
+            print_usage();
+        }
+        else
+        {
+            switch (_mode)
             {
-                return Catch::Session().run(1, argv);
-            }
-                
-            case MODE_VER:
-            {
-                print_version();
-                break;
-            }
-
-            case MODE_RNA:
-            {
-                if (_cmd != CMD_SEQUENCING &&
-                    _cmd != CMD_ALIGN      &&
-                    _cmd != CMD_ASSEMBLY   &&
-                    _cmd != CMD_ABUNDANCE  &&
-                    _cmd != CMD_DIFFERENTIAL)
+                case MODE_TEST:
                 {
-                    print_usage();
+                    return Catch::Session().run(1, argv);
                 }
-                else
+                    
+                case MODE_VER:
                 {
-                    switch (_cmd)
+                    print_version();
+                    break;
+                }
+                    
+                case MODE_RNA:
+                {
+                    if (_cmd != CMD_SEQUENCING &&
+                        _cmd != CMD_ALIGN      &&
+                        _cmd != CMD_ASSEMBLY   &&
+                        _cmd != CMD_ABUNDANCE  &&
+                        _cmd != CMD_DIFFERENTIAL)
                     {
-                        case CMD_SEQS:         { print_sequins(RNA_MIX_PATH);                   break; }
-                        case CMD_ALIGN:        { analyze<RAlign>(optarg, RAlign::Base);     break; }
-                        case CMD_ASSEMBLY:     { analyze<Assembly>(optarg, Assembly::Base);     break; }
-                        case CMD_ABUNDANCE:
+                        print_usage();
+                    }
+                    else
+                    {
+                        switch (_cmd)
                         {
-                            analyze<Abundance>(optarg, detect<Abundance::Level>(optarg));
-                            break;
-                        }
-
-                        case CMD_DIFFERENTIAL:
-                        {
-                            analyze<Differential>(optarg, detect<Differential::Level>(optarg));
-                            break;
+                            case CMD_SEQS:         { print_sequins(RNA_MIX_PATH);                   break; }
+                            case CMD_ALIGN:        { analyze<RAlign>(optarg, RAlign::Base);     break; }
+                            case CMD_ASSEMBLY:     { analyze<Assembly>(optarg, Assembly::Base);     break; }
+                            case CMD_ABUNDANCE:
+                            {
+                                analyze<Abundance>(optarg, detect<Abundance::Level>(optarg));
+                                break;
+                            }
+                                
+                            case CMD_DIFFERENTIAL:
+                            {
+                                analyze<Differential>(optarg, detect<Differential::Level>(optarg));
+                                break;
+                            }
                         }
                     }
+                    
+                    break;
                 }
-                
-                break;
-            }
-                
-            case MODE_DNA:
-            {
-                if (_cmd != CMD_SEQUENCING &&
-                    _cmd != CMD_ALIGN      &&
-                    _cmd != CMD_VARIATION)
+                    
+                case MODE_DNA:
                 {
-                    print_usage();
-                }
-                else
-                {
-                    switch (_cmd)
+                    if (_cmd != CMD_SEQUENCING &&
+                        _cmd != CMD_ALIGN      &&
+                        _cmd != CMD_VARIATION)
                     {
-                        case CMD_SEQS:      { print_sequins(RNA_MIX_PATH);                   break; }
-                        case CMD_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
-                        case CMD_VARIATION: { analyze<Structural>(optarg, Structural::Base); break; }
+                        print_usage();
                     }
+                    else
+                    {
+                        switch (_cmd)
+                        {
+                            case CMD_SEQS:      { print_sequins(RNA_MIX_PATH);                   break; }
+                            case CMD_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
+                            case CMD_VARIATION: { analyze<Structural>(optarg, Structural::Base); break; }
+                        }
+                    }
+                    
+                    break;
                 }
-
-                break;
-            }
-
-            default:
-            {
-                assert(false);
+                    
+                default:
+                {
+                    assert(false);
+                }
             }
         }
     }
-
+SV_INTERRUPT
     return 0;
 }
 
