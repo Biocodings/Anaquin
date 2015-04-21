@@ -112,6 +112,8 @@ static void print_version()
 
 static void print_sequins(const std::string &file)
 {
+    
+    
     const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%  %7%  %8%";
 
     std::cout << (boost::format(format) % "r_name"
@@ -227,7 +229,7 @@ static int parse_options(int argc, char ** argv)
                 }
                 
                 _mode = next;
-                _opt  = optarg;
+                _opt  = optarg ? optarg : _opt;
 
                 break;
             }
@@ -259,7 +261,8 @@ static int parse_options(int argc, char ** argv)
                 
             case CMD_RNA:
             {
-                if (_mode != MODE_SEQUENCING &&
+                if (_mode != MODE_SEQS       &&
+                    _mode != MODE_SEQUENCING &&
                     _mode != MODE_ALIGN      &&
                     _mode != MODE_ASSEMBLY   &&
                     _mode != MODE_ABUNDANCE  &&
@@ -294,7 +297,8 @@ static int parse_options(int argc, char ** argv)
 
             case CMD_DNA:
             {
-                if (_mode != MODE_SEQUENCING &&
+                if (_mode != MODE_SEQS       &&
+                    _mode != MODE_SEQUENCING &&
                     _mode != MODE_ALIGN      &&
                     _mode != MODE_VARIATION)
                 {

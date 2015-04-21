@@ -16,18 +16,33 @@ DAlignStats DAlign::analyze(const std::string &file, const DAlign::Options &opti
 
     //Feature f1, f2;
 
-    /*
-     * At the alignment, we're only interested in counting for the gene-level.
-     * Isoform-level is another possibiltiy but there wouldn't be information
-     * to distinguish ambiguous reads from alternative splicing.
-     */
-    
     auto c = countsForGenes();
-    
+
     ParserSAM::parse(file, [&](const Alignment &align)
     {
+        // There shouldn't be any splicing for DNA
+        assert(!align.spliced);
+        
         classify(stats, align, [&](const Alignment &)
         {
+            /*
+            
+            if ((!align.spliced && find(r.fs.begin(), r.fs.end(), align, f1)) ||
+                (align.spliced && checkSplice(r, align, f1, f2)))
+            {
+                assert(r.iso2Gene.count(f1.iID));
+                
+                ce[r.iso2Gene.at(f1.iID)]++;
+                cb[r.iso2Gene.at(f1.iID)]++;
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            */
+            
             return true;
         });
  
