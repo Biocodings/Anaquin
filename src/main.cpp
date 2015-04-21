@@ -10,7 +10,7 @@
 #include "dna/daligner.hpp"
 #include "dna/structural.hpp"
 
-#include "parser_csv.hpp"
+#include "parsers/parser_csv.hpp"
 #include "writers/path_writer.hpp"
 #include "parsers/parser_sequins.hpp"
 
