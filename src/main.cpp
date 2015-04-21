@@ -112,9 +112,7 @@ static void print_version()
 
 static void print_sequins(const std::string &file)
 {
-    
-    
-    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%  %7%  %8%";
+    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%";
 
     std::cout << (boost::format(format) % "r_name"
                                         % "v_name"
@@ -123,7 +121,7 @@ static void print_sequins(const std::string &file)
                                         % "r_con"
                                         % "v_con").str() << std::endl;
 
-    ParserCSV::parse(file, [&](const Fields &fields)
+    ParserCSV::parse(file + "/mixture_A.csv", [&](const Fields &fields)
     {
         std::cout << (boost::format(format) % fields[0]
                                             % fields[3]
