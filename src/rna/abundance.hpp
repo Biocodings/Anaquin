@@ -17,7 +17,7 @@ namespace Spike
         // Coefficient for the linear model
         double slope;
     };
-    
+
     struct Abundance
     {
         enum Level

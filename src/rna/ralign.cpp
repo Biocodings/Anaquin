@@ -1,7 +1,7 @@
 #include <iostream>
 #include <assert.h>
+#include "ralign.hpp"
 #include "biology.hpp"
-#include "raligner.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
@@ -46,9 +46,9 @@ static bool checkSplice(const Standard &r, const Alignment &align, Feature &e1, 
     return false;
 }
 
-RAlignerStats RAligner::analyze(const std::string &file, const RAligner::Options &options)
+RAlignStats RAlign::analyze(const std::string &file, const RAlign::Options &options)
 {
-    RAlignerStats stats;
+    RAlignStats stats;
     const auto &r = Standard::instance();
 
     Feature f1, f2;

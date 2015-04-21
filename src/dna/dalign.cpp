@@ -1,7 +1,7 @@
 #include <iostream>
 #include <assert.h>
+#include "dalign.hpp"
 #include "biology.hpp"
-#include "daligner.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
@@ -9,12 +9,12 @@
 
 using namespace Spike;
 
-DAlignerStats DAligner::analyze(const std::string &file, const DAligner::Options &options)
+DAlignStats DAlign::analyze(const std::string &file, const DAlign::Options &options)
 {
-    DAlignerStats stats;
+    DAlignStats stats;
     const auto &r = Standard::instance();
 
-    Feature f1, f2;
+    //Feature f1, f2;
 
     /*
      * At the alignment, we're only interested in counting for the gene-level.
@@ -26,26 +26,10 @@ DAlignerStats DAligner::analyze(const std::string &file, const DAligner::Options
     
     ParserSAM::parse(file, [&](const Alignment &align)
     {
-        if ((options.level == Exon   && align.spliced) ||
-            (options.level == Splice && !align.spliced))
-        {
-            return;
-        }
-
         classify(stats, align, [&](const Alignment &)
         {
-            
-            
-            
-            
-            
             return true;
-            
         });
-        
-        
-        
-        
  
         stats.n++;        
     });
