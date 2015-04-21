@@ -1,9 +1,9 @@
 #ifndef GI_EXPRESSION_HPP
 #define GI_EXPRESSION_HPP
 
+#include <map>
 #include <math.h>
 #include <iostream>
-#include "standard.hpp"
 #include "sensitivity.hpp"
 
 namespace Spike
@@ -60,7 +60,7 @@ namespace Spike
             {
                 r.counts = 0;
             }
-            
+
             return r;
         }
     };

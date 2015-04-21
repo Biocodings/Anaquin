@@ -63,25 +63,25 @@ static const struct option long_options[] =
 {
     { "t",    no_argument,       0, CMD_TEST },
     { "v",    no_argument,       0, CMD_VER  },
-    { "rna",  required_argument, 0, CMD_DNA  },
-    { "dna",  required_argument, 0, CMD_RNA  },
+    { "rna",  required_argument, 0, CMD_RNA  },
+    { "dna",  required_argument, 0, CMD_DNA  },
     { "meta", required_argument, 0, CMD_META },
 
     { "f",    required_argument, 0, MODE_RESTRICTS    },
     { "l",    no_argument,       0, MODE_SEQS         },
-    { "seqs", required_argument, 0, MODE_SEQS         },
+    { "se",   required_argument, 0, MODE_SEQS         },
     { "al",   required_argument, 0, MODE_ALIGN        },
     { "as",   required_argument, 0, MODE_ASSEMBLY     },
     { "ab",   required_argument, 0, MODE_ABUNDANCE    },
     { "df",   required_argument, 0, MODE_DIFFERENTIAL },
-    { "var",  required_argument, 0, MODE_VARIATION    },
+    { "va",   required_argument, 0, MODE_VARIATION    },
 
     {0,  0, 0,  0 }
 };
 
 typedef int Command;
 
-static void invalidCmd(Command cmd)
+static int invalid_cmd(Command cmd = 0)
 {
     const std::map<Command, std::string> mapper =
     {
@@ -92,7 +92,12 @@ static void invalidCmd(Command cmd)
         { CMD_META,  "-meta" },
     };
 
-    std::cerr << "Invalid command: " << mapper.at(cmd) << std::endl;
+    if (cmd)
+    {
+        std::cerr << "Invalid command: " << mapper.at(cmd) << std::endl;
+    }
+    
+    return 1;
 }
 
 static void print_usage()
@@ -135,9 +140,10 @@ template <typename Analyzer, typename Level> void analyze(const std::string &fil
     o.writer = std::shared_ptr<PathWriter>(new PathWriter(_output));
 
     o.level = lv;
-
+    
     std::cout << "-----------------------------------------" << std::endl;
-    //std::cout << "Analyze " << Analyzer::name() << " data-analyzer..." << std::endl;
+    std::cout << "------------- Sequin Analysis -----------" << std::endl;
+    std::cout << "-----------------------------------------" << std::endl << std::endl;
 
     Analyzer::analyze(file, o);
 
@@ -168,6 +174,28 @@ template <typename Level> static Level detect(const std::string &file)
 
 static int parse_options(int argc, char ** argv)
 {
+    /*
+     * It's quite tricky and complicated to parse all commands by getopt_long_only().
+     * Check for the commands that don't require '-' prefix.
+     */
+
+    if (argc <= 1)
+    {
+        print_usage();
+    }
+    else
+    {
+        const auto tmp = std::string(argv[1]);
+
+        /*
+         * The following commands will be ignored by getopt_long_only()
+         */
+        
+        if (tmp == "rna")  { _cmd = CMD_RNA;  }
+        if (tmp == "dna")  { _cmd = CMD_DNA;  }
+        if (tmp == "meta") { _cmd = CMD_META; }
+    }
+    
     int next, index;
 
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
@@ -184,19 +212,23 @@ static int parse_options(int argc, char ** argv)
             {
                 if (_cmd != 0)
                 {
-                    std::cerr << "Ambiguous command. Please check the usage and try again." << std::endl;
-                    return 1;
+                    return invalid_cmd(_cmd);
                 }
                 
-                _opt = optarg ? optarg : _opt;
                 _cmd = next;
-
                 break;
             }
                 
             default:
             {
-                _cmd = _cmd == 0 ? next : _cmd;
+                if (_mode != 0 || !_opt.empty())
+                {
+                    return invalid_cmd();
+                }
+                
+                _mode = next;
+                _opt  = optarg;
+
                 break;
             }
         }
@@ -208,7 +240,7 @@ static int parse_options(int argc, char ** argv)
     }
     else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opt.empty()))
     {
-        invalidCmd(_cmd);
+        invalid_cmd(_cmd);
     }
     else
     {
@@ -227,17 +259,17 @@ static int parse_options(int argc, char ** argv)
                 
             case CMD_RNA:
             {
-                if (_cmd != MODE_SEQUENCING &&
-                    _cmd != MODE_ALIGN      &&
-                    _cmd != MODE_ASSEMBLY   &&
-                    _cmd != MODE_ABUNDANCE  &&
-                    _cmd != MODE_DIFFERENTIAL)
+                if (_mode != MODE_SEQUENCING &&
+                    _mode != MODE_ALIGN      &&
+                    _mode != MODE_ASSEMBLY   &&
+                    _mode != MODE_ABUNDANCE  &&
+                    _mode != MODE_DIFFERENTIAL)
                 {
                     print_usage();
                 }
                 else
                 {
-                    switch (_cmd)
+                    switch (_mode)
                     {
                         case MODE_SEQS:      { print_sequins(RNA_MIX_PATH);             break; }
                         case MODE_ALIGN:     { analyze<RAlign>(_opt, RAlign::Base);     break; }
@@ -259,18 +291,18 @@ static int parse_options(int argc, char ** argv)
                 
                 break;
             }
-                
+
             case CMD_DNA:
             {
-                if (_cmd != MODE_SEQUENCING &&
-                    _cmd != MODE_ALIGN      &&
-                    _cmd != MODE_VARIATION)
+                if (_mode != MODE_SEQUENCING &&
+                    _mode != MODE_ALIGN      &&
+                    _mode != MODE_VARIATION)
                 {
                     print_usage();
                 }
                 else
                 {
-                    switch (_cmd)
+                    switch (_mode)
                     {
                         case MODE_SEQS:      { print_sequins(RNA_MIX_PATH);                   break; }
                         case MODE_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
