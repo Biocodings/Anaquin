@@ -70,24 +70,24 @@ Standard::Standard()
      * Create data-structure for DNA mutations & variations
      */
 
-//    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
-//    {
-//        Variation v;
-//        v.pos = f.l.start;
-//
-//        /*
-//         * Example: D_3_3_R_C/A
-//         */
-//        
-//        Tokens::split(f.name, "_/", toks);
-//
-//        v.r = toks[toks.size() - 2];
-//        v.m = toks[toks.size() - 1];
-//        
-//        vars.push_back(v);
-//    });
-//
-//    assert(!vars.empty());
+    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
+    {
+        Variation v;
+        v.pos = f.l.start;
+
+        /*
+         * Example: D_3_3_R_C/A
+         */
+        
+        Tokens::split(f.name, "_/", toks);
+
+        v.r = toks[toks.size() - 2];
+        v.m = toks[toks.size() - 1];
+        
+        vars.push_back(v);
+    });
+
+    assert(!vars.empty());
 
     /*
      * Construct the data-structure for genes

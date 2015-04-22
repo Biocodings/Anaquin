@@ -1,8 +1,8 @@
-#include "dsequence.hpp"
+#include "m_sequence.hpp"
 
 using namespace Spike;
 
-DSequenceStats DSequence::analyze(const std::string &file, const DSequence &options)
+MSequenceStats MSequence::analyze(const std::string &file, const DSequence &options)
 {
-	return DSequenceStats();
+	return MSequenceStats();
 }
