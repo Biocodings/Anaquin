@@ -8,8 +8,7 @@ namespace Spike
 {
     struct StructuralStats : public AnalyzerStats
     {
-        Percentage covered;
-        Percentage efficiency;
+        // Empty Implementation
     };
 
     struct Structural

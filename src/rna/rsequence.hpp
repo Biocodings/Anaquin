@@ -2,7 +2,6 @@
 #define GI_R_SEQUENCE_HPP
 
 #include "analyzer.hpp"
-#include "sensitivity.hpp"
 
 namespace Spike
 {
