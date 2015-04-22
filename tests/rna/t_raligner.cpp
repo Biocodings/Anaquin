@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "rna/ralign.hpp"
+#include "rna/r_align.hpp"
 
 using namespace Spike;
 

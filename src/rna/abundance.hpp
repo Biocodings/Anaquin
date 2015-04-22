@@ -31,7 +31,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static AbundanceStats analyze(const std::string &file, const Abundance::Options &options = Abundance::Options());
+        static AbundanceStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

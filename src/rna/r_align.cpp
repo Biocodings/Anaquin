@@ -1,6 +1,6 @@
 #include <iostream>
 #include <assert.h>
-#include "ralign.hpp"
+#include "r_align.hpp"
 #include "biology.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
@@ -46,7 +46,7 @@ static bool checkSplice(const Standard &r, const Alignment &align, Feature &e1, 
     return false;
 }
 
-RAlignStats RAlign::analyze(const std::string &file, const RAlign::Options &options)
+RAlignStats RAlign::analyze(const std::string &file, const Options &options)
 {
     RAlignStats stats;
     const auto &r = Standard::instance();

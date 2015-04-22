@@ -11,7 +11,7 @@ using namespace SS;
 using namespace SS::R;
 using namespace Spike;
 
-AbundanceStats Abundance::analyze(const std::string &file, const Abundance::Options &options)
+AbundanceStats Abundance::analyze(const std::string &file, const Options &options)
 {
     AbundanceStats stats;
     const auto &r = Standard::instance();

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <assert.h>
-#include "dalign.hpp"
+#include "d_align.hpp"
 #include "biology.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
@@ -9,7 +9,7 @@
 
 using namespace Spike;
 
-DAlignStats DAlign::analyze(const std::string &file, const DAlign::Options &options)
+DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 {
     DAlignStats stats;
     const auto &r = Standard::instance();

@@ -25,7 +25,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static StructuralStats analyze(const std::string &file, const Structural::Options &options = Structural::Options());
+        static StructuralStats analyze(const std::string &file, const Options &options = Options());
     };    
 }
 

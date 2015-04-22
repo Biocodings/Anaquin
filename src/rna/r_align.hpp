@@ -25,7 +25,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static RAlignStats analyze(const std::string &file, const RAlign::Options &options = RAlign::Options());
+        static RAlignStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

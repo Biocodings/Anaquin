@@ -16,7 +16,6 @@ namespace Spike
         enum Mode
         {
             Base,
-            Nucleotide,
         };
 
         struct Options : public AnalyzerOptions<DAlign::Mode>
@@ -24,7 +23,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static DAlignStats analyze(const std::string &file, const DAlign::Options &options = DAlign::Options());
+        static DAlignStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

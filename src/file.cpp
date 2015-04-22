@@ -33,8 +33,15 @@ File::~File()
 
 bool File::nextLine(std::string &line) const
 {
+    retry:
+    
     if (std::getline(*_imp->f, line))
     {
+        if (line.empty())
+        {
+            goto retry;
+        }
+
         return true;
     }
     else

@@ -23,7 +23,7 @@ template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
     }
 }
 
-AssemblyStats Assembly::analyze(const std::string &file, const Assembly::Options &options)
+AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
 {
     AssemblyStats stats;
     const auto &r = Standard::instance();

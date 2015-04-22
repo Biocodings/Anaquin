@@ -38,7 +38,7 @@ static bool find(const std::vector<Variation> &vs, const VCFVariant &q, VariantS
     return (r.matched = false);
 }
 
-StructuralStats Structural::analyze(const std::string &file, const Structural::Options &options)
+StructuralStats Structural::analyze(const std::string &file, const Options &options)
 {
     const auto &r = Standard::instance();
 

@@ -32,7 +32,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static AssemblyStats analyze(const std::string &file, const Assembly::Options &options = Assembly::Options());
+        static AssemblyStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

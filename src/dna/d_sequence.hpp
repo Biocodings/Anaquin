@@ -22,7 +22,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static DSequenceStats analyze(const std::string &file, const DSequence::Options &options = DSequence::Options());
+        static DSequenceStats analyze(const std::string &file, const DSequence &options = DSequence());
     };
 }
 

@@ -2,7 +2,6 @@
 #define GI_PARSER_VCF_HPP
 
 #include <set>
-#include "types.hpp"
 #include "standard.hpp"
 
 namespace Spike
@@ -20,14 +19,20 @@ namespace Spike
         // The reference position, with the 1st base having position 1
         Locus l;
 
-        // Semi-colon separated list of unique identifiers where available
-        VariantID varID;
-        
         Sequence r;
-        
-        // Reference base - alternate non-reference alleles called on at least one of the samples
+
+        /*
+         * List of alternate non-reference alleles called on at least one of the samples
+         */
+
         std::set<Sequence> alts;
 
+        /*
+         * Additional information
+         */
+        
+        std::map<std::string, std::string> info;
+        
         Zygosity zy;
     };
 

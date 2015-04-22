@@ -2,13 +2,18 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include "rna/ralign.hpp"
+#include "rna/r_align.hpp"
 #include "rna/assembly.hpp"
 #include "rna/abundance.hpp"
 #include "rna/differential.hpp"
 
-#include "dna/dalign.hpp"
+#include "dna/d_align.hpp"
+#include "dna/d_sequence.hpp"
 #include "dna/structural.hpp"
+
+#include "meta/denovo.hpp"
+#include "meta/m_align.hpp"
+#include "meta/m_sequence.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "writers/path_writer.hpp"
