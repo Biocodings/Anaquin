@@ -39,6 +39,7 @@
 #define MODE_ABUNDANCE    285
 #define MODE_DIFFERENTIAL 286
 #define MODE_VARIATION    287
+#define MODE_DE_NOVO      288
 
 using namespace Spike;
 
@@ -80,6 +81,7 @@ static const struct option long_options[] =
     { "ab",   required_argument, 0, MODE_ABUNDANCE    },
     { "df",   required_argument, 0, MODE_DIFFERENTIAL },
     { "va",   required_argument, 0, MODE_VARIATION    },
+    { "de",   required_argument, 0, MODE_DE_NOVO      },
 
     {0,  0, 0,  0 }
 };
@@ -115,26 +117,26 @@ static void print_version()
     std::cout << "Version 1.0. Garvan Institute, copyright 2015." << std::endl;
 }
 
-static void print_sequins(const std::string &file)
+static void print_sequins(Command cmd)
 {
-    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%";
-
-    std::cout << (boost::format(format) % "r_name"
-                                        % "v_name"
-                                        % "r_ratio"
-                                        % "v_ratio"
-                                        % "r_con"
-                                        % "v_con").str() << std::endl;
-
-    ParserCSV::parse(file + "/mixture_A.csv", [&](const Fields &fields)
-    {
-        std::cout << (boost::format(format) % fields[0]
-                                            % fields[3]
-                                            % fields[8]
-                                            % fields[9]
-                                            % fields[11]
-                                            % fields[12]).str() << std::endl;
-    });
+//    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%";
+//
+//    std::cout << (boost::format(format) % "r_name"
+//                                        % "v_name"
+//                                        % "r_ratio"
+//                                        % "v_ratio"
+//                                        % "r_con"
+//                                        % "v_con").str() << std::endl;
+//
+//    ParserCSV::parse("/mixture_A.csv", [&](const Fields &fields)
+//    {
+//        std::cout << (boost::format(format) % fields[0]
+//                                            % fields[3]
+//                                            % fields[8]
+//                                            % fields[9]
+//                                            % fields[11]
+//                                            % fields[12]).str() << std::endl;
+//    });
 }
 
 template <typename Analyzer, typename Level> void analyze(const std::string &file, Level lv)
@@ -277,7 +279,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_sequins(RNA_MIX_PATH);             break; }
+                        case MODE_SEQS:      { print_sequins(_cmd);                     break; }
                         case MODE_ALIGN:     { analyze<RAlign>(_opt, RAlign::Base);     break; }
                         case MODE_ASSEMBLY:  { analyze<Assembly>(_opt, Assembly::Base); break; }
 
@@ -311,9 +313,30 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_sequins(RNA_MIX_PATH);                   break; }
+                        case MODE_SEQS:      { print_sequins(_cmd);                           break; }
                         case MODE_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
                         case MODE_VARIATION: { analyze<Structural>(optarg, Structural::Base); break; }
+                    }
+                }
+                
+                break;
+            }
+                
+            case CMD_META:
+            {
+                if (_mode != MODE_SEQS  &&
+                    _mode != MODE_ALIGN &&
+                    _mode != MODE_DE_NOVO)
+                {
+                    print_usage();
+                }
+                else
+                {
+                    switch (_mode)
+                    {
+                        case MODE_SEQS:    { print_sequins(_cmd);                   break; }
+                        case MODE_ALIGN:   { analyze<MAlign>(optarg, MAlign::Base); break; }
+                        case MODE_DE_NOVO: { analyze<Denovo>(optarg, Denovo::Base); break; }
                     }
                 }
                 
