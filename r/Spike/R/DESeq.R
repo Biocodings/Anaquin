@@ -15,26 +15,21 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with Spike. If not, see <http://www.gnu.org/licenses/>.
 
-
-
-RNASequins <- function()
+SP_DESeq2 <- function(params, tsQuotes, times=seq(0,10,.1))
 {
-    ms <- list("A" = ("/Users/tedwong/Sources/QA/data/RNA/mixture_A.csv"),
-               "B" = ("/Users/tedwong/Sources/QA/data/RNA/mixture_B.csv"))
-    ms
+    UseMethod("DESeq2")
 }
 
-SP_DESeq <- function(object, test = c("Wald", "LRT"), fitType = c("parametric", 
-                                                                  "local", "mean"), betaPrior, full = design(object), reduced, 
-                     quiet = FALSE, minReplicatesForReplace = 7, modelMatrixType, 
-                     parallel = FALSE, BPPARAM = bpparam())
+SP_DESeq2.default <- function(object, test = c("Wald", "LRT"), fitType = c("parametric", "local", "mean"),
+                              betaPrior, full = design(object), reduced, 
+                              quiet = FALSE, minReplicatesForReplace = 7, modelMatrixType, 
+                              parallel = FALSE, BPPARAM = bpparam())
 {
-    # We can do the origianl test... But what to show?
-    assay(object)[1:3,]
+    
+    
+    
 }
-
-
-
+    
 
 #library("airway")
 #data("airway")
