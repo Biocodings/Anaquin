@@ -6,10 +6,10 @@ import math
 import subprocess
 
 def dna_path():
-    return '/home/tedwong/Projects/DNA_Simulation/'
+    return 'DNA_Simulation/'
 
 def rna_path():
-    return '/home/tedwong/Projects/RNA_Simulation/'
+    return 'RNA_Simulation/'
 
 def dna_seq_path():
     return dna_path() + 'seqs/'
@@ -24,16 +24,16 @@ def rna_read_path():
     return rna_path() + 'reads/'
 
 def r_sequins():
-    return '../data/RNA/RNA.tab.fa'
+    return '../data/rna/RNA.tab.fa'
 
 def d_sequins():
-    return '../data/DNA/DNA.tab.fa'
+    return '../data/dna/DNA.tab.fa'
 
 def d_standards():
-    return '../data/DNA/DNA_Standards_Analysis.txt'
+    return '../data/dna/DNA_Standards_Analysis.txt'
 
 def r_standards():
-    return '../data/RNA/RNA_Standards_Analysis.txt'
+    return '../data/rna/RNA_Standards_Analysis.txt'
 
 # Split a file of sequin into individual sequins
 def split_sequins(file, seq_path):
@@ -89,6 +89,8 @@ def simulate_reads(file, seq_path, read_path, min_, max_):
             
             if (math.fabs(ratio - ps[ts]['logr']) > 0.5):
                 raise Exception('Inconsistence mixture ratio: ' + ps[ts]['id'])
+
+            # This can be changed to simulate sequencing depth
 
             s = 1
             c = 0
