@@ -60,6 +60,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     
     auto cb = RAnalyzer::countsForGenes();
     auto ce = RAnalyzer::countsForGenes();
+    auto ci = RAnalyzer::countsForGenes();
 
     ParserSAM::parse(file, [&](const Alignment &align)
     {
@@ -78,8 +79,16 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
                 {
                     assert(r.iso2Gene.count(f1.iID));
                     
-                    ce[r.iso2Gene.at(f1.iID)]++;
                     cb[r.iso2Gene.at(f1.iID)]++;
+                    
+                    if (align.spliced)
+                    {
+                        ci[r.iso2Gene.at(f1.iID)]++;
+                    }
+                    else
+                    {
+                        ce[r.iso2Gene.at(f1.iID)]++;
+                    }
 
                     return true;
                 }
@@ -91,13 +100,21 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
+    FIX_FN(stats, stats.mb);
+    FIX_FN(stats, stats.me);
+    FIX_FN(stats, stats.mi);
+
     assert(stats.nr + stats.nq == stats.n);
     
     const auto rb = Expression::analyze(cb);
     const auto re = Expression::analyze(ce);
+    const auto ri = Expression::analyze(ci);
 
-    stats.sb = rb.sens(r.r_seqs_gA);
-    stats.se = re.sens(r.r_seqs_gA);
+    const auto seqs = r.r_mix_sequins(options.mix);
+
+    stats.sb = rb.sens(seqs);
+    stats.se = re.sens(seqs);
+    stats.si = re.sens(seqs);
 
     /*
      * Base-level statistics

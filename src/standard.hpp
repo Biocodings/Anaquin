@@ -91,6 +91,16 @@ namespace Spike
                 return s;
             }
 
+            inline const SequinsMap& r_mix_sequins(Mixture mix) const
+            {
+                return mix == MixA ? r_seqs_gA : r_seqs_gB;
+            }
+
+            inline const SequinMap& r_mix_sequin(Mixture mix) const
+            {
+                return mix == MixA ? r_seqs_iA : r_seqs_iB;
+            }
+
             ChromoID id;
 
             // The location of the chromosome

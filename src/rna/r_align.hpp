@@ -8,7 +8,8 @@ namespace Spike
 {
     struct RAlignStats : public AnalyzerStats
     {
-        Sensitivity se;
+        Confusion me, mi;
+        Sensitivity se, si;
     };
 
     struct RAlign : public RAnalyzer
@@ -20,7 +21,7 @@ namespace Spike
             Splice,
         };
 
-        struct Options : public AnalyzerOptions<RAlign::Level>
+        struct Options : public SingleMixtureOptions<RAlign::Level>
         {
             // Empty Implementation
         };

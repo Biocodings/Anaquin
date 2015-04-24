@@ -8,9 +8,16 @@ namespace Spike
 {
     struct Confusion : public SS::Confusion
     {
+        /*
+         * The usual formula: tn / (tn + fp) would not work. We don't know
+         * tn, furthermore fp would have been dominated by tn. The formula
+         * below is consistent to cufflink's recommendation. Technically,
+         * we're not calculating specificity but positive predication value.
+         */
+
         inline Percentage sp() const
         {
-            return (tp + fp) ? tp / (tp + fp) : NAN;
+            return ((tp + fp) && fp != n()) ? tp / (tp + fp) : NAN;
         }
     };
     
@@ -70,7 +77,7 @@ namespace Spike
                 stats.nq++;
                 return false;
             });
-       }
+    }
 }
 
 #endif

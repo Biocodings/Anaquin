@@ -34,10 +34,10 @@ namespace Spike
                 {
                     m[p.first] = 0;
                 });
-            
+
                 assert(m.size() == r.r_seqs_gA.size() && m.size() == r.r_seqs_gB.size());
                 assert(m.size() != r.r_seqs_iA.size() && m.size() != r.r_seqs_iB.size());
-            
+
                 return m;
             }
     };

@@ -11,6 +11,13 @@
 
 namespace Spike
 {
+    template <typename Stats> void adjustFN(const Stats &s, Confusion &m)
+    {
+        m.fn = s.nr - m.tp; // TODO: Revise this formula
+    }
+
+    #define FIX_FN(x, y) adjustFN(x, y)
+
     inline std::map<SequinID, Counts> countsForSequins()
     {
         const auto &r = Standard::instance();
@@ -77,6 +84,11 @@ namespace Spike
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
     };
     
+    template <typename Level> struct SingleMixtureOptions : public AnalyzerOptions<Level>
+    {
+        Mixture mix = MixA;
+    };
+
     struct AnalyzeReporter
     {
         template <typename ID> static void reportCounts(const std::string &name,
