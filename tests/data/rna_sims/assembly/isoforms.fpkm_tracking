@@ -1,6 +1,5 @@
 tracking_id	class_code	nearest_ref_id	gene_id	gene_short_name	tss_id	locus	length	coverage	FPKM	FPKM_conf_lo	FPKM_conf_hi	FPKM_status
 R_5_3_R	-	-	R_5_3	-	-	chrT:388487-542749	1986	0.000255361	0.0269585	0	16.7466	OK
-R_5_3_V	-	-	R_5_3	-	-	chrT:419473-542749	1969	1.35897	143.466	71.5134	215.419	OK
 R_8_3_R	-	-	R_8_3	-	-	chrT:579980-596290	1648	0	0	0	0	OK
 R_8_3_V	-	-	R_8_3	-	-	chrT:579980-596325	945	0	0	0	0	OK
 R_9_1_V	-	-	R_9_1	-	-	chrT:695558-700855	954	0	0	0	0	OK

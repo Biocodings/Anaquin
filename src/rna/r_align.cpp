@@ -106,10 +106,6 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     AnalyzeReporter::reportClassify("align.stats", stats.dilution(), stats.mb, stats.sb, options.writer);
 
     /*
-     * Exon-level statistics
-     */
-
-    /*
      * Counting statistics
      */
     
