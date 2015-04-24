@@ -96,16 +96,18 @@ namespace Spike
             writer->close();
         }
 
-        template <typename Stats> static void reportSS(const std::string &name, const Stats &stats, std::shared_ptr<Writer> writer)
+        static void reportClassify
+            (const std::string &name, Percentage dilution, const Confusion &m,
+                const Sensitivity &s, std::shared_ptr<Writer> writer)
         {
             const std::string format = "%1%\t%2%\t%3%\t%4%";
             
             writer->open(name);
             writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
-            writer->write((boost::format(format) % stats.dilution()
-                                                 % stats.mb.sp()
-                                                 % stats.mb.sn()
-                                                 % stats.sb.abund).str());
+            writer->write((boost::format(format) % dilution
+                                                 % m.sp()
+                                                 % m.sn()
+                                                 % s.abund).str());
             writer->close();
         }
     };

@@ -77,7 +77,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
      * Base-level statistics
      */
     
-    AnalyzeReporter::reportSS("structural.stats", stats, options.writer);
+    AnalyzeReporter::reportClassify("structural.stats", stats.dilution(), stats.mb, stats.sb, options.writer);
 
     /*
      * Counting statistics

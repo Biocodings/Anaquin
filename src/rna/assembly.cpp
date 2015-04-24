@@ -127,9 +127,9 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
     /*
      * Base-level statistics
      */
-    
-    AnalyzeReporter::reportSS("assembly.stats", stats, options.writer);
-    
+
+    AnalyzeReporter::reportClassify("assembly.stats", stats.dilution(), stats.mb, stats.sb, options.writer);
+
     /*
      * Exon-level statistics
      */

@@ -103,7 +103,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * Base-level statistics
      */
 
-    AnalyzeReporter::reportSS("align.stats", stats, options.writer);
+    AnalyzeReporter::reportClassify("align.stats", stats.dilution(), stats.mb, stats.sb, options.writer);
 
     /*
      * Exon-level statistics
