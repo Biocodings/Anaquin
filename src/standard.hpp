@@ -125,6 +125,10 @@ namespace Spike
             Standard();
             Standard(Standard const&)       = delete;
             void operator=(Standard const&) = delete;
+
+            void rna();
+            void dna();
+            void meta();
     };
 }
 

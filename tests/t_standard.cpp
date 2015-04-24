@@ -14,8 +14,8 @@ TEST_CASE("Standard_Isoforms")
 {
     const auto &r = Standard::instance();
 
-    REQUIRE(r.r_seqs_iA.size() == 62);
-    REQUIRE(r.r_seqs_iB.size() == 62);
+    REQUIRE(r.r_seqs_iA.size() == 61);
+    REQUIRE(r.r_seqs_iB.size() == 61);
 
     const auto ids =
     {

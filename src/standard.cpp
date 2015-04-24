@@ -17,21 +17,60 @@ using namespace Spike;
 
 Standard::Standard()
 {
-	std::ifstream in("data/silico.fa");
-	std::string line;
-
+    std::ifstream in("data/silico.fa");
+    std::string line;
+    
     if (!in.good())
     {
         std::cerr << "Error: Failed to load the reference chromosome" << std::endl;
         throw std::runtime_error("Error: Failed to load the reference chromosome");
     }
-
-	// Assume that the first line contains only the name of the chromosome
-	std::getline(in, line);
-
-	// Remove the '<' prefix
-	id = line.substr(1, line.size());
     
+    // Assume that the first line contains only the name of the chromosome
+    std::getline(in, line);
+    
+    // Remove the '<' prefix
+    id = line.substr(1, line.size());
+
+    rna();
+    dna();
+    meta();
+}
+
+void Standard::meta()
+{
+    
+}
+
+void Standard::dna()
+{
+    //
+    //    /*
+    //     * Create data-structure for DNA mutations & variations
+    //     */
+    //
+    //    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
+    //    {
+    //        Variation v;
+    //        v.pos = f.l.start;
+    //
+    //        /*
+    //         * Example: D_3_3_R_C/A
+    //         */
+    //
+    //        Tokens::split(f.name, "_/", toks);
+    //
+    //        v.r = toks[toks.size() - 2];
+    //        v.m = toks[toks.size() - 1];
+    //
+    //        vars.push_back(v);
+    //    });
+    //
+    //    assert(!vars.empty());
+}
+
+void Standard::rna()
+{
     /*
      * The region occupied by the chromosome is the smallest area contains all the features.
      */
@@ -65,29 +104,6 @@ Standard::Standard()
 
     assert(!iso2Gene.empty());
     std::vector<std::string> toks;
-
-    /*
-     * Create data-structure for DNA mutations & variations
-     */
-
-    ParserBED::parse("data/DNA/ChrT.5.8.Variation.bed", [&](const BedFeature &f)
-    {
-        Variation v;
-        v.pos = f.l.start;
-
-        /*
-         * Example: D_3_3_R_C/A
-         */
-        
-        Tokens::split(f.name, "_/", toks);
-
-        v.r = toks[toks.size() - 2];
-        v.m = toks[toks.size() - 1];
-        
-        vars.push_back(v);
-    });
-
-    assert(!vars.empty());
 
     /*
      * Construct the data-structure for genes
@@ -148,7 +164,7 @@ Standard::Standard()
     // Required while reading mixtures
     std::map<IsoformID, Locus> temp;
 
-    ParserBED::parse("data/RNA/standards.bed", [&](const BedFeature &t)
+    ParserBED::parse("data/rna/standards.bed", [&](const BedFeature &t)
     {
         // How easy this is, we'd have to perform unions from a GTF file
         temp[t.name] = t.l;
@@ -188,10 +204,6 @@ Standard::Standard()
         { "A", A }, { "B", B }, { "C", C }, { "D", D }
     };
 
-    /*
-     * Read mixtures for RNA
-     */
-
     ParserCSV::parse("data/rna/rna_mixtures.csv", [&](const Fields &fields, unsigned i)
     {
         enum RNAField
@@ -219,8 +231,8 @@ Standard::Standard()
         seqs.grp    = gs[fields[Group]];
         seqs.geneID = fields[Ref].substr(0, fields[0].length() - 2);
 
-        seqs.r.l = temp[seqs.r.id];
-        seqs.v.l = temp[seqs.v.id];
+        seqs.r.l = temp.at(seqs.r.id);
+        seqs.v.l = !seqs.v.id.empty() ? temp.at(seqs.v.id) : Locus();
 
         const auto ratio_r = stoi(fields[RatioR]);
         const auto ratio_v = stoi(fields[RatioV]);
@@ -230,21 +242,29 @@ Standard::Standard()
         seqs.v.fold = static_cast<Fold>(ratio_v) / ratio_r;
 
         const auto r_len = stoi(fields[RLen]);
-        const auto v_len = stoi(fields[VLen]);
+        const auto v_len = !seqs.v.id.empty() ? stoi(fields[VLen]) : 0;
 
         auto f = [&](RNAField f, std::map<SequinID, Sequins> &g, std::map<TranscriptID, Sequin> &i)
         {
             assert(f == AimA || f == AimB);
-            
+
+            // Ratio of the reference, reverse between mixtures
+            const auto ratio = f == AimA ? ratio_r : ratio_v;
+
             const auto aim = stof(fields[f]);
 
-            seqs.r.raw  = aim / (ratio_r / total_r);
+            seqs.r.raw  = aim * (static_cast<Fold>(ratio) / total_r);
             seqs.v.raw  = aim - seqs.r.raw;
             seqs.r.fpkm = seqs.r.raw / (1000 / r_len);
-            seqs.v.fpkm = seqs.v.raw / (1000 / v_len);
+
+            i[seqs.r.id] = seqs.r;
             
-            i[seqs.r.id]   = seqs.r;
-            i[seqs.v.id]   = seqs.v;
+            if (!seqs.v.id.empty())
+            {
+                seqs.v.fpkm  = seqs.v.raw / (1000 / v_len);
+                i[seqs.v.id] = seqs.v;
+            }
+            
             g[seqs.geneID] = seqs;
         };
 
@@ -254,6 +274,6 @@ Standard::Standard()
         // Calculate the concentration required by mixture B
         f(AimB, r_seqs_gB, r_seqs_iB);
 
-        assert(!seqs.geneID.empty() && !seqs.r.id.empty() && !seqs.v.id.empty());
+        assert(!seqs.geneID.empty() && !seqs.r.id.empty());
     });
 }

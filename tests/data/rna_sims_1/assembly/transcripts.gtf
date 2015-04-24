@@ -8,15 +8,6 @@ chrT	Cufflinks	exon	538413	538493	1	+	.	gene_id "R_5_3"; transcript_id "R_5_3_R"
 chrT	Cufflinks	exon	539348	539742	1	+	.	gene_id "R_5_3"; transcript_id "R_5_3_R"; exon_number "7"; FPKM "0.0269584607"; frac "0.000190"; conf_lo "0.000000"; conf_hi "16.746551"; cov "0.000255";
 chrT	Cufflinks	exon	540365	540493	1	+	.	gene_id "R_5_3"; transcript_id "R_5_3_R"; exon_number "8"; FPKM "0.0269584607"; frac "0.000190"; conf_lo "0.000000"; conf_hi "16.746551"; cov "0.000255";
 chrT	Cufflinks	exon	542286	542749	1	+	.	gene_id "R_5_3"; transcript_id "R_5_3_R"; exon_number "9"; FPKM "0.0269584607"; frac "0.000190"; conf_lo "0.000000"; conf_hi "16.746551"; cov "0.000255";
-chrT	Cufflinks	transcript	419474	542749	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	419474	419676	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "1"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	447005	447068	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "2"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	480183	480429	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "3"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	524943	525182	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "4"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	527936	528162	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "5"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	539348	539742	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "6"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	540365	540493	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "7"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
-chrT	Cufflinks	exon	542286	542749	1000	+	.	gene_id "R_5_3"; transcript_id "R_5_3_V"; exon_number "8"; FPKM "143.4663593692"; frac "0.999810"; conf_lo "71.513352"; conf_hi "215.419367"; cov "1.358970";
 chrT	Cufflinks	transcript	579981	596290	1	+	.	gene_id "R_8_3"; transcript_id "R_8_3_R"; FPKM "0.0000000000"; frac "0.000000"; conf_lo "0.000000"; conf_hi "0.000000"; cov "0.000000";
 chrT	Cufflinks	exon	579981	580712	1	+	.	gene_id "R_8_3"; transcript_id "R_8_3_R"; exon_number "1"; FPKM "0.0000000000"; frac "0.000000"; conf_lo "0.000000"; conf_hi "0.000000"; cov "0.000000";
 chrT	Cufflinks	exon	585127	585151	1	+	.	gene_id "R_8_3"; transcript_id "R_8_3_R"; exon_number "2"; FPKM "0.0000000000"; frac "0.000000"; conf_lo "0.000000"; conf_hi "0.000000"; cov "0.000000";
