@@ -11,13 +11,6 @@
 
 namespace Spike
 {
-    template <typename Stats> void adjustFN(const Stats &s, Confusion &m)
-    {
-        m.fn = s.nr - m.tp; // TODO: Revise this formula
-    }
-
-    #define FIX_FN(x, y) adjustFN(x, y)
-
     inline std::map<SequinID, Counts> countsForSequins()
     {
         const auto &r = Standard::instance();
@@ -50,30 +43,31 @@ namespace Spike
         return m;
     }
     
-    struct AnalyzerStats
+    class AnalyzerStats
     {
-        // Binary classification at the base level
-        Confusion mb;
-        
-        // Limit of sensitivity at the base level
-        Sensitivity sb;
+        public:
+            // Classification at the base level
+            Confusion mb;
 
-        // Total number of samples
-        Counts n = 0;
-        
-        // Number of samples aligned to the chromosome
-        Counts nr = 0;
-        
-        // Number of samples aligned to the real sample
-        Counts nq = 0;
+            // Limit of sensitivity at the base level
+            Sensitivity sb;
 
-        inline Percentage pr() const { return nr / n; }
-        inline Percentage pq() const { return nq / n; }
+            // Total number of samples
+            Counts n = 0;
+        
+            // Number of samples aligned to the chromosome
+            Counts nr = 0;
+        
+            // Number of samples aligned to the sample
+            Counts nq = 0;
+        
+            inline Percentage pr() const { return nr / n; }
+            inline Percentage pq() const { return nq / n; }
 
-        inline Percentage dilution() const
-        {
-            return n ? static_cast<Percentage>(nr) / n : 1.0;
-        }
+            inline Percentage dilution() const
+            {
+                return n ? static_cast<Percentage>(nr) / n : 1.0;
+            }
     };
 
     template <typename Level> struct AnalyzerOptions
@@ -91,28 +85,15 @@ namespace Spike
 
     struct AnalyzeReporter
     {
-        template <typename ID> static void reportCounts(const std::string &name,
-                                                        const std::map<ID, Counts> &m,
-                                                        std::shared_ptr<Writer> writer)
+        template <typename ID> static void reportClassify
+                    (const std::string &name,
+                     Percentage dilution,
+                     const Confusion &m,
+                     const Sensitivity &s,
+                     const std::map<ID, Counts> &c,
+                     std::shared_ptr<Writer> writer)
         {
-            const std::string format = "%1%\t%2%";
-            
-            writer->open(name);
-            writer->write((boost::format(format) % "name" % "counts").str());
-            
-            for (auto p : m)
-            {
-                writer->write((boost::format(format) % p.first % p.second).str());
-            }
-            
-            writer->close();
-        }
-
-        static void reportClassify
-            (const std::string &name, Percentage dilution, const Confusion &m,
-                const Sensitivity &s, std::shared_ptr<Writer> writer)
-        {
-            const std::string format = "%1%\t%2%\t%3%\t%4%";
+            const std::string format = "%1%\t%2%\t%3%\t%4%\n\n";
             
             writer->open(name);
             writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
@@ -120,6 +101,12 @@ namespace Spike
                                                  % m.sp()
                                                  % m.sn()
                                                  % s.abund).str());
+
+            for (auto p : c)
+            {
+                writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+            }
+            
             writer->close();
         }
     };

@@ -34,7 +34,10 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
     auto ce = countsForSequins();
     auto ct = countsForSequins();
     auto ci = countsForSequins();
-    
+
+    // The structure depends on the mixture
+    const auto seq = r.r_mix_sequin(options.mix);
+
     std::vector<Feature> exons;
     
 	ParserGTF::parse(file, [&](const Feature &f)
@@ -45,12 +48,12 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
                      {
                          case Transcript:
                          {
-                             assert(r.r_seqs_iA.count(f.iID));
-                             const auto &seq = r.r_seqs_iA.at(f.iID);
+                             assert(seq.count(f.iID));
+                             const auto &s = seq.at(f.iID);
                              
                              assert(cb.count(f.iID) && ct.count(f.iID));
-                             
-                             if (tfp(seq.l == f.l, &stats.mt))
+
+                             if (tfp(s.l == f.l, &stats.mt))
                              {
                                  cb[f.iID]++;
                                  ct[f.iID]++;
@@ -61,7 +64,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
                              {
                                  return false;
                              }
-                             
+
                              break;
                          }
                              
@@ -69,7 +72,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
                          {
                              exons.push_back(f);
                              assert(cb.count(f.iID) && ce.count(f.iID));
-                             
+
                              if (tfp(find(r.exons, f), &stats.me))
                              {
                                  cb[f.iID]++;
@@ -115,7 +118,6 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
 
     assert(stats.n && stats.nr + stats.nq == stats.n);
 
-    
     const auto rb = Expression::analyze(cb);
     const auto re = Expression::analyze(ce);
     const auto rt = Expression::analyze(ct);
@@ -126,32 +128,19 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
     stats.st = rt.sens(r.r_seqs_iA);
     stats.si = ri.sens(r.r_seqs_iA);
 
-    /*
-     * Base-level statistics
-     */
+    const auto &writer = options.writer;
 
-    AnalyzeReporter::reportClassify("assembly.stats", stats.dilution(), stats.mb, stats.sb, options.writer);
+    // Report the for base level
+    AnalyzeReporter::reportClassify("assembly.base.stats", stats.dilution(), stats.mb, stats.sb, cb, writer);
 
-    /*
-     * Exon-level statistics
-     */
+    // Report the for exons level
+    AnalyzeReporter::reportClassify("assembly.exons.stats", stats.dilution(), stats.me, stats.se, ce, writer);
 
-    /*
-     * Transcript-level statistics
-     */
+    // Report the for transcripts level
+    AnalyzeReporter::reportClassify("assembly.transcripts.stats", stats.dilution(), stats.mt, stats.st, ct, writer);
 
-    /*
-     * Intron-level statistics
-     */
+    // Report the for intron level
+    AnalyzeReporter::reportClassify("assembly.intron.stats", stats.dilution(), stats.mi, stats.si, ci, writer);
     
-    /*
-     * Counting statistics
-     */
-    
-    AnalyzeReporter::reportCounts("base.counts", cb, options.writer);
-    AnalyzeReporter::reportCounts("exon.counts", ce, options.writer);
-    AnalyzeReporter::reportCounts("transcripts.counts", ce, options.writer);
-    AnalyzeReporter::reportCounts("introns.counts", ce, options.writer);
-
     return stats;
 }

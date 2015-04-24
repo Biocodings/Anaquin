@@ -63,7 +63,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
         });
     });
 
-    stats.mb.fn = stats.nr - stats.mb.tp;
+    stats.mb.fn() = stats.nr - stats.mb.tp();
 
     /*
      * Calculate the limit of sensitivity
@@ -73,17 +73,8 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
     
     stats.sb = rb.sens(r.r_seqs_gA);
 
-    /*
-     * Base-level statistics
-     */
-    
-    AnalyzeReporter::reportClassify("structural.stats", stats.dilution(), stats.mb, stats.sb, options.writer);
+    // Report for the base-level
+    AnalyzeReporter::reportClassify("variation_base.stats", stats.dilution(), stats.mb, stats.sb, cb, options.writer);
 
-    /*
-     * Counting statistics
-     */
-    
-    AnalyzeReporter::reportCounts("base.counts", cb, options.writer);
-    
     return stats;
 }

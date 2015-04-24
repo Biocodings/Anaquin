@@ -44,9 +44,8 @@ DifferentialStats Differential::analyze(const std::string &f, const Options &opt
                 assert(r.r_seqs_gA.count(t.geneID));
                 assert(r.r_seqs_gB.count(t.geneID));
 
-                if (t.status != NoTest)
+                if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
-                    assert(t.fpkm_1);
                     assert(c.count(r.r_seqs_gA.at(t.geneID).geneID));
                     assert(c.count(r.r_seqs_gB.at(t.geneID).geneID));
 
@@ -71,7 +70,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Options &opt
                 assert(r.r_seqs_iA.count(t.testID));
                 assert(r.r_seqs_iB.count(t.testID));
 
-                if (t.status != NoTest)
+                if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
                     known = r.r_seqs_iB.at(t.testID).raw / r.r_seqs_iA.at(t.testID).raw;

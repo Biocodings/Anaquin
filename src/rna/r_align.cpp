@@ -100,34 +100,29 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
-    FIX_FN(stats, stats.mb);
-    FIX_FN(stats, stats.me);
-    FIX_FN(stats, stats.mi);
-
     assert(stats.nr + stats.nq == stats.n);
     
     const auto rb = Expression::analyze(cb);
     const auto re = Expression::analyze(ce);
     const auto ri = Expression::analyze(ci);
 
+    // The structure depends on the mixture
     const auto seqs = r.r_mix_sequins(options.mix);
 
     stats.sb = rb.sens(seqs);
     stats.se = re.sens(seqs);
     stats.si = re.sens(seqs);
 
-    /*
-     * Base-level statistics
-     */
+    const auto &writer = options.writer;
+    
+    // Report for the base-level
+    AnalyzeReporter::reportClassify("ralign_base.stats", stats.dilution(), stats.mb, stats.sb, cb, writer);
 
-    AnalyzeReporter::reportClassify("align.stats", stats.dilution(), stats.mb, stats.sb, options.writer);
+    // Report for the exon-level
+    AnalyzeReporter::reportClassify("ralign_exons.stats", stats.dilution(), stats.me, stats.se, ce, writer);
 
-    /*
-     * Counting statistics
-     */
-
-    AnalyzeReporter::reportCounts("base.counts", cb, options.writer);
-    AnalyzeReporter::reportCounts("exon.counts", ce, options.writer);
+    // Report for the intron-level
+    AnalyzeReporter::reportClassify("ralign_intron.stats", stats.dilution(), stats.mi, stats.si, ci, writer);
 
 	return stats;
 }

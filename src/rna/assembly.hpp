@@ -27,7 +27,7 @@ namespace Spike
             Transcripts,
         };
 
-        struct Options : public AnalyzerOptions<Assembly::Level>
+        struct Options : public SingleMixtureOptions<Assembly::Level>
         {
             // Empty Implementation
         };

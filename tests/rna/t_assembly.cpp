@@ -3,14 +3,20 @@
 
 using namespace Spike;
 
-TEST_CASE("Assembly_Simulation_1")
+TEST_CASE("Assembly_Simulations_Annotated")
 {
-/*    const auto r = Assembly::analyze("tests/data/rna_sims/assembly/transcripts.gtf");
+    const auto r = Assembly::analyze("tests/data/rna_sims/transcripts_an.gtf");
 
     REQUIRE(r.n  == 1040);
     REQUIRE(r.nr == 1040);
     REQUIRE(r.nq == 0);
-    REQUIRE(r.mb.fp == 31);
-    REQUIRE(r.mb.tp == 1026);
- */
+}
+
+TEST_CASE("Assembly_Simulations_Denovo")
+{
+    //const auto r = Assembly::analyze("tests/data/rna_sims/transcripts_dn.gtf");
+
+    //REQUIRE(r.n  == 1040);
+    //REQUIRE(r.nr == 1040);
+    //REQUIRE(r.nq == 0);
 }

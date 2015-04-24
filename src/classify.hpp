@@ -17,7 +17,7 @@ namespace Spike
 
         inline Percentage sp() const
         {
-            return ((tp + fp) && fp != n()) ? tp / (tp + fp) : NAN;
+            return ((tp() + fp()) && fp() != n()) ? tp() / (tp() + fp()) : NAN;
         }
     };
     
@@ -25,13 +25,13 @@ namespace Spike
     {
         if (cond)
         {
-            if (m1) { m1->tp++; }
-            if (m2) { m2->tp++; }
+            if (m1) { m1->tp()++; }
+            if (m2) { m2->tp()++; }
         }
         else
         {
-            if (m1) { m1->fp++; }
-            if (m2) { m2->fp++; }
+            if (m1) { m1->fp()++; }
+            if (m2) { m2->fp()++; }
         }
 
         return cond;

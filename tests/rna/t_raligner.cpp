@@ -36,8 +36,8 @@ TEST_CASE("RAlign_Simulations_Exon")
         REQUIRE(r.n  == 53394);
         REQUIRE(r.nr == 53394);
         REQUIRE(r.nq == 0);
-        REQUIRE(r.mb.tp == 52835);
-        REQUIRE(r.mb.fp == 559);
+        REQUIRE(r.mb.tp() == 52835);
+        REQUIRE(r.mb.fp() == 559);
     }
 }
 
@@ -49,8 +49,8 @@ TEST_CASE("RAlign_RNA_Cufflinks")
     REQUIRE(0 == r.nr);
     REQUIRE(3271 == r.n);
     REQUIRE(3271 == r.nq);
-    REQUIRE(0 == r.mb.tp);
-    REQUIRE(0 == r.mb.fp);
+    REQUIRE(0 == r.mb.tp());
+    REQUIRE(0 == r.mb.fp());
     REQUIRE(isnan(r.mb.sp()));
     REQUIRE(isnan(r.mb.sn()));
     REQUIRE(0 == r.dilution());
