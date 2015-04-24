@@ -13,7 +13,7 @@ namespace Spike
         inline void set(BasePair start, BasePair end)
         {
             this->start = start; this->end = end;
-            assert(this->end > this->start);
+            assert(this->end >= this->start);
         }
 
         inline BasePair length() const { return (end - start + 1); }

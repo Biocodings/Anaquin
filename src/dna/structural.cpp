@@ -51,7 +51,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
     {
         classify(stats, v, [&](const VCFVariant &)
         {
-            if (find(r.vars, v, vs) && vs.zy && vs.seq && vs.alts)
+            if (r.d_vars.count(v.id) && vs.zy && vs.seq && vs.alts)
             {
                 cb[vs.ref->id]++;
                 return true;

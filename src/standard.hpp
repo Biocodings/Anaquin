@@ -92,12 +92,12 @@ namespace Spike
             }
 
             ChromoID id;
-        
+
             // The location of the chromosome
             Locus l;
-        
+
             /*
-             * RNA sequins
+             * RNA data
              */
 
             SequinsMap r_seqs_gA;
@@ -105,30 +105,30 @@ namespace Spike
 
             SequinMap r_seqs_iA;
             SequinMap r_seqs_iB;
-        
-            /*
-             * DNA sequins
-             */
-        
-            std::vector<Variation> vars;
-        
-            /*
-             * Metagenomic sequins
-             */
-
-            std::map<TranscriptID, GeneID> iso2Gene;
 
             // Reference genes
             std::vector<Gene> genes;
-        
+
             // Reference features
             std::vector<Feature> fs;
 
             // Reference exons
             std::vector<Feature> exons;
-        
+
             // Reference introns (spliced junctions)
             std::vector<Feature> introns;
+
+            std::map<TranscriptID, GeneID> iso2Gene;
+        
+            /*
+             * DNA data
+             */
+
+            std::map<GeneID, Variation> d_vars;
+
+            /*
+             * Metagenomic data
+             */
 
         private:
             Standard();
