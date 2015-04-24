@@ -8,6 +8,12 @@
 
 namespace Spike
 {
+    enum Mixture
+    {
+        MixA,
+        MixB
+    };
+
     enum Group { A, B, C, D };
 
     enum Zygosity
@@ -47,9 +53,6 @@ namespace Spike
         IsoformID id;        
         Locus l;
 
-        // Fold ratio relative to the other sequin
-        Fold fold;
-
         // Amount of abundance
         Concentration raw;
 
@@ -65,6 +68,9 @@ namespace Spike
         }
         
         Group grp;
+        
+        // Fold ratio from r to v
+        Fold fold;
 
         // Each mixture represents a transcript for a gene
         GeneID geneID;
@@ -73,6 +79,9 @@ namespace Spike
         Sequin r, v;
     };
 
+    typedef std::map<SequinID, Sequins> SequinsMap;
+    typedef std::map<TranscriptID, Sequin> SequinMap;
+    
     class Standard
     {
         public:
@@ -91,11 +100,11 @@ namespace Spike
              * RNA sequins
              */
 
-            std::map<GeneID, Sequins> r_seqs_gA;
-            std::map<GeneID, Sequins> r_seqs_gB;
+            SequinsMap r_seqs_gA;
+            SequinsMap r_seqs_gB;
 
-            std::map<TranscriptID, Sequin> r_seqs_iA;
-            std::map<TranscriptID, Sequin> r_seqs_iB;
+            SequinMap r_seqs_iA;
+            SequinMap r_seqs_iB;
         
             /*
              * DNA sequins

@@ -8,8 +8,8 @@ static std::string exts[] = { "sam", "bam" };
 TEST_CASE("RAlign_RNA_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution. It's obviously independent.
-    const auto r = RAlign::analyze("tests/data/cufflinks_test.sam");
-    
+    const auto r = RAlign::analyze("tests/data/cufflinks.sam");
+
     REQUIRE(0 == r.nr);
     REQUIRE(3271 == r.n);
     REQUIRE(3271 == r.nq);
@@ -20,7 +20,7 @@ TEST_CASE("RAlign_Simulations_1")
 {
     for (auto ex : exts)
     {
-        const auto r = RAlign::analyze("tests/data/rna_sims_1/align/accepted_hits." + ex);
+        const auto r = RAlign::analyze("tests/data/rna_sims/align/accepted_hits." + ex);
 
         REQUIRE(r.n  == 98041);
         REQUIRE(r.nr == 98040);
@@ -42,7 +42,7 @@ TEST_CASE("RAlign_Simulations_1_Exon")
     {
         RAlign::Options options;
         options.level = RAlign::Exon;
-        const auto r = RAlign::analyze("tests/data/rna_sims_1/align/accepted_hits." + ex, options);
+        const auto r = RAlign::analyze("tests/data/rna_sims/align/accepted_hits." + ex, options);
     
         REQUIRE(r.n  == 52360);
         REQUIRE(r.nr == 52359);

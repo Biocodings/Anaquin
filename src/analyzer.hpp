@@ -11,14 +11,12 @@
 
 namespace Spike
 {
-    #define ANALYZE_COUNTS(x,y) const auto y = Expression::analyze(x); assert(!y.limit_count || r.r_seqs_iA.count(y.limit_key));
-
     inline std::map<SequinID, Counts> countsForSequins()
     {
         const auto &r = Standard::instance();
-        
-        std::map<SequinID, Counts> m;
-        std::for_each(r.r_seqs_iA.begin(), r.r_seqs_iA.end(), [&](const std::pair<SequinID, Sequin> &p)
+
+        std::map<TranscriptID, Counts> m;
+        std::for_each(r.r_seqs_iA.begin(), r.r_seqs_iA.end(), [&](const std::pair<TranscriptID, Sequin> &p)
                       {
                           m[p.first] = 0;
                       });

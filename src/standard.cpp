@@ -238,9 +238,8 @@ void Standard::rna()
         const auto ratio_v = stoi(fields[RatioV]);
         const auto total_r = ratio_r + ratio_v;
 
-        seqs.r.fold = static_cast<Fold>(ratio_r) / ratio_v;
-        seqs.v.fold = static_cast<Fold>(ratio_v) / ratio_r;
-
+        seqs.fold = static_cast<Fold>(ratio_r) / ratio_v;
+        
         const auto r_len = stoi(fields[RLen]);
         const auto v_len = !seqs.v.id.empty() ? stoi(fields[VLen]) : 0;
 
@@ -255,13 +254,14 @@ void Standard::rna()
 
             seqs.r.raw  = aim * (static_cast<Fold>(ratio) / total_r);
             seqs.v.raw  = aim - seqs.r.raw;
-            seqs.r.fpkm = seqs.r.raw / (1000 / r_len);
+            seqs.r.fpkm = seqs.r.raw / (1000.0 / r_len);
 
+            // There is always an entry for the reference
             i[seqs.r.id] = seqs.r;
             
             if (!seqs.v.id.empty())
             {
-                seqs.v.fpkm  = seqs.v.raw / (1000 / v_len);
+                seqs.v.fpkm  = seqs.v.raw / (1000.0 / v_len);
                 i[seqs.v.id] = seqs.v;
             }
             

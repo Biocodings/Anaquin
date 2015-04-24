@@ -117,26 +117,55 @@ static void print_version()
     std::cout << "Version 1.0. Garvan Institute, copyright 2015." << std::endl;
 }
 
-static void print_sequins(Command cmd)
+static void print_rna()
 {
-//    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%";
-//
-//    std::cout << (boost::format(format) % "r_name"
-//                                        % "v_name"
-//                                        % "r_ratio"
-//                                        % "v_ratio"
-//                                        % "r_con"
-//                                        % "v_con").str() << std::endl;
-//
-//    ParserCSV::parse("/mixture_A.csv", [&](const Fields &fields)
-//    {
-//        std::cout << (boost::format(format) % fields[0]
-//                                            % fields[3]
-//                                            % fields[8]
-//                                            % fields[9]
-//                                            % fields[11]
-//                                            % fields[12]).str() << std::endl;
-//    });
+    const auto &r = Standard::instance();
+    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%  %7%";
+
+    auto f = [&](const SequinsMap &seqs)
+    {
+        std::cout << (boost::format(format) % "r"
+                                            % "v"
+                                            % "fold"
+                                            % "r_con"
+                                            % "v_con"
+                                            % "r_norm"
+                                            % "v_norm").str() << std::endl;
+
+        for (std::size_t i = A; i <= D; i++)
+        {
+            for (auto j : seqs)
+            {
+                const auto &p = j.second;
+                
+                if (p.grp == i)
+                {
+                    std::cout << (boost::format(format) % p.r.id
+                                                        % p.v.id
+                                                        % p.fold
+                                                        % p.r.raw
+                                                        % p.v.raw
+                                                        % p.r.fpkm
+                                                        % p.r.fpkm).str() << std::endl;
+                }
+            }
+        }
+    };
+
+    std::cout << "\n----------------------------- A -----------------------------" << std::endl;
+    f(r.r_seqs_gA);
+    std::cout << "\n----------------------------- B -----------------------------" << std::endl;
+    f(r.r_seqs_gB);
+}
+
+void print_dna()
+{
+    // Empty Implementation
+}
+
+void print_meta()
+{
+    // Empty Implementation    
 }
 
 template <typename Analyzer, typename Level> void analyze(const std::string &file, Level lv)
@@ -279,7 +308,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_sequins(_cmd);                     break; }
+                        case MODE_SEQS:      { print_rna();                             break; }
                         case MODE_ALIGN:     { analyze<RAlign>(_opt, RAlign::Base);     break; }
                         case MODE_ASSEMBLY:  { analyze<Assembly>(_opt, Assembly::Base); break; }
 
@@ -313,7 +342,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_sequins(_cmd);                           break; }
+                        case MODE_SEQS:      { print_dna();                                   break; }
                         case MODE_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
                         case MODE_VARIATION: { analyze<Structural>(optarg, Structural::Base); break; }
                     }
@@ -334,7 +363,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:    { print_sequins(_cmd);                   break; }
+                        case MODE_SEQS:    { print_meta();                          break; }
                         case MODE_ALIGN:   { analyze<MAlign>(optarg, MAlign::Base); break; }
                         case MODE_DE_NOVO: { analyze<Denovo>(optarg, Denovo::Base); break; }
                     }
