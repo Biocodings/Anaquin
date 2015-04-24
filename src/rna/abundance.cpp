@@ -16,7 +16,7 @@ AbundanceStats Abundance::analyze(const std::string &file, const Options &option
     AbundanceStats stats;
     const auto &r = Standard::instance();
 
-    auto c = options.level == Gene ? countsForGenes() : countsForSequins();
+    auto c = options.level == Gene ? RAnalyzer::countsForGenes() : RAnalyzer::countsForSequins();
     
     // Values for the x-axis and y-axis
     std::vector<double> x, y;

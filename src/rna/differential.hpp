@@ -1,8 +1,8 @@
 #ifndef GI_DIFFERENTIAL_HPP
 #define GI_DIFFERENTIAL_HPP
 
-#include "analyzer.hpp"
 #include "classify.hpp"
+#include "r_analyzer.hpp"
 #include "sensitivity.hpp"
 
 namespace Spike
@@ -19,7 +19,7 @@ namespace Spike
         double slope;
     };
 
-    struct Differential
+    struct Differential : public RAnalyzer
     {
         enum Level
         {

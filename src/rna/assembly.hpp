@@ -2,7 +2,7 @@
 #define GI_ASSEMBLY_HPP
 
 #include "classify.hpp"
-#include "analyzer.hpp"
+#include "r_analyzer.hpp"
 
 namespace Spike
 {
@@ -17,7 +17,7 @@ namespace Spike
         Sensitivity si;
     };
 
-    struct Assembly
+    struct Assembly : RAnalyzer
     {
         enum Level
         {

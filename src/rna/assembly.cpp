@@ -18,6 +18,8 @@ template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
         {
             intr = exons[i];
             intr.l = Locus(exons[i - 1].l.end, exons[i].l.start);
+            
+            // Intron is simply a non-transcribed region spliced between exons
             f(exons[i - 1], exons[i], intr);
         }
     }

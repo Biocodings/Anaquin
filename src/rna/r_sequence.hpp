@@ -1,7 +1,7 @@
 #ifndef GI_R_SEQUENCE_HPP
 #define GI_R_SEQUENCE_HPP
 
-#include "analyzer.hpp"
+#include "r_analyzer.hpp"
 
 namespace Spike
 {
@@ -10,7 +10,7 @@ namespace Spike
         // Empty Implementation
     };
 
-    struct RSequence
+    struct RSequence : RAnalyzer
     {
         enum Level
         {

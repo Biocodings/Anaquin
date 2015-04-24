@@ -14,7 +14,7 @@ DifferentialStats Differential::analyze(const std::string &f, const Options &opt
     DifferentialStats stats;
     const auto &r = Standard::instance();
 
-    auto c = options.level == Gene ? countsForGenes() : countsForSequins();
+    auto c = options.level == Gene ? RAnalyzer::countsForGenes() : RAnalyzer::countsForSequins();
 
     // Values for the coordinates
     std::vector<Concentration> x, y;

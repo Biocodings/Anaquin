@@ -58,9 +58,9 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * but there wouldn't be information to distinguish ambiguous reads from alternative splicing.
      */
     
-    auto cb = countsForGenes();
-    auto ce = countsForGenes();
-    
+    auto cb = RAnalyzer::countsForGenes();
+    auto ce = RAnalyzer::countsForGenes();
+
     ParserSAM::parse(file, [&](const Alignment &align)
     {
         if ((options.level == Exon   && align.spliced) ||
@@ -108,7 +108,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     /*
      * Counting statistics
      */
-    
+
     AnalyzeReporter::reportCounts("base.counts", cb, options.writer);
     AnalyzeReporter::reportCounts("exon.counts", ce, options.writer);
 

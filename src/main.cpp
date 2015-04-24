@@ -41,6 +41,11 @@
 #define MODE_VARIATION    287
 #define MODE_DE_NOVO      288
 
+#define OPT_THREAD        320
+#define OPT_MIN           321
+#define OPT_MAX           322
+#define OPT_LIMIT         323
+
 using namespace Spike;
 
 /*
@@ -69,6 +74,12 @@ static const struct option long_options[] =
 {
     { "t",    no_argument,       0, CMD_TEST },
     { "v",    no_argument,       0, CMD_VER  },
+
+    { "p",     required_argument, 0, OPT_THREAD },
+    { "min",   required_argument, 0, OPT_MIN    },
+    { "max",   required_argument, 0, OPT_MAX    },
+    { "limit", required_argument, 0, OPT_LIMIT  },
+
     { "rna",  required_argument, 0, CMD_RNA  },
     { "dna",  required_argument, 0, CMD_DNA  },
     { "meta", required_argument, 0, CMD_META },
@@ -239,6 +250,14 @@ static int parse_options(int argc, char ** argv)
         switch (next)
         {
             case 'o': { _output = optarg; break; }
+
+            case OPT_MAX:
+            case OPT_MIN:
+            case OPT_THREAD:
+            case OPT_LIMIT:
+            {
+                break;
+            }
 
             case CMD_VER:
             case CMD_DNA:

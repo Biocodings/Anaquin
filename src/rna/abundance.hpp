@@ -1,7 +1,7 @@
 #ifndef GI_ABUNDANCE_HPP
 #define GI_ABUNDANCE_HPP
 
-#include "analyzer.hpp"
+#include "r_analyzer.hpp"
 #include "sensitivity.hpp"
 
 namespace Spike
@@ -18,7 +18,7 @@ namespace Spike
         double slope;
     };
 
-    struct Abundance
+    struct Abundance : public RAnalyzer
     {
         enum Level
         {

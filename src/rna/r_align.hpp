@@ -1,8 +1,8 @@
 #ifndef GI_R_ALIGN_HPP
 #define GI_R_ALIGN_HPP
 
-#include "analyzer.hpp"
 #include "classify.hpp"
+#include "r_analyzer.hpp"
 
 namespace Spike
 {
@@ -11,7 +11,7 @@ namespace Spike
         Sensitivity se;
     };
 
-    struct RAlign
+    struct RAlign : public RAnalyzer
     {
         enum Level
         {
