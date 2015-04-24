@@ -2,7 +2,7 @@
 
 using namespace Spike;
 
-MSequenceStats MSequence::analyze(const std::string &file, const DSequence &options)
+MSequenceStats MSequence::analyze(const std::string &file, const Options &options)
 {
 	return MSequenceStats();
 }

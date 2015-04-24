@@ -19,7 +19,7 @@ namespace Spike
     // Number of lines in a file (most likely a large file)
     typedef long long Lines;
     
-    typedef float Fold;
+    typedef double Fold;
     
     typedef std::string GeneID;
     typedef std::string ChromoID;

@@ -23,7 +23,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static MAlignStats analyze(const std::string &file, const MAlign &options = MAlign());
+        static MAlignStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

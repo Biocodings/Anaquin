@@ -1,7 +1,5 @@
 #include <iostream>
-#include <assert.h>
 #include "m_align.hpp"
-#include "biology.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "writers/writer.hpp"
@@ -9,7 +7,7 @@
 
 using namespace Spike;
 
-MAlignStats MAlign::analyze(const std::string &file, const MAlign &options)
+MAlignStats MAlign::analyze(const std::string &file, const Options &options)
 {
 	return MAlignStats();
 }

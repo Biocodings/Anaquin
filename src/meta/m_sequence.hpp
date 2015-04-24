@@ -22,7 +22,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        static MSequenceStats analyze(const std::string &file, const MSequence &options = MSequence());
+        static MSequenceStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

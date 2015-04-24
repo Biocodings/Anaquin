@@ -187,66 +187,73 @@ Standard::Standard()
     {
         { "A", A }, { "B", B }, { "C", C }, { "D", D }
     };
-    
+
     /*
-     * Create data-structure for sequins. Refer to the documentation for more details.
+     * Read mixtures for RNA
      */
 
-    auto create_sequin = [&](const IsoformID &id, Group grp, Fold fold, Concentration raw, Concentration fpkm, std::map<IsoformID, Sequin> &ig)
+    ParserCSV::parse("data/rna/rna_mixtures.csv", [&](const Fields &fields, unsigned i)
     {
-        Sequin seq;
-        
-        seq.id = id;
-        
-        // Make sure the sequin is known
-        assert(temp.count(seq.id));
-        
-        // The BED file has given out the position for the sequin
-        seq.l = temp[seq.id];
-        
-        seq.raw  = raw;
-        seq.fpkm = fpkm;
-        seq.fold = fold;
-        
-        assert(ig.count(seq.id) == 0);
-        assert(seq.l.start != 0 || seq.l.end != 0);
-        
-        return (ig[seq.id] = seq);
-    };
-
-    auto read_mixture = [&](const std::string &file, std::map<GeneID, Sequins> &mg, std::map<TranscriptID, Sequin> &ig)
-    {
-        Sequins seqs;
-
-        unsigned n = 0;
-
-        ParserCSV::parse(file, [&](const Fields &fields)
+        enum RNAField
         {
-            if (!n++)
-            {
-                return;
-            }
+            Ref,
+            Var,
+            Group,
+            RLen,
+            VLen,
+            AimA,
+            AimB,
+            RatioR,
+            RatioV,
+        };
 
-            /*
-             * REF, VAR, Grp, REF_lEN, VAR_LEN, AIM, RATIO, RATIO, CON, CON, CON_READ, CON_READ, PER_KB
-             */
+        if (i == 0)
+        {
+            return;
+        }
 
-            seqs.geneID = fields[0].substr(0, fields[0].length() - 2);
-            seqs.r = create_sequin(fields[0], gs[fields[2]], stoi(fields[6]), stof(fields[10]), stof(fields[12]), ig);
+        Sequins seqs;
+        
+        seqs.r.id   = fields[Ref];
+        seqs.v.id   = fields[Var];
+        seqs.grp    = gs[fields[Group]];
+        seqs.geneID = fields[Ref].substr(0, fields[0].length() - 2);
+
+        seqs.r.l = temp[seqs.r.id];
+        seqs.v.l = temp[seqs.v.id];
+
+        const auto ratio_r = stoi(fields[RatioR]);
+        const auto ratio_v = stoi(fields[RatioV]);
+        const auto total_r = ratio_r + ratio_v;
+
+        seqs.r.fold = static_cast<Fold>(ratio_r) / ratio_v;
+        seqs.v.fold = static_cast<Fold>(ratio_v) / ratio_r;
+
+        const auto r_len = stoi(fields[RLen]);
+        const auto v_len = stoi(fields[VLen]);
+
+        auto f = [&](RNAField f, std::map<SequinID, Sequins> &g, std::map<TranscriptID, Sequin> &i)
+        {
+            assert(f == AimA || f == AimB);
             
-            /*
-             * Create data-structure for the variant mixture
-             */
+            const auto aim = stof(fields[f]);
 
-            if (!fields[11].empty())
-            {
-                seqs.v = create_sequin(fields[1], gs[fields[2]], stoi(fields[7]), stof(fields[11]), stof(fields[13]), ig);
-            }
+            seqs.r.raw  = aim / (ratio_r / total_r);
+            seqs.v.raw  = aim - seqs.r.raw;
+            seqs.r.fpkm = seqs.r.raw / (1000 / r_len);
+            seqs.v.fpkm = seqs.v.raw / (1000 / v_len);
+            
+            i[seqs.r.id]   = seqs.r;
+            i[seqs.v.id]   = seqs.v;
+            g[seqs.geneID] = seqs;
+        };
 
-            mg[seqs.geneID] = seqs;
-        });
-    };
+        // Calculate the concentration required by mixture A
+        f(AimA, r_seqs_gA, r_seqs_iA);
 
-    read_mixture("data/RNA/mixture_A.csv", r_seqs_gA, r_seqs_iA);
-    read_mixture("data/RNA/mixture_B.csv", r_seqs_gB, r_seqs_iB);
+        // Calculate the concentration required by mixture B
+        f(AimB, r_seqs_gB, r_seqs_iB);
+
+        assert(!seqs.geneID.empty() && !seqs.r.id.empty() && !seqs.v.id.empty());
+    });
 }
