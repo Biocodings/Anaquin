@@ -63,19 +63,36 @@ namespace Spike
         return cond;
     }
 
-    template <typename Iter, typename T> bool find(const Iter &iter, const T &t)
+    /*
+     * Loop through an iterator and count the total number of overlaps in t.
+     * The loci in the iterator are assumed be non-overlapping.
+     */
+
+    template <typename Iter, typename T> BasePair countOverlaps(const Iter &iter, const T &t)
     {
-        for (auto i: iter)
+        BasePair n = 0;
+
+        for (auto &i : iter)
+        {
+            n += i.l.overlap(t.l);
+        }
+
+        return n;
+    }
+
+    template <typename Iter, typename T> const T * find(const Iter &iter, const T &t)
+    {
+        for (auto &i : iter)
         {
             if (i.l.contains(t.l))
             {
-                return true;
+                return &i;
             }
         }
 
-        return false;
+        return NULL;
     }
-    
+
     template <typename Iter, typename T> bool find_map(const Iter &map, const T &t)
     {
         for (auto i: map)

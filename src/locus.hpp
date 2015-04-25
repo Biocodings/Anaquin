@@ -18,11 +18,20 @@ namespace Spike
 
         inline BasePair length() const { return (end - start + 1); }
 
+        // Returns the base-pairs that are overlapped with the given reference
         inline BasePair overlap(const Locus &l) const
         {
             if (l.start > end || start > l.end)
             {
                 return 0;
+            }
+            else if (start <= l.start && end >= l.end)
+            {
+                return l.length();
+            }
+            else if (start >= l.start && end <= l.end)
+            {
+                return length();
             }
             else if (end >= l.end)
             {

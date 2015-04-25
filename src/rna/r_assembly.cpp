@@ -60,13 +60,17 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     ce.at(f.iID)++;
                 }
                 
+                stats.mb.nq() += f.l.length();
+                stats.mb.tp() += std::min(f.l.length(), countOverlaps(s.r_exons, f));                
+                stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
+
                 break;
             }
 
             case Transcript:
             {
                 /*
-                 * Classify at the transctipt level
+                 * Classify at the base & transctipt level
                  */
                 
                 if (classify(stats.mt, f, [&](const Feature &)
@@ -77,6 +81,12 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     ct.at(f.iID)++;
                 }
                 
+                /*
+                 * Classify at the base level
+                 */
+
+                
+                
                 break;
             }
 
@@ -85,12 +95,6 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                 break;
             }
         }
-
-        /*
-         * Classify at the base level. The
-         */
-        
-        
     });
 
     stats.me.nr() = s.r_exons.size();
