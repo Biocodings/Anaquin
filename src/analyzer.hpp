@@ -53,20 +53,21 @@ namespace Spike
             // Limit of sensitivity at the base level
             Sensitivity sb;
 
-            // Counts for the reference
-            Counts nr = 0;
+            // Counts for the reference chromosome
+            Counts nt = 0;
+
+            // Counts for the samples
+            Counts ns = 0;
 
             // Counts for the experiment
-            Counts nq = 0;
+            inline Counts n() const { return nt + ns; }
 
-            inline Counts n() const { return nr + nq; }
-
-            inline Percentage pr() const { return nr / n(); }
-            inline Percentage pq() const { return nq / n(); }
+            inline Percentage pt() const { return nt / n(); }
+            inline Percentage ps() const { return ns / n(); }
 
             inline Percentage dilution() const
             {
-                return n() ? static_cast<Percentage>(nr) / n() : 1.0;
+                return n() ? static_cast<Percentage>(nt) / n() : 1.0;
             }
     };
 
@@ -89,18 +90,16 @@ namespace Spike
     {
         template <typename ID> static void reportClassify
                     (const std::string &name,
-                     Percentage dilution,
                      const Confusion &m,
                      const Sensitivity &s,
                      const std::map<ID, Counts> &c,
                      std::shared_ptr<Writer> writer)
         {
-            const std::string format = "%1%\t%2%\t%3%\t%4%\n\n";
+            const std::string format = "%1%\t%2%\t%3%\n\n";
             
             writer->open(name);
-            writer->write((boost::format(format) % "dl" % "sp" % "sn" % "ss").str());
-            writer->write((boost::format(format) % dilution
-                                                 % m.sp()
+            writer->write((boost::format(format) % "sp" % "sn" % "ss").str());
+            writer->write((boost::format(format) % m.sp()
                                                  % m.sn()
                                                  % s.abund).str());
 

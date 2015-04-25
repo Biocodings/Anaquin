@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    typedef unsigned Counts;
+    typedef unsigned long Counts;
     typedef double Percentage;
     
     typedef std::string Sequence;

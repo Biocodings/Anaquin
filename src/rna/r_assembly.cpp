@@ -93,6 +93,9 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
         
     });
 
+    stats.me.nr() = s.r_exons.size();
+    stats.mt.nr() = seqs.size();
+
     assert(stats.me.nq() == exons.size());
     assert(stats.me.nq() >= stats.me.tp());
     assert(s.r_exons.size() >= stats.me.tp());
@@ -105,7 +108,24 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     stats.se = Expression::analyze(ce, seqs);
     stats.st = Expression::analyze(ct, seqs);
+
+    /*
+     * Report for the statistics
+     */
     
+    const auto &writer = options.writer;
+
+    // Report the for base level
+    //AnalyzeReporter::reportClassify("assembly.base.stats", stats.dilution(), stats.mb, stats.sb, cb, writer);
+    
+    // Report the for exons level
+    AnalyzeReporter::reportClassify("assembly.exons.stats", stats.me, stats.se, ce, writer);
+
+    // Report the for transcripts level
+    AnalyzeReporter::reportClassify("assembly.transcripts.stats", stats.mt, stats.st, ct, writer);
+
+    // Report the for intron level
+    //AnalyzeReporter::reportClassify("assembly.intron.stats", stats.dilution(), stats.mi, stats.si, ci, writer);
 
     
     
@@ -177,26 +197,10 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     //assert(stats.n() && stats.nr + stats.nq == stats.n());
 /*
     const auto rb = Expression::analyze(cb);
-    const auto rt = Expression::analyze(ct);
     const auto ri = Expression::analyze(ci);
 
 //    stats.sb = rb.sens(r.r_seqs_iA);
-  //  stats.st = rt.sens(r.r_seqs_iA);
     //stats.si = ri.sens(r.r_seqs_iA);
-
-    const auto &writer = options.writer;
-
-    // Report the for base level
-    AnalyzeReporter::reportClassify("assembly.base.stats", stats.dilution(), stats.mb, stats.sb, cb, writer);
-
-    // Report the for exons level
-    AnalyzeReporter::reportClassify("assembly.exons.stats", stats.dilution(), stats.me, stats.se, ce, writer);
-
-    // Report the for transcripts level
-    AnalyzeReporter::reportClassify("assembly.transcripts.stats", stats.dilution(), stats.mt, stats.st, ct, writer);
-
-    // Report the for intron level
-    AnalyzeReporter::reportClassify("assembly.intron.stats", stats.dilution(), stats.mi, stats.si, ci, writer);
 */
     return stats;
 }

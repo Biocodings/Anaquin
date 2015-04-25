@@ -63,7 +63,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
 //        });
     });
 
-    stats.mb.fn() = stats.nr - stats.mb.tp();
+    //stats.mb.fn() = stats.nr - stats.mb.tp();
 
     /*
      * Calculate the limit of sensitivity

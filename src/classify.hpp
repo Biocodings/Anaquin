@@ -10,7 +10,26 @@ namespace Spike
     {
         public:
             inline Counts& nq() const { return _nq; }
+            inline Counts& nr() const { return _nr; }
 
+            inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
+
+            inline Counts &fp() const
+            {
+                assert(_nq - _tp == _fp);
+                return _fp;
+            }
+
+            inline Percentage sn() const
+            {
+                assert(_nr);
+                
+                // Adjust for fn... Refer to the wikipedia for more details
+                _fn = _nr - _tp;
+                
+                return SS::Confusion::sn();
+            }
+        
             /*
              * The usual formula: tn / (tn + fp) would not work. We don't know
              * tn, furthermore fp would have been dominated by tn. The formula
@@ -24,7 +43,8 @@ namespace Spike
             }
 
         private:
-            mutable Counts _nq;
+            mutable Counts _nq = 0;
+            mutable Counts _nr = 0;
     };
     
     inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
