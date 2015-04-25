@@ -22,10 +22,6 @@ namespace Spike
         enum Level
         {
             All,
-            Base,
-            Exon,
-            Intron,
-            Transcripts,
         };
 
         struct Options : public SingleMixtureOptions<RAssembly::Level>

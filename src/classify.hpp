@@ -2,23 +2,29 @@
 #define GI_CLASSIFY_HPP
 
 #include "standard.hpp"
-#include <ss/ml/classify.hpp>
+#include <ss/ml/confusion.hpp>
 
 namespace Spike
 {
-    struct Confusion : public SS::Confusion
+    class Confusion : public SS::Confusion
     {
-        /*
-         * The usual formula: tn / (tn + fp) would not work. We don't know
-         * tn, furthermore fp would have been dominated by tn. The formula
-         * below is consistent to cufflink's recommendation. Technically,
-         * we're not calculating specificity but positive predication value.
-         */
+        public:
+            inline Counts& nq() const { return _nq; }
 
-        inline Percentage sp() const
-        {
-            return ((tp() + fp()) && fp() != n()) ? tp() / (tp() + fp()) : NAN;
-        }
+            /*
+             * The usual formula: tn / (tn + fp) would not work. We don't know
+             * tn, furthermore fp would have been dominated by tn. The formula
+             * below is consistent to cufflink's recommendation. Technically,
+             * we're not calculating specificity but positive predication value.
+             */
+
+            inline Percentage sp() const
+            {
+                return ((tp() + fp()) && fp() != n()) ? tp() / (tp() + fp()) : NAN;
+            }
+
+        private:
+            mutable Counts _nq;
     };
     
     inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
@@ -49,32 +55,47 @@ namespace Spike
 
         return false;
     }
+    
+    template <typename Iter, typename T> bool find_map(const Iter &map, const T &t)
+    {
+        for (auto i: map)
+        {
+            if (i.second.l.contains(t.l))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /*
-     * Specalised classification for the project. Negativity isn't required because in a typical
-     * experiment the dilution would be so low that negativity dominates positivity.
+     * Binary classification. Negativity isn't required because in a typical experiment
+     * the dilution would be so low that negativity dominates positivity.
      */
 
-    template <typename T, typename Stats, typename Positive>
-    void classify(Stats &stats, const T &t, Positive p)
+    template <typename T, typename Positivity>
+    bool classify(Confusion &m, const T &t, Positivity p)
     {
-        static const Standard &r = Standard::instance();
+        static const auto &s = Standard::instance();
 
-        SS::classify(stats.mb, t,
-            [&](const T &)  // Classifier
+        if (t.id == s.id && s.l.contains(t.l))
+        {
+            // Regardless of whether it's tp, it's counted as an experiment (query) unit
+            m.nq()++;
+
+            if (p(t))
             {
-                return (t.id == r.id && r.l.contains(t.l));
-            },
-            [&](const T &t) // Positive?
+                m.tp()++;
+                return true;
+            }
+            else
             {
-                stats.nr++;
-                return p(t);
-            },
-            [&](const T &t) // Negative?
-            {
-                stats.nq++;
-                return false;
-            });
+                m.fp()++;
+            }
+        }
+
+        return false;
     }
 }
 

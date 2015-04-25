@@ -3,6 +3,12 @@
 
 namespace Spike
 {
+    enum RNALevel
+    {
+        Gene,
+        Isoform
+    };
+
     template <typename T1, typename T2> bool contains(const T1 &t1, const T2 &t2)
     {
         return t1.l.contains(t2.l);

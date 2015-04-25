@@ -4,32 +4,13 @@
 #include <map>
 #include <math.h>
 #include <iostream>
+#include <assert.h>
 #include "sensitivity.hpp"
 
 namespace Spike
 {
     struct Expression
     {
-        template <typename T> struct ExpressionResults
-        {
-            // Name of a sequin or a gene
-            T key;
-
-            // The counts for the sensitivity
-            Counts counts;
-
-            template <typename ID, typename S> Sensitivity sens(const std::map<ID, S> &m) const
-            {
-                Sensitivity s;
-                
-                s.id     = key;
-                s.counts = counts;
-                s.abund  = counts ? m.at(key).abund(false) : NAN;
-
-                return s;
-            }
-        };
-
         template <typename T> static void print(const std::map<T, unsigned> &m)
         {
             for (auto iter = m.begin(); iter != m.end(); iter++)
@@ -38,30 +19,39 @@ namespace Spike
             }
         }
 
-        template <typename T> static ExpressionResults<T> analyze(const std::map<T, Counts> &c)
+        template <typename T, typename ID, typename S> static Sensitivity
+                analyze(const std::map<T, Counts> &c, const std::map<ID, S> &m)
         {
-            ExpressionResults<T> r;
-
-            if (!c.size()) { return r; }
+            Sensitivity s;
 
             // The lowest count must be zero because it can't be negative
-            r.counts = std::numeric_limits<unsigned>::max();
+            s.counts = std::numeric_limits<unsigned>::max();
 
             for (auto iter = c.begin(); iter != c.end(); iter++)
             {
-                if (iter->second && iter->second < r.counts)
+                /*
+                 * It's a better sensitivity measure if it has smaller counts while
+                 * still detectable. If there's a tie, choose the smaller abundance.
+                 */
+
+                if (iter->second)
                 {
-                    r.key = iter->first;
-                    r.counts = iter->second;
+                    if (iter->second < s.counts ||
+                       (iter->second == s.counts && m.at(iter->first).abund(false) < s.abund))
+                    {
+                        s.id = iter->first;
+                        s.counts = iter->second;
+                        s.abund = m.at(s.id).abund(false);
+                    }
                 }
             }
-
-            if (r.counts == std::numeric_limits<unsigned>::max())
+                    
+            if (s.counts == std::numeric_limits<unsigned>::max())
             {
-                r.counts = 0;
+                s.counts = 0;
             }
 
-            return r;
+            return s;
         }
     };
 }

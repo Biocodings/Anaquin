@@ -14,7 +14,7 @@ namespace Spike
         StartCodon,
         Transcript,
     };
-    
+
     typedef std::string FeatureID;
     
     struct Feature

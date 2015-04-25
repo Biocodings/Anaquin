@@ -31,8 +31,8 @@ namespace Spike
         Zygosity zy;
         Sequence r, m;
     };
-    
-    struct Gene
+
+    struct TGene
     {
         GeneID id;
         
@@ -79,24 +79,24 @@ namespace Spike
         Sequin r, v;
     };
 
-    typedef std::map<SequinID, Sequins> SequinsMap;
-    typedef std::map<TranscriptID, Sequin> SequinMap;
-    
     class Standard
     {
         public:
+            typedef std::map<SequinID, Sequins> SequinsMap;
+            typedef std::map<TranscriptID, Sequin> SequinMap;
+
             static Standard& instance()
             {
                 static Standard s;
                 return s;
             }
 
-            inline const SequinsMap& r_mix_sequins(Mixture mix) const
+            inline const SequinsMap& r_pair(Mixture mix) const
             {
                 return mix == MixA ? r_seqs_gA : r_seqs_gB;
             }
 
-            inline const SequinMap& r_mix_sequin(Mixture mix) const
+            inline const SequinMap& r_sequin(Mixture mix) const
             {
                 return mix == MixA ? r_seqs_iA : r_seqs_iB;
             }
@@ -110,26 +110,16 @@ namespace Spike
              * RNA data
              */
 
-            SequinsMap r_seqs_gA;
-            SequinsMap r_seqs_gB;
-
-            SequinMap r_seqs_iA;
-            SequinMap r_seqs_iB;
-
-            // Reference genes
-            std::vector<Gene> genes;
-
-            // Reference features
-            std::vector<Feature> fs;
-
-            // Reference exons
-            std::vector<Feature> exons;
-
-            // Reference introns (spliced junctions)
-            std::vector<Feature> introns;
-
-            std::map<TranscriptID, GeneID> iso2Gene;
+            SequinMap  r_seqs_iA, r_seqs_iB;
+            SequinsMap r_seqs_gA, r_seqs_gB;
         
+            std::vector<Feature> r_fs;
+            std::vector<TGene>   r_genes;
+            std::vector<Feature> r_exons;
+            std::vector<Feature> r_introns;
+
+            std::map<TranscriptID, GeneID> r_iso2Gene;
+
             /*
              * DNA data
              */
@@ -145,7 +135,7 @@ namespace Spike
             Standard(Standard const&)       = delete;
             void operator=(Standard const&) = delete;
 
-            void rna();
+            void rna(const std::string &mix = "data/rna/rna_mixtures.csv");
             void dna();
             void meta();
     };

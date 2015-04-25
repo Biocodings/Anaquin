@@ -133,7 +133,7 @@ static void print_rna()
     const auto &r = Standard::instance();
     const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%  %7%";
 
-    auto f = [&](const SequinsMap &seqs)
+    auto f = [&](const Standard::SequinsMap &seqs)
     {
         std::cout << (boost::format(format) % "r"
                                             % "v"
@@ -179,15 +179,13 @@ void print_meta()
     // Empty Implementation    
 }
 
-template <typename Analyzer, typename Level> void analyze(const std::string &file, Level lv)
+template <typename Analyzer> void analyze(const std::string &file)
 {
     typename Analyzer::Options o;
 
     // If nothing is provided, default directory (empty string) will be used
     o.writer = std::shared_ptr<PathWriter>(new PathWriter(_output));
 
-    o.level = lv;
-    
     std::cout << "-----------------------------------------" << std::endl;
     std::cout << "------------- Sequin Analysis -----------" << std::endl;
     std::cout << "-----------------------------------------" << std::endl << std::endl;
@@ -327,19 +325,19 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_rna();                             break; }
-                        case MODE_ALIGN:     { analyze<RAlign>(_opt, RAlign::Base);     break; }
-                        case MODE_ASSEMBLY:  { analyze<RAssembly>(_opt, RAssembly::Base); break; }
+                        case MODE_SEQS:      { print_rna();              break; }
+                        case MODE_ALIGN:     { analyze<RAlign>(_opt);    break; }
+                        case MODE_ASSEMBLY:  { analyze<RAssembly>(_opt); break; }
 
                         case MODE_ABUNDANCE:
                         {
-                            analyze<RAbundance>(_opt, detect<RAbundance::Level>(_opt));
+                            //analyze<RAbundance>(_opt, detect<RAbundance::Level>(_opt));
                             break;
                         }
 
                         case MODE_DIFFERENTIAL:
                         {
-                            analyze<RDifferential>(_opt, detect<RDifferential::Level>(_opt));
+                            //analyze<RDifferential>(_opt, detect<RDifferential::Level>(_opt));
                             break;
                         }
                     }
@@ -361,9 +359,9 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_dna();                                   break; }
-                        case MODE_ALIGN:     { analyze<DAlign>(optarg, DAlign::Base);         break; }
-                        case MODE_VARIATION: { analyze<Structural>(optarg, Structural::Base); break; }
+                        case MODE_SEQS:      { print_dna();                 break; }
+                        case MODE_ALIGN:     { analyze<DAlign>(optarg);     break; }
+                        case MODE_VARIATION: { analyze<Structural>(optarg); break; }
                     }
                 }
                 
@@ -382,9 +380,9 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:    { print_meta();                          break; }
-                        case MODE_ALIGN:   { analyze<MAlign>(optarg, MAlign::Base); break; }
-                        case MODE_DE_NOVO: { analyze<Denovo>(optarg, Denovo::Base); break; }
+                        case MODE_SEQS:    { print_meta();            break; }
+                        case MODE_ALIGN:   { analyze<MAlign>(optarg); break; }
+                        case MODE_DE_NOVO: { analyze<Denovo>(optarg); break; }
                     }
                 }
                 

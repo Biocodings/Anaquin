@@ -17,7 +17,7 @@ namespace Spike
         }
 
         inline BasePair length() const { return (end - start + 1); }
-        
+
         inline bool contains(const Locus &q) const
         {
             return (q.start >= start && q.end <= end);

@@ -64,7 +64,7 @@ void Standard::dna()
     assert(!d_vars.empty());
 }
 
-void Standard::rna()
+void Standard::rna(const std::string &mix)
 {
     /*
      * The region occupied by the chromosome is the smallest area contains all the features.
@@ -85,7 +85,7 @@ void Standard::rna()
 		l.end = std::max(l.end, f.l.end);
 		l.start = std::min(l.start, f.l.start);
         
-        fs.push_back(f);
+        r_fs.push_back(f);
         
         assert(!f.iID.empty());
         assert(!f.geneID.empty());
@@ -94,10 +94,10 @@ void Standard::rna()
         gids.insert(f.geneID);
         
         // Construct a mapping between isoformID to geneID
-        iso2Gene[f.iID] = f.geneID;
+        r_iso2Gene[f.iID] = f.geneID;
     });
 
-    assert(!iso2Gene.empty());
+    assert(!r_iso2Gene.empty());
     std::vector<std::string> toks;
 
     /*
@@ -106,7 +106,7 @@ void Standard::rna()
 
     for (auto gid : gids)
     {
-        Gene g;
+        TGene g;
         
         g.id = gid;
         g.l.end = std::numeric_limits<BasePair>::min();
@@ -116,7 +116,7 @@ void Standard::rna()
          * Add all features for this gene
          */
         
-        for (auto f : fs)
+        for (auto f : r_fs)
         {
             if (f.geneID == g.id)
             {
@@ -126,27 +126,27 @@ void Standard::rna()
                 if (f.type == Exon)
                 {
                     g.exons.push_back(f);
-                    exons.push_back(f);
+                    r_exons.push_back(f);
                 }
             }
         }
 
         assert(g.l.end > g.l.start);
 
-        assert(!exons.empty());
-        genes.push_back(g);
+        assert(!r_exons.empty());
+        r_genes.push_back(g);
     }
     
-    assert(!genes.empty());
+    assert(!r_genes.empty());
 
     // Sort the exons by starting position
-    std::sort(exons.begin(), exons.end(), [](const Feature& x, const Feature& y)
+    std::sort(r_exons.begin(), r_exons.end(), [](const Feature& x, const Feature& y)
     {
         return (x.l.start < y.l.start);
     });
 
     // Sort the genes by starting position
-    std::sort(genes.begin(), genes.end(), [](const Gene& x, const Gene& y)
+    std::sort(r_genes.begin(), r_genes.end(), [](const TGene& x, const TGene& y)
     {
         return (x.l.start < y.l.start);
     });
@@ -180,26 +180,26 @@ void Standard::rna()
                 // Intron is a region between exons that have been spliced
                 j.l = Locus(t.blocks[i - 1].end - 1, t.blocks[i].start); // ????
 
-                introns.push_back(j);
+                r_introns.push_back(j);
             }
         }
 
-        const auto iter = std::find_if(genes.begin(), genes.end(), [&](const Gene &g)
+        const auto iter = std::find_if(r_genes.begin(), r_genes.end(), [&](const TGene &g)
         {
-            return (g.id == iso2Gene[t.name]);
+            return (g.id == r_iso2Gene[t.name]);
         });
 
-        assert(iter != genes.end());
+        assert(iter != r_genes.end());
     });
 
-    assert(!introns.empty());
+    assert(!r_introns.empty());
 
     static std::map<std::string, Group> gs =
     {
         { "A", A }, { "B", B }, { "C", C }, { "D", D }
     };
 
-    ParserCSV::parse("data/rna/rna_mixtures.csv", [&](const Fields &fields, unsigned i)
+    ParserCSV::parse(mix, [&](const Fields &fields, unsigned i)
     {
         enum RNAField
         {
@@ -271,4 +271,6 @@ void Standard::rna()
 
         assert(!seqs.geneID.empty() && !seqs.r.id.empty());
     });
+
+    assert(!r_exons.empty() && !r_introns.empty());
 }

@@ -18,34 +18,34 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 
     auto c = countsForGenes();
 
-    ParserSAM::parse(file, [&](const Alignment &align)
-    {
+//    ParserSAM::parse(file, [&](const Alignment &align)
+//    {
         // There shouldn't be any splicing for DNA
-        assert(!align.spliced);
+//        assert(!align.spliced);
         
-        classify(stats, align, [&](const Alignment &)
-        {
-            /*
-            
-            if ((!align.spliced && find(r.fs.begin(), r.fs.end(), align, f1)) ||
-                (align.spliced && checkSplice(r, align, f1, f2)))
-            {
-                assert(r.iso2Gene.count(f1.iID));
-                
-                ce[r.iso2Gene.at(f1.iID)]++;
-                cb[r.iso2Gene.at(f1.iID)]++;
-                
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            */
-            
-            return true;
-        });
-    });
+//        classify(stats, align, [&](const Alignment &)
+//        {
+//            /*
+//            
+//            if ((!align.spliced && find(r.fs.begin(), r.fs.end(), align, f1)) ||
+//                (align.spliced && checkSplice(r, align, f1, f2)))
+//            {
+//                assert(r.iso2Gene.count(f1.iID));
+//                
+//                ce[r.iso2Gene.at(f1.iID)]++;
+//                cb[r.iso2Gene.at(f1.iID)]++;
+//                
+//                return true;
+//            }
+//            else
+//            {
+//                return false;
+//            }
+//            */
+//            
+//            return true;
+//        });
+//    });
 //
 //    assert(stats.nr + stats.nq == stats.n);
 //    
@@ -71,5 +71,5 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 //                                                 % stats.s.exp).str());
 //    options.writer->close();
 
-	return stats;
+	return DAlignStats();
 }

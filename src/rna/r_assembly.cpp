@@ -4,7 +4,7 @@
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "parsers/parser_gtf.hpp"
-
+#include <iostream>
 using namespace Spike;
 
 template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
@@ -27,120 +27,162 @@ template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
 RAssemblyStats RAssembly::analyze(const std::string &file, const Options &options)
 {
     RAssemblyStats stats;
-    const auto &r = Standard::instance();
+    const auto &s = Standard::instance();
 
-    auto cb = countsForSequins();
-    auto ce = countsForSequins();
-    auto ct = countsForSequins();
-    auto ci = countsForSequins();
+    auto cb = RAnalyzer::counter(Isoform, options.mix);
+    auto ce = RAnalyzer::counter(Isoform, options.mix);
+    auto ct = RAnalyzer::counter(Isoform, options.mix);
+    auto ci = RAnalyzer::counter(Isoform, options.mix);
 
     // The structure depends on the mixture
-    const auto seq = r.r_mix_sequin(options.mix);
+    const auto seqs = s.r_sequin(options.mix);
 
     std::vector<Feature> exons;
 
-    
-
     ParserGTF::parse(file, [&](const Feature &f)
     {
+        switch (f.type)
+        {
+            case Exon:
+            {
+                // We'll need it to construct introns later
+                exons.push_back(f);
+                
+                /*
+                 * Classify at the exon level
+                 */
+                
+                if (classify(stats.me, f, [&](const Feature &)
+                {
+                    return find(s.r_exons, f);
+                }))
+                {
+                    ce.at(f.iID)++;
+                }
+                
+                break;
+            }
 
-    });
-    
-    
-    
-    
-    
-    
-	ParserGTF::parse(file, [&](const Feature &f)
-	{
-        classify(stats, f, [&](const Feature &)
-                 {
-                     switch (f.type)
-                     {
-                         case Transcript:
-                         {
-                             assert(seq.count(f.iID));
-                             const auto &s = seq.at(f.iID);
-                             
-                             assert(cb.count(f.iID) && ct.count(f.iID));
+            case Transcript:
+            {
+                /*
+                 * Classify at the transctipt level
+                 */
+                
+                if (classify(stats.mt, f, [&](const Feature &)
+                {
+                    return find_map(seqs, f);
+                }))
+                {
+                    ct.at(f.iID)++;
+                }
+                
+                break;
+            }
 
-                             if (tfp(s.l == f.l, &stats.mt))
-                             {
-                                 cb[f.iID]++;
-                                 ct[f.iID]++;
-                                 
-                                 return true;
-                             }
-                             else
-                             {
-                                 return false;
-                             }
+            default:
+            {
+                break;
+            }
+        }
 
-                             break;
-                         }
-                             
-                         case Exon:
-                         {
-                             exons.push_back(f);
-                             assert(cb.count(f.iID) && ce.count(f.iID));
-
-                             if (tfp(find(r.exons, f), &stats.me))
-                             {
-                                 cb[f.iID]++;
-                                 ce[f.iID]++;
-                                 
-                                 return true;
-                             }
-                             else
-                             {
-                                 return false;
-                             }
-                             
-                             break;
-                         }
-                             
-                         default:
-                         {
-                             throw std::runtime_error("Unknown assembly type!");
-                         }
-                     }
-                 });
+        /*
+         * Classify at the base level. The
+         */
+        
+        
     });
 
+    assert(stats.me.nq() == exons.size());
+    assert(stats.me.nq() >= stats.me.tp());
+    assert(s.r_exons.size() >= stats.me.tp());
+
+    assert(stats.mt.nq() >= stats.mt.tp());
+
+    /*
+     * Calculate for the sensitivity
+     */
+
+    stats.se = Expression::analyze(ce, seqs);
+    stats.st = Expression::analyze(ct, seqs);
+    
+
     
     
     
-    assert(!r.introns.empty());
+//	ParserGTF::parse(file, [&](const Feature &f)
+//	{
+//        classify(stats, f, [&](const Feature &)
+//                 {
+//                     switch (f.type)
+//                     {
+//                         case Transcript:
+//                         {
+//                             assert(seq.count(f.iID));
+//                             const auto &s = seq.at(f.iID);
+//                             
+//                             assert(cb.count(f.iID) && ct.count(f.iID));
+//
+//                             if (tfp(s.l == f.l, &stats.mt))
+//                             {
+//                                 cb[f.iID]++;
+//                                 ct[f.iID]++;
+//                                 
+//                                 return true;
+//                             }
+//                             else
+//                             {
+//                                 return false;
+//                             }
+//
+//                             break;
+//                         }
+//                             
+//                         case Exon:
+//                         {
+//                             break;
+//                         }
+//                             
+//                         default:
+//                         {
+//                             throw std::runtime_error("Unknown assembly type!");
+//                         }
+//                     }
+//                 });
+//    });
+
+    
+    
+    
+   // assert(!r.introns.empty());
     
     extractIntrons(exons, [&](const Feature &, const Feature &, Feature &i)
     {
-        classify(stats, i,
-                 [&](const Feature &)
-                 {
-                     if (tfp(find(r.introns, i), &stats.mi))
-                     {
-                         assert(ci.count(i.iID));
-                         ci[i.iID]++;
-                         return true;
-                     }
-                     else
-                     {
-                         return false;
-                     }
-                 });
+//        classify(stats, i,
+//                 [&](const Feature &)
+//                 {
+//                     if (tfp(find(r.introns, i), &stats.mi))
+//                     {
+//                         assert(ci.count(i.iID));
+//                         ci[i.iID]++;
+//                         return true;
+//                     }
+//                     else
+//                     {
+//                         return false;
+//                     }
+//                 });
     });
 
-    assert(stats.n() && stats.nr + stats.nq == stats.n());
-
+    //assert(stats.n() && stats.nr + stats.nq == stats.n());
+/*
     const auto rb = Expression::analyze(cb);
-    const auto re = Expression::analyze(ce);
     const auto rt = Expression::analyze(ct);
     const auto ri = Expression::analyze(ci);
-    
-    stats.sb = rb.sens(r.r_seqs_iA);
-    stats.se = re.sens(r.r_seqs_iA);
-    stats.st = rt.sens(r.r_seqs_iA);
-    stats.si = ri.sens(r.r_seqs_iA);
+
+//    stats.sb = rb.sens(r.r_seqs_iA);
+  //  stats.st = rt.sens(r.r_seqs_iA);
+    //stats.si = ri.sens(r.r_seqs_iA);
 
     const auto &writer = options.writer;
 
@@ -155,6 +197,6 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     // Report the for intron level
     AnalyzeReporter::reportClassify("assembly.intron.stats", stats.dilution(), stats.mi, stats.si, ci, writer);
-    
+*/
     return stats;
 }
