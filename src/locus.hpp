@@ -18,6 +18,22 @@ namespace Spike
 
         inline BasePair length() const { return (end - start + 1); }
 
+        inline BasePair overlap(const Locus &l) const
+        {
+            if (l.start > end || start > l.end)
+            {
+                return 0;
+            }
+            else if (end >= l.end)
+            {
+                return l.end - start + 1;
+            }
+            else
+            {
+                return end - l.start + 1;
+            }
+        }
+
         inline bool contains(const Locus &q) const
         {
             return (q.start >= start && q.end <= end);

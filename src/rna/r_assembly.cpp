@@ -4,7 +4,7 @@
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "parsers/parser_gtf.hpp"
-#include <iostream>
+
 using namespace Spike;
 
 template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)

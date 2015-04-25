@@ -49,9 +49,9 @@ TEST_CASE("RAlign_RNA_Cufflinks")
     //REQUIRE(0 == r.nr);
    // REQUIRE(3271 == r.n);
     //REQUIRE(3271 == r.nq);
-    REQUIRE(0 == r.mb.tp());
-    REQUIRE(0 == r.mb.fp());
-    REQUIRE(isnan(r.mb.sp()));
-    REQUIRE(isnan(r.mb.sn()));
-    REQUIRE(0 == r.dilution());
+    //REQUIRE(0 == r.mb.tp());
+    //REQUIRE(0 == r.mb.fp());
+    //REQUIRE(isnan(r.mb.sp()));
+    //REQUIRE(isnan(r.mb.sn()));
+    //REQUIRE(0 == r.dilution());
 }
