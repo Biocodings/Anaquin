@@ -13,12 +13,7 @@ namespace Spike
 
     struct DAlign
     {
-        enum Mode
-        {
-            Base,
-        };
-
-        struct Options : public AnalyzerOptions<DAlign::Mode>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

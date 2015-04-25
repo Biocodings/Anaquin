@@ -71,19 +71,23 @@ namespace Spike
             }
     };
 
-    template <typename Level> struct AnalyzerOptions
+    struct AnalyzerOptions
     {
-        Level level;
-
         std::set<SequinID> filters;
 
         // How the results are written
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
     };
-    
-    template <typename Level> struct SingleMixtureOptions : public AnalyzerOptions<Level>
+
+    struct SingleMixtureOptions : public AnalyzerOptions
     {
         Mixture mix = MixA;
+    };
+
+    struct DoubleMixtureOptions : public AnalyzerOptions
+    {
+        Mixture rMix = MixA;
+        Mixture qMix = MixB;
     };
 
     struct AnalyzeReporter

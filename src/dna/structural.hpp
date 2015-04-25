@@ -13,14 +13,7 @@ namespace Spike
 
     struct Structural
     {
-        enum StructuralLevel
-        {
-            Base,
-            Homozygous,
-            Heterzygous
-        };
-
-        struct Options : public AnalyzerOptions<StructuralLevel>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

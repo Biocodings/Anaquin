@@ -13,12 +13,7 @@ namespace Spike
 
     struct Denovo
     {
-        enum DenovoLevel
-        {
-            Base,
-        };
-
-        struct Options : public AnalyzerOptions<DenovoLevel>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

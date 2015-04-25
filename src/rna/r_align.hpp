@@ -14,14 +14,7 @@ namespace Spike
 
     struct RAlign : public RAnalyzer
     {
-        enum Level
-        {
-            Base,
-            Exon,
-            Splice,
-        };
-
-        struct Options : public SingleMixtureOptions<RAlign::Level>
+        struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };

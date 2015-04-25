@@ -12,12 +12,7 @@ namespace Spike
 
     struct RSequence : RAnalyzer
     {
-        enum Level
-        {
-            Base
-        };
-
-        struct Options : public AnalyzerOptions<RSequence::Level>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

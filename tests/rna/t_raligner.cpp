@@ -30,7 +30,7 @@ TEST_CASE("RAlign_Simulations_Exon")
     for (auto ex : exts)
     {
         RAlign::Options options;
-        options.level = RAlign::Exon;
+        //options.level = RAlign::Exon;
         const auto r = RAlign::analyze("tests/data/rna_sims/accepted_hits." + ex, options);
     
        // REQUIRE(r.n  == 53394);

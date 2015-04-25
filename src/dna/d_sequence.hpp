@@ -12,12 +12,7 @@ namespace Spike
 
     struct DSequence
     {
-        enum Mode
-        {
-            Base,
-        };
-
-        struct Options : public AnalyzerOptions<DSequence::Mode>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

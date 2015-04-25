@@ -20,13 +20,7 @@ namespace Spike
 
     struct RAbundance : public RAnalyzer
     {
-        enum Level
-        {
-            Gene,
-            Isoform,
-        };
-
-        struct Options : public AnalyzerOptions<RAbundance::Level>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

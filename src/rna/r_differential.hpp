@@ -21,13 +21,7 @@ namespace Spike
 
     struct RDifferential : public RAnalyzer
     {
-        enum Level
-        {
-            Gene,
-            Isoform,
-        };
-
-        struct Options : public AnalyzerOptions<RDifferential::Level>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

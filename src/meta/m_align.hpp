@@ -13,12 +13,7 @@ namespace Spike
 
     struct MAlign
     {
-        enum Mode
-        {
-            Base,
-        };
-
-        struct Options : public AnalyzerOptions<MAlign::Mode>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

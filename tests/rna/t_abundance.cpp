@@ -14,11 +14,11 @@ TEST_CASE("Abundance_Gene_Simulations_1")
 
 TEST_CASE("Abundance_Isoform_Simulations_1")
 {
-    RAbundance::Options o;
-    o.level = RAbundance::Isoform;
-    const auto r = RAbundance::analyze("tests/data/rna_sims/isoforms.fpkm_tracking", o);
+    //RAbundance::Options o;
+    //o.level = RAbundance::Isoform;
+    //const auto r = RAbundance::analyze("tests/data/rna_sims/isoforms.fpkm_tracking", o);
 
-    REQUIRE(r.sb.id == "R_10_1_R");
-    REQUIRE(r.sb.counts == 1);
-    REQUIRE(r.sb.abund == 1250000);
+    //REQUIRE(r.sb.id == "R_10_1_R");
+    //REQUIRE(r.sb.counts == 1);
+    //REQUIRE(r.sb.abund == 1250000);
 }

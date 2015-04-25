@@ -19,12 +19,7 @@ namespace Spike
 
     struct RAssembly : RAnalyzer
     {
-        enum Level
-        {
-            All,
-        };
-
-        struct Options : public SingleMixtureOptions<RAssembly::Level>
+        struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };

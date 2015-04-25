@@ -12,12 +12,7 @@ namespace Spike
 
     struct MSequence
     {
-        enum Mode
-        {
-            Base,
-        };
-
-        struct Options : public AnalyzerOptions<MSequence::Mode>
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };
