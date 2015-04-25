@@ -1,5 +1,3 @@
-#include "classify.hpp"
-#include "standard.hpp"
 #include "r_assembly.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
@@ -7,7 +5,7 @@
 
 using namespace Spike;
 
-template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
+template <typename Iter, typename F> static void extractIntrons(const Iter &exons, F f)
 {
     Feature intr;
     
