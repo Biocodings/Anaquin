@@ -1,8 +1,8 @@
 #include <iostream>
 #include "standard.hpp"
 #include "classify.hpp"
-#include "abundance.hpp"
 #include "expression.hpp"
+#include "r_abundance.hpp"
 #include "writers/r_writer.hpp"
 #include "parsers/parser_tracking.hpp"
 #include <ss/regression/linear_model.hpp>
@@ -11,9 +11,9 @@ using namespace SS;
 using namespace SS::R;
 using namespace Spike;
 
-AbundanceStats Abundance::analyze(const std::string &file, const Options &options)
+RAbundanceStats RAbundance::analyze(const std::string &file, const Options &options)
 {
-    AbundanceStats stats;
+    RAbundanceStats stats;
     const auto &r = Standard::instance();
 
     auto c = options.level == Gene ? RAnalyzer::countsForGenes() : RAnalyzer::countsForSequins();

@@ -1,5 +1,5 @@
-#ifndef GI_DIFFERENTIAL_HPP
-#define GI_DIFFERENTIAL_HPP
+#ifndef GI_R_DIFFERENTIAL_HPP
+#define GI_R_DIFFERENTIAL_HPP
 
 #include "classify.hpp"
 #include "r_analyzer.hpp"
@@ -7,7 +7,7 @@
 
 namespace Spike
 {
-    struct DifferentialStats : public AnalyzerStats
+    struct RDifferentialStats : public AnalyzerStats
     {
         // Correlation for the samples
         double r;
@@ -19,7 +19,7 @@ namespace Spike
         double slope;
     };
 
-    struct Differential : public RAnalyzer
+    struct RDifferential : public RAnalyzer
     {
         enum Level
         {
@@ -27,12 +27,12 @@ namespace Spike
             Isoform,
         };
 
-        struct Options : public AnalyzerOptions<Differential::Level>
+        struct Options : public AnalyzerOptions<RDifferential::Level>
         {
             // Empty Implementation
         };
 
-        static DifferentialStats analyze(const std::string &f, const Options &options = Options());
+        static RDifferentialStats analyze(const std::string &f, const Options &options = Options());
     };
 }
 

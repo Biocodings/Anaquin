@@ -1,6 +1,7 @@
 #ifndef GI_ANALYZER_HPP
 #define GI_ANALYZER_HPP
 
+#include <set>
 #include <map>
 #include <memory>
 #include "types.hpp"
@@ -73,6 +74,8 @@ namespace Spike
     template <typename Level> struct AnalyzerOptions
     {
         Level level;
+
+        std::set<SequinID> filters;
 
         // How the results are written
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());

@@ -8,7 +8,9 @@ namespace Spike
 {
     struct Alignment
     {
-        std::string id;
+        typedef std::string AlignmentID;
+        
+        AlignmentID id;
         
         // If this field is false, no assumption can be made to other fields
         bool mapped;

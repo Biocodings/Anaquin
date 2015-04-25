@@ -3,9 +3,9 @@
 #include <getopt.h>
 
 #include "rna/r_align.hpp"
-#include "rna/assembly.hpp"
-#include "rna/abundance.hpp"
-#include "rna/differential.hpp"
+#include "rna/r_assembly.hpp"
+#include "rna/r_abundance.hpp"
+#include "rna/r_differential.hpp"
 
 #include "dna/d_align.hpp"
 #include "dna/d_sequence.hpp"
@@ -237,7 +237,7 @@ static int parse_options(int argc, char ** argv)
         /*
          * The following commands will be ignored by getopt_long_only()
          */
-        
+
         if (tmp == "rna")  { _cmd = CMD_RNA;  }
         if (tmp == "dna")  { _cmd = CMD_DNA;  }
         if (tmp == "meta") { _cmd = CMD_META; }
@@ -269,7 +269,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     return invalid_cmd(_cmd);
                 }
-                
+
                 _cmd = next;
                 break;
             }
@@ -329,17 +329,17 @@ static int parse_options(int argc, char ** argv)
                     {
                         case MODE_SEQS:      { print_rna();                             break; }
                         case MODE_ALIGN:     { analyze<RAlign>(_opt, RAlign::Base);     break; }
-                        case MODE_ASSEMBLY:  { analyze<Assembly>(_opt, Assembly::Base); break; }
+                        case MODE_ASSEMBLY:  { analyze<RAssembly>(_opt, RAssembly::Base); break; }
 
                         case MODE_ABUNDANCE:
                         {
-                            analyze<Abundance>(optarg, detect<Abundance::Level>(_opt));
+                            analyze<RAbundance>(_opt, detect<RAbundance::Level>(_opt));
                             break;
                         }
 
                         case MODE_DIFFERENTIAL:
                         {
-                            analyze<Differential>(optarg, detect<Differential::Level>(_opt));
+                            analyze<RDifferential>(_opt, detect<RDifferential::Level>(_opt));
                             break;
                         }
                     }

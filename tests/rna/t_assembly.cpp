@@ -1,11 +1,11 @@
 #include <catch.hpp>
-#include "assembly.hpp"
+#include "r_assembly.hpp"
 
 using namespace Spike;
 
 TEST_CASE("Assembly_Simulations_Annotated")
 {
-    const auto r = Assembly::analyze("tests/data/rna_sims/transcripts_an.gtf");
+    const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_an.gtf");
 
     REQUIRE(r.n  == 1040);
     REQUIRE(r.nr == 1040);

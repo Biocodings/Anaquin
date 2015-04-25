@@ -1,11 +1,10 @@
-#include "assembly.hpp"
 #include "classify.hpp"
 #include "standard.hpp"
+#include "r_assembly.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "parsers/parser_gtf.hpp"
 
-#include <iostream>
 using namespace Spike;
 
 template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
@@ -25,9 +24,9 @@ template <typename Iter, typename F> void extractIntrons(const Iter &exons, F f)
     }
 }
 
-AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
+RAssemblyStats RAssembly::analyze(const std::string &file, const Options &options)
 {
-    AssemblyStats stats;
+    RAssemblyStats stats;
     const auto &r = Standard::instance();
 
     auto cb = countsForSequins();
@@ -39,7 +38,7 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
     const auto seq = r.r_mix_sequin(options.mix);
 
     std::vector<Feature> exons;
-    
+
 	ParserGTF::parse(file, [&](const Feature &f)
 	{
         classify(stats, f, [&](const Feature &)
@@ -96,6 +95,9 @@ AssemblyStats Assembly::analyze(const std::string &file, const Options &options)
                  });
     });
 
+    
+    
+    
     assert(!r.introns.empty());
     
     extractIntrons(exons, [&](const Feature &, const Feature &, Feature &i)

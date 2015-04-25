@@ -1,12 +1,12 @@
-#ifndef GI_ABUNDANCE_HPP
-#define GI_ABUNDANCE_HPP
+#ifndef GI_R_ABUNDANCE_HPP
+#define GI_R_ABUNDANCE_HPP
 
 #include "r_analyzer.hpp"
 #include "sensitivity.hpp"
 
 namespace Spike
 {
-    struct AbundanceStats : public AnalyzerStats
+    struct RAbundanceStats : public AnalyzerStats
     {
         // Correlation for the samples
         double r;
@@ -18,7 +18,7 @@ namespace Spike
         double slope;
     };
 
-    struct Abundance : public RAnalyzer
+    struct RAbundance : public RAnalyzer
     {
         enum Level
         {
@@ -26,12 +26,12 @@ namespace Spike
             Isoform,
         };
 
-        struct Options : public AnalyzerOptions<Abundance::Level>
+        struct Options : public AnalyzerOptions<RAbundance::Level>
         {
             // Empty Implementation
         };
 
-        static AbundanceStats analyze(const std::string &file, const Options &options = Options());
+        static RAbundanceStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

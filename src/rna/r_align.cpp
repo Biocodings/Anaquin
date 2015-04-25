@@ -46,6 +46,14 @@ static bool checkSplice(const Standard &r, const Alignment &align, Feature &e1, 
     return false;
 }
 
+template <typename F> void abcd(const RAlign::Options &options, const Alignment &align, F f)
+{
+    if (options.filters.empty() || !options.filters.count(align.id))
+    {
+        f(align);
+    }
+}
+
 RAlignStats RAlign::analyze(const std::string &file, const Options &options)
 {
     RAlignStats stats;
@@ -61,7 +69,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     auto cb = RAnalyzer::countsForGenes();
     auto ce = RAnalyzer::countsForGenes();
     auto ci = RAnalyzer::countsForGenes();
-
+    
     ParserSAM::parse(file, [&](const Alignment &align)
     {
         if ((options.level == Exon   && align.spliced) ||

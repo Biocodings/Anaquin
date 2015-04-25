@@ -1,12 +1,12 @@
-#ifndef GI_ASSEMBLY_HPP
-#define GI_ASSEMBLY_HPP
+#ifndef GI_R_ASSEMBLY_HPP
+#define GI_R_ASSEMBLY_HPP
 
 #include "classify.hpp"
 #include "r_analyzer.hpp"
 
 namespace Spike
 {
-    struct AssemblyStats : public AnalyzerStats
+    struct RAssemblyStats : public AnalyzerStats
     {
         Confusion me;
         Confusion mt;
@@ -17,22 +17,23 @@ namespace Spike
         Sensitivity si;
     };
 
-    struct Assembly : RAnalyzer
+    struct RAssembly : RAnalyzer
     {
         enum Level
         {
+            All,
             Base,
             Exon,
             Intron,
             Transcripts,
         };
 
-        struct Options : public SingleMixtureOptions<Assembly::Level>
+        struct Options : public SingleMixtureOptions<RAssembly::Level>
         {
             // Empty Implementation
         };
 
-        static AssemblyStats analyze(const std::string &file, const Options &options = Options());
+        static RAssemblyStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

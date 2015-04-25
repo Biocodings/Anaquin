@@ -1,6 +1,6 @@
 #include "classify.hpp"
 #include "expression.hpp"
-#include "differential.hpp"
+#include "r_differential.hpp"
 #include "writers/r_writer.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <ss/regression/linear_model.hpp>
@@ -9,9 +9,9 @@ using namespace SS;
 using namespace SS::R;
 using namespace Spike;
 
-DifferentialStats Differential::analyze(const std::string &f, const Options &options)
+RDifferentialStats RDifferential::analyze(const std::string &f, const Options &options)
 {
-    DifferentialStats stats;
+    RDifferentialStats stats;
     const auto &r = Standard::instance();
 
     auto c = options.level == Gene ? RAnalyzer::countsForGenes() : RAnalyzer::countsForSequins();
