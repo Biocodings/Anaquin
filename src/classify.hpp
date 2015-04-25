@@ -14,12 +14,6 @@ namespace Spike
 
             inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
 
-            inline Counts &fp() const
-            {
-                assert(_nq - _tp == _fp);
-                return _fp;
-            }
-
             inline Percentage sn() const
             {
                 assert(_nr);
@@ -80,6 +74,18 @@ namespace Spike
         return n;
     }
 
+    template <typename Iter, typename T> BasePair countOverlaps_map(const Iter &map, const T &t)
+    {
+        BasePair n = 0;
+        
+        for (auto &i : map)
+        {
+            n += i.second.l.overlap(t.l);
+        }
+
+        return n;
+    }
+    
     template <typename Iter, typename T> const T * find(const Iter &iter, const T &t)
     {
         for (auto &i : iter)

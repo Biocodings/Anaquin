@@ -37,7 +37,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     // The structure depends on the mixture
     const auto seqs = s.r_sequin(options.mix);
 
-    std::vector<Feature> exons;
+    std::vector<Feature> q_exons;
 
     ParserGTF::parse(file, [&](const Feature &f)
     {
@@ -46,8 +46,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
             case Exon:
             {
                 // We'll need it to construct introns later
-                exons.push_back(f);
-                
+                q_exons.push_back(f);
+
                 /*
                  * Classify at the exon level
                  */
@@ -60,6 +60,10 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     ce.at(f.iID)++;
                 }
                 
+                /*
+                 * Classify at the base level
+                 */
+                
                 stats.mb.nq() += f.l.length();
                 stats.mb.tp() += std::min(f.l.length(), countOverlaps(s.r_exons, f));                
                 stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
@@ -70,7 +74,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
             case Transcript:
             {
                 /*
-                 * Classify at the base & transctipt level
+                 * Classify at the transctipt level
                  */
                 
                 if (classify(stats.mt, f, [&](const Feature &)
@@ -80,12 +84,14 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                 {
                     ct.at(f.iID)++;
                 }
-                
+
                 /*
                  * Classify at the base level
                  */
 
-                
+                stats.mb.nq() += f.l.length();
+                stats.mb.tp() += std::min(f.l.length(), countOverlaps_map(seqs, f));
+                stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
                 
                 break;
             }
@@ -97,14 +103,49 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
         }
     });
 
-    stats.me.nr() = s.r_exons.size();
-    stats.mt.nr() = seqs.size();
+    assert(!s.r_introns.empty());
 
-    assert(stats.me.nq() == exons.size());
+    // There is no guarantee that the exons in the query is sorted
+    std::sort(q_exons.begin(), q_exons.end(), [&](const Feature &f1, const Feature &f2)
+    {
+        return f1.l.start < f2.l.start;
+    });
+
+    extractIntrons(q_exons, [&](const Feature &, const Feature &, Feature &i)
+                   {
+                       /*
+                        * Classify at the intron level
+                        */
+                       
+                       if (classify(stats.mi, i, [&](const Feature &)
+                       {
+                           return find(s.r_introns, i);
+                       }))
+                       {
+                           ci[i.iID]++;
+                       }
+                       
+                       /*
+                        * Classify at the base level
+                        */
+
+                       stats.mb.nq() += i.l.length();
+                       stats.mb.tp() += std::min(i.l.length(), countOverlaps(s.r_introns, i));
+                       stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
+                   });
+
+    stats.mt.nr() = seqs.size();
+    stats.me.nr() = s.r_exons.size();
+    stats.mi.nr() = s.r_introns.size();
+    stats.mb.nr() = 1000; // TODO: Need super-loci coding
+
+    assert(stats.me.nq() == q_exons.size());
     assert(stats.me.nq() >= stats.me.tp());
     assert(s.r_exons.size() >= stats.me.tp());
 
     assert(stats.mt.nq() >= stats.mt.tp());
+    assert(stats.me.nq() >= stats.me.tp());
+    assert(stats.mi.nq() >= stats.mi.tp());
 
     /*
      * Calculate for the sensitivity
@@ -112,6 +153,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     stats.se = Expression::analyze(ce, seqs);
     stats.st = Expression::analyze(ct, seqs);
+    stats.sb = Expression::analyze(cb, seqs);
+    stats.si = Expression::analyze(ci, seqs);
 
     /*
      * Report for the statistics
@@ -120,8 +163,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     const auto &writer = options.writer;
 
     // Report the for base level
-    //AnalyzeReporter::reportClassify("assembly.base.stats", stats.dilution(), stats.mb, stats.sb, cb, writer);
-    
+    AnalyzeReporter::reportClassify("assembly.base.stats", stats.mb, stats.sb, cb, writer);
+
     // Report the for exons level
     AnalyzeReporter::reportClassify("assembly.exons.stats", stats.me, stats.se, ce, writer);
 
@@ -129,82 +172,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     AnalyzeReporter::reportClassify("assembly.transcripts.stats", stats.mt, stats.st, ct, writer);
 
     // Report the for intron level
-    //AnalyzeReporter::reportClassify("assembly.intron.stats", stats.dilution(), stats.mi, stats.si, ci, writer);
+    AnalyzeReporter::reportClassify("assembly.intron.stats", stats.mi, stats.si, ci, writer);
 
-    
-    
-    
-//	ParserGTF::parse(file, [&](const Feature &f)
-//	{
-//        classify(stats, f, [&](const Feature &)
-//                 {
-//                     switch (f.type)
-//                     {
-//                         case Transcript:
-//                         {
-//                             assert(seq.count(f.iID));
-//                             const auto &s = seq.at(f.iID);
-//                             
-//                             assert(cb.count(f.iID) && ct.count(f.iID));
-//
-//                             if (tfp(s.l == f.l, &stats.mt))
-//                             {
-//                                 cb[f.iID]++;
-//                                 ct[f.iID]++;
-//                                 
-//                                 return true;
-//                             }
-//                             else
-//                             {
-//                                 return false;
-//                             }
-//
-//                             break;
-//                         }
-//                             
-//                         case Exon:
-//                         {
-//                             break;
-//                         }
-//                             
-//                         default:
-//                         {
-//                             throw std::runtime_error("Unknown assembly type!");
-//                         }
-//                     }
-//                 });
-//    });
-
-    
-    
-    
-   // assert(!r.introns.empty());
-    
-    extractIntrons(exons, [&](const Feature &, const Feature &, Feature &i)
-    {
-//        classify(stats, i,
-//                 [&](const Feature &)
-//                 {
-//                     if (tfp(find(r.introns, i), &stats.mi))
-//                     {
-//                         assert(ci.count(i.iID));
-//                         ci[i.iID]++;
-//                         return true;
-//                     }
-//                     else
-//                     {
-//                         return false;
-//                     }
-//                 });
-    });
-
-    //assert(stats.n() && stats.nr + stats.nq == stats.n());
-/*
-    const auto rb = Expression::analyze(cb);
-    const auto ri = Expression::analyze(ci);
-
-//    stats.sb = rb.sens(r.r_seqs_iA);
-    //stats.si = ri.sens(r.r_seqs_iA);
-*/
     return stats;
 }

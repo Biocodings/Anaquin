@@ -112,13 +112,11 @@ namespace Spike
 
             SequinMap  r_seqs_iA, r_seqs_iB;
             SequinsMap r_seqs_gA, r_seqs_gB;
-        
+
             std::vector<Feature> r_fs;
             std::vector<TGene>   r_genes;
             std::vector<Feature> r_exons;
             std::vector<Feature> r_introns;
-
-            std::map<TranscriptID, GeneID> r_iso2Gene;
 
             /*
              * DNA data

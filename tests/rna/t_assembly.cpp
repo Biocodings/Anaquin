@@ -19,6 +19,8 @@ TEST_CASE("Assembly_Simulations_Annotated")
     REQUIRE(r.st.id == "R_9_2_R");
     REQUIRE(r.st.counts == 1);
     REQUIRE(r.st.abund == 9.25);
+    
+    
 }
 
 TEST_CASE("Assembly_Simulations_Denovo")

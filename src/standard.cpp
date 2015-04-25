@@ -80,6 +80,8 @@ void Standard::rna(const std::string &mix)
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
 
+    std::map<TranscriptID, GeneID> r_iso2Gene;
+    
     ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f)
 	{
 		l.end = std::max(l.end, f.l.end);
