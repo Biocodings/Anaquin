@@ -45,8 +45,6 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
             
             return true;
         });
- 
-        stats.n++;        
     });
 //
 //    assert(stats.nr + stats.nq == stats.n);

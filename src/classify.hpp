@@ -51,10 +51,10 @@ namespace Spike
     }
 
     /*
-     * Specalised binary-classification for the project. Negativity isn't required because in a typical
-     * experiment the dilution would be so low that true-negative dominates false-positive.
+     * Specalised classification for the project. Negativity isn't required because in a typical
+     * experiment the dilution would be so low that negativity dominates positivity.
      */
-    
+
     template <typename T, typename Stats, typename Positive>
     void classify(Stats &stats, const T &t, Positive p)
     {
@@ -65,15 +65,13 @@ namespace Spike
             {
                 return (t.id == r.id && r.l.contains(t.l));
             },
-            [&](const T &t) // Positive (reference detected)
+            [&](const T &t) // Positive?
             {
-                stats.n++;
                 stats.nr++;
                 return p(t);
             },
-            [&](const T &t) // Negative (query detected)
+            [&](const T &t) // Negative?
             {
-                stats.n++;
                 stats.nq++;
                 return false;
             });

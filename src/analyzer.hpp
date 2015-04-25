@@ -53,21 +53,20 @@ namespace Spike
             // Limit of sensitivity at the base level
             Sensitivity sb;
 
-            // Total number of samples
-            Counts n = 0;
-        
-            // Number of samples aligned to the chromosome
+            // Counts for the reference
             Counts nr = 0;
-        
-            // Number of samples aligned to the sample
+
+            // Counts for the experiment
             Counts nq = 0;
-        
-            inline Percentage pr() const { return nr / n; }
-            inline Percentage pq() const { return nq / n; }
+
+            inline Counts n() const { return nr + nq; }
+
+            inline Percentage pr() const { return nr / n(); }
+            inline Percentage pq() const { return nq / n(); }
 
             inline Percentage dilution() const
             {
-                return n ? static_cast<Percentage>(nr) / n : 1.0;
+                return n() ? static_cast<Percentage>(nr) / n() : 1.0;
             }
     };
 

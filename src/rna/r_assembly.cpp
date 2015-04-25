@@ -39,6 +39,18 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     std::vector<Feature> exons;
 
+    
+
+    ParserGTF::parse(file, [&](const Feature &f)
+    {
+
+    });
+    
+    
+    
+    
+    
+    
 	ParserGTF::parse(file, [&](const Feature &f)
 	{
         classify(stats, f, [&](const Feature &)
@@ -118,7 +130,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                  });
     });
 
-    assert(stats.n && stats.nr + stats.nq == stats.n);
+    assert(stats.n() && stats.nr + stats.nq == stats.n());
 
     const auto rb = Expression::analyze(cb);
     const auto re = Expression::analyze(ce);
