@@ -290,4 +290,17 @@ void Standard::rna(const std::string &mix)
 
     assert(!r_exons.empty() && !r_introns.empty());
     assert(r_l_exons.size() == r_exons.size());
+
+    r_l_exons = Locus::merge(r_l_exons);
+
+    for (auto i = 0; i < r_l_exons.size(); i++)
+    {
+        r_c_exons += r_l_exons[i].length();
+    }
+
+    assert(r_c_exons);
+
+#ifdef DEBUG
+    checkOverlap(r_l_exons);
+#endif
 }

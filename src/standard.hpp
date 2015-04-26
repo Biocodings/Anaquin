@@ -116,7 +116,9 @@ namespace Spike
             std::vector<Feature> r_introns;
 
             std::vector<Locus> r_l_exons;
-        
+
+            BasePair r_c_exons = 0;
+
             /*
              * DNA data
              */

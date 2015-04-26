@@ -3,9 +3,33 @@
 
 using namespace Spike;
 
+TEST_CASE("Locus_Super_Loci")
+{
+    const auto ls = std::vector<Locus>
+    {
+        Locus(10, 20),
+        Locus(15, 25),
+        Locus(15, 30),
+        Locus(50, 60),
+        Locus(70, 80),
+    };
+
+    const auto r = Locus::merge(ls);
+
+    REQUIRE(r.size() == 3);
+    REQUIRE(r[0] == Locus(10, 30));
+    REQUIRE(r[1] == Locus(50, 60));
+    REQUIRE(r[2] == Locus(70, 80));
+}
+
 TEST_CASE("Locus_Merge_None_Overlap")
 {
-    const auto m = Locus::merge(std::vector<Locus> { Locus(10, 20), Locus(21, 30), Locus(31, 40) });
+    const auto m = Locus::merge(std::vector<Locus>
+    {
+        Locus(10, 20),
+        Locus(21, 30),
+        Locus(31, 40)
+    });
 
     REQUIRE(m.size() == 3);
     REQUIRE(m[0] == Locus(10, 20));

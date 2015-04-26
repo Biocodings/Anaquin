@@ -1,14 +1,23 @@
 #ifndef GI_LOCUS_HPP
 #define GI_LOCUS_HPP
 
+#include <set>
+#include <map>
+#include <list>
 #include <vector>
 #include <assert.h>
 #include "types.hpp"
-
+#include <iostream>
 namespace Spike
 {
     struct Locus
     {
+        Locus(const Locus &l1, const Locus &l2)
+        {
+            end   = std::max(l1.end,   l2.end);
+            start = std::min(l1.start, l2.start);
+        }
+
         Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
 
         inline void set(BasePair start, BasePair end)
@@ -17,64 +26,46 @@ namespace Spike
             assert(this->end >= this->start);
         }
 
-        static std::vector<Locus> mm(const std::vector<Locus> &l1, const std::vector<Locus> &l2)
+        static std::vector<Locus> merge(const std::vector<Locus> &x)
         {
+            std::vector<Locus> sorted = x;
+            
+            std::sort(sorted.begin(), sorted.end(), [&](const Locus &l1, const Locus &l2)
+            {
+                return (l1.start < l2.start) || (l1.start == l2.start && l1.end < l2.end);
+            });
+            
             std::vector<Locus> merged;
             
-            std::size_t i = 0;
-            std::size_t j = 0;
-            
-            for (;i < l1.size(), j < l2.size(); i++, j++)
+            for (auto i = 0; i < sorted.size();)
             {
+                const Locus * end = &sorted[i];
+
+                // We'll need the index for skipping i
+                auto j = i + 1;
                 
-            }
-            
-            
-            return merged;
-        }
-        
-        
-        
-        /*
-         * Create a super-locus by merging overlapping elements. Nothing is assumed
-         * in the given iterator.
-         */
-
-        template <typename Iter> static std::vector<Locus> merge(const Iter &iter)
-        {
-            std::vector<Locus> merged;
-
-            for (auto &i : iter)
-            {
-                bool found = false;
-
-                for (auto &j : merged)
+                // Look forward until the end of an overlap region
+                for (; j < sorted.size(); j++)
                 {
-                    if (i.overlap(j))
+                    if (sorted[j].overlap(*end))
                     {
-                        found = true;
-
-                        j.end = std::max(i.end, j.end);
-                        j.start = std::min(i.start, j.start);
-
+                        end = &sorted[j];
+                    }
+                    else
+                    {
                         break;
                     }
                 }
 
-                if (!found)
-                {
-                    merged.push_back(i);
-                }
+                // Construct the super-loci for the region
+                merged.push_back(Locus(sorted[i], *end));
+
+                i = j;
             }
-
-            std::sort(merged.begin(), merged.end(), [&](const Locus &l1, const Locus &l2)
-            {
-                return l1.start < l2.start;
-            });
-
+            
             return merged;
         }
-
+        
         inline BasePair length() const { return (end - start + 1); }
 
         inline BasePair overlap(const Locus &l) const

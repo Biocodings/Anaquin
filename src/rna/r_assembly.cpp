@@ -71,6 +71,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                 stats.mb.tp() += countOverlaps(s.r_l_exons, f);
                 stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
 
+                assert(stats.mb.nq() >= stats.mb.tp());
                 break;
             }
 
@@ -140,7 +141,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     stats.mt.nr() = seqs.size();
     stats.me.nr() = s.r_exons.size();
     stats.mi.nr() = s.r_introns.size();
-    stats.mb.nr() = 1000; // TODO: Need super-loci coding
+    stats.mb.nr() = s.r_c_exons;
 
     assert(stats.me.nq() == q_exons.size());
     assert(stats.me.nq() >= stats.me.tp());

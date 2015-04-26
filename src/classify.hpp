@@ -68,7 +68,10 @@ namespace Spike
 
         for (auto &i : iter)
         {
-            n += t.l.overlap(i);
+            if (t.l.overlap(i))
+            {
+                n += t.l.overlap(i);
+            }
         }
 
         return n;

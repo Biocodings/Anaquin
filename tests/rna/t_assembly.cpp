@@ -3,27 +3,6 @@
 
 using namespace Spike;
 
-TEST_CASE("Assembly_Simulations_All_Filtered")
-{
-    RAssembly::Options opts;
-    const auto &s = Standard::instance();
-
-    for (auto i: s.r_seqs_iA)
-    {
-        opts.filters.insert(i.first);
-    }
-    
-    const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_an.gtf", opts);
-    
-    REQUIRE(r.me.nq() == 0);
-    REQUIRE(r.me.nr() == 498);
-    REQUIRE(r.mt.nq() == 0);
-    REQUIRE(r.mt.nr() == 61);
-
-    REQUIRE(r.me.tp() == 0);
-    REQUIRE(r.me.fn() == 498);
-}
-
 TEST_CASE("Assembly_Simulations_Annotated")
 {
     const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_an.gtf");
@@ -43,6 +22,27 @@ TEST_CASE("Assembly_Simulations_Annotated")
     REQUIRE(r.st.id == "R_9_2_R");
     REQUIRE(r.st.counts == 1);
     REQUIRE(r.st.abund == 9.25);
+}
+
+TEST_CASE("Assembly_Simulations_All_Filtered")
+{
+    RAssembly::Options opts;
+    const auto &s = Standard::instance();
+    
+    for (auto i: s.r_seqs_iA)
+    {
+        opts.filters.insert(i.first);
+    }
+    
+    const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_an.gtf", opts);
+    
+    REQUIRE(r.me.nq() == 0);
+    REQUIRE(r.me.nr() == 498);
+    REQUIRE(r.mt.nq() == 0);
+    REQUIRE(r.mt.nr() == 61);
+    
+    REQUIRE(r.me.tp() == 0);
+    REQUIRE(r.me.fn() == 498);
 }
 
 TEST_CASE("Assembly_Simulations_Denovo")
