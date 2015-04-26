@@ -20,6 +20,12 @@ TEST_CASE("Locus_Merge_Some_Overlap")
     REQUIRE(m.size() == 2);
     REQUIRE(m[0] == Locus(10, 22));
     REQUIRE(m[1] == Locus(31, 40));
+
+    Locus l1(1838532, 1839438);
+    Locus l2(1839318, 1839438);
+    
+    REQUIRE(l1.overlap(l2));
+    REQUIRE(l2.overlap(l1));
 }
 
 TEST_CASE("Locus_Merge_All_Overlap")

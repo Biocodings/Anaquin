@@ -19,6 +19,11 @@ namespace Spike
     
     struct Feature
     {
+        inline bool overlap(const Locus &l) const
+        {
+            return this->l.overlap(l);
+        }
+
         FeatureID id;
 
         // The location of the feature relative to the chromosome

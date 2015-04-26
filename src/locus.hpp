@@ -10,13 +10,31 @@ namespace Spike
     struct Locus
     {
         Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
-        
+
         inline void set(BasePair start, BasePair end)
         {
             this->start = start; this->end = end;
             assert(this->end >= this->start);
         }
 
+        static std::vector<Locus> mm(const std::vector<Locus> &l1, const std::vector<Locus> &l2)
+        {
+            std::vector<Locus> merged;
+            
+            std::size_t i = 0;
+            std::size_t j = 0;
+            
+            for (;i < l1.size(), j < l2.size(); i++, j++)
+            {
+                
+            }
+            
+            
+            return merged;
+        }
+        
+        
+        
         /*
          * Create a super-locus by merging overlapping elements. Nothing is assumed
          * in the given iterator.
@@ -29,10 +47,10 @@ namespace Spike
             for (auto &i : iter)
             {
                 bool found = false;
-                
+
                 for (auto &j : merged)
                 {
-                    if (j.overlap(i))
+                    if (i.overlap(j))
                     {
                         found = true;
 
@@ -42,7 +60,7 @@ namespace Spike
                         break;
                     }
                 }
-                
+
                 if (!found)
                 {
                     merged.push_back(i);
@@ -56,7 +74,7 @@ namespace Spike
 
             return merged;
         }
-        
+
         inline BasePair length() const { return (end - start + 1); }
 
         inline BasePair overlap(const Locus &l) const

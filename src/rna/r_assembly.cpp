@@ -63,7 +63,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                  */
                 
                 stats.mb.nq() += f.l.length();
-                stats.mb.tp() += std::min(f.l.length(), countOverlaps(s.r_exons, f));                
+                stats.mb.tp() += countOverlaps(s.r_l_exons, f);
                 stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
 
                 break;
@@ -87,9 +87,9 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                  * Classify at the base level
                  */
 
-                stats.mb.nq() += f.l.length();
-                stats.mb.tp() += std::min(f.l.length(), countOverlaps_map(seqs, f));
-                stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
+                //stats.mb.nq() += f.l.length();
+                //stats.mb.tp() += std::min(f.l.length(), countOverlaps_map(seqs, f));
+                //stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
                 
                 break;
             }
@@ -127,9 +127,9 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                         * Classify at the base level
                         */
 
-                       stats.mb.nq() += i.l.length();
-                       stats.mb.tp() += std::min(i.l.length(), countOverlaps(s.r_introns, i));
-                       stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
+                       //stats.mb.nq() += i.l.length();
+                       //stats.mb.tp() += std::min(i.l.length(), countOverlaps(s.r_introns, i));
+                       //stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
                    });
 
     stats.mt.nr() = seqs.size();

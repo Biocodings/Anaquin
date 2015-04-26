@@ -15,6 +15,23 @@
 
 using namespace Spike;
 
+static void checkOverlap(const std::vector<Locus> &ls)
+{
+    for (auto i = 0; i < ls.size(); i++)
+    {
+        for (auto j = i + 1; j < ls.size(); j++)
+        {
+            if (ls[i].overlap(ls[j]))
+            {
+                const auto ii = ls[i];
+                const auto jj = ls[j];
+                
+                throw std::runtime_error("dsaksdajkdsjkkj");
+            }
+        }
+    }
+}
+
 Standard::Standard()
 {
     std::ifstream in("data/silico.fa");
@@ -81,7 +98,7 @@ void Standard::rna(const std::string &mix)
     std::set<TranscriptID> iids;
 
     std::map<TranscriptID, GeneID> r_iso2Gene;
-    
+
     ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f)
 	{
 		l.end = std::max(l.end, f.l.end);
@@ -127,8 +144,8 @@ void Standard::rna(const std::string &mix)
                 
                 if (f.type == Exon)
                 {
-                    g.exons.push_back(f);
                     r_exons.push_back(f);
+                    r_l_exons.push_back(f.l);
                 }
             }
         }
@@ -154,8 +171,8 @@ void Standard::rna(const std::string &mix)
     });
 
     /*
-     * Create data-structure for RNA standards. An identical GTF file has already been
-     * parsed. For simplistic, we prefer to directly extract the locus from a BED file.
+     * An identical GTF file has already been parsed. For simplistic, we prefer to directly
+     * extract the locus from a BED file.
      */
 
     // Required while reading mixtures
@@ -255,7 +272,7 @@ void Standard::rna(const std::string &mix)
 
             // There is always an entry for the reference
             i[seqs.r.id] = seqs.r;
-            
+
             if (!seqs.v.id.empty())
             {
                 seqs.v.fpkm  = seqs.v.raw / (1000.0 / v_len);
@@ -265,14 +282,12 @@ void Standard::rna(const std::string &mix)
             g[seqs.geneID] = seqs;
         };
 
-        // Calculate the concentration required by mixture A
         f(AimA, r_seqs_gA, r_seqs_iA);
-
-        // Calculate the concentration required by mixture B
         f(AimB, r_seqs_gB, r_seqs_iB);
 
         assert(!seqs.geneID.empty() && !seqs.r.id.empty());
     });
 
     assert(!r_exons.empty() && !r_introns.empty());
+    assert(r_l_exons.size() == r_exons.size());
 }

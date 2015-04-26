@@ -35,12 +35,9 @@ namespace Spike
     struct TGene
     {
         GeneID id;
-        
+
         // 1-indexed locus relative to the chromosome
         Locus l;
-
-        std::vector<Feature> exons;
-        std::vector<Feature> introns;
     };
     
     struct Sequin
@@ -118,6 +115,8 @@ namespace Spike
             std::vector<Feature> r_exons;
             std::vector<Feature> r_introns;
 
+            std::vector<Locus> r_l_exons;
+        
             /*
              * DNA data
              */
