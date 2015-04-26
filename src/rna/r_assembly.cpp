@@ -39,6 +39,11 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     ParserGTF::parse(file, [&](const Feature &f)
     {
+        if (options.filters.count(f.iID))
+        {
+            return;
+        }
+
         switch (f.type)
         {
             case Exon:

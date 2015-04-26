@@ -79,8 +79,8 @@ namespace Spike
     class Standard
     {
         public:
+            typedef std::map<SequinID, Sequin>  SequinMap;
             typedef std::map<SequinID, Sequins> SequinsMap;
-            typedef std::map<TranscriptID, Sequin> SequinMap;
 
             static Standard& instance()
             {
