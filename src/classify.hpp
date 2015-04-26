@@ -102,7 +102,6 @@ namespace Spike
         {
             const bool matched = (rule == ExactRule    && i.l == t.l) ||
                                  (rule == ContainsRule && i.l.contains(t.l));
-
             if (matched)
             {
                 return &i;
@@ -112,11 +111,13 @@ namespace Spike
         return NULL;
     }
 
-    template <typename Iter, typename T> bool find_map(const Iter &map, const T &t)
+    template <typename Iter, typename T> bool find_map(const Iter &map, const T &t, MatchRule rule)
     {
         for (auto i: map)
         {
-            if (i.second.l.contains(t.l))
+            const bool matched = (rule == ExactRule    && i.second.l == t.l) ||
+                                 (rule == ContainsRule && i.second.l.contains(t.l));
+            if (matched)
             {
                 return true;
             }

@@ -1,6 +1,7 @@
 #ifndef GI_LOCUS_HPP
 #define GI_LOCUS_HPP
 
+#include <vector>
 #include <assert.h>
 #include "types.hpp"
 
@@ -16,9 +17,48 @@ namespace Spike
             assert(this->end >= this->start);
         }
 
+        /*
+         * Create a super-locus by merging overlapping elements. Nothing is assumed
+         * in the given iterator.
+         */
+
+        template <typename Iter> static std::vector<Locus> merge(const Iter &iter)
+        {
+            std::vector<Locus> merged;
+
+            for (auto &i : iter)
+            {
+                bool found = false;
+                
+                for (auto &j : merged)
+                {
+                    if (j.overlap(i))
+                    {
+                        found = true;
+
+                        j.end = std::max(i.end, j.end);
+                        j.start = std::min(i.start, j.start);
+
+                        break;
+                    }
+                }
+                
+                if (!found)
+                {
+                    merged.push_back(i);
+                }
+            }
+
+            std::sort(merged.begin(), merged.end(), [&](const Locus &l1, const Locus &l2)
+            {
+                return l1.start < l2.start;
+            });
+
+            return merged;
+        }
+        
         inline BasePair length() const { return (end - start + 1); }
 
-        // Returns the base-pairs that are overlapped with the given reference
         inline BasePair overlap(const Locus &l) const
         {
             if (l.start > end || start > l.end)
@@ -59,7 +99,7 @@ namespace Spike
         }
 
         BasePair start, end;
-    };    
+    };
 }
 
 #endif

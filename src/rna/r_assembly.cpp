@@ -74,10 +74,10 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                 /*
                  * Classify at the transctipt level
                  */
-                
+
                 if (classify(stats.mt, f, [&](const Feature &)
                 {
-                    return find_map(seqs, f);
+                    return find_map(seqs, f, ExactRule);
                 }))
                 {
                     ct.at(f.iID)++;
@@ -103,7 +103,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     assert(!s.r_introns.empty());
 
-    // There is no guarantee that the exons in the query is sorted
+    // There is no guarantee that the exons in the query are sorted
     std::sort(q_exons.begin(), q_exons.end(), [&](const Feature &f1, const Feature &f2)
     {
         return f1.l.start < f2.l.start;
