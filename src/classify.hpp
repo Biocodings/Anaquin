@@ -85,12 +85,25 @@ namespace Spike
 
         return n;
     }
+
+    enum MatchRule
+    {
+        ExactRule,
+        ContainsRule,
+    };
+
+    /*
+     *
+     */
     
-    template <typename Iter, typename T> const T * find(const Iter &iter, const T &t)
+    template <typename Iter, typename T> const T * find(const Iter &iter, const T &t, MatchRule rule)
     {
         for (auto &i : iter)
         {
-            if (i.l.contains(t.l))
+            const bool matched = (rule == ExactRule    && i.l == t.l) ||
+                                 (rule == ContainsRule && i.l.contains(t.l));
+
+            if (matched)
             {
                 return &i;
             }

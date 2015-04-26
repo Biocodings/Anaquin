@@ -52,12 +52,12 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                 
                 if (classify(stats.me, f, [&](const Feature &)
                 {
-                    return find(s.r_exons, f);
+                    return find(s.r_exons, f, ExactRule);
                 }))
                 {
                     ce.at(f.iID)++;
                 }
-                
+
                 /*
                  * Classify at the base level
                  */
@@ -117,7 +117,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                        
                        if (classify(stats.mi, i, [&](const Feature &)
                        {
-                           return find(s.r_introns, i);
+                           return find(s.r_introns, i, ExactRule);
                        }))
                        {
                            ci[i.iID]++;

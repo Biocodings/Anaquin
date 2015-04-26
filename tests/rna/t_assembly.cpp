@@ -12,6 +12,9 @@ TEST_CASE("Assembly_Simulations_Annotated")
     REQUIRE(r.mt.nq() == 61);
     REQUIRE(r.mt.nr() == 61);
     
+    REQUIRE(r.me.tp() == 490);
+    REQUIRE(r.me.fn() == 8);
+    
     REQUIRE(r.se.id == "R_1_4_R");
     REQUIRE(r.se.counts == 1);
     REQUIRE(r.se.abund == 152);
@@ -19,12 +22,12 @@ TEST_CASE("Assembly_Simulations_Annotated")
     REQUIRE(r.st.id == "R_9_2_R");
     REQUIRE(r.st.counts == 1);
     REQUIRE(r.st.abund == 9.25);
-    
-    
 }
 
 TEST_CASE("Assembly_Simulations_Denovo")
 {
+    int a = 1;
+    a = 1;
     //const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_dn.gtf");
 
     //REQUIRE(r.n  == 1040);
