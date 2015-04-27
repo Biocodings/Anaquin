@@ -3,6 +3,19 @@
 
 using namespace Spike;
 
+TEST_CASE("Locus_Merge_Overlap_Last")
+{
+    const auto ls = std::vector<Locus>
+    {
+        Locus(3456296, 3506320),
+        Locus(3504723, 3506320),
+    };
+
+    const auto r = Locus::merge(ls);
+
+    REQUIRE(r.size() == 1);
+}
+
 TEST_CASE("Locus_Super_Loci")
 {
     const auto ls = std::vector<Locus>

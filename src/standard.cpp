@@ -15,21 +15,16 @@
 
 using namespace Spike;
 
-static void checkOverlap(const std::vector<Locus> &ls)
+static template <typename Iter> BasePair countLocus(const Iter &iter)
 {
-    for (auto i = 0; i < ls.size(); i++)
+    BasePair n = 0;
+    
+    for (auto i : iter)
     {
-        for (auto j = i + 1; j < ls.size(); j++)
-        {
-            if (ls[i].overlap(ls[j]))
-            {
-                const auto ii = ls[i];
-                const auto jj = ls[j];
-                
-                throw std::runtime_error("dsaksdajkdsjkkj");
-            }
-        }
+        n += static_cast<Locus>(i).length();
     }
+
+    return n;
 }
 
 Standard::Standard()
@@ -199,6 +194,7 @@ void Standard::rna(const std::string &mix)
                 // Intron is a region between exons that have been spliced
                 j.l = Locus(t.blocks[i - 1].end - 1, t.blocks[i].start); // ????
 
+                r_l_introns.push_back(j.l);
                 r_introns.push_back(j);
             }
         }
@@ -291,16 +287,33 @@ void Standard::rna(const std::string &mix)
     assert(!r_exons.empty() && !r_introns.empty());
     assert(r_l_exons.size() == r_exons.size());
 
-    r_l_exons = Locus::merge(r_l_exons);
+    /*
+     * Merging overlapping regions for the exons
+     */
 
-    for (auto i = 0; i < r_l_exons.size(); i++)
+    r_c_exons = countLocus(r_l_exons = Locus::merge(r_l_exons));
+    
+    /*
+     * Merging overlapping regions for the transcripts
+     */
+    
+    for (const auto &i : r_seqs_iA)
     {
-        r_c_exons += r_l_exons[i].length();
+        r_l_trans.push_back(i.second.l);
     }
+    
+    r_c_trans = countLocus(r_l_trans = Locus::merge(r_l_trans));
 
-    assert(r_c_exons);
+    /*
+     * Merging overlapping regions for the introns
+     */
 
-#ifdef DEBUG
-    checkOverlap(r_l_exons);
-#endif
+    r_c_introns = countLocus(r_l_introns = Locus::merge(r_l_introns));
+    
+    assert(r_c_trans && r_c_exons && r_c_introns);
+    assert(!r_l_trans.empty() && !r_l_exons.empty() && !r_l_introns.empty());
+
+    assert(!Locus::overlap(r_l_introns));
+    assert(!Locus::overlap(r_l_trans));
+    assert(!Locus::overlap(r_l_exons));
 }

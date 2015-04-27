@@ -2,7 +2,7 @@
 #define GI_CLASSIFY_HPP
 
 #include "standard.hpp"
-#include <ss/ml/confusion.hpp>
+#include <ss/data/confusion.hpp>
 
 namespace Spike
 {
@@ -68,9 +68,9 @@ namespace Spike
 
         for (auto &i : iter)
         {
-            if (t.l.overlap(i))
+            if (static_cast<Locus>(t).overlap(i))
             {
-                n += t.l.overlap(i);
+                n += static_cast<Locus>(t).overlap(i);
             }
         }
 

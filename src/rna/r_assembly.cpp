@@ -2,7 +2,7 @@
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "parsers/parser_gtf.hpp"
-
+#include <iostream>
 using namespace Spike;
 
 template <typename Iter, typename F> static void extractIntrons(const Iter &exons, F f)
@@ -35,7 +35,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     // The structure depends on the mixture
     const auto seqs = s.r_sequin(options.mix);
 
-    std::vector<Feature> q_exons;
+    std::vector<Feature> q_exons, q_trans, q_introns;
 
     ParserGTF::parse(file, [&](const Feature &f)
     {
@@ -48,9 +48,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
         {
             case Exon:
             {
-                // We'll need it to construct introns later
                 q_exons.push_back(f);
-
+                
                 /*
                  * Classify at the exon level
                  */
@@ -63,20 +62,14 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     ce.at(f.iID)++;
                 }
 
-                /*
-                 * Classify at the base level
-                 */
-                
-                stats.mb.nq() += f.l.length();
-                stats.mb.tp() += countOverlaps(s.r_l_exons, f);
-                stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
-
                 assert(stats.mb.nq() >= stats.mb.tp());
                 break;
             }
 
             case Transcript:
             {
+                q_trans.push_back(f);
+                
                 /*
                  * Classify at the transctipt level
                  */
@@ -89,14 +82,6 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     ct.at(f.iID)++;
                 }
 
-                /*
-                 * Classify at the base level
-                 */
-
-                //stats.mb.nq() += f.l.length();
-                //stats.mb.tp() += std::min(f.l.length(), countOverlaps_map(seqs, f));
-                //stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
-                
                 break;
             }
 
@@ -117,6 +102,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     extractIntrons(q_exons, [&](const Feature &, const Feature &, Feature &i)
                    {
+                       q_introns.push_back(i);
+
                        /*
                         * Classify at the intron level
                         */
@@ -137,11 +124,28 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                        //stats.mb.tp() += std::min(i.l.length(), countOverlaps(s.r_introns, i));
                        //stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
                    });
+    
+    /*
+     * Classify at the base level
+     */
+
+    countBase(s.r_l_exons,   q_exons,   stats.mb);
+    countBase(s.r_l_trans,   q_trans,   stats.mb);
+    countBase(s.r_l_introns, q_introns, stats.mb);
+    
+    /*
+     * Setting the known references
+     */
 
     stats.mt.nr() = seqs.size();
     stats.me.nr() = s.r_exons.size();
     stats.mi.nr() = s.r_introns.size();
-    stats.mb.nr() = s.r_c_exons;
+    stats.mb.nr() = s.r_c_exons + s.r_c_trans + s.r_c_introns;
+
+    assert(stats.mb.nr() >= stats.mb.tp());
+    assert(stats.mt.nr() >= stats.mt.tp());
+    assert(stats.me.nr() >= stats.me.tp());
+    assert(stats.mi.nr() >= stats.mi.tp());
 
     assert(stats.me.nq() == q_exons.size());
     assert(stats.me.nq() >= stats.me.tp());

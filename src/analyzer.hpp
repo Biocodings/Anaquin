@@ -1,7 +1,6 @@
 #ifndef GI_ANALYZER_HPP
 #define GI_ANALYZER_HPP
 
-#include <set>
 #include <map>
 #include <memory>
 #include "types.hpp"
@@ -12,6 +11,23 @@
 
 namespace Spike
 {
+    template <typename Iter1, typename Iter2> void countBase(const Iter1 &r, const Iter2 &q, Confusion &m)
+    {
+        /*
+         * Classify by constructing non-overlapping region for the query
+         */
+
+        const auto q_merged = Locus::merge(q);
+        assert(!Locus::overlap(q_merged));
+
+        for (auto l : q_merged)
+        {
+            m.nq() += l.length();
+            m.tp() += countOverlaps(r, l);
+            m.fp()  = m.nq() - m.tp();
+        }
+    }
+    
     inline std::map<SequinID, Counts> countsForSequins()
     {
         const auto &r = Standard::instance();

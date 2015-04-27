@@ -24,6 +24,20 @@ namespace Spike
             return this->l.overlap(l);
         }
 
+        operator Locus &()
+        {
+            return l;
+        }
+
+        void operator=(const Feature &f)
+        {
+            l  = f.l;
+            id = f.id;
+            type = f.type;
+            iID  = f.iID;
+            geneID = f.geneID;
+        }
+        
         FeatureID id;
 
         // The location of the feature relative to the chromosome
@@ -36,16 +50,7 @@ namespace Spike
 
         // Empty if the information is unavailable
         TranscriptID iID;
-
-        void operator=(const Feature &f)
-        {
-            l  = f.l;
-            id = f.id;
-            type = f.type;
-            iID  = f.iID;
-            geneID = f.geneID;
-        }
-    };    
+    };
 }
 
 #endif

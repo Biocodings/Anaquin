@@ -57,13 +57,14 @@ template <typename F> void abcd(const RAlign::Options &options, const Alignment 
 RAlignStats RAlign::analyze(const std::string &file, const Options &options)
 {
     RAlignStats stats;
-    const auto &s = Standard::instance();
-//
-//    Feature f1, f2;
-//
+    //const auto &s = Standard::instance();
+
+    Feature f1, f2;
+
     auto cb = RAnalyzer::counter(Gene, options.mix);
     auto ce = RAnalyzer::counter(Gene, options.mix);
     auto ci = RAnalyzer::counter(Gene, options.mix);
+
 //
 //    ParserSAM::parse(file, [&](const Alignment &align)
 //    {

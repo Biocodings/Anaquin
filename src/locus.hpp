@@ -26,10 +26,32 @@ namespace Spike
             assert(this->end >= this->start);
         }
 
-        static std::vector<Locus> merge(const std::vector<Locus> &x)
+        static bool overlap(const std::vector<Locus> &ls)
         {
-            std::vector<Locus> sorted = x;
-            
+            for (auto i = 0; i < ls.size(); i++)
+            {
+                for (auto j = i + 1; j < ls.size(); j++)
+                {
+                    if (ls[i].overlap(ls[j]))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        template <typename T> static std::vector<Locus> merge(const std::vector<T> &x)
+        {
+            std::vector<Locus> sorted;
+
+            // std::copy doesn't allow implicit type conversion...
+            for (auto i : x)
+            {
+                sorted.push_back(i);
+            }
+
             std::sort(sorted.begin(), sorted.end(), [&](const Locus &l1, const Locus &l2)
             {
                 return (l1.start < l2.start) || (l1.start == l2.start && l1.end < l2.end);
@@ -39,17 +61,22 @@ namespace Spike
             
             for (auto i = 0; i < sorted.size();)
             {
-                const Locus * end = &sorted[i];
-
+                //if (end->start == 3456296)
+                {
+                  //  std::cout << end->end << std::endl;
+                }
+                
                 // We'll need the index for skipping i
                 auto j = i + 1;
+                
+                Locus super = sorted[i];
                 
                 // Look forward until the end of an overlap region
                 for (; j < sorted.size(); j++)
                 {
-                    if (sorted[j].overlap(*end))
+                    if (sorted[j].overlap(super))
                     {
-                        end = &sorted[j];
+                        super = super + sorted[j];
                     }
                     else
                     {
@@ -58,7 +85,7 @@ namespace Spike
                 }
 
                 // Construct the super-loci for the region
-                merged.push_back(Locus(sorted[i], *end));
+                merged.push_back(super);
 
                 i = j;
             }
