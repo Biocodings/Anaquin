@@ -14,7 +14,13 @@ TEST_CASE("Assembly_Simulations_Annotated")
     
     REQUIRE(r.me.tp() == 490);
     REQUIRE(r.me.fn() == 8);
-    
+
+    REQUIRE(r.mt.tp() == 61);
+    REQUIRE(r.mt.fn() == 0);
+
+    REQUIRE(r.mi.tp() == 429);
+    REQUIRE(r.mi.fn() == 7);
+
     REQUIRE(r.se.id == "R_1_4_R");
     REQUIRE(r.se.counts == 1);
     REQUIRE(r.se.abund == 152);

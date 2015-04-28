@@ -5,19 +5,25 @@
 #include <iostream>
 using namespace Spike;
 
-template <typename Iter, typename F> static void extractIntrons(const Iter &exons, F f)
+template <typename F> static void extractIntrons(const std::map<SequinID, std::vector<Feature>> &x, F f)
 {
-    Feature intr;
-    
-    for (auto i = 0; i < exons.size(); i++)
+    Feature ir;
+
+    for (const auto & ts : x)
     {
-        if (i)
+        for (auto i = 0; i < ts.second.size(); i++)
         {
-            intr = exons[i];
-            intr.l = Locus(exons[i - 1].l.end, exons[i].l.start);
-            
-            // Intron is simply a non-transcribed region spliced between exons
-            f(exons[i - 1], exons[i], intr);
+            if (i)
+            {
+                ir = ts.second[i];
+                ir.l = Locus(ts.second[i - 1].l.end, ts.second[i].l.start);
+
+                if (ts.second[i-1].iID == ts.second[i].iID)
+                {
+                    // Intron is simply a non-transcribed region spliced between exons
+                    f(ts.second[i-1], ts.second[i], ir);
+                }
+            }
         }
     }
 }
@@ -35,6 +41,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     // The structure depends on the mixture
     const auto seqs = s.r_sequin(options.mix);
 
+    std::map<SequinID, std::vector<Feature>> q_exons_;
     std::vector<Feature> q_exons, q_trans, q_introns;
 
     ParserGTF::parse(file, [&](const Feature &f)
@@ -49,7 +56,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
             case Exon:
             {
                 q_exons.push_back(f);
-                
+                q_exons_[f.iID].push_back(f);
+
                 /*
                  * Classify at the exon level
                  */
@@ -94,13 +102,19 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     assert(!s.r_introns.empty());
 
-    // There is no guarantee that the exons in the query are sorted
-    std::sort(q_exons.begin(), q_exons.end(), [&](const Feature &f1, const Feature &f2)
+    /*
+     * Sort the exons in the query since there is no guarantee that those are sorted.
+     */
+    
+    for (auto &i : q_exons_)
     {
-        return f1.l.start < f2.l.start;
-    });
+        std::sort(i.second.begin(), i.second.end(), [&](const Feature &f1, const Feature &f2)
+        {
+            return f1.l.start < f2.l.start;
+        });
+    }
 
-    extractIntrons(q_exons, [&](const Feature &, const Feature &, Feature &i)
+    extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
                    {
                        q_introns.push_back(i);
 
@@ -115,14 +129,6 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                        {
                            ci[i.iID]++;
                        }
-                       
-                       /*
-                        * Classify at the base level
-                        */
-
-                       //stats.mb.nq() += i.l.length();
-                       //stats.mb.tp() += std::min(i.l.length(), countOverlaps(s.r_introns, i));
-                       //stats.mb.fp()  = stats.mb.nq() - stats.mb.tp();
                    });
     
     /*
@@ -132,7 +138,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     countBase(s.r_l_exons,   q_exons,   stats.mb);
     countBase(s.r_l_trans,   q_trans,   stats.mb);
     countBase(s.r_l_introns, q_introns, stats.mb);
-    
+
     /*
      * Setting the known references
      */
