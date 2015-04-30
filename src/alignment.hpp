@@ -8,8 +8,10 @@ namespace Spike
 {
     struct Alignment
     {
+        operator const Locus &() const { return l; }
+
         typedef std::string AlignmentID;
-        
+
         AlignmentID id;
         
         // If this field is false, no assumption can be made to other fields

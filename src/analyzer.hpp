@@ -25,18 +25,6 @@ namespace Spike
             m.nq() += l.length();
             m.tp() += countOverlaps(r, l);
             m.fp()  = m.nq() - m.tp();
-            
-            if (m.nq() != m.tp())
-            {
-                std::cout << l.length() << std::endl;
-                std::cout << countOverlaps(r, l) << std::endl;
-                
-                std::cout << l.start << " " << l.end << std::endl;
-                
-                auto c =countOverlaps(r, l);
-                c =c ;
-            }
-            
         }
     }
     
@@ -75,12 +63,6 @@ namespace Spike
     class AnalyzerStats
     {
         public:
-            // Classification at the base level
-            Confusion mb;
-
-            // Limit of sensitivity at the base level
-            Sensitivity sb;
-
             // Counts for the reference chromosome
             Counts nt = 0;
 

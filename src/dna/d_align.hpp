@@ -2,7 +2,6 @@
 #define GI_D_ALIGN_HPP
 
 #include "analyzer.hpp"
-#include "classify.hpp"
 
 namespace Spike
 {

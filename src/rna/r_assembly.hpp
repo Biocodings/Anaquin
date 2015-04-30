@@ -8,10 +8,12 @@ namespace Spike
 {
     struct RAssemblyStats : public AnalyzerStats
     {
+        Confusion mb;
         Confusion me;
         Confusion mt;
         Confusion mi;
 
+        Sensitivity sb;
         Sensitivity se;
         Sensitivity st;
         Sensitivity si;

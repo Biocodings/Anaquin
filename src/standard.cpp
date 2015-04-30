@@ -15,7 +15,7 @@
 
 using namespace Spike;
 
-static template <typename Iter> BasePair countLocus(const Iter &iter)
+template <typename Iter> BasePair countLocus(const Iter &iter)
 {
     BasePair n = 0;
     
@@ -91,8 +91,6 @@ void Standard::rna(const std::string &mix)
 
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
-
-    std::map<TranscriptID, GeneID> r_iso2Gene;
 
     ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f)
 	{

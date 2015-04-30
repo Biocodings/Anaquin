@@ -123,6 +123,8 @@ namespace Spike
             BasePair r_c_trans;
             BasePair r_c_introns;
 
+            std::map<TranscriptID, GeneID> r_iso2Gene;
+
             /*
              * DNA data
              */
