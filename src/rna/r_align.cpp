@@ -109,7 +109,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     countBase(s.r_l_introns, q_juns,  stats.mb);
     countBase(s.r_l_exons,   q_exons, stats.mb);
 
-    stats.me.nr() = s.r_exons.size();
+    stats.me.nr() = q_exons.size();
     stats.mj.nr() = s.r_introns.size();
     stats.mb.nr() = s.r_c_exons + s.r_c_introns;
 

@@ -63,22 +63,10 @@ namespace Spike
     class AnalyzerStats
     {
         public:
-            // Counts for the reference chromosome
-            Counts nt = 0;
-
-            // Counts for the samples
-            Counts ns = 0;
-
-            // Counts for the experiment
-            inline Counts n() const { return nt + ns; }
-
-            inline Percentage pt() const { return nt / n(); }
-            inline Percentage ps() const { return ns / n(); }
-
-            inline Percentage dilution() const
-            {
-                return n() ? static_cast<Percentage>(nt) / n() : 1.0;
-            }
+            //inline Percentage dilution() const
+            //{
+            //    return n() ? static_cast<Percentage>(nt) / n() : 1.0;
+            //}
     };
 
     struct AnalyzerOptions

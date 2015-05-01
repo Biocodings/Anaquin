@@ -16,7 +16,7 @@ namespace Spike
 
             inline Percentage sn() const
             {
-                assert(_nr);
+                assert(_nr && _nr >= _tp);
                 
                 // Adjust for fn... Refer to the wikipedia for more details
                 _fn = _nr - _tp;
@@ -33,7 +33,7 @@ namespace Spike
 
             inline Percentage sp() const
             {
-                return ((tp() + fp()) && fp() != n()) ? tp() / (tp() + fp()) : NAN;
+                return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
             }
 
         private:
