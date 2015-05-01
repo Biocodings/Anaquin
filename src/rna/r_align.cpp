@@ -90,7 +90,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
         {
             Feature f1, f2;
             q_juns.push_back(align);
-
+            
             if (classify(stats.mj, align, [&](const Alignment &)
                 {
                     return checkSplice(s, align, f1, f2);

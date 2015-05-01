@@ -21,18 +21,20 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
     auto t = bam_init1();
 
     Alignment align;
+    int nn = 0;
 
     while (sam_read1(f, h, t) >= 0)
     {
+        nn++;
+        
         align.id = std::string(h->target_name[0]);
         align.mapped = !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)
         {
             const auto cigar = bam_get_cigar(t);
-            
-            // Length of the sequence
-            int n = 0;
+
+            auto n = t->core.pos;
             
             // It's true only if we have a BAM_CREF_SKIP operation
             align.spliced = false;
