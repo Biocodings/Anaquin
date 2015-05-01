@@ -84,8 +84,8 @@ namespace Spike
 
     struct DoubleMixtureOptions : public AnalyzerOptions
     {
-        Mixture rMix = MixA;
-        Mixture qMix = MixB;
+        const Mixture rMix = MixA;
+        const Mixture qMix = MixB;
     };
 
     struct AnalyzeReporter

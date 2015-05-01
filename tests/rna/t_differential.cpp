@@ -5,12 +5,14 @@ using namespace Spike;
 
 TEST_CASE("Differential_Genes_Simulations_1")
 {
-    const auto r = RDifferential::analyze("tests/data/rna_sims/gene_exp.diff");
+    RDifferential::Options o;
+    o.level = RNALevel::Gene;
+    const auto r = RDifferential::analyze("tests/data/rna_sims/gene_exp.diff", o);
 }
 
 TEST_CASE("Differential_Isoforms_Simulations_1")
 {
-    //RDifferential::Options o;
-    //o.level = RDifferential::Isoform;
-    //const auto r = RDifferential::analyze("tests/data/rna_sims/isoform_exp.diff", o);
+    RDifferential::Options o;
+    o.level = RNALevel::Isoform;
+    const auto r = RDifferential::analyze("tests/data/rna_sims/isoform_exp.diff", o);
 }

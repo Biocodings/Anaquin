@@ -2,12 +2,14 @@
 #define GI_R_ABUNDANCE_HPP
 
 #include "r_analyzer.hpp"
-#include "sensitivity.hpp"
 
 namespace Spike
 {
     struct RAbundanceStats : public AnalyzerStats
     {
+        Confusion m;
+        Sensitivity s;
+
         // Correlation for the samples
         double r;
         
@@ -20,9 +22,9 @@ namespace Spike
 
     struct RAbundance : public RAnalyzer
     {
-        struct Options : public AnalyzerOptions
+        struct Options : public SingleMixtureOptions
         {
-            // Empty Implementation
+            RNALevel level;
         };
 
         static RAbundanceStats analyze(const std::string &file, const Options &options = Options());

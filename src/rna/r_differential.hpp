@@ -1,14 +1,15 @@
 #ifndef GI_R_DIFFERENTIAL_HPP
 #define GI_R_DIFFERENTIAL_HPP
 
-#include "classify.hpp"
 #include "r_analyzer.hpp"
-#include "sensitivity.hpp"
 
 namespace Spike
 {
     struct RDifferentialStats : public AnalyzerStats
     {
+        Confusion m;
+        Sensitivity s;
+
         // Correlation for the samples
         double r;
 
@@ -21,9 +22,9 @@ namespace Spike
 
     struct RDifferential : public RAnalyzer
     {
-        struct Options : public AnalyzerOptions
+        struct Options : public DoubleMixtureOptions
         {
-            // Empty Implementation
+            RNALevel level;
         };
 
         static RDifferentialStats analyze(const std::string &f, const Options &options = Options());
