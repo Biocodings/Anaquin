@@ -36,30 +36,39 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
             
             // It's true only if we have a BAM_CREF_SKIP operation
             align.spliced = false;
+
+            /*
+             * What to do with something like "528084 50 79M10250N22M"? We'd split it into three independent
+             * blocks.
+             */
             
             for (int k = 0; k < t->core.n_cigar; k++)
             {
                 const int op = bam_cigar_op(cigar[k]);
                 const int ol = bam_cigar_oplen(cigar[k]);
+
+                // 1-based leftmost coordinate is assumed
+                align.l.set(n + 1, n + ol);
+
+                // We'll need it for the next operation
+                n += ol;
                 
                 if (op == BAM_CMATCH || op == BAM_CINS || op == BAM_CDEL)
                 {
-                    n += ol;
+                    align.spliced = false;
                 }
                 else if (op == BAM_CREF_SKIP)
                 {
-                    n += ol;
                     align.spliced = true;
                 }
+                
+                x(align);
             }
-            
-            // 1-based leftmost coordinate is assumed
-            align.l.set(t->core.pos + 1, t->core.pos + n);
-
-            assert(n == align.l.length());
         }
-
-        x(align);
+        else
+        {
+            x(align);
+        }
     }
 
     sam_close(f);
