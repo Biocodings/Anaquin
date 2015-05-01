@@ -25,6 +25,16 @@ namespace Spike
             m.nq() += l.length();
             m.tp() += countOverlaps(r, l);
             m.fp()  = m.nq() - m.tp();
+            
+            if (countOverlaps(r, l) != l.length())
+            {
+                std::cout << l.start << " " << l.end << std::endl;
+                std::cout << countOverlaps(r, l) << std::endl;
+                
+                int a = 1;
+                a = 1;                
+            }
+            
         }
     }
     

@@ -61,11 +61,6 @@ namespace Spike
             
             for (auto i = 0; i < sorted.size();)
             {
-                //if (end->start == 3456296)
-                {
-                  //  std::cout << end->end << std::endl;
-                }
-                
                 // We'll need the index for skipping i
                 auto j = i + 1;
                 
