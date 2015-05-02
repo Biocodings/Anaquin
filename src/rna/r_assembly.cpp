@@ -70,7 +70,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     ce.at(f.iID)++;
                 }
 
-                assert(stats.mb.nq() >= stats.mb.tp());
+                assert(stats.mb.nq >= stats.mb.tp());
                 break;
             }
 
@@ -143,23 +143,23 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
      * Setting the known references
      */
 
-    stats.mt.nr() = seqs.size();
-    stats.me.nr() = s.r_exons.size();
-    stats.mi.nr() = s.r_introns.size();
-    stats.mb.nr() = s.r_c_exons + s.r_c_trans + s.r_c_introns;
+    stats.mt.nr = seqs.size();
+    stats.me.nr = s.r_exons.size();
+    stats.mi.nr = s.r_introns.size();
+    stats.mb.nr = s.r_c_exons + s.r_c_trans + s.r_c_introns;
 
-    assert(stats.mb.nr() >= stats.mb.tp());
-    assert(stats.mt.nr() >= stats.mt.tp());
-    assert(stats.me.nr() >= stats.me.tp());
-    assert(stats.mi.nr() >= stats.mi.tp());
+    assert(stats.mb.nr >= stats.mb.tp());
+    assert(stats.mt.nr >= stats.mt.tp());
+    assert(stats.me.nr >= stats.me.tp());
+    assert(stats.mi.nr >= stats.mi.tp());
 
-    assert(stats.me.nq() == q_exons.size());
-    assert(stats.me.nq() >= stats.me.tp());
+    assert(stats.me.nq == q_exons.size());
+    assert(stats.me.nq >= stats.me.tp());
     assert(s.r_exons.size() >= stats.me.tp());
 
-    assert(stats.mt.nq() >= stats.mt.tp());
-    assert(stats.me.nq() >= stats.me.tp());
-    assert(stats.mi.nq() >= stats.mi.tp());
+    assert(stats.mt.nq >= stats.mt.tp());
+    assert(stats.me.nq >= stats.me.tp());
+    assert(stats.mi.nq >= stats.mi.tp());
 
     /*
      * Calculate for the sensitivity

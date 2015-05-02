@@ -22,9 +22,9 @@ namespace Spike
 
         for (auto l : q_merged)
         {
-            m.nq() += l.length();
+            m.nq   += l.length();
             m.tp() += countOverlaps(r, l);
-            m.fp()  = m.nq() - m.tp();
+            m.fp()  = m.nq - m.tp();
         }
     }
     

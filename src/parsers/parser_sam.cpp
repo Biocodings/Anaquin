@@ -8,7 +8,7 @@
 
 using namespace Spike;
 
-void ParserSAM::parse(const std::string &file, std::function<void (const Alignment &)> x)
+void ParserSAM::parse(const std::string &file, std::function<void (const Alignment &, const ParserProgress &)> x)
 {
     auto f = sam_open(file.c_str(), "r");
     
@@ -21,11 +21,11 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
     auto t = bam_init1();
 
     Alignment align;
-    int nn = 0;
+    ParserProgress p;
 
     while (sam_read1(f, h, t) >= 0)
     {
-        nn++;
+        p.i++;
         
         align.id = std::string(h->target_name[0]);
         align.mapped = !(t->core.flag & BAM_FUNMAP);
@@ -63,13 +63,13 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
                 {
                     align.spliced = true;
                 }
-                
-                x(align);
+
+                x(align, p);
             }
         }
         else
         {
-            x(align);
+            x(align, p);
         }
     }
 

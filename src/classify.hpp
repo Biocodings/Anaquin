@@ -9,18 +9,15 @@ namespace Spike
     class Confusion : public SS::Confusion
     {
         public:
-            inline Counts& nq() const { return _nq; }
-            inline Counts& nr() const { return _nr; }
-
             inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
 
             inline Percentage sn() const
             {
-                assert(_nr && _nr >= _tp);
-                
+                assert(nr && nr >= _tp);
+
                 // Adjust for fn... Refer to the wikipedia for more details
-                _fn = _nr - _tp;
-                
+                _fn = nr - _tp;
+
                 return SS::Confusion::sn();
             }
         
@@ -36,9 +33,9 @@ namespace Spike
                 return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
             }
 
-        private:
-            mutable Counts _nq = 0;
-            mutable Counts _nr = 0;
+        //private:
+            Counts nq = 0;
+            Counts nr = 0;
     };
     
     inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
@@ -142,7 +139,7 @@ namespace Spike
         if (t.id == s.id && s.l.contains(t.l))
         {
             // Regardless of whether it's tp, it's counted as an experiment (query) unit
-            m.nq()++;
+            m.nq++;
 
             if (p(t))
             {

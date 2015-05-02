@@ -3,12 +3,13 @@
 
 #include <functional>
 #include "alignment.hpp"
+#include "parsers/parser.hpp"
 
 namespace Spike
 {
     struct ParserSAM
     {
-        static void parse(const std::string &file, std::function<void (const Alignment &)>);
+        static void parse(const std::string &file, std::function<void (const Alignment &, const ParserProgress &)>);
     };
 }
 

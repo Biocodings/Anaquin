@@ -56,7 +56,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     std::vector<Alignment> q_exons;
     std::vector<Alignment> q_juns;
 
-    ParserSAM::parse(file, [&](const Alignment &align)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
         if (!align.mapped)
         {
@@ -101,7 +101,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
             }
         }
     });
-    
+
     /*
      * Classify at the base level
      */
@@ -109,9 +109,9 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     countBase(s.r_l_introns, q_juns,  stats.mb);
     countBase(s.r_l_exons,   q_exons, stats.mb);
 
-    stats.me.nr() = q_exons.size();
-    stats.mj.nr() = s.r_introns.size();
-    stats.mb.nr() = s.r_c_exons + s.r_c_introns;
+    stats.me.nr = q_exons.size();
+    stats.mj.nr = s.r_introns.size();
+    stats.mb.nr = s.r_c_exons + s.r_c_introns;
 
     // The structure depends on the mixture
     const auto seqs = s.r_pair(options.mix);
