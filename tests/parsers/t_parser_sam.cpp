@@ -11,7 +11,7 @@ TEST_CASE("Test_Junction")
      * Cigar: 79M10250N22M
      */
     
-    ParserSAM::parse("tests/data/introns.sam", [&](const Alignment &align)
+    ParserSAM::parse("tests/data/introns.sam", [&](const Alignment &align, const ParserProgress &)
     {
         aligns.push_back(align);
     });

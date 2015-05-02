@@ -7,10 +7,10 @@ TEST_CASE("Assembly_Simulations_Annotated")
 {
     const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_an.gtf");
 
-    REQUIRE(r.me.nq() == 490);
-    REQUIRE(r.me.nr() == 498);
-    REQUIRE(r.mt.nq() == 61);
-    REQUIRE(r.mt.nr() == 61);
+    REQUIRE(r.me.nq == 490);
+    REQUIRE(r.me.nr == 498);
+    REQUIRE(r.mt.nq == 61);
+    REQUIRE(r.mt.nr == 61);
     
     REQUIRE(r.me.tp() == 490);
     REQUIRE(r.me.fn() == 8);
@@ -42,10 +42,10 @@ TEST_CASE("Assembly_Simulations_All_Filtered")
     
     const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_an.gtf", opts);
     
-    REQUIRE(r.me.nq() == 0);
-    REQUIRE(r.me.nr() == 498);
-    REQUIRE(r.mt.nq() == 0);
-    REQUIRE(r.mt.nr() == 61);
+    REQUIRE(r.me.nq == 0);
+    REQUIRE(r.me.nr == 498);
+    REQUIRE(r.mt.nq == 0);
+    REQUIRE(r.mt.nr == 61);
     
     REQUIRE(r.me.tp() == 0);
     REQUIRE(r.me.fn() == 498);
