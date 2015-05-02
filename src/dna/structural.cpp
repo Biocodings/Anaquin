@@ -74,7 +74,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
 //    stats.sb = rb.sens(r.r_seqs_gA);
 //
 //    // Report for the base-level
-//    AnalyzeReporter::reportClassify("variation_base.stats", stats.dilution(), stats.mb, stats.sb, cb, options.writer);
+//    AnalyzeReporter::report("variation_base.stats", stats.dilution(), stats.mb, stats.sb, cb, options.writer);
 //
     return stats;
 }

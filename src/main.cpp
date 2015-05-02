@@ -1,3 +1,4 @@
+#include <ctime>
 #include <iostream>
 #include <unistd.h>
 #include <getopt.h>
@@ -183,16 +184,19 @@ template <typename Analyzer> void analyze(const std::string &file)
 {
     typename Analyzer::Options o;
 
-    // If nothing is provided, default directory (empty string) will be used
-    o.writer = std::shared_ptr<PathWriter>(new PathWriter(_output));
+    o.writer = std::shared_ptr<PathWriter>(new PathWriter(_output.empty() ? "spike_out" : _output));
 
     std::cout << "-----------------------------------------" << std::endl;
     std::cout << "------------- Sequin Analysis -----------" << std::endl;
     std::cout << "-----------------------------------------" << std::endl << std::endl;
 
+    std::clock_t begin = std::clock();
+    
     Analyzer::analyze(file, o);
 
-    std::cout << "Completed." << std::endl;
+    std::clock_t end = std::clock();
+    const double elapsed = double(end - begin) / CLOCKS_PER_SEC;
+    std::cout << "Completed. Elpased: " << elapsed << " seconds" << std::endl;
 }
 
 /*

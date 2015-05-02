@@ -6,36 +6,34 @@
 
 namespace Spike
 {
-    class Confusion : public SS::Confusion
+    struct Confusion : public SS::Confusion
     {
-        public:
-            inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
-
-            inline Percentage sn() const
-            {
-                assert(nr && nr >= _tp);
-
-                // Adjust for fn... Refer to the wikipedia for more details
-                _fn = nr - _tp;
-
-                return SS::Confusion::sn();
-            }
+        inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
         
-            /*
-             * The usual formula: tn / (tn + fp) would not work. We don't know
-             * tn, furthermore fp would have been dominated by tn. The formula
-             * below is consistent to cufflink's recommendation. Technically,
-             * we're not calculating specificity but positive predication value.
-             */
+        inline Percentage sn() const
+        {
+            assert(nr && nr >= _tp);
+            
+            // Adjust for fn... Refer to the wikipedia for more details
+            _fn = nr - _tp;
+            
+            return SS::Confusion::sn();
+        }
+        
+        /*
+         * The usual formula: tn / (tn + fp) would not work. We don't know
+         * tn, furthermore fp would have been dominated by tn. The formula
+         * below is consistent to cufflink's recommendation. Technically,
+         * we're not calculating specificity but positive predication value.
+         */
+        
+        inline Percentage sp() const
+        {
+            return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
+        }
 
-            inline Percentage sp() const
-            {
-                return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
-            }
-
-        //private:
-            Counts nq = 0;
-            Counts nr = 0;
+        Counts nq = 0;
+        Counts nr = 0;
     };
     
     inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
@@ -126,29 +124,34 @@ namespace Spike
         return false;
     }
 
-    /*
-     * Binary classification. Negativity isn't required because in a typical experiment
-     * the dilution would be so low that negativity dominates positivity.
-     */
-
-    template <typename T, typename Positivity>
-    bool classify(Confusion &m, const T &t, Positivity p)
+    enum ClassifyResult
     {
-        static const auto &s = Standard::instance();
+        Ignore = -1,
+        Negative = 0,
+        Positive = 1,
+    };
+    
+    template <typename T, typename Classifer> bool classify(Confusion &m, const T &t, Classifer c)
+    {
+        const auto &s = Standard::instance();
 
         if (t.id == s.id && s.l.contains(t.l))
         {
-            // Regardless of whether it's tp, it's counted as an experiment (query) unit
-            m.nq++;
+            const auto r = c(t);
 
-            if (p(t))
+            if ((void *) r != (void *) ClassifyResult::Ignore)
             {
-                m.tp()++;
-                return true;
-            }
-            else
-            {
-                m.fp()++;
+                if ((void *) r == (void *) ClassifyResult::Negative)
+                {
+                    m.nq++;
+                    m.fp()++;
+                }
+                else
+                {
+                    m.nq++;
+                    m.tp()++;
+                    return true;
+                }
             }
         }
 

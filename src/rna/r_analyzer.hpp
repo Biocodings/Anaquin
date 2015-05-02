@@ -9,7 +9,7 @@ namespace Spike
     struct RAnalyzer
     {
         protected:
-            static std::map<SequinID, Counts> counter(RNALevel level, Mixture mix)
+            static Counter counter(RNALevel level, Mixture mix)
             {
                 const auto &s = Standard::instance();
                 std::map<SequinID, Counts> m;

@@ -11,6 +11,8 @@
 
 namespace Spike
 {
+    typedef std::map<std::string, Counts> Counter;
+
     template <typename Iter1, typename Iter2> void countBase(const Iter1 &r, const Iter2 &q, Confusion &m)
     {
         /*
@@ -90,20 +92,19 @@ namespace Spike
 
     struct AnalyzeReporter
     {
-        template <typename ID> static void reportClassify
+        template <typename ID> static void report
                     (const std::string &name,
                      const Confusion &m,
                      const Sensitivity &s,
                      const std::map<ID, Counts> &c,
                      std::shared_ptr<Writer> writer)
         {
-            const std::string format = "%1%\t%2%\t%3%\n\n";
+            const std::string format = "%1%\t%2%\t%3%";
             
             writer->open(name);
             writer->write((boost::format(format) % "sp" % "sn" % "ss").str());
-            writer->write((boost::format(format) % m.sp()
-                                                 % m.sn()
-                                                 % s.abund).str());
+            writer->write((boost::format(format) % m.sp() % m.sn() % s.abund).str());
+            writer->write("\n");
 
             for (auto p : c)
             {

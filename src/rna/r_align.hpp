@@ -7,13 +7,9 @@ namespace Spike
 {
     struct RAlignStats : public AnalyzerStats
     {
-        Confusion mb;
-        Confusion me;
-        Confusion mj;
-
-        Sensitivity sb;
-        Sensitivity se;
-        Sensitivity sj;
+        Counter     cb, ce, ci;
+        Confusion   mb, me, mi;
+        Sensitivity sb, se, si;
     };
 
     struct RAlign : public RAnalyzer

@@ -49,12 +49,11 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     RAlignStats stats;
     const auto &s = Standard::instance();
 
-    auto cb = RAnalyzer::counter(Gene, options.mix);
-    auto ce = RAnalyzer::counter(Gene, options.mix);
-    auto cj = RAnalyzer::counter(Gene, options.mix);
+    stats.cb = RAnalyzer::counter(Gene, options.mix);
+    stats.ce = RAnalyzer::counter(Gene, options.mix);
+    stats.ci = RAnalyzer::counter(Gene, options.mix);
 
-    std::vector<Alignment> q_exons;
-    std::vector<Alignment> q_juns;
+    std::vector<Alignment> q_exons, q_introns;
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
@@ -63,41 +62,42 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
             return;
         }
 
-        Feature f;
-
         /*
          * Classify at the exon level
          */
 
         if (!align.spliced)
         {
+            Feature f;
             q_exons.push_back(align);
 
             if (classify(stats.me, align, [&](const Alignment &)
                 {
-                    return find(s.r_fs.begin(), s.r_fs.end(), align, f);
+                    const bool succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
+                    return options.filters.count(f.iID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
-                ce.at(s.r_iso2Gene.at(f.iID))++;
+                stats.ce.at(s.r_iso2Gene.at(f.iID))++;
             }
         }
 
         /*
-         * Classify at the junction level
+         * Classify at the intron level
          */
         
         else
         {
             Feature f1, f2;
-            q_juns.push_back(align);
-            
-            if (classify(stats.mj, align, [&](const Alignment &)
+            q_introns.push_back(align);
+
+            if (classify(stats.mi, align, [&](const Alignment &)
                 {
-                    return checkSplice(s, align, f1, f2);
+                    const bool succeed = checkSplice(s, align, f1, f2);
+                    return options.filters.count(f1.iID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
-                
-                cj.at(s.r_iso2Gene.at(f1.iID))++;
+                assert(f1.iID == f2.iID);
+                stats.ci.at(s.r_iso2Gene.at(f1.iID))++;
             }
         }
     });
@@ -106,11 +106,11 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * Classify at the base level
      */
 
-    countBase(s.r_l_introns, q_juns,  stats.mb);
     countBase(s.r_l_exons,   q_exons, stats.mb);
+    countBase(s.r_l_introns, q_introns, stats.mb);
 
-    stats.me.nr = q_exons.size();
-    stats.mj.nr = s.r_introns.size();
+    stats.me.nr = s.r_exons.size();
+    stats.mi.nr = s.r_introns.size();
     stats.mb.nr = s.r_c_exons + s.r_c_introns;
 
     // The structure depends on the mixture
@@ -120,20 +120,20 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the sensitivity
      */
 
-    stats.se = Expression::analyze(ce, seqs);
-    stats.sj = Expression::analyze(cj, seqs);
-    stats.sb = Expression::analyze(cb, seqs);
+    stats.se = Expression::analyze(stats.ce, seqs);
+    stats.si = Expression::analyze(stats.ci, seqs);
+    stats.sb = Expression::analyze(stats.cb, seqs);
 
     const auto &writer = options.writer;
     
     // Report for the base-level
-    AnalyzeReporter::reportClassify("ralign_base.stats", stats.mb, stats.sb, cb, writer);
+    AnalyzeReporter::report("ralign_base.stats", stats.mb, stats.sb, stats.cb, writer);
     
     // Report for the exon-level
-    AnalyzeReporter::reportClassify("ralign_exon.stats", stats.me, stats.se, ce, writer);
+    AnalyzeReporter::report("ralign_exon.stats", stats.me, stats.se, stats.ce, writer);
 
     // Report for the intron-level
-    AnalyzeReporter::reportClassify("ralign_junction.stats", stats.mj, stats.sj, cj, writer);
+    AnalyzeReporter::report("ralign_junction.stats", stats.mi, stats.si, stats.ci, writer);
 
 	return stats;
 }

@@ -177,16 +177,16 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     const auto &writer = options.writer;
 
     // Report the for base level
-    AnalyzeReporter::reportClassify("assembly.base.stats", stats.mb, stats.sb, cb, writer);
+    AnalyzeReporter::report("assembly.base.stats", stats.mb, stats.sb, cb, writer);
 
     // Report the for exons level
-    AnalyzeReporter::reportClassify("assembly.exons.stats", stats.me, stats.se, ce, writer);
+    AnalyzeReporter::report("assembly.exons.stats", stats.me, stats.se, ce, writer);
 
     // Report the for transcripts level
-    AnalyzeReporter::reportClassify("assembly.transcripts.stats", stats.mt, stats.st, ct, writer);
+    AnalyzeReporter::report("assembly.transcripts.stats", stats.mt, stats.st, ct, writer);
 
     // Report the for intron level
-    AnalyzeReporter::reportClassify("assembly.intron.stats", stats.mi, stats.si, ci, writer);
+    AnalyzeReporter::report("assembly.intron.stats", stats.mi, stats.si, ci, writer);
 
     return stats;
 }
