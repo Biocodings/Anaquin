@@ -1,5 +1,7 @@
 #include <catch.hpp>
-#include "parser_gtf.hpp"
+#include "parsers/parser_gtf.hpp"
+
+using namespace Spike;
 
 TEST_CASE("ParserGTFTest")
 {

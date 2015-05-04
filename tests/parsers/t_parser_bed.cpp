@@ -1,5 +1,7 @@
 #include <catch.hpp>
-#include "parser_bed.hpp"
+#include "parsers/parser_bed.hpp"
+
+using namespace Spike;
 
 TEST_CASE("ParserBEDTest")
 {
