@@ -3,6 +3,7 @@
 
 #include <set>
 #include "standard.hpp"
+#include "parsers/parser.hpp"
 
 namespace Spike
 {
@@ -36,11 +37,9 @@ namespace Spike
         Zygosity zy;
     };
 
-    typedef std::function<void (const VCFVariant &)> VCFVariantF;
-
     struct ParserVCF
     {
-        static void parse(const std::string &file, VCFVariantF);
+        static void parse(const std::string &file, std::function<void (const VCFVariant &, const ParserProgress &)>);
     };
 }
 

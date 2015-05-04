@@ -7,7 +7,6 @@
 #include "file.hpp"
 #include "tokens.hpp"
 #include "standard.hpp"
-#include "parsers/parser_fa.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_vcf.hpp"
@@ -58,8 +57,8 @@ void Standard::dna()
 {
     Variation v;
     std::vector<std::string> toks;
-    
-    ParserBED::parse("data/dna/ChrT.5.8.Variation.bed", [&](const BedFeature &b)
+
+    ParserBED::parse("data/dna/ChrT.5.8.Variation.bed", [&](const BedFeature &b, const ParserProgress &)
     {
         v.id  = b.id;
         v.pos = b.l.start;
@@ -158,7 +157,7 @@ void Standard::rna(const std::string &mix)
     // Required while reading mixtures
     std::map<IsoformID, Locus> temp;
 
-    ParserBED::parse("data/rna/standards.bed", [&](const BedFeature &t)
+    ParserBED::parse("data/rna/standards.bed", [&](const BedFeature &t, const ParserProgress &)
     {
         assert(!t.name.empty());
         

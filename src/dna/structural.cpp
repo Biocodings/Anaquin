@@ -47,7 +47,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
     
     auto cb = countsForGenes();
 
-    ParserVCF::parse(file, [&](const VCFVariant &v)
+    ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
     {
 //        classify(stats, v, [&](const VCFVariant &)
 //        {

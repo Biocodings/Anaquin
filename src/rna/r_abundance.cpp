@@ -21,7 +21,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     // Values for the x-axis and y-axis
     std::vector<double> x, y;
 
-    ParserTracking::parse(file, [&](const Tracking &t)
+    ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
     {
         assert(s.r_seqs_gA.count(t.geneID));
 

@@ -3,6 +3,7 @@
 
 #include "feature.hpp"
 #include <functional>
+#include "parsers/parser.hpp"
 
 namespace Spike
 {

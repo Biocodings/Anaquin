@@ -19,7 +19,7 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
     // Values for the coordinates
     std::vector<Concentration> x, y;
 
-    ParserCDiffs::parse(f, [&](const TrackingDiffs &t)
+    ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
         Fold known, measured;
 

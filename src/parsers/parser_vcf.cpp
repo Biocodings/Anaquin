@@ -27,12 +27,13 @@ enum VCFField
     Format_Data_4
 };
 
-void ParserVCF::parse(const std::string &file, VCFVariantF fv)
+void ParserVCF::parse(const std::string &file, std::function<void (const VCFVariant &, const ParserProgress &)> fv)
 {
     std::string line;
     File f(file);
 
     VCFVariant v;
+    ParserProgress p;
 
     std::vector<std::string> t1;
     std::vector<std::string> t2;
@@ -40,6 +41,8 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
 
     while (f.nextLine(line))
     {
+        p.i++;
+
 		if (line[0] == '#')
 		{
 			continue;
@@ -115,6 +118,6 @@ void ParserVCF::parse(const std::string &file, VCFVariantF fv)
             }
         }
 
-        fv(v);
+        fv(v, p);
 	}
 }

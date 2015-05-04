@@ -4,6 +4,7 @@
 #include <vector>
 #include "locus.hpp"
 #include <functional>
+#include "parsers/parser.hpp"
 
 namespace Spike
 {
@@ -21,7 +22,7 @@ namespace Spike
     
     struct ParserBED
     {
-        static void parse(const std::string &file, std::function<void(const BedFeature &)>);
+        static void parse(const std::string &file, std::function<void(const BedFeature &, const ParserProgress &)>);
     };
 }
 

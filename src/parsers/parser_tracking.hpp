@@ -3,6 +3,7 @@
 
 #include "types.hpp"
 #include <functional>
+#include "parsers/parser.hpp"
 #include "parsers/parser_cuffs.hpp"
 
 namespace Spike
@@ -23,7 +24,7 @@ namespace Spike
     
     struct ParserTracking
     {
-        static void parse(const std::string &file, std::function<void (const Tracking &)>);
+        static void parse(const std::string &file, std::function<void (const Tracking &, const ParserProgress &)>);
     };    
 }
 

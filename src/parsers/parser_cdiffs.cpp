@@ -20,16 +20,19 @@ enum TrackingField
     FQValue     = 12,
 };
 
-void ParserCDiffs::parse(const std::string &file, std::function<void (const TrackingDiffs &)> f)
+void ParserCDiffs::parse(const std::string &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)
 {
     File i(file);
     TrackingDiffs t;
-    
+    ParserProgress p;
+
     std::string line;
     std::vector<std::string> tokens;
     
     while (i.nextLine(line))
     {
+        p.i++;
+
         if (boost::starts_with(line, "test_id"))
         {
             continue;
@@ -50,7 +53,7 @@ void ParserCDiffs::parse(const std::string &file, std::function<void (const Trac
 
         if (t.status != TrackingStatus::HIData)
         {
-            f(t);
+            f(t, p);
         }
     }
 }

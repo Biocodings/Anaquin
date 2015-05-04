@@ -15,7 +15,7 @@ enum TrackingField
     T_Status  = 12,
 };
 
-void ParserTracking::parse(const std::string &file, std::function<void (const Tracking &)> f)
+void ParserTracking::parse(const std::string &file, std::function<void (const Tracking &, const ParserProgress &)> f)
 {
     File i(file);
 
@@ -26,12 +26,14 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
     };
 
     Tracking t;
+    ParserProgress p;
     
     std::string line;
     std::vector<std::string> tokens;
     
     while (i.nextLine(line))
     {
+        p.i++;
         Tokens::split(line, "\t", tokens);
        
         /*
@@ -58,9 +60,7 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
 
         if (t.status != TrackingStatus::HIData)
         {
-            f(t);
+            f(t, p);
         }
     }
 }
-
-

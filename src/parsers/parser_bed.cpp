@@ -5,10 +5,11 @@
 
 using namespace Spike;
 
-void ParserBED::parse(const std::string &file, std::function<void(const BedFeature &)> x)
+void ParserBED::parse(const std::string &file, std::function<void(const BedFeature &, const ParserProgress &)> x)
 {
     File f(file);
     BedFeature bf;
+    ParserProgress p;
     
     /*
      *     Required
@@ -37,6 +38,7 @@ void ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
     
     while (f.nextTokens(tokens, "\t"))
     {
+        p.i++;
         bf.blocks.clear();
         
         // Name of the chromosome
@@ -66,6 +68,6 @@ void ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
             }
         }
 
-        x(bf);
+        x(bf, p);
     }
 }
