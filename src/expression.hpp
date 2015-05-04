@@ -11,7 +11,7 @@ namespace Spike
 {
     struct Expression
     {
-        template <typename T> static void print(const std::map<T, unsigned> &m)
+        template <typename Map> static void print(const Map &m)
         {
             for (auto iter = m.begin(); iter != m.end(); iter++)
             {
@@ -30,8 +30,8 @@ namespace Spike
             for (auto iter = c.begin(); iter != c.end(); iter++)
             {
                 /*
-                 * It's a better sensitivity measure if it has smaller counts while
-                 * still detectable. If there's a tie, choose the smaller abundance.
+                 * It's a better sensitivity measure if it has smaller counts while still being
+                 * detectable. Choose the smaller abundance if there's a tie.
                  */
 
                 if (iter->second)

@@ -147,8 +147,6 @@ void Standard::rna(const std::string &mix)
         r_genes.push_back(g);
     }
     
-    #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
-    
     CHECK_AND_SORT(r_exons);
     CHECK_AND_SORT(r_genes);
 
@@ -304,4 +302,9 @@ void Standard::rna(const std::string &mix)
     assert(!Locus::overlap(r_l_introns));
     assert(!Locus::overlap(r_l_trans));
     assert(!Locus::overlap(r_l_exons));
+    
+    for (const auto &i: r_seqs_iA)
+    {
+        r_sequins.push_back(i.second);
+    }
 }

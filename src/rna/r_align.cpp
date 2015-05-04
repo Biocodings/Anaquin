@@ -89,8 +89,8 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * Anything that has not been detected will be the false-positives.
      */
 
-    count(stats.e_lc, stats.me.nr);
-    count(stats.i_lc, stats.mi.nr);
+    count_ref(stats.e_lc, stats.me.nr);
+    count_ref(stats.i_lc, stats.mi.nr);
     stats.mb.nr = s.r_c_exons;
 
     assert(stats.me.nr && stats.mi.nr && stats.mb.nr);
@@ -99,7 +99,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     const auto seqs = s.r_pair(options.mix);
 
     /*
-     * Calculate for the sensitivity
+     * Calculate for the LOS
      */
 
     stats.se = Expression::analyze(stats.ce, seqs);

@@ -67,9 +67,8 @@ TEST_CASE("RAlign_Cufflinks")
     // The sample file was taken from Cufflink's source distribution. It's obviously independent.
     const auto r = RAlign::analyze("tests/data/cufflinks.sam");
 
-    REQUIRE(3329 == r.me.n());
     REQUIRE(0 == r.me.nq);
-    REQUIRE(3329 == r.me.nr);
+    REQUIRE(360 == r.me.nr);
     REQUIRE(isnan(r.me.sp()));
     REQUIRE(isnan(r.me.sn()));
 }

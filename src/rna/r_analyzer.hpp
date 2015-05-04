@@ -5,9 +5,9 @@
 
 namespace Spike
 {
-    typedef std::map<Locus, Counts>    LocusCounter;
-    typedef std::map<GeneID, Counts>   GeneCounter;
-    typedef std::map<SequinID, Counts> SequinCounter;
+    typedef std::map<Locus, Counts>     LocusCounter;
+    typedef std::map<GeneID, Counts>    GeneCounter;
+    typedef std::map<IsoformID, Counts> IsoformCounter;
 
     class RAnalyzer
     {
@@ -28,6 +28,11 @@ namespace Spike
                 return RAnalyzer::counter<std::vector<Feature>, GeneID>(Standard::instance().r_genes);
             }
 
+            static IsoformCounter isoformCounter()
+            {
+                return RAnalyzer::counter<std::vector<Sequin>, IsoformID>(Standard::instance().r_sequins);
+            }
+
         private:
         
             template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
@@ -44,7 +49,7 @@ namespace Spike
 
         protected:
 
-            template <typename T> static void count(const std::map<T, Counts> &m, Counts &c)
+            template <typename T> static void count_ref(const std::map<T, Counts> &m, Counts &c)
             {
                 for (const auto & i : m)
                 {
@@ -57,6 +62,8 @@ namespace Spike
                         c += i.second;
                     }
                 }
+
+                assert(c);
             }
         
             static Counter counter(RNALevel level, Mixture mix)

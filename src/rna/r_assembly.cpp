@@ -15,12 +15,10 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
         {
             if (i)
             {
-                ir = ts.second[i];
-                ir.l = Locus(ts.second[i - 1].l.end, ts.second[i].l.start);
-
                 if (ts.second[i-1].iID == ts.second[i].iID)
                 {
-                    // Intron is simply a non-transcribed region spliced between exons
+                    ir = ts.second[i];
+                    ir.l = Locus(ts.second[i - 1].l.end + 1, ts.second[i].l.start - 1);
                     f(ts.second[i-1], ts.second[i], ir);
                 }
             }
@@ -33,16 +31,11 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     RAssemblyStats stats;
     const auto &s = Standard::instance();
 
-    auto cb = RAnalyzer::counter(Isoform, options.mix);
-    auto ce = RAnalyzer::counter(Isoform, options.mix);
-    auto ct = RAnalyzer::counter(Isoform, options.mix);
-    auto ci = RAnalyzer::counter(Isoform, options.mix);
-
     // The structure depends on the mixture
     const auto seqs = s.r_sequin(options.mix);
 
     std::map<SequinID, std::vector<Feature>> q_exons_;
-    std::vector<Feature> q_exons, q_trans, q_introns;
+    std::vector<Feature> q_exons;
 
     ParserGTF::parse(file, [&](const Feature &f)
     {
@@ -61,23 +54,21 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                 /*
                  * Classify at the exon level
                  */
-                
+
                 if (classify(stats.me, f, [&](const Feature &)
                 {
                     return find(s.r_exons, f, ExactRule);
                 }))
                 {
-                    ce.at(f.iID)++;
+                    stats.e_lc.at(f.l)++;
+                    stats.ce.at(f.iID)++;
                 }
 
-                assert(stats.mb.nq >= stats.mb.tp());
                 break;
             }
 
             case Transcript:
             {
-                q_trans.push_back(f);
-                
                 /*
                  * Classify at the transctipt level
                  */
@@ -87,7 +78,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     return find_map(seqs, f, ExactRule);
                 }))
                 {
-                    ct.at(f.iID)++;
+                    stats.t_lc.at(f.iID)++;
+                    stats.ct.at(f.iID)++;
                 }
 
                 break;
@@ -100,24 +92,17 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
         }
     });
 
-    assert(!s.r_introns.empty());
-
     /*
-     * Sort the exons in the query since there is no guarantee that those are sorted.
+     * Sort the exons in the query since there is no guarantee that those are sorted
      */
     
     for (auto &i : q_exons_)
     {
-        std::sort(i.second.begin(), i.second.end(), [&](const Feature &f1, const Feature &f2)
-        {
-            return f1.l.start < f2.l.start;
-        });
+        CHECK_AND_SORT(i.second);
     }
 
     extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
                    {
-                       q_introns.push_back(i);
-
                        /*
                         * Classify at the intron level
                         */
@@ -127,7 +112,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                            return find(s.r_introns, i, ExactRule);
                        }))
                        {
-                           ci[i.iID]++;
+                           stats.i_lc.at(i.l)++;
+                           stats.ci[i.iID]++;
                        }
                    });
     
@@ -135,58 +121,38 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
      * Classify at the base level
      */
 
-    countBase(s.r_l_exons,   q_exons,   stats.mb);
-    countBase(s.r_l_trans,   q_trans,   stats.mb);
-    countBase(s.r_l_introns, q_introns, stats.mb);
+    countBase(s.r_l_exons, q_exons, stats.mb);
 
     /*
      * Setting the known references
      */
+    
+    count_ref(stats.e_lc, stats.me.nr);
+    count_ref(stats.i_lc, stats.mi.nr);
 
+    // The number of sequins is also the number of known transcripts
     stats.mt.nr = seqs.size();
-    stats.me.nr = s.r_exons.size();
-    stats.mi.nr = s.r_introns.size();
-//    stats.mb.nr = s.r_c_exons + s.r_c_trans + s.r_c_introns;
-
-    assert(stats.mb.nr >= stats.mb.tp());
-    assert(stats.mt.nr >= stats.mt.tp());
-    assert(stats.me.nr >= stats.me.tp());
-    assert(stats.mi.nr >= stats.mi.tp());
-
-    assert(stats.me.nq == q_exons.size());
-    assert(stats.me.nq >= stats.me.tp());
-    assert(s.r_exons.size() >= stats.me.tp());
-
-    assert(stats.mt.nq >= stats.mt.tp());
-    assert(stats.me.nq >= stats.me.tp());
-    assert(stats.mi.nq >= stats.mi.tp());
+    
+    // The known base length is the total length of all known exons
+    stats.mb.nr = s.r_c_exons;
 
     /*
-     * Calculate for the sensitivity
+     * Calculate for the LOS
      */
 
-    stats.se = Expression::analyze(ce, seqs);
-    stats.st = Expression::analyze(ct, seqs);
-    stats.sb = Expression::analyze(cb, seqs);
-    stats.si = Expression::analyze(ci, seqs);
+    stats.se = Expression::analyze(stats.ce, seqs);
+    stats.st = Expression::analyze(stats.ct, seqs);
+    stats.sb = Expression::analyze(stats.cb, seqs);
+    stats.si = Expression::analyze(stats.ci, seqs);
 
     /*
      * Report for the statistics
      */
-    
-    const auto &writer = options.writer;
 
-    // Report the for base level
-    AnalyzeReporter::report("assembly.base.stats", stats.mb, stats.sb, cb, writer);
-
-    // Report the for exons level
-    AnalyzeReporter::report("assembly.exons.stats", stats.me, stats.se, ce, writer);
-
-    // Report the for transcripts level
-    AnalyzeReporter::report("assembly.transcripts.stats", stats.mt, stats.st, ct, writer);
-
-    // Report the for intron level
-    AnalyzeReporter::report("assembly.intron.stats", stats.mi, stats.si, ci, writer);
+    AnalyzeReporter::report("assembly.base.stats", stats.mb, stats.sb, stats.cb, options.writer);
+    AnalyzeReporter::report("assembly.exons.stats", stats.me, stats.se, stats.ce, options.writer);
+    AnalyzeReporter::report("assembly.intron.stats", stats.mi, stats.si, stats.ci, options.writer);
+    AnalyzeReporter::report("assembly.transcripts.stats", stats.mt, stats.st, stats.ct, options.writer);
 
     return stats;
 }

@@ -8,6 +8,8 @@
 
 namespace Spike
 {
+    #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
+
     enum Mixture
     {
         MixA,
@@ -34,6 +36,9 @@ namespace Spike
 
     struct Sequin
     {
+        operator Locus()     const { return l;  }
+        operator IsoformID() const { return id; }
+
         inline Concentration abund(bool norm) const
         {
             return norm ? fpkm : raw;
@@ -101,6 +106,8 @@ namespace Spike
 
             SequinMap  r_seqs_iA, r_seqs_iB;
             SequinsMap r_seqs_gA, r_seqs_gB;
+
+            std::vector<Sequin> r_sequins;
 
             std::vector<Feature> r_fs;
             std::vector<Feature> r_genes;

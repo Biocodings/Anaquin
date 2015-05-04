@@ -7,7 +7,7 @@
 #include <vector>
 #include <assert.h>
 #include "types.hpp"
-#include <iostream>
+
 namespace Spike
 {
     struct Locus
@@ -19,12 +19,6 @@ namespace Spike
         }
 
         Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
-
-        inline void set(BasePair start, BasePair end)
-        {
-            this->start = start; this->end = end;
-            assert(this->end >= this->start);
-        }
 
         static bool overlap(const std::vector<Locus> &ls)
         {

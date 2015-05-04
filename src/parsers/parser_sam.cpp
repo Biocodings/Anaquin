@@ -50,7 +50,7 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
                 const int ol = bam_cigar_oplen(cigar[k]);
 
                 // 1-based leftmost coordinate is assumed
-                align.l.set(n + 1, n + ol);
+                align.l = Locus(n + 1, n + ol);
 
                 // We'll need it for the next operation
                 n += ol;
