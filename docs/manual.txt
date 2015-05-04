@@ -76,7 +76,7 @@ Version: 1.0.00
               Analyse sequins only with expression (in FPKM) lower than this value. Can be used with -max
               to specific range of expression values. Can be used for assembly, abundance, and differential.
 
-        —-limitofsensitivity <FPKM>
+        —-los <FPKM>
               This will restrict analysis to sequins with expression (in FPKM) higher than calculated limit
               of sensitivity. Analyse only sequins detected. This will ignore sequins not detected in
               alignment file from analysis.
