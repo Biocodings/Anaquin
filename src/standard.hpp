@@ -32,14 +32,6 @@ namespace Spike
         Sequence r, m;
     };
 
-    struct TGene
-    {
-        GeneID id;
-
-        // 1-indexed locus relative to the chromosome
-        Locus l;
-    };
-    
     struct Sequin
     {
         inline Concentration abund(bool norm) const
@@ -111,7 +103,7 @@ namespace Spike
             SequinsMap r_seqs_gA, r_seqs_gB;
 
             std::vector<Feature> r_fs;
-            std::vector<TGene>   r_genes;
+            std::vector<Feature> r_genes;
             std::vector<Feature> r_exons;
             std::vector<Feature> r_introns;
 

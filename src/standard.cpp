@@ -118,9 +118,9 @@ void Standard::rna(const std::string &mix)
 
     for (auto gid : gids)
     {
-        TGene g;
-        
-        g.id = gid;
+        Feature g;
+
+        g.id = g.geneID = gid;
         g.l.end = std::numeric_limits<BasePair>::min();
         g.l.start = std::numeric_limits<BasePair>::max();
 
@@ -144,24 +144,13 @@ void Standard::rna(const std::string &mix)
         }
 
         assert(g.l.end > g.l.start);
-
-        assert(!r_exons.empty());
         r_genes.push_back(g);
     }
     
-    assert(!r_genes.empty());
-
-    // Sort the exons by starting position
-    std::sort(r_exons.begin(), r_exons.end(), [](const Feature& x, const Feature& y)
-    {
-        return (x.l.start < y.l.start);
-    });
-
-    // Sort the genes by starting position
-    std::sort(r_genes.begin(), r_genes.end(), [](const TGene& x, const TGene& y)
-    {
-        return (x.l.start < y.l.start);
-    });
+    #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
+    
+    CHECK_AND_SORT(r_exons);
+    CHECK_AND_SORT(r_genes);
 
     /*
      * An identical GTF file has already been parsed. For simplistic, we prefer to directly
@@ -173,31 +162,32 @@ void Standard::rna(const std::string &mix)
 
     ParserBED::parse("data/rna/standards.bed", [&](const BedFeature &t)
     {
+        assert(!t.name.empty());
+        
         // How easy this is, we'd have to perform unions from a GTF file
         temp[t.name] = t.l;
-        
+
         /*
          * In this context, we're given a transcript. Each block in the transcript is an exon.
          */
 
         Feature j;
 
+        j.id = id;
+        j.iID = t.name;
+        j.type = Intron;
+
         for (auto i = 0; i < t.blocks.size(); i++)
         {
             if (i)
             {
-                j.id = id;
-                j.type = Junction;
-
-                // Intron is a region between exons that have been spliced
-                j.l = Locus(t.blocks[i - 1].end - 1, t.blocks[i].start); // ????
-
+                j.l = Locus(t.blocks[i - 1].end + 1, t.blocks[i].start - 1);
                 r_l_introns.push_back(j.l);
                 r_introns.push_back(j);
             }
         }
 
-        const auto iter = std::find_if(r_genes.begin(), r_genes.end(), [&](const TGene &g)
+        const auto iter = std::find_if(r_genes.begin(), r_genes.end(), [&](const Feature &g)
         {
             return (g.id == r_iso2Gene[t.name]);
         });
@@ -205,7 +195,7 @@ void Standard::rna(const std::string &mix)
         assert(iter != r_genes.end());
     });
 
-    assert(!r_introns.empty());
+    CHECK_AND_SORT(r_introns);
 
     static std::map<std::string, Group> gs =
     {

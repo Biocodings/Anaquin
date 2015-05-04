@@ -119,15 +119,9 @@ namespace Spike
             return (q.start >= start && q.end <= end);
         }
 
-        inline Locus operator+(const Locus &l) const
-        {
-            return Locus(std::min(start, l.start), std::max(end, l.end));
-        }
-
-        bool operator==(const Locus &x) const
-        {
-            return start == x.start && end == x.end;
-        }
+        inline Locus operator+(const Locus &l) const { return Locus(std::min(start, l.start), std::max(end, l.end));}
+        inline bool operator==(const Locus &l) const { return start == l.start && end == l.end; }
+        inline bool operator<(const Locus &l)  const { return start < l.start || (start == l.start && end < l.end); }
 
         BasePair start, end;
     };

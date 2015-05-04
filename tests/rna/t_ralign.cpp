@@ -5,6 +5,35 @@ using namespace Spike;
 
 static std::string exts[] = { "sam", "bam" };
 
+TEST_CASE("RAlign_Simulations")
+{
+    for (auto ex : exts)
+    {
+        const auto r = RAlign::analyze("tests/data/rna_sims/accepted_hits." + ex);
+
+        REQUIRE(r.mb.nq == 31718);
+        REQUIRE(r.mb.nr == 54280);
+        REQUIRE(r.mb.sp() == Approx(0.9978245791));
+        REQUIRE(r.mb.sn() == Approx(0.5830692704));
+        
+        REQUIRE(r.me.nq == 161295);
+        REQUIRE(r.me.nr == 161142);
+        REQUIRE(r.me.sp() == Approx(0.9981400539));
+        REQUIRE(r.me.sn() == Approx(0.9990691613));
+        REQUIRE(r.se.id == "R_5_1");
+        REQUIRE(r.se.counts == 22);
+        REQUIRE(r.se.abund == 9765.0);
+
+        REQUIRE(r.mi.nq == 59243);
+        REQUIRE(r.mi.nr == 59121);
+        REQUIRE(r.mi.sp() == Approx(0.9957800922));
+        REQUIRE(r.mi.sn() == Approx(0.9978349487));
+        REQUIRE(r.si.id == "R_5_1");
+        REQUIRE(r.si.counts == 3);
+        REQUIRE(r.si.abund == 9765.0);
+    }
+}
+
 TEST_CASE("RAlign_Simulations_All_Filtered")
 {
     for (auto ex : exts)
@@ -20,40 +49,16 @@ TEST_CASE("RAlign_Simulations_All_Filtered")
         const auto r = RAlign::analyze("tests/data/rna_sims/accepted_hits." + ex, opts);
         
         REQUIRE(r.me.nq == 300);
-        REQUIRE(r.me.nr == 161297);
+        REQUIRE(r.me.nr == 360);
         REQUIRE(isnan(r.me.sn()));
         REQUIRE(r.me.sp() == 0.0);
         REQUIRE(r.se.id == "");
 
-        REQUIRE(r.mi.nq == 0);
-        REQUIRE(r.mi.nr == 436);
+        REQUIRE(r.mi.nq == 250);
+        REQUIRE(r.mi.nr == 332);
         REQUIRE(isnan(r.mi.sn()));
         REQUIRE(r.mi.sp() == 0.0);
         REQUIRE(r.si.id == "");
-    }
-}
-
-TEST_CASE("RAlign_Simulations")
-{
-    for (auto ex : exts)
-    {
-        const auto r = RAlign::analyze("tests/data/rna_sims/accepted_hits." + ex);
-
-        REQUIRE(r.me.nq == 161295);
-        REQUIRE(r.me.nr == 161297);
-        REQUIRE(r.me.sp() == Approx(0.9981400539));
-        REQUIRE(r.me.sn() == Approx(0.9981276775));
-        REQUIRE(r.se.id == "R_5_1");
-        REQUIRE(r.se.counts == 22);
-        REQUIRE(r.se.abund == 9765.0);
-
-        REQUIRE(r.mi.nq == 161295);
-        REQUIRE(r.mi.nr == 161297);
-        REQUIRE(r.mi.sp() == Approx(0.9981400539));
-        REQUIRE(r.mi.sn() == Approx(0.9981276775));
-        REQUIRE(r.si.id == "R_5_1");
-        REQUIRE(r.si.counts == 22);
-        REQUIRE(r.si.abund == 9765.0);
     }
 }
 

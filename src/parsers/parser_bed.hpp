@@ -12,7 +12,7 @@ namespace Spike
         ChromoID id;
         
         Locus l;
-        
+
         FeatureName name;
         
         // Locations of the sorted blocks

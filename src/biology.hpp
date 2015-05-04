@@ -8,7 +8,17 @@ namespace Spike
         Gene,
         Isoform
     };
-
+    
+    enum RNAFeature
+    {
+        CDS,
+        Exon,
+        Intron,
+        StopCodon,
+        StartCodon,
+        Transcript,
+    };
+    
     template <typename T1, typename T2> bool contains(const T1 &t1, const T2 &t2)
     {
         return t1.l.contains(t2.l);

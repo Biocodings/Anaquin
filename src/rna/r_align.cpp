@@ -1,46 +1,26 @@
-#include <iostream>
 #include <assert.h>
 #include "r_align.hpp"
 #include "biology.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
-#include "writers/writer.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;
 
-static bool checkSplice(const Standard &s, const Alignment &align, Feature &e1, Feature &e2)
+static bool checkSplice(const Alignment &align, Feature &f)
 {
     assert(align.spliced);
-
-    /*
-     * A spliced alignment is correct if it aligns to two consecutive exons
-     */
-        
-    for (auto i = 0; i < s.r_exons.size(); i++)
+    const auto &s = Standard::instance();
+    
+    for (auto i = 0; i < s.r_introns.size(); i++)
     {
-        e1 = s.r_exons[i];
-
-        // Check if it starts inside exon_1
-        if (align.l.start >= e1.l.start && align.l.start <= e1.l.end && align.l.end > e1.l.end
-            && i != s.r_exons.size() - 1)
+        if (align.l == s.r_introns[i].l)
         {
-            for (auto j = i + 1; j < s.r_exons.size(); j++)
-            {
-                e2 = s.r_exons[j];
-
-                if (e1.iID == e2.iID)
-                {
-                    // Check if it ends inside exon_2
-                    if (align.l.start < e2.l.start && align.l.end >= e2.l.start && align.l.end <= e2.l.end)
-                    {
-                        return true;
-                    }
-                }
-            }
+            f = s.r_introns[i];
+            return true;
         }
     }
-    
+
     return false;
 }
 
@@ -49,14 +29,12 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     RAlignStats stats;
     const auto &s = Standard::instance();
 
-    stats.cb = RAnalyzer::counter(Gene, options.mix);
-    stats.ce = RAnalyzer::counter(Gene, options.mix);
-    stats.ci = RAnalyzer::counter(Gene, options.mix);
-
     std::vector<Alignment> q_exons, q_introns;
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
+        Feature f;
+        
         if (!align.mapped)
         {
             return;
@@ -68,7 +46,6 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
 
         if (!align.spliced)
         {
-            Feature f;
             q_exons.push_back(align);
 
             if (classify(stats.me, align, [&](const Alignment &)
@@ -77,6 +54,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
                     return options.filters.count(f.iID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
+                stats.e_lc.at(f.l)++;
                 stats.ce.at(s.r_iso2Gene.at(f.iID))++;
             }
         }
@@ -87,32 +65,37 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
         
         else
         {
-            Feature f1, f2;
             q_introns.push_back(align);
 
             if (classify(stats.mi, align, [&](const Alignment &)
                 {
-                    const bool succeed = checkSplice(s, align, f1, f2);
-                    return options.filters.count(f1.iID) ? Ignore : succeed ? Positive : Negative;
+                    const bool succeed = checkSplice(align, f);
+                    return options.filters.count(f.iID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
-                assert(f1.iID == f2.iID);
-                stats.ci.at(s.r_iso2Gene.at(f1.iID))++;
+                stats.i_lc.at(align.l)++;
+                stats.ci.at(s.r_iso2Gene.at(f.iID))++;
             }
         }
     });
-
+    
     /*
      * Classify at the base level
      */
+    
+    countBase(s.r_l_exons, q_exons, stats.mb);
 
-    countBase(s.r_l_exons,   q_exons, stats.mb);
-    countBase(s.r_l_introns, q_introns, stats.mb);
+    /*
+     * Calculating for the references. The idea is similar to cuffcompare, where a reference is counted for each true-positive.
+     * Anything that has not been detected will be the false-positives.
+     */
 
-    stats.me.nr = s.r_exons.size();
-    stats.mi.nr = s.r_introns.size();
-    stats.mb.nr = s.r_c_exons + s.r_c_introns;
+    count(stats.e_lc, stats.me.nr);
+    count(stats.i_lc, stats.mi.nr);
+    stats.mb.nr = s.r_c_exons;
 
+    assert(stats.me.nr && stats.mi.nr && stats.mb.nr);
+    
     // The structure depends on the mixture
     const auto seqs = s.r_pair(options.mix);
 
@@ -124,16 +107,9 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     stats.si = Expression::analyze(stats.ci, seqs);
     stats.sb = Expression::analyze(stats.cb, seqs);
 
-    const auto &writer = options.writer;
-    
-    // Report for the base-level
-    AnalyzeReporter::report("ralign_base.stats", stats.mb, stats.sb, stats.cb, writer);
-    
-    // Report for the exon-level
-    AnalyzeReporter::report("ralign_exon.stats", stats.me, stats.se, stats.ce, writer);
-
-    // Report for the intron-level
-    AnalyzeReporter::report("ralign_junction.stats", stats.mi, stats.si, stats.ci, writer);
+    AnalyzeReporter::report("ralign_base.stats", stats.mb, stats.sb, stats.cb, options.writer);
+    AnalyzeReporter::report("ralign_exon.stats", stats.me, stats.se, stats.ce, options.writer);
+    AnalyzeReporter::report("ralign_introns.stats", stats.mi, stats.si, stats.ci, options.writer);
 
 	return stats;
 }

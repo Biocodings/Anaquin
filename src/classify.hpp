@@ -54,7 +54,7 @@ namespace Spike
 
     /*
      * Loop through an iterator and count the total number of overlaps in t.
-     * The loci in the iterator are assumed be non-overlapping.
+     * The elements in the iterator are assumed be non-overlapping.
      */
 
     template <typename Iter, typename T> BasePair countOverlaps(const Iter &iter, const T &t)
@@ -63,12 +63,12 @@ namespace Spike
 
         for (auto &i : iter)
         {
-            if (static_cast<Locus>(t).overlap(i))
+            if (static_cast<Locus>(t).overlap(i)) // TODO
             {
                 n += static_cast<Locus>(t).overlap(i);
             }
         }
-
+        
         return n;
     }
 

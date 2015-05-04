@@ -1,4 +1,3 @@
-#include <vector>
 #include <catch.hpp>
 #include "standard.hpp"
 
@@ -6,18 +5,43 @@ using namespace Spike;
 
 TEST_CASE("Standard_ID")
 {
-    const auto &r = Standard::instance();
-	REQUIRE("chrT" == r.id);
+	REQUIRE("chrT" == Standard::instance().id);
 }
 
-TEST_CASE("Standard_Isoforms")
+TEST_CASE("Standard_Introns")
 {
-    const auto &r = Standard::instance();
+    const auto &s = Standard::instance();
 
-    REQUIRE(r.r_seqs_iA.size() == 61);
-    REQUIRE(r.r_seqs_iB.size() == 61);
+    REQUIRE(s.r_introns.size() == 436);
 
-    const auto ids =
+    REQUIRE(s.r_introns[0].id == "chrT");
+    REQUIRE(s.r_introns[0].type == Intron);
+    REQUIRE(s.r_introns[0].l == Locus(388627, 447004));
+}
+
+TEST_CASE("Standard_RNA_Sequins")
+{
+    const auto &s = Standard::instance();
+
+    REQUIRE(s.r_genes.size()   == 32);
+    REQUIRE(s.r_seqs_iA.size() == 61);
+    REQUIRE(s.r_seqs_iB.size() == 61);
+
+    const auto genes =
+    {
+        "R_1_1",  "R_1_2",  "R_1_3", "R_1_4",
+        "R_2_1",  "R_2_2",  "R_2_3", "R_2_4",
+        "R_3_1",  "R_3_2",  "R_3_3",
+        "R_4_1",  "R_4_2",  "R_4_3",
+        "R_5_1",  "R_5_2",  "R_5_3",
+        "R_6_1",  "R_6_2",  "R_6_3",
+        "R_7_1",  "R_7_2",  "R_7_3",
+        "R_8_1",  "R_8_2",  "R_8_3",
+        "R_9_1",  "R_9_2",  "R_9_3",
+        "R_10_1", "R_10_2", "R_10_3",
+    };
+    
+    const auto trans =
     {
         "R_1_1_R",  "R_1_1_V",  "R_1_2_R",  "R_1_2_V",  "R_1_3_R",  "R_1_3_V",
         "R_1_4_R",  "R_10_1_R", "R_10_1_V", "R_10_2_R", "R_10_2_V", "R_10_3_R",
@@ -32,8 +56,15 @@ TEST_CASE("Standard_Isoforms")
         "R_9_3_V"
     };
 
-    for (auto id : ids)
+    for (auto g : genes)
     {
-        REQUIRE(r.r_seqs_iA.count(id));
+        REQUIRE(s.r_seqs_gA.count(g));
+        REQUIRE(s.r_seqs_gB.count(g));
+    }
+
+    for (auto t : trans)
+    {
+        REQUIRE(s.r_seqs_iA.count(t));
+        REQUIRE(s.r_seqs_iB.count(t));
     }
 }

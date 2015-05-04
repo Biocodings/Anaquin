@@ -146,7 +146,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     stats.mt.nr = seqs.size();
     stats.me.nr = s.r_exons.size();
     stats.mi.nr = s.r_introns.size();
-    stats.mb.nr = s.r_c_exons + s.r_c_trans + s.r_c_introns;
+//    stats.mb.nr = s.r_c_exons + s.r_c_trans + s.r_c_introns;
 
     assert(stats.mb.nr >= stats.mb.tp());
     assert(stats.mt.nr >= stats.mt.tp());

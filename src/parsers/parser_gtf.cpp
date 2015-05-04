@@ -9,7 +9,7 @@ using namespace Spike;
 
 void ParserGTF::parse(const std::string &file, std::function<void (const Feature &)> x)
 {
-    std::map<std::string, FeatureType> mapper =
+    std::map<std::string, RNAFeature> mapper =
     {
         { "exon", Exon },
         { "CDS",  CDS  },

@@ -2,19 +2,10 @@
 #define GI_FEATURE_HPP
 
 #include "locus.hpp"
+#include "biology.hpp"
 
 namespace Spike
 {
-    enum FeatureType
-    {
-        CDS,
-        Exon,
-        Junction,
-        StopCodon,
-        StartCodon,
-        Transcript,
-    };
-
     typedef std::string FeatureID;
     
     struct Feature
@@ -24,10 +15,8 @@ namespace Spike
             return this->l.overlap(l);
         }
 
-        operator Locus &()
-        {
-            return l;
-        }
+        operator Locus() const     { return l;  }
+        operator FeatureID() const { return id; }
 
         void operator=(const Feature &f)
         {
@@ -42,8 +31,8 @@ namespace Spike
 
         // The location of the feature relative to the chromosome
         Locus l;
-        
-        FeatureType type;
+
+        RNAFeature type;
         
         // Empty if the information is unavailable
         GeneID geneID;

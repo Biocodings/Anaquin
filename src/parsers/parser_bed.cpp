@@ -55,13 +55,13 @@ void ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
                 boost::split(sizes,  tokens[10], boost::is_any_of(","));
                 boost::split(starts, tokens[11], boost::is_any_of(","));
                 assert(sizes.size() == starts.size());
-                
+
                 for (auto i = 0; i < stod(tokens[9]); i++)
                 {
                     const BasePair start = stod(starts[i]);
                     const BasePair size  = stod(sizes[i]);
-                    
-                    bf.blocks.push_back(Locus(bf.l.start + start, bf.l.start + start + size));
+
+                    bf.blocks.push_back(Locus(bf.l.start + start, bf.l.start + start + size - 1));
                 }
             }
         }
