@@ -3,12 +3,11 @@
 
 using namespace Spike;
 
-TEST_CASE("Abundance_Gene_Simulations_1")
+TEST_CASE("RAbundance_Simulations_TMap")
 {
-    RAbundance::Options o;
-    o.level = RNALevel::Gene;
-    const auto r = RAbundance::analyze("tests/data/rna_sims/rna.transcripts_an.gtf.tmap", o);
+    const auto r = RAbundance::analyze("tests/data/rna_sims/rna.transcripts_an.gtf.tmap");
 
+    
 
 }
 

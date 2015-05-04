@@ -4,6 +4,7 @@
 #include "expression.hpp"
 #include "r_abundance.hpp"
 #include "writers/r_writer.hpp"
+#include "parsers/parser_tmap.hpp"
 #include "parsers/parser_tracking.hpp"
 #include <ss/regression/linear_model.hpp>
 
@@ -11,69 +12,96 @@ using namespace SS;
 using namespace SS::R;
 using namespace Spike;
 
+static bool suffix(const std::string &str, const std::string &suffix)
+{
+    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 RAbundanceStats RAbundance::analyze(const std::string &file, const Options &options)
 {
     RAbundanceStats stats;
     const auto &s = Standard::instance();
 
-    auto c = RAnalyzer::counter(options.level, options.mix);
+    auto c = RAnalyzer::isoformCounter();
 
     // Values for the x-axis and y-axis
     std::vector<double> x, y;
 
-    ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
+    if (suffix(file, ".tmap"))
     {
-        assert(s.r_seqs_gA.count(t.geneID));
-
-        switch (options.level)
+        ParserTMap::parse(file, [&](const TMap &t, const ParserProgress &)
         {
-            case Gene:
+            if (s.r_seqs_iA.count(t.refID))
             {
-                c[t.geneID]++;
-                const auto &m = s.r_seqs_gA.at(t.geneID);
+                c[t.refID]++;
                 
                 if (t.fpkm)
                 {
-                    /*
-                     * The x-axis would be the known concentration for each gene,
-                     * the y-axis would be the expression (RPKM) reported.
-                     */
-                    
-                    x.push_back(m.abund(true));
+                    const auto &i = s.r_seqs_iA.at(t.refID);
+                    x.push_back(i.abund(true));
                     y.push_back(t.fpkm);
                 }
-
-                break;
             }
-
-            case Isoform:
-            {
-                c[t.trackID]++;
-                assert(s.r_seqs_iA.count(t.trackID));
-                
-                if (t.fpkm)
-                {
-                    const auto &i = s.r_seqs_iA.at(t.trackID);
-
-                    x.push_back(i.abund(true));
-                    y.push_back(t.fpkm);                    
-                }
-                
-                break;
-            }
-        }
-    });
-
-    assert(!x.empty() && !y.empty());
-
-    if (options.level == Gene)
-    {
-        stats.s = Expression::analyze(c, s.r_pair(options.mix));
+        });
+    
+        stats.s = Expression::analyze(c, s.r_sequin(options.mix));
     }
     else
     {
-        stats.s = Expression::analyze(c, s.r_sequin(options.mix));
+        ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
+                              {
+                                  assert(s.r_seqs_gA.count(t.geneID));
+                                  
+                                  switch (options.level)
+                                  {
+                                      case Gene:
+                                      {
+                                          c[t.geneID]++;
+                                          const auto &m = s.r_seqs_gA.at(t.geneID);
+                                          
+                                          if (t.fpkm)
+                                          {
+                                              /*
+                                               * The x-axis would be the known concentration for each gene,
+                                               * the y-axis would be the expression (RPKM) reported.
+                                               */
+                                              
+                                              x.push_back(m.abund(true));
+                                              y.push_back(t.fpkm);
+                                          }
+                                          
+                                          break;
+                                      }
+                                          
+                                      case Isoform:
+                                      {
+                                          c[t.trackID]++;
+                                          assert(s.r_seqs_iA.count(t.trackID));
+                                          
+                                          if (t.fpkm)
+                                          {
+                                              const auto &i = s.r_seqs_iA.at(t.trackID);
+                                              
+                                              x.push_back(i.abund(true));
+                                              y.push_back(t.fpkm);                    
+                                          }
+                                          
+                                          break;
+                                      }
+                                  }
+                              });
+        
+        if (options.level == Gene)
+        {
+            stats.s = Expression::analyze(c, s.r_pair(options.mix));
+        }
+        else
+        {
+            stats.s = Expression::analyze(c, s.r_sequin(options.mix));
+        }
     }
+    
+    assert(!x.empty() && !y.empty() && x.size() == y.size());
     
     // Perform a linear-model to the abundance
     const auto m = lm(y, x);
@@ -95,19 +123,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     const std::string format = "%1%\t%2%\t%3%";
     
-    /*
-     * Base-level statistics
-     */
-    
-    if (options.level == Gene)
-    {
-        options.writer->open("abundance.genes.stats");
-    }
-    else
-    {
-        options.writer->open("abundance.isoform.stats");
-    }
-
+    options.writer->open("abundance.stats");
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
     options.writer->write((boost::format(format) % stats.r2
                                                  % stats.slope
@@ -118,15 +134,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
      * Generate a plot for the fold-change relationship
      */
 
-    if (options.level == Gene)
-    {
-        options.writer->open("abundance.genes.R");
-    }
-    else
-    {
-        options.writer->open("abundance.isoform.R");
-    }
-
+    options.writer->open("abundance.R");
     options.writer->write(RWriter::write(x, y));
     options.writer->close();
 

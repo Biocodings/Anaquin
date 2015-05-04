@@ -329,21 +329,11 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_rna();              break; }
-                        case MODE_ALIGN:     { analyze<RAlign>(_opt);    break; }
-                        case MODE_ASSEMBLY:  { analyze<RAssembly>(_opt); break; }
-
-                        case MODE_ABUNDANCE:
-                        {
-                            //analyze<RAbundance>(_opt, detect<RAbundance::Level>(_opt));
-                            break;
-                        }
-
-                        case MODE_DIFFERENTIAL:
-                        {
-                            //analyze<RDifferential>(_opt, detect<RDifferential::Level>(_opt));
-                            break;
-                        }
+                        case MODE_SEQS:         { print_rna();                  break; }
+                        case MODE_ALIGN:        { analyze<RAlign>(_opt);        break; }
+                        case MODE_ASSEMBLY:     { analyze<RAssembly>(_opt);     break; }
+                        case MODE_ABUNDANCE:    { analyze<RAbundance>(_opt);    break; }
+                        case MODE_DIFFERENTIAL: { analyze<RDifferential>(_opt); break; }
                     }
                 }
                 
