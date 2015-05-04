@@ -1,6 +1,5 @@
 #include <assert.h>
 #include "r_align.hpp"
-#include "biology.hpp"
 #include "expression.hpp"
 #include <boost/format.hpp>
 #include "parsers/parser_sam.hpp"
