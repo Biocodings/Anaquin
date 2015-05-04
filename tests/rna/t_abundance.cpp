@@ -7,13 +7,7 @@ TEST_CASE("RAbundance_Simulations_TMap")
 {
     const auto r = RAbundance::analyze("tests/data/rna_sims/rna.transcripts_an.gtf.tmap");
 
-    
-
-}
-
-TEST_CASE("Abundance_Isoform_Simulations_1")
-{
-    RAbundance::Options o;
-    o.level = RNALevel::Isoform;
-   // const auto r = RAbundance::analyze("tests/data/rna_sims/isoforms.fpkm_tracking", o);
+    REQUIRE(r.r == Approx(0.6833372));
+    //REQUIRE(r.slope == Approx(0.6833372));
+    //REQUIRE(r.r2 == Approx(0.6833372));
 }

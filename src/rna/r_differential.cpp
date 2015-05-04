@@ -16,8 +16,8 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
 
     auto c = RAnalyzer::counter(options.level, options.qMix);
     
-    // Values for the coordinates
     std::vector<Concentration> x, y;
+    std::vector<std::string> z;
 
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
@@ -153,7 +153,7 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
         options.writer->open("diffs.isoform.R");
     }
 
-    options.writer->write(RWriter::write(x, y));
+    options.writer->write(RWriter::write(x, y, z));
     options.writer->close();
 
     return stats;

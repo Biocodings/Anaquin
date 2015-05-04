@@ -24,8 +24,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     auto c = RAnalyzer::isoformCounter();
 
-    // Values for the x-axis and y-axis
     std::vector<double> x, y;
+    std::vector<SequinID> z;
 
     if (suffix(file, ".tmap"))
     {
@@ -38,70 +38,72 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 if (t.fpkm)
                 {
                     const auto &i = s.r_seqs_iA.at(t.refID);
+
                     x.push_back(i.abund(true));
                     y.push_back(t.fpkm);
+                    z.push_back(t.refID);
                 }
             }
         });
-    
+
         stats.s = Expression::analyze(c, s.r_sequin(options.mix));
     }
     else
     {
-        ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
-                              {
-                                  assert(s.r_seqs_gA.count(t.geneID));
-                                  
-                                  switch (options.level)
-                                  {
-                                      case Gene:
-                                      {
-                                          c[t.geneID]++;
-                                          const auto &m = s.r_seqs_gA.at(t.geneID);
-                                          
-                                          if (t.fpkm)
-                                          {
-                                              /*
-                                               * The x-axis would be the known concentration for each gene,
-                                               * the y-axis would be the expression (RPKM) reported.
-                                               */
-                                              
-                                              x.push_back(m.abund(true));
-                                              y.push_back(t.fpkm);
-                                          }
-                                          
-                                          break;
-                                      }
-                                          
-                                      case Isoform:
-                                      {
-                                          c[t.trackID]++;
-                                          assert(s.r_seqs_iA.count(t.trackID));
-                                          
-                                          if (t.fpkm)
-                                          {
-                                              const auto &i = s.r_seqs_iA.at(t.trackID);
-                                              
-                                              x.push_back(i.abund(true));
-                                              y.push_back(t.fpkm);                    
-                                          }
-                                          
-                                          break;
-                                      }
-                                  }
-                              });
-        
-        if (options.level == Gene)
-        {
-            stats.s = Expression::analyze(c, s.r_pair(options.mix));
-        }
-        else
-        {
-            stats.s = Expression::analyze(c, s.r_sequin(options.mix));
-        }
+//        ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
+//                              {
+//                                  assert(s.r_seqs_gA.count(t.geneID));
+//                                  
+//                                  switch (options.level)
+//                                  {
+//                                      case Gene:
+//                                      {
+//                                          c[t.geneID]++;
+//                                          const auto &m = s.r_seqs_gA.at(t.geneID);
+//                                          
+//                                          if (t.fpkm)
+//                                          {
+//                                              /*
+//                                               * The x-axis would be the known concentration for each gene,
+//                                               * the y-axis would be the expression (RPKM) reported.
+//                                               */
+//                                              
+//                                              x.push_back(m.abund(true));
+//                                              y.push_back(t.fpkm);
+//                                          }
+//                                          
+//                                          break;
+//                                      }
+//                                          
+//                                      case Isoform:
+//                                      {
+//                                          c[t.trackID]++;
+//                                          assert(s.r_seqs_iA.count(t.trackID));
+//                                          
+//                                          if (t.fpkm)
+//                                          {
+//                                              const auto &i = s.r_seqs_iA.at(t.trackID);
+//                                              
+//                                              x.push_back(i.abund(true));
+//                                              y.push_back(t.fpkm);                    
+//                                          }
+//                                          
+//                                          break;
+//                                      }
+//                                  }
+//                              });
+//        
+//        if (options.level == Gene)
+//        {
+//            stats.s = Expression::analyze(c, s.r_pair(options.mix));
+//        }
+//        else
+//        {
+//            stats.s = Expression::analyze(c, s.r_sequin(options.mix));
+//        }
     }
     
-    assert(!x.empty() && !y.empty() && x.size() == y.size());
+    assert(!x.empty() && x.size() == y.size() && y.size() == z.size());
     
     // Perform a linear-model to the abundance
     const auto m = lm(y, x);
@@ -135,7 +137,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
      */
 
     options.writer->open("abundance.R");
-    options.writer->write(RWriter::write(x, y));
+    options.writer->write(RWriter::write(x, y, z));
     options.writer->close();
 
     return stats;

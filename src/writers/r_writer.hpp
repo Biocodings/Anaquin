@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <numeric>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -12,7 +13,7 @@ namespace Spike
 {
     struct RWriter
     {
-        template <typename Iter> static std::string write(Iter &x, Iter &y)
+        template <typename I1, typename I2> static std::string write(const I1 &x, const I1 &y, const I2 &z)
         {
             using boost::algorithm::join;
             using boost::adaptors::transformed;
@@ -20,10 +21,10 @@ namespace Spike
             std::stringstream ss;
             ss << std::ifstream("scripts/exp_t.R").rdbuf();
 
-            const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", " );
-            const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", " );
-    
-            return (boost::format(ss.str()) % xs % ys).str();
+            return (boost::format(ss.str()) %
+                        join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
+                        join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
+                       (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str()).str();
         }
     };
 }
