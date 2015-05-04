@@ -7,7 +7,7 @@ TEST_CASE("Abundance_Gene_Simulations_1")
 {
     RAbundance::Options o;
     o.level = RNALevel::Gene;
- //   const auto r = RAbundance::analyze("tests/data/rna_sims/rna.transcripts_an.gtf.tmap", o);
+    const auto r = RAbundance::analyze("tests/data/rna_sims/rna.transcripts_an.gtf.tmap", o);
 
 
 }
