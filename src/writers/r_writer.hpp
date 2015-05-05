@@ -19,7 +19,7 @@ namespace Spike
             using boost::adaptors::transformed;
             
             std::stringstream ss;
-            ss << std::ifstream("scripts/exp_t.R").rdbuf();
+            ss << std::ifstream("scripts/abundance.R").rdbuf();
 
             return (boost::format(ss.str()) %
                         join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
