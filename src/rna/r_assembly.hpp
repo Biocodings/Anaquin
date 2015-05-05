@@ -16,7 +16,7 @@ namespace Spike
         // Number of times that each isoform (transcript) is positively identified
         IsoformCounter t_lc = RAnalyzer::isoformCounter();
 
-        Counter cb = RAnalyzer::isoformCounter();
+        Counter cb = RAnalyzer::geneCounter();
         Counter ce = RAnalyzer::isoformCounter();
         Counter ci = RAnalyzer::isoformCounter();
         Counter ct = RAnalyzer::isoformCounter();

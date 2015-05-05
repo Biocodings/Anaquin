@@ -52,19 +52,16 @@ namespace Spike
         return cond;
     }
 
-    /*
-     * Loop through an iterator and count the total number of overlaps in t.
-     * The elements in the iterator are assumed be non-overlapping.
-     */
-
-    template <typename Iter, typename T> BasePair countOverlaps(const Iter &iter, const T &t)
+    template <typename Iter, typename T> BasePair countOverlaps(const Iter &r, const T &t, std::map<std::string, Counts> &c)
     {
         BasePair n = 0;
 
-        for (auto &i : iter)
+        for (auto &i : r)
         {
-            if (static_cast<Locus>(t).overlap(i)) // TODO
+            if (static_cast<Locus>(t).overlap(i))
             {
+                assert(c.count(i.gID));
+                c[i.gID]++;
                 n += static_cast<Locus>(t).overlap(i);
             }
         }

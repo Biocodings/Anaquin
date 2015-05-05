@@ -121,7 +121,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
      * Classify at the base level
      */
 
-    countBase(s.r_l_exons, q_exons, stats.mb);
+    countBase(s.r_l_exons, q_exons, stats.mb, stats.cb);
 
     /*
      * Setting the known references
@@ -142,7 +142,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     stats.se = Expression::analyze(stats.ce, seqs);
     stats.st = Expression::analyze(stats.ct, seqs);
-    stats.sb = Expression::analyze(stats.cb, seqs);
+    stats.sb = Expression::analyze(stats.cb, s.r_pair(options.mix));
     stats.si = Expression::analyze(stats.ci, seqs);
 
     /*

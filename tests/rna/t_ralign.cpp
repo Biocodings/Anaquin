@@ -15,6 +15,9 @@ TEST_CASE("RAlign_Simulations")
         REQUIRE(r.mb.nr == 54280);
         REQUIRE(r.mb.sp() == Approx(0.9978245791));
         REQUIRE(r.mb.sn() == Approx(0.5830692704));
+        REQUIRE(r.sb.id == "R_5_1");
+        REQUIRE(r.sb.counts == 2);
+        REQUIRE(r.sb.abund == 9765.0);
         
         REQUIRE(r.me.nq == 161295);
         REQUIRE(r.me.nr == 161142);

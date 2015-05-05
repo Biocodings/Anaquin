@@ -9,6 +9,8 @@
 #include <boost/format.hpp>
 #include "writers/mock_writer.hpp"
 
+#include <alignment.hpp> // TODO...
+
 namespace Spike
 {
     typedef std::map<std::string, Counts> Counter;
@@ -29,7 +31,7 @@ namespace Spike
     };
 
     // Classify at the base-level by counting for non-overlapping regions
-    template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m)
+    template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m, Counter &c)
     {
         const auto q_merged = Locus::merge<Feature, Locus>(q);
         assert(!Locus::overlap(q_merged));
@@ -37,7 +39,21 @@ namespace Spike
         for (auto l : q_merged)
         {
             m.nq   += l.length();
-            m.tp() += countOverlaps(r, l);
+            m.tp() += countOverlaps(r, l, c);
+            m.fp()  = m.nq - m.tp();
+        }
+    }
+
+    // Classify at the base-level by counting for non-overlapping regions
+    template <typename I1, typename I2> void countBase____(const I1 &r, const I2 &q, Confusion &m, Counter &c)
+    {
+        const auto q_merged = Locus::merge<Alignment, Locus>(q);
+        assert(!Locus::overlap(q_merged));
+        
+        for (auto l : q_merged)
+        {
+            m.nq   += l.length();
+            m.tp() += countOverlaps(r, l, c);
             m.fp()  = m.nq - m.tp();
         }
     }

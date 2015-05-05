@@ -115,12 +115,7 @@ namespace Spike
             std::vector<Feature> r_introns;
 
             std::vector<RNALocus> r_l_exons;
-            std::vector<Locus> r_l_trans;
-            std::vector<Locus> r_l_introns;
-
             BasePair r_c_exons;
-            BasePair r_c_trans;
-            BasePair r_c_introns;
 
             std::map<TranscriptID, GeneID> r_iso2Gene;
 
