@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ss/c.hpp>
 #include "expression.hpp"
 #include "r_abundance.hpp"
 #include "writers/r_writer.hpp"
@@ -102,9 +103,9 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     }
     
     assert(!x.empty() && x.size() == y.size() && y.size() == z.size());
-    
+
     // Perform a linear-model to the abundance
-    const auto m = lm(y, x);
+    const auto m = lm("y ~ x", data.frame(SS::c(y), SS::c(x)));
 
     /*
      * In our analysis, the dependent variable is expression while the independent

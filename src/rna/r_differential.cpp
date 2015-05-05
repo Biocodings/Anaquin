@@ -1,3 +1,4 @@
+#include <ss/c.hpp>
 #include "classify.hpp"
 #include "expression.hpp"
 #include "r_differential.hpp"
@@ -108,8 +109,8 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
      *
      *     expression = constant + slope * concentraion
      */
-    
-    const auto m = lm(y, x);
+
+    const auto m = lm("y ~ x", data.frame(SS::c(y), SS::c(x)));
 
     stats.r2 = m.ar2;
     

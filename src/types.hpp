@@ -13,9 +13,9 @@ namespace Spike
     // Defined as long long because there could be many reads
     typedef long long Reads;
     
-    typedef float FPKM;
-    typedef float Concentration;
-    
+    typedef double FPKM;
+    typedef double Concentration;
+
     // Number of lines in a file (most likely a large file)
     typedef long long Lines;
     
