@@ -11,6 +11,9 @@ using namespace SS;
 using namespace SS::R;
 using namespace Spike;
 
+static const std::string GTracking = "genes.fpkm_tracking";
+static const std::string ITracking = "isoforms.fpkm_tracking";
+
 static bool suffix(const std::string &str, const std::string &suffix)
 {
     return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
@@ -49,59 +52,53 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     }
     else
     {
-//        ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
-//                              {
-//                                  assert(s.r_seqs_gA.count(t.geneID));
-//                                  
-//                                  switch (options.level)
-//                                  {
-//                                      case Gene:
-//                                      {
-//                                          c[t.geneID]++;
-//                                          const auto &m = s.r_seqs_gA.at(t.geneID);
-//                                          
-//                                          if (t.fpkm)
-//                                          {
-//                                              /*
-//                                               * The x-axis would be the known concentration for each gene,
-//                                               * the y-axis would be the expression (RPKM) reported.
-//                                               */
-//                                              
-//                                              x.push_back(m.abund(true));
-//                                              y.push_back(t.fpkm);
-//                                          }
-//                                          
-//                                          break;
-//                                      }
-//                                          
-//                                      case Isoform:
-//                                      {
-//                                          c[t.trackID]++;
-//                                          assert(s.r_seqs_iA.count(t.trackID));
-//                                          
-//                                          if (t.fpkm)
-//                                          {
-//                                              const auto &i = s.r_seqs_iA.at(t.trackID);
-//                                              
-//                                              x.push_back(i.abund(true));
-//                                              y.push_back(t.fpkm);                    
-//                                          }
-//                                          
-//                                          break;
-//                                      }
-//                                  }
-//                              });
-//        
-//        if (options.level == Gene)
-//        {
-//            stats.s = Expression::analyze(c, s.r_pair(options.mix));
-//        }
-//        else
-//        {
-//            stats.s = Expression::analyze(c, s.r_sequin(options.mix));
-//        }
+        if (file.find(GTracking) != std::string::npos && file.find(ITracking) != std::string::npos)
+        {
+            throw std::runtime_error((boost::format("Unknown file. It must be %1% or %2%")
+                                        % GTracking % ITracking).str());
+        }
+
+        ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
+        {
+            if (file.find(ITracking) != std::string::npos)
+            {
+                c[t.trackID]++;
+                assert(s.r_seqs_iA.count(t.trackID));
+                
+                if (t.fpkm)
+                {
+                    const auto &i = s.r_seqs_iA.at(t.trackID);
+                    
+                    x.push_back(i.abund(true));
+                    y.push_back(t.fpkm);
+                    z.push_back(t.trackID);
+                }
+
+                stats.s = Expression::analyze(c, s.r_sequin(options.mix));
+            }
+            else
+            {
+                c[t.geneID]++;
+                assert(s.r_seqs_gA.count(t.geneID));
+                const auto &m = s.r_seqs_gA.at(t.geneID);
+
+                if (t.fpkm)
+                {
+                    /*
+                     * The x-axis would be the known concentration for each gene,
+                     * the y-axis would be the expression (RPKM) reported.
+                     */
+                    
+                    x.push_back(m.abund(true));
+                    y.push_back(t.fpkm);
+                    z.push_back(t.geneID);
+                }
+
+                stats.s = Expression::analyze(c, s.r_pair(options.mix));
+            }
+        });
     }
-    
+
     assert(!x.empty() && x.size() == y.size() && y.size() == z.size());
 
     // Perform a linear-model to the abundance
