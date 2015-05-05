@@ -9,15 +9,7 @@ namespace Spike
     {
         Confusion m;
         Sensitivity s;
-
-        // Correlation for the samples
-        double r;
-        
-        // Adjusted R2 for the linear model
-        double r2;
-        
-        // Coefficient for the linear model
-        double slope;
+        LinearModel lm;
     };
 
     struct RAbundance : public RAnalyzer

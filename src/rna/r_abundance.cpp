@@ -114,20 +114,20 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
      *     expression = constant + slope * concentraion
      */
 
-    stats.r2 = m.ar2;
+    stats.lm.r2 = m.ar2;
     
     // Dependency between the two variables
-    stats.r = cor(x, y);
+    stats.lm.r = cor(x, y);
     
     // Linear relationship between the two variables
-    stats.slope = m.coeffs[1].value;
+    stats.lm.m = m.coeffs[1].value;
 
     const std::string format = "%1%\t%2%\t%3%";
     
     options.writer->open("abundance.stats");
     options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
-    options.writer->write((boost::format(format) % stats.r2
-                                                 % stats.slope
+    options.writer->write((boost::format(format) % stats.lm.r2
+                                                 % stats.lm.m
                                                  % stats.s.abund).str());
     options.writer->close();
 

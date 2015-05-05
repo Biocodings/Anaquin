@@ -13,6 +13,21 @@ namespace Spike
 {
     typedef std::map<std::string, Counts> Counter;
 
+    struct LinearModel
+    {
+        // Least-squared constant coefficient
+        double c;
+
+        // Least-squared slope coefficient
+        double m;
+        
+        // Adjusted R2
+        double r2;
+
+        // Pearson correlation
+        double r;
+    };
+    
     template <typename Iter1, typename Iter2> void countBase(const Iter1 &r, const Iter2 &q, Confusion &m)
     {
         /*
