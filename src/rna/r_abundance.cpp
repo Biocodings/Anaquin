@@ -115,12 +115,9 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
      */
 
     stats.lm.r2 = m.ar2;
-    
-    // Dependency between the two variables
-    stats.lm.r = cor(x, y);
-    
-    // Linear relationship between the two variables
-    stats.lm.m = m.coeffs[1].value;
+    stats.lm.r  = cor(x, y);
+    stats.lm.c  = m.coeffs[0].v;
+    stats.lm.m  = m.coeffs[1].v;
 
     const std::string format = "%1%\t%2%\t%3%";
     
