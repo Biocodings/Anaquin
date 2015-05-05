@@ -17,7 +17,7 @@ namespace Spike
         {
             using boost::algorithm::join;
             using boost::adaptors::transformed;
-            
+
             std::stringstream ss;
             ss << std::ifstream("scripts/abundance.R").rdbuf();
 
