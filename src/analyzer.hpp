@@ -27,14 +27,11 @@ namespace Spike
         // Pearson correlation
         double r;
     };
-    
-    template <typename Iter1, typename Iter2> void countBase(const Iter1 &r, const Iter2 &q, Confusion &m)
-    {
-        /*
-         * Classify by constructing non-overlapping region for the query
-         */
 
-        const auto q_merged = Locus::merge(q);
+    // Classify at the base-level by counting for non-overlapping regions
+    template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m)
+    {
+        const auto q_merged = Locus::merge<Feature, Locus>(q);
         assert(!Locus::overlap(q_merged));
 
         for (auto l : q_merged)

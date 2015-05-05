@@ -137,7 +137,7 @@ void Standard::rna(const std::string &mix)
                 if (f.type == Exon)
                 {
                     r_exons.push_back(f);
-                    r_l_exons.push_back(f.l);
+                    r_l_exons.push_back(RNALocus(f.geneID, f.l));
                 }
             }
         }
@@ -276,7 +276,7 @@ void Standard::rna(const std::string &mix)
      * Merging overlapping regions for the exons
      */
 
-    r_c_exons = countLocus(r_l_exons = Locus::merge(r_l_exons));
+    r_c_exons = countLocus(r_l_exons = Locus::merge<RNALocus, RNALocus>(r_l_exons));
     
     /*
      * Merging overlapping regions for the transcripts
@@ -287,13 +287,13 @@ void Standard::rna(const std::string &mix)
         r_l_trans.push_back(i.second.l);
     }
     
-    r_c_trans = countLocus(r_l_trans = Locus::merge(r_l_trans));
+    r_c_trans = countLocus(r_l_trans = Locus::merge<Locus, Locus>(r_l_trans));
 
     /*
      * Merging overlapping regions for the introns
      */
 
-    r_c_introns = countLocus(r_l_introns = Locus::merge(r_l_introns));
+    r_c_introns = countLocus(r_l_introns = Locus::merge<Locus, Locus>(r_l_introns));
     
     assert(r_c_trans && r_c_exons && r_c_introns);
     assert(!r_l_trans.empty() && !r_l_exons.empty() && !r_l_introns.empty());

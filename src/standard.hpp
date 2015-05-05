@@ -114,7 +114,7 @@ namespace Spike
             std::vector<Feature> r_exons;
             std::vector<Feature> r_introns;
 
-            std::vector<Locus> r_l_exons;
+            std::vector<RNALocus> r_l_exons;
             std::vector<Locus> r_l_trans;
             std::vector<Locus> r_l_introns;
 

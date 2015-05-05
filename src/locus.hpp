@@ -20,7 +20,7 @@ namespace Spike
 
         Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
 
-        static bool overlap(const std::vector<Locus> &ls)
+        template <typename T> static bool overlap(const std::vector<T> &ls)
         {
             for (auto i = 0; i < ls.size(); i++)
             {
@@ -36,9 +36,9 @@ namespace Spike
             return false;
         }
 
-        template <typename T> static std::vector<Locus> merge(const std::vector<T> &x)
+        template <typename T, typename R> static std::vector<R> merge(const std::vector<T> &x)
         {
-            std::vector<Locus> sorted;
+            std::vector<R> sorted;
 
             // std::copy doesn't allow implicit type conversion...
             for (auto i : x)
@@ -51,21 +51,21 @@ namespace Spike
                 return (l1.start < l2.start) || (l1.start == l2.start && l1.end < l2.end);
             });
             
-            std::vector<Locus> merged;
+            std::vector<R> merged;
             
             for (auto i = 0; i < sorted.size();)
             {
                 // We'll need the index for skipping i
                 auto j = i + 1;
-                
-                Locus super = sorted[i];
+
+                auto super = sorted[i];
                 
                 // Look forward until the end of an overlap region
                 for (; j < sorted.size(); j++)
                 {
                     if (sorted[j].overlap(super))
                     {
-                        super = super + sorted[j];
+                        super += sorted[j];
                     }
                     else
                     {
@@ -78,7 +78,7 @@ namespace Spike
 
                 i = j;
             }
-            
+
             return merged;
         }
         
@@ -113,11 +113,32 @@ namespace Spike
             return (q.start >= start && q.end <= end);
         }
 
-        inline Locus operator+(const Locus &l) const { return Locus(std::min(start, l.start), std::max(end, l.end));}
-        inline bool operator==(const Locus &l) const { return start == l.start && end == l.end; }
-        inline bool operator<(const Locus &l)  const { return start < l.start || (start == l.start && end < l.end); }
+        inline void operator+=(const Locus &l)
+        {
+            this->start = std::min(start, l.start);
+            this->end   = std::max(end, l.end);
+        }
+
+        inline bool operator==(const Locus &l) const { return start == l.start && end == l.end;    }
+
+        inline Locus operator+(const Locus &l)  const
+        {
+            return Locus(std::min(start, l.start), std::max(end, l.end));
+        }
+
+        inline bool operator<(const Locus &l)  const
+        {
+            return start < l.start || (start == l.start && end < l.end);
+        }
 
         BasePair start, end;
+    };
+
+    struct RNALocus : public Locus
+    {
+        RNALocus(const std::string &gID, const Locus &l) : gID(gID), Locus(l) {}
+
+        std::string gID;
     };
 }
 
