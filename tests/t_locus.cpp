@@ -11,7 +11,7 @@ TEST_CASE("Locus_Merge_Overlap_Last")
         Locus(3504723, 3506320),
     };
 
-    const auto r = Locus::merge(ls);
+    const auto r = Locus::merge<Locus, Locus>(ls);
 
     REQUIRE(r.size() == 1);
 }
@@ -27,7 +27,7 @@ TEST_CASE("Locus_Super_Loci")
         Locus(70, 80),
     };
 
-    const auto r = Locus::merge(ls);
+    const auto r = Locus::merge<Locus, Locus>(ls);
 
     REQUIRE(r.size() == 3);
     REQUIRE(r[0] == Locus(10, 30));
@@ -37,7 +37,7 @@ TEST_CASE("Locus_Super_Loci")
 
 TEST_CASE("Locus_Merge_None_Overlap")
 {
-    const auto m = Locus::merge(std::vector<Locus>
+    const auto m = Locus::merge<Locus, Locus>(std::vector<Locus>
     {
         Locus(10, 20),
         Locus(21, 30),
@@ -52,7 +52,7 @@ TEST_CASE("Locus_Merge_None_Overlap")
 
 TEST_CASE("Locus_Merge_Some_Overlap")
 {
-    const auto m = Locus::merge(std::vector<Locus> { Locus(10, 20), Locus(15, 22), Locus(31, 40) });
+    const auto m = Locus::merge<Locus, Locus>(std::vector<Locus> { Locus(10, 20), Locus(15, 22), Locus(31, 40) });
     
     REQUIRE(m.size() == 2);
     REQUIRE(m[0] == Locus(10, 22));
@@ -67,7 +67,7 @@ TEST_CASE("Locus_Merge_Some_Overlap")
 
 TEST_CASE("Locus_Merge_All_Overlap")
 {
-    const auto m = Locus::merge(std::vector<Locus> { Locus(10, 20), Locus(10, 20), Locus(10, 20) });
+    const auto m = Locus::merge<Locus, Locus>(std::vector<Locus> { Locus(10, 20), Locus(10, 20), Locus(10, 20) });
     
     REQUIRE(m.size() == 1);
     REQUIRE(m[0] == Locus(10, 20));

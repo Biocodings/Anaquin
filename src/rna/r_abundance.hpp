@@ -7,7 +7,6 @@ namespace Spike
 {
     struct RAbundanceStats : public AnalyzerStats
     {
-        Confusion m;
         Sensitivity s;
         LinearModel lm;
     };
@@ -16,7 +15,7 @@ namespace Spike
     {
         struct Options : public SingleMixtureOptions
         {
-            RNALevel level;
+            RNALevel level = Isoform;
         };
 
         static RAbundanceStats analyze(const std::string &file, const Options &options = Options());
