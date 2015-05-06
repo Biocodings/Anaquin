@@ -5,10 +5,9 @@
 
 namespace Spike
 {
-    struct RDifferentialStats : public AnalyzerStats
+    struct RDifferentialStats : public CorrelationStats
     {
-        Sensitivity s;
-        LinearModel lm;
+        // Empty Implementation
     };
 
     struct RDifferential : public RAnalyzer

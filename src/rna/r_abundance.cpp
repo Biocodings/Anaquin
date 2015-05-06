@@ -26,9 +26,6 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     auto c = RAnalyzer::isoformCounter();
 
-    std::vector<double> x, y;
-    std::vector<SequinID> z;
-
     if (suffix(file, ".tmap"))
     {
         ParserTMap::parse(file, [&](const TMap &t, const ParserProgress &)
@@ -41,9 +38,9 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 {
                     const auto &i = s.r_seqs_iA.at(t.refID);
 
-                    x.push_back(i.abund(true));
-                    y.push_back(t.fpkm);
-                    z.push_back(t.refID);
+                    stats.x.push_back(i.abund(true));
+                    stats.y.push_back(t.fpkm);
+                    stats.z.push_back(t.refID);
                 }
             }
         });
@@ -69,9 +66,9 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 {
                     const auto &i = s.r_seqs_iA.at(t.trackID);
                     
-                    x.push_back(i.abund(true));
-                    y.push_back(t.fpkm);
-                    z.push_back(t.trackID);
+                    stats.x.push_back(i.abund(true));
+                    stats.y.push_back(t.fpkm);
+                    stats.z.push_back(t.trackID);
                 }
 
                 stats.s = Expression::analyze(c, s.r_sequin(options.mix));
@@ -89,9 +86,9 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                      * the y-axis would be the expression (RPKM) reported.
                      */
                     
-                    x.push_back(m.abund(true));
-                    y.push_back(t.fpkm);
-                    z.push_back(t.geneID);
+                    stats.x.push_back(m.abund(true));
+                    stats.y.push_back(t.fpkm);
+                    stats.z.push_back(t.geneID);
                 }
 
                 stats.s = Expression::analyze(c, s.r_pair(options.mix));
@@ -99,39 +96,10 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
         });
     }
 
-    assert(!x.empty() && x.size() == y.size() && y.size() == z.size());
+    assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
-    // Perform a linear-model to the abundance
-    const auto m = lm("y ~ x", data.frame(SS::c(y), SS::c(x)));
-
-    /*
-     * In our analysis, the dependent variable is expression while the independent
-     * variable is the known concentraion.
-     *
-     *     expression = constant + slope * concentraion
-     */
-
-    stats.lm.r2 = m.ar2;
-    stats.lm.r  = cor(x, y);
-    stats.lm.c  = m.coeffs[0].v;
-    stats.lm.m  = m.coeffs[1].v;
-
-    const std::string format = "%1%\t%2%\t%3%";
+    stats.linear();
+    AnalyzeReporter::report("abundance.stats", "abundance.R", stats, c, options.writer);
     
-    options.writer->open("abundance.stats");
-    options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
-    options.writer->write((boost::format(format) % stats.lm.r2
-                                                 % stats.lm.m
-                                                 % stats.s.abund).str());
-    options.writer->close();
-
-    /*
-     * Generate a plot for the fold-change relationship
-     */
-
-    options.writer->open("abundance.R");
-    options.writer->write(RWriter::write(x, y, z));
-    options.writer->close();
-
     return stats;
 }

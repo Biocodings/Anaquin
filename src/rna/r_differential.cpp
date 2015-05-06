@@ -1,7 +1,5 @@
-#include <ss/c.hpp>
 #include "expression.hpp"
 #include "r_differential.hpp"
-#include "writers/r_writer.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <ss/regression/linear_model.hpp>
 
@@ -14,9 +12,6 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
     const auto &s = Standard::instance();
 
     auto c = (options.level == Gene ? RAnalyzer::geneCounter() : RAnalyzer::isoformCounter());
-
-    std::vector<Concentration> x, y;
-    std::vector<std::string> z;
 
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
@@ -48,9 +43,9 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
                     measured = t.fpkm_2 / t.fpkm_1;
 
                     c[t.geneID]++;                    
-                    x.push_back(known);
-                    y.push_back(measured);
-                    z.push_back(t.geneID);
+                    stats.x.push_back(known);
+                    stats.y.push_back(measured);
+                    stats.z.push_back(t.geneID);
                 }
 
                 break;
@@ -58,7 +53,7 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
 
             case Isoform:
             {
-               if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
+                if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
                     known = s.r_seqs_iB.at(t.testID).raw / s.r_seqs_iA.at(t.testID).raw;
@@ -69,9 +64,9 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
                     if (known)
                     {
                         c[t.testID]++;
-                        x.push_back(known);
-                        y.push_back(measured);
-                        z.push_back(t.testID);
+                        stats.x.push_back(known);
+                        stats.y.push_back(measured);
+                        stats.z.push_back(t.testID);
                     }
                 }
 
@@ -80,67 +75,21 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
         }
     });
 
-    assert(!c.empty() && !x.empty());
-    assert(!x.empty() && x.size() == y.size());
+    assert(!c.empty() && !stats.x.empty());
+    assert(!stats.x.empty() && stats.x.size() == stats.y.size());
+
+    stats.linear();
 
     if (options.level == Gene)
     {
         stats.s = Expression::analyze(c, s.r_pair(options.rMix));
+        AnalyzeReporter::report("diffs.stats", "diffs.genes.R", stats, c, options.writer);
     }
     else
     {
         stats.s = Expression::analyze(c, s.r_sequin(options.rMix));
+        AnalyzeReporter::report("diffs.stats", "diffs.isoform.R", stats, c, options.writer);
     }
-
-    /*
-     * In our analysis, the dependent variable is expression while the independent
-     * variable is the known concentraion.
-     *
-     *     expression = constant + slope * concentraion
-     */
-
-    const auto m = lm("y ~ x", data.frame(SS::c(y), SS::c(x)));
-
-    stats.lm.r2 = m.ar2;
-    stats.lm.r = cor(x, y);
-    stats.lm.m = m.coeffs[1].v;
-
-    /*
-     * Base-level statistics
-     */
-    
-    const std::string format = "%1%\t%2%\t%3%";
-
-    if (options.level == Gene)
-    {
-        options.writer->open("diffs.genes.stats");
-    }
-    else
-    {
-        options.writer->open("diffs.isoform.stats");
-    }
-    
-    options.writer->write((boost::format(format) % "r" % "s" % "ss").str());
-    options.writer->write((boost::format(format) % stats.lm.r
-                                                 % stats.lm.m
-                                                 % stats.s.abund).str());
-    options.writer->close();
-
-    /*
-     * Generate a plot for the fold-change relationship
-     */
-    
-    if (options.level == Gene)
-    {
-        options.writer->open("diffs.genes.R");
-    }
-    else
-    {
-        options.writer->open("diffs.isoform.R");
-    }
-
-    options.writer->write(RWriter::write(x, y, z));
-    options.writer->close();
 
     return stats;
 }

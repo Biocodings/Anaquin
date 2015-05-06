@@ -5,10 +5,9 @@
 
 namespace Spike
 {
-    struct RAbundanceStats : public AnalyzerStats
+    struct RAbundanceStats : public CorrelationStats
     {
-        Sensitivity s;
-        LinearModel lm;
+        // Empty Implementation
     };
 
     struct RAbundance : public RAnalyzer

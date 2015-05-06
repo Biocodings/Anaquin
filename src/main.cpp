@@ -180,10 +180,8 @@ void print_meta()
     // Empty Implementation    
 }
 
-template <typename Analyzer> void analyze(const std::string &file)
+template <typename Analyzer> void analyze(const std::string &file, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    typename Analyzer::Options o;
-
     o.writer = std::shared_ptr<PathWriter>(new PathWriter(_output.empty() ? "spike_out" : _output));
 
     std::cout << "-----------------------------------------" << std::endl;
@@ -199,26 +197,29 @@ template <typename Analyzer> void analyze(const std::string &file)
     std::cout << "Completed. Elpased: " << elapsed << " seconds" << std::endl;
 }
 
-/*
- * Some commands such as RNA-abdunance takes an input file at the gene-level or isoform-level.
- * If the purpose isn't explicity specified, maybe we can automatically detect its usage.
- */
-
-template <typename Level> static Level detect(const std::string &file)
+template <typename Options> static Options detect(const std::string &file)
 {
     const bool found_gene = file.find("gene") != std::string::npos;
     const bool found_isoform = file.find("isoform") != std::string::npos;
 
+    Options o;
+    
     if (found_gene && !found_isoform)
     {
-        return Level::Gene;
+        std::cout << "Detected at RNA gene level" << std::endl;
+        o.level = RNALevel::Gene;
     }
     else if (!found_gene && found_isoform)
     {
-        return Level::Isoform;
+        std::cout << "Detected at RNA isoform level" << std::endl;
+        o.level = RNALevel::Isoform;
+    }
+    else
+    {
+        throw std::runtime_error("Unknown type. Have you specified the level?");
     }
 
-    throw std::runtime_error("Unknown type. Have you specified the level?");
+    return o;
 }
 
 static int parse_options(int argc, char ** argv)
@@ -329,11 +330,21 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:         { print_rna();                  break; }
-                        case MODE_ALIGN:        { analyze<RAlign>(_opt);        break; }
-                        case MODE_ASSEMBLY:     { analyze<RAssembly>(_opt);     break; }
-                        case MODE_ABUNDANCE:    { analyze<RAbundance>(_opt);    break; }
-                        case MODE_DIFFERENTIAL: { analyze<RDifferential>(_opt); break; }
+                        case MODE_SEQS:     { print_rna();              break; }
+                        case MODE_ALIGN:    { analyze<RAlign>(_opt);    break; }
+                        case MODE_ASSEMBLY: { analyze<RAssembly>(_opt); break; }
+
+                        case MODE_ABUNDANCE:
+                        {
+                            analyze<RAbundance>(_opt, detect<RAbundance::Options>(_opt));
+                            break;
+                        }
+
+                        case MODE_DIFFERENTIAL:
+                        {
+                            analyze<RDifferential>(_opt, detect<RDifferential::Options>(_opt));
+                            break;
+                        }
                     }
                 }
                 

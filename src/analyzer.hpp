@@ -2,13 +2,15 @@
 #define GI_ANALYZER_HPP
 
 #include <map>
+#include <vector>
 #include <memory>
+#include <ss/r.hpp>
 #include "types.hpp"
 #include "classify.hpp"
 #include "sensitivity.hpp"
 #include <boost/format.hpp>
+#include "writers/r_writer.hpp"
 #include "writers/mock_writer.hpp"
-
 #include <alignment.hpp> // TODO...
 
 namespace Spike
@@ -89,7 +91,34 @@ namespace Spike
         
         return m;
     }
-    
+
+    struct CorrelationStats
+    {
+        Sensitivity s;
+        LinearModel lm;
+
+        std::vector<std::string> z;
+        std::vector<Concentration> x;
+        std::vector<Concentration> y;
+        
+        void linear()
+        {
+            const auto m = SS::lm("y ~ x", SS::data.frame(SS::c(y), SS::c(x)));
+
+            // Pearson correlation
+            lm.r = SS::cor(x, y);
+
+            // Adjusted R2
+            lm.r2 = m.ar2;
+
+            // Constant coefficient
+            lm.c = m.coeffs[0].v;
+
+            // Regression slope
+            lm.m = m.coeffs[1].v;
+        }
+    };
+
     class AnalyzerStats
     {
         public:
@@ -120,6 +149,37 @@ namespace Spike
 
     struct AnalyzeReporter
     {
+        template <typename ID, typename Stats, typename Writer>
+            static void report(const std::string &name,
+                               const std::string &r,
+                               const Stats &stats,
+                               const std::map<ID, Counts> &c,
+                               std::shared_ptr<Writer> writer)
+        {
+            const std::string format = "%1%\t%2%\t%3%";
+            
+            writer->open(name);
+            writer->write((boost::format(format) % "r" % "slope" % "ss").str());
+            writer->write((boost::format(format) % stats.lm.r % stats.lm.m % stats.s.abund).str());
+            writer->write("\n");
+            
+            for (auto p : c)
+            {
+                writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+            }
+            
+            writer->close();
+
+            /*
+             * Generate a plot for the fold-change relationship
+             */
+
+            writer->open(r);
+            writer->write(RWriter::write(stats.x, stats.y, stats.z));
+
+            writer->close();
+        }
+
         template <typename ID> static void report
                     (const std::string &name,
                      const Confusion &m,
