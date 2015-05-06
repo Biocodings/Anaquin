@@ -127,7 +127,7 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
                 print cmd
                 os.system(cmd)
         else:
-            print 'Ignore ' + ts + ' (not found)
+            print 'Ignore ' + ts + ' (not found)'
 
     print('Merging the individual simulations...')
     os.system('cat ' + read_path + '*R1.fastq > ' + read_path + 'simulated_1.fastq')
