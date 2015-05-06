@@ -179,7 +179,6 @@ void Standard::rna(const std::string &mix)
             if (i)
             {
                 j.l = Locus(t.blocks[i - 1].end + 1, t.blocks[i].start - 1);
-                //r_l_introns.push_back(RNALocus(j.id, j.l));
                 r_introns.push_back(j);
             }
         }
@@ -269,8 +268,8 @@ void Standard::rna(const std::string &mix)
         assert(!seqs.geneID.empty() && !seqs.r.id.empty());
     });
 
-    assert(!r_exons.empty() && !r_introns.empty());
     assert(r_l_exons.size() == r_exons.size());
+    assert(!r_exons.empty() && !r_introns.empty());
 
     /*
      * Merging overlapping regions for the exons
@@ -278,23 +277,8 @@ void Standard::rna(const std::string &mix)
 
     r_c_exons = countLocus(r_l_exons = Locus::merge<RNALocus, RNALocus>(r_l_exons));
     
-    /*
-     * Merging overlapping regions for the transcripts
-     */
-    
-    /*
-     * Merging overlapping regions for the introns
-     */
-
-    //r_c_introns = countLocus(r_l_introns = Locus::merge<Locus, Locus>(r_l_introns));
-    
-    //assert(r_c_trans && r_c_exons && r_c_introns);
     assert(r_c_exons);
-    //assert(!r_l_trans.empty() && !r_l_exons.empty() && !r_l_introns.empty());
     assert(!r_l_exons.empty());
-
-    //assert(!Locus::overlap(r_l_introns));
-    //assert(!Locus::overlap(r_l_trans));
     assert(!Locus::overlap(r_l_exons));
     
     for (const auto &i: r_seqs_iA)

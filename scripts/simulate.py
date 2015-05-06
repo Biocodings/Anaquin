@@ -45,7 +45,7 @@ def split_sequins(file, seq_path):
             w.write(l1)
             w.write(l2)
 
-def read_standards(file):
+def read_mixtures(file):
     ps = {}
     with open(file) as f:
         l = f.readline()
@@ -67,7 +67,7 @@ def read_standards(file):
 # Generate simulated reads for each sequin
 def simulate_reads(file, seq_path, read_path, min_, max_, mix):
     os.system('mkdir -p ' + read_path)
-    ps = read_standards(file)
+    ps = read_mixtures(file)
 
     for f in os.listdir(seq_path):
         ts = f.split('.')[0]
@@ -117,11 +117,11 @@ if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print 'Usage: python simulate.py RNA_A|RNA_B'
     elif (sys.argv[1] == 'RNA_A'):
-        split_sequins(r_sequins(), rna_seq_path())
-        simulate_reads(r_mixtures(), rna_seq_path(), rna_read_path(), 0, sys.maxint, 'A')
+        split_sequins(r_sequins(), seq_path())
+        simulate_reads(r_mixtures(), seq_path(), read_path(), 0, sys.maxint, 'A')
     elif (sys.argv[1] == 'RNA_B'):
-        split_sequins(r_sequins(), rna_seq_path())
-        simulate_reads(r_mixtures(), rna_seq_path(), rna_read_path(), 0, sys.maxint, 'B')
+        split_sequins(r_sequins(), seq_path())
+        simulate_reads(r_mixtures(), seq_path(), read_path(), 0, sys.maxint, 'B')
     #elif (sys.argv[1] == 'DNA_T'):
     #    split_sequins(d_sequins(), dna_seq_path())
     #    simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 120000, 120000)
@@ -139,7 +139,3 @@ if __name__ == '__main__':
     # Example workflow for RNA:
     #
     #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned index seqs/simulated.fq
-    #
-    # Example workflow for DNA:
-    #
-    #
