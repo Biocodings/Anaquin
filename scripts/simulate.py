@@ -106,8 +106,8 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
             # Multiply the concentration by a constant (applies to all sequins)
             fpkm = c + (s * fpkm)
 
-            na = max(min_, fpkm)
-            na = min(max_, fpkm)
+            fpkm = max(min_, fpkm)
+            fpkm = min(max_, fpkm)
             
             print '\n------------------ ' + ts + ' ------------------'
             
@@ -118,7 +118,7 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
             o2 = read_path + ts + '.R2.fastq'
 
             # Don't bother if the abundance is too low
-            if (int(na) > 5):
+            if (int(fpkm) > 5):
                 print 'Generating: ' + str(fpkm)
                 
                 # Simulate reads from a given sequin
