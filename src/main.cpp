@@ -158,7 +158,7 @@ static void print_rna()
                                                         % p.r.raw
                                                         % p.v.raw
                                                         % p.r.fpkm
-                                                        % p.r.fpkm).str() << std::endl;
+                                                        % p.v.fpkm).str() << std::endl;
                 }
             }
         }
