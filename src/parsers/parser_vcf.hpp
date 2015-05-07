@@ -7,37 +7,7 @@
 
 namespace Spike
 {
-    enum VCFVariantInfo
-    {
-        AC, // Allele frequency
-    };
-
-    struct VCFVariant
-    {
-        ChromoID id;
-
-        // The reference position, with the 1st base having position 1
-        Locus l;
-
-        Mutation m;
-
-        Sequence ref;
-        Sequence alt;
-
-        Genotype gt;
-        
-        // Allelle frequency
-        Counts af;
-
-        // Allele count in genotypes
-        Counts ac;
-
-        // Total number of alleles in called genotypes
-        Counts an;
-
-        // Combined depth across samples
-        unsigned dp;
-    };
+    typedef Variation VCFVariant;
 
     struct ParserVCF
     {

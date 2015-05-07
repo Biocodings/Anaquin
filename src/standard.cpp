@@ -48,29 +48,15 @@ Standard::Standard()
     meta();
 }
 
-void Standard::meta()
+void Standard::meta(const std::string &mix)
 {
-    
+    // Empty Implementation
 }
 
-void Standard::dna()
+void Standard::dna(const std::string &mix)
 {
-    Variation v;
-    std::vector<std::string> toks;
-    
-                     
-    
-    ParserBED::parse("data/dna/ChrT.5.8.Variation.bed", [&](const BedFeature &b, const ParserProgress &)
+    ParserVCF::parse("data/dna/variant.ChrT51.vcf", [&](const VCFVariant &v, const ParserProgress &)
     {
-        v.id  = b.id;
-        v.l = Locus(b.l.start, b.l.end);
-
-        // Eg: D_3_3_R_C/A
-        Tokens::split(b.name, "_/", toks);
-    
-        //v.r = toks[toks.size() - 2];
-        //v.m = toks[toks.size() - 1];
-
         d_vars[v.id] = v;
     });
 

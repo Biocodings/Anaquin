@@ -22,21 +22,31 @@ namespace Spike
 
     struct Variation
     {
-        SequinID id;
-
+        ChromoID id;
+        
+        // The reference position, with the 1st base having position 1
         Locus l;
-
+        
+        // Type of the mutation
+        Mutation m;
+        
+        Sequence r, a;
+        
         Genotype gt;
-
-        // Allele frequency
+        
+        // Allelle frequency
         Counts af;
-
-        Sequence ref;
-        Sequence alt;
-
-        Mutation type;
+        
+        // Allele count in genotypes
+        Counts ac;
+        
+        // Total number of alleles in called genotypes
+        Counts an;
+        
+        // Combined depth across samples
+        unsigned dp;
     };
-
+    
     struct Sequin
     {
         operator Locus()     const { return l;  }
@@ -137,9 +147,9 @@ namespace Spike
             Standard(Standard const&)       = delete;
             void operator=(Standard const&) = delete;
 
-            void rna(const std::string &mix = "data/rna/rna_mixtures.csv");
-            void dna();
-            void meta();
+            void rna (const std::string &mix = "data/rna/rna_mixtures.csv");
+            void dna (const std::string &mix = "data/rna/rna_mixtures.csv");
+            void meta(const std::string &mix = "data/rna/meta_mixtures.csv");
     };
 }
 

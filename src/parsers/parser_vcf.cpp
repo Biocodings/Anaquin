@@ -61,7 +61,7 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
          * to the position of the first base in the string.
          */
 
-        v.ref = fields[Ref];
+        v.r = fields[Ref];
 
         /*
          * Additional information
@@ -96,9 +96,9 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
 
         for (auto i = 0; i < alts.size(); i++)
         {
-            v.alt = alts[i];
-            
-            if (v.ref.size() == v.alt.size() && v.ref.size() == 1)
+            v.a = alts[i];
+
+            if (v.r.size() == v.a.size() && v.r.size() == 1)
             {
                 v.m = SNP;
             }

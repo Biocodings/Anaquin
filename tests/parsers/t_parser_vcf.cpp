@@ -14,14 +14,14 @@ TEST_CASE("Standard_DNA_1")
 
     REQUIRE(vs.size() == 245);
     
-    REQUIRE(vs[0].l == Locus(373892, 373892));
-    REQUIRE(vs[0].ref == "T");
-    REQUIRE(vs[0].alt == "C");
+    REQUIRE(vs[0].l  == Locus(373892, 373892));
+    REQUIRE(vs[0].r  == "T");
+    REQUIRE(vs[0].a  == "C");
     REQUIRE(vs[0].gt == HomozygousAlt);
     
-    REQUIRE(vs[1].l == Locus(373899, 373899));
-    REQUIRE(vs[1].ref == "TACTAACACGACGTGC");
-    REQUIRE(vs[1].alt == "T");
+    REQUIRE(vs[1].l  == Locus(373899, 373899));
+    REQUIRE(vs[1].r  == "TACTAACACGACGTGC");
+    REQUIRE(vs[1].a  == "T");
     REQUIRE(vs[1].gt == HomozygousAlt);
 }
 

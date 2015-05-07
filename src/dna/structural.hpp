@@ -9,8 +9,6 @@ namespace Spike
     struct StructuralStats
     {
         
-        
-        
     };
 
     struct Structural
