@@ -3,7 +3,7 @@
 #include "file.hpp"
 #include "tokens.hpp"
 #include "parsers/parser_vcf.hpp"
-
+#include <iostream>
 using namespace Spike;
 
 /*
@@ -21,13 +21,15 @@ enum VCFField
     Filter,
     Info,
     Format,
-    Format_Data_1,
-    Format_Data_2,
-    Format_Data_3,
-    Format_Data_4
+    Format_Data,
 };
 
-void ParserVCF::parse(const std::string &file, std::function<void (const VCFVariant &, const ParserProgress &)> fv)
+static const std::map<std::string, Genotype> allele =
+{
+    { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
+};
+
+void ParserVCF::parse(const std::string &file, std::function<void (const VCFVariant &, const ParserProgress &)> fp)
 {
     std::string line;
     File f(file);
@@ -35,9 +37,10 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
     VCFVariant v;
     ParserProgress p;
 
-    std::vector<std::string> t1;
-    std::vector<std::string> t2;
-    std::vector<std::string> t3;
+    std::vector<std::string> t;
+    std::vector<std::string> infos;
+    std::vector<std::string> fields;
+    std::vector<std::string> formats;
 
     while (f.nextLine(line))
     {
@@ -48,76 +51,74 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
 			continue;
 		}
 
-        Tokens::split(line, "\t", t1);
+        Tokens::split(line, "\t", fields);
 
-        /*
-         * An identifier from the reference genome. All entries for a specific CHROM should form a
-         * contiguous block within the VCF file.
-         */
-
-        v.id = t1[Chromo];
-
-        /*
-         * The reference position, with the 1st base having position 1.
-         */
-
-        v.l.end = v.l.start = stod(t1[Pos]);
+        v.id = fields[Chromo];
+        v.l.start = v.l.end = stod(fields[Pos]);
 
         /*
          * Each base must be one of A,C,G,T,N (case insensitive). The value in the POS field refers
          * to the position of the first base in the string.
          */
-        
-        v.r = t1[Ref];
+
+        v.ref = fields[Ref];
+
+        /*
+         * Additional information
+         *
+         *    AC: allele count in genotypes, for each ALT allele, in the same order as listed
+         *    AF: allele frequency for each ALT allele in the same order as listed
+         *    AN: total number of alleles in called genotypes
+         *    DP: combined depth across samples
+         */
+
+        Tokens::split(fields[Info], ";", infos);
+
+        for (const auto info : infos)
+        {
+            Tokens::split(info, "=", t);
+            assert(t.size() == 2);
+
+            if (t[0] == "AC") { v.ac = stof(t[1]); }
+            if (t[0] == "AF") { v.af = stof(t[1]); }
+            if (t[0] == "AN") { v.an = stof(t[1]); }
+            if (t[0] == "DP") { v.dp = stod(t[1]); }
+        }
+
+        Tokens::split(fields[Format], ":", formats);
 
         /*
          * Comma separated list of alternate non-reference alleles called on at least one of the samples
          */
-        
-        v.alts.clear();
-        Tokens::split(t1[Alt], ",", v.alts);
 
-        /*
-         * Additional information
-         */
+        std::vector<Sequence> alts;
+        Tokens::split(fields[Alt], ",", alts);
 
-        Tokens::split(t1[Info], ";", t2);
-        
-        for (const auto i : t2)
+        for (auto i = 0; i < alts.size(); i++)
         {
-            Tokens::split(i, "=", t3);
-
-            if (t3.size() != 2)
+            v.alt = alts[i];
+            
+            if (v.ref.size() == v.alt.size() && v.ref.size() == 1)
             {
-                throw std::runtime_error("Malformed VCF " + file);
+                v.m = SNP;
+            }
+            else
+            {
+                v.m = Indel;
             }
 
-            v.info[t3[0]] = t3[1];
-        }
-        
-        const std::map<std::string, Genotype> allele =
-        {
-            { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
-        };
+            Tokens::split(fields[Format_Data + i], ":", t);
+            assert(t.size() == formats.size());
 
-        /*
-         * If genotype information is present, then the same types of data must be present for
-         * all samples. First a FORMAT field is given specifying the data types and order.
-         */
-
-        Tokens::split(t1[Format], ":", t2);
-        Tokens::split(t1[Format_Data_1], ":", t3);
-
-        assert(t2.size() == t3.size());
-
-        for (auto i = 0; i < t2.size(); i++)
-        {
-            if (t2[i] == "GT")
+            for (auto j = 0; j < t.size(); j++)
             {
-                v.gt = allele.at(t3[i]);
+                if (formats[j] == "GT")
+                {
+                    v.gt = allele.at(t[j]);
+                }
             }
-        }
 
-        fv(v, p);
+            fp(v, p);
+        }
 	}
 }

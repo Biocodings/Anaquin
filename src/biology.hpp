@@ -33,12 +33,7 @@ namespace Spike
         HomozygousRef,
         HomozygousAlt,
     };
-
-    template <typename T1, typename T2> bool contains(const T1 &t1, const T2 &t2)
-    {
-        return t1.l.contains(t2.l);
-    }
-
+    
     template <typename Iter, typename T, typename F> bool find(const Iter &begin, const Iter &end, const T &t, F &r)
     {
         for (auto i = begin; i < end; i++)

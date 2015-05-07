@@ -57,7 +57,9 @@ void Standard::dna()
 {
     Variation v;
     std::vector<std::string> toks;
-
+    
+                     
+    
     ParserBED::parse("data/dna/ChrT.5.8.Variation.bed", [&](const BedFeature &b, const ParserProgress &)
     {
         v.id  = b.id;
@@ -65,7 +67,7 @@ void Standard::dna()
 
         // Eg: D_3_3_R_C/A
         Tokens::split(b.name, "_/", toks);
-        
+    
         //v.r = toks[toks.size() - 2];
         //v.m = toks[toks.size() - 1];
 

@@ -14,27 +14,29 @@ namespace Spike
 
     struct VCFVariant
     {
-        // An identifier from the reference genome
         ChromoID id;
 
         // The reference position, with the 1st base having position 1
         Locus l;
 
-        Sequence r;
+        Mutation m;
 
-        /*
-         * List of alternate non-reference alleles called on at least one of the samples
-         */
-
-        std::set<Sequence> alts;
-
-        /*
-         * Additional information
-         */
-        
-        std::map<std::string, std::string> info;
+        Sequence ref;
+        Sequence alt;
 
         Genotype gt;
+        
+        // Allelle frequency
+        Counts af;
+
+        // Allele count in genotypes
+        Counts ac;
+
+        // Total number of alleles in called genotypes
+        Counts an;
+
+        // Combined depth across samples
+        unsigned dp;
     };
 
     struct ParserVCF
