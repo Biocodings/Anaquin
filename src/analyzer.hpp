@@ -119,15 +119,6 @@ namespace Spike
         }
     };
 
-    class AnalyzerStats
-    {
-        public:
-            //inline Percentage dilution() const
-            //{
-            //    return n() ? static_cast<Percentage>(nt) / n() : 1.0;
-            //}
-    };
-
     struct AnalyzerOptions
     {
         std::set<SequinID> filters;

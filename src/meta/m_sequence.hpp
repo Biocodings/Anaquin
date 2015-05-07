@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    struct MSequenceStats : public AnalyzerStats
+    struct MSequenceStats
     {
         // Empty Implementation
     };

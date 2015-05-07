@@ -6,9 +6,11 @@
 
 namespace Spike
 {
-    struct StructuralStats : public AnalyzerStats
+    struct StructuralStats
     {
-        // Empty Implementation
+        
+        
+        
     };
 
     struct Structural

@@ -2,11 +2,10 @@
 #define GI_M_ALIGN_HPP
 
 #include "analyzer.hpp"
-#include "classify.hpp"
 
 namespace Spike
 {
-    struct MAlignStats : public AnalyzerStats
+    struct MAlignStats
     {
         // Empty Implementation
     };
