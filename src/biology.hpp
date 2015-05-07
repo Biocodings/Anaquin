@@ -8,7 +8,7 @@ namespace Spike
         Gene,
         Isoform
     };
-    
+
     enum RNAFeature
     {
         CDS,
@@ -19,6 +19,21 @@ namespace Spike
         Transcript,
     };
     
+    enum Mutation
+    {
+        SNP,
+        Indel,
+        Translocation,
+        CopyNumber
+    };
+
+    enum Genotype
+    {
+        Heterzygous,
+        HomozygousRef,
+        HomozygousAlt,
+    };
+
     template <typename T1, typename T2> bool contains(const T1 &t1, const T2 &t2)
     {
         return t1.l.contains(t2.l);

@@ -33,8 +33,8 @@ namespace Spike
          */
         
         std::map<std::string, std::string> info;
-        
-        Zygosity zy;
+
+        Genotype gt;
     };
 
     struct ParserVCF

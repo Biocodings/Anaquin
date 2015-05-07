@@ -95,9 +95,9 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
             v.info[t3[0]] = t3[1];
         }
         
-        const std::map<std::string, Zygosity> allele =
+        const std::map<std::string, Genotype> allele =
         {
-            { "0/0", Homozygous } , { "1/1", Homozygous } , { "0/1", Heterzygous }
+            { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
         };
 
         /*
@@ -114,7 +114,7 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
         {
             if (t2[i] == "GT")
             {
-                v.zy = allele.at(t3[i]);
+                v.gt = allele.at(t3[i]);
             }
         }
 

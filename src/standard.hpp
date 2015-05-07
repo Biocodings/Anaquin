@@ -18,20 +18,23 @@ namespace Spike
 
     enum Group { A, B, C, D };
 
-    enum Zygosity
-    {
-        Homozygous,
-        Heterzygous,
-    };
-    
     typedef std::string Sequence;
 
     struct Variation
     {
-        GeneID id;        
-        BasePair pos;
-        Zygosity zy;
-        Sequence r, m;
+        SequinID id;
+
+        Locus l;
+
+        Genotype gt;
+
+        // Allele frequency
+        Counts af;
+
+        Sequence ref;
+        Sequence alt;
+
+        Mutation type;
     };
 
     struct Sequin

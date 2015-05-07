@@ -25,17 +25,18 @@ static bool find(const std::vector<Variation> &vs, const VCFVariant &q, VariantS
 {
     for (auto &v : vs)
     {
-        if (v.pos == q.l.start)
+        //if (v.pos == q.l.start)
         {
-            r.zy   = (v.zy == r.zy);
-            r.seq  = (v.r == q.r);
-            r.alts = (q.alts.size() == 1 && q.alts.count(v.m));
-            r.ref  = &v;
-            return (r.matched = true);
+          //  r.zy   = (v.zy == r.zy);
+           // r.seq  = (v.r == q.r);
+            //r.alts = (q.alts.size() == 1 && q.alts.count(v.m));
+            //r.ref  = &v;
+            //return (r.matched = true);
         }
     }
 
-    return (r.matched = false);
+    return false;
+//    return (r.matched = false);
 }
 
 StructuralStats Structural::analyze(const std::string &file, const Options &options)

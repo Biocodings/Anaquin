@@ -43,8 +43,8 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
                     measured = t.fpkm_2 / t.fpkm_1;
 
                     c[t.geneID]++;                    
-                    stats.x.push_back(known);
-                    stats.y.push_back(measured);
+                    stats.x.push_back(log(known));
+                    stats.y.push_back(log(measured));
                     stats.z.push_back(t.geneID);
                 }
 
@@ -64,8 +64,8 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
                     if (known)
                     {
                         c[t.testID]++;
-                        stats.x.push_back(known);
-                        stats.y.push_back(measured);
+                        stats.x.push_back(log(known));
+                        stats.y.push_back(log(measured));
                         stats.z.push_back(t.testID);
                     }
                 }

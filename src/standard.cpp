@@ -61,13 +61,13 @@ void Standard::dna()
     ParserBED::parse("data/dna/ChrT.5.8.Variation.bed", [&](const BedFeature &b, const ParserProgress &)
     {
         v.id  = b.id;
-        v.pos = b.l.start;
+        v.l = Locus(b.l.start, b.l.end);
 
         // Eg: D_3_3_R_C/A
         Tokens::split(b.name, "_/", toks);
         
-        v.r = toks[toks.size() - 2];
-        v.m = toks[toks.size() - 1];
+        //v.r = toks[toks.size() - 2];
+        //v.m = toks[toks.size() - 1];
 
         d_vars[v.id] = v;
     });

@@ -8,7 +8,6 @@
 #include <ss/regression/linear_model.hpp>
 
 using namespace SS;
-using namespace SS::R;
 using namespace Spike;
 
 static const std::string GTracking = "genes.fpkm_tracking";
@@ -38,8 +37,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 {
                     const auto &i = s.r_seqs_iA.at(t.refID);
 
-                    stats.x.push_back(i.abund(true));
-                    stats.y.push_back(t.fpkm);
+                    stats.x.push_back(log(i.abund(true)));
+                    stats.y.push_back(log(t.fpkm));
                     stats.z.push_back(t.refID);
                 }
             }
@@ -66,8 +65,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 {
                     const auto &i = s.r_seqs_iA.at(t.trackID);
                     
-                    stats.x.push_back(i.abund(true));
-                    stats.y.push_back(t.fpkm);
+                    stats.x.push_back(log(i.abund(true)));
+                    stats.y.push_back(log(t.fpkm));
                     stats.z.push_back(t.trackID);
                 }
 
@@ -86,8 +85,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                      * the y-axis would be the expression (RPKM) reported.
                      */
                     
-                    stats.x.push_back(m.abund(true));
-                    stats.y.push_back(t.fpkm);
+                    stats.x.push_back(log(m.abund(true)));
+                    stats.y.push_back(log(t.fpkm));
                     stats.z.push_back(t.geneID);
                 }
 

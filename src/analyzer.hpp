@@ -156,11 +156,11 @@ namespace Spike
                                const std::map<ID, Counts> &c,
                                std::shared_ptr<Writer> writer)
         {
-            const std::string format = "%1%\t%2%\t%3%";
+            const std::string format = "%1%\t%2%\t%3%\t%4%";
             
             writer->open(name);
-            writer->write((boost::format(format) % "r" % "slope" % "ss").str());
-            writer->write((boost::format(format) % stats.lm.r % stats.lm.m % stats.s.abund).str());
+            writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
+            writer->write((boost::format(format) % stats.lm.r % stats.lm.m % stats.lm.r2 % stats.s.abund).str());
             writer->write("\n");
             
             for (auto p : c)

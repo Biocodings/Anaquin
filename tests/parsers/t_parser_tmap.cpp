@@ -7,22 +7,18 @@ TEST_CASE("ParserTMap_Cuffcompare")
 {
     std::vector<TMap> tmaps;
     
-    ParserTMap::parse("tests/data/rna_sims/rna.transcripts_an.gtf.tmap", [&](const TMap &t, const ParserProgress &)
+    ParserTMap::parse("tests/data/rna_sims/rna.transcripts.gtf.tmap", [&](const TMap &t, const ParserProgress &)
     {
         tmaps.push_back(t);
     });
 
-    REQUIRE(tmaps.size() == 61);
+    REQUIRE(tmaps.size() == 62);
 
-    REQUIRE(tmaps[0].lFPKM == Approx(48.175752));
-    REQUIRE(tmaps[0].fpkm  == Approx(115.882484));
-    REQUIRE(tmaps[0].uFPKM == Approx(183.589216));
+    REQUIRE(tmaps[0].lFPKM == Approx(2.129797));
+    REQUIRE(tmaps[0].fpkm  == Approx(3.122386));
+    REQUIRE(tmaps[0].uFPKM == Approx(4.114974));
 
-    REQUIRE(tmaps[1].lFPKM == 0.00);
-    REQUIRE(tmaps[1].fpkm  == 0.00);
-    REQUIRE(tmaps[1].uFPKM == 0.00);
-
-    REQUIRE(tmaps[5].lFPKM == Approx(2682.960189));
-    REQUIRE(tmaps[5].fpkm  == Approx(3414.686897));
-    REQUIRE(tmaps[5].uFPKM == Approx(4146.413606));
+    REQUIRE(tmaps[1].lFPKM == Approx(10.714247));
+    REQUIRE(tmaps[1].fpkm  == Approx(13.773730));
+    REQUIRE(tmaps[1].uFPKM == Approx(16.833214));
 }
