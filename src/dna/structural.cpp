@@ -48,7 +48,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
 
     stats.m.nr = stats.ml.nr = s.d_vars.size();
 
-    assert(stats.ml.tp() <= stats.m.tp());
+    assert(stats.ml.tp() >= stats.m.tp());
 
     // The structure depends on the mixture
     //const auto seqs = s.r_pair(options.mix);
