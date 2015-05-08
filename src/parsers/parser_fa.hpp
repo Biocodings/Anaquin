@@ -1,0 +1,20 @@
+#ifndef GI_PARSER_FA_HPP
+#define GI_PARSER_FA_HPP
+
+#include <functional>
+#include "parsers/parser.hpp"
+
+namespace Spike
+{
+    struct FALine
+    {
+        std::string id;
+    };
+
+    struct ParserFA
+    {
+        static void parse(const std::string &file, std::function<void(const FALine &, const ParserProgress &)>);
+    };
+}
+
+#endif

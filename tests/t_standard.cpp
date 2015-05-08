@@ -8,12 +8,16 @@ TEST_CASE("Standard_ID")
 	REQUIRE("chrT" == Standard::instance().id);
 }
 
+TEST_CASE("Standard_DNA")
+{
+    REQUIRE(Standard::instance().d_seqs.size() == 72);
+}
+
 TEST_CASE("Standard_Introns")
 {
     const auto &s = Standard::instance();
 
     REQUIRE(s.r_introns.size() == 436);
-
     REQUIRE(s.r_introns[0].id == "chrT");
     REQUIRE(s.r_introns[0].type == Intron);
     REQUIRE(s.r_introns[0].l == Locus(388627, 447004));

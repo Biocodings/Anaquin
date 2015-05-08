@@ -7,6 +7,7 @@
 #include "file.hpp"
 #include "tokens.hpp"
 #include "standard.hpp"
+#include "parsers/parser_fa.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_vcf.hpp"
@@ -60,6 +61,12 @@ void Standard::dna(const std::string &mix)
         d_vars[v.id] = v;
     });
 
+    ParserFA::parse("data/dna/DNA.tab.fa", [&](const FALine &l, const ParserProgress &)
+    {
+        d_seqs.insert(l.id);
+    });
+    
+    assert(!d_seqs.empty());
     assert(!d_vars.empty());
 }
 

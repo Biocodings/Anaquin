@@ -7,7 +7,6 @@ namespace Spike
 {
     struct DAlignStats
     {
-        // Empty Implementation
     };
 
     struct DAlign
