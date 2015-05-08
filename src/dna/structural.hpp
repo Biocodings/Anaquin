@@ -2,13 +2,31 @@
 #define GI_STRUCTURAL_HPP
 
 #include "analyzer.hpp"
-#include "classify.hpp"
 
 namespace Spike
 {
     struct StructuralStats
     {
-        
+        // Overall performance
+        Confusion m;
+
+        // Overall sensitivity
+        Sensitivity s;
+
+        // Base-level performance
+        Confusion mb;
+
+        // Base-level sensitivity
+        Sensitivity sb;
+
+        // Percentage of variants detected
+        double covered;
+
+        // Performance for each genotype
+        std::map<Genotype, Confusion> m_gts;
+
+        // Allelle frequencies
+        std::map<Sequence, std::pair<Counts, Counts>> afs;
     };
 
     struct Structural

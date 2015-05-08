@@ -11,11 +11,11 @@ def dna_path():
 def rna_path():
     return 'RNA_Simulation/'
 
-def seq_path():
-    return rna_path() + 'seqs/'
+def seq_path(base):
+    return base + 'seqs/'
 
-def read_path():
-    return rna_path() + 'reads/'
+def read_path(base):
+    return base + 'reads/'
 
 def r_sequins():
     return '../data/rna/RNA.tab.fa'
@@ -25,6 +25,9 @@ def d_sequins():
 
 def r_mixtures():
     return '../data/rna/rna_mixtures.csv'
+
+def d_mixtures():
+    return '../data/dna/dna_mixtures.csv'
 
 # Split a file of sequin into individual sequins
 def split_sequins(file, seq_path):
@@ -134,23 +137,23 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
     os.system('cat ' + read_path + '*R2.fastq > ' + read_path + 'simulated_2.fastq')
 
 def print_usage():
-    print 'Usage: python simulate.py RNA_A|RNA_B'
+    print 'Usage: python simulate.py RNA_A|RNA_B|DNA_A|DNA_B'
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print_usage()
     elif (sys.argv[1] == 'RNA_A'):
-        split_sequins(r_sequins(), seq_path())
-        simulate_reads(r_mixtures(), seq_path(), read_path(), 0, sys.maxint, 'A')
+        split_sequins(r_sequins(), seq_path(rna_path()))
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')
     elif (sys.argv[1] == 'RNA_B'):
-        split_sequins(r_sequins(), seq_path())
-        simulate_reads(r_mixtures(), seq_path(), read_path(), 0, sys.maxint, 'B')
-    #elif (sys.argv[1] == 'DNA_T'):
-    #    split_sequins(d_sequins(), dna_seq_path())
-    #    simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 120000, 120000)
-    #elif (sys.argv[1] == 'DNA'):
-    #    split_sequins(d_sequins(), dna_seq_path())
-    #    simulate_reads(d_standards(), dna_seq_path(), dna_read_path(), 0, sys.maxint)
+        split_sequins(r_sequins(), seq_path(rna_path()))
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B')
+    elif (sys.argv[1] == 'DNA_A'):
+        split_sequins(d_sequins(), seq_path(dna_path()))
+        simulate_reads(d_mixtures(), seq_path(dna_path()), read_path(dna_path()), 0, sys.maxint, 'A')
+    elif (sys.argv[1] == 'DNA_B'):
+        split_sequins(d_sequins(), seq_path(dna_path()))
+        simulate_reads(d_mixtures(), seq_path(dna_path()), read_path(dna_path()), 0, sys.maxint, 'B')
     else:
         print_usage()
 
