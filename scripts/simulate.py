@@ -24,10 +24,10 @@ def d_sequins():
     return '../data/dna/DNA.tab.fa'
 
 def r_mixtures():
-    return '../data/rna/rna_mixtures.csv'
+    return '../data/rna/DNA_Standards_Analysis.txt'
 
 def d_mixtures():
-    return '../data/dna/dna_mixtures.csv'
+    return '../data/dna/RNA_Standards_Analysis.txt'
 
 # Split a file of sequin into individual sequins
 def split_sequins(file, seq_path):
@@ -60,8 +60,12 @@ def read_mixture(file, mix):
             tokens = l.strip().split(',')
             
             #
-            # Ref, Var, Group, RLen, VLen, AimA, AimB, RatioR, RatioV
+            # ID  DNA_ID  subgroup  mix-A  mix-B  expected-fold-change  log2(Mix 1/Mix 2)
             #
+            
+            ID = 
+            
+            
 
             ratio_r = float(tokens[7]);
             ratio_v = float(tokens[8]);

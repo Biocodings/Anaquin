@@ -31,7 +31,7 @@ namespace Spike
 
     struct Structural
     {
-        struct Options : public AnalyzerOptions
+        struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };

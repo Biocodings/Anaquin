@@ -58,14 +58,14 @@ void Standard::dna(const std::string &mix)
 {
     ParserVCF::parse("data/dna/variant.ChrT51.vcf", [&](const VCFVariant &v, const ParserProgress &)
     {
-        d_vars[v.id] = v;
+        d_vars[v.l] = v;
     });
 
     ParserFA::parse("data/dna/DNA.tab.fa", [&](const FALine &l, const ParserProgress &)
     {
         d_seqs.insert(l.id);
     });
-    
+
     assert(!d_seqs.empty());
     assert(!d_vars.empty());
 }

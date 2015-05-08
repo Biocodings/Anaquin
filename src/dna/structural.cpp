@@ -4,66 +4,66 @@
 
 using namespace Spike;
 
-struct VariantSearch
-{
-    // Whether a match has been found for the position
-    bool matched;
-    
-    // Whether the zygosity is matched
-    bool zy;
-    
-    // Whether the sequence is matched
-    bool seq;
-    
-    // Whether the alleles are matched
-    bool alts;
-
-    const Variation *ref;
-};
-
-static bool find(const std::vector<Variation> &vs, const VCFVariant &q, VariantSearch &r)
-{
-    for (auto &v : vs)
-    {
-        //if (v.pos == q.l.start)
-        {
-          //  r.zy   = (v.zy == r.zy);
-           // r.seq  = (v.r == q.r);
-            //r.alts = (q.alts.size() == 1 && q.alts.count(v.m));
-            //r.ref  = &v;
-            //return (r.matched = true);
-        }
-    }
-
-    return false;
-//    return (r.matched = false);
-}
-
 StructuralStats Structural::analyze(const std::string &file, const Options &options)
 {
     StructuralStats stats;
     const auto &s = Standard::instance();
     
-    VariantSearch vs;
-    
     auto c = countsForGenes();
+    Variation r;
 
-    ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
+    ParserVCF::parse(file, [&](const VCFVariant &q, const ParserProgress &)
     {
-//        classify(stats, v, [&](const VCFVariant &)
-//        {
-//            if (r.d_vars.count(v.id) && vs.zy && vs.seq && vs.alts)
-//            {
-//                cb[vs.ref->id]++;
-//                return true;
-//            }
-//            else
-//            {
-//                return false;
-//            }
-//        });
+        if (q.m == SNP || q.m == Indel)
+        {
+            /*
+             * SNP/Indel classification
+             */
+
+            if (classify(stats.m, q, [&](const VCFVariant &)
+            {
+                if (!s.d_vars.count(q.l))
+                {
+                    return Negative;
+                }
+
+                // Can we find a matching reference variation?
+                r = s.d_vars.at(q.l);
+
+                if (options.filters.count(r.id))
+                {
+                    return Ignore;
+                }
+
+                return (q.r == r.r && q.a == r.a ? Positive : Negative);
+            }))
+            {
+                c[r.id]++;
+            }
+        }
     });
 
+    
+    
+    
+    
+    
+    
+    
+    // The structure depends on the mixture
+    const auto seqs = s.r_pair(options.mix);
+
+    
+    
+    /*
+     * Calculate for the LOS
+     */
+    
+    stats.s = Expression::analyze(c, seqs);
+
+    
+    
+    
     //stats.mb.fn() = stats.nr - stats.mb.tp();
 
     /*

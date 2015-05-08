@@ -105,7 +105,6 @@
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
 		EF44A8201AF791780036C894 /* t_parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_tmap.cpp; path = parsers/t_parser_tmap.cpp; sourceTree = "<group>"; };
-		EF4539771AE79E1E00FFF2B9 /* dna_mixtures.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = dna_mixtures.csv; path = ../data/dna/dna_mixtures.csv; sourceTree = "<group>"; };
 		EF4BD9A91ADDFB92007BE6AB /* parser_cdiffs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_cdiffs.cpp; path = ../src/parsers/parser_cdiffs.cpp; sourceTree = "<group>"; };
 		EF4BD9AA1ADDFB92007BE6AB /* parser_cdiffs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_cdiffs.hpp; path = ../src/parsers/parser_cdiffs.hpp; sourceTree = "<group>"; };
 		EF4BD9AC1ADDFBC5007BE6AB /* parser_cuffs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_cuffs.hpp; path = ../src/parsers/parser_cuffs.hpp; sourceTree = "<group>"; };
@@ -127,7 +126,8 @@
 		EF76C9281ADC09FD003D45F9 /* r_differential.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_differential.hpp; path = ../src/rna/r_differential.hpp; sourceTree = "<group>"; };
 		EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_fa.cpp; path = ../src/parsers/parser_fa.cpp; sourceTree = "<group>"; };
 		EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_fa.hpp; path = ../src/parsers/parser_fa.hpp; sourceTree = "<group>"; };
-		EFA584541AE87C0400E7C777 /* rna_mixtures.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = rna_mixtures.csv; path = ../data/rna/rna_mixtures.csv; sourceTree = "<group>"; };
+		EFA1A6B31AFC902F0066DD9F /* DNA_Standards_Analysis.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = DNA_Standards_Analysis.txt; path = ../data/dna/DNA_Standards_Analysis.txt; sourceTree = "<group>"; };
+		EFA1A6B41AFC98000066DD9F /* RNA_Standards_Analysis.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = RNA_Standards_Analysis.txt; path = ../data/rna/RNA_Standards_Analysis.txt; sourceTree = "<group>"; };
 		EFBB830C1ADF953B0002611E /* parser_sequins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_sequins.cpp; path = ../src/parsers/parser_sequins.cpp; sourceTree = "<group>"; };
 		EFBB830D1ADF953B0002611E /* parser_sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_sequins.hpp; path = ../src/parsers/parser_sequins.hpp; sourceTree = "<group>"; };
 		EFBF33BE1AEBAE250016083E /* t_locus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_locus.cpp; sourceTree = "<group>"; };
@@ -142,7 +142,6 @@
 		EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_sequence.cpp; path = ../src/rna/r_sequence.cpp; sourceTree = "<group>"; };
 		EFD4575C1AE65DAE0027DA46 /* r_sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_sequence.hpp; path = ../src/rna/r_sequence.hpp; sourceTree = "<group>"; };
 		EFE08CEE1AF4DD0C00B980FE /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
-		EFE6C0A71AEA0D7500CE37E5 /* ChrT.5.8.Variation.bed */ = {isa = PBXFileReference; lastKnownFileType = text; name = ChrT.5.8.Variation.bed; path = ../data/dna/ChrT.5.8.Variation.bed; sourceTree = "<group>"; };
 		EFE6C0A91AEA0D7E00CE37E5 /* standards.bed */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.bed; path = ../data/rna/standards.bed; sourceTree = "<group>"; };
 		EFE6C0AA1AEA0D7E00CE37E5 /* standards.gtf */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.gtf; path = ../data/rna/standards.gtf; sourceTree = "<group>"; };
 		EFE6C0AB1AEA17BF00CE37E5 /* r_analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_analyzer.hpp; path = ../src/rna/r_analyzer.hpp; sourceTree = "<group>"; };
@@ -349,7 +348,7 @@
 		EFE6C0A41AEA0D2100CE37E5 /* rna */ = {
 			isa = PBXGroup;
 			children = (
-				EFA584541AE87C0400E7C777 /* rna_mixtures.csv */,
+				EFA1A6B41AFC98000066DD9F /* RNA_Standards_Analysis.txt */,
 				EFE6C0A91AEA0D7E00CE37E5 /* standards.bed */,
 				EFE6C0AA1AEA0D7E00CE37E5 /* standards.gtf */,
 			);
@@ -359,8 +358,7 @@
 		EFE6C0A51AEA0D2500CE37E5 /* dna */ = {
 			isa = PBXGroup;
 			children = (
-				EFE6C0A71AEA0D7500CE37E5 /* ChrT.5.8.Variation.bed */,
-				EF4539771AE79E1E00FFF2B9 /* dna_mixtures.csv */,
+				EFA1A6B31AFC902F0066DD9F /* DNA_Standards_Analysis.txt */,
 			);
 			name = dna;
 			sourceTree = "<group>";
