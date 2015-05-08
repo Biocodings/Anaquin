@@ -16,7 +16,7 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 
     //Feature f1, f2;
 
-    auto c = countsForGenes();
+    //auto c = countsForGenes();
 
 //    ParserSAM::parse(file, [&](const Alignment &align)
 //    {

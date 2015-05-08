@@ -13,20 +13,11 @@ namespace Spike
         // Overall sensitivity
         Sensitivity s;
 
-        // Base-level performance
-        Confusion mb;
+        // Performance for the position
+        Confusion ml;
 
-        // Base-level sensitivity
-        Sensitivity sb;
-
-        // Percentage of variants detected
-        double covered;
-
-        // Performance for each genotype
-        std::map<Genotype, Confusion> m_gts;
-
-        // Allelle frequencies
-        std::map<Sequence, std::pair<Counts, Counts>> afs;
+        // Sensitivity for the position
+        Sensitivity sl;
     };
 
     struct Structural

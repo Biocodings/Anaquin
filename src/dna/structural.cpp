@@ -1,4 +1,5 @@
 #include "expression.hpp"
+#include "r_analyzer.hpp"
 #include "dna/structural.hpp"
 #include "parsers/parser_vcf.hpp"
 
@@ -8,8 +9,8 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
 {
     StructuralStats stats;
     const auto &s = Standard::instance();
-    
-    auto c = countsForGenes();
+
+    auto c = DAnalyzer::d_sequinCounter();
     Variation r;
 
     ParserVCF::parse(file, [&](const VCFVariant &q, const ParserProgress &)
@@ -26,6 +27,8 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
                 {
                     return Negative;
                 }
+                
+                stats.ml.tp()++;
 
                 // Can we find a matching reference variation?
                 r = s.d_vars.at(q.l);
@@ -35,7 +38,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
                     return Ignore;
                 }
 
-                return (q.r == r.r && q.a == r.a ? Positive : Negative);
+                return ((q.r == r.r && q.a == r.a) ? Positive : Negative);
             }))
             {
                 c[r.id]++;
@@ -43,39 +46,20 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
         }
     });
 
-    
-    
-    
-    
-    
-    
-    
-    // The structure depends on the mixture
-    const auto seqs = s.r_pair(options.mix);
+    stats.m.nr = stats.ml.nr = s.d_vars.size();
 
-    
-    
+    assert(stats.ml.tp() <= stats.m.tp());
+
+    // The structure depends on the mixture
+    //const auto seqs = s.r_pair(options.mix);
+
     /*
      * Calculate for the LOS
      */
-    
-    stats.s = Expression::analyze(c, seqs);
 
-    
-    
-    
-    //stats.mb.fn() = stats.nr - stats.mb.tp();
+    //stats.s = Expression::analyze(c, seqs);
 
-    /*
-     * Calculate the limit of sensitivity
-     */
-    
-//    const auto rb = Expression::analyze(cb);
-//    
-//    stats.sb = rb.sens(r.r_seqs_gA);
-//
-//    // Report for the base-level
-//    AnalyzeReporter::report("variation_base.stats", stats.dilution(), stats.mb, stats.sb, cb, options.writer);
-//
+    AnalyzeReporter::report("dalign_overall.stats", stats.m, stats.s, c, options.writer);
+
     return stats;
 }

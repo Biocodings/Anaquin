@@ -98,11 +98,6 @@ namespace Spike
                 return s;
             }
 
-   //         inline const Sequins& d_map(Mixture mix) const
-     //       {
-       //         return mix == MixA ? d_seqs_A : d_seqs_B;
-         //   }
-
             inline const SequinsMap& r_pair(Mixture mix) const
             {
                 return mix == MixA ? r_seqs_gA : r_seqs_gB;
@@ -143,7 +138,7 @@ namespace Spike
 
             std::set<std::string> d_seqs;
             std::map<Locus, Variation> d_vars;
-        
+
             /*
              * Metagenomic data
              */
