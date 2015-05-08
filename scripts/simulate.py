@@ -49,20 +49,15 @@ def split_sequins(file, seq_path):
             w.write(l2)
 
 def read_mixture(file, mix):
-    i = 0
     r = {}
+
     with open(file) as f:
         l = f.readline()
+
         while True:
             l = f.readline()
             if (not l):
                 break
-
-            i = i + 1
-
-            # Skip the first-line comment
-            if i == 1:
-                continue
 
             tokens = l.strip().split('\t')
 
@@ -133,7 +128,7 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
                 print cmd
                 os.system(cmd)
         else:
-            print 'Ignore ' + ts + ' (not found)'
+            raise key + ' not found!'
 
     print('Merging the individual simulations...')
     os.system('cat ' + read_path + '*R1.fastq > ' + read_path + 'simulated_1.fastq')
