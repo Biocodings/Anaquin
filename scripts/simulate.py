@@ -24,10 +24,10 @@ def d_sequins():
     return '../data/dna/DNA.tab.fa'
 
 def r_mixtures():
-    return '../data/rna/DNA_Standards_Analysis.txt'
+    return '../data/rna/RNA_Standards_Analysis.txt'
 
 def d_mixtures():
-    return '../data/dna/RNA_Standards_Analysis.txt'
+    return '../data/dna/DNA_Standards_Analysis.txt'
 
 # Split a file of sequin into individual sequins
 def split_sequins(file, seq_path):
@@ -49,6 +49,7 @@ def split_sequins(file, seq_path):
             w.write(l2)
 
 def read_mixture(file, mix):
+    i = 0
     r = {}
     with open(file) as f:
         l = f.readline()
@@ -57,41 +58,27 @@ def read_mixture(file, mix):
             if (not l):
                 break
 
-            tokens = l.strip().split(',')
-            
+            i = i + 1
+
+            # Skip the first-line comment
+            if i == 1:
+                continue
+
+            tokens = l.strip().split('\t')
+
             #
             # ID  DNA_ID  subgroup  mix-A  mix-B  expected-fold-change  log2(Mix 1/Mix 2)
             #
-            
-            ID = 
-            
-            
 
-            ratio_r = float(tokens[7]);
-            ratio_v = float(tokens[8]);
-            ratio_t = ratio_r + ratio_v;
-
-            aim   = float(tokens[5] if mix == 'A' else tokens[6])
-            ratio = float(ratio_r   if mix == 'A' else ratio_v)      
-            r_raw = float(aim * (ratio / ratio_t))
-            v_raw = float(aim - r_raw)
-
-            r_fpkm = r_raw / (1000 / float(tokens[3]))
-            v_fpkm = -1 if tokens[4] == '' else v_raw / (1000 / float(tokens[4]))
-
-            # Create data-structure for the reference sequin
-            r[tokens[0]] = { 'id':    tokens[0],
-                             'group': tokens[2],
-                             'raw':   r_raw,
-                             'fpkm':  r_fpkm,
+            # Create data-structure for the sequin            
+            r[tokens[1]] = { 'id':     tokens[1],
+                             'group':  tokens[2],
+                             'con_a':  float(tokens[3]),
+                             'con_b':  float(tokens[4]),
+                             'fold' :  float(tokens[5]),
+                             'l_fold': float(tokens[6])
                            }
 
-            # Create data-structure for the variant sequin
-            r[tokens[1]] = { 'id':    tokens[1],
-                             'group': tokens[2],
-                             'raw':   v_raw,
-                             'fpkm':  v_fpkm,
-                           }
     return r
 
 # Generate simulated reads for each sequin for a given mixture
@@ -99,37 +86,49 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
     os.system('mkdir -p ' + read_path)
     d = read_mixture(file, mix)
 
-    for f in os.listdir(seq_path):
-        ts = f.split('.')[0]
+    min_c = 1000000;
+
+    # Let's calculate a constant such that all concentration will be at least 10
+    for key in d:
+        if (d[key]['con_a'] < min_c):
+            min_c = d[key]['con_a'];
+        if (d[key]['con_b'] < min_c):
+            min_c = d[key]['con_b'];
     
-        if ts in d:
-            fpkm = d[ts]['fpkm']
-            
-            # This can be changed to simulate sequencing depth
+    print 'Minimum concentration: ' + str(min_c)
+
+    for f in os.listdir(seq_path):
+        key = f.split('.')[0]
+
+        if key in d:
+            if mix == 'A':
+                con = d[key]['con_a']
+            else:
+                con = d[key]['con_b']
+                
+            # This can be changed to simulate sequencing depth and coverage...
 
             s = 1
             c = 0
 
-            # Multiply the concentration by a constant (applies to all sequins)
-            fpkm = c + (s * fpkm)
-
-            fpkm = max(min_, fpkm)
-            fpkm = min(max_, fpkm)
+            con = c + (s * con)
+            con = max(min_, con)
+            con = min(max_, con)
             
-            print '\n------------------ ' + ts + ' ------------------'
+            print '\n------------------ ' + key + ' ------------------'
             
             # Command: wgsim -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq
             
-            i  = seq_path  + ts + '.fa'
-            o1 = read_path + ts + '.R1.fastq'
-            o2 = read_path + ts + '.R2.fastq'
+            i  = seq_path  + key + '.fa'
+            o1 = read_path + key + '.R1.fastq'
+            o2 = read_path + key + '.R2.fastq'
 
             # Don't bother if the abundance is too low
-            if (int(fpkm) > 5):
-                print 'Generating: ' + str(fpkm)
-                
+            if (con > 1):
+                print 'Generating: ' + str(con)
+
                 # Simulate reads from a given sequin
-                cmd = 'wgsim -d 400 -N ' + str(int(fpkm)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                cmd = 'wgsim -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
                 print cmd
                 os.system(cmd)
@@ -160,12 +159,3 @@ if __name__ == '__main__':
         simulate_reads(d_mixtures(), seq_path(dna_path()), read_path(dna_path()), 0, sys.maxint, 'B')
     else:
         print_usage()
-
-    # Reads have been simulated and written to simulated.fq.
-    #
-    # Build an index for bowtie:
-    #    --> bowtie2-build -f ../chromo/ChrT.5.10.fa index
-    #
-    # Example workflow for RNA:
-    #
-    #    1. tophat2 -p 8 -G ../chromo/chromo.gtf -o aligned index seqs/simulated.fq
