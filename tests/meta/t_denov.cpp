@@ -1,4 +1,4 @@
 #include <catch.hpp>
-#include "meta/denovo.hpp"
+#include "meta/m_assembly.hpp"
 
 using namespace Spike;

@@ -12,8 +12,8 @@
 #include "dna/d_sequence.hpp"
 #include "dna/structural.hpp"
 
-#include "meta/denovo.hpp"
 #include "meta/m_align.hpp"
+#include "meta/m_assembly.hpp"
 #include "meta/m_sequence.hpp"
 
 #include "parsers/parser_csv.hpp"
@@ -385,9 +385,9 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:    { print_meta();            break; }
-                        case MODE_ALIGN:   { analyze<MAlign>(optarg); break; }
-                        case MODE_DE_NOVO: { analyze<Denovo>(optarg); break; }
+                        case MODE_SEQS:    { print_meta();               break; }
+                        case MODE_ALIGN:   { analyze<MAlign>(optarg);    break; }
+                        case MODE_DE_NOVO: { analyze<MAssembly>(optarg); break; }
                     }
                 }
                 

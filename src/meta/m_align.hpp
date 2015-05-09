@@ -5,9 +5,10 @@
 
 namespace Spike
 {
-    struct MAlignStats
+    struct MAlignStats : public AnalyzerStats
     {
-        // Empty Implementation
+        // Overall performance
+        Confusion m;
     };
 
     struct MAlign

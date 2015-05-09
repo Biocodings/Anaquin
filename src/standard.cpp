@@ -56,6 +56,7 @@ void Standard::meta(const std::string &mix)
 
 void Standard::dna(const std::string &mix)
 {
+    //DNA_Standards_Analysis.txt
     ParserVCF::parse("data/dna/variant.ChrT51.vcf", [&](const VCFVariant &v, const ParserProgress &)
     {
         d_vars[v.l] = v;

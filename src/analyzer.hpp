@@ -17,6 +17,22 @@ namespace Spike
 {
     typedef std::map<std::string, Counts> Counter;
 
+    struct Data
+    {
+        
+    };
+    
+    struct AnalyzerStats
+    {
+        // Counts for the sequins
+        Counts n_seqs;
+
+        // Counts for the samples
+        Counts n_samps;
+
+        inline Percentage dilution() { return n_seqs / (n_seqs + n_samps); }
+    };
+
     struct LinearModel
     {
         // Least-squared constant coefficient

@@ -1,24 +1,23 @@
-#ifndef GI_DENOVO_HPP
-#define GI_DENOVO_HPP
+#ifndef GI_D_SEQUENCE_HPP
+#define GI_D_SEQUENCE_HPP
 
 #include "analyzer.hpp"
-#include "classify.hpp"
 
 namespace Spike
 {
-    struct DenovoStats
+    struct DSequenceStats
     {
         // Empty Implementation
     };
 
-    struct Denovo
+    struct DSequence
     {
         struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };
 
-        static DenovoStats analyze(const std::string &file, const Options &options = Options());
+        static DSequenceStats analyze(const std::string &file, const DSequence &options = DSequence());
     };
 }
 
