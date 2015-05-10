@@ -3,7 +3,6 @@
 #include "parsers/parser_cdiffs.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
-#include <iostream>
 using namespace SS;
 using namespace Spike;
 

@@ -13,7 +13,7 @@ void ParserCSV::parse(const std::string &file, std::function<void (const std::ve
     
     while (std::getline(i, line))
     {
-        Tokens::split(line, ",", tokens);
+        Tokens::split(line, "\t", tokens);
         x(tokens, n++);
     }
 }

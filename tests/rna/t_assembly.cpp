@@ -13,7 +13,7 @@ TEST_CASE("RAssembly_Simulations_Annotated")
     REQUIRE(r.me.sn() == Approx(0.9979633401));
     REQUIRE(r.se.id == "R_1_4_R");
     REQUIRE(r.se.counts == 1);
-    REQUIRE(r.se.abund == 152);
+    REQUIRE(r.se.abund == Approx(0.3051757812));
     
     REQUIRE(r.mt.nq == 61);
     REQUIRE(r.mt.nr == 61);
@@ -21,7 +21,7 @@ TEST_CASE("RAssembly_Simulations_Annotated")
     REQUIRE(r.mt.sn() == Approx(1.0));
     REQUIRE(r.st.id == "R_9_2_R");
     REQUIRE(r.st.counts == 1);
-    REQUIRE(r.st.abund == 9.25);
+    REQUIRE(r.st.abund == Approx(0.0190734863));
     
     REQUIRE(r.mi.nq == 429);
     REQUIRE(r.mi.nr == 431);
@@ -29,7 +29,7 @@ TEST_CASE("RAssembly_Simulations_Annotated")
     REQUIRE(r.mi.sn() == Approx(0.9953596288));
     REQUIRE(r.si.id == "R_7_2_R");
     REQUIRE(r.si.counts == 1);
-    REQUIRE(r.si.abund == 305.0);
+    REQUIRE(r.si.abund == Approx(0.6103515625));
     
     REQUIRE(r.mb.nq == 54077);
     REQUIRE(r.mb.nr == 54280);
@@ -37,7 +37,7 @@ TEST_CASE("RAssembly_Simulations_Annotated")
     REQUIRE(r.mb.sn() == Approx(0.9962601326));
     REQUIRE(r.sb.id == "R_1_4");
     REQUIRE(r.sb.counts == 1);
-    REQUIRE(r.sb.abund == 152.0);
+    REQUIRE(r.sb.abund == Approx(0.9155273438));
 }
 
 TEST_CASE("RAssembly_Simulations_All_Filtered")

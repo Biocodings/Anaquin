@@ -37,12 +37,13 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
                 if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
-                    known = s.r_seqs_gB.at(t.geneID).abund(true) / s.r_seqs_gA.at(t.geneID).abund(true);
+                    known = (s.r_seqs_gB.at(t.geneID).r.raw + s.r_seqs_gB.at(t.geneID).v.raw) /
+                            (s.r_seqs_gA.at(t.geneID).r.raw + s.r_seqs_gA.at(t.geneID).v.raw);
 
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
-
-                    c[t.geneID]++;                    
+                    
+                    c[t.geneID]++;
                     stats.x.push_back(log(known));
                     stats.y.push_back(log(measured));
                     stats.z.push_back(t.geneID);

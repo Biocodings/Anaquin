@@ -39,7 +39,6 @@
 #define MODE_ABUNDANCE    285
 #define MODE_DIFFERENTIAL 286
 #define MODE_VARIATION    287
-#define MODE_ASSEMBLY     288
 
 #define OPT_THREAD        320
 #define OPT_MIN           321
@@ -131,7 +130,7 @@ static void print_version()
 static void print_rna()
 {
     const auto &r = Standard::instance();
-    const std::string format = "%1%  %2%  %3%  %4%  %5%  %6%  %7%";
+    const std::string format = "%1%  %2%  %3%  %4%  %5%";
 
     auto f = [&](const Standard::SequinsMap &seqs)
     {
@@ -139,9 +138,7 @@ static void print_rna()
                                             % "v"
                                             % "fold"
                                             % "r_con"
-                                            % "v_con"
-                                            % "r_norm"
-                                            % "v_norm").str() << std::endl;
+                                            % "v_con").str() << std::endl;
 
         for (std::size_t i = A; i <= D; i++)
         {
@@ -155,9 +152,7 @@ static void print_rna()
                                                         % p.v.id
                                                         % p.fold
                                                         % p.r.raw
-                                                        % p.v.raw
-                                                        % p.r.fpkm
-                                                        % p.v.fpkm).str() << std::endl;
+                                                        % p.v.raw).str() << std::endl;
                 }
             }
         }

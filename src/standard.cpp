@@ -194,76 +194,81 @@ void Standard::rna(const std::string &mix)
         { "A", A }, { "B", B }, { "C", C }, { "D", D }
     };
 
+    // This definition is the easiest because variant sequin might be unavailable
+    std::map<GeneID, std::vector<Fields>> seqs;
+
+    enum RNAField
+    {
+        ID,
+        RNA_ID,
+        Group,
+        Con_A,
+        Con_B,
+        Fold,
+        LogFold,
+    };
+    
     ParserCSV::parse(mix, [&](const Fields &fields, unsigned i)
     {
-        enum RNAField
-        {
-            Ref,
-            Var,
-            Group,
-            RLen,
-            VLen,
-            AimA,
-            AimB,
-            RatioR,
-            RatioV,
-        };
-
         if (i == 0)
         {
             return;
         }
-
-        Sequins seqs;
         
-        seqs.r.id   = fields[Ref];
-        seqs.v.id   = fields[Var];
-        seqs.grp    = gs[fields[Group]];
-        seqs.geneID = fields[Ref].substr(0, fields[0].length() - 2);
-
-        seqs.r.l = temp.at(seqs.r.id);
-        seqs.v.l = !seqs.v.id.empty() ? temp.at(seqs.v.id) : Locus();
-
-        const auto ratio_r = stoi(fields[RatioR]);
-        const auto ratio_v = stoi(fields[RatioV]);
-        const auto total_r = ratio_r + ratio_v;
-
-        seqs.fold = static_cast<Fold>(ratio_r) / ratio_v;
-        
-        const auto r_len = stoi(fields[RLen]);
-        const auto v_len = !seqs.v.id.empty() ? stoi(fields[VLen]) : 0;
-
-        auto f = [&](RNAField f, std::map<SequinID, Sequins> &g, std::map<TranscriptID, Sequin> &i)
-        {
-            assert(f == AimA || f == AimB);
-
-            // Ratio of the reference, reverse between mixtures
-            const auto ratio = f == AimA ? ratio_r : ratio_v;
-
-            const auto aim = stof(fields[f]);
-
-            seqs.r.raw  = aim * (static_cast<Fold>(ratio) / total_r);
-            seqs.v.raw  = aim - seqs.r.raw;
-            seqs.r.fpkm = seqs.r.raw / (1000.0 / r_len);
-
-            // There is always an entry for the reference
-            i[seqs.r.id] = seqs.r;
-
-            if (!seqs.v.id.empty())
-            {
-                seqs.v.fpkm  = seqs.v.raw / (1000.0 / v_len);
-                i[seqs.v.id] = seqs.v;
-            }
-            
-            g[seqs.geneID] = seqs;
-        };
-
-        f(AimA, r_seqs_gA, r_seqs_iA);
-        f(AimB, r_seqs_gB, r_seqs_iB);
-
-        assert(!seqs.geneID.empty() && !seqs.r.id.empty());
+        seqs[fields[RNA_ID].substr(0, fields[RNA_ID].length() - 2)].push_back(fields);
     });
 
+    for (const auto &p : seqs)
+    {
+        auto parse_sequin = [&](const Fields &f, SequinMap &m, Mixture mix)
+        {
+            Sequin s;
+
+            s.id   = f[RNA_ID];
+            s.l    = temp.at(s.id);
+            s.raw  = stof(f[mix == MixA ? Con_A : Con_B]);
+            s.fpkm = s.raw;
+
+            return (m[s.id] = s);
+        };
+
+        auto build_sequins = [&](const Sequin &r, const Sequin &v, SequinsMap &m)
+        {
+            Sequins seqs;
+
+            seqs.r   = r;
+            seqs.v   = v;
+            seqs.grp = gs.at(p.second[0][Group]);
+            seqs.geneID = r.id.substr(0, r.id.length() - 2);
+            seqs.fold = 0.0; // TODO: This might not even needed
+
+            m[seqs.geneID] = seqs;
+        };
+
+        const auto &r_fields = p.second[0];
+        
+        const auto seq_r_a = parse_sequin(r_fields, r_seqs_iA, MixA);
+        const auto seq_r_b = parse_sequin(r_fields, r_seqs_iB, MixB);
+        assert(r_fields.size() == 7);
+        
+        if (p.second.size() > 1)
+        {
+            const auto &v_fields = p.second[1];
+            assert(v_fields.size() == 7);
+
+            const auto seq_v_a = parse_sequin(v_fields, r_seqs_iA, MixA);
+            const auto seq_v_b = parse_sequin(v_fields, r_seqs_iB, MixB);
+
+            build_sequins(seq_r_a, seq_r_a, r_seqs_gA);
+            build_sequins(seq_r_b, seq_v_b, r_seqs_gB);
+        }
+        else
+        {
+            build_sequins(seq_r_a, seq_r_b, r_seqs_gA);
+            build_sequins(seq_r_b, seq_r_b, r_seqs_gB);
+        }
+    }
+    
     assert(r_l_exons.size() == r_exons.size());
     assert(!r_exons.empty() && !r_introns.empty());
 
