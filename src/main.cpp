@@ -12,7 +12,6 @@
 #include "dna/d_sequence.hpp"
 #include "dna/structural.hpp"
 
-#include "meta/m_align.hpp"
 #include "meta/m_assembly.hpp"
 #include "meta/m_sequence.hpp"
 
@@ -40,7 +39,7 @@
 #define MODE_ABUNDANCE    285
 #define MODE_DIFFERENTIAL 286
 #define MODE_VARIATION    287
-#define MODE_DE_NOVO      288
+#define MODE_ASSEMBLY     288
 
 #define OPT_THREAD        320
 #define OPT_MIN           321
@@ -93,7 +92,7 @@ static const struct option long_options[] =
     { "ab",   required_argument, 0, MODE_ABUNDANCE    },
     { "df",   required_argument, 0, MODE_DIFFERENTIAL },
     { "va",   required_argument, 0, MODE_VARIATION    },
-    { "de",   required_argument, 0, MODE_DE_NOVO      },
+    { "de",   required_argument, 0, MODE_ASSEMBLY     },
 
     {0,  0, 0,  0 }
 };
@@ -375,9 +374,7 @@ static int parse_options(int argc, char ** argv)
                 
             case CMD_META:
             {
-                if (_mode != MODE_SEQS  &&
-                    _mode != MODE_ALIGN &&
-                    _mode != MODE_DE_NOVO)
+                if (_mode != MODE_SEQS && _mode != MODE_ASSEMBLY)
                 {
                     print_usage();
                 }
@@ -385,12 +382,11 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:    { print_meta();               break; }
-                        case MODE_ALIGN:   { analyze<MAlign>(optarg);    break; }
-                        case MODE_DE_NOVO: { analyze<MAssembly>(optarg); break; }
+                        case MODE_SEQS:     { analyze<MSequence>(optarg); break; }
+                        case MODE_ASSEMBLY: { analyze<MAssembly>(optarg); break; }
                     }
                 }
-                
+
                 break;
             }
                 

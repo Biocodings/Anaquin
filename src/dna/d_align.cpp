@@ -12,7 +12,7 @@ using namespace Spike;
 DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 {
     DAlignStats stats;
-    //const auto &r = Standard::instance();
+    const auto &s = Standard::instance();
 
     //Feature f1, f2;
 

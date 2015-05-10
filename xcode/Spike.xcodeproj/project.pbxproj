@@ -49,7 +49,6 @@
 		EFE6C0A31AE9D0CF00CE37E5 /* m_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC111AE7510700F0FD9A /* m_sequence.cpp */; };
 		EFECDC141AE7635200F0FD9A /* t_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC131AE7635200F0FD9A /* t_sequence.cpp */; };
 		EFECDC191AE7639900F0FD9A /* t_denov.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC161AE7639900F0FD9A /* t_denov.cpp */; };
-		EFECDC1A1AE7639900F0FD9A /* t_malign.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC171AE7639900F0FD9A /* t_malign.cpp */; };
 		EFECDC1B1AE7639900F0FD9A /* t_msequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC181AE7639900F0FD9A /* t_msequence.cpp */; };
 		EFF4FB091ADD248D0008FD04 /* t_ralign.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4FB041ADD248D0008FD04 /* t_ralign.cpp */; };
 /* End PBXBuildFile section */
@@ -154,7 +153,6 @@
 		EFECDC121AE7510700F0FD9A /* m_sequence.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_sequence.hpp; sourceTree = "<group>"; };
 		EFECDC131AE7635200F0FD9A /* t_sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_sequence.cpp; path = ../tests/dna/t_sequence.cpp; sourceTree = "<group>"; };
 		EFECDC161AE7639900F0FD9A /* t_denov.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_denov.cpp; path = ../tests/meta/t_denov.cpp; sourceTree = "<group>"; };
-		EFECDC171AE7639900F0FD9A /* t_malign.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_malign.cpp; path = ../tests/meta/t_malign.cpp; sourceTree = "<group>"; };
 		EFECDC181AE7639900F0FD9A /* t_msequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_msequence.cpp; path = ../tests/meta/t_msequence.cpp; sourceTree = "<group>"; };
 		EFF4FAFE1ADC99250008FD04 /* sensitivity.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sensitivity.hpp; path = ../src/sensitivity.hpp; sourceTree = "<group>"; };
 		EFF4FB041ADD248D0008FD04 /* t_ralign.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_ralign.cpp; path = ../tests/RNA/t_ralign.cpp; sourceTree = "<group>"; };
@@ -400,7 +398,6 @@
 			isa = PBXGroup;
 			children = (
 				EFECDC161AE7639900F0FD9A /* t_denov.cpp */,
-				EFECDC171AE7639900F0FD9A /* t_malign.cpp */,
 				EFECDC181AE7639900F0FD9A /* t_msequence.cpp */,
 			);
 			name = meta;
@@ -484,7 +481,6 @@
 				EF224B5A1ADB5E3C00B989A8 /* structural.cpp in Sources */,
 				EF4BD9B31ADE4054007BE6AB /* t_parser_bed.cpp in Sources */,
 				EF13716B1ACADFEB006B0DE2 /* t_standard.cpp in Sources */,
-				EFECDC1A1AE7639900F0FD9A /* t_malign.cpp in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
 				EF224B541ADB5B8900B989A8 /* r_align.cpp in Sources */,
