@@ -13,8 +13,7 @@ namespace Spike
         // Overlal LOS for the exon-level
         Sensitivity se;
 
-        // Overall counter for the sequins
-        Counter c = DAnalyzer::sequinCounter();
+        Counter ce = DAnalyzer::sequinCounter();
     };
 
     struct DAlign

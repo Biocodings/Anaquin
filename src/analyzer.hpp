@@ -37,6 +37,23 @@ namespace Spike
         return c;
     }
 
+    template <typename T> static void count_ref(const std::map<T, Counts> &m, Counts &c)
+    {
+        for (const auto & i : m)
+        {
+            if (i.second == 0)
+            {
+                c++;
+            }
+            else
+            {
+                c += i.second;
+            }
+        }
+        
+        assert(c);
+    }
+
     struct DAnalyzer
     {
         static SequinCounter sequinCounter()
@@ -67,25 +84,6 @@ namespace Spike
             static IsoformCounter isoformCounter()
             {
                 return counter<std::vector<Sequin>, IsoformID>(Standard::instance().r_sequins);
-            }
-        
-        protected:
-        
-            template <typename T> static void count_ref(const std::map<T, Counts> &m, Counts &c)
-            {
-                for (const auto & i : m)
-                {
-                    if (i.second == 0)
-                    {
-                        c++;
-                    }
-                    else
-                    {
-                        c += i.second;
-                    }
-                }
-            
-                assert(c);
             }
     };
 

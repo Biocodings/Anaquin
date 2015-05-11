@@ -1,7 +1,8 @@
 #include <assert.h>
 #include "d_align.hpp"
+#include "expression.hpp"
 #include "parsers/parser_sam.hpp"
-#include <iostream>
+
 using namespace Spike;
 
 DAlignStats DAlign::analyze(const std::string &file, const Options &options)
@@ -11,23 +12,41 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
-        if (classify(stats.m, align, [&](const Alignment &)
+        const BedFeature *matched;
+        
+        /*
+         * Classify at the exon-level
+         */
+        
+        if (classify(stats.me, align, [&](const Alignment &)
                      {
-                         const auto matched = find(s.d_exons, align, MatchRule::Contains);
+                         matched = find(s.d_exons, align, MatchRule::Contains);
                         
                          if (!matched)
                          {
                              return Negative;
                          }
+                         else if (options.filters.count(matched->id))
+                         {
+                             return Ignore;
+                         }
 
                          return Positive;
                      }))
         {
-            // Empty Implementation
+            stats.ce[matched->id]++;
         }
     });
 
-    //AnalyzeReporter::report("dalign_base.stats", stats.m, stats.s, stats.c, options.writer);
+    count_ref(stats.ce, stats.me.nr);
 
-	return DAlignStats();
+    /*
+     * Calculate for the LOS
+     */
+    
+    //stats.se = Expression::analyze(stats.ce, seqs);
+
+    AnalyzeReporter::report("dalign_exons.stats", stats.me, stats.se, stats.ce, options.writer);
+
+	return stats;
 }
