@@ -5,6 +5,7 @@
 #include <vector>
 #include "locus.hpp"
 #include "feature.hpp"
+#include "parser_bed.hpp"
 
 namespace Spike
 {
@@ -108,12 +109,6 @@ namespace Spike
             Locus l;
 
             /*
-             * Chromosome data
-             */
-        
-            std::vector<Sequin> seqs;
-
-            /*
              * RNA data
              */
 
@@ -136,6 +131,7 @@ namespace Spike
              * DNA data
              */
 
+            std::vector<BedFeature> d_exons;
             std::set<std::string> d_seqs;
             std::map<Locus, Variation> d_vars;
 

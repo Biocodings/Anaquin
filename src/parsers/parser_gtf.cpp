@@ -7,7 +7,7 @@
 
 using namespace Spike;
 
-void ParserGTF::parse(const std::string &file, std::function<void (const Feature &)> x)
+void ParserGTF::parse(const std::string &file, std::function<void (const Feature &, const ParserProgress &)> x)
 {
     std::map<std::string, RNAFeature> mapper =
     {
@@ -38,12 +38,15 @@ void ParserGTF::parse(const std::string &file, std::function<void (const Feature
 	 *    9. attribute
 	 */
     
+    ParserProgress p;
+    
     std::vector<std::string> tokens;
     std::vector<std::string> options;
     std::vector<std::string> nameValue;
 
     while (std::getline(in, line))
     {
+        p.i++;
         boost::split(tokens, line, boost::is_any_of("\t"));
 
         f.id = tokens[0];
@@ -91,6 +94,6 @@ void ParserGTF::parse(const std::string &file, std::function<void (const Feature
             }
         }
 
-        x(f);
+        x(f, p);
 	}
 }

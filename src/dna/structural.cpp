@@ -10,7 +10,7 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
     StructuralStats stats;
     const auto &s = Standard::instance();
 
-    auto c = DAnalyzer::d_sequinCounter();
+    auto c = DAnalyzer::sequinCounter();
     Variation r;
 
     ParserVCF::parse(file, [&](const VCFVariant &q, const ParserProgress &)

@@ -1,9 +1,8 @@
 #ifndef GI_PARSER_TMAP_HPP
 #define GI_PARSER_TMAP_HPP
 
-#include "types.hpp"
 #include <functional>
-#include "parsers/parser.hpp"
+#include "analyzer.hpp"
 
 namespace Spike
 {

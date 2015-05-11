@@ -2,8 +2,7 @@
 #define GI_PARSER_VCF_HPP
 
 #include <set>
-#include "standard.hpp"
-#include "parsers/parser.hpp"
+#include "analyzer.hpp"
 
 namespace Spike
 {

@@ -7,14 +7,14 @@ namespace Spike
 {
     struct DAlignStats
     {
-        // Overall performance for the base-level
-        Confusion m;
+        // Overall performance for the exon-level
+        Confusion me;
 
-        // Overlal LORD for the base-level
-        Sensitivity s;
+        // Overlal LOS for the exon-level
+        Sensitivity se;
 
         // Overall counter for the sequins
-        Counter c = Analyzer::sequinCounter();
+        Counter c = DAnalyzer::sequinCounter();
     };
 
     struct DAlign

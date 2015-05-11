@@ -1,9 +1,8 @@
 #ifndef GI_PARSER_SAM_HPP
 #define GI_PARSER_SAM_HPP
 
-#include <functional>
+#include "analyzer.hpp"
 #include "alignment.hpp"
-#include "parsers/parser.hpp"
 
 namespace Spike
 {

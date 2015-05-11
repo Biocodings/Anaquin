@@ -36,7 +36,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     std::map<SequinID, std::vector<Feature>> q_exons_;
     std::vector<Feature> q_exons;
 
-    ParserGTF::parse(file, [&](const Feature &f)
+    ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
     {
         if (options.filters.count(f.iID))
         {

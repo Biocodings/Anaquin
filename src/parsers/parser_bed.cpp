@@ -38,7 +38,6 @@ void ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
     
     while (f.nextTokens(tokens, "\t"))
     {
-        p.i++;
         bf.blocks.clear();
         
         // Name of the chromosome
@@ -69,5 +68,6 @@ void ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
         }
 
         x(bf, p);
+        p.i++;
     }
 }

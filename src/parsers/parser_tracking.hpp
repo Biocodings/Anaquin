@@ -2,8 +2,7 @@
 #define GI_PARSER_TRACKING_HPP
 
 #include "types.hpp"
-#include <functional>
-#include "parsers/parser.hpp"
+#include "analyzer.hpp"
 #include "parsers/parser_cuffs.hpp"
 
 namespace Spike

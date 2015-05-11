@@ -1,7 +1,7 @@
 #ifndef GI_PARSER_BED_HPP
 #define GI_PARSER_BED_HPP
 
-#include <vector>
+#include "types.hpp"
 #include "locus.hpp"
 #include <functional>
 #include "parsers/parser.hpp"

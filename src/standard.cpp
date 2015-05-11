@@ -56,10 +56,19 @@ void Standard::meta(const std::string &mix)
 
 void Standard::dna(const std::string &mix)
 {
-    //DNA_Standards_Analysis.txt
     ParserVCF::parse("data/dna/variant.ChrT51.vcf", [&](const VCFVariant &v, const ParserProgress &)
     {
         d_vars[v.l] = v;
+    });
+
+    ParserBED::parse("data/dna/DNA.ref.bed", [&](const BedFeature &f, const ParserProgress &)
+    {
+        d_exons.push_back(f);
+    });
+
+    ParserCSV::parse("data/dna/DNA_Standards_Analysis.txt", [&](const Fields &fields, const ParserProgress &)
+    {
+        // Empty Implementation
     });
 
     ParserFA::parse("data/dna/DNA.tab.fa", [&](const FALine &l, const ParserProgress &)
@@ -67,8 +76,7 @@ void Standard::dna(const std::string &mix)
         d_seqs.insert(l.id);
     });
 
-    assert(!d_seqs.empty());
-    assert(!d_vars.empty());
+    assert(!d_seqs.empty() && !d_vars.empty() && !d_exons.empty());
 }
 
 void Standard::rna(const std::string &mix)
@@ -87,7 +95,7 @@ void Standard::rna(const std::string &mix)
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
 
-    ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f)
+    ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f, const ParserProgress &)
 	{
 		l.end = std::max(l.end, f.l.end);
 		l.start = std::min(l.start, f.l.start);
@@ -153,7 +161,7 @@ void Standard::rna(const std::string &mix)
     // Required while reading mixtures
     std::map<IsoformID, Locus> temp;
 
-    ParserBED::parse("data/rna/standards.bed", [&](const BedFeature &t, const ParserProgress &)
+    ParserBED::parse("data/rna/standards.bed", [&](const BedFeature &t, const ParserProgress &p)
     {
         assert(!t.name.empty());
         
@@ -208,9 +216,9 @@ void Standard::rna(const std::string &mix)
         LogFold,
     };
     
-    ParserCSV::parse(mix, [&](const Fields &fields, unsigned i)
+    ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &p)
     {
-        if (i == 0)
+        if (p.i == 0)
         {
             return;
         }
@@ -284,6 +292,5 @@ void Standard::rna(const std::string &mix)
     for (const auto &i: r_seqs_iA)
     {
         r_sequins.push_back(i.second);
-        this->seqs.push_back(i.second); // TODO: Fix this later...
     }
 }

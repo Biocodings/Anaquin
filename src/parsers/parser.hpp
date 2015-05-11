@@ -5,9 +5,7 @@ namespace Spike
 {
     struct ParserProgress
     {
-        typedef long long Progress;
-
-        Progress i = 0;
+        long long i = 0;
     };
 }
 

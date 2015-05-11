@@ -36,15 +36,15 @@ namespace Spike
         
         return c;
     }
-    
-    struct Analyzer
+
+    struct DAnalyzer
     {
         static SequinCounter sequinCounter()
         {
             return counter<std::set<std::string>, SequinID>(Standard::instance().d_seqs);
         }
     };
-    
+
     class RAnalyzer
     {
         public:
