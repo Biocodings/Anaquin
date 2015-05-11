@@ -103,7 +103,7 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
                 
             # This can be changed to simulate sequencing depth and coverage...
 
-            s = 100
+            s = 1
             c = 0
 
             con = c + (s * con)
