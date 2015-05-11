@@ -224,10 +224,9 @@ void Standard::rna(const std::string &mix)
         {
             Sequin s;
 
-            s.id   = f[RNA_ID];
-            s.l    = temp.at(s.id);
-            s.raw  = stof(f[mix == MixA ? Con_A : Con_B]);
-            s.fpkm = s.raw;
+            s.id  = f[RNA_ID];
+            s.l   = temp.at(s.id);
+            s.raw = stof(f[mix == MixA ? Con_A : Con_B]);
 
             return (m[s.id] = s);
         };

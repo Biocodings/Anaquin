@@ -52,28 +52,22 @@ namespace Spike
         operator Locus()     const { return l;  }
         operator IsoformID() const { return id; }
 
-        inline Concentration abund(bool norm) const
-        {
-            return norm ? fpkm : raw;
-        }
+        inline Concentration abund() const { return raw; }
 
         SequinID id;
         Locus l;
         
         // Amount of abundance
         Concentration raw;
-
-        // Amount of abundance after normalization
-        Concentration fpkm;
     };
 
     struct Sequins
     {
-        inline Concentration abund(bool norm) const
+        inline Concentration abund() const
         {
-            return r.abund(norm) + v.abund(norm);
+            return r.abund() + v.abund();
         }
-        
+
         Group grp;
         
         // Fold ratio from r to v

@@ -37,7 +37,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 {
                     const auto &i = s.r_seqs_iA.at(t.refID);
 
-                    stats.x.push_back(log(i.abund(true)));
+                    stats.x.push_back(log(i.abund()));
                     stats.y.push_back(log(t.fpkm));
                     stats.z.push_back(t.refID);
                 }
@@ -65,7 +65,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 {
                     const auto &i = s.r_seqs_iA.at(t.trackID);
                     
-                    stats.x.push_back(log(i.abund(true)));
+                    stats.x.push_back(log(i.abund()));
                     stats.y.push_back(log(t.fpkm));
                     stats.z.push_back(t.trackID);
                 }
@@ -84,8 +84,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                      * The x-axis would be the known concentration for each gene,
                      * the y-axis would be the expression (RPKM) reported.
                      */
-                    
-                    stats.x.push_back(log(m.abund(true)));
+
+                    stats.x.push_back(log(m.abund()));
                     stats.y.push_back(log(t.fpkm));
                     stats.z.push_back(t.geneID);
                 }

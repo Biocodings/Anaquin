@@ -37,15 +37,20 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
                 if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
-                    known = (s.r_seqs_gB.at(t.geneID).r.raw + s.r_seqs_gB.at(t.geneID).v.raw) /
-                            (s.r_seqs_gA.at(t.geneID).r.raw + s.r_seqs_gA.at(t.geneID).v.raw);
+                    known = (s.r_seqs_gB.at(t.geneID).r.abund() + s.r_seqs_gB.at(t.geneID).v.abund()) /
+                            (s.r_seqs_gA.at(t.geneID).r.abund() + s.r_seqs_gA.at(t.geneID).v.abund());
 
+                    if (known == 0.5)
+                    {
+                        known = known;
+                    }
+                    
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
                     
                     c[t.geneID]++;
-                    stats.x.push_back(log(known));
-                    stats.y.push_back(log(measured));
+                    stats.x.push_back(known);
+                    stats.y.push_back(measured);
                     stats.z.push_back(t.geneID);
                 }
 
@@ -57,7 +62,7 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
                 if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
-                    known = s.r_seqs_iB.at(t.testID).raw / s.r_seqs_iA.at(t.testID).raw;
+                    known = s.r_seqs_iB.at(t.testID).abund() / s.r_seqs_iA.at(t.testID).abund();
 
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;

@@ -8,7 +8,7 @@ TEST_CASE("Differential_Simulations_Isoforms")
     /*
      * The experiment for mixutre B is identical but it has 100 times coverage.
      */
-    
+
     RDifferential::Options o;
     o.level = RNALevel::Isoform;
     const auto r = RDifferential::analyze("tests/data/rna_sims/isoform_exp.diff", o);

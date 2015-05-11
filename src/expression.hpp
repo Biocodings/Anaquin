@@ -37,15 +37,15 @@ namespace Spike
                 if (iter->second)
                 {
                     if (iter->second < s.counts ||
-                       (iter->second == s.counts && m.at(iter->first).abund(false) < s.abund))
+                       (iter->second == s.counts && m.at(iter->first).abund() < s.abund))
                     {
                         s.id = iter->first;
                         s.counts = iter->second;
-                        s.abund = m.at(s.id).abund(false);
+                        s.abund = m.at(s.id).abund();
                     }
                 }
             }
-                    
+
             if (s.counts == std::numeric_limits<unsigned>::max())
             {
                 s.counts = 0;
