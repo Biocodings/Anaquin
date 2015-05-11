@@ -108,6 +108,12 @@ namespace Spike
             Locus l;
 
             /*
+             * Chromosome data
+             */
+        
+            std::vector<Sequin> seqs;
+
+            /*
              * RNA data
              */
 

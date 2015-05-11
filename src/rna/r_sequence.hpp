@@ -1,7 +1,7 @@
 #ifndef GI_R_SEQUENCE_HPP
 #define GI_R_SEQUENCE_HPP
 
-#include "r_analyzer.hpp"
+#include "analyzer.hpp"
 
 namespace Spike
 {

@@ -9,9 +9,12 @@ namespace Spike
     {
         // Overall performance for the base-level
         Confusion m;
-        
-        // Overlal LOR for the base-level
+
+        // Overlal LORD for the base-level
         Sensitivity s;
+
+        // Overall counter for the sequins
+        Counter c = Analyzer::sequinCounter();
     };
 
     struct DAlign

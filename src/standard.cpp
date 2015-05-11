@@ -284,5 +284,6 @@ void Standard::rna(const std::string &mix)
     for (const auto &i: r_seqs_iA)
     {
         r_sequins.push_back(i.second);
+        this->seqs.push_back(i.second); // TODO: Fix this later...
     }
 }

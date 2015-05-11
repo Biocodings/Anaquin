@@ -1,8 +1,7 @@
 #include "r_assembly.hpp"
 #include "expression.hpp"
-#include <boost/format.hpp>
 #include "parsers/parser_gtf.hpp"
-#include <iostream>
+
 using namespace Spike;
 
 template <typename F> static void extractIntrons(const std::map<SequinID, std::vector<Feature>> &x, F f)
@@ -57,7 +56,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
                 if (classify(stats.me, f, [&](const Feature &)
                 {
-                    return find(s.r_exons, f, ExactRule);
+                    return find(s.r_exons, f, Exact);
                 }))
                 {
                     stats.e_lc.at(f.l)++;
@@ -75,7 +74,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
                 if (classify(stats.mt, f, [&](const Feature &)
                 {
-                    return find_map(seqs, f, ExactRule);
+                    return find_map(seqs, f, Exact);
                 }))
                 {
                     stats.t_lc.at(f.iID)++;
@@ -109,7 +108,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                        
                        if (classify(stats.mi, i, [&](const Feature &)
                        {
-                           return find(s.r_introns, i, ExactRule);
+                           return find(s.r_introns, i, Exact);
                        }))
                        {
                            stats.i_lc.at(i.l)++;
