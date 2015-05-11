@@ -53,7 +53,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
                     return options.filters.count(f.iID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
-                stats.e_lc.at(f.l)++;
+                stats.ec.at(f.l)++;
                 stats.ce.at(s.r_iso2Gene.at(f.iID))++;
             }
         }
@@ -72,7 +72,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
                     return options.filters.count(f.iID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
-                stats.i_lc.at(align.l)++;
+                stats.ic.at(align.l)++;
                 stats.ci.at(s.r_iso2Gene.at(f.iID))++;
             }
         }
@@ -89,8 +89,8 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * Anything that has not been detected will be the false-positives.
      */
 
-    count_ref(stats.e_lc, stats.me.nr);
-    count_ref(stats.i_lc, stats.mi.nr);
+    count_ref(stats.ec, stats.me.nr);
+    count_ref(stats.ic, stats.mi.nr);
     stats.mb.nr = s.r_c_exons;
 
     assert(stats.me.nr && stats.mi.nr && stats.mb.nr);

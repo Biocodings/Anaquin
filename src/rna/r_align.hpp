@@ -8,10 +8,10 @@ namespace Spike
     struct RAlignStats
     {
         // Number of times that each exon is positively identified
-        LocusCounter e_lc = RAnalyzer::exonCounter();
+        LocusCounter ec = RAnalyzer::exonCounter();
 
         // Number of times that each intron is positively identified
-        LocusCounter i_lc = RAnalyzer::intronCounter();
+        LocusCounter ic = RAnalyzer::intronCounter();
 
         Counter cb = RAnalyzer::geneCounter();
         Counter ce = RAnalyzer::geneCounter();
