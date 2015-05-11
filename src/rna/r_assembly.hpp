@@ -1,7 +1,7 @@
 #ifndef GI_R_ASSEMBLY_HPP
 #define GI_R_ASSEMBLY_HPP
 
-#include "r_analyzer.hpp"
+#include "analyzer.hpp"
 
 namespace Spike
 {

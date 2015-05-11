@@ -145,7 +145,6 @@
 		EFE08CEE1AF4DD0C00B980FE /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
 		EFE6C0A91AEA0D7E00CE37E5 /* standards.bed */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.bed; path = ../data/rna/standards.bed; sourceTree = "<group>"; };
 		EFE6C0AA1AEA0D7E00CE37E5 /* standards.gtf */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.gtf; path = ../data/rna/standards.gtf; sourceTree = "<group>"; };
-		EFE6C0AB1AEA17BF00CE37E5 /* r_analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_analyzer.hpp; path = ../src/rna/r_analyzer.hpp; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
 		EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EFECDC101AE7510700F0FD9A /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
@@ -252,7 +251,6 @@
 				EF76C9281ADC09FD003D45F9 /* r_differential.hpp */,
 				EF224B4E1ADB5B8900B989A8 /* r_align.cpp */,
 				EF224B4F1ADB5B8900B989A8 /* r_align.hpp */,
-				EFE6C0AB1AEA17BF00CE37E5 /* r_analyzer.hpp */,
 				EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */,
 				EFD4575C1AE65DAE0027DA46 /* r_sequence.hpp */,
 			);

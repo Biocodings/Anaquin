@@ -1,5 +1,5 @@
+#include "analyzer.hpp"
 #include "expression.hpp"
-#include "rna/r_analyzer.hpp"
 #include "dna/structural.hpp"
 #include "parsers/parser_vcf.hpp"
 
