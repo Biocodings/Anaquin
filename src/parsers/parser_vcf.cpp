@@ -1,9 +1,8 @@
-#include <map>
 #include <assert.h>
 #include "file.hpp"
 #include "tokens.hpp"
 #include "parsers/parser_vcf.hpp"
-#include <iostream>
+
 using namespace Spike;
 
 /*
@@ -86,6 +85,7 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
         }
 
         Tokens::split(fields[Format], ":", formats);
+        assert(std::find(formats.begin(), formats.end(), "GT") != formats.end());
 
         /*
          * Comma separated list of alternate non-reference alleles called on at least one of the samples
@@ -109,7 +109,7 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
 
             Tokens::split(fields[Format_Data + i], ":", t);
             assert(t.size() == formats.size());
-
+            
             for (auto j = 0; j < t.size(); j++)
             {
                 if (formats[j] == "GT")

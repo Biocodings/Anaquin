@@ -2,6 +2,7 @@
 #define GI_CLASSIFY_HPP
 
 #include "standard.hpp"
+#include "sensitivity.hpp"
 #include <ss/data/confusion.hpp>
 
 namespace Spike
@@ -35,7 +36,13 @@ namespace Spike
         Counts nq = 0;
         Counts nr = 0;
     };
-    
+
+    struct Performance
+    {
+        Confusion m;
+        Sensitivity s;
+    };
+
     inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
     {
         if (cond)

@@ -3,35 +3,22 @@
 
 using namespace Spike;
 
-TEST_CASE("DNA_Variation_Simulation_1")
+TEST_CASE("DNA_Variation_Simulation")
 {
     const auto r = Structural::analyze("tests/data/dna_sims/DNA.flat.chrT.vcf");
     
-    REQUIRE(r.m.sp() == Approx(0.7852348993));
-    REQUIRE(r.m.sn() == Approx(0.9551020408));
+    REQUIRE(r.p.m.sp() == Approx(0.0100671141));
+    REQUIRE(r.p.m.sn() == Approx(0.012244898));
 
-    REQUIRE(r.ml.sp() == Approx(1.0));
-    REQUIRE(r.ml.sn() == Approx(0.9551020408));
-}
-
-TEST_CASE("DNA_Variation_Simulation_2")
-{
-    const auto r = Structural::analyze("tests/data/dna_sims/simulations_1.vcf");
+    REQUIRE(r.p_al.m.sp() == Approx(1.0));
+    REQUIRE(r.p_al.m.sn() == Approx(0.9551020408));
     
-    REQUIRE(r.m.sp() == Approx(0.4649122807));
-    REQUIRE(r.m.sn() == Approx(0.2163265306));
+    REQUIRE(r.p_gt.m.sp() == Approx(1.0));
+    REQUIRE(r.p_gt.m.sn() == Approx(0.012244898));
 
-    REQUIRE(r.ml.sp() == Approx(1.0));
-    REQUIRE(r.ml.sn() == Approx(0.3510204082));
-}
-
-TEST_CASE("DNA_Variation_Simulation_3")
-{
-    const auto r = Structural::analyze("tests/data/dna_sims/simulations_2.vcf");
+    REQUIRE(r.p_af.m.sp() == Approx(1.0));
+    REQUIRE(r.p_af.m.sn() == Approx(0.012244898));
     
-    REQUIRE(r.m.sp() == Approx(0.4649122807));
-    REQUIRE(r.m.sn() == Approx(0.2163265306));
-    
-    REQUIRE(r.ml.sp() == Approx(1.0));
-    REQUIRE(r.ml.sn() == Approx(0.3510204082));
+    REQUIRE(r.p_l.m.sp() == Approx(1.0));
+    REQUIRE(r.p_l.m.sn() == Approx(0.9551020408));
 }

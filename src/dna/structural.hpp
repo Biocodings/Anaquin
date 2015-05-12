@@ -8,16 +8,19 @@ namespace Spike
     struct StructuralStats
     {
         // Overall performance
-        Confusion m;
+        Performance p;
 
-        // Overall sensitivity
-        Sensitivity s;
+        // Performance relative to alleles
+        Performance p_al;
+        
+        // Performance relative to the position
+        Performance p_l;
 
-        // Performance for the position
-        Confusion ml;
+        // Performance relative to genotype
+        Performance p_gt;
 
-        // Sensitivity for the position
-        Sensitivity sl;
+        // Performance relative to allele frequency
+        Performance p_af;
     };
 
     struct Structural
@@ -28,7 +31,7 @@ namespace Spike
         };
 
         static StructuralStats analyze(const std::string &file, const Options &options = Options());
-    };    
+    };
 }
 
 #endif
