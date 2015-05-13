@@ -9,13 +9,15 @@ namespace Spike
     struct MAssemblyStats
     {
         // Percentage of the genome that is contained in the assembly
-        Percentage cov_genome;
+        //Percentage cov_genome;
 
         // Percentage of the genes in the genome that are contained in the assembly
-        std::map<SequinID, Percentage> cov_gene;
+        //std::map<SequinID, Percentage> cov_gene;
 
         // Empirical distribution for contigs  
         Data contigs;
+        
+        // Maximum contig length
     };
 
     struct MAssembly
