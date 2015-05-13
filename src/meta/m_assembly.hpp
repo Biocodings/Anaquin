@@ -1,23 +1,25 @@
 #ifndef GI_M_ASSEMBLY_HPP
 #define GI_M_ASSEMBLY_HPP
 
-#include <map>
+#include "types.hpp"
 #include "analyzer.hpp"
 
 namespace Spike
 {
+    struct Contig
+    {
+        BasePair l;
+        std::string id;
+        std::string seq;
+    };
+
     struct MAssemblyStats
     {
-        // Percentage of the genome that is contained in the assembly
-        //Percentage cov_genome;
-
-        // Percentage of the genes in the genome that are contained in the assembly
-        //std::map<SequinID, Percentage> cov_gene;
-
-        // Empirical distribution for contigs  
-        Data contigs;
+        std::vector<Contig> contigs;
         
-        // Maximum contig length
+        BasePair min, max;
+        BasePair mean, sum;
+        BasePair N20, N50, N80;
     };
 
     struct MAssembly
@@ -27,6 +29,7 @@ namespace Spike
             // Empty Implementation
         };
 
+        static MAssemblyStats stats(const std::string &file);
         static MAssemblyStats analyze(const std::string &file, const Options &options = Options());
     };
 }

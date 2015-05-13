@@ -1,4 +1,3 @@
-#include <assert.h>
 #include "file.hpp"
 #include "parsers/parser_fa.hpp"
 #include <boost/algorithm/string.hpp>
@@ -8,21 +7,29 @@ using namespace Spike;
 void ParserFA::parse(const std::string &file, std::function<void(const FALine &, const ParserProgress &)> x)
 {
     File f(file);
+
     FALine l;
+    std::string s;
     ParserProgress p;
-    std::vector<std::string> tokens;
-    
-    while (f.nextTokens(tokens, "\t"))
+
+    std::stringstream ss;
+    #define CALL_BACK() if (p.i) { l.seq = ss.str(); x(l, p); ss.str(""); }
+
+    while (f.nextLine(s))
     {
-        if (p.i % 2)
+        if (s[0] != '>')
         {
-            x(l, p);
+            boost::trim(s);
+            ss << s;
         }
         else
         {
-            l.id = tokens[0];
+            CALL_BACK();
+            l.id = s.substr(1, s.size() - 1);
         }
 
         p.i++;
     }
+
+    CALL_BACK();
 }

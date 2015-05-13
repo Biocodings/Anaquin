@@ -12,6 +12,7 @@
 		EF175D4A1AE4DE7C00AC3D6C /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF175D491AE4DE7C00AC3D6C /* t_assembly.cpp */; };
 		EF175D4C1AE4F3CE00AC3D6C /* t_abundance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF175D4B1AE4F3CE00AC3D6C /* t_abundance.cpp */; };
 		EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF175D4D1AE4F43000AC3D6C /* t_differential.cpp */; };
+		EF215ACF1B03210D00689E20 /* histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF215ACD1B03210D00689E20 /* histogram.cpp */; };
 		EF224B541ADB5B8900B989A8 /* r_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B4E1ADB5B8900B989A8 /* r_align.cpp */; };
 		EF224B551ADB5B8900B989A8 /* r_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B501ADB5B8900B989A8 /* r_assembly.cpp */; };
 		EF224B5A1ADB5E3C00B989A8 /* structural.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B581ADB5E3C00B989A8 /* structural.cpp */; };
@@ -70,6 +71,8 @@
 		EF175D491AE4DE7C00AC3D6C /* t_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_assembly.cpp; path = ../tests/RNA/t_assembly.cpp; sourceTree = "<group>"; };
 		EF175D4B1AE4F3CE00AC3D6C /* t_abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_abundance.cpp; path = ../tests/rna/t_abundance.cpp; sourceTree = "<group>"; };
 		EF175D4D1AE4F43000AC3D6C /* t_differential.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_differential.cpp; path = ../tests/rna/t_differential.cpp; sourceTree = "<group>"; };
+		EF215ACD1B03210D00689E20 /* histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = histogram.cpp; sourceTree = "<group>"; };
+		EF215ACE1B03210D00689E20 /* histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = histogram.h; sourceTree = "<group>"; };
 		EF224B4C1ADB5B0000B989A8 /* manual.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = manual.txt; path = ../docs/manual.txt; sourceTree = "<group>"; };
 		EF224B4E1ADB5B8900B989A8 /* r_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_align.cpp; path = ../src/rna/r_align.cpp; sourceTree = "<group>"; };
 		EF224B4F1ADB5B8900B989A8 /* r_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_align.hpp; path = ../src/rna/r_align.hpp; sourceTree = "<group>"; };
@@ -378,6 +381,8 @@
 		EFECDC0C1AE7510700F0FD9A /* meta */ = {
 			isa = PBXGroup;
 			children = (
+				EF215ACD1B03210D00689E20 /* histogram.cpp */,
+				EF215ACE1B03210D00689E20 /* histogram.h */,
 				EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */,
 				EFECDC101AE7510700F0FD9A /* m_assembly.hpp */,
 				EFECDC111AE7510700F0FD9A /* m_sequence.cpp */,
@@ -480,6 +485,7 @@
 				EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */,
 				EFD36E9D1ACB912700F6F098 /* file.cpp in Sources */,
 				EF2290631AC0E58000CE76BF /* standard.cpp in Sources */,
+				EF215ACF1B03210D00689E20 /* histogram.cpp in Sources */,
 				EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */,
 				EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */,
 				EF175D4C1AE4F3CE00AC3D6C /* t_abundance.cpp in Sources */,

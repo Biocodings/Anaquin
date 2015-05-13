@@ -8,6 +8,7 @@ namespace Spike
     struct FALine
     {
         std::string id;
+        std::string seq;
     };
 
     struct ParserFA
