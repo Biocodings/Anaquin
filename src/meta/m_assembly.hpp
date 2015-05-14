@@ -1,25 +1,14 @@
 #ifndef GI_M_ASSEMBLY_HPP
 #define GI_M_ASSEMBLY_HPP
 
-#include "types.hpp"
 #include "analyzer.hpp"
+#include "stats/denovo.hpp"
 
 namespace Spike
 {
-    struct Contig
+    struct MAssemblyStats : DNStats
     {
-        BasePair l;
-        std::string id;
-        std::string seq;
-    };
-
-    struct MAssemblyStats
-    {
-        std::vector<Contig> contigs;
-        
-        BasePair min, max;
-        BasePair mean, sum;
-        BasePair N20, N50, N80;
+        // Empty Implementation
     };
 
     struct MAssembly
@@ -29,7 +18,6 @@ namespace Spike
             // Empty Implementation
         };
 
-        static MAssemblyStats stats(const std::string &file);
         static MAssemblyStats analyze(const std::string &file, const Options &options = Options());
     };
 }

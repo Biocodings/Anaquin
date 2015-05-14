@@ -51,7 +51,10 @@ Standard::Standard()
 
 void Standard::meta(const std::string &mix)
 {
-    // Empty Implementation
+    ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &)
+    {
+        // Empty Implementation
+    });
 }
 
 void Standard::dna(const std::string &mix)
@@ -66,7 +69,7 @@ void Standard::dna(const std::string &mix)
         d_exons.push_back(f);
     });
 
-    ParserCSV::parse("data/dna/DNA_Standards_Analysis.txt", [&](const Fields &fields, const ParserProgress &)
+    ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &)
     {
         // Empty Implementation
     });

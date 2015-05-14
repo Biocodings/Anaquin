@@ -144,9 +144,9 @@ namespace Spike
             Standard(Standard const&)       = delete;
             void operator=(Standard const&) = delete;
 
-            void rna (const std::string &mix = "data/rna/RNA_Standards_Analysis.txt");
-            void dna (const std::string &mix = "data/rna/rna_mixtures.csv");
-            void meta(const std::string &mix = "data/rna/meta_mixtures.csv");
+            void rna (const std::string &mix = "data/rna/rna_standards.txt");
+            void dna (const std::string &mix = "data/rna/dna_standards.txt");
+            void meta(const std::string &mix = "data/rna/meta_standards.txt");
     };
 }
 

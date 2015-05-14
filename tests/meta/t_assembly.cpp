@@ -1,11 +1,11 @@
 #include <catch.hpp>
-#include "meta/m_assembly.hpp"
+#include "stats/denovo.hpp"
 
 using namespace Spike;
 
-TEST_CASE("MAssembly_Contigs_Stats")
+TEST_CASE("DNAssembly_Contigs_Stats")
 {
-    const auto r = MAssembly::stats("tests/data/meta/contigs.fa");
+    const auto r = DNAsssembly::stats("tests/data/meta/contigs.fa");
 
     REQUIRE(r.contigs.size() == 63);
 
