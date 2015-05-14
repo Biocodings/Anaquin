@@ -1,4 +1,3 @@
-#include "analyzer.hpp"
 #include "expression.hpp"
 #include "dna/structural.hpp"
 #include "parsers/parser_vcf.hpp"
@@ -17,10 +16,6 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
     {
         if (q.m == SNP || q.m == Indel)
         {
-            /*
-             * SNP/Indel classification
-             */
-
             if (classify(stats.p.m, q, [&](const VCFVariant &)
             {
                 if (!s.d_vars.count(q.l))
@@ -30,10 +25,36 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
                 
                 r = s.d_vars.at(q.l);
                 
-                if (options.filters.count(r.id))
+                
+                
+                
+                bool found = false;
+                BedFeature tt;
+                
+                for (auto &exon: s.d_exons)
+                {
+                    if (exon.l.contains(r.l))
+                    {
+                        found = true;
+                        tt = exon;
+                        break;
+                    }
+                }
+                
+                if (!found)
+                {
+                    std::cout << "????" << std::endl;
+                }
+                
+                if (options.filters.count(tt.name))
                 {
                     return Ignore;
                 }
+                
+                c.at(tt.name)++;
+                
+                
+                
                 
                 stats.p_l.m.tp()++;
                 

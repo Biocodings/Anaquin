@@ -41,6 +41,9 @@ namespace Spike
         // The total number of G and C nucleotides in the assembly, divided by the total length of the assembly.
         double gc;
 
+        // Number of ambigious bases (Ns)
+        Counts ambigs;
+
         BasePair min, max;
         BasePair mean, sum;
         BasePair N20, N50, N80;

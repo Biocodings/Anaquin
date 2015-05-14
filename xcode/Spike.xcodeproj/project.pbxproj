@@ -105,6 +105,7 @@
 		EF3D36211B046AB8002289A5 /* histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = histogram.cpp; path = ../src/stats/histogram.cpp; sourceTree = "<group>"; };
 		EF3D36221B046AB8002289A5 /* histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = histogram.h; path = ../src/stats/histogram.h; sourceTree = "<group>"; };
 		EF3D36261B046CFC002289A5 /* meta_standards.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = meta_standards.txt; path = ../data/meta/meta_standards.txt; sourceTree = "<group>"; };
+		EF3D36281B048478002289A5 /* DNA.ref.bed */ = {isa = PBXFileReference; lastKnownFileType = text; name = DNA.ref.bed; path = ../data/dna/DNA.ref.bed; sourceTree = "<group>"; };
 		EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_tracking.cpp; path = parsers/t_parser_tracking.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
@@ -370,6 +371,7 @@
 		EFE6C0A51AEA0D2500CE37E5 /* dna */ = {
 			isa = PBXGroup;
 			children = (
+				EF3D36281B048478002289A5 /* DNA.ref.bed */,
 				EFA1A6B31AFC902F0066DD9F /* dna_standards.txt */,
 			);
 			name = dna;

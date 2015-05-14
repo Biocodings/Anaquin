@@ -15,6 +15,7 @@ RDifferentialStats RDifferential::analyze(const std::string &f, const Options &o
 
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
+        // The known and observed fold-change
         Fold known, measured;
 
         /*
