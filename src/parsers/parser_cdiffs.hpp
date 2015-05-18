@@ -18,7 +18,7 @@ namespace Spike
         SS::TestStats stats;
 
         // The p-value and q-value under the null-hypothesis
-        SS::Probability p, q;
+        SS::P p, q;
 
         TrackingStatus status;
     };

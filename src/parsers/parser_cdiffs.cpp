@@ -47,8 +47,8 @@ void ParserCDiffs::parse(const std::string &file, std::function<void (const Trac
         t.logFold = stof(tokens[FLogFold]);
         t.stats   = stof(tokens[FTestStats]);
 
-        t.p = SS::Probability(stof(tokens[FPValue]));
-        t.q = SS::Probability(stof(tokens[FQValue]));
+        t.p = SS::P(stof(tokens[FPValue]));
+        t.q = SS::P(stof(tokens[FQValue]));
 
         if (t.status != TrackingStatus::HIData)
         {

@@ -1,7 +1,7 @@
 #include "expression.hpp"
 #include "r_differential.hpp"
 #include "parsers/parser_cdiffs.hpp"
-#include <ss/regression/linear_model.hpp>
+#include <ss/regression/lm.hpp>
 
 using namespace SS;
 using namespace Spike;
