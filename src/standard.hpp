@@ -5,7 +5,7 @@
 #include <vector>
 #include "locus.hpp"
 #include "feature.hpp"
-#include "parser_bed.hpp"
+#include "parsers/parser_bed.hpp"
 
 namespace Spike
 {
