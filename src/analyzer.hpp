@@ -118,24 +118,16 @@ namespace Spike
     // Classify at the base-level by counting for non-overlapping regions
     template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m, Counter &c)
     {
-        const auto q_merged = Locus::merge<Feature, Locus>(q);
-        assert(!Locus::overlap(q_merged));
-
-        for (auto l : q_merged)
-        {
-            m.nq   += l.length();
-            m.tp() += countOverlaps(r, l, c);
-            m.fp()  = m.nq - m.tp();
-        }
-    }
-
-    // Classify at the base-level by counting for non-overlapping regions
-    template <typename I1, typename I2> void countBase____(const I1 &r, const I2 &q, Confusion &m, Counter &c)
-    {
-        const auto q_merged = Locus::merge<Alignment, Locus>(q);
-        assert(!Locus::overlap(q_merged));
+        typedef typename I2::value_type Type;
         
-        for (auto l : q_merged)
+        /*
+         * The features in the query might overlap. We'd need to merge them before analysis.
+         */
+        
+        const auto merged = Locus::merge<Type, Locus>(q);
+        assert(!Locus::overlap(merged));
+
+        for (const auto &l : merged)
         {
             m.nq   += l.length();
             m.tp() += countOverlaps(r, l, c);

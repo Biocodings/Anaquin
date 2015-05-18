@@ -3,9 +3,9 @@
 #include "expression.hpp"
 #include "r_abundance.hpp"
 #include "writers/r_writer.hpp"
+#include <ss/regression/lm.hpp>
 #include "parsers/parser_tmap.hpp"
 #include "parsers/parser_tracking.hpp"
-#include <ss/regression/linear_model.hpp>
 
 using namespace SS;
 using namespace Spike;

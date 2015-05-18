@@ -81,7 +81,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * Classify at the base level
      */
 
-    countBase____(s.r_l_exons, q_exons, stats.mb, stats.cb);
+    countBase(s.r_l_exons, q_exons, stats.mb, stats.cb);
 
     /*
      * Calculating for the references. The idea is similar to cuffcompare, where a reference is counted for each true-positive.
