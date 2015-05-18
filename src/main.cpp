@@ -44,6 +44,7 @@
 #define OPT_MIN           321
 #define OPT_MAX           322
 #define OPT_LIMIT         323
+#define OPT_OUTPUT        324
 
 using namespace Spike;
 
@@ -74,6 +75,7 @@ static const struct option long_options[] =
     { "t",    no_argument,       0, CMD_TEST },
     { "v",    no_argument,       0, CMD_VER  },
 
+    { "o",     required_argument, 0, OPT_OUTPUT },
     { "p",     required_argument, 0, OPT_THREAD },
     { "min",   required_argument, 0, OPT_MIN    },
     { "max",   required_argument, 0, OPT_MAX    },
@@ -231,10 +233,6 @@ static int parse_options(int argc, char ** argv)
     {
         const auto tmp = std::string(argv[1]);
 
-        /*
-         * The following commands will be ignored by getopt_long_only()
-         */
-
         if (tmp == "rna")  { _cmd = CMD_RNA;  }
         if (tmp == "dna")  { _cmd = CMD_DNA;  }
         if (tmp == "meta") { _cmd = CMD_META; }
@@ -246,7 +244,7 @@ static int parse_options(int argc, char ** argv)
     {
         switch (next)
         {
-            case 'o': { _output = optarg; break; }
+            case OPT_OUTPUT: { _output = optarg; break; }
 
             case OPT_MAX:
             case OPT_MIN:
