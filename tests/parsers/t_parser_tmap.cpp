@@ -7,7 +7,7 @@ TEST_CASE("ParserTMap_Cuffcompare")
 {
     std::vector<TMap> tmaps;
     
-    ParserTMap::parse("tests/data/rna_sims/rna.transcripts.gtf.tmap", [&](const TMap &t, const ParserProgress &)
+    ParserTMap::parse("tests/data/rna/rna.transcripts.gtf.tmap", [&](const TMap &t, const ParserProgress &)
     {
         tmaps.push_back(t);
     });

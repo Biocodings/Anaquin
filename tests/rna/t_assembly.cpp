@@ -5,7 +5,7 @@ using namespace Spike;
 
 TEST_CASE("RAssembly_Simulations_Annotated")
 {
-    const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts.gtf");
+    const auto r = RAssembly::analyze("tests/data/rna/transcripts.gtf");
     
     REQUIRE(r.me.nq == 490);
     REQUIRE(r.me.nr == 491);
@@ -50,7 +50,7 @@ TEST_CASE("RAssembly_Simulations_All_Filtered")
         opts.filters.insert(i.first);
     }
     
-    const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts.gtf", opts);
+    const auto r = RAssembly::analyze("tests/data/rna/transcripts.gtf", opts);
     
     REQUIRE(r.me.nq == 0);
     REQUIRE(r.me.nr == 360);
@@ -78,7 +78,7 @@ TEST_CASE("RAssembly_Simulations_All_Filtered")
 
 TEST_CASE("RAssembly_Simulations_Denovo")
 {
-    //const auto r = RAssembly::analyze("tests/data/rna_sims/transcripts_dn.gtf");
+    //const auto r = RAssembly::analyze("tests/data/rna/transcripts_dn.gtf");
 
     //REQUIRE(r.n  == 1040);
     //REQUIRE(r.nr == 1040);

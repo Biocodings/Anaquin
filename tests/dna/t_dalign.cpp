@@ -5,7 +5,7 @@ using namespace Spike;
 
 TEST_CASE("DAlign_Simulations")
 {
-    const auto r = DAlign::analyze("tests/data/dna_sims/aligned.sam");
+    const auto r = DAlign::analyze("tests/data/dna/aligned.sam");
 
     REQUIRE(r.me.sp() == Approx(0.999984782));
     REQUIRE(r.me.sn() == Approx(0.9997261462));

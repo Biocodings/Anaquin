@@ -5,7 +5,7 @@ using namespace Spike;
 
 TEST_CASE("RAbundance_Simulations_Genes_Tracking")
 {
-    const auto r = RAbundance::analyze("tests/data/rna_sims/genes.fpkm_tracking");
+    const auto r = RAbundance::analyze("tests/data/rna/genes.fpkm_tracking");
 
     REQUIRE(r.lm.r2 == Approx(0.9501333493));
     REQUIRE(r.lm.r  == Approx(0.9757704727));
@@ -19,7 +19,7 @@ TEST_CASE("RAbundance_Simulations_Genes_Tracking")
 
 TEST_CASE("RAbundance_Simulations_Isoforms_Tracking")
 {
-    const auto r = RAbundance::analyze("tests/data/rna_sims/isoforms.fpkm_tracking");
+    const auto r = RAbundance::analyze("tests/data/rna/isoforms.fpkm_tracking");
     
     REQUIRE(r.lm.r  == Approx(0.7835626667));
     REQUIRE(r.lm.c  == Approx(3.5085392148));
@@ -33,7 +33,7 @@ TEST_CASE("RAbundance_Simulations_Isoforms_Tracking")
 
 TEST_CASE("RAbundance_Simulations_TMap")
 {
-    const auto r = RAbundance::analyze("tests/data/rna_sims/rna.transcripts.gtf.tmap");
+    const auto r = RAbundance::analyze("tests/data/rna/rna.transcripts.gtf.tmap");
 
     REQUIRE(r.lm.r  == Approx(0.7817439443));
     REQUIRE(r.lm.c  == Approx(3.5041984197));

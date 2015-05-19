@@ -5,11 +5,20 @@ using namespace Spike;
 
 static std::string exts[] = { "sam", "bam" };
 
+TEST_CASE("RAlign_Lung_Cancer")
+{
+    const auto r = RAlign::analyze("/Users/tedwong/Sources/ABCD.sam");
+    
+
+    
+    
+}
+
 TEST_CASE("RAlign_Simulations")
 {
     for (auto ex : exts)
     {
-        const auto r = RAlign::analyze("tests/data/rna_sims/accepted_hits." + ex);
+        const auto r = RAlign::analyze("tests/data/rna/accepted_hits." + ex);
 
         REQUIRE(r.mb.nq == 31718);
         REQUIRE(r.mb.nr == 54280);
@@ -49,7 +58,7 @@ TEST_CASE("RAlign_Simulations_All_Filtered")
         }
         
         opts.filters.insert("R_5_3_V");
-        const auto r = RAlign::analyze("tests/data/rna_sims/accepted_hits." + ex, opts);
+        const auto r = RAlign::analyze("tests/data/rna/accepted_hits." + ex, opts);
         
         REQUIRE(r.me.nq == 300);
         REQUIRE(r.me.nr == 360);

@@ -5,7 +5,7 @@ using namespace Spike;
 
 TEST_CASE("DNA_Variation_Simulation")
 {
-    const auto r = Structural::analyze("tests/data/dna_sims/DNA.flat.chrT.vcf");
+    const auto r = Structural::analyze("tests/data/dna/DNA.flat.chrT.vcf");
     
     REQUIRE(r.p.m.sp() == Approx(0.0100671141));
     REQUIRE(r.p.m.sn() == Approx(0.012244898));
