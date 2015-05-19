@@ -33,7 +33,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     {
         Feature f;
         
-        if (!align.mapped)
+        if (align.id != s.id || !align.mapped)
         {
             return;
         }
@@ -84,8 +84,8 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     countBase(s.r_l_exons, q_exons, stats.mb, stats.cb);
 
     /*
-     * Calculating for the references. The idea is similar to cuffcompare, where a reference is counted for each true-positive.
-     * Anything that has not been detected will be the false-positives.
+     * Calculating for the references. The idea is similar to cuffcompare, where a reference is counted
+     * for each true-positive. Anything that has not been detected will be the false-positives.
      */
 
     count_ref(stats.ec, stats.me.nr);

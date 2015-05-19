@@ -63,12 +63,11 @@ namespace Spike
     {
         BasePair n = 0;
 
-        for (auto &i : r)
+        for (const auto &i : r)
         {
             if (static_cast<Locus>(t).overlap(i))
             {
-                assert(c.count(i.gID));
-                c[i.gID]++;
+                c.at(i.gID)++;
                 n += static_cast<Locus>(t).overlap(i);
             }
         }

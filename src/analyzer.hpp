@@ -12,14 +12,9 @@
 #include "writers/r_writer.hpp"
 #include "writers/mock_writer.hpp"
 #include <alignment.hpp> // TODO...
-
+#include <iostream>
 namespace Spike
 {
-    struct Data
-    {
-        
-    };
-    
     typedef std::map<Locus, Counts>     LocusCounter;
     typedef std::map<GeneID, Counts>    GeneCounter;
     typedef std::map<IsoformID, Counts> IsoformCounter;
@@ -219,7 +214,8 @@ namespace Spike
                      const Confusion &m,
                      const Sensitivity &s,
                      const std::map<ID, Counts> &c,
-                     std::shared_ptr<Writer> writer)
+                     std::shared_ptr<Writer> writer,
+                     bool writeCount = true)
         {
             const std::string format = "%1%\t%2%\t%3%";
             
@@ -228,9 +224,12 @@ namespace Spike
             writer->write((boost::format(format) % m.sp() % m.sn() % s.abund).str());
             writer->write("\n");
 
-            for (auto p : c)
+            if (writeCount)
             {
-                writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+                for (const auto &p : c)
+                {
+                    writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+                }
             }
             
             writer->close();

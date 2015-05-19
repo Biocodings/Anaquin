@@ -19,7 +19,7 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
 {
     BasePair n = 0;
     
-    for (auto i : iter)
+    for (const auto &i : iter)
     {
         n += static_cast<Locus>(i).length();
     }
