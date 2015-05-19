@@ -5,15 +5,6 @@ using namespace Spike;
 
 static std::string exts[] = { "sam", "bam" };
 
-TEST_CASE("RAlign_Lung_Cancer")
-{
-    const auto r = RAlign::analyze("/Users/tedwong/Sources/ABCD.sam");
-    
-
-    
-    
-}
-
 TEST_CASE("RAlign_Simulations")
 {
     for (auto ex : exts)
