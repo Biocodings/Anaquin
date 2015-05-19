@@ -24,10 +24,10 @@ def d_sequins():
     return '../data/dna/DNA.tab.fa'
 
 def r_mixtures():
-    return '../data/rna/RNA_Standards_Analysis.txt'
+    return '../data/rna/rna_standards.txt'
 
 def d_mixtures():
-    return '../data/dna/DNA_Standards_Analysis.txt'
+    return '../data/dna/dna_standards.txt'
 
 # Split a file of sequin into individual sequins
 def split_sequins(file, seq_path):
