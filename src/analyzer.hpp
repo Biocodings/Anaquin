@@ -4,7 +4,7 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include "ss/r.hpp"
+#include <ss/r.hpp>
 #include "types.hpp"
 #include "classify.hpp"
 #include "sensitivity.hpp"
