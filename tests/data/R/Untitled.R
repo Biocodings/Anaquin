@@ -1,4 +1,5 @@
 
+
 dir <- '/Users/tedwong/Sources/QA/scripts/test'
 files <- c('/Users/tedwong/Sources/QA/scripts/test/mix_a.bam', '/Users/tedwong/Sources/QA/scripts/test/mix_b.bam')
 
@@ -24,8 +25,4 @@ library("DESeq2")
 dds <- DESeqDataSet(se, design = ~Condition)
 
 # Need replicates, just put them as new library in the CSV!!!!
-
-
-
-
 
