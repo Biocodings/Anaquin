@@ -5,6 +5,25 @@ using namespace Spike;
 
 static std::string exts[] = { "sam", "bam" };
 
+#ifdef REGRESSION_TESTING
+
+TEST_CASE("RAlign_RK1A")
+{
+    const auto r = RAlign::analyze("tests/data/R_K562/RK1A_filtered.bam");
+}
+
+TEST_CASE("RAlign_RK2A")
+{
+    const auto r = RAlign::analyze("tests/data/R_K562/RK2A_filtered.bam");
+}
+
+TEST_CASE("RAlign_RK3A")
+{
+    const auto r = RAlign::analyze("tests/data/R_K562/RK3A_filtered.bam");
+}
+
+#endif
+
 TEST_CASE("RAlign_Simulations")
 {
     for (auto ex : exts)
