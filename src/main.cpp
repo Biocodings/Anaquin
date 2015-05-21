@@ -120,8 +120,9 @@ static int invalid_cmd(Command cmd = 0)
 }
 
 static void print_usage()
-{    
-    std::cout << std::ifstream("docs/manual.txt").rdbuf() << std::endl;
+{
+    extern std::string manual();
+    std::cout << manual() << std::endl;
 }
 
 static void print_version()

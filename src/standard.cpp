@@ -4,7 +4,7 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
-#include "file.hpp"
+#include "reader.hpp"
 #include "tokens.hpp"
 #include "standard.hpp"
 #include "parsers/parser_fa.hpp"
@@ -37,7 +37,7 @@ Standard::Standard()
         std::cerr << "Error: Failed to load the reference chromosome" << std::endl;
         throw std::runtime_error("Error: Failed to load the reference chromosome");
     }
-    
+
     // Assume that the first line contains only the name of the chromosome
     std::getline(in, line);
     
@@ -82,6 +82,9 @@ void Standard::dna(const std::string &mix)
     assert(!d_seqs.empty() && !d_vars.empty() && !d_exons.empty());
 }
 
+extern std::string standards_bed();
+extern std::string standards_gtf();
+
 void Standard::rna(const std::string &mix)
 {
     /*
@@ -98,7 +101,7 @@ void Standard::rna(const std::string &mix)
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
 
-    ParserGTF::parse("data/RNA/standards.gtf", [&](const Feature &f, const ParserProgress &)
+    ParserGTF::parse(standards_gtf(), [&](const Feature &f, const ParserProgress &)
 	{
 		l.end = std::max(l.end, f.l.end);
 		l.start = std::min(l.start, f.l.start);
@@ -113,7 +116,7 @@ void Standard::rna(const std::string &mix)
         
         // Construct a mapping between isoformID to geneID
         r_iso2Gene[f.iID] = f.geneID;
-    });
+    }, ParserGTF::String);
 
     assert(!r_iso2Gene.empty());
     std::vector<std::string> toks;
@@ -164,7 +167,7 @@ void Standard::rna(const std::string &mix)
     // Required while reading mixtures
     std::map<IsoformID, Locus> temp;
 
-    ParserBED::parse("data/rna/standards.bed", [&](const BedFeature &t, const ParserProgress &p)
+    ParserBED::parse(standards_bed(), [&](const BedFeature &t, const ParserProgress &p)
     {
         assert(!t.name.empty());
         
@@ -196,7 +199,7 @@ void Standard::rna(const std::string &mix)
         });
 
         assert(iter != r_genes.end());
-    });
+    }, ParserBED::ParseMode::String);
 
     CHECK_AND_SORT(r_introns);
 

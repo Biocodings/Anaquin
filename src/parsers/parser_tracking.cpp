@@ -1,5 +1,5 @@
 #include <map>
-#include "file.hpp"
+#include "reader.hpp"
 #include "tokens.hpp"
 #include "parsers/parser_tracking.hpp"
 
@@ -17,7 +17,7 @@ enum TrackingField
 
 void ParserTracking::parse(const std::string &file, std::function<void (const Tracking &, const ParserProgress &)> f)
 {
-    File i(file);
+    Reader i(file);
 
     static const std::map<std::string, TrackingStatus> mapper =
     {

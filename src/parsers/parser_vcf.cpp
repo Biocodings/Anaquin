@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "file.hpp"
+#include "reader.hpp"
 #include "tokens.hpp"
 #include "parsers/parser_vcf.hpp"
 
@@ -31,7 +31,7 @@ static const std::map<std::string, Genotype> allele =
 void ParserVCF::parse(const std::string &file, std::function<void (const VCFVariant &, const ParserProgress &)> fp)
 {
     std::string line;
-    File f(file);
+    Reader f(file);
 
     VCFVariant v;
     ParserProgress p;

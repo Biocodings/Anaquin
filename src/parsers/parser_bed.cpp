@@ -1,16 +1,16 @@
 #include <assert.h>
-#include "file.hpp"
+#include "reader.hpp"
 #include "parsers/parser_bed.hpp"
 #include <boost/algorithm/string.hpp>
 
 using namespace Spike;
 
-void ParserBED::parse(const std::string &file, std::function<void(const BedFeature &, const ParserProgress &)> x)
+void ParserBED::parse(const std::string &file, Callback x, ParseMode mode)
 {
-    File f(file);
+    Reader f(file, static_cast<Reader::Mode>(mode));
     BedFeature bf;
     ParserProgress p;
-    
+
     /*
      *     Required
      *    ----------
@@ -38,6 +38,12 @@ void ParserBED::parse(const std::string &file, std::function<void(const BedFeatu
     
     while (f.nextTokens(tokens, "\t"))
     {
+        // Empty line?
+        if (tokens.size() == 1)
+        {
+            return;
+        }
+        
         bf.blocks.clear();
         
         // Name of the chromosome

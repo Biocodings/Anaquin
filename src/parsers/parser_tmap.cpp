@@ -1,5 +1,5 @@
 #include <map>
-#include "file.hpp"
+#include "reader.hpp"
 #include "tokens.hpp"
 #include "parsers/parser_tmap.hpp"
 
@@ -24,7 +24,7 @@ enum TMapField
 
 void ParserTMap::parse(const std::string &file, std::function<void (const TMap &, const ParserProgress &)> f)
 {
-    File i(file);
+    Reader i(file);
 
     TMap t;
     ParserProgress p;

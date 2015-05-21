@@ -1,4 +1,4 @@
-#include "file.hpp"
+#include "reader.hpp"
 #include "parsers/parser_fa.hpp"
 #include <boost/algorithm/string.hpp>
 
@@ -6,7 +6,7 @@ using namespace Spike;
 
 void ParserFA::parse(const std::string &file, std::function<void(const FALine &, const ParserProgress &)> x)
 {
-    File f(file);
+    Reader f(file);
 
     FALine l;
     std::string s;

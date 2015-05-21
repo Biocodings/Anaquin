@@ -22,7 +22,14 @@ namespace Spike
     
     struct ParserBED
     {
-        static void parse(const std::string &file, std::function<void(const BedFeature &, const ParserProgress &)>);
+        enum ParseMode
+        {
+            File,
+            String,
+        };
+
+        typedef std::function<void(const BedFeature &, const ParserProgress &)> Callback;
+        static void parse(const std::string &, Callback, ParseMode mode = File);
     };
 }
 

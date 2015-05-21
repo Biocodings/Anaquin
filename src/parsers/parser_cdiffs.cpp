@@ -1,4 +1,4 @@
-#include "file.hpp"
+#include "reader.hpp"
 #include "tokens.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <boost/algorithm/string/predicate.hpp>
@@ -21,7 +21,7 @@ enum TrackingField
 
 void ParserCDiffs::parse(const std::string &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)
 {
-    File i(file);
+    Reader i(file);
     TrackingDiffs t;
     ParserProgress p;
 

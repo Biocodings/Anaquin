@@ -1,4 +1,4 @@
-#include "file.hpp"
+#include "reader.hpp"
 #include "standard.hpp"
 #include "parser_sequins.hpp"
 #include <boost/algorithm/string.hpp>
@@ -7,9 +7,8 @@ using namespace Spike;
 
 SequinList ParserSequins::parse(const std::string &file)
 {
-    const auto &s = Standard::instance();
-    
-    File f(file);
+    const auto &s = Standard::instance();    
+    Reader f(file);
     
     SequinList l;
     std::string line;

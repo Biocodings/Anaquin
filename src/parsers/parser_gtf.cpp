@@ -1,13 +1,12 @@
-#include <map>
-#include <vector>
 #include <fstream>
+#include <sstream>
 #include <assert.h>
 #include "tokens.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Spike;
 
-void ParserGTF::parse(const std::string &file, std::function<void (const Feature &, const ParserProgress &)> x)
+template<typename Callback, typename Stream> void _parse(const std::string &file, Callback x)
 {
     std::map<std::string, RNAFeature> mapper =
     {
@@ -17,26 +16,26 @@ void ParserGTF::parse(const std::string &file, std::function<void (const Feature
         { "stop_codon",  StopCodon  },
         { "transcript",  Transcript }
     };
-
+    
     std::string line;
-    std::ifstream in(file);
+    Stream in(file);
 
     Feature f;
-
-	/*
-	 * Fields must be tab-separated. Also, all but the final field in each feature line must contain a value;
-	 * "empty" columns should be denoted with a '.'. Please refer to the online documentation for more details.
-	 *
-	 *    1. seqname
-	 *    2. sourcre
-	 *    3. feature
-	 *    4. start
-	 *    5. end
-	 *    6. score
-	 *    7. strand
-	 *    8. frame
-	 *    9. attribute
-	 */
+    
+    /*
+     * Fields must be tab-separated. Also, all but the final field in each feature line must contain a value;
+     * "empty" columns should be denoted with a '.'. Please refer to the online documentation for more details.
+     *
+     *    1. seqname
+     *    2. sourcre
+     *    3. feature
+     *    4. start
+     *    5. end
+     *    6. score
+     *    7. strand
+     *    8. frame
+     *    9. attribute
+     */
     
     ParserProgress p;
     
@@ -49,16 +48,22 @@ void ParserGTF::parse(const std::string &file, std::function<void (const Feature
         p.i++;
         boost::split(tokens, line, boost::is_any_of("\t"));
 
+        // Empty line?
+        if (tokens.size() == 1)
+        {
+            return;
+        }
+        
         f.id = tokens[0];
         f.l  = Locus(stoi(tokens[3]), stoi(tokens[4]));
-
+        
         if (!mapper.count(tokens[2]))
         {
             throw std::runtime_error("Unknown feature type: " + tokens[2]);
         }
         
         f.type = mapper[tokens[2]];
-
+        
         /*
          * Eg: "gene_id "R_5_3"; transcript_id "R_5_3_R";"
          */
@@ -71,7 +76,7 @@ void ParserGTF::parse(const std::string &file, std::function<void (const Feature
             {
                 boost::trim(option);
                 boost::split(nameValue, option, boost::is_any_of(" "));
-
+                
                 if (nameValue.size() == 2)
                 {
                     // Make sure that silly characters are removed
@@ -93,7 +98,13 @@ void ParserGTF::parse(const std::string &file, std::function<void (const Feature
                 }
             }
         }
-
+        
         x(f, p);
-	}
+    }
+}
+
+void ParserGTF::parse(const std::string &str, Callback x, ParseMode mode)
+{
+    return mode == File ? _parse<Callback, std::ifstream>(str, x) :
+                          _parse<Callback, std::stringstream>(str, x);
 }
