@@ -14,11 +14,11 @@ struct Spike::ReaderInternal
     std::shared_ptr<std::stringstream> s;
 };
 
-Reader::Reader(const std::string &file, Mode mode)
+Reader::Reader(const std::string &file, ParserMode mode)
 {
     _imp = new ReaderInternal();
 
-    if (mode == Mode::File)
+    if (mode == ParserMode::File)
     {
         const auto f = std::shared_ptr<std::ifstream>(new std::ifstream(file));
         

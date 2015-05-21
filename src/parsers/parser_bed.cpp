@@ -5,9 +5,9 @@
 
 using namespace Spike;
 
-void ParserBED::parse(const std::string &file, Callback x, ParseMode mode)
+void ParserBED::parse(const std::string &file, Callback x, ParserMode mode)
 {
-    Reader f(file, static_cast<Reader::Mode>(mode));
+    Reader f(file, mode);
     BedFeature bf;
     ParserProgress p;
 

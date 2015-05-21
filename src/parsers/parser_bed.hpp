@@ -19,17 +19,11 @@ namespace Spike
         // Locations of the sorted blocks
         std::vector<Locus> blocks;
     };
-    
+
     struct ParserBED
     {
-        enum ParseMode
-        {
-            File,
-            String,
-        };
-
         typedef std::function<void(const BedFeature &, const ParserProgress &)> Callback;
-        static void parse(const std::string &, Callback, ParseMode mode = File);
+        static void parse(const std::string &, Callback, ParserMode mode = File);
     };
 }
 

@@ -13,6 +13,14 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
+extern std::string d_tab_fa();
+extern std::string silico_fa();
+extern std::string d_ref_bed();
+extern std::string standards_bed();
+extern std::string standards_gtf();
+extern std::string d_variant_vcf();
+extern std::string r_standards_txt();
+
 using namespace Spike;
 
 template <typename Iter> BasePair countLocus(const Iter &iter)
@@ -29,7 +37,7 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
 
 Standard::Standard()
 {
-    std::ifstream in("data/silico.fa");
+    std::stringstream in(silico_fa());
     std::string line;
     
     if (!in.good())
@@ -51,39 +59,33 @@ Standard::Standard()
 
 void Standard::meta(const std::string &mix)
 {
-    ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &)
-    {
-        // Empty Implementation
-    });
+    // Empty Implementation
 }
 
 void Standard::dna(const std::string &mix)
 {
-    ParserVCF::parse("data/dna/variant.ChrT51.vcf", [&](const VCFVariant &v, const ParserProgress &)
+    ParserVCF::parse(d_variant_vcf(), [&](const VCFVariant &v, const ParserProgress &)
     {
         d_vars[v.l] = v;
-    });
+    }, ParserMode::String);
 
-    ParserBED::parse("data/dna/DNA.ref.bed", [&](const BedFeature &f, const ParserProgress &)
+    ParserBED::parse(d_ref_bed(), [&](const BedFeature &f, const ParserProgress &)
     {
         d_exons.push_back(f);
-    });
+    }, ParserMode::String);
 
-    ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &)
-    {
+    //ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &)
+    //{
         // Empty Implementation
-    });
+    //}, ParserMode::String);
 
-    ParserFA::parse("data/dna/DNA.tab.fa", [&](const FALine &l, const ParserProgress &)
+    ParserFA::parse(d_tab_fa(), [&](const FALine &l, const ParserProgress &)
     {
         d_seqs.insert(l.id);
-    });
+    }, ParserMode::String);
 
     assert(!d_seqs.empty() && !d_vars.empty() && !d_exons.empty());
 }
-
-extern std::string standards_bed();
-extern std::string standards_gtf();
 
 void Standard::rna(const std::string &mix)
 {
@@ -199,7 +201,7 @@ void Standard::rna(const std::string &mix)
         });
 
         assert(iter != r_genes.end());
-    }, ParserBED::ParseMode::String);
+    }, ParserMode::String);
 
     CHECK_AND_SORT(r_introns);
 
@@ -222,7 +224,7 @@ void Standard::rna(const std::string &mix)
         LogFold,
     };
     
-    ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(r_standards_txt(), [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {
@@ -230,8 +232,10 @@ void Standard::rna(const std::string &mix)
         }
         
         seqs[fields[RNA_ID].substr(0, fields[RNA_ID].length() - 2)].push_back(fields);
-    });
+    }, ParserMode::String);
 
+    assert(!seqs.empty());
+    
     for (const auto &p : seqs)
     {
         auto parse_sequin = [&](const Fields &f, SequinMap &m, Mixture mix)

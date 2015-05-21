@@ -1,20 +1,17 @@
-#include <fstream>
-#include "tokens.hpp"
+#include "reader.hpp"
 #include "parser_csv.hpp"
 
 using namespace Spike;
 
-void ParserCSV::parse(const std::string &file, std::function<void (const std::vector<std::string> &, const ParserProgress &)> x)
+void ParserCSV::parse(const std::string &file, Callback c, ParserMode mode)
 {
-    std::string line;
-    std::ifstream i(file);
-    std::vector<std::string> tokens;
     ParserProgress p;
+    Reader r(file, mode);
+    std::vector<std::string> tokens;
     
-    while (std::getline(i, line))
+    while (r.nextTokens(tokens, "\t"))
     {
-        Tokens::split(line, "\t", tokens);
-        x(tokens, p);
+        c(tokens, p);
         p.i++;
     }
 }

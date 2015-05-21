@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "parsers/parser.hpp"
 
 namespace Spike
 {
@@ -11,13 +12,7 @@ namespace Spike
     class Reader
     {
         public:
-            enum Mode
-            {
-                File,
-                String,
-            };
-
-            Reader(const std::string &file, Mode mode = File);
+            Reader(const std::string &file, ParserMode mode = File);
             ~Reader();
 
             // Returns the next line in the file

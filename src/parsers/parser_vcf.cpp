@@ -28,10 +28,10 @@ static const std::map<std::string, Genotype> allele =
     { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
 };
 
-void ParserVCF::parse(const std::string &file, std::function<void (const VCFVariant &, const ParserProgress &)> fp)
+void ParserVCF::parse(const std::string &file, Callback c, ParserMode mode)
 {
     std::string line;
-    Reader f(file);
+    Reader f(file, mode);
 
     VCFVariant v;
     ParserProgress p;
@@ -118,7 +118,7 @@ void ParserVCF::parse(const std::string &file, std::function<void (const VCFVari
                 }
             }
 
-            fp(v, p);
+            c(v, p);
         }
 	}
 }

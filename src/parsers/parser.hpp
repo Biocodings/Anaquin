@@ -7,6 +7,12 @@ namespace Spike
     {
         long long i = 0;
     };
+
+    enum ParserMode
+    {
+        File,
+        String,
+    };
 }
 
 #endif

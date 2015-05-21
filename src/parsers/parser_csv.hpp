@@ -1,8 +1,9 @@
 #ifndef GI_PARSER_CSV_HPP
 #define GI_PARSER_CSV_HPP
 
+#include <vector>
 #include <functional>
-#include "analyzer.hpp"
+#include "parsers/parser.hpp"
 
 namespace Spike
 {
@@ -10,7 +11,8 @@ namespace Spike
 
     struct ParserCSV
     {
-        static void parse(const std::string &file, std::function<void (const Fields &, const ParserProgress &)>);
+        typedef std::function<void (const Fields &, const ParserProgress &)> Callback;
+        static void parse(const std::string &file, Callback, ParserMode mode);
     };    
 }
 
