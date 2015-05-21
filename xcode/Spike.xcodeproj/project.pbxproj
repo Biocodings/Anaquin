@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		EF13716B1ACADFEB006B0DE2 /* t_standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF13716A1ACADFEB006B0DE2 /* t_standard.cpp */; };
-		EF150F4F1AD5060A0004E613 /* libhts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF150F4E1AD5060A0004E613 /* libhts.a */; };
 		EF175D4A1AE4DE7C00AC3D6C /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF175D491AE4DE7C00AC3D6C /* t_assembly.cpp */; };
 		EF175D4C1AE4F3CE00AC3D6C /* t_abundance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF175D4B1AE4F3CE00AC3D6C /* t_abundance.cpp */; };
 		EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF175D4D1AE4F43000AC3D6C /* t_differential.cpp */; };
@@ -47,6 +46,40 @@
 		EFD457571AE65D6E0027DA46 /* d_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD457551AE65D6E0027DA46 /* d_align.cpp */; };
 		EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD457581AE65D860027DA46 /* d_sequence.cpp */; };
 		EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */; };
+		EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDD6A701B0DD60500450029 /* libz.dylib */; };
+		EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A751B0DD75B00450029 /* bgzf.c */; };
+		EFDD6A901B0DD76200450029 /* faidx.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7A1B0DD76200450029 /* faidx.c */; };
+		EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7D1B0DD76200450029 /* hfile_net.c */; };
+		EFDD6A931B0DD76200450029 /* hfile.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7E1B0DD76200450029 /* hfile.c */; };
+		EFDD6A941B0DD76200450029 /* hts.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A801B0DD76200450029 /* hts.c */; };
+		EFDD6A961B0DD76200450029 /* kfunc.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A821B0DD76200450029 /* kfunc.c */; };
+		EFDD6A971B0DD76200450029 /* knetfile.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A831B0DD76200450029 /* knetfile.c */; };
+		EFDD6A981B0DD76200450029 /* kstring.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A841B0DD76200450029 /* kstring.c */; };
+		EFDD6A991B0DD76200450029 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A851B0DD76200450029 /* md5.c */; };
+		EFDD6A9A1B0DD76200450029 /* regidx.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A861B0DD76200450029 /* regidx.c */; };
+		EFDD6A9B1B0DD76200450029 /* sam.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A871B0DD76200450029 /* sam.c */; };
+		EFDD6A9C1B0DD76200450029 /* synced_bcf_reader.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A881B0DD76200450029 /* synced_bcf_reader.c */; };
+		EFDD6A9E1B0DD76200450029 /* tbx.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A8A1B0DD76200450029 /* tbx.c */; };
+		EFDD6AA01B0DD76200450029 /* vcf_sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A8C1B0DD76200450029 /* vcf_sweep.c */; };
+		EFDD6AA11B0DD76200450029 /* vcf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A8D1B0DD76200450029 /* vcf.c */; };
+		EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A8E1B0DD76200450029 /* vcfutils.c */; };
+		EFDD6AC91B0DD76C00450029 /* cram_codecs.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AA31B0DD76C00450029 /* cram_codecs.c */; };
+		EFDD6ACA1B0DD76C00450029 /* cram_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AA51B0DD76C00450029 /* cram_decode.c */; };
+		EFDD6ACB1B0DD76C00450029 /* cram_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AA71B0DD76C00450029 /* cram_encode.c */; };
+		EFDD6ACC1B0DD76C00450029 /* cram_index.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AA91B0DD76C00450029 /* cram_index.c */; };
+		EFDD6ACD1B0DD76C00450029 /* cram_io.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AAB1B0DD76C00450029 /* cram_io.c */; };
+		EFDD6ACE1B0DD76C00450029 /* cram_samtools.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AAD1B0DD76C00450029 /* cram_samtools.c */; };
+		EFDD6ACF1B0DD76C00450029 /* cram_stats.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AAF1B0DD76C00450029 /* cram_stats.c */; };
+		EFDD6AD11B0DD76C00450029 /* mFILE.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AB41B0DD76C00450029 /* mFILE.c */; };
+		EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AB71B0DD76C00450029 /* open_trace_file.c */; };
+		EFDD6AD31B0DD76C00450029 /* pooled_alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ABA1B0DD76C00450029 /* pooled_alloc.c */; };
+		EFDD6AD41B0DD76C00450029 /* rANS_static.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ABD1B0DD76C00450029 /* rANS_static.c */; };
+		EFDD6AD51B0DD76C00450029 /* sam_header.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ABF1B0DD76C00450029 /* sam_header.c */; };
+		EFDD6AD61B0DD76C00450029 /* string_alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AC11B0DD76C00450029 /* string_alloc.c */; };
+		EFDD6AD71B0DD76C00450029 /* thread_pool.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AC31B0DD76C00450029 /* thread_pool.c */; };
+		EFDD6AD81B0DD76C00450029 /* vlen.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AC51B0DD76C00450029 /* vlen.c */; };
+		EFDD6AD91B0DD76C00450029 /* zfio.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AC71B0DD76C00450029 /* zfio.c */; };
+		EFDD6ADB1B0DDB8700450029 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADA1B0DDB8700450029 /* files.c */; };
 		EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */; };
 		EFE6C0A31AE9D0CF00CE37E5 /* m_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC111AE7510700F0FD9A /* m_sequence.cpp */; };
 		EFECDC191AE7639900F0FD9A /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC161AE7639900F0FD9A /* t_assembly.cpp */; };
@@ -149,6 +182,44 @@
 		EFD457591AE65D860027DA46 /* d_sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = d_sequence.hpp; path = ../src/dna/d_sequence.hpp; sourceTree = "<group>"; };
 		EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_sequence.cpp; path = ../src/rna/r_sequence.cpp; sourceTree = "<group>"; };
 		EFD4575C1AE65DAE0027DA46 /* r_sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_sequence.hpp; path = ../src/rna/r_sequence.hpp; sourceTree = "<group>"; };
+		EFDD6A701B0DD60500450029 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		EFDD6A751B0DD75B00450029 /* bgzf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bgzf.c; path = ../src/htslib/bgzf.c; sourceTree = "<group>"; };
+		EFDD6A771B0DD75B00450029 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../src/htslib/config.h; sourceTree = "<group>"; };
+		EFDD6A7A1B0DD76200450029 /* faidx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = faidx.c; path = ../src/htslib/faidx.c; sourceTree = "<group>"; };
+		EFDD6A7B1B0DD76200450029 /* hfile_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hfile_internal.h; path = ../src/htslib/hfile_internal.h; sourceTree = "<group>"; };
+		EFDD6A7D1B0DD76200450029 /* hfile_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile_net.c; path = ../src/htslib/hfile_net.c; sourceTree = "<group>"; };
+		EFDD6A7E1B0DD76200450029 /* hfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile.c; path = ../src/htslib/hfile.c; sourceTree = "<group>"; };
+		EFDD6A7F1B0DD76200450029 /* hts_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hts_internal.h; path = ../src/htslib/hts_internal.h; sourceTree = "<group>"; };
+		EFDD6A801B0DD76200450029 /* hts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hts.c; path = ../src/htslib/hts.c; sourceTree = "<group>"; };
+		EFDD6A821B0DD76200450029 /* kfunc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kfunc.c; path = ../src/htslib/kfunc.c; sourceTree = "<group>"; };
+		EFDD6A831B0DD76200450029 /* knetfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = knetfile.c; path = ../src/htslib/knetfile.c; sourceTree = "<group>"; };
+		EFDD6A841B0DD76200450029 /* kstring.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kstring.c; path = ../src/htslib/kstring.c; sourceTree = "<group>"; };
+		EFDD6A851B0DD76200450029 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = ../src/htslib/md5.c; sourceTree = "<group>"; };
+		EFDD6A861B0DD76200450029 /* regidx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = regidx.c; path = ../src/htslib/regidx.c; sourceTree = "<group>"; };
+		EFDD6A871B0DD76200450029 /* sam.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sam.c; path = ../src/htslib/sam.c; sourceTree = "<group>"; };
+		EFDD6A881B0DD76200450029 /* synced_bcf_reader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = synced_bcf_reader.c; path = ../src/htslib/synced_bcf_reader.c; sourceTree = "<group>"; };
+		EFDD6A8A1B0DD76200450029 /* tbx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tbx.c; path = ../src/htslib/tbx.c; sourceTree = "<group>"; };
+		EFDD6A8C1B0DD76200450029 /* vcf_sweep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcf_sweep.c; path = ../src/htslib/vcf_sweep.c; sourceTree = "<group>"; };
+		EFDD6A8D1B0DD76200450029 /* vcf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcf.c; path = ../src/htslib/vcf.c; sourceTree = "<group>"; };
+		EFDD6A8E1B0DD76200450029 /* vcfutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcfutils.c; path = ../src/htslib/vcfutils.c; sourceTree = "<group>"; };
+		EFDD6A8F1B0DD76200450029 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../src/htslib/version.h; sourceTree = "<group>"; };
+		EFDD6AA31B0DD76C00450029 /* cram_codecs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_codecs.c; path = ../src/htslib/cram/cram_codecs.c; sourceTree = "<group>"; };
+		EFDD6AA51B0DD76C00450029 /* cram_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_decode.c; path = ../src/htslib/cram/cram_decode.c; sourceTree = "<group>"; };
+		EFDD6AA71B0DD76C00450029 /* cram_encode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_encode.c; path = ../src/htslib/cram/cram_encode.c; sourceTree = "<group>"; };
+		EFDD6AA91B0DD76C00450029 /* cram_index.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_index.c; path = ../src/htslib/cram/cram_index.c; sourceTree = "<group>"; };
+		EFDD6AAB1B0DD76C00450029 /* cram_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_io.c; path = ../src/htslib/cram/cram_io.c; sourceTree = "<group>"; };
+		EFDD6AAD1B0DD76C00450029 /* cram_samtools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_samtools.c; path = ../src/htslib/cram/cram_samtools.c; sourceTree = "<group>"; };
+		EFDD6AAF1B0DD76C00450029 /* cram_stats.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_stats.c; path = ../src/htslib/cram/cram_stats.c; sourceTree = "<group>"; };
+		EFDD6AB41B0DD76C00450029 /* mFILE.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mFILE.c; path = ../src/htslib/cram/mFILE.c; sourceTree = "<group>"; };
+		EFDD6AB71B0DD76C00450029 /* open_trace_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = open_trace_file.c; path = ../src/htslib/cram/open_trace_file.c; sourceTree = "<group>"; };
+		EFDD6ABA1B0DD76C00450029 /* pooled_alloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pooled_alloc.c; path = ../src/htslib/cram/pooled_alloc.c; sourceTree = "<group>"; };
+		EFDD6ABD1B0DD76C00450029 /* rANS_static.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rANS_static.c; path = ../src/htslib/cram/rANS_static.c; sourceTree = "<group>"; };
+		EFDD6ABF1B0DD76C00450029 /* sam_header.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sam_header.c; path = ../src/htslib/cram/sam_header.c; sourceTree = "<group>"; };
+		EFDD6AC11B0DD76C00450029 /* string_alloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string_alloc.c; path = ../src/htslib/cram/string_alloc.c; sourceTree = "<group>"; };
+		EFDD6AC31B0DD76C00450029 /* thread_pool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = thread_pool.c; path = ../src/htslib/cram/thread_pool.c; sourceTree = "<group>"; };
+		EFDD6AC51B0DD76C00450029 /* vlen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vlen.c; path = ../src/htslib/cram/vlen.c; sourceTree = "<group>"; };
+		EFDD6AC71B0DD76C00450029 /* zfio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zfio.c; path = ../src/htslib/cram/zfio.c; sourceTree = "<group>"; };
+		EFDD6ADA1B0DDB8700450029 /* files.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = files.c; path = ../src/htslib/cram/files.c; sourceTree = "<group>"; };
 		EFE6C0A91AEA0D7E00CE37E5 /* standards.bed */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.bed; path = ../data/rna/standards.bed; sourceTree = "<group>"; };
 		EFE6C0AA1AEA0D7E00CE37E5 /* standards.gtf */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.gtf; path = ../data/rna/standards.gtf; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
@@ -167,7 +238,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF150F4F1AD5060A0004E613 /* libhts.a in Frameworks */,
+				EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,29 +282,30 @@
 		7FC557061AB473A90085C090 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				EFECDC0C1AE7510700F0FD9A /* meta */,
+				EFDD6A731B0DD73900450029 /* htslib */,
 				EF224B571ADB5E3300B989A8 /* dna */,
-				EF224B4D1ADB5B7C00B989A8 /* rna */,
-				EFE9A01D1AD3B10900557829 /* writers */,
+				EFECDC0C1AE7510700F0FD9A /* meta */,
 				EF3860D61AD378190062D246 /* parsers */,
+				EF224B4D1ADB5B7C00B989A8 /* rna */,
 				EF3D361D1B046A50002289A5 /* stats */,
-				EF76C9221ADBE82F003D45F9 /* expression.hpp */,
-				EF2290341AC0E58000CE76BF /* alignment.hpp */,
-				EF2290381AC0E58000CE76BF /* biology.hpp */,
-				EF22903E1AC0E58000CE76BF /* feature.hpp */,
-				EFD36E9C1ACB912700F6F098 /* reader.cpp */,
-				EFCF175C1AEA77960083F2C4 /* filter.hpp */,
-				EFD36E9B1ACB90D400F6F098 /* reader.hpp */,
-				EFF4FB0D1ADD256F0008FD04 /* analyzer.hpp */,
-				EF22903F1AC0E58000CE76BF /* locus.hpp */,
+				EFE9A01D1AD3B10900557829 /* writers */,
 				EF2290351AC0E58000CE76BF /* main.cpp */,
+				EFD36E9C1ACB912700F6F098 /* reader.cpp */,
 				EF312C451B0C5FBD00DE3EC2 /* resources.cpp */,
 				EF2290521AC0E58000CE76BF /* standard.cpp */,
-				EF2290511AC0E58000CE76BF /* standard.hpp */,
+				EF2290341AC0E58000CE76BF /* alignment.hpp */,
+				EFF4FB0D1ADD256F0008FD04 /* analyzer.hpp */,
+				EF2290381AC0E58000CE76BF /* biology.hpp */,
 				EF2290541AC0E58000CE76BF /* classify.hpp */,
+				EF76C9221ADBE82F003D45F9 /* expression.hpp */,
+				EF22903E1AC0E58000CE76BF /* feature.hpp */,
+				EFCF175C1AEA77960083F2C4 /* filter.hpp */,
+				EF22903F1AC0E58000CE76BF /* locus.hpp */,
+				EFD36E9B1ACB90D400F6F098 /* reader.hpp */,
+				EFF4FAFE1ADC99250008FD04 /* sensitivity.hpp */,
+				EF2290511AC0E58000CE76BF /* standard.hpp */,
 				EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */,
 				EF2290551AC0E58000CE76BF /* types.hpp */,
-				EFF4FAFE1ADC99250008FD04 /* sensitivity.hpp */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -242,6 +314,7 @@
 			isa = PBXGroup;
 			children = (
 				EF150F4E1AD5060A0004E613 /* libhts.a */,
+				EFDD6A701B0DD60500450029 /* libz.dylib */,
 			);
 			name = Framework;
 			sourceTree = "<group>";
@@ -356,6 +429,58 @@
 				EF224B4C1ADB5B0000B989A8 /* manual.txt */,
 			);
 			name = Docs;
+			sourceTree = "<group>";
+		};
+		EFDD6A731B0DD73900450029 /* htslib */ = {
+			isa = PBXGroup;
+			children = (
+				EFDD6A741B0DD75300450029 /* cram */,
+				EFDD6A7A1B0DD76200450029 /* faidx.c */,
+				EFDD6A7B1B0DD76200450029 /* hfile_internal.h */,
+				EFDD6A7D1B0DD76200450029 /* hfile_net.c */,
+				EFDD6A7E1B0DD76200450029 /* hfile.c */,
+				EFDD6A7F1B0DD76200450029 /* hts_internal.h */,
+				EFDD6A801B0DD76200450029 /* hts.c */,
+				EFDD6A821B0DD76200450029 /* kfunc.c */,
+				EFDD6A831B0DD76200450029 /* knetfile.c */,
+				EFDD6A841B0DD76200450029 /* kstring.c */,
+				EFDD6A851B0DD76200450029 /* md5.c */,
+				EFDD6A861B0DD76200450029 /* regidx.c */,
+				EFDD6A871B0DD76200450029 /* sam.c */,
+				EFDD6A881B0DD76200450029 /* synced_bcf_reader.c */,
+				EFDD6A8A1B0DD76200450029 /* tbx.c */,
+				EFDD6A8C1B0DD76200450029 /* vcf_sweep.c */,
+				EFDD6A8D1B0DD76200450029 /* vcf.c */,
+				EFDD6A8E1B0DD76200450029 /* vcfutils.c */,
+				EFDD6A8F1B0DD76200450029 /* version.h */,
+				EFDD6A751B0DD75B00450029 /* bgzf.c */,
+				EFDD6A771B0DD75B00450029 /* config.h */,
+			);
+			name = htslib;
+			sourceTree = "<group>";
+		};
+		EFDD6A741B0DD75300450029 /* cram */ = {
+			isa = PBXGroup;
+			children = (
+				EFDD6AA31B0DD76C00450029 /* cram_codecs.c */,
+				EFDD6AA51B0DD76C00450029 /* cram_decode.c */,
+				EFDD6AA71B0DD76C00450029 /* cram_encode.c */,
+				EFDD6AA91B0DD76C00450029 /* cram_index.c */,
+				EFDD6AAB1B0DD76C00450029 /* cram_io.c */,
+				EFDD6AAD1B0DD76C00450029 /* cram_samtools.c */,
+				EFDD6AAF1B0DD76C00450029 /* cram_stats.c */,
+				EFDD6ADA1B0DDB8700450029 /* files.c */,
+				EFDD6AB41B0DD76C00450029 /* mFILE.c */,
+				EFDD6AB71B0DD76C00450029 /* open_trace_file.c */,
+				EFDD6ABA1B0DD76C00450029 /* pooled_alloc.c */,
+				EFDD6ABD1B0DD76C00450029 /* rANS_static.c */,
+				EFDD6ABF1B0DD76C00450029 /* sam_header.c */,
+				EFDD6AC11B0DD76C00450029 /* string_alloc.c */,
+				EFDD6AC31B0DD76C00450029 /* thread_pool.c */,
+				EFDD6AC51B0DD76C00450029 /* vlen.c */,
+				EFDD6AC71B0DD76C00450029 /* zfio.c */,
+			);
+			name = cram;
 			sourceTree = "<group>";
 		};
 		EFE6C0A41AEA0D2100CE37E5 /* rna */ = {
@@ -487,45 +612,78 @@
 				EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */,
 				EFE6C0A31AE9D0CF00CE37E5 /* m_sequence.cpp in Sources */,
 				EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */,
+				EFDD6AD61B0DD76C00450029 /* string_alloc.c in Sources */,
 				EFD457571AE65D6E0027DA46 /* d_align.cpp in Sources */,
 				EF175D4A1AE4DE7C00AC3D6C /* t_assembly.cpp in Sources */,
 				EF4BD9AB1ADDFB92007BE6AB /* parser_cdiffs.cpp in Sources */,
 				EF5616141AE4FE4300EE5ACB /* t_dalign.cpp in Sources */,
 				EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */,
+				EFDD6AD41B0DD76C00450029 /* rANS_static.c in Sources */,
 				EF224B5A1ADB5E3C00B989A8 /* structural.cpp in Sources */,
+				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF13716B1ACADFEB006B0DE2 /* t_standard.cpp in Sources */,
+				EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */,
+				EFDD6A991B0DD76200450029 /* md5.c in Sources */,
+				EFDD6A9A1B0DD76200450029 /* regidx.c in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
+				EFDD6ACE1B0DD76C00450029 /* cram_samtools.c in Sources */,
 				EF224B541ADB5B8900B989A8 /* r_align.cpp in Sources */,
+				EFDD6A971B0DD76200450029 /* knetfile.c in Sources */,
+				EFDD6AA11B0DD76200450029 /* vcf.c in Sources */,
 				EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */,
+				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
+				EFDD6ACB1B0DD76C00450029 /* cram_encode.c in Sources */,
 				EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */,
 				EFD36E9D1ACB912700F6F098 /* reader.cpp in Sources */,
 				EF2290631AC0E58000CE76BF /* standard.cpp in Sources */,
 				EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */,
+				EFDD6A901B0DD76200450029 /* faidx.c in Sources */,
 				EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */,
+				EFDD6AA01B0DD76200450029 /* vcf_sweep.c in Sources */,
+				EFDD6A9C1B0DD76200450029 /* synced_bcf_reader.c in Sources */,
+				EFDD6A981B0DD76200450029 /* kstring.c in Sources */,
 				EF175D4C1AE4F3CE00AC3D6C /* t_abundance.cpp in Sources */,
+				EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */,
+				EFDD6AD91B0DD76C00450029 /* zfio.c in Sources */,
+				EFDD6AD31B0DD76C00450029 /* pooled_alloc.c in Sources */,
 				EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */,
+				EFDD6A9B1B0DD76200450029 /* sam.c in Sources */,
 				EF224B551ADB5B8900B989A8 /* r_assembly.cpp in Sources */,
+				EFDD6A961B0DD76200450029 /* kfunc.c in Sources */,
 				EF3D36231B046AB8002289A5 /* histogram.cpp in Sources */,
+				EFDD6ACD1B0DD76C00450029 /* cram_io.c in Sources */,
 				EF3860E81AD3783A0062D246 /* parser_tracking.cpp in Sources */,
 				EF312C461B0C5FBD00DE3EC2 /* resources.cpp in Sources */,
+				EFDD6AC91B0DD76C00450029 /* cram_codecs.c in Sources */,
 				EF44A8211AF791780036C894 /* t_parser_tmap.cpp in Sources */,
+				EFDD6ACA1B0DD76C00450029 /* cram_decode.c in Sources */,
 				EFBF33BF1AEBAE250016083E /* t_locus.cpp in Sources */,
 				EFA1A6B21AFC4FAB0066DD9F /* parser_fa.cpp in Sources */,
 				EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */,
+				EFDD6ACC1B0DD76C00450029 /* cram_index.c in Sources */,
+				EFDD6AD51B0DD76C00450029 /* sam_header.c in Sources */,
+				EFDD6AD11B0DD76C00450029 /* mFILE.c in Sources */,
 				EF76C91E1ADBD59F003D45F9 /* path_writer.cpp in Sources */,
 				EF4BD9B71ADE4054007BE6AB /* t_parser_vcf.cpp in Sources */,
 				EFBB830E1ADF953B0002611E /* parser_sequins.cpp in Sources */,
+				EFDD6AD81B0DD76C00450029 /* vlen.c in Sources */,
 				EF4BD9B51ADE4054007BE6AB /* t_parser_gtf.cpp in Sources */,
 				EF4BD9B41ADE4054007BE6AB /* t_parser_cdiffs.cpp in Sources */,
 				EFF4FB091ADD248D0008FD04 /* t_ralign.cpp in Sources */,
+				EFDD6A9E1B0DD76200450029 /* tbx.c in Sources */,
+				EFDD6ACF1B0DD76C00450029 /* cram_stats.c in Sources */,
 				EF44A81C1AF78E400036C894 /* t_parser_tracking.cpp in Sources */,
 				EF5E49431AFE37430066C689 /* d_abundance.cpp in Sources */,
 				EF3D36201B046A62002289A5 /* denovo.cpp in Sources */,
+				EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */,
 				EF4BD9B61ADE4054007BE6AB /* t_parser_sam.cpp in Sources */,
 				EF3860E61AD3783A0062D246 /* parser_bed.cpp in Sources */,
 				EFECDC191AE7639900F0FD9A /* t_assembly.cpp in Sources */,
+				EFDD6A931B0DD76200450029 /* hfile.c in Sources */,
+				EFDD6ADB1B0DDB8700450029 /* files.c in Sources */,
 				EF76C92A1ADC09FD003D45F9 /* r_differential.cpp in Sources */,
+				EFDD6AD71B0DD76C00450029 /* thread_pool.c in Sources */,
 				EF5616151AE4FE4300EE5ACB /* t_structural.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -614,6 +772,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					/Users/tedwong/Sources/QA/src/htslib,
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -623,17 +782,15 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/Cellar/boost/1.57.0/include,
-					/Users/tedwong/Sources/QQ/Headers,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 					/usr/include/catch/include/,
 					../include,
 					../../include,
-					"../include/tclap-1.2.1/include",
 					/Users/tedwong/Sources/SS,
 					../../src,
 					../src,
 					src,
-					/Users/tedwong/Sources/HT,
+					/Users/tedwong/Sources/QA/src/htslib,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -651,22 +808,21 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					/Users/tedwong/Sources/QA/src/htslib,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/Cellar/boost/1.57.0/include,
-					/Users/tedwong/Sources/QQ/Headers,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 					/usr/include/catch/include/,
 					../include,
 					../../include,
-					"../include/tclap-1.2.1/include",
 					/Users/tedwong/Sources/SS,
 					../../src,
 					../src,
 					src,
-					/Users/tedwong/Sources/HT,
+					/Users/tedwong/Sources/QA/src/htslib,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
