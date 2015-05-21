@@ -1,6 +1,6 @@
-# Makefile for anaquin, a statistical library for spike-in sequins.
+# Makefile for Anaquin, a statistical library for spike-in sequins.
 #
-#    Copyright (C) 2013-2015 Garvan Institute of Medical Research
+#    Copyright (C) 2015- Garvan Institute of Medical Research
 #
 #    Author: Ted Wong <t.wong@garvan.org.au>
 #
@@ -22,14 +22,53 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-GCC=g++
-CPPFLAGS=-std=c++11
+BOOST = /usr/local/Cellar/boost/1.57.0/include
 
-CATCH_PATH = {CATCH_PATH}
-BOOST_PATH = {BOOST_PATH}
-EIGEN_PATH = {EIGEN_PATH}
-SS_PATH    = {SS_PATH}
-HTLIB_PATH = {HTLIB_PATH}
+# Required for unit-testing
+CATCH = /usr/include/catch/include
 
-all:
-	g++ -std=c++11 -I $(BOOST_PATH) -I {CATCH_PATH} -I /home/bamboo/boost_1_57_0 -l hts -L $(HTLIB_PATH)  -I $(HTLIB_PATH) -I /home/bamboo/eigen -I src -I ${EIGEN_PATH}  -I $(SS_PATH)  -I /usr/include -o anaquins src/*.cpp src/rna/*.cpp src/dna/*.cpp src/parsers/*.cpp src/writers/*.cpp tests/rna/t_ralign.cpp tests/t_standard.cpp src/meta/*.cpp
+# Linear-algebra library
+EIGEN = /usr/local/Cellar/eigen/3.2.4/include/eigen3
+
+# Statistics library
+SS = /Users/tedwong/Sources/SS
+
+# Required for reading a BAM file
+HTLIB = /Users/tedwong/Sources/HT
+
+LIBS = hts
+
+# Where the header are stored
+INCLUDE = src
+
+# Declaration of variables
+CC = g++
+CC_FLAGS = -std=c++11
+
+EXEC    = anaquin
+SOURCES = $(wildcard src/*.cpp src/rna/*.cpp src/dna/*.cpp src/meta/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/rna/*.cpp tests/meta/*.cpp tests/*.cpp)
+OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
+
+$(EXEC): $(OBJECTS) $(OBJECTS_TEST)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) -l ${LIBS} -L ${HTLIB} -o $(EXEC)
+
+%.o: %.cpp
+	$(CC) -c $(CC_FLAGS) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${HTLIB} $< -o $@
+
+clean:
+	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
+
+
+
+
+
+
+
+
+
+
+
+
+

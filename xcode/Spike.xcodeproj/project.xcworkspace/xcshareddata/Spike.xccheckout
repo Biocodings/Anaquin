@@ -12,6 +12,8 @@
 	<dict>
 		<key>1754a112-b80e-1970-4a7e-ce57b7db7bff++505</key>
 		<string>https://github.com/student-t/Anaquin/trunk</string>
+		<key>179373a4-1820-8b07-f7c7-ce57b7db7bff++505</key>
+		<string>https://github.com/samtools/htslib/trunk</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>xcode/Spike.xcodeproj</string>
@@ -19,11 +21,15 @@
 	<dict>
 		<key>1754a112-b80e-1970-4a7e-ce57b7db7bff++505</key>
 		<string>../../..</string>
+		<key>179373a4-1820-8b07-f7c7-ce57b7db7bff++505</key>
+		<string>../../../../HT</string>
 	</dict>
 	<key>IDESourceControlProjectRepositoryRootDictionary</key>
 	<dict>
 		<key>1754a112-b80e-1970-4a7e-ce57b7db7bff++505</key>
 		<string>https://github.com/student-t/Anaquin</string>
+		<key>179373a4-1820-8b07-f7c7-ce57b7db7bff++505</key>
+		<string>https://github.com/samtools/htslib</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/student-t/Anaquin/trunk/xcode/Spike.xcodeproj</string>
@@ -33,6 +39,14 @@
 	<string>1754a112-b80e-1970-4a7e-ce57b7db7bff++505</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>179373a4-1820-8b07-f7c7-ce57b7db7bff++505</string>
+			<key>IDESourceControlWCCName</key>
+			<string>HT</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.subversion</string>

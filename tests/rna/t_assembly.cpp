@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "r_assembly.hpp"
+#include "rna/r_assembly.hpp"
 
 using namespace Spike;
 
