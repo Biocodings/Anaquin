@@ -633,51 +633,51 @@ static void *mt_worker(void *data)
 
 int bgzf_mt(BGZF *fp, int n_threads, int n_sub_blks)
 {
-    int i;
-    mtaux_t *mt;
-    pthread_attr_t attr;
-    if (!fp->is_write || fp->mt || n_threads <= 1) return -1;
-    mt = (mtaux_t*)calloc(1, sizeof(mtaux_t));
-    mt->n_threads = n_threads;
-    mt->n_blks = n_threads * n_sub_blks;
-    mt->len = (int*)calloc(mt->n_blks, sizeof(int));
-    mt->blk = (void**)calloc(mt->n_blks, sizeof(void*));
-    for (i = 0; i < mt->n_blks; ++i)
-        mt->blk[i] = malloc(BGZF_MAX_BLOCK_SIZE);
-    mt->tid = (pthread_t*)calloc(mt->n_threads, sizeof(pthread_t)); // tid[0] is not used, as the worker 0 is launched by the master
-    mt->w = (worker_t*)calloc(mt->n_threads, sizeof(worker_t));
-    for (i = 0; i < mt->n_threads; ++i) {
-        mt->w[i].i = i;
-        mt->w[i].mt = mt;
-        mt->w[i].compress_level = fp->compress_level;
-        mt->w[i].buf = malloc(BGZF_MAX_BLOCK_SIZE);
-    }
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-    pthread_mutex_init(&mt->lock, 0);
-    pthread_cond_init(&mt->cv, 0);
-    for (i = 1; i < mt->n_threads; ++i) // worker 0 is effectively launched by the master thread
-        pthread_create(&mt->tid[i], &attr, mt_worker, &mt->w[i]);
-    fp->mt = mt;
+//    int i;
+//    mtaux_t *mt;
+//    pthread_attr_t attr;
+//    if (!fp->is_write || fp->mt || n_threads <= 1) return -1;
+//    mt = (mtaux_t*)calloc(1, sizeof(mtaux_t));
+//    mt->n_threads = n_threads;
+//    mt->n_blks = n_threads * n_sub_blks;
+//    mt->len = (int*)calloc(mt->n_blks, sizeof(int));
+//    mt->blk = (void**)calloc(mt->n_blks, sizeof(void*));
+//    for (i = 0; i < mt->n_blks; ++i)
+//        mt->blk[i] = malloc(BGZF_MAX_BLOCK_SIZE);
+//    mt->tid = (pthread_t*)calloc(mt->n_threads, sizeof(pthread_t)); // tid[0] is not used, as the worker 0 is launched by the master
+//    mt->w = (worker_t*)calloc(mt->n_threads, sizeof(worker_t));
+//    for (i = 0; i < mt->n_threads; ++i) {
+//        mt->w[i].i = i;
+//        mt->w[i].mt = mt;
+//        mt->w[i].compress_level = fp->compress_level;
+//        mt->w[i].buf = malloc(BGZF_MAX_BLOCK_SIZE);
+//    }
+//    pthread_attr_init(&attr);
+//    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+//    pthread_mutex_init(&mt->lock, 0);
+//    pthread_cond_init(&mt->cv, 0);
+//    for (i = 1; i < mt->n_threads; ++i) // worker 0 is effectively launched by the master thread
+//        pthread_create(&mt->tid[i], &attr, mt_worker, &mt->w[i]);
+//    fp->mt = mt;
     return 0;
 }
 
 static void mt_destroy(mtaux_t *mt)
 {
-    int i;
-    // signal all workers to quit
-    pthread_mutex_lock(&mt->lock);
-    mt->done = 1; mt->proc_cnt = 0;
-    pthread_cond_broadcast(&mt->cv);
-    pthread_mutex_unlock(&mt->lock);
-    for (i = 1; i < mt->n_threads; ++i) pthread_join(mt->tid[i], 0); // worker 0 is effectively launched by the master thread
-    // free other data allocated on heap
-    for (i = 0; i < mt->n_blks; ++i) free(mt->blk[i]);
-    for (i = 0; i < mt->n_threads; ++i) free(mt->w[i].buf);
-    free(mt->blk); free(mt->len); free(mt->w); free(mt->tid);
-    pthread_cond_destroy(&mt->cv);
-    pthread_mutex_destroy(&mt->lock);
-    free(mt);
+//    int i;
+//    // signal all workers to quit
+//    pthread_mutex_lock(&mt->lock);
+//    mt->done = 1; mt->proc_cnt = 0;
+//    pthread_cond_broadcast(&mt->cv);
+//    pthread_mutex_unlock(&mt->lock);
+//    for (i = 1; i < mt->n_threads; ++i) pthread_join(mt->tid[i], 0); // worker 0 is effectively launched by the master thread
+//    // free other data allocated on heap
+//    for (i = 0; i < mt->n_blks; ++i) free(mt->blk[i]);
+//    for (i = 0; i < mt->n_threads; ++i) free(mt->w[i].buf);
+//    free(mt->blk); free(mt->len); free(mt->w); free(mt->tid);
+//    pthread_cond_destroy(&mt->cv);
+//    pthread_mutex_destroy(&mt->lock);
+//    free(mt);
 }
 
 static void mt_queue(BGZF *fp)

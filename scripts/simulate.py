@@ -135,14 +135,26 @@ def print_usage():
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print_usage()
-    elif (sys.argv[1] == 'RNA'):
-        split_sequins(r_sequins(), seq_path(rna_path()))
-        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_A_1_1/'), 0, sys.maxint, 'A')
-        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_A_1_2/'), 0, sys.maxint, 'A')
-        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_A_1_3/'), 0, sys.maxint, 'A')
-        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_B_100_1/'), 0, sys.maxint, 'B', 0, 100)
-        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_B_100_2/'), 0, sys.maxint, 'B', 0, 100)
-        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_B_100_3/'), 0, sys.maxint, 'B', 0, 100)
+    elif (sys.argv[1] == 'RNA'):  
+        a = ['RNA_A_1_1', 'RNA_A_1_2', 'RNA_A_1_3']              
+        for i in range(1,len(a)):
+            split_sequins(r_sequins(), seq_path(rna_path()))        
+            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')
+            os.system('mv RNA_Simulation ' + a[i])
+
+        b = ['RNA_B_100_1', 'RNA_B_100_2', 'RNA_B_100_3']              
+        for i in range(1,len(b)):
+            split_sequins(r_sequins(), seq_path(rna_path()))        
+            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 100)
+            os.system('mv RNA_Simulation ' + b[i])
+        
+        #os.system('tophat -o RNA_A_1_1/aligned RNA_A_1_1 RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
+        #os.system('tophat -o RNA_A_1_1/aligned RNA_A_1_1 RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
+        #os.system('tophat -o RNA_A_1_1/aligned RNA_A_1_1 RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
+        #os.system('tophat -o RNA_A_1_1/aligned RNA_A_1_1 RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
+        #os.system('tophat -o RNA_A_1_1/aligned RNA_A_1_1 RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
+        #os.system('tophat -o RNA_A_1_1/aligned RNA_A_1_1 RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
+        
     elif (sys.argv[1] == 'RNA_A'):
         split_sequins(r_sequins(), seq_path(rna_path()))
         simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')

@@ -421,55 +421,55 @@ static void *t_pool_worker(void *arg) {
 t_pool *t_pool_init(int qsize, int tsize) {
     int i;
     t_pool *p = malloc(sizeof(*p));
-    p->qsize = qsize;
-    p->tsize = tsize;
-    p->njobs = 0;
-    p->nwaiting = 0;
-    p->shutdown = 0;
-    p->head = p->tail = NULL;
-    p->t_stack = NULL;
-#ifdef DEBUG_TIME
-    p->total_time = p->wait_time = 0;
-#endif
-
-    p->t = malloc(tsize * sizeof(p->t[0]));
-
-    pthread_mutex_init(&p->pool_m, NULL);
-    pthread_cond_init(&p->empty_c, NULL);
-    pthread_cond_init(&p->full_c, NULL);
-
-    pthread_mutex_lock(&p->pool_m);
-
-#ifdef IN_ORDER
-    if (!(p->t_stack = malloc(tsize * sizeof(*p->t_stack))))
-	return NULL;
-    p->t_stack_top = -1;
-
-    for (i = 0; i < tsize; i++) {
-	t_pool_worker_t *w = &p->t[i];
-	p->t_stack[i] = 0;
-	w->p = p;
-	w->idx = i;
-	w->wait_time = 0;
-	pthread_cond_init(&w->pending_c, NULL);
-	if (0 != pthread_create(&w->tid, NULL, t_pool_worker, w))
-	    return NULL;
-    }
-#else
-    pthread_cond_init(&p->pending_c, NULL);
-
-    for (i = 0; i < tsize; i++) {
-	t_pool_worker_t *w = &p->t[i];
-	w->p = p;
-	w->idx = i;
-	pthread_cond_init(&w->pending_c, NULL);
-	if (0 != pthread_create(&w->tid, NULL, t_pool_worker, w))
-	    return NULL;
-    }
-#endif
-
-    pthread_mutex_unlock(&p->pool_m);
-
+//    p->qsize = qsize;
+//    p->tsize = tsize;
+//    p->njobs = 0;
+//    p->nwaiting = 0;
+//    p->shutdown = 0;
+//    p->head = p->tail = NULL;
+//    p->t_stack = NULL;
+//#ifdef DEBUG_TIME
+//    p->total_time = p->wait_time = 0;
+//#endif
+//
+//    p->t = malloc(tsize * sizeof(p->t[0]));
+//
+//    pthread_mutex_init(&p->pool_m, NULL);
+//    pthread_cond_init(&p->empty_c, NULL);
+//    pthread_cond_init(&p->full_c, NULL);
+//
+//    pthread_mutex_lock(&p->pool_m);
+//
+//#ifdef IN_ORDER
+//    if (!(p->t_stack = malloc(tsize * sizeof(*p->t_stack))))
+//	return NULL;
+//    p->t_stack_top = -1;
+//
+//    for (i = 0; i < tsize; i++) {
+//	t_pool_worker_t *w = &p->t[i];
+//	p->t_stack[i] = 0;
+//	w->p = p;
+//	w->idx = i;
+//	w->wait_time = 0;
+//	pthread_cond_init(&w->pending_c, NULL);
+//	if (0 != pthread_create(&w->tid, NULL, t_pool_worker, w))
+//	    return NULL;
+//    }
+//#else
+//    pthread_cond_init(&p->pending_c, NULL);
+//
+//    for (i = 0; i < tsize; i++) {
+//	t_pool_worker_t *w = &p->t[i];
+//	w->p = p;
+//	w->idx = i;
+//	pthread_cond_init(&w->pending_c, NULL);
+//	if (0 != pthread_create(&w->tid, NULL, t_pool_worker, w))
+//	    return NULL;
+//    }
+//#endif
+//
+//    pthread_mutex_unlock(&p->pool_m);
+//
     return p;
 }
 
@@ -668,68 +668,68 @@ int t_pool_flush(t_pool *p) {
  * t_pool_destroy(p,1) to quickly exit after a fatal error.
  */
 void t_pool_destroy(t_pool *p, int kill) {
-    int i;
-    
-#ifdef DEBUG
-    fprintf(stderr, "Destroying pool %p, kill=%d\n", p, kill);
-#endif
-
-    /* Send shutdown message to worker threads */
-    if (!kill) {
-	pthread_mutex_lock(&p->pool_m);
-	p->shutdown = 1;
-
-#ifdef DEBUG
-	fprintf(stderr, "Sending shutdown request\n");
-#endif
-
-#ifdef IN_ORDER
-	for (i = 0; i < p->tsize; i++)
-	    pthread_cond_signal(&p->t[i].pending_c);
-#else
-	pthread_cond_broadcast(&p->pending_c);
-#endif
-	pthread_mutex_unlock(&p->pool_m);
-
-#ifdef DEBUG
-	fprintf(stderr, "Shutdown complete\n");
-#endif
-	for (i = 0; i < p->tsize; i++)
-	    pthread_join(p->t[i].tid, NULL);
-    } else {
-	for (i = 0; i < p->tsize; i++)
-	    pthread_kill(p->t[i].tid, SIGINT);
-    }
-
-    pthread_mutex_destroy(&p->pool_m);
-    pthread_cond_destroy(&p->empty_c);
-    pthread_cond_destroy(&p->full_c);
-#ifdef IN_ORDER
-    for (i = 0; i < p->tsize; i++)
-	pthread_cond_destroy(&p->t[i].pending_c);
-#else
-    pthread_cond_destroy(&p->pending_c);
-#endif
-
-#ifdef DEBUG_TIME
-    fprintf(stderr, "Total time=%f\n", p->total_time / 1000000.0);
-    fprintf(stderr, "Wait  time=%f\n", p->wait_time  / 1000000.0);
-    fprintf(stderr, "%d%% utilisation\n",
-	    (int)(100 - ((100.0 * p->wait_time) / p->total_time + 0.5)));
-    for (i = 0; i < p->tsize; i++)
-	fprintf(stderr, "%d: Wait time=%f\n", i,
-		p->t[i].wait_time / 1000000.0);
-#endif
-
-    if (p->t_stack)
-	free(p->t_stack);
-
-    free(p->t);
-    free(p);
-
-#ifdef DEBUG
-    fprintf(stderr, "Destroyed pool %p\n", p);
-#endif
+//    int i;
+//    
+//#ifdef DEBUG
+//    fprintf(stderr, "Destroying pool %p, kill=%d\n", p, kill);
+//#endif
+//
+//    /* Send shutdown message to worker threads */
+//    if (!kill) {
+//	pthread_mutex_lock(&p->pool_m);
+//	p->shutdown = 1;
+//
+//#ifdef DEBUG
+//	fprintf(stderr, "Sending shutdown request\n");
+//#endif
+//
+//#ifdef IN_ORDER
+//	for (i = 0; i < p->tsize; i++)
+//	    pthread_cond_signal(&p->t[i].pending_c);
+//#else
+//	pthread_cond_broadcast(&p->pending_c);
+//#endif
+//	pthread_mutex_unlock(&p->pool_m);
+//
+//#ifdef DEBUG
+//	fprintf(stderr, "Shutdown complete\n");
+//#endif
+//	for (i = 0; i < p->tsize; i++)
+//	    pthread_join(p->t[i].tid, NULL);
+//    } else {
+//	for (i = 0; i < p->tsize; i++)
+//	    pthread_kill(p->t[i].tid, SIGINT);
+//    }
+//
+//    pthread_mutex_destroy(&p->pool_m);
+//    pthread_cond_destroy(&p->empty_c);
+//    pthread_cond_destroy(&p->full_c);
+//#ifdef IN_ORDER
+//    for (i = 0; i < p->tsize; i++)
+//	pthread_cond_destroy(&p->t[i].pending_c);
+//#else
+//    pthread_cond_destroy(&p->pending_c);
+//#endif
+//
+//#ifdef DEBUG_TIME
+//    fprintf(stderr, "Total time=%f\n", p->total_time / 1000000.0);
+//    fprintf(stderr, "Wait  time=%f\n", p->wait_time  / 1000000.0);
+//    fprintf(stderr, "%d%% utilisation\n",
+//	    (int)(100 - ((100.0 * p->wait_time) / p->total_time + 0.5)));
+//    for (i = 0; i < p->tsize; i++)
+//	fprintf(stderr, "%d: Wait time=%f\n", i,
+//		p->t[i].wait_time / 1000000.0);
+//#endif
+//
+//    if (p->t_stack)
+//	free(p->t_stack);
+//
+//    free(p->t);
+//    free(p);
+//
+//#ifdef DEBUG
+//    fprintf(stderr, "Destroyed pool %p\n", p);
+//#endif
 }
 
 
