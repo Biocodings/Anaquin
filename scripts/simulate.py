@@ -137,13 +137,13 @@ if __name__ == '__main__':
         print_usage()
     elif (sys.argv[1] == 'RNA'):  
         a = ['RNA_A_1_1', 'RNA_A_1_2', 'RNA_A_1_3']              
-        for i in range(1,len(a)):
+        for i in range(0,len(a)):
             split_sequins(r_sequins(), seq_path(rna_path()))        
             simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
         b = ['RNA_B_100_1', 'RNA_B_100_2', 'RNA_B_100_3']              
-        for i in range(1,len(b)):
+        for i in range(0,len(b)):
             split_sequins(r_sequins(), seq_path(rna_path()))        
             simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 100)
             os.system('mv RNA_Simulation ' + b[i])
