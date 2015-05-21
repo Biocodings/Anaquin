@@ -317,6 +317,8 @@ static int inflate_block(BGZF* fp, int block_length)
 
 static int inflate_gzip_block(BGZF *fp, int cached)
 {
+    return 0;
+/*
     int ret = Z_OK;
     do
     {
@@ -342,6 +344,7 @@ static int inflate_gzip_block(BGZF *fp, int cached)
     }
     while (ret != Z_STREAM_END);
     return BGZF_MAX_BLOCK_SIZE - fp->gz_stream->avail_out;
+*/
 }
 
 // Returns: 0 on success (BGZF header); -1 on non-BGZF GZIP header; -2 on error
@@ -380,7 +383,7 @@ static int load_block_from_cache(BGZF *fp, int64_t block_address)
     if ( hseek(fp->fp, p->end_offset, SEEK_SET) < 0 )
     {
         // todo: move the error up
-        fprintf(stderr,"Could not hseek to %"PRId64"\n", p->end_offset);
+        //fprintf(stderr,"Could not hseek to %"PRId64"\n", p->end_offset);
         exit(1);
     }
     return p->size;

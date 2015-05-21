@@ -48,9 +48,9 @@ struct _bcf_sweep_t
     int idx_done;           // the index is built during the first pass
 };
 
-BGZF *hts_get_bgzfp(htsFile *fp);
-int hts_useek(htsFile *file, long uoffset, int where);
-long hts_utell(htsFile *file);
+//BGZF *hts_get_bgzfp(htsFile *fp);
+//int hts_useek(htsFile *file, long uoffset, int where);
+//long hts_utell(htsFile *file);
 
 static inline int sw_rec_equal(bcf_sweep_t *sw, bcf1_t *rec)
 {
@@ -82,6 +82,7 @@ static void sw_rec_save(bcf_sweep_t *sw, bcf1_t *rec)
 
 static void sw_fill_buffer(bcf_sweep_t *sw)
 {
+/*
     if ( !sw->iidx ) return;
     sw->iidx--;
 
@@ -102,10 +103,13 @@ static void sw_fill_buffer(bcf_sweep_t *sw)
         rec = &sw->rec[sw->nrec];
     }
     sw_rec_save(sw, &sw->rec[0]);
+*/
 }
 
 bcf_sweep_t *bcf_sweep_init(const char *fname)
 {
+    return NULL;
+/*
     bcf_sweep_t *sw = (bcf_sweep_t*) calloc(1,sizeof(bcf_sweep_t));
     sw->file = hts_open(fname, "r");
     sw->fp   = hts_get_bgzfp(sw->file);
@@ -116,6 +120,7 @@ bcf_sweep_t *bcf_sweep_init(const char *fname)
     sw->block_size = 1024*1024*3;
     sw->direction = SW_FWD;
     return sw;
+*/
 }
 
 void bcf_empty1(bcf1_t *v);
@@ -133,6 +138,7 @@ void bcf_sweep_destroy(bcf_sweep_t *sw)
 
 static void sw_seek(bcf_sweep_t *sw, int direction)
 {
+/*
     sw->direction = direction;
     if ( direction==SW_FWD )
         hts_useek(sw->file, sw->idx[0], 0);
@@ -141,10 +147,14 @@ static void sw_seek(bcf_sweep_t *sw, int direction)
         sw->iidx = sw->nidx;
         sw->nrec = 0;
     }
+*/
 }
 
 bcf1_t *bcf_sweep_fwd(bcf_sweep_t *sw)
 {
+    return NULL;
+    
+/*
     if ( sw->direction==SW_BWD ) sw_seek(sw, SW_FWD);
 
     long pos = hts_utell(sw->file);
@@ -170,6 +180,7 @@ bcf1_t *bcf_sweep_fwd(bcf_sweep_t *sw)
         }
     }
     return rec;
+*/
 }
 
 bcf1_t *bcf_sweep_bwd(bcf_sweep_t *sw)

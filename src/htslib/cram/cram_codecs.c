@@ -120,7 +120,7 @@ static int get_zero_bits_MSB(cram_block *block) {
 static void store_bit_MSB(cram_block *block, unsigned int bit) {
     if (block->byte >= block->alloc) {
 	block->alloc = block->alloc ? block->alloc*2 : 1024;
-	block->data = realloc(block->data, block->alloc);
+	block->data = (int *) realloc(block->data, block->alloc);
     }
 
     if (bit)
@@ -144,7 +144,7 @@ static void store_bytes_MSB(cram_block *block, char *bytes, int len) {
 
     while (block->byte + len >= block->alloc) {
 	block->alloc = block->alloc ? block->alloc*2 : 1024;
-	block->data = realloc(block->data, block->alloc);
+	block->data = (int *) realloc(block->data, block->alloc);
     }
 
     memcpy(&block->data[block->byte], bytes, len);
@@ -255,12 +255,12 @@ static int store_bits_MSB(cram_block *block, unsigned int val, int nbits) {
     if (block->byte+4 >= block->alloc) {
 	if (block->byte) {
 	    block->alloc *= 2;
-	    block->data = realloc(block->data, block->alloc + 4);
+	    block->data = (unsigned char *) realloc(block->data, block->alloc + 4);
 	    if (!block->data)
 		return -1;
 	} else {
 	    block->alloc = 1024;
-	    block->data = realloc(block->data, block->alloc + 4);
+	    block->data = (unsigned char *) realloc(block->data, block->alloc + 4);
 	    if (!block->data)
 		return -1;
 	    block->data[0] = 0; // initialise first byte of buffer
@@ -420,7 +420,7 @@ cram_codec *cram_external_decode_init(char *data, int size,
     cram_codec *c;
     char *cp = data;
 
-    if (!(c = malloc(sizeof(*c))))
+    if (!(c = (cram_codec *) malloc(sizeof(*c))))
 	return NULL;
 
     c->codec  = E_EXTERNAL;
@@ -1209,8 +1209,8 @@ cram_codec *cram_huffman_encode_init(cram_stats *st,
 	    continue;
 	if (nvals >= vals_alloc) {
 	    vals_alloc = vals_alloc ? vals_alloc*2 : 1024;
-	    vals  = realloc(vals,  vals_alloc * sizeof(int));
-	    freqs = realloc(freqs, vals_alloc * sizeof(int));
+	    vals  = (int *) realloc(vals,  vals_alloc * sizeof(int));
+	    freqs = (int *) realloc(freqs, vals_alloc * sizeof(int));
 	    if (!vals || !freqs) {
 		if (vals)  free(vals);
 		if (freqs) free(freqs);
@@ -1234,8 +1234,8 @@ cram_codec *cram_huffman_encode_init(cram_stats *st,
 		continue;
 	    if (nvals >= vals_alloc) {
 		vals_alloc = vals_alloc ? vals_alloc*2 : 1024;
-		vals  = realloc(vals,  vals_alloc * sizeof(int));
-		freqs = realloc(freqs, vals_alloc * sizeof(int));
+		vals  = (int *) realloc(vals,  vals_alloc * sizeof(int));
+		freqs = (int *) realloc(freqs, vals_alloc * sizeof(int));
 		if (!vals || !freqs)
 		    return NULL;
 	    }
@@ -1251,8 +1251,8 @@ cram_codec *cram_huffman_encode_init(cram_stats *st,
 
     assert(nvals > 0);
 
-    freqs = realloc(freqs, 2*nvals*sizeof(*freqs));
-    lens = calloc(2*nvals, sizeof(*lens));
+    freqs = (int *) realloc(freqs, 2*nvals*sizeof(*freqs));
+    lens = (int *) calloc(2*nvals, sizeof(*lens));
     if (!lens || !freqs)
 	return NULL;
 

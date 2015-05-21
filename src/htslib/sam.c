@@ -457,7 +457,7 @@ int bam_index_build(const char *fn, int min_shift)
 
 static int bam_readrec(BGZF *fp, void *ignored, void *bv, int *tid, int *beg, int *end)
 {
-    bam1_t *b = bv;
+    bam1_t *b = (bam1_t *) bv;
     int ret;
     if ((ret = bam_read1(fp, b)) >= 0) {
         *tid = b->core.tid; *beg = b->core.pos;
@@ -469,16 +469,16 @@ static int bam_readrec(BGZF *fp, void *ignored, void *bv, int *tid, int *beg, in
 // This is used only with read_rest=1 iterators, so need not set tid/beg/end.
 static int cram_readrec(BGZF *ignored, void *fpv, void *bv, int *tid, int *beg, int *end)
 {
-    htsFile *fp = fpv;
-    bam1_t *b = bv;
+    htsFile *fp = (htsFile *) fpv;
+    bam1_t *b = (bam1_t *) bv;
     return cram_get_bam_seq(fp->fp.cram, &b);
 }
 
 // This is used only with read_rest=1 iterators, so need not set tid/beg/end.
 static int sam_bam_cram_readrec(BGZF *bgzfp, void *fpv, void *bv, int *tid, int *beg, int *end)
 {
-    htsFile *fp = fpv;
-    bam1_t *b = bv;
+    htsFile *fp = (htsFile *) fpv;
+    bam1_t *b = (bam1_t *) bv;
     switch (fp->format.format) {
     case bam:   return bam_read1(bgzfp, b);
     case cram:  return cram_get_bam_seq(fp->fp.cram, &b);
@@ -507,7 +507,7 @@ hts_idx_t *sam_index_load(samFile *fp, const char *fn)
     case cram: {
         if (cram_index_load(fp->fp.cram, fn) < 0) return NULL;
         // Cons up a fake "index" just pointing at the associated cram_fd:
-        hts_cram_idx_t *idx = malloc(sizeof (hts_cram_idx_t));
+        hts_cram_idx_t *idx = (hts_cram_idx_t *) malloc(sizeof (hts_cram_idx_t));
         if (idx == NULL) return NULL;
         idx->fmt = HTS_FMT_CRAI;
         idx->cram = fp->fp.cram;

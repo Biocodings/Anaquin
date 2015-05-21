@@ -145,7 +145,7 @@ int bcf_sr_add_reader(bcf_srs_t *files, const char *fname)
 
     reader->file = file_ptr;
 
-    files->errnum = 0;
+    files->errnum = (bcf_sr_error) 0;
 
     if ( files->require_index )
     {
@@ -438,77 +438,77 @@ static int _readers_next_region(bcf_srs_t *files)
  */
 static void _reader_fill_buffer(bcf_srs_t *files, bcf_sr_t *reader)
 {
-    // Return if the buffer is full: the coordinate of the last buffered record differs
-    if ( reader->nbuffer && reader->buffer[reader->nbuffer]->pos != reader->buffer[1]->pos ) return;
-
-    // No iterator (sequence not present in this file) and not streaming
-    if ( !reader->itr && !files->streaming ) return;
-
-    // Fill the buffer with records starting at the same position
-    int i, ret = 0;
-    while (1)
-    {
-        if ( reader->nbuffer+1 >= reader->mbuffer )
-        {
-            // Increase buffer size
-            reader->mbuffer += 8;
-            reader->buffer = (bcf1_t**) realloc(reader->buffer, sizeof(bcf1_t*)*reader->mbuffer);
-            for (i=8; i>0; i--)     // initialize
-            {
-                reader->buffer[reader->mbuffer-i] = bcf_init1();
-                reader->buffer[reader->mbuffer-i]->max_unpack = files->max_unpack;
-                reader->buffer[reader->mbuffer-i]->pos = -1;    // for rare cases when VCF starts from 1
-            }
-        }
-        if ( files->streaming )
-        {
-            if ( reader->file->format.format==vcf )
-            {
-                if ( (ret=hts_getline(reader->file, KS_SEP_LINE, &files->tmps)) < 0 ) break;   // no more lines
-                int ret = vcf_parse1(&files->tmps, reader->header, reader->buffer[reader->nbuffer+1]);
-                if ( ret<0 ) break;
-            }
-            else if ( reader->file->format.format==bcf )
-            {
-                if ( (ret=bcf_read1(reader->file, reader->header, reader->buffer[reader->nbuffer+1])) < 0 ) break; // no more lines
-            }
-            else
-            {
-                fprintf(stderr,"[%s:%d %s] fixme: not ready for this\n", __FILE__,__LINE__,__FUNCTION__);
-                exit(1);
-            }
-        }
-        else if ( reader->tbx_idx )
-        {
-            if ( (ret=tbx_itr_next(reader->file, reader->tbx_idx, reader->itr, &files->tmps)) < 0 ) break;  // no more lines
-            vcf_parse1(&files->tmps, reader->header, reader->buffer[reader->nbuffer+1]);
-        }
-        else
-        {
-            if ( (ret=bcf_itr_next(reader->file, reader->itr, reader->buffer[reader->nbuffer+1])) < 0 ) break; // no more lines
-            bcf_subset_format(reader->header,reader->buffer[reader->nbuffer+1]);
-        }
-
-        // apply filter
-        if ( !reader->nfilter_ids )
-            bcf_unpack(reader->buffer[reader->nbuffer+1], BCF_UN_STR);
-        else
-        {
-            bcf_unpack(reader->buffer[reader->nbuffer+1], BCF_UN_STR|BCF_UN_FLT);
-            if ( !has_filter(reader, reader->buffer[reader->nbuffer+1]) ) continue;
-        }
-        reader->nbuffer++;
-
-        if ( reader->buffer[reader->nbuffer]->pos != reader->buffer[1]->pos ) break;    // the buffer is full
-    }
-    if ( ret<0 )
-    {
-        // done for this region
-        tbx_itr_destroy(reader->itr);
-        reader->itr = NULL;
-    }
-    if ( files->collapse && reader->nbuffer>=2 && reader->buffer[1]->pos==reader->buffer[2]->pos )
-        collapse_buffer(files, reader);
+//    // Return if the buffer is full: the coordinate of the last buffered record differs
+//    if ( reader->nbuffer && reader->buffer[reader->nbuffer]->pos != reader->buffer[1]->pos ) return;
+//
+//    // No iterator (sequence not present in this file) and not streaming
+//    if ( !reader->itr && !files->streaming ) return;
+//
+//    // Fill the buffer with records starting at the same position
+//    int i, ret = 0;
+//    while (1)
+//    {
+//        if ( reader->nbuffer+1 >= reader->mbuffer )
+//        {
+//            // Increase buffer size
+//            reader->mbuffer += 8;
+//            reader->buffer = (bcf1_t**) realloc(reader->buffer, sizeof(bcf1_t*)*reader->mbuffer);
+//            for (i=8; i>0; i--)     // initialize
+//            {
+//                reader->buffer[reader->mbuffer-i] = bcf_init1();
+//                reader->buffer[reader->mbuffer-i]->max_unpack = files->max_unpack;
+//                reader->buffer[reader->mbuffer-i]->pos = -1;    // for rare cases when VCF starts from 1
+//            }
+//        }
+//        if ( files->streaming )
+//        {
+//            if ( reader->file->format.format==vcf )
+//            {
+//                if ( (ret=hts_getline(reader->file, KS_SEP_LINE, &files->tmps)) < 0 ) break;   // no more lines
+//                int ret = vcf_parse1(&files->tmps, reader->header, reader->buffer[reader->nbuffer+1]);
+//                if ( ret<0 ) break;
+//            }
+//            else if ( reader->file->format.format==bcf )
+//            {
+//                if ( (ret=bcf_read1(reader->file, reader->header, reader->buffer[reader->nbuffer+1])) < 0 ) break; // no more lines
+//            }
+//            else
+//            {
+//                fprintf(stderr,"[%s:%d %s] fixme: not ready for this\n", __FILE__,__LINE__,__FUNCTION__);
+//                exit(1);
+//            }
+//        }
+//        else if ( reader->tbx_idx )
+//        {
+//            if ( (ret=tbx_itr_next(reader->file, reader->tbx_idx, reader->itr, &files->tmps)) < 0 ) break;  // no more lines
+//            vcf_parse1(&files->tmps, reader->header, reader->buffer[reader->nbuffer+1]);
+//        }
+//        else
+//        {
+//            if ( (ret=bcf_itr_next(reader->file, reader->itr, reader->buffer[reader->nbuffer+1])) < 0 ) break; // no more lines
+//            bcf_subset_format(reader->header,reader->buffer[reader->nbuffer+1]);
+//        }
+//
+//        // apply filter
+//        if ( !reader->nfilter_ids )
+//            bcf_unpack(reader->buffer[reader->nbuffer+1], BCF_UN_STR);
+//        else
+//        {
+//            bcf_unpack(reader->buffer[reader->nbuffer+1], BCF_UN_STR|BCF_UN_FLT);
+//            if ( !has_filter(reader, reader->buffer[reader->nbuffer+1]) ) continue;
+//        }
+//        reader->nbuffer++;
+//
+//        if ( reader->buffer[reader->nbuffer]->pos != reader->buffer[1]->pos ) break;    // the buffer is full
+//    }
+//    if ( ret<0 )
+//    {
+//        // done for this region
+//        tbx_itr_destroy(reader->itr);
+//        reader->itr = NULL;
+//    }
+//    if ( files->collapse && reader->nbuffer>=2 && reader->buffer[1]->pos==reader->buffer[2]->pos )
+//        collapse_buffer(files, reader);
 }
 
 /*
@@ -1089,88 +1089,88 @@ int bcf_sr_regions_seek(bcf_sr_regions_t *reg, const char *seq)
 
 int bcf_sr_regions_next(bcf_sr_regions_t *reg)
 {
-    if ( reg->iseq<0 ) return -1;
-    reg->start = reg->end = -1;
-    reg->nals = 0;
-
-    // using in-memory regions
-    if ( reg->regs )
-    {
-        while ( reg->iseq < reg->nseqs )
-        {
-            reg->regs[reg->iseq].creg++;
-            if ( reg->regs[reg->iseq].creg < reg->regs[reg->iseq].nregs ) break;
-            reg->iseq++;
-        }
-        if ( reg->iseq >= reg->nseqs ) { reg->iseq = -1; return -1; } // no more regions left
-        region1_t *creg = &reg->regs[reg->iseq].regs[reg->regs[reg->iseq].creg];
-        reg->start = creg->start;
-        reg->end   = creg->end;
-        return 0;
-    }
-
-    // reading from tabix
-    char *chr, *chr_end;
-    int ichr = 0, ifrom = 1, ito = 2, is_bed = 0, from, to;
-    if ( reg->tbx )
-    {
-        ichr   = reg->tbx->conf.sc-1;
-        ifrom  = reg->tbx->conf.bc-1;
-        ito    = reg->tbx->conf.ec-1;
-        if ( ito<0 ) ito = ifrom;
-        is_bed = reg->tbx->conf.preset==TBX_UCSC ? 1 : 0;
-    }
-
-    int ret = 0;
-    while ( !ret )
-    {
-        if ( reg->itr )
-        {
-            // tabix index present, reading a chromosome block
-            ret = tbx_itr_next(reg->file, reg->tbx, reg->itr, &reg->line);
-            if ( ret<0 ) { reg->iseq = -1; return -1; }
-        }
-        else
-        {
-            if ( reg->is_bin )
-            {
-                // Waited for seek which never came. Reopen in text mode and stream
-                // through the regions, otherwise hts_getline would fail
-                hts_close(reg->file);
-                reg->file = hts_open(reg->fname, "r");
-                if ( !reg->file )
-                {
-                    fprintf(stderr,"[%s:%d %s] Could not open file: %s\n", __FILE__,__LINE__,__FUNCTION__,reg->fname);
-                    reg->file = NULL;
-                    bcf_sr_regions_destroy(reg);
-                    return -1;
-                }
-                reg->is_bin = 0;
-            }
-
-            // tabix index absent, reading the whole file
-            ret = hts_getline(reg->file, KS_SEP_LINE, &reg->line);
-            if ( ret<0 ) { reg->iseq = -1; return -1; }
-        }
-        ret = _regions_parse_line(reg->line.s, ichr,ifrom,ito, &chr,&chr_end,&from,&to);
-        if ( ret<0 )
-        {
-            fprintf(stderr,"[%s:%d] Could not parse the file %s, using the columns %d,%d,%d\n", __FILE__,__LINE__,reg->fname,ichr+1,ifrom+1,ito+1);
-            return -1;
-        }
-    }
-    if ( is_bed ) from++;
-
-    *chr_end = 0;
-    if ( khash_str2int_get(reg->seq_hash, chr, &reg->iseq)<0 )
-    {
-        fprintf(stderr,"Broken tabix index? The sequence \"%s\" not in dictionary [%s]\n", chr,reg->line.s);
-        exit(1);
-    }
-    *chr_end = '\t';
-
-    reg->start = from - 1;
-    reg->end   = to - 1;
+//    if ( reg->iseq<0 ) return -1;
+//    reg->start = reg->end = -1;
+//    reg->nals = 0;
+//
+//    // using in-memory regions
+//    if ( reg->regs )
+//    {
+//        while ( reg->iseq < reg->nseqs )
+//        {
+//            reg->regs[reg->iseq].creg++;
+//            if ( reg->regs[reg->iseq].creg < reg->regs[reg->iseq].nregs ) break;
+//            reg->iseq++;
+//        }
+//        if ( reg->iseq >= reg->nseqs ) { reg->iseq = -1; return -1; } // no more regions left
+//        region1_t *creg = &reg->regs[reg->iseq].regs[reg->regs[reg->iseq].creg];
+//        reg->start = creg->start;
+//        reg->end   = creg->end;
+//        return 0;
+//    }
+//
+//    // reading from tabix
+//    char *chr, *chr_end;
+//    int ichr = 0, ifrom = 1, ito = 2, is_bed = 0, from, to;
+//    if ( reg->tbx )
+//    {
+//        ichr   = reg->tbx->conf.sc-1;
+//        ifrom  = reg->tbx->conf.bc-1;
+//        ito    = reg->tbx->conf.ec-1;
+//        if ( ito<0 ) ito = ifrom;
+//        is_bed = reg->tbx->conf.preset==TBX_UCSC ? 1 : 0;
+//    }
+//
+//    int ret = 0;
+//    while ( !ret )
+//    {
+//        if ( reg->itr )
+//        {
+//            // tabix index present, reading a chromosome block
+//            ret = tbx_itr_next(reg->file, reg->tbx, reg->itr, &reg->line);
+//            if ( ret<0 ) { reg->iseq = -1; return -1; }
+//        }
+//        else
+//        {
+//            if ( reg->is_bin )
+//            {
+//                // Waited for seek which never came. Reopen in text mode and stream
+//                // through the regions, otherwise hts_getline would fail
+//                hts_close(reg->file);
+//                reg->file = hts_open(reg->fname, "r");
+//                if ( !reg->file )
+//                {
+//                    fprintf(stderr,"[%s:%d %s] Could not open file: %s\n", __FILE__,__LINE__,__FUNCTION__,reg->fname);
+//                    reg->file = NULL;
+//                    bcf_sr_regions_destroy(reg);
+//                    return -1;
+//                }
+//                reg->is_bin = 0;
+//            }
+//
+//            // tabix index absent, reading the whole file
+//            ret = hts_getline(reg->file, KS_SEP_LINE, &reg->line);
+//            if ( ret<0 ) { reg->iseq = -1; return -1; }
+//        }
+//        ret = _regions_parse_line(reg->line.s, ichr,ifrom,ito, &chr,&chr_end,&from,&to);
+//        if ( ret<0 )
+//        {
+//            fprintf(stderr,"[%s:%d] Could not parse the file %s, using the columns %d,%d,%d\n", __FILE__,__LINE__,reg->fname,ichr+1,ifrom+1,ito+1);
+//            return -1;
+//        }
+//    }
+//    if ( is_bed ) from++;
+//
+//    *chr_end = 0;
+//    if ( khash_str2int_get(reg->seq_hash, chr, &reg->iseq)<0 )
+//    {
+//        fprintf(stderr,"Broken tabix index? The sequence \"%s\" not in dictionary [%s]\n", chr,reg->line.s);
+//        exit(1);
+//    }
+//    *chr_end = '\t';
+//
+//    reg->start = from - 1;
+//    reg->end   = to - 1;
     return 0;
 }
 

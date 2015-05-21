@@ -320,12 +320,15 @@ void hts_md5_final(unsigned char *result, hts_md5_context *ctx)
 
 hts_md5_context *hts_md5_init(void)
 {
+    return NULL;
+/*
     hts_md5_context *ctx = malloc(sizeof(*ctx));
     if (!ctx)
         return NULL;
 
     hts_md5_reset(ctx);
     return ctx;
+*/
 }
 
 #else

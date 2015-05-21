@@ -77,7 +77,7 @@ def read_mixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate_reads(file, seq_path, read_path, min_, max_, mix):
+def simulate_reads(file, seq_path, read_path, min_, max_, mix, c=0, s=1):
     os.system('mkdir -p ' + read_path)
     d = read_mixture(file, mix)
 
@@ -101,11 +101,6 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
             else:
                 con = d[key]['con_b']
                 
-            # This can be changed to simulate sequencing depth and coverage...
-
-            s = 1
-            c = 0
-
             con = c + (s * con)
             con = max(min_, con)
             con = min(max_, con)
@@ -123,7 +118,7 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix):
                 print 'Generating: ' + str(con)
 
                 # Simulate reads from a given sequin
-                cmd = 'wgsim -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                cmd = 'wgsim  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
                 print cmd
                 os.system(cmd)
@@ -140,6 +135,14 @@ def print_usage():
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
         print_usage()
+    elif (sys.argv[1] == 'RNA'):
+        split_sequins(r_sequins(), seq_path(rna_path()))
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_A_1_1/'), 0, sys.maxint, 'A')
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_A_1_2/'), 0, sys.maxint, 'A')
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_A_1_3/'), 0, sys.maxint, 'A')
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_B_100_1/'), 0, sys.maxint, 'B', 0, 100)
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_B_100_2/'), 0, sys.maxint, 'B', 0, 100)
+        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path('RNA_B_100_3/'), 0, sys.maxint, 'B', 0, 100)
     elif (sys.argv[1] == 'RNA_A'):
         split_sequins(r_sequins(), seq_path(rna_path()))
         simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')

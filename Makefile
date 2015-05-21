@@ -31,44 +31,32 @@ CATCH = /usr/include/catch/include
 EIGEN = /usr/local/Cellar/eigen/3.2.4/include/eigen3
 
 # Statistics library
-SS = /Users/tedwong/Sources/SS
+SS = ../SS
 
-# Required for reading a BAM file
-HTLIB = /Users/tedwong/Sources/HT
-
-LIBS = hts
+HLIB = src/htslib
 
 # Where the header are stored
 INCLUDE = src
 
-# Declaration of variables
 CC = g++
 CC_FLAGS = -std=c++11
 
-EXEC    = anaquin
-SOURCES = $(wildcard src/*.cpp src/rna/*.cpp src/dna/*.cpp src/meta/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp)
-OBJECTS = $(SOURCES:.cpp=.o)
+EXEC         = anaquin
+SOURCES      = $(wildcard src/*.cpp src/rna/*.cpp src/dna/*.cpp src/meta/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp)
+OBJECTS      = $(SOURCES:.cpp=.o)
 SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/rna/*.cpp tests/meta/*.cpp tests/*.cpp)
 OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
+SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
+OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
-$(EXEC): $(OBJECTS) $(OBJECTS_TEST)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) -l ${LIBS} -L ${HTLIB} -o $(EXEC)
+$(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -lz -o $(EXEC)
+
+%.o: %.c
+	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} $< -o $@
 
 %.o: %.cpp
-	$(CC) -c $(CC_FLAGS) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${HTLIB} $< -o $@
+	$(CC) -c $(CC_FLAGS) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
-
-
-
-
-
-
-
-
-
-
-
-
-
