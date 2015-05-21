@@ -2,6 +2,7 @@
 #define GI_EXPRESSION_HPP
 
 #include <map>
+#include <limits>
 #include <math.h>
 #include <iostream>
 #include <assert.h>
