@@ -43,7 +43,7 @@
 		EFA1A6B21AFC4FAB0066DD9F /* parser_fa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */; };
 		EFBB830E1ADF953B0002611E /* parser_sequins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBB830C1ADF953B0002611E /* parser_sequins.cpp */; };
 		EFBF33BF1AEBAE250016083E /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF33BE1AEBAE250016083E /* t_locus.cpp */; };
-		EFD36E9D1ACB912700F6F098 /* Reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD36E9C1ACB912700F6F098 /* Reader.cpp */; };
+		EFD36E9D1ACB912700F6F098 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD36E9C1ACB912700F6F098 /* reader.cpp */; };
 		EFD457571AE65D6E0027DA46 /* d_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD457551AE65D6E0027DA46 /* d_align.cpp */; };
 		EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD457581AE65D860027DA46 /* d_sequence.cpp */; };
 		EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */; };
@@ -141,7 +141,7 @@
 		EFBF33BE1AEBAE250016083E /* t_locus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_locus.cpp; sourceTree = "<group>"; };
 		EFCF175C1AEA77960083F2C4 /* filter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = filter.hpp; path = ../src/filter.hpp; sourceTree = "<group>"; };
 		EFD36E9B1ACB90D400F6F098 /* reader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = reader.hpp; path = ../src/reader.hpp; sourceTree = "<group>"; };
-		EFD36E9C1ACB912700F6F098 /* Reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Reader.cpp; path = ../src/Reader.cpp; sourceTree = "<group>"; };
+		EFD36E9C1ACB912700F6F098 /* reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reader.cpp; path = ../src/reader.cpp; sourceTree = "<group>"; };
 		EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/tokens.hpp; sourceTree = "<group>"; };
 		EFD457551AE65D6E0027DA46 /* d_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = d_align.cpp; path = ../src/dna/d_align.cpp; sourceTree = "<group>"; };
 		EFD457561AE65D6E0027DA46 /* d_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = d_align.hpp; path = ../src/dna/d_align.hpp; sourceTree = "<group>"; };
@@ -221,7 +221,7 @@
 				EF2290341AC0E58000CE76BF /* alignment.hpp */,
 				EF2290381AC0E58000CE76BF /* biology.hpp */,
 				EF22903E1AC0E58000CE76BF /* feature.hpp */,
-				EFD36E9C1ACB912700F6F098 /* Reader.cpp */,
+				EFD36E9C1ACB912700F6F098 /* reader.cpp */,
 				EFCF175C1AEA77960083F2C4 /* filter.hpp */,
 				EFD36E9B1ACB90D400F6F098 /* reader.hpp */,
 				EFF4FB0D1ADD256F0008FD04 /* analyzer.hpp */,
@@ -499,7 +499,7 @@
 				EF224B541ADB5B8900B989A8 /* r_align.cpp in Sources */,
 				EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */,
 				EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */,
-				EFD36E9D1ACB912700F6F098 /* Reader.cpp in Sources */,
+				EFD36E9D1ACB912700F6F098 /* reader.cpp in Sources */,
 				EF2290631AC0E58000CE76BF /* standard.cpp in Sources */,
 				EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */,
 				EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */,
