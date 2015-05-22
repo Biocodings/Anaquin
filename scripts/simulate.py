@@ -4,6 +4,7 @@ import os
 import sys
 import math
 import subprocess
+from random import randint
 
 def dna_path():
     return 'DNA_Simulation/'
@@ -118,7 +119,7 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix, c=0, s=1):
                 print 'Generating: ' + str(con)
 
                 # Simulate reads from a given sequin
-                cmd = 'wgsim  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                cmd = 'wgsim -S ' + str(randint(1,100)) + '  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
                 print cmd
                 os.system(cmd)
@@ -145,7 +146,7 @@ if __name__ == '__main__':
         b = ['RNA_B_100_1', 'RNA_B_100_2', 'RNA_B_100_3']              
         for i in range(0,len(b)):
             split_sequins(r_sequins(), seq_path(rna_path()))        
-            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 100)
+            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 1000)
             os.system('mv RNA_Simulation ' + b[i])
         
         #os.system('tophat -o RNA_A_1_1/aligned RNA_A_1_1 RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
