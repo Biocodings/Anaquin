@@ -59,7 +59,6 @@
 		EFDD6A9B1B0DD76200450029 /* sam.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A871B0DD76200450029 /* sam.c */; };
 		EFDD6A9C1B0DD76200450029 /* synced_bcf_reader.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A881B0DD76200450029 /* synced_bcf_reader.c */; };
 		EFDD6A9E1B0DD76200450029 /* tbx.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A8A1B0DD76200450029 /* tbx.c */; };
-		EFDD6AA01B0DD76200450029 /* vcf_sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A8C1B0DD76200450029 /* vcf_sweep.c */; };
 		EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A8E1B0DD76200450029 /* vcfutils.c */; };
 		EFDD6AC91B0DD76C00450029 /* cram_codecs.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AA31B0DD76C00450029 /* cram_codecs.c */; };
 		EFDD6ACA1B0DD76C00450029 /* cram_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6AA51B0DD76C00450029 /* cram_decode.c */; };
@@ -185,10 +184,8 @@
 		EFDD6A751B0DD75B00450029 /* bgzf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bgzf.c; path = ../src/htslib/bgzf.c; sourceTree = "<group>"; };
 		EFDD6A771B0DD75B00450029 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../src/htslib/config.h; sourceTree = "<group>"; };
 		EFDD6A7A1B0DD76200450029 /* faidx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = faidx.c; path = ../src/htslib/faidx.c; sourceTree = "<group>"; };
-		EFDD6A7B1B0DD76200450029 /* hfile_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hfile_internal.h; path = ../src/htslib/hfile_internal.h; sourceTree = "<group>"; };
 		EFDD6A7D1B0DD76200450029 /* hfile_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile_net.c; path = ../src/htslib/hfile_net.c; sourceTree = "<group>"; };
 		EFDD6A7E1B0DD76200450029 /* hfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile.c; path = ../src/htslib/hfile.c; sourceTree = "<group>"; };
-		EFDD6A7F1B0DD76200450029 /* hts_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hts_internal.h; path = ../src/htslib/hts_internal.h; sourceTree = "<group>"; };
 		EFDD6A801B0DD76200450029 /* hts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hts.c; path = ../src/htslib/hts.c; sourceTree = "<group>"; };
 		EFDD6A821B0DD76200450029 /* kfunc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kfunc.c; path = ../src/htslib/kfunc.c; sourceTree = "<group>"; };
 		EFDD6A831B0DD76200450029 /* knetfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = knetfile.c; path = ../src/htslib/knetfile.c; sourceTree = "<group>"; };
@@ -197,7 +194,6 @@
 		EFDD6A871B0DD76200450029 /* sam.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sam.c; path = ../src/htslib/sam.c; sourceTree = "<group>"; };
 		EFDD6A881B0DD76200450029 /* synced_bcf_reader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = synced_bcf_reader.c; path = ../src/htslib/synced_bcf_reader.c; sourceTree = "<group>"; };
 		EFDD6A8A1B0DD76200450029 /* tbx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tbx.c; path = ../src/htslib/tbx.c; sourceTree = "<group>"; };
-		EFDD6A8C1B0DD76200450029 /* vcf_sweep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcf_sweep.c; path = ../src/htslib/vcf_sweep.c; sourceTree = "<group>"; };
 		EFDD6A8E1B0DD76200450029 /* vcfutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcfutils.c; path = ../src/htslib/vcfutils.c; sourceTree = "<group>"; };
 		EFDD6A8F1B0DD76200450029 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = ../src/htslib/version.h; sourceTree = "<group>"; };
 		EFDD6AA31B0DD76C00450029 /* cram_codecs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram_codecs.c; path = ../src/htslib/cram/cram_codecs.c; sourceTree = "<group>"; };
@@ -434,10 +430,8 @@
 			children = (
 				EFDD6A741B0DD75300450029 /* cram */,
 				EFDD6A7A1B0DD76200450029 /* faidx.c */,
-				EFDD6A7B1B0DD76200450029 /* hfile_internal.h */,
 				EFDD6A7D1B0DD76200450029 /* hfile_net.c */,
 				EFDD6A7E1B0DD76200450029 /* hfile.c */,
-				EFDD6A7F1B0DD76200450029 /* hts_internal.h */,
 				EFDD6A801B0DD76200450029 /* hts.c */,
 				EFDD6A821B0DD76200450029 /* kfunc.c */,
 				EFDD6A831B0DD76200450029 /* knetfile.c */,
@@ -446,7 +440,6 @@
 				EFDD6A871B0DD76200450029 /* sam.c */,
 				EFDD6A881B0DD76200450029 /* synced_bcf_reader.c */,
 				EFDD6A8A1B0DD76200450029 /* tbx.c */,
-				EFDD6A8C1B0DD76200450029 /* vcf_sweep.c */,
 				EFDD6A8E1B0DD76200450029 /* vcfutils.c */,
 				EFDD6A8F1B0DD76200450029 /* version.h */,
 				EFDD6A751B0DD75B00450029 /* bgzf.c */,
@@ -636,7 +629,6 @@
 				EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */,
 				EFDD6A901B0DD76200450029 /* faidx.c in Sources */,
 				EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */,
-				EFDD6AA01B0DD76200450029 /* vcf_sweep.c in Sources */,
 				EFDD6A9C1B0DD76200450029 /* synced_bcf_reader.c in Sources */,
 				EFDD6A981B0DD76200450029 /* kstring.c in Sources */,
 				EF175D4C1AE4F3CE00AC3D6C /* t_abundance.cpp in Sources */,
