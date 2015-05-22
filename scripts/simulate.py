@@ -131,7 +131,7 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix, c=0, s=1):
     os.system('cat ' + read_path + '*R2.fastq > ' + read_path + 'simulated_2.fastq')
 
 def print_usage():
-    print 'Usage: python simulate.py RNA_A|RNA_B|DNA_A|DNA_B'
+    print 'Usage: python simulate.py RNA|DNA'
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
@@ -143,18 +143,11 @@ if __name__ == '__main__':
             simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
-        b = ['RNA_B_100_1', 'RNA_B_100_2', 'RNA_B_100_3']              
+        b = ['RNA_B_20_1', 'RNA_B_20_2', 'RNA_B_20_3']
         for i in range(0,len(b)):
             split_sequins(r_sequins(), seq_path(rna_path()))        
-            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 1000)
+            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 20)
             os.system('mv RNA_Simulation ' + b[i])
-
-        os.system('tophat -p 8 -o RNA_A_1_1/aligned combined RNA_A_1_1/reads/simulated_1.fastq RNA_A_1_1/reads/simulated_2.fastq')
-        os.system('tophat -p 8 -o RNA_A_1_2/aligned combined RNA_A_1_2/reads/simulated_1.fastq RNA_A_1_2/reads/simulated_2.fastq')
-        os.system('tophat -p 8 -o RNA_A_1_3/aligned combined RNA_A_1_3/reads/simulated_1.fastq RNA_A_1_3/reads/simulated_2.fastq')
-        os.system('tophat -p 8 -o RNA_B_100_1/aligned combined RNA_B_100_1/reads/simulated_1.fastq RNA_B_100_1/reads/simulated_2.fastq')
-        os.system('tophat -p 8 -o RNA_B_100_2/aligned combined RNA_B_100_2/reads/simulated_1.fastq RNA_B_100_2/reads/simulated_2.fastq')
-        os.system('tophat -p 8 -o RNA_B_100_3/aligned combined RNA_B_100_3/reads/simulated_1.fastq RNA_B_100_3/reads/simulated_2.fastq')
     elif (sys.argv[1] == 'DNA_A'):
         split_sequins(d_sequins(), seq_path(dna_path()))
         simulate_reads(d_mixtures(), seq_path(dna_path()), read_path(dna_path()), 0, sys.maxint, 'A')
