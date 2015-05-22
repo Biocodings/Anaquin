@@ -1548,26 +1548,7 @@ static refs_t *refs_create(void) {
  *         NULL on failure.
  */
 static BGZF *bgzf_open_ref(char *fn, char *mode) {
-    BGZF *fp;
-    char fai_file[PATH_MAX];
-
-    snprintf(fai_file, PATH_MAX, "%s.fai", fn);
-    if (access(fai_file, R_OK) != 0)
-	if (fai_build(fn) != 0)
-	    return NULL;
-
-    if (!(fp = bgzf_open(fn, mode))) {
-	perror(fn);
-	return NULL;
-    }
-
-    if (fp->is_compressed == 1 && bgzf_index_load(fp, fn, ".gzi") < 0) {
-	fprintf(stderr, "Unable to load .gzi index '%s.gzi'\n", fn);
-	bgzf_close(fp);
-	return NULL;
-    }
-
-    return fp;
+    return NULL;
 }
 
 /*

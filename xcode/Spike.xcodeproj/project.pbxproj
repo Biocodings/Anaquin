@@ -48,7 +48,6 @@
 		EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */; };
 		EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDD6A701B0DD60500450029 /* libz.dylib */; };
 		EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A751B0DD75B00450029 /* bgzf.c */; };
-		EFDD6A901B0DD76200450029 /* faidx.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7A1B0DD76200450029 /* faidx.c */; };
 		EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7D1B0DD76200450029 /* hfile_net.c */; };
 		EFDD6A931B0DD76200450029 /* hfile.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7E1B0DD76200450029 /* hfile.c */; };
 		EFDD6A941B0DD76200450029 /* hts.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A801B0DD76200450029 /* hts.c */; };
@@ -183,7 +182,6 @@
 		EFDD6A701B0DD60500450029 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		EFDD6A751B0DD75B00450029 /* bgzf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bgzf.c; path = ../src/htslib/bgzf.c; sourceTree = "<group>"; };
 		EFDD6A771B0DD75B00450029 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../src/htslib/config.h; sourceTree = "<group>"; };
-		EFDD6A7A1B0DD76200450029 /* faidx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = faidx.c; path = ../src/htslib/faidx.c; sourceTree = "<group>"; };
 		EFDD6A7D1B0DD76200450029 /* hfile_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile_net.c; path = ../src/htslib/hfile_net.c; sourceTree = "<group>"; };
 		EFDD6A7E1B0DD76200450029 /* hfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile.c; path = ../src/htslib/hfile.c; sourceTree = "<group>"; };
 		EFDD6A801B0DD76200450029 /* hts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hts.c; path = ../src/htslib/hts.c; sourceTree = "<group>"; };
@@ -429,7 +427,6 @@
 			isa = PBXGroup;
 			children = (
 				EFDD6A741B0DD75300450029 /* cram */,
-				EFDD6A7A1B0DD76200450029 /* faidx.c */,
 				EFDD6A7D1B0DD76200450029 /* hfile_net.c */,
 				EFDD6A7E1B0DD76200450029 /* hfile.c */,
 				EFDD6A801B0DD76200450029 /* hts.c */,
@@ -627,7 +624,6 @@
 				EF2290631AC0E58000CE76BF /* standard.cpp in Sources */,
 				EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */,
 				EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */,
-				EFDD6A901B0DD76200450029 /* faidx.c in Sources */,
 				EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */,
 				EFDD6A9C1B0DD76200450029 /* synced_bcf_reader.c in Sources */,
 				EFDD6A981B0DD76200450029 /* kstring.c in Sources */,
