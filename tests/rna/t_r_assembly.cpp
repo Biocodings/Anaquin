@@ -3,10 +3,17 @@
 
 using namespace Spike;
 
-TEST_CASE("RAssembly_Simulations_Annotated")
+TEST_CASE("dkfdjksjk")
+{
+    const auto r = RAssembly::analyze("/Users/tedwong/Sources/QA/transcripts.gtf");
+    
+    
+}
+
+TEST_CASE("/home/tedwon/Sources/QA")
 {
     const auto r = RAssembly::analyze("tests/data/rna/transcripts.gtf");
-    
+
     REQUIRE(r.me.nq == 490);
     REQUIRE(r.me.nr == 491);
     REQUIRE(r.me.sp() == Approx(1.0));
