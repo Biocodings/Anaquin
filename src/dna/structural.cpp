@@ -53,9 +53,6 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
                 
                 c.at(tt.name)++;
                 
-                
-                
-                
                 stats.p_l.m.tp()++;
                 
                 // Does the alternative allele match with the reference?

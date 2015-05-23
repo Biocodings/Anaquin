@@ -36,6 +36,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     std::map<SequinID, std::vector<Feature>> q_exons_;
     std::vector<Feature> q_exons;
 
+    Counts i = 0;
+    
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
     {
         // Don't bother unless the transcript is a sequin or it's been filtered
@@ -43,6 +45,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
         {
             return;
         }
+        
+        i++;
 
         switch (f.type)
         {
@@ -116,6 +120,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                            stats.ci[i.iID]++;
                        }
                    });
+    
+    std::cout << "Processed " << i << " rows" << std::endl;
     
     /*
      * Classify at the base level
