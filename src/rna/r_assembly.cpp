@@ -38,7 +38,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
 
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
     {
-        if (options.filters.count(f.iID))
+        // Don't bother unless the transcript is a sequin or it's been filtered
+        if (!stats.ce.count(f.iID) || options.filters.count(f.iID))
         {
             return;
         }

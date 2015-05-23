@@ -1,12 +1,11 @@
-#include <fstream>
-#include <sstream>
 #include <assert.h>
 #include "tokens.hpp"
+#include "reader.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Spike;
 
-template<typename Callback, typename Stream> void _parse(const std::string &file, Callback x)
+template<typename Callback, ParserMode Mode> void _parse(const std::string &file, Callback x)
 {
     std::map<std::string, RNAFeature> mapper =
     {
@@ -18,7 +17,7 @@ template<typename Callback, typename Stream> void _parse(const std::string &file
     };
     
     std::string line;
-    Stream in(file);
+    Reader r(file, Mode);
 
     Feature f;
     
@@ -43,7 +42,7 @@ template<typename Callback, typename Stream> void _parse(const std::string &file
     std::vector<std::string> options;
     std::vector<std::string> nameValue;
 
-    while (std::getline(in, line))
+    while (r.nextLine(line))
     {
         p.i++;
         boost::split(tokens, line, boost::is_any_of("\t"));
@@ -105,6 +104,6 @@ template<typename Callback, typename Stream> void _parse(const std::string &file
 
 void ParserGTF::parse(const std::string &str, Callback x, ParseMode mode)
 {
-    return mode == File ? _parse<Callback, std::ifstream>(str, x) :
-                          _parse<Callback, std::stringstream>(str, x);
+    return mode == File ? _parse<Callback, ParserMode::File>(str, x) :
+                          _parse<Callback, ParserMode::String>(str, x);
 }

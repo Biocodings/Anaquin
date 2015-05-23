@@ -39,6 +39,7 @@
 #define MODE_ABUNDANCE    285
 #define MODE_DIFFERENTIAL 286
 #define MODE_VARIATION    287
+#define MODE_SEQUINS      288
 
 #define OPT_THREAD        320
 #define OPT_MIN           321
@@ -85,8 +86,9 @@ static const struct option long_options[] =
     { "dna",  required_argument, 0, CMD_DNA  },
     { "meta", required_argument, 0, CMD_META },
 
-    { "f",    required_argument, 0, MODE_RESTRICTS    },
     { "l",    no_argument,       0, MODE_SEQS         },
+    { "seqs", no_argument,       0, MODE_SEQUINS      },
+    { "f",    required_argument, 0, MODE_RESTRICTS    },
     { "se",   required_argument, 0, MODE_SEQS         },
     { "al",   required_argument, 0, MODE_ALIGN        },
     { "as",   required_argument, 0, MODE_ASSEMBLY     },
@@ -95,7 +97,12 @@ static const struct option long_options[] =
     { "va",   required_argument, 0, MODE_VARIATION    },
     { "de",   required_argument, 0, MODE_ASSEMBLY     },
 
-    {0,  0, 0,  0 }
+    { "sequins",  no_argument,       0, MODE_SEQUINS      },
+    { "align",    required_argument, 0, MODE_ALIGN        },
+    { "assembly", required_argument, 0, MODE_ASSEMBLY     },
+    { "diffs",    required_argument, 0, MODE_DIFFERENTIAL },
+
+    {0,  0, 0, 0 }
 };
 
 typedef int Command;
@@ -128,6 +135,14 @@ static void print_usage()
 static void print_version()
 {
     std::cout << "Version 1.0. Garvan Institute, copyright 2015." << std::endl;
+}
+
+static void print_rna_sequins()
+{
+    for (const auto &i : Standard::instance().r_sequins)
+    {
+        std::cout << i.id << std::endl;
+    }
 }
 
 static void print_rna()
@@ -310,7 +325,8 @@ static int parse_options(int argc, char ** argv)
                 
             case CMD_RNA:
             {
-                if (_mode != MODE_SEQS       &&
+                if (_mode != MODE_SEQUINS    &&
+                    _mode != MODE_SEQS       &&
                     _mode != MODE_SEQUENCING &&
                     _mode != MODE_ALIGN      &&
                     _mode != MODE_ASSEMBLY   &&
@@ -323,6 +339,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
+                        case MODE_SEQUINS:  { print_rna_sequins();      break; }
                         case MODE_SEQS:     { print_rna();              break; }
                         case MODE_ALIGN:    { analyze<RAlign>(_opt);    break; }
                         case MODE_ASSEMBLY: { analyze<RAssembly>(_opt); break; }

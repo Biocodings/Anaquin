@@ -64,7 +64,7 @@ namespace Spike
             {
                 return counter<std::vector<Feature>, Locus>(Standard::instance().r_exons);
             }
-        
+
             static LocusCounter intronCounter()
             {
                 return counter<std::vector<Feature>, Locus>(Standard::instance().r_introns);
