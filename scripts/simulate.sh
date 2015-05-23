@@ -9,9 +9,9 @@ tophat -o RNA_B_20_3/aligned combined RNA_B_20_3/reads/simulated_1.fastq RNA_B_2
 cufflinks -p 4 -o RNA_A_1_1/assembly  RNA_A_1_1/aligned/accepted_hits.bam
 cufflinks -p 4 -o RNA_A_1_2/assembly  RNA_A_1_2/aligned/accepted_hits.bam
 cufflinks -p 4 -o RNA_A_1_3/assembly  RNA_A_1_3/aligned/accepted_hits.bam
-cufflinks -p 4 -o RNA_B_20_1/assembly RNA_B_20_1/aligned/accepted_hit.bam
-cufflinks -p 4 -o RNA_B_20_2/assembly RNA_B_20_2/aligned/accepted_hit.bam
-cufflinks -p 4 -o RNA_B_20_3/assembly RNA_B_20_3/aligned/accepted_hit.bam
+cufflinks -p 4 -o RNA_B_20_1/assembly RNA_B_20_1/aligned/accepted_hits.bam
+cufflinks -p 4 -o RNA_B_20_2/assembly RNA_B_20_2/aligned/accepted_hits.bam
+cufflinks -p 4 -o RNA_B_20_3/assembly RNA_B_20_3/aligned/accepted_hits.bam
 
 rm assemblies.txt
 cat RNA_A_1_1/assembly/transcripts.gtf  >> assemblies.txt
