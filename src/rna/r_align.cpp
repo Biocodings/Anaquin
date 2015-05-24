@@ -49,11 +49,11 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
             if (classify(stats.me, align, [&](const Alignment &)
                 {
                     const bool succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
-                    return options.filters.count(f.iID) ? Ignore : succeed ? Positive : Negative;
+                    return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
                 stats.ec.at(f.l)++;
-                stats.ce.at(s.r_iso2Gene.at(f.iID))++;
+                stats.ce.at(s.r_iso2Gene.at(f.tID))++;
             }
         }
 
@@ -68,11 +68,11 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
             if (classify(stats.mi, align, [&](const Alignment &)
                 {
                     const bool succeed = checkSplice(align, f);
-                    return options.filters.count(f.iID) ? Ignore : succeed ? Positive : Negative;
+                    return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
                 stats.ic.at(align.l)++;
-                stats.ci.at(s.r_iso2Gene.at(f.iID))++;
+                stats.ci.at(s.r_iso2Gene.at(f.tID))++;
             }
         }
     });

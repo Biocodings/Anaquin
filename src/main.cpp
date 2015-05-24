@@ -97,10 +97,11 @@ static const struct option long_options[] =
     { "va",   required_argument, 0, MODE_VARIATION    },
     { "de",   required_argument, 0, MODE_ASSEMBLY     },
 
-    { "sequins",  no_argument,       0, MODE_SEQUINS      },
-    { "align",    required_argument, 0, MODE_ALIGN        },
-    { "assembly", required_argument, 0, MODE_ASSEMBLY     },
-    { "diffs",    required_argument, 0, MODE_DIFFERENTIAL },
+    { "sequins",   no_argument,       0, MODE_SEQUINS      },
+    { "align",     required_argument, 0, MODE_ALIGN        },
+    { "assembly",  required_argument, 0, MODE_ASSEMBLY     },
+    { "abundance", required_argument, 0, MODE_ABUNDANCE    },
+    { "diffs",     required_argument, 0, MODE_DIFFERENTIAL },
 
     {0,  0, 0, 0 }
 };

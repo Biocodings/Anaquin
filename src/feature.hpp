@@ -23,7 +23,7 @@ namespace Spike
             l  = f.l;
             id = f.id;
             type = f.type;
-            iID  = f.iID;
+            tID  = f.tID;
             geneID = f.geneID;
         }
         
@@ -38,7 +38,7 @@ namespace Spike
         GeneID geneID;
 
         // Empty if the information is unavailable
-        TranscriptID iID;
+        TranscriptID tID;
     };
 }
 

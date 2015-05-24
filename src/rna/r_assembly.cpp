@@ -14,7 +14,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
         {
             if (i)
             {
-                if (ts.second[i-1].iID == ts.second[i].iID)
+                if (ts.second[i-1].tID == ts.second[i].tID)
                 {
                     ir = ts.second[i];
                     ir.l = Locus(ts.second[i - 1].l.end + 1, ts.second[i].l.start - 1);
@@ -41,7 +41,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
     {
         // Don't bother unless the transcript is a sequin or it's been filtered
-        if (!stats.ce.count(f.iID) || options.filters.count(f.iID))
+        if (!stats.ce.count(f.tID) || options.filters.count(f.tID))
         {
             return;
         }
@@ -53,7 +53,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
             case Exon:
             {
                 q_exons.push_back(f);
-                q_exons_[f.iID].push_back(f);
+                q_exons_[f.tID].push_back(f);
 
                 /*
                  * Classify at the exon level
@@ -65,7 +65,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                 }))
                 {
                     stats.e_lc.at(f.l)++;
-                    stats.ce.at(f.iID)++;
+                    stats.ce.at(f.tID)++;
                 }
 
                 break;
@@ -82,8 +82,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                     return find_map(seqs, f, Exact);
                 }))
                 {
-                    stats.t_lc.at(f.iID)++;
-                    stats.ct.at(f.iID)++;
+                    stats.t_lc.at(f.tID)++;
+                    stats.ct.at(f.tID)++;
                 }
 
                 break;
@@ -117,11 +117,9 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                        }))
                        {
                            stats.i_lc.at(i.l)++;
-                           stats.ci[i.iID]++;
+                           stats.ci[i.tID]++;
                        }
                    });
-    
-    std::cout << "Processed " << i << " rows" << std::endl;
     
     /*
      * Classify at the base level
@@ -160,5 +158,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     AnalyzeReporter::report("assembly.intron.stats", stats.mi, stats.si, stats.ci, options.writer);
     AnalyzeReporter::report("assembly.transcripts.stats", stats.mt, stats.st, stats.ct, options.writer);
 
+    std::cout << "Processed " << i << " rows" << std::endl;
+    
     return stats;
 }

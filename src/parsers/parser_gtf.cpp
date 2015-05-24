@@ -85,14 +85,14 @@ template<typename Callback, ParserMode Mode> void _parse(const std::string &file
                     {
                         f.geneID = nameValue[1];
                     }
-                    else if (nameValue[0] == "transcript_id")
+                    else if (nameValue[0] == "nearest_ref" || nameValue[0] == "transcript_id")
                     {
-                        f.iID = nameValue[1];
+                        f.tID = nameValue[1];
                     }
                     
-                    if (!f.geneID.empty() && !f.iID.empty())
+                    if (!f.geneID.empty() && !f.tID.empty())
                     {
-                        assert(f.geneID != f.iID);
+                        assert(f.geneID != f.tID);
                     }
                 }
             }

@@ -110,14 +110,14 @@ void Standard::rna(const std::string &mix)
         
         r_fs.push_back(f);
         
-        assert(!f.iID.empty());
+        assert(!f.tID.empty());
         assert(!f.geneID.empty());
 
-        iids.insert(f.iID);
+        iids.insert(f.tID);
         gids.insert(f.geneID);
         
         // Construct a mapping between isoformID to geneID
-        r_iso2Gene[f.iID] = f.geneID;
+        r_iso2Gene[f.tID] = f.geneID;
     }, ParserGTF::String);
 
     assert(!r_iso2Gene.empty());
@@ -182,8 +182,8 @@ void Standard::rna(const std::string &mix)
 
         Feature j;
 
-        j.id = id;
-        j.iID = t.name;
+        j.id   = id;
+        j.tID  = t.name;
         j.type = Intron;
 
         for (auto i = 0; i < t.blocks.size(); i++)
