@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
+#include "resources.hpp"
 #include "rna/r_align.hpp"
 #include "rna/r_assembly.hpp"
 #include "rna/r_abundance.hpp"
@@ -135,7 +136,14 @@ static void print_usage()
 
 static void print_version()
 {
-    std::cout << "Version 1.0. Garvan Institute, copyright 2015." << std::endl;
+    const auto c = Resources::chromo();
+    const auto m = Resources::mixture();
+
+    std::cout << "Version 1.0. Garvan Institute of Medical Research, 2015." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Chromosome: " << c.id << " version " << c.v << std::endl;
+    std::cout << "Mixture A: version " << m.va << std::endl;
+    std::cout << "Mixture B: version " << m.vb << std::endl;
 }
 
 static void print_rna_sequins()

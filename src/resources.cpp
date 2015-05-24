@@ -1,4 +1,5 @@
 #include <string>
+#include "resources.hpp"
 #include "data/silico.fa"
 #include "data/manual.txt"
 #include "data/DNA.tab.fa"
@@ -8,7 +9,27 @@
 #include "data/rna_standards.txt"
 #include "data/variant.ChrT51.vcf"
 
-using namespace std;
+using namespace Spike;
+
+ChromosomeInfo Resources::chromo()
+{
+    ChromosomeInfo i;
+    
+    i.v  = 1.0;
+    i.id = "chrT";
+
+    return i;
+}
+
+MixtureInfo Resources::mixture()
+{
+    MixtureInfo i;
+    
+    i.va = 1.0;
+    i.vb = 1.0;
+
+    return i;
+}
 
 std::string silico_fa()
 {
