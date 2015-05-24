@@ -5,7 +5,7 @@ using namespace Spike;
 
 TEST_CASE("/home/tedwon/Sources/QA")
 {
-    const auto r = RAssembly::analyze("tests/data/rna/transcripts.gtf");
+    const auto r = RAssembly::analyze("/Users/tedwong/Sources/QA/scripts/merged.gtf");
 
     REQUIRE(r.me.nq == 490);
     REQUIRE(r.me.nr == 491);
