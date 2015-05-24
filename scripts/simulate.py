@@ -135,7 +135,7 @@ def print_usage():
 
 if __name__ == '__main__':
     if (len(sys.argv) != 2):
-        print_usage()
+        iprint_usage()
     elif (sys.argv[1] == 'RNA'):  
         a = ['RNA_A_1_1', 'RNA_A_1_2', 'RNA_A_1_3']              
         for i in range(0,len(a)):
