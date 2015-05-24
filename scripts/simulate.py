@@ -143,10 +143,10 @@ if __name__ == '__main__':
             simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
-        b = ['RNA_B_20_1', 'RNA_B_20_2', 'RNA_B_20_3']
+        b = ['RNA_B_10_1', 'RNA_B_10_2', 'RNA_B_10_3']
         for i in range(0,len(b)):
             split_sequins(r_sequins(), seq_path(rna_path()))        
-            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 20)
+            simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 10)
             os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'DNA_A'):
         split_sequins(d_sequins(), seq_path(dna_path()))
