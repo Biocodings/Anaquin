@@ -1,6 +1,6 @@
 #include "stats/denovo.hpp"
 #include "meta/m_assembly.hpp"
-
+#include <iostream>
 using namespace Spike;
 
 MAssemblyStats MAssembly::analyze(const std::string &file, const Options &options)
@@ -12,10 +12,10 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
     /*
      * Write out assembly results
      */
-
+    
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
-    options.writer->open(file);
+    options.writer->open("meta_assembly.stats");
     options.writer->write((boost::format(format) % "N20" % "N50" % "N80" % "min" % "mean" % "max").str());
     options.writer->write((boost::format(format) % stats.dstats.N20
                                                  % stats.dstats.N50

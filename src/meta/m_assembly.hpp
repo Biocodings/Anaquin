@@ -13,7 +13,7 @@ namespace Spike
 
     struct MAssembly
     {
-        struct Options : public AnalyzerOptions
+        struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };

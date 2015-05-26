@@ -18,7 +18,7 @@ namespace Spike
 
     struct DAlign
     {
-        struct Options : public AnalyzerOptions
+        struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };

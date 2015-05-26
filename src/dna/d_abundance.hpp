@@ -12,7 +12,7 @@ namespace Spike
 
     struct DSequence
     {
-        struct Options : public AnalyzerOptions
+        struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };

@@ -3,6 +3,26 @@
 
 using namespace Spike;
 
+TEST_CASE("MAssembly_Contigs_2")
+{
+    const auto r = MAssembly::analyze("tests/data/meta/contigs_2.fa");
+    
+//    REQUIRE(r.dstats.contigs.size() == 63);
+//    
+//    REQUIRE(r.dstats.contigs[0].id == "NODE_1_length_4075_cov_20.748220");
+//    REQUIRE(r.dstats.contigs[1].id == "NODE_2_length_1635_cov_21.235474");
+//    REQUIRE(r.dstats.contigs[2].id == "NODE_3_length_2338_cov_20.628742");
+//    REQUIRE(r.dstats.contigs[3].id == "NODE_4_length_1996_cov_19.849699");
+//    
+//    REQUIRE(r.dstats.N80  == 1836);
+//    REQUIRE(r.dstats.N50  == 2846);
+//    REQUIRE(r.dstats.N20  == 4703);
+//    REQUIRE(r.dstats.mean == 3585);
+//    REQUIRE(r.dstats.min  == 67);
+//    REQUIRE(r.dstats.max  == 9109);
+//    REQUIRE(r.dstats.sum  == 139916);
+}
+
 TEST_CASE("DNAssembly_Contigs")
 {
     const auto r = DNAsssembly::stats("tests/data/meta/contigs.fa");

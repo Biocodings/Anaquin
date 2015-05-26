@@ -382,15 +382,15 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_dna();                 break; }
-                        case MODE_ALIGN:     { analyze<DAlign>(optarg);     break; }
-                        case MODE_VARIATION: { analyze<Structural>(optarg); break; }
+                        case MODE_SEQS:      { print_dna();               break; }
+                        case MODE_ALIGN:     { analyze<DAlign>(_opt);     break; }
+                        case MODE_VARIATION: { analyze<Structural>(_opt); break; }
                     }
                 }
-                
+
                 break;
             }
-                
+
             case CMD_META:
             {
                 if (_mode != MODE_SEQS && _mode != MODE_ASSEMBLY)
@@ -401,14 +401,14 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:     { analyze<MSequence>(optarg); break; }
-                        case MODE_ASSEMBLY: { analyze<MAssembly>(optarg); break; }
+                        case MODE_SEQS:     { analyze<MSequence>(_opt); break; }
+                        case MODE_ASSEMBLY: { analyze<MAssembly>(_opt); break; }
                     }
                 }
 
                 break;
             }
-                
+
             default:
             {
                 assert(false);
