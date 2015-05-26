@@ -1,7 +1,7 @@
 #ifndef GI_PARSER_CDIFFS_HPP
 #define GI_PARSER_CDIFFS_HPP
 
-#include <ss/prob.hpp>
+#include <ss/p.hpp>
 #include "analyzer.hpp"
 #include "parsers/parser_cuffs.hpp"
 
@@ -18,7 +18,7 @@ namespace Spike
         SS::TestStats stats;
 
         // The p-value and q-value under the null-hypothesis
-        SS::P p, q;
+        SS::P<double> p, q;
 
         TrackingStatus status;
     };

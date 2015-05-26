@@ -4,11 +4,11 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include <ss/r.hpp>
 #include "types.hpp"
 #include "classify.hpp"
 #include "sensitivity.hpp"
 #include <boost/format.hpp>
+#include <ss/regression/lm.hpp>
 #include "writers/r_writer.hpp"
 #include "writers/mock_writer.hpp"
 
