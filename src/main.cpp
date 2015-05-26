@@ -90,7 +90,6 @@ static const struct option long_options[] =
     { "l",    no_argument,       0, MODE_SEQS         },
     { "seqs", no_argument,       0, MODE_SEQUINS      },
     { "f",    required_argument, 0, MODE_RESTRICTS    },
-    { "se",   required_argument, 0, MODE_SEQS         },
     { "al",   required_argument, 0, MODE_ALIGN        },
     { "as",   required_argument, 0, MODE_ASSEMBLY     },
     { "ab",   required_argument, 0, MODE_ABUNDANCE    },

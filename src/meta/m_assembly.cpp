@@ -5,5 +5,10 @@ using namespace Spike;
 
 MAssemblyStats MAssembly::analyze(const std::string &file, const Options &options)
 {
-    return MAssemblyStats();
+    MAssemblyStats stats;
+
+    stats.dstats = DNAsssembly::stats(file);
+    
+    
+    return stats;;
 }

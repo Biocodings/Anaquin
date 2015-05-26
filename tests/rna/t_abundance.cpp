@@ -5,7 +5,7 @@ using namespace Spike;
 
 TEST_CASE("RAbundance_Simulations_Isoforms_Tracking")
 {
-    const auto r = RAbundance::analyze("/Users/tedwong/Sources/QA/isoforms.fpkm_tracking");
+    const auto r = RAbundance::analyze("tests/data/rna/isoforms.fpkm_tracking");
     
     REQUIRE(r.lm.r  == Approx(0.7835626667));
     REQUIRE(r.lm.c  == Approx(3.5085392148));

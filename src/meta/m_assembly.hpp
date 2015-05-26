@@ -6,9 +6,9 @@
 
 namespace Spike
 {
-    struct MAssemblyStats : DNStats
+    struct MAssemblyStats
     {
-        // Empty Implementation
+        DNStats dstats;
     };
 
     struct MAssembly
