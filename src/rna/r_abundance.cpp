@@ -24,7 +24,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     const auto &s = Standard::instance();
 
     auto c = RAnalyzer::isoformCounter();
-
+    unsigned i = 0;
+    
     if (suffix(file, ".tmap"))
     {
         ParserTMap::parse(file, [&](const TMap &t, const ParserProgress &)
@@ -48,7 +49,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     }
     else
     {
-        if (file.find(GTracking) != std::string::npos && file.find(ITracking) != std::string::npos)
+        if (file.find(GTracking) == std::string::npos && file.find(ITracking) == std::string::npos)
         {
             throw std::runtime_error((boost::format("Unknown file. It must be %1% or %2%")
                                         % GTracking % ITracking).str());
@@ -58,9 +59,15 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
         {
             if (file.find(ITracking) != std::string::npos)
             {
-                c[t.trackID]++;
-                assert(s.r_seqs_iA.count(t.trackID));
+                // Is this a transcript for the sequin?
+                if (!s.r_seqs_iA.count(t.trackID))
+                {
+                    return;
+                }
                 
+                i++;
+                c[t.trackID]++;
+
                 if (t.fpkm)
                 {
                     const auto &i = s.r_seqs_iA.at(t.trackID);
@@ -74,8 +81,14 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
             }
             else
             {
+                // Is this a gene for the sequin?
+                if (!s.r_seqs_gA.count(t.trackID))
+                {
+                    return;
+                }
+
+                i++;
                 c[t.geneID]++;
-                assert(s.r_seqs_gA.count(t.geneID));
                 const auto &m = s.r_seqs_gA.at(t.geneID);
 
                 if (t.fpkm)
@@ -99,6 +112,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     stats.linear();
     AnalyzeReporter::report("abundance.stats", "abundance.R", stats, c, options.writer);
+    
+    std::cout << "Processed " << i << " rows" << std::endl;
     
     return stats;
 }
