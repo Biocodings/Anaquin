@@ -1,6 +1,6 @@
 #include <assert.h>
-#include "d_align.hpp"
 #include "expression.hpp"
+#include "dna/d_align.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;
@@ -46,7 +46,7 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
     
     //stats.se = Expression::analyze(stats.ce, seqs);
 
-    AnalyzeReporter::report("dalign_exons.stats", stats.me, stats.se, stats.ce, options.writer);
+    AnalyzeReporter::report("align.stats", stats.me, stats.se, stats.ce, options.writer);
 
 	return stats;
 }

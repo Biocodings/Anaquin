@@ -13,7 +13,7 @@
 		EF175D4E1AE4F43000AC3D6C /* t_differential.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF175D4D1AE4F43000AC3D6C /* t_differential.cpp */; };
 		EF224B541ADB5B8900B989A8 /* r_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B4E1ADB5B8900B989A8 /* r_align.cpp */; };
 		EF224B551ADB5B8900B989A8 /* r_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B501ADB5B8900B989A8 /* r_assembly.cpp */; };
-		EF224B5A1ADB5E3C00B989A8 /* structural.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B581ADB5E3C00B989A8 /* structural.cpp */; };
+		EF224B5A1ADB5E3C00B989A8 /* d_variant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF224B581ADB5E3C00B989A8 /* d_variant.cpp */; };
 		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; };
 		EF2290631AC0E58000CE76BF /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290521AC0E58000CE76BF /* standard.cpp */; };
 		EF312C461B0C5FBD00DE3EC2 /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF312C451B0C5FBD00DE3EC2 /* resources.cpp */; };
@@ -106,8 +106,8 @@
 		EF224B4F1ADB5B8900B989A8 /* r_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_align.hpp; path = ../src/rna/r_align.hpp; sourceTree = "<group>"; };
 		EF224B501ADB5B8900B989A8 /* r_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_assembly.cpp; path = ../src/rna/r_assembly.cpp; sourceTree = "<group>"; };
 		EF224B511ADB5B8900B989A8 /* r_assembly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_assembly.hpp; path = ../src/rna/r_assembly.hpp; sourceTree = "<group>"; };
-		EF224B581ADB5E3C00B989A8 /* structural.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = structural.cpp; path = ../src/dna/structural.cpp; sourceTree = "<group>"; };
-		EF224B591ADB5E3C00B989A8 /* structural.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = structural.hpp; path = ../src/dna/structural.hpp; sourceTree = "<group>"; };
+		EF224B581ADB5E3C00B989A8 /* d_variant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = d_variant.cpp; path = ../src/dna/d_variant.cpp; sourceTree = "<group>"; };
+		EF224B591ADB5E3C00B989A8 /* d_variant.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = d_variant.hpp; path = ../src/dna/d_variant.hpp; sourceTree = "<group>"; };
 		EF2290341AC0E58000CE76BF /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/alignment.hpp; sourceTree = "<group>"; };
 		EF2290351AC0E58000CE76BF /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
 		EF2290381AC0E58000CE76BF /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/biology.hpp; sourceTree = "<group>"; };
@@ -335,8 +335,8 @@
 				EFD457561AE65D6E0027DA46 /* d_align.hpp */,
 				EFD457581AE65D860027DA46 /* d_sequence.cpp */,
 				EFD457591AE65D860027DA46 /* d_sequence.hpp */,
-				EF224B581ADB5E3C00B989A8 /* structural.cpp */,
-				EF224B591ADB5E3C00B989A8 /* structural.hpp */,
+				EF224B581ADB5E3C00B989A8 /* d_variant.cpp */,
+				EF224B591ADB5E3C00B989A8 /* d_variant.hpp */,
 			);
 			name = dna;
 			sourceTree = "<group>";
@@ -601,7 +601,7 @@
 				EF5616141AE4FE4300EE5ACB /* t_dalign.cpp in Sources */,
 				EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */,
 				EFDD6AD41B0DD76C00450029 /* rANS_static.c in Sources */,
-				EF224B5A1ADB5E3C00B989A8 /* structural.cpp in Sources */,
+				EF224B5A1ADB5E3C00B989A8 /* d_variant.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF13716B1ACADFEB006B0DE2 /* t_standard.cpp in Sources */,
 				EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */,

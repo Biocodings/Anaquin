@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "dna/structural.hpp"
+#include "dna/d_structural.hpp"
 
 using namespace Spike;
 

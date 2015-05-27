@@ -1,11 +1,11 @@
-#ifndef GI_STRUCTURAL_HPP
-#define GI_STRUCTURAL_HPP
+#ifndef GI_D_VARIANT_HPP
+#define GI_D_VARIANT_HPP
 
 #include "analyzer.hpp"
 
 namespace Spike
 {
-    struct StructuralStats
+    struct VariantStats
     {
         // Overall performance
         Performance p;
@@ -23,14 +23,14 @@ namespace Spike
         Performance p_af;
     };
 
-    struct Structural
+    struct DVariant
     {
         struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };
 
-        static StructuralStats analyze(const std::string &file, const Options &options = Options());
+        static VariantStats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

@@ -11,7 +11,7 @@
 
 #include "dna/d_align.hpp"
 #include "dna/d_sequence.hpp"
-#include "dna/structural.hpp"
+#include "dna/d_structural.hpp"
 
 #include "meta/m_assembly.hpp"
 #include "meta/m_sequence.hpp"
@@ -99,6 +99,7 @@ static const struct option long_options[] =
 
     { "sequins",   no_argument,       0, MODE_SEQUINS      },
     { "align",     required_argument, 0, MODE_ALIGN        },
+    { "variant",   required_argument, 0, MODE_VARIATION    },
     { "assembly",  required_argument, 0, MODE_ASSEMBLY     },
     { "abundance", required_argument, 0, MODE_ABUNDANCE    },
     { "diffs",     required_argument, 0, MODE_DIFFERENTIAL },

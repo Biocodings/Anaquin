@@ -1,10 +1,10 @@
 #include "expression.hpp"
-#include "dna/structural.hpp"
+#include "dna/d_variant.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Spike;
 
-StructuralStats Structural::analyze(const std::string &file, const Options &options)
+VariantStats Structural::analyze(const std::string &file, const Options &options)
 {
     StructuralStats stats;
     const auto &s = Standard::instance();
@@ -40,6 +40,8 @@ StructuralStats Structural::analyze(const std::string &file, const Options &opti
                         break;
                     }
                 }
+                
+                
                 
                 if (!found)
                 {
