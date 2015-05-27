@@ -101,7 +101,6 @@
 		EF175D491AE4DE7C00AC3D6C /* t_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_assembly.cpp; path = ../tests/RNA/t_assembly.cpp; sourceTree = "<group>"; };
 		EF175D4B1AE4F3CE00AC3D6C /* t_abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_abundance.cpp; path = ../tests/rna/t_abundance.cpp; sourceTree = "<group>"; };
 		EF175D4D1AE4F43000AC3D6C /* t_differential.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_differential.cpp; path = ../tests/rna/t_differential.cpp; sourceTree = "<group>"; };
-		EF224B4C1ADB5B0000B989A8 /* manual.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = manual.txt; path = ../docs/manual.txt; sourceTree = "<group>"; };
 		EF224B4E1ADB5B8900B989A8 /* r_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_align.cpp; path = ../src/rna/r_align.cpp; sourceTree = "<group>"; };
 		EF224B4F1ADB5B8900B989A8 /* r_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_align.hpp; path = ../src/rna/r_align.hpp; sourceTree = "<group>"; };
 		EF224B501ADB5B8900B989A8 /* r_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_assembly.cpp; path = ../src/rna/r_assembly.cpp; sourceTree = "<group>"; };
@@ -134,8 +133,6 @@
 		EF3D361F1B046A62002289A5 /* denovo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = denovo.hpp; path = ../src/stats/denovo.hpp; sourceTree = "<group>"; };
 		EF3D36211B046AB8002289A5 /* histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = histogram.cpp; path = ../src/stats/histogram.cpp; sourceTree = "<group>"; };
 		EF3D36221B046AB8002289A5 /* histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = histogram.h; path = ../src/stats/histogram.h; sourceTree = "<group>"; };
-		EF3D36261B046CFC002289A5 /* meta_standards.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = meta_standards.txt; path = ../data/meta/meta_standards.txt; sourceTree = "<group>"; };
-		EF3D36281B048478002289A5 /* DNA.ref.bed */ = {isa = PBXFileReference; lastKnownFileType = text; name = DNA.ref.bed; path = ../data/dna/DNA.ref.bed; sourceTree = "<group>"; };
 		EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_tracking.cpp; path = parsers/t_parser_tracking.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
@@ -162,8 +159,6 @@
 		EF76C9281ADC09FD003D45F9 /* r_differential.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_differential.hpp; path = ../src/rna/r_differential.hpp; sourceTree = "<group>"; };
 		EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_fa.cpp; path = ../src/parsers/parser_fa.cpp; sourceTree = "<group>"; };
 		EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_fa.hpp; path = ../src/parsers/parser_fa.hpp; sourceTree = "<group>"; };
-		EFA1A6B31AFC902F0066DD9F /* dna_standards.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = dna_standards.txt; path = ../data/dna/dna_standards.txt; sourceTree = "<group>"; };
-		EFA1A6B41AFC98000066DD9F /* rna_standards.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = rna_standards.txt; path = ../data/rna/rna_standards.txt; sourceTree = "<group>"; };
 		EFA2618D1B121D6E00812BBE /* resources.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = resources.hpp; path = ../src/resources.hpp; sourceTree = "<group>"; };
 		EFB1E0421B0098F300F093A2 /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
 		EFBB830C1ADF953B0002611E /* parser_sequins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_sequins.cpp; path = ../src/parsers/parser_sequins.cpp; sourceTree = "<group>"; };
@@ -209,8 +204,6 @@
 		EFDD6AC71B0DD76C00450029 /* zfio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zfio.c; path = ../src/htslib/cram/zfio.c; sourceTree = "<group>"; };
 		EFDD6ADA1B0DDB8700450029 /* files.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = files.c; path = ../src/htslib/cram/files.c; sourceTree = "<group>"; };
 		EFDD6ADC1B0DE65D00450029 /* vcf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcf.c; path = ../src/htslib/vcf.c; sourceTree = "<group>"; };
-		EFE6C0A91AEA0D7E00CE37E5 /* standards.bed */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.bed; path = ../data/rna/standards.bed; sourceTree = "<group>"; };
-		EFE6C0AA1AEA0D7E00CE37E5 /* standards.gtf */ = {isa = PBXFileReference; lastKnownFileType = text; name = standards.gtf; path = ../data/rna/standards.gtf; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
 		EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EFECDC101AE7510700F0FD9A /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
@@ -251,8 +244,6 @@
 		7F7C70491AB4726E00C6EE36 = {
 			isa = PBXGroup;
 			children = (
-				EF224B5B1ADB5EA100B989A8 /* Data */,
-				EFD36E9A1ACB775B00F6F098 /* Docs */,
 				7FC557061AB473A90085C090 /* Sources */,
 				7F6E0C831AB653AC00C9E3E0 /* Tests */,
 				EF150F4D1AD505D50004E613 /* Framework */,
@@ -341,16 +332,6 @@
 			name = dna;
 			sourceTree = "<group>";
 		};
-		EF224B5B1ADB5EA100B989A8 /* Data */ = {
-			isa = PBXGroup;
-			children = (
-				EFE6C0A61AEA0D4F00CE37E5 /* meta */,
-				EFE6C0A51AEA0D2500CE37E5 /* dna */,
-				EFE6C0A41AEA0D2100CE37E5 /* rna */,
-			);
-			name = Data;
-			sourceTree = "<group>";
-		};
 		EF3860D61AD378190062D246 /* parsers */ = {
 			isa = PBXGroup;
 			children = (
@@ -413,14 +394,6 @@
 			name = dna;
 			sourceTree = "<group>";
 		};
-		EFD36E9A1ACB775B00F6F098 /* Docs */ = {
-			isa = PBXGroup;
-			children = (
-				EF224B4C1ADB5B0000B989A8 /* manual.txt */,
-			);
-			name = Docs;
-			sourceTree = "<group>";
-		};
 		EFDD6A731B0DD73900450029 /* htslib */ = {
 			isa = PBXGroup;
 			children = (
@@ -463,33 +436,6 @@
 				EFDD6AC71B0DD76C00450029 /* zfio.c */,
 			);
 			name = cram;
-			sourceTree = "<group>";
-		};
-		EFE6C0A41AEA0D2100CE37E5 /* rna */ = {
-			isa = PBXGroup;
-			children = (
-				EFA1A6B41AFC98000066DD9F /* rna_standards.txt */,
-				EFE6C0A91AEA0D7E00CE37E5 /* standards.bed */,
-				EFE6C0AA1AEA0D7E00CE37E5 /* standards.gtf */,
-			);
-			name = rna;
-			sourceTree = "<group>";
-		};
-		EFE6C0A51AEA0D2500CE37E5 /* dna */ = {
-			isa = PBXGroup;
-			children = (
-				EF3D36281B048478002289A5 /* DNA.ref.bed */,
-				EFA1A6B31AFC902F0066DD9F /* dna_standards.txt */,
-			);
-			name = dna;
-			sourceTree = "<group>";
-		};
-		EFE6C0A61AEA0D4F00CE37E5 /* meta */ = {
-			isa = PBXGroup;
-			children = (
-				EF3D36261B046CFC002289A5 /* meta_standards.txt */,
-			);
-			name = meta;
 			sourceTree = "<group>";
 		};
 		EFE9A01D1AD3B10900557829 /* writers */ = {
