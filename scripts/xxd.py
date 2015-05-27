@@ -1,5 +1,5 @@
 #
-# This script converts resources into C++ headers such that the software can embed.
+# This script converts resources into C++ headers such that the software can compile with.
 #
 
 #!/usr/bin/python
@@ -8,6 +8,8 @@ import os
 import sys
 import math
 import subprocess
+
+os.system('rm -rf src/data')
 
 def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
