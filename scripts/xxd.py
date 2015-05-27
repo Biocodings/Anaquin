@@ -6,20 +6,28 @@
 
 import os
 import sys
-import math
 import subprocess
 
-os.system('rm -rf src/data')
+os.system('rm -rf src/data/*')
 
 def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
 
 docs  = [ 'docs/manual.txt' ]
 data  = [ 'data/silico.fa',
+
+           # ---------- META ----------
+
+           # ---------- RNA ----------
+
           'data/rna/standards.gtf',
           'data/rna/standards.bed',
           'data/rna/rna_standards.txt',
-          'data/dna/variant.ChrT51.vcf',          
+
+           # ---------- DNA ----------
+
+          'data/dna/DNA.mix.csv',
+          'data/dna/DNA.var.vcf',          
           'data/dna/DNA.ref.bed',
           'data/dna/DNA.tab.fa',
         ]

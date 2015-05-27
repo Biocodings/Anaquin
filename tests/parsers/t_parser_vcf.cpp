@@ -3,11 +3,11 @@
 
 using namespace Spike;
 
-TEST_CASE("Standard_DNA_1")
+TEST_CASE("ParserVCF_Sample_File")
 {
     std::vector<VCFVariant> vs;
-    
-    ParserVCF::parse("data/dna/variant.ChrT51.vcf", [&](const VCFVariant &v, const ParserProgress &)
+
+    ParserVCF::parse("data/dna/DNA.var.vcf", [&](const VCFVariant &v, const ParserProgress &)
     {
         vs.push_back(v);
     });
@@ -23,16 +23,4 @@ TEST_CASE("Standard_DNA_1")
     REQUIRE(vs[1].r  == "TACTAACACGACGTGC");
     REQUIRE(vs[1].a  == "T");
     REQUIRE(vs[1].gt == HomozygousAlt);
-}
-
-TEST_CASE("Standard_DNA_2")
-{
-    std::vector<VCFVariant> vs;
-    
-    ParserVCF::parse("data/dna/hetero.ChrT51.vcf", [&](const VCFVariant &v, const ParserProgress &)
-                     {
-                         vs.push_back(v);
-                     });
-
-    REQUIRE(vs.size() == 139);
 }

@@ -47,22 +47,17 @@ template<typename Callback, ParserMode Mode> void _parse(const std::string &file
         p.i++;
         boost::split(tokens, line, boost::is_any_of("\t"));
 
-        // Empty line?
-        if (tokens.size() == 1)
+        // Empty line? Unknown feature such as mRNA?
+        if (tokens.size() == 1 || !mapper.count(tokens[2]))
         {
-            return;
+            continue;
         }
         
         f.id = tokens[0];
         f.l  = Locus(stoi(tokens[3]), stoi(tokens[4]));
-        
-        if (!mapper.count(tokens[2]))
-        {
-            throw std::runtime_error("Unknown feature type: " + tokens[2]);
-        }
-        
+
         f.type = mapper[tokens[2]];
-        
+
         /*
          * Eg: "gene_id "R_5_3"; transcript_id "R_5_3_R";"
          */
@@ -89,11 +84,6 @@ template<typename Callback, ParserMode Mode> void _parse(const std::string &file
                     {
                         f.tID = nameValue[1];
                     }
-                    
-                    if (!f.geneID.empty() && !f.tID.empty())
-                    {
-                        assert(f.geneID != f.tID);
-                    }
                 }
             }
         }
@@ -102,7 +92,7 @@ template<typename Callback, ParserMode Mode> void _parse(const std::string &file
     }
 }
 
-void ParserGTF::parse(const std::string &str, Callback x, ParseMode mode)
+void ParserGTF::parse(const std::string &str, Callback x, ParserMode mode)
 {
     return mode == File ? _parse<Callback, ParserMode::File>(str, x) :
                           _parse<Callback, ParserMode::String>(str, x);

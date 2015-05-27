@@ -1,12 +1,13 @@
 #include "stats/denovo.hpp"
 #include "meta/m_assembly.hpp"
-#include <iostream>
+
 using namespace Spike;
 
 MAssemblyStats MAssembly::analyze(const std::string &file, const Options &options)
 {
     MAssemblyStats stats;
 
+    // Calculate the general statistics for de-novo assembly
     stats.dstats = DNAsssembly::stats(file);
     
     /*

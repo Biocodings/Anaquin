@@ -22,9 +22,8 @@ namespace Spike
     enum Mutation
     {
         SNP,
-        Indel,
-        Translocation,
-        CopyNumber
+        Insertion,
+        Deletion
     };
 
     enum Genotype

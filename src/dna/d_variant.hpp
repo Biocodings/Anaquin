@@ -10,17 +10,8 @@ namespace Spike
         // Overall performance
         Performance p;
 
-        // Performance relative to alleles
-        Performance p_al;
-        
-        // Performance relative to the position
-        Performance p_l;
-
-        // Performance relative to genotype
-        Performance p_gt;
-
-        // Performance relative to allele frequency
-        Performance p_af;
+        // The proportion of genetic variation with alignment coverage
+        double covered;
     };
 
     struct DVariant

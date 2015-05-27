@@ -8,14 +8,8 @@ namespace Spike
 {
     struct ParserGTF
     {
-        enum ParseMode
-        {
-            File,
-            String
-        };
-        
         typedef std::function<void (const Feature &, const ParserProgress &)> Callback;
-        static void parse(const std::string &, Callback, ParseMode mode = File);
+        static void parse(const std::string &, Callback, ParserMode mode = File);
     };
 }
 

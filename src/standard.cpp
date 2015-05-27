@@ -13,13 +13,16 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
-extern std::string d_tab_fa();
-extern std::string silico_fa();
-extern std::string d_ref_bed();
-extern std::string standards_bed();
-extern std::string standards_gtf();
-extern std::string d_variant_vcf();
-extern std::string r_standards_txt();
+extern std::string silico_f();
+
+extern std::string r_bed_f();
+extern std::string r_gtf_f();
+extern std::string r_mix_f();
+
+extern std::string d_mix_f();
+extern std::string d_vcf_f();
+extern std::string d_bed_f();
+extern std::string d_seqs_f();
 
 using namespace Spike;
 
@@ -37,12 +40,11 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
 
 Standard::Standard()
 {
-    std::stringstream in(silico_fa());
+    std::stringstream in(silico_f());
     std::string line;
     
     if (!in.good())
     {
-        std::cerr << "Error: Failed to load the reference chromosome" << std::endl;
         throw std::runtime_error("Error: Failed to load the reference chromosome");
     }
 
@@ -57,29 +59,29 @@ Standard::Standard()
     meta();
 }
 
-void Standard::meta(const std::string &mix)
+void Standard::meta()
 {
     // Empty Implementation
 }
 
-void Standard::dna(const std::string &mix)
+void Standard::dna()
 {
-    ParserVCF::parse(d_variant_vcf(), [&](const VCFVariant &v, const ParserProgress &)
+    ParserVCF::parse(d_vcf_f(), [&](const VCFVariant &v, const ParserProgress &)
     {
         d_vars[v.l] = v;
     }, ParserMode::String);
 
-    ParserBED::parse(d_ref_bed(), [&](const BedFeature &f, const ParserProgress &)
+    ParserBED::parse(d_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
         d_exons.push_back(f);
     }, ParserMode::String);
 
-    //ParserCSV::parse(mix, [&](const Fields &fields, const ParserProgress &)
-    //{
+    ParserCSV::parse(d_mix_f(), [&](const Fields &fields, const ParserProgress &)
+    {
         // Empty Implementation
-    //}, ParserMode::String);
+    }, ParserMode::String);
 
-    ParserFA::parse(d_tab_fa(), [&](const FALine &l, const ParserProgress &)
+    ParserFA::parse(d_seqs_f(), [&](const FALine &l, const ParserProgress &)
     {
         d_seqs.insert(l.id);
     }, ParserMode::String);
@@ -87,7 +89,7 @@ void Standard::dna(const std::string &mix)
     assert(!d_seqs.empty() && !d_vars.empty() && !d_exons.empty());
 }
 
-void Standard::rna(const std::string &mix)
+void Standard::rna()
 {
     /*
      * The region occupied by the chromosome is the smallest area contains all the features.
@@ -103,7 +105,7 @@ void Standard::rna(const std::string &mix)
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
 
-    ParserGTF::parse(standards_gtf(), [&](const Feature &f, const ParserProgress &)
+    ParserGTF::parse(r_gtf_f(), [&](const Feature &f, const ParserProgress &)
 	{
 		l.end = std::max(l.end, f.l.end);
 		l.start = std::min(l.start, f.l.start);
@@ -118,7 +120,7 @@ void Standard::rna(const std::string &mix)
         
         // Construct a mapping between isoformID to geneID
         r_iso2Gene[f.tID] = f.geneID;
-    }, ParserGTF::String);
+    }, String);
 
     assert(!r_iso2Gene.empty());
     std::vector<std::string> toks;
@@ -169,7 +171,7 @@ void Standard::rna(const std::string &mix)
     // Required while reading mixtures
     std::map<IsoformID, Locus> temp;
 
-    ParserBED::parse(standards_bed(), [&](const BedFeature &t, const ParserProgress &p)
+    ParserBED::parse(r_bed_f(), [&](const BedFeature &t, const ParserProgress &p)
     {
         assert(!t.name.empty());
         
@@ -223,8 +225,8 @@ void Standard::rna(const std::string &mix)
         Fold,
         LogFold,
     };
-    
-    ParserCSV::parse(r_standards_txt(), [&](const Fields &fields, const ParserProgress &p)
+
+    ParserCSV::parse(r_mix_f(), [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {

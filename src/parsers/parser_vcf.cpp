@@ -102,9 +102,13 @@ void ParserVCF::parse(const std::string &file, Callback c, ParserMode mode)
             {
                 v.m = SNP;
             }
+            else if (v.r.size() > v.a.size())
+            {
+                v.m = Deletion;
+            }
             else
             {
-                v.m = Indel;
+                v.m = Insertion;
             }
 
             Tokens::split(fields[Format_Data + i], ":", t);

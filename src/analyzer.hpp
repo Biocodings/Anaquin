@@ -50,7 +50,7 @@ namespace Spike
 
     struct DAnalyzer
     {
-        static SequinCounter sequinCounter()
+        static SequinCounter counterVars()
         {
             return counter<std::set<std::string>, SequinID>(Standard::instance().d_seqs);
         }

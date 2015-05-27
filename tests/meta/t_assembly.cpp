@@ -6,6 +6,7 @@ using namespace Spike;
 TEST_CASE("MAssembly_Contigs_2")
 {
     const auto r = MAssembly::analyze("tests/data/meta/contigs_2.fa");
+//    REQUIRE(r.dstats.N50 == 594);
     
 //    REQUIRE(r.dstats.contigs.size() == 63);
 //    
@@ -15,7 +16,6 @@ TEST_CASE("MAssembly_Contigs_2")
 //    REQUIRE(r.dstats.contigs[3].id == "NODE_4_length_1996_cov_19.849699");
 //    
 //    REQUIRE(r.dstats.N80  == 1836);
-//    REQUIRE(r.dstats.N50  == 2846);
 //    REQUIRE(r.dstats.N20  == 4703);
 //    REQUIRE(r.dstats.mean == 3585);
 //    REQUIRE(r.dstats.min  == 67);
