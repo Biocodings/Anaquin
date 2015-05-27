@@ -4,9 +4,9 @@
 
 using namespace Spike;
 
-VariantStats Structural::analyze(const std::string &file, const Options &options)
+VariantStats DVariant::analyze(const std::string &file, const Options &options)
 {
-    StructuralStats stats;
+    VariantStats stats;
     const auto &s = Standard::instance();
 
     auto c = DAnalyzer::sequinCounter();

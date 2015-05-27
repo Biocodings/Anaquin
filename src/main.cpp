@@ -10,8 +10,8 @@
 #include "rna/r_differential.hpp"
 
 #include "dna/d_align.hpp"
+#include "dna/d_variant.hpp"
 #include "dna/d_sequence.hpp"
-#include "dna/d_structural.hpp"
 
 #include "meta/m_assembly.hpp"
 #include "meta/m_sequence.hpp"
@@ -383,9 +383,9 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_dna();               break; }
-                        case MODE_ALIGN:     { analyze<DAlign>(_opt);     break; }
-                        case MODE_VARIATION: { analyze<Structural>(_opt); break; }
+                        case MODE_SEQS:      { print_dna();             break; }
+                        case MODE_ALIGN:     { analyze<DAlign>(_opt);   break; }
+                        case MODE_VARIATION: { analyze<DVariant>(_opt); break; }
                     }
                 }
 
