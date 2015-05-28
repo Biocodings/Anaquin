@@ -7,12 +7,14 @@
  * META Resources
  */
 
+#include "data/META.tab.fa"
 #include "data/META.mix.csv"
 
 /*
  * RNA Resources
  */
 
+#include "data/RNA.tab.fa"
 #include "data/RNA.ref.bed"
 #include "data/RNA.ref.gtf"
 #include "data/RNA.mix.csv"
@@ -48,9 +50,11 @@ MixtureInfo Resources::mixture()
     return i;
 }
 
+#define ToString(x) std::string(reinterpret_cast<char*>(x))
+
 std::string manual()
 {
-    return std::string(reinterpret_cast<char*>(docs_manual_txt));
+    return ToString(docs_manual_txt);
 }
 
 /*
@@ -59,35 +63,45 @@ std::string manual()
 
 std::string silico_f()
 {
-    return std::string(reinterpret_cast<char*>(data_silico_fa));
+    return ToString(data_silico_fa);
 }
 
 /*
  * META Resources
  */
 
+std::string m_tab_f()
+{
+    return ToString(data_meta_META_tab_fa);
+}
+
 std::string m_mix_f()
 {
-    return std::string(reinterpret_cast<char*>(data_meta_META_mix_csv));
+    return ToString(data_meta_META_mix_csv);
 }
 
 /*
  * RNA Resources
  */
 
+std::string r_tab_f()
+{
+    return ToString(data_rna_RNA_tab_fa);
+}
+
 std::string r_gtf_f()
 {
-    return std::string(reinterpret_cast<char*>(data_rna_RNA_ref_gtf));
+    return ToString(data_rna_RNA_ref_gtf);
 }
 
 std::string r_bed_f()
 {
-    return std::string(reinterpret_cast<char*>(data_rna_RNA_ref_bed));
+    return ToString(data_rna_RNA_ref_bed);
 }
 
 std::string r_mix_f()
 {
-    return std::string(reinterpret_cast<char*>(data_rna_RNA_mix_csv));
+    return ToString(data_rna_RNA_mix_csv);
 }
 
 /*
@@ -96,20 +110,20 @@ std::string r_mix_f()
 
 std::string d_tab_f()
 {
-    return std::string(reinterpret_cast<char *>(data_dna_DNA_tab_fa));
+    return ToString(data_dna_DNA_tab_fa);
 }
 
 std::string d_mix_f()
 {
-    return std::string(reinterpret_cast<char *>(data_dna_DNA_mix_csv));
+    return ToString(data_dna_DNA_mix_csv);
 }
 
 std::string d_bed_f()
 {
-    return std::string(reinterpret_cast<char *>(data_dna_DNA_ref_bed));
+    return ToString(data_dna_DNA_ref_bed);
 }
 
 std::string d_vcf_f()
 {
-    return std::string(reinterpret_cast<char *>(data_dna_DNA_var_vcf));
+    return ToString(data_dna_DNA_var_vcf);
 }
