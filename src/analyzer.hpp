@@ -52,7 +52,7 @@ namespace Spike
     {
         static SequinCounter counterSeqs()
         {
-            return counter<std::vector<BedFeature>, SequinID>(Standard::instance().d_seqs);
+            return counter<std::vector<BedFeature>, SequinID>(Standard::instance().d_annot);
         }
     };
 

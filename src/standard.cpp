@@ -13,6 +13,17 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
+enum CSVField
+{
+    ID,
+    RDM_ID,
+    Group,
+    Con_A,
+    Con_B,
+    Fold,
+    LogFold,
+};
+
 extern std::string silico_f();
 
 extern std::string r_bed_f();
@@ -37,6 +48,28 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
 
     return n;
 }
+
+static Sequins createSequins(const Sequin &r, const Sequin &v)
+{
+    Sequins seqs;
+
+    seqs.r = r;
+    seqs.v = v;
+    seqs.geneID = r.id.substr(0, r.id.length() - 2);
+
+    return seqs;
+}
+
+static Sequin createSequin(const Fields &f, Mixture mix)
+{
+    Sequin s;
+
+    s.id  = f[RDM_ID];
+    //s.l   = temp.at(s.id);
+    s.raw = stof(f[mix == MixA ? Con_A : Con_B]);
+
+    return s;
+};
 
 Standard::Standard()
 {
@@ -73,15 +106,37 @@ void Standard::dna()
 
     ParserBED::parse(d_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
-        d_seqs.push_back(f);
+        d_annot.push_back(f);
     }, ParserMode::String);
 
-    ParserCSV::parse(d_mix_f(), [&](const Fields &fields, const ParserProgress &)
+    std::map<SequinID, std::vector<Fields>> seqs;
+
+    ParserCSV::parse(d_mix_f(), [&](const Fields &fields, const ParserProgress &p)
     {
-        // Empty Implementation
+        if (p.i == 0)
+        {
+            return;
+        }
+
+        seqs[fields[RDM_ID].substr(0, fields[RDM_ID].length() - 2)].push_back(fields);
     }, ParserMode::String);
 
-    assert(!d_seqs.empty() && !d_vars.empty());
+    /*
+     * Build sequins from the CSV lines
+     */
+
+    for (const auto &p : seqs)
+    {
+        const auto seq_ra = createSequin(p.second[0], MixA);
+        const auto seq_va = createSequin(p.second[1], MixA);
+        const auto seq_rb = createSequin(p.second[0], MixB);
+        const auto seq_vb = createSequin(p.second[1], MixB);
+
+        d_seqs_A[seq_ra.id] = d_seqs_A[seq_va.id] = createSequins(seq_ra, seq_va);
+        d_seqs_B[seq_rb.id] = d_seqs_B[seq_vb.id] = createSequins(seq_rb, seq_vb);
+    }
+
+    assert(!d_annot.empty() && !d_vars.empty() && !d_seqs_A.empty() && !d_seqs_A.empty());
 }
 
 void Standard::rna()
@@ -124,7 +179,7 @@ void Standard::rna()
      * Construct the data-structure for genes
      */
 
-    for (auto gid : gids)
+    for (const auto &gid : gids)
     {
         Feature g;
 
@@ -250,11 +305,10 @@ void Standard::rna()
         {
             Sequins seqs;
 
-            seqs.r   = r;
-            seqs.v   = v;
-            seqs.grp = gs.at(p.second[0][Group]);
+            seqs.r      = r;
+            seqs.v      = v;
+            seqs.grp    = gs.at(p.second[0][Group]);
             seqs.geneID = r.id.substr(0, r.id.length() - 2);
-            seqs.fold = 0.0; // TODO: This might not even needed
 
             m[seqs.geneID] = seqs;
         };
@@ -273,12 +327,12 @@ void Standard::rna()
             const auto seq_v_a = parse_sequin(v_fields, r_seqs_iA, MixA);
             const auto seq_v_b = parse_sequin(v_fields, r_seqs_iB, MixB);
 
-            build_sequins(seq_r_a, seq_r_a, r_seqs_gA);
+            build_sequins(seq_r_a, seq_v_a, r_seqs_gA);
             build_sequins(seq_r_b, seq_v_b, r_seqs_gB);
         }
         else
         {
-            build_sequins(seq_r_a, seq_r_b, r_seqs_gA);
+            build_sequins(seq_r_a, seq_r_b, r_seqs_gA); // TODO: How to fix this??
             build_sequins(seq_r_b, seq_r_b, r_seqs_gB);
         }
     }
@@ -291,7 +345,7 @@ void Standard::rna()
      */
 
     r_c_exons = countLocus(r_l_exons = Locus::merge<RNALocus, RNALocus>(r_l_exons));
-    
+
     assert(r_c_exons);
     assert(!r_l_exons.empty());
     assert(!Locus::overlap(r_l_exons));

@@ -157,13 +157,12 @@ static void print_rna_sequins()
 static void print_rna()
 {
     const auto &r = Standard::instance();
-    const std::string format = "%1%  %2%  %3%  %4%  %5%";
+    const std::string format = "%1%  %2%  %3%  %4%";
 
     auto f = [&](const Standard::SequinsMap &seqs)
     {
         std::cout << (boost::format(format) % "r"
                                             % "v"
-                                            % "fold"
                                             % "r_con"
                                             % "v_con").str() << std::endl;
 
@@ -177,7 +176,6 @@ static void print_rna()
                 {
                     std::cout << (boost::format(format) % p.r.id
                                                         % p.v.id
-                                                        % p.fold
                                                         % p.r.raw
                                                         % p.v.raw).str() << std::endl;
                 }

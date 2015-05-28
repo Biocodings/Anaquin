@@ -71,9 +71,6 @@ namespace Spike
 
         Group grp;
         
-        // Fold ratio from r to v
-        Fold fold;
-
         // Each mixture represents a transcript for a gene
         GeneID geneID;
 
@@ -131,8 +128,13 @@ namespace Spike
              * DNA data
              */
 
-            std::vector<BedFeature> d_seqs;
             std::map<Locus, Variation> d_vars;
+
+            // DNA annotation
+            std::vector<BedFeature> d_annot;
+
+            // DNA Sequins for each of the mixture
+            SequinsMap d_seqs_A, d_seqs_B;
 
             /*
              * Metagenomic data

@@ -28,7 +28,7 @@ TEST_CASE("Differential_Simulations_Genes")
     o.level = RNALevel::Gene;
     const auto r = RDifferential::analyze("tests/data/rna/gene_exp.diff", o);
 
-    REQUIRE(r.lm.m  == Approx(0.4991802783));
-    REQUIRE(r.lm.r  == Approx(0.5082241358));
-    REQUIRE(r.lm.r2 == Approx(0.2212063608));
+    REQUIRE(r.lm.m  == Approx(1.0824361534));
+    REQUIRE(r.lm.r  == Approx(0.8374341202));
+    REQUIRE(r.lm.r2 == Approx(0.6863607009));
 }
