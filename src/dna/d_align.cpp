@@ -38,7 +38,6 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
         }
         else
         {
-            std::cout << align.id << std::endl;
             stats.n_samps++;
         }
     });
@@ -47,6 +46,9 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
     //stats.se = Expression::analyze(stats.ce, seqs);
 
     AnalyzeReporter::report("dna_align.stats", stats, stats.p.m, stats.p.s, stats.c, options.writer);
+
+    std::cout << "Sensitivity: " << stats.p.m.sn() << std::endl;
+    std::cout << "Specificity: " << stats.p.m.sp() << std::endl;
 
 	return stats;
 }

@@ -224,7 +224,7 @@ namespace Spike
                                                  % s.abund
                                                  % ss.n_seqs
                                                  % ss.n_samps
-                                                 % ss.dilution()).str());
+                                                 % ss.dilution()).str());            
             writer->write("\n");
 
             for (const auto &p : c)
