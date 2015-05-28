@@ -191,12 +191,42 @@ static void print_rna()
 
 void print_dna()
 {
-    // Empty Implementation
+    const auto &s = Standard::instance();
+    const std::string format = "%1%  %2%  %3%  %4%";
+    
+    auto f = [&](const Standard::PairMap &seqs)
+    {
+        std::cout << (boost::format(format) % "r"
+                                            % "v"
+                                            % "r_con"
+                                            % "v_con").str() << std::endl;
+
+        for (std::size_t i = A; i <= D; i++)
+        {
+            for (auto j : seqs)
+            {
+                const auto &p = j.second;
+                
+                if (p.grp == i)
+                {
+                    std::cout << (boost::format(format) % p.r.id
+                                  % p.v.id
+                                  % p.r.raw
+                                  % p.v.raw).str() << std::endl;
+                }
+            }
+        }
+    };
+
+    std::cout << "\n----------------------------- A -----------------------------" << std::endl;
+    f(s.d_pair_A);
+    std::cout << "\n----------------------------- B -----------------------------" << std::endl;
+    f(s.d_pair_B);
 }
 
 void print_meta()
 {
-    // Empty Implementation    
+    // Empty Implementation
 }
 
 template <typename Analyzer> void analyze(const std::string &file, typename Analyzer::Options o = typename Analyzer::Options())

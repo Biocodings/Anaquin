@@ -55,6 +55,7 @@ static Sequins createSequins(const Sequin &r, const Sequin &v)
 
     seqs.r = r;
     seqs.v = v;
+    seqs.grp = Group::A; // TODO: Fix this....
     seqs.geneID = r.id.substr(0, r.id.length() - 2);
 
     return seqs;
