@@ -63,11 +63,13 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
             continue;
         }
         
-        // Calculate RPKM for the sequin
-        const double measured = static_cast<double>(i.second) / (100.0 / 100.0) / ((double) n / std::pow(10, 6));
-
+        const auto s = m.at(i.first);
+        
         // Compare the RPKM with the known concentration
-        const auto known = m.at(i.first).abund();
+        const auto known = s.abund();
+        
+        // Calculate RPKM for the sequin
+        const double measured = (std::pow(10, 9) * static_cast<double>(i.second)) / (n * 100.0);
 
         stats.x.push_back(log(known));
         stats.y.push_back(log(measured));
