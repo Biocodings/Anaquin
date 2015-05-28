@@ -18,6 +18,8 @@ data  = [ 'data/silico.fa',
 
            # ---------- META ----------
 
+          'data/meta/META.mix.csv',
+
            # ---------- RNA ----------
 
           'data/rna/standards.gtf',

@@ -35,6 +35,8 @@ extern std::string d_vcf_f();
 extern std::string d_bed_f();
 extern std::string d_tab_f();
 
+extern std::string m_mix_f();
+
 using namespace Spike;
 
 template <typename Iter> BasePair countLocus(const Iter &iter)
@@ -140,6 +142,10 @@ void Standard::dna()
         d_pair_A[seq_ra.id] = d_pair_A[seq_va.id] = createSequins(seq_ra, seq_va);
         d_pair_B[seq_rb.id] = d_pair_B[seq_vb.id] = createSequins(seq_rb, seq_vb);
     }
+    
+    /*
+     * Gather information from the sequin sequences
+     */
 
     assert(!d_annot.empty()  && !d_vars.empty());
     assert(!d_seq_A.empty()  && !d_seq_B.empty());

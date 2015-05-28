@@ -2,13 +2,19 @@
 #include "resources.hpp"
 #include "data/silico.fa"
 #include "data/manual.txt"
-#include "data/standards.bed"
-#include "data/standards.gtf"
+
+/*
+ * META Resources
+ */
+
+#include "data/META.mix.csv"
 
 /*
  * RNA Resources
  */
 
+#include "data/standards.bed"
+#include "data/standards.gtf"
 #include "data/rna_standards.txt"
 
 /*
@@ -59,6 +65,11 @@ std::string silico_f()
 /*
  * META Resources
  */
+
+std::string m_mix_f()
+{
+    return std::string(reinterpret_cast<char*>(data_meta_META_mix_csv));
+}
 
 /*
  * RNA Resources

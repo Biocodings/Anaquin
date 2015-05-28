@@ -153,6 +153,12 @@ namespace Spike
              * Metagenomic data
              */
 
+            // Metagenomic sequins for each of the mixture
+            SequinMap m_seq_A, m_seq_B;
+
+            // Metagenomic pairs for each of the mixture
+            PairMap m_pair_A, m_pair_B;
+        
         private:
             Standard();
             Standard(Standard const&)       = delete;
