@@ -20,6 +20,7 @@ data  = [ 'data/silico.fa',
 
           'data/meta/META.tab.fa',
           'data/meta/META.mix.csv',
+          'data/meta/META.ref.bed',          
 
            # ---------- RNA ----------
 

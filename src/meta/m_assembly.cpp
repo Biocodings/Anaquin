@@ -25,6 +25,6 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
                                                  % stats.dstats.mean
                                                  % stats.dstats.max).str());
     options.writer->close();
-    
+
     return stats;;
 }

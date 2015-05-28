@@ -8,6 +8,7 @@
  */
 
 #include "data/META.tab.fa"
+#include "data/META.ref.bed"
 #include "data/META.mix.csv"
 
 /*
@@ -78,6 +79,11 @@ std::string m_tab_f()
 std::string m_mix_f()
 {
     return ToString(data_meta_META_mix_csv);
+}
+
+std::string m_bed_f()
+{
+    return ToString(data_meta_META_ref_bed);
 }
 
 /*
