@@ -31,7 +31,7 @@ namespace Spike
         return c;
     }
 
-    template <typename T> static void count_ref(const std::map<T, Counts> &m, Counts &c)
+    template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
     {
         for (const auto & i : m)
         {
@@ -50,9 +50,9 @@ namespace Spike
 
     struct DAnalyzer
     {
-        static SequinCounter counterVars()
+        static SequinCounter counterSeqs()
         {
-            return counter<std::set<std::string>, SequinID>(Standard::instance().d_seqs);
+            return counter<std::vector<BedFeature>, SequinID>(Standard::instance().d_seqs);
         }
     };
 
@@ -82,16 +82,16 @@ namespace Spike
     };
 
     typedef std::map<std::string, Counts> Counter;
-    
+
     struct AnalyzerStats
     {
         // Counts for the sequins
-        Counts n_seqs;
+        Counts n_seqs = 0;
 
         // Counts for the samples
-        Counts n_samps;
+        Counts n_samps = 0;
 
-        inline Percentage dilution() { return n_seqs / (n_seqs + n_samps); }
+        inline Percentage dilution() const { return n_seqs / (n_seqs + n_samps + 1.0); }
     };
 
     struct LinearModel
@@ -191,7 +191,7 @@ namespace Spike
             writer->write((boost::format(format) % stats.lm.r % stats.lm.m % stats.lm.r2 % stats.s.abund).str());
             writer->write("\n");
             
-            for (auto p : c)
+            for (const auto &p : c)
             {
                 writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
             }
@@ -204,33 +204,34 @@ namespace Spike
 
             writer->open(r);
             writer->write(RWriter::write(stats.x, stats.y, stats.z));
-
             writer->close();
         }
 
         template <typename ID> static void report
-                    (const std::string &name,
-                     const Confusion &m,
-                     const Sensitivity &s,
-                     const std::map<ID, Counts> &c,
-                     std::shared_ptr<Writer> writer,
-                     bool writeCount = true)
+                        (const std::string &name,
+                         const AnalyzerStats &ss,
+                         const Confusion &m,
+                         const Sensitivity &s,
+                         const std::map<ID, Counts> &c,
+                         std::shared_ptr<Writer> writer)
         {
-            const std::string format = "%1%\t%2%\t%3%";
+            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
             
             writer->open(name);
-            writer->write((boost::format(format) % "sp" % "sn" % "ss").str());
-            writer->write((boost::format(format) % m.sp() % m.sn() % s.abund).str());
+            writer->write((boost::format(format) % "sp" % "sn" % "ss" % "seqs" % "samples" % "dil").str());
+            writer->write((boost::format(format) % m.sp()
+                                                 % m.sn()
+                                                 % s.abund
+                                                 % ss.n_seqs
+                                                 % ss.n_samps
+                                                 % ss.dilution()).str());
             writer->write("\n");
 
-            if (writeCount)
+            for (const auto &p : c)
             {
-                for (const auto &p : c)
-                {
-                    writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
-                }
+                writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
             }
-            
+
             writer->close();
         }
     };

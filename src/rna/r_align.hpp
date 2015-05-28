@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    struct RAlignStats
+    struct RAlignStats : public AnalyzerStats
     {
         // Number of times that each exon is positively identified
         LocusCounter ec = RAnalyzer::exonCounter();

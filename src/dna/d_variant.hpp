@@ -5,12 +5,12 @@
 
 namespace Spike
 {
-    struct VariantStats
+    struct VariantStats : public AnalyzerStats
     {
         // Overall performance
         Performance p;
 
-        // The proportion of genetic variation with alignment coverage
+        // The proportion of variations with alignment coverage
         double covered;
     };
 

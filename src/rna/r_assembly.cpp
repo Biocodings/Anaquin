@@ -131,8 +131,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
      * Setting the known references
      */
     
-    count_ref(stats.e_lc, stats.me.nr);
-    count_ref(stats.i_lc, stats.mi.nr);
+    sums(stats.e_lc, stats.me.nr);
+    sums(stats.i_lc, stats.mi.nr);
 
     // The number of sequins is also the number of known transcripts
     stats.mt.nr = seqs.size();
@@ -153,12 +153,12 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
      * Report for the statistics
      */
 
-    AnalyzeReporter::report("assembly.base.stats", stats.mb, stats.sb, stats.cb, options.writer);
-    AnalyzeReporter::report("assembly.exons.stats", stats.me, stats.se, stats.ce, options.writer);
-    AnalyzeReporter::report("assembly.intron.stats", stats.mi, stats.si, stats.ci, options.writer);
-    AnalyzeReporter::report("assembly.transcripts.stats", stats.mt, stats.st, stats.ct, options.writer);
+    AnalyzeReporter::report("assembly.base.stats", stats, stats.mb, stats.sb, stats.cb, options.writer);
+    AnalyzeReporter::report("assembly.exons.stats", stats, stats.me, stats.se, stats.ce, options.writer);
+    AnalyzeReporter::report("assembly.intron.stats", stats, stats.mi, stats.si, stats.ci, options.writer);
+    AnalyzeReporter::report("assembly.transcripts.stats", stats, stats.mt, stats.st, stats.ct, options.writer);
 
     std::cout << "Processed " << i << " rows" << std::endl;
-    
+
     return stats;
 }

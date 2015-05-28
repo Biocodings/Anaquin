@@ -10,6 +10,8 @@ namespace Spike
 {
     struct BedFeature
     {
+        operator const FeatureName &() const { return name; }
+
         ChromoID id;
         
         Locus l;

@@ -10,7 +10,7 @@ VariantStats DVariant::analyze(const std::string &file, const Options &options)
     const auto &s = Standard::instance();
 
     // Create a counter for each known variant
-    auto c = DAnalyzer::counterVars();
+    auto c = DAnalyzer::counterSeqs();
 
     Variation r;
 
@@ -26,23 +26,9 @@ VariantStats DVariant::analyze(const std::string &file, const Options &options)
 
             r = s.d_vars.at(q.l);
 
+           
             
-            
-                         
-            bool found = false;
-            BedFeature tt;
-            
-            for (const auto &exon: s.d_exons)
-            {
-                if (exon.l.contains(r.l))
-                {
-                    found = true;
-                    tt = exon;
-                    break;
-                }
-            }
-            
-
+           
             bool f_found = false;
             
             for (const auto &var: s.d_vars)
@@ -56,18 +42,19 @@ VariantStats DVariant::analyze(const std::string &file, const Options &options)
             
             
             
-            if (!found)
+            if (!f_found)
             {
                 std::cout << "????" << std::endl;
             }
             
+            /*
             if (options.filters.count(tt.id))
             {
                 return Ignore;
             }
 
             c.at(tt.name)++;
-            
+*/
             //stats.p_l.m.tp()++;
             
             // Does the alternative allele match with the reference?
@@ -108,8 +95,7 @@ VariantStats DVariant::analyze(const std::string &file, const Options &options)
      */
 
     //stats.s = Expression::analyze(c, seqs);
-
-    AnalyzeReporter::report("dalign_overall.stats", stats.p.m, stats.p.s, c, options.writer);
+    AnalyzeReporter::report("dalign_overall.stats", stats, stats.p.m, stats.p.s, c, options.writer);
 
     return stats;
 }

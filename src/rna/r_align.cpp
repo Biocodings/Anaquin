@@ -88,8 +88,8 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
      * for each true-positive. Anything that has not been detected will be the false-positives.
      */
 
-    count_ref(stats.ec, stats.me.nr);
-    count_ref(stats.ic, stats.mi.nr);
+    sums(stats.ec, stats.me.nr);
+    sums(stats.ic, stats.mi.nr);
     stats.mb.nr = s.r_c_exons;
 
     assert(stats.me.nr && stats.mi.nr && stats.mb.nr);
@@ -105,9 +105,9 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
     stats.si = Expression::analyze(stats.ci, seqs);
     stats.sb = Expression::analyze(stats.cb, seqs);
 
-    AnalyzeReporter::report("ralign_base.stats", stats.mb, stats.sb, stats.cb, options.writer);
-    AnalyzeReporter::report("ralign_exon.stats", stats.me, stats.se, stats.ce, options.writer);
-    AnalyzeReporter::report("ralign_introns.stats", stats.mi, stats.si, stats.ci, options.writer);
+    AnalyzeReporter::report("ralign_base.stats", stats, stats.mb, stats.sb, stats.cb, options.writer);
+    AnalyzeReporter::report("ralign_exon.stats", stats, stats.me, stats.se, stats.ce, options.writer);
+    AnalyzeReporter::report("ralign_introns.stats", stats, stats.mi, stats.si, stats.ci, options.writer);
 
 	return stats;
 }

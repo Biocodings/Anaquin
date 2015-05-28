@@ -5,15 +5,10 @@
 
 namespace Spike
 {
-    struct DAlignStats
+    struct DAlignStats : public AnalyzerStats
     {
-        // Overall performance for the exon-level
-        Confusion me;
-
-        // Overlal LOS for the exon-level
-        Sensitivity se;
-
-        Counter ce = DAnalyzer::counterVars();
+        Performance p;
+        Counter c = DAnalyzer::counterSeqs();
     };
 
     struct DAlign

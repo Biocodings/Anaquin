@@ -73,7 +73,7 @@ void Standard::dna()
 
     ParserBED::parse(d_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
-        d_exons.push_back(f);
+        d_seqs.push_back(f);
     }, ParserMode::String);
 
     ParserCSV::parse(d_mix_f(), [&](const Fields &fields, const ParserProgress &)
@@ -81,12 +81,7 @@ void Standard::dna()
         // Empty Implementation
     }, ParserMode::String);
 
-    ParserFA::parse(d_seqs_f(), [&](const FALine &l, const ParserProgress &)
-    {
-        d_seqs.insert(l.id);
-    }, ParserMode::String);
-
-    assert(!d_seqs.empty() && !d_vars.empty() && !d_exons.empty());
+    assert(!d_seqs.empty() && !d_vars.empty());
 }
 
 void Standard::rna()

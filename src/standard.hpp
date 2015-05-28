@@ -131,8 +131,7 @@ namespace Spike
              * DNA data
              */
 
-            std::set<std::string> d_seqs;
-            std::vector<BedFeature> d_exons;
+            std::vector<BedFeature> d_seqs;
             std::map<Locus, Variation> d_vars;
 
             /*
