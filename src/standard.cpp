@@ -74,6 +74,44 @@ static Sequin createSequin(const Fields &f, Mixture mix)
     return s;
 };
 
+static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standard::SequinMap &seq_B,
+                                              Standard::PairMap  &pair_A, Standard::PairMap  &pair_B)
+{
+    std::map<SequinID, std::vector<Fields>> seqs;
+    
+    ParserCSV::parse(d_mix_f(), [&](const Fields &fields, const ParserProgress &p)
+    {
+        if (p.i == 0)
+        {
+            return;
+        }
+
+        seqs[fields[RDM_ID].substr(0, fields[RDM_ID].length() - 2)].push_back(fields);
+    }, ParserMode::String);
+    
+    /*
+     * Build sequins from the CSV lines
+     */
+    
+    for (const auto &p : seqs)
+    {
+        const auto seq_ra = createSequin(p.second[0], MixA);
+        const auto seq_va = createSequin(p.second[1], MixA);
+        const auto seq_rb = createSequin(p.second[0], MixB);
+        const auto seq_vb = createSequin(p.second[1], MixB);
+        
+        seq_A[seq_ra.id]  = seq_ra;
+        seq_A[seq_va.id]  = seq_va;
+        seq_B[seq_rb.id]  = seq_rb;
+        seq_B[seq_vb.id]  = seq_vb;
+        pair_A[seq_ra.id] = pair_A[seq_va.id] = createSequins(seq_ra, seq_va);
+        pair_B[seq_rb.id] = pair_B[seq_vb.id] = createSequins(seq_rb, seq_vb);
+    }
+
+    assert(!seq_A.empty()  && !seq_B.empty());
+    assert(!pair_A.empty() && !pair_B.empty());
+}
+
 Standard::Standard()
 {
     std::stringstream in(silico_f());
@@ -97,7 +135,7 @@ Standard::Standard()
 
 void Standard::meta()
 {
-    // Empty Implementation
+    parseMix(m_mix_f(), m_seq_A, m_seq_B, m_pair_A, m_pair_B);
 }
 
 void Standard::dna()
@@ -112,44 +150,8 @@ void Standard::dna()
         d_annot.push_back(f);
     }, ParserMode::String);
 
-    std::map<SequinID, std::vector<Fields>> seqs;
-
-    ParserCSV::parse(d_mix_f(), [&](const Fields &fields, const ParserProgress &p)
-    {
-        if (p.i == 0)
-        {
-            return;
-        }
-
-        seqs[fields[RDM_ID].substr(0, fields[RDM_ID].length() - 2)].push_back(fields);
-    }, ParserMode::String);
-
-    /*
-     * Build sequins from the CSV lines
-     */
-
-    for (const auto &p : seqs)
-    {
-        const auto seq_ra = createSequin(p.second[0], MixA);
-        const auto seq_va = createSequin(p.second[1], MixA);
-        const auto seq_rb = createSequin(p.second[0], MixB);
-        const auto seq_vb = createSequin(p.second[1], MixB);
-
-        d_seq_A[seq_ra.id]  = seq_ra;
-        d_seq_A[seq_va.id]  = seq_va;
-        d_seq_B[seq_rb.id]  = seq_rb;
-        d_seq_B[seq_vb.id]  = seq_vb;
-        d_pair_A[seq_ra.id] = d_pair_A[seq_va.id] = createSequins(seq_ra, seq_va);
-        d_pair_B[seq_rb.id] = d_pair_B[seq_vb.id] = createSequins(seq_rb, seq_vb);
-    }
-    
-    /*
-     * Gather information from the sequin sequences
-     */
-
+    parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
     assert(!d_annot.empty()  && !d_vars.empty());
-    assert(!d_seq_A.empty()  && !d_seq_B.empty());
-    assert(!d_pair_A.empty() && !d_pair_B.empty());
 }
 
 void Standard::rna()
