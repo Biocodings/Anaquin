@@ -83,14 +83,14 @@ std::string r_mix_f()
  * DNA Resources
  */
 
+std::string d_tab_f()
+{
+    return std::string(reinterpret_cast<char *>(data_dna_DNA_tab_fa));
+}
+
 std::string d_mix_f()
 {
     return std::string(reinterpret_cast<char *>(data_dna_DNA_mix_csv));
-}
-
-std::string d_seqs_f()
-{
-    return std::string(reinterpret_cast<char *>(data_dna_DNA_tab_fa));
 }
 
 std::string d_bed_f()

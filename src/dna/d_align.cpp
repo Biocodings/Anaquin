@@ -44,10 +44,46 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 
     sums(stats.c, stats.p.m.nr);
 
+    /*
+     * Generate an abundance plot for the accuracy of quantification, the measured DNA
+     * standard abundance (in RPKM) relative to the known concentration (in attamoles/ul)
+     * of each DNA standard.
+     */
+    
+    // The total number of reads aligned
+    const auto n = stats.n_seqs;
+
+    // Known concentration for the given mixture
+    const auto &m = s.d_seq(options.mix);
+
+    for (const auto &i : stats.c)
+    {
+        if (!i.second)
+        {
+            continue;
+        }
+        
+        // Calculate RPKM for the sequin
+        const double measured = static_cast<double>(i.second) / (100.0 / 100.0) / ((double) n / std::pow(10, 6));
+
+        // Compare the RPKM with the known concentration
+        const auto known = m.at(i.first).abund();
+
+        stats.x.push_back(log(known));
+        stats.y.push_back(log(measured));
+        stats.z.push_back(i.first);
+    }
+    
+    // Perform a linear regreession
+    stats.linear();
+
     // Calculate for the sensitivity
     stats.p.s = Expression::analyze(stats.c, s.d_seq(options.mix));
 
-    AnalyzeReporter::report("dna_align.stats", stats, stats.p.m, stats.p.s, stats.c, options.writer);
+    AnalyzeReporter::report("dalign.stats", stats, stats.p.m, stats.p.s, stats.c, options.writer);
+
+    // Generate a R script for plotting relative abundance
+    AnalyzeReporter::script("dalign.R", stats, options.writer);
 
     std::cout << "Sensitivity: " << stats.p.m.sn() << std::endl;
     std::cout << "Specificity: " << stats.p.m.sp() << std::endl;

@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    struct DAlignStats : public AnalyzerStats
+    struct DAlignStats : public AnalyzerStats, public CorrelationStats
     {
         Performance p;
         Counter c = DAnalyzer::counterSequins();

@@ -33,7 +33,7 @@ extern std::string r_mix_f();
 extern std::string d_mix_f();
 extern std::string d_vcf_f();
 extern std::string d_bed_f();
-extern std::string d_seqs_f();
+extern std::string d_tab_f();
 
 using namespace Spike;
 

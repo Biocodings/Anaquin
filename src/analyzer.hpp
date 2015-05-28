@@ -177,6 +177,15 @@ namespace Spike
 
     struct AnalyzeReporter
     {
+        static void script(const std::string &file,
+                           const CorrelationStats &stats,
+                           std::shared_ptr<Writer> writer)
+        {
+            writer->open(file);
+            writer->write(RWriter::write(stats.x, stats.y, stats.z));
+            writer->close();
+        }
+
         template <typename ID, typename Stats, typename Writer>
             static void report(const std::string &name,
                                const std::string &r,
