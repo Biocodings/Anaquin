@@ -159,7 +159,7 @@ static void print_rna()
     const auto &r = Standard::instance();
     const std::string format = "%1%  %2%  %3%  %4%";
 
-    auto f = [&](const Standard::SequinsMap &seqs)
+    auto f = [&](const Standard::PairMap &seqs)
     {
         std::cout << (boost::format(format) % "r"
                                             % "v"

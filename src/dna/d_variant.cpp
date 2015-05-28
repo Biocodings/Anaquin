@@ -10,7 +10,7 @@ VariantStats DVariant::analyze(const std::string &file, const Options &options)
     const auto &s = Standard::instance();
 
     // Create a counter for each known variant
-    auto c = DAnalyzer::counterSeqs();
+    auto c = DAnalyzer::counterSequins();
 
     Variation r;
 

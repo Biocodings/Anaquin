@@ -82,7 +82,7 @@ namespace Spike
     {
         public:
             typedef std::map<SequinID, Sequin>  SequinMap;
-            typedef std::map<SequinID, Sequins> SequinsMap;
+            typedef std::map<SequinID, Sequins> PairMap;
 
             static Standard& instance()
             {
@@ -90,7 +90,7 @@ namespace Spike
                 return s;
             }
 
-            inline const SequinsMap& r_pair(Mixture mix) const
+            inline const PairMap& r_pair(Mixture mix) const
             {
                 return mix == MixA ? r_seqs_gA : r_seqs_gB;
             }
@@ -110,7 +110,7 @@ namespace Spike
              */
 
             SequinMap  r_seqs_iA, r_seqs_iB;
-            SequinsMap r_seqs_gA, r_seqs_gB;
+            PairMap r_seqs_gA, r_seqs_gB;
 
             std::vector<Sequin> r_sequins;
 
@@ -128,13 +128,26 @@ namespace Spike
              * DNA data
              */
 
+            inline const PairMap &d_pair(Mixture mix) const
+            {
+                return mix == MixA ? d_pair_A : d_pair_B;
+            }
+
+            inline const SequinMap &d_seq(Mixture mix) const
+            {
+                return mix == MixA ? d_seq_A : d_seq_B;
+            }
+
             std::map<Locus, Variation> d_vars;
 
             // DNA annotation
             std::vector<BedFeature> d_annot;
 
-            // DNA Sequins for each of the mixture
-            SequinsMap d_seqs_A, d_seqs_B;
+            // DNA sequins for each of the mixture
+            SequinMap d_seq_A, d_seq_B;
+
+            // DNA pairs for each of the mixture
+            PairMap d_pair_A, d_pair_B;
 
             /*
              * Metagenomic data

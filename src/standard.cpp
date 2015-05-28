@@ -132,11 +132,17 @@ void Standard::dna()
         const auto seq_rb = createSequin(p.second[0], MixB);
         const auto seq_vb = createSequin(p.second[1], MixB);
 
-        d_seqs_A[seq_ra.id] = d_seqs_A[seq_va.id] = createSequins(seq_ra, seq_va);
-        d_seqs_B[seq_rb.id] = d_seqs_B[seq_vb.id] = createSequins(seq_rb, seq_vb);
+        d_seq_A[seq_ra.id]  = seq_ra;
+        d_seq_A[seq_va.id]  = seq_va;
+        d_seq_B[seq_rb.id]  = seq_rb;
+        d_seq_B[seq_vb.id]  = seq_vb;
+        d_pair_A[seq_ra.id] = d_pair_A[seq_va.id] = createSequins(seq_ra, seq_va);
+        d_pair_B[seq_rb.id] = d_pair_B[seq_vb.id] = createSequins(seq_rb, seq_vb);
     }
 
-    assert(!d_annot.empty() && !d_vars.empty() && !d_seqs_A.empty() && !d_seqs_A.empty());
+    assert(!d_annot.empty()  && !d_vars.empty());
+    assert(!d_seq_A.empty()  && !d_seq_B.empty());
+    assert(!d_pair_A.empty() && !d_pair_B.empty());
 }
 
 void Standard::rna()
@@ -301,7 +307,7 @@ void Standard::rna()
             return (m[s.id] = s);
         };
 
-        auto build_sequins = [&](const Sequin &r, const Sequin &v, SequinsMap &m)
+        auto build_sequins = [&](const Sequin &r, const Sequin &v, PairMap &m)
         {
             Sequins seqs;
 

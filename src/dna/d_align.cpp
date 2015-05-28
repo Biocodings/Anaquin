@@ -33,7 +33,7 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
                              return Positive;
                          }))
             {
-                stats.c[matched->id]++;
+                stats.c.at(matched->name)++;
             }
         }
         else
@@ -43,7 +43,9 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
     });
 
     sums(stats.c, stats.p.m.nr);
-    //stats.se = Expression::analyze(stats.ce, seqs);
+
+    // Calculate for the sensitivity
+    stats.p.s = Expression::analyze(stats.c, s.d_seq(options.mix));
 
     AnalyzeReporter::report("dna_align.stats", stats, stats.p.m, stats.p.s, stats.c, options.writer);
 

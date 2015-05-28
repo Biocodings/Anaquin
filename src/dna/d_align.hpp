@@ -8,7 +8,7 @@ namespace Spike
     struct DAlignStats : public AnalyzerStats
     {
         Performance p;
-        Counter c = DAnalyzer::counterSeqs();
+        Counter c = DAnalyzer::counterSequins();
     };
 
     struct DAlign

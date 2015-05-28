@@ -50,7 +50,7 @@ namespace Spike
 
     struct DAnalyzer
     {
-        static SequinCounter counterSeqs()
+        static SequinCounter counterSequins()
         {
             return counter<std::vector<BedFeature>, SequinID>(Standard::instance().d_annot);
         }
