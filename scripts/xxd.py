@@ -22,9 +22,10 @@ data  = [ 'data/silico.fa',
 
            # ---------- RNA ----------
 
-          'data/rna/standards.gtf',
-          'data/rna/standards.bed',
-          'data/rna/rna_standards.txt',
+          'data/rna/RNA.tab.fa',
+          'data/rna/RNA.ref.gtf',
+          'data/rna/RNA.ref.bed',
+          'data/rna/RNA.mix.csv',
 
            # ---------- DNA ----------
 

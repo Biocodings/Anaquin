@@ -13,9 +13,9 @@
  * RNA Resources
  */
 
-#include "data/standards.bed"
-#include "data/standards.gtf"
-#include "data/rna_standards.txt"
+#include "data/RNA.ref.bed"
+#include "data/RNA.ref.gtf"
+#include "data/RNA.mix.csv"
 
 /*
  * DNA Resources
@@ -77,17 +77,17 @@ std::string m_mix_f()
 
 std::string r_gtf_f()
 {
-    return std::string(reinterpret_cast<char*>(data_rna_standards_gtf));
+    return std::string(reinterpret_cast<char*>(data_rna_RNA_ref_gtf));
 }
 
 std::string r_bed_f()
 {
-    return std::string(reinterpret_cast<char*>(data_rna_standards_bed));
+    return std::string(reinterpret_cast<char*>(data_rna_RNA_ref_bed));
 }
 
 std::string r_mix_f()
 {
-    return std::string(reinterpret_cast<char*>(data_rna_rna_standards_txt));
+    return std::string(reinterpret_cast<char*>(data_rna_RNA_mix_csv));
 }
 
 /*

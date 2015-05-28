@@ -69,7 +69,7 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
         const auto known = s.abund();
         
         // Calculate RPKM for the sequin
-        const double measured = (std::pow(10, 9) * static_cast<double>(i.second)) / (n * 100.0);
+        const double measured = (std::pow(10, 9) * static_cast<double>(i.second)) / (n * s.l.length());
 
         stats.x.push_back(log(known));
         stats.y.push_back(log(measured));

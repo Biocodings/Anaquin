@@ -145,13 +145,17 @@ void Standard::dna()
         d_vars[v.l] = v;
     }, ParserMode::String);
 
+    parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
+
     ParserBED::parse(d_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
         d_annot.push_back(f);
+        d_seq_A.at(f.name).l    = d_seq_B.at(f.name).l    = f.l;
+        d_pair_A.at(f.name).r.l = d_pair_A.at(f.name).v.l = f.l;
+        d_pair_B.at(f.name).r.l = d_pair_B.at(f.name).v.l = f.l;
     }, ParserMode::String);
 
-    parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
-    assert(!d_annot.empty()  && !d_vars.empty());
+    assert(!d_annot.empty() && !d_vars.empty());
 }
 
 void Standard::rna()
