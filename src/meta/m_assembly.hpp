@@ -11,6 +11,16 @@ namespace Spike
         DNStats dstats;
     };
 
+    struct Velvet
+    {
+        struct VelvetStats
+        {
+            
+        };
+
+        static VelvetStats analyze(const std::string &file);
+    };
+    
     struct MAssembly
     {
         struct Options : public SingleMixtureOptions

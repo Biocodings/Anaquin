@@ -12,7 +12,7 @@ namespace Spike
         std::string id;
         std::string seq;
     };
-    
+
     struct DVRefStats
     {
         /*

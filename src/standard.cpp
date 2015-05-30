@@ -137,18 +137,32 @@ Standard::Standard()
 
 void Standard::meta()
 {
+    // Parse mixtures
     parseMix(m_mix_f(), m_seq_A, m_seq_B, m_pair_A, m_pair_B);
+
+    // Parse annotations
+    ParserBED::parse(m_bed_f(), [&](const BedFeature &f, const ParserProgress &)
+    {
+        m_annot.push_back(f);
+    }, ParserMode::String);
+
+    assert(!m_annot.empty());
+    assert(!m_seq_A.empty()  && !m_seq_A.empty());
+    assert(!m_pair_A.empty() && !m_pair_B.empty());
 }
 
 void Standard::dna()
 {
+    // Parse variations for reference
     ParserVCF::parse(d_vcf_f(), [&](const VCFVariant &v, const ParserProgress &)
     {
         d_vars[v.l] = v;
     }, ParserMode::String);
 
+    // Parse mixtures
     parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
 
+    // Parse annotation
     ParserBED::parse(d_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
         d_annot.push_back(f);
@@ -157,7 +171,9 @@ void Standard::dna()
         d_pair_B.at(f.name).r.l = d_pair_B.at(f.name).v.l = f.l;
     }, ParserMode::String);
 
-    assert(!d_annot.empty() && !d_vars.empty());
+    assert(!d_annot.empty()  && !d_vars.empty());
+    assert(!d_seq_A.empty()  && !d_seq_A.empty());
+    assert(!d_pair_A.empty() && !d_pair_B.empty());
 }
 
 void Standard::rna()

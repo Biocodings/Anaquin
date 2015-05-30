@@ -143,22 +143,25 @@ namespace Spike
             // DNA annotation
             std::vector<BedFeature> d_annot;
 
-            // DNA sequins for each of the mixture
+            // DNA sequins
             SequinMap d_seq_A, d_seq_B;
 
-            // DNA pairs for each of the mixture
+            // DNA pairs
             PairMap d_pair_A, d_pair_B;
 
             /*
              * Metagenomic data
              */
 
-            // Metagenomic sequins for each of the mixture
+            // Metagenomic sequins
             SequinMap m_seq_A, m_seq_B;
 
-            // Metagenomic pairs for each of the mixture
+            // Metagenomic pairs
             PairMap m_pair_A, m_pair_B;
-        
+
+            // Metagenomic annotation
+            std::vector<BedFeature> m_annot;
+
         private:
             Standard();
             Standard(Standard const&)       = delete;
