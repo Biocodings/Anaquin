@@ -8,7 +8,7 @@ namespace Spike
 {
     struct MAssemblyStats
     {
-        DNStats dstats;
+        DNStats ds;
     };
 
     struct Velvet

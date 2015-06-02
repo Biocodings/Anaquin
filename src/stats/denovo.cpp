@@ -25,6 +25,12 @@ DNStats DNAsssembly::stats(const std::string &file)
     });
 
     /*
+     * This is copied from printContiguityStats() in Histogram.h of the Abyss source code.
+     */
+
+    h = h.trimLow(500);
+    
+    /*
      * Reference: https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
      */
 

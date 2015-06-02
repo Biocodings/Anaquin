@@ -38,14 +38,8 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
     MAssemblyStats stats;
 
     // Calculate the general statistics for de-novo assembly
-    stats.dstats = DNAsssembly::stats(file);
+    stats.ds = DNAsssembly::stats(file);
 
-    
-    
-    
-    
-    
-    
     /*
      * Write out assembly results
      */
@@ -54,12 +48,12 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
 
     options.writer->open("meta_assembly.stats");
     options.writer->write((boost::format(format) % "N20" % "N50" % "N80" % "min" % "mean" % "max").str());
-    options.writer->write((boost::format(format) % stats.dstats.N20
-                                                 % stats.dstats.N50
-                                                 % stats.dstats.N80
-                                                 % stats.dstats.min
-                                                 % stats.dstats.mean
-                                                 % stats.dstats.max).str());
+    options.writer->write((boost::format(format) % stats.ds.N20
+                                                 % stats.ds.N50
+                                                 % stats.ds.N80
+                                                 % stats.ds.min
+                                                 % stats.ds.mean
+                                                 % stats.ds.max).str());
     options.writer->close();
 
     return stats;;
