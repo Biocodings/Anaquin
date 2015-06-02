@@ -14,7 +14,6 @@
 #include "dna/d_sequence.hpp"
 
 #include "meta/m_assembly.hpp"
-#include "meta/m_sequence.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "writers/path_writer.hpp"
@@ -430,7 +429,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:     { analyze<MSequence>(_opt); break; }
+                        case MODE_SEQS:     { break; }
                         case MODE_ASSEMBLY: { analyze<MAssembly>(_opt); break; }
                     }
                 }

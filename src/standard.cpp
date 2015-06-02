@@ -76,12 +76,45 @@ static Sequin createSequin(const Fields &f, Mixture mix)
     return s;
 };
 
+static void parseMix__(const std::string &file, Standard::SequinMap &a, Standard::SequinMap &b)
+{
+    std::map<SequinID, Fields> seqs;
+    
+    ParserCSV::parse(file, [&](const Fields &fields, const ParserProgress &p)
+    {
+        if (p.i == 0 || fields.size() != 3)
+        {
+            return;
+        }
+
+        assert(seqs.count(fields[0]) == 0);
+        seqs[fields[0]] = fields;
+    }, ParserMode::String, ",");
+
+    for (const auto &seq : seqs)
+    {
+        Sequin t;
+
+        t.id  = seq.first;
+        t.raw = stof(seq.second[1]);
+
+        a[t.id] = t;
+
+        
+        
+        t.id  = seq.first;
+        t.raw = stof(seq.second[2]);
+        
+        b[t.id] = t;
+    }
+}
+
 static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standard::SequinMap &seq_B,
                                               Standard::PairMap  &pair_A, Standard::PairMap  &pair_B)
 {
     std::map<SequinID, std::vector<Fields>> seqs;
     
-    ParserCSV::parse(d_mix_f(), [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(file, [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {
@@ -90,11 +123,11 @@ static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standa
 
         seqs[fields[RDM_ID].substr(0, fields[RDM_ID].length() - 2)].push_back(fields);
     }, ParserMode::String);
-    
+
     /*
      * Build sequins from the CSV lines
      */
-    
+
     for (const auto &p : seqs)
     {
         const auto seq_ra = createSequin(p.second[0], MixA);
@@ -138,7 +171,7 @@ Standard::Standard()
 void Standard::meta()
 {
     // Parse mixtures
-    parseMix(m_mix_f(), m_seq_A, m_seq_B, m_pair_A, m_pair_B);
+    parseMix__(m_mix_f(), m_seq_A, m_seq_B);
 
     // Parse annotations
     ParserBED::parse(m_bed_f(), [&](const BedFeature &f, const ParserProgress &)
@@ -147,8 +180,8 @@ void Standard::meta()
     }, ParserMode::String);
 
     assert(!m_annot.empty());
-    assert(!m_seq_A.empty()  && !m_seq_A.empty());
-    assert(!m_pair_A.empty() && !m_pair_B.empty());
+    //assert(!m_seq_A.empty()  && !m_seq_A.empty());
+    //assert(!m_pair_A.empty() && !m_pair_B.empty());
 }
 
 void Standard::dna()

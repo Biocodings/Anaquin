@@ -2,43 +2,93 @@
 #include "stats/denovo.hpp"
 #include "meta/m_assembly.hpp"
 #include "parsers/parser_fa.hpp"
+#include "parsers/parser_blat.hpp"
 
 using namespace Spike;
 
-Velvet::VelvetStats Velvet::analyze(const std::string &file)
+Velvet::VelvetStats Velvet::analyze(const std::string &contig, const std::string &blat)
 {
+    Velvet::VelvetStats stats;
+    std::map<std::string, ParserBlat::BlatLine> psl;
+
+    // Perform a pairwise alignment with blat
+    ParserBlat::parse(blat, [&](const ParserBlat::BlatLine &l, const ParserProgress &p)
+    {
+        psl[l.qName] = l;
+    });
+
+    assert(!psl.empty());
+    
     /*
-     * Read coverage from the contig file. The format would be like:
+     * Read coverage from the contig file. The format looks like:
      *
      *      >NODE_77460_length_31_cov_1.129032
      */
 
     std::vector<std::string> tokens;
     
-    ParserFA::parse(file, [&](const FALine &l, const ParserProgress &)
+    ParserFA::parse(contig, [&](const FALine &l, const ParserProgress &)
     {
         Tokens::split(l.id, "_", tokens);
+        Node node;
+        
+        // Eg: NODE_77460
+        node.id = l.id;
 
-        const auto cov = stof(tokens[tokens.size() - 1]);
-        
-        
-        
-        std::cout << l.id << std::endl;
+        if (psl.count(l.id))
+        {
+            node.sequin = psl[l.id].tName;
+        }
+
+        // Coverage of the node in k-mer
+        node.cov = stof(tokens[tokens.size() - 1]);
+
+        stats.nodes.push_back(node);
     });
 
-    
-    
-    
-    
-    return Velvet::VelvetStats();
+    return stats;
 }
 
 MAssemblyStats MAssembly::analyze(const std::string &file, const Options &options)
 {
     MAssemblyStats stats;
 
+    // Calculate velvet-specific statistics
+    const auto contigs = Velvet::analyze(file, "/Users/tedwong/Sources/QA/output.psl");
+    
     // Calculate the general statistics for de-novo assembly
     stats.ds = DNAsssembly::stats(file);
+    
+   // Standard::instance().m_annot
+
+    /*
+     * Plot the coverage realtive to the known concentration (in attamoles/ul) of each assembled contig.
+     *
+     */
+
+    std::vector<double> x, y;
+    std::vector<std::string> z;
+
+    for (const auto &node : contigs.nodes)
+    {
+        if (!node.sequin.empty())
+        {
+            const auto &seq = Standard::instance().m_seq_A.at(node.sequin);
+            
+            // Known concentration from the matching sequin
+            const auto known = seq.abund();
+            
+            // Measured coverage
+            const auto measured = node.cov;
+
+            x.push_back(known);
+            y.push_back(measured);
+            z.push_back(node.sequin);
+        }
+    }
+
+    // Generate a R script for a plot of abundance
+    AnalyzeReporter::script("my_script.R", x, y, z, options.writer);
 
     /*
      * Write out assembly results

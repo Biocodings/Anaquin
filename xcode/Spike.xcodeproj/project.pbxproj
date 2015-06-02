@@ -17,6 +17,7 @@
 		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; };
 		EF2290631AC0E58000CE76BF /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290521AC0E58000CE76BF /* standard.cpp */; };
 		EF312C461B0C5FBD00DE3EC2 /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF312C451B0C5FBD00DE3EC2 /* resources.cpp */; };
+		EF3211951B1DBC1A0062BB10 /* parser_blat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3211931B1DBC1A0062BB10 /* parser_blat.cpp */; };
 		EF3860E61AD3783A0062D246 /* parser_bed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860D71AD3783A0062D246 /* parser_bed.cpp */; };
 		EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860D91AD3783A0062D246 /* parser_csv.cpp */; };
 		EF3860E81AD3783A0062D246 /* parser_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DB1AD3783A0062D246 /* parser_tracking.cpp */; };
@@ -76,7 +77,6 @@
 		EFDD6ADB1B0DDB8700450029 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADA1B0DDB8700450029 /* files.c */; };
 		EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADC1B0DE65D00450029 /* vcf.c */; };
 		EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */; };
-		EFE6C0A31AE9D0CF00CE37E5 /* m_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC111AE7510700F0FD9A /* m_sequence.cpp */; };
 		EFECDC191AE7639900F0FD9A /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC161AE7639900F0FD9A /* t_assembly.cpp */; };
 		EFF4FB091ADD248D0008FD04 /* t_ralign.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4FB041ADD248D0008FD04 /* t_ralign.cpp */; };
 /* End PBXBuildFile section */
@@ -116,6 +116,8 @@
 		EF2290541AC0E58000CE76BF /* classify.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = classify.hpp; path = ../src/classify.hpp; sourceTree = "<group>"; };
 		EF2290551AC0E58000CE76BF /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../src/types.hpp; sourceTree = "<group>"; };
 		EF312C451B0C5FBD00DE3EC2 /* resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = resources.cpp; path = ../src/resources.cpp; sourceTree = "<group>"; };
+		EF3211931B1DBC1A0062BB10 /* parser_blat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_blat.cpp; path = ../src/parsers/parser_blat.cpp; sourceTree = "<group>"; };
+		EF3211941B1DBC1A0062BB10 /* parser_blat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_blat.hpp; path = ../src/parsers/parser_blat.hpp; sourceTree = "<group>"; };
 		EF3860D71AD3783A0062D246 /* parser_bed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_bed.cpp; path = ../src/parsers/parser_bed.cpp; sourceTree = "<group>"; };
 		EF3860D81AD3783A0062D246 /* parser_bed.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_bed.hpp; path = ../src/parsers/parser_bed.hpp; sourceTree = "<group>"; };
 		EF3860D91AD3783A0062D246 /* parser_csv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_csv.cpp; path = ../src/parsers/parser_csv.cpp; sourceTree = "<group>"; };
@@ -204,8 +206,6 @@
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
 		EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EFECDC101AE7510700F0FD9A /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
-		EFECDC111AE7510700F0FD9A /* m_sequence.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_sequence.cpp; sourceTree = "<group>"; };
-		EFECDC121AE7510700F0FD9A /* m_sequence.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_sequence.hpp; sourceTree = "<group>"; };
 		EFECDC161AE7639900F0FD9A /* t_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_assembly.cpp; path = ../tests/meta/t_assembly.cpp; sourceTree = "<group>"; };
 		EFF4FAFE1ADC99250008FD04 /* sensitivity.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = sensitivity.hpp; path = ../src/sensitivity.hpp; sourceTree = "<group>"; };
 		EFF4FB041ADD248D0008FD04 /* t_ralign.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_ralign.cpp; path = ../tests/RNA/t_ralign.cpp; sourceTree = "<group>"; };
@@ -332,6 +332,8 @@
 			children = (
 				EF3860D71AD3783A0062D246 /* parser_bed.cpp */,
 				EF3860D81AD3783A0062D246 /* parser_bed.hpp */,
+				EF3211931B1DBC1A0062BB10 /* parser_blat.cpp */,
+				EF3211941B1DBC1A0062BB10 /* parser_blat.hpp */,
 				EF4BD9A91ADDFB92007BE6AB /* parser_cdiffs.cpp */,
 				EF4BD9AA1ADDFB92007BE6AB /* parser_cdiffs.hpp */,
 				EF3860D91AD3783A0062D246 /* parser_csv.cpp */,
@@ -450,8 +452,6 @@
 			children = (
 				EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */,
 				EFECDC101AE7510700F0FD9A /* m_assembly.hpp */,
-				EFECDC111AE7510700F0FD9A /* m_sequence.cpp */,
-				EFECDC121AE7510700F0FD9A /* m_sequence.hpp */,
 			);
 			name = meta;
 			path = ../src/meta;
@@ -533,7 +533,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */,
-				EFE6C0A31AE9D0CF00CE37E5 /* m_sequence.cpp in Sources */,
 				EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */,
 				EFDD6AD61B0DD76C00450029 /* string_alloc.c in Sources */,
 				EFD457571AE65D6E0027DA46 /* d_align.cpp in Sources */,
@@ -554,6 +553,7 @@
 				EFDD6A971B0DD76200450029 /* knetfile.c in Sources */,
 				EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */,
 				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
+				EF3211951B1DBC1A0062BB10 /* parser_blat.cpp in Sources */,
 				EFDD6ACB1B0DD76C00450029 /* cram_encode.c in Sources */,
 				EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */,
 				EFD36E9D1ACB912700F6F098 /* reader.cpp in Sources */,

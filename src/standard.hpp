@@ -156,12 +156,9 @@ namespace Spike
             // Metagenomic sequins
             SequinMap m_seq_A, m_seq_B;
 
-            // Metagenomic pairs
-            PairMap m_pair_A, m_pair_B;
-
             // Metagenomic annotation
             std::vector<BedFeature> m_annot;
-
+        
         private:
             Standard();
             Standard(Standard const&)       = delete;

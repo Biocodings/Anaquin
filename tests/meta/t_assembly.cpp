@@ -3,6 +3,22 @@
 
 using namespace Spike;
 
+TEST_CASE("dsdsaklskladlksad")
+{
+    const auto r = MAssembly::analyze("/Users/tedwong/Sources/QA/contigs.fa");
+    
+    
+    
+    REQUIRE(r.ds.N50  == 594);
+    REQUIRE(r.ds.N80  == 594);
+    REQUIRE(r.ds.N20  == 594);
+    REQUIRE(r.ds.mean == 594);
+    REQUIRE(r.ds.min  == 594);
+    REQUIRE(r.ds.max  == 594);
+    REQUIRE(r.ds.sum  == 594);
+}
+
+
 TEST_CASE("MAssembly_Contigs_2")
 {
     const auto r = MAssembly::analyze("tests/data/meta/contigs_2.fa");

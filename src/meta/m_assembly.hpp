@@ -11,14 +11,25 @@ namespace Spike
         DNStats ds;
     };
 
+    struct Node
+    {
+        std::string id;
+
+        // The sequin that the node has been aligned to, empty if not aligned
+        std::string sequin;
+
+        // Coverage of the node
+        double cov;
+    };
+
     struct Velvet
     {
         struct VelvetStats
         {
-            
+            std::vector<Node> nodes;
         };
 
-        static VelvetStats analyze(const std::string &file);
+        static VelvetStats analyze(const std::string &contig, const std::string &blat);
     };
     
     struct MAssembly

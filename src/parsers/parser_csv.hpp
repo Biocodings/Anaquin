@@ -12,7 +12,7 @@ namespace Spike
     struct ParserCSV
     {
         typedef std::function<void (const Fields &, const ParserProgress &)> Callback;
-        static void parse(const std::string &file, Callback, ParserMode mode);
+        static void parse(const std::string &file, Callback, ParserMode mode, const std::string &delim = "\t");
     };    
 }
 
