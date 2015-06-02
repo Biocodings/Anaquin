@@ -81,8 +81,8 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
             // Measured coverage
             const auto measured = node.cov;
 
-            x.push_back(known);
-            y.push_back(measured);
+            x.push_back(log(known));
+            y.push_back(log(measured));
             z.push_back(node.sequin);
         }
     }
