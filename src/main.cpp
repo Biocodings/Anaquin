@@ -62,8 +62,8 @@ static std::vector<SequinID> filtered;
 static int _cmd  = 0;
 static int _mode = 0;
 
-// The operand for _cmd
-static std::string _opt;
+// The operands for the command
+std::vector<std::string> _opts;
 
 /*
  * Argument options
@@ -323,13 +323,17 @@ static int parse_options(int argc, char ** argv)
                 
             default:
             {
-                if (_mode != 0 || !_opt.empty())
+                if (_mode != 0)
                 {
                     return invalid_cmd();
                 }
                 
                 _mode = next;
-                _opt  = optarg ? optarg : _opt;
+                
+                if (optarg)
+                {
+                    _opts.push_back(optarg);
+                }
 
                 break;
             }
@@ -340,7 +344,7 @@ static int parse_options(int argc, char ** argv)
     {
         print_usage();
     }
-    else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opt.empty()))
+    else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opts[0].empty()))
     {
         invalid_cmd(_cmd);
     }
@@ -375,20 +379,20 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQUINS:  { print_rna_sequins();      break; }
-                        case MODE_SEQS:     { print_rna();              break; }
-                        case MODE_ALIGN:    { analyze<RAlign>(_opt);    break; }
-                        case MODE_ASSEMBLY: { analyze<RAssembly>(_opt); break; }
+                        case MODE_SEQUINS:  { print_rna_sequins();          break; }
+                        case MODE_SEQS:     { print_rna();                  break; }
+                        case MODE_ALIGN:    { analyze<RAlign>(_opts[0]);    break; }
+                        case MODE_ASSEMBLY: { analyze<RAssembly>(_opts[0]); break; }
 
                         case MODE_ABUNDANCE:
                         {
-                            analyze<RAbundance>(_opt, detect<RAbundance::Options>(_opt));
+                            analyze<RAbundance>(_opts[0], detect<RAbundance::Options>(_opts[0]));
                             break;
                         }
 
                         case MODE_DIFFERENTIAL:
                         {
-                            analyze<RDifferential>(_opt, detect<RDifferential::Options>(_opt));
+                            analyze<RDifferential>(_opts[0], detect<RDifferential::Options>(_opts[0]));
                             break;
                         }
                     }
@@ -410,9 +414,9 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_dna();             break; }
-                        case MODE_ALIGN:     { analyze<DAlign>(_opt);   break; }
-                        case MODE_VARIATION: { analyze<DVariant>(_opt); break; }
+                        case MODE_SEQS:      { print_dna();                break; }
+                        case MODE_ALIGN:     { analyze<DAlign>(_opts[0]);   break; }
+                        case MODE_VARIATION: { analyze<DVariant>(_opts[0]); break; }
                     }
                 }
 
@@ -429,8 +433,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:     { break; }
-                        case MODE_ASSEMBLY: { analyze<MAssembly>(_opt); break; }
+                        case MODE_ASSEMBLY: { analyze<MAssembly>(_opts[0]); break; }
                     }
                 }
 
