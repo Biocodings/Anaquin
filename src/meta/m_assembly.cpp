@@ -1,51 +1,8 @@
 #include "tokens.hpp"
-#include "meta/histogram.h"
 #include "meta/m_assembly.hpp"
-#include "parsers/parser_fa.hpp"
 #include "parsers/parser_blat.hpp"
 
 using namespace Spike;
-
-DNStats DNAsssembly::stats(const std::string &file)
-{
-    DNStats stats;
-    Histogram h;
-    
-    ParserFA::parse(file, [&](const FALine &l, const ParserProgress &)
-                    {
-                        Contig c;
-                        
-                        c.id = l.id;
-                        
-                        // Sequence of the config
-                        c.seq = l.seq;
-                        
-                        // Length of the contig
-                        h.insert(c.l = l.seq.length());
-                        
-                        stats.contigs.push_back(c);
-                    });
-    
-    /*
-     * This is copied from printContiguityStats() in Histogram.h of the Abyss source code.
-     */
-    
-    h = h.trimLow(500);
-    
-    /*
-     * Reference: https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
-     */
-    
-    stats.sum  = h.sum();
-    stats.N50  = h.n50();
-    stats.min  = h.minimum();
-    stats.max  = h.maximum();
-    stats.mean = h.expectedValue();
-    stats.N80  = h.weightedPercentile(1 - 0.8);
-    stats.N20  = h.weightedPercentile(1 - 0.2);
-    
-    return stats;
-}
 
 Velvet::VelvetStats Velvet::analyze(const std::string &contig, const std::string &blat)
 {
@@ -92,11 +49,8 @@ Velvet::VelvetStats Velvet::analyze(const std::string &contig, const std::string
 
 MAssemblyStats MAssembly::analyze(const std::string &file, const Options &options)
 {
-    MAssemblyStats stats;
+    MAssemblyStats stats = DNAsssembly::stats<MAssemblyStats>(file);
 
-    // Calculate the general statistics for de-novo assembly
-    stats.ds = DNAsssembly::stats(file);
-    
     if (!options.psl.empty())
     {
         std::cout << "Using an aligment file: " << options.psl << std::endl;
@@ -143,12 +97,12 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
 
     options.writer->open("assembly.stats");
     options.writer->write((boost::format(format) % "N20" % "N50" % "N80" % "min" % "mean" % "max").str());
-    options.writer->write((boost::format(format) % stats.ds.N20
-                                                 % stats.ds.N50
-                                                 % stats.ds.N80
-                                                 % stats.ds.min
-                                                 % stats.ds.mean
-                                                 % stats.ds.max).str());
+    options.writer->write((boost::format(format) % stats.N20
+                                                 % stats.N50
+                                                 % stats.N80
+                                                 % stats.min
+                                                 % stats.mean
+                                                 % stats.max).str());
     options.writer->close();
 
     return stats;;

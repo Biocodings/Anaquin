@@ -7,18 +7,18 @@ TEST_CASE("MAssembly_Contigs_2")
 {
     const auto r = MAssembly::analyze("tests/data/meta/contigs_2.fa");
     
-    REQUIRE(r.ds.N50  == 594);
-    REQUIRE(r.ds.N80  == 594);
-    REQUIRE(r.ds.N20  == 594);
-    REQUIRE(r.ds.mean == 594);
-    REQUIRE(r.ds.min  == 594);
-    REQUIRE(r.ds.max  == 594);
-    REQUIRE(r.ds.sum  == 594);
+    REQUIRE(r.N50  == 594);
+    REQUIRE(r.N80  == 594);
+    REQUIRE(r.N20  == 594);
+    REQUIRE(r.mean == 594);
+    REQUIRE(r.min  == 594);
+    REQUIRE(r.max  == 594);
+    REQUIRE(r.sum  == 594);
 }
 
 TEST_CASE("DNAssembly_Contigs")
 {
-    const auto r = DNAsssembly::stats("tests/data/meta/contigs.fa");
+    const auto r = DNAsssembly::stats<>("tests/data/meta/contigs.fa");
 
     REQUIRE(r.contigs.size() == 63);
 
