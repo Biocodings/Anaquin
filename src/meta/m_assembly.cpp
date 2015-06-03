@@ -59,11 +59,8 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
     // Calculate the general statistics for de-novo assembly
     stats.ds = DNAsssembly::stats(file);
     
-   // Standard::instance().m_annot
-
     /*
      * Plot the coverage realtive to the known concentration (in attamoles/ul) of each assembled contig.
-     *
      */
 
     std::vector<double> x, y;
@@ -77,7 +74,7 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
             
             // Known concentration from the matching sequin
             const auto known = seq.abund();
-            
+
             // Measured coverage
             const auto measured = node.cov;
 

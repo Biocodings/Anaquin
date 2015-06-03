@@ -177,6 +177,16 @@ void Standard::meta()
     ParserBED::parse(m_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
         m_annot.push_back(f);
+        
+        if (m_seq_A.count(f.name))
+        {
+            m_seq_A.at(f.name).l = f.l;
+            m_seq_B.at(f.name).l = f.l;
+        }
+        else
+        {
+            std::cout << f.name << std::endl;
+        }
     }, ParserMode::String);
 
     assert(!m_annot.empty());

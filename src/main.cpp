@@ -344,7 +344,7 @@ static int parse_options(int argc, char ** argv)
     {
         print_usage();
     }
-    else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opts[0].empty()))
+    else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opts.empty()))
     {
         invalid_cmd(_cmd);
     }
