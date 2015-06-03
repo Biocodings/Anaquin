@@ -1,8 +1,8 @@
-#include "histogram.h"
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
 #include <string>
+#include "meta/histogram.h"
 
 using namespace std;
 

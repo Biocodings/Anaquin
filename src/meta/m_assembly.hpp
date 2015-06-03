@@ -2,10 +2,30 @@
 #define GI_M_ASSEMBLY_HPP
 
 #include "analyzer.hpp"
-#include "stats/denovo.hpp"
 
 namespace Spike
 {
+    struct Contig
+    {
+        BasePair l;
+        std::string id;
+        std::string seq;
+    };
+    
+    struct DNStats
+    {
+        std::vector<Contig> contigs;
+        
+        BasePair min, max;
+        BasePair mean, sum;
+        BasePair N20, N50, N80;
+    };
+    
+    struct DNAsssembly
+    {
+        static DNStats stats(const std::string &file);
+    };
+    
     struct MAssemblyStats
     {
         DNStats ds;
