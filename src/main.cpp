@@ -46,12 +46,16 @@
 #define OPT_MAX           322
 #define OPT_LIMIT         323
 #define OPT_OUTPUT        324
+#define OPT_PSL           325
 
 using namespace Spike;
 
 /*
  * Variables used in argument parsing
  */
+
+// An alignment file by BLAST used for metagenomics
+static std::string _psl;
 
 // The path that output files are written
 static std::string _output;
@@ -96,6 +100,8 @@ static const struct option long_options[] =
     { "va",   required_argument, 0, MODE_VARIATION    },
     { "de",   required_argument, 0, MODE_ASSEMBLY     },
 
+    { "psl",  required_argument, 0, OPT_PSL },
+    
     { "sequins",   no_argument,       0, MODE_SEQUINS      },
     { "align",     required_argument, 0, MODE_ALIGN        },
     { "variant",   required_argument, 0, MODE_VARIATION    },
@@ -291,8 +297,9 @@ static int parse_options(int argc, char ** argv)
     {
         switch (next)
         {
+            case OPT_PSL:    { _psl = optarg;    break; }
             case OPT_OUTPUT: { _output = optarg; break; }
-
+                
             case OPT_MAX:
             case OPT_MIN:
             case OPT_THREAD:
@@ -425,8 +432,8 @@ static int parse_options(int argc, char ** argv)
             case CMD_META:
             {
                 std::cout << "Metagenomics command detected" << std::endl;
-                
-                if (_mode != MODE_SEQS && _mode != MODE_ASSEMBLY)
+
+                if (_mode != MODE_ASSEMBLY)
                 {
                     print_usage();
                 }
@@ -434,7 +441,16 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_ASSEMBLY: { analyze<MAssembly>(_opts[0]); break; }
+                        case MODE_ASSEMBLY:
+                        {
+                            MAssembly::Options o;
+
+                            // We'd also take an alignment file from a user
+                            o.psl = _psl;
+                            
+                            analyze<MAssembly>(_opts[0], o);
+                            break;
+                        }
                     }
                 }
 

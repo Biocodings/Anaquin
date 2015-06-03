@@ -53,40 +53,46 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
 {
     MAssemblyStats stats;
 
-    // Calculate velvet-specific statistics
-    //const auto contigs = Velvet::analyze(file, "/Users/tedwong/Sources/QA/output.psl");
-    
     // Calculate the general statistics for de-novo assembly
     stats.ds = DNAsssembly::stats(file);
     
-    /*
-     * Plot the coverage realtive to the known concentration (in attamoles/ul) of each assembled contig.
-     */
-/*
-    std::vector<double> x, y;
-    std::vector<std::string> z;
-
-    for (const auto &node : contigs.nodes)
+    if (!options.psl.empty())
     {
-        if (!node.sequin.empty())
+        std::cout << "Using an aligment file: " << options.psl << std::endl;
+        
+        // Calculate velvet-specific statistics
+        const auto contigs = Velvet::analyze(file, options.psl);
+        
+        std::cout << "Creating a abundance plot" << std::endl;
+        
+        /*
+         * Plot the coverage realtive to the known concentration (in attamoles/ul) of each assembled contig.
+         */
+
+        std::vector<double> x, y;
+        std::vector<std::string> z;
+        
+        for (const auto &node : contigs.nodes)
         {
-            const auto &seq = Standard::instance().m_seq_A.at(node.sequin);
-            
-            // Known concentration from the matching sequin
-            const auto known = seq.abund();
-
-            // Measured coverage
-            const auto measured = node.cov;
-
-            x.push_back(log(known));
-            y.push_back(log(measured));
-            z.push_back(node.sequin);
+            if (!node.sequin.empty())
+            {
+                const auto &seq = Standard::instance().m_seq_A.at(node.sequin);
+                
+                // Known concentration from the matching sequin
+                const auto known = seq.abund();
+                
+                // Measured coverage
+                const auto measured = node.cov;
+                
+                x.push_back(log(known));
+                y.push_back(log(measured));
+                z.push_back(node.sequin);
+            }
         }
+        
+        // Generate a R script for a plot of abundance
+        AnalyzeReporter::script("abundance.R", x, y, z, options.writer);
     }
-
-    // Generate a R script for a plot of abundance
-    AnalyzeReporter::script("meta_abundance.R", x, y, z, options.writer);
-*/
     
     /*
      * Write out assembly results
