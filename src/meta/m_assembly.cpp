@@ -54,7 +54,7 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
     MAssemblyStats stats;
 
     // Calculate velvet-specific statistics
-    const auto contigs = Velvet::analyze(file, "/Users/tedwong/Sources/QA/output.psl");
+    //const auto contigs = Velvet::analyze(file, "/Users/tedwong/Sources/QA/output.psl");
     
     // Calculate the general statistics for de-novo assembly
     stats.ds = DNAsssembly::stats(file);
@@ -62,7 +62,7 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
     /*
      * Plot the coverage realtive to the known concentration (in attamoles/ul) of each assembled contig.
      */
-
+/*
     std::vector<double> x, y;
     std::vector<std::string> z;
 
@@ -86,7 +86,8 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
 
     // Generate a R script for a plot of abundance
     AnalyzeReporter::script("meta_abundance.R", x, y, z, options.writer);
-
+*/
+    
     /*
      * Write out assembly results
      */
