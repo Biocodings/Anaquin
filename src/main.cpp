@@ -69,7 +69,7 @@ std::vector<std::string> _opts;
  * Argument options
  */
 
-static const char *short_options = "o";
+static const char *short_options = "";
 
 static const struct option long_options[] =
 {
@@ -272,11 +272,6 @@ template <typename Options> static Options detect(const std::string &file)
 
 static int parse_options(int argc, char ** argv)
 {
-    /*
-     * It's quite tricky and complicated to parse all commands by getopt_long_only().
-     * Check for the commands that don't require '-' prefix.
-     */
-
     if (argc <= 1)
     {
         print_usage();
@@ -365,6 +360,8 @@ static int parse_options(int argc, char ** argv)
                 
             case CMD_RNA:
             {
+                std::cout << "RNA command detected" << std::endl;
+                
                 if (_mode != MODE_SEQUINS    &&
                     _mode != MODE_SEQS       &&
                     _mode != MODE_SEQUENCING &&
@@ -403,6 +400,8 @@ static int parse_options(int argc, char ** argv)
 
             case CMD_DNA:
             {
+                std::cout << "DNA command detected" << std::endl;
+                
                 if (_mode != MODE_SEQS       &&
                     _mode != MODE_SEQUENCING &&
                     _mode != MODE_ALIGN      &&
@@ -425,6 +424,8 @@ static int parse_options(int argc, char ** argv)
 
             case CMD_META:
             {
+                std::cout << "Metagenomics command detected" << std::endl;
+                
                 if (_mode != MODE_SEQS && _mode != MODE_ASSEMBLY)
                 {
                     print_usage();
