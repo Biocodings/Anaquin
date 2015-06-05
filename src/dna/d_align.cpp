@@ -87,8 +87,5 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
     // Generate a R script for plotting relative abundance
     AnalyzeReporter::script("dalign.R", stats, options.writer);
 
-    std::cout << "Sensitivity: " << stats.p.m.sn() << std::endl;
-    std::cout << "Specificity: " << stats.p.m.sp() << std::endl;
-
 	return stats;
 }

@@ -27,6 +27,8 @@
 		EF4270A21B213BF200C9ED4E /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270A11B213BF200C9ED4E /* test.cpp */; };
 		EF4270A91B214F9000C9ED4E /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270A51B214F9000C9ED4E /* reader.cpp */; };
 		EF4270AA1B214F9000C9ED4E /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270A71B214F9000C9ED4E /* resources.cpp */; };
+		EF4270AD1B21666B00C9ED4E /* t_rna.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270AC1B21666B00C9ED4E /* t_rna.cpp */; };
+		EF4270AF1B21667C00C9ED4E /* t_dna.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270AE1B21667C00C9ED4E /* t_dna.cpp */; };
 		EF44A81C1AF78E400036C894 /* t_parser_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */; };
 		EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */; };
 		EF44A8211AF791780036C894 /* t_parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A8201AF791780036C894 /* t_parser_tmap.cpp */; };
@@ -138,6 +140,8 @@
 		EF4270A71B214F9000C9ED4E /* resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = resources.cpp; path = ../src/data/resources.cpp; sourceTree = "<group>"; };
 		EF4270A81B214F9000C9ED4E /* resources.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = resources.hpp; path = ../src/data/resources.hpp; sourceTree = "<group>"; };
 		EF4270AB1B2152A100C9ED4E /* tokens.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/data/tokens.hpp; sourceTree = "<group>"; };
+		EF4270AC1B21666B00C9ED4E /* t_rna.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_rna.cpp; path = ../tests/rna/t_rna.cpp; sourceTree = "<group>"; };
+		EF4270AE1B21667C00C9ED4E /* t_dna.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_dna.cpp; path = ../tests/dna/t_dna.cpp; sourceTree = "<group>"; };
 		EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_tracking.cpp; path = parsers/t_parser_tracking.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
@@ -384,6 +388,7 @@
 			isa = PBXGroup;
 			children = (
 				EF5616121AE4FE4300EE5ACB /* t_dalign.cpp */,
+				EF4270AE1B21667C00C9ED4E /* t_dna.cpp */,
 				EF5616131AE4FE4300EE5ACB /* t_variant.cpp */,
 			);
 			name = dna;
@@ -472,6 +477,7 @@
 				EF175D4B1AE4F3CE00AC3D6C /* t_abundance.cpp */,
 				EF175D491AE4DE7C00AC3D6C /* t_assembly.cpp */,
 				EF175D4D1AE4F43000AC3D6C /* t_differential.cpp */,
+				EF4270AC1B21666B00C9ED4E /* t_rna.cpp */,
 				EFF4FB041ADD248D0008FD04 /* t_ralign.cpp */,
 			);
 			name = rna;
@@ -557,6 +563,7 @@
 				EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */,
 				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
 				EF3211951B1DBC1A0062BB10 /* parser_blat.cpp in Sources */,
+				EF4270AF1B21667C00C9ED4E /* t_dna.cpp in Sources */,
 				EFDD6ACB1B0DD76C00450029 /* cram_encode.c in Sources */,
 				EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */,
 				EF2290631AC0E58000CE76BF /* standard.cpp in Sources */,
@@ -593,6 +600,7 @@
 				EF4BD9B41ADE4054007BE6AB /* t_parser_cdiffs.cpp in Sources */,
 				EFF4FB091ADD248D0008FD04 /* t_ralign.cpp in Sources */,
 				EFDD6A9E1B0DD76200450029 /* tbx.c in Sources */,
+				EF4270AD1B21666B00C9ED4E /* t_rna.cpp in Sources */,
 				EFDD6ACF1B0DD76C00450029 /* cram_stats.c in Sources */,
 				EF44A81C1AF78E400036C894 /* t_parser_tracking.cpp in Sources */,
 				EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */,

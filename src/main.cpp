@@ -59,7 +59,7 @@ static std::string _psl;
 static std::string _output;
 
 // The sequins that have been restricted
-static std::vector<SequinID> filtered;
+static std::vector<SequinID> _filters;
 
 static int _cmd  = 0;
 static int _mode = 0;
@@ -200,6 +200,7 @@ void print_dna()
     // Empty Implementation
 }
 
+// Read sequins from a file, one per line. The identifiers must match.
 static bool readFilters(const std::string &file)
 {
     Reader r(file);
@@ -229,7 +230,8 @@ static bool readFilters(const std::string &file)
                     std::cerr << "Unknown sequin for metagenomics: " << line << std::endl;
                     return false;
                 }
-                
+
+                _filters.push_back(line);
                 break;
             }
 
@@ -237,6 +239,12 @@ static bool readFilters(const std::string &file)
         }
     }
 
+    if (_filters.empty())
+    {
+        std::cerr << "No sequin found in: " << line << std::endl;
+        return false;
+    }
+    
     return true;
 }
 
