@@ -89,7 +89,7 @@ static void parseMix__(const std::string &file, Standard::SequinMap &a, Standard
 
         assert(seqs.count(fields[0]) == 0);
         seqs[fields[0]] = fields;
-    }, ParserMode::String, ",");
+    }, DataMode::String, ",");
 
     for (const auto &seq : seqs)
     {
@@ -122,7 +122,7 @@ static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standa
         }
 
         seqs[fields[RDM_ID].substr(0, fields[RDM_ID].length() - 2)].push_back(fields);
-    }, ParserMode::String);
+    }, DataMode::String);
 
     /*
      * Build sequins from the CSV lines
@@ -187,7 +187,7 @@ void Standard::meta()
         {
             std::cout << f.name << std::endl;
         }
-    }, ParserMode::String);
+    }, DataMode::String);
 
     assert(!m_annot.empty());
     //assert(!m_seq_A.empty()  && !m_seq_A.empty());
@@ -200,7 +200,7 @@ void Standard::dna()
     ParserVCF::parse(d_vcf_f(), [&](const VCFVariant &v, const ParserProgress &)
     {
         d_vars[v.l] = v;
-    }, ParserMode::String);
+    }, DataMode::String);
 
     // Parse mixtures
     parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
@@ -212,7 +212,7 @@ void Standard::dna()
         d_seq_A.at(f.name).l    = d_seq_B.at(f.name).l    = f.l;
         d_pair_A.at(f.name).r.l = d_pair_A.at(f.name).v.l = f.l;
         d_pair_B.at(f.name).r.l = d_pair_B.at(f.name).v.l = f.l;
-    }, ParserMode::String);
+    }, DataMode::String);
 
     assert(!d_annot.empty()  && !d_vars.empty());
     assert(!d_seq_A.empty()  && !d_seq_A.empty());
@@ -333,7 +333,7 @@ void Standard::rna()
         });
 
         assert(iter != r_genes.end());
-    }, ParserMode::String);
+    }, DataMode::String);
 
     CHECK_AND_SORT(r_introns);
 
@@ -364,7 +364,7 @@ void Standard::rna()
         }
         
         seqs[fields[RNA_ID].substr(0, fields[RNA_ID].length() - 2)].push_back(fields);
-    }, ParserMode::String);
+    }, DataMode::String);
 
     assert(!seqs.empty());
     

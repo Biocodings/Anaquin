@@ -8,33 +8,33 @@ import os
 import sys
 import subprocess
 
-os.system('rm -rf src/data/*')
+os.system('rm -rf src/resources/*')
 
 def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
 
-docs  = [ 'docs/manual.txt' ]
-data  = [ 'data/silico.fa',
+docs  = [ 'resources/manual.txt' ]
+data  = [ 'resources/silico.fa',
 
            # ---------- META ----------
 
-          'data/meta/META.tab.fa',
-          'data/meta/META.mix.csv',
-          'data/meta/META.ref.bed',          
+          'resources/meta/META.tab.fa',
+          'resources/meta/META.mix.csv',
+          'resources/meta/META.ref.bed',          
 
            # ---------- RNA ----------
 
-          'data/rna/RNA.tab.fa',
-          'data/rna/RNA.ref.gtf',
-          'data/rna/RNA.ref.bed',
-          'data/rna/RNA.mix.csv',
+          'resources/rna/RNA.tab.fa',
+          'resources/rna/RNA.ref.gtf',
+          'resources/rna/RNA.ref.bed',
+          'resources/rna/RNA.mix.csv',
 
            # ---------- DNA ----------
 
-          'data/dna/DNA.mix.csv',
-          'data/dna/DNA.var.vcf',          
-          'data/dna/DNA.ref.bed',
-          'data/dna/DNA.tab.fa',
+          'resources/dna/DNA.mix.csv',
+          'resources/dna/DNA.var.vcf',          
+          'resources/dna/DNA.ref.bed',
+          'resources/dna/DNA.tab.fa',
         ]
 tests = [ ]
 

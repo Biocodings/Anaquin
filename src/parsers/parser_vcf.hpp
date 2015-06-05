@@ -11,7 +11,7 @@ namespace Spike
     struct ParserVCF
     {
         typedef std::function<void (const VCFVariant &, const ParserProgress &)> Callback;
-        static void parse(const std::string &file, Callback, ParserMode = File);
+        static void parse(const std::string &file, Callback, DataMode = File);
     };
 }
 

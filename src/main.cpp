@@ -3,7 +3,9 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include "resources.hpp"
+#include "data/reader.hpp"
+#include "data/resources.hpp"
+
 #include "rna/r_align.hpp"
 #include "rna/r_assembly.hpp"
 #include "rna/r_abundance.hpp"
@@ -22,9 +24,6 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 
-#define RNA_MIX_PATH "data/RNA"
-#define DNA_MIX_PATH "data/DNA"
-
 #define CMD_VER   'v'
 #define CMD_TEST  't'
 #define CMD_RNA   265
@@ -32,7 +31,6 @@
 #define CMD_META  267
 
 #define MODE_RESTRICTS    280
-#define MODE_SEQS         281
 #define MODE_SEQUENCING   282
 #define MODE_ALIGN        283
 #define MODE_ASSEMBLY     284
@@ -90,8 +88,9 @@ static const struct option long_options[] =
     { "dna",  required_argument, 0, CMD_DNA  },
     { "meta", required_argument, 0, CMD_META },
 
-    { "l",    no_argument,       0, MODE_SEQS         },
-    { "seqs", no_argument,       0, MODE_SEQUINS      },
+    { "l",       no_argument, 0, MODE_SEQUINS },
+    { "sequins", no_argument, 0, MODE_SEQUINS },
+
     { "f",    required_argument, 0, MODE_RESTRICTS    },
     { "al",   required_argument, 0, MODE_ALIGN        },
     { "as",   required_argument, 0, MODE_ASSEMBLY     },
@@ -102,7 +101,6 @@ static const struct option long_options[] =
 
     { "psl",  required_argument, 0, OPT_PSL },
     
-    { "sequins",   no_argument,       0, MODE_SEQUINS      },
     { "align",     required_argument, 0, MODE_ALIGN        },
     { "variant",   required_argument, 0, MODE_VARIATION    },
     { "assembly",  required_argument, 0, MODE_ASSEMBLY     },
@@ -151,12 +149,15 @@ static void print_version()
     std::cout << "Mixture B: version " << m.vb << std::endl;
 }
 
-static void print_rna_sequins()
+static void print_sequins(Reader &r)
 {
-    for (const auto &i : Standard::instance().r_sequins)
-    {
-        std::cout << i.id << std::endl;
-    }
+    
+    
+}
+
+void print_meta()
+{
+    // Empty Implementation
 }
 
 static void print_rna()
@@ -195,41 +196,6 @@ static void print_rna()
 }
 
 void print_dna()
-{
-    const auto &s = Standard::instance();
-    const std::string format = "%1%  %2%  %3%  %4%";
-    
-    auto f = [&](const Standard::PairMap &seqs)
-    {
-        std::cout << (boost::format(format) % "r"
-                                            % "v"
-                                            % "r_con"
-                                            % "v_con").str() << std::endl;
-
-        for (std::size_t i = A; i <= D; i++)
-        {
-            for (auto j : seqs)
-            {
-                const auto &p = j.second;
-                
-                if (p.grp == i)
-                {
-                    std::cout << (boost::format(format) % p.r.id
-                                  % p.v.id
-                                  % p.r.raw
-                                  % p.v.raw).str() << std::endl;
-                }
-            }
-        }
-    };
-
-    std::cout << "\n----------------------------- A -----------------------------" << std::endl;
-    f(s.d_pair_A);
-    std::cout << "\n----------------------------- B -----------------------------" << std::endl;
-    f(s.d_pair_B);
-}
-
-void print_meta()
 {
     // Empty Implementation
 }
@@ -276,7 +242,7 @@ template <typename Options> static Options detect(const std::string &file)
     return o;
 }
 
-static int parse_options(int argc, char ** argv)
+int parse_options(int argc, char ** argv)
 {
     if (argc <= 1)
     {
@@ -370,7 +336,6 @@ static int parse_options(int argc, char ** argv)
                 std::cout << "RNA command detected" << std::endl;
                 
                 if (_mode != MODE_SEQUINS    &&
-                    _mode != MODE_SEQS       &&
                     _mode != MODE_SEQUENCING &&
                     _mode != MODE_ALIGN      &&
                     _mode != MODE_ASSEMBLY   &&
@@ -383,8 +348,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQUINS:  { print_rna_sequins();          break; }
-                        case MODE_SEQS:     { print_rna();                  break; }
+                        case MODE_SEQUINS:  { print_rna();                  break; }
                         case MODE_ALIGN:    { analyze<RAlign>(_opts[0]);    break; }
                         case MODE_ASSEMBLY: { analyze<RAssembly>(_opts[0]); break; }
 
@@ -409,7 +373,7 @@ static int parse_options(int argc, char ** argv)
             {
                 std::cout << "DNA command detected" << std::endl;
                 
-                if (_mode != MODE_SEQS       &&
+                if (_mode != MODE_SEQUINS    &&
                     _mode != MODE_SEQUENCING &&
                     _mode != MODE_ALIGN      &&
                     _mode != MODE_VARIATION)
@@ -420,7 +384,7 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQS:      { print_dna();                break; }
+                        case MODE_SEQUINS:   { print_dna();                break; }
                         case MODE_ALIGN:     { analyze<DAlign>(_opts[0]);   break; }
                         case MODE_VARIATION: { analyze<DVariant>(_opts[0]); break; }
                     }
@@ -433,7 +397,8 @@ static int parse_options(int argc, char ** argv)
             {
                 std::cout << "Metagenomics command detected" << std::endl;
 
-                if (_mode != MODE_ASSEMBLY)
+                if (_mode != MODE_SEQUINS &&
+                    _mode != MODE_ASSEMBLY)
                 {
                     print_usage();
                 }
@@ -441,6 +406,8 @@ static int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
+                        case MODE_SEQUINS: { print_meta(); break; }
+
                         case MODE_ASSEMBLY:
                         {
                             MAssembly::Options o;

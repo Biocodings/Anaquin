@@ -5,7 +5,7 @@
 
 using namespace Spike;
 
-void ParserBED::parse(const std::string &file, Callback x, ParserMode mode)
+void ParserBED::parse(const std::string &file, Callback x, DataMode mode)
 {
     Reader f(file, mode);
     BedFeature bf;

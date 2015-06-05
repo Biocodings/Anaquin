@@ -9,10 +9,15 @@ namespace Spike
 {
     struct ReaderInternal;
 
+    /*
+     * Reader encapsulates the underlying data-source. For example, we could source from a memory string
+     * or a physical file.
+     */
+    
     class Reader
     {
         public:
-            Reader(const std::string &file, ParserMode mode = File);
+            Reader(const std::string &, DataMode mode = File);
             ~Reader();
 
             // Returns the next line in the file

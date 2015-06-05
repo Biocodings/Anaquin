@@ -8,7 +8,7 @@ namespace Spike
         long long i = 0;
     };
 
-    enum ParserMode
+    enum DataMode
     {
         File,
         String,

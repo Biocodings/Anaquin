@@ -5,7 +5,7 @@
 
 using namespace Spike;
 
-template<typename Callback, ParserMode Mode> void _parse(const std::string &file, Callback x)
+template<typename Callback, DataMode Mode> void _parse(const std::string &file, Callback x)
 {
     std::map<std::string, RNAFeature> mapper =
     {
@@ -92,8 +92,8 @@ template<typename Callback, ParserMode Mode> void _parse(const std::string &file
     }
 }
 
-void ParserGTF::parse(const std::string &str, Callback x, ParserMode mode)
+void ParserGTF::parse(const std::string &str, Callback x, DataMode mode)
 {
-    return mode == File ? _parse<Callback, ParserMode::File>(str, x) :
-                          _parse<Callback, ParserMode::String>(str, x);
+    return mode == File ? _parse<Callback, DataMode::File>(str, x) :
+                          _parse<Callback, DataMode::String>(str, x);
 }

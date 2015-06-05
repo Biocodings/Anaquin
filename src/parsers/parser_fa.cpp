@@ -4,7 +4,7 @@
 
 using namespace Spike;
 
-void ParserFA::parse(const std::string &file, Callback c, ParserMode mode)
+void ParserFA::parse(const std::string &file, Callback c, DataMode mode)
 {
     Reader f(file, mode);
 

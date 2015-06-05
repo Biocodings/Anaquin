@@ -28,7 +28,7 @@ static const std::map<std::string, Genotype> allele =
     { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
 };
 
-void ParserVCF::parse(const std::string &file, Callback c, ParserMode mode)
+void ParserVCF::parse(const std::string &file, Callback c, DataMode mode)
 {
     std::string line;
     Reader f(file, mode);

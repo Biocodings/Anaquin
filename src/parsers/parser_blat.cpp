@@ -29,7 +29,7 @@ enum PSLField
     PSL_T_Starts
 };
 
-void ParserBlat::parse(const std::string &file, Callback c, ParserMode mode)
+void ParserBlat::parse(const std::string &file, Callback c, DataMode mode)
 {
     Reader r(file, mode);
     ParserProgress p;

@@ -2,7 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <assert.h>
-#include "reader.hpp"
+#include "reader/reader.hpp"
 #include <boost/algorithm/string.hpp>
 
 using namespace Spike;
@@ -14,11 +14,11 @@ struct Spike::ReaderInternal
     std::shared_ptr<std::stringstream> s;
 };
 
-Reader::Reader(const std::string &file, ParserMode mode)
+Reader::Reader(const std::string &file, DataMode mode)
 {
     _imp = new ReaderInternal();
 
-    if (mode == ParserMode::File)
+    if (mode == DataMode::File)
     {
         const auto f = std::shared_ptr<std::ifstream>(new std::ifstream(file));
         

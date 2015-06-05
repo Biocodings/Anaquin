@@ -3,7 +3,7 @@
 
 using namespace Spike;
 
-void ParserCSV::parse(const std::string &file, Callback c, ParserMode mode, const std::string &delim)
+void ParserCSV::parse(const std::string &file, Callback c, DataMode mode, const std::string &delim)
 {
     ParserProgress p;
     Reader r(file, mode);

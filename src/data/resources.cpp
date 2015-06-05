@@ -1,33 +1,33 @@
 #include <string>
 #include "resources.hpp"
-#include "data/silico.fa"
-#include "data/manual.txt"
+#include "resources/silico.fa"
+#include "resources/manual.txt"
 
 /*
  * META Resources
  */
 
-#include "data/META.tab.fa"
-#include "data/META.ref.bed"
-#include "data/META.mix.csv"
+#include "resources/META.tab.fa"
+#include "resources/META.ref.bed"
+#include "resources/META.mix.csv"
 
 /*
  * RNA Resources
  */
 
-#include "data/RNA.tab.fa"
-#include "data/RNA.ref.bed"
-#include "data/RNA.ref.gtf"
-#include "data/RNA.mix.csv"
+#include "resources/RNA.tab.fa"
+#include "resources/RNA.ref.bed"
+#include "resources/RNA.ref.gtf"
+#include "resources/RNA.mix.csv"
 
 /*
  * DNA Resources
  */
 
-#include "data/DNA.tab.fa"
-#include "data/DNA.ref.bed"
-#include "data/DNA.var.vcf"
-#include "data/DNA.mix.csv"
+#include "resources/DNA.tab.fa"
+#include "resources/DNA.ref.bed"
+#include "resources/DNA.var.vcf"
+#include "resources/DNA.mix.csv"
 
 using namespace Spike;
 
