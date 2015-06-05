@@ -4,9 +4,9 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
-#include "reader.hpp"
-#include "tokens.hpp"
 #include "standard.hpp"
+#include "data/reader.hpp"
+#include "data/tokens.hpp"
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_csv.hpp"

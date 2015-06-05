@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
+#include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "data/resources.hpp"
 
@@ -149,15 +150,44 @@ static void print_version()
     std::cout << "Mixture B: version " << m.vb << std::endl;
 }
 
-static void print_sequins(Reader &r)
+// Print a file of mixture A and B
+void print(Reader &r)
 {
+    /*
+     * Format: <ID, Mix A, Mix B>
+     */
+
+    std::string l;
     
+    // Skip the first line
+    r.nextLine(l);
+
+    std::cout << "ID\tMix A\tMix B" << std::endl;
     
+    while (r.nextLine(l))
+    {
+        if (l == "\r" || l == "\n" || l == "\r\n")
+        {
+            continue;
+        }
+
+        std::vector<std::string> tokens;
+        Tokens::split(l, ",", tokens);
+
+        if (tokens.size() != 3)
+        {
+            std::cerr << "Malformed file: [" << l << "]" << std::endl;
+        }
+
+        std::cout << tokens[0] << "\t" << tokens[1] << "\t" << tokens[2] << std::endl;
+    }
 }
 
 void print_meta()
 {
-    // Empty Implementation
+    extern std::string m_mix_f();
+    Reader r(m_mix_f(), String);
+    print(r);
 }
 
 static void print_rna()

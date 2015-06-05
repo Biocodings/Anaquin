@@ -1,6 +1,6 @@
-#include "reader.hpp"
 #include "standard.hpp"
-#include "parser_sequins.hpp"
+#include "data/reader.hpp"
+#include "parsers/parser_sequins.hpp"
 #include <boost/algorithm/string.hpp>
 
 using namespace Spike;

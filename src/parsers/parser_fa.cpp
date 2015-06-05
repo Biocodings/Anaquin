@@ -1,4 +1,4 @@
-#include "reader.hpp"
+#include "data/reader.hpp"
 #include "parsers/parser_fa.hpp"
 #include <boost/algorithm/string.hpp>
 

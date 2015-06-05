@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "reader.hpp"
+#include "data/reader.hpp"
 #include "parsers/parser_bed.hpp"
 #include <boost/algorithm/string.hpp>
 

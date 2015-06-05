@@ -137,6 +137,7 @@
 		EF4270A61B214F9000C9ED4E /* reader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = reader.hpp; path = ../src/data/reader.hpp; sourceTree = "<group>"; };
 		EF4270A71B214F9000C9ED4E /* resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = resources.cpp; path = ../src/data/resources.cpp; sourceTree = "<group>"; };
 		EF4270A81B214F9000C9ED4E /* resources.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = resources.hpp; path = ../src/data/resources.hpp; sourceTree = "<group>"; };
+		EF4270AB1B2152A100C9ED4E /* tokens.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/data/tokens.hpp; sourceTree = "<group>"; };
 		EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_tracking.cpp; path = parsers/t_parser_tracking.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
@@ -167,7 +168,6 @@
 		EFBB830C1ADF953B0002611E /* parser_sequins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_sequins.cpp; path = ../src/parsers/parser_sequins.cpp; sourceTree = "<group>"; };
 		EFBB830D1ADF953B0002611E /* parser_sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_sequins.hpp; path = ../src/parsers/parser_sequins.hpp; sourceTree = "<group>"; };
 		EFBF33BE1AEBAE250016083E /* t_locus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_locus.cpp; sourceTree = "<group>"; };
-		EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/tokens.hpp; sourceTree = "<group>"; };
 		EFD457551AE65D6E0027DA46 /* d_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = d_align.cpp; path = ../src/dna/d_align.cpp; sourceTree = "<group>"; };
 		EFD457561AE65D6E0027DA46 /* d_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = d_align.hpp; path = ../src/dna/d_align.hpp; sourceTree = "<group>"; };
 		EFD457581AE65D860027DA46 /* d_sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = d_sequence.cpp; path = ../src/dna/d_sequence.cpp; sourceTree = "<group>"; };
@@ -279,7 +279,6 @@
 				EF22903F1AC0E58000CE76BF /* locus.hpp */,
 				EFF4FAFE1ADC99250008FD04 /* sensitivity.hpp */,
 				EF2290511AC0E58000CE76BF /* standard.hpp */,
-				EFD36E9F1ACB9F0700F6F098 /* tokens.hpp */,
 				EF2290551AC0E58000CE76BF /* types.hpp */,
 			);
 			name = Sources;
@@ -363,6 +362,7 @@
 				EF4270A61B214F9000C9ED4E /* reader.hpp */,
 				EF4270A71B214F9000C9ED4E /* resources.cpp */,
 				EF4270A81B214F9000C9ED4E /* resources.hpp */,
+				EF4270AB1B2152A100C9ED4E /* tokens.hpp */,
 			);
 			name = data;
 			sourceTree = "<group>";

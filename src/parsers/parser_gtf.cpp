@@ -1,6 +1,6 @@
 #include <assert.h>
-#include "tokens.hpp"
-#include "reader.hpp"
+#include "data/tokens.hpp"
+#include "data/reader.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Spike;

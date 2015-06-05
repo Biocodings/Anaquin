@@ -2,7 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <assert.h>
-#include "reader/reader.hpp"
+#include "data/reader.hpp"
 #include <boost/algorithm/string.hpp>
 
 using namespace Spike;

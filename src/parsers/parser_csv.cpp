@@ -1,5 +1,5 @@
-#include "reader.hpp"
-#include "parser_csv.hpp"
+#include "data/reader.hpp"
+#include "parsers/parser_csv.hpp"
 
 using namespace Spike;
 

@@ -1,6 +1,6 @@
 #include <assert.h>
-#include "reader.hpp"
-#include "tokens.hpp"
+#include "data/reader.hpp"
+#include "data/tokens.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Spike;
