@@ -4,7 +4,7 @@
 #include <numeric>
 #include "analyzer.hpp"
 #include "data/tokens.hpp"
-#include "meta/histogram.h"
+#include "meta/m_histogram.h"
 #include "parsers/parser_fa.hpp"
 
 namespace Spike

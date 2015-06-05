@@ -4,8 +4,8 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include "types.hpp"
 #include "classify.hpp"
+#include "data/types.hpp"
 #include "sensitivity.hpp"
 #include <boost/format.hpp>
 #include <ss/regression/lm.hpp>

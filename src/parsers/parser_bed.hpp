@@ -1,9 +1,9 @@
 #ifndef GI_PARSER_BED_HPP
 #define GI_PARSER_BED_HPP
 
-#include "types.hpp"
-#include "locus.hpp"
 #include <functional>
+#include "data/types.hpp"
+#include "data/locus.hpp"
 #include "parsers/parser.hpp"
 
 namespace Spike

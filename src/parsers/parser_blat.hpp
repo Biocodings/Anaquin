@@ -1,8 +1,8 @@
 #ifndef GI_PARSER_BLAT_HPP
 #define GI_PARSER_BLAT_HPP
 
-#include "types.hpp"
 #include <functional>
+#include "data/types.hpp"
 #include "parsers/parser.hpp"
 
 namespace Spike

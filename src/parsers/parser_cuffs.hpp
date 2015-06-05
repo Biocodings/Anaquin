@@ -2,7 +2,7 @@
 #define GI_PARSER_CUFFS_HPP
 
 #include <map>
-#include "types.hpp"
+#include "data/types.hpp"
 
 namespace Spike
 {

@@ -1,7 +1,7 @@
 #ifndef GI_SENSITIVITY_HPP
 #define GI_SENSITIVITY_HPP
 
-#include "types.hpp"
+#include "data/types.hpp"
 
 namespace Spike
 {

@@ -3,8 +3,8 @@
 
 #include <map>
 #include <vector>
-#include "locus.hpp"
 #include "feature.hpp"
+#include "data/locus.hpp"
 #include "parsers/parser_bed.hpp"
 
 namespace Spike

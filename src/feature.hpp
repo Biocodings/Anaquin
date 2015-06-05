@@ -1,8 +1,8 @@
 #ifndef GI_FEATURE_HPP
 #define GI_FEATURE_HPP
 
-#include "locus.hpp"
-#include "biology.hpp"
+#include "data/locus.hpp"
+#include "data/biology.hpp"
 
 namespace Spike
 {

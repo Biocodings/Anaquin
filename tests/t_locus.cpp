@@ -1,5 +1,5 @@
-#include "locus.hpp"
 #include <catch.hpp>
+#include "data/locus.hpp"
 
 using namespace Spike;
 

@@ -6,8 +6,8 @@
 #include <list>
 #include <vector>
 #include <assert.h>
-#include "types.hpp"
 #include <algorithm>
+#include "data/types.hpp"
 
 namespace Spike
 {

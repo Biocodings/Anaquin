@@ -1,8 +1,8 @@
 #ifndef GI_ALIGNMENT_HPP
 #define GI_ALIGNMENT_HPP
 
-#include "types.hpp"
-#include "locus.hpp"
+#include "data/locus.hpp"
+#include "data/types.hpp"
 
 namespace Spike
 {
