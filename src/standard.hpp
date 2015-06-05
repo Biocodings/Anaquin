@@ -157,7 +157,7 @@ namespace Spike
             SequinMap m_seq_A, m_seq_B;
 
             // Metagenomic annotation
-            std::vector<BedFeature> m_annot;
+            std::vector<BedFeature> m_model;
         
         private:
             Standard();

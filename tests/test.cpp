@@ -4,7 +4,7 @@
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 
-int parse_options(const std::string &command, std::string &output)
+int parse_options(const std::string &command, std::string &output, std::string &error)
 {
     extern int parse_options(int argc, char ** argv);
 
@@ -22,13 +22,18 @@ int parse_options(const std::string &command, std::string &output)
         strcpy(argv[i+1], tokens[i].c_str());
     }
     
-    std::stringstream buffer;
-    std::streambuf * const old = std::cout.rdbuf(buffer.rdbuf());
-    
+    std::stringstream outputBuffer, errorBuffer;
+
+    std::streambuf * const _errorBuffer  = std::cerr.rdbuf(errorBuffer.rdbuf());
+    std::streambuf * const _outputBuffer = std::cout.rdbuf(outputBuffer.rdbuf());
+
     const int status = parse_options(static_cast<int>(tokens.size()) + 1, argv);
 
-    output = buffer.str();
-    std::cout.rdbuf(old);
+    error  = errorBuffer.str();
+    output = outputBuffer.str();
+
+    std::cout.rdbuf(_errorBuffer);
+    std::cout.rdbuf(_outputBuffer);
 
     for (std::size_t i = 0; i > tokens.size(); i++)
     {

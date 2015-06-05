@@ -25,13 +25,13 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 
-#define CMD_VER   'v'
-#define CMD_TEST  't'
+#define CMD_VER    'v'
+#define CMD_TEST   't'
 #define CMD_RNA   265
 #define CMD_DNA   266
 #define CMD_META  267
 
-#define MODE_RESTRICTS    280
+#define MODE_FILTER       280
 #define MODE_SEQUENCING   282
 #define MODE_ALIGN        283
 #define MODE_ASSEMBLY     284
@@ -40,7 +40,6 @@
 #define MODE_VARIATION    287
 #define MODE_SEQUINS      288
 
-#define OPT_THREAD        320
 #define OPT_MIN           321
 #define OPT_MAX           322
 #define OPT_LIMIT         323
@@ -80,7 +79,6 @@ static const struct option long_options[] =
     { "v",    no_argument,       0, CMD_VER  },
 
     { "o",     required_argument, 0, OPT_OUTPUT },
-    { "p",     required_argument, 0, OPT_THREAD },
     { "min",   required_argument, 0, OPT_MIN    },
     { "max",   required_argument, 0, OPT_MAX    },
     { "limit", required_argument, 0, OPT_LIMIT  },
@@ -92,7 +90,9 @@ static const struct option long_options[] =
     { "l",       no_argument, 0, MODE_SEQUINS },
     { "sequins", no_argument, 0, MODE_SEQUINS },
 
-    { "f",    required_argument, 0, MODE_RESTRICTS    },
+    { "r",        required_argument, 0, MODE_FILTER },
+    { "restrict", required_argument, 0, MODE_FILTER },
+    
     { "al",   required_argument, 0, MODE_ALIGN        },
     { "as",   required_argument, 0, MODE_ASSEMBLY     },
     { "ab",   required_argument, 0, MODE_ABUNDANCE    },
@@ -192,42 +192,52 @@ void print_meta()
 
 static void print_rna()
 {
-    const auto &r = Standard::instance();
-    const std::string format = "%1%  %2%  %3%  %4%";
-
-    auto f = [&](const Standard::PairMap &seqs)
-    {
-        std::cout << (boost::format(format) % "r"
-                                            % "v"
-                                            % "r_con"
-                                            % "v_con").str() << std::endl;
-
-        for (std::size_t i = A; i <= D; i++)
-        {
-            for (auto j : seqs)
-            {
-                const auto &p = j.second;
-                
-                if (p.grp == i)
-                {
-                    std::cout << (boost::format(format) % p.r.id
-                                                        % p.v.id
-                                                        % p.r.raw
-                                                        % p.v.raw).str() << std::endl;
-                }
-            }
-        }
-    };
-
-    std::cout << "\n----------------------------- A -----------------------------" << std::endl;
-    f(r.r_seqs_gA);
-    std::cout << "\n----------------------------- B -----------------------------" << std::endl;
-    f(r.r_seqs_gB);
+    // Empty Implementation
 }
 
 void print_dna()
 {
     // Empty Implementation
+}
+
+static bool readFilters(const std::string &file)
+{
+    Reader r(file);
+    std::string line;
+    
+    // We'll use it to compare the sequins
+    const auto &s = Standard::instance();
+
+    while (r.nextLine(line))
+    {
+        switch (_cmd)
+        {
+            case CMD_RNA:
+            {
+                break;
+            }
+
+            case CMD_DNA:
+            {
+                break;
+            }
+
+            case CMD_META:
+            {
+                if (!s.m_seq_A.count(line))
+                {
+                    std::cerr << "Unknown sequin for metagenomics: " << line << std::endl;
+                    return false;
+                }
+                
+                break;
+            }
+
+            default: { print_usage(); break; }
+        }
+    }
+
+    return true;
 }
 
 template <typename Analyzer> void analyze(const std::string &file, typename Analyzer::Options o = typename Analyzer::Options())
@@ -295,10 +305,19 @@ int parse_options(int argc, char ** argv)
         {
             case OPT_PSL:    { _psl = optarg;    break; }
             case OPT_OUTPUT: { _output = optarg; break; }
-                
+
+            case MODE_FILTER:
+            {
+                if (!readFilters(optarg))
+                {
+                    return 1;
+                }
+
+                break;
+            }
+
             case OPT_MAX:
             case OPT_MIN:
-            case OPT_THREAD:
             case OPT_LIMIT:
             {
                 break;

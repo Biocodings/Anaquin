@@ -176,7 +176,7 @@ void Standard::meta()
     // Parse annotations
     ParserBED::parse(m_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
-        m_annot.push_back(f);
+        m_model.push_back(f);
         
         if (m_seq_A.count(f.name))
         {
@@ -185,13 +185,12 @@ void Standard::meta()
         }
         else
         {
-            std::cout << f.name << std::endl;
+            //std::cout << f.name << std::endl;
         }
     }, DataMode::String);
 
-    assert(!m_annot.empty());
-    //assert(!m_seq_A.empty()  && !m_seq_A.empty());
-    //assert(!m_pair_A.empty() && !m_pair_B.empty());
+    assert(!m_model.empty());
+    assert(!m_seq_A.empty()  && !m_seq_A.empty());
 }
 
 void Standard::dna()
