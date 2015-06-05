@@ -37,7 +37,7 @@ int parse_options(const std::string &command, std::string &output, std::string &
 
     for (std::size_t i = 0; i < tokens.size(); i++)
     {
-        delete argv[i];
+        delete[] argv[i];
     }
 
     return status;

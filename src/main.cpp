@@ -7,10 +7,10 @@
 #include "data/reader.hpp"
 #include "data/resources.hpp"
 
+#include "rna/r_diffs.hpp"
 #include "rna/r_align.hpp"
 #include "rna/r_assembly.hpp"
 #include "rna/r_abundance.hpp"
-#include "rna/r_differential.hpp"
 
 #include "dna/d_align.hpp"
 #include "dna/d_variant.hpp"
@@ -421,7 +421,7 @@ int parse_options(int argc, char ** argv)
 
                         case MODE_DIFFERENTIAL:
                         {
-                            analyze<RDifferential>(_opts[0], detect<RDifferential::Options>(_opts[0]));
+                            analyze<RDiffs>(_opts[0], detect<RDiffs::Options>(_opts[0]));
                             break;
                         }
                     }
@@ -462,7 +462,8 @@ int parse_options(int argc, char ** argv)
                 if (_mode != MODE_BLAST    &&
                     _mode != MODE_SEQUINS  &&
                     _mode != MODE_SEQUENCE &&
-                    _mode != MODE_ASSEMBLY)
+                    _mode != MODE_ASSEMBLY &&
+                    _mode != MODE_DIFFERENTIAL)
                 {
                     print_usage();
                 }
@@ -475,7 +476,7 @@ int parse_options(int argc, char ** argv)
 
                         case MODE_BLAST:
                         {
-                            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+                            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
                             
                             // Analyse the BLAST alignment
                             const auto r = MBlast::analyze(_opts[0]);
@@ -486,26 +487,27 @@ int parse_options(int argc, char ** argv)
                                                                 % "N"
                                                                 % "Cov"
                                                                 % "Mis"
-                                                                % "Gaps"
-                                                                % "ACov"
-                                                                % "MCov").str() << std::endl;
+                                                                % "Gaps").str() << std::endl;
 
-                            for (const auto &align : r.aligns)
+                            for (const auto &align : r.metas)
                             {
                                 std::cout << (boost::format(format) % align.id
-                                                                    % align.mixA
-                                                                    % align.mixB
+                                                                    % align.seqA.abund()
+                                                                    % align.seqB.abund()
                                                                     % align.aligns.size()
-                                                                    % "?"
-                                                                    % "?"
-                                                                    % "?"
-                                                                    % "?"
-                                                                    % "?").str() << std::endl;
+                                                                    % align.coverage
+                                                                    % align.mismatch
+                                                                    % align.gaps).str() << std::endl;
                             }
                             
                             break;
                         }
                             
+                        case MODE_DIFFERENTIAL:
+                        {
+                            break;
+                        }
+
                         case MODE_ASSEMBLY:
                         {
                             MAssembly::Options o;

@@ -37,12 +37,18 @@ namespace Spike
             return false;
         }
 
-        template <typename T, typename R> static std::vector<R> merge(const std::vector<T> &x)
+        /*
+         * Merge a list of objects according to the locus. The type of the object must be
+         * castable to Locus.
+         */
+        
+        template <typename T, typename R, template <typename, typename = std::allocator<T>> class Inputs>
+                static std::vector<R> merge(const Inputs<T> &x)
         {
             std::vector<R> sorted;
 
             // std::copy doesn't allow implicit type conversion...
-            for (auto i : x)
+            for (const auto &i : x)
             {
                 sorted.push_back(i);
             }

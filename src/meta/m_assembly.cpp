@@ -1,23 +1,20 @@
+#include "meta/m_blast.hpp"
 #include "meta/m_assembly.hpp"
-#include "parsers/parser_blat.hpp"
 
 using namespace Spike;
 
 MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &options)
 {
     MAssembly::Stats stats = Velvet::parse<MAssembly::Stats, MAssembly::AlignedContig>(file);
-    
+
+    // Prefer the alignment file from user if provided
     if (!options.blast.empty())
     {
-        std::map<std::string, ParserBlat::BlatLine> psl;
-
-        // Perform a pairwise alignment with blat
-        ParserBlat::parse(options.blast, [&](const ParserBlat::BlatLine &l, const ParserProgress &p)
-        {
-            psl[l.qName] = l;
-        });
-
         std::cout << "Using an aligment file: "  << options.blast << std::endl;
+        
+        // Analyse the given blast alignment file
+        const auto r = MBlast::analyze(options.blast);
+        
         std::cout << "Creating a abundance plot" << std::endl;
 
         /*
@@ -27,29 +24,28 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         std::vector<double> x, y;
         std::vector<std::string> z;
 
-        for (auto &contig : stats.contigs)
+        for (const auto &contig : stats.contigs)
         {
-            if (psl.count(contig.id))
+            // If the contig has an alignment
+            if (r.aligns.count(contig.id))
             {
-                contig.sequin = psl[contig.id].tName;
-            }
-
-            if (!contig.sequin.empty())
-            {
-                //const auto &seq = Standard::instance().m_seq_A.at(node.sequin);
+                const auto &seq = r.aligns.at(contig.id).seqA;
                 
                 // Known concentration from the matching sequin
-                //const auto known = seq.abund();
+                const auto known = seq.abund();
+
+                assert(contig.k_cov);
                 
-                // Measured coverage
-                //const auto measured = node.cov;
+                // Measured coverage (alignment coverage)
+                const auto measured = contig.k_cov / seq.l.length();
+                //const auto measured = contig.k_cov contig.seq.length();
                 
-                //x.push_back(log(known));
-                //y.push_back(log(measured));
-                //z.push_back(node.sequin);
+                x.push_back(log(known));
+                y.push_back(log(measured));
+                z.push_back(contig.id);
             }
         }
-        
+
         // Generate a R script for a plot of abundance
         AnalyzeReporter::script("abundance.R", x, y, z, options.writer);
     }
@@ -73,5 +69,5 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                                  % -1).str());
     options.writer->close();
 
-    return stats;;
+    return stats;
 }

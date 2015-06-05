@@ -386,7 +386,7 @@ void Standard::rna()
 
             seqs.r      = r;
             seqs.v      = v;
-            seqs.grp    = gs.at(p.second[0][Group]);
+            //seqs.grp    = gs.at(p.second[0][Group]);
             seqs.geneID = r.id.substr(0, r.id.length() - 2);
 
             m[seqs.geneID] = seqs;

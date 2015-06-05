@@ -26,8 +26,8 @@ MBlast::Stats MBlast::analyze(const std::string &file)
     for (const auto &seq : Standard::instance().m_seq_A)
     {
         m[seq.first].id   = seq.first;
-        m[seq.first].mixA = seq.second.raw;
-        m[seq.first].mixB = mixB.at(m[seq.first].id).abund();
+        m[seq.first].seqA = seq.second;
+        m[seq.first].seqB = mixB.at(m[seq.first].id);
     }
     
     /*
@@ -38,7 +38,8 @@ MBlast::Stats MBlast::analyze(const std::string &file)
     {
         if (m.count(l.tName))
         {
-            m.at(l.tName).aligns.insert(Locus(l.tStart, l.tEnd));
+            m.at(l.tName).ids.push_back(l.tName);
+            m.at(l.tName).aligns.push_back(Locus(l.tStart, l.tEnd));
         }
         else
         {
@@ -52,12 +53,52 @@ MBlast::Stats MBlast::analyze(const std::string &file)
     
     MBlast::Stats stats;
 
-    for (const auto &i : m)
+    for (auto &i : m)
     {
-        stats.aligns.insert(i.second);
+        /*
+         * In order to calculate for the coverage, we'll need to merge the contigs. Although they
+         * are likely already non-overlapping, just to make sure...
+         */
+        
+        const auto merged = Locus::merge<Locus, Locus>(i.second.aligns);
+
+        BasePair gaps  = 0;
+        BasePair total = 0;
+        
+        for (std::size_t j = 0; j < merged.size(); j++)
+        {
+            // Only calculate if there is indeed a gap (although almost always there is)
+            if (j && merged[j-1].end + 1 != merged[j].start)
+            {
+                gaps += Locus(merged[j-1].end + 1, merged[j].start - 1).length();
+            }
+            
+            total += merged[j].length();
+        }
+        
+        assert(i.second.seqA.l.length() == i.second.seqB.l.length());
+        
+        // Fraction of bases covered by alignments
+        i.second.coverage = (double) total / i.second.seqA.l.length();
+        
+        // Fraction of bases not covered by alignments
+        i.second.mismatch = 1 - i.second.coverage;
+        
+        // Fraction of bases covered by gaps
+        i.second.gaps = (double) gaps / i.second.seqA.l.length();
+        
+        assert(i.second.gaps     >= 0.0 && i.second.gaps     <= 1.0);
+        assert(i.second.coverage >= 0.0 && i.second.coverage <= 1.0);
+        assert(i.second.mismatch >= 0.0 && i.second.mismatch <= 1.0);
+
+        // Create an alignment for each contig that aligns to the metaquin
+        for (const ContigID &id : i.second.ids)
+        {
+            stats.aligns[id] = i.second;
+        }
+
+        stats.metas.insert(i.second);
     }
 
-    assert(stats.aligns.size() == m.size());
-    
     return stats;
 }

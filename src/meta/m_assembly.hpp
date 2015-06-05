@@ -107,7 +107,7 @@ namespace Spike
         struct AlignedContig : public Contig
         {
             // The sequin that the node has been aligned to, empty if not aligned
-            std::string sequin;
+            //std::string sequin;
         };
         
         struct Stats : public DNAsssembly::Stats<AlignedContig>

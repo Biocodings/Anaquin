@@ -3,8 +3,9 @@
 
 #include <map>
 #include <vector>
-#include "feature.hpp"
 #include "data/locus.hpp"
+#include "data/sequin.hpp"
+#include "data/feature.hpp"
 #include "parsers/parser_bed.hpp"
 
 namespace Spike
@@ -48,36 +49,6 @@ namespace Spike
         unsigned dp;
     };
     
-    struct Sequin
-    {
-        operator Locus()     const { return l;  }
-        operator IsoformID() const { return id; }
-
-        inline Concentration abund() const { return raw; }
-
-        SequinID id;
-        Locus l;
-        
-        // Amount of abundance
-        Concentration raw;
-    };
-
-    struct Sequins
-    {
-        inline Concentration abund() const
-        {
-            return r.abund() + v.abund();
-        }
-
-        Group grp;
-        
-        // Each mixture represents a transcript for a gene
-        GeneID geneID;
-
-        // Reference and variant mixtures
-        Sequin r, v;
-    };
-
     class Standard
     {
         public:

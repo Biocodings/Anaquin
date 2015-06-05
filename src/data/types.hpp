@@ -5,6 +5,7 @@
 
 namespace Spike
 {
+    typedef std::string ContigID;
     typedef std::string MetaQuinID;
 
     typedef unsigned long Counts;

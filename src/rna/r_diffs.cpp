@@ -1,14 +1,14 @@
 #include "expression.hpp"
-#include "r_differential.hpp"
+#include "rna/r_diffs.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <ss/regression/lm.hpp>
 
 using namespace SS;
 using namespace Spike;
 
-RDifferentialStats RDifferential::analyze(const std::string &f, const Options &options)
+RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
 {
-    RDifferentialStats stats;
+    RDiffs::Stats stats;
     const auto &s = Standard::instance();
 
     auto c = (options.level == Gene ? RAnalyzer::geneCounter() : RAnalyzer::isoformCounter());
