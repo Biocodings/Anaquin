@@ -35,7 +35,7 @@ int parse_options(const std::string &command, std::string &output, std::string &
     std::cout.rdbuf(_errorBuffer);
     std::cout.rdbuf(_outputBuffer);
 
-    for (std::size_t i = 0; i > tokens.size(); i++)
+    for (std::size_t i = 0; i < tokens.size(); i++)
     {
         delete argv[i];
     }

@@ -31,6 +31,7 @@
 		EF4270AF1B21667C00C9ED4E /* t_dna.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270AE1B21667C00C9ED4E /* t_dna.cpp */; };
 		EF4270B21B21676B00C9ED4E /* m_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270B01B21676B00C9ED4E /* m_sequence.cpp */; };
 		EF4270B61B21C21B00C9ED4E /* m_blast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270B41B21C21B00C9ED4E /* m_blast.cpp */; };
+		EF4270BA1B21CA8900C9ED4E /* t_blast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270B91B21CA8900C9ED4E /* t_blast.cpp */; };
 		EF44A81C1AF78E400036C894 /* t_parser_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */; };
 		EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */; };
 		EF44A8211AF791780036C894 /* t_parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A8201AF791780036C894 /* t_parser_tmap.cpp */; };
@@ -148,6 +149,7 @@
 		EF4270B51B21C21B00C9ED4E /* m_blast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_blast.hpp; sourceTree = "<group>"; };
 		EF4270B71B21C41A00C9ED4E /* types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../src/data/types.hpp; sourceTree = "<group>"; };
 		EF4270B81B21C45A00C9ED4E /* locus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/data/locus.hpp; sourceTree = "<group>"; };
+		EF4270B91B21CA8900C9ED4E /* t_blast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_blast.cpp; path = ../tests/meta/t_blast.cpp; sourceTree = "<group>"; };
 		EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_tracking.cpp; path = parsers/t_parser_tracking.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
@@ -476,6 +478,7 @@
 			isa = PBXGroup;
 			children = (
 				EFECDC161AE7639900F0FD9A /* t_assembly.cpp */,
+				EF4270B91B21CA8900C9ED4E /* t_blast.cpp */,
 				EF42709F1B213B1D00C9ED4E /* t_meta.cpp */,
 			);
 			name = meta;
@@ -620,6 +623,7 @@
 				EF4270A21B213BF200C9ED4E /* test.cpp in Sources */,
 				EFECDC191AE7639900F0FD9A /* t_assembly.cpp in Sources */,
 				EFDD6A931B0DD76200450029 /* hfile.c in Sources */,
+				EF4270BA1B21CA8900C9ED4E /* t_blast.cpp in Sources */,
 				EFDD6ADB1B0DDB8700450029 /* files.c in Sources */,
 				EF76C92A1ADC09FD003D45F9 /* r_differential.cpp in Sources */,
 				EF4270B21B21676B00C9ED4E /* m_sequence.cpp in Sources */,

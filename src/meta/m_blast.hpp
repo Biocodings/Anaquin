@@ -2,6 +2,7 @@
 #define GI_M_BLAST_HPP
 
 #include <set>
+#include "data/locus.hpp"
 #include "data/types.hpp"
 
 namespace Spike
@@ -10,8 +11,16 @@ namespace Spike
     {
         // Name of the metaquin
         std::string id;
+
+        Concentration mixA, mixB;
+
+        // Contigs aligned to this metaquin
+        std::set<Locus> aligns;
+
+        inline bool operator==(const MetaAlignment &x) const { return id == x.id; }
+        inline bool operator<(const MetaAlignment &x)  const { return id < x.id;  }
     };
-    
+
     struct MBlast
     {
         struct Stats

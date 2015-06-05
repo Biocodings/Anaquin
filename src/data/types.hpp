@@ -5,6 +5,8 @@
 
 namespace Spike
 {
+    typedef std::string MetaQuinID;
+
     typedef unsigned long Counts;
     typedef double Percentage;
     

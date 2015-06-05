@@ -10,25 +10,23 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     if (!options.blast.empty())
     {
         std::map<std::string, ParserBlat::BlatLine> psl;
-        
+
         // Perform a pairwise alignment with blat
         ParserBlat::parse(options.blast, [&](const ParserBlat::BlatLine &l, const ParserProgress &p)
         {
             psl[l.qName] = l;
         });
-        
-        assert(!psl.empty());
-        
+
         std::cout << "Using an aligment file: "  << options.blast << std::endl;
         std::cout << "Creating a abundance plot" << std::endl;
-        
+
         /*
          * Plot the coverage realtive to the known concentration (in attamoles/ul) of each assembled contig.
          */
 
         std::vector<double> x, y;
         std::vector<std::string> z;
-        
+
         for (auto &contig : stats.contigs)
         {
             if (psl.count(contig.id))

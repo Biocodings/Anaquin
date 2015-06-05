@@ -16,6 +16,7 @@
 #include "dna/d_variant.hpp"
 #include "dna/d_sequence.hpp"
 
+#include "meta/m_blast.hpp"
 #include "meta/m_assembly.hpp"
 
 #include "parsers/parser_csv.hpp"
@@ -32,6 +33,7 @@
 #define CMD_META  267
 
 #define MODE_FILTER       280
+#define MODE_BLAST        281
 #define MODE_SEQUENCE     282
 #define MODE_ALIGN        283
 #define MODE_ASSEMBLY     284
@@ -52,11 +54,10 @@ using namespace Spike;
  * Variables used in argument parsing
  */
 
-// An alignment file by BLAST used for metagenomics
-static std::string _blast;
-
 // The path that output files are written
 static std::string _output;
+
+static std::string _psl;
 
 // The sequins that have been restricted
 static std::vector<SequinID> _filters;
@@ -87,6 +88,8 @@ static const struct option long_options[] =
     { "dna",  required_argument, 0, CMD_DNA  },
     { "meta", required_argument, 0, CMD_META },
 
+    { "blast", required_argument, 0, MODE_BLAST },
+    
     { "l",       no_argument, 0, MODE_SEQUINS },
     { "sequins", no_argument, 0, MODE_SEQUINS },
 
@@ -311,7 +314,7 @@ int parse_options(int argc, char ** argv)
     {
         switch (next)
         {
-            case OPT_PSL:    { _blast  = optarg; break; }
+            case OPT_PSL:    { _psl    = optarg; break; }
             case OPT_OUTPUT: { _output = optarg; break; }
 
             case MODE_FILTER:
@@ -456,7 +459,8 @@ int parse_options(int argc, char ** argv)
             {
                 std::cout << "Metagenomics command detected" << std::endl;
 
-                if (_mode != MODE_SEQUINS  &&
+                if (_mode != MODE_BLAST    &&
+                    _mode != MODE_SEQUINS  &&
                     _mode != MODE_SEQUENCE &&
                     _mode != MODE_ASSEMBLY)
                 {
@@ -469,13 +473,46 @@ int parse_options(int argc, char ** argv)
                         case MODE_SEQUENCE: { break; }
                         case MODE_SEQUINS:  { print_meta(); break; }
 
+                        case MODE_BLAST:
+                        {
+                            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+                            
+                            // Analyse the BLAST alignment
+                            const auto r = MBlast::analyze(_opts[0]);
+
+                            std::cout << (boost::format(format) % "ID"
+                                                                % "MixA"
+                                                                % "MixB"
+                                                                % "N"
+                                                                % "Cov"
+                                                                % "Mis"
+                                                                % "Gaps"
+                                                                % "ACov"
+                                                                % "MCov").str() << std::endl;
+
+                            for (const auto &align : r.aligns)
+                            {
+                                std::cout << (boost::format(format) % align.id
+                                                                    % align.mixA
+                                                                    % align.mixB
+                                                                    % align.aligns.size()
+                                                                    % "?"
+                                                                    % "?"
+                                                                    % "?"
+                                                                    % "?"
+                                                                    % "?").str() << std::endl;
+                            }
+                            
+                            break;
+                        }
+                            
                         case MODE_ASSEMBLY:
                         {
                             MAssembly::Options o;
 
-                            // We'd also take an alignment file from a user
-                            o.blast = _blast;
-                            
+                            // We'd also take an alignment PSL file from a user
+                            o.blast = _psl;
+
                             analyze<MAssembly>(_opts[0], o);
                             break;
                         }

@@ -4,6 +4,21 @@
 
 extern int parse_options(const std::string &command, std::string &output, std::string &error);
 
+TEST_CASE("Meta_Blast")
+{
+    std::string output, error;
+    
+    const int status = parse_options("meta -blast tests/data/meta/align.psl ", output, error);
+    
+    std::cout << output << std::endl;
+    
+    REQUIRE(status == 0);
+    REQUIRE(error.find("Unknown") != std::string::npos);
+    REQUIRE(error.find("This is my sequin!!!") != std::string::npos);
+    
+    remove("test.filer");
+}
+
 TEST_CASE("Meta_Print_Sequins")
 {
     std::string output, error;
@@ -35,3 +50,5 @@ TEST_CASE("Meta_Invalid_Filters")
 
     remove("test.filer");
 }
+
+
