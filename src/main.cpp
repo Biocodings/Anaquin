@@ -32,7 +32,7 @@
 #define CMD_META  267
 
 #define MODE_FILTER       280
-#define MODE_SEQUENCING   282
+#define MODE_SEQUENCE     282
 #define MODE_ALIGN        283
 #define MODE_ASSEMBLY     284
 #define MODE_ABUNDANCE    285
@@ -387,16 +387,16 @@ int parse_options(int argc, char ** argv)
                 print_version();
                 break;
             }
-                
+
             case CMD_RNA:
             {
                 std::cout << "RNA command detected" << std::endl;
                 
-                if (_mode != MODE_SEQUINS    &&
-                    _mode != MODE_SEQUENCING &&
-                    _mode != MODE_ALIGN      &&
-                    _mode != MODE_ASSEMBLY   &&
-                    _mode != MODE_ABUNDANCE  &&
+                if (_mode != MODE_SEQUINS   &&
+                    _mode != MODE_SEQUENCE  &&
+                    _mode != MODE_ALIGN     &&
+                    _mode != MODE_ASSEMBLY  &&
+                    _mode != MODE_ABUNDANCE &&
                     _mode != MODE_DIFFERENTIAL)
                 {
                     print_usage();
@@ -405,6 +405,7 @@ int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
+                        case MODE_SEQUENCE: { break; }
                         case MODE_SEQUINS:  { print_rna();                  break; }
                         case MODE_ALIGN:    { analyze<RAlign>(_opts[0]);    break; }
                         case MODE_ASSEMBLY: { analyze<RAssembly>(_opts[0]); break; }
@@ -430,9 +431,9 @@ int parse_options(int argc, char ** argv)
             {
                 std::cout << "DNA command detected" << std::endl;
                 
-                if (_mode != MODE_SEQUINS    &&
-                    _mode != MODE_SEQUENCING &&
-                    _mode != MODE_ALIGN      &&
+                if (_mode != MODE_SEQUINS  &&
+                    _mode != MODE_SEQUENCE &&
+                    _mode != MODE_ALIGN    &&
                     _mode != MODE_VARIATION)
                 {
                     print_usage();
@@ -441,7 +442,8 @@ int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQUINS:   { print_dna();                break; }
+                        case MODE_SEQUENCE:  { break; }
+                        case MODE_SEQUINS:   { print_dna();                 break; }
                         case MODE_ALIGN:     { analyze<DAlign>(_opts[0]);   break; }
                         case MODE_VARIATION: { analyze<DVariant>(_opts[0]); break; }
                     }
@@ -454,7 +456,8 @@ int parse_options(int argc, char ** argv)
             {
                 std::cout << "Metagenomics command detected" << std::endl;
 
-                if (_mode != MODE_SEQUINS &&
+                if (_mode != MODE_SEQUINS  &&
+                    _mode != MODE_SEQUENCE &&
                     _mode != MODE_ASSEMBLY)
                 {
                     print_usage();
@@ -463,7 +466,8 @@ int parse_options(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_SEQUINS: { print_meta(); break; }
+                        case MODE_SEQUENCE: { break; }
+                        case MODE_SEQUINS:  { print_meta(); break; }
 
                         case MODE_ASSEMBLY:
                         {
