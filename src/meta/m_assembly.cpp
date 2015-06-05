@@ -64,14 +64,14 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
     options.writer->open("assembly.stats");
     options.writer->write((boost::format(format) % "Nodes" % "N20" % "N50" % "N80" % "min" % "mean" % "max" % "total" % "reads").str());
-    options.writer->write((boost::format(format) % -1
+    options.writer->write((boost::format(format) % stats.contigs.size()
                                                  % stats.N20
                                                  % stats.N50
                                                  % stats.N80
                                                  % stats.min
                                                  % stats.mean
                                                  % stats.max
-                                                 % -1
+                                                 % stats.total
                                                  % -1).str());
     options.writer->close();
 

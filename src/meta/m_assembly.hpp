@@ -1,6 +1,7 @@
 #ifndef GI_M_ASSEMBLY_HPP
 #define GI_M_ASSEMBLY_HPP
 
+#include <numeric>
 #include "analyzer.hpp"
 #include "data/tokens.hpp"
 #include "meta/histogram.h"
@@ -12,15 +13,20 @@ namespace Spike
     {
         template <typename T> struct Stats
         {
-            BasePair min, max;
-            BasePair mean, sum;
+            BasePair mean, min, max;
             BasePair N20, N50, N80;
+            
+            // Total number of bases in contigs
+            BasePair total;
+            
+            // Total number of bases in the assembly
+            BasePair sum;
 
             // List of assembled contigs not in any specifc order
             std::vector<T> contigs;
         };
 
-        template <typename T = DNAsssembly::Stats<Contig>, typename C = Contig> static T parse(const std::string &file, std::function<void (const C&)> f)
+        template <typename C = Contig, typename T = DNAsssembly::Stats<C>> static T parse(const std::string &file, std::function<void (const C&)> f)
         {
             T stats;
             Histogram h;
@@ -39,7 +45,7 @@ namespace Spike
                                 c.seq = l.seq;
 
                                 // The histogram needs the length of the sequence
-                                h.insert(l.seq.length());
+                                h.insert(l.seq.size());
 
                                 // Allows to apply operations on a specific assembler
                                 f(c);
@@ -54,14 +60,19 @@ namespace Spike
              * Reference: https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
              */
             
-            stats.sum  = h.sum();
-            stats.N50  = h.n50();
-            stats.min  = h.minimum();
-            stats.max  = h.maximum();
-            stats.mean = h.expectedValue();
-            stats.N80  = h.weightedPercentile(1 - 0.8);
-            stats.N20  = h.weightedPercentile(1 - 0.2);
-            
+            stats.sum   = h.sum();
+            stats.N50   = h.n50();
+            stats.min   = h.minimum();
+            stats.max   = h.maximum();
+            stats.mean  = h.expectedValue();
+            stats.N80   = h.weightedPercentile(1 - 0.8);
+            stats.N20   = h.weightedPercentile(1 - 0.2);
+            stats.sum   = h.sum();
+            stats.total = std::accumulate(stats.contigs.begin(), stats.contigs.end(), 0, [&](int sum, const C &c)
+                          {
+                              return sum + c.seq.size();
+                          });
+
             return stats;
         }
     };
@@ -79,8 +90,8 @@ namespace Spike
              */
             
             std::vector<std::string> tokens;
-            
-            return DNAsssembly::parse<Stats, C>(file, [&](const C &node)
+
+            return DNAsssembly::parse<C, Stats>(file, [&](const C &node)
             {
                 C copy = node;
                 Tokens::split(node.id, "_", tokens);
