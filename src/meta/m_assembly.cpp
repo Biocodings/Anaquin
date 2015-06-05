@@ -1,63 +1,25 @@
-#include "data/tokens.hpp"
 #include "meta/m_assembly.hpp"
 #include "parsers/parser_blat.hpp"
 
 using namespace Spike;
 
-Velvet::VelvetStats Velvet::analyze(const std::string &contig, const std::string &blat)
+MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &options)
 {
-    Velvet::VelvetStats stats;
-    std::map<std::string, ParserBlat::BlatLine> psl;
-
-    // Perform a pairwise alignment with blat
-    ParserBlat::parse(blat, [&](const ParserBlat::BlatLine &l, const ParserProgress &p)
-    {
-        psl[l.qName] = l;
-    });
-
-    assert(!psl.empty());
+    MAssembly::Stats stats = Velvet::parse<MAssembly::Stats, MAssembly::AlignedContig>(file);
     
-    /*
-     * Read coverage from the contig file. The format looks like:
-     *
-     *      >NODE_77460_length_31_cov_1.129032
-     */
-
-    std::vector<std::string> tokens;
-    
-    ParserFA::parse(contig, [&](const FALine &l, const ParserProgress &)
+    if (!options.blast.empty())
     {
-        Tokens::split(l.id, "_", tokens);
-        Node node;
+        std::map<std::string, ParserBlat::BlatLine> psl;
         
-        // Eg: NODE_77460
-        node.id = l.id;
-
-        if (psl.count(l.id))
+        // Perform a pairwise alignment with blat
+        ParserBlat::parse(options.blast, [&](const ParserBlat::BlatLine &l, const ParserProgress &p)
         {
-            node.sequin = psl[l.id].tName;
-        }
-
-        // Coverage of the node in k-mer
-        node.cov = stof(tokens[tokens.size() - 1]);
-
-        stats.nodes.push_back(node);
-    });
-
-    return stats;
-}
-
-MAssemblyStats MAssembly::analyze(const std::string &file, const Options &options)
-{
-    MAssemblyStats stats = DNAsssembly::stats<MAssemblyStats>(file);
-
-    if (!options.psl.empty())
-    {
-        std::cout << "Using an aligment file: " << options.psl << std::endl;
+            psl[l.qName] = l;
+        });
         
-        // Calculate velvet-specific statistics
-        const auto contigs = Velvet::analyze(file, options.psl);
+        assert(!psl.empty());
         
+        std::cout << "Using an aligment file: "  << options.blast << std::endl;
         std::cout << "Creating a abundance plot" << std::endl;
         
         /*
@@ -67,21 +29,26 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
         std::vector<double> x, y;
         std::vector<std::string> z;
         
-        for (const auto &node : contigs.nodes)
+        for (auto &contig : stats.contigs)
         {
-            if (!node.sequin.empty())
+            if (psl.count(contig.id))
             {
-                const auto &seq = Standard::instance().m_seq_A.at(node.sequin);
+                contig.sequin = psl[contig.id].tName;
+            }
+
+            if (!contig.sequin.empty())
+            {
+                //const auto &seq = Standard::instance().m_seq_A.at(node.sequin);
                 
                 // Known concentration from the matching sequin
-                const auto known = seq.abund();
+                //const auto known = seq.abund();
                 
                 // Measured coverage
-                const auto measured = node.cov;
+                //const auto measured = node.cov;
                 
-                x.push_back(log(known));
-                y.push_back(log(measured));
-                z.push_back(node.sequin);
+                //x.push_back(log(known));
+                //y.push_back(log(measured));
+                //z.push_back(node.sequin);
             }
         }
         
@@ -93,16 +60,19 @@ MAssemblyStats MAssembly::analyze(const std::string &file, const Options &option
      * Write out assembly results
      */
 
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
     options.writer->open("assembly.stats");
-    options.writer->write((boost::format(format) % "N20" % "N50" % "N80" % "min" % "mean" % "max").str());
-    options.writer->write((boost::format(format) % stats.N20
+    options.writer->write((boost::format(format) % "Nodes" % "N20" % "N50" % "N80" % "min" % "mean" % "max" % "total" % "reads").str());
+    options.writer->write((boost::format(format) % -1
+                                                 % stats.N20
                                                  % stats.N50
                                                  % stats.N80
                                                  % stats.min
                                                  % stats.mean
-                                                 % stats.max).str());
+                                                 % stats.max
+                                                 % -1
+                                                 % -1).str());
     options.writer->close();
 
     return stats;;

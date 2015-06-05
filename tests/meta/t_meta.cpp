@@ -20,7 +20,6 @@ TEST_CASE("Meta_Print_Sequins")
 TEST_CASE("Meta_Invalid_Filters")
 {
     std::string output, error;
-    const int status = parse_options("meta -assembly contig.fa -r test.filter", output, error);
 
     std::ofstream o;
     o.open ("test.filter");
@@ -28,6 +27,8 @@ TEST_CASE("Meta_Invalid_Filters")
     o << "This is my sequin!!!" << std::endl;
     o.close();
 
+    const int status = parse_options("meta -assembly contig.fa -r test.filter", output, error);
+    
     REQUIRE(status == 1);
     REQUIRE(error.find("Unknown") != std::string::npos);
     REQUIRE(error.find("This is my sequin!!!") != std::string::npos);

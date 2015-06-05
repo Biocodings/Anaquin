@@ -53,7 +53,7 @@ using namespace Spike;
  */
 
 // An alignment file by BLAST used for metagenomics
-static std::string _psl;
+static std::string _blast;
 
 // The path that output files are written
 static std::string _output;
@@ -311,7 +311,7 @@ int parse_options(int argc, char ** argv)
     {
         switch (next)
         {
-            case OPT_PSL:    { _psl = optarg;    break; }
+            case OPT_PSL:    { _blast  = optarg; break; }
             case OPT_OUTPUT: { _output = optarg; break; }
 
             case MODE_FILTER:
@@ -474,7 +474,7 @@ int parse_options(int argc, char ** argv)
                             MAssembly::Options o;
 
                             // We'd also take an alignment file from a user
-                            o.psl = _psl;
+                            o.blast = _blast;
                             
                             analyze<MAssembly>(_opts[0], o);
                             break;

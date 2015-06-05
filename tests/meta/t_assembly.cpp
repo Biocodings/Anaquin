@@ -18,7 +18,7 @@ TEST_CASE("MAssembly_Contigs_2")
 
 TEST_CASE("DNAssembly_Contigs")
 {
-    const auto r = DNAsssembly::stats<>("tests/data/meta/contigs.fa");
+    const auto r = Velvet::parse<DNAsssembly::Stats<Contig>, Contig>("tests/data/meta/contigs_1.fa");
 
     REQUIRE(r.contigs.size() == 63);
 

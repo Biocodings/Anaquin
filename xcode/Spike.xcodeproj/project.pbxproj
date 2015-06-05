@@ -112,7 +112,6 @@
 		EF224B591ADB5E3C00B989A8 /* d_variant.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = d_variant.hpp; path = ../src/dna/d_variant.hpp; sourceTree = "<group>"; };
 		EF2290341AC0E58000CE76BF /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/alignment.hpp; sourceTree = "<group>"; };
 		EF2290351AC0E58000CE76BF /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
-		EF2290381AC0E58000CE76BF /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/biology.hpp; sourceTree = "<group>"; };
 		EF22903E1AC0E58000CE76BF /* feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = feature.hpp; path = ../src/feature.hpp; sourceTree = "<group>"; };
 		EF22903F1AC0E58000CE76BF /* locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/locus.hpp; sourceTree = "<group>"; };
 		EF2290511AC0E58000CE76BF /* standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = standard.hpp; path = ../src/standard.hpp; sourceTree = "<group>"; };
@@ -145,6 +144,7 @@
 		EF4270AE1B21667C00C9ED4E /* t_dna.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_dna.cpp; path = ../tests/dna/t_dna.cpp; sourceTree = "<group>"; };
 		EF4270B01B21676B00C9ED4E /* m_sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_sequence.cpp; sourceTree = "<group>"; };
 		EF4270B11B21676B00C9ED4E /* m_sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_sequence.hpp; sourceTree = "<group>"; };
+		EF4270B31B21A4B500C9ED4E /* biology.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/data/biology.hpp; sourceTree = "<group>"; };
 		EF44A81B1AF78E400036C894 /* t_parser_tracking.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_tracking.cpp; path = parsers/t_parser_tracking.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
@@ -279,7 +279,6 @@
 				EF2290521AC0E58000CE76BF /* standard.cpp */,
 				EF2290341AC0E58000CE76BF /* alignment.hpp */,
 				EFF4FB0D1ADD256F0008FD04 /* analyzer.hpp */,
-				EF2290381AC0E58000CE76BF /* biology.hpp */,
 				EF2290541AC0E58000CE76BF /* classify.hpp */,
 				EF76C9221ADBE82F003D45F9 /* expression.hpp */,
 				EF22903E1AC0E58000CE76BF /* feature.hpp */,
@@ -364,6 +363,7 @@
 		EF4270A31B214F8400C9ED4E /* data */ = {
 			isa = PBXGroup;
 			children = (
+				EF4270B31B21A4B500C9ED4E /* biology.hpp */,
 				EF4270A41B214F9000C9ED4E /* filter.hpp */,
 				EF4270A51B214F9000C9ED4E /* reader.cpp */,
 				EF4270A61B214F9000C9ED4E /* reader.hpp */,
