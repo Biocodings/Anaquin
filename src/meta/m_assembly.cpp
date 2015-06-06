@@ -7,13 +7,12 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 {
     MAssembly::Stats stats = Velvet::parse<MAssembly::Stats, MAssembly::AlignedContig>(file);
 
-    // Prefer an alignment file from user
-    if (!options.blast.empty())
+    if (!options.psl.empty())
     {
-        std::cout << "Using an aligment file: "  << options.blast << std::endl;
+        std::cout << "Using an aligment file: "  << options.psl << std::endl;
 
         // Analyse the given blast alignment file
-        const auto r = MBlast::analyze(options.blast);
+        const auto r = MBlast::analyze(options.psl);
 
         std::cout << "Creating an abundance plot" << std::endl;
 
@@ -55,7 +54,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         }
         
         // Generate a R script for a plot of abundance
-        AnalyzeReporter::script("abundance.R", x, y, z, options.writer);
+        AnalyzeReporter::script("meta_abundance.R", x, y, z, options.writer);
     }
     
     /*

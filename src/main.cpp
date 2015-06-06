@@ -95,8 +95,8 @@ static const struct option long_options[] =
     { "l",        no_argument, 0, MODE_SEQUINS },
     { "sequins",  no_argument, 0, MODE_SEQUINS },
 
-    { "r",        required_argument, 0, MODE_FILTER },
-    { "restrict", required_argument, 0, MODE_FILTER },
+    { "f",        required_argument, 0, MODE_FILTER },
+    { "filter", required_argument, 0, MODE_FILTER },
     
     { "as",       required_argument, 0, MODE_ASSEMBLY },
     { "assembly", required_argument, 0, MODE_ASSEMBLY },
@@ -517,7 +517,7 @@ int parse_options(int argc, char ** argv)
                             MAssembly::Options o;
 
                             // We'd also take an alignment PSL file from a user
-                            o.blast = _psl;
+                            o.psl = _psl;
 
                             analyze<MAssembly>(_opts[0], o);
                             break;
