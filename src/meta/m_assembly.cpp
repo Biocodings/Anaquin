@@ -7,45 +7,53 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 {
     MAssembly::Stats stats = Velvet::parse<MAssembly::Stats, MAssembly::AlignedContig>(file);
 
-    // Prefer the alignment file from user if provided
+    // Prefer an alignment file from user
     if (!options.blast.empty())
     {
         std::cout << "Using an aligment file: "  << options.blast << std::endl;
-        
+
         // Analyse the given blast alignment file
         const auto r = MBlast::analyze(options.blast);
-        
-        std::cout << "Creating a abundance plot" << std::endl;
+
+        std::cout << "Creating an abundance plot" << std::endl;
 
         /*
-         * Plot the coverage realtive to the known concentration (in attamoles/ul) of each assembled contig.
+         * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
          */
 
         std::vector<double> x, y;
         std::vector<std::string> z;
 
-        for (const auto &contig : stats.contigs)
+        for (const auto &meta : r.metas)
         {
-            // If the contig has an alignment
-            if (r.aligns.count(contig.id))
+            // If the metaquin has an alignment
+            if (!meta.aligns.empty())
             {
-                const auto &seq = r.aligns.at(contig.id).seqA;
-                
-                // Known concentration from the matching sequin
-                const auto known = seq.abund();
+                // Known concentration
+                const auto known = meta.seqA.abund();
 
-                assert(contig.k_cov);
+                BasePair measured = 0;
                 
-                // Measured coverage (alignment coverage)
-                const auto measured = contig.k_cov / seq.l.length();
-                //const auto measured = contig.k_cov contig.seq.length();
-                
+                /*
+                 * Calculate measured concentration for this metaquin. The problem is that our
+                 * alignment information is independent to the coverage. We'll need to link the
+                 * pieces together. We'll also need to average out the contigs for the sequin.
+                 */
+
+                for (std::size_t i = 0; i < meta.temp.size(); i++)
+                {
+                    const auto &contig = stats.contigs.at(meta.temp[i]);
+
+                    measured += contig.k_cov / contig.seq.size();
+                    //measured += contig.k_cov / meta.seqA.l.length();
+                }
+
                 x.push_back(log(known));
                 y.push_back(log(measured));
-                z.push_back(contig.id);
+                z.push_back(meta.id);
             }
         }
-
+        
         // Generate a R script for a plot of abundance
         AnalyzeReporter::script("abundance.R", x, y, z, options.writer);
     }

@@ -38,6 +38,7 @@ MBlast::Stats MBlast::analyze(const std::string &file)
     {
         if (m.count(l.tName))
         {
+            m.at(l.tName).temp.push_back(l.qName);
             m.at(l.tName).ids.push_back(l.tName);
             m.at(l.tName).aligns.push_back(Locus(l.tStart, l.tEnd));
         }

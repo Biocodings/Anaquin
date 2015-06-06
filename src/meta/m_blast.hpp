@@ -26,6 +26,8 @@ namespace Spike
         // Contigs aligned to this metaquin
         std::vector<Locus> aligns;
 
+        std::vector<std::string> temp;
+        
         // Fraction of bases covered by alignments
         double coverage;
         

@@ -6,7 +6,7 @@ namespace Spike
     struct Contig
     {
         std::string id;
-        
+
         // The sequence being assembled
         std::string seq;
 

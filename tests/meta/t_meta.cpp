@@ -4,16 +4,6 @@
 
 extern int parse_options(const std::string &command, std::string &output, std::string &error);
 
-TEST_CASE("Meta_Blast")
-{
-    std::string output, error;
-    
-    const int status = parse_options("meta -blast tests/data/meta/align.psl ", output, error);
-    
-    REQUIRE(status == 0);
-    REQUIRE(output.find("M5_G") != std::string::npos);
-}
-
 TEST_CASE("Meta_Print_Sequins")
 {
     std::string output, error;
@@ -46,4 +36,21 @@ TEST_CASE("Meta_Invalid_Filters")
     remove("test.filer");
 }
 
+TEST_CASE("Meta_Assembly_Blast")
+{
+    std::string output, error;
+    
+    const int status = parse_options("meta -assembly tests/data/meta/contigs_3.fa -psl tests/data/meta/align.psl", output, error);
+    
+    REQUIRE(status == 0);
+}
 
+TEST_CASE("Meta_Blast")
+{
+    std::string output, error;
+    
+    const int status = parse_options("meta -blast tests/data/meta/align.psl", output, error);
+    
+    REQUIRE(status == 0);
+    REQUIRE(output.find("M5_G") != std::string::npos);
+}

@@ -18,7 +18,7 @@ int parse_options(const std::string &command, std::string &output, std::string &
 
     for (std::size_t i = 0; i < tokens.size(); i++)
     {
-        argv[i+1] = new char(tokens[i].size() + 1);
+        argv[i+1] = new char[tokens[i].size() + 1];
         strcpy(argv[i+1], tokens[i].c_str());
     }
     
@@ -42,6 +42,3 @@ int parse_options(const std::string &command, std::string &output, std::string &
 
     return status;
 }
-
-
-
