@@ -131,7 +131,7 @@ namespace Spike
 
             // Metagenomic annotation
             std::vector<BedFeature> m_model;
-        
+
         private:
             Standard();
             Standard(Standard const&)       = delete;
