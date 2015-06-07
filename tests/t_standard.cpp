@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "standard.hpp"
+#include "data/standard.hpp"
 
 using namespace Spike;
 

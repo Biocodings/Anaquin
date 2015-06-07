@@ -3,7 +3,6 @@
 
 #include <map>
 #include <vector>
-#include "data/locus.hpp"
 #include "data/sequin.hpp"
 #include "data/feature.hpp"
 #include "parsers/parser_bed.hpp"

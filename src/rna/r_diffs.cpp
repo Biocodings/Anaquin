@@ -1,4 +1,4 @@
-#include "expression.hpp"
+#include "stats/expression.hpp"
 #include "rna/r_diffs.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include <ss/regression/lm.hpp>

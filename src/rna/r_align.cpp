@@ -1,6 +1,6 @@
 #include <assert.h>
 #include "r_align.hpp"
-#include "expression.hpp"
+#include "stats/expression.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;

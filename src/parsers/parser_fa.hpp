@@ -1,7 +1,7 @@
 #ifndef GI_PARSER_FA_HPP
 #define GI_PARSER_FA_HPP
 
-#include "analyzer.hpp"
+#include "stats/analyzer.hpp"
 #include "parsers/parser.hpp"
 
 namespace Spike

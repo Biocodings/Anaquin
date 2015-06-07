@@ -1,6 +1,6 @@
 #include <map>
 #include <iostream>
-#include "standard.hpp"
+#include "data/standard.hpp"
 #include "meta/m_blast.hpp"
 #include "parsers/parser_blat.hpp"
 

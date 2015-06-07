@@ -1,5 +1,5 @@
 #include "r_assembly.hpp"
-#include "expression.hpp"
+#include "stats/expression.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Spike;

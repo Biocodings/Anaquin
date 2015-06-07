@@ -2,7 +2,7 @@
 #define GI_M_ASSEMBLY_HPP
 
 #include <numeric>
-#include "analyzer.hpp"
+#include "stats/analyzer.hpp"
 #include "data/tokens.hpp"
 #include "meta/m_histogram.h"
 #include "parsers/parser_fa.hpp"

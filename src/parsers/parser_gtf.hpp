@@ -1,8 +1,8 @@
 #ifndef GI_PARSER_GTF_HPP
 #define GI_PARSER_GTF_HPP
 
-#include "feature.hpp"
-#include "analyzer.hpp"
+#include "data/feature.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Spike
 {

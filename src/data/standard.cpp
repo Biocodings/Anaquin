@@ -4,7 +4,7 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
-#include "standard.hpp"
+#include "data/standard.hpp"
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
 #include "parsers/parser_fa.hpp"

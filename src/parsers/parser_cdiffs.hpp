@@ -2,7 +2,7 @@
 #define GI_PARSER_CDIFFS_HPP
 
 #include <ss/p.hpp>
-#include "analyzer.hpp"
+#include "stats/analyzer.hpp"
 #include "parsers/parser_cuffs.hpp"
 
 namespace Spike

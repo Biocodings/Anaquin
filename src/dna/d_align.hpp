@@ -1,7 +1,7 @@
 #ifndef GI_D_ALIGN_HPP
 #define GI_D_ALIGN_HPP
 
-#include "analyzer.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Spike
 {

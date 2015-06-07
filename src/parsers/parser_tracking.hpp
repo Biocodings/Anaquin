@@ -1,7 +1,7 @@
 #ifndef GI_PARSER_TRACKING_HPP
 #define GI_PARSER_TRACKING_HPP
 
-#include "analyzer.hpp"
+#include "stats/analyzer.hpp"
 #include "data/types.hpp"
 #include "parsers/parser_cuffs.hpp"
 

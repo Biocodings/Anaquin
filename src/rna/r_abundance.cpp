@@ -1,6 +1,6 @@
 #include <iostream>
 #include <ss/c.hpp>
-#include "expression.hpp"
+#include "stats/expression.hpp"
 #include "r_abundance.hpp"
 #include "writers/r_writer.hpp"
 #include <ss/regression/lm.hpp>

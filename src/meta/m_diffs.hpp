@@ -1,7 +1,7 @@
 #ifndef GI_M_DIFFS_HPP
 #define GI_M_DIFFS_HPP
 
-#include "analyzer.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Spike
 {
