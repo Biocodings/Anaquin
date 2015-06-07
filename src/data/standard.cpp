@@ -168,29 +168,40 @@ Standard::Standard()
     meta();
 }
 
-void Standard::meta()
+void Standard::meta_mod(const FileName &file)
 {
-    // Parse mixtures
-    parseMix__(m_mix_f(), m_seq_A, m_seq_B);
-
-    // Parse annotations
     ParserBED::parse(m_bed_f(), [&](const BedFeature &f, const ParserProgress &)
     {
         m_model.push_back(f);
-        
+                         
         if (m_seq_A.count(f.name))
         {
             m_seq_A.at(f.name).l = f.l;
             m_seq_B.at(f.name).l = f.l;
         }
-        else
-        {
-            //std::cout << f.name << std::endl;
-        }
     }, DataMode::String);
 
     assert(!m_model.empty());
+}
+
+void Standard::meta_mix(const FileName &file)
+{
+    m_seq_A.clear();
+    m_seq_B.clear();
+    
+    // Parse a mixture file 
+    parseMix__(file, m_seq_A, m_seq_B);
+
     assert(!m_seq_A.empty()  && !m_seq_A.empty());
+}
+
+void Standard::meta()
+{
+    // Apply the default mixture file
+    meta_mix(m_mix_f());
+
+    // Apply the default annotation file
+    meta_mod(m_bed_f());
 }
 
 void Standard::dna()

@@ -29,8 +29,10 @@ namespace Spike
     typedef std::string SequinID;
     typedef std::string IsoformID;
     typedef std::string VariantID;
-    typedef std::string FeatureName;
     typedef std::string TranscriptID;
+
+    typedef std::string FileName;
+    typedef std::string FeatureName;
 
     // Eg: 388488 from the first matching base
     typedef long long BasePair;    

@@ -123,6 +123,9 @@ namespace Spike
              * Metagenomic data
              */
 
+            void meta_mod(const FileName &);
+            void meta_mix(const FileName &);
+
             // Metagenomic sequins
             SequinMap m_seq_A, m_seq_B;
 
@@ -134,8 +137,13 @@ namespace Spike
             Standard(Standard const&)       = delete;
             void operator=(Standard const&) = delete;
 
+            // Apply default resources for RNA
             void rna();
+
+            // Apply default resources for DNA
             void dna();
+
+            // Apply default resources for metagenomics
             void meta();
     };
 }
