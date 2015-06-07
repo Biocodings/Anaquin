@@ -15,6 +15,8 @@ TEST_CASE("Meta_Assembly_Default_Mixture_Model")
     const int status = parse_options("meta -mixture data/meta/META.mix.csv -model data/meta/META.ref.bed -assembly tests/data/meta/contigs_3.fa", output, error);
 
     REQUIRE(status == 0);
+    REQUIRE(output.find("Mixture file") != std::string::npos);
+    REQUIRE(output.find("Model file") != std::string::npos);
 }
 
 /*

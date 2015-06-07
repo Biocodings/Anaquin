@@ -223,9 +223,9 @@ template <typename Mixture, typename Model> void applyCustom(Mixture mix, Model 
     
     std::cout << "Mixture file: " << _mixture << std::endl;
     std::cout << "Model file: "   << _model   << std::endl;
-    
-    mix(_mixture);
-    mod(_model);
+
+    mix(Reader(_mixture));
+    mod(Reader(_model));
 }
 
 // Read sequins from a file, one per line. The identifiers must match.
