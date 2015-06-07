@@ -373,8 +373,7 @@ void Standard::rna()
         {
             Sequin s;
 
-            s.l = temp.at(s.id);
-            s.id  = f[RNA_ID];
+            s.l = temp.at(s.id = f[RNA_ID]);
             s.abund() = stof(f[mix == MixA ? Con_A : Con_B]);
 
             return (m[s.id] = s);

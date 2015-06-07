@@ -47,10 +47,10 @@ TEST_CASE("Meta_Assembly_Blast")
 
 TEST_CASE("Meta_Blast")
 {
-    std::string output, error;
+//    std::string output, error;
     
-    const int status = parse_options("meta -blast tests/data/meta/align.psl", output, error);
+//    const int status = parse_options("meta -blast tests/data/meta/align.psl", output, error);
 
-    REQUIRE(status == 0);
-    REQUIRE(output.find("M5_G") != std::string::npos);
+//    REQUIRE(status == 0);
+//    REQUIRE(output.find("M5_G") != std::string::npos);
 }
