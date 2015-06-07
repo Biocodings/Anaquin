@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include "data/reader.hpp"
 #include "data/sequin.hpp"
 #include "data/feature.hpp"
 #include "parsers/parser_bed.hpp"
@@ -123,8 +124,8 @@ namespace Spike
              * Metagenomic data
              */
 
-            void meta_mod(const FileName &);
-            void meta_mix(const FileName &);
+            void meta_mod(const Reader &);
+            void meta_mix(const Reader &);
 
             // Metagenomic sequins
             SequinMap m_seq_A, m_seq_B;

@@ -332,6 +332,9 @@ void parse(int argc, char ** argv)
     }
     
     int next, index;
+
+    // This is not needed for the software but unit-testing
+    optind = optreset = 1;
     
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
@@ -471,7 +474,7 @@ void parse(int argc, char ** argv)
                 
                 applyCustom(std::bind(&Standard::meta_mix, &s, std::placeholders::_1),
                             std::bind(&Standard::meta_mod, &s, std::placeholders::_1));
-                
+
                 if (_mode != MODE_BLAST    &&
                     _mode != MODE_SEQUINS  &&
                     _mode != MODE_SEQUENCE &&

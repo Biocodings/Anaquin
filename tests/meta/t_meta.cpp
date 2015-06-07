@@ -4,6 +4,45 @@
 
 extern int parse_options(const std::string &command, std::string &output, std::string &error);
 
+/*
+ * Analyze an assembly from Velvet. Given the same default mixture and annotation model.
+ */
+
+TEST_CASE("Meta_Assembly_Default_Mixture_Model")
+{
+    std::string output, error;
+    
+    const int status = parse_options("meta -mixture data/meta/META.mix.csv -model data/meta/META.ref.bed -assembly tests/data/meta/contigs_3.fa", output, error);
+
+    REQUIRE(status == 0);
+}
+
+/*
+ * Analyze an assembly from Velvet
+ */
+
+TEST_CASE("Meta_Assembly")
+{
+    std::string output, error;
+    
+    const int status = parse_options("meta -assembly tests/data/meta/contigs_3.fa", output, error);
+    
+    REQUIRE(status == 0);
+}
+
+/*
+ * Analyze an assembly from Velvet. An alignment file from Blast is also given.
+ */
+
+TEST_CASE("Meta_Assembly_Blast")
+{
+    std::string output, error;
+    
+    const int status = parse_options("meta -assembly tests/data/meta/contigs_3.fa -psl tests/data/meta/align.psl", output, error);
+    
+    REQUIRE(status == 0);
+}
+
 TEST_CASE("Meta_Print_Sequins")
 {
     std::string output, error;
@@ -34,15 +73,6 @@ TEST_CASE("Meta_Invalid_Filters")
     REQUIRE(error.find("This is my sequin!!!") != std::string::npos);
 
     remove("test.filer");
-}
-
-TEST_CASE("Meta_Assembly_Blast")
-{
-    std::string output, error;
-    
-    const int status = parse_options("meta -assembly tests/data/meta/contigs_3.fa -psl tests/data/meta/align.psl", output, error);
-    
-    //REQUIRE(status == 0);
 }
 
 TEST_CASE("Meta_Blast")

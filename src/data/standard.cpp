@@ -76,11 +76,11 @@ static Sequin createSequin(const Fields &f, Mixture mix)
     return s;
 };
 
-static void parseMix__(const std::string &file, Standard::SequinMap &a, Standard::SequinMap &b)
+static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::SequinMap &b)
 {
     std::map<SequinID, Fields> seqs;
 
-    ParserCSV::parse(file, [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0 || fields.size() != 3)
         {
@@ -91,7 +91,7 @@ static void parseMix__(const std::string &file, Standard::SequinMap &a, Standard
         assert(seqs.count(fields[0]) == 0);
 
         seqs[fields[0]] = fields;
-    }, DataMode::String, ",");
+    }, ",");
 
     for (const auto &seq : seqs)
     {
@@ -113,8 +113,10 @@ static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standa
                                               Standard::PairMap  &pair_A, Standard::PairMap  &pair_B)
 {
     std::map<SequinID, std::vector<Fields>> seqs;
+
+    Reader r(file, DataMode::String);
     
-    ParserCSV::parse(file, [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {
@@ -122,7 +124,7 @@ static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standa
         }
 
         seqs[fields[RDM_ID].substr(0, fields[RDM_ID].length() - 2)].push_back(fields);
-    }, DataMode::String);
+    });
 
     /*
      * Build sequins from the CSV lines
@@ -168,9 +170,9 @@ Standard::Standard()
     meta();
 }
 
-void Standard::meta_mod(const FileName &file)
+void Standard::meta_mod(const Reader &r)
 {
-    ParserBED::parse(m_bed_f(), [&](const BedFeature &f, const ParserProgress &)
+    ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
         m_model.push_back(f);
                          
@@ -179,18 +181,18 @@ void Standard::meta_mod(const FileName &file)
             m_seq_A.at(f.name).l = f.l;
             m_seq_B.at(f.name).l = f.l;
         }
-    }, DataMode::String);
+    });
 
     assert(!m_model.empty());
 }
 
-void Standard::meta_mix(const FileName &file)
+void Standard::meta_mix(const Reader &r)
 {
     m_seq_A.clear();
     m_seq_B.clear();
     
     // Parse a mixture file 
-    parseMix__(file, m_seq_A, m_seq_B);
+    parseMix__(r, m_seq_A, m_seq_B);
 
     assert(!m_seq_A.empty()  && !m_seq_A.empty());
 }
@@ -198,10 +200,10 @@ void Standard::meta_mix(const FileName &file)
 void Standard::meta()
 {
     // Apply the default mixture file
-    meta_mix(m_mix_f());
+    meta_mix(Reader(m_mix_f(), DataMode::String));
 
     // Apply the default annotation file
-    meta_mod(m_bed_f());
+    meta_mod(Reader(m_bed_f(), DataMode::String));
 }
 
 void Standard::dna()
@@ -214,15 +216,15 @@ void Standard::dna()
 
     // Parse mixtures
     parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
-
+    
     // Parse annotation
-    ParserBED::parse(d_bed_f(), [&](const BedFeature &f, const ParserProgress &)
+    ParserBED::parse(Reader(d_bed_f(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
     {
         d_annot.push_back(f);
         d_seq_A.at(f.name).l    = d_seq_B.at(f.name).l    = f.l;
         d_pair_A.at(f.name).r.l = d_pair_A.at(f.name).v.l = f.l;
         d_pair_B.at(f.name).r.l = d_pair_B.at(f.name).v.l = f.l;
-    }, DataMode::String);
+    });
 
     assert(!d_annot.empty()  && !d_vars.empty());
     assert(!d_seq_A.empty()  && !d_seq_A.empty());
@@ -311,7 +313,7 @@ void Standard::rna()
     // Required while reading mixtures
     std::map<IsoformID, Locus> temp;
 
-    ParserBED::parse(r_bed_f(), [&](const BedFeature &t, const ParserProgress &p)
+    ParserBED::parse(Reader(r_bed_f(), DataMode::String), [&](const BedFeature &t, const ParserProgress &p)
     {
         assert(!t.name.empty());
         
@@ -343,7 +345,7 @@ void Standard::rna()
         });
 
         assert(iter != r_genes.end());
-    }, DataMode::String);
+    });
 
     CHECK_AND_SORT(r_introns);
 
@@ -366,7 +368,7 @@ void Standard::rna()
         LogFold,
     };
 
-    ParserCSV::parse(r_mix_f(), [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(Reader(r_mix_f(), DataMode::String), [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {
@@ -374,7 +376,7 @@ void Standard::rna()
         }
         
         seqs[fields[RNA_ID].substr(0, fields[RNA_ID].length() - 2)].push_back(fields);
-    }, DataMode::String);
+    });
 
     assert(!seqs.empty());
     

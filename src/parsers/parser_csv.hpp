@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include "data/reader.hpp"
 #include "parsers/parser.hpp"
 
 namespace Spike
@@ -12,8 +13,8 @@ namespace Spike
     struct ParserCSV
     {
         typedef std::function<void (const Fields &, const ParserProgress &)> Callback;
-        static void parse(const std::string &file, Callback, DataMode mode, const std::string &delim = "\t");
-    };    
+        static void parse(const Reader &, Callback, const std::string &delim = "\t");
+    };
 }
 
 #endif

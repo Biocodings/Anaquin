@@ -5,9 +5,8 @@
 
 using namespace Spike;
 
-void ParserBED::parse(const std::string &file, Callback x, DataMode mode)
+void ParserBED::parse(const Reader &r, Callback x)
 {
-    Reader f(file, mode);
     BedFeature bf;
     ParserProgress p;
 
@@ -35,8 +34,8 @@ void ParserBED::parse(const std::string &file, Callback x, DataMode mode)
      */
 
     std::vector<std::string> sizes, starts, tokens;
-    
-    while (f.nextTokens(tokens, "\t"))
+
+    while (r.nextTokens(tokens, "\t"))
     {
         // Empty line?
         if (tokens.size() == 1)
