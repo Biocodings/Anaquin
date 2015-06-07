@@ -69,9 +69,9 @@ static Sequin createSequin(const Fields &f, Mixture mix)
 {
     Sequin s;
 
-    s.id  = f[RDM_ID];
+    s.id = f[RDM_ID];
     //s.l   = temp.at(s.id);
-    s.raw = stof(f[mix == MixA ? Con_A : Con_B]);
+    s.abund() = stof(f[mix == MixA ? Con_A : Con_B]);
 
     return s;
 };
@@ -79,7 +79,7 @@ static Sequin createSequin(const Fields &f, Mixture mix)
 static void parseMix__(const std::string &file, Standard::SequinMap &a, Standard::SequinMap &b)
 {
     std::map<SequinID, Fields> seqs;
-    
+
     ParserCSV::parse(file, [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0 || fields.size() != 3)
@@ -87,7 +87,9 @@ static void parseMix__(const std::string &file, Standard::SequinMap &a, Standard
             return;
         }
 
+        // Make sure there's no duplicate sequin in the mixture file
         assert(seqs.count(fields[0]) == 0);
+
         seqs[fields[0]] = fields;
     }, DataMode::String, ",");
 
@@ -96,14 +98,12 @@ static void parseMix__(const std::string &file, Standard::SequinMap &a, Standard
         Sequin t;
 
         t.id  = seq.first;
-        t.raw = stof(seq.second[1]);
+        t.abund() = stof(seq.second[1]);
 
         a[t.id] = t;
 
-        
-        
         t.id  = seq.first;
-        t.raw = stof(seq.second[2]);
+        t.abund() = stof(seq.second[2]);
         
         b[t.id] = t;
     }
@@ -373,9 +373,9 @@ void Standard::rna()
         {
             Sequin s;
 
+            s.l = temp.at(s.id);
             s.id  = f[RNA_ID];
-            s.l   = temp.at(s.id);
-            s.raw = stof(f[mix == MixA ? Con_A : Con_B]);
+            s.abund() = stof(f[mix == MixA ? Con_A : Con_B]);
 
             return (m[s.id] = s);
         };

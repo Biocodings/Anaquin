@@ -6,20 +6,25 @@
 
 namespace Spike
 {
-    struct Sequin
+    class Sequin
     {
-        operator Locus()     const { return l;  }
-        operator IsoformID() const { return id; }
+        public:
+            operator Locus()     const { return l;  }
+            operator IsoformID() const { return id; }
+
+            SequinID id;
+            Locus l;
+
+            // Amount of abundance, a non-const method
+            Concentration &abund() { return _abund; }
         
-        inline Concentration abund() const { return raw; }
-        
-        SequinID id;
-        Locus l;
-        
-        // Amount of abundance
-        Concentration raw;
+            // Amount of abundance, a const method
+            const Concentration &abund() const { return _abund; }
+
+        private:
+            Concentration _abund;
     };
-    
+
     struct Sequins
     {
         inline Concentration abund() const
