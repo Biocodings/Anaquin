@@ -6,9 +6,6 @@ import math
 import subprocess
 from random import randint
 
-def meta_path():
-    return 'META_Simulation/'
-
 def dna_path():
     return 'DNA_Simulation/'
 
@@ -27,14 +24,8 @@ def r_sequins():
 def d_sequins():
     return '../data/dna/DNA.tab.fa'
 
-def r_mixtures():
-    return '../data/rna/rna_standards.txt'
-
-def d_mixtures():
-    return '../data/dna/dna_standards.txt'
-
 # Split a file of sequin into individual sequins
-def split_sequins(file, seq_path):
+def split(file, seq_path):
     os.system('mkdir -p ' + seq_path)
 
     with open(file) as f:
@@ -47,12 +38,12 @@ def split_sequins(file, seq_path):
             file = l1.replace(">","")
             file = file.replace("?","")
             file = file.replace("\n","")
-
+    
             w = open(seq_path + file + '.fa', 'w')
             w.write(l1)
             w.write(l2)
 
-def read_mixture(file, mix):
+def readMixture(file, mix):
     r = {}
 
     with open(file) as f:
@@ -63,55 +54,42 @@ def read_mixture(file, mix):
             if (not l):
                 break
 
-            tokens = l.strip().split('\t')
+            tokens = l.strip().split(',')
 
             #
-            # ID  DNA_ID  subgroup  mix-A  mix-B  expected-fold-change  log2(Mix 1/Mix 2)
+            # ID  Mix_A  Mix_B
             #
+            
+            if (tokens[0] == 'id'):
+                continue
 
             # Create data-structure for the sequin            
-            r[tokens[1]] = { 'id':     tokens[1],
-                             'group':  tokens[2],
-                             'con_a':  float(tokens[3]),
-                             'con_b':  float(tokens[4]),
-                             'fold' :  float(tokens[5]),
-                             'l_fold': float(tokens[6])
+            r[tokens[0]] = { 'id': tokens[0],
+                             'a':  float(tokens[1]),
+                             'b':  float(tokens[2]),
                            }
-
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate_reads(file, seq_path, read_path, min_, max_, mix, c=0, s=1):
+def simulate(file, seq_path, read_path, mix, c=0, s=1):
     os.system('mkdir -p ' + read_path)
-    d = read_mixture(file, mix)
-
-    min_c = 1000000;
-
-    # Let's calculate a constant such that all concentration will be at least 10
-    for key in d:
-        if (d[key]['con_a'] < min_c):
-            min_c = d[key]['con_a'];
-        if (d[key]['con_b'] < min_c):
-            min_c = d[key]['con_b'];
-    
-    print 'Minimum concentration: ' + str(min_c)
+    mix = readMixture(file, mix)
 
     for f in os.listdir(seq_path):
         key = f.split('.')[0]
 
-        if key in d:
+        if key in mix:
             if mix == 'A':
-                con = d[key]['con_a']
+                con = mix[key]['a']
             else:
-                con = d[key]['con_b']
-                
+                con = mix[key]['b']
+
+            # The concentration needed to be added for the simulation
             con = c + (s * con)
-            con = max(min_, con)
-            con = min(max_, con)
-            
+
             print '\n------------------ ' + key + ' ------------------'
             
-            # Command: wgsim -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq
+            # Command: wgsim -e 0 -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq
             
             i  = seq_path  + key + '.fa'
             o1 = read_path + key + '.R1.fastq'
@@ -122,10 +100,12 @@ def simulate_reads(file, seq_path, read_path, min_, max_, mix, c=0, s=1):
                 print 'Generating: ' + str(con)
 
                 # Simulate reads from a given sequin
-                cmd = 'wgsim -S ' + str(randint(1,100)) + '  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + '  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
                 print cmd
                 os.system(cmd)
+            else:
+                print '-------- Warning --------: ' + key + ' not generated!'                
         else:
             print '-------- Warning --------: ' + key + ' not found!'
 
@@ -151,9 +131,24 @@ if __name__ == '__main__':
             simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 10)
             os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'META'):
+        split('../data/meta/META.ref.fa', 'META_Simulation_A/seqs/')
+        split('../data/meta/META.ref.fa', 'META_Simulation_B/seqs/')
+        
+        # Generate simulation for mixture A (5% of the origianl concentration to save time)
+        simulate('../data/meta/META.mix.csv', 'META_Simulation_A/seqs/', 'META_Simulation_A/reads/', 'A', 0, 0.05)
+        
+        # Generate simulation for mixture B (5% of the origianl concentration to save time)
+        simulate('../data/meta/META.mix.csv', 'META_Simulation_B/seqs/', 'META_Simulation_B/reads/', 'B', 0, 0.05)
 
+        os.system('velveth A 31 -fastq -shortPaired META_Simulation_A/reads/simulated_1.fastq META_Simulation_A/reads/simulated_2.fastq')
+        #os.system('velvetg A')
+        os.system('velvetg A -exp_cov auto')
+        os.system('meta-velvetg A')
+        os.system('blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl')
 
-        split_sequins(r_sequins(), seq_path(rna_path()))        
-        simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')
+        os.system('velveth B 21 -fastq -shortPaired META_Simulation_B/reads/simulated_1.fastq META_Simulation_B/reads/simulated_2.fastq')    
+        #os.system('velvetg B')
+        os.system('velvetg B -exp_cov auto')
+        os.system('blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl')
     else:
         print_usage()
