@@ -36,69 +36,78 @@ MBlast::Stats MBlast::analyze(const std::string &file)
     
     ParserBlat::parse(file, [&](const ParserBlat::BlatLine &l, const ParserProgress &)
     {
-        if (m.count(l.tName))
+        // Eg: M2_G, M10_G
+        const SequinID id = l.tName;
+
+        if (m.count(id))
         {
-            m.at(l.tName).temp.push_back(l.qName);
-            m.at(l.tName).ids.push_back(l.tName);
-            m.at(l.tName).aligns.push_back(Locus(l.tStart, l.tEnd));
+            AlignedContig contig;
+
+            contig.id = l.qName;
+            contig.l  = Locus(l.tStart, l.tEnd);
+
+            m.at(id).contigs.push_back(contig);
         }
         else
         {
-            std::cout << "Warning: " << l.tName << " not a metaquin" << std::endl;
+            std::cout << "Warning: " << id << " not a metaquin" << std::endl;
         }
     });
-    
+
     /*
-     * Convert the results
+     * The variable m now holds information on the aligned contigs.
+     * Traverse through all sequins, and calculate statistics for all alignments
+     * to each of those sequin.
      */
-    
+
     MBlast::Stats stats;
 
     for (auto &i : m)
     {
-        /*
-         * In order to calculate for the coverage, we'll need to merge the contigs. Although they
-         * are likely already non-overlapping, just to make sure...
-         */
-        
-        const auto merged = Locus::merge<Locus, Locus>(i.second.aligns);
+        // The data-structure for the aligment for this particular sequin
+        auto &align = i.second;
 
-        BasePair gaps  = 0;
-        BasePair total = 0;
-        
-        for (std::size_t j = 0; j < merged.size(); j++)
+        if (!align.contigs.empty())
         {
-            // Only calculate if there is indeed a gap (although almost always there is)
-            if (j && merged[j-1].end + 1 != merged[j].start)
+            // Make sure the contigs are non-overlapping
+            const auto merged = Locus::merge<AlignedContig, Locus>(align.contigs);
+            
+            BasePair gaps  = 0;
+            BasePair total = 0;
+            
+            for (std::size_t j = 0; j < merged.size(); j++)
             {
-                gaps += Locus(merged[j-1].end + 1, merged[j].start - 1).length();
+                if (j && merged[j-1].end + 1 != merged[j].start)
+                {
+                    gaps += Locus(merged[j-1].end + 1, merged[j].start - 1).length();
+                }
+                
+                total += merged[j].length();
             }
             
-            total += merged[j].length();
-        }
-        
-        assert(i.second.seqA.l.length() == i.second.seqB.l.length());
-        
-        // Fraction of bases covered by alignments
-        i.second.coverage = (double) total / i.second.seqA.l.length();
-        
-        // Fraction of bases not covered by alignments
-        i.second.mismatch = 1 - i.second.coverage;
-        
-        // Fraction of bases covered by gaps
-        i.second.gaps = (double) gaps / i.second.seqA.l.length();
-        
-        assert(i.second.gaps     >= 0.0 && i.second.gaps     <= 1.0);
-        assert(i.second.coverage >= 0.0 && i.second.coverage <= 1.0);
-        assert(i.second.mismatch >= 0.0 && i.second.mismatch <= 1.0);
-
-        // Create an alignment for each contig that aligns to the metaquin
-        for (const ContigID &id : i.second.ids)
-        {
-            stats.aligns[id] = i.second;
+            assert(align.seqA.l.length() == align.seqB.l.length());
+            
+            // Fraction of bases covered by alignments
+            align.coverage = (double) total / align.seqA.l.length();
+            
+            // Fraction of bases not covered by alignments
+            align.mismatch = 1 - align.coverage;
+            
+            // Fraction of bases covered by gaps
+            align.gaps = (double) gaps / align.seqA.l.length();
+            
+            assert(align.gaps     >= 0.0 && align.gaps     <= 1.0);
+            assert(align.coverage >= 0.0 && align.coverage <= 1.0);
+            assert(align.mismatch >= 0.0 && align.mismatch <= 1.0);
+            
+            // Create an alignment for each contig that aligns to the metaquin
+            for (const auto &i : align.contigs)
+            {
+                stats.aligns[i.id] = align;
+            }
         }
 
-        stats.metas[i.second.id] = i.second;
+        stats.metas[align.id] = align;
     }
 
     return stats;

@@ -515,7 +515,7 @@ void parse(int argc, char ** argv)
                                                 % align.second.id
                                                 % align.second.seqA.abund()
                                                 % align.second.seqB.abund()
-                                                % align.second.aligns.size()
+                                                % align.second.contigs.size()
                                                 % align.second.coverage
                                                 % align.second.mismatch
                                                 % align.second.gaps).str() << std::endl;

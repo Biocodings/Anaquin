@@ -121,7 +121,7 @@ namespace Spike
             std::string psl;
 
             // The type of the assembler used
-            Assembler assembler;
+            Assembler ass;
         };
 
         static Stats analyze(const std::string &file, const Options &options = Options());

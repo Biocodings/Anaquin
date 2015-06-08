@@ -4,6 +4,15 @@
 
 extern int parse_options(const std::string &command, std::string &output, std::string &error);
 
+TEST_CASE("Meta_Assembly_E1")
+{
+    std::string output, error;
+    
+    const int status = parse_options("meta ./anaquin meta -assembly tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/align_A.psl", output, error);
+
+    REQUIRE(status == 0);
+}
+
 /*
  * Analyze an assembly from Velvet. Given the same default mixture and annotation model.
  */
@@ -28,19 +37,6 @@ TEST_CASE("Meta_Assembly")
     std::string output, error;
     
     const int status = parse_options("meta -assembly tests/data/meta/contigs_3.fa", output, error);
-    
-    REQUIRE(status == 0);
-}
-
-/*
- * Analyze an assembly from Velvet. An alignment file from Blast is also given.
- */
-
-TEST_CASE("Meta_Assembly_Blast")
-{
-    std::string output, error;
-    
-    const int status = parse_options("meta -assembly tests/data/meta/contigs_3.fa -psl tests/data/meta/align.psl", output, error);
     
     REQUIRE(status == 0);
 }

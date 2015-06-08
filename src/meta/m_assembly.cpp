@@ -31,25 +31,29 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
         for (const auto &meta : r.metas)
         {
+            const auto &align = meta.second;
+            
             // If the metaquin has an alignment
-            if (!meta.second.aligns.empty())
+            if (!align.contigs.empty())
             {
                 // Known concentration
-                const auto known = meta.second.seqA.abund();
+                const auto known = align.seqA.abund();
 
-                BasePair measured = 0;
-                
                 /*
-                 * Calculate measured concentration for this metaquin. The problem is that our
-                 * alignment information is independent to the coverage. We'll need to link the
-                 * pieces together. We'll also need to average out the contigs for the sequin.
+                 * Calculate measured concentration for this metaquin. Average out
+                 * the coverage for each aligned contig.
                  */
 
-                for (std::size_t i = 0; i < meta.second.temp.size(); i++)
-                {
-                    const auto &contig = stats.contigs.at(meta.second.temp[i]);
+                BasePair measured = 0;
 
+                for (std::size_t i = 0; i < align.contigs.size(); i++)
+                {
+                    const auto &contig = stats.contigs.at(align.contigs[i].id);
+
+                    // Average relative to the size of the contig
                     measured += contig.k_cov / contig.seq.size();
+                    
+                    // Average relative to the size of the sequin
                     //measured += contig.k_cov / meta.seqA.l.length();
                 }
 
@@ -62,7 +66,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         // Generate a R script for a plot of abundance
         AnalyzeReporter::script("meta_abundance.R", x, y, z, options.writer);
     }
-    
+
     /*
      * Write out assembly results
      */
@@ -70,7 +74,17 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
     options.writer->open("assembly.stats");
-    options.writer->write((boost::format(format) % "Nodes" % "N20" % "N50" % "N80" % "min" % "mean" % "max" % "total" % "reads").str());
+
+    options.writer->write((boost::format(format) % "Nodes"
+                                                 % "N20"
+                                                 % "N50"
+                                                 % "N80"
+                                                 % "min"
+                                                 % "mean"
+                                                 % "max"
+                                                 % "total"
+                                                 % "reads").str());
+
     options.writer->write((boost::format(format) % stats.contigs.size()
                                                  % stats.N20
                                                  % stats.N50

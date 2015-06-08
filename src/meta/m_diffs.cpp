@@ -34,7 +34,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
         for (const auto &meta : r1.metas)
         {
             // If the metaquin has an alignment
-            if (!meta.second.aligns.empty())
+            if (!meta.second.contigs.empty())
             {
                 // Known concentration
                 const auto known = meta.second.seqB.abund() / meta.second.seqA.abund();
@@ -47,10 +47,10 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                  * pieces together. We'll also need to average out the contigs for the sequin.
                  */
                 
-                for (std::size_t i = 0; i < meta.second.temp.size(); i++)
+                for (std::size_t i = 0; i < meta.second.contigs.size(); i++)
                 {
-                    const auto &contig_1 = stats_1.contigs.at(meta.second.temp[i]);
-                    const auto &contig_2 = stats_2.contigs.at(meta.second.temp[i]);
+                    const auto &contig_1 = stats_1.contigs.at(meta.second.contigs[i].id);
+                    const auto &contig_2 = stats_2.contigs.at(meta.second.contigs[i].id);
 
                     measured += (contig_2.k_cov / contig_2.seq.size()) / (contig_1.k_cov / contig_1.seq.size());
                     //measured += (contig_2.k_cov / meta.seqA.l.length()) / (contig_1.k_cov / meta.seqA.l.length());

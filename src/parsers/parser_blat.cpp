@@ -29,9 +29,8 @@ enum PSLField
     PSL_T_Starts
 };
 
-void ParserBlat::parse(const std::string &file, Callback c, DataMode mode)
+void ParserBlat::parse(const Reader &r, Callback c)
 {
-    Reader r(file, mode);
     ParserProgress p;
 
     std::string line;

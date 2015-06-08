@@ -25,7 +25,7 @@ namespace Spike
         };
 
         typedef std::function<void(const BlatLine &, const ParserProgress &)> Callback;
-        static void parse(const std::string &, Callback, DataMode mode = File);
+        static void parse(const Reader &, Callback);
     };
 }
 

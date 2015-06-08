@@ -5,6 +5,16 @@
 
 namespace Spike
 {
+    struct AlignedContig
+    {
+        operator const Locus &() const { return l; }
+
+        ContigID id;
+        
+        // The positon where the alignment occurs
+        Locus l;
+    };
+    
     /*
      * Represents all alignments for a particular metaquin
      */
@@ -12,18 +22,17 @@ namespace Spike
     struct MetaAlignment
     {
         // Name of the metaquin
-        std::string id;
+        SequinID id;
 
         // Mixture A and B
         Sequin seqA, seqB;
 
         // Contigs aligned to this metaquin
-        std::vector<std::string> ids;
-        
-        // Contigs aligned to this metaquin
-        std::vector<Locus> aligns;
+        std::vector<AlignedContig> contigs;
 
-        std::vector<std::string> temp;
+        /*
+         * The following metrics are only valid if there's at least an alignment
+         */
         
         // Fraction of bases covered by alignments
         double coverage;
