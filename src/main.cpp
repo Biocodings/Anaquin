@@ -275,7 +275,10 @@ static void readFilters(const std::string &file)
 
 template <typename Analyzer> void analyze(const std::string &file, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    o.writer = std::shared_ptr<PathWriter>(new PathWriter(_output.empty() ? "spike_out" : _output));
+    const auto path = _output.empty() ? "spike_out" : _output;
+
+    std::cout << "Path: " << path << std::endl;
+    o.writer = std::shared_ptr<PathWriter>(new PathWriter(path));
 
     std::cout << "-----------------------------------------" << std::endl;
     std::cout << "------------- Sequin Analysis -----------" << std::endl;
@@ -419,7 +422,7 @@ void parse(int argc, char ** argv)
 
             case CMD_RNA:
             {
-                std::cout << "RNA analysis requested" << std::endl;
+                std::cout << "RNA analysis - Garvan Institute" << std::endl;
 
                 if (_mode != MODE_SEQUINS   &&
                     _mode != MODE_SEQUENCE  &&
@@ -458,7 +461,7 @@ void parse(int argc, char ** argv)
                 
             case CMD_DNA:
             {
-                std::cout << "DNA analysis requested" << std::endl;
+                std::cout << "DNA analysis - Garvan Institute" << std::endl;
                 
                 if (_mode != MODE_SEQUINS  &&
                     _mode != MODE_SEQUENCE &&
@@ -483,7 +486,7 @@ void parse(int argc, char ** argv)
                 
             case CMD_META:
             {
-                std::cout << "Metagenomics analysis requested" << std::endl;
+                std::cout << "Metagenomics analysis - Garvan Institute" << std::endl;
                 
                 applyCustom(std::bind(&Standard::meta_mix, &s, std::placeholders::_1),
                             std::bind(&Standard::meta_mod, &s, std::placeholders::_1));
@@ -543,6 +546,11 @@ void parse(int argc, char ** argv)
                             
                             o.psl_1 = _opts[2];
                             o.psl_2 = _opts[3];
+
+                            const auto path = _output.empty() ? "spike_out" : _output;
+                            
+                            std::cout << "Path: " << path << std::endl;
+                            o.writer = std::shared_ptr<PathWriter>(new PathWriter(path));
 
                             MDiffs::analyze(_opts[0], _opts[1], o);
                             break;
