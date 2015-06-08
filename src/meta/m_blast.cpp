@@ -98,7 +98,7 @@ MBlast::Stats MBlast::analyze(const std::string &file)
             stats.aligns[id] = i.second;
         }
 
-        stats.metas.insert(i.second);
+        stats.metas[i.second.id] = i.second;
     }
 
     return stats;

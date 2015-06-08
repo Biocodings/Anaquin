@@ -3,10 +3,6 @@
 
 using namespace Spike;
 
-TEST_CASE("MBlast_Test_1")
+TEST_CASE("MBlast_E1")
 {
-    const auto &r = MBlast::analyze("tests/data/meta/align.psl");
-    
-    
-    
 }

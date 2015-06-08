@@ -492,6 +492,10 @@ void parse(int argc, char ** argv)
                             
                         case MODE_BLAST:
                         {
+                            /*
+                             * Prints the relevant statistics about the alignment file
+                             */
+                            
                             const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
                             
                             // Analyse the BLAST alignment
@@ -507,15 +511,16 @@ void parse(int argc, char ** argv)
                             
                             for (const auto &align : r.metas)
                             {
-                                std::cout << (boost::format(format) % align.id
-                                              % align.seqA.abund()
-                                              % align.seqB.abund()
-                                              % align.aligns.size()
-                                              % align.coverage
-                                              % align.mismatch
-                                              % align.gaps).str() << std::endl;
+                                std::cout << (boost::format(format)
+                                                % align.second.id
+                                                % align.second.seqA.abund()
+                                                % align.second.seqB.abund()
+                                                % align.second.aligns.size()
+                                                % align.second.coverage
+                                                % align.second.mismatch
+                                                % align.second.gaps).str() << std::endl;
                             }
-                            
+
                             break;
                         }
                             

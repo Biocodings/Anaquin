@@ -1,8 +1,8 @@
 #ifndef GI_CLASSIFY_HPP
 #define GI_CLASSIFY_HPP
 
-#include "data/standard.hpp"
 #include "sensitivity.hpp"
+#include "data/standard.hpp"
 #include <ss/data/confusion.hpp>
 
 namespace Spike

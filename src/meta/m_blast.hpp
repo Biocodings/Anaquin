@@ -1,9 +1,6 @@
 #ifndef GI_M_BLAST_HPP
 #define GI_M_BLAST_HPP
 
-#include <set>
-#include "data/locus.hpp"
-#include "data/types.hpp"
 #include "data/sequin.hpp"
 
 namespace Spike
@@ -43,13 +40,22 @@ namespace Spike
 
     struct MBlast
     {
+        // For convenience, the outputs are done in either direction
         struct Stats
         {
-            std::set<MetaAlignment> metas;
+            // For each contig in the mixture (could be unmapped)
+            std::map<SequinID, MetaAlignment> metas;
+
+            // For each contig listed in the alignment file
             std::map<ContigID, MetaAlignment> aligns;
         };
 
-        static Stats analyze(const std::string &file);
+        /*
+         * Conduct statistical analysis for an alignment geneated by BLAST relative
+         * the sequins. The input file is assumed to be PSL format.
+         */
+
+        static Stats analyze(const std::string &);
     };
 }
 

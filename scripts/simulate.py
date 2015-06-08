@@ -151,13 +151,9 @@ if __name__ == '__main__':
             simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 10)
             os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'META'):
+
+
         split_sequins(r_sequins(), seq_path(rna_path()))        
         simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'A')
-    #elif (sys.argv[1] == 'DNA_A'):
-    #    split_sequins(d_sequins(), seq_path(dna_path()))
-    #    simulate_reads(d_mixtures(), seq_path(dna_path()), read_path(dna_path()), 0, sys.maxint, 'A')
-    #elif (sys.argv[1] == 'DNA_B'):
-    #    split_sequins(d_sequins(), seq_path(dna_path()))
-    #    simulate_reads(d_mixtures(), seq_path(dna_path()), read_path(dna_path()), 0, sys.maxint, 'B')
     else:
         print_usage()

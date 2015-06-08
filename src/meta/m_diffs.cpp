@@ -34,23 +34,23 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
         for (const auto &meta : r1.metas)
         {
             // If the metaquin has an alignment
-            if (!meta.aligns.empty())
+            if (!meta.second.aligns.empty())
             {
                 // Known concentration
-                const auto known = meta.seqB.abund() / meta.seqA.abund();
+                const auto known = meta.second.seqB.abund() / meta.second.seqA.abund();
                 
                 BasePair measured = 0;
-                
+
                 /*
                  * Calculate measured concentration for this metaquin. The problem is that our
                  * alignment information is independent to the coverage. We'll need to link the
                  * pieces together. We'll also need to average out the contigs for the sequin.
                  */
                 
-                for (std::size_t i = 0; i < meta.temp.size(); i++)
+                for (std::size_t i = 0; i < meta.second.temp.size(); i++)
                 {
-                    const auto &contig_1 = stats_1.contigs.at(meta.temp[i]);
-                    const auto &contig_2 = stats_2.contigs.at(meta.temp[i]);
+                    const auto &contig_1 = stats_1.contigs.at(meta.second.temp[i]);
+                    const auto &contig_2 = stats_2.contigs.at(meta.second.temp[i]);
 
                     measured += (contig_2.k_cov / contig_2.seq.size()) / (contig_1.k_cov / contig_1.seq.size());
                     //measured += (contig_2.k_cov / meta.seqA.l.length()) / (contig_1.k_cov / meta.seqA.l.length());
@@ -58,7 +58,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
 
                 x.push_back(log(known));
                 y.push_back(log(measured));
-                z.push_back(meta.id);
+                z.push_back(meta.second.id);
             }
         }
         

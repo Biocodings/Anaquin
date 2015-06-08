@@ -26,10 +26,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         for (const auto &meta : r.metas)
         {
             // If the metaquin has an alignment
-            if (!meta.aligns.empty())
+            if (!meta.second.aligns.empty())
             {
                 // Known concentration
-                const auto known = meta.seqA.abund();
+                const auto known = meta.second.seqA.abund();
 
                 BasePair measured = 0;
                 
@@ -39,9 +39,9 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                  * pieces together. We'll also need to average out the contigs for the sequin.
                  */
 
-                for (std::size_t i = 0; i < meta.temp.size(); i++)
+                for (std::size_t i = 0; i < meta.second.temp.size(); i++)
                 {
-                    const auto &contig = stats.contigs.at(meta.temp[i]);
+                    const auto &contig = stats.contigs.at(meta.second.temp[i]);
 
                     measured += contig.k_cov / contig.seq.size();
                     //measured += contig.k_cov / meta.seqA.l.length();
@@ -49,10 +49,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
                 x.push_back(log(known));
                 y.push_back(log(measured));
-                z.push_back(meta.id);
+                z.push_back(meta.second.id);
             }
         }
-        
+
         // Generate a R script for a plot of abundance
         AnalyzeReporter::script("meta_abundance.R", x, y, z, options.writer);
     }
