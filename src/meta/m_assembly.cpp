@@ -44,7 +44,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                  * the coverage for each aligned contig.
                  */
 
-                BasePair measured = 0;
+                Concentration measured = 0;
 
                 for (std::size_t i = 0; i < align.contigs.size(); i++)
                 {
@@ -54,8 +54,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                     measured += contig.k_cov / contig.seq.size();
                     
                     // Average relative to the size of the sequin
-                    //measured += contig.k_cov / meta.seqA.l.length();
+                    //measured += (double) contig.k_cov / meta.seqA.l.length();
                 }
+                
+                assert(measured != 0);
 
                 x.push_back(log(known));
                 y.push_back(log(measured));

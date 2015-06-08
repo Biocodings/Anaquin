@@ -26,7 +26,7 @@ namespace Spike
             std::map<ContigID, T> contigs;
         };
 
-        template <typename C = Contig, typename T = DNAsssembly::Stats<C>> static T parse(const std::string &file, std::function<void (const C&)> f)
+        template <typename C = Contig, typename T = DNAsssembly::Stats<C>> static T parse(const std::string &file, std::function<void (C&)> f)
         {
             T stats;
             Histogram h;
@@ -92,13 +92,12 @@ namespace Spike
             
             std::vector<std::string> tokens;
 
-            return DNAsssembly::parse<C, Stats>(file, [&](const C &node)
+            return DNAsssembly::parse<C, Stats>(file, [&](C &node)
             {
-                C copy = node;
                 Tokens::split(node.id, "_", tokens);
 
                 // Parse the k-mer coverage
-                copy.k_cov = stod(tokens[tokens.size() - 1]);
+                node.k_cov = stod(tokens[tokens.size() - 1]);
             });
         }
     };

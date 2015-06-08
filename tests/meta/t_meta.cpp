@@ -7,8 +7,8 @@ extern int parse_options(const std::string &command, std::string &output, std::s
 TEST_CASE("Meta_Assembly_E1")
 {
     std::string output, error;
-    
-    const int status = parse_options("meta ./anaquin meta -assembly tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/align_A.psl", output, error);
+
+    const int status = parse_options("meta ./anaquin meta -assembly tests/data/meta/e1/contigs_A.fa -psl tests/data/meta/e1/align_A.psl", output, error);
 
     REQUIRE(status == 0);
 }
