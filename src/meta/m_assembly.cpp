@@ -5,11 +5,17 @@ using namespace Spike;
 
 MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &options)
 {
-    MAssembly::Stats stats = Velvet::parse<MAssembly::Stats, MAssembly::AlignedContig>(file);
+    /*
+     * The code for a specific assembler is indepenent to alignment for contigs.
+     * While it is certinaly a good design, we'll need to link the information.
+     */
 
+    auto stats = Velvet::parse<MAssembly::Stats, Contig>(file);
+
+    // Prefer a user supplied alignment file if any
     if (!options.psl.empty())
     {
-        std::cout << "Using an aligment file: "  << options.psl << std::endl;
+        std::cout << "Using an aligment file: " << options.psl << std::endl;
 
         // Analyse the given blast alignment file
         const auto r = MBlast::analyze(options.psl);

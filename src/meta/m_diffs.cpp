@@ -11,8 +11,8 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
      * we're interested in the log-fold ratio of the samples.
      */
     
-    const auto stats_1 = Velvet::parse<MAssembly::Stats, MAssembly::AlignedContig>(file_1);
-    const auto stats_2 = Velvet::parse<MAssembly::Stats, MAssembly::AlignedContig>(file_2);
+    const auto stats_1 = Velvet::parse<MAssembly::Stats, Contig>(file_1);
+    const auto stats_2 = Velvet::parse<MAssembly::Stats, Contig>(file_2);
 
     if (!options.psl_1.empty() && !options.psl_2.empty())
     {

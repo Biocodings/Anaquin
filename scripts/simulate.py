@@ -141,14 +141,15 @@ if __name__ == '__main__':
         simulate('../data/meta/META.mix.csv', 'META_Simulation_B/seqs/', 'META_Simulation_B/reads/', 'B', 0, 0.05)
 
         os.system('velveth A 31 -fastq -shortPaired META_Simulation_A/reads/simulated_1.fastq META_Simulation_A/reads/simulated_2.fastq')
-        #os.system('velvetg A')
-        os.system('velvetg A -exp_cov auto')
-        os.system('meta-velvetg A')
+        os.system('velvetg A')
+        #os.system('velvetg A -exp_cov auto')
+        #os.system('meta-velvetg A')
         os.system('blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl')
 
         os.system('velveth B 21 -fastq -shortPaired META_Simulation_B/reads/simulated_1.fastq META_Simulation_B/reads/simulated_2.fastq')    
-        #os.system('velvetg B')
-        os.system('velvetg B -exp_cov auto')
+        os.system('velvetg B')
+        #os.system('velvetg B -exp_cov auto')
+        #os.system('meta-velvetg A')        
         os.system('blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl')
     else:
         print_usage()
