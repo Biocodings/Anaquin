@@ -7,8 +7,8 @@ using namespace Spike;
 MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file_2, const Options &options)
 {
     /*
-     * The implementation is very similar to with one single sample. The only difference is that
-     * we're interested in the log-fold ratio of the samples.
+     * The implementation is very similar to one single sample. The only difference is that
+     * we're interested in the log-fold change of the samples.
      */
     
     const auto stats_1 = Velvet::parse<MAssembly::Stats, Contig>(file_1);
@@ -22,7 +22,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
         const auto r1 = MBlast::analyze(options.psl_1);
         const auto r2 = MBlast::analyze(options.psl_2);
 
-        std::cout << "Creating an abundance plot" << std::endl;
+        std::cout << "Creating a differential plot" << std::endl;
         
         /*
          * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
@@ -31,34 +31,103 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
         std::vector<double> x, y;
         std::vector<std::string> z;
         
+        // Marginal observation for mixture A
+        std::map<SequinID, Concentration> x1;
+        
+        // Marginal observation for mixture B
+        std::map<SequinID, Concentration> x2;
+
         for (const auto &meta : r1.metas)
         {
+            const auto &align = meta.second;
+            
             // If the metaquin has an alignment
-            if (!meta.second.contigs.empty())
+            if (!align.contigs.empty())
             {
-                // Known concentration
-                const auto known = meta.second.seqB.abund() / meta.second.seqA.abund();
-                
-                BasePair measured = 0;
-
                 /*
-                 * Calculate measured concentration for this metaquin. The problem is that our
-                 * alignment information is independent to the coverage. We'll need to link the
-                 * pieces together. We'll also need to average out the contigs for the sequin.
+                 * Calculate measured concentration for this metaquin. Average out
+                 * the coverage for each aligned contig.
                  */
                 
-                for (std::size_t i = 0; i < meta.second.contigs.size(); i++)
+                Concentration measured = 0;
+                
+                for (std::size_t i = 0; i < align.contigs.size(); i++)
                 {
-                    const auto &contig_1 = stats_1.contigs.at(meta.second.contigs[i].id);
-                    const auto &contig_2 = stats_2.contigs.at(meta.second.contigs[i].id);
+                    const auto &contig = stats_1.contigs.at(align.contigs[i].id);
 
-                    measured += (contig_2.k_cov / contig_2.seq.size()) / (contig_1.k_cov / contig_1.seq.size());
-                    //measured += (contig_2.k_cov / meta.seqA.l.length()) / (contig_1.k_cov / meta.seqA.l.length());
+                    // Average relative to the size of the contig
+                    measured += contig.k_cov / contig.seq.size();
+                    
+                    // Average relative to the size of the sequin
+                    //measured += (double) contig.k_cov / meta.seqA.l.length();
                 }
+                
+                assert(measured != 0);
+                x1[align.id] = measured;
+            }
+            else
+            {
+                x1[align.id] = 0;
+            }
+        }
 
-                x.push_back(log(known));
-                y.push_back(log(measured));
-                z.push_back(meta.second.id);
+        for (const auto &meta : r2.metas)
+        {
+            const auto &align = meta.second;
+            
+            // If the metaquin has an alignment
+            if (!align.contigs.empty())
+            {
+                /*
+                 * Calculate measured concentration for this metaquin. Average out
+                 * the coverage for each aligned contig.
+                 */
+                
+                Concentration measured = 0;
+                
+                for (std::size_t i = 0; i < align.contigs.size(); i++)
+                {
+                    const auto &contig = stats_2.contigs.at(align.contigs[i].id);
+                    
+                    // Average relative to the size of the contig
+                    measured += contig.k_cov / contig.seq.size();
+                    
+                    // Average relative to the size of the sequin
+                    //measured += (double) contig.k_cov / meta.seqA.l.length();
+                }
+                
+                assert(measured != 0);
+                x2[align.id] = measured;
+            }
+            else
+            {
+                x2[align.id] = 0;
+            }
+        }
+        
+        assert(x1.size() == x2.size());
+        assert(r1.metas.size() == r2.metas.size());
+        
+        for (const auto &meta : r1.metas)
+        {
+            const auto &align = meta.second;
+
+            // If the metaquin has an alignment
+            if (!align.contigs.empty())
+            {
+                // Known concentration
+                const auto known = align.seqB.abund() / align.seqA.abund();
+                
+                // TODO: ????
+                if (x2.at(align.id) && x1.at(align.id))
+                {
+                    // Ratio of the marginal concentration
+                    const auto measured = x2.at(align.id) / x1.at(align.id);
+                    
+                    x.push_back(log(known));
+                    y.push_back(log(measured));
+                    z.push_back(align.id);                    
+                }
             }
         }
         

@@ -1,7 +1,7 @@
-#include "stats/expression.hpp"
 #include "rna/r_diffs.hpp"
-#include "parsers/parser_cdiffs.hpp"
+#include "stats/expression.hpp"
 #include <ss/regression/lm.hpp>
+#include "parsers/parser_cdiffs.hpp"
 
 using namespace SS;
 using namespace Spike;

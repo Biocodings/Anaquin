@@ -52,7 +52,7 @@ namespace Spike
         // For convenience, the outputs are done in either direction
         struct Stats
         {
-            // For each contig in the mixture (could be unmapped)
+            // For each sequin (could be unmapped)
             std::map<SequinID, MetaAlignment> metas;
 
             // For each contig listed in the alignment file

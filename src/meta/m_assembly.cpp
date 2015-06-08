@@ -61,7 +61,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
                 x.push_back(log(known));
                 y.push_back(log(measured));
-                z.push_back(meta.second.id);
+                z.push_back(align.id);
             }
         }
 

@@ -17,6 +17,7 @@
 #include "dna/d_sequence.hpp"
 
 #include "meta/m_blast.hpp"
+#include "meta/m_diffs.hpp"
 #include "meta/m_assembly.hpp"
 
 #include "parsers/parser_csv.hpp"
@@ -316,6 +317,7 @@ template <typename Options> static Options detect(const std::string &file)
 
 void parse(int argc, char ** argv)
 {
+    _opts.clear();
     _cmd = _mode = 0;
     
     if (argc <= 1)
@@ -377,11 +379,22 @@ void parse(int argc, char ** argv)
 
                 _mode = next;
                 
-                if (optarg)
+                if (_cmd == CMD_META && _mode == MODE_DIFFERENTIAL)
+                {
+                    optind--;
+                    
+                    for (; optind < argc && *argv[optind] != '-'; optind++)
+                    {
+                        _opts.push_back(argv[optind]);
+                    }
+
+                    assert(_opts.size() == 4);
+                }
+                else if (optarg)
                 {
                     _opts.push_back(optarg);
                 }
-                
+
                 break;
             }
         }
@@ -526,6 +539,12 @@ void parse(int argc, char ** argv)
                             
                         case MODE_DIFFERENTIAL:
                         {
+                            MDiffs::Options o;
+                            
+                            o.psl_1 = _opts[2];
+                            o.psl_2 = _opts[3];
+
+                            MDiffs::analyze(_opts[0], _opts[1], o);
                             break;
                         }
                             
