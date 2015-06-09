@@ -19,7 +19,7 @@ static void generateFilter(const std::string &file, const std::vector<std::strin
 
 TEST_CASE("Meta_Sequins")
 {
-    std::string output, error;    
+    std::string output, error;
     const int status = parse_options("meta -l", output, error);
     
     REQUIRE(status == 0);
