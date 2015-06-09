@@ -429,7 +429,7 @@ void parse(int argc, char ** argv)
                 _mode = next;
                 
                 /*
-                 * Considers multiple arguments for a single option...
+                 * If this is not the last argument, we might try to extract multiple arguments.
                  */
                 
                 if (optind < argc)
@@ -440,6 +440,10 @@ void parse(int argc, char ** argv)
                     {
                         _opts.push_back(argv[optind]);
                     }                    
+                }
+                else if (optarg)
+                {
+                    _opts.push_back(optarg);
                 }
                 
                 break;
