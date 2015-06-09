@@ -1,6 +1,6 @@
 <b>Garvan Institute of Medical Research</b>
 <br>
-Timothy Mercer, Wendy Chen, Ted Wong
+Dr Timothy Mercer, Dr Wendy Chen, Ted Wong
 
 <b>Compilation</b>
 
