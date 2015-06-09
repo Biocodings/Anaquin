@@ -80,13 +80,24 @@ static std::string _model;
 static std::string _mixture;
 
 // The sequins that have been filtered
-static std::vector<SequinID> _filters;
+static std::set<SequinID> _filters;
 
 static int _cmd  = 0;
 static int _mode = 0;
 
 // The operands for the command
 std::vector<std::string> _opts;
+
+static void reset()
+{
+    _psl.clear();
+    _opts.clear();
+    _model.clear();
+    _output.clear();
+    _mixture.clear();
+    _filters.clear();
+    _cmd = _mode = 0;
+}
 
 /*
  * Argument options
@@ -254,12 +265,15 @@ static void readFilters(const std::string &file)
 
             case CMD_META:
             {
+                // The sequins must match other than the specific mixture
+                assert(s.m_seq_A.size() == s.m_seq_B.size());
+
                 if (!s.m_seq_A.count(line))
                 {
                     throw InvalidFilterError("Unknown sequin for metagenomics: " + line);
                 }
 
-                _filters.push_back(line);
+                _filters.insert(line);
                 break;
             }
 
@@ -284,6 +298,11 @@ template <typename Analyzer> void analyze(const std::string &file, typename Anal
     std::cout << "------------- Sequin Analysis -----------" << std::endl;
     std::cout << "-----------------------------------------" << std::endl << std::endl;
 
+    for (const auto &filter : (o.filters = _filters))
+    {
+        std::cout << "Filter: " << filter << std::endl;
+    }
+    
     std::clock_t begin = std::clock();
     
     Analyzer::analyze(file, o);
@@ -320,9 +339,8 @@ template <typename Options> static Options detect(const std::string &file)
 
 void parse(int argc, char ** argv)
 {
-    _opts.clear();
-    _cmd = _mode = 0;
-    
+    reset();
+
     if (argc <= 1)
     {
         printUsage();

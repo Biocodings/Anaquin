@@ -7,8 +7,8 @@ TEST_CASE("MAssembly_E1")
 {
     MAssembly::Options o;
     
-    o.ass = MAssembly::Assembler::Velvet;
-    o.psl = "tests/data/meta/e1/align_A.psl";
+    o.tool = MAssembly::Assembler::Velvet;
+    o.psl  = "tests/data/meta/e1/align_A.psl";
     
     const auto r = MAssembly::analyze("tests/data/meta/e1/contigs_A.fa", o);
 }

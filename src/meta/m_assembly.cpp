@@ -10,7 +10,16 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
      * While it is certinaly a good design, we'll need to link the information.
      */
 
-    auto stats = Velvet::parse<MAssembly::Stats, Contig>(file);
+    MAssembly::Stats stats;
+
+    /*
+     * Generate statistics for contigs, no reference sequins needed
+     */
+
+    switch (options.tool)
+    {
+        case Velvet: { stats = Velvet::parse<MAssembly::Stats, Contig>(file); break; }
+    }
 
     // Prefer a user supplied alignment file if any
     if (!options.psl.empty())
@@ -32,7 +41,13 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         for (const auto &meta : r.metas)
         {
             const auto &align = meta.second;
-            
+
+            // Ignore if there's a filter and the sequin is not one of those
+            if (!options.filters.empty() && !options.filters.count(align.id))
+            {
+                continue;
+            }
+
             // If the metaquin has an alignment
             if (!align.contigs.empty())
             {
@@ -73,7 +88,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
      * Write out assembly results
      */
 
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
     options.writer->open("assembly.stats");
 
@@ -84,9 +99,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                                  % "min"
                                                  % "mean"
                                                  % "max"
-                                                 % "total"
-                                                 % "reads").str());
-
+                                                 % "total").str());
     options.writer->write((boost::format(format) % stats.contigs.size()
                                                  % stats.N20
                                                  % stats.N50
@@ -94,8 +107,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                                  % stats.min
                                                  % stats.mean
                                                  % stats.max
-                                                 % stats.total
-                                                 % -1).str());
+                                                 % stats.total).str());
     options.writer->close();
 
     return stats;
