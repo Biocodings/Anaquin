@@ -14,6 +14,7 @@ namespace Spike
     {
         struct Options : public SingleMixtureOptions
         {
+            Options() {}
             RNALevel level = Isoform;
         };
 
