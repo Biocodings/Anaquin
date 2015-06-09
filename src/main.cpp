@@ -372,11 +372,10 @@ void parse(int argc, char ** argv)
     
     int next, index;
 
-    extern int optreset;
-    
-    // This is not needed for the software but unit-testing
+#ifdef UNIT_TESTING
     optind = optreset = 1;
-    
+#endif
+
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
         switch (next)

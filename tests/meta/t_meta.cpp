@@ -20,6 +20,15 @@ static void generateFilter(const std::string &file, const std::vector<std::strin
 TEST_CASE("Meta_Sequins")
 {
     std::string output, error;
+    
+    const int s1 = parse_options("meta -o A -assembly A/contigs.fa", output, error);
+    
+    
+    
+    
+    
+    
+
     const int status = parse_options("meta -l", output, error);
     
     REQUIRE(status == 0);
@@ -61,20 +70,20 @@ TEST_CASE("Meta_Assembly_E1")
 {
     std::string output, error;
 
-    const int s1 = parse_options("meta ./anaquin meta -assembly tests/data/meta/e1/contigs_A.fa -psl tests/data/meta/e1/align_A.psl", output, error);
+    const int s1 = parse_options("meta -assembly tests/data/meta/e1/contigs_A.fa -psl tests/data/meta/e1/align_A.psl", output, error);
 
     REQUIRE(s1 == 0);
 
-    const int s2 = parse_options("meta ./anaquin meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -psl tests/data/meta/e1/align_A.psl tests/data/meta/e1/align_B.psl", output, error);
+    const int s2 = parse_options("meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -psl tests/data/meta/e1/align_A.psl tests/data/meta/e1/align_B.psl", output, error);
 
     REQUIRE(s2 == 0);
 
     generateFilter("test.filter", std::vector<std::string> { "M11_G" });
-    const int s3 = parse_options("meta ./anaquin meta -assembly tests/data/meta/e1/contigs_A.fa -filter test.filter -psl tests/data/meta/e1/align_A.psl", output, error);
+    const int s3 = parse_options("meta -assembly tests/data/meta/e1/contigs_A.fa -filter test.filter -psl tests/data/meta/e1/align_A.psl", output, error);
     
     REQUIRE(s3 == 0);
 
-    const int s4 = parse_options("meta ./anaquin meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -filter test.filter -psl tests/data/meta/e1/align_A.psl tests/data/meta/e1/align_B.psl", output, error);
+    const int s4 = parse_options("meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -filter test.filter -psl tests/data/meta/e1/align_A.psl tests/data/meta/e1/align_B.psl", output, error);
     
     REQUIRE(s4 == 0);
     
