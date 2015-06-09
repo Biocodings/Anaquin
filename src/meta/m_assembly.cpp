@@ -91,7 +91,6 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
     options.writer->open("assembly.stats");
-
     options.writer->write((boost::format(format) % "Nodes"
                                                  % "N20"
                                                  % "N50"

@@ -11,11 +11,13 @@ TEST_CASE("Differential_Simulations_Isoforms")
 
     RDiffs::Options o;
     o.level = RNALevel::Isoform;
-    const auto r = RDiffs::analyze("tests/data/rna/isoform_exp.diff", o);
 
-    REQUIRE(r.lm.m  == Approx(0.9771063293));
-    REQUIRE(r.lm.r  == Approx(0.9637073186));
-    REQUIRE(r.lm.r2 == Approx(0.9268056282));
+    const auto r  = RDiffs::analyze("tests/data/rna/isoform_exp.diff", o);
+    const auto lm = r.linear();
+    
+    REQUIRE(lm.m  == Approx(0.9771063293));
+    REQUIRE(lm.r  == Approx(0.9637073186));
+    REQUIRE(lm.r2 == Approx(0.9268056282));
 }
 
 TEST_CASE("Differential_Simulations_Genes")
@@ -26,9 +28,11 @@ TEST_CASE("Differential_Simulations_Genes")
 
     RDiffs::Options o;
     o.level = RNALevel::Gene;
-    const auto r = RDiffs::analyze("tests/data/rna/gene_exp.diff", o);
 
-    REQUIRE(r.lm.m  == Approx(1.0824361534));
-    REQUIRE(r.lm.r  == Approx(0.8374341202));
-    REQUIRE(r.lm.r2 == Approx(0.6863607009));
+    const auto r  = RDiffs::analyze("tests/data/rna/gene_exp.diff", o);
+    const auto lm = r.linear();
+
+    REQUIRE(lm.m  == Approx(1.0824361534));
+    REQUIRE(lm.r  == Approx(0.8374341202));
+    REQUIRE(lm.r2 == Approx(0.6863607009));
 }

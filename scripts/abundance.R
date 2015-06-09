@@ -1,5 +1,5 @@
 #
-# R script generated automatically for plotting relationship for sequins.
+# R script generated automatically for sequins.
 #
 
 x <- c(%1%)

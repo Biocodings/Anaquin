@@ -132,16 +132,17 @@ namespace Spike
     struct CorrelationStats
     {
         Sensitivity s;
-        LinearModel lm;
 
         std::vector<std::string> z;
         std::vector<Concentration> x;
         std::vector<Concentration> y;
-        
-        void linear()
+
+        LinearModel linear() const
         {
             const auto m = SS::lm("y ~ x", SS::data.frame(SS::c(y), SS::c(x)));
 
+            LinearModel lm;
+            
             // Pearson correlation
             lm.r = SS::cor(x, y);
 
@@ -153,6 +154,8 @@ namespace Spike
 
             // Regression slope
             lm.m = m.coeffs[1].v;
+            
+            return lm;
         }
     };
 
@@ -205,12 +208,13 @@ namespace Spike
                                std::shared_ptr<Writer> writer)
         {
             const std::string format = "%1%\t%2%\t%3%\t%4%";
+            const auto &lm = stats.linear();
             
             writer->open(name);
             writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
-            writer->write((boost::format(format) % stats.lm.r % stats.lm.m % stats.lm.r2 % stats.s.abund).str());
+            writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
             writer->write("\n");
-            
+
             for (const auto &p : c)
             {
                 writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());

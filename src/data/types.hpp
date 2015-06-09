@@ -17,6 +17,7 @@ namespace Spike
     typedef long long Reads;
     
     typedef double FPKM;
+    typedef double Coverage;
     typedef double Concentration;
 
     // Number of lines in a file (most likely a large file)
