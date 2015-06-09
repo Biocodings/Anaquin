@@ -372,6 +372,8 @@ void parse(int argc, char ** argv)
     
     int next, index;
 
+    extern int optreset;
+    
     // This is not needed for the software but unit-testing
     optind = optreset = 1;
     
