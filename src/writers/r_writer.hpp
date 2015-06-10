@@ -2,12 +2,13 @@
 #define GI_R_WRITER_HPP
 
 #include <string>
-#include <fstream>
 #include <sstream>
 #include <numeric>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+
+extern std::string linearR();
 
 namespace Spike
 {
@@ -19,7 +20,7 @@ namespace Spike
             using boost::adaptors::transformed;
 
             std::stringstream ss;
-            ss << std::ifstream("scripts/abundance.R").rdbuf();
+            ss << linearR();
 
             return (boost::format(ss.str()) %
                         join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
@@ -27,6 +28,6 @@ namespace Spike
                        (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str()).str();
         }
     };
-}
+}p
 
 #endif

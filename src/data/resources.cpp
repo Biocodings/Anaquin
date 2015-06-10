@@ -2,6 +2,7 @@
 #include "resources.hpp"
 #include "resources/silico.fa"
 #include "resources/manual.txt"
+#include "resources/linear.R"
 
 /*
  * META Resources
@@ -52,6 +53,11 @@ MixtureInfo Resources::mixture()
 }
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
+
+std::string linearR()
+{
+    return ToString(scripts_linear_R);
+}
 
 std::string manual()
 {

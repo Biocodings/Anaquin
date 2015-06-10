@@ -16,8 +16,7 @@ def xxd(src, dst):
 docs  = [ 'docs/manual.txt' ]
 data  = [ 'data/silico.fa',
 
-          'scripts/abundance.R',
-          'scripts/differential.R',
+          'scripts/linear.R',
 
            # ---------- META ----------
 
