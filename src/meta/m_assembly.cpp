@@ -63,6 +63,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
                 for (std::size_t i = 0; i < align.contigs.size(); i++)
                 {
+                    // Crash if the alignment file doesn't match with the contigs
                     const auto &contig = stats.contigs.at(align.contigs[i].id);
                     
                     // Average relative to the size of the contig
