@@ -2,7 +2,6 @@
 #define GI_ANALYZER_HPP
 
 #include <map>
-#include <vector>
 #include <memory>
 #include "classify.hpp"
 #include "data/types.hpp"
@@ -16,8 +15,8 @@ namespace Spike
 {
     typedef std::map<Locus, Counts>     LocusCounter;
     typedef std::map<GeneID, Counts>    GeneCounter;
-    typedef std::map<IsoformID, Counts> IsoformCounter;
     typedef std::map<SequinID, Counts>  SequinCounter;
+    typedef std::map<IsoformID, Counts> IsoformCounter;
     
     template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
     {

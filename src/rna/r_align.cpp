@@ -9,7 +9,7 @@ static bool checkSplice(const Alignment &align, Feature &f)
 {
     assert(align.spliced);
     const auto &s = Standard::instance();
-    
+
     for (auto i = 0; i < s.r_introns.size(); i++)
     {
         if (align.l == s.r_introns[i].l)
@@ -22,9 +22,9 @@ static bool checkSplice(const Alignment &align, Feature &f)
     return false;
 }
 
-RAlignStats RAlign::analyze(const std::string &file, const Options &options)
+RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 {
-    RAlignStats stats;
+    RAlign::Stats stats;
     const auto &s = Standard::instance();
 
     std::vector<Alignment> q_exons, q_introns;
@@ -37,12 +37,7 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
         {
             return;
         }
-
-        /*
-         * Classify at the exon level
-         */
-
-        if (!align.spliced)
+        else if (!align.spliced)
         {
             q_exons.push_back(align);
 
@@ -56,11 +51,6 @@ RAlignStats RAlign::analyze(const std::string &file, const Options &options)
                 stats.ce.at(s.r_iso2Gene.at(f.tID))++;
             }
         }
-
-        /*
-         * Classify at the intron level
-         */
-        
         else
         {
             q_introns.push_back(align);

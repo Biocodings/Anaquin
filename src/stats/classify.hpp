@@ -43,45 +43,26 @@ namespace Spike
         Sensitivity s;
     };
 
-    inline bool tfp(bool cond, Confusion *m1, Confusion *m2 = NULL)
-    {
-        if (cond)
-        {
-            if (m1) { m1->tp()++; }
-            if (m2) { m2->tp()++; }
-        }
-        else
-        {
-            if (m1) { m1->fp()++; }
-            if (m2) { m2->fp()++; }
-        }
+    /*
+     * Given references, this function computes total overalap of a query to the references.
+     * For example:
+     *
+     *    r = (1,10),(12,20)  q = (15,21)
+     *
+     * The overlap consists of (15,20).
+     */
 
-        return cond;
-    }
-
-    template <typename Iter, typename T> BasePair countOverlaps(const Iter &r, const T &t, std::map<std::string, Counts> &c)
+    template <typename Iter, typename T, typename C> BasePair countOverlaps(const Iter &rs, const T &q, C &c)
     {
         BasePair n = 0;
 
-        for (const auto &i : r)
+        for (const auto &x : rs)
         {
-            if (static_cast<Locus>(t).overlap(i))
+            if (static_cast<Locus>(q).overlap(x))
             {
-                c.at(i.gID)++;
-                n += static_cast<Locus>(t).overlap(i);
+                c.at(x.gID)++;
+                n += static_cast<Locus>(q).overlap(x);
             }
-        }
-        
-        return n;
-    }
-
-    template <typename Iter, typename T> BasePair countOverlaps_map(const Iter &map, const T &t)
-    {
-        BasePair n = 0;
-        
-        for (auto &i : map)
-        {
-            n += i.second.l.overlap(t.l);
         }
 
         return n;
