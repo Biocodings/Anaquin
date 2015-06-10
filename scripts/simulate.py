@@ -36,7 +36,10 @@ def split(file, seq_path):
             file = file.replace("?","")
             file = file.replace("\n","")
     
-            w = open(seq_path + file + '.fa', 'w')
+            # Create a directory for each sequin
+            os.system('mkdir -p ' + (seq_path + file))
+        
+            w = open(seq_path + file + '/' + file + '.fa', 'w')
             w.write(l1)
             w.write(l2)
 
@@ -68,8 +71,7 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, seq_path, read_path, mix, tool='wgsim', c=0, s=1):
-    os.system('mkdir -p ' + read_path)
+def simulate(file, seq_path, mix, tool='wgsim', c=0, s=1):
     mix = readMixture(file, mix)
 
     for f in os.listdir(seq_path):
@@ -89,8 +91,6 @@ def simulate(file, seq_path, read_path, mix, tool='wgsim', c=0, s=1):
             # Command: wgsim -e 0 -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq
             
             i  = seq_path  + key + '.fa'
-            o1 = read_path + key + '.R1.fastq'
-            o2 = read_path + key + '.R2.fastq'
 
             # This is the number of reads that we'll need
             con = int(con)
@@ -101,21 +101,33 @@ def simulate(file, seq_path, read_path, mix, tool='wgsim', c=0, s=1):
 
                 # Simulate reads from a given sequin
                 if tool == 'wgsim':
+                    o1 = read_path + key + '.R1.fastq'
+                    o2 = read_path + key + '.R2.fastq'
                     cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + '  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
-                else:
+                    print cmd
+                    os.system(cmd)
+                else:                    
                     os.system('mkdir -p ' + os.getcwd() + '/Sherman/' + key)
-                    cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + str(con) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
+                    #cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + str(con) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
+                    cmd = '../Sherman -cr 0 -e 0 -n ' + str(con) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
 
-                print cmd
-                os.system(cmd)
+                    print cmd
+                    os.system(cmd)
+
+                    # Move the generated FASTQ to the proper directory
+                    print ('mv simulated.fastq ' + os.getcwd() + '/Sherman/' + key)
+                    os.system('mv simulated.fastq ' + os.getcwd() + '/Sherman/' + key + "/")
+                    
+                    os.system('find Sherman/ -name *.fastq -exec cat {} + > simulated.fastq')
             else:
                 print '-------- Warning --------: ' + key + ' not generated!'                
         else:
-            print '-------- Warning --------: ' + key + ' not found!'
+            print '-------- Warning --------: ' + key + ' not found in the mixture!'
 
-    print('Merging the individual simulations...')
-    os.system('cat ' + read_path + '*R1.fastq > ' + read_path + 'simulated_1.fastq')
-    os.system('cat ' + read_path + '*R2.fastq > ' + read_path + 'simulated_2.fastq')
+    if (tool == 'wgsim'):
+        print('Merging the individual simulations...')
+        os.system('cat ' + read_path + '*R1.fastq > ' + read_path + 'simulated_1.fastq')
+        os.system('cat ' + read_path + '*R2.fastq > ' + read_path + 'simulated_2.fastq')
 
 def print_usage():
     print 'Usage: python simulate.py RNA|DNA|META|Sherman'
@@ -124,8 +136,8 @@ if __name__ == '__main__':
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
     elif (sys.argv[1] == 'Sherman'):
-        split(sys.argv[2], 'Sherman/seqs/')
-        simulate(sys.argv[3], 'Sherman/seqs/', 'Sherman/reads/', 'A', 0 ,1)
+        split(sys.argv[2], 'Sherman/')
+        simulate(sys.argv[3], 'Sherman/', 'A', 0 ,1)
         #simulate(sys.argv[3], 'Sherman/seqs/', 'Sherman/reads/', 'B', 0 ,1)                
     elif (sys.argv[1] == 'RNA'):
         a = ['RNA_A_1_1', 'RNA_A_1_2', 'RNA_A_1_3']              
