@@ -104,7 +104,7 @@ def simulate(file, seq_path, read_path, mix, tool='wgsim', c=0, s=1):
                     cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + '  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
                 else:
                     os.system('mkdir -p ' + key)
-                    cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + str(con) + ' -l 101 --genome_folder ./key/' + key
+                    cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + str(con) + ' -l 101 --genome_folder Sherman/' + key
 
                 print cmd
                 os.system(cmd)
