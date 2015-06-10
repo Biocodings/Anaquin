@@ -6,9 +6,6 @@ import math
 import subprocess
 from random import randint
 
-def dna_path():
-    return 'DNA_Simulation/'
-
 def rna_path():
     return 'RNA_Simulation/'
 
@@ -71,7 +68,7 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, seq_path, read_path, mix, c=0, s=1):
+def simulate(file, seq_path, read_path, mix, tool='wgsim', c=0, s=1):
     os.system('mkdir -p ' + read_path)
     mix = readMixture(file, mix)
 
@@ -100,7 +97,10 @@ def simulate(file, seq_path, read_path, mix, c=0, s=1):
                 print 'Generating: ' + str(con)
 
                 # Simulate reads from a given sequin
-                cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + '  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                if tool == 'wgsim':
+                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + '  -d 400 -N ' + str(int(con)) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                else:
+                    cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + con + ' -l 101 --genome_folder ./' + key
 
                 print cmd
                 os.system(cmd)
@@ -114,12 +114,16 @@ def simulate(file, seq_path, read_path, mix, c=0, s=1):
     os.system('cat ' + read_path + '*R2.fastq > ' + read_path + 'simulated_2.fastq')
 
 def print_usage():
-    print 'Usage: python simulate.py RNA|DNA|META'
+    print 'Usage: python simulate.py RNA|DNA|META|Sherman'
 
 if __name__ == '__main__':
-    if (len(sys.argv) != 2):
+    if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
-    elif (sys.argv[1] == 'RNA'):  
+    elif (sys.argv[1] == 'Sherman'):
+        split(sys.argv[2], 'Sherman/seqs/')
+        #simulate(sys.argv[3], 'Sherman/seqs/', 'Sherman/reads/', 'A', 0 ,1)
+        #simulate(sys.argv[3], 'Sherman/seqs/', 'Sherman/reads/', 'B', 0 ,1)                
+    elif (sys.argv[1] == 'RNA'):
         a = ['RNA_A_1_1', 'RNA_A_1_2', 'RNA_A_1_3']              
         for i in range(0,len(a)):
             split_sequins(r_sequins(), seq_path(rna_path()))        
@@ -130,6 +134,8 @@ if __name__ == '__main__':
             split_sequins(r_sequins(), seq_path(rna_path()))        
             simulate_reads(r_mixtures(), seq_path(rna_path()), read_path(rna_path()), 0, sys.maxint, 'B', 0, 10)
             os.system('mv RNA_Simulation ' + b[i])
+    elif (sys.argv[1] == 'DNA'):
+        pass
     elif (sys.argv[1] == 'META'):
         split('../data/meta/META.ref.fa', 'META_Simulation_A/seqs/')
         split('../data/meta/META.ref.fa', 'META_Simulation_B/seqs/')
@@ -141,14 +147,14 @@ if __name__ == '__main__':
         simulate('../data/meta/META.mix.csv', 'META_Simulation_B/seqs/', 'META_Simulation_B/reads/', 'B', 0, 0.05)
 
         os.system('velveth A 31 -fastq -shortPaired META_Simulation_A/reads/simulated_1.fastq META_Simulation_A/reads/simulated_2.fastq')
-        os.system('velvetg A')
-        #os.system('velvetg A -exp_cov auto')
+        #os.system('velvetg A')
+        os.system('velvetg A -exp_cov auto')
         #os.system('meta-velvetg A')
         os.system('blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl')
 
         os.system('velveth B 21 -fastq -shortPaired META_Simulation_B/reads/simulated_1.fastq META_Simulation_B/reads/simulated_2.fastq')    
-        os.system('velvetg B')
-        #os.system('velvetg B -exp_cov auto')
+        #os.system('velvetg B')
+        os.system('velvetg B -exp_cov auto')
         #os.system('meta-velvetg A')        
         os.system('blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl')
     else:

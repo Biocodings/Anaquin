@@ -13,32 +13,35 @@ os.system('rm -rf src/resources/*')
 def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
 
-docs  = [ 'resources/manual.txt' ]
-data  = [ 'resources/silico.fa',
+docs  = [ 'docs/manual.txt' ]
+data  = [ 'data/silico.fa',
+
+          'scripts/abundance.R',
+          'scripts/differential.R',
 
            # ---------- META ----------
 
-          'resources/meta/META.tab.fa',
-          'resources/meta/META.mix.csv',
-          'resources/meta/META.ref.bed',          
+          'data/meta/META.tab.fa',
+          'data/meta/META.mix.csv',
+          'data/meta/META.ref.bed',
 
            # ---------- RNA ----------
 
-          'resources/rna/RNA.tab.fa',
-          'resources/rna/RNA.ref.gtf',
-          'resources/rna/RNA.ref.bed',
-          'resources/rna/RNA.mix.csv',
+          'data/rna/RNA.tab.fa',
+          'data/rna/RNA.ref.gtf',
+          'data/rna/RNA.ref.bed',
+          'data/rna/RNA.mix.csv',
 
            # ---------- DNA ----------
 
-          'resources/dna/DNA.mix.csv',
-          'resources/dna/DNA.var.vcf',          
-          'resources/dna/DNA.ref.bed',
-          'resources/dna/DNA.tab.fa',
+          'data/dna/DNA.mix.csv',
+          'data/dna/DNA.var.vcf',          
+          'data/dna/DNA.ref.bed',
+          'data/dna/DNA.tab.fa',
         ]
 tests = [ ]
 
 r = data + docs
 for i in range(0,len(r)):
     file = os.path.basename(r[i])
-    xxd(r[i], 'src/data/' + file)
+    xxd(r[i], 'src/resources/' + file)
