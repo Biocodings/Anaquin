@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "r_align.hpp"
+#include "rna/r_align.hpp"
 #include "stats/expression.hpp"
 #include "parsers/parser_sam.hpp"
 
@@ -27,23 +27,36 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     RAlign::Stats stats;
     const auto &s = Standard::instance();
 
+    // Tracking for each gene (sequin) in the experiment
+    auto gTracker = RAnalyzer::sequinTracker();
+
     std::vector<Alignment> q_exons, q_introns;
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
         Feature f;
-        
-        if (align.id != s.id || !align.mapped)
+
+        if (!align.mapped)
         {
             return;
         }
-        else if (!align.spliced)
+        else if (align.id != s.id)
+        {
+            stats.n_samps++;
+            return;
+        }
+        
+        stats.n_chromo++;
+        
+        bool succeed = false;
+        
+        if (!align.spliced)
         {
             q_exons.push_back(align);
 
-            if (classify(stats.me, align, [&](const Alignment &)
+            if (classify(stats.pe.m, align, [&](const Alignment &)
                 {
-                    const bool succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
+                    succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
                     return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
@@ -55,9 +68,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         {
             q_introns.push_back(align);
 
-            if (classify(stats.mi, align, [&](const Alignment &)
+            if (classify(stats.pi.m, align, [&](const Alignment &)
                 {
-                    const bool succeed = checkSplice(align, f);
+                    succeed = checkSplice(align, f);
                     return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
@@ -65,25 +78,34 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                 stats.ci.at(s.r_iso2Gene.at(f.tID))++;
             }
         }
+        
+        if (succeed)
+        {
+            std::cout << f.tID << std::endl;
+            gTracker.at(f.tID).push_back(align.l);
+        }
     });
-    
+
     /*
      * Classify at the base level
      */
 
-    countBase(s.r_l_exons, q_exons, stats.mb, stats.cb);
+    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.cb);
 
     /*
-     * Calculating for the references. The idea is similar to cuffcompare, where a reference is counted
-     * for each true-positive. Anything that has not been detected will be the false-positives.
+     * Calculate for the number of references. The idea is similar to cuffcompare, each true-positive is
+     * counted as a reference. Anything that is undetected in the experiment will be counted as a single
+     * reference.
      */
-
-    sums(stats.ec, stats.me.nr);
-    sums(stats.ic, stats.mi.nr);
-    stats.mb.nr = s.r_c_exons;
-
-    assert(stats.me.nr && stats.mi.nr && stats.mb.nr);
     
+    sums(stats.ec, stats.pe.m.nr);
+    sums(stats.ic, stats.pi.m.nr);
+    
+    // Total length of all reference exons
+    stats.pb.m.nr = s.r_c_exons;
+
+    assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
+
     // The structure depends on the mixture
     const auto seqs = s.r_pair(options.mix);
 
@@ -91,13 +113,60 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the LOS
      */
 
-    stats.se = Expression::analyze(stats.ce, seqs);
-    stats.si = Expression::analyze(stats.ci, seqs);
-    stats.sb = Expression::analyze(stats.cb, seqs);
+    stats.pe.s = Expression::analyze(stats.ce, seqs);
+    stats.pi.s = Expression::analyze(stats.ci, seqs);
+    stats.pb.s = Expression::analyze(stats.cb, seqs);
 
-    AnalyzeReporter::report("ralign_base.stats", stats, stats.mb, stats.sb, stats.cb, options.writer);
-    AnalyzeReporter::report("ralign_exon.stats", stats, stats.me, stats.se, stats.ce, options.writer);
-    AnalyzeReporter::report("ralign_introns.stats", stats, stats.mi, stats.si, stats.ci, options.writer);
+    /*
+     *  General statistics
+     *
+     *    - Reads to genome
+     *    - Reads to in-silico chromosome
+     *    - Dilution
+     *    - Alignment sensitivity
+     *    - Alignment specificity
+     *    - Spliced sensitivity
+     *    - Spliced specificity
+     *    - Detection limit
+     */
+
+    //const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
+
+    /*
+    options.writer->open("ralign_general.stats");
+    options.writer->write((boost::format(format) % "samples"
+                                                 % "silco"
+                                                 % "dilution"
+                                                 % "sn"
+                                                 % "sp"
+                                                 % "spliced sn"
+                                                 % "spliced sp"
+                                                 % "detect").str());
+    options.writer->write((boost::format(format) % stats.n_samps
+                                                 % stats.n_chromo
+                                                 % stats.dilution()
+                                                 % stats.
+                                                 % ss.n_seqs
+                                                 % ss.n_samps
+                                                 % ss.dilution()).str());
+    options.writer->close();
+
+    for (const auto &p : c)
+    {
+        writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+    }
+    
+    writer->close();
+
+    */
+
+    /*
+     * Write out statistics for various levels
+     */
+
+    AnalyzeReporter::report("ralign_base.stats",    stats.pb, stats.cb, options.writer);
+    AnalyzeReporter::report("ralign_exon.stats",    stats.pe, stats.ce, options.writer);
+    AnalyzeReporter::report("ralign_introns.stats", stats.pi, stats.ci, options.writer);
 
 	return stats;
 }

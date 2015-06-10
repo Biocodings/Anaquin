@@ -37,12 +37,11 @@ namespace Spike
 
                 if (iter->second)
                 {
-                    if (iter->second < s.counts ||
-                       (iter->second == s.counts && m.at(iter->first).abund() < s.abund))
+                    if (iter->second < s.counts || (iter->second == s.counts && m.at(iter->first).abund() < s.abund))
                     {
-                        s.id = iter->first;
+                        s.id     = iter->first;
                         s.counts = iter->second;
-                        s.abund = m.at(s.id).abund();
+                        s.abund  = m.at(s.id).abund();
                     }
                 }
             }

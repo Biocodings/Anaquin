@@ -67,7 +67,7 @@ VariantStats DVariant::analyze(const std::string &file, const Options &options)
             const bool match_gt = (q.gt == r.gt);
             
             // Does the allele frequency? One would expect to match for a perfect experiment.
-            const bool match_af = (q.af == r.af);
+            //const bool match_af = (q.af == r.af);
             
             //if (match_gt)           { stats.p_gt.m.tp()++; }
             //if (match_af)           { stats.p_af.m.tp()++; }
@@ -95,7 +95,7 @@ VariantStats DVariant::analyze(const std::string &file, const Options &options)
      */
 
     //stats.s = Expression::analyze(c, seqs);
-    AnalyzeReporter::report("dalign_overall.stats", stats, stats.p.m, stats.p.s, c, options.writer);
+    //AnalyzeReporter::report("dalign_overall.stats", stats, stats.p.m, stats.p.s, c, options.writer);
 
     return stats;
 }

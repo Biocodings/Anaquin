@@ -9,6 +9,14 @@ namespace Spike
     {
         struct Stats : public AnalyzerStats
         {
+            // Total mapped to the in-silico chromosome
+            Counts n_chromo = 0;
+            
+            // Total mapped to the samples
+            Counts n_samps = 0;
+            
+            inline Percentage dilution() const { return n_chromo / (n_chromo + n_samps); }
+
             // Number of times that each exon is positively identified
             LocusCounter ec = RAnalyzer::exonCounter();
             
@@ -19,8 +27,7 @@ namespace Spike
             Counter ce = RAnalyzer::geneCounter();
             Counter ci = RAnalyzer::geneCounter();
 
-            Confusion   mb, me, mi;
-            Sensitivity sb, se, si;
+            Performance pb, pe, pi;
         };
 
         struct Options : public SingleMixtureOptions

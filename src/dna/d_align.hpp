@@ -5,20 +5,28 @@
 
 namespace Spike
 {
-    struct DAlignStats : public AnalyzerStats, public CorrelationStats
-    {
-        Performance p;
-        Counter c = DAnalyzer::counterSequins();
-    };
-
     struct DAlign
     {
         struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };
+        
+        struct Stats : public AnalyzerStats, public CorrelationStats
+        {
+            // Total mapped to the in-silico chromosome
+            Counts n_chromo = 0;
+            
+            // Total mapped to the samples
+            Counts n_samps = 0;
+            
+            inline Percentage dilution() const { return n_chromo / (n_chromo + n_samps); }
+            
+            Performance p;
+            Counter c = DAnalyzer::counterSequins();
+        };
 
-        static DAlignStats analyze(const std::string &file, const Options &options = Options());
+        static Stats analyze(const std::string &file, const Options &options = Options());
     };
 }
 

@@ -5,8 +5,8 @@
 #include <memory>
 #include "classify.hpp"
 #include "data/types.hpp"
-#include "sensitivity.hpp"
 #include <boost/format.hpp>
+#include "stats/sensitivity.hpp"
 #include <ss/regression/lm.hpp>
 #include "writers/r_writer.hpp"
 #include "writers/mock_writer.hpp"
@@ -17,7 +17,10 @@ namespace Spike
     typedef std::map<GeneID, Counts>    GeneCounter;
     typedef std::map<SequinID, Counts>  SequinCounter;
     typedef std::map<IsoformID, Counts> IsoformCounter;
-    
+
+    // Tracking for each known sequin
+    typedef std::map<SequinID, std::vector<Locus>> SequinTracker;
+
     template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
     {
         std::map<T, Counts> c;
@@ -47,6 +50,21 @@ namespace Spike
         assert(c);
     }
 
+    struct Analyzer
+    {
+        template <typename T1, typename T2, typename Iter> static std::map<T1, T2> tracker(const Iter &iter)
+        {
+            std::map<T1, T2> m;
+
+            for (const auto &i : iter)
+            {
+                m[static_cast<T1>(i)] = T2();
+            }
+
+            return m;
+        }
+    };
+
     struct DAnalyzer
     {
         static SequinCounter counterSequins()
@@ -58,7 +76,11 @@ namespace Spike
     class RAnalyzer
     {
         public:
-        
+            static SequinTracker sequinTracker()
+            {
+                return Analyzer::tracker<SequinID, std::vector<Locus>>(Standard::instance().r_sequins);
+            }
+
             static LocusCounter exonCounter()
             {
                 return counter<std::vector<Feature>, Locus>(Standard::instance().r_exons);
@@ -84,13 +106,7 @@ namespace Spike
 
     struct AnalyzerStats
     {
-        // Counts for the sequins
-        Counts n_seqs = 0;
-
-        // Counts for the samples
-        Counts n_samps = 0;
-
-        inline Percentage dilution() const { return n_seqs / (n_seqs + n_samps + 1.0); }
+        // Empty Implementation
     };
 
     struct LinearModel
@@ -230,24 +246,20 @@ namespace Spike
             writer->close();
         }
 
-        template <typename ID> static void report
-                        (const std::string &name,
-                         const AnalyzerStats &ss,
-                         const Confusion &m,
-                         const Sensitivity &s,
-                         const std::map<ID, Counts> &c,
-                         std::shared_ptr<Writer> writer)
+        template <typename Writer> static void report(const FileName &name,
+                                                      const Performance &p,
+                                                      const Counter &c,
+                                                      Writer writer)
         {
-            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-            
+            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+
             writer->open(name);
-            writer->write((boost::format(format) % "sp" % "sn" % "ss" % "seqs" % "samples" % "dil").str());
-            writer->write((boost::format(format) % m.sp()
-                                                 % m.sn()
-                                                 % s.abund
-                                                 % ss.n_seqs
-                                                 % ss.n_samps
-                                                 % ss.dilution()).str());            
+            writer->write((boost::format(format) % "sn" % "sp" % "los" % "ss" % "counts").str());
+            writer->write((boost::format(format) % p.m.sn()
+                                                 % p.m.sp()
+                                                 % p.s.id
+                                                 % p.s.counts
+                                                 % p.s.counts).str());
             writer->write("\n");
 
             for (const auto &p : c)
@@ -256,7 +268,7 @@ namespace Spike
             }
 
             writer->close();
-        }
+        };
     };
 }
 

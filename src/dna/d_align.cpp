@@ -4,9 +4,9 @@
 
 using namespace Spike;
 
-DAlignStats DAlign::analyze(const std::string &file, const Options &options)
+DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
 {
-    DAlignStats stats;
+    DAlign::Stats stats;
     static const auto &s = Standard::instance();
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
@@ -15,7 +15,7 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
 
         if (align.id == s.id)
         {
-            stats.n_seqs++;
+            stats.n_chromo++;
 
             if (classify(stats.p.m, align, [&](const Alignment &)
                          {
@@ -49,9 +49,9 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
      * standard abundance (in RPKM) relative to the known concentration (in attamoles/ul)
      * of each DNA standard.
      */
-    
+
     // The total number of reads aligned
-    const auto n = stats.n_seqs;
+    const auto n = stats.n_chromo;
 
     // Known concentration for the given mixture
     const auto &m = s.d_seq(options.mix);
@@ -82,10 +82,10 @@ DAlignStats DAlign::analyze(const std::string &file, const Options &options)
     // Calculate for the sensitivity
     stats.p.s = Expression::analyze(stats.c, s.d_seq(options.mix));
 
-    AnalyzeReporter::report("dalign.stats", stats, stats.p.m, stats.p.s, stats.c, options.writer);
+    //AnalyzeReporter::report("dalign.stats", stats, stats.p.m, stats.p.s, stats.c, options.writer);
 
     // Generate a R script for plotting relative abundance
-    AnalyzeReporter::script("dalign.R", stats, options.writer);
+    //AnalyzeReporter::script("dalign.R", stats, options.writer);
 
 	return stats;
 }

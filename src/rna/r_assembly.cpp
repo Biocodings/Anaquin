@@ -25,9 +25,9 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-RAssemblyStats RAssembly::analyze(const std::string &file, const Options &options)
+RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &options)
 {
-    RAssemblyStats stats;
+    RAssembly::Stats stats;
     const auto &s = Standard::instance();
 
     // The structure depends on the mixture
@@ -37,7 +37,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
     std::vector<Feature> q_exons;
 
     Counts i = 0;
-    
+
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
     {
         // Don't bother unless the transcript is a sequin or it's been filtered
@@ -59,7 +59,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                  * Classify at the exon level
                  */
 
-                if (classify(stats.me, f, [&](const Feature &)
+                if (classify(stats.pe.m, f, [&](const Feature &)
                 {
                     return find(s.r_exons, f, Exact);
                 }))
@@ -77,7 +77,7 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                  * Classify at the transctipt level
                  */
 
-                if (classify(stats.mt, f, [&](const Feature &)
+                if (classify(stats.pt.m, f, [&](const Feature &)
                 {
                     return find_map(seqs, f, Exact);
                 }))
@@ -110,8 +110,8 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
                        /*
                         * Classify at the intron level
                         */
-                       
-                       if (classify(stats.mi, i, [&](const Feature &)
+
+                       if (classify(stats.pi.m, i, [&](const Feature &)
                        {
                            return find(s.r_introns, i, Exact);
                        }))
@@ -125,40 +125,38 @@ RAssemblyStats RAssembly::analyze(const std::string &file, const Options &option
      * Classify at the base level
      */
 
-    countBase(s.r_l_exons, q_exons, stats.mb, stats.cb);
+    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.cb);
 
     /*
      * Setting the known references
      */
     
-    sums(stats.e_lc, stats.me.nr);
-    sums(stats.i_lc, stats.mi.nr);
+    sums(stats.e_lc, stats.pe.m.nr);
+    sums(stats.i_lc, stats.pi.m.nr);
 
     // The number of sequins is also the number of known transcripts
-    stats.mt.nr = seqs.size();
+    stats.pt.m.nr = seqs.size();
     
     // The known base length is the total length of all known exons
-    stats.mb.nr = s.r_c_exons;
+    stats.pb.m.nr = s.r_c_exons;
 
     /*
      * Calculate for the LOS
      */
 
-    stats.se = Expression::analyze(stats.ce, seqs);
-    stats.st = Expression::analyze(stats.ct, seqs);
-    stats.sb = Expression::analyze(stats.cb, s.r_pair(options.mix));
-    stats.si = Expression::analyze(stats.ci, seqs);
+    stats.pe.s = Expression::analyze(stats.ce, seqs);
+    stats.pt.s = Expression::analyze(stats.ct, seqs);
+    stats.pb.s = Expression::analyze(stats.cb, s.r_pair(options.mix));
+    stats.pi.s = Expression::analyze(stats.ci, seqs);
 
     /*
-     * Report for the statistics
+     * Write out statistics for various levels
      */
 
-    AnalyzeReporter::report("assembly.base.stats", stats, stats.mb, stats.sb, stats.cb, options.writer);
-    AnalyzeReporter::report("assembly.exons.stats", stats, stats.me, stats.se, stats.ce, options.writer);
-    AnalyzeReporter::report("assembly.intron.stats", stats, stats.mi, stats.si, stats.ci, options.writer);
-    AnalyzeReporter::report("assembly.transcripts.stats", stats, stats.mt, stats.st, stats.ct, options.writer);
-
-    std::cout << "Processed " << i << " rows" << std::endl;
+    AnalyzeReporter::report("assembly.base.stats", stats.pb, stats.cb, options.writer);
+    AnalyzeReporter::report("assembly.exons.stats", stats.pe, stats.ce, options.writer);
+    AnalyzeReporter::report("assembly.intron.stats", stats.pi, stats.ci, options.writer);
+    AnalyzeReporter::report("assembly.transcripts.stats", stats.pt, stats.ct, options.writer);
 
     return stats;
 }
