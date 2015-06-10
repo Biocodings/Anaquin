@@ -83,7 +83,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         // Generate a R script for a plot of abundance
         AnalyzeReporter::script("meta_abundance.R", x, y, z, options.writer);
         
-        std::cout << "Abundance plot generated" << std::endl;        
+        std::cout << "Abundance plot generated" << std::endl;
     }
 
     /*

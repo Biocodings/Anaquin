@@ -19,6 +19,8 @@ namespace Spike
             using boost::algorithm::join;
             using boost::adaptors::transformed;
 
+            std::cout << "Loading the linear model" << std::endl;
+
             std::stringstream ss;
             ss << linearR();
 
