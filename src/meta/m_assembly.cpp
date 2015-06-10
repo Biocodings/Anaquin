@@ -63,8 +63,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
                 for (std::size_t i = 0; i < align.contigs.size(); i++)
                 {
+                    std::cout << "--------------" << std::endl;
                     const auto &contig = stats.contigs.at(align.contigs[i].id);
-
+                    std::cout << "?????????????" << std::endl;
+                    
                     // Average relative to the size of the contig
                     measured += contig.k_cov / contig.seq.size();
                     
