@@ -38,8 +38,6 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         std::vector<double> x, y;
         std::vector<std::string> z;
 
-                            std::cout << "--------111------" << std::endl;
-        
         for (const auto &meta : r.metas)
         {
             const auto &align = meta.second;
