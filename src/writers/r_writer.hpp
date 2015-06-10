@@ -22,12 +22,14 @@ namespace Spike
             std::stringstream ss;
             ss << linearR();
 
+            std::cout << "Generating a linear model" << std::endl;
+            
             return (boost::format(ss.str()) %
                         join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
                         join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
                        (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str()).str();
         }
     };
-}p
+}
 
 #endif
