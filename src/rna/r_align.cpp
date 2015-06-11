@@ -45,7 +45,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
             stats.n_samps++;
             return;
         }
-        
+
         stats.n_chromo++;
         
         bool succeed = false;
@@ -78,10 +78,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                 stats.ci.at(s.r_iso2Gene.at(f.tID))++;
             }
         }
-        
-        if (succeed)
+
+        if (succeed && gTracker.count(f.tID))
         {
-            std::cout << f.tID << std::endl;
             gTracker.at(f.tID).push_back(align.l);
         }
     });
@@ -129,10 +128,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      *    - Spliced specificity
      *    - Detection limit
      */
+/*
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
-    //const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-
-    /*
     options.writer->open("ralign_general.stats");
     options.writer->write((boost::format(format) % "samples"
                                                  % "silco"
@@ -150,16 +148,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                                                  % ss.n_samps
                                                  % ss.dilution()).str());
     options.writer->close();
-
-    for (const auto &p : c)
-    {
-        writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
-    }
-    
-    writer->close();
-
-    */
-
+*/
     /*
      * Write out statistics for various levels
      */
