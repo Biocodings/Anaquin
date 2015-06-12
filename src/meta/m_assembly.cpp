@@ -32,11 +32,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         const auto r = MBlast::analyze(options.psl);
 
         std::cout << "Creating an abundance plot" << std::endl;
-
-        /*
-         * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
-         */
-
+        
         for (const auto &meta : r.metas)
         {
             const auto &align = meta.second;
@@ -47,7 +43,22 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                 continue;
             }
 
-            // If the metaquin has an alignment
+            /*
+             * Calculate the limit of sensitivity. LOS is defined as the metaquin with the lowest amount of
+             * concentration while still detectable in the experiment.
+             */
+            
+            if (ms.s.id.empty() || align.seqA.abund() < ms.s.abund)
+            {
+                ms.s.id     = align.id;
+                ms.s.abund  = align.seqA.abund();
+                ms.s.counts = align.contigs.size();
+            }
+
+            /*
+             * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
+             */
+
             if (!align.contigs.empty())
             {
                 // Known concentration
@@ -79,6 +90,8 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
             }
         }
 
+        assert(!ms.s.id.empty());
+        
         // Generate a R script for a plot of abundance
         AnalyzeReporter::script("meta_abundance.R", ms.x, ms.y, ms.z, options.writer);
         
@@ -142,7 +155,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                                      % lm.r
                                                      % lm.m
                                                      % lm.r2
-                                                     % -999).str());
+                                                     % ms.s.abund).str());
     }
     
     options.writer->close();
