@@ -30,8 +30,8 @@ namespace Spike
             // Observed fold-change
             Coverage ob_fold;
         };
-        
-        struct Stats : public CorrelationStats
+
+        struct Stats : public ModelStats
         {
             std::vector<SequinDiff> diffs;
         };

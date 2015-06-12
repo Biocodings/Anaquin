@@ -21,6 +21,8 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         case Velvet: { stats = Velvet::parse<MAssembly::Stats, Contig>(file); break; }
     }
 
+    ModelStats ms;
+    
     // Prefer a user supplied alignment file if any
     if (!options.psl.empty())
     {
@@ -34,9 +36,6 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         /*
          * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
          */
-
-        std::vector<double> x, y;
-        std::vector<std::string> z;
 
         for (const auto &meta : r.metas)
         {
@@ -55,8 +54,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                 const auto known = align.seqA.abund();
 
                 /*
-                 * Calculate measured concentration for this metaquin. Average out
-                 * the coverage for each aligned contig.
+                 * Calculate measured concentration for this metaquin. Average out the coverage for each aligned contig.
                  */
 
                 Concentration measured = 0;
@@ -75,14 +73,14 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
             
                 assert(measured != 0);
 
-                x.push_back(log(known));
-                y.push_back(log(measured));
-                z.push_back(align.id);
+                ms.z.push_back(align.id);
+                ms.x.push_back(log(known));
+                ms.y.push_back(log(measured));
             }
         }
 
         // Generate a R script for a plot of abundance
-        AnalyzeReporter::script("meta_abundance.R", x, y, z, options.writer);
+        AnalyzeReporter::script("meta_abundance.R", ms.x, ms.y, ms.z, options.writer);
         
         std::cout << "Abundance plot generated" << std::endl;
     }
@@ -91,25 +89,62 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
      * Write out assembly results
      */
 
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-
     options.writer->open("assembly.stats");
-    options.writer->write((boost::format(format) % "Nodes"
-                                                 % "N20"
-                                                 % "N50"
-                                                 % "N80"
-                                                 % "min"
-                                                 % "mean"
-                                                 % "max"
-                                                 % "total").str());
-    options.writer->write((boost::format(format) % stats.contigs.size()
-                                                 % stats.N20
-                                                 % stats.N50
-                                                 % stats.N80
-                                                 % stats.min
-                                                 % stats.mean
-                                                 % stats.max
-                                                 % stats.total).str());
+    
+    if (ms.x.size() <= 1)
+    {
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+        
+        options.writer->write((boost::format(format) % "Nodes"
+                                                     % "N20"
+                                                     % "N50"
+                                                     % "N80"
+                                                     % "min"
+                                                     % "mean"
+                                                     % "max"
+                                                     % "total").str());
+        options.writer->write((boost::format(format) % stats.contigs.size()
+                                                     % stats.N20
+                                                     % stats.N50
+                                                     % stats.N80
+                                                     % stats.min
+                                                     % stats.mean
+                                                     % stats.max
+                                                     % stats.total).str());
+    }
+    else
+    {
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+
+        // Fit a simple linear regression model
+        const auto lm = ms.linear();
+
+        options.writer->write((boost::format(format) % "Nodes"
+                                                     % "N20"
+                                                     % "N50"
+                                                     % "N80"
+                                                     % "min"
+                                                     % "mean"
+                                                     % "max"
+                                                     % "total"
+                                                     % "r"
+                                                     % "slope"
+                                                     % "r2"
+                                                     % "los").str());
+        options.writer->write((boost::format(format) % stats.contigs.size()
+                                                     % stats.N20
+                                                     % stats.N50
+                                                     % stats.N80
+                                                     % stats.min
+                                                     % stats.mean
+                                                     % stats.max
+                                                     % stats.total
+                                                     % lm.r
+                                                     % lm.m
+                                                     % lm.r2
+                                                     % -999).str());
+    }
+    
     options.writer->close();
 
     return stats;

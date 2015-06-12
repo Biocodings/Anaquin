@@ -12,7 +12,7 @@ namespace Spike
             RNALevel level;
         };
 
-        struct Stats : public CorrelationStats
+        struct Stats : public ModelStats
         {
             // Empty Implementation
         };

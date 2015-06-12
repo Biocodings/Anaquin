@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    struct RAbundanceStats : public CorrelationStats
+    struct RAbundanceStats : public ModelStats
     {
         // Empty Implementation
     };

@@ -12,7 +12,7 @@ namespace Spike
             // Empty Implementation
         };
         
-        struct Stats : public CorrelationStats
+        struct Stats : public ModelStats
         {
             // Total mapped to the in-silico chromosome
             Counts n_chromo = 0;

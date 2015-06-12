@@ -139,29 +139,33 @@ namespace Spike
         }
     }
 
-    struct CorrelationStats
+    struct ModelStats
     {
         Sensitivity s;
 
-        std::vector<std::string> z;
+        std::vector<SequinID> z;
+        
+        // Known concentration for sequins
         std::vector<Concentration> x;
-        std::vector<Concentration> y;
-
+        
+        // Measured coverage for sequins
+        std::vector<Coverage> y;
+        
         LinearModel linear() const
         {
             const auto m = SS::lm("y ~ x", SS::data.frame(SS::c(y), SS::c(x)));
-
+            
             LinearModel lm;
             
             // Pearson correlation
             lm.r = SS::cor(x, y);
-
+            
             // Adjusted R2
             lm.r2 = m.ar2;
-
+            
             // Constant coefficient
             lm.c = m.coeffs[0].v;
-
+            
             // Regression slope
             lm.m = m.coeffs[1].v;
             
@@ -202,7 +206,7 @@ namespace Spike
         }
 
         static void script(const std::string &file,
-                           const CorrelationStats &stats,
+                           const ModelStats  &stats,
                            std::shared_ptr<Writer> writer)
         {
             writer->open(file);
