@@ -69,15 +69,14 @@ namespace Spike
             stats.N20   = h.weightedPercentile(1 - 0.2);
             stats.sum   = h.sum();
             stats.total = std::accumulate(stats.contigs.begin(), stats.contigs.end(), 0,
-                          [&](int sum, const std::pair<std::string, C> &p)
-                          {
-                              return sum + p.second.seq.size();
-                          });
-
+                                           [&](int sum, const std::pair<std::string, C> &p)
+                                           {
+                                               return sum + p.second.seq.size();
+                                           });
             return stats;
         }
     };
-    
+
     struct Velvet
     {
         template <typename Stats, typename C> static Stats parse(const std::string &file)

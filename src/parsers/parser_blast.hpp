@@ -22,6 +22,18 @@ namespace Spike
 
             // Alignment end position in query
             BasePair tEnd;
+
+            // Number of gap bases in query
+            BasePair qGaps;
+            
+            // Number of gap bases in target
+            BasePair tGaps;
+            
+            // Number of matching bases
+            BasePair matches;
+
+            // Number of mismatching bases
+            BasePair mismatch;
         };
 
         typedef std::function<void(const BlastLine &, const ParserProgress &)> Callback;

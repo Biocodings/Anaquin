@@ -5,16 +5,29 @@
 
 namespace Spike
 {
+    /*
+     * Represents a contig that has been aligned.
+     */
+    
     struct AlignedContig
     {
         operator const Locus &() const { return l; }
 
         ContigID id;
-        
+
         // The positon where the alignment occurs
         Locus l;
+
+        // Number of matching bases
+        BasePair match;
+
+        // Number of gaps in the sequin
+        BasePair gap;
+
+        // Number of mis-matching bases
+        BasePair mismatch;
     };
-    
+
     /*
      * Represents all alignments for a particular metaquin
      */
@@ -31,9 +44,9 @@ namespace Spike
         std::vector<AlignedContig> contigs;
 
         /*
-         * The following metrics are only valid if there's at least an alignment
+         * The following metrics are only valid if an alignment is available
          */
-        
+
         // Fraction of bases covered by alignments
         double covered;
         

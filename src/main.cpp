@@ -564,30 +564,30 @@ void parse(int argc, char ** argv)
                             
                             // Analyse the BLAST alignment
                             const auto r = MBlast::analyze(_opts[0]);
-                            
+
                             std::cout << (boost::format(format) % "ID"
-                                          % "MixA"
-                                          % "MixB"
-                                          % "N"
-                                          % "Cov"
-                                          % "Mis"
-                                          % "Gaps").str() << std::endl;
-                            
+                                                                % "ConA"
+                                                                % "ConB"
+                                                                % "Contigs"
+                                                                % "Covered"
+                                                                % "Mismatch"
+                                                                % "Gaps").str() << std::endl;
+
                             for (const auto &align : r.metas)
                             {
                                 std::cout << (boost::format(format)
-                                                % align.second.id
-                                                % align.second.seqA.abund()
-                                                % align.second.seqB.abund()
-                                                % align.second.contigs.size()
-                                                % align.second.covered
-                                                % align.second.mismatch
-                                                % align.second.gaps).str() << std::endl;
+                                                 % align.second.id
+                                                 % align.second.seqA.abund()
+                                                 % align.second.seqB.abund()
+                                                 % align.second.contigs.size()
+                                                 % align.second.covered
+                                                 % align.second.mismatch
+                                                 % align.second.gaps).str() << std::endl;
                             }
 
                             break;
                         }
-                            
+
                         case MODE_DIFFERENTIAL:
                         {
                             if (_opts.size() != 2 || (!_psl_A.empty() != !_psl_B.empty()))

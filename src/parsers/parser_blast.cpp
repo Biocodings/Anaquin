@@ -47,10 +47,14 @@ void ParserBlast::parse(const Reader &r, Callback c)
         
         Tokens::split(line, "\t", tokens);
 
-        l.qName  = tokens[PSL_QName];
-        l.tName  = tokens[PSL_TName];
-        l.tStart = stoi(tokens[PSL_TStart]);
-        l.tEnd   = stoi(tokens[PSL_TEnd]);
+        l.qName    = tokens[PSL_QName];
+        l.tName    = tokens[PSL_TName];
+        l.tStart   = stoi(tokens[PSL_TStart]);
+        l.tEnd     = stoi(tokens[PSL_TEnd]);
+        l.qGaps    = stoi(tokens[PSL_QGap_Bases]);
+        l.tGaps    = stoi(tokens[PSL_TGap_Bases]);
+        l.matches  = stoi(tokens[PSL_Match]);
+        l.mismatch = stoi(tokens[PSL_MisMatch]);
 
         c(l, p);
     }

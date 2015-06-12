@@ -1,4 +1,5 @@
 #include <map>
+#include <numeric>
 #include <iostream>
 #include "meta/m_blast.hpp"
 #include "data/standard.hpp"
@@ -48,14 +49,19 @@ MBlast::Stats MBlast::analyze(const std::string &file)
         {
             AlignedContig contig;
 
-            contig.id = l.qName;
-            contig.l  = Locus(l.tStart, l.tEnd);
+            contig.id       = l.qName;
+            contig.l        = Locus(l.tStart, l.tEnd);
+            contig.match    = l.matches;
+            contig.mismatch = l.mismatch;
+
+            // Only interested in the target (eg: M10_G)
+            contig.gap = l.tGaps;
 
             m.at(id).contigs.push_back(contig);
         }
         else
         {
-            std::cout << "Warning: " << id << " not a metaquin" << std::endl;
+            std::cout << "Warning: " << id << " not a metaquin (given in alignment)" << std::endl;
         }
     });
 
@@ -76,31 +82,40 @@ MBlast::Stats MBlast::analyze(const std::string &file)
         {
             // Make sure the contigs are non-overlapping
             const auto merged = Locus::merge<AlignedContig, Locus>(align.contigs);
+
+            // The total non-overlapping bases for the alignments
+            const auto total = std::accumulate(merged.begin(), merged.end(), 0, [&](int sum, const Locus &l)
+                               {
+                                   return sum + l.length();
+                               });
             
-            BasePair gaps  = 0;
-            BasePair total = 0;
+            /*
+             * Don't consider for overlapping because a base can be matched or mismatched.
+             */
             
-            for (std::size_t j = 0; j < merged.size(); j++)
+            BasePair gaps = 0;
+            BasePair match = 0;
+            BasePair mismatch = 0;
+
+            for (const auto &contig : align.contigs)
             {
-                if (j && merged[j-1].end + 1 != merged[j].start)
-                {
-                    gaps += Locus(merged[j-1].end + 1, merged[j].start - 1).length();
-                }
-                
-                total += merged[j].length();
+                gaps     += contig.gap;
+                match    += contig.match;
+                mismatch += contig.mismatch;
             }
             
+            assert(match > mismatch && match > gaps);
             assert(align.seqA.l.length() == align.seqB.l.length());
             
-            // Fraction of bases covered by alignments
+            // Fraction of sequins covered by alignments
             align.covered = (double) total / align.seqA.l.length();
             
-            // Fraction of bases not covered by alignments
-            align.mismatch = 1 - align.covered;
-            
+            // Fraction of mismatch bases in alignments
+            align.mismatch = (double) mismatch / match;
+
             // Fraction of bases covered by gaps
-            align.gaps = (double) gaps / align.seqA.l.length();
-            
+            align.gaps = (double) gaps / match;
+
             assert(align.gaps     >= 0.0 && align.gaps     <= 1.0);
             assert(align.covered  >= 0.0 && align.covered  <= 1.0);
             assert(align.mismatch >= 0.0 && align.mismatch <= 1.0);
