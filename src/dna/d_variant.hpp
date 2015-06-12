@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    struct VariantStats : public AnalyzerStats
+    struct VariantStats
     {
         // Overall performance
         Performance p;

@@ -18,7 +18,7 @@ namespace Spike
     typedef std::map<SequinID, Counts>  SequinCounter;
     typedef std::map<IsoformID, Counts> IsoformCounter;
 
-    // Tracking for each known sequin
+    // Tracking for each sequin
     typedef std::map<SequinID, std::vector<Locus>> SequinTracker;
 
     template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
@@ -104,11 +104,6 @@ namespace Spike
 
     typedef std::map<std::string, Counts> Counter;
 
-    struct AnalyzerStats
-    {
-        // Empty Implementation
-    };
-
     struct LinearModel
     {
         // Least-squared constant coefficient
@@ -178,7 +173,7 @@ namespace Spike
     {
         std::set<SequinID> filters;
 
-        // How the results are written
+        // By default, the results are written to no-where
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
     };
 

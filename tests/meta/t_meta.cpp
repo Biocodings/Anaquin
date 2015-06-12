@@ -4,6 +4,7 @@
 
 extern int parse_options(const std::string &command, std::string &output, std::string &error);
 
+// Generate a file for filtering, one line per sequin
 static void generateFilter(const std::string &file, const std::vector<std::string> &sequins)
 {
     std::ofstream o;
@@ -15,6 +16,16 @@ static void generateFilter(const std::string &file, const std::vector<std::strin
     }
     
     o.close();
+}
+
+TEST_CASE("Meta_Diffs_Empty_Align")
+{
+    std::string output, error;
+    
+    const int s = parse_options("meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -psl tests/data/meta/empty.psl tests/data/meta/empty.psl", output, error);
+
+    REQUIRE(s == 1);
+    REQUIRE(error.find("Empty file:") != std::string::npos);
 }
 
 TEST_CASE("Meta_Sequins")

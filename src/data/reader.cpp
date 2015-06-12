@@ -21,16 +21,25 @@ Reader::Reader(const std::string &file, DataMode mode)
     if (mode == DataMode::File)
     {
         const auto f = std::shared_ptr<std::ifstream>(new std::ifstream(file));
-        
+
         if (!f->good())
         {
-            throw std::runtime_error("Failed to load " + file);
+            throw InvalidFileError(file);
         }
-        
+        else if (f->peek() == std::ifstream::traits_type::eof())
+        {
+            throw EmptyFileError(file);
+        }
+
         _imp->f = f;
     }
     else
     {
+        if (file.empty())
+        {
+            throw EmptyFileError(file);
+        }
+
         _imp->s = std::shared_ptr<std::stringstream>(new std::stringstream(file));
     }
 }

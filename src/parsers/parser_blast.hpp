@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_BLAT_HPP
-#define GI_PARSER_BLAT_HPP
+#ifndef GI_PARSER_BLAST_HPP
+#define GI_PARSER_BLAST_HPP
 
 #include <functional>
 #include "data/types.hpp"
@@ -7,9 +7,9 @@
 
 namespace Spike
 {
-    struct ParserBlat
+    struct ParserBlast
     {
-        struct BlatLine
+        struct BlastLine
         {
             // Target sequence name
             std::string tName;
@@ -24,7 +24,7 @@ namespace Spike
             BasePair tEnd;
         };
 
-        typedef std::function<void(const BlatLine &, const ParserProgress &)> Callback;
+        typedef std::function<void(const BlastLine &, const ParserProgress &)> Callback;
         static void parse(const Reader &, Callback);
     };
 }

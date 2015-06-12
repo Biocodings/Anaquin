@@ -19,13 +19,9 @@ namespace Spike
             using boost::algorithm::join;
             using boost::adaptors::transformed;
 
-            std::cout << "Loading the linear model" << std::endl;
-
             std::stringstream ss;
             ss << linearR();
 
-            std::cout << "Generating a linear model" << std::endl;
-            
             return (boost::format(ss.str()) %
                         join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
                         join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %

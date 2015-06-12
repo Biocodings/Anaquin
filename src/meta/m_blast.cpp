@@ -1,19 +1,24 @@
 #include <map>
 #include <iostream>
-#include "data/standard.hpp"
 #include "meta/m_blast.hpp"
-#include "parsers/parser_blat.hpp"
+#include "data/standard.hpp"
+#include "parsers/parser_blast.hpp"
 
 using namespace Spike;
 
 MBlast::Stats MBlast::analyze(const std::string &file)
 {
-    std::map<std::string, ParserBlat::BlatLine> psl;
+    std::map<std::string, ParserBlast::BlastLine> psl;
 
-    ParserBlat::parse(file, [&](const ParserBlat::BlatLine &l, const ParserProgress &)
+    ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
     {
         psl[l.qName] = l;
     });
+
+    if (psl.empty())
+    {
+        throw EmptyFileError(file);
+    }
 
     /*
      * Create data-strucutre for each metaquin
@@ -34,7 +39,7 @@ MBlast::Stats MBlast::analyze(const std::string &file)
      * Compare each alignment to the metaquins
      */
     
-    ParserBlat::parse(file, [&](const ParserBlat::BlatLine &l, const ParserProgress &)
+    ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
     {
         // Eg: M2_G, M10_G
         const SequinID id = l.tName;

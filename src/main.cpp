@@ -580,7 +580,7 @@ void parse(int argc, char ** argv)
                                                 % align.second.seqA.abund()
                                                 % align.second.seqB.abund()
                                                 % align.second.contigs.size()
-                                                % align.second.coverage
+                                                % align.second.covered
                                                 % align.second.mismatch
                                                 % align.second.gaps).str() << std::endl;
                             }
@@ -630,10 +630,26 @@ void parse(int argc, char ** argv)
 
 int parse_options(int argc, char ** argv)
 {
+    auto printError = [&](const std::string &file)
+    {
+        std::cerr << std::endl;
+        std::cerr << "*********************************************" << std::endl;
+        std::cerr << file << std::endl;
+        std::cerr << "*********************************************" << std::endl;
+    };
+    
     try
     {
         parse(argc, argv);
         return 0;
+    }
+    catch (const EmptyFileError &ex)
+    {
+        printError((boost::format("%1%%2%") % "Empty file: " % ex.what()).str());
+    }
+    catch (const InvalidFileError &ex)
+    {
+        printError((boost::format("%1%%2%") % "Invalid file: " % ex.what()).str());
     }
     catch (const InvalidUsageError &)
     {
@@ -641,7 +657,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidFilterError &ex)
     {
-        std::cerr << ex.what() << std::endl;
+        printError((boost::format("%1%%2%") % "Invalid filter: " % ex.what()).str());
     }
 
     return 1;

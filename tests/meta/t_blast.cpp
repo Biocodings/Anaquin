@@ -3,10 +3,7 @@
 
 using namespace Spike;
 
-TEST_CASE("MBlast_E1")
+TEST_CASE("MBlast_Empty")
 {
-    
-    
-    
-    
+    REQUIRE_THROWS(MBlast::analyze("tests/data/empty.psl"));
 }

@@ -7,7 +7,7 @@ namespace Spike
 {
     struct RAlign : public RAnalyzer
     {
-        struct Stats : public AnalyzerStats
+        struct Stats
         {
             // Total mapped to the in-silico chromosome
             Counts n_chromo = 0;

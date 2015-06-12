@@ -1,6 +1,6 @@
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
-#include "parsers/parser_blat.hpp"
+#include "parsers/parser_blast.hpp"
 
 using namespace Spike;
 
@@ -29,14 +29,14 @@ enum PSLField
     PSL_T_Starts
 };
 
-void ParserBlat::parse(const Reader &r, Callback c)
+void ParserBlast::parse(const Reader &r, Callback c)
 {
     ParserProgress p;
 
     std::string line;
     std::vector<std::string> tokens;
 
-    BlatLine l;
+    BlastLine l;
     
     while (r.nextLine(line))
     {
