@@ -48,14 +48,20 @@ namespace Spike
          */
 
         // Fraction of bases covered by alignments
-        double covered;
+        double covered = 0.0;
         
         // Fraction of bases not covered by alignments
-        double mismatch;
+        double mismatch = 0.0;
 
         // Fraction of gap bases in alignments
-        double gaps;
+        double gaps = 0.0;
+
+        // Average coverage depth across assembled sequence
+        double depthAlign = 0.0; // TODO: ????
         
+        // Average coverage depth across entire sequin
+        double depthSequin = 0.0; // TODO: ????
+
         inline bool operator<(const MetaAlignment &x)  const { return id < x.id;  }
         inline bool operator==(const MetaAlignment &x) const { return id == x.id; }
     };

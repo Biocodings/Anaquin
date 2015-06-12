@@ -2,8 +2,8 @@
 #define GI_M_ASSEMBLY_HPP
 
 #include <numeric>
-#include "stats/analyzer.hpp"
 #include "data/tokens.hpp"
+#include "stats/analyzer.hpp"
 #include "meta/m_histogram.h"
 #include "parsers/parser_fa.hpp"
 

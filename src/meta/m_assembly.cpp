@@ -6,14 +6,14 @@ using namespace Spike;
 MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &options)
 {
     /*
-     * The code for a specific assembler is indepenent to alignment for contigs.
-     * While it is certinaly a good design, we'll need to link the information.
+     * The code for a specific assembler is indepenent to alignments. While it's
+     * certinaly a good design, we'll need to link and bridge the details.
      */
 
     MAssembly::Stats stats;
 
     /*
-     * Generate statistics for contigs, no reference sequins needed
+     * Generate statistics from a specific assembler, references not required (de-novo assembly)
      */
 
     switch (options.tool)
@@ -22,18 +22,18 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     }
 
     ModelStats ms;
-    
+
+    MBlast::Stats r; // TODO: Should this be here?
+
     // Prefer a user supplied alignment file if any
     if (!options.psl.empty())
     {
-        std::cout << "Using an aligment file: " << options.psl << std::endl;
+        std::cout << "Aligment file: " << options.psl << std::endl;
 
         // Analyse the given blast alignment file
-        const auto r = MBlast::analyze(options.psl);
+        r = MBlast::analyze(options.psl);
 
-        std::cout << "Creating an abundance plot" << std::endl;
-        
-        for (const auto &meta : r.metas)
+        for (auto &meta : r.metas)
         {
             const auto &align = meta.second;
 
@@ -72,7 +72,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
                 for (std::size_t i = 0; i < align.contigs.size(); i++)
                 {
-                    // Crash if the alignment file doesn't match with the contigs
+                    // Crash if the alignment file doesn't match with the contigs...
                     const auto &contig = stats.contigs.at(align.contigs[i].id);
                     
                     // Average relative to the size of the contig
@@ -80,8 +80,16 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                     
                     // Average relative to the size of the sequin
                     //measured += (double) contig.k_cov / meta.seqA.l.length();
+                    
+                    /*
+                     * Calculate for the average depth for alignment and sequin
+                     */
+                    
+                    meta.second.depthAlign  += align.contigs[i].l.length() * contig.k_cov / align.contigs[i].l.length();
+                    meta.second.depthSequin += align.contigs[i].l.length() * contig.k_cov;
                 }
-            
+
+                meta.second.depthSequin = meta.second.depthSequin / align.seqA.l.length();
                 assert(measured != 0);
 
                 ms.z.push_back(align.id);
@@ -99,10 +107,39 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     }
 
     /*
+     * Write out results for each sequin
+     */
+    
+    options.writer->open("abundance_stats.stats");
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
+
+    options.writer->write((boost::format(format) % "ID"
+                                                 % "Con"
+                                                 % "Status"
+                                                 % "DAlign"
+                                                 % "DSequin"
+                                                 % "Covered").str());
+    
+    for (auto &meta : r.metas)
+    {
+        const std::string status = meta.second.contigs.size() == 0 ? "Undetected" :
+                                   meta.second.covered == 1.0      ? "Full" : "Partial";
+
+        options.writer->write((boost::format(format) % meta.second.id
+                                                     % meta.second.seqA.abund()
+                                                     % status
+                                                     % meta.second.depthAlign
+                                                     % meta.second.depthSequin
+                                                     % meta.second.covered).str());
+    }
+    
+    options.writer->close();
+    
+    /*
      * Write out assembly results
      */
 
-    options.writer->open("assembly.stats");
+    options.writer->open("meta_assembly.stats");
     
     if (ms.x.size() <= 1)
     {
