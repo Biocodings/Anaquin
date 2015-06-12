@@ -22,6 +22,8 @@ namespace Spike
             std::stringstream ss;
             ss << linearR();
 
+            std::string s = linearR();
+            
             return (boost::format(ss.str()) %
                         join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
                         join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %

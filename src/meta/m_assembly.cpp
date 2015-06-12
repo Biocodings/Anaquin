@@ -72,7 +72,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                     // Average relative to the size of the sequin
                     //measured += (double) contig.k_cov / meta.seqA.l.length();
                 }
-                
+            
                 assert(measured != 0);
 
                 x.push_back(log(known));

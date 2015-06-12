@@ -6,9 +6,9 @@
 #include "classify.hpp"
 #include "data/types.hpp"
 #include <boost/format.hpp>
-#include "stats/sensitivity.hpp"
 #include <ss/regression/lm.hpp>
 #include "writers/r_writer.hpp"
+#include "stats/sensitivity.hpp"
 #include "writers/mock_writer.hpp"
 
 namespace Spike
