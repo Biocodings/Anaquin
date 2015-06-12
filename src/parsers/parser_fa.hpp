@@ -15,7 +15,7 @@ namespace Spike
     struct ParserFA
     {
         typedef std::function<void(const FALine &, const ParserProgress &)> Callback;
-        static void parse(const std::string &file, Callback, DataMode mode = File);
+        static void parse(const Reader &r, Callback);
     };
 }
 

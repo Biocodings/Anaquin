@@ -55,5 +55,3 @@ void ParserBlast::parse(const Reader &r, Callback c)
         c(l, p);
     }
 }
-
-

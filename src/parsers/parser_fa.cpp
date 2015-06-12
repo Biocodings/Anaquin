@@ -4,10 +4,8 @@
 
 using namespace Spike;
 
-void ParserFA::parse(const std::string &file, Callback c, DataMode mode)
+void ParserFA::parse(const Reader &r, Callback c)
 {
-    Reader f(file, mode);
-
     FALine l;
     std::string s;
     ParserProgress p;
@@ -15,7 +13,7 @@ void ParserFA::parse(const std::string &file, Callback c, DataMode mode)
     std::stringstream ss;
     #define CALL_BACK() if (p.i) { l.seq = ss.str(); c(l, p); ss.str(""); }
 
-    while (f.nextLine(s))
+    while (r.nextLine(s))
     {
         if (s[0] != '>')
         {

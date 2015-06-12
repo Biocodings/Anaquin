@@ -7,7 +7,7 @@ TEST_CASE("ParserVCF_Sample_File")
 {
     std::vector<VCFVariant> vs;
 
-    ParserVCF::parse("data/dna/DNA.var.vcf", [&](const VCFVariant &v, const ParserProgress &)
+    ParserVCF::parse(Reader("data/dna/DNA.var.vcf"), [&](const VCFVariant &v, const ParserProgress &)
     {
         vs.push_back(v);
     });

@@ -209,10 +209,10 @@ void Standard::meta()
 void Standard::dna()
 {
     // Parse variations for reference
-    ParserVCF::parse(d_vcf_f(), [&](const VCFVariant &v, const ParserProgress &)
+    ParserVCF::parse(Reader(d_vcf_f(), DataMode::String), [&](const VCFVariant &v, const ParserProgress &)
     {
         d_vars[v.l] = v;
-    }, DataMode::String);
+    });
 
     // Parse mixtures
     parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
@@ -247,7 +247,7 @@ void Standard::rna()
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
 
-    ParserGTF::parse(r_gtf_f(), [&](const Feature &f, const ParserProgress &)
+    ParserGTF::parse(Reader(r_gtf_f(), DataMode::String), [&](const Feature &f, const ParserProgress &)
 	{
 		l.end = std::max(l.end, f.l.end);
 		l.start = std::min(l.start, f.l.start);
@@ -262,7 +262,7 @@ void Standard::rna()
         
         // Construct a mapping between isoformID to geneID
         r_iso2Gene[f.tID] = f.geneID;
-    }, String);
+    });
 
     assert(!r_iso2Gene.empty());
     std::vector<std::string> toks;
