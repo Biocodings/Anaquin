@@ -88,18 +88,18 @@ MBlast::Stats MBlast::analyze(const std::string &file)
             assert(align.seqA.l.length() == align.seqB.l.length());
             
             // Fraction of bases covered by alignments
-            align.coverage = (double) total / align.seqA.l.length();
+            align.covered = (double) total / align.seqA.l.length();
             
             // Fraction of bases not covered by alignments
-            align.mismatch = 1 - align.coverage;
+            align.mismatch = 1 - align.covered;
             
             // Fraction of bases covered by gaps
             align.gaps = (double) gaps / align.seqA.l.length();
             
             assert(align.gaps     >= 0.0 && align.gaps     <= 1.0);
-            assert(align.coverage >= 0.0 && align.coverage <= 1.0);
+            assert(align.covered  >= 0.0 && align.covered  <= 1.0);
             assert(align.mismatch >= 0.0 && align.mismatch <= 1.0);
-            
+
             // Create an alignment for each contig that aligns to the metaquin
             for (const auto &i : align.contigs)
             {

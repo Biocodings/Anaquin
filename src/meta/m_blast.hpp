@@ -35,7 +35,7 @@ namespace Spike
          */
         
         // Fraction of bases covered by alignments
-        double coverage;
+        double covered;
         
         // Fraction of bases not covered by alignments
         double mismatch;
