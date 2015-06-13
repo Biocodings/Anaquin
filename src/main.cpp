@@ -553,40 +553,7 @@ void parse(int argc, char ** argv)
                     {
                         case MODE_SEQUENCE: { break; }
                         case MODE_SEQUINS:  { print_meta(); break; }
-                            
-                        case MODE_BLAST:
-                        {
-                            /*
-                             * Prints the relevant statistics about the alignment file
-                             */
-                            
-                            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
-                            
-                            // Analyse the BLAST alignment
-                            const auto r = MBlast::analyze(_opts[0]);
-
-                            std::cout << (boost::format(format) % "ID"
-                                                                % "ConA"
-                                                                % "ConB"
-                                                                % "Contigs"
-                                                                % "Covered"
-                                                                % "Mismatch"
-                                                                % "Gaps").str() << std::endl;
-
-                            for (const auto &align : r.metas)
-                            {
-                                std::cout << (boost::format(format)
-                                                 % align.second.id
-                                                 % align.second.seqA.abund()
-                                                 % align.second.seqB.abund()
-                                                 % align.second.contigs.size()
-                                                 % align.second.covered
-                                                 % align.second.mismatch
-                                                 % align.second.gaps).str() << std::endl;
-                            }
-
-                            break;
-                        }
+                        case MODE_BLAST:    { MBlast::analyze(_opts[0]); break; }
 
                         case MODE_DIFFERENTIAL:
                         {
