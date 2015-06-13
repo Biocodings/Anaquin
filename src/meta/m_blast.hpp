@@ -2,6 +2,7 @@
 #define GI_M_BLAST_HPP
 
 #include "data/sequin.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Spike
 {
@@ -83,7 +84,7 @@ namespace Spike
          * the sequins. The input file is assumed to be PSL format.
          */
 
-        static Stats analyze(const std::string &);
+        static Stats analyze(const std::string &, const AnalyzerOptions &options = AnalyzerOptions());
     };
 }
 

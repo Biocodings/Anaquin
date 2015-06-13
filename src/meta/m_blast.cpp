@@ -1,13 +1,14 @@
 #include <map>
 #include <numeric>
 #include <iostream>
+#include <boost/format.hpp>
 #include "meta/m_blast.hpp"
 #include "data/standard.hpp"
 #include "parsers/parser_blast.hpp"
 
 using namespace Spike;
 
-MBlast::Stats MBlast::analyze(const std::string &file)
+MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &options)
 {
     std::map<std::string, ParserBlast::BlastLine> psl;
 
@@ -129,6 +130,37 @@ MBlast::Stats MBlast::analyze(const std::string &file)
 
         stats.metas[align.id] = align;
     }
+
+    /*
+     * Write out results
+     */
+
+    options.writer->open("align_stats.txt");
+    
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+
+    options.writer->write((boost::format(format) % "ID"
+                                                 % "ConA"
+                                                 % "ConB"
+                                                 % "Contigs"
+                                                 % "Covered"
+                                                 % "Mismatch"
+                                                 % "Gaps").str());
+
+    for (const auto &align : stats.metas)
+    {
+        options.writer->write((boost::format(format)
+                                    % align.second.id
+                                    % align.second.seqA.abund()
+                                    % align.second.seqB.abund()
+                                    % align.second.contigs.size()
+                                    % align.second.covered
+                                    % align.second.mismatch
+                                    % align.second.gaps).str());
+        options.writer->write("\n");
+    }
+
+    options.writer->close();
 
     return stats;
 }
