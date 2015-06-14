@@ -8,9 +8,10 @@
  * META Resources
  */
 
-#include "resources/META.tab.fa"
-#include "resources/META.ref.bed"
-#include "resources/META.mix.csv"
+#include "resources/META.v1.ref.fa"
+#include "resources/META.v1.tab.fa"
+#include "resources/META.v6.mix.csv"
+#include "resources/META.v1.ref.bed"
 
 /*
  * RNA Resources
@@ -77,19 +78,24 @@ std::string silico_f()
  * META Resources
  */
 
-std::string m_tab_f()
+std::string metaDataTab()
 {
-    return ToString(data_meta_META_tab_fa);
+    return ToString(data_meta_META_v1_tab_fa);
 }
 
-std::string m_mix_f()
+std::string metaDataMix()
 {
-    return ToString(data_meta_META_mix_csv);
+    return ToString(data_meta_META_v6_mix_csv);
 }
 
-std::string m_bed_f()
+std::string metaDataBed()
 {
-    return ToString(data_meta_META_ref_bed);
+    return ToString(data_meta_META_v1_ref_bed);
+}
+
+std::string metaDataFA()
+{
+    return ToString(data_meta_META_v1_ref_fa);
 }
 
 /*

@@ -211,8 +211,8 @@ void print(Reader &r)
 
 void print_meta()
 {
-    extern std::string m_mix_f();
-    Reader r(m_mix_f(), String);
+    extern std::string metaDataMix();
+    Reader r(metaDataMix(), String);
     print(r);
 }
 

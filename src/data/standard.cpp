@@ -35,9 +35,10 @@ extern std::string d_vcf_f();
 extern std::string d_bed_f();
 extern std::string d_tab_f();
 
-extern std::string m_bed_f();
-extern std::string m_mix_f();
-extern std::string m_tab_f();
+extern std::string metaDataFA();
+extern std::string metaDataBed();
+extern std::string metaDataMix();
+extern std::string metaDataTab();
 
 using namespace Spike;
 
@@ -82,7 +83,7 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
 
     ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
     {
-        if (p.i == 0 || fields.size() != 3)
+        if (p.i == 0 || fields.size() != 4)
         {
             return;
         }
@@ -103,7 +104,7 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
         a[t.id] = t;
 
         t.id  = seq.first;
-        t.abund() = stof(seq.second[2]);
+        t.abund() = stof(seq.second[3]);
         
         b[t.id] = t;
     }
@@ -200,10 +201,10 @@ void Standard::meta_mix(const Reader &r)
 void Standard::meta()
 {
     // Apply the default mixture file
-    meta_mix(Reader(m_mix_f(), DataMode::String));
+    meta_mix(Reader(metaDataMix(), DataMode::String));
 
     // Apply the default annotation file
-    meta_mod(Reader(m_bed_f(), DataMode::String));
+    meta_mod(Reader(metaDataBed(), DataMode::String));
 }
 
 void Standard::dna()

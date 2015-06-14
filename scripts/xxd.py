@@ -20,9 +20,10 @@ data  = [ 'data/silico.fa',
 
            # ---------- META ----------
 
-          'data/meta/META.tab.fa',
-          'data/meta/META.mix.csv',
-          'data/meta/META.ref.bed',
+          'data/meta/META.v1.ref.fa',
+          'data/meta/META.v1.tab.fa',
+          'data/meta/META.v6.mix.csv',
+          'data/meta/META.v1.ref.bed',
 
            # ---------- RNA ----------
 
