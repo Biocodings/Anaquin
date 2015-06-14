@@ -1,5 +1,5 @@
 #
-# R script generated automatically for sequins.
+# R script generated automatically for sequin analysis.
 #
 
 x <- c(%1%)
@@ -15,4 +15,4 @@ m <- lm(y~x)
 # Prints a summary statistics of the model
 summary(m)
 
-plot(x, y, xlab='Known Abundance', ylab='Measured Abundance')
+plot(x, y, xlab='Log Known Abundance (attomoles/ul)', ylab='Log Measured Abundance (k-mer average coverage)')
