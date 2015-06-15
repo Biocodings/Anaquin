@@ -113,7 +113,5 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     stats.linear();
     AnalyzeReporter::report("abundance.stats", "abundance.R", stats, "FPKM", c, options.writer);
 
-    std::cout << "Processed " << i << " rows" << std::endl;
-    
     return stats;
 }

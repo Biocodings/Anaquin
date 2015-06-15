@@ -48,8 +48,6 @@ namespace Spike
             const auto zs = (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str();
             const auto cs = (boost::format("'%1%'") % boost::algorithm::join(c, "','")).str();
 
-            std::cout << s << std::endl;
-            
             return (boost::format(ss.str()) % xs % ys % zs % cs % units % s).str();
         }
     };

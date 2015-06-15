@@ -69,6 +69,7 @@ namespace Spike
                 return mix == MixA ? r_seqs_iA : r_seqs_iB;
             }
 
+            // The name of the chromosome (should be chrT)
             ChromoID id;
 
             // The location of the chromosome
@@ -78,12 +79,10 @@ namespace Spike
              * RNA data
              */
 
-            SequinMap  r_seqs_iA, r_seqs_iB;
+            SequinMap r_seqs_iA, r_seqs_iB;
             PairMap r_seqs_gA, r_seqs_gB;
 
-            std::vector<Sequin> r_sequins;
-
-            std::vector<Feature> r_fs;
+            std::vector<Sequin>  r_sequins;
             std::vector<Feature> r_genes;
             std::vector<Feature> r_exons;
             std::vector<Feature> r_introns;

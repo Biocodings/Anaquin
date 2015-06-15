@@ -76,9 +76,11 @@ namespace Spike
     class RAnalyzer
     {
         public:
-            static SequinTracker sequinTracker()
+            typedef std::map<SequinID, Performance> GeneTracker;
+
+            static GeneTracker geneTracker()
             {
-                return Analyzer::tracker<SequinID, std::vector<Locus>>(Standard::instance().r_sequins);
+                return Analyzer::tracker<GeneID, Performance>(Standard::instance().r_genes);
             }
 
             static LocusCounter exonCounter()
@@ -299,7 +301,7 @@ namespace Spike
             writer->write((boost::format(format) % p.m.sn()
                                                  % p.m.sp()
                                                  % p.s.id
-                                                 % p.s.counts
+                                                 % p.s.abund
                                                  % p.s.counts).str());
             writer->write("\n");
 

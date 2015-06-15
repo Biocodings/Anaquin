@@ -30,5 +30,5 @@ abline(v=%6%, lty=2)
 # Legend for correlation
 legend("top", legend=c(paste('r:', round(cor(x,y), 4))), bty = "n")
 
-# Legned for R2
+# Legend for R2
 legend("topright", legend=c(paste('R2:', round(summary(m)$r.squared, 4))), bty = "n")

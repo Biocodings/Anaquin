@@ -80,6 +80,7 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
     assert(!c.empty() && !stats.x.empty());
     assert(!stats.x.empty() && stats.x.size() == stats.y.size());
 
+    // Perform a linear-regression model
     stats.linear();
 
     if (options.level == Gene)

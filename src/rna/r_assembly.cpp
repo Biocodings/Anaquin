@@ -1,4 +1,4 @@
-#include "r_assembly.hpp"
+#include "rna/r_assembly.hpp"
 #include "stats/expression.hpp"
 #include "parsers/parser_gtf.hpp"
 
@@ -89,10 +89,8 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
                 break;
             }
 
-            default:
-            {
-                break;
-            }
+            // There're many other possibilties in a GTF file, but we don't need those
+            default: { break; }
         }
     });
 

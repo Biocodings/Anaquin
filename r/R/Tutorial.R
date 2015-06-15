@@ -1,4 +1,4 @@
-#  Copyright (C) 2015 - Garvan Institute (Timothey Mercer, Wendy Chen, Ted Wong)
+#  Copyright (C) 2015 - Garvan Institute (Dr Timothey Mercer, Dr Wendy Chen, Ted Wong)
 #
 #  Spike is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,20 @@
 # for an experiment. There is a single factor in the experiment, the second group has ten fold-change
 # relative to the first group.
 #
+
+#
+# Required: aligned SAM/BAM files
+#
+
+# Given a list of BAM files, construct an experimental object for DESEq2 and EdgeR
+AnaquinExperiment<- function(files, gtf='data/rna/standards.gtf')
+{
+	bams <- BamFileList(paste('r/data', list.files(path = 'r/data/', pattern = "\\.bam$"), sep='/'), yieldSize=2000000)	
+	
+	# Read in the gene model which will be used for counting reads
+	model <- makeTranscriptDbFromGFF('data/rna/standards.gtf', format='gtf')
+	
+}
 
 library("DESeq2")
 library("Rsamtools")

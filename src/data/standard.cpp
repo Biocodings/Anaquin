@@ -259,6 +259,8 @@ void Standard::rna()
     std::set<GeneID> gids;
     std::set<TranscriptID> iids;
 
+    std::vector<Feature> r_fs;
+
     ParserGTF::parse(Reader(r_gtf_f(), DataMode::String), [&](const Feature &f, const ParserProgress &)
 	{
 		l.end = std::max(l.end, f.l.end);
@@ -294,8 +296,8 @@ void Standard::rna()
         /*
          * Add all features for this gene
          */
-        
-        for (auto f : r_fs)
+
+        for (const auto &f : r_fs)
         {
             if (f.geneID == g.id)
             {

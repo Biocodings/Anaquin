@@ -22,15 +22,39 @@ static bool checkSplice(const Alignment &align, Feature &f)
     return false;
 }
 
+void RAlign::reportGeneral(const std::string &file, const RAlign::Stats &stats, const Options &options)
+{
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+
+    options.writer->open(file);
+    options.writer->write((boost::format(format) % "samples"
+                                                 % "chrT"
+                                                 % "dilution"
+                                                 % "sn"
+                                                 % "sp"
+                                                 % "spliced sn"
+                                                 % "spliced sp"
+                                                 % "los").str());
+    options.writer->write((boost::format(format) % stats.n_samps
+                                                 % stats.n_chrT
+                                                 % stats.dilution()
+                                                 //% stats.
+/*
+                                                 % ss.n_seqs
+                                                 % ss.n_samps
+                                                 % ss.dilution()
+ */
+ 
+ ).str());
+    options.writer->close();
+}
+
 RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 {
     RAlign::Stats stats;
     const auto &s = Standard::instance();
 
-    // Tracking for each gene (sequin) in the experiment
-    auto gTracker = RAnalyzer::sequinTracker();
-
-    std::vector<Alignment> q_exons, q_introns;
+    std::vector<Alignment> exons, introns;
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
@@ -46,13 +70,18 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
             return;
         }
 
-        stats.n_chromo++;
+        stats.n_chrT++;
         
+        // Whether the read has mapped to a feature correctly
         bool succeed = false;
+        
+        /*
+         * Collect statistics at the exon level
+         */
         
         if (!align.spliced)
         {
-            q_exons.push_back(align);
+            exons.push_back(align);
 
             if (classify(stats.pe.m, align, [&](const Alignment &)
                 {
@@ -64,9 +93,14 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                 stats.ce.at(s.r_iso2Gene.at(f.tID))++;
             }
         }
+        
+        /*
+         * Collect statistics at the intron level
+         */
+
         else
         {
-            q_introns.push_back(align);
+            introns.push_back(align);
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
                 {
@@ -79,9 +113,34 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
             }
         }
 
-        if (succeed && gTracker.count(f.tID))
+        /*
+         * Collect statistics at the gene level
+         */
+        
+        const auto geneID = f.tID;
+
+        if (succeed && stats.g_exon_tracker.count(geneID))
         {
-            gTracker.at(f.tID).push_back(align.l);
+            if (align.spliced)
+            {
+                auto &p = stats.g_intron_tracker.at(geneID);
+
+                classify(p.m, align, [&](const Alignment &)
+                {
+                    // This is only executed if succeed is true
+                    return Positive;
+                });
+            }
+            else
+            {
+                auto &p = stats.g_exon_tracker.at(geneID);
+
+                classify(p.m, align, [&](const Alignment &)
+                {
+                    // This is only executed if succeed is true
+                    return Positive;
+                });
+            }
         }
     });
 
@@ -89,7 +148,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Classify at the base level
      */
 
-    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.cb);
+    countBase(s.r_l_exons, exons, stats.pb.m, stats.cb);
 
     /*
      * Calculate for the number of references. The idea is similar to cuffcompare, each true-positive is
@@ -116,39 +175,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     stats.pi.s = Expression::analyze(stats.ci, seqs);
     stats.pb.s = Expression::analyze(stats.cb, seqs);
 
-    /*
-     *  General statistics
-     *
-     *    - Reads to genome
-     *    - Reads to in-silico chromosome
-     *    - Dilution
-     *    - Alignment sensitivity
-     *    - Alignment specificity
-     *    - Spliced sensitivity
-     *    - Spliced specificity
-     *    - Detection limit
-     */
-/*
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    // Write out general statistics
+    //reportGeneral("ralign_general.statsD", stats, options);
 
-    options.writer->open("ralign_general.stats");
-    options.writer->write((boost::format(format) % "samples"
-                                                 % "silco"
-                                                 % "dilution"
-                                                 % "sn"
-                                                 % "sp"
-                                                 % "spliced sn"
-                                                 % "spliced sp"
-                                                 % "detect").str());
-    options.writer->write((boost::format(format) % stats.n_samps
-                                                 % stats.n_chromo
-                                                 % stats.dilution()
-                                                 % stats.
-                                                 % ss.n_seqs
-                                                 % ss.n_samps
-                                                 % ss.dilution()).str());
-    options.writer->close();
-*/
     /*
      * Write out statistics for various levels
      */

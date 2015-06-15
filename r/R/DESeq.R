@@ -1,6 +1,6 @@
 ## Spike - Garvan Institute
 ##
-## Copyright (C) 2015   Dr Timothy Mercer, Wendy Chen & Ted Wong
+## Copyright (C) 2015   Dr Timothy Mercer, Dr Wendy Chen & Ted Wong
 ##
 ##  RQuantLib is free software: you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@ SP_DESeq2 <- function(object, test = c("Wald", "LRT"), fitType = c("parametric",
     
 }
     
+library('foreign')
+f <- read.csv('/Users/tedwong/Sources/QA/data/meta/META.v6.mix.csv')
+
 
 #library("airway")
 #data("airway")

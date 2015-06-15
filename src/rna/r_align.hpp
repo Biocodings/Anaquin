@@ -5,37 +5,48 @@
 
 namespace Spike
 {
-    struct RAlign : public RAnalyzer
+    class RAlign : public RAnalyzer
     {
-        struct Stats
-        {
-            // Total mapped to the in-silico chromosome
-            Counts n_chromo = 0;
+        public:
+            struct Stats
+            {
+                // Total mapped to the in-silico chromosome
+                Counts n_chrT = 0;
+
+                // Total mapped to the samples
+                Counts n_samps = 0;
+
+                // Tracker for each exon for each gene
+                GeneTracker g_exon_tracker = RAnalyzer::geneTracker();
+
+                // Tracker for each intron for each gene
+                GeneTracker g_intron_tracker = RAnalyzer::geneTracker();
+
+                // Fraction of sequin spiked
+                inline Percentage dilution() const { return n_chrT / (n_chrT + n_samps); }
+
+                // Number of times that each exon is positively identified
+                LocusCounter ec = RAnalyzer::exonCounter();
             
-            // Total mapped to the samples
-            Counts n_samps = 0;
-            
-            inline Percentage dilution() const { return n_chromo / (n_chromo + n_samps); }
+                // Number of times that each intron is positively identified
+                LocusCounter ic = RAnalyzer::intronCounter();
 
-            // Number of times that each exon is positively identified
-            LocusCounter ec = RAnalyzer::exonCounter();
-            
-            // Number of times that each intron is positively identified
-            LocusCounter ic = RAnalyzer::intronCounter();
+                Counter cb = RAnalyzer::geneCounter();
+                Counter ce = RAnalyzer::geneCounter();
+                Counter ci = RAnalyzer::geneCounter();
 
-            Counter cb = RAnalyzer::geneCounter();
-            Counter ce = RAnalyzer::geneCounter();
-            Counter ci = RAnalyzer::geneCounter();
+                Performance pb, pe, pi;
+            };
 
-            Performance pb, pe, pi;
-        };
+            struct Options : public SingleMixtureOptions
+            {
+                // Empty Implementation
+            };
 
-        struct Options : public SingleMixtureOptions
-        {
-            // Empty Implementation
-        };
+            static Stats analyze(const std::string &, const Options &options = Options());
 
-        static Stats analyze(const std::string &, const Options &options = Options());
+        private:
+            void reportGeneral(const std::string &, const Stats &, const Options &);
     };
 }
 
