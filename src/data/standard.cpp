@@ -42,14 +42,6 @@ extern std::string metaDataTab();
 
 using namespace Spike;
 
-static Sequin::Group strToGroup(const std::string &str)
-{
-    std::map<std::string, Sequin::Group> m =
-        { { "A", Sequin::A }, { "B", Sequin::B }, { "C", Sequin::C }, { "D", Sequin::D } };
-
-    return m.at(str);
-};
-
 template <typename Iter> BasePair countLocus(const Iter &iter)
 {
     BasePair n = 0;
