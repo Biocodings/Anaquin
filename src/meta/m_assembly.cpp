@@ -100,13 +100,15 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         }
         
         assert(!ms.s.id.empty());
-        
-        // Generate a R script for a plot of abundance
-        AnalyzeReporter::script("meta_abundance.R", ms.x, ms.y, ms.z, options.writer);
-        
-        std::cout << "Abundance plot generated" << std::endl;
     }
 
+    /*
+     * Generate a R script for a plot of abundance
+     */
+
+    AnalyzeReporter::script("meta_abundance.R", ms.x, ms.y, ms.z, "k-mer average", ms.s.abund, options.writer);
+    std::cout << "Abundance plot generated" << std::endl;
+    
     /*
      * Write out results for each sequin
      */

@@ -18,4 +18,11 @@ m <- lm(y~x)
 # Prints a summary statistics of the model
 summary(m)
 
-plot(seq.x, seq.y, col=seq.cols, xlab='Log Known Abundance (attomoles/ul)', ylab='Log Measured Abundance (k-mer average)')
+# Render the plot with filled circles
+par(pch=19)
+
+# Consturct a plot with some space on the top-corners for legends
+plot(seq.x, seq.y, xlim=c(min(x), 2.0 * max(x)), ylim=c(min(y), 2.0 * max(y)), col=seq.cols, xlab='Log2 spike amount (attomoles/ul)', ylab='Log2 measured coverage (%5%)')
+
+# Draw a line for LOS
+abline(v=%6%, lty=2)

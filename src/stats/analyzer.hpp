@@ -194,16 +194,9 @@ namespace Spike
 
     struct AnalyzeReporter
     {
-        /*
-         * Createa new R script given the coordinates and colors.
-         */
-        
-        template <typename T> static void script
-                    (const std::string &file,
-                     const std::vector<T> &x,
-                     const std::vector<T> &y,
-                     const std::vector<SequinID> &z,
-                     std::shared_ptr<Writer> writer)
+        typedef std::map<Sequin::Group, ColorID> ColorScheme;
+
+        static ColorScheme defaultScheme()
         {
             std::map<Sequin::Group, ColorID> m =
             {
@@ -219,15 +212,37 @@ namespace Spike
                 { Sequin::Group::J, "gold" },
             };
 
+            return m;
+        }
+
+        /*
+         * Createa new R script given the coordinates and colors.
+         */
+        
+        template <typename T> static void script
+                    (const std::string &file,
+                     const std::vector<T> &x,
+                     const std::vector<T> &y,
+                     const std::vector<SequinID> &z,
+                     const std::string &units,
+                     T s,
+                     std::shared_ptr<Writer> writer)
+        {
+            const auto scheme = AnalyzeReporter::defaultScheme();
+
+            /*
+             * Group sequins by their groups
+             */
+
             std::vector<ColorID> c;
             
-            const auto &s = Standard::instance();
+            const auto &st = Standard::instance();
             
             for (const auto &id : z)
             {
-                if (s.m_seq_A.count(id))
+                if (st.m_seq_A.count(id))
                 {
-                    c.push_back(m.at(s.m_seq_A.at(id).grp));
+                    c.push_back(scheme.at(st.m_seq_A.at(id).grp));
                 }
                 else
                 {
@@ -236,7 +251,7 @@ namespace Spike
             }
 
             writer->open(file);
-            writer->write(RWriter::write(x, y, z, c));
+            writer->write(RWriter::write(x, y, z, c, units, s));
             writer->close();
         }
 
@@ -244,6 +259,7 @@ namespace Spike
             static void report(const std::string &name,
                                const std::string &r,
                                const Stats &stats,
+                               const std::string &units,
                                const std::map<ID, Counts> &c,
                                std::shared_ptr<Writer> writer)
         {
@@ -267,7 +283,7 @@ namespace Spike
              */
 
             writer->open(r);
-            writer->write(RWriter::write(stats.x, stats.y, stats.z));
+            writer->write(RWriter::write(stats.x, stats.y, stats.z, units, stats.s.abund));
             writer->close();
         }
 

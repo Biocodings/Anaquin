@@ -18,19 +18,24 @@ namespace Spike
         template <typename T> static std::string write
                     (const std::vector<T> &x,
                      const std::vector<T> &y,
-                     const std::vector<SequinID> &z)
+                     const std::vector<SequinID> &z,
+                     const std::string &units,
+                     T s)
         {
+            // The default color is simply black
             std::vector<ColorID> c(z.size(), "black");
 
             // Apply the default drawing color
-            return RWriter::write(x, y, z, c);
+            return RWriter::write(x, y, z, c, units, s);
         }
-        
+
         template <typename T> static std::string write
                     (const std::vector<T> &x,
                      const std::vector<T> &y,
                      const std::vector<SequinID> &z,
-                     const std::vector<ColorID>  &c)
+                     const std::vector<ColorID>  &c,
+                     const std::string units,
+                     T s)
         {
             using boost::algorithm::join;
             using boost::adaptors::transformed;
@@ -43,7 +48,7 @@ namespace Spike
             const auto zs = (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str();
             const auto cs = (boost::format("'%1%'") % boost::algorithm::join(c, "','")).str();
 
-            return (boost::format(ss.str()) % xs % ys % zs % cs).str();
+            return (boost::format(ss.str()) % xs % ys % zs % cs % units % s).str();
         }
     };
 }

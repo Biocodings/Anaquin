@@ -152,7 +152,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
         }
 
         // Generate a R script for a plot of abundance
-        AnalyzeReporter::script("meta_diffs.R", x, y, z, options.writer);
+        AnalyzeReporter::script("meta_diffs.R", x, y, z, "k-mer average", 0.0, options.writer);
     }
     
     /*

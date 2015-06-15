@@ -85,12 +85,12 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
     if (options.level == Gene)
     {
         stats.s = Expression::analyze(c, s.r_pair(options.rMix));
-        AnalyzeReporter::report("diffs.stats", "diffs.genes.R", stats, c, options.writer);
+        AnalyzeReporter::report("diffs.stats", "diffs.genes.R", stats, "FPKM", c, options.writer);
     }
     else
     {
         stats.s = Expression::analyze(c, s.r_sequin(options.rMix));
-        AnalyzeReporter::report("diffs.stats", "diffs.isoform.R", stats, c, options.writer);
+        AnalyzeReporter::report("diffs.stats", "diffs.isoform.R", stats, "FPKM", c, options.writer);
     }
 
     return stats;
