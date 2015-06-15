@@ -13,20 +13,20 @@ TEST_CASE("MAssembly_E1")
     const auto r = MAssembly::analyze("tests/data/meta/e1/contigs_A.fa", o);
 }
 
-TEST_CASE("MAssembly_Contigs_2")
-{
-    const auto r = MAssembly::analyze("tests/data/meta/contigs_2.fa");
-
-    REQUIRE(r.N50  == 594);
-    REQUIRE(r.N80  == 594);
-    REQUIRE(r.N20  == 594);
-    REQUIRE(r.mean == 594);
-    REQUIRE(r.min  == 594);
-    REQUIRE(r.max  == 594);
-    REQUIRE(r.sum  == 594);
-    REQUIRE(r.total == 168340);
-    REQUIRE(r.contigs.size() == 2764);
-}
+//TEST_CASE("MAssembly_Contigs_2")
+//{
+//    const auto r = MAssembly::analyze("tests/data/meta/contigs_2.fa");
+//
+//    REQUIRE(r.N50  == 594);
+//    REQUIRE(r.N80  == 594);
+//    REQUIRE(r.N20  == 594);
+//    REQUIRE(r.mean == 594);
+//    REQUIRE(r.min  == 594);
+//    REQUIRE(r.max  == 594);
+//    REQUIRE(r.sum  == 594);
+//    REQUIRE(r.total == 168340);
+//    REQUIRE(r.contigs.size() == 2764);
+//}
 
 TEST_CASE("DNAssembly_Contigs_1")
 {
