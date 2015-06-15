@@ -144,13 +144,13 @@ namespace Spike
         Sensitivity s;
 
         std::vector<SequinID> z;
-        
+
         // Known concentration for sequins
         std::vector<Concentration> x;
         
         // Measured coverage for sequins
         std::vector<Coverage> y;
-        
+
         LinearModel linear() const
         {
             const auto m = SS::lm("y ~ x", SS::data.frame(SS::c(y), SS::c(x)));
@@ -194,14 +194,49 @@ namespace Spike
 
     struct AnalyzeReporter
     {
-        template <typename T> static void script(const std::string &file,
-                                                 const std::vector<T> &x,
-                                                 const std::vector<T> &y,
-                                                 const std::vector<std::string> &z,
-                                                 std::shared_ptr<Writer> writer)
+        /*
+         * Createa new R script given the coordinates and colors.
+         */
+        
+        template <typename T> static void script
+                    (const std::string &file,
+                     const std::vector<T> &x,
+                     const std::vector<T> &y,
+                     const std::vector<SequinID> &z,
+                     std::shared_ptr<Writer> writer)
         {
+            std::map<Sequin::Group, ColorID> m =
+            {
+                { Sequin::Group::A, "red" },
+                { Sequin::Group::B, "blue" },
+                { Sequin::Group::C, "black" },
+                { Sequin::Group::D, "pink" },
+                { Sequin::Group::E, "orange" },
+                { Sequin::Group::F, "yellow" },
+                { Sequin::Group::G, "green" },
+                { Sequin::Group::H, "brown" },
+                { Sequin::Group::I, "silver" },
+                { Sequin::Group::J, "gold" },
+            };
+
+            std::vector<ColorID> c;
+            
+            const auto &s = Standard::instance();
+            
+            for (const auto &id : z)
+            {
+                if (s.m_seq_A.count(id))
+                {
+                    c.push_back(m.at(s.m_seq_A.at(id).grp));
+                }
+                else
+                {
+                    throw std::runtime_error("Unknown sequin ID: " + id);
+                }
+            }
+
             writer->open(file);
-            writer->write(RWriter::write(x, y, z));
+            writer->write(RWriter::write(x, y, z, c));
             writer->close();
         }
 

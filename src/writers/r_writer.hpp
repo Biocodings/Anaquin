@@ -2,6 +2,7 @@
 #define GI_R_WRITER_HPP
 
 #include <string>
+#include <vector>
 #include <sstream>
 #include <numeric>
 #include <boost/format.hpp>
@@ -14,7 +15,22 @@ namespace Spike
 {
     struct RWriter
     {
-        template <typename I1, typename I2> static std::string write(const I1 &x, const I1 &y, const I2 &z)
+        template <typename T> static std::string write
+                    (const std::vector<T> &x,
+                     const std::vector<T> &y,
+                     const std::vector<SequinID> &z)
+        {
+            std::vector<ColorID> c(z.size(), "black");
+
+            // Apply the default drawing color
+            return RWriter::write(x, y, z, c);
+        }
+        
+        template <typename T> static std::string write
+                    (const std::vector<T> &x,
+                     const std::vector<T> &y,
+                     const std::vector<SequinID> &z,
+                     const std::vector<ColorID>  &c)
         {
             using boost::algorithm::join;
             using boost::adaptors::transformed;
@@ -22,12 +38,12 @@ namespace Spike
             std::stringstream ss;
             ss << linearR();
 
-            std::string s = linearR();
-            
-            return (boost::format(ss.str()) %
-                        join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
-                        join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ") %
-                       (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str()).str();
+            const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
+            const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
+            const auto zs = (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str();
+            const auto cs = (boost::format("'%1%'") % boost::algorithm::join(c, "','")).str();
+
+            return (boost::format(ss.str()) % xs % ys % zs % cs).str();
         }
     };
 }

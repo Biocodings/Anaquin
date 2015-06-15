@@ -100,7 +100,7 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
         Sequin s;
 
         s.id  = seq.first;
-        s.grp = static_cast<Sequin::Group>('A' - seq.second[4][0]);
+        s.grp = static_cast<Sequin::Group>(seq.second[4][0] - 'A');
 
         // Length of the sequin
         s.length = stoi(seq.second[1]);

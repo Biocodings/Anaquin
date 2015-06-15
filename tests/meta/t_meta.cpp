@@ -21,6 +21,8 @@ static void generateFilter(const std::string &file, const std::vector<std::strin
 TEST_CASE("Meta_Diffs_Empty_Align")
 {
     std::string output, error;
+
+    // Typical command for differential with alignments
     const int s = parse_options("meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -psl tests/data/meta/empty.psl tests/data/meta/empty.psl", output, error);
 
     REQUIRE(s == 1);

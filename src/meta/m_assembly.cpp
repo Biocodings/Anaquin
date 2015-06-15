@@ -25,79 +25,80 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
     MBlast::Stats r; // TODO: Should this be here?
 
-    // Prefer a user supplied alignment file if any
     if (!options.psl.empty())
     {
-        std::cout << "Aligment file: " << options.psl << std::endl;
+        throw std::invalid_argument("Alignment file needs to be specified");
+    }
 
-        // Analyse the given blast alignment file
-        r = MBlast::analyze(options.psl);
-
-        for (auto &meta : r.metas)
+    std::cout << "Aligment file: " << options.psl << std::endl;
+    
+    // Analyse the given blast alignment file
+    r = MBlast::analyze(options.psl);
+    
+    for (auto &meta : r.metas)
+    {
+        const auto &align = meta.second;
+        
+        // Ignore if there's a filter and the sequin is not one of those
+        if (!options.filters.empty() && !options.filters.count(align.id))
         {
-            const auto &align = meta.second;
-
-            // Ignore if there's a filter and the sequin is not one of those
-            if (!options.filters.empty() && !options.filters.count(align.id))
-            {
-                continue;
-            }
-
+            continue;
+        }
+        
+        /*
+         * Calculate the limit of sensitivity. LOS is defined as the metaquin with the lowest amount of
+         * concentration while still detectable in the experiment.
+         */
+        
+        if (ms.s.id.empty() || align.seqA.abund() < ms.s.abund)
+        {
+            ms.s.id     = align.id;
+            ms.s.abund  = align.seqA.abund();
+            ms.s.counts = align.contigs.size();
+        }
+        
+        /*
+         * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
+         */
+        
+        if (!align.contigs.empty())
+        {
+            // Known concentration
+            const auto known = align.seqA.abund();
+            
             /*
-             * Calculate the limit of sensitivity. LOS is defined as the metaquin with the lowest amount of
-             * concentration while still detectable in the experiment.
+             * Calculate measured concentration for this metaquin. Average out the coverage for each aligned contig.
              */
             
-            if (ms.s.id.empty() || align.seqA.abund() < ms.s.abund)
+            Concentration measured = 0;
+            
+            for (std::size_t i = 0; i < align.contigs.size(); i++)
             {
-                ms.s.id     = align.id;
-                ms.s.abund  = align.seqA.abund();
-                ms.s.counts = align.contigs.size();
-            }
-
-            /*
-             * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
-             */
-
-            if (!align.contigs.empty())
-            {
-                // Known concentration
-                const auto known = align.seqA.abund();
-
+                // Crash if the alignment file doesn't match with the contigs...
+                const auto &contig = stats.contigs.at(align.contigs[i].id);
+                
+                // Average relative to the size of the contig
+                measured += contig.k_cov / contig.seq.size();
+                
+                // Average relative to the size of the sequin
+                //measured += (double) contig.k_cov / meta.seqA.l.length();
+                
                 /*
-                 * Calculate measured concentration for this metaquin. Average out the coverage for each aligned contig.
+                 * Calculate for the average depth for alignment and sequin
                  */
-
-                Concentration measured = 0;
-
-                for (std::size_t i = 0; i < align.contigs.size(); i++)
-                {
-                    // Crash if the alignment file doesn't match with the contigs...
-                    const auto &contig = stats.contigs.at(align.contigs[i].id);
-                    
-                    // Average relative to the size of the contig
-                    measured += contig.k_cov / contig.seq.size();
-                    
-                    // Average relative to the size of the sequin
-                    //measured += (double) contig.k_cov / meta.seqA.l.length();
-                    
-                    /*
-                     * Calculate for the average depth for alignment and sequin
-                     */
-                    
-                    meta.second.depthAlign  += align.contigs[i].l.length() * contig.k_cov / align.contigs[i].l.length();
-                    meta.second.depthSequin += align.contigs[i].l.length() * contig.k_cov;
-                }
-
-                meta.second.depthSequin = meta.second.depthSequin / align.seqA.length;
-                assert(measured != 0);
-
-                ms.z.push_back(align.id);
-                ms.x.push_back(log(known));
-                ms.y.push_back(log(measured));
+                
+                meta.second.depthAlign  += align.contigs[i].l.length() * contig.k_cov / align.contigs[i].l.length();
+                meta.second.depthSequin += align.contigs[i].l.length() * contig.k_cov;
             }
+            
+            meta.second.depthSequin = meta.second.depthSequin / align.seqA.length;
+            assert(measured != 0);
+            
+            ms.z.push_back(align.id);
+            ms.x.push_back(log(known));
+            ms.y.push_back(log(measured));
         }
-
+        
         assert(!ms.s.id.empty());
         
         // Generate a R script for a plot of abundance

@@ -2,12 +2,12 @@
 # R script generated automatically for sequin analysis.
 #
 
-x <- c(%1%)
-y <- c(%2%)
-z <- c(%3%)
+seq.x <- c(%1%)
+seq.y <- c(%2%)
+seq.z <- c(%3%)
 
-# Color for each point (by group)
-colors <- c(%4%)
+# Color for each point
+seq.cols <- c(%4%)
 
 # Pearson's correlation
 p <- cor(x, y)
@@ -18,4 +18,4 @@ m <- lm(y~x)
 # Prints a summary statistics of the model
 summary(m)
 
-plot(x, y, xlab='Log Known Abundance (attomoles/ul)', ylab='Log Measured Abundance (k-mer average)')
+plot(seq.x, seq.y, col=seq.cols, xlab='Log Known Abundance (attomoles/ul)', ylab='Log Measured Abundance (k-mer average)')

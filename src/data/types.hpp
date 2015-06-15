@@ -26,6 +26,7 @@ namespace Spike
     typedef double Fold;
     
     typedef std::string GeneID;
+    typedef std::string ColorID;
     typedef std::string ChromoID;
     typedef std::string SequinID;
     typedef std::string IsoformID;
@@ -34,6 +35,15 @@ namespace Spike
 
     typedef std::string FileName;
     typedef std::string FeatureName;
+
+    typedef enum
+    {
+        Red,
+        Blue,
+        Black,
+        Pink,
+        Orange,
+    } Color;
 
     // Eg: 388488 from the first matching base
     typedef long long BasePair;    
