@@ -6,6 +6,9 @@ x <- c(%1%)
 y <- c(%2%)
 z <- c(%3%)
 
+# Color for each point (by group)
+colors <- c(%4%)
+
 # Pearson's correlation
 p <- cor(x, y)
 
