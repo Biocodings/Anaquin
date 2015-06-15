@@ -15,4 +15,4 @@ m <- lm(y~x)
 # Prints a summary statistics of the model
 summary(m)
 
-plot(x, y, xlab='Log Known Abundance (attomoles/ul)', ylab='Log Measured Abundance (k-mer average coverage)')
+plot(x, y, xlab='Log Known Abundance (attomoles/ul)', ylab='Log Measured Abundance (k-mer average)')
