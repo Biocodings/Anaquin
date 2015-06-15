@@ -89,7 +89,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                     meta.second.depthSequin += align.contigs[i].l.length() * contig.k_cov;
                 }
 
-                meta.second.depthSequin = meta.second.depthSequin / align.seqA.l.length();
+                meta.second.depthSequin = meta.second.depthSequin / align.seqA.length;
                 assert(measured != 0);
 
                 ms.z.push_back(align.id);

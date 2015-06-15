@@ -22,6 +22,13 @@ TEST_CASE("Meta_Diffs_Empty_Align")
 {
     std::string output, error;
     
+    const int sssss = parse_options("meta -assembly contigs.fa -psl align.psl", output, error);
+    
+
+    
+    
+    
+    
     const int s = parse_options("meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -psl tests/data/meta/empty.psl tests/data/meta/empty.psl", output, error);
 
     REQUIRE(s == 1);

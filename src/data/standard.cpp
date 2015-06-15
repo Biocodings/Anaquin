@@ -79,6 +79,7 @@ static Sequin createSequin(const Fields &f, Mixture mix)
 
 static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::SequinMap &b)
 {
+    // Define here to detect duplicates
     std::map<SequinID, Fields> seqs;
 
     ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
@@ -88,7 +89,7 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
             return;
         }
 
-        // Make sure there's no duplicate sequin in the mixture file
+        // Make sure there's no duplicate in the mixture file
         assert(seqs.count(fields[0]) == 0);
 
         seqs[fields[0]] = fields;
@@ -96,17 +97,24 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
 
     for (const auto &seq : seqs)
     {
-        Sequin t;
+        Sequin s;
 
-        t.id  = seq.first;
-        t.abund() = stof(seq.second[1]);
+        s.id  = seq.first;
 
-        a[t.id] = t;
+        // Length of the sequin
+        s.length = stoi(seq.second[1]);
 
-        t.id  = seq.first;
-        t.abund() = stof(seq.second[3]);
+        // Concentration for mixture A
+        s.abund() = stof(seq.second[2]);
         
-        b[t.id] = t;
+        // Create an entry for mixture A
+        a[s.id] = s;
+
+        // Concentration for mixture B
+        s.abund() = stof(seq.second[3]);
+        
+        // Create an entry for mixture B
+        b[s.id] = s;
     }
 }
 

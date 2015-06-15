@@ -61,7 +61,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     measured += contig.k_cov / contig.seq.size();
                     
                     // Average relative to the size of the sequin
-                    //measured += contig.k_cov / meta.second.seqA.l.length();
+                    //measured += contig.k_cov / meta.second.seqA.length;
                 }
                 
                 assert(measured != 0);
@@ -95,7 +95,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     measured += contig.k_cov / contig.seq.size();
                     
                     // Average relative to the size of the sequin
-                    //measured += contig.k_cov / meta.second.seqB.l.length();
+                    //measured += contig.k_cov / meta.second.seqB.length;
                 }
                 
                 assert(measured != 0);

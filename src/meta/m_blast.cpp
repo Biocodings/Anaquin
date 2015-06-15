@@ -1,4 +1,4 @@
-#include <map>
+//#include <map>
 #include <numeric>
 #include <iostream>
 #include <boost/format.hpp>
@@ -36,7 +36,7 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
         m[seq.first].seqA = seq.second;
         m[seq.first].seqB = mixB.at(m[seq.first].id);
     }
-    
+
     /*
      * Compare each alignment to the metaquins
      */
@@ -105,11 +105,11 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
                 mismatch += contig.mismatch;
             }
             
+            assert(align.seqA.length == align.seqB.length);
             assert(match > mismatch && match > gaps);
-            assert(align.seqA.l.length() == align.seqB.l.length());
             
             // Fraction of sequins covered by alignments
-            align.covered = (double) total / align.seqA.l.length();
+            align.covered = (double) total / align.seqA.length;
             
             // Fraction of mismatch bases in alignments
             align.mismatch = (double) mismatch / match;

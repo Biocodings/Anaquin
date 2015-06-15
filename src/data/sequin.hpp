@@ -15,6 +15,8 @@ namespace Spike
             SequinID id;
             Locus l;
 
+            BasePair length;
+
             // Amount of abundance, a non-const method
             Concentration &abund() { return _abund; }
         
