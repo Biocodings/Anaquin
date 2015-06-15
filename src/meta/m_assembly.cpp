@@ -25,7 +25,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
     MBlast::Stats r; // TODO: Should this be here?
 
-    if (!options.psl.empty())
+    if (options.psl.empty())
     {
         throw std::invalid_argument("Alignment file needs to be specified");
     }
