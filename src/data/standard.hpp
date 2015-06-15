@@ -18,8 +18,6 @@ namespace Spike
         MixB
     };
 
-    enum Group { A, B, C, D };
-
     typedef std::string Sequence;
 
     struct Variation

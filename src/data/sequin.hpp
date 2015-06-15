@@ -9,11 +9,16 @@ namespace Spike
     class Sequin
     {
         public:
+            enum Group { A, B, C, D, E, F, G, H, I, J, K };
+
             operator Locus()     const { return l;  }
             operator IsoformID() const { return id; }
 
             SequinID id;
             Locus l;
+
+            // The group of log-fold changes between samples
+            Group grp;
 
             BasePair length;
 

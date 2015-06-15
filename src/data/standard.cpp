@@ -4,9 +4,9 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
-#include "data/standard.hpp"
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
+#include "data/standard.hpp"
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_csv.hpp"
@@ -15,13 +15,13 @@
 
 enum CSVField
 {
-    ID,
-    RDM_ID,
-    Group,
-    Con_A,
-    Con_B,
-    Fold,
-    LogFold,
+    CSV_ID,
+    CSV_RDM_ID,
+    CSV_Group,
+    CSV_Con_A,
+    CSV_Con_B,
+    CSV_Fold,
+    CSV_LogFold,
 };
 
 extern std::string silico_f();
@@ -41,6 +41,14 @@ extern std::string metaDataMix();
 extern std::string metaDataTab();
 
 using namespace Spike;
+
+static Sequin::Group strToGroup(const std::string &str)
+{
+    std::map<std::string, Sequin::Group> m =
+        { { "A", Sequin::A }, { "B", Sequin::B }, { "C", Sequin::C }, { "D", Sequin::D } };
+
+    return m.at(str);
+};
 
 template <typename Iter> BasePair countLocus(const Iter &iter)
 {
@@ -70,9 +78,9 @@ static Sequin createSequin(const Fields &f, Mixture mix)
 {
     Sequin s;
 
-    s.id = f[RDM_ID];
+    s.id = f[CSV_RDM_ID];
     //s.l   = temp.at(s.id);
-    s.abund() = stof(f[mix == MixA ? Con_A : Con_B]);
+    s.abund() = stof(f[mix == MixA ? CSV_Con_A : CSV_Con_B]);
 
     return s;
 };
@@ -84,7 +92,7 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
 
     ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
     {
-        if (p.i == 0 || fields.size() != 4)
+        if (p.i == 0 || fields.size() != 5)
         {
             return;
         }
@@ -100,6 +108,7 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
         Sequin s;
 
         s.id  = seq.first;
+        s.grp = static_cast<Sequin::Group>('A' - seq.second[4][0]);
 
         // Length of the sequin
         s.length = stoi(seq.second[1]);
@@ -116,6 +125,8 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
         // Create an entry for mixture B
         b[s.id] = s;
     }
+    
+    assert(!a.empty() && !b.empty());
 }
 
 static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standard::SequinMap &seq_B,
@@ -132,7 +143,7 @@ static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standa
             return;
         }
 
-        seqs[fields[RDM_ID].substr(0, fields[RDM_ID].length() - 2)].push_back(fields);
+        seqs[fields[CSV_RDM_ID].substr(0, fields[CSV_RDM_ID].length() - 2)].push_back(fields);
     });
 
     /*
@@ -203,7 +214,7 @@ void Standard::meta_mix(const Reader &r)
     // Parse a mixture file 
     parseMix__(r, m_seq_A, m_seq_B);
 
-    assert(!m_seq_A.empty()  && !m_seq_A.empty());
+    assert(!m_seq_A.empty() && !m_seq_B.empty());
 }
 
 void Standard::meta()
@@ -357,11 +368,6 @@ void Standard::rna()
     });
 
     CHECK_AND_SORT(r_introns);
-
-    static std::map<std::string, Group> gs =
-    {
-        { "A", A }, { "B", B }, { "C", C }, { "D", D }
-    };
 
     // This definition is the easiest because variant sequin might be unavailable
     std::map<GeneID, std::vector<Fields>> seqs;
