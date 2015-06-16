@@ -311,30 +311,33 @@ void Standard::rna_mix(const Reader &r)
         r_sequins.push_back(i.second);
     }
 
-    // TODO: Reactive this!
-//    for (const auto &gene : r_genes)
-//    {
-//        const auto r = gene.id + "_1";
-//        const auto v = gene.id + "_2";
-//
-//        assert(r_seqs_A.count(r) && r_seqs_B.count(r));
-//        assert(r_seqs_A.count(v) && r_seqs_B.count(v));
-//        
-//        GeneSequin s;
-//        
-//        s.r = r_seqs_A.at(r);
-//        s.v = r_seqs_A.at(r);
-//        
-//        r_seqs_gA[gene.geneID] = s;
-//
-//        s.r = r_seqs_B.at(r);
-//        s.v = r_seqs_B.at(r);
-//
-//        r_seqs_gB[gene.geneID] = s;
-//    }
+    for (const auto &gene : r_genes)
+    {
+        const auto r = gene.id + "_R";
+        const auto v = gene.id + "_V";
+
+        if (!r_seqs_A.count(r) || !r_seqs_A.count(v))
+        {
+            continue; // TODO: Fix this please!
+        }
+        
+        assert(r_seqs_A.count(r) && r_seqs_B.count(r));
+        assert(r_seqs_A.count(v) && r_seqs_B.count(v));
+        
+        GeneSequin s;
+        
+        s.r = r_seqs_A.at(r);
+        s.v = r_seqs_A.at(r);
+        
+        r_seqs_gA[gene.geneID] = s;
+
+        s.r = r_seqs_B.at(r);
+        s.v = r_seqs_B.at(r);
+
+        r_seqs_gB[gene.geneID] = s;
+    }
     
-    // TODO: Reactive this!
-    //assert(!r_seqs_gA.empty() && !r_seqs_gB.empty());
+    assert(!r_seqs_gA.empty() && !r_seqs_gB.empty());
 }
 
 void Standard::rna()

@@ -1,10 +1,21 @@
-//#include <catch.hpp>
-//#include "rna/r_align.hpp"
-//
-//using namespace Spike;
-//
-//static std::string exts[] = { "sam", "bam" };
-//
+#include <catch.hpp>
+#include "rna/r_align.hpp"
+
+using namespace Spike;
+
+static std::string exts[] = { "sam", "bam" };
+
+TEST_CASE("RAlign_Cufflinks")
+{
+    // The sample file was taken from Cufflink's source distribution
+    const auto r = RAlign::analyze("tests/data/cufflinks.sam");
+    
+    REQUIRE(0 == r.pe.m.nq);
+    REQUIRE(360 == r.pe.m.nr);
+    REQUIRE(isnan(r.pe.m.sp()));
+    REQUIRE(isnan(r.pe.m.sn()));
+}
+
 //TEST_CASE("RAlign_Simulations")
 //{
 //    for (auto ex : exts)
@@ -63,15 +74,4 @@
 //        REQUIRE(r.pi.m.sp() == 0.0);
 //        REQUIRE(r.pi.s.id == "");
 //    }
-//}
-//
-//TEST_CASE("RAlign_Cufflinks")
-//{
-//    // The sample file was taken from Cufflink's source distribution. It's obviously independent.
-//    const auto r = RAlign::analyze("tests/data/cufflinks.sam");
-//
-//    REQUIRE(0 == r.pe.m.nq);
-//    REQUIRE(360 == r.pe.m.nr);
-//    REQUIRE(isnan(r.pe.m.sp()));
-//    REQUIRE(isnan(r.pe.m.sn()));
 //}

@@ -41,7 +41,7 @@ namespace Spike
                     {
                         s.id     = iter->first;
                         s.counts = iter->second;
-                        s.abund  = m.at(s.id).abund();
+                        //s.abund  = m.at(s.id).abund(); // TODO: Reactive this
                     }
                 }
             }

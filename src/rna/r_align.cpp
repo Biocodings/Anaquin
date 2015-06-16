@@ -171,9 +171,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the LOS
      */
 
-    stats.pe.s = Expression::analyze(stats.ce, seqs);
-    stats.pi.s = Expression::analyze(stats.ci, seqs);
-    stats.pb.s = Expression::analyze(stats.cb, seqs);
+    //stats.pe.s = Expression::analyze(stats.ce, seqs); (Activate this)
+    //stats.pi.s = Expression::analyze(stats.ci, seqs); (Activate this)
+    //stats.pb.s = Expression::analyze(stats.cb, seqs); (Activate this)
 
     // Write out general statistics
     //reportGeneral("ralign_general.statsD", stats, options);
