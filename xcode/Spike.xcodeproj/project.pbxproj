@@ -115,7 +115,6 @@
 		EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reader.cpp; path = ../src/data/reader.cpp; sourceTree = "<group>"; };
 		EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = reader.hpp; path = ../src/data/reader.hpp; sourceTree = "<group>"; };
 		EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = resources.cpp; path = ../src/data/resources.cpp; sourceTree = "<group>"; };
-		EF1DE0AF1B21EC6D00DEC381 /* resources.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = resources.hpp; path = ../src/data/resources.hpp; sourceTree = "<group>"; };
 		EF1DE0B01B21EC6D00DEC381 /* standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = standard.cpp; path = ../src/data/standard.cpp; sourceTree = "<group>"; };
 		EF1DE0B11B21EC6D00DEC381 /* standard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = standard.hpp; path = ../src/data/standard.hpp; sourceTree = "<group>"; };
 		EF1DE0B21B21EC6D00DEC381 /* tokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = tokens.hpp; path = ../src/data/tokens.hpp; sourceTree = "<group>"; };
@@ -382,7 +381,6 @@
 				EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */,
 				EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */,
 				EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */,
-				EF1DE0AF1B21EC6D00DEC381 /* resources.hpp */,
 				EF1DE0BD1B21ECA600DEC381 /* sequin.hpp */,
 				EF1DE0B01B21EC6D00DEC381 /* standard.cpp */,
 				EF1DE0B11B21EC6D00DEC381 /* standard.hpp */,

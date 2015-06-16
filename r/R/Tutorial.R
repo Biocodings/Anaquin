@@ -24,13 +24,25 @@
 #
 
 # Given a list of BAM files, construct an experimental object for DESEq2 and EdgeR
-AnaquinExperiment<- function(files, gtf='data/rna/standards.gtf')
+AnaquinExperiment<- function(gtf='data/rna/standards.gtf')
 {
-	bams <- BamFileList(paste('r/data', list.files(path = 'r/data/', pattern = "\\.bam$"), sep='/'), yieldSize=2000000)	
+	bams <- BamFileList(paste('/Users/tedwong/Sources/QA/r/data/', list.files(path = '/Users/tedwong/Sources/QA/r/data/', pattern = "\\.bam$"), sep='/'), yieldSize=2000000)
 	
 	# Read in the gene model which will be used for counting reads
-	model <- makeTranscriptDbFromGFF('data/rna/standards.gtf', format='gtf')
+	model <- makeTranscriptDbFromGFF('/Users/tedwong/Sources/QA/data/rna/RNA.ref.gtf', format='gtf')
+
+	# Load experimental metadata for the samples
+	exp <- read.csv(file.path('/Users/tedwong/Sources/QA/r/data/', "experiment.csv"), row.names=1)
 	
+	# Produces a GRangesList of all the exons grouped by gene
+	genes <- exonsBy(model, by="gene")
+	
+	se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)	
+
+	# The colData slot, so far empty, should contain all the metadata.
+	colData(se) <- DataFrame(exp)
+    
+    se
 }
 
 library("DESeq2")
@@ -38,28 +50,17 @@ library("Rsamtools")
 library("GenomicFeatures")
 library("GenomicAlignments")
 
-# Load experimental metadata for the samples
-exp <- read.csv(file.path('r/data', "experiment.csv"), row.names=1)
 
-bams <- BamFileList(paste('r/data', list.files(path = 'r/data/', pattern = "\\.bam$"), sep='/'), yieldSize=2000000)
-
-# Read in the gene model which will be used for counting reads
-model <- makeTranscriptDbFromGFF('data/rna/standards.gtf', format='gtf')
-
-# Produces a GRangesList of all the exons grouped by gene
-genes <- exonsBy(model, by="gene")
-
-se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
 
 # We can investigate the resulting SummarizedExperiment by looking at the counts in the assay slot
-head(assay(se))
+#head(assay(se))
 
 #
 # R_1_4 is missing in the experiment as expected because it was skipped in the simulation.
 #
 
 # The colData slot, so far empty, should contain all the metadata.
-colData(se) <- DataFrame(exp)
+#colData(se) <- DataFrame(exp)
 
 # Build a one-factor model with DESeq2
 dds <- DESeqDataSet(se, design = ~condition)
@@ -72,6 +73,11 @@ res <- results(dds)
 
 # p-values for a particular sequin, one'd expect it be signfiicant due to how the simulation was done
 res['R_1_1',]
+
+# What does Anaquin do? Anaquin does differential expression here and compare the log-fold changes
+#
+# The column log2FoldChange!!!!
+
 
 
 

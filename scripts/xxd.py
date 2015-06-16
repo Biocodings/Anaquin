@@ -13,35 +13,35 @@ os.system('rm -rf src/resources/*')
 def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
 
-docs  = [ 'docs/manual.txt' ]
-data  = [ 'data/silico.fa',
-
-          'scripts/linear.R',
+data  = [ 'data/manual.txt',    
+          'data/linear.R',
 
            # ---------- META ----------
 
-          'data/meta/META.v1.ref.fa',
+          'data/meta/m_manual.txt',
+          'data/meta/META.v1.tab.fa',
           'data/meta/META.v1.tab.fa',
           'data/meta/META.v6.mix.csv',
-          'data/meta/META.v1.ref.bed',
+          'data/meta/META.v1.tab.bed',
 
            # ---------- RNA ----------
 
-          'data/rna/RNA.tab.fa',
-          'data/rna/RNA.ref.gtf',
-          'data/rna/RNA.ref.bed',
-          'data/rna/RNA.mix.csv',
+          'data/rna/r_manual.txt',
+          'data/rna/RNA.v0.chrT.fa',  # Reference for the chromosome
+          'data/rna/RNA.v1.chrT.bed', # Reference BED for the chromosome
+          'data/rna/RNA.v1.chrT.gtf', # Reference GTF for the chromosome
+          'data/rna/RNA.v1.mix.csv',  # Mixture CSV file
+          'data/rna/RNA.v1.tab.fa',   # Reference for the sequins
 
            # ---------- DNA ----------
 
-          'data/dna/DNA.mix.csv',
-          'data/dna/DNA.var.vcf',          
-          'data/dna/DNA.ref.bed',
-          'data/dna/DNA.tab.fa',
+          'data/dna/d_manual.txt',
+          'data/dna/DNA.v0.chrT.fa', # Reference for the chromosome
+          'data/dna/DNA.v0.vcf',     # Reference structural variations
         ]
 tests = [ ]
 
-r = data + docs
+r = data
 for i in range(0,len(r)):
     file = os.path.basename(r[i])
     xxd(r[i], 'src/resources/' + file)

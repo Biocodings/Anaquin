@@ -15,6 +15,8 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with Spike. If not, see <http://www.gnu.org/licenses/>.
 
+library('DESeq2')
+
 SP_DESeq2 <- function(object, test = c("Wald", "LRT"), fitType = c("parametric", "local", "mean"),
                       betaPrior, full = design(object), reduced, 
                       quiet = FALSE, minReplicatesForReplace = 7, modelMatrixType, 
