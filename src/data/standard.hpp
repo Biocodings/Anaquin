@@ -79,8 +79,11 @@ namespace Spike
              * RNA data
              */
 
+            // Sequins for mixture A and B
             SequinMap r_seqs_A,  r_seqs_B;
-            GeneMap   r_seqs_gA, r_seqs_gB;
+
+            // Genes for mixture A and B
+            GeneMap r_seqs_gA, r_seqs_gB;
 
             std::vector<Sequin>  r_sequins;
             std::vector<Feature> r_genes;
@@ -92,12 +95,6 @@ namespace Spike
 
             // Mapping from sequin to gene
             std::map<SequinID, GeneID> r_isoformToGene;
-
-            // Mapping from gene to sequin for the references
-            std::map<GeneID, SequinID> r_geneToIsoform_r;
-        
-            // Mapping from gene to sequin for the variants
-            std::map<GeneID, SequinID> r_geneToIsoform_v;
 
             void rna_mod(const Reader &);
             void rna_mix(const Reader &);

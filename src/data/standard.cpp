@@ -49,18 +49,6 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
     return n;
 }
 
-//static Sequins createSequins(const Sequin &r, const Sequin &v)
-//{
-//    Sequins seqs;
-//
-//    seqs.r = r;
-//    seqs.v = v;
-//    //seqs.grp = Group::A; // TODO: Fix this....
-//    seqs.geneID = r.id.substr(0, r.id.length() - 2);
-//
-//    return seqs;
-//}
-
 static void parseMix(const Reader &r, Standard::SequinMap &a, Standard::SequinMap &b)
 {
     // Define here to detect duplicates
@@ -299,8 +287,6 @@ void Standard::rna_mod(const Reader &r)
 
     assert(!r_introns.empty());
     CHECK_AND_SORT(r_introns);
-
-    assert(!r_geneToIsoform_r.empty() && !r_geneToIsoform_v.empty());
 }
 
 void Standard::rna_mix(const Reader &r)
@@ -324,8 +310,31 @@ void Standard::rna_mix(const Reader &r)
     {
         r_sequins.push_back(i.second);
     }
+
+    // TODO: Reactive this!
+//    for (const auto &gene : r_genes)
+//    {
+//        const auto r = gene.id + "_1";
+//        const auto v = gene.id + "_2";
+//
+//        assert(r_seqs_A.count(r) && r_seqs_B.count(r));
+//        assert(r_seqs_A.count(v) && r_seqs_B.count(v));
+//        
+//        GeneSequin s;
+//        
+//        s.r = r_seqs_A.at(r);
+//        s.v = r_seqs_A.at(r);
+//        
+//        r_seqs_gA[gene.geneID] = s;
+//
+//        s.r = r_seqs_B.at(r);
+//        s.v = r_seqs_B.at(r);
+//
+//        r_seqs_gB[gene.geneID] = s;
+//    }
     
-    assert(!r_seqs_gA.empty() && !r_seqs_gB.empty());
+    // TODO: Reactive this!
+    //assert(!r_seqs_gA.empty() && !r_seqs_gB.empty());
 }
 
 void Standard::rna()
