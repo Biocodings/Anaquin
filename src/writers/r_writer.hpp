@@ -9,7 +9,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
-extern std::string linearR();
+extern std::string LinearR();
 
 namespace Spike
 {
@@ -41,7 +41,7 @@ namespace Spike
             using boost::adaptors::transformed;
 
             std::stringstream ss;
-            ss << linearR();
+            ss << LinearR();
 
             const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
             const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");

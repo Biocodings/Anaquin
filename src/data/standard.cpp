@@ -24,21 +24,16 @@ enum CSVField
     CSV_LogFold,
 };
 
-extern std::string silico_f();
+extern std::string RNADataFA();
+extern std::string RNADataTab();
+extern std::string RNADataBed();
+extern std::string RNADataGTF();
+extern std::string RNADataMix();
 
-extern std::string r_bed_f();
-extern std::string r_gtf_f();
-extern std::string r_mix_f();
-
-extern std::string d_mix_f();
-extern std::string d_vcf_f();
-extern std::string d_bed_f();
-extern std::string d_tab_f();
-
-extern std::string metaDataFA();
-extern std::string metaDataBed();
-extern std::string metaDataMix();
-extern std::string metaDataTab();
+extern std::string MetaDataFA();
+extern std::string MetaDataBed();
+extern std::string MetaDataMix();
+extern std::string MetaDataTab();
 
 using namespace Spike;
 
@@ -163,9 +158,9 @@ static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standa
 
 Standard::Standard()
 {
-    std::stringstream in(silico_f());
+    std::stringstream in(RNADataFA());
     std::string line;
-    
+
     if (!in.good())
     {
         throw std::runtime_error("Error: Failed to load the reference chromosome");
@@ -212,45 +207,57 @@ void Standard::meta_mix(const Reader &r)
 void Standard::meta()
 {
     // Apply the default mixture file
-    meta_mix(Reader(metaDataMix(), DataMode::String));
+    meta_mix(Reader(MetaDataMix(), DataMode::String));
 
     // Apply the default annotation file
-    meta_mod(Reader(metaDataBed(), DataMode::String));
+    meta_mod(Reader(MetaDataBed(), DataMode::String));
 }
 
 void Standard::dna()
 {
-    // Parse variations for reference
-    ParserVCF::parse(Reader(d_vcf_f(), DataMode::String), [&](const VCFVariant &v, const ParserProgress &)
-    {
-        d_vars[v.l] = v;
-    });
-
-    // Parse mixtures
-    parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
-    
-    // Parse annotation
-    ParserBED::parse(Reader(d_bed_f(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
-    {
-        d_annot.push_back(f);
-        d_seq_A.at(f.name).l    = d_seq_B.at(f.name).l    = f.l;
-        d_pair_A.at(f.name).r.l = d_pair_A.at(f.name).v.l = f.l;
-        d_pair_B.at(f.name).r.l = d_pair_B.at(f.name).v.l = f.l;
-    });
-
-    assert(!d_annot.empty()  && !d_vars.empty());
-    assert(!d_seq_A.empty()  && !d_seq_A.empty());
-    assert(!d_pair_A.empty() && !d_pair_B.empty());
+//    // Parse variations for reference
+//    ParserVCF::parse(Reader(d_vcf_f(), DataMode::String), [&](const VCFVariant &v, const ParserProgress &)
+//    {
+//        d_vars[v.l] = v;
+//    });
+//
+//    // Parse mixtures
+//    parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
+//    
+//    // Parse annotation
+//    ParserBED::parse(Reader(d_bed_f(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
+//    {
+//        d_annot.push_back(f);
+//        d_seq_A.at(f.name).l    = d_seq_B.at(f.name).l    = f.l;
+//        d_pair_A.at(f.name).r.l = d_pair_A.at(f.name).v.l = f.l;
+//        d_pair_B.at(f.name).r.l = d_pair_B.at(f.name).v.l = f.l;
+//    });
+//
+//    assert(!d_annot.empty()  && !d_vars.empty());
+//    assert(!d_seq_A.empty()  && !d_seq_A.empty());
+//    assert(!d_pair_A.empty() && !d_pair_B.empty());
 }
 
-void Standard::rna()
+void Standard::rna_mix(const Reader &r)
+{
+    
+}
+
+void Standard::rna_mod(const Reader &r)
 {
     /*
      * The region occupied by the chromosome is the smallest area contains all the features.
      */
     
-	l.end = std::numeric_limits<BasePair>::min();
-	l.start = std::numeric_limits<BasePair>::max();
+    l.end   = std::numeric_limits<BasePair>::min();
+    l.start = std::numeric_limits<BasePair>::max();
+
+    
+    
+}
+
+void Standard::rna()
+{
 
     /*
      * Data-structures required to build up the chromosome. Orders of the features are not guarenteed.
@@ -261,7 +268,7 @@ void Standard::rna()
 
     std::vector<Feature> r_fs;
 
-    ParserGTF::parse(Reader(r_gtf_f(), DataMode::String), [&](const Feature &f, const ParserProgress &)
+    ParserGTF::parse(Reader(RNADataGTF(), DataMode::String), [&](const Feature &f, const ParserProgress &)
 	{
 		l.end = std::max(l.end, f.l.end);
 		l.start = std::min(l.start, f.l.start);
@@ -327,7 +334,7 @@ void Standard::rna()
     // Required while reading mixtures
     std::map<IsoformID, Locus> temp;
 
-    ParserBED::parse(Reader(r_bed_f(), DataMode::String), [&](const BedFeature &t, const ParserProgress &p)
+    ParserBED::parse(Reader(RNADataBed(), DataMode::String), [&](const BedFeature &t, const ParserProgress &p)
     {
         assert(!t.name.empty());
         
@@ -358,6 +365,8 @@ void Standard::rna()
             return (g.id == r_iso2Gene[t.name]);
         });
 
+        std::cout << r_iso2Gene[t.name] << std::endl;
+        
         assert(iter != r_genes.end());
     });
 
@@ -377,7 +386,7 @@ void Standard::rna()
         LogFold,
     };
 
-    ParserCSV::parse(Reader(r_mix_f(), DataMode::String), [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(Reader(RNADataMix(), DataMode::String), [&](const Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {

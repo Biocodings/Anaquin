@@ -5,7 +5,6 @@
 
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
-#include "data/resources.hpp"
 
 #include "rna/r_diffs.hpp"
 #include "rna/r_align.hpp"
@@ -150,8 +149,8 @@ static const struct option long_options[] =
     { "ab",        required_argument, 0, MODE_ABUNDANCE },
     { "abundance", required_argument, 0, MODE_ABUNDANCE },
 
-    { "var",      required_argument, 0, MODE_VARIATION },
-    { "variant",  required_argument,  0, MODE_VARIATION },
+    { "var",     required_argument, 0, MODE_VARIATION },
+    { "variant", required_argument,  0, MODE_VARIATION },
 
     { "blast", required_argument, 0, MODE_BLAST },
 
@@ -160,20 +159,22 @@ static const struct option long_options[] =
 
 static void printUsage()
 {
-    extern std::string manual();
-    std::cout << manual() << std::endl;
+    extern std::string Manual();
+    std::cout << Manual() << std::endl;
 }
 
 static void printVersion()
 {
-    const auto c = Resources::chromo();
-    const auto m = Resources::mixture();
+    extern float ChromoVersion();
+    extern float MixtureVersion();
 
+    // Most likely it's chrT
+    extern FileName ChromoName();
+    
     std::cout << "Version 1.0. Garvan Institute of Medical Research, 2015." << std::endl;
     std::cout << std::endl;
-    std::cout << "Chromosome: " << c.id << " version " << c.v << std::endl;
-    std::cout << "Mixture A: version " << m.va << std::endl;
-    std::cout << "Mixture B: version " << m.vb << std::endl;
+    std::cout << "Chromosome: " << ChromoName() << " version " << ChromoVersion() << std::endl;
+    std::cout << "Mixture: version " << MixtureVersion() << std::endl;
 }
 
 // Print a file of mixture A and B
@@ -211,8 +212,8 @@ void print(Reader &r)
 
 void print_meta()
 {
-    extern std::string metaDataMix();
-    Reader r(metaDataMix(), String);
+    extern std::string MetaDataMix();
+    Reader r(MetaDataMix(), String);
     print(r);
 }
 
@@ -470,7 +471,10 @@ void parse(int argc, char ** argv)
 
             case CMD_RNA:
             {
-                std::cout << "RNA analysis - Garvan Institute" << std::endl;
+                std::cout << "RNA analysis" << std::endl;
+
+                applyCustom(std::bind(&Standard::rna_mix, &s, std::placeholders::_1),
+                            std::bind(&Standard::rna_mod, &s, std::placeholders::_1));
 
                 if (_mode != MODE_SEQUINS   &&
                     _mode != MODE_SEQUENCE  &&
@@ -509,7 +513,7 @@ void parse(int argc, char ** argv)
                 
             case CMD_DNA:
             {
-                std::cout << "DNA analysis - Garvan Institute" << std::endl;
+                std::cout << "DNA analysis" << std::endl;
                 
                 if (_mode != MODE_SEQUINS  &&
                     _mode != MODE_SEQUENCE &&
@@ -534,7 +538,7 @@ void parse(int argc, char ** argv)
                 
             case CMD_META:
             {
-                std::cout << "Metagenomics analysis - Garvan Institute" << std::endl;
+                std::cout << "Metagenomics analysis" << std::endl;
                 
                 applyCustom(std::bind(&Standard::meta_mix, &s, std::placeholders::_1),
                             std::bind(&Standard::meta_mod, &s, std::placeholders::_1));

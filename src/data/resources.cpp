@@ -1,147 +1,135 @@
 #include <string>
-#include "resources.hpp"
-#include "resources/silico.fa"
-#include "resources/manual.txt"
+
+/*
+ * Scripts
+ */
+
 #include "resources/linear.R"
+#include "resources/manual.txt"
 
 /*
  * META Resources
  */
 
-#include "resources/META.v1.ref.fa"
+#include "resources/m_manual.txt"
 #include "resources/META.v1.tab.fa"
 #include "resources/META.v6.mix.csv"
-#include "resources/META.v1.ref.bed"
+#include "resources/META.v1.tab.bed"
 
 /*
  * RNA Resources
  */
 
-#include "resources/RNA.tab.fa"
-#include "resources/RNA.ref.bed"
-#include "resources/RNA.ref.gtf"
-#include "resources/RNA.mix.csv"
+#include "resources/r_manual.txt"
+#include "resources/RNA.v0.chrT.fa"
+#include "resources/RNA.v1.tab.fa"
+#include "resources/RNA.v1.mix.csv"
+#include "resources/RNA.v1.chrT.bed"
+#include "resources/RNA.v1.chrT.gtf"
 
 /*
  * DNA Resources
  */
 
-#include "resources/DNA.tab.fa"
-#include "resources/DNA.ref.bed"
-#include "resources/DNA.var.vcf"
-#include "resources/DNA.mix.csv"
-
-using namespace Spike;
-
-ChromosomeInfo Resources::chromo()
-{
-    ChromosomeInfo i;
-    
-    i.v  = 1.0;
-    i.id = "chrT";
-
-    return i;
-}
-
-MixtureInfo Resources::mixture()
-{
-    MixtureInfo i;
-    
-    i.va = 1.0;
-    i.vb = 1.0;
-
-    return i;
-}
+#include "resources/d_manual.txt"
+#include "resources/DNA.v0.vcf"
+#include "resources/DNA.v0.chrT.fa"
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
-std::string linearR()
+std::string ChromoName()
 {
-    return ToString(scripts_linear_R);
+    return "chrT";
 }
 
-std::string manual()
+float ChromoVersion()
 {
-    return ToString(docs_manual_txt);
+    return 1.0;
 }
 
-/*
- * Silico chromosome
- */
-
-std::string silico_f()
+float MixtureVersion()
 {
-    return ToString(data_silico_fa);
+    return 1.0;
+}
+
+std::string LinearR()
+{
+    return ToString(data_linear_R);
+}
+
+std::string Manual()
+{
+    return ToString(data_manual_txt);
 }
 
 /*
  * META Resources
  */
 
-std::string metaDataTab()
+std::string MetaDataTab()
 {
     return ToString(data_meta_META_v1_tab_fa);
 }
 
-std::string metaDataMix()
+std::string MetaDataMix()
 {
     return ToString(data_meta_META_v6_mix_csv);
 }
 
-std::string metaDataBed()
+std::string MetaDataBed()
 {
-    return ToString(data_meta_META_v1_ref_bed);
-}
-
-std::string metaDataFA()
-{
-    return ToString(data_meta_META_v1_ref_fa);
+    return ToString(data_meta_META_v1_tab_bed);
 }
 
 /*
  * RNA Resources
  */
 
-std::string r_tab_f()
+std::string RNADataFA()
 {
-    return ToString(data_rna_RNA_tab_fa);
+    return ToString(data_rna_RNA_v0_chrT_fa);
 }
 
-std::string r_gtf_f()
+std::string RNADataTab()
 {
-    return ToString(data_rna_RNA_ref_gtf);
+    return ToString(data_rna_RNA_v1_tab_fa);
 }
 
-std::string r_bed_f()
+std::string RNADataGTF()
 {
-    return ToString(data_rna_RNA_ref_bed);
+    return ToString(data_rna_RNA_v1_chrT_gtf);
 }
 
-std::string r_mix_f()
+std::string RNADataBed()
 {
-    return ToString(data_rna_RNA_mix_csv);
+    return ToString(data_rna_RNA_v1_chrT_bed);
+}
+
+std::string RNADataMix()
+{
+    return ToString(data_rna_RNA_v1_mix_csv);
 }
 
 /*
  * DNA Resources
  */
 
-std::string d_tab_f()
+std::string DNADataTab()
 {
-    return ToString(data_dna_DNA_tab_fa);
+    return "";
 }
 
-std::string d_mix_f()
+std::string DNADataMix()
 {
-    return ToString(data_dna_DNA_mix_csv);
+    return "";
 }
 
-std::string d_bed_f()
+std::string DNADataBed()
 {
-    return ToString(data_dna_DNA_ref_bed);
+    return "";
 }
 
-std::string d_vcf_f()
+std::string DNADataVCF()
 {
-    return ToString(data_dna_DNA_var_vcf);
+    return ToString(data_dna_DNA_v0_vcf);
 }

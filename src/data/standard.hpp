@@ -92,6 +92,9 @@ namespace Spike
 
             std::map<TranscriptID, GeneID> r_iso2Gene;
 
+            void rna_mod(const Reader &);
+            void rna_mix(const Reader &);
+
             /*
              * DNA data
              */
