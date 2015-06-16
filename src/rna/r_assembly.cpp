@@ -144,7 +144,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
     stats.pe.s = Expression::analyze(stats.ce, seqs);
     stats.pt.s = Expression::analyze(stats.ct, seqs);
-    stats.pb.s = Expression::analyze(stats.cb, s.r_pair(options.mix));
+    stats.pb.s = Expression::analyze(stats.cb, s.r_gene(options.mix));
     stats.pi.s = Expression::analyze(stats.ci, seqs);
 
     /*

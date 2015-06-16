@@ -50,8 +50,8 @@ namespace Spike
     class Standard
     {
         public:
-            typedef std::map<SequinID, Sequin>  SequinMap;
-            typedef std::map<SequinID, Sequins> PairMap;
+            typedef std::map<SequinID, Sequin> SequinMap;
+            typedef std::map<GeneID, GeneSequin> GeneMap;
 
             static Standard& instance()
             {
@@ -59,14 +59,14 @@ namespace Spike
                 return s;
             }
 
-            inline const PairMap& r_pair(Mixture mix) const
-            {
-                return mix == MixA ? r_seqs_gA : r_seqs_gB;
-            }
-
             inline const SequinMap& r_sequin(Mixture mix) const
             {
-                return mix == MixA ? r_seqs_iA : r_seqs_iB;
+                return mix == MixA ? r_seqs_A : r_seqs_B;
+            }
+        
+            inline const GeneMap & r_gene(Mixture mix) const
+            {
+                return mix == Mixture::MixA ? r_seqs_gA : r_seqs_gB;
             }
 
             // The name of the chromosome (should be chrT)
@@ -79,8 +79,8 @@ namespace Spike
              * RNA data
              */
 
-            SequinMap r_seqs_iA, r_seqs_iB;
-            PairMap r_seqs_gA, r_seqs_gB;
+            SequinMap r_seqs_A,  r_seqs_B;
+            GeneMap   r_seqs_gA, r_seqs_gB;
 
             std::vector<Sequin>  r_sequins;
             std::vector<Feature> r_genes;
@@ -90,7 +90,14 @@ namespace Spike
             std::vector<RNALocus> r_l_exons;
             BasePair r_c_exons;
 
-            std::map<TranscriptID, GeneID> r_iso2Gene;
+            // Mapping from sequin to gene
+            std::map<SequinID, GeneID> r_isoformToGene;
+
+            // Mapping from gene to sequin for the references
+            std::map<GeneID, SequinID> r_geneToIsoform_r;
+        
+            // Mapping from gene to sequin for the variants
+            std::map<GeneID, SequinID> r_geneToIsoform_v;
 
             void rna_mod(const Reader &);
             void rna_mix(const Reader &);
@@ -98,11 +105,6 @@ namespace Spike
             /*
              * DNA data
              */
-
-            inline const PairMap &d_pair(Mixture mix) const
-            {
-                return mix == MixA ? d_pair_A : d_pair_B;
-            }
 
             inline const SequinMap &d_seq(Mixture mix) const
             {
@@ -116,9 +118,6 @@ namespace Spike
 
             // DNA sequins
             SequinMap d_seq_A, d_seq_B;
-
-            // DNA pairs
-            PairMap d_pair_A, d_pair_B;
 
             /*
              * Metagenomic data

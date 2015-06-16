@@ -45,7 +45,7 @@ TEST_CASE("RAssembly_Simulations_All_Filtered")
     RAssembly::Options opts;
     const auto &s = Standard::instance();
     
-    for (auto i: s.r_seqs_iA)
+    for (auto i: s.r_seqs_A)
     {
         opts.filters.insert(i.first);
     }

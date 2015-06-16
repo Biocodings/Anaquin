@@ -58,7 +58,7 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
                 if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
-                    known = s.r_seqs_iB.at(t.testID).abund() / s.r_seqs_iA.at(t.testID).abund();
+                    known = s.r_seqs_B.at(t.testID).abund() / s.r_seqs_A.at(t.testID).abund();
 
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
@@ -85,7 +85,7 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
 
     if (options.level == Gene)
     {
-        stats.s = Expression::analyze(c, s.r_pair(options.rMix));
+        stats.s = Expression::analyze(c, s.r_gene(options.rMix));
         AnalyzeReporter::report("diffs.stats", "diffs.genes.R", stats, "FPKM", c, options.writer);
     }
     else

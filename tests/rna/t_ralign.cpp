@@ -43,7 +43,7 @@ TEST_CASE("RAlign_Simulations_All_Filtered")
     {
         RAlign::Options opts;
         
-        for (auto i: Standard::instance().r_seqs_iA)
+        for (auto i: Standard::instance().r_seqs_A)
         {
             opts.filters.insert(i.first);
         }

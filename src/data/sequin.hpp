@@ -11,8 +11,8 @@ namespace Spike
         public:
             enum Group { A, B, C, D, E, F, G, H, I, J, K };
 
-            operator Locus()     const { return l;  }
-            operator IsoformID() const { return id; }
+            operator Locus()    const { return l;  }
+            operator SequinID() const { return id; }
 
             SequinID id;
             Locus l;
@@ -32,16 +32,13 @@ namespace Spike
             Concentration _abund;
     };
 
-    struct Sequins
+    struct GeneSequin
     {
         inline Concentration abund() const
         {
             return r.abund() + v.abund();
         }
-        
-        // Each mixture represents a transcript for a gene
-        GeneID geneID;
-        
+
         // Reference and variant mixtures
         Sequin r, v;
     };

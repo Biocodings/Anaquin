@@ -1,5 +1,5 @@
-#include "data/standard.hpp"
 #include "data/reader.hpp"
+#include "data/standard.hpp"
 #include "parsers/parser_sequins.hpp"
 #include <boost/algorithm/string.hpp>
 
@@ -17,10 +17,10 @@ SequinList ParserSequins::parse(const std::string &file)
     {
         boost::trim(line);
 
-        if (std::find_if(s.r_seqs_iA.begin(), s.r_seqs_iA.end(), [&](const std::pair<SequinID, Sequin> &p)
+        if (std::find_if(s.r_seqs_A.begin(), s.r_seqs_A.end(), [&](const std::pair<SequinID, Sequin> &p)
         {
             return p.first == line;
-        }) != s.r_seqs_iA.end())
+        }) != s.r_seqs_A.end())
         {
             throw std::runtime_error("Unknown sequin: " + line);
         }

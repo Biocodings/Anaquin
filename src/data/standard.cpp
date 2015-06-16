@@ -49,30 +49,19 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
     return n;
 }
 
-static Sequins createSequins(const Sequin &r, const Sequin &v)
-{
-    Sequins seqs;
+//static Sequins createSequins(const Sequin &r, const Sequin &v)
+//{
+//    Sequins seqs;
+//
+//    seqs.r = r;
+//    seqs.v = v;
+//    //seqs.grp = Group::A; // TODO: Fix this....
+//    seqs.geneID = r.id.substr(0, r.id.length() - 2);
+//
+//    return seqs;
+//}
 
-    seqs.r = r;
-    seqs.v = v;
-    //seqs.grp = Group::A; // TODO: Fix this....
-    seqs.geneID = r.id.substr(0, r.id.length() - 2);
-
-    return seqs;
-}
-
-static Sequin createSequin(const Fields &f, Mixture mix)
-{
-    Sequin s;
-
-    s.id = f[CSV_RDM_ID];
-    //s.l   = temp.at(s.id);
-    s.abund() = stof(f[mix == MixA ? CSV_Con_A : CSV_Con_B]);
-
-    return s;
-};
-
-static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::SequinMap &b)
+static void parseMix(const Reader &r, Standard::SequinMap &a, Standard::SequinMap &b)
 {
     // Define here to detect duplicates
     std::map<SequinID, Fields> seqs;
@@ -114,46 +103,6 @@ static void parseMix__(const Reader &r, Standard::SequinMap &a, Standard::Sequin
     }
     
     assert(!a.empty() && !b.empty());
-}
-
-static void parseMix(const std::string &file, Standard::SequinMap &seq_A, Standard::SequinMap &seq_B,
-                                              Standard::PairMap  &pair_A, Standard::PairMap  &pair_B)
-{
-    std::map<SequinID, std::vector<Fields>> seqs;
-
-    Reader r(file, DataMode::String);
-    
-    ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
-    {
-        if (p.i == 0)
-        {
-            return;
-        }
-
-        seqs[fields[CSV_RDM_ID].substr(0, fields[CSV_RDM_ID].length() - 2)].push_back(fields);
-    });
-
-    /*
-     * Build sequins from the CSV lines
-     */
-
-    for (const auto &p : seqs)
-    {
-        const auto seq_ra = createSequin(p.second[0], MixA);
-        const auto seq_va = createSequin(p.second[1], MixA);
-        const auto seq_rb = createSequin(p.second[0], MixB);
-        const auto seq_vb = createSequin(p.second[1], MixB);
-        
-        seq_A[seq_ra.id]  = seq_ra;
-        seq_A[seq_va.id]  = seq_va;
-        seq_B[seq_rb.id]  = seq_rb;
-        seq_B[seq_vb.id]  = seq_vb;
-        pair_A[seq_ra.id] = pair_A[seq_va.id] = createSequins(seq_ra, seq_va);
-        pair_B[seq_rb.id] = pair_B[seq_vb.id] = createSequins(seq_rb, seq_vb);
-    }
-
-    assert(!seq_A.empty()  && !seq_B.empty());
-    assert(!pair_A.empty() && !pair_B.empty());
 }
 
 Standard::Standard()
@@ -199,7 +148,7 @@ void Standard::meta_mix(const Reader &r)
     m_seq_B.clear();
     
     // Parse a mixture file 
-    parseMix__(r, m_seq_A, m_seq_B);
+    parseMix(r, m_seq_A, m_seq_B);
 
     assert(!m_seq_A.empty() && !m_seq_B.empty());
 }
@@ -238,229 +187,149 @@ void Standard::dna()
 //    assert(!d_pair_A.empty() && !d_pair_B.empty());
 }
 
-void Standard::rna_mix(const Reader &r)
-{
-    
-}
-
 void Standard::rna_mod(const Reader &r)
 {
     /*
-     * The region occupied by the chromosome is the smallest area contains all the features.
+     * The region occupied by the chromosome is the smallest area contains all features.
      */
     
     l.end   = std::numeric_limits<BasePair>::min();
     l.start = std::numeric_limits<BasePair>::max();
 
-    
-    
-}
-
-void Standard::rna()
-{
+    std::vector<Feature> fs;
+    std::set<GeneID> geneIDs;
 
     /*
-     * Data-structures required to build up the chromosome. Orders of the features are not guarenteed.
+     * The orders in a GTF file is not guaranteed. For simplicity, we'll defer most of the workloads
+     * after the parsing.
      */
-
-    std::set<GeneID> gids;
-    std::set<TranscriptID> iids;
-
-    std::vector<Feature> r_fs;
 
     ParserGTF::parse(Reader(RNADataGTF(), DataMode::String), [&](const Feature &f, const ParserProgress &)
-	{
-		l.end = std::max(l.end, f.l.end);
-		l.start = std::min(l.start, f.l.start);
+    {
+        assert(!f.tID.empty() && !f.geneID.empty());
         
-        r_fs.push_back(f);
+        l.end   = std::max(l.end, f.l.end);
+        l.start = std::min(l.start, f.l.start);
         
-        assert(!f.tID.empty());
-        assert(!f.geneID.empty());
-
-        iids.insert(f.tID);
-        gids.insert(f.geneID);
+        // Automatically filter out the duplicates
+        geneIDs.insert(f.geneID);
+        
+        fs.push_back(f);
         
         // Construct a mapping between isoformID to geneID
-        r_iso2Gene[f.tID] = f.geneID;
+        r_isoformToGene[f.tID] = f.geneID;
+        
+        if (f.type == Exon)
+        {
+            r_exons.push_back(f);
+        }
     });
-
-    assert(!r_iso2Gene.empty());
-    std::vector<std::string> toks;
-
+    
+    assert(!r_exons.empty());
+    assert(!r_isoformToGene.empty());
+    assert(l.end   != std::numeric_limits<BasePair>::min());
+    assert(l.start != std::numeric_limits<BasePair>::min());
+    
     /*
-     * Construct the data-structure for genes
+     * Construct data-structure for each gene
      */
-
-    for (const auto &gid : gids)
+    
+    for (const auto &geneID : geneIDs)
     {
         Feature g;
 
-        g.id = g.geneID = gid;
-        g.l.end = std::numeric_limits<BasePair>::min();
-        g.l.start = std::numeric_limits<BasePair>::max();
+        // The name of the gene is also the it's ID
+        g.id = g.geneID = geneID;
 
+        g.l.end   = std::numeric_limits<BasePair>::min();
+        g.l.start = std::numeric_limits<BasePair>::max();
+        
         /*
-         * Add all features for this gene
+         * Add all exons for this gene
          */
 
-        for (const auto &f : r_fs)
+        for (const auto &f : fs)
         {
             if (f.geneID == g.id)
             {
-                g.l.end = std::max(g.l.end, f.l.end);
+                g.l.end   = std::max(g.l.end, f.l.end);
                 g.l.start = std::min(g.l.start, f.l.start);
                 
                 if (f.type == Exon)
                 {
-                    r_exons.push_back(f);
+                    // TODO: ????
                     r_l_exons.push_back(RNALocus(f.geneID, f.l));
                 }
             }
         }
 
+        assert(g.l.end   != std::numeric_limits<BasePair>::min());
+        assert(g.l.start != std::numeric_limits<BasePair>::min());
         assert(g.l.end > g.l.start);
+
         r_genes.push_back(g);
     }
-    
+
+    assert(!r_l_exons.empty() && !r_genes.empty());
+
     CHECK_AND_SORT(r_exons);
     CHECK_AND_SORT(r_genes);
 
     /*
-     * An identical GTF file has already been parsed. For simplistic, we prefer to directly
-     * extract the locus from a BED file.
+     * Extract introns between each successive pair of exons for each gene.
+     * Note that it's only possible once the list has been sorted.
      */
-
-    // Required while reading mixtures
-    std::map<IsoformID, Locus> temp;
-
-    ParserBED::parse(Reader(RNADataBed(), DataMode::String), [&](const BedFeature &t, const ParserProgress &p)
-    {
-        assert(!t.name.empty());
-        
-        // How easy this is, we'd have to perform unions from a GTF file
-        temp[t.name] = t.l;
-
-        /*
-         * In this context, we're given a transcript. Each block in the transcript is an exon.
-         */
-
-        Feature j;
-
-        j.id   = id;
-        j.tID  = t.name;
-        j.type = Intron;
-
-        for (auto i = 0; i < t.blocks.size(); i++)
-        {
-            if (i)
-            {
-                j.l = Locus(t.blocks[i - 1].end + 1, t.blocks[i].start - 1);
-                r_introns.push_back(j);
-            }
-        }
-
-        const auto iter = std::find_if(r_genes.begin(), r_genes.end(), [&](const Feature &g)
-        {
-            return (g.id == r_iso2Gene[t.name]);
-        });
-
-        std::cout << r_iso2Gene[t.name] << std::endl;
-        
-        assert(iter != r_genes.end());
-    });
-
-    CHECK_AND_SORT(r_introns);
-
-    // This definition is the easiest because variant sequin might be unavailable
-    std::map<GeneID, std::vector<Fields>> seqs;
-
-    enum RNAField
-    {
-        ID,
-        RNA_ID,
-        Group,
-        Con_A,
-        Con_B,
-        Fold,
-        LogFold,
-    };
-
-    ParserCSV::parse(Reader(RNADataMix(), DataMode::String), [&](const Fields &fields, const ParserProgress &p)
-    {
-        if (p.i == 0)
-        {
-            return;
-        }
-        
-        seqs[fields[RNA_ID].substr(0, fields[RNA_ID].length() - 2)].push_back(fields);
-    });
-
-    assert(!seqs.empty());
     
-    for (const auto &p : seqs)
+    for (std::size_t i = 0; i < r_exons.size(); i++)
     {
-        auto parse_sequin = [&](const Fields &f, SequinMap &m, Mixture mix)
+        if (i && r_exons[i].geneID == r_exons[i-1].geneID)
         {
-            Sequin s;
+            Feature f;
+            
+            f.id   = id;
+            f.tID  = r_exons[i].tID;
+            f.type = Intron;
 
-            s.l = temp.at(s.id = f[RNA_ID]);
-            s.abund() = stof(f[mix == MixA ? Con_A : Con_B]);
-
-            return (m[s.id] = s);
-        };
-
-        auto build_sequins = [&](const Sequin &r, const Sequin &v, PairMap &m)
-        {
-            Sequins seqs;
-
-            seqs.r      = r;
-            seqs.v      = v;
-            //seqs.grp    = gs.at(p.second[0][Group]);
-            seqs.geneID = r.id.substr(0, r.id.length() - 2);
-
-            m[seqs.geneID] = seqs;
-        };
-
-        const auto &r_fields = p.second[0];
-        
-        const auto seq_r_a = parse_sequin(r_fields, r_seqs_iA, MixA);
-        const auto seq_r_b = parse_sequin(r_fields, r_seqs_iB, MixB);
-        assert(r_fields.size() == 7);
-        
-        if (p.second.size() > 1)
-        {
-            const auto &v_fields = p.second[1];
-            assert(v_fields.size() == 7);
-
-            const auto seq_v_a = parse_sequin(v_fields, r_seqs_iA, MixA);
-            const auto seq_v_b = parse_sequin(v_fields, r_seqs_iB, MixB);
-
-            build_sequins(seq_r_a, seq_v_a, r_seqs_gA);
-            build_sequins(seq_r_b, seq_v_b, r_seqs_gB);
-        }
-        else
-        {
-            build_sequins(seq_r_a, seq_r_b, r_seqs_gA); // TODO: How to fix this??
-            build_sequins(seq_r_b, seq_r_b, r_seqs_gB);
+            // The locus is simply whatever between the two successive exons
+            f.l = Locus(r_exons[i-1].l.end + 1, r_exons[i].l.start - 1);
+            
+            r_introns.push_back(f);
         }
     }
-    
-    assert(r_l_exons.size() == r_exons.size());
-    assert(!r_exons.empty() && !r_introns.empty());
 
+    assert(!r_introns.empty());
+    CHECK_AND_SORT(r_introns);
+
+    assert(!r_geneToIsoform_r.empty() && !r_geneToIsoform_v.empty());
+}
+
+void Standard::rna_mix(const Reader &r)
+{
+    // Parse the mixture file
+    parseMix(r, r_seqs_A, r_seqs_B);
+
+    assert(r_l_exons.size() == r_exons.size());
+    
     /*
      * Merging overlapping regions for the exons
      */
-
+    
     r_c_exons = countLocus(r_l_exons = Locus::merge<RNALocus, RNALocus>(r_l_exons));
-
+    
     assert(r_c_exons);
     assert(!r_l_exons.empty());
     assert(!Locus::overlap(r_l_exons));
-    
-    for (const auto &i: r_seqs_iA)
+
+    for (const auto &i: r_seqs_A)
     {
         r_sequins.push_back(i.second);
     }
+    
+    assert(!r_seqs_gA.empty() && !r_seqs_gB.empty());
+}
+
+void Standard::rna()
+{
+    rna_mod(Reader(RNADataGTF(), DataMode::String));
+    rna_mix(Reader(RNADataMix(), DataMode::String));
 }

@@ -90,7 +90,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                 }))
             {
                 stats.ec.at(f.l)++;
-                stats.ce.at(s.r_iso2Gene.at(f.tID))++;
+                stats.ce.at(s.r_isoformToGene.at(f.tID))++;
             }
         }
         
@@ -109,7 +109,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                 }))
             {
                 stats.ic.at(align.l)++;
-                stats.ci.at(s.r_iso2Gene.at(f.tID))++;
+                stats.ci.at(s.r_isoformToGene.at(f.tID))++;
             }
         }
 
@@ -165,7 +165,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
 
     // The structure depends on the mixture
-    const auto seqs = s.r_pair(options.mix);
+    const auto seqs = s.r_gene(options.mix);
 
     /*
      * Calculate for the LOS

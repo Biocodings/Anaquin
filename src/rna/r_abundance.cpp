@@ -30,13 +30,13 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     {
         ParserTMap::parse(file, [&](const TMap &t, const ParserProgress &)
         {
-            if (s.r_seqs_iA.count(t.refID))
+            if (s.r_seqs_A.count(t.refID))
             {
                 c[t.refID]++;
                 
                 if (t.fpkm)
                 {
-                    const auto &i = s.r_seqs_iA.at(t.refID);
+                    const auto &i = s.r_seqs_A.at(t.refID);
 
                     stats.x.push_back(log(i.abund()));
                     stats.y.push_back(log(t.fpkm));
@@ -60,7 +60,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
             if (file.find(ITracking) != std::string::npos)
             {
                 // Is this a transcript for the sequin?
-                if (!s.r_seqs_iA.count(t.trackID))
+                if (!s.r_seqs_A.count(t.trackID))
                 {
                     return;
                 }
@@ -70,7 +70,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
                 if (t.fpkm)
                 {
-                    const auto &i = s.r_seqs_iA.at(t.trackID);
+                    const auto &i = s.r_seqs_A.at(t.trackID);
                     
                     stats.x.push_back(log(i.abund()));
                     stats.y.push_back(log(t.fpkm));
@@ -103,7 +103,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                     stats.z.push_back(t.geneID);
                 }
 
-                stats.s = Expression::analyze(c, s.r_pair(options.mix));
+                stats.s = Expression::analyze(c, s.r_gene(options.mix));
             }
         });
     }
