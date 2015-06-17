@@ -13,10 +13,67 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Anaquin If not, see <http://www.gnu.org/licenses/>.
 
-library("DESeq2")
-library("Rsamtools")
-library("GenomicFeatures")
-library("GenomicAlignments")
+LoadMixtures <- function(file)
+{
+    if (hasArg(file))
+    {
+        mixture <- read.csv(file)
+    }
+    else
+    {
+        # Nothing specified, load the latest mixture file available online
+        mixture <- read.csv(url("http://smallchess.com/Temp/RNA.v1.mix.csv"))
+    }
+
+    version <- unique(mixture[["Version"]])
+
+    r <- c(mixture=mixture, version=version)
+    #class(r) <- c("Mixture")
+    r
+}
+
+#print.Mixture <- function(x)
+#{
+#    print(paste('Version:', x$version))
+#    print(x$mixture)
+#}
+
+RNAAnalyze <- function(r)
+{
+    # Load the default and latest mixtures
+    m <- LoadMixtures()
+  
+    c <- assays(se)$counts
+
+    sequins <- c(as.vector(m$mixture.ID))
+  
+    i <- row.names(c) %in% sequins
+  
+    j <- sequins %in% row.names(c)
+  
+    # Filter out the rows for sequins (other rows are assumed to be the experiment)
+    rows <- c[i,]
+  
+    # Measured RPKM for each detected sequin
+    observed <- res$log2FoldChange[i]
+  
+    # Concentration for mixture A
+    mixA <- m$mixture.Mix.A[j]
+  
+    # Concentration for mixture B
+    mixB <- m$mixture.Mix.B[j]
+  
+    # Known concentration for each detected sequin
+    known <- log(mixB / mixA)
+}
+
+
+
+
+
+
+
+
 
 #
 # Required: aligned SAM/BAM files
@@ -41,7 +98,7 @@ AnaquinExperiment<- function(files, gtf='/Users/tedwong/Sources/QA/data/rna/RNA.
 	# The colData slot, so far empty, should contain all the metadata.
 	colData(se) <- DataFrame(exp)
 
-    se
+  se
 	# We can investigate the resulting SummarizedExperiment by looking at the counts in the assay slot
 	#head(assay(se))
 	
@@ -58,10 +115,15 @@ AnaquinExperiment<- function(files, gtf='/Users/tedwong/Sources/QA/data/rna/RNA.
 	#res['R_1_1',]
 }
 
-se <- AnaquinExperiment('/Users/tedwong/Sources/QA/tests/data/rna/accepted_hits.bam')
 
 
 
 
 
-
+#library("airway")
+#data("airway")
+#se <- airway
+#library("DESeq2")
+#ddsSE <- DESeqDataSet(se, design = ~ cell + dex)
+#d <- DESeq(ddsSE)
+#results(d)

@@ -13,26 +13,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Anaquin If not, see <http://www.gnu.org/licenses/>.
 
-#
-# This script demostrates a common workflow of DESeq2 and Anaquin
-#
+library('edgeR')
+library('GenomicRanges')
+library('GenomicFeatures'')
 
-library('DESeq2')
+model <- makeTranscriptDbFromGFF('/Users/tedwong/Sources/QA/data/rna/RNA.v1.chrT.gtf', format='gtf')
 
-# Load the column data that describes the experiment
-colData <- read.csv('/Users/tedwong/Sources/QA/r/data/colData.csv')
 
-# Load the count matrix
-airData <- read.csv('/Users/tedwong/Sources/QA/r/data/airway.csv', row.names=1)
-
-# Construct an object for DESeq2
-se <- DESeqDataSetFromMatrix(as.matrix(airData), colData=cd, design=~dex)
-
-# Run the differential expression test
-dds <- DESeq(se)
-
-# Gather the results
-res <- results(dds)
 
 
 
