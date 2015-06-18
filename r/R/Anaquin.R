@@ -21,98 +21,147 @@ LoadMixtures <- function(file)
     }
     else
     {
-        # Nothing specified, load the latest mixture file available online
+        # Nothing specified, load the latest mixture available online
         mixture <- read.csv(url("http://smallchess.com/Temp/RNA.v1.mix.csv"))
     }
 
-    version <- unique(mixture[["Version"]])
+    version <- max(mixture[["Version"]])
 
-    r <- c(mixture=mixture, version=version)
-    #class(r) <- c("Mixture")
+    r <- list('data'=data.frame(mixture), 'version'=version)
+    class(r) <- c("Mixture")
     r
 }
 
-#print.Mixture <- function(x)
-#{
-#    print(paste('Version:', x$version))
-#    print(x$mixture)
-#}
-
-RNAAnalyze <- function(r)
+print.Mixture <- function(x)
 {
-    # Load the default and latest mixtures
-    m <- LoadMixtures()
-  
-    c <- assays(se)$counts
+    print(paste('Version:', x$version))
+    print(x$data)
+}
 
-    sequins <- c(as.vector(m$mixture.ID))
+DESeq2_Analyze <- function(r, m)
+{
+    # List of genes for the experiment (sequins + samples)
+    genes <- rownames(r)
+
+    # List of all sequins
+    sequins <- c(as.vector(m$data$ID))
+
+    # Filter out to only rows for sequins, the index works only on genes
+    i <- genes %in% sequins
   
-    i <- row.names(c) %in% sequins
-  
-    j <- sequins %in% row.names(c)
-  
-    # Filter out the rows for sequins (other rows are assumed to be the experiment)
-    rows <- c[i,]
+    # Filter out undetected sequins, the index works only on sequins
+    j <- sequins %in% genes
+
+    genes   <- genes[i]
+    sequins <- sequins[j]
+
+    # We'll in trouble if they don't match...
+    stopifnot(length(genes) == length(sequins))
   
     # Measured RPKM for each detected sequin
-    observed <- res$log2FoldChange[i]
+    measured <- r$log2FoldChange[i]
   
     # Concentration for mixture A
-    mixA <- m$mixture.Mix.A[j]
+    mixA <- m$data$Mix.A[j]
   
     # Concentration for mixture B
-    mixB <- m$mixture.Mix.B[j]
+    mixB <- m$data$Mix.B[j]
   
     # Known concentration for each detected sequin
     known <- log(mixB / mixA)
+
+    # We'll again in trouble if they don't match...
+    stopifnot(length(known) == length(measured))
+
+    # Fit a simple-linear regression model
+    m <- lm(measured~known)
+
+    # Pearson's correlation
+    r <- cor(known, measured)
+
+    # Coefficients of determination
+    r2 <- summary(m)$r.squared
+    
+    # Regression slope
+    slope <- coef(m)["known"]
+
+    # Generate a linear plot of the relationship
+    plot(known, measured)
+    
+    r <- list(data=data.frame(known, measured), r=r, r2=r2, slope=slope)
+    class(r) <- c("Anaquin")
+    r
 }
 
-
-
-
-
-
-
-
-
-#
-# Required: aligned SAM/BAM files
-#
-
-# Given a list of BAM files, construct an experimental object for DESEq2 and EdgeR
-AnaquinExperiment<- function(files, gtf='/Users/tedwong/Sources/QA/data/rna/RNA.ref.gtf')
+EdgeR_Analyze <- function(r, m)
 {
-	bams <- BamFileList(paste('', files, sep='/'), yieldSize=2000000)	
+    # List of genes for the experiment (sequins + samples)
+    genes <- rownames(r)
 
-	# Read in the gene model which will be used for counting reads
-	model <- makeTranscriptDbFromGFF(gtf, format='gtf')
+    # List of all sequins
+    sequins <- c(as.vector(m$data$ID))
+    
+    # Filter out to only rows for sequins, the index works only on genes
+    i <- genes %in% sequins
+    
+    # Filter out undetected sequins, the index works only on sequins
+    j <- sequins %in% genes
+    
+    genes   <- genes[i]
+    sequins <- sequins[j]
+    
+    # We'll in trouble if they don't match...
+    stopifnot(length(genes) == length(sequins))
+    
+    # Measured RPKM for each detected sequin
+    measured <- r$table$logFC[i]
+    
+    # Concentration for mixture A
+    mixA <- m$data$Mix.A[j]
+    
+    # Concentration for mixture B
+    mixB <- m$data$Mix.B[j]
+    
+    # Known concentration for each detected sequin
+    known <- log(mixB / mixA)
+    
+    # We'll again in trouble if they don't match...
+    stopifnot(length(known) == length(measured))
+    
+    # Fit a simple-linear regression model
+    m <- lm(measured~known)
+    
+    # Pearson's correlation
+    r <- cor(known, measured)
+    
+    # Coefficients of determination
+    r2 <- summary(m)$r.squared
+    
+    # Regression slope
+    slope <- coef(m)["known"]
+    
+    # Generate a linear plot of the relationship
+    plot(known, measured)
+    
+    r <- list(data=data.frame(known, measured), r=r, r2=r2, slope=slope)
+    class(r) <- c("Anaquin")
+    r 
+}
 
-	# Load experimental metadata for the samples
-	exp <- read.csv(file.path('', "/Users/tedwong/Sources/QA/r/data/experiment.csv"), row.names=1)
-	
-	# Produces a GRangesList of all the exons grouped by gene
-	genes <- exonsBy(model, by="gene")
-	
-	se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
-	
-	# The colData slot, so far empty, should contain all the metadata.
-	colData(se) <- DataFrame(exp)
-
-  se
-	# We can investigate the resulting SummarizedExperiment by looking at the counts in the assay slot
-	#head(assay(se))
-	
-	# Build a one-factor model with DESeq2
-	#dds <- DESeqDataSet(se, design = ~condition)
-	
-	# Run the differential expression
-	#dds <- DESeq(dds)
-	
-	# Extract the estimated log2 fold changes and p-values for the treated condition
-	#res <- results(dds)
-	
-	# p-values for a particular sequin, one'd expect it be signfiicant due to how the simulation was done
-	#res['R_1_1',]
+RNAAnalyze <- function(r, m=LoadMixtures())
+{
+    if (class(r) == 'DESeqResults')
+    {
+        DESeq2_Analyze(r, m)
+    }
+    else if (class(r)[1] == 'DGEExact')
+    {
+        EdgeR_Analyze(r, m)        
+    }
+    else
+    {
+        stop('Unknown input. The input must be a result object from DESeq2 or EdgeR')
+    }    
 }
 
 
@@ -120,10 +169,58 @@ AnaquinExperiment<- function(files, gtf='/Users/tedwong/Sources/QA/data/rna/RNA.
 
 
 
-#library("airway")
-#data("airway")
-#se <- airway
-#library("DESeq2")
-#ddsSE <- DESeqDataSet(se, design = ~ cell + dex)
-#d <- DESeq(ddsSE)
-#results(d)
+# 
+# 
+# 
+# #
+# # Required: aligned SAM/BAM files
+# #
+# 
+# # Given a list of BAM files, construct an experimental object for DESEq2 and EdgeR
+# AnaquinExperiment<- function(files, gtf='/Users/tedwong/Sources/QA/data/rna/RNA.ref.gtf')
+# {
+# 	bams <- BamFileList(paste('', files, sep='/'), yieldSize=2000000)	
+# 
+# 	# Read in the gene model which will be used for counting reads
+# 	model <- makeTranscriptDbFromGFF(gtf, format='gtf')
+# 
+# 	# Load experimental metadata for the samples
+# 	exp <- read.csv(file.path('', "/Users/tedwong/Sources/QA/r/data/experiment.csv"), row.names=1)
+# 	
+# 	# Produces a GRangesList of all the exons grouped by gene
+# 	genes <- exonsBy(model, by="gene")
+# 	
+# 	se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
+# 	
+# 	# The colData slot, so far empty, should contain all the metadata.
+# 	colData(se) <- DataFrame(exp)
+# 
+#   se
+# 	# We can investigate the resulting SummarizedExperiment by looking at the counts in the assay slot
+# 	#head(assay(se))
+# 	
+# 	# Build a one-factor model with DESeq2
+# 	#dds <- DESeqDataSet(se, design = ~condition)
+# 	
+# 	# Run the differential expression
+# 	#dds <- DESeq(dds)
+# 	
+# 	# Extract the estimated log2 fold changes and p-values for the treated condition
+# 	#res <- results(dds)
+# 	
+# 	# p-values for a particular sequin, one'd expect it be signfiicant due to how the simulation was done
+# 	#res['R_1_1',]
+# }
+# 
+# 
+# 
+# 
+# 
+# 
+# #library("airway")
+# #data("airway")
+# #se <- airway
+# #library("DESeq2")
+# #ddsSE <- DESeqDataSet(se, design = ~ cell + dex)
+# #d <- DESeq(ddsSE)
+# #results(d)

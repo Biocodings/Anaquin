@@ -20,13 +20,13 @@
 library('DESeq2')
 
 # Load the column data that describes the experiment
-colData <- read.csv('/Users/tedwong/Sources/QA/r/data/colData.csv')
+col <- read.csv('/Users/tedwong/Sources/QA/r/data/colData.csv')
 
 # Load the count matrix
-airData <- read.csv('/Users/tedwong/Sources/QA/r/data/airway.csv', row.names=1)
+data <- read.csv('/Users/tedwong/Sources/QA/r/data/airway.csv', row.names=1)
 
 # Construct an object for DESeq2
-se <- DESeqDataSetFromMatrix(as.matrix(airData), colData=cd, design=~dex)
+se <- DESeqDataSetFromMatrix(as.matrix(data), colData=col, design=~dex)
 
 # Run the differential expression test
 dds <- DESeq(se)
@@ -34,7 +34,8 @@ dds <- DESeq(se)
 # Gather the results
 res <- results(dds)
 
-
+# Call to Anaquin
+RNAAnalyze(res)
 
 
 

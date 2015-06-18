@@ -14,10 +14,23 @@
 #  along with Anaquin If not, see <http://www.gnu.org/licenses/>.
 
 library('edgeR')
-library('GenomicRanges')
-library('GenomicFeatures'')
 
-model <- makeTranscriptDbFromGFF('/Users/tedwong/Sources/QA/data/rna/RNA.v1.chrT.gtf', format='gtf')
+# Load the column data that describes the experiment
+col <- read.csv('/Users/tedwong/Sources/QA/r/data/colData.csv')
+
+# Load the count matrix
+data <- read.csv('/Users/tedwong/Sources/QA/r/data/airway.csv', row.names=1)
+
+# Factor level
+group <- factor(c(1,1,1,1,2,2,2,2))
+
+# Constuct an object for DGEList
+y <- DGEList(counts=data, group=group)
+
+y <- calcNormFactors(y)
+y <- estimateCommonDisp(y)
+y <- estimateTagwiseDisp(y)
+r <- exactTest(y)
 
 
 
