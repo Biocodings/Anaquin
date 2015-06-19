@@ -49,48 +49,90 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
     return n;
 }
 
-static void parseMix(const Reader &r, Standard::SequinMap &a, Standard::SequinMap &b)
+static void parseMix(const Reader &r,
+                     Standard::SequinMap &a,
+                     Standard::SequinMap &b,
+                     Standard::BaseMap   &ba,
+                     Standard::BaseMap   &bb)
 {
-    // Define here to detect duplicates
-    std::map<SequinID, Fields> seqs;
+    a.clear();
+    b.clear();
+    ba.clear();
+    bb.clear();
+    
+    // Used to detect duplicates
+    std::set<SequinID> sequinIDs;
+    
+    // Used to link sequins for each base
+    std::map<BaseID, std::set<TypeID>> baseIDs;
 
     ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
     {
-        if (p.i == 0 || fields.size() != 5)
+        if (p.i == 0)
         {
             return;
         }
 
-        // Make sure there's no duplicate in the mixture file
-        assert(seqs.count(fields[0]) == 0);
-
-        seqs[fields[0]] = fields;
-    }, ",");
-
-    for (const auto &seq : seqs)
-    {
         Sequin s;
+        
+        // Make sure there's no duplicate in the mixture file
+        assert(sequinIDs.count(fields[0]) == 0);
 
-        s.id  = seq.first;
-        s.grp = static_cast<Sequin::Group>(seq.second[4][0] - 'A');
+        sequinIDs.insert(s.id = fields[0]);
+        
+        // Base ID is simply the ID without the last part
+        s.baseID = s.id.substr(0, s.id.find_last_of("_"));
+
+        // Skip over "_"
+        s.typeID = s.id.substr(s.id.find_last_of("_") + 1);
+        
+        assert(s.id != s.baseID && !s.typeID.empty());
 
         // Length of the sequin
-        s.length = stoi(seq.second[1]);
-
+        s.length = stoi(fields[1]);
+        
         // Concentration for mixture A
-        s.abund() = stof(seq.second[2]);
+        s.abund() = stof(fields[2]);
         
         // Create an entry for mixture A
         a[s.id] = s;
-
+        
         // Concentration for mixture B
-        s.abund() = stof(seq.second[3]);
+        s.abund() = stof(fields[3]);
         
         // Create an entry for mixture B
         b[s.id] = s;
-    }
-    
+
+        baseIDs[s.baseID].insert(s.typeID);
+    });
+
     assert(!a.empty() && !b.empty());
+
+    for (const auto &baseID : baseIDs)
+    {
+        const auto &typeIDs = baseID.second;
+        assert(typeIDs.size() >= 1);
+        
+        auto f = [&](const Standard::SequinMap &m, Standard::BaseMap &bm)
+        {
+            Base base;
+            
+            for (auto iter = typeIDs.begin(); iter != typeIDs.end(); iter++)
+            {
+                // Reconstruct the sequinID
+                const auto id = baseID.first + "_" + *iter;
+                
+                base.sequins.insert(std::pair<TypeID, Sequin>(*iter, m.at(id)));
+            }
+
+            bm[baseID.first] = base;
+        };
+
+        f(a, ba);
+        f(b, bb);
+    }
+
+    assert(!a.empty() && !b.empty() && !ba.empty() && !bb.empty());
 }
 
 Standard::Standard()
@@ -111,7 +153,7 @@ Standard::Standard()
 
     rna();
     dna();
-    meta();
+    //meta();
 }
 
 void Standard::meta_mod(const Reader &r)
@@ -136,7 +178,7 @@ void Standard::meta_mix(const Reader &r)
     m_seq_B.clear();
     
     // Parse a mixture file 
-    parseMix(r, m_seq_A, m_seq_B);
+    parseMix(r, m_seq_A, m_seq_B, m_seq_bA, m_seq_bB);
 
     assert(!m_seq_A.empty() && !m_seq_B.empty());
 }
@@ -292,10 +334,8 @@ void Standard::rna_mod(const Reader &r)
 void Standard::rna_mix(const Reader &r)
 {
     // Parse the mixture file
-    parseMix(r, r_seqs_A, r_seqs_B);
+    parseMix(r, r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
 
-    assert(r_l_exons.size() == r_exons.size());
-    
     /*
      * Merging overlapping regions for the exons
      */
@@ -305,39 +345,12 @@ void Standard::rna_mix(const Reader &r)
     assert(r_c_exons);
     assert(!r_l_exons.empty());
     assert(!Locus::overlap(r_l_exons));
+    //assert(r_l_exons.size() == r_exons.size());
 
     for (const auto &i: r_seqs_A)
     {
         r_sequins.push_back(i.second);
     }
-
-    for (const auto &gene : r_genes)
-    {
-        const auto r = gene.id + "_R";
-        const auto v = gene.id + "_V";
-
-        if (!r_seqs_A.count(r) || !r_seqs_A.count(v))
-        {
-            continue; // TODO: Fix this please!
-        }
-        
-        assert(r_seqs_A.count(r) && r_seqs_B.count(r));
-        assert(r_seqs_A.count(v) && r_seqs_B.count(v));
-        
-        GeneSequin s;
-        
-        s.r = r_seqs_A.at(r);
-        s.v = r_seqs_A.at(r);
-        
-        r_seqs_gA[gene.geneID] = s;
-
-        s.r = r_seqs_B.at(r);
-        s.v = r_seqs_B.at(r);
-
-        r_seqs_gB[gene.geneID] = s;
-    }
-    
-    assert(!r_seqs_gA.empty() && !r_seqs_gB.empty());
 }
 
 void Standard::rna()

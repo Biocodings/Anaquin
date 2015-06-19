@@ -24,7 +24,9 @@ namespace Spike
     typedef long long Lines;
     
     typedef double Fold;
-    
+
+    typedef std::string TypeID;
+    typedef std::string BaseID;
     typedef std::string GeneID;
     typedef std::string ColorID;
     typedef std::string ChromoID;

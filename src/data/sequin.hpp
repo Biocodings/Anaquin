@@ -14,7 +14,15 @@ namespace Spike
             operator Locus()    const { return l;  }
             operator SequinID() const { return id; }
 
+            // Eg: R2_7_1, R2_7_2 etc
             SequinID id;
+
+            // Eg: R2_7, R2_72 etc
+            BaseID baseID;
+        
+            // Eg: 1, 2, 3 etc
+            TypeID typeID;
+
             Locus l;
 
             // The group of log-fold changes between samples
@@ -32,15 +40,20 @@ namespace Spike
             Concentration _abund;
     };
 
-    struct GeneSequin
+    struct Base
     {
         inline Concentration abund() const
         {
-            return r.abund() + v.abund();
+            return r->abund() + (v ? v->abund() : 0);
         }
 
-        // Reference and variant mixtures
-        Sequin r, v;
+        // Reference mixture, always valid
+        const Sequin *r = NULL;
+
+        // Variant mixture, could be NULL
+        const Sequin *v = NULL;
+
+        std::map<TypeID, Sequin> sequins;
     };
 }
 

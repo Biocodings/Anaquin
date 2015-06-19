@@ -50,8 +50,8 @@ namespace Spike
     class Standard
     {
         public:
+            typedef std::map<BaseID, Base> BaseMap;
             typedef std::map<SequinID, Sequin> SequinMap;
-            typedef std::map<GeneID, GeneSequin> GeneMap;
 
             static Standard& instance()
             {
@@ -64,7 +64,7 @@ namespace Spike
                 return mix == MixA ? r_seqs_A : r_seqs_B;
             }
         
-            inline const GeneMap & r_gene(Mixture mix) const
+            inline const BaseMap & r_gene(Mixture mix) const
             {
                 return mix == Mixture::MixA ? r_seqs_gA : r_seqs_gB;
             }
@@ -83,7 +83,7 @@ namespace Spike
             SequinMap r_seqs_A,  r_seqs_B;
 
             // Genes for mixture A and B
-            GeneMap r_seqs_gA, r_seqs_gB;
+            BaseMap r_seqs_gA, r_seqs_gB;
 
             std::vector<Sequin>  r_sequins;
             std::vector<Feature> r_genes;
@@ -113,8 +113,11 @@ namespace Spike
             // DNA annotation
             std::vector<BedFeature> d_annot;
 
-            // DNA sequins
+            // For each DNA sequin
             SequinMap d_seq_A, d_seq_B;
+        
+            // For each DNA base
+            BaseMap d_seqs_bA, d_seqs_bB;
 
             /*
              * Metagenomic data
@@ -123,8 +126,11 @@ namespace Spike
             void meta_mod(const Reader &);
             void meta_mix(const Reader &);
 
-            // Metagenomic sequins
+            // For each meta sequin
             SequinMap m_seq_A, m_seq_B;
+
+            // For each meta base
+            BaseMap m_seq_bA, m_seq_bB;
 
             // Metagenomic annotation
             std::vector<BedFeature> m_model;

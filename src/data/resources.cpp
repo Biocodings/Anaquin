@@ -107,7 +107,7 @@ std::string RNADataBed()
 
 std::string RNADataMix()
 {
-    return ToString(data_meta_META_v6_mix_csv);
+    return ToString(data_rna_RNA_v4_1_mix);
 }
 
 /*
