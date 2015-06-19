@@ -87,27 +87,27 @@ std::string MetaDataBed()
 
 std::string RNADataFA()
 {
-    return ToString(data_rna_RNA_v0_chrT_fa);
+    return ToString(data_chrT_v1_fa);
 }
 
 std::string RNADataTab()
 {
-    return ToString(data_rna_RNA_v1_tab_fa);
+    return ToString(data_rna_RNA_v1_2_tab_fa);
 }
 
 std::string RNADataGTF()
 {
-    return ToString(data_rna_RNA_v1_chrT_gtf);
+    return ToString(data_rna_RNA_v1_gtf);
 }
 
 std::string RNADataBed()
 {
-    return ToString(data_rna_RNA_v1_chrT_bed);
+    return ToString(data_rna_RNA_v1_bed);
 }
 
 std::string RNADataMix()
 {
-    return ToString(data_rna_RNA_v1_mix_csv);
+    return ToString(data_meta_META_v6_mix_csv);
 }
 
 /*
