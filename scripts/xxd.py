@@ -15,6 +15,15 @@ def xxd(src, dst):
 
 data  = [ 'data/manual.txt',    
           'data/linear.R',
+          'data/chrT.v1.fa',
+
+           # ---------- RNA ----------
+
+          'data/rna/r_manual.txt',
+          'data/rna/RNA.v1.bed',
+          'data/rna/RNA.v1.gtf',
+          'data/rna/RNA.v4.1.mix',
+          'data/rna/RNA.v1.2.tab.fa',
 
            # ---------- META ----------
 
@@ -23,15 +32,6 @@ data  = [ 'data/manual.txt',
           'data/meta/META.v1.tab.fa',
           'data/meta/META.v6.mix.csv',
           'data/meta/META.v1.tab.bed',
-
-           # ---------- RNA ----------
-
-          'data/rna/r_manual.txt',
-          'data/rna/RNA.v0.chrT.fa',  # Reference for the chromosome
-          'data/rna/RNA.v1.chrT.bed', # Reference BED for the chromosome
-          'data/rna/RNA.v1.chrT.gtf', # Reference GTF for the chromosome
-          'data/rna/RNA.v1.mix.csv',  # Mixture CSV file
-          'data/rna/RNA.v1.tab.fa',   # Reference for the sequins
 
            # ---------- DNA ----------
 
