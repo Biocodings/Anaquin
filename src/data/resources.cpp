@@ -8,6 +8,17 @@
 #include "resources/manual.txt"
 
 /*
+ * RNA Resources
+ */
+
+#include "resources/r_manual.txt"
+#include "resources/chrT.v1.fa"
+#include "resources/RNA.v1.bed"
+#include "resources/RNA.v1.gtf"
+#include "resources/RNA.v4.1.mix"
+#include "resources/RNA.v1.2.tab.fa"
+
+/*
  * META Resources
  */
 
@@ -15,17 +26,6 @@
 #include "resources/META.v1.tab.fa"
 #include "resources/META.v6.mix.csv"
 #include "resources/META.v1.tab.bed"
-
-/*
- * RNA Resources
- */
-
-#include "resources/r_manual.txt"
-#include "resources/RNA.v0.chrT.fa"
-#include "resources/RNA.v1.tab.fa"
-#include "resources/RNA.v1.mix.csv"
-#include "resources/RNA.v1.chrT.bed"
-#include "resources/RNA.v1.chrT.gtf"
 
 /*
  * DNA Resources
