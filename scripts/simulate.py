@@ -113,7 +113,7 @@ def simulate(file, basePath, mix='A', tool='wgsim', c=0, s=0.10):
                     
                     os.system('find Sherman/ -name *.fastq -exec cat {} + > simulated.fastq')
             else:
-                print '-------- Warning --------: ' + key + ' not generated!'                
+                print 'Warning: ' + key + ' not generated!'                
         else:
             print '-------- Warning --------: ' + key + ' not found in the mixture!'            
 
@@ -132,8 +132,8 @@ if __name__ == '__main__':
         print_usage()
 
     elif (sys.argv[1] == 'RNA'):
-        a = ['RNA_A_1_1', 'RNA_A_1_2', 'RNA_A_1_3']              
-        b = ['RNA_B_10_1', 'RNA_B_10_2', 'RNA_B_10_3']
+        a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
+        b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
 
         for i in range(0,len(a)):
             split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')
