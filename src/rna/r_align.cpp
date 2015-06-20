@@ -56,8 +56,12 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 
     std::vector<Alignment> exons, introns;
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
+#ifndef DEBUG
+        std::cout << "Processed: " << p.i << std::endl;
+#endif
+
         Feature f;
 
         if (!align.mapped)
