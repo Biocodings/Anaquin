@@ -11,7 +11,7 @@ TEST_CASE("Test_Junction")
      * Cigar: 388598 - 29M58378N64M33114N8M
      */
 
-    ParserSAM::parse("tests/data/introns.sam", [&](const Alignment &align, const ParserProgress &)
+    ParserSAM::parse("tests/data/rna/introns.sam", [&](const Alignment &align, const ParserProgress &)
     {
         aligns.push_back(align);
     });

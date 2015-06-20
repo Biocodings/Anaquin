@@ -25,12 +25,6 @@ namespace Spike
                 // Fraction of sequin spiked
                 inline Percentage dilution() const { return n_chrT / (n_chrT + n_samps); }
 
-                // Number of times that each exon is positively identified
-                LocusCounter ec = RAnalyzer::exonCounter();
-            
-                // Number of times that each intron is positively identified
-                LocusCounter ic = RAnalyzer::intronCounter();
-
                 Counter cb = RAnalyzer::geneCounter();
                 Counter ce = RAnalyzer::geneCounter();
                 Counter ci = RAnalyzer::geneCounter();

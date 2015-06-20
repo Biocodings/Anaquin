@@ -125,12 +125,11 @@ def simulate(file, basePath, mix='A', tool='wgsim', c=0, s=0.10):
         os.system('rm '  + basePath + '/*R2.fastq')
 
 def print_usage():
-    print 'Usage: python simulate.py RNA|DNA|META|Sherman'
+    print 'Usage: python simulate.py RNA|DNA|META'
 
 if __name__ == '__main__':
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
-
     elif (sys.argv[1] == 'RNA'):
         a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
         b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
@@ -144,8 +143,6 @@ if __name__ == '__main__':
             split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
             simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B')
             os.system('mv RNA_Simulation ' + b[i])
-    elif (sys.argv[1] == 'DNA'):
-        pass
     elif (sys.argv[1] == 'META'):
         split('../data/meta/META.ref.fa', 'META_Simulation_A/seqs/')
         split('../data/meta/META.ref.fa', 'META_Simulation_B/seqs/')
@@ -156,20 +153,16 @@ if __name__ == '__main__':
         # Generate simulation for mixture B (5% of the origianl concentration to save time)
         simulate('../data/meta/META.mix.csv', 'META_Simulation_B/seqs/', 'META_Simulation_B/reads/', 'B', 0, 0.05)
 
-        os.system('velveth A 31 -fastq -shortPaired META_Simulation_A/reads/simulated_1.fastq META_Simulation_A/reads/simulated_2.fastq')
+        #os.system('velveth A 31 -fastq -shortPaired META_Simulation_A/reads/simulated_1.fastq META_Simulation_A/reads/simulated_2.fastq')
         #os.system('velvetg A')
-        os.system('velvetg A -exp_cov auto')
+        #os.system('velvetg A -exp_cov auto')
         #os.system('meta-velvetg A')
-        os.system('blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl')
+        #os.system('blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl')
 
-        os.system('velveth B 21 -fastq -shortPaired META_Simulation_B/reads/simulated_1.fastq META_Simulation_B/reads/simulated_2.fastq')    
+        #os.system('velveth B 21 -fastq -shortPaired META_Simulation_B/reads/simulated_1.fastq META_Simulation_B/reads/simulated_2.fastq')    
         #os.system('velvetg B')
-        os.system('velvetg B -exp_cov auto')
+        #os.system('velvetg B -exp_cov auto')
         #os.system('meta-velvetg A')        
-        os.system('blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl')
-    elif (sys.argv[1] == 'Sherman'):
-        split(sys.argv[2], 'Sherman/')
-        simulate(sys.argv[3], 'Sherman/', 'A', 0 ,1)
-        #simulate(sys.argv[3], 'Sherman/seqs/', 'Sherman/reads/', 'B', 0 ,1)                
+        #os.system('blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl')
     else:
         print_usage()

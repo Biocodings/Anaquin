@@ -42,16 +42,11 @@ namespace Spike
 
     struct Base
     {
-        inline Concentration abund() const
+        Concentration abund() const
         {
-            return r->abund() + (v ? v->abund() : 0);
+            return 10.0;
+            //return r->abund() + (v ? v->abund() : 0);
         }
-
-        // Reference mixture, always valid
-        const Sequin *r = NULL;
-
-        // Variant mixture, could be NULL
-        const Sequin *v = NULL;
 
         std::map<TypeID, Sequin> sequins;
     };

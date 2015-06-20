@@ -1,11 +1,11 @@
-#include <assert.h>
 #include "rna/r_align.hpp"
 #include "stats/expression.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;
 
-static bool checkSplice(const Alignment &align, Feature &f)
+// Find the matching intron by locus given a spliced alignment
+static bool findIntron(const Alignment &align, Feature &f)
 {
     assert(align.spliced);
     const auto &s = Standard::instance();
@@ -74,11 +74,11 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         
         // Whether the read has mapped to a feature correctly
         bool succeed = false;
-        
+
         /*
          * Collect statistics at the exon level
          */
-        
+
         if (!align.spliced)
         {
             exons.push_back(align);
@@ -89,11 +89,10 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                     return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
-                stats.ec.at(f.l)++;
                 stats.ce.at(s.r_isoformToGene.at(f.tID))++;
             }
         }
-        
+
         /*
          * Collect statistics at the intron level
          */
@@ -104,11 +103,10 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
                 {
-                    succeed = checkSplice(align, f);
+                    succeed = findIntron(align, f);
                     return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
-                stats.ic.at(align.l)++;
                 stats.ci.at(s.r_isoformToGene.at(f.tID))++;
             }
         }
@@ -145,21 +143,30 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     });
 
     /*
-     * Classify at the base level
+     * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
+     * as a reference. Anything that is undetected in the experiment will be counted as a single reference.
+     */
+
+    sums(stats.ce, stats.pe.m.nr);
+    sums(stats.ci, stats.pi.m.nr);
+
+    /*
+     * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
+     * The number is expected to approach the reference length (calculated next) for a very large
+     * experiment with sufficient coverage.
      */
 
     countBase(s.r_l_exons, exons, stats.pb.m, stats.cb);
 
     /*
-     * Calculate for the number of references. The idea is similar to cuffcompare, each true-positive is
-     * counted as a reference. Anything that is undetected in the experiment will be counted as a single
-     * reference.
+     * The counts for references is the total length of all known non-overlapping exons.
+     * For example, if we have the following exons:
+     *
+     *    {1,10}, {50,55}, {70,74}
+     *
+     * The length of all the bases is 10+5+4 = 19.
      */
     
-    sums(stats.ec, stats.pe.m.nr);
-    sums(stats.ic, stats.pi.m.nr);
-    
-    // Total length of all reference exons
     stats.pb.m.nr = s.r_c_exons;
 
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
@@ -171,9 +178,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the LOS
      */
 
-    //stats.pe.s = Expression::analyze(stats.ce, seqs); (Activate this)
-    //stats.pi.s = Expression::analyze(stats.ci, seqs); (Activate this)
-    //stats.pb.s = Expression::analyze(stats.cb, seqs); (Activate this)
+    stats.pe.s = Expression::analyze(stats.ce, seqs);
+    stats.pi.s = Expression::analyze(stats.ci, seqs);
+    stats.pb.s = Expression::analyze(stats.cb, seqs);
 
     // Write out general statistics
     //reportGeneral("ralign_general.statsD", stats, options);

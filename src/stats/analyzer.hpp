@@ -35,7 +35,7 @@ namespace Spike
 
     template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
     {
-        for (const auto & i : m)
+        for (const auto &i : m)
         {
             if (i.second == 0)
             {
@@ -46,7 +46,7 @@ namespace Spike
                 c += i.second;
             }
         }
-        
+
         assert(c);
     }
 
@@ -97,7 +97,7 @@ namespace Spike
             {
                 return counter<std::vector<Feature>, GeneID>(Standard::instance().r_genes);
             }
-        
+
             static IsoformCounter isoformCounter()
             {
                 return counter<std::vector<Sequin>, IsoformID>(Standard::instance().r_sequins);

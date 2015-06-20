@@ -1,8 +1,8 @@
 #ifndef GI_CLASSIFY_HPP
 #define GI_CLASSIFY_HPP
 
-#include "sensitivity.hpp"
 #include "data/standard.hpp"
+#include "stats/sensitivity.hpp"
 #include <ss/data/confusion.hpp>
 
 namespace Spike
@@ -14,10 +14,10 @@ namespace Spike
         inline Percentage sn() const
         {
             assert(nr && nr >= _tp);
-            
+
             // Adjust for fn... Refer to the wikipedia for more details
             _fn = nr - _tp;
-            
+
             return SS::Confusion::sn();
         }
         

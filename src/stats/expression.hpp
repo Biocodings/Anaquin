@@ -30,18 +30,21 @@ namespace Spike
 
             for (auto iter = c.begin(); iter != c.end(); iter++)
             {
+                const auto counts = iter->second;
+
                 /*
-                 * It's a better sensitivity measure if it has smaller counts while still being
-                 * detectable. Choose the smaller abundance if there's a tie.
+                 * Is this sequin detectable? If it's detectable, what about the concentration?
+                 * By definition, the detection limit is defined as the smallest abundant while
+                 * still being detected.
                  */
 
-                if (iter->second)
+                if (counts)
                 {
-                    if (iter->second < s.counts || (iter->second == s.counts && m.at(iter->first).abund() < s.abund))
+                    if (counts < s.counts || (counts == s.counts && m.at(iter->first).abund() < s.abund))
                     {
                         s.id     = iter->first;
-                        s.counts = iter->second;
-                        //s.abund  = m.at(s.id).abund(); // TODO: Reactive this
+                        s.counts = counts;
+                        s.abund  = m.at(s.id).abund();
                     }
                 }
             }
