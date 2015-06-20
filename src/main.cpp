@@ -199,7 +199,7 @@ void print(Reader &r)
         }
 
         std::vector<std::string> tokens;
-        Tokens::split(l, ",", tokens);
+        Tokens::split(l, "\t", tokens);
 
         if (tokens.size() != 3)
         {

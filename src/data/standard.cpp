@@ -153,7 +153,7 @@ Standard::Standard()
 
     rna();
     dna();
-    //meta();
+    meta();
 }
 
 void Standard::meta_mod(const Reader &r)
