@@ -60,7 +60,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        if (p.i % 1000)
+        if ((p.i % 1000) == 0)
         {
             options.terminal->write("Processed: " + std::to_string(p.i));
         }
