@@ -27,9 +27,9 @@ TEST_CASE("RAssembly_Simulation")
     REQUIRE(r.pb.m.nr == 151192);
     REQUIRE(r.pb.m.sp() == Approx(1.0));
     REQUIRE(r.pb.m.sn() == Approx(0.9869503677));
-    REQUIRE(r.pb.s.id == "R1_14");
+    REQUIRE(r.pb.s.id == "R2_28");
     REQUIRE(r.pb.s.counts == 1);
-    REQUIRE(r.pb.s.abund == Approx(10.0));
+    REQUIRE(r.pb.s.abund == Approx(57.0));
 
     REQUIRE(r.pt.m.nq == 162);
     REQUIRE(r.pt.m.nr == 164);
