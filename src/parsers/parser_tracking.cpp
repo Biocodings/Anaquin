@@ -53,9 +53,10 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
 
         t.trackID = tokens[T_TrackID];
         t.geneID  = tokens[T_GeneID];
-        t.fpkm    = stof(tokens[T_FPKM]);
-        t.lFPKM   = stof(tokens[T_FPKM_LO]);
-        t.uFPKM   = stof(tokens[T_FPKM_HI]);
+        
+        t.fpkm    = stod(tokens[T_FPKM]);
+        t.lFPKM   = stod(tokens[T_FPKM_LO]);
+        t.uFPKM   = stod(tokens[T_FPKM_HI]);
         t.status  = mapper.at(tokens[T_Status]);
 
         if (t.status != TrackingStatus::HIData)
