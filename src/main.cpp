@@ -20,8 +20,10 @@
 #include "meta/m_assembly.hpp"
 
 #include "parsers/parser_csv.hpp"
-#include "writers/path_writer.hpp"
 #include "parsers/parser_sequins.hpp"
+
+#include "writers/file_writer.hpp"
+#include "writers/terminal_writer.hpp"
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
@@ -297,7 +299,12 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     const auto path = _output.empty() ? "spike_out" : _output;
     
     std::cout << "Path: " << path << std::endl;
-    o.writer = std::shared_ptr<PathWriter>(new PathWriter(path));
+
+#ifndef DEBUG
+    o.writer   = std::shared_ptr<FileWriter>(new FileWriter(path));
+    o.logger   = std::shared_ptr<FileWriter>(new FileWriter(path));
+    o.terminal = std::shared_ptr<TerminalWriter>(new TerminalWriter());
+#endif
 
     std::cout << "-----------------------------------------" << std::endl;
     std::cout << "------------- Sequin Analysis -----------" << std::endl;

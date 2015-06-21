@@ -179,8 +179,9 @@ namespace Spike
     {
         std::set<SequinID> filters;
 
-        // By default, the results are written to no-where
-        std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> writer   = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> logger   = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> terminal = std::shared_ptr<Writer>(new MockWriter());
     };
 
     struct SingleMixtureOptions : public AnalyzerOptions

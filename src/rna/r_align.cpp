@@ -56,18 +56,14 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 
     std::vector<Alignment> exons, introns;
 
-#ifdef DEBUG
-    std::cout << "Parsing alignments" << std::endl;
-#endif
+    options.terminal->write("Parsing alignments");
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-#ifndef DEBUG
-        if (p % 1000)
+        if (p.i % 1000)
         {
-            std::cout << "Processed: " << p.i << std::endl;
+            options.terminal->write("Processed: " + std::to_string(p.i));
         }
-#endif
 
         Feature f;
 
@@ -85,6 +81,8 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         
         // Whether the read has mapped to a feature correctly
         bool succeed = false;
+
+        options.logger->write((boost::format("%1% %2% %3%") % align.id % align.l.start % align.l.end).str());
 
         /*
          * Collect statistics at the exon level
@@ -153,9 +151,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
-#ifndef DEBUG
-    std::cout << "Counting references" << std::endl;
-#endif
+    options.terminal->write("Counting references");
     
     /*
      * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
@@ -165,9 +161,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     sums(stats.ce, stats.pe.m.nr);
     sums(stats.ci, stats.pi.m.nr);
 
-#ifndef DEBUG
-    std::cout << "Counting bases" << std::endl;
-#endif
+    options.terminal->write("Counting bases");
     
     /*
      * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
@@ -201,9 +195,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     stats.pi.s = Expression::analyze(stats.ci, seqs);
     stats.pb.s = Expression::analyze(stats.cb, seqs);
 
-#ifndef DEBUG
-    std::cout << "Writing results" << std::endl;
-#endif
+    options.terminal->write("Writing results");
     
     // Write out general statistics
     //reportGeneral("ralign_general.statsD", stats, options);
