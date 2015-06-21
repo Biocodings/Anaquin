@@ -15,9 +15,9 @@ namespace Spike
         struct Stats
         {
             Counter cb = RAnalyzer::geneCounter();
-            Counter ce = RAnalyzer::isoformCounter();
-            Counter ci = RAnalyzer::isoformCounter();
-            Counter ct = RAnalyzer::isoformCounter();
+            Counter ce = RAnalyzer::sequinCounter();
+            Counter ci = RAnalyzer::sequinCounter();
+            Counter ct = RAnalyzer::sequinCounter();
 
             // Performance for each level
             Performance p, pb, pe, pt, pi;

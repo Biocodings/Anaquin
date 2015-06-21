@@ -21,6 +21,25 @@ namespace Spike
 
         Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
 
+        template <typename Iter, typename F> static Locus expand(const Iter &iter, F f)
+        {
+            Locus l;
+            
+            l.end   = std::numeric_limits<BasePair>::min();
+            l.start = std::numeric_limits<BasePair>::max();
+
+            for (const auto &i : iter)
+            {
+                if (f(i))
+                {
+                    l.end   = std::max(l.end, i.l.end);
+                    l.start = std::min(l.start, i.l.start);
+                }
+            }
+
+            return l;
+        };
+        
         template <typename T> static bool overlap(const std::vector<T> &ls)
         {
             for (auto i = 0; i < ls.size(); i++)
@@ -126,7 +145,8 @@ namespace Spike
             this->end   = std::max(end, l.end);
         }
 
-        inline bool operator==(const Locus &l) const { return start == l.start && end == l.end;    }
+        inline bool operator!=(const Locus &l) const { return !operator==(l); }
+        inline bool operator==(const Locus &l) const { return start == l.start && end == l.end; }
 
         inline Locus operator+(const Locus &l)  const
         {

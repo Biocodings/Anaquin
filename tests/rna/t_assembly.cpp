@@ -8,17 +8,17 @@ TEST_CASE("RAssembly_Simulation")
     const auto r = RAssembly::analyze("tests/data/rna/A1/transcripts.gtf");
 
     REQUIRE(r.pe.m.nq == 1190);
-    REQUIRE(r.pe.m.nr == 1192);
+    REQUIRE(r.pe.m.nr == 1190);
     REQUIRE(r.pe.m.sp() == Approx(1.0));
-    REQUIRE(r.pe.m.sn() == Approx(0.9983221477));
+    REQUIRE(r.pe.m.sn() == Approx(1.0));
     REQUIRE(r.pe.s.id == "R2_28_2");
     REQUIRE(r.pe.s.counts == 1);
     REQUIRE(r.pe.s.abund == Approx(16.0));
 
     REQUIRE(r.pi.m.nq == 1028);
-    REQUIRE(r.pi.m.nr == 883);
+    REQUIRE(r.pi.m.nr == 881);
     REQUIRE(r.pi.m.sp() == Approx(0.8414396887));
-    REQUIRE(r.pi.m.sn() == Approx(0.979614949));
+    REQUIRE(r.pi.m.sn() == Approx(0.9818388195));
     REQUIRE(r.pi.s.id == "R2_38_4");
     REQUIRE(r.pi.s.counts == 1);
     REQUIRE(r.pi.s.abund == Approx(4.0));
@@ -34,10 +34,10 @@ TEST_CASE("RAssembly_Simulation")
     REQUIRE(r.pt.m.nq == 162);
     REQUIRE(r.pt.m.nr == 164);
     REQUIRE(r.pt.m.sp() == Approx(1.0));
-    REQUIRE(r.pt.m.sn() == Approx(1.0));
-    REQUIRE(r.pt.s.id == "R_9_2_R");
+    REQUIRE(r.pt.m.sn() == Approx(0.987804878));
+    REQUIRE(r.pt.s.id == "R2_38_1");
     REQUIRE(r.pt.s.counts == 1);
-    REQUIRE(r.pt.s.abund == Approx(0.0190734863));
+    REQUIRE(r.pt.s.abund == Approx(1.0));
 }
 
 //TEST_CASE("RAssembly_Simulations_All_Filtered")

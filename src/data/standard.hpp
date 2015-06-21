@@ -85,7 +85,12 @@ namespace Spike
             // Genes for mixture A and B
             BaseMap r_seqs_gA, r_seqs_gB;
 
-            std::vector<Sequin>  r_sequins;
+            // Unique set of sequin names
+            std::set<SequinID> r_sequinIDs;
+        
+            // Sequins and their positions
+            std::map<SequinID, Locus> r_sequins;
+
             std::vector<Feature> r_genes;
             std::vector<Feature> r_exons;
             std::vector<Feature> r_introns;

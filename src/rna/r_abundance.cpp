@@ -23,7 +23,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     RAbundanceStats stats;
     const auto &s = Standard::instance();
 
-    auto c = RAnalyzer::isoformCounter();
+    auto c = RAnalyzer::sequinCounter();
     unsigned i = 0;
     
     if (suffix(file, ".tmap"))

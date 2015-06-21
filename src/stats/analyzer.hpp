@@ -16,7 +16,6 @@ namespace Spike
     typedef std::map<Locus, Counts>     LocusCounter;
     typedef std::map<GeneID, Counts>    GeneCounter;
     typedef std::map<SequinID, Counts>  SequinCounter;
-    typedef std::map<IsoformID, Counts> IsoformCounter;
 
     // Tracking for each sequin
     typedef std::map<SequinID, std::vector<Locus>> SequinTracker;
@@ -98,9 +97,9 @@ namespace Spike
                 return counter<std::vector<Feature>, GeneID>(Standard::instance().r_genes);
             }
 
-            static IsoformCounter isoformCounter()
+            static SequinCounter sequinCounter()
             {
-                return counter<std::vector<Sequin>, IsoformID>(Standard::instance().r_sequins);
+                return counter<std::set<SequinID>, SequinID>(Standard::instance().r_sequinIDs);
             }
     };
 

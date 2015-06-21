@@ -8,11 +8,6 @@ TEST_CASE("Standard_ID")
 	REQUIRE("chrT" == Standard::instance().id);
 }
 
-TEST_CASE("Standard_DNA")
-{
-    //REQUIRE(Standard::instance().d_seqs.size() == 72);
-}
-
 //TEST_CASE("Standard_Introns")
 //{
 //    const auto &s = Standard::instance();

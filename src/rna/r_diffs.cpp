@@ -11,7 +11,7 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
     RDiffs::Stats stats;
     const auto &s = Standard::instance();
 
-    auto c = (options.level == Gene ? RAnalyzer::geneCounter() : RAnalyzer::isoformCounter());
+    auto c = (options.level == Gene ? RAnalyzer::geneCounter() : RAnalyzer::sequinCounter());
 
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {

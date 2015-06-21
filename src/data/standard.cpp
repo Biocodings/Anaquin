@@ -227,11 +227,13 @@ void Standard::rna_mod(const Reader &r)
     l.start = std::numeric_limits<BasePair>::max();
 
     std::vector<Feature> fs;
+
     std::set<GeneID> geneIDs;
+    std::set<GeneID> sequinIDs;
 
     /*
      * The orders in a GTF file is not guaranteed. For simplicity, we'll defer most of the workloads
-     * after the parsing.
+     * after parsing.
      */
 
     ParserGTF::parse(Reader(RNADataGTF(), DataMode::String), [&](const Feature &f, const ParserProgress &)
@@ -243,10 +245,11 @@ void Standard::rna_mod(const Reader &r)
         
         // Automatically filter out the duplicates
         geneIDs.insert(f.geneID);
+        sequinIDs.insert(f.tID);
         
         fs.push_back(f);
         
-        // Construct a mapping between isoformID to geneID
+        // Construct a mapping between sequinID to geneID
         r_isoformToGene[f.tID] = f.geneID;
         
         if (f.type == Exon)
@@ -260,6 +263,23 @@ void Standard::rna_mod(const Reader &r)
     assert(l.end   != std::numeric_limits<BasePair>::min());
     assert(l.start != std::numeric_limits<BasePair>::min());
     
+    /*
+     * Construct a data-structure that maps from sequinID to it's positon
+     */
+
+    for (const auto &sequinID : sequinIDs)
+    {
+        r_sequins[sequinID] = Locus::expand(r_exons, [&](const Feature &f)
+        {
+            return f.tID == sequinID;
+        });
+
+        // Make sure the position is valid
+        assert(r_sequins.at(sequinID) != Locus());
+    }
+
+    assert(!r_sequins.empty());
+
     /*
      * Construct data-structure for each gene
      */
@@ -345,12 +365,32 @@ void Standard::rna_mix(const Reader &r)
     assert(r_c_exons);
     assert(!r_l_exons.empty());
     assert(!Locus::overlap(r_l_exons));
-    //assert(r_l_exons.size() == r_exons.size());
 
-    for (const auto &i: r_seqs_A)
+    /*
+     * The mixture file isn't able to tell us the position of a sequin. Here, we'll
+     * merge the information with the model. Note that we might have a sequin defined
+     * in a mixture file that doesn't not appear in the model.
+     */
+
+    for (auto &i: r_seqs_A)
     {
-        r_sequins.push_back(i.second);
+        if (!r_sequins.count(i.first))
+        {
+            std::cout << "Warning: " << i.first << " defined in mixture but not in the model" << std::endl;
+        }
+        else
+        {
+            // Note that we're assigning by reference here
+            i.second.l = r_sequins.at(i.first);
+
+            // Make sure it's not an empty range
+            assert(i.second.l != Locus());
+            
+            r_sequinIDs.insert(i.first);
+        }
     }
+
+    assert(!r_sequinIDs.empty());
 }
 
 void Standard::rna()
