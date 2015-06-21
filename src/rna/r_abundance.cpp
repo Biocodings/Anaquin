@@ -62,7 +62,6 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
             {
                 if (!s.r_seqs_A.count(t.trackID))
                 {
-                    std::cout << t.trackID << std::endl;
                     return;
                 }
                 
@@ -84,12 +83,12 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
             {
                 if (!s.r_seqs_gA.count(t.trackID))
                 {
-                    std::cout << t.trackID << std::endl;
                     return;
                 }
 
                 i++;
                 c[t.geneID]++;
+
                 const auto &m = s.r_seqs_gA.at(t.geneID);
 
                 if (t.fpkm)
