@@ -304,6 +304,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.writer   = std::shared_ptr<FileWriter>(new FileWriter(path));
     o.logger   = std::shared_ptr<FileWriter>(new FileWriter(path));
     o.terminal = std::shared_ptr<TerminalWriter>(new TerminalWriter());
+    o.logger->open("anaquin.log");
 #endif
 
     std::cout << "-----------------------------------------" << std::endl;
@@ -322,6 +323,10 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     std::clock_t end = std::clock();
     const double elapsed = double(end - begin) / CLOCKS_PER_SEC;
     std::cout << "Completed. Elpased: " << elapsed << " seconds" << std::endl;
+
+#ifndef DEBUG
+    o.logger->close();
+#endif
 }
 
 // Analyze for a single-sample input
