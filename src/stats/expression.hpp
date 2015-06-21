@@ -5,8 +5,7 @@
 #include <limits>
 #include <math.h>
 #include <iostream>
-#include <assert.h>
-#include "sensitivity.hpp"
+#include "stats/sensitivity.hpp"
 
 namespace Spike
 {
@@ -40,6 +39,12 @@ namespace Spike
 
                 if (counts)
                 {
+                    if (m.counts(iter->first))
+                    {
+                        std::cout << "--------" << iter->first << std::endl;
+                        continue;
+                    }
+                    
                     if (counts < s.counts || (counts == s.counts && m.at(iter->first).abund() < s.abund))
                     {
                         s.id     = iter->first;

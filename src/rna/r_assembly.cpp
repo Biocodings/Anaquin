@@ -30,13 +30,11 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
     RAssembly::Stats stats;
     const auto &s = Standard::instance();
 
-    // The structure depends on the mixture
-    const auto seqs = s.r_sequin(options.mix);
+    // The sequins depends on the mixture
+    const auto sequins = s.r_sequin(options.mix);
 
-    std::map<SequinID, std::vector<Feature>> q_exons_;
     std::vector<Feature> q_exons;
-
-    Counts i = 0;
+    std::map<SequinID, std::vector<Feature>> q_exons_;
 
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
     {
@@ -46,8 +44,6 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
             return;
         }
         
-        i++;
-
         switch (f.type)
         {
             case Exon:
@@ -64,7 +60,6 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
                     return find(s.r_exons, f, Exact);
                 }))
                 {
-                    stats.e_lc.at(f.l)++;
                     stats.ce.at(f.tID)++;
                 }
 
@@ -79,10 +74,9 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pt.m, f, [&](const Feature &)
                 {
-                    return find_map(seqs, f, Exact);
+                    return find_map(sequins, f, Exact);
                 }))
                 {
-                    stats.t_lc.at(f.tID)++;
                     stats.ct.at(f.tID)++;
                 }
 
@@ -95,7 +89,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
     });
 
     /*
-     * Sort the exons in the query since there is no guarantee that those are sorted
+     * Sort the query exons since there is no guarantee that those are sorted
      */
     
     for (auto &i : q_exons_)
@@ -103,49 +97,83 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
         CHECK_AND_SORT(i.second);
     }
 
-    extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
-                   {
-                       /*
-                        * Classify at the intron level
-                        */
-
-                       if (classify(stats.pi.m, i, [&](const Feature &)
-                       {
-                           return find(s.r_introns, i, Exact);
-                       }))
-                       {
-                           stats.i_lc.at(i.l)++;
-                           stats.ci[i.tID]++;
-                       }
-                   });
-    
     /*
-     * Classify at the base level
+     * Now that the query exons are sorted. We can extract the introns between each pair
+     * of successive exon.
      */
 
-    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.cb);
+    extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
+    {
+        /*
+         * Classify at the intron level
+         */
+        
+        if (classify(stats.pi.m, i, [&](const Feature &)
+                     {
+                         return find(s.r_introns, i, Exact);
+                     }))
+        {
+            stats.ci[i.tID]++;
+        }
+    });
+
+    options.logger->write("Counting references");
 
     /*
      * Setting the known references
      */
     
-    sums(stats.e_lc, stats.pe.m.nr);
-    sums(stats.i_lc, stats.pi.m.nr);
+    sums(stats.ce, stats.pe.m.nr);
+    sums(stats.ci, stats.pi.m.nr);
 
-    // The number of sequins is also the number of known transcripts
-    stats.pt.m.nr = seqs.size();
+    /*
+     * The counts for references for the transcript level is simply all the sequins.
+     */
+
+    stats.pt.m.nr = sequins.size();
+
+    options.logger->write("Merging overlapping bases");
+    options.terminal->write("Merging overlapping bases");
+
+    /*
+     * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
+     * The number is expected to approach the reference length (calculated next) for a very large
+     * experiment with sufficient coverage.
+     */
     
-    // The known base length is the total length of all known exons
+    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.cb);
+
+    /*
+     * The counts for references is the total length of all known non-overlapping exons.
+     * For example, if we have the following exons:
+     *
+     *    {1,10}, {50,55}, {70,74}
+     *
+     * The length of all the bases is 10+5+4 = 19.
+     */
+
     stats.pb.m.nr = s.r_c_exons;
 
+    options.logger->write("Calculating LOS");
+    options.terminal->write("Calculating LOS");
+    
     /*
      * Calculate for the LOS
      */
 
-    stats.pe.s = Expression::analyze(stats.ce, seqs);
-    stats.pt.s = Expression::analyze(stats.ct, seqs);
+    options.logger->write("Calculating LOS - exon level");
+    stats.pe.s = Expression::analyze(stats.ce, sequins);
+    
+    options.logger->write("Calculating LOS - transcript level");
+    stats.pt.s = Expression::analyze(stats.ct, sequins);
+    
+    options.logger->write("Calculating LOS - base level");
     stats.pb.s = Expression::analyze(stats.cb, s.r_gene(options.mix));
-    stats.pi.s = Expression::analyze(stats.ci, seqs);
+    
+    options.logger->write("Calculating LOS - intron level");
+    stats.pi.s = Expression::analyze(stats.ci, sequins);
+
+    options.logger->write("Writing results");
 
     /*
      * Write out statistics for various levels

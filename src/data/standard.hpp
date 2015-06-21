@@ -63,7 +63,7 @@ namespace Spike
             {
                 return mix == MixA ? r_seqs_A : r_seqs_B;
             }
-        
+
             inline const BaseMap & r_gene(Mixture mix) const
             {
                 return mix == Mixture::MixA ? r_seqs_gA : r_seqs_gB;

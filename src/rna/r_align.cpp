@@ -151,7 +151,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
-    options.terminal->write("Counting references");
+    options.logger->write("Counting references");
     
     /*
      * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
@@ -161,7 +161,8 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     sums(stats.ce, stats.pe.m.nr);
     sums(stats.ci, stats.pi.m.nr);
 
-    options.logger->write("Counting bases");
+    options.logger->write("Merging overlapping bases");
+    options.terminal->write("Merging overlapping bases");
     
     /*
      * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
@@ -183,7 +184,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     stats.pb.m.nr = s.r_c_exons;
 
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
+
     options.logger->write("Calculating LOS");
+    options.terminal->write("Calculating LOS");
 
     // The structure depends on the mixture
     const auto seqs = s.r_gene(options.mix);

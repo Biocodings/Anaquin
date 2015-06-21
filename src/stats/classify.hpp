@@ -91,7 +91,7 @@ namespace Spike
 
     template <typename Iter, typename T> bool find_map(const Iter &map, const T &t, MatchRule rule)
     {
-        for (auto i: map)
+        for (const auto &i: map)
         {
             const bool matched = (rule == Exact    && i.second.l == t.l) ||
                                  (rule == Contains && i.second.l.contains(t.l));

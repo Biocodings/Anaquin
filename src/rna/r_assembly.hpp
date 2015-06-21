@@ -14,15 +14,6 @@ namespace Spike
 
         struct Stats
         {
-            // Number of times that each exon is positively identified
-            LocusCounter e_lc = RAnalyzer::exonCounter();
-            
-            // Number of times that each intron is positively identified
-            LocusCounter i_lc = RAnalyzer::intronCounter();
-            
-            // Number of times that each isoform (transcript) is positively identified
-            IsoformCounter t_lc = RAnalyzer::isoformCounter();
-            
             Counter cb = RAnalyzer::geneCounter();
             Counter ce = RAnalyzer::isoformCounter();
             Counter ci = RAnalyzer::isoformCounter();

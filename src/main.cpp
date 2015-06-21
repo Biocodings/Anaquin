@@ -663,6 +663,8 @@ int parse_options(int argc, char ** argv)
 
 int main(int argc, char ** argv)
 {
-    signal(SIGSEGV, handler);   // install our handler
+#ifndef DEBUG
+    signal(SIGSEGV, handler);
+#endif
     return parse_options(argc, argv);
 }
