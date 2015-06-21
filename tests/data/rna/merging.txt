@@ -1,0 +1,6 @@
+A1/transcripts.gtf
+A2/transcripts.gtf
+A3/transcripts.gtf
+B1/transcripts.gtf
+B2/transcripts.gtf
+B3/transcripts.gtf
