@@ -39,7 +39,7 @@ namespace Spike
 
                 if (counts)
                 {
-                    if (m.counts(iter->first))
+                    if (m.count(iter->first))
                     {
                         std::cout << "--------" << iter->first << std::endl;
                         continue;
