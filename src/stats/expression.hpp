@@ -49,7 +49,10 @@ namespace Spike
                     {
                         s.id     = iter->first;
                         s.counts = counts;
+                        
+                        std::cout << "???" << s.id << std::endl;
                         s.abund  = m.at(s.id).abund();
+                        std::cout << "---" << s.id << std::endl;
                     }
                 }
             }

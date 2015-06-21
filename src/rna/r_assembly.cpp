@@ -74,6 +74,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pt.m, f, [&](const Feature &)
                 {
+                    // TODO: Fix this!!!
                     return find_map(sequins, f, Exact);
                 }))
                 {
