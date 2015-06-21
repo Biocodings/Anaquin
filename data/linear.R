@@ -2,12 +2,12 @@
 # R script generated automatically for sequin analysis.
 #
 
-seq.x <- c(%1%)
-seq.y <- c(%2%)
-seq.z <- c(%3%)
+x <- c(%1%)
+y <- c(%2%)
+z <- c(%3%)
 
 # Color for each point
-seq.cols <- c(%4%)
+cols <- c(%4%)
 
 # Pearson's correlation
 p <- cor(x, y)
@@ -22,7 +22,7 @@ summary(m)
 par(pch=19)
 
 # Consturct a plot with some space on the top-corners for legends
-plot(seq.x, seq.y, ylim=c(min(y), 2.0 * max(y)), col=seq.cols, xlab='Log2 spike amount (attomoles/ul)', ylab='Log2 measured coverage (%5%)')
+plot(x, y, ylim=c(min(y), 2.0 * max(y)), col=cols, xlab='Log2 spike amount (attomoles/ul)', ylab='Log2 measured coverage (%5%)')
 
 # Draw a line for LOS
 abline(v=%6%, lty=2)

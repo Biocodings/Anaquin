@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ss/c.hpp>
+#include "rna/r_abundance.hpp"
 #include "stats/expression.hpp"
-#include "r_abundance.hpp"
 #include "writers/r_writer.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_tmap.hpp"
@@ -10,8 +10,8 @@
 using namespace SS;
 using namespace Spike;
 
-static const std::string GTracking = "genes.fpkm_tracking";
-static const std::string ITracking = "isoforms.fpkm_tracking";
+static const FileName GTracking = "genes.fpkm_tracking";
+static const FileName ITracking = "isoforms.fpkm_tracking";
 
 static bool suffix(const std::string &str, const std::string &suffix)
 {
@@ -51,17 +51,18 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     {
         if (file.find(GTracking) == std::string::npos && file.find(ITracking) == std::string::npos)
         {
-            throw std::runtime_error((boost::format("Unknown file. It must be %1% or %2%")
-                                        % GTracking % ITracking).str());
+            throw std::invalid_argument((boost::format("Unknown file. It must be %1% or %2%")
+                                                % GTracking
+                                                % ITracking).str());
         }
 
         ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
         {
             if (file.find(ITracking) != std::string::npos)
             {
-                // Is this a transcript for the sequin?
                 if (!s.r_seqs_A.count(t.trackID))
                 {
+                    std::cout << t.trackID << std::endl;
                     return;
                 }
                 
@@ -71,6 +72,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                 if (t.fpkm)
                 {
                     const auto &i = s.r_seqs_A.at(t.trackID);
+
+                    std::cout << log(i.abund()) << std::endl;
                     
                     stats.x.push_back(log(i.abund()));
                     stats.y.push_back(log(t.fpkm));
@@ -81,7 +84,6 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
             }
             else
             {
-                // Is this a gene for the sequin?
                 if (!s.r_seqs_gA.count(t.trackID))
                 {
                     return;
@@ -108,11 +110,10 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
         });
     }
 
-    // TODO: Reactive this!
-    //assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
+    assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
-    //stats.linear();
-    //AnalyzeReporter::report("abundance.stats", "abundance.R", stats, "FPKM", c, options.writer);
+    stats.linear();
+    AnalyzeReporter::report("abundance.stats", "abundance.R", stats, "FPKM", c, options.writer);
 
     return stats;
 }
