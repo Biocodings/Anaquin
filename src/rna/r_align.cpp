@@ -187,6 +187,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     // The structure depends on the mixture
     const auto seqs = s.r_gene(options.mix);
 
+    options.logger->write("Calculating LOS");
+    options.terminal->write("Calculating LOS");
+
     /*
      * Calculate for the LOS
      */

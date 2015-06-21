@@ -2,6 +2,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <getopt.h>
+#include <execinfo.h>
 
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
@@ -53,6 +54,20 @@
 #define OPT_FILTER  328
 
 using namespace Spike;
+
+void handler(int sig)
+{
+    void *array[10];
+    size_t size;
+    
+    // get void*'s for all entries on the stack
+    size = backtrace(array, 10);
+    
+    // print out all the frames to stderr
+    fprintf(stderr, "Error: signal %d:\n", sig);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
+}
 
 struct InvalidUsageError : public std::runtime_error
 {
@@ -642,15 +657,12 @@ int parse_options(int argc, char ** argv)
     {
         printError((boost::format("%1%%2%") % "Invalid filter: " % ex.what()).str());
     }
-    catch (...)
-    {
-        std::cout << "FUCK" << std::endl;
-    }
 
     return 1;
 }
 
 int main(int argc, char ** argv)
 {
+    signal(SIGSEGV, handler);   // install our handler
     return parse_options(argc, argv);
 }

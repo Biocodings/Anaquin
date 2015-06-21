@@ -16,7 +16,7 @@ namespace Spike
         
         // If this field is false, no assumption can be made to other fields
         bool mapped;
-        
+
         // Whether this is a spliced read
         bool spliced;
         
