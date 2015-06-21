@@ -1,6 +1,7 @@
 #ifndef GI_SEQUIN_HPP
 #define GI_SEQUIN_HPP
 
+#include <numeric>
 #include "data/types.hpp"
 #include "data/locus.hpp"
 
@@ -44,8 +45,11 @@ namespace Spike
     {
         Concentration abund() const
         {
-            return 10.0;
-            //return r->abund() + (v ? v->abund() : 0);
+            return std::accumulate(sequins.begin(), sequins.end(), 0,
+                [&](int sum, const std::pair<TypeID, Sequin> &p)
+                {
+                    return sum + p.second.abund();
+                });
         }
 
         std::map<TypeID, Sequin> sequins;

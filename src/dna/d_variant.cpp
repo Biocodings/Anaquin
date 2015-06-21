@@ -1,5 +1,5 @@
-#include "stats/expression.hpp"
 #include "dna/d_variant.hpp"
+#include "stats/expression.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Spike;
