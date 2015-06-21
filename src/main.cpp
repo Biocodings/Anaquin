@@ -630,6 +630,10 @@ int parse_options(int argc, char ** argv)
     {
         printError((boost::format("%1%%2%") % "Invalid filter: " % ex.what()).str());
     }
+    catch (...)
+    {
+        std::cout << "FUCK" << std::endl;
+    }
 
     return 1;
 }

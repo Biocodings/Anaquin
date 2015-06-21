@@ -733,7 +733,6 @@
 					/Users/tedwong/Sources/QA/src/htslib,
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"$(inherited)",
 					UNIT_TESTING,
 				);

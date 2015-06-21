@@ -56,8 +56,19 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 
     std::vector<Alignment> exons, introns;
 
+#ifdef DEBUG
+    std::cout << "Parsing alignments" << std::endl;
+#endif
+    
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
+#ifndef DEBUG
+        if (p % 1000)
+        {
+            std::cout << "Processed: " << p.i << std::endl;
+        }
+#endif
+
         Feature f;
 
         if (!align.mapped)
@@ -142,6 +153,10 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
+#ifndef DEBUG
+    std::cout << "Counting references" << std::endl;
+#endif
+    
     /*
      * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
      * as a reference. Anything that is undetected in the experiment will be counted as a single reference.
@@ -150,6 +165,10 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     sums(stats.ce, stats.pe.m.nr);
     sums(stats.ci, stats.pi.m.nr);
 
+#ifndef DEBUG
+    std::cout << "Counting bases" << std::endl;
+#endif
+    
     /*
      * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
      * The number is expected to approach the reference length (calculated next) for a very large
@@ -182,6 +201,10 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     stats.pi.s = Expression::analyze(stats.ci, seqs);
     stats.pb.s = Expression::analyze(stats.cb, seqs);
 
+#ifndef DEBUG
+    std::cout << "Writing results" << std::endl;
+#endif
+    
     // Write out general statistics
     //reportGeneral("ralign_general.statsD", stats, options);
 
