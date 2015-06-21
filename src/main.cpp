@@ -207,7 +207,7 @@ void print(Reader &r)
     r.nextLine(l);
 
     std::cout << "ID\tMix A\tMix B" << std::endl;
-    
+
     while (r.nextLine(l))
     {
         if (l == "\r" || l == "\n" || l == "\r\n")
@@ -218,28 +218,25 @@ void print(Reader &r)
         std::vector<std::string> tokens;
         Tokens::split(l, "\t", tokens);
 
-        if (tokens.size() != 3)
-        {
-            std::cerr << "Malformed file: [" << l << "]" << std::endl;
-        }
-
-        std::cout << tokens[0] << "\t" << tokens[1] << "\t" << tokens[2] << std::endl;
+        std::cout << tokens[0] << "\t" << tokens[2] << "\t" << tokens[3] << std::endl;
     }
 }
 
-void print_meta()
+void printMeta()
 {
     extern std::string MetaDataMix();
     Reader r(MetaDataMix(), String);
     print(r);
 }
 
-static void print_rna()
+static void printRNA()
 {
-    // Empty Implementation
+    extern std::string RNADataMix();
+    Reader r(RNADataMix(), String);
+    print(r);
 }
 
-void print_dna()
+void printDNA()
 {
     // Empty Implementation
 }
@@ -517,7 +514,7 @@ void parse(int argc, char ** argv)
                     switch (_mode)
                     {
                         case MODE_SEQUENCE: { break; }
-                        case MODE_SEQUINS:  { print_rna();                  break; }
+                        case MODE_SEQUINS:  { printRNA();                   break; }
                         case MODE_ALIGN:    { analyze<RAlign>(_opts[0]);    break; }
                         case MODE_ASSEMBLY: { analyze<RAssembly>(_opts[0]); break; }
                             
@@ -554,7 +551,7 @@ void parse(int argc, char ** argv)
                     switch (_mode)
                     {
                         case MODE_SEQUENCE:  { break; }
-                        case MODE_SEQUINS:   { print_dna();                 break; }
+                        case MODE_SEQUINS:   { printMeta();                 break; }
                         case MODE_ALIGN:     { analyze<DAlign>(_opts[0]);   break; }
                         case MODE_VARIATION: { analyze<DVariant>(_opts[0]); break; }
                     }
@@ -583,7 +580,7 @@ void parse(int argc, char ** argv)
                     switch (_mode)
                     {
                         case MODE_SEQUENCE: { break; }
-                        case MODE_SEQUINS:  { print_meta(); break; }
+                        case MODE_SEQUINS:  { printMeta(); break; }
                         case MODE_BLAST:    { MBlast::analyze(_opts[0]); break; }
 
                         case MODE_DIFFERENTIAL:
