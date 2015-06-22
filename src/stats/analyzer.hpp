@@ -237,14 +237,14 @@ namespace Spike
              */
 
             std::vector<ColorID> c;
-            
+
             const auto &st = Standard::instance();
             
             for (const auto &id : z)
             {
                 if (st.m_seq_A.count(id))
                 {
-                    c.push_back(scheme.at(st.m_seq_A.at(id).grp));
+                    c.push_back("black");
                 }
                 else
                 {

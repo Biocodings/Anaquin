@@ -56,8 +56,11 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix='A', tool='wgsim', c=0, s=0.10):
+def simulate(file, basePath, mix='A', c=0, s=0.1, tool='wgsim'):
     mix = readMixture(file, mix)
+
+    print basePath
+
 
     for f in os.listdir(basePath):
         key = f.split('.')[0]
@@ -90,8 +93,8 @@ def simulate(file, basePath, mix='A', tool='wgsim', c=0, s=0.10):
                     o1 = path + '/' + key + '.R1.fastq'
                     o2 = path + '/' + key + '.R2.fastq'                    
 
-                    # Command: wgsim -e 0 -d 400 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq            
-                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + ' -d 400 -N ' + str(con) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                    # Command: wgsim -e 0 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq            
+                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
 
                     print cmd
                     os.system(cmd)
@@ -144,25 +147,21 @@ if __name__ == '__main__':
             simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B')
             os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'META'):
-        split('../data/meta/META.ref.fa', 'META_Simulation_A/seqs/')
-        split('../data/meta/META.ref.fa', 'META_Simulation_B/seqs/')
-        
-        # Generate simulation for mixture A (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.mix.csv', 'META_Simulation_A/seqs/', 'META_Simulation_A/reads/', 'A', 0, 0.05)
-        
-        # Generate simulation for mixture B (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.mix.csv', 'META_Simulation_B/seqs/', 'META_Simulation_B/reads/', 'B', 0, 0.05)
+        split('../data/meta/META.v1.tab.fa', 'META_A/')
+        split('../data/meta/META.v1.tab.fa', 'META_B/')
 
-        #os.system('velveth A 31 -fastq -shortPaired META_Simulation_A/reads/simulated_1.fastq META_Simulation_A/reads/simulated_2.fastq')
+        # Generate simulation for mixture A (5% of the origianl concentration to save time)
+        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 2)
+
+        # Generate simulation for mixture B (5% of the origianl concentration to save time)
+        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 2)
+
+        #os.system('velveth A 31 -fastq -shortPaired META_A/simulated_1.fastq META_A/simulated_2.fastq')
         #os.system('velvetg A')
-        #os.system('velvetg A -exp_cov auto')
-        #os.system('meta-velvetg A')
         #os.system('blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl')
 
-        #os.system('velveth B 21 -fastq -shortPaired META_Simulation_B/reads/simulated_1.fastq META_Simulation_B/reads/simulated_2.fastq')    
+        #os.system('velveth B 31 -fastq -shortPaired META_B/simulated_1.fastq META_B/simulated_2.fastq')    
         #os.system('velvetg B')
-        #os.system('velvetg B -exp_cov auto')
-        #os.system('meta-velvetg A')        
         #os.system('blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl')
     else:
         print_usage()
