@@ -19,7 +19,7 @@ data  = [ 'data/manual.txt',
 
            # ---------- RNA ----------
 
-          'data/rna/r_manual.txt',
+          'data/rna/RNA.usage.txt',
           'data/rna/RNA.v1.bed',
           'data/rna/RNA.v1.gtf',
           'data/rna/RNA.v4.1.mix',
@@ -27,7 +27,7 @@ data  = [ 'data/manual.txt',
 
            # ---------- META ----------
 
-          'data/meta/m_manual.txt',
+          'data/meta/META.usage.txt',
           'data/meta/META.v1.tab.fa',
           'data/meta/META.v1.tab.fa',
           'data/meta/META.v6.mix.csv',
@@ -35,9 +35,10 @@ data  = [ 'data/manual.txt',
 
            # ---------- DNA ----------
 
-          'data/dna/d_manual.txt',
+          'data/dna/DNA.usage.txt',
           'data/dna/DNA.v3.mix.csv',
           'data/dna/DNA.variant.bed',
+          'data/dna/DNA.MixA.v1.vcf',
         ]
 tests = [ ]
 
