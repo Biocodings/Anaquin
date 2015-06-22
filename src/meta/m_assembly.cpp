@@ -67,7 +67,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
             const auto known = align.seqA.abund();
             
             /*
-             * Calculate measured concentration for this metaquin. Average out the coverage for each aligned contig.
+             * Measure concentration for this metaquin. Average out the coverage for each aligned contig.
              */
             
             Concentration measured = 0;

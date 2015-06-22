@@ -58,7 +58,7 @@ TEST_CASE("Meta_Single_Filter")
     std::string output, error;
     generateFilter("test.filter", std::vector<std::string> { "M11_G" });
     
-    const int status = parse_options("meta -assembly tests/data/meta/A/contigs.fa -f test.filter -psl tests/data/meta/B/align.psl", output, error);
+    const int status = parse_options("meta -assembly tests/data/meta/A/contigs.fa -f test.filter -psl tests/data/meta/A/align.psl", output, error);
 
     REQUIRE(status == 0);
     REQUIRE(output.find("Metagenomics") != std::string::npos);
