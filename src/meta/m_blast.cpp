@@ -27,9 +27,9 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
     
     std::map<MetaQuinID, MetaAlignment> m;
 
-    const auto &mixB = Standard::instance().m_seq_B;
+    const auto &mixB = Standard::instance().m_seqs_B;
     
-    for (const auto &seq : Standard::instance().m_seq_A)
+    for (const auto &seq : Standard::instance().m_seqs_A)
     {
         m[seq.first].id   = seq.first;
         m[seq.first].seqA = seq.second;
