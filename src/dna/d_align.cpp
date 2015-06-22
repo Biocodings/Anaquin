@@ -19,7 +19,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
 
             if (classify(stats.p.m, align, [&](const Alignment &)
                          {
-                             matched = find(s.d_annot, align, MatchRule::Contains);
+                             matched = find(s.d_model, align, MatchRule::Contains);
                              
                              if (!matched)
                              {
@@ -29,7 +29,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
                              {
                                  return Ignore;
                              }
-                             
+
                              return Positive;
                          }))
             {

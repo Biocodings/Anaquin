@@ -274,20 +274,35 @@ static void readFilters(const std::string &file)
         {
             case CMD_RNA:
             {
+                assert(s.r_seqs_A.size() == s.r_seqs_B.size());
+
+                if (!s.r_seqs_A.count(line))
+                {
+                    throw InvalidFilterError("Unknown sequin for RNA: " + line);
+                }
+                
+                _filters.insert(line);
                 break;
             }
 
             case CMD_DNA:
             {
+                assert(s.d_seqs_A.size() == s.d_seqs_B.size());
+                
+                if (!s.d_seqs_A.count(line))
+                {
+                    throw InvalidFilterError("Unknown sequin for DNA: " + line);
+                }
+                
+                _filters.insert(line);
                 break;
             }
 
             case CMD_META:
             {
-                // The sequins must match other than the specific mixture
-                assert(s.m_seq_A.size() == s.m_seq_B.size());
+                assert(s.m_seqs_A.size() == s.m_seqs_B.size());
 
-                if (!s.m_seq_A.count(line))
+                if (!s.m_seqs_A.count(line))
                 {
                     throw InvalidFilterError("Unknown sequin for metagenomics: " + line);
                 }
@@ -538,6 +553,9 @@ void parse(int argc, char ** argv)
             case CMD_DNA:
             {
                 std::cout << "DNA analysis" << std::endl;
+                
+                applyCustom(std::bind(&Standard::dna_mix, &s, std::placeholders::_1),
+                            std::bind(&Standard::dna_mod, &s, std::placeholders::_1));
                 
                 if (_mode != MODE_SEQUINS  &&
                     _mode != MODE_SEQUENCE &&

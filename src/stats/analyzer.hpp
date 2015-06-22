@@ -68,7 +68,7 @@ namespace Spike
     {
         static SequinCounter counterSequins()
         {
-            return counter<std::vector<BedFeature>, SequinID>(Standard::instance().d_annot);
+            return counter<std::vector<BedFeature>, SequinID>(Standard::instance().d_model);
         }
     };
 
@@ -242,7 +242,7 @@ namespace Spike
             
             for (const auto &id : z)
             {
-                if (st.m_seq_A.count(id))
+                if (st.m_seqs_A.count(id))
                 {
                     c.push_back("black");
                 }

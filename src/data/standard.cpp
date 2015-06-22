@@ -35,6 +35,9 @@ extern std::string MetaDataBed();
 extern std::string MetaDataMix();
 extern std::string MetaDataTab();
 
+extern std::string DNADataBed();
+extern std::string DNADataMix();
+
 using namespace Spike;
 
 template <typename Iter> BasePair countLocus(const Iter &iter)
@@ -156,17 +159,27 @@ Standard::Standard()
     meta();
 }
 
+void Standard::dna_mod(const Reader &r)
+{
+    ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
+    {
+        d_model.push_back(f);
+    });
+
+    assert(!d_model.empty());
+}
+
+void Standard::dna_mix(const Reader &r)
+{
+    // Parse the mixture file
+    parseMix(r, d_seqs_A, d_seqs_B, d_seqs_bA, d_seqs_bB);
+}
+
 void Standard::meta_mod(const Reader &r)
 {
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
         m_model.push_back(f);
-                         
-        if (m_seq_A.count(f.name))
-        {
-            m_seq_A.at(f.name).l = f.l;
-            m_seq_B.at(f.name).l = f.l;
-        }
     });
 
     assert(!m_model.empty());
@@ -174,13 +187,14 @@ void Standard::meta_mod(const Reader &r)
 
 void Standard::meta_mix(const Reader &r)
 {
-    m_seq_A.clear();
-    m_seq_B.clear();
+    m_seqs_A.clear();
+    m_seqs_B.clear();
     
     // Parse a mixture file 
-    parseMix(r, m_seq_A, m_seq_B, m_seq_bA, m_seq_bB);
+    parseMix(r, m_seqs_A, m_seqs_B, m_seqs_bA, m_seqs_bB);
 
-    assert(!m_seq_A.empty() && !m_seq_B.empty());
+    assert(!m_seqs_A.empty()  && !m_seqs_B.empty());
+    assert(!m_seqs_bA.empty() && !m_seqs_bB.empty());
 }
 
 void Standard::meta()
@@ -194,27 +208,8 @@ void Standard::meta()
 
 void Standard::dna()
 {
-//    // Parse variations for reference
-//    ParserVCF::parse(Reader(d_vcf_f(), DataMode::String), [&](const VCFVariant &v, const ParserProgress &)
-//    {
-//        d_vars[v.l] = v;
-//    });
-//
-//    // Parse mixtures
-//    parseMix(d_mix_f(), d_seq_A, d_seq_B, d_pair_A, d_pair_B);
-//    
-//    // Parse annotation
-//    ParserBED::parse(Reader(d_bed_f(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
-//    {
-//        d_annot.push_back(f);
-//        d_seq_A.at(f.name).l    = d_seq_B.at(f.name).l    = f.l;
-//        d_pair_A.at(f.name).r.l = d_pair_A.at(f.name).v.l = f.l;
-//        d_pair_B.at(f.name).r.l = d_pair_B.at(f.name).v.l = f.l;
-//    });
-//
-//    assert(!d_annot.empty()  && !d_vars.empty());
-//    assert(!d_seq_A.empty()  && !d_seq_A.empty());
-//    assert(!d_pair_A.empty() && !d_pair_B.empty());
+    dna_mod(Reader(DNADataBed(), DataMode::String));
+    dna_mix(Reader(DNADataMix(), DataMode::String));
 }
 
 void Standard::rna_mod(const Reader &r)

@@ -34,7 +34,7 @@ TEST_CASE("Meta_Diffs_Empty_Align")
     std::string output, error;
 
     // Typical command for differential with alignments
-    const int s = parse_options("meta -diffs tests/data/meta/e1/contigs_A.fa tests/data/meta/e1/contigs_B.fa -psl tests/data/meta/empty.psl tests/data/meta/empty.psl", output, error);
+    const int s = parse_options("meta -diffs tests/data/meta/A/contigs.fa tests/data/meta/B/contigs.fa -psl tests/data/meta/empty.psl tests/data/meta/empty.psl", output, error);
 
     REQUIRE(s == 1);
     REQUIRE(error.find("Empty file:") != std::string::npos);
@@ -58,7 +58,7 @@ TEST_CASE("Meta_Single_Filter")
     std::string output, error;
     generateFilter("test.filter", std::vector<std::string> { "M11_G" });
     
-    const int status = parse_options("meta -assembly tests/data/meta/e1/contigs_A.fa -f test.filter -psl tests/data/meta/e1/align_A.psl", output, error);
+    const int status = parse_options("meta -assembly tests/data/meta/A/contigs.fa -f test.filter -psl tests/data/meta/B/align.psl", output, error);
 
     REQUIRE(status == 0);
     REQUIRE(output.find("Metagenomics") != std::string::npos);

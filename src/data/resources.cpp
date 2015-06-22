@@ -32,8 +32,8 @@
  */
 
 #include "resources/d_manual.txt"
-#include "resources/DNA.v0.vcf"
-#include "resources/DNA.v0.chrT.fa"
+#include "resources/DNA.v3.mix.csv"
+#include "resources/DNA.variant.bed"
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
@@ -114,22 +114,12 @@ std::string RNADataMix()
  * DNA Resources
  */
 
-std::string DNADataTab()
-{
-    return "";
-}
-
 std::string DNADataMix()
 {
-    return "";
+    return ToString(data_dna_DNA_v3_mix_csv);
 }
 
 std::string DNADataBed()
 {
-    return "";
-}
-
-std::string DNADataVCF()
-{
-    return ToString(data_dna_DNA_v0_vcf);
+    return ToString(data_dna_DNA_variant_bed);
 }
