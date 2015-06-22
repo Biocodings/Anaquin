@@ -99,15 +99,15 @@ void ParserVCF::parse(const Reader &r, Callback c)
 
             if (v.r.size() == v.a.size() && v.r.size() == 1)
             {
-                v.m = SNP;
+                v.type = SNP;
             }
             else if (v.r.size() > v.a.size())
             {
-                v.m = Deletion;
+                v.type = Deletion;
             }
             else
             {
-                v.m = Insertion;
+                v.type = Insertion;
             }
 
             Tokens::split(fields[Format_Data + i], ":", t);

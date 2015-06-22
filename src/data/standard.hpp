@@ -26,12 +26,12 @@ namespace Spike
         
         // The reference position, with the 1st base having position 1
         Locus l;
-        
+
         // Type of the mutation
-        Mutation m;
+        Mutation type;
         
         Sequence r, a;
-        
+
         Genotype gt;
         
         // Allelle frequency

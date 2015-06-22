@@ -161,11 +161,31 @@ Standard::Standard()
 
 void Standard::dna_mod(const Reader &r)
 {
+    std::vector<std::string> tokens;
+    
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
         d_model.push_back(f);
+        
+        // Eg: D.1.1.R_G/GACGTT
+        Tokens::split(f.name, "_", tokens);
+
+        assert(tokens.size() == 2);
+
+        // Eg: G/GACTCTCATTC
+        Tokens::split(std::string(tokens[1]), "/", tokens);
+
+        assert(tokens.size() == 2);
+        
+        Variation v;
+    
+        v.id   = tokens[0];
+        v.type = ParserVCF::strToSNP(tokens[0], tokens[1]);
+        
+        d_vars[v.l = f.l] = v;
     });
 
+    assert(!d_vars.empty());
     assert(!d_model.empty());
 }
 
