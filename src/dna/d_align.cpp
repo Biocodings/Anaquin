@@ -1,5 +1,5 @@
-#include "stats/expression.hpp"
 #include "dna/d_align.hpp"
+#include "stats/expression.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;
@@ -15,23 +15,19 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
 
         if (align.id == s.id)
         {
-            stats.n_chromo++;
+            stats.n_chrT++;
 
             if (classify(stats.p.m, align, [&](const Alignment &)
-                         {
-                             matched = find(s.d_model, align, MatchRule::Contains);
-                             
-                             if (!matched)
-                             {
-                                 return Negative;
-                             }
-                             else if (options.filters.count(matched->id))
-                             {
-                                 return Ignore;
-                             }
+            {
+                matched = find(s.d_model, align, MatchRule::Contains);
 
-                             return Positive;
-                         }))
+                if (options.filters.count(matched->id))
+                {
+                    return Ignore;
+                }
+                
+                return matched ? Positive : Negative;
+            }))
             {
                 stats.c.at(matched->name)++;
             }
@@ -51,7 +47,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
      */
 
     // The total number of reads aligned
-    const auto n = stats.n_chromo;
+    const auto n = stats.n_chrT;
 
     // Known concentration for the given mixture
     const auto &m = s.d_seq(options.mix);
@@ -82,10 +78,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
     // Calculate for the sensitivity
     stats.p.s = Expression::analyze(stats.c, s.d_seq(options.mix));
 
-    //AnalyzeReporter::report("dalign.stats", stats, stats.p.m, stats.p.s, stats.c, options.writer);
-
-    // Generate a R script for plotting relative abundance
-    //AnalyzeReporter::script("dalign.R", stats, options.writer);
-
+    AnalyzeReporter::report("dalign.stats", stats.p, stats.c, options.writer);
+    
 	return stats;
 }
