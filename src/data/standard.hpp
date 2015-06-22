@@ -115,14 +115,11 @@ namespace Spike
 
             std::map<Locus, Variation> d_vars;
 
+            // Sequins for mixture A and B
+            SequinMap d_seq_A, d_seq_B;
+
             // DNA annotation
             std::vector<BedFeature> d_annot;
-
-            // For each DNA sequin
-            SequinMap d_seq_A, d_seq_B;
-        
-            // For each DNA base
-            BaseMap d_seqs_bA, d_seqs_bB;
 
             /*
              * Metagenomic data
@@ -131,7 +128,7 @@ namespace Spike
             void meta_mod(const Reader &);
             void meta_mix(const Reader &);
 
-            // For each meta sequin
+            // Sequins for mixture A and B
             SequinMap m_seq_A, m_seq_B;
 
             // For each meta base

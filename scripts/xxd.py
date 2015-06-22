@@ -36,8 +36,8 @@ data  = [ 'data/manual.txt',
            # ---------- DNA ----------
 
           'data/dna/d_manual.txt',
-          'data/dna/DNA.v0.chrT.fa', # Reference for the chromosome
-          'data/dna/DNA.v0.vcf',     # Reference structural variations
+          'data/dna/DNA.v3.mix.csv',
+          'data/dna/DNA.variant.bed',
         ]
 tests = [ ]
 
