@@ -151,10 +151,10 @@ if __name__ == '__main__':
         split('../data/meta/META.v1.tab.fa', 'META_B/')
 
         # Generate simulation for mixture A (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 2)
+        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 1)
 
         # Generate simulation for mixture B (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 2)
+        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 1)
 
         #os.system('velveth A 31 -fastq -shortPaired META_A/simulated_1.fastq META_A/simulated_2.fastq')
         #os.system('velvetg A')
