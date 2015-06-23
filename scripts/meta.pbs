@@ -1,0 +1,7 @@
+velveth A 31 -fastq -shortPaired META_A/simulated_1.fastq META_A/simulated_2.fastq
+velvetg A
+blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl
+
+velveth B 31 -fastq -shortPaired META_B/simulated_1.fastq META_B/simulated_2.fastq
+velvetg B
+blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl
