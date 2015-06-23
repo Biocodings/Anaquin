@@ -84,7 +84,7 @@ def simulate(file, basePath, mix='A', c=0, s=0.1, tool='wgsim'):
             con = int(con)
 
             # Don't bother if the abundance is too low
-            if (con > 1 and con < 50000):
+            if (con > 1):
                 print 'Generating: ' + str(con)
 
                 # Simulate reads from a given sequin
