@@ -94,7 +94,7 @@ def simulate(file, basePath, mix='A', c=0, s=0.1, tool='wgsim'):
                     o2 = path + '/' + key + '.R2.fastq'                    
 
                     # Command: wgsim -e 0 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq            
-                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + i + ' ' + o1 + ' ' + o2
+                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + ' ' + i + ' ' + o1 + ' ' + o2
 
                     print cmd
                     os.system(cmd)
@@ -155,13 +155,5 @@ if __name__ == '__main__':
 
         # Generate simulation for mixture B (5% of the origianl concentration to save time)
         simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 0.5)
-
-        #os.system('velveth A 31 -fastq -shortPaired META_A/simulated_1.fastq META_A/simulated_2.fastq')
-        #os.system('velvetg A')
-        #os.system('blat ../data/meta/META.ref.fa A/contigs.fa A/align.psl')
-
-        #os.system('velveth B 31 -fastq -shortPaired META_B/simulated_1.fastq META_B/simulated_2.fastq')    
-        #os.system('velvetg B')
-        #os.system('blat ../data/meta/META.ref.fa B/contigs.fa B/align.psl')
     else:
         print_usage()
