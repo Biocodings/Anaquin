@@ -53,11 +53,14 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
     return n;
 }
 
+typedef std::set<std::string> MixtureFilter;
+
 static void parseMix(const Reader &r,
                      Standard::SequinMap &a,
                      Standard::SequinMap &b,
                      Standard::BaseMap   &ba,
-                     Standard::BaseMap   &bb)
+                     Standard::BaseMap   &bb,
+                     const MixtureFilter &filters)
 {
     a.clear();
     b.clear();
@@ -81,7 +84,7 @@ static void parseMix(const Reader &r,
         
         // Make sure there's no duplicate in the mixture file
         assert(sequinIDs.count(fields[0]) == 0);
-
+        
         sequinIDs.insert(s.id = fields[0]);
 
         // Base ID is simply the ID without the last part
@@ -193,7 +196,7 @@ void Standard::dna_mod(const Reader &r)
 void Standard::dna_mix(const Reader &r)
 {
     // Parse the mixture file
-    parseMix(r, d_seqs_A, d_seqs_B, d_seqs_bA, d_seqs_bB);
+    parseMix(r, d_seqs_A, d_seqs_B, d_seqs_bA, d_seqs_bB, MixtureFilter());
 }
 
 void Standard::meta_mod(const Reader &r)
@@ -212,7 +215,7 @@ void Standard::meta_mix(const Reader &r)
     m_seqs_B.clear();
     
     // Parse a mixture file 
-    parseMix(r, m_seqs_A, m_seqs_B, m_seqs_bA, m_seqs_bB);
+    parseMix(r, m_seqs_A, m_seqs_B, m_seqs_bA, m_seqs_bB, MixtureFilter());
 
     assert(!m_seqs_A.empty()  && !m_seqs_B.empty());
     assert(!m_seqs_bA.empty() && !m_seqs_bB.empty());
@@ -254,6 +257,12 @@ void Standard::rna_mod(const Reader &r)
 
     ParserGTF::parse(Reader(RNADataGTF(), DataMode::String), [&](const Feature &f, const ParserProgress &)
     {
+        // TODO: Please fix me!
+        if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
+        {
+            return; // TODO!
+        }
+
         assert(!f.tID.empty() && !f.geneID.empty());
         
         l.end   = std::max(l.end, f.l.end);
@@ -370,7 +379,7 @@ void Standard::rna_mod(const Reader &r)
 void Standard::rna_mix(const Reader &r)
 {
     // Parse the mixture file
-    parseMix(r, r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
+    parseMix(r, r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB, MixtureFilter());
 
     /*
      * Merging overlapping regions for the exons
