@@ -76,14 +76,14 @@ static void parseMix(const Reader &r,
         {
             return;
         }
-
+        
         Sequin s;
         
         // Make sure there's no duplicate in the mixture file
         assert(sequinIDs.count(fields[0]) == 0);
 
         sequinIDs.insert(s.id = fields[0]);
-        
+
         // Base ID is simply the ID without the last part
         s.baseID = s.id.substr(0, s.id.find_last_of("_"));
 
