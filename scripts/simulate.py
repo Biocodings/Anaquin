@@ -84,7 +84,7 @@ def simulate(file, basePath, mix='A', c=0, s=0.1, tool='wgsim'):
             con = int(con)
 
             # Don't bother if the abundance is too low
-            if (con > 1):
+            if (con > 1 and con < 50000):
                 print 'Generating: ' + str(con)
 
                 # Simulate reads from a given sequin
@@ -94,7 +94,7 @@ def simulate(file, basePath, mix='A', c=0, s=0.1, tool='wgsim'):
                     o2 = path + '/' + key + '.R2.fastq'                    
 
                     # Command: wgsim -e 0 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq            
-                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + ' -1 101 -2 101 ' + i + ' ' + o1 + ' ' + o2
+                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + i + ' ' + o1 + ' ' + o2
 
                     print cmd
                     os.system(cmd)
@@ -139,22 +139,22 @@ if __name__ == '__main__':
 
         for i in range(0,len(a)):
             split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')
-            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A')
+            simulate('rna/mixture.csv', 'RNA_Simulation/', 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
         for i in range(0,len(b)):
             split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
-            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B')
+            simulate('rna/mixture.csv', 'RNA_Simulation/', 'B')
             os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'META'):
         split('../data/meta/META.v1.tab.fa', 'META_A/')
         split('../data/meta/META.v1.tab.fa', 'META_B/')
 
         # Generate simulation for mixture A (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 1)
+        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 0.5)
 
         # Generate simulation for mixture B (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 1)
+        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 0.5)
 
         #os.system('velveth A 31 -fastq -shortPaired META_A/simulated_1.fastq META_A/simulated_2.fastq')
         #os.system('velvetg A')
