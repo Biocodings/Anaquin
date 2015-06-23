@@ -29,6 +29,14 @@ DVariant::Stats DVariant::analyze(const std::string &file, const Options &option
                 return Negative;
             }
 
+            assert(s.d_seqs_bA.count(known.id));
+            
+            const auto &base = s.d_seqs_bA.at(known.id);
+            
+            stats.x.push_back(base.alleleFreq());
+            stats.y.push_back(var.dp);
+            stats.z.push_back(known.id);
+  
             return Positive;
         }))
         {
@@ -43,10 +51,10 @@ DVariant::Stats DVariant::analyze(const std::string &file, const Options &option
      */
     
     stats.covered = std::accumulate(stats.c.begin(), stats.c.end(), 0,
-                                    [&](int sum, const std::pair<SequinID, Counts> &p)
-                                    {
-                                        return sum + (p.second ? 1 : 0);
-                                    });
+            [&](int sum, const std::pair<SequinID, Counts> &p)
+            {
+                return sum + (p.second ? 1 : 0);
+            });
 
     // The proportion of genetic variation with alignment coverage
     stats.covered = stats.covered / s.d_vars.size();
@@ -56,6 +64,16 @@ DVariant::Stats DVariant::analyze(const std::string &file, const Options &option
     // Measure of variant detection independent to sequencing depth or coverage
     stats.efficiency = stats.m.sn() / stats.covered;
     
+    /*
+     * Created a script for allele frequency
+     */
+
+    // Fit a linear model on allele frequency
+    stats.linear();
+    
+    // Create a script for allele frequency
+    AnalyzeReporter::script("dna_allele.R", stats.x, stats.y, stats.z, "Allele Frequence", 10.0, options.writer);
+
     /*
      * Write out results
      */

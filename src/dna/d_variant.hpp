@@ -12,7 +12,7 @@ namespace Spike
             // Empty Implementation
         };
 
-        struct Stats
+        struct Stats : public ModelStats
         {
             // Overall performance
             Confusion m;

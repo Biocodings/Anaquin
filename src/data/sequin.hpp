@@ -54,6 +54,26 @@ namespace Spike
 
         std::map<TypeID, Sequin> sequins;
     };
+    
+    struct VariantBase : public Base
+    {
+        inline double alleleFreq() const
+        {
+            assert(sequins.size() == 2);
+            
+            const auto ref = sequins.begin()->first;
+            const auto var = sequins.rbegin()->first;
+
+            // Abundance for the reference
+            const auto r = sequins.at(ref).abund();
+            
+            // Abundance for the variant
+            const auto v = sequins.at(var).abund();
+            
+            // Abundance ratio of reference to variant DNA standard
+            return r / (r + v);
+        }
+    };
 }
 
 #endif

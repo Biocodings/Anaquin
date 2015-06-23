@@ -35,8 +35,8 @@ namespace Spike
         Genotype gt;
         
         // Allelle frequency
-        Counts af;
-        
+        double af;
+
         // Allele count in genotypes
         Counts ac;
         
@@ -59,6 +59,8 @@ namespace Spike
                 return s;
             }
 
+            void check() const;
+        
             inline const SequinMap& r_sequin(Mixture mix) const
             {
                 return mix == MixA ? r_seqs_A : r_seqs_B;
@@ -85,9 +87,9 @@ namespace Spike
             // Genes for mixture A and B
             BaseMap r_seqs_gA, r_seqs_gB;
 
-            // Unique set of sequin names
-            std::set<SequinID> r_sequinIDs;
-        
+            // Sequin IDs for RNA standards
+            std::set<SequinID> r_seqIDs;
+
             // Sequins and their positions
             std::map<SequinID, Locus> r_sequins;
 
@@ -118,15 +120,17 @@ namespace Spike
 
             // Sequins for mixture A and B
             SequinMap d_seqs_A, d_seqs_B;
-        
-            // Pairs for mixture A and B
-            BaseMap d_seqs_bA, d_seqs_bB;
+
+            typedef std::map<BaseID, VariantBase> VariantBaseMap;
+
+            // Bases for mixture A and B
+            VariantBaseMap d_seqs_bA, d_seqs_bB;
 
             // Indexed by the position
             std::map<Locus, Variation> d_vars;
 
-            // Unique set of sequin names
-            std::set<SequinID> d_sequinIDs;
+            // Sequin IDs for DNA standards
+            std::set<SequinID> d_seqIDs;
 
             /*
              * Metagenomic data
@@ -140,6 +144,9 @@ namespace Spike
 
             // Pairs for mixture A and B
             BaseMap m_seqs_bA, m_seqs_bB;
+
+            // Sequin IDs for metagenomic standards
+            std::set<SequinID> m_seqIDs;
 
             // Metagenomic annotation
             std::vector<BedFeature> m_model;

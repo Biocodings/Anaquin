@@ -55,12 +55,12 @@ template <typename Iter> BasePair countLocus(const Iter &iter)
 
 typedef std::set<std::string> MixtureFilter;
 
-static void parseMix(const Reader &r,
-                     Standard::SequinMap &a,
-                     Standard::SequinMap &b,
-                     Standard::BaseMap   &ba,
-                     Standard::BaseMap   &bb,
-                     const MixtureFilter &filters)
+template <typename SequinMap, typename BaseMap> void parseMix(const Reader &r,
+                                                              SequinMap &a,
+                                                              SequinMap &b,
+                                                              BaseMap   &ba,
+                                                              BaseMap   &bb,
+                                                              const MixtureFilter &filters)
 {
     a.clear();
     b.clear();
@@ -120,10 +120,10 @@ static void parseMix(const Reader &r,
         const auto &typeIDs = baseID.second;
         assert(typeIDs.size() >= 1);
         
-        auto f = [&](const Standard::SequinMap &m, Standard::BaseMap &bm)
+        auto f = [&](const SequinMap &m, BaseMap &bm)
         {
-            Base base;
-            
+            typename BaseMap::mapped_type base;
+
             for (auto iter = typeIDs.begin(); iter != typeIDs.end(); iter++)
             {
                 // Reconstruct the sequinID
@@ -161,6 +161,20 @@ Standard::Standard()
     rna();
     dna();
     meta();
+    
+    // Throw an exception if any inconsistency
+    check();
+}
+
+void Standard::check() const
+{
+    for (const auto &i : d_seqs_bA)
+    {
+        if (i.second.alleleFreq() == 0)
+        {
+            throw std::runtime_error("Zero allele frequency: " + i.first);
+        }
+    }
 }
 
 void Standard::dna_mod(const Reader &r)
@@ -184,7 +198,7 @@ void Standard::dna_mod(const Reader &r)
         Variation v;
 
         // Eg: D_1_10
-        d_sequinIDs.insert(v.id = id);
+        d_seqIDs.insert(v.id = id);
         
         // Eg: G/GACTCTCATTC
         Tokens::split(var, "/", tokens);
@@ -200,7 +214,7 @@ void Standard::dna_mod(const Reader &r)
     });
 
     assert(!d_vars.empty());
-    assert(d_vars.size() >= d_sequinIDs.size());
+    assert(d_vars.size() >= d_seqIDs.size());
 }
 
 void Standard::dna_mix(const Reader &r)
@@ -421,11 +435,11 @@ void Standard::rna_mix(const Reader &r)
             // Make sure it's not an empty range
             assert(i.second.l != Locus());
             
-            r_sequinIDs.insert(i.first);
+            r_seqIDs.insert(i.first);
         }
     }
 
-    assert(!r_sequinIDs.empty());
+    assert(!r_seqIDs.empty());
 }
 
 void Standard::rna()

@@ -68,7 +68,7 @@ namespace Spike
     {
         static SequinCounter counterSequins()
         {
-            return counter<std::set<SequinID>, SequinID>(Standard::instance().d_sequinIDs);
+            return counter<std::set<SequinID>, SequinID>(Standard::instance().d_seqIDs);
         }
     };
 
@@ -99,7 +99,7 @@ namespace Spike
 
             static SequinCounter sequinCounter()
             {
-                return counter<std::set<SequinID>, SequinID>(Standard::instance().r_sequinIDs);
+                return counter<std::set<SequinID>, SequinID>(Standard::instance().r_seqIDs);
             }
     };
 
@@ -232,24 +232,18 @@ namespace Spike
         {
             const auto scheme = AnalyzeReporter::defaultScheme();
 
-            /*
-             * Group sequins by their groups
-             */
-
             std::vector<ColorID> c;
 
-            const auto &st = Standard::instance();
-            
             for (const auto &id : z)
             {
-                if (st.m_seqs_A.count(id))
-                {
+                //if (st.m_seqs_A.count(id))
+                //{
                     c.push_back("black");
-                }
-                else
-                {
-                    throw std::runtime_error("Unknown sequin ID: " + id);
-                }
+                //}
+                //else
+                //{
+                //    throw std::runtime_error("Unknown sequin ID: " + id);
+                //}
             }
 
             writer->open(file);
