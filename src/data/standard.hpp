@@ -22,15 +22,15 @@ namespace Spike
 
     struct Variation
     {
-        ChromoID id;
+        SequinID id;
         
         // The reference position, with the 1st base having position 1
         Locus l;
 
         // Type of the mutation
         Mutation type;
-        
-        Sequence r, a;
+
+        Sequence ref, alt;
 
         Genotype gt;
         
@@ -116,16 +116,17 @@ namespace Spike
             void dna_mod(const Reader &);
             void dna_mix(const Reader &);
 
-            std::map<Locus, Variation> d_vars;
-
             // Sequins for mixture A and B
             SequinMap d_seqs_A, d_seqs_B;
-
+        
             // Pairs for mixture A and B
             BaseMap d_seqs_bA, d_seqs_bB;
 
-            // DNA annotation
-            std::vector<BedFeature> d_model;
+            // Indexed by the position
+            std::map<Locus, Variation> d_vars;
+
+            // Unique set of sequin names
+            std::set<SequinID> d_sequinIDs;
 
             /*
              * Metagenomic data

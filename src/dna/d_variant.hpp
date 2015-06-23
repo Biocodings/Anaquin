@@ -5,15 +5,6 @@
 
 namespace Spike
 {
-    struct VariantStats
-    {
-        // Overall performance
-        Performance p;
-
-        // The proportion of variations with alignment coverage
-        double covered;
-    };
-
     struct DVariant
     {
         struct Options : public SingleMixtureOptions
@@ -21,7 +12,21 @@ namespace Spike
             // Empty Implementation
         };
 
-        static VariantStats analyze(const std::string &file, const Options &options = Options());
+        struct Stats
+        {
+            // Overall performance
+            Confusion m;
+
+            // The proportion of variations with alignment coverage
+            double covered;
+
+            // Measure of variant detection independent to sequencing depth or coverage
+            double efficiency;
+
+            SequinCounter c = DAnalyzer::counterSequins();
+        };
+
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 

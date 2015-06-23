@@ -39,16 +39,17 @@ namespace Spike
 
                 if (counts)
                 {
-                    if (!m.count(iter->first))
+                    const auto &id = iter->first;
+
+                    if (!m.count(id))
                     {
                         continue;
                     }
                     
                     if (counts < s.counts || (counts == s.counts && m.at(iter->first).abund() < s.abund))
                     {
-                        s.id     = iter->first;
-                        s.counts = counts;
-                        
+                        s.id     = id;
+                        s.counts = counts;                        
                         s.abund  = m.at(s.id).abund();
                     }
                 }

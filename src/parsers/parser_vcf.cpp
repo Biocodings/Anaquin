@@ -59,7 +59,7 @@ void ParserVCF::parse(const Reader &r, Callback c)
          * to the position of the first base in the string.
          */
 
-        v.r = fields[Ref];
+        v.ref = fields[Ref];
 
         /*
          * Additional information
@@ -95,13 +95,13 @@ void ParserVCF::parse(const Reader &r, Callback c)
 
         for (auto i = 0; i < alts.size(); i++)
         {
-            v.a = alts[i];
+            v.alt = alts[i];
 
-            if (v.r.size() == v.a.size() && v.r.size() == 1)
+            if (v.ref.size() == v.alt.size() && v.ref.size() == 1)
             {
                 v.type = SNP;
             }
-            else if (v.r.size() > v.a.size())
+            else if (v.ref.size() > v.alt.size())
             {
                 v.type = Deletion;
             }

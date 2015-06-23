@@ -11,7 +11,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
-        const BedFeature *matched;
+        const Variation *matched;
 
         if (align.id == s.id)
         {
@@ -19,7 +19,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
 
             if (classify(stats.p.m, align, [&](const Alignment &)
             {
-                matched = find(s.d_model, align, MatchRule::Contains);
+                matched = findMap(s.d_vars, align, MatchRule::Contains);
 
                 if (options.filters.count(matched->id))
                 {
@@ -29,7 +29,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
                 return matched ? Positive : Negative;
             }))
             {
-                stats.c.at(matched->name)++;
+                stats.c.at(matched->id)++;
             }
         }
         else

@@ -4,98 +4,77 @@
 
 using namespace Spike;
 
-VariantStats DVariant::analyze(const std::string &file, const Options &options)
+DVariant::Stats DVariant::analyze(const std::string &file, const Options &options)
 {
-    VariantStats stats;
+    DVariant::Stats stats;
     const auto &s = Standard::instance();
 
-    // Create a counter for each known variant
-    auto c = DAnalyzer::counterSequins();
-
-    Variation r;
-
-    ParserVCF::parse(file, [&](const VCFVariant &q, const ParserProgress &)
+    ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)
     {
-        if (classify(stats.p.m, q, [&](const VCFVariant &)
+        Variation known;
+
+        if (classify(stats.m, var, [&](const VCFVariant &)
         {
-            // Can we find the known variant?
-            if (!s.d_vars.count(q.l))
+            // Can we find this variant?
+            if (!s.d_vars.count(var.l))
             {
                 return Negative;
             }
 
-            r = s.d_vars.at(q.l);
+            known = s.d_vars.at(var.l);
 
-           
-            
-           
-            bool f_found = false;
-            
-            for (const auto &var: s.d_vars)
+            // Does the variant match with the meta?
+            if (known.type != var.type || known.alt != var.alt || known.ref != var.ref)
             {
-                if (var.first.contains(r.l))
-                {
-                    f_found = true;
-                    break;
-                }
-            }
-            
-            
-            
-            if (!f_found)
-            {
-                std::cout << "????" << std::endl;
-            }
-            
-            /*
-            if (options.filters.count(tt.id))
-            {
-                return Ignore;
+                return Negative;
             }
 
-            c.at(tt.name)++;
-*/
-            //stats.p_l.m.tp()++;
-            
-            // Does the alternative allele match with the reference?
-            const bool match_a  = (q.a == r.a);
-            
-            // Does the reference allele match with the reference?
-            const bool match_r  = (q.r == r.r);
-            
-            // Does the genotype match with the reference?
-            const bool match_gt = (q.gt == r.gt);
-            
-            // Does the allele frequency? One would expect to match for a perfect experiment.
-            //const bool match_af = (q.af == r.af);
-            
-            //if (match_gt)           { stats.p_gt.m.tp()++; }
-            //if (match_af)           { stats.p_af.m.tp()++; }
-            //if (match_a && match_r) { stats.p_al.m.tp()++; }
-            
-            return (match_a & match_r & match_gt ? Positive : Negative);
+            return Positive;
         }))
         {
-            c[r.id]++;
+            stats.c.at(known.id)++;
         }
     });
 
-    //stats.p.m.nr = stats.p_l.m.nr = stats.p_gt.m.nr = stats.p_af.m.nr = stats.p_al.m.nr = s.d_vars.size();
-    stats.p.m.nr = s.d_vars.size();
-
-    //assert(stats.p_l.m.tp()  >= stats.p.m.tp());
-    //assert(stats.p_gt.m.tp() >= stats.p.m.tp());
-    //assert(stats.p_af.m.tp() >= stats.p.m.tp());
-
-    // The structure depends on the mixture
-    //const auto seqs = s.r_pair(options.mix);
-
+    stats.m.nr = s.d_vars.size();
+    
     /*
-     * Calculate for the LOS
+     * Calculate the proportion of genetic variation with alignment coverage
+     */
+    
+    stats.covered = std::accumulate(stats.c.begin(), stats.c.end(), 0,
+                                    [&](int sum, const std::pair<SequinID, Counts> &p)
+                                    {
+                                        return sum + (p.second ? 1 : 0);
+                                    });
+
+    // The proportion of genetic variation with alignment coverage
+    stats.covered = stats.covered / s.d_vars.size();
+
+    assert(stats.covered >= 0 && stats.covered <= 1.0);
+
+    // Measure of variant detection independent to sequencing depth or coverage
+    stats.efficiency = stats.m.sn() / stats.covered;
+    
+    /*
+     * Write out results
      */
 
-    //stats.s = Expression::analyze(c, seqs);
-    //AnalyzeReporter::report("dalign_overall.stats", stats, stats.p.m, stats.p.s, c, options.writer);
+    const std::string format = "%1%\t%2%\t%3%";
+
+    options.writer->open("dna_variant.stats");
+    options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
+    options.writer->write((boost::format(format) % stats.m.sn()
+                                                 % stats.m.sp()
+                                                 % stats.covered).str());
+    options.writer->write("\n");
+    
+    for (const auto &p : stats.c)
+    {
+        options.writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+    }
+    
+    options.writer->close();
 
     return stats;
 }

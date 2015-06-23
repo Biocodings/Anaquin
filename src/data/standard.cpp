@@ -169,28 +169,38 @@ void Standard::dna_mod(const Reader &r)
     
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
-        d_model.push_back(f);
-        
-        // Eg: D.1.1.R_G/GACGTT
-        Tokens::split(f.name, "_", tokens);
+        // Eg: D_1_10_R.G/A
+        Tokens::split(f.name, ".", tokens);
 
+        // Eg: D_1_10_R and G/A
         assert(tokens.size() == 2);
 
         // Eg: G/GACTCTCATTC
-        Tokens::split(std::string(tokens[1]), "/", tokens);
+        const auto var = tokens[1];
 
-        assert(tokens.size() == 2);
+        // Eg: D_1_10
+        const auto id = tokens[0].substr(0, tokens[0].find_last_of("_"));
         
         Variation v;
-    
-        v.id   = tokens[0];
-        v.type = ParserVCF::strToSNP(tokens[0], tokens[1]);
+
+        // Eg: D_1_10
+        d_sequinIDs.insert(v.id = id);
         
+        // Eg: G/GACTCTCATTC
+        Tokens::split(var, "/", tokens);
+
+        // Eg: G and GACTCTCATTC
+        assert(tokens.size() == 2);
+        
+        v.type = ParserVCF::strToSNP(tokens[0], tokens[1]);
+        v.ref  = tokens[0];
+        v.alt  = tokens[1];
+
         d_vars[v.l = f.l] = v;
     });
 
     assert(!d_vars.empty());
-    assert(!d_model.empty());
+    assert(d_vars.size() >= d_sequinIDs.size());
 }
 
 void Standard::dna_mix(const Reader &r)

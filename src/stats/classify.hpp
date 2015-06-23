@@ -10,7 +10,7 @@ namespace Spike
     struct Confusion : public SS::Confusion
     {
         inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
-        
+
         inline Percentage sn() const
         {
             assert(nr && nr >= _tp);

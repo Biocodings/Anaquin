@@ -68,7 +68,7 @@ namespace Spike
     {
         static SequinCounter counterSequins()
         {
-            return counter<std::vector<BedFeature>, SequinID>(Standard::instance().d_model);
+            return counter<std::set<SequinID>, SequinID>(Standard::instance().d_sequinIDs);
         }
     };
 
