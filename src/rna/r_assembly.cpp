@@ -39,7 +39,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
     {
         // Don't bother unless the transcript is a sequin or it's been filtered
-        if (!stats.ce.count(f.tID) || options.filters.count(f.tID))
+        if (options.filters.count(f.tID))
         {
             return;
         }
@@ -48,6 +48,8 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
         {
             case Exon:
             {
+                const Feature *match;
+
                 q_exons.push_back(f);
                 q_exons_[f.tID].push_back(f);
 
@@ -57,10 +59,10 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pe.m, f, [&](const Feature &)
                 {
-                    return find(s.r_exons, f, Exact);
+                    return (match = find(s.r_exons, f, Exact));
                 }))
                 {
-                    stats.ce.at(f.tID)++;
+                    stats.ce.at(match->tID)++;
                 }
 
                 break;
@@ -68,17 +70,18 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
             case Transcript:
             {
+                const Sequin *match;
+
                 /*
                  * Classify at the transctipt level
                  */
 
                 if (classify(stats.pt.m, f, [&](const Feature &)
                 {
-                    // TODO: Fix this!!!
-                    return find_map(sequins, f, Exact);
+                    return (match = findMap(sequins, f, Exact));
                 }))
                 {
-                    stats.ct.at(f.tID)++;
+                    stats.ct.at(match->id)++;
                 }
 
                 break;

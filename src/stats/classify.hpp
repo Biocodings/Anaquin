@@ -74,7 +74,7 @@ namespace Spike
         Contains,
     };
 
-    template <typename Iter, typename T> const typename Iter::value_type * find(const Iter &iter, const T &t, MatchRule rule)
+    template <typename Iter, typename T> const typename Iter::value_type * find(const Iter &iter, const T &t,MatchRule rule)
     {
         for (const auto &i : iter)
         {
@@ -89,7 +89,8 @@ namespace Spike
         return NULL;
     }
 
-    template <typename Iter, typename T> bool find_map(const Iter &map, const T &t, MatchRule rule)
+    // Similar to find(), works on a std::map
+    template <typename Iter, typename T> const typename Iter::mapped_type * findMap(const Iter &map, const T &t, MatchRule rule)
     {
         for (const auto &i: map)
         {
@@ -97,11 +98,11 @@ namespace Spike
                                  (rule == Contains && i.second.l.contains(t.l));
             if (matched)
             {
-                return true;
+                return &i.second;
             }
         }
 
-        return false;
+        return NULL;
     }
 
     enum ClassifyResult
@@ -115,7 +116,8 @@ namespace Spike
     {
         const auto &s = Standard::instance();
 
-        if (t.id == s.id && s.l.contains(t.l))
+        //if (t.id == s.id && s.l.contains(t.l))
+        if (s.l.contains(t.l))
         {
             const auto r = c(t);
 
