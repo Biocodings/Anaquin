@@ -37,6 +37,7 @@ extern std::string MetaDataTab();
 
 extern std::string DNADataBed();
 extern std::string DNADataMix();
+extern std::string DNADataVCF();
 
 using namespace Spike;
 

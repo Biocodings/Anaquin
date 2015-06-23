@@ -7,11 +7,11 @@ TEST_CASE("DNAssembly_Contigs")
 {
     const auto r = Velvet::parse<DNAsssembly::Stats<Contig>, Contig>("tests/data/meta/A/contigs.fa");
     
-    REQUIRE(r.contigs.size() == 23299);
-    REQUIRE(r.N80 == 596);
-    REQUIRE(r.N50 == 634);
-    REQUIRE(r.N20 == 777);
-    REQUIRE(r.min == 506);
-    REQUIRE(r.max == 931);
-    REQUIRE(r.sum == 5300);
+    REQUIRE(r.contigs.size() == 453);
+    REQUIRE(r.N80 == 549);
+    REQUIRE(r.N50 == 649);
+    REQUIRE(r.N20 == 1994);
+    REQUIRE(r.min == 511);
+    REQUIRE(r.max == 1994);
+    REQUIRE(r.sum == 7805);
 }
