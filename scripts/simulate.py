@@ -151,9 +151,9 @@ if __name__ == '__main__':
         split('../data/meta/META.v1.tab.fa', 'META_B/')
 
         # Generate simulation for mixture A (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 0.5)
+        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 1.0)
 
         # Generate simulation for mixture B (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 0.5)
+        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 1.0)
     else:
         print_usage()
