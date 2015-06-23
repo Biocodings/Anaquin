@@ -38,7 +38,6 @@ data  = [ 'data/manual.txt',
           'data/dna/DNA.usage.txt',
           'data/dna/DNA.v3.mix.csv',
           'data/dna/DNA.variant.bed',
-          'data/dna/DNA.MixA.v1.vcf',
         ]
 tests = [ ]
 
