@@ -20,7 +20,7 @@
 #include "meta/m_diffs.hpp"
 #include "meta/m_assembly.hpp"
 
-#include "conj/c_join.hpp"
+#include "con/c_join.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"

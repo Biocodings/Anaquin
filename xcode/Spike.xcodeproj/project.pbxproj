@@ -42,13 +42,13 @@
 		EF8ADAE91B220767005E2187 /* m_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF8ADAE71B220767005E2187 /* m_diffs.cpp */; };
 		EFA1A6B21AFC4FAB0066DD9F /* parser_fa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */; };
 		EFACC75B1B1F0C80004A9770 /* m_histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFACC7591B1F0C80004A9770 /* m_histogram.cpp */; };
-		EFB017271B3AB4FE00E0E4FC /* c_join.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB017251B3AB4FE00E0E4FC /* c_join.cpp */; };
+		EFB0172A1B3ACD5800E0E4FC /* t_con.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB017291B3ACD5800E0E4FC /* t_con.cpp */; };
+		EFB0172E1B3ACDA200E0E4FC /* c_join.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB0172C1B3ACDA200E0E4FC /* c_join.cpp */; };
 		EFBB830E1ADF953B0002611E /* parser_sequins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBB830C1ADF953B0002611E /* parser_sequins.cpp */; };
 		EFBF33BF1AEBAE250016083E /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBF33BE1AEBAE250016083E /* t_locus.cpp */; };
 		EFD457571AE65D6E0027DA46 /* d_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD457551AE65D6E0027DA46 /* d_align.cpp */; };
 		EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD457581AE65D860027DA46 /* d_sequence.cpp */; };
 		EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */; };
-		EFD8BAF71B3A7ED20010ACB6 /* t_join.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD8BAF61B3A7ED20010ACB6 /* t_join.cpp */; };
 		EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDD6A701B0DD60500450029 /* libz.dylib */; };
 		EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A751B0DD75B00450029 /* bgzf.c */; };
 		EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A7D1B0DD76200450029 /* hfile_net.c */; };
@@ -173,8 +173,9 @@
 		EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_fa.hpp; path = ../src/parsers/parser_fa.hpp; sourceTree = "<group>"; };
 		EFACC7591B1F0C80004A9770 /* m_histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_histogram.cpp; sourceTree = "<group>"; };
 		EFACC75A1B1F0C80004A9770 /* m_histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_histogram.h; sourceTree = "<group>"; };
-		EFB017251B3AB4FE00E0E4FC /* c_join.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = c_join.cpp; path = ../src/conj/c_join.cpp; sourceTree = "<group>"; };
-		EFB017261B3AB4FE00E0E4FC /* c_join.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = c_join.hpp; path = ../src/conj/c_join.hpp; sourceTree = "<group>"; };
+		EFB017291B3ACD5800E0E4FC /* t_con.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_con.cpp; path = ../tests/con/t_con.cpp; sourceTree = "<group>"; };
+		EFB0172C1B3ACDA200E0E4FC /* c_join.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = c_join.cpp; path = ../src/con/c_join.cpp; sourceTree = "<group>"; };
+		EFB0172D1B3ACDA200E0E4FC /* c_join.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = c_join.hpp; path = ../src/con/c_join.hpp; sourceTree = "<group>"; };
 		EFB1E0421B0098F300F093A2 /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
 		EFBB830C1ADF953B0002611E /* parser_sequins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_sequins.cpp; path = ../src/parsers/parser_sequins.cpp; sourceTree = "<group>"; };
 		EFBB830D1ADF953B0002611E /* parser_sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_sequins.hpp; path = ../src/parsers/parser_sequins.hpp; sourceTree = "<group>"; };
@@ -185,7 +186,6 @@
 		EFD457591AE65D860027DA46 /* d_sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = d_sequence.hpp; path = ../src/dna/d_sequence.hpp; sourceTree = "<group>"; };
 		EFD4575B1AE65DAE0027DA46 /* r_sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_sequence.cpp; path = ../src/rna/r_sequence.cpp; sourceTree = "<group>"; };
 		EFD4575C1AE65DAE0027DA46 /* r_sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_sequence.hpp; path = ../src/rna/r_sequence.hpp; sourceTree = "<group>"; };
-		EFD8BAF61B3A7ED20010ACB6 /* t_join.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_join.cpp; path = ../tests/conjoint/t_join.cpp; sourceTree = "<group>"; };
 		EFDD6A701B0DD60500450029 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		EFDD6A751B0DD75B00450029 /* bgzf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bgzf.c; path = ../src/htslib/bgzf.c; sourceTree = "<group>"; };
 		EFDD6A7D1B0DD76200450029 /* hfile_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hfile_net.c; path = ../src/htslib/hfile_net.c; sourceTree = "<group>"; };
@@ -239,7 +239,7 @@
 		7F6E0C831AB653AC00C9E3E0 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				EFD8BAF51B3A7EC10010ACB6 /* conjoint */,
+				EFB017281B3ACD5000E0E4FC /* con */,
 				EF75DF841AE4A61700BB70F9 /* dna */,
 				EFECDC151AE7635F00F0FD9A /* meta */,
 				EF4BD9AD1ADE4035007BE6AB /* parsers */,
@@ -275,8 +275,8 @@
 			isa = PBXGroup;
 			children = (
 				EFDD6A731B0DD73900450029 /* htslib */,
-				EFB017241B3AB4F400E0E4FC /* conj */,
 				EF4270A31B214F8400C9ED4E /* data */,
+				EFB0172B1B3ACD9100E0E4FC /* con */,
 				EF224B571ADB5E3300B989A8 /* dna */,
 				EFECDC0C1AE7510700F0FD9A /* meta */,
 				EF3860D61AD378190062D246 /* parsers */,
@@ -407,21 +407,21 @@
 			name = dna;
 			sourceTree = "<group>";
 		};
-		EFB017241B3AB4F400E0E4FC /* conj */ = {
+		EFB017281B3ACD5000E0E4FC /* con */ = {
 			isa = PBXGroup;
 			children = (
-				EFB017251B3AB4FE00E0E4FC /* c_join.cpp */,
-				EFB017261B3AB4FE00E0E4FC /* c_join.hpp */,
+				EFB017291B3ACD5800E0E4FC /* t_con.cpp */,
 			);
-			name = conj;
+			name = con;
 			sourceTree = "<group>";
 		};
-		EFD8BAF51B3A7EC10010ACB6 /* conjoint */ = {
+		EFB0172B1B3ACD9100E0E4FC /* con */ = {
 			isa = PBXGroup;
 			children = (
-				EFD8BAF61B3A7ED20010ACB6 /* t_join.cpp */,
+				EFB0172C1B3ACDA200E0E4FC /* c_join.cpp */,
+				EFB0172D1B3ACDA200E0E4FC /* c_join.hpp */,
 			);
-			name = conjoint;
+			name = con;
 			sourceTree = "<group>";
 		};
 		EFDD6A731B0DD73900450029 /* htslib */ = {
@@ -602,9 +602,10 @@
 				EFD4575D1AE65DAE0027DA46 /* r_sequence.cpp in Sources */,
 				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
 				EF3211951B1DBC1A0062BB10 /* parser_blast.cpp in Sources */,
-				EFB017271B3AB4FE00E0E4FC /* c_join.cpp in Sources */,
+				EFB0172E1B3ACDA200E0E4FC /* c_join.cpp in Sources */,
 				EF4270AF1B21667C00C9ED4E /* t_dna.cpp in Sources */,
 				EFDD6ACB1B0DD76C00450029 /* cram_encode.c in Sources */,
+				EFB0172A1B3ACD5800E0E4FC /* t_con.cpp in Sources */,
 				EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */,
 				EFD4575A1AE65D860027DA46 /* d_sequence.cpp in Sources */,
 				EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */,
@@ -646,7 +647,6 @@
 				EFDD6A931B0DD76200450029 /* hfile.c in Sources */,
 				EF4270BA1B21CA8900C9ED4E /* t_blast.cpp in Sources */,
 				EFDD6ADB1B0DDB8700450029 /* files.c in Sources */,
-				EFD8BAF71B3A7ED20010ACB6 /* t_join.cpp in Sources */,
 				EF76C92A1ADC09FD003D45F9 /* r_diffs.cpp in Sources */,
 				EF4270B21B21676B00C9ED4E /* m_sequence.cpp in Sources */,
 				EFDD6AD71B0DD76C00450029 /* thread_pool.c in Sources */,
