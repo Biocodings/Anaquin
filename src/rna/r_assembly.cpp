@@ -62,7 +62,6 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
                     return (match = find(s.r_exons, f, Exact));
                 }))
                 {
-                    std::cout << match->tID << std::endl;
                     stats.ce.at(match->tID)++;
                 }
 

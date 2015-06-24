@@ -31,8 +31,10 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
         {
             continue;
         }
-        
-        align.id = std::string(h->target_name[t->core.tid]);
+    
+        align.i      = 0;
+        align.id     = std::string(h->target_name[t->core.tid]);
+        align.qName  = bam_get_qname(t);
         align.mapped = !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)
@@ -45,14 +47,13 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
             align.spliced = false;
 
             /*
-             * What to do with something like "528084 50 79M10250N22M"? We'd split it into three independent
-             * blocks.
+             * What to do with something like "528084 50 79M10250N22M"? We'd split it into three blocks.
              */
-            
-            for (int k = 0; k < t->core.n_cigar; k++)
+
+            for (; align.i < t->core.n_cigar; align.i++)
             {
-                const int op = bam_cigar_op(cigar[k]);
-                const int ol = bam_cigar_oplen(cigar[k]);
+                const int op = bam_cigar_op(cigar[align.i]);
+                const int ol = bam_cigar_oplen(cigar[align.i]);
 
                 // 1-based leftmost coordinate is assumed
                 align.l = Locus(n + 1, n + ol);

@@ -3,8 +3,8 @@
 
 #include <numeric>
 #include "data/tokens.hpp"
-#include "stats/analyzer.hpp"
 #include "meta/m_histogram.h"
+#include "stats/analyzer.hpp"
 #include "parsers/parser_fa.hpp"
 
 namespace Spike

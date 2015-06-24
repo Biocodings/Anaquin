@@ -7,7 +7,7 @@ TEST_CASE("RAlign_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution
     const auto r = RAlign::analyze("tests/data/rna/cufflinks.sam");
-    
+
     REQUIRE(r.pe.m.nq == 0);
     REQUIRE(r.pe.m.nr == 76);
     REQUIRE(isnan(r.pe.m.sp()));

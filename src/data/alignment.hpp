@@ -10,9 +10,12 @@ namespace Spike
     {
         operator const Locus &() const { return l; }
 
-        typedef std::string AlignmentID;
-
-        AlignmentID id;
+        std::string id;
+        
+        // Eg: B7_591:6:155:12:674
+        std::string qName;
+        
+        unsigned i;
         
         // If this field is false, no assumption can be made to other fields
         bool mapped;
