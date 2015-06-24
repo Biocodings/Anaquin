@@ -15,11 +15,15 @@ def xxd(src, dst):
 
 data  = [ 'data/manual.txt',    
           'data/linear.R',
-          'data/chrT.v1.fa',
+
+           # ------- Conjoint -------
+
+           'data/con/CON.v2.mix.csv',
 
            # ---------- RNA ----------
 
           'data/rna/RNA.usage.txt',
+          'data/rna/chrT.v1.fa',
           'data/rna/RNA.v1.bed',
           'data/rna/RNA.v1.gtf',
           'data/rna/RNA.v4.1.mix',
