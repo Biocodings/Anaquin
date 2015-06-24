@@ -8,6 +8,12 @@
 #include "resources/manual.txt"
 
 /*
+ * Conjoint Resources
+ */
+
+#include "resources/CON.v2.mix.csv"
+
+/*
  * RNA Resources
  */
 
@@ -63,6 +69,19 @@ std::string Manual()
 }
 
 /*
+ * Fusion Resources
+ */
+
+/*
+ * Conjoint Resources
+ */
+
+std::string ConDataMix()
+{
+    return ToString(data_con_CON_v2_mix_csv);
+}
+
+/*
  * META Resources
  */
 
@@ -87,7 +106,7 @@ std::string MetaDataBed()
 
 std::string RNADataFA()
 {
-    return ToString(data_chrT_v1_fa);
+    return ToString(data_rna_chrT_v1_fa);
 }
 
 std::string RNADataTab()

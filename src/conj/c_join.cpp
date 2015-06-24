@@ -8,7 +8,7 @@ CJoin::Stats CJoin::analyze(const std::string &file, const Options &options)
 {
     CJoin::Stats stats;
 
-    // Construct a histogram of the aligned sequin
+    // Construct a histogram of the aligned sequins
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
         if (align.i == 0)
@@ -16,6 +16,12 @@ CJoin::Stats CJoin::analyze(const std::string &file, const Options &options)
             stats.hist[align.id]++;
         }
     });
+
+    const auto &s = Standard::instance();
+
+    /*
+     * Write out histogram
+     */
 
     options.writer->open("conjoin_histogram.stats");
     
