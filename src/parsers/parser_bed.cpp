@@ -49,7 +49,7 @@ void ParserBED::parse(const Reader &r, Callback x)
         bf.id = tokens[0];
 
         // Position of the feature in standard chromosomal coordinates
-        bf.l  = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
+        bf.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
 
         if (tokens.size() >= 4)
         {

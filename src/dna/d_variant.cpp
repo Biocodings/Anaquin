@@ -33,12 +33,19 @@ DVariant::Stats DVariant::analyze(const std::string &file, const Options &option
             
             const auto &base = s.d_seqs_bA.at(match.id);
             
-            // TODO: Need to get mixture for this base. Once got it, use the
-            //       allele frequency to get expected coverage. Might need to
-            //       normalized.
+            /*
+             * Plotting the relative allele frequency that is established by differences
+             * in the concentration of reference and variant DNA standards.
+             */
+            
+            // The measured coverage is the number of base calls aligned and used in variant calling
+            const auto measured = (double) var.dp_a / (var.dp_r + var.dp_a);
 
-            stats.x.push_back(base.alleleFreq());
-            stats.y.push_back(var.dp);
+            // The known coverage for allele frequnece
+            const auto known = base.alleleFreq();
+
+            stats.x.push_back(known);
+            stats.y.push_back(measured);
             stats.z.push_back(match.id);
   
             return Positive;

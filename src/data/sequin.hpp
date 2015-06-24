@@ -71,7 +71,7 @@ namespace Spike
             const auto v = sequins.at(var).abund();
             
             // Abundance ratio of reference to variant DNA standard
-            return r / (r + v);
+            return v / (r + v);
         }
     };
 }

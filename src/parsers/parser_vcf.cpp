@@ -72,7 +72,7 @@ void ParserVCF::parse(const Reader &r, Callback c)
 
         Tokens::split(fields[Info], ";", infos);
 
-        for (const auto info : infos)
+        for (const auto &info : infos)
         {
             Tokens::split(info, "=", t);
             assert(t.size() == 2);
@@ -118,6 +118,18 @@ void ParserVCF::parse(const Reader &r, Callback c)
                 if (formats[j] == "GT")
                 {
                     v.gt = allele.at(t[j]);
+                }
+                else if (formats[j] == "AD")
+                {
+                    std::vector<std::string> tokens;
+                    
+                    // Eg: 143,16
+                    Tokens::split(t[j], ",", tokens);
+                    
+                    assert(tokens.size() == 2);
+                    
+                    v.dp_r = stod(tokens[0]);
+                    v.dp_a = stod(tokens[1]);
                 }
             }
 

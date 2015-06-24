@@ -45,6 +45,12 @@ namespace Spike
         
         // Combined depth across samples
         unsigned dp;
+        
+        // Depth for reference
+        unsigned dp_r;
+        
+        // Depth for alternative
+        unsigned dp_a;
     };
     
     class Standard

@@ -194,7 +194,7 @@ void Standard::dna_mod(const Reader &r)
 
         // Eg: D_1_10
         const auto id = tokens[0].substr(0, tokens[0].find_last_of("_"));
-        
+
         Variation v;
 
         // Eg: D_1_10
