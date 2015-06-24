@@ -139,6 +139,32 @@ namespace Spike
             std::set<SequinID> d_seqIDs;
 
             /*
+             * Conjoint data
+             */
+        
+            void con_mod(const Reader &);
+            void con_mix(const Reader &);
+
+            // Sequins for mixture A and B
+            SequinMap c_seqs_A, c_seqs_B;
+        
+            // Bases for mixture A and B
+            BaseMap c_seqs_bA, c_seqs_bB;
+        
+            /*
+             * Fusion data
+             */
+             
+            void fusi_mod(const Reader &);
+            void fusi_mix(const Reader &);
+
+            // Sequins for mixture A and B
+            SequinMap f_seqs_A, f_seqs_B;
+        
+            // Bases for mixture A and B
+            BaseMap f_seqs_bA, f_seqs_bB;
+        
+            /*
              * Metagenomic data
              */
 
@@ -148,7 +174,7 @@ namespace Spike
             // Sequins for mixture A and B
             SequinMap m_seqs_A, m_seqs_B;
 
-            // Pairs for mixture A and B
+            // Bases for mixture A and B
             BaseMap m_seqs_bA, m_seqs_bB;
 
             // Sequin IDs for metagenomic standards
@@ -170,6 +196,12 @@ namespace Spike
 
             // Apply default resources for metagenomics
             void meta();
+        
+            // Apply default resources for conjoint
+            void con();
+        
+            // Apply default resources for fusion
+            void fusi();
     };
 }
 
