@@ -11,7 +11,7 @@ DVariant::Stats DVariant::analyze(const std::string &file, const Options &option
 
     ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)
     {
-        Variation known;
+        Variation match;
 
         if (classify(stats.m, var, [&](const VCFVariant &)
         {
@@ -21,26 +21,30 @@ DVariant::Stats DVariant::analyze(const std::string &file, const Options &option
                 return Negative;
             }
 
-            known = s.d_vars.at(var.l);
+            match = s.d_vars.at(var.l);
 
             // Does the variant match with the meta?
-            if (known.type != var.type || known.alt != var.alt || known.ref != var.ref)
+            if (match.type != var.type || match.alt != var.alt || match.ref != var.ref)
             {
                 return Negative;
             }
 
-            assert(s.d_seqs_bA.count(known.id));
+            assert(s.d_seqs_bA.count(match.id));
             
-            const auto &base = s.d_seqs_bA.at(known.id);
+            const auto &base = s.d_seqs_bA.at(match.id);
             
+            // TODO: Need to get mixture for this base. Once got it, use the
+            //       allele frequency to get expected coverage. Might need to
+            //       normalized.
+
             stats.x.push_back(base.alleleFreq());
             stats.y.push_back(var.dp);
-            stats.z.push_back(known.id);
+            stats.z.push_back(match.id);
   
             return Positive;
         }))
         {
-            stats.c.at(known.id)++;
+            stats.c.at(match.id)++;
         }
     });
 

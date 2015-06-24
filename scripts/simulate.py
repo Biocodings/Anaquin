@@ -34,12 +34,17 @@ def readMixture(file, mix):
     with open(file) as f:
         l = f.readline()
 
+        if (',' in l):
+            split = ','
+        else:
+            split = '\t'
+
         while True:
             l = f.readline()
             if (not l):
                 break
 
-            tokens = l.strip().split('\t')
+            tokens = l.strip().split(split)
 
             #
             # ID  Length Mix_A  Mix_B
@@ -56,11 +61,8 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix='A', c=0, s=0.1, tool='wgsim'):
+def simulate(file, basePath, mix='A', c=0, s=1, tool='wgsim'):
     mix = readMixture(file, mix)
-
-    print basePath
-
 
     for f in os.listdir(basePath):
         key = f.split('.')[0]
@@ -124,15 +126,28 @@ def simulate(file, basePath, mix='A', c=0, s=0.1, tool='wgsim'):
         print('Merging the individual simulations...')
         os.system('cat ' + basePath + '*R1.fastq > ' + basePath + 'simulated_1.fastq')
         os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
-        os.system('rm '  + basePath + '/*R1.fastq')
-        os.system('rm '  + basePath + '/*R2.fastq')
+        #os.system('rm '  + basePath + '/*R1.fastq')
+        #os.system('rm '  + basePath + '/*R2.fastq')
 
 def print_usage():
-    print 'Usage: python simulate.py RNA|DNA|META'
+    print 'Usage: python simulate.py RNA|DNA|META|RNAFlat'
 
 if __name__ == '__main__':
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
+    elif (sys.argv[1] == 'RNAFlat'):
+        a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
+        b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
+
+        for i in range(0,len(a)):
+            split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')
+            simulate('../tests/data/rna/flat.mix.csv', 'RNA_Simulation/', 'A')
+            os.system('mv RNA_Simulation ' + a[i])
+
+        for i in range(0,len(b)):
+            split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
+            simulate('../tests/data/rna/flat.mix.csv', 'RNA_Simulation/', 'B')
+            os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'RNA'):
         a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
         b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
