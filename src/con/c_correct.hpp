@@ -1,11 +1,11 @@
-#ifndef GI_C_JOIN_HPP
-#define GI_C_JOIN_HPP
+#ifndef GI_C_CORRECT_HPP
+#define GI_C_CORRECT_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Spike
 {
-    struct CJoin
+    struct CCorrect
     {
         struct Options : public SingleMixtureOptions
         {

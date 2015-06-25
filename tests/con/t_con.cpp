@@ -1,11 +1,11 @@
 #include <catch.hpp>
-#include "con/c_join.hpp"
+#include "con/c_correct.hpp"
 
 using namespace Spike;
 
 TEST_CASE("Conjoint_Test")
 {
-    const auto r = CJoin::analyze("tests/data/con/test.sam");
+    const auto r = CCorrect::analyze("tests/data/con/test.sam");
 
     REQUIRE(r.expTotal == 450);
     REQUIRE(r.actTotal == 54);

@@ -1,4 +1,4 @@
-#include "con/c_join.hpp"
+#include "con/c_correct.hpp"
 #include "stats/expression.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
@@ -15,9 +15,9 @@ std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, double fo
     return std::vector<double> { nA, nB, nC, nD };
 }
 
-CJoin::Stats CJoin::analyze(const std::string &file, const Options &options)
+CCorrect::Stats CCorrect::analyze(const std::string &file, const Options &options)
 {
-    CJoin::Stats stats;
+    CCorrect::Stats stats;
 
     // We'll need it to construct expected library size
     std::set<BaseID> baseIDs;

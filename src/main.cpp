@@ -20,7 +20,7 @@
 #include "meta/m_diffs.hpp"
 #include "meta/m_assembly.hpp"
 
-#include "con/c_join.hpp"
+#include "con/c_correct.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
@@ -36,8 +36,8 @@
 #define CMD_RNA   265
 #define CMD_DNA   266
 #define CMD_META  267
-#define CMD_CONJ  268
-#define CMD_FUSI  269
+#define CMD_CON   268
+#define CMD_FUS   269
 
 #define MODE_BLAST        281
 #define MODE_SEQUENCE     282
@@ -47,7 +47,7 @@
 #define MODE_DIFFERENTIAL 286
 #define MODE_VARIATION    287
 #define MODE_SEQUINS      288
-#define MODE_JOIN         289
+#define MODE_CORRECT      289
 
 #define OPT_MIN     321
 #define OPT_MAX     322
@@ -138,8 +138,8 @@ static const struct option long_options[] =
     { "rna",  required_argument, 0, CMD_RNA  },
     { "dna",  required_argument, 0, CMD_DNA  },
     { "meta", required_argument, 0, CMD_META },
-    { "conj", required_argument, 0, CMD_CONJ },
-    { "fusi", required_argument, 0, CMD_FUSI },
+    { "con",  required_argument, 0, CMD_CON  },
+    { "fus",  required_argument, 0, CMD_FUS  },
 
     { "psl",     required_argument, 0, OPT_PSL     },
     { "min",     required_argument, 0, OPT_MIN     },
@@ -173,7 +173,7 @@ static const struct option long_options[] =
     { "ab",        required_argument, 0, MODE_ABUNDANCE },
     { "abundance", required_argument, 0, MODE_ABUNDANCE },
 
-    { "join",    required_argument, 0, MODE_JOIN },
+    { "correct", required_argument, 0, MODE_CORRECT },
     
     { "var",     required_argument, 0, MODE_VARIATION },
     { "variant", required_argument, 0, MODE_VARIATION },
@@ -281,8 +281,8 @@ static void readFilters(const std::string &file)
     {
         switch (_cmd)
         {
-            case CMD_FUSI: { break; }
-            case CMD_CONJ: { break; }
+            case CMD_FUS: { break; }
+            case CMD_CON: { break; }
 
             case CMD_RNA:
             {
@@ -420,10 +420,10 @@ void parse(int argc, char ** argv)
         if (tmp == "rna")  { _cmd = CMD_RNA;  }
         if (tmp == "dna")  { _cmd = CMD_DNA;  }
         if (tmp == "meta") { _cmd = CMD_META; }
-        if (tmp == "conj") { _cmd = CMD_CONJ; }
-        if (tmp == "fusi") { _cmd = CMD_FUSI; }
+        if (tmp == "con")  { _cmd = CMD_CON;  }
+        if (tmp == "fus")  { _cmd = CMD_FUS;  }
     }
-    
+
     int next, index;
 
 #ifdef UNIT_TESTING
@@ -522,24 +522,24 @@ void parse(int argc, char ** argv)
             case CMD_VER:  { printVersion();                break; }
             case CMD_TEST: { Catch::Session().run(1, argv); break; }
 
-            case CMD_FUSI:
+            case CMD_FUS:
             {
                 std::cout << "Fusion Analysis" << std::endl;
                 break;
             }
-                
-            case CMD_CONJ:
+
+            case CMD_CON:
             {
-                std::cout << "Conjoin Analysis" << std::endl;
-                
+                std::cout << "Conjoint Analysis" << std::endl;
+
                 if (_mode != MODE_SEQUINS &&
-                    _mode != MODE_JOIN)
+                    _mode != MODE_CORRECT)
                 {
                     throw InvalidUsageError();
                 }
                 else
                 {
-                    case MODE_JOIN: { analyze<CJoin>(_opts[0]); break; }
+                    case MODE_CORRECT: { analyze<CCorrect>(_opts[0]); break; }
                 }
 
                 break;
