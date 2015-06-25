@@ -133,6 +133,8 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
         // Concentration for mixture A
         s.abund() = stof(fields[2]);
         
+        assert(s.length && s.abund());
+        
         // Create an entry for mixture A
         a[s.id] = s;
         
@@ -143,6 +145,9 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
         b[s.id] = s;
 
         info.baseIDs[s.baseID].insert(s.typeID);
+
+        // Don't assert s.abund() because there might not be mixture B
+        assert(s.length);
     });
 
     assert(!a.empty() && !b.empty());
@@ -250,6 +255,39 @@ void Standard::meta_mix(const Reader &r)
 void Standard::con_mix(const Reader &r)
 {
     parseMix(r, c_seqs_A, c_seqs_B);
+
+    c_size = 0;
+    
+    for (const auto &i : c_seqs_A)
+    {
+        /*
+         * For each conjoint sequin, we have four groups - A, B, C and D. Each group represents an DNA standard.
+         * Assume the following ratio:
+         *
+         *   - A: 1
+         *   - B: 2
+         *   - C: 4
+         *   - D: 8
+         */
+
+        const auto fold = i.second.abund();
+        
+        // Expected concentration for group A
+        const auto con_A = fold * 1;
+        
+        // Expected concentration for group B
+        const auto con_B = fold * 2;
+        
+        // Expected concentration for group C
+        const auto con_C = fold * 4;
+        
+        // Expected concentration for group D
+        const auto con_D = fold * 8;
+        
+        c_size += (con_A + con_B + con_C + con_D);
+    }
+
+    assert(c_size);
 }
 
 void Standard::con()

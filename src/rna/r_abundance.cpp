@@ -46,8 +46,8 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
             if (t.fpkm)
             {
                 const auto &i = s.r_seqs_A.at(t.trackID);
-                
-                stats.x.push_back(log(i.abund()));
+
+                stats.x.push_back(log(i.abund() / i.length));
                 stats.y.push_back(log(fpkm));
                 stats.z.push_back(t.trackID);
             }

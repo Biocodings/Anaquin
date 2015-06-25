@@ -26,9 +26,6 @@ namespace Spike
 
             Locus l;
 
-            // The group of log-fold changes between samples
-            Group grp;
-
             BasePair length;
 
             // Amount of abundance, a non-const method

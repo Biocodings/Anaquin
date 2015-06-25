@@ -145,11 +145,11 @@ namespace Spike
             void con_mod(const Reader &);
             void con_mix(const Reader &);
 
+            // Library size
+            Counts c_size;
+
             // Sequins for mixture A and B
             SequinMap c_seqs_A, c_seqs_B;
-        
-            // Bases for mixture A and B
-            BaseMap c_seqs_bA, c_seqs_bB;
         
             /*
              * Fusion data

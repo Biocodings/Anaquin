@@ -8,9 +8,9 @@ TEST_CASE("RAbundance_Simulations_Isoforms_A1")
     const auto r  = RAbundance::analyze("tests/data/rna/A1/isoforms.fpkm_tracking");
     const auto lm = r.linear();
 
-    REQUIRE(lm.r  == Approx(0.807708163));
-    REQUIRE(lm.m  == Approx(0.935856799));
-    REQUIRE(lm.r2 == Approx(0.6481533605));
+    REQUIRE(lm.r  == Approx(0.8143944753));
+    REQUIRE(lm.m  == Approx(0.9300431127));
+    REQUIRE(lm.r2 == Approx(0.6591315122));
 
     REQUIRE(r.s.id == "R2_38_1");
     REQUIRE(r.s.counts == 1);
