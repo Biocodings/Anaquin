@@ -37,7 +37,8 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
         const auto actual = log(b.s_correct.at(id) / a.s_correct.at(id));
         
         // Calculate known fold change between mixture A and B
-        const auto known = log(s.c_seqs_B.at(id).abund() / s.c_seqs_A.at(id).abund());
+        const auto known = log((s.c_seqs_B.at(id).abund() / s.c_seqs_B.at(id).length) /
+                               (s.c_seqs_A.at(id).abund() / s.c_seqs_A.at(id).length));
 
         stats.x.push_back(known);
         stats.y.push_back(actual);
