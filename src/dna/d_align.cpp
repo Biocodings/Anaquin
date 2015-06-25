@@ -75,8 +75,10 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
     // Perform a linear regreession
     stats.linear();
 
+    options.logger->write("Calculating LOS");
+    
     // Calculate for the sensitivity
-    stats.p.s = 0; // TODO: Fix this!!! Expression::analyze(stats.c, s.d_seq(options.mix));
+    stats.p.s.abund = 0.0; // TODO: Fix this!!! Expression::analyze(stats.c, s.d_seq(options.mix));
 
     AnalyzeReporter::report("dalign.stats", stats.p, stats.c, options.writer);
     
