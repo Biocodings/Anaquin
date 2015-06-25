@@ -29,7 +29,7 @@ CCorrect::Stats CCorrect::analyze(const std::string &file, const Options &option
         if (align.i == 0)
         {
             stats.actTotal++;
-            stats.raw[align.id]++;
+            stats.abund[align.id]++;
             baseIDs.insert(align.id.substr(0, align.id.size() - 2));
         }
     });
@@ -64,29 +64,32 @@ CCorrect::Stats CCorrect::analyze(const std::string &file, const Options &option
         const auto baseC = base + "_C";
         const auto baseD = base + "_D";
     
-        if (!stats.raw.count(baseA) || !stats.raw.count(baseB) || !stats.raw.count(baseC) || !stats.raw.count(baseD))
+        if (!stats.abund.count(baseA) ||
+            !stats.abund.count(baseB) ||
+            !stats.abund.count(baseC) ||
+            !stats.abund.count(baseD))
         {
             continue;
         }
         
-        #define COUNT(x) stats.raw.count(x) ? stats.raw.at(x) : 0
+        #define COUNT(x) stats.abund.count(x) ? stats.abund.at(x) : 0
 
         // Create a vector for normalized measured coverage
-        const auto normal = create(COUNT(baseA), COUNT(baseB), COUNT(baseC), COUNT(baseD), 1.0, stats.actTotal);
+        const auto actual = create(COUNT(baseA), COUNT(baseB), COUNT(baseC), COUNT(baseD), 1.0, stats.actTotal);
 
         // Create a vector for normalized expected coverage
         const auto expect = create(1.0, 2.0, 4.0, 8.0, s.c_seqs_A.at(base).abund(), stats.expTotal);
 
         // Fit a linear regression model
-        const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(normal), SS::c(expect)));
+        const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(actual), SS::c(expect)));
 
         // Regression slope that we'll correct to 1
         const auto slope = lm.coeffs[1].v;
         
         std::vector<double> correct;
-        correct.resize(normal.size());
+        correct.resize(actual.size());
 
-        std::transform(normal.begin(), normal.end(), correct.begin(), [&](double c)
+        std::transform(actual.begin(), actual.end(), correct.begin(), [&](double c)
         {
             return c / slope;
         });
@@ -98,10 +101,10 @@ CCorrect::Stats CCorrect::analyze(const std::string &file, const Options &option
         stats.expect[baseC]  = expect[2];
         stats.expect[baseD]  = expect[3];
 
-        stats.normal[baseA]  = normal[0];
-        stats.normal[baseB]  = normal[1];
-        stats.normal[baseC]  = normal[2];
-        stats.normal[baseD]  = normal[3];
+        stats.actual[baseA]  = actual[0];
+        stats.actual[baseB]  = actual[1];
+        stats.actual[baseC]  = actual[2];
+        stats.actual[baseD]  = actual[3];
         
         stats.correct[baseA] = correct[0];
         stats.correct[baseB] = correct[1];
@@ -114,30 +117,34 @@ CCorrect::Stats CCorrect::analyze(const std::string &file, const Options &option
      */
 
     auto writeHist = [&](const std::string &file,
+                         const std::map<SequinID, Counts>   &abund,
                          const std::map<SequinID, Coverage> &expect,
-                         const std::map<SequinID, Counts> &raw,
+                         const std::map<SequinID, Coverage> &actual,
                          const std::map<SequinID, Coverage> &correct)
     {
-        const std::string format = "%1%\t%2%\t%3%\t%4%";
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
         options.writer->open(file);
-        options.writer->write((boost::format(format) % "ID" % "expect" % "raw" % "correct").str());
+        options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "actual" % "correct").str());
 
-        assert(raw.size() == correct.size());
-        
-        for (const auto &i : stats.raw)
+        assert(abund.size() == correct.size());
+        assert(abund.size() == expect.size());
+        assert(abund.size() == actual.size());
+
+        for (const auto &i : stats.abund)
         {
             assert(correct.count(i.first));
             options.writer->write((boost::format(format) % i.first
+                                                         % abund.at(i.first)
                                                          % expect.at(i.first)
-                                                         % raw.at(i.first)
+                                                         % actual.at(i.first)
                                                          % correct.at(i.first)).str());
         }
 
         options.writer->close();
     };
 
-    writeHist("conjoint_histogram.stats", stats.expect, stats.raw, stats.correct);
+    writeHist("conjoint.stats", stats.abund, stats.expect, stats.actual, stats.correct);
 
 	return stats;
 }

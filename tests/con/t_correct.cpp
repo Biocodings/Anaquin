@@ -15,26 +15,26 @@ TEST_CASE("Conjoint_Test")
     REQUIRE(r.expect.count("GA116_C") == 1);
     REQUIRE(r.expect.count("GA116_D") == 1);
     
-    REQUIRE(r.raw.count("GA116_A") == 1);
-    REQUIRE(r.raw.count("GA116_B") == 1);
-    REQUIRE(r.raw.count("GA116_C") == 1);
-    REQUIRE(r.raw.count("GA116_D") == 1);
+    REQUIRE(r.abund.count("GA116_A") == 1);
+    REQUIRE(r.abund.count("GA116_B") == 1);
+    REQUIRE(r.abund.count("GA116_C") == 1);
+    REQUIRE(r.abund.count("GA116_D") == 1);
 
     REQUIRE(r.correct.count("GA116_A") == 1);
     REQUIRE(r.correct.count("GA116_B") == 1);
     REQUIRE(r.correct.count("GA116_C") == 1);
     REQUIRE(r.correct.count("GA116_D") == 1);
 
-    REQUIRE(r.raw.at("GA116_A") == 2);
-    REQUIRE(r.raw.at("GA116_B") == 4);
-    REQUIRE(r.raw.at("GA116_C") == 7);
-    REQUIRE(r.raw.at("GA116_D") == 17);
+    REQUIRE(r.abund.at("GA116_A") == 2);
+    REQUIRE(r.abund.at("GA116_B") == 4);
+    REQUIRE(r.abund.at("GA116_C") == 7);
+    REQUIRE(r.abund.at("GA116_D") == 17);
 
-    REQUIRE(r.normal.at("GA116_A") == Approx(0.037037037));
-    REQUIRE(r.normal.at("GA116_B") == Approx(0.0740740741));
-    REQUIRE(r.normal.at("GA116_C") == Approx(0.1296296296));
-    REQUIRE(r.normal.at("GA116_D") == Approx(0.3148148148));
-    
+    REQUIRE(r.actual.at("GA116_A") == Approx(0.037037037));
+    REQUIRE(r.actual.at("GA116_B") == Approx(0.0740740741));
+    REQUIRE(r.actual.at("GA116_C") == Approx(0.1296296296));
+    REQUIRE(r.actual.at("GA116_D") == Approx(0.3148148148));
+
     REQUIRE(r.expect.at("GA116_A") == Approx(0.0444444444));
     REQUIRE(r.expect.at("GA116_B") == Approx(0.0888888889));
     REQUIRE(r.expect.at("GA116_C") == Approx(0.1777777778));

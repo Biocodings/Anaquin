@@ -18,11 +18,11 @@ namespace Spike
             std::map<SequinID, Coverage> expect;
 
             // Histogram before normalization and correction
-            std::map<SequinID, Counts> raw;
+            std::map<SequinID, Counts> abund;
 
             // Histogram after normalization but before correction
-            std::map<SequinID, Coverage> normal;
-            
+            std::map<SequinID, Coverage> actual;
+
             // Histogram after correction
             std::map<SequinID, Coverage> correct;
             
