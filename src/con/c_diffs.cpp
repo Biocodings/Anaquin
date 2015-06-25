@@ -36,6 +36,11 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
         stats.x.push_back(known);
         stats.y.push_back(actual);
         stats.z.push_back(id);
+        
+        std::cout << i.first << std::endl;
+        std::cout << known << std::endl;
+        std::cout << actual << std::endl;
+        
     }
     
     // Perform a linear regreession
