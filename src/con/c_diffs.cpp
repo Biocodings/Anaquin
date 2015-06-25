@@ -13,12 +13,12 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
      * Let's reuse the code for single mixture. We'll create create a histogram for both mixtures.
      */
 
+    options.terminal->write("Analyzing mixuture B: " + fileB);
+    const auto b = CSingle::analyze(fileB);
+
     options.terminal->write("Analyzing mixuture A: " + fileA);
     const auto a = CSingle::analyze(fileA);
 
-    options.terminal->write("Analyzing mixuture A: " + fileB);
-    const auto b = CSingle::analyze(fileB);
-    
     const auto &s = Standard::instance();
 
     for (const auto &i : a.s_correct)
@@ -36,11 +36,6 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
         stats.x.push_back(known);
         stats.y.push_back(actual);
         stats.z.push_back(id);
-        
-        std::cout << i.first << std::endl;
-        std::cout << known << std::endl;
-        std::cout << actual << std::endl;
-        
     }
     
     // Perform a linear regreession

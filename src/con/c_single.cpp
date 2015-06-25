@@ -129,13 +129,17 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "actual" % "correct").str());
 
         std::cout << abund.size() << " " << correct.size() << " " << expect.size() << " " << actual.size() << std::endl;
-        
-        assert(abund.size() == correct.size());
-        assert(abund.size() == expect.size());
-        assert(abund.size() == actual.size());
+
+        assert(expect.size() == correct.size());
+        assert(expect.size() == actual.size());
 
         for (const auto &i : stats.abund)
         {
+            if (!correct.count(i.first))
+            {
+                continue;
+            }
+            
             assert(correct.count(i.first));
             options.writer->write((boost::format(format) % i.first
                                                          % abund.at(i.first)
