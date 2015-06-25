@@ -23,6 +23,12 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
 
     for (const auto &i : a.s_correct)
     {
+        if (!b.s_correct.count(id))
+        {
+            std::cout << "Warning: " + i.first << std::endl;
+            continue;
+        }
+        
         const auto &id = i.first;
         
         assert(b.s_correct.count(id));
