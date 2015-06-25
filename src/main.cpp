@@ -20,7 +20,8 @@
 #include "meta/m_diffs.hpp"
 #include "meta/m_assembly.hpp"
 
-#include "con/c_correct.hpp"
+#include "con/c_diffs.hpp"
+#include "con/c_single.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
@@ -231,23 +232,10 @@ void print(Reader &r)
     }
 }
 
-void printMeta()
+void printMixture(const std::string &file)
 {
-    extern std::string MetaDataMix();
-    Reader r(MetaDataMix(), String);
+    Reader r(file, String);
     print(r);
-}
-
-static void printRNA()
-{
-    extern std::string RNADataMix();
-    Reader r(RNADataMix(), String);
-    print(r);
-}
-
-void printDNA()
-{
-    // Empty Implementation
 }
 
 template <typename Mixture, typename Model> void applyCustom(Mixture mix, Model mod)
@@ -533,13 +521,21 @@ void parse(int argc, char ** argv)
                 std::cout << "Conjoint Analysis" << std::endl;
 
                 if (_mode != MODE_SEQUINS &&
-                    _mode != MODE_CORRECT)
+                    _mode != MODE_CORRECT &&
+                    _mode != MODE_DIFFERENTIAL)
                 {
                     throw InvalidUsageError();
                 }
                 else
                 {
-                    case MODE_CORRECT: { analyze<CCorrect>(_opts[0]); break; }
+                    extern std::string ConDataMix();
+                    
+                    switch (_mode)
+                    {
+                        case MODE_SEQUINS:      { printMixture(ConDataMix());          break; }
+                        case MODE_CORRECT:      { analyze<CSingle>(_opts[0]);          break; }
+                        case MODE_DIFFERENTIAL: { analyze<CDiffs>(_opts[0], _opts[1]); break; }
+                    }
                 }
 
                 break;
@@ -563,10 +559,12 @@ void parse(int argc, char ** argv)
                 }
                 else
                 {
+                    extern std::string RNADataMix();
+                    
                     switch (_mode)
                     {
                         case MODE_SEQUENCE: { break; }
-                        case MODE_SEQUINS:  { printRNA();                   break; }
+                        case MODE_SEQUINS:  { printMixture(RNADataMix());   break; }
                         case MODE_ALIGN:    { analyze<RAlign>(_opts[0]);    break; }
                         case MODE_ASSEMBLY: { analyze<RAssembly>(_opts[0]); break; }
                             
@@ -603,10 +601,12 @@ void parse(int argc, char ** argv)
                 }
                 else
                 {
+                    extern std::string DNADataMix();
+                    
                     switch (_mode)
                     {
                         case MODE_SEQUENCE:  { break; }
-                        case MODE_SEQUINS:   { printMeta();                 break; }
+                        case MODE_SEQUINS:   { printMixture(DNADataMix());  break; }
                         case MODE_ALIGN:     { analyze<DAlign>(_opts[0]);   break; }
                         case MODE_VARIATION: { analyze<DVariant>(_opts[0]); break; }
                     }
@@ -632,11 +632,13 @@ void parse(int argc, char ** argv)
                 }
                 else
                 {
+                    extern std::string MetaDataMix();
+
                     switch (_mode)
                     {
                         case MODE_SEQUENCE: { break; }
-                        case MODE_SEQUINS:  { printMeta(); break; }
-                        case MODE_BLAST:    { MBlast::analyze(_opts[0]); break; }
+                        case MODE_SEQUINS:  { printMixture(MetaDataMix()); break; }
+                        case MODE_BLAST:    { MBlast::analyze(_opts[0]);   break; }
 
                         case MODE_DIFFERENTIAL:
                         {

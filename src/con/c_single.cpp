@@ -1,5 +1,4 @@
-#include "con/c_correct.hpp"
-#include "stats/expression.hpp"
+#include "con/c_single.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
 
@@ -15,9 +14,9 @@ std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, double fo
     return std::vector<double> { nA, nB, nC, nD };
 }
 
-CCorrect::Stats CCorrect::analyze(const std::string &file, const Options &options)
+CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
 {
-    CCorrect::Stats stats;
+    CSingle::Stats stats;
 
     // We'll need it to construct expected library size
     std::set<BaseID> baseIDs;
@@ -110,6 +109,8 @@ CCorrect::Stats CCorrect::analyze(const std::string &file, const Options &option
         stats.correct[baseB] = correct[1];
         stats.correct[baseC] = correct[2];
         stats.correct[baseD] = correct[3];
+
+        stats.s_correct[base] = correct[0] + correct[1] + correct[2] + correct[3];
     }
     
     /*

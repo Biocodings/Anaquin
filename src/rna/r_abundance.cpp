@@ -79,7 +79,9 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
+    // Perform a linear regreession
     stats.linear();
+
     AnalyzeReporter::report("abundance.stats", "abundance.R", stats, "FPKM", c, options.writer);
 
     return stats;

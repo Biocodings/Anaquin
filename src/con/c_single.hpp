@@ -1,30 +1,33 @@
-#ifndef GI_C_CORRECT_HPP
-#define GI_C_CORRECT_HPP
+#ifndef GI_C_SINGLE_HPP
+#define GI_C_SINGLE_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Spike
 {
-    struct CCorrect
+    struct CSingle
     {
         struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };
 
-        struct Stats : public ModelStats
+        struct Stats
         {
             // Histogram expected
-            std::map<SequinID, Coverage> expect;
+            std::map<TypeID, Coverage> expect;
 
             // Histogram before normalization and correction
-            std::map<SequinID, Counts> abund;
+            std::map<TypeID, Counts> abund;
 
             // Histogram after normalization but before correction
-            std::map<SequinID, Coverage> actual;
+            std::map<TypeID, Coverage> actual;
 
             // Histogram after correction
-            std::map<SequinID, Coverage> correct;
+            std::map<TypeID, Coverage> correct;
+            
+            // Corrected abundance for each sequin
+            std::map<SequinID, Coverage> s_correct;
             
             // Expected size of the library
             Counts expTotal = 0;
@@ -33,7 +36,7 @@ namespace Spike
             Counts actTotal = 0;
         };
 
-        static Stats analyze(const std::string &file, const Options &options = Options());
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 
