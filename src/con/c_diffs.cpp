@@ -23,28 +23,28 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
 
     for (const auto &i : a.s_correct)
     {
-        if (!b.s_correct.count(i.first))
-        {
-            std::cout << "Warning: " + i.first << std::endl;
-            continue;
-        }
-        
         const auto &id = i.first;
         
+        if (!b.s_correct.count(i.first))
+        {
+            options.terminal->write((boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str());
+            continue;
+        }
+
         assert(b.s_correct.count(id));
 
-// TODO: Maybe raw...
-        
+        const auto len_a = s.c_seqs_A.at(id).length;
+        const auto len_b = s.c_seqs_B.at(id).length;
+
         // Calculate actual fold change between mixture A and B
-        const auto actual = log(b.s_correct.at(id) / a.s_correct.at(id));
+        const auto actual = (b.abund.at(id) / len_b) / (a.abund.at(id) / len_a);
         
         // Calculate known fold change between mixture A and B
-        const auto known = log((s.c_seqs_B.at(id).abund() / s.c_seqs_B.at(id).length) /
-                               (s.c_seqs_A.at(id).abund() / s.c_seqs_A.at(id).length));
+        const auto known = (s.c_seqs_B.at(id).abund() / len_b) / (s.c_seqs_A.at(id).abund() / len_a);
 
-        stats.x.push_back(known);
-        stats.y.push_back(actual);
         stats.z.push_back(id);
+        stats.x.push_back(log(known));
+        stats.y.push_back(log(actual));
     }
     
     // Perform a linear regreession
