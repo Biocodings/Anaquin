@@ -49,6 +49,7 @@
 #define MODE_VARIATION    287
 #define MODE_SEQUINS      288
 #define MODE_CORRECT      289
+#define MODE_MODEL        290
 
 #define OPT_MIN     321
 #define OPT_MAX     322
@@ -159,6 +160,8 @@ static const struct option long_options[] =
     { "f",        required_argument, 0, OPT_FILTER },
     { "filter",   required_argument, 0, OPT_FILTER },
 
+    { "m",        no_argument, 0, MODE_MODEL },
+    
     { "l",        no_argument, 0, MODE_SEQUINS },
     { "sequins",  no_argument, 0, MODE_SEQUINS },
 
@@ -236,6 +239,14 @@ void printMixture(const std::string &file)
 {
     Reader r(file, String);
     print(r);
+}
+
+void printFeatures(const Standard::SequinMap &m)
+{
+    for (const auto &i : m)
+    {
+        std::cout << i.first << " " << i.second.l.start << " " << i.second.l.end << std::endl;
+    }
 }
 
 template <typename Mixture, typename Model> void applyCustom(Mixture mix, Model mod)
@@ -548,7 +559,8 @@ void parse(int argc, char ** argv)
                 applyCustom(std::bind(&Standard::rna_mix, &s, std::placeholders::_1),
                             std::bind(&Standard::rna_mod, &s, std::placeholders::_1));
 
-                if (_mode != MODE_SEQUINS   &&
+                if (_mode != MODE_MODEL     &&
+                    _mode != MODE_SEQUINS   &&
                     _mode != MODE_SEQUENCE  &&
                     _mode != MODE_ALIGN     &&
                     _mode != MODE_ASSEMBLY  &&
@@ -564,6 +576,7 @@ void parse(int argc, char ** argv)
                     switch (_mode)
                     {
                         case MODE_SEQUENCE: { break; }
+                        case MODE_MODEL:    { printFeatures(s.r_seqs_A);    break; }
                         case MODE_SEQUINS:  { printMixture(RNADataMix());   break; }
                         case MODE_ALIGN:    { analyze<RAlign>(_opts[0]);    break; }
                         case MODE_ASSEMBLY: { analyze<RAssembly>(_opts[0]); break; }

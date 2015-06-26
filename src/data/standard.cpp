@@ -255,39 +255,6 @@ void Standard::meta_mix(const Reader &r)
 void Standard::con_mix(const Reader &r)
 {
     parseMix(r, c_seqs_A, c_seqs_B);
-
-    c_size = 0;
-    
-    for (const auto &i : c_seqs_A)
-    {
-        /*
-         * For each conjoint sequin, we have four groups - A, B, C and D. Each group represents an DNA standard.
-         * Assume the following ratio:
-         *
-         *   - A: 1
-         *   - B: 2
-         *   - C: 4
-         *   - D: 8
-         */
-
-        const auto fold = i.second.abund();
-        
-        // Expected concentration for group A
-        const auto con_A = fold * 1;
-        
-        // Expected concentration for group B
-        const auto con_B = fold * 2;
-        
-        // Expected concentration for group C
-        const auto con_C = fold * 4;
-        
-        // Expected concentration for group D
-        const auto con_D = fold * 8;
-        
-        c_size += (con_A + con_B + con_C + con_D);
-    }
-
-    assert(c_size);
 }
 
 void Standard::con()
@@ -339,7 +306,7 @@ void Standard::rna_mod(const Reader &r)
         // TODO: Please fix me!
         if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
         {
-            return; // TODO!
+            return; // TODO! To save assembly from crashing!! Defined in the model but not in sequin!
         }
 
         assert(!f.tID.empty() && !f.geneID.empty());
@@ -470,7 +437,7 @@ void Standard::rna_mix(const Reader &r)
     assert(!Locus::overlap(r_l_exons));
 
     /*
-     * The mixture file isn't able to tell us the position of a sequin. Here, we'll
+     * The mixture file is unable to give us the position of a sequin. Here, we'll
      * merge the information with the model. Note that we might have a sequin defined
      * in a mixture file that doesn't not appear in the model.
      */

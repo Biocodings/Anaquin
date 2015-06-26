@@ -1,3 +1,4 @@
+#include <ss/stats.hpp>
 #include "con/c_single.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
@@ -63,14 +64,6 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         const auto baseC = base + "_C";
         const auto baseD = base + "_D";
     
-        if (!stats.abund.count(baseA) ||
-            !stats.abund.count(baseB) ||
-            !stats.abund.count(baseC) ||
-            !stats.abund.count(baseD))
-        {
-            continue;
-        }
-        
         #define COUNT(x) stats.abund.count(x) ? stats.abund.at(x) : 0
 
         // Create a vector for normalized measured coverage
@@ -79,11 +72,18 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         // Create a vector for normalized expected coverage
         const auto expect = create(1.0, 2.0, 4.0, 8.0, s.c_seqs_A.at(base).abund(), stats.expTotal);
 
-        // Fit a linear regression model
-        const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(actual), SS::c(expect)));
+        // Make it one so that it can be divided (avoid division by zero)
+        double slope = 1.0;
 
-        // Regression slope that we'll correct to 1
-        const auto slope = lm.coeffs[1].v;
+        // Don't do a linear regression if the slope will be zero
+        if (SS::sum(actual))
+        {
+            // Fit a linear regression model
+            const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(actual), SS::c(expect)));
+            
+            // Regression slope that we'll correct to 1
+            slope = lm.coeffs[1].v;
+        }
         
         std::vector<double> correct;
         correct.resize(actual.size());
@@ -93,8 +93,11 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
             return c / slope;
         });
 
-        assert(expect[0] && expect[1] && expect[2] && expect[3]);
-
+        if (SS::sum(actual))
+        {
+            assert(expect[0] && expect[1] && expect[2] && expect[3]);
+        }
+        
         stats.expect[baseA]  = expect[0];
         stats.expect[baseB]  = expect[1];
         stats.expect[baseC]  = expect[2];
@@ -128,24 +131,34 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         options.writer->open(file);
         options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "actual" % "correct").str());
 
-        std::cout << abund.size() << " " << correct.size() << " " << expect.size() << " " << actual.size() << std::endl;
-
-        assert(expect.size() == correct.size());
-        assert(expect.size() == actual.size());
-
-        for (const auto &i : stats.abund)
+        /*
+         * The argument abund is a histogram of abundance before normalization. It's directly taken off from the alignment file.
+         * Not all sequins would be detected, in fact anything could be in the histogram.
+         */
+        
+        assert(expect.size() == actual.size() && expect.size() == correct.size());
+        
+        for (const auto &i : correct)
         {
-            if (!correct.count(i.first))
-            {
-                continue;
-            }
+            // Eg: GA322_B
+            const auto id = i.first;
             
-            assert(correct.count(i.first));
-            options.writer->write((boost::format(format) % i.first
-                                                         % abund.at(i.first)
-                                                         % expect.at(i.first)
-                                                         % actual.at(i.first)
-                                                         % correct.at(i.first)).str());
+            if (abund.count(id))
+            {
+                options.writer->write((boost::format(format) % id
+                                                             % abund.at(id)
+                                                             % expect.at(id)
+                                                             % actual.at(id)
+                                                             % correct.at(id)).str());
+            }
+            else
+            {
+                options.writer->write((boost::format(format) % id
+                                                             % "NA"
+                                                             % "NA"
+                                                             % "NA"
+                                                             % "NA").str());
+            }
         }
 
         options.writer->close();

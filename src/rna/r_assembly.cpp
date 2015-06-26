@@ -65,8 +65,8 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
                 }
                 else
                 {
-                    options.logger->write((boost::format("[Exon]: %1% %2%") % std::to_string(f.l.start)
-                                                                            % std::to_string(f.l.end)).str()) ;
+                    //options.logger->write((boost::format("[Exon]: %1% %2%") % std::to_string(f.l.start)
+                      //                                                      % std::to_string(f.l.end)).str()) ;
                 }
 
                 break;
@@ -86,6 +86,11 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
                 }))
                 {
                     stats.ct.at(match->id)++;
+                }
+                else
+                {
+                    options.logger->write((boost::format("[Transcript]: %1% %2%") % std::to_string(f.l.start)
+                                                                                  % std::to_string(f.l.end)).str()) ;
                 }
 
                 break;

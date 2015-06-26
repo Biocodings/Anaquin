@@ -99,8 +99,8 @@ namespace Spike
             // Sequins and their positions
             std::map<SequinID, Locus> r_sequins;
 
-            std::vector<Feature> r_genes;
             std::vector<Feature> r_exons;
+            std::vector<Feature> r_genes;
             std::vector<Feature> r_introns;
 
             std::vector<RNALocus> r_l_exons;
@@ -144,9 +144,6 @@ namespace Spike
         
             void con_mod(const Reader &);
             void con_mix(const Reader &);
-
-            // Library size
-            Counts c_size;
 
             // Sequins for mixture A and B
             SequinMap c_seqs_A, c_seqs_B;
