@@ -63,6 +63,11 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
                 {
                     stats.ce.at(match->tID)++;
                 }
+                else
+                {
+                    options.logger->write((boost::format("[Exon]: %1% %2%") % std::to_string(f.l.start)
+                                                                            % std::to_string(f.l.end)).str()) ;
+                }
 
                 break;
             }

@@ -205,7 +205,7 @@ namespace Spike
         }
         
         template <typename T, typename ID, typename S> static Sensitivity
-        analyze(const std::map<T, Counts> &c, const std::map<ID, S> &m)
+            analyze(const std::map<T, Counts> &c, const std::map<ID, S> &m)
         {
             Sensitivity s;
             

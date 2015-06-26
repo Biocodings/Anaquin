@@ -86,7 +86,7 @@ def simulate(file, basePath, mix='A', c=0, s=1, tool='wgsim'):
             con = int(con)
 
             # Don't bother if the abundance is too low or too high
-            if (con > 1 and con < 100000):
+            if (con > 1 and con < 200000):
                 print 'Generating: ' + str(con)
 
                 # Simulate reads from a given sequin
@@ -96,7 +96,7 @@ def simulate(file, basePath, mix='A', c=0, s=1, tool='wgsim'):
                     o2 = path + '/' + key + '.R2.fastq'                    
 
                     # Command: wgsim -e 0 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq            
-                    cmd = 'wgsim -r 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + ' ' + i + ' ' + o1 + ' ' + o2
+                    cmd = 'wgsim -r 0 -s 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + ' ' + i + ' ' + o1 + ' ' + o2
 
                     print cmd
                     os.system(cmd)

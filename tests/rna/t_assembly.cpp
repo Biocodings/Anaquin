@@ -5,6 +5,9 @@ using namespace Spike;
 
 TEST_CASE("RAssembly_Simulation")
 {
+    const auto rrr = RAssembly::analyze("scripts/A1/transcripts.gtf");
+    
+    
     const auto r = RAssembly::analyze("tests/data/rna/A1/transcripts.gtf");
 
     REQUIRE(r.pe.m.nq == 1200);
