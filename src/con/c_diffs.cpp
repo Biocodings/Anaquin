@@ -19,29 +19,34 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
     options.terminal->write("Analyzing mixuture A: " + fileA);
     const auto a = CSingle::analyze(fileA);
 
+    options.terminal->write("Mergin mixtures");
     const auto &s = Standard::instance();
 
-    for (const auto &i : a.s_correct)
+    /*
+     * Try for each detected sequin in the experiment
+     */
+    
+    for (const auto &i : a.actual)
     {
         const auto &id = i.first;
-        
-        if (!b.s_correct.count(i.first))
+
+        // Don't bother if the sequin isn't detected in either mixture
+        if (!a.actual.at(id) || !b.actual.at(id))
         {
             options.terminal->write((boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str());
             continue;
         }
 
-        assert(b.s_correct.count(id));
-
-        const auto len_a = s.c_seqs_A.at(id).length;
-        const auto len_b = s.c_seqs_B.at(id).length;
-
-        // Calculate actual fold change between mixture A and B
-        const auto actual = (b.abund.at(id) / len_b) / (a.abund.at(id) / len_a);
+        const auto baseID = s.c_map.at(id);
         
         // Calculate known fold change between mixture A and B
-        const auto known = (s.c_seqs_B.at(id).abund() / len_b) / (s.c_seqs_A.at(id).abund() / len_a);
+        const auto known = (b.expect.at(id) / a.expect.at(id));
 
+        // Calculate actual fold change between mixture A and B
+        const auto actual = (b.actual.at(id) / a.actual.at(id));
+
+        std::cout << known << " " << actual << std::endl;
+        
         stats.z.push_back(id);
         stats.x.push_back(log(known));
         stats.y.push_back(log(actual));

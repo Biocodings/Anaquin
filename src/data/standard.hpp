@@ -147,7 +147,9 @@ namespace Spike
 
             // Sequins for mixture A and B
             SequinMap c_seqs_A, c_seqs_B;
-        
+
+            std::map<TypeID, SequinID> c_map;
+
             /*
              * Fusion data
              */

@@ -255,6 +255,16 @@ void Standard::meta_mix(const Reader &r)
 void Standard::con_mix(const Reader &r)
 {
     parseMix(r, c_seqs_A, c_seqs_B);
+
+    for (const auto &i : c_seqs_A)
+    {
+        const auto &base = i.first;
+
+        c_map[base + "_" + "A"] = base;
+        c_map[base + "_" + "B"] = base;
+        c_map[base + "_" + "C"] = base;
+        c_map[base + "_" + "D"] = base;
+    }
 }
 
 void Standard::con()
