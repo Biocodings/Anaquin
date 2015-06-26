@@ -1,7 +1,6 @@
 #include <iostream>
 #include <ss/c.hpp>
 #include "rna/r_abundance.hpp"
-#include "stats/expression.hpp"
 #include "writers/r_writer.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_tmap.hpp"

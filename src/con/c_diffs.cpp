@@ -33,6 +33,8 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
         
         assert(b.s_correct.count(id));
 
+// TODO: Maybe raw...
+        
         // Calculate actual fold change between mixture A and B
         const auto actual = log(b.s_correct.at(id) / a.s_correct.at(id));
         

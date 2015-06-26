@@ -1,5 +1,4 @@
 #include "dna/d_align.hpp"
-#include "stats/expression.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;
@@ -78,7 +77,7 @@ DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
     options.logger->write("Calculating LOS");
     
     // Calculate for the sensitivity
-    stats.p.s.abund = 0.0; // TODO: Fix this!!! Expression::analyze(stats.c, s.d_seq(options.mix));
+    stats.p.s = Expression::analyze(stats.c, s.d_seq(options.mix));
 
     AnalyzeReporter::report("dalign.stats", stats.p, stats.c, options.writer);
     

@@ -1,5 +1,4 @@
 #include "rna/r_align.hpp"
-#include "stats/expression.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;

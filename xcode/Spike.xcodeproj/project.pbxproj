@@ -121,7 +121,6 @@
 		EF1DE0B31B21EC6D00DEC381 /* types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = types.hpp; path = ../src/data/types.hpp; sourceTree = "<group>"; };
 		EF1DE0B91B21EC8300DEC381 /* analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = analyzer.hpp; path = ../src/stats/analyzer.hpp; sourceTree = "<group>"; };
 		EF1DE0BA1B21EC8300DEC381 /* classify.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = classify.hpp; path = ../src/stats/classify.hpp; sourceTree = "<group>"; };
-		EF1DE0BB1B21EC8300DEC381 /* expression.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = expression.hpp; path = ../src/stats/expression.hpp; sourceTree = "<group>"; };
 		EF1DE0BC1B21EC8300DEC381 /* sensitivity.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sensitivity.hpp; path = ../src/stats/sensitivity.hpp; sourceTree = "<group>"; };
 		EF1DE0BD1B21ECA600DEC381 /* sequin.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sequin.hpp; path = ../src/data/sequin.hpp; sourceTree = "<group>"; };
 		EF224B4E1ADB5B8900B989A8 /* r_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_align.cpp; path = ../src/rna/r_align.cpp; sourceTree = "<group>"; };
@@ -307,7 +306,6 @@
 			children = (
 				EF1DE0B91B21EC8300DEC381 /* analyzer.hpp */,
 				EF1DE0BA1B21EC8300DEC381 /* classify.hpp */,
-				EF1DE0BB1B21EC8300DEC381 /* expression.hpp */,
 				EF1DE0BC1B21EC8300DEC381 /* sensitivity.hpp */,
 			);
 			name = stats;

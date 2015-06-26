@@ -1,5 +1,4 @@
 #include "rna/r_assembly.hpp"
-#include "stats/expression.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Spike;
