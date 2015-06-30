@@ -61,7 +61,7 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix='A', c=0, s=1, tool='wgsim'):
+def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=1, tool='wgsim'):
     mix = readMixture(file, mix)
 
     for f in os.listdir(basePath):
@@ -84,6 +84,9 @@ def simulate(file, basePath, mix='A', c=0, s=1, tool='wgsim'):
 
             # This is the number of reads that we'll need
             con = int(con)
+
+            con = max(min_, con)
+            con = min(max_, con)
 
             # Don't bother if the abundance is too low or too high
             if (con > 1 and con < 200000):
@@ -141,12 +144,12 @@ if __name__ == '__main__':
 
         for i in range(0,len(a)):
             split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')
-            simulate('../tests/data/rna/flat.mix.csv', 'RNA_Simulation/', 'A')
+            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A', min_=5000, max_=5000)
             os.system('mv RNA_Simulation ' + a[i])
 
         for i in range(0,len(b)):
             split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
-            simulate('../tests/data/rna/flat.mix.csv', 'RNA_Simulation/', 'B')
+            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B', min_=5000, max_=5000)
             os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'RNA'):
         a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
