@@ -45,8 +45,6 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
         // Calculate actual fold change between mixture A and B
         const auto actual = (b.actual.at(id) / a.actual.at(id));
 
-        std::cout << known << " " << actual << std::endl;
-        
         stats.z.push_back(id);
         stats.x.push_back(log(known));
         stats.y.push_back(log(actual));
