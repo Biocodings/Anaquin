@@ -56,10 +56,11 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     std::vector<Alignment> exons, introns;
 
     options.terminal->write("Parsing alignments");
-    
+    int n = 0;
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        if ((p.i % 10000) == 0)
+        // This is done because a typical SAM/BAM file is huge
+        if ((p.i % 100000) == 0)
         {
             options.terminal->write("Processed: " + std::to_string(p.i));
         }
@@ -97,6 +98,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
                     return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
                 }))
             {
+                n++;
                 stats.ce.at(s.r_isoformToGene.at(f.tID))++;
             }
         }
@@ -164,9 +166,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     options.terminal->write("Merging overlapping bases");
     
     /*
-     * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
-     * The number is expected to approach the reference length (calculated next) for a very large
-     * experiment with sufficient coverage.
+     * The counts for bases in a query is the total non-overlapping bases of all the exons in the experiment.
      */
 
     countBase(s.r_l_exons, exons, stats.pb.m, stats.cb);

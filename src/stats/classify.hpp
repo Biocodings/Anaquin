@@ -11,6 +11,7 @@ namespace Spike
     {
         inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
 
+        // Sensitivity, metrics for positive classification
         inline Percentage sn() const
         {
             assert(nr && nr >= _tp);
