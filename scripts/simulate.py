@@ -56,30 +56,27 @@ def readMixture(file, mix):
             # Create data-structure for the sequin            
             r[tokens[0]] = { 'id':  tokens[0],
                              'len': float(tokens[1]),
-                             'a':   float(tokens[2]),
-                             'b':   float(tokens[3]),
+                             'A':   float(tokens[2]),
+                             'B':   float(tokens[3]),
                            }
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=1, tool='wgsim'):
-    mix = readMixture(file, mix)
+def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=0.1, tool='wgsim'):
+    mixFile = readMixture(file, mix)
 
     for f in os.listdir(basePath):
         key = f.split('.')[0]
-
-        if key in mix:            
+        
+        if key in mixFile:            
             # The concentration level depends on the level
-            if mix == 'A':
-                reads = mix[key]['a']
-            else:
-                reads = mix[key]['b']
-
+            reads = mixFile[key][mix]
+                
             # The concentration needed to be added for the simulation
             reads = c + (s * reads)
 
             # Length of the sequin
-            length = mix[key]['len']
+            length = mixFile[key]['len']
 
             print '\n------------------ ' + key + ' ------------------'
             
@@ -153,21 +150,6 @@ def print_usage():
 if __name__ == '__main__':
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
-    elif (sys.argv[1] == 'RNAFlat'):
-        a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
-        b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
-
-        for i in range(0,len(a)):
-            split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')
-            #simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A', min_=5000, max_=5000)
-            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A')
-            os.system('mv RNA_Simulation ' + a[i])
-            break
-
-        #for i in range(0,len(b)):
-         #   split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
-          #  simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B', min_=5000, max_=5000)
-           # os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'RNA'):
         a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
         b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
