@@ -54,9 +54,10 @@ def readMixture(file, mix):
                 continue
                 
             # Create data-structure for the sequin            
-            r[tokens[0]] = { 'id': tokens[0],                            
-                             'a':  float(tokens[2]),
-                             'b':  float(tokens[3]),
+            r[tokens[0]] = { 'id':  tokens[0],
+                             'len': float(tokens[1]),
+                             'a':   float(tokens[2]),
+                             'b':   float(tokens[3]),
                            }
     return r
 
@@ -70,12 +71,15 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=1, tool='w
         if key in mix:            
             # The concentration level depends on the level
             if mix == 'A':
-                con = mix[key]['a']
+                reads = mix[key]['a']
             else:
-                con = mix[key]['b']
+                reads = mix[key]['b']
 
             # The concentration needed to be added for the simulation
-            con = c + (s * con)
+            reads = c + (s * reads)
+
+            # Length of the sequin
+            length = mix[key]['len']
 
             print '\n------------------ ' + key + ' ------------------'
             
@@ -83,14 +87,25 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=1, tool='w
             path  = basePath  + key
 
             # This is the number of reads that we'll need
-            con = int(con)
+            reads = int(reads)
 
-            con = max(min_, con)
-            con = min(max_, con)
+            #
+            # The number of reads need to be adjusted for the sequin length.
+            # The implementation borrows from Wendy's script. For example,
+            #
+            #   - length is 1689
+            #   - reads is 468750
+            #
+            # We would calculate: 468750 * (1689 / 1000) to get reads per KB.
+            #
+            
+            reads = max(min_, reads)
+            reads = min(max_, reads)
+            reads = reads * (length / 1000)
 
             # Don't bother if the abundance is too low or too high
-            if (con > 1 and con < 200000):
-                print 'Generating: ' + str(con)
+            if (reads > 1):
+                print 'Generating: ' + str(reads)
 
                 # Simulate reads from a given sequin
                 if tool == 'wgsim':
@@ -98,8 +113,8 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=1, tool='w
                     o1 = path + '/' + key + '.R1.fastq'
                     o2 = path + '/' + key + '.R2.fastq'                    
 
-                    # Command: wgsim -e 0 -N 5151 -1 101 -2 101 ${X} ${X}.R1.fastq ${X}.R2.fastq            
-                    cmd = 'wgsim -r 0 -s 0 -S ' + str(randint(1,100)) + ' -N ' + str(con) + ' ' + i + ' ' + o1 + ' ' + o2
+                    # Generate single-paired simulated reads
+                    cmd = 'wgsim -e 0 -r 0 -s 0 -d 0 -1 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' /dev/null'
 
                     print cmd
                     os.system(cmd)
@@ -109,8 +124,8 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=1, tool='w
                     os.system(cmd)                    
                 else:                    
                     os.system('mkdir -p ' + os.getcwd() + '/Sherman/' + key)
-                    #cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + str(con) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
-                    cmd = '../Sherman -cr 0 -e 0 -n ' + str(con) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
+                    #cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + str(reads) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
+                    cmd = '../Sherman -cr 0 -e 0 -n ' + str(reads) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
 
                     print cmd
                     os.system(cmd)
@@ -128,7 +143,7 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=1, tool='w
     if (tool == 'wgsim'):
         print('Merging the individual simulations...')
         os.system('cat ' + basePath + '*R1.fastq > ' + basePath + 'simulated_1.fastq')
-        os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
+        #os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
         #os.system('rm '  + basePath + '/*R1.fastq')
         #os.system('rm '  + basePath + '/*R2.fastq')
 
@@ -144,13 +159,15 @@ if __name__ == '__main__':
 
         for i in range(0,len(a)):
             split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')
-            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A', min_=5000, max_=5000)
+            #simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A', min_=5000, max_=5000)
+            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A')
             os.system('mv RNA_Simulation ' + a[i])
+            break
 
-        for i in range(0,len(b)):
-            split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
-            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B', min_=5000, max_=5000)
-            os.system('mv RNA_Simulation ' + b[i])
+        #for i in range(0,len(b)):
+         #   split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
+          #  simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B', min_=5000, max_=5000)
+           # os.system('mv RNA_Simulation ' + b[i])
     elif (sys.argv[1] == 'RNA'):
         a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
         b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
