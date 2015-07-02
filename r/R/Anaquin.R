@@ -17,62 +17,90 @@ LoadMixtures <- function(file)
 {
     if (hasArg(file))
     {
-        mixture <- read.csv(file)
+        m <- read.csv(file)
     }
     else
     {
         # Nothing specified, load the latest mixture available online
-        mixture <- read.csv(url("http://smallchess.com/Temp/RNA.v1.mix.csv"))
+        #mixture <- read.csv(url("http://smallchess.com/Temp/RNA.v1.mix.csv"))
+        m <- read.csv('/Users/tedwong/Sources/QA/data/rna/RNA.v4.1.mix', sep='\t')
+    }
+    
+    #
+    # The mixture file only gives us the isoforms. We'll need to combine the information
+    # for genes.
+    #
+    
+    m$GeneID <- as.character(m$ID)
+    m$GeneID <- substr(as.character(m$GeneID), 1, nchar(m$GeneID)-2)
+    geneIDs  <- unique(m$GeneID)
+
+    # Frame to store data for genes
+    g <- data.frame(ID=geneIDs, MixA=rep(0, length(geneIDs)), MixB=rep(0, length(geneIDs)), Fold=rep(0, length(geneIDs)))
+
+    for (gene in geneIDs)
+    {
+        # Filter a list of sequins for the gene
+        sequins <- m[m$GeneID == gene,]
+
+        # Concentration for mixture A at the gene-level
+        mixA <- sum(sequins$MixA / sequins$Length)
+        
+        # Concentration for mixture B at the gene-level
+        mixB <- sum(sequins$MixB / sequins$Length)
+        
+        # Expected fold-change
+        fold <- mixB / mixA
+        
+        g[g$ID == gene,]$MixA <- mixA
+        g[g$ID == gene,]$MixB <- mixB        
+        g[g$ID == gene,]$Fold <- fold
     }
 
-    version <- max(mixture[["Version"]])
-
-    r <- list('data'=data.frame(mixture), 'version'=version)
+    g$ID <- as.character(g$ID)
+    
+    r <- list('data'=data.frame(m), 'genes'=g)
     class(r) <- c("Mixture")
     r
 }
 
 print.Mixture <- function(x)
 {
-    print(paste('Version:', x$version))
-    print(x$data)
+    print(head(x$data))
+    print(head(x$genes))
 }
 
 DESeq2_Analyze <- function(r, m)
 {
-    # List of genes for the experiment (sequins + samples)
-    genes <- rownames(r)
+    # List of genes in the experiment (samples + sequins)
+    measured <- data.frame(ID=c(rownames(r)))
 
-    # List of all sequins
-    sequins <- c(as.vector(m$data$ID))
+    # List of known genes
+    known <- data.frame(ID=c(m$genes$ID)))
 
-    # Filter out to only rows for sequins, the index works only on genes
-    i <- genes %in% sequins
+    # Filter out the overlapping, the index works only for known
+    i <- measured$ID %in% known$ID
   
-    # Filter out undetected sequins, the index works only on sequins
-    j <- sequins %in% genes
-
-    genes   <- genes[i]
-    sequins <- sequins[j]
+    # Filter out the overlapping, the index works only for measured
+    j <- known$ID %in% measured$ID
 
     # We'll in trouble if they don't match...
-    stopifnot(length(genes) == length(sequins))
+    stopifnot(length(known) == length(measured))
   
     # Measured RPKM for each detected sequin
-    measured <- r$log2FoldChange[i]
-  
-    # Concentration for mixture A
-    mixA <- m$data$Mix.A[j]
-  
-    # Concentration for mixture B
-    mixB <- m$data$Mix.B[j]
-  
-    # Known concentration for each detected sequin
-    known <- log(mixB / mixA)
+    measured$logFold <- r$log2FoldChange[i]
+
+    # Known concentration for each sequin detected in the experiment
+    known$logFold <- log(m$genes$Fold[j])
 
     # We'll again in trouble if they don't match...
     stopifnot(length(known) == length(measured))
 
+    # There's no guarantee of any particular ordering. Let's sort them.
+    
+    
+    
+    
     # Fit a simple-linear regression model
     m <- lm(measured~known)
 
@@ -148,7 +176,7 @@ EdgeR_Analyze <- function(r, m)
     r 
 }
 
-RNAAnalyze <- function(r, m=LoadMixtures())
+Anaquin <- function(r, m=LoadMixtures())
 {
     if (class(r) == 'DESeqResults')
     {
