@@ -73,39 +73,39 @@ print.Mixture <- function(x)
 DESeq2_Analyze <- function(r, m)
 {
     # List of genes in the experiment (samples + sequins)
-    measured <- data.frame(ID=c(rownames(r)))
+    measured <- rownames(r)
 
     # List of known genes
-    known <- data.frame(ID=c(m$genes$ID)))
+    known <- m$genes$ID
 
     # Filter out the overlapping, the index works only for known
-    i <- measured$ID %in% known$ID
+    i <- measured %in% known
   
     # Filter out the overlapping, the index works only for measured
-    j <- known$ID %in% measured$ID
+    j <- known %in% measured
 
-    # We'll in trouble if they don't match...
-    stopifnot(length(known) == length(measured))
-  
-    # Measured RPKM for each detected sequin
-    measured$logFold <- r$log2FoldChange[i]
-
+    known    <- data.frame(ID=c(known[i]))
+    measured <- data.frame(ID=c(measured[j]))
+    
     # Known concentration for each sequin detected in the experiment
-    known$logFold <- log(m$genes$Fold[j])
+    known$logFold <- log(m$genes$Fold[i])
+    
+    # Measured RPKM for each detected sequin
+    measured$logFold <- r$log2FoldChange[j]
 
-    # We'll again in trouble if they don't match...
+    stopifnot(nrow(known) == nrow(measured))
     stopifnot(length(known) == length(measured))
 
-    # There's no guarantee of any particular ordering. Let's sort them.
+    known <- known[with(known, order(ID)),]    
+    measured <- measured[with(measured, order(ID)),]
     
-    
-    
+    measured$logFold[is.na(measured$logFold)] <- 0
     
     # Fit a simple-linear regression model
-    m <- lm(measured~known)
+    m <- lm(measured$logFold ~ known$logFold)
 
     # Pearson's correlation
-    r <- cor(known, measured)
+    r <- cor(known$logFold, measured$logFold)
 
     # Coefficients of determination
     r2 <- summary(m)$r.squared
