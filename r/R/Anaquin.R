@@ -27,8 +27,7 @@ LoadMixtures <- function(file)
     }
     
     #
-    # The mixture file only gives us the isoforms. We'll need to combine the information
-    # for genes.
+    # The mixture file only gives us the isoforms. We'll need to combine the information for genes
     #
     
     m$GeneID <- as.character(m$ID)

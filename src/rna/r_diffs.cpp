@@ -83,16 +83,36 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
     // Perform a linear-regression model
     stats.linear();
 
+    /*
+     * Write out results for statistics
+     */
+    
     if (options.level == Gene)
     {
         stats.s = Expression::analyze(c, s.r_gene(options.rMix));
-        AnalyzeReporter::report("diffs.stats", "diffs.genes.R", stats, "FPKM", c, options.writer);
+        AnalyzeReporter::report("rna_diffs.stats", "diffs.genes.R", stats, "FPKM", c, options.writer);
     }
     else
     {
         stats.s = Expression::analyze(c, s.r_sequin(options.rMix));
-        AnalyzeReporter::report("diffs.stats", "diffs.isoform.R", stats, "FPKM", c, options.writer);
+        AnalyzeReporter::report("rna_diffs.stats", "diffs.isoform.R", stats, "FPKM", c, options.writer);
     }
+
+    /*
+     * Write out results for RNA sequins
+     */
+    
+    const std::string format = "%1%\t%2%\t%3%";
+    
+    options.writer->open("rna_sequins.stats");
+    options.writer->write((boost::format(format) % "id" % "spiked" % "measured").str());
+    
+    for (std::size_t i = 0; i < stats.z.size(); i++)
+    {
+        options.writer->write((boost::format(format) % stats.z[i] % stats.x[i] % stats.y[i]).str());
+    }
+    
+    options.writer->close();
 
     return stats;
 }
