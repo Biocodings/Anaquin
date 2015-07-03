@@ -5,7 +5,7 @@ using namespace Spike;
 
 TEST_CASE("Differential_Simulations_Isoforms")
 {
-    RDiffs::analyze("/Users/tedwong/Sources/QA/scripts/isoform_exp.diff");
+    RDiffs::analyze("/Users/tedwong/Projects/RNA/D/gene_exp.diff");
 
     
 //    /*

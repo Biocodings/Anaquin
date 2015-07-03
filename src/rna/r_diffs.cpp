@@ -36,16 +36,28 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
             {
                 if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
+                    if (t.geneID == "R1_11")
+                    {
+                        auto a = s.r_seqs_gB.at(t.geneID).abund();
+                        auto b = s.r_seqs_gA.at(t.geneID).abund();
+
+                        known = (s.r_seqs_gB.at(t.geneID).abund() /
+                                 s.r_seqs_gA.at(t.geneID).abund());
+                        
+                        a = log2f(known);
+                        a = a;
+                    }
+                    
                     // Calculate the known fold-change between B and A
-                    known = (s.r_seqs_gB.at(t.geneID).abund() + s.r_seqs_gB.at(t.geneID).abund()) /
-                            (s.r_seqs_gA.at(t.geneID).abund() + s.r_seqs_gA.at(t.geneID).abund());
+                    known = (s.r_seqs_gB.at(t.geneID).abund() /
+                             s.r_seqs_gA.at(t.geneID).abund());
 
                     // Calculate the measured fold-change between B and A
                     measured = t.fpkm_2 / t.fpkm_1;
                     
                     c[t.geneID]++;
-                    stats.x.push_back(log(known));
-                    stats.y.push_back(log(measured));
+                    stats.x.push_back(log2f(known));
+                    stats.y.push_back(log2f(measured));
                     stats.z.push_back(t.geneID);
                 }
 

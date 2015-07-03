@@ -5,6 +5,11 @@ using namespace Spike;
 
 TEST_CASE("RAbundance_Simulations_Isoforms_A1")
 {
+    std::string a = "/Users/tedwong/Projects/RNA/A1/isoforms.fpkm_tracking";
+    RAbundance::analyze(a);
+    
+    
+    
     const auto r  = RAbundance::analyze("tests/data/rna/A1/isoforms.fpkm_tracking");
     const auto lm = r.linear();
 

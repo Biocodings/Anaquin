@@ -22,7 +22,6 @@ LoadMixtures <- function(file)
     else
     {
         # Nothing specified, load the latest mixture available online
-        #mixture <- read.csv(url("http://smallchess.com/Temp/RNA.v1.mix.csv"))
         m <- read.csv('/Users/tedwong/Sources/QA/data/rna/RNA.v4.1.mix', sep='\t')
     }
     
@@ -35,27 +34,29 @@ LoadMixtures <- function(file)
     geneIDs  <- unique(m$GeneID)
 
     # Frame to store data for genes
-    g <- data.frame(ID=geneIDs, MixA=rep(0, length(geneIDs)), MixB=rep(0, length(geneIDs)), Fold=rep(0, length(geneIDs)))
+    g <- data.frame(ID=geneIDs,
+                    A=rep(0, length(geneIDs)),
+                    B=rep(0, length(geneIDs)),
+                    fold=rep(0, length(geneIDs)),
+                    logFold = rep(0, length(geneIDs)))
 
     for (gene in geneIDs)
     {
         # Filter a list of sequins for the gene
         sequins <- m[m$GeneID == gene,]
 
-        # Concentration for mixture A at the gene-level
-        mixA <- sum(sequins$MixA / sequins$Length)
+        #mixA <- sum(sequins$MixA / sequins$Length)
+        #mixB <- sum(sequins$MixB / sequins$Length)
+        mixA <- sum(sequins$MixA)
+        mixB <- sum(sequins$MixB)
         
-        # Concentration for mixture B at the gene-level
-        mixB <- sum(sequins$MixB / sequins$Length)
-        
-        # Expected fold-change
-        fold <- mixB / mixA
-        
-        g[g$ID == gene,]$MixA <- mixA
-        g[g$ID == gene,]$MixB <- mixB        
-        g[g$ID == gene,]$Fold <- fold
+        g[g$ID == gene,]$A <- mixA
+        g[g$ID == gene,]$B <- mixB
+        g[g$ID == gene,]$fold <- mixB / mixA
+        g[g$ID == gene,]$logFold <- log2(mixB / mixA)
     }
 
+    # Prefer not to have it as factor variable
     g$ID <- as.character(g$ID)
     
     r <- list('data'=data.frame(m), 'genes'=g)
@@ -87,11 +88,12 @@ DESeq2_Analyze <- function(r, m)
     measured <- data.frame(ID=c(measured[j]))
     
     # Known concentration for each sequin detected in the experiment
-    known$logFold <- log(m$genes$Fold[i])
+    known$logFold <- m$genes$logFold[i]
     
-    # Measured RPKM for each detected sequin
+    # Measured log fold-change for each detected sequin
     measured$logFold <- r$log2FoldChange[j]
-
+    #measured$logFold <- r$table$logFC[i]
+    
     stopifnot(nrow(known) == nrow(measured))
     stopifnot(length(known) == length(measured))
 
@@ -137,7 +139,6 @@ EdgeR_Analyze <- function(r, m)
     genes   <- genes[i]
     sequins <- sequins[j]
     
-    # We'll in trouble if they don't match...
     stopifnot(length(genes) == length(sequins))
     
     # Measured RPKM for each detected sequin
@@ -150,7 +151,7 @@ EdgeR_Analyze <- function(r, m)
     mixB <- m$data$Mix.B[j]
     
     # Known concentration for each detected sequin
-    known <- log(mixB / mixA)
+    known <- log2(mixB / mixA)
     
     # We'll again in trouble if they don't match...
     stopifnot(length(known) == length(measured))
