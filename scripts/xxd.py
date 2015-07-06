@@ -16,6 +16,12 @@ def xxd(src, dst):
 data  = [ 'data/manual.txt',    
           'data/linear.R',
 
+           # ------- Fusion -------
+
+           'data/fus/FUS.v3.csv',
+           'data/fus/FUS.v1.tab',
+           'data/fus/FUS.v1.bed',
+
            # ------- Conjoint -------
 
            'data/con/CON.v2.mix.csv',
@@ -23,11 +29,10 @@ data  = [ 'data/manual.txt',
            # ---------- RNA ----------
 
           'data/rna/RNA.usage.txt',
-          'data/rna/chrT.v1.fa',
+          'data/rna/chrT.v2.fa',
           'data/rna/RNA.v1.bed',
           'data/rna/RNA.v1.gtf',
           'data/rna/RNA.v4.1.mix',
-          'data/rna/RNA.v1.2.tab.fa',
 
            # ---------- META ----------
 
