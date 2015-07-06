@@ -7,7 +7,7 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>4D3BA502-17E6-4DB6-8D95-11E6136DBC45</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>Spike</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>1754a112-b80e-1970-4a7e-ce57b7db7bff++505</key>
@@ -16,7 +16,7 @@
 		<string>http://www.smallchess.com/2gNUaENVQpWt3Jw7TvQN</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>xcode/Spike.xcodeproj/project.xcworkspace</string>
+	<string>xcode/Spike.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>1754a112-b80e-1970-4a7e-ce57b7db7bff++505</key>
@@ -30,7 +30,7 @@
 		<string>https://github.com/student-t/Anaquin</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/student-t/Anaquin/trunk/xcode/Spike.xcodeproj/project.xcworkspace</string>
+	<string>https://github.com/student-t/Anaquin/trunk/xcode/Spike.xcodeproj</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
