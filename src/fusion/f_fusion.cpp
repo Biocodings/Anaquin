@@ -1,33 +1,57 @@
-#include "data/reader.hpp"
 #include "fusion/f_fusion.hpp"
+#include "parsers/parser_fusion.hpp"
 
 using namespace Spike;
 
 FFusion::Stats FFusion::analyze(const std::string &file, const Options &options)
 {
-    Reader r(file);
-    std::vector<std::string> tokens;
+    FFusion::Stats stats;
+    const auto &s = Standard::instance();
     
-    while (r.nextTokens(tokens, "@"))
+    ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &)
     {
-        assert(tokens.size() > 1);
-        
-        /*
-         * chrT-chrT  2082667  4107441  fr  223  37  86  0  47545  81  0.054435
-         */
-        
-        std::cout << tokens[0] << std::endl;
-        
-        
-    }
+        if (f.chr_1 == s.id && f.chr_2 == s.id)
+        {
+            
+//            if (classify(stats.p.m, f, [&](const ParserFusion::Fusion &)
+  //          {
+                
+                
+                
+                
+    //            return true;
+      //      }));
+        }
+    });
     
-    //            bool nextTokens(std::vector<std::string> &, const std::string &c) const;
+    /*
+     if (align.id == s.id)
+     {
+     stats.n_chrT++;
+     
+     if (classify(stats.p.m, align, [&](const Alignment &)
+     {
+     matched = findMap(s.d_vars, align, MatchRule::Contains);
+     
+     if (options.filters.count(matched->id))
+     {
+     return Ignore;
+     }
+     
+     return matched ? Positive : Negative;
+     }))
+     {
+     stats.c.at(matched->id)++;
+     }
+     }
+     else
+     {
+     stats.n_samps++;
+     }
+*/
     
-    //            bool nextLine(std::string &) const;
     
     
     
-    
-    
-    return FFusion::Stats();
+    return stats;
 }

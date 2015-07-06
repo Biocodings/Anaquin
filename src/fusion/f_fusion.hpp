@@ -14,10 +14,10 @@ namespace Spike
 
         struct Stats
         {
-
+            Performance p;
         };
 
-        static Stats analyze(const std::string &file, const Options &options = Options());
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 
