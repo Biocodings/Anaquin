@@ -37,6 +37,7 @@ void ParserFusion::parse(const Reader &r, Callback x)
         
         f.dir_1 = tokens[3][0] == 'f' ? Forward : Backward;
         f.dir_2 = tokens[3][1] == 'f' ? Forward : Backward;;
+        f.reads = stoi(tokens[4]);
 
         p.i++;
         x(f, p);
