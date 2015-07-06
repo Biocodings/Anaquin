@@ -8,6 +8,13 @@
 #include "resources/manual.txt"
 
 /*
+ * Fusion Resources
+ */
+
+#include "resources/FUS.v1.bed"
+#include "resources/FUS.v3.csv"
+
+/*
  * Conjoint Resources
  */
 
@@ -17,12 +24,11 @@
  * RNA Resources
  */
 
-#include "resources/chrT.v1.fa"
+#include "resources/chrT.v2.fa"
 #include "resources/RNA.v1.bed"
 #include "resources/RNA.v1.gtf"
 #include "resources/RNA.v4.1.mix"
 #include "resources/RNA.usage.txt"
-#include "resources/RNA.v1.2.tab.fa"
 
 /*
  * META Resources
@@ -72,6 +78,16 @@ std::string Manual()
  * Fusion Resources
  */
 
+std::string FusDataMix()
+{
+    return ToString(data_fus_FUS_v3_csv);
+}
+
+std::string FusDataBed()
+{
+    return ToString(data_fus_FUS_v1_bed);
+}
+
 /*
  * Conjoint Resources
  */
@@ -106,12 +122,7 @@ std::string MetaDataBed()
 
 std::string RNADataFA()
 {
-    return ToString(data_rna_chrT_v1_fa);
-}
-
-std::string RNADataTab()
-{
-    return ToString(data_rna_RNA_v1_2_tab_fa);
+    return ToString(data_rna_chrT_v2_fa);
 }
 
 std::string RNADataGTF()

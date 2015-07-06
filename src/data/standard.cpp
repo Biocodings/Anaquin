@@ -13,21 +13,12 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
-enum CSVField
-{
-    CSV_ID,
-    CSV_RDM_ID,
-    CSV_Group,
-    CSV_Con_A,
-    CSV_Con_B,
-    CSV_Fold,
-    CSV_LogFold,
-};
+extern std::string FusDataMix();
+extern std::string FusDataBed();
 
 extern std::string ConDataMix();
 
 extern std::string RNADataFA();
-extern std::string RNADataTab();
 extern std::string RNADataBed();
 extern std::string RNADataGTF();
 extern std::string RNADataMix();
