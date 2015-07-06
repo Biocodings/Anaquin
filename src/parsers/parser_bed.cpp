@@ -7,31 +7,8 @@ using namespace Spike;
 
 void ParserBED::parse(const Reader &r, Callback x)
 {
-    BedFeature bf;
+    BedFeature f;
     ParserProgress p;
-
-    /*
-     *     Required
-     *    ----------
-     *
-     *    1. Name of the chromosome
-     *    2. Starting position
-     *    3. Ending position
-     *
-     *     Optional
-     *    ----------
-     *
-     *    4. Name of the BED line
-     *    5. Score
-     *    6. Strand
-     *    7. Thick starting position
-     *    8. Thick ending position
-     *    9. An RGB value
-     *   10. The number of blocks (exons) in the BED line
-     *   11. A comma-separated list of the block sizes. The number of items in this list should correspond to blockCount.
-     *   12. A comma-separated list of block starts. All of the blockStart positions should be calculated relative to chromStart.
-     *       The number of items in this list should correspond to blockCount.
-     */
 
     std::vector<std::string> sizes, starts, tokens;
 
@@ -42,19 +19,25 @@ void ParserBED::parse(const Reader &r, Callback x)
         {
             return;
         }
-        
-        bf.blocks.clear();
-        
+
+        f.blocks.clear();
+
         // Name of the chromosome
-        bf.id = tokens[0];
+        f.id = tokens[0];
 
         // Position of the feature in standard chromosomal coordinates
-        bf.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
+        f.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
 
+        if (tokens.size() >= 6)
+        {
+            // Defines the strand, either '+' or '-'
+            f.strand = tokens[5] == "+" ? Forward : Backward;
+        }
+        
         if (tokens.size() >= 4)
         {
             // Name of the BED line (eg: gene)
-            bf.name = tokens[3];
+            f.name = tokens[3];
 
             if (tokens.size() >= 10)
             {
@@ -67,12 +50,12 @@ void ParserBED::parse(const Reader &r, Callback x)
                     const BasePair start = stod(starts[i]);
                     const BasePair size  = stod(sizes[i]);
 
-                    bf.blocks.push_back(Locus(bf.l.start + start, bf.l.start + start + size - 1));
+                    f.blocks.push_back(Locus(f.l.start + start, f.l.start + start + size - 1));
                 }
             }
         }
 
-        x(bf, p);
+        x(f, p);
         p.i++;
     }
 }

@@ -4,6 +4,7 @@
 #include <functional>
 #include "data/types.hpp"
 #include "data/locus.hpp"
+#include "data/biology.hpp"
 #include "parsers/parser.hpp"
 
 namespace Spike
@@ -13,6 +14,9 @@ namespace Spike
         operator const FeatureName &() const { return name; }
 
         ChromoID id;
+
+        // Forward or reverse strand?
+        Strand strand;
         
         Locus l;
 
