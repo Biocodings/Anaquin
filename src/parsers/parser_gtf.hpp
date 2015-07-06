@@ -9,7 +9,7 @@ namespace Spike
     struct ParserGTF
     {
         typedef std::function<void (const Feature &, const ParserProgress &)> Callback;
-        static void parse(const Reader &r, Callback);
+        static void parse(const Reader &, Callback);
     };
 }
 

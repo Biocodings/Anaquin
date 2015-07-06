@@ -23,7 +23,7 @@ namespace Spike
     
     struct ParserTracking
     {
-        static void parse(const std::string &file, std::function<void (const Tracking &, const ParserProgress &)>);
+        static void parse(const std::string &, std::function<void (const Tracking &, const ParserProgress &)>);
     };    
 }
 

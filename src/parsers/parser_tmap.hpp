@@ -21,7 +21,7 @@ namespace Spike
 
     struct ParserTMap
     {
-        static void parse(const std::string &file, std::function<void (const TMap &, const ParserProgress &)>);
+        static void parse(const std::string &, std::function<void (const TMap &, const ParserProgress &)>);
     };
 }
 
