@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include "data/region.hpp"
 #include "data/reader.hpp"
 #include "data/sequin.hpp"
 #include "data/feature.hpp"
@@ -22,6 +23,8 @@ namespace Spike
 
     struct Variation
     {
+        operator const Locus &() const { return l; }
+
         SequinID id;
         
         // The reference position, with the 1st base having position 1
@@ -65,8 +68,6 @@ namespace Spike
                 return s;
             }
 
-            void check() const;
-        
             inline const SequinMap& r_sequin(Mixture mix) const
             {
                 return mix == MixA ? r_seqs_A : r_seqs_B;
@@ -142,7 +143,6 @@ namespace Spike
              * Conjoint data
              */
         
-            void con_mod(const Reader &);
             void con_mix(const Reader &);
 
             // Sequins for mixture A and B
@@ -153,16 +153,19 @@ namespace Spike
             /*
              * Fusion data
              */
-             
-            void fusi_mod(const Reader &);
-            void fusi_mix(const Reader &);
 
-            // Sequins for mixture A and B
-            SequinMap f_seqs_A, f_seqs_B;
-        
-            // Bases for mixture A and B
-            BaseMap f_seqs_bA, f_seqs_bB;
-        
+            void f_mod(const Reader &);
+            void f_mix(const Reader &);
+
+            // Exons for each fusion sequin in the forward strand
+            std::map<SequinID, Region> f_f_exons;
+
+            // Exons for each fusion sequin in the reverse strand
+            std::map<SequinID, Region> f_r_exons;
+
+            // Mixture for each fusion sequin
+            SequinMap f_seqs_A;
+
             /*
              * Metagenomic data
              */
@@ -195,12 +198,12 @@ namespace Spike
 
             // Apply default resources for metagenomics
             void meta();
-        
+
             // Apply default resources for conjoint
             void con();
-        
+
             // Apply default resources for fusion
-            void fusi();
+            void fus();
     };
 }
 

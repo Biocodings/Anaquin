@@ -3,6 +3,12 @@
 
 namespace Spike
 {
+    enum Strand
+    {
+        Forward,
+        Backward,
+    };
+
     struct Contig
     {
         std::string id;

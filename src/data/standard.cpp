@@ -91,6 +91,48 @@ template <typename SequinMap, typename BaseMap> void mergeMix(const Reader &r,
     assert(!a.empty() && !b.empty() && !ba.empty() && !bb.empty());
 }
 
+template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &m, unsigned column)
+{
+    m.clear();
+    ParseSequinInfo info;
+    
+    ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
+    {
+        if (p.i == 0)
+        {
+            return;
+        }
+        
+        Sequin s;
+        
+        // Make sure there's no duplicate in the mixture file
+        assert(info.sequinIDs.count(fields[0]) == 0);
+        
+        info.sequinIDs.insert(s.id = fields[0]);
+        
+        // Base ID is simply the ID without the last part
+        s.baseID = s.id.substr(0, s.id.find_last_of("_"));
+        
+        // Skip over "_"
+        s.typeID = s.id.substr(s.id.find_last_of("_") + 1);
+        
+        // Length of the sequin
+        s.length = stoi(fields[1]);
+        
+        assert(s.length);
+        
+        // Concentration for the mixture
+        s.abund() = stof(fields[column]);
+        
+        // Create an entry for the mixture
+        m[s.id] = s;
+        
+        info.baseIDs[s.baseID].insert(s.typeID);
+    });
+    
+    return info;
+}
+
 template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &a, SequinMap &b)
 {
     a.clear();
@@ -161,26 +203,12 @@ Standard::Standard()
     
     // Remove the '<' prefix
     id = line.substr(1, line.size());
-
+    
+    fus();
     con();
     rna();
     dna();
     meta();
-    fusi();
-    
-    // Throw an exception if any inconsistency
-    check();
-}
-
-void Standard::check() const
-{
-    for (const auto &i : d_seqs_bA)
-    {
-        if (i.second.alleleFreq() == 0)
-        {
-            throw std::runtime_error("Zero allele frequency: " + i.first);
-        }
-    }
 }
 
 void Standard::dna_mod(const Reader &r)
@@ -258,14 +286,49 @@ void Standard::con_mix(const Reader &r)
     }
 }
 
+void Standard::f_mix(const Reader &r)
+{
+    parseMix(r, f_seqs_A, 2);
+}
+
+void Standard::f_mod(const Reader &r)
+{
+    f_f_exons.clear();
+    f_r_exons.clear();
+    
+    ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
+    {
+        // Eg: FG1_3_P1
+        const auto id = f.name.substr(0, f.name.find_last_of("."));
+        
+        if (id == "FG1_9_P2")
+        {
+            int a = 10;
+            a = 10;
+        }
+        
+        if (f.strand == Forward)
+        {
+            f_f_exons[id].push_back(f.l);
+        }
+        else
+        {
+            f_r_exons[id].push_back(f.l);
+        }
+    });
+
+    assert(!f_f_exons.empty() && !f_r_exons.empty());
+}
+
 void Standard::con()
 {
     con_mix(Reader(ConDataMix(), DataMode::String));
 }
 
-void Standard::fusi()
+void Standard::fus()
 {
-    // Empty Implementation
+    f_mix(Reader(FusDataMix(), DataMode::String));
+    f_mod(Reader(FusDataBed(), DataMode::String));
 }
 
 void Standard::meta()
