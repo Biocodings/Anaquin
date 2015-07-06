@@ -117,8 +117,7 @@ namespace Spike
     {
         const auto &s = Standard::instance();
 
-        //if (t.id == s.id && s.l.contains(t.l))
-        if (s.l.contains(t.l))
+        if (s.l.contains(static_cast<Locus>(t)))
         {
             const auto r = c(t);
 

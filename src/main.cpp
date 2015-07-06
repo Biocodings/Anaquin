@@ -23,6 +23,8 @@
 #include "con/c_diffs.hpp"
 #include "con/c_single.hpp"
 
+#include "fus/f_discover.hpp"
+
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
 
@@ -50,6 +52,7 @@
 #define MODE_SEQUINS      288
 #define MODE_CORRECT      289
 #define MODE_MODEL        290
+#define MODE_DISCOVERY    291
 
 #define OPT_MIN     321
 #define OPT_MAX     322
@@ -177,8 +180,9 @@ static const struct option long_options[] =
     { "ab",        required_argument, 0, MODE_ABUNDANCE },
     { "abundance", required_argument, 0, MODE_ABUNDANCE },
 
-    { "correct", required_argument, 0, MODE_CORRECT },
-    
+    { "correct",  required_argument, 0, MODE_CORRECT   },
+    { "discover", required_argument, 0, MODE_DISCOVERY },
+
     { "var",     required_argument, 0, MODE_VARIATION },
     { "variant", required_argument, 0, MODE_VARIATION },
 
@@ -524,6 +528,19 @@ void parse(int argc, char ** argv)
             case CMD_FUS:
             {
                 std::cout << "Fusion Analysis" << std::endl;
+                
+                if (_mode != MODE_DISCOVERY)
+                {
+                    throw InvalidUsageError();
+                }
+                else
+                {
+                    switch (_mode)
+                    {
+                        case MODE_DISCOVERY: { analyze<FDiscover>(_opts[0]); break; }
+                    }
+                }
+
                 break;
             }
 
