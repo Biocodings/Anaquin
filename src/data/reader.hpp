@@ -10,10 +10,10 @@ namespace Spike
     struct ReaderInternal;
 
     /*
-     * Reader encapsulates the underlying data-source. For example, we could source from a memory string
+     * Reader encapsulates the underlying data source. For example, we could source from a memory string
      * or a physical file.
      */
-    
+
     class Reader
     {
         public:
