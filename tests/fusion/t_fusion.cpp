@@ -5,11 +5,9 @@ using namespace Spike;
 
 TEST_CASE("FFusion_Test")
 {
-    FFusion::analyze("tests/data/fusion/fusions.out");
+    const auto stats = FFusion::analyze("tests/data/fusion/fusions.out");
     
-    
-    
-    
-    //        static Stats analyze(const std::string &file, const Options &options = Options());
-    
+    REQUIRE(stats.p.m.sn() == Approx(0.125));
+    REQUIRE(stats.p.m.sp() == Approx(0.3157894737));
+    REQUIRE(stats.p.m.nr == 48);
 }
