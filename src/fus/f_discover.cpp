@@ -47,7 +47,19 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
             return Negative;
         }))
         {
-            // Empty Implementation
+            assert(!id.empty());
+            
+            const auto seq = s.f_seqs_A.at(id);
+            
+            // Known abundance for the fusion
+            const auto known = seq.abund() / seq.length;
+            
+            // Measured abundance for the fusion
+            const auto measured = f.reads;
+            
+            stats.x.push_back(log2f(known));
+            stats.y.push_back(log2f(measured));
+            stats.z.push_back(id);
         }
     });
 
@@ -58,7 +70,9 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
      * Write out the statistics
      */
 
-    //    AnalyzeReporter::report("rna_abundance.stats", "abundance.R", stats, "FPKM", c, options.writer);
+    options.writer->open("fusion_coverage.R");
+    options.writer->write(RWriter::write(stats.x, stats.y, stats.z, "?", 0.0));
+    options.writer->close();
     
     AnalyzeReporter::report("fusion_discover.stats", stats.p, stats.c, options.writer);
     

@@ -128,7 +128,7 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
         m[s.id] = s;
         
         info.baseIDs[s.baseID].insert(s.typeID);
-    });
+    }, ",");
     
     return info;
 }
