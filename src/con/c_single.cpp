@@ -54,6 +54,7 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
     }
     
     assert(stats.expTotal);
+    options.terminal->write("Correcting...");
     
     for (const auto &i : s.c_seqs_A)
     {
@@ -164,6 +165,7 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         options.writer->close();
     };
 
+    options.terminal->write("Writing histogram");
     writeHist("conjoint.stats", stats.abund, stats.expect, stats.actual, stats.correct);
 
 	return stats;
