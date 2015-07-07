@@ -293,8 +293,8 @@ void Standard::f_mix(const Reader &r)
 
 void Standard::f_mod(const Reader &r)
 {
-    f_f_exons.clear();
-    f_r_exons.clear();
+    f_f_fusions.clear();
+    f_r_fusions.clear();
 
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
@@ -303,15 +303,15 @@ void Standard::f_mod(const Reader &r)
         
         if (f.strand == Forward)
         {
-            f_f_exons[id].push_back(f.l);
+            f_f_fusions[id] = f.l;
         }
         else
         {
-            f_r_exons[id].push_back(f.l);
+            f_r_fusions[id] = f.l;
         }
     });
 
-    assert(!f_f_exons.empty() && !f_r_exons.empty());
+    assert(!f_f_fusions.empty() && !f_r_fusions.empty());
 }
 
 void Standard::con()

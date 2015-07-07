@@ -20,11 +20,11 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
                     
                 if (f.dir_1 == Backward && f.dir_2 == Forward)
                 {
-                    for (const auto &i : s.f_f_exons)
+                    for (const auto &i : s.f_f_fusions)
                     {
                         id = i.first;
-                        
-                        if (i.second.region().start == start)
+
+                        if (i.second.start == start)
                         {
                             return Positive;
                         }
@@ -32,11 +32,11 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
                 }
                 else
                 {
-                    for (const auto &i : s.f_f_exons)
+                    for (const auto &i : s.f_r_fusions)
                     {
                         id = i.first;
 
-                        if (i.second.region().end == start)
+                        if (i.second.end == start)
                         {
                             return Positive;
                         }
@@ -52,7 +52,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
     });
 
     // The references are simply the known fusion points
-    stats.p.m.nr = s.f_f_exons.size() + s.f_r_exons.size();
+    stats.p.m.nr = s.f_f_fusions.size() + s.f_r_fusions.size();
 
     AnalyzeReporter::report("fusion_discover.stats", stats.p, stats.c, options.writer);
     

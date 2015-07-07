@@ -157,11 +157,11 @@ namespace Spike
             void f_mod(const Reader &);
             void f_mix(const Reader &);
 
-            // Exons for each fusion sequin in the forward strand
-            std::map<SequinID, Region> f_f_exons;
+            // Locus for each fusion in the forward strand
+            std::map<SequinID, Locus> f_f_fusions;
 
-            // Exons for each fusion sequin in the reverse strand
-            std::map<SequinID, Region> f_r_exons;
+            // Locus for each fusion in the reverse strand
+            std::map<SequinID, Locus> f_r_fusions;
 
             // Mixture for each fusion sequin
             SequinMap f_seqs_A;
