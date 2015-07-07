@@ -19,8 +19,7 @@ data  = [ 'data/manual.txt',
            # ------- Fusion -------
 
            'data/fus/FUS.v3.csv',
-           'data/fus/FUS.v1.tab',
-           'data/fus/FUS.v1.bed',
+           'data/fus/FUS.v1.ref',
 
            # ------- Conjoint -------
 
