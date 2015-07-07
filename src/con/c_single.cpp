@@ -22,7 +22,12 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
     // We'll need it to construct expected library size
     std::set<BaseID> baseIDs;
     
-    // Construct a histogram of the aligned sequins
+    options.terminal->write("Parsing alignment file");
+
+    /*
+     * Construct a histogram or distribution of the aligned sequins.
+     */
+    
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
         // Don't repeat the same read if it's spliced
@@ -30,12 +35,16 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         {
             stats.actTotal++;
             stats.abund[align.id]++;
-            baseIDs.insert(align.id.substr(0, align.id.size() - 2));
+
+            // Eg: C_1068 to C
+            baseIDs.insert(align.id.substr(0, align.id.find_last_of("_")));
         }
     });
 
     assert(!baseIDs.empty());
     assert(stats.actTotal);
+
+    options.terminal->write("Calculating the expected library size");
 
     const auto &s = Standard::instance();
 
@@ -45,16 +54,23 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
     
     for (const auto &id : baseIDs)
     {
-        const auto fold = s.c_seqs_A.at(id).abund();
+        if (!s.c_seqs_A.count(id))
+        {
+            options.terminal->write("Warning: " + id + " is detected but it's not found in the mixture file");
+        }
+        else
+        {
+            const auto fold = s.c_seqs_A.at(id).abund();
+            
+            // Expected size for this particular sequin
+            const auto size = 1.0 * fold + 2.0 * fold + 4.0 * fold + 8.0 * fold;
 
-        // Expected size for this particular sequin
-        const auto size = 1.0 * fold + 2.0 * fold + 4.0 * fold + 8.0 * fold;
-     
-        stats.expTotal += size;
+            stats.expTotal += size;
+        }
     }
     
     assert(stats.expTotal);
-    options.terminal->write("Correcting...");
+    options.terminal->write("Linearly correcting the observed abundance");
     
     for (const auto &i : s.c_seqs_A)
     {
