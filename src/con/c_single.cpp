@@ -70,9 +70,14 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         // Create a vector for normalized measured coverage
         const auto actual = create(COUNT(baseA), COUNT(baseB), COUNT(baseC), COUNT(baseD), 1.0, stats.actTotal);
 
+        std::cout << "----------" << base << "----------" << std::endl;
+        
         // Create a vector for normalized expected coverage
         const auto expect = create(1.0, 2.0, 4.0, 8.0, s.c_seqs_A.at(base).abund(), stats.expTotal);
 
+        std::cout << "-------------" << std::endl;
+        
+        
         // Make it one so that it can be divided (avoid division by zero)
         double slope = 1.0;
 
