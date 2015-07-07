@@ -24,7 +24,7 @@
  * RNA Resources
  */
 
-#include "resources/chrT.v2.fa"
+//#include "resources/chrT.v2.fa"
 #include "resources/RNA.v1.bed"
 #include "resources/RNA.v1.gtf"
 #include "resources/RNA.v4.1.mix"
@@ -120,10 +120,10 @@ std::string MetaDataBed()
  * RNA Resources
  */
 
-std::string RNADataFA()
-{
-    return ToString(data_rna_chrT_v2_fa);
-}
+//std::string RNADataFA()
+//{
+  //  return ToString(data_rna_chrT_v2_fa);
+//}
 
 std::string RNADataGTF()
 {

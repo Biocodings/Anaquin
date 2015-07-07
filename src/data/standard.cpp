@@ -190,19 +190,19 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
 
 Standard::Standard()
 {
-    std::stringstream in(RNADataFA());
-    std::string line;
+    //std::stringstream in(RNADataFA());
+  //  std::string line;
 
-    if (!in.good())
-    {
-        throw std::runtime_error("Error: Failed to load the reference chromosome");
-    }
+//    if (!in.good())
+  //  {
+    //    throw std::runtime_error("Error: Failed to load the reference chromosome");
+    //}
 
     // Assume that the first line contains only the name of the chromosome
-    std::getline(in, line);
+   // std::getline(in, line);
     
     // Remove the '<' prefix
-    id = line.substr(1, line.size());
+    id = "chrT";// line.substr(1, line.size());
     
     fus();
     con();
