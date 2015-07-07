@@ -8,11 +8,13 @@
 
 namespace Spike
 {
-    typedef std::vector<std::string> Fields;
-
     struct ParserCSV
     {
-        typedef std::function<void (const Fields &, const ParserProgress &)> Callback;
+        typedef std::vector<std::string> Fields;
+
+        // Callback for parsing a CSV file
+        typedef std::function<void (const ParserCSV::Fields &, const ParserProgress &)> Callback;
+
         static void parse(const Reader &, Callback, const std::string &delim = "\t");
     };
 }

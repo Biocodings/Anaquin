@@ -14,7 +14,7 @@
 #include "parsers/parser_gtf.hpp"
 
 extern std::string FusDataMix();
-extern std::string FusDataBed();
+extern std::string FusDataRef();
 
 extern std::string ConDataMix();
 
@@ -96,7 +96,7 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
     m.clear();
     ParseSequinInfo info;
     
-    ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {
@@ -140,7 +140,7 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
     
     ParseSequinInfo info;
     
-    ParserCSV::parse(r, [&](const Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
     {
         if (p.i == 0)
         {
@@ -296,18 +296,20 @@ void Standard::f_mod(const Reader &r)
     f_f_fusions.clear();
     f_r_fusions.clear();
 
-    ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
+    ParserCSV::parse(r, [&](const ParserCSV::Fields &f, const ParserProgress &)
     {
-        // Eg: FG1_3_P1
-        const auto id = f.name.substr(0, f.name.find_last_of("."));
+        assert(f[0] == "chrT-chrT");
         
-        if (f.strand == Forward)
+        const auto l  = Locus(stod(f[1]) + 1, stod(f[2]) + 1);
+        const auto id = f[4];
+
+        if (f[3] == "fr")
         {
-            f_f_fusions[id] = f.l;
+            f_f_fusions[id] = l;
         }
         else
         {
-            f_r_fusions[id] = f.l;
+            f_r_fusions[id] = l;
         }
     });
 
@@ -322,7 +324,7 @@ void Standard::con()
 void Standard::fus()
 {
     f_mix(Reader(FusDataMix(), DataMode::String));
-    f_mod(Reader(FusDataBed(), DataMode::String));
+    f_mod(Reader(FusDataRef(), DataMode::String));
 }
 
 void Standard::meta()

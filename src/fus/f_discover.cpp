@@ -17,13 +17,13 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
             if (f.chr_1 == s.id && f.chr_2 == s.id)
             {
                 const auto start = f.start_1;
-                    
+                
                 if (f.dir_1 == Backward && f.dir_2 == Forward)
                 {
-                    for (const auto &i : s.f_f_fusions)
+                    for (const auto &i : s.f_r_fusions)
                     {
                         id = i.first;
-
+                        
                         if (i.second.start == start)
                         {
                             return Positive;
@@ -32,11 +32,11 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
                 }
                 else
                 {
-                    for (const auto &i : s.f_r_fusions)
+                    for (const auto &i : s.f_f_fusions)
                     {
                         id = i.first;
-
-                        if (i.second.end == start)
+                        
+                        if (i.second.start == start)
                         {
                             return Positive;
                         }
@@ -54,6 +54,12 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
     // The references are simply the known fusion points
     stats.p.m.nr = s.f_f_fusions.size() + s.f_r_fusions.size();
 
+    /*
+     * Write out the statistics
+     */
+
+    //    AnalyzeReporter::report("rna_abundance.stats", "abundance.R", stats, "FPKM", c, options.writer);
+    
     AnalyzeReporter::report("fusion_discover.stats", stats.p, stats.c, options.writer);
     
     return stats;

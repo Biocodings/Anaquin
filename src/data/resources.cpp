@@ -11,7 +11,7 @@
  * Fusion Resources
  */
 
-#include "resources/FUS.v1.bed"
+#include "resources/FUS.v1.ref"
 #include "resources/FUS.v3.csv"
 
 /*
@@ -83,9 +83,9 @@ std::string FusDataMix()
     return ToString(data_fus_FUS_v3_csv);
 }
 
-std::string FusDataBed()
+std::string FusDataRef()
 {
-    return ToString(data_fus_FUS_v1_bed);
+    return ToString(data_fus_FUS_v1_ref);
 }
 
 /*
