@@ -139,7 +139,6 @@
 		EF2907B91B4A85ED00BFBA56 /* region.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = region.hpp; path = ../src/data/region.hpp; sourceTree = "<group>"; };
 		EF2907BB1B4AA58A00BFBA56 /* f_discover.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = f_discover.cpp; sourceTree = "<group>"; };
 		EF2907BC1B4AA58A00BFBA56 /* f_discover.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = f_discover.hpp; sourceTree = "<group>"; };
-		EF2907BD1B4AA58A00BFBA56 /* f_fusion.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = f_fusion.o; sourceTree = "<group>"; };
 		EF3211931B1DBC1A0062BB10 /* parser_blast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_blast.cpp; path = ../src/parsers/parser_blast.cpp; sourceTree = "<group>"; };
 		EF3211941B1DBC1A0062BB10 /* parser_blast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_blast.hpp; path = ../src/parsers/parser_blast.hpp; sourceTree = "<group>"; };
 		EF3860D71AD3783A0062D246 /* parser_bed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_bed.cpp; path = ../src/parsers/parser_bed.cpp; sourceTree = "<group>"; };
@@ -358,7 +357,6 @@
 			children = (
 				EF2907BB1B4AA58A00BFBA56 /* f_discover.cpp */,
 				EF2907BC1B4AA58A00BFBA56 /* f_discover.hpp */,
-				EF2907BD1B4AA58A00BFBA56 /* f_fusion.o */,
 			);
 			name = fus;
 			path = ../src/fus;
