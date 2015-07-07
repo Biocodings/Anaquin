@@ -295,17 +295,11 @@ void Standard::f_mod(const Reader &r)
 {
     f_f_exons.clear();
     f_r_exons.clear();
-    
+
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
         // Eg: FG1_3_P1
         const auto id = f.name.substr(0, f.name.find_last_of("."));
-        
-        if (id == "FG1_9_P2")
-        {
-            int a = 10;
-            a = 10;
-        }
         
         if (f.strand == Forward)
         {
