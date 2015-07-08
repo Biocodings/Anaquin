@@ -69,7 +69,11 @@ CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
         }
     }
     
-    assert(stats.expTotal);
+    if (!stats.expTotal)
+    {
+        throw std::runtime_error("Error in conjoint. Unable to find anything that matches with the mixture.");
+    }
+    
     options.terminal->write("Linearly correcting the observed abundance");
     
     for (const auto &i : s.c_seqs_A)
