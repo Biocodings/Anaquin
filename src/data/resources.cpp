@@ -18,7 +18,7 @@
  * Conjoint Resources
  */
 
-#include "resources/CON.v2.mix.csv"
+#include "resources/CON.v3.mix.csv"
 
 /*
  * RNA Resources
@@ -94,7 +94,7 @@ std::string FusDataRef()
 
 std::string ConDataMix()
 {
-    return ToString(data_con_CON_v2_mix_csv);
+    return ToString(data_con_CON_v3_mix_csv);
 }
 
 /*

@@ -23,12 +23,11 @@ data  = [ 'data/manual.txt',
 
            # ------- Conjoint -------
 
-           'data/con/CON.v2.mix.csv',
+           'data/con/CON.v3.mix.csv',
 
            # ---------- RNA ----------
 
           'data/rna/RNA.usage.txt',
-          'data/rna/chrT.v2.fa',
           'data/rna/RNA.v1.bed',
           'data/rna/RNA.v1.gtf',
           'data/rna/RNA.v4.1.mix',
