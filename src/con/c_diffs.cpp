@@ -13,11 +13,11 @@ CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB
      * Let's reuse the code for single mixture. We'll create create a histogram for both mixtures.
      */
 
-    options.terminal->write("Analyzing mixuture B: " + fileB);
-    const auto b = CSingle::analyze(fileB);
-
     options.terminal->write("Analyzing mixuture A: " + fileA);
     const auto a = CSingle::analyze(fileA);
+
+    options.terminal->write("Analyzing mixuture B: " + fileB);
+    const auto b = CSingle::analyze(fileB);
 
     options.terminal->write("Mergin mixtures");
     const auto &s = Standard::instance();
