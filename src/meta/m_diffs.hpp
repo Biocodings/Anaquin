@@ -38,11 +38,11 @@ namespace Spike
 
         struct Options : public DoubleMixtureOptions
         {
-            // An optional PSL file for the first sample
-            std::string psl_1;
+            // An optional PSL file for mixture A
+            std::string pA;
 
-            // An optional PSL file for the second sample
-            std::string psl_2;
+            // An optional PSL file for mixture B
+            std::string pB;
         };
 
         static Stats analyze(const std::string &, const std::string &, const Options &options = Options());
