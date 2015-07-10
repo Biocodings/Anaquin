@@ -66,14 +66,9 @@
 #define OPT_MIXTURE 327
 #define OPT_FILTER  328
 #define OPT_THREAD  329
+#define OPT_MODE    330
 
 using namespace Spike;
-
-static bool number(const std::string& s)
-{
-    return !s.empty() && std::find_if(s.begin(),
-                s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
-}
 
 void handler(int sig)
 {
@@ -171,8 +166,10 @@ static const char *short_options = "";
 
 static const struct option long_options[] =
 {
-    { "v", no_argument, 0, CMD_VER  },
-    { "t", no_argument, 0, CMD_TEST },
+    { "v",      no_argument, 0, CMD_VER  },
+    { "verson", no_argument, 0, CMD_VER  },
+    { "t",      no_argument, 0, CMD_TEST },
+    { "test",   no_argument, 0, CMD_TEST },
 
     { "rna",      required_argument, 0, CMD_RNA    },
     { "var",      required_argument, 0, CMD_VAR    },
@@ -199,6 +196,8 @@ static const struct option long_options[] =
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "mixture", required_argument, 0, OPT_MIXTURE },
+
+    { "mode", required_argument, 0, OPT_MODE },
 
     { "o",       required_argument, 0, OPT_OUTPUT  },
     { "output",  required_argument, 0, OPT_OUTPUT  },
@@ -502,6 +501,18 @@ void parse(int argc, char ** argv)
             throw std::runtime_error("eeee");
         }
     };
+    
+    auto checkFile = [&](const std::string &str)
+    {
+        std::ifstream file(str);
+        
+        if (!file.good())
+        {
+            
+        }
+
+        return file.good();
+    };
 
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
@@ -549,34 +560,15 @@ void parse(int argc, char ** argv)
                 _cmd = next;
                 break;
             }
-                
+
             default:
             {
                 if (_mode != 0)
                 {
-                    throw InvalidUsageError();
+                    throw RepeatOptionError("Mode");
                 }
 
                 _mode = next;
-                
-                /*
-                 * If this is not the last argument, we might try to extract multiple arguments.
-                 */
-                
-                if (optind < argc)
-                {
-                    optind--;
-                    
-                    for (; optind < argc && *argv[optind] != '-'; optind++)
-                    {
-                        _opts.push_back(argv[optind]);
-                    }                    
-                }
-                else if (optarg)
-                {
-                    _opts.push_back(optarg);
-                }
-                
                 break;
             }
         }
