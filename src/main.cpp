@@ -34,6 +34,9 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 
+typedef int Mode;
+typedef int Command;
+
 #define CMD_CMD    'c'
 #define CMD_VER    'v'
 #define CMD_TEST   't'
@@ -47,17 +50,15 @@
 #define CMD_STRUCT 272
 #define CMD_CLINIC 273
 
-#define MODE_BLAST        281
-#define MODE_SEQUENCE     282
-#define MODE_ALIGN        283
-#define MODE_ASSEMBLY     284
-#define MODE_ABUNDANCE    285
-#define MODE_DIFFERENTIAL 286
-#define MODE_VARIATION    287
-#define MODE_SEQUINS      288
-#define MODE_CORRECT      289
-#define MODE_MODEL        290
-#define MODE_FUSION       291
+#define MODE_BLAST     281
+#define MODE_ALIGN     283
+#define MODE_ASSEMBLY  284
+#define MODE_ABUNDANCE 285
+#define MODE_DIFFS     286
+#define MODE_VARIATION 287
+#define MODE_CORRECT   289
+#define MODE_MIXTURE   290
+#define MODE_FUSION    291
 
 #define OPT_MIN     321
 #define OPT_MAX     322
@@ -152,8 +153,38 @@ static std::set<SequinID> _filters;
 static int _cmd  = 0;
 static int _mode = 0;
 
-// The operands for the command
-std::vector<std::string> _opts;
+// The first operand for the command
+std::string _opt1;
+
+// The second operand for the command
+std::string _opt2;
+
+/*
+ * Defines the possible command values
+ */
+
+static std::map<std::string, Command> _cmds =
+{
+    { "rna",    CMD_RNA    },
+    { "var",    CMD_VAR    },
+    { "meta",   CMD_META   },
+    { "ladder", CMD_LADDER },
+    { "cancer", CMD_CANCER },
+    { "fusion", CMD_FUSION },
+    { "clinic", CMD_CLINIC },
+};
+
+/*
+ * Define the possible modes for each command
+ */
+
+static std::map<std::string, Mode> _modes =
+{
+    { "correct",   MODE_CORRECT   },
+    { "abundance", MODE_ABUNDANCE },
+    { "align",     MODE_ALIGN     },
+    { "diffs",     MODE_DIFFS },
+};
 
 static void reset()
 {
@@ -161,9 +192,10 @@ static void reset()
     _pB.clear();
     _mix.clear();
     _ref.clear();
-    _opts.clear();
     _output.clear();
     _filters.clear();
+    _opt1.clear();
+    _opt2.clear();
     _cmd = _mode = 0;
 }
 
@@ -201,7 +233,8 @@ static const struct option long_options[] =
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "mixture", required_argument, 0, OPT_MIXTURE },
 
-    { "mode", required_argument, 0, OPT_MODE },
+    { "p",       required_argument, 0, OPT_MODE },
+    { "mode",    required_argument, 0, OPT_MODE },
 
     { "o",       required_argument, 0, OPT_OUTPUT  },
     { "output",  required_argument, 0, OPT_OUTPUT  },
@@ -209,49 +242,10 @@ static const struct option long_options[] =
     { "f",        required_argument, 0, OPT_FILTER },
     { "filter",   required_argument, 0, OPT_FILTER },
 
-    { "l",        no_argument, 0, MODE_SEQUINS },
-    { "sequins",  no_argument, 0, MODE_SEQUINS },
-
-    { "assembly", required_argument, 0, MODE_ASSEMBLY },
-
-    { "align", required_argument, 0, MODE_ALIGN },
-
-    { "diffs", required_argument, 0, MODE_DIFFERENTIAL },
-
-    { "abundance", required_argument, 0, MODE_ABUNDANCE },
-
-    { "correct", required_argument, 0, MODE_CORRECT },
-    { "fusion",  required_argument, 0, MODE_FUSION  },
-
-    { "var",     required_argument, 0, MODE_VARIATION },
-    { "variant", required_argument, 0, MODE_VARIATION },
-
     { "blast", required_argument, 0, MODE_BLAST },
 
     {0, 0, 0, 0 }
 };
-
-// Returns the name of the value
-static const char * optionName(int value)
-{
-    const struct option *p = long_options;
-
-    while (true)
-    {
-        const struct option &o = *p++;
-
-        if (!o.name)
-        {
-            break;
-        }
-        else if (o.val == value)
-        {
-            return o.name;
-        }
-    }
-
-    return nullptr;
-}
 
 static void printUsage()
 {
@@ -299,22 +293,6 @@ void print(Reader &r)
 
         std::cout << tokens[0] << "\t" << tokens[2] << "\t" << tokens[3] << std::endl;
     }
-}
-
-static const std::map<std::string, int> &commands()
-{
-    static const std::map<std::string, int> cmds =
-    {
-        { "rna",      CMD_RNA  },
-        { "var",      CMD_VAR  },
-        { "meta",     CMD_META },
-        { "cancer",   CMD_CANCER },
-        { "fusion",   CMD_FUSION },
-        { "ladder",   CMD_LADDER },
-        { "clinical", CMD_CLINIC },
-    };
-    
-    return cmds;
 }
 
 static void printMixture(const std::string &file)
@@ -552,32 +530,10 @@ void parse(int argc, char ** argv)
         }
     };
 
-    /*
-     * A value is invalid if it's not a possibility for the given option. This function
-     * reports an error message and throws an exception.
-     */
-    
-    auto triggerInvalidValue = [&](const std::set<std::string> &values)
-    {
-        std::string str;
-        
-        for (const auto &value : values)
-        {
-            str += value + "|";
-        }
-        
-        // Remove the last "|"
-        str = str.substr(0, str.length() - 2);
-
-        const auto &arg   = argv[index];
-        const auto format = boost::format("Invalid value for -%1%. Possibilities are: %2%");
-        throw InvalidValueError((boost::format(format) % arg % format).str());
-    };
-
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
-        const auto p = argv[argc];
-        
+        const auto &arg = argv[index];
+
         switch (next)
         {
             case OPT_REF:     { checkFile(_ref = optarg);    break; }
@@ -593,38 +549,14 @@ void parse(int argc, char ** argv)
 
             case CMD_CMD:
             {
-                const std::set<std::string> cmds = { "rna",
-                                                     "var",
-                                                     "meta",
-                                                     "cancer",
-                                                     "clinical",
-                                                     "fusion",
-                                                     "ladder" };
-                if (!optionName(_cmd = next))
+                if (!_cmds.count(std::string(optarg)))
                 {
-                    triggerInvalidValue(cmds);
+                    const auto ranges = "rna|var|ladder|fusion|cancer|clinic|meta";
+                    const auto format = boost::format("Invalid value for -%1%. Possibilities are: %2%");
+                    throw InvalidValueError((boost::format(format) % arg % ranges).str());
                 }
 
-                break;
-            }
-
-            case CMD_VER:
-            case CMD_VAR:
-            case CMD_RNA:
-            case CMD_META:
-            case CMD_TEST:
-            case CMD_CLINIC:
-            case CMD_CANCER:
-            case CMD_LADDER:
-            case CMD_FUSION:
-            case CMD_STRUCT:
-            {
-                if (_cmd != 0)
-                {
-                    throw RepeatOptionError("More than ");
-                }
-                
-                _cmd = next;
+                _cmd = _cmds.at(optarg);
                 break;
             }
 
@@ -634,8 +566,10 @@ void parse(int argc, char ** argv)
                 {
                     throw RepeatOptionError("Mode");
                 }
+                
+                // We'll defer the check later we might not even have the command
+                _mode = _modes.at(optarg);
 
-                _mode = next;
                 break;
             }
         }
@@ -645,7 +579,7 @@ void parse(int argc, char ** argv)
     {
         //throw InvalidUsageError();
     }
-    else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opts.empty()))
+    else if ((_cmd == CMD_TEST || _cmd == CMD_VER) && (!_output.empty() || _mode != 0 || !_opt1.empty()))
     {
         //throw InvalidUsageError();
     }
@@ -682,7 +616,7 @@ void parse(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_FUSION: { analyze<FFusion>(_opts[0]); break; }
+                        case MODE_FUSION: { analyze<FFusion>(_opt1); break; }
                     }
                 }
 
@@ -693,9 +627,9 @@ void parse(int argc, char ** argv)
             {
                 std::cout << "Ladder Analysis" << std::endl;
 
-                if (_mode != MODE_SEQUINS &&
+                if (_mode != MODE_MIXTURE &&
                     _mode != MODE_CORRECT &&
-                    _mode != MODE_DIFFERENTIAL)
+                    _mode != MODE_DIFFS)
                 {
                     //throw InvalidUsageError();
                 }
@@ -705,9 +639,9 @@ void parse(int argc, char ** argv)
                     
                     switch (_mode)
                     {
-                        case MODE_SEQUINS:      { printMixture(LadderDataMix());       break; }
-                        case MODE_CORRECT:      { analyze<LCorrect>(_opts[0]);         break; }
-                        case MODE_DIFFERENTIAL: { analyze<LDiffs>(_opts[0], _opts[1]); break; }
+                        case MODE_MIXTURE: { printMixture(LadderDataMix()); break; }
+                        case MODE_CORRECT: { analyze<LCorrect>(_opt1);      break; }
+                        case MODE_DIFFS:   { analyze<LDiffs>(_pA, _pB);     break; }
                     }
                 }
 
@@ -721,13 +655,11 @@ void parse(int argc, char ** argv)
                 applyCustom(std::bind(&Standard::rna_mix, &s, std::placeholders::_1),
                             std::bind(&Standard::rna_mod, &s, std::placeholders::_1));
 
-                if (_mode != MODE_MODEL     &&
-                    _mode != MODE_SEQUINS   &&
-                    _mode != MODE_SEQUENCE  &&
+                if (_mode != MODE_MIXTURE   &&
                     _mode != MODE_ALIGN     &&
                     _mode != MODE_ASSEMBLY  &&
                     _mode != MODE_ABUNDANCE &&
-                    _mode != MODE_DIFFERENTIAL)
+                    _mode != MODE_DIFFS)
                 {
                     //throw InvalidUsageError();
                 }
@@ -737,21 +669,19 @@ void parse(int argc, char ** argv)
                     
                     switch (_mode)
                     {
-                        case MODE_SEQUENCE: { break; }
-                        case MODE_MODEL:    { printFeatures(s.r_seqs_A);    break; }
-                        case MODE_SEQUINS:  { printMixture(RNADataMix());   break; }
-                        case MODE_ALIGN:    { analyze<RAlign>(_opts[0]);    break; }
-                        case MODE_ASSEMBLY: { analyze<RAssembly>(_opts[0]); break; }
+                        case MODE_MIXTURE:  { printMixture(RNADataMix()); break; }
+                        case MODE_ALIGN:    { analyze<RAlign>(_opt1);     break; }
+                        case MODE_ASSEMBLY: { analyze<RAssembly>(_opt1);  break; }
                             
                         case MODE_ABUNDANCE:
                         {
-                            analyze<RAbundance>(_opts[0], detect<RAbundance::Options>(_opts[0]));
+                            analyze<RAbundance>(_opt1, detect<RAbundance::Options>(_opt1));
                             break;
                         }
-                            
-                        case MODE_DIFFERENTIAL:
+
+                        case MODE_DIFFS:
                         {
-                            analyze<RDiffs>(_opts[0], detect<RDiffs::Options>(_opts[0]));
+                            analyze<RDiffs>(_opt1, detect<RDiffs::Options>(_opt1));
                             break;
                         }
                     }
@@ -767,8 +697,7 @@ void parse(int argc, char ** argv)
                 applyCustom(std::bind(&Standard::dna_mix, &s, std::placeholders::_1),
                             std::bind(&Standard::dna_mod, &s, std::placeholders::_1));
                 
-                if (_mode != MODE_SEQUINS  &&
-                    _mode != MODE_SEQUENCE &&
+                if (_mode != MODE_MIXTURE  &&
                     _mode != MODE_ALIGN    &&
                     _mode != MODE_VARIATION)
                 {
@@ -780,13 +709,12 @@ void parse(int argc, char ** argv)
                     
                     switch (_mode)
                     {
-                        case MODE_SEQUENCE:  { break; }
-                        case MODE_SEQUINS:   { printMixture(DNADataMix());  break; }
-                        case MODE_ALIGN:     { analyze<VAlign>(_opts[0]);   break; }
-                        case MODE_VARIATION: { analyze<DVariant>(_opts[0]); break; }
+                        case MODE_MIXTURE:   { printMixture(DNADataMix()); break; }
+                        case MODE_ALIGN:     { analyze<VAlign>(_opt1);     break; }
+                        case MODE_VARIATION: { analyze<DVariant>(_opt1);   break; }
                     }
                 }
-                
+
                 break;
             }
                 
@@ -798,10 +726,9 @@ void parse(int argc, char ** argv)
                             std::bind(&Standard::meta_mod, &s, std::placeholders::_1));
 
                 if (_mode != MODE_BLAST    &&
-                    _mode != MODE_SEQUINS  &&
-                    _mode != MODE_SEQUENCE &&
+                    _mode != MODE_MIXTURE  &&
                     _mode != MODE_ASSEMBLY &&
-                    _mode != MODE_DIFFERENTIAL)
+                    _mode != MODE_DIFFS)
                 {
                     //throw InvalidUsageError();
                 }
@@ -811,13 +738,12 @@ void parse(int argc, char ** argv)
 
                     switch (_mode)
                     {
-                        case MODE_SEQUENCE: { break; }
-                        case MODE_SEQUINS:  { printMixture(MetaDataMix()); break; }
-                        case MODE_BLAST:    { MBlast::analyze(_opts[0]);   break; }
+                        case MODE_MIXTURE: { printMixture(MetaDataMix()); break; }
+                        case MODE_BLAST:   { MBlast::analyze(_opt1);      break; }
 
-                        case MODE_DIFFERENTIAL:
+                        case MODE_DIFFS:
                         {
-                            if (_opts.size() != 2 || (!_pA.empty() != !_pB.empty()))
+//                            if (_opts.size() != 2 || (!_pA.empty() != !_pB.empty()))
                             {
                                 //throw InvalidUsageError();
                             }
@@ -827,7 +753,7 @@ void parse(int argc, char ** argv)
                             o.pA = _pA;
                             o.pB = _pB;
 
-                            analyze<MDiffs>(_opts[0], _opts[1], o);
+                            analyze<MDiffs>(_pA, _pB, o);
                             break;
                         }
 
@@ -838,7 +764,7 @@ void parse(int argc, char ** argv)
                             // We'd also take an alignment PSL file from a user
                             o.psl = _pA;
 
-                            analyze<MAssembly>(_opts[0], o);
+                            analyze<MAssembly>(_opt1, o);
                             break;
                         }
                     }
