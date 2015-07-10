@@ -33,6 +33,7 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 
+#define CMD_CMD    'c'
 #define CMD_VER    'v'
 #define CMD_TEST   't'
 #define CMD_RNA    265
@@ -171,6 +172,8 @@ static const struct option long_options[] =
     { "t",      no_argument, 0, CMD_TEST },
     { "test",   no_argument, 0, CMD_TEST },
 
+    { "c",   required_argument, 0, CMD_CMD },
+/*
     { "rna",      required_argument, 0, CMD_RNA    },
     { "var",      required_argument, 0, CMD_VAR    },
     { "meta",     required_argument, 0, CMD_META   },
@@ -180,7 +183,7 @@ static const struct option long_options[] =
     { "ladder",   required_argument, 0, CMD_LADDER },
     { "fusion",   required_argument, 0, CMD_FUSION },
     { "struct",   required_argument, 0, CMD_STRUCT },
-
+*/
     { "min",     required_argument, 0, OPT_MIN },
     { "max",     required_argument, 0, OPT_MAX },
 
@@ -538,6 +541,11 @@ void parse(int argc, char ** argv)
                     _psl_B = argv[optind++];
                 }
                 
+                break;
+            }
+                
+            case CMD_CMD:
+            {
                 break;
             }
                 
