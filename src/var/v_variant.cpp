@@ -1,4 +1,4 @@
-#include "dna/d_variant.hpp"
+#include "var/v_variant.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Spike;
