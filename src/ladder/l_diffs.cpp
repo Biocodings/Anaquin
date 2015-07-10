@@ -1,22 +1,22 @@
-#include "con/c_diffs.hpp"
-#include "con/c_single.hpp"
+#include "ladder/l_diffs.hpp"
+#include "ladder/l_correct.hpp"
 #include <ss/regression/lm.hpp>
 
 using namespace Spike;
 
-CDiffs::Stats CDiffs::analyze(const std::string &fileA, const std::string &fileB, const Options &options)
+LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB, const Options &options)
 {
-    CDiffs::Stats stats;
+    LDiffs::Stats stats;
 
     /*
      * Let's reuse the code for single mixture. We'll create create a histogram for both mixtures.
      */
 
     options.terminal->write("Analyzing mixuture A: " + fileA);
-    const auto a = CSingle::analyze(fileA);
+    const auto a = LCorrect::analyze(fileA);
 
     options.terminal->write("Analyzing mixuture B: " + fileB);
-    const auto b = CSingle::analyze(fileB);
+    const auto b = LCorrect::analyze(fileB);
 
     options.terminal->write("Mergin mixtures");
     const auto &s = Standard::instance();

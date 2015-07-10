@@ -1,11 +1,11 @@
 #include <ss/stats.hpp>
-#include "con/c_single.hpp"
+#include "ladder/l_correct.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;
 
-std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, double fold, Counts size)
+static std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, double fold, Counts size)
 {
     const auto nA = rA * (fold / size);
     const auto nB = rB * (fold / size);
@@ -15,9 +15,9 @@ std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, double fo
     return std::vector<double> { nA, nB, nC, nD };
 }
 
-CSingle::Stats CSingle::analyze(const std::string &file, const Options &options)
+LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &options)
 {
-    CSingle::Stats stats;
+    LCorrect::Stats stats;
 
     // We'll need it to construct expected library size
     std::set<BaseID> baseIDs;

@@ -1,13 +1,13 @@
-#include "fus/f_discover.hpp"
+#include "fusion/f_fusion.hpp"
 #include "parsers/parser_fusion.hpp"
 
 using namespace Spike;
 
-FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &options)
+FFusion::Stats FFusion::analyze(const std::string &file, const Options &options)
 {
-    FDiscover::Stats stats;
+    FFusion::Stats stats;
     const auto &s = Standard::instance();
-    
+
     ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &)
     {
         SequinID id;

@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "dna/d_align.hpp"
+#include "var/v_align.hpp"
 
 using namespace Spike;
 

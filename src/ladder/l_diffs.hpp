@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    struct CDiffs
+    struct LDiffs
     {
         struct Options : public SingleMixtureOptions
         {

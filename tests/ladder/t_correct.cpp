@@ -1,11 +1,11 @@
 #include <catch.hpp>
-#include "ladder/c_correct.hpp"
+#include "ladder/l_correct.hpp"
 
 using namespace Spike;
 
-TEST_CASE("Conjoint_Single_Test")
+TEST_CASE("Ladder_Correct_Test")
 {
-    const auto r = CSingle::analyze("tests/data/con/aligned_A.sam");
+    const auto r = LCorrect::analyze("tests/data/con/aligned_A.sam");
 
     REQUIRE(r.expTotal == 450);
     REQUIRE(r.actTotal == 54);

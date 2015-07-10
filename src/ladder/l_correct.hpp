@@ -1,11 +1,11 @@
-#ifndef GI_C_SINGLE_HPP
-#define GI_C_SINGLE_HPP
+#ifndef GI_L_CORRECT_HPP
+#define GI_L_CORRECT_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Spike
 {
-    struct CSingle
+    struct LCorrect
     {
         struct Options : public SingleMixtureOptions
         {

@@ -1,9 +1,9 @@
 #include <catch.hpp>
-#include "dna/d_variant.hpp"
+#include "var/v_variant.hpp"
 
 using namespace Spike;
 
-TEST_CASE("DNA_Variant_Simulation")
+TEST_CASE("Variant_Variant_Simulation")
 {
     const auto r  = DVariant::analyze("tests/data/dna/VARquin.MixA.v1.vcf");
     const auto lm = r.linear();

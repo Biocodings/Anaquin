@@ -22,7 +22,7 @@
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_correct.hpp"
 
-#include "fusion/f_discover.hpp"
+#include "fusion/f_fusion.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
@@ -55,7 +55,7 @@
 #define MODE_SEQUINS      288
 #define MODE_CORRECT      289
 #define MODE_MODEL        290
-#define MODE_DISCOVERY    291
+#define MODE_FUSION       291
 
 #define OPT_MIN     321
 #define OPT_MAX     322
@@ -155,42 +155,38 @@ static const struct option long_options[] =
     { "fusion",   required_argument, 0, CMD_FUSION },
     { "struct",   required_argument, 0, CMD_STRUCT },
 
-    { "psl",     required_argument, 0, OPT_PSL     },
-    { "min",     required_argument, 0, OPT_MIN     },
-    { "max",     required_argument, 0, OPT_MAX     },
-    { "los",     required_argument, 0, OPT_LOS     },
+    { "min",     required_argument, 0, OPT_MIN },
+    { "max",     required_argument, 0, OPT_MAX },
 
-    { "mod",     required_argument, 0, OPT_MODEL   },
-    { "model",   required_argument, 0, OPT_MODEL   },
-    
+    { "psl",     required_argument, 0, OPT_PSL },
+    { "los",     required_argument, 0, OPT_LOS },
+
+    { "r",       required_argument, 0, OPT_REF },
+    { "ref",     required_argument, 0, OPT_REF },
+
+    { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "mixture", required_argument, 0, OPT_MIXTURE },
 
     { "o",       required_argument, 0, OPT_OUTPUT  },
     { "output",  required_argument, 0, OPT_OUTPUT  },
-    
+
     { "f",        required_argument, 0, OPT_FILTER },
     { "filter",   required_argument, 0, OPT_FILTER },
 
-    { "m",        no_argument, 0, MODE_MODEL },
-    
     { "l",        no_argument, 0, MODE_SEQUINS },
     { "sequins",  no_argument, 0, MODE_SEQUINS },
 
-    { "as",       required_argument, 0, MODE_ASSEMBLY },
     { "assembly", required_argument, 0, MODE_ASSEMBLY },
 
-    { "al",    required_argument, 0, MODE_ALIGN },
     { "align", required_argument, 0, MODE_ALIGN },
 
-    { "df",    required_argument, 0, MODE_DIFFERENTIAL },
     { "diffs", required_argument, 0, MODE_DIFFERENTIAL },
 
-    { "ab",        required_argument, 0, MODE_ABUNDANCE },
     { "abundance", required_argument, 0, MODE_ABUNDANCE },
 
-    { "correct",  required_argument, 0, MODE_CORRECT   },
-    { "discover", required_argument, 0, MODE_DISCOVERY },
+    { "correct", required_argument, 0, MODE_CORRECT },
+    { "fusion",  required_argument, 0, MODE_FUSION  },
 
     { "var",     required_argument, 0, MODE_VARIATION },
     { "variant", required_argument, 0, MODE_VARIATION },
@@ -531,8 +527,8 @@ void parse(int argc, char ** argv)
             case CMD_FUSION:
             {
                 std::cout << "Fusion Analysis" << std::endl;
-                
-                if (_mode != MODE_DISCOVERY)
+
+                if (_mode != MODE_FUSION)
                 {
                     throw InvalidUsageError();
                 }
@@ -540,14 +536,14 @@ void parse(int argc, char ** argv)
                 {
                     switch (_mode)
                     {
-                        case MODE_DISCOVERY: { analyze<FDiscover>(_opts[0]); break; }
+                        case MODE_FUSION: { analyze<FFusion>(_opts[0]); break; }
                     }
                 }
 
                 break;
             }
 
-            case CMD_CON:
+            case CMD_LADDER:
             {
                 std::cout << "Ladder Analysis" << std::endl;
 
@@ -564,8 +560,8 @@ void parse(int argc, char ** argv)
                     switch (_mode)
                     {
                         case MODE_SEQUINS:      { printMixture(ConDataMix());          break; }
-                        case MODE_CORRECT:      { analyze<CSingle>(_opts[0]);          break; }
-                        case MODE_DIFFERENTIAL: { analyze<CDiffs>(_opts[0], _opts[1]); break; }
+                        case MODE_CORRECT:      { analyze<LCorrect>(_opts[0]);         break; }
+                        case MODE_DIFFERENTIAL: { analyze<LDiffs>(_opts[0], _opts[1]); break; }
                     }
                 }
 
@@ -617,10 +613,10 @@ void parse(int argc, char ** argv)
                 
                 break;
             }
-                
-            case CMD_DNA:
+
+            case CMD_VAR:
             {
-                std::cout << "DNA Analysis" << std::endl;
+                std::cout << "Variant Analysis" << std::endl;
                 
                 applyCustom(std::bind(&Standard::dna_mix, &s, std::placeholders::_1),
                             std::bind(&Standard::dna_mod, &s, std::placeholders::_1));

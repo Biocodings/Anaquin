@@ -1,11 +1,11 @@
-#ifndef GI_F_DISCOVER_HPP
-#define GI_F_DISCOVER_HPP
+#ifndef GI_F_FUSION_HPP
+#define GI_F_FUSION_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Spike
 {
-    struct FDiscover
+    struct FFusion
     {
         struct Options : public SingleMixtureOptions
         {
