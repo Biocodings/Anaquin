@@ -3,9 +3,9 @@
 
 using namespace Spike;
 
-DAlign::Stats DAlign::analyze(const std::string &file, const Options &options)
+VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 {
-    DAlign::Stats stats;
+    VAlign::Stats stats;
     static const auto &s = Standard::instance();
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)

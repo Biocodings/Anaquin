@@ -5,7 +5,7 @@
 
 namespace Spike
 {
-    struct DAlign
+    struct VAlign
     {
         struct Options : public SingleMixtureOptions
         {

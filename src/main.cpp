@@ -428,6 +428,9 @@ void parse(int argc, char ** argv)
     optind = optreset = 1;
 #endif
 
+    
+    
+    
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
         switch (next)
@@ -636,7 +639,7 @@ void parse(int argc, char ** argv)
                     {
                         case MODE_SEQUENCE:  { break; }
                         case MODE_SEQUINS:   { printMixture(DNADataMix());  break; }
-                        case MODE_ALIGN:     { analyze<DAlign>(_opts[0]);   break; }
+                        case MODE_ALIGN:     { analyze<VAlign>(_opts[0]);   break; }
                         case MODE_VARIATION: { analyze<DVariant>(_opts[0]); break; }
                     }
                 }
