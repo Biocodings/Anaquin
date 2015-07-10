@@ -54,13 +54,13 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     
     for (const auto &id : baseIDs)
     {
-        if (!s.c_seqs_A.count(id))
+        if (!s.l_seqs_A.count(id))
         {
             options.terminal->write("Warning: " + id + " is detected but it's not found in the mixture file");
         }
         else
         {
-            const auto fold = s.c_seqs_A.at(id).abund();
+            const auto fold = s.l_seqs_A.at(id).abund();
             
             // Expected size for this particular sequin
             const auto size = 1.0 * fold + 2.0 * fold + 4.0 * fold + 8.0 * fold;
@@ -76,9 +76,9 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     
     options.terminal->write("Linearly correcting the observed abundance");
     
-    for (const auto &i : s.c_seqs_A)
+    for (const auto &i : s.l_seqs_A)
     {
-        const std::string base = i.first;
+        const std::string &base = i.first;
 
         const auto baseA = base + "_A";
         const auto baseB = base + "_B";
@@ -91,7 +91,7 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
         const auto actual = create(COUNT(baseA), COUNT(baseB), COUNT(baseC), COUNT(baseD), 1.0, stats.actTotal);
 
         // Create a vector for normalized expected coverage
-        const auto expect = create(1.0, 2.0, 4.0, 8.0, s.c_seqs_A.at(base).abund(), stats.expTotal);
+        const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund(), stats.expTotal);
 
         // Make it one so that it can be divided (avoid division by zero)
         double slope = 1.0;

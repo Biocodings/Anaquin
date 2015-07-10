@@ -16,7 +16,7 @@
 extern std::string FusDataMix();
 extern std::string FusDataRef();
 
-extern std::string ConDataMix();
+extern std::string LadderDataMix();
 
 extern std::string RNADataFA();
 extern std::string RNADataBed();
@@ -190,25 +190,15 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
 
 Standard::Standard()
 {
-    //std::stringstream in(RNADataFA());
-  //  std::string line;
-
-//    if (!in.good())
-  //  {
-    //    throw std::runtime_error("Error: Failed to load the reference chromosome");
-    //}
-
-    // Assume that the first line contains only the name of the chromosome
-   // std::getline(in, line);
+    id = "chrT";
     
-    // Remove the '<' prefix
-    id = "chrT";// line.substr(1, line.size());
-    
-    fus();
-    con();
     rna();
-    dna();
     meta();
+    cancer();
+    fusion();
+    ladder();
+    variant();
+    clinical();
 }
 
 void Standard::dna_mod(const Reader &r)
@@ -271,18 +261,18 @@ void Standard::meta_mix(const Reader &r)
     mergeMix(r, parseMix(r, m_seqs_A, m_seqs_B), m_seqs_A, m_seqs_B, m_seqs_bA, m_seqs_bB);
 }
 
-void Standard::con_mix(const Reader &r)
+void Standard::ladder_mix(const Reader &r)
 {
-    parseMix(r, c_seqs_A, c_seqs_B);
+    parseMix(r, l_seqs_A, l_seqs_B);
 
-    for (const auto &i : c_seqs_A)
+    for (const auto &i : l_seqs_A)
     {
         const auto &base = i.first;
 
-        c_map[base + "_" + "A"] = base;
-        c_map[base + "_" + "B"] = base;
-        c_map[base + "_" + "C"] = base;
-        c_map[base + "_" + "D"] = base;
+        l_map[base + "_" + "A"] = base;
+        l_map[base + "_" + "B"] = base;
+        l_map[base + "_" + "C"] = base;
+        l_map[base + "_" + "D"] = base;
     }
 }
 
@@ -316,12 +306,12 @@ void Standard::f_mod(const Reader &r)
     assert(!f_f_fusions.empty() && !f_r_fusions.empty());
 }
 
-void Standard::con()
+void Standard::ladder()
 {
-    con_mix(Reader(ConDataMix(), DataMode::String));
+    ladder_mix(Reader(LadderDataMix(), DataMode::String));
 }
 
-void Standard::fus()
+void Standard::fusion()
 {
     f_mix(Reader(FusDataMix(), DataMode::String));
     f_mod(Reader(FusDataRef(), DataMode::String));
@@ -336,7 +326,7 @@ void Standard::meta()
     meta_mod(Reader(MetaDataBed(), DataMode::String));
 }
 
-void Standard::dna()
+void Standard::variant()
 {
     dna_mod(Reader(DNADataBed(), DataMode::String));
     dna_mix(Reader(DNADataMix(), DataMode::String));
@@ -521,6 +511,16 @@ void Standard::rna_mix(const Reader &r)
     }
 
     assert(!r_seqIDs.empty());
+}
+
+void Standard::cancer()
+{
+    // Empty Implementation
+}
+
+void Standard::clinical()
+{
+    // Empty Implementation
 }
 
 void Standard::rna()

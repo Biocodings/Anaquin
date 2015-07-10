@@ -89,13 +89,16 @@ void handler(int sig)
     exit(1);
 }
 
-/*
- * For example, giving "ABCD" as the number of threads
- */
-
+// For example, giving "ABCD" as the number of threads
 struct InvalidFormatError : public std::runtime_error
 {
     InvalidFormatError(const std::string &msg) : std::runtime_error(msg) {}
+};
+
+// Giving the same option more than once
+struct RepeatOptionError : public std::runtime_error
+{
+    RepeatOptionError(const std::string &msg) : std::runtime_error(msg) {}
 };
 
 struct InvalidUsageError : public std::runtime_error
@@ -123,6 +126,15 @@ static std::string _psl_B;
 
 // Number of threads
 static unsigned _threads = 1;
+
+// Custom minmium concentration
+static double _min;
+
+// Custom maximum concentration
+static double _max;
+
+// Custom sensivitiy
+static double _los;
 
 // Custom reference file
 static std::string _ref;
@@ -448,6 +460,10 @@ void parse(int argc, char ** argv)
     optind = optreset = 1;
 #endif
 
+    /*
+     * Reconstruct the overall command
+     */
+    
     std::string command;
     
     for (int i = 0; i < argc; i++)
@@ -457,32 +473,50 @@ void parse(int argc, char ** argv)
 
     assert(!command.empty());
 
+    // Attempt to parse and store a floating point from string
+    auto parseDouble = [&](const std::string &str, double &r)
+    {
+        assert(next);
+        
+        try
+        {
+            r = stof(str);
+        }
+        catch (...)
+        {
+            throw std::runtime_error("ddddd");
+        }
+    };
+    
+    // Attempt to parse and store an integer from string
+    auto parseInt = [&](const std::string &str, unsigned &r)
+    {
+        assert(next);
+        
+        try
+        {
+            r = stoi(str);
+        }
+        catch (...)
+        {
+            throw std::runtime_error("eeee");
+        }
+    };
+
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
+        const auto p = argv[argc];
+        
         switch (next)
         {
-            case OPT_REF:     { _ref = optarg;       break; }
-            case OPT_MIXTURE: { _mix = optarg;       break; }
-            case OPT_OUTPUT:  { _output = optarg;    break; }
-            case OPT_FILTER:  { readFilters(optarg); break; }
-
-            case OPT_THREAD:
-            {
-                if (!number(optarg))
-                {
-                    throw InvalidFormatError("Number of threads must be a number");
-                }
-
-                _threads = std::stoi(optarg);
-                break;
-            }
-
-            case OPT_MAX:
-            case OPT_MIN:
-            case OPT_LOS:
-            {
-                break;
-            }
+            case OPT_REF:     { _ref = optarg;              break; }
+            case OPT_MIXTURE: { _mix = optarg;              break; }
+            case OPT_OUTPUT:  { _output = optarg;           break; }
+            case OPT_FILTER:  { readFilters(optarg);        break; }
+            case OPT_MAX:     { parseDouble(optarg, _max);  break; }
+            case OPT_MIN:     { parseDouble(optarg, _min);  break; }
+            case OPT_LOS:     { parseDouble(optarg, _los);  break; }
+            case OPT_THREAD:  { parseInt(optarg, _threads); break; }
 
             case OPT_PSL:
             {
@@ -501,14 +535,15 @@ void parse(int argc, char ** argv)
             case CMD_RNA:
             case CMD_META:
             case CMD_TEST:
+            case CMD_CLINIC:
+            case CMD_CANCER:
             case CMD_LADDER:
             case CMD_FUSION:
             case CMD_STRUCT:
-            case CMD_CLINIC:
             {
                 if (_cmd != 0)
                 {
-                    throw InvalidUsageError();
+                    throw RepeatOptionError("More than ");
                 }
                 
                 _cmd = next;
@@ -564,6 +599,18 @@ void parse(int argc, char ** argv)
             case CMD_VER:  { printVersion();                break; }
             case CMD_TEST: { Catch::Session().run(1, argv); break; }
 
+            case CMD_CANCER:
+            {
+                std::cout << "Cancer Analysis" << std::endl;
+                break;
+            }
+
+            case CMD_CLINIC:
+            {
+                std::cout << "Clinic Analysis" << std::endl;
+                break;
+            }
+
             case CMD_FUSION:
             {
                 std::cout << "Fusion Analysis" << std::endl;
@@ -595,11 +642,11 @@ void parse(int argc, char ** argv)
                 }
                 else
                 {
-                    extern std::string ConDataMix();
+                    extern std::string LadderDataMix();
                     
                     switch (_mode)
                     {
-                        case MODE_SEQUINS:      { printMixture(ConDataMix());          break; }
+                        case MODE_SEQUINS:      { printMixture(LadderDataMix());       break; }
                         case MODE_CORRECT:      { analyze<LCorrect>(_opts[0]);         break; }
                         case MODE_DIFFERENTIAL: { analyze<LDiffs>(_opts[0], _opts[1]); break; }
                     }

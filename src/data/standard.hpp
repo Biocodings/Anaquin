@@ -140,15 +140,15 @@ namespace Spike
             std::set<SequinID> d_seqIDs;
 
             /*
-             * Conjoint data
+             * Ladder data
              */
-        
-            void con_mix(const Reader &);
+
+            void ladder_mix(const Reader &);
 
             // Sequins for mixture A and B
-            SequinMap c_seqs_A, c_seqs_B;
+            SequinMap l_seqs_A, l_seqs_B;
 
-            std::map<TypeID, SequinID> c_map;
+            std::map<TypeID, SequinID> l_map;
 
             /*
              * Fusion data
@@ -190,20 +190,26 @@ namespace Spike
             Standard(Standard const&)       = delete;
             void operator=(Standard const&) = delete;
 
-            // Apply default resources for RNA
+            // Apply resources for RNA
             void rna();
 
-            // Apply default resources for DNA
-            void dna();
+            // Apply resources for variant
+            void variant();
 
-            // Apply default resources for metagenomics
+            // Apply resources for metagenomics
             void meta();
 
-            // Apply default resources for conjoint
-            void con();
+            // Apply resources for conjoint
+            void ladder();
 
-            // Apply default resources for fusion
-            void fus();
+            // Apply resources for fusion
+            void fusion();
+
+            // Apply resources for clinical
+            void clinical();
+
+            // Apply resources for cancer
+            void cancer();
     };
 }
 

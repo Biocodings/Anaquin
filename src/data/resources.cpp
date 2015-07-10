@@ -89,10 +89,10 @@ std::string FusDataRef()
 }
 
 /*
- * Conjoint Resources
+ * Ladder Resources
  */
 
-std::string ConDataMix()
+std::string LadderDataMix()
 {
     return ToString(data_con_CON_v3_mix_csv);
 }
