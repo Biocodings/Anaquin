@@ -36,11 +36,15 @@
 
 #define CMD_VER    'v'
 #define CMD_TEST   't'
-#define CMD_RNA   265
-#define CMD_DNA   266
-#define CMD_META  267
-#define CMD_CON   268
-#define CMD_FUS   269
+#define CMD_RNA    265
+#define CMD_VAR    266
+#define CMD_META   267
+#define CMD_LADDER 268
+#define CMD_FUSION 269
+#define CMD_FETAL  270
+#define CMD_CANCER 271
+#define CMD_STRUCT 272
+#define CMD_CLINIC 273
 
 #define MODE_BLAST        281
 #define MODE_SEQUENCE     282
@@ -60,8 +64,10 @@
 #define OPT_OUTPUT  324
 #define OPT_PSL     325
 #define OPT_MODEL   326
-#define OPT_MIXTURE 327
-#define OPT_FILTER  328
+#define OPT_REF     327
+#define OPT_MIXTURE 328
+#define OPT_FILTER  329
+#define OPT_THREAD  330
 
 using namespace Spike;
 
@@ -140,11 +146,15 @@ static const struct option long_options[] =
     { "v", no_argument, 0, CMD_VER  },
     { "t", no_argument, 0, CMD_TEST },
 
-    { "rna",  required_argument, 0, CMD_RNA  },
-    { "dna",  required_argument, 0, CMD_DNA  },
-    { "meta", required_argument, 0, CMD_META },
-    { "con",  required_argument, 0, CMD_CON  },
-    { "fus",  required_argument, 0, CMD_FUS  },
+    { "rna",      required_argument, 0, CMD_RNA    },
+    { "var",      required_argument, 0, CMD_VAR    },
+    { "meta",     required_argument, 0, CMD_META   },
+    { "fetal",    required_argument, 0, CMD_FETAL  },
+    { "cancer",   required_argument, 0, CMD_CANCER },
+    { "clinical", required_argument, 0, CMD_CLINIC },
+    { "ladder",   required_argument, 0, CMD_LADDER },
+    { "fusion",   required_argument, 0, CMD_FUSION },
+    { "struct",   required_argument, 0, CMD_STRUCT },
 
     { "psl",     required_argument, 0, OPT_PSL     },
     { "min",     required_argument, 0, OPT_MIN     },
@@ -284,8 +294,8 @@ static void readFilters(const std::string &file)
     {
         switch (_cmd)
         {
-            case CMD_FUS: { break; }
-            case CMD_CON: { break; }
+            case CMD_FUSION: { break; }
+            case CMD_LADDER: { break; }
 
             case CMD_RNA:
             {
@@ -300,7 +310,7 @@ static void readFilters(const std::string &file)
                 break;
             }
 
-            case CMD_DNA:
+            case CMD_VAR:
             {
                 assert(s.d_seqs_A.size() == s.d_seqs_B.size());
                 
@@ -416,16 +426,6 @@ void parse(int argc, char ** argv)
     {
         printUsage();
     }
-    else
-    {
-        const auto tmp = std::string(argv[1]);
-        
-        if (tmp == "rna")  { _cmd = CMD_RNA;  }
-        if (tmp == "dna")  { _cmd = CMD_DNA;  }
-        if (tmp == "meta") { _cmd = CMD_META; }
-        if (tmp == "con")  { _cmd = CMD_CON;  }
-        if (tmp == "fus")  { _cmd = CMD_FUS;  }
-    }
 
     int next, index;
 
@@ -462,10 +462,14 @@ void parse(int argc, char ** argv)
             }
                 
             case CMD_VER:
-            case CMD_DNA:
+            case CMD_VAR:
             case CMD_RNA:
             case CMD_META:
             case CMD_TEST:
+            case CMD_LADDER:
+            case CMD_FUSION:
+            case CMD_STRUCT:
+            case CMD_CLINIC:
             {
                 if (_cmd != 0)
                 {
@@ -525,7 +529,7 @@ void parse(int argc, char ** argv)
             case CMD_VER:  { printVersion();                break; }
             case CMD_TEST: { Catch::Session().run(1, argv); break; }
 
-            case CMD_FUS:
+            case CMD_FUSION:
             {
                 std::cout << "Fusion Analysis" << std::endl;
                 
@@ -546,7 +550,7 @@ void parse(int argc, char ** argv)
 
             case CMD_CON:
             {
-                std::cout << "Conjoint Analysis" << std::endl;
+                std::cout << "Ladder Analysis" << std::endl;
 
                 if (_mode != MODE_SEQUINS &&
                     _mode != MODE_CORRECT &&
