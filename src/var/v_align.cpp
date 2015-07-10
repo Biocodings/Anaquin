@@ -1,4 +1,4 @@
-#include "dna/d_align.hpp"
+#include "var/v_align.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Spike;

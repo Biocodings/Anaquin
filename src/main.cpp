@@ -12,18 +12,17 @@
 #include "rna/r_assembly.hpp"
 #include "rna/r_abundance.hpp"
 
-#include "dna/d_align.hpp"
-#include "dna/d_variant.hpp"
-#include "dna/d_sequence.hpp"
+#include "var/v_align.hpp"
+#include "var/v_variant.hpp"
 
 #include "meta/m_blast.hpp"
 #include "meta/m_diffs.hpp"
 #include "meta/m_assembly.hpp"
 
-#include "con/c_diffs.hpp"
-#include "con/c_single.hpp"
+#include "ladder/l_diffs.hpp"
+#include "ladder/l_correct.hpp"
 
-#include "fus/f_discover.hpp"
+#include "fusion/f_discover.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"

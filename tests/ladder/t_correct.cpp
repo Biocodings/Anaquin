@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "con/c_single.hpp"
+#include "ladder/c_correct.hpp"
 
 using namespace Spike;
 
