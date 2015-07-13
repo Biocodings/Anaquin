@@ -201,7 +201,7 @@ Standard::Standard()
     clinical();
 }
 
-void Standard::dna_mod(const Reader &r)
+void Standard::var_mod(const Reader &r)
 {
     std::vector<std::string> tokens;
     
@@ -241,7 +241,7 @@ void Standard::dna_mod(const Reader &r)
     assert(d_vars.size() >= d_seqIDs.size());
 }
 
-void Standard::dna_mix(const Reader &r)
+void Standard::var_mix(const Reader &r)
 {
     mergeMix(r, parseMix(r, d_seqs_A, d_seqs_B), d_seqs_A, d_seqs_B, d_seqs_bA, d_seqs_bB);
 }
@@ -261,7 +261,7 @@ void Standard::meta_mix(const Reader &r)
     mergeMix(r, parseMix(r, m_seqs_A, m_seqs_B), m_seqs_A, m_seqs_B, m_seqs_bA, m_seqs_bB);
 }
 
-void Standard::ladder_mix(const Reader &r)
+void Standard::l_mix(const Reader &r)
 {
     parseMix(r, l_seqs_A, l_seqs_B);
 
@@ -308,7 +308,7 @@ void Standard::f_mod(const Reader &r)
 
 void Standard::ladder()
 {
-    ladder_mix(Reader(LadderDataMix(), DataMode::String));
+    l_mix(Reader(LadderDataMix(), DataMode::String));
 }
 
 void Standard::fusion()
@@ -328,8 +328,8 @@ void Standard::meta()
 
 void Standard::variant()
 {
-    dna_mod(Reader(DNADataBed(), DataMode::String));
-    dna_mix(Reader(DNADataMix(), DataMode::String));
+    var_mod(Reader(DNADataBed(), DataMode::String));
+    var_mix(Reader(DNADataMix(), DataMode::String));
 }
 
 void Standard::rna_mod(const Reader &r)

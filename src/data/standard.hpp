@@ -114,7 +114,7 @@ namespace Spike
             void rna_mix(const Reader &);
 
             /*
-             * DNA data
+             * Variant data
              */
 
             inline const SequinMap &d_seq(Mixture mix) const
@@ -122,8 +122,8 @@ namespace Spike
                 return mix == MixA ? d_seqs_A : d_seqs_B;
             }
 
-            void dna_mod(const Reader &);
-            void dna_mix(const Reader &);
+            void var_mod(const Reader &);
+            void var_mix(const Reader &);
 
             // Sequins for mixture A and B
             SequinMap d_seqs_A, d_seqs_B;
@@ -143,7 +143,7 @@ namespace Spike
              * Ladder data
              */
 
-            void ladder_mix(const Reader &);
+            void l_mix(const Reader &);
 
             // Sequins for mixture A and B
             SequinMap l_seqs_A, l_seqs_B;
