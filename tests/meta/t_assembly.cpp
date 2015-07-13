@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "meta/m_assembly.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("DNAssembly_Contigs")
 {

@@ -4,7 +4,7 @@
 #include "data/locus.hpp"
 #include "data/biology.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     typedef std::string FeatureID;
     

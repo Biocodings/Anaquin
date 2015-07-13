@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "var/v_align.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 //TEST_CASE("DAlign_Simulations")
 //{

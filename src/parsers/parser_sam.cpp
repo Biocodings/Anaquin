@@ -6,7 +6,7 @@
 #include "parsers/parser_sam.hpp"
 #include <boost/algorithm/string.hpp>
 
-using namespace Spike;
+using namespace Anaquin;
 
 void ParserSAM::parse(const std::string &file, std::function<void (const Alignment &, const ParserProgress &)> x)
 {

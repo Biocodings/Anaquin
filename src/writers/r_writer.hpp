@@ -11,7 +11,7 @@
 
 extern std::string LinearR();
 
-namespace Spike
+namespace Anaquin
 {
     struct RWriter
     {

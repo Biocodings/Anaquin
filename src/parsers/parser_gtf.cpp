@@ -3,7 +3,7 @@
 #include "data/reader.hpp"
 #include "parsers/parser_gtf.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 void ParserGTF::parse(const Reader &r, Callback x)
 {

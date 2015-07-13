@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Spike
+namespace Anaquin
 {
     struct Writer
     {

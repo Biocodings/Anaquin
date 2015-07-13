@@ -32,7 +32,7 @@ extern std::string DNADataBed();
 extern std::string DNADataMix();
 extern std::string DNADataVCF();
 
-using namespace Spike;
+using namespace Anaquin;
 
 template <typename Iter> BasePair countLocus(const Iter &iter)
 {

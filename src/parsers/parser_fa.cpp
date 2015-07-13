@@ -2,7 +2,7 @@
 #include "parsers/parser_fa.hpp"
 #include <boost/algorithm/string.hpp>
 
-using namespace Spike;
+using namespace Anaquin;
 
 void ParserFA::parse(const Reader &r, Callback c)
 {

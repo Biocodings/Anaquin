@@ -1,6 +1,6 @@
 #include "parsers/parser_csv.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 void ParserCSV::parse(const Reader &r, Callback c, const std::string &delim)
 {

@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "rna/r_abundance.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("RAbundance_Simulations_Isoforms_A1")
 {

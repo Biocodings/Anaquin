@@ -2,7 +2,7 @@
 #include "data/tokens.hpp"
 #include "parsers/parser_fusion.hpp"
 #include <iostream>
-using namespace Spike;
+using namespace Anaquin;
 
 void ParserFusion::parse(const Reader &r, Callback x)
 {

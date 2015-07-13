@@ -4,7 +4,7 @@
 #include <fstream>
 #include "writers/writer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     class FileWriter : public Writer
     {

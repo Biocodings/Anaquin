@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Spike
+namespace Anaquin
 {
     typedef std::string ContigID;
     typedef std::string MetaQuinID;

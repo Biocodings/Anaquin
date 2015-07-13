@@ -5,9 +5,9 @@
 #include "data/reader.hpp"
 #include <boost/algorithm/string.hpp>
 
-using namespace Spike;
+using namespace Anaquin;
 
-struct Spike::ReaderInternal
+struct Anaquin::ReaderInternal
 {
     std::string t;
     std::shared_ptr<std::ifstream> f;

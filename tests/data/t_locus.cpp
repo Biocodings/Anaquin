@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "data/locus.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("Locus_Merge_Overlap_Last")
 {

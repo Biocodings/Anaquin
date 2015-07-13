@@ -7,7 +7,7 @@
 #include "stats/analyzer.hpp"
 #include "parsers/parser_fa.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct DNAsssembly
     {

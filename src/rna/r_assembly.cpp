@@ -1,7 +1,7 @@
 #include "rna/r_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 template <typename F> static void extractIntrons(const std::map<SequinID, std::vector<Feature>> &x, F f)
 {

@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "rna/r_diffs.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("Differential_Simulations_Isoforms")
 {

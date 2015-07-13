@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "ladder/l_correct.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("Ladder_Correct_Test")
 {

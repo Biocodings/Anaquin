@@ -72,7 +72,7 @@ typedef std::string OptionValue;
 #define OPT_PSL_1   330
 #define OPT_PSL_2   331
 
-using namespace Spike;
+using namespace Anaquin;
 
 void handler(int sig)
 {

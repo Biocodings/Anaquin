@@ -4,7 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace Spike
+namespace Anaquin
 {
     struct ParserProgress
     {

@@ -4,7 +4,7 @@
 #include <functional>
 #include "stats/analyzer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     typedef std::string RefGeneID;
     typedef std::string RefID;

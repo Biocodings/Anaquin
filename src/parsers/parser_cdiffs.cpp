@@ -4,7 +4,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 using namespace SS;
-using namespace Spike;
+using namespace Anaquin;
 
 enum TrackingField
 {

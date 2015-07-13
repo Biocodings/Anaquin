@@ -4,7 +4,7 @@
 #include <string>
 #include <boost/algorithm/string.hpp>
 
-namespace Spike
+namespace Anaquin
 {
     struct Tokens
     {

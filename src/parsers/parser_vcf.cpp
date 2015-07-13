@@ -3,7 +3,7 @@
 #include "data/tokens.hpp"
 #include "parsers/parser_vcf.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 /*
  * Refer to http://samtools.github.io/hts-specs/VCFv4.1.pdf for more details

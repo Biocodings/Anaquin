@@ -1,7 +1,7 @@
 #include "fusion/f_fusion.hpp"
 #include "parsers/parser_fusion.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 FFusion::Stats FFusion::analyze(const std::string &file, const Options &options)
 {

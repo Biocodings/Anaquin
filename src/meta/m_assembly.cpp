@@ -1,7 +1,7 @@
 #include "meta/m_blast.hpp"
 #include "meta/m_assembly.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &options)
 {

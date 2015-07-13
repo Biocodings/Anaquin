@@ -1,7 +1,7 @@
 #ifndef GI_FILTER_HPP
 #define GI_FILTER_HPP
 
-namespace Spike
+namespace Anaquin
 {
     struct Filter
     {

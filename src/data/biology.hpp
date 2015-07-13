@@ -1,7 +1,7 @@
 #ifndef GI_BIOLOGY_HPP
 #define GI_BIOLOGY_HPP
 
-namespace Spike
+namespace Anaquin
 {
     enum Strand
     {

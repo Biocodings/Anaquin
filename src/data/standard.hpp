@@ -9,7 +9,7 @@
 #include "data/feature.hpp"
 #include "parsers/parser_bed.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
 

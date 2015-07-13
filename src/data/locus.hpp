@@ -9,7 +9,7 @@
 #include <algorithm>
 #include "data/types.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct Locus
     {

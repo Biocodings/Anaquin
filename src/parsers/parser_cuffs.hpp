@@ -4,7 +4,7 @@
 #include <map>
 #include "data/types.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     enum TrackingStatus
     {

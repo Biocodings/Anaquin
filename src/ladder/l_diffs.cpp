@@ -2,7 +2,7 @@
 #include "ladder/l_correct.hpp"
 #include <ss/regression/lm.hpp>
 
-using namespace Spike;
+using namespace Anaquin;
 
 LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB, const Options &options)
 {

@@ -5,7 +5,7 @@
 #include "stats/analyzer.hpp"
 #include "parsers/parser_cuffs.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct TrackingDiffs
     {

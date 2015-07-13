@@ -4,7 +4,7 @@
 #include "data/feature.hpp"
 #include "stats/analyzer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct ParserGTF
     {

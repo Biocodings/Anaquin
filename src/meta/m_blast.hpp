@@ -4,7 +4,7 @@
 #include "data/sequin.hpp"
 #include "stats/analyzer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     /*
      * Represents a contig that has been aligned.

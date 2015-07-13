@@ -3,7 +3,7 @@
 
 #include "writers/writer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct MockWriter : public Writer
     {

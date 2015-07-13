@@ -5,7 +5,7 @@
 #include "data/standard.hpp"
 #include "parsers/parser_blast.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &options)
 {

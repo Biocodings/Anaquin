@@ -3,7 +3,7 @@
 #include "parsers/parser_sequins.hpp"
 #include <boost/algorithm/string.hpp>
 
-using namespace Spike;
+using namespace Anaquin;
 
 SequinList ParserSequins::parse(const std::string &file)
 {

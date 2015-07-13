@@ -3,7 +3,7 @@
 #include "parsers/parser_cdiffs.hpp"
 
 using namespace SS;
-using namespace Spike;
+using namespace Anaquin;
 
 RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
 {

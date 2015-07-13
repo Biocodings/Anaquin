@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "var/v_variant.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("Variant_Variant_Simulation")
 {

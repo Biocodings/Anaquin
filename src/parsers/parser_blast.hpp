@@ -5,7 +5,7 @@
 #include "data/types.hpp"
 #include "parsers/parser.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct ParserBlast
     {

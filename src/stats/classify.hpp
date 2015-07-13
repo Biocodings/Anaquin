@@ -5,7 +5,7 @@
 #include "stats/sensitivity.hpp"
 #include <ss/data/confusion.hpp>
 
-namespace Spike
+namespace Anaquin
 {
     struct Confusion : public SS::Confusion
     {

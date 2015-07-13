@@ -5,7 +5,7 @@
 #include <numeric>
 #include "data/locus.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct Region : public std::vector<Locus>
     {

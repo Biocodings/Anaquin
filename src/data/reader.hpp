@@ -5,7 +5,7 @@
 #include <string>
 #include "parsers/parser.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct ReaderInternal;
 

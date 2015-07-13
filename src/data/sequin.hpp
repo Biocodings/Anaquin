@@ -5,7 +5,7 @@
 #include "data/types.hpp"
 #include "data/locus.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     class Sequin
     {

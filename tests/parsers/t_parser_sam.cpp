@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "parsers/parser_sam.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("Test_Junction")
 {

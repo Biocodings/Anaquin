@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "rna/r_assembly.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("RAssembly_Simulation")
 {

@@ -4,7 +4,7 @@
 #include "stats/analyzer.hpp"
 #include "parsers/parser.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct FALine
     {

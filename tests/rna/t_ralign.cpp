@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "rna/r_align.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("RAlign_Cufflinks")
 {

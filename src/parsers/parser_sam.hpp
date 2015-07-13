@@ -4,7 +4,7 @@
 #include "data/alignment.hpp"
 #include "stats/analyzer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct ParserSAM
     {

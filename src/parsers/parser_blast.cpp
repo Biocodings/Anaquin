@@ -2,7 +2,7 @@
 #include "data/tokens.hpp"
 #include "parsers/parser_blast.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 enum PSLField
 {

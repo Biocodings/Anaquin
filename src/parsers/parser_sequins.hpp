@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace Spike
+namespace Anaquin
 {
     typedef std::vector<std::string> SequinList;
 

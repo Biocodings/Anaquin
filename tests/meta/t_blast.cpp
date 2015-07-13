@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "meta/m_blast.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("MBlast_Empty")
 {

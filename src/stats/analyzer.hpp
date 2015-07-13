@@ -11,7 +11,7 @@
 #include "stats/sensitivity.hpp"
 #include "writers/mock_writer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     typedef std::map<Locus, Counts>     LocusCounter;
     typedef std::map<GeneID, Counts>    GeneCounter;

@@ -4,7 +4,7 @@
 #include <iostream>
 #include "writers/writer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     class TerminalWriter : public Writer
     {

@@ -3,7 +3,7 @@
 #include "data/tokens.hpp"
 #include "parsers/parser_tmap.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 enum TMapField
 {

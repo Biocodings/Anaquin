@@ -6,7 +6,7 @@
 #include "data/reader.hpp"
 #include "data/biology.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct ParserFusion
     {

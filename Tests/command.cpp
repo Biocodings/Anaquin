@@ -1,7 +1,14 @@
 #include <catch.hpp>
 #include "var/v_align.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
+
+TEST_CASE("Missing_Mixture_File")
+{
+
+}
+
+//-c ladder -p correct tests/data/ladder/aligned_A.sam
 
 //TEST_CASE("DAlign_Simulations")
 //{

@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "ladder/l_diffs.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 TEST_CASE("Ladder_Diffs_Test")
 {

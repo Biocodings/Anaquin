@@ -3,7 +3,7 @@
 
 #include "data/types.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     struct Sensitivity
     {

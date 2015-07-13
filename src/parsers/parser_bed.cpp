@@ -3,7 +3,7 @@
 #include "parsers/parser_bed.hpp"
 #include <boost/algorithm/string.hpp>
 
-using namespace Spike;
+using namespace Anaquin;
 
 void ParserBED::parse(const Reader &r, Callback x)
 {

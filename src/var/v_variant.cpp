@@ -1,7 +1,7 @@
 #include "var/v_variant.hpp"
 #include "parsers/parser_vcf.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 DVariant::Stats DVariant::analyze(const std::string &file, const Options &options)
 {

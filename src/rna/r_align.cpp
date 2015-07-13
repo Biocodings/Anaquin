@@ -1,7 +1,7 @@
 #include "rna/r_align.hpp"
 #include "parsers/parser_sam.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 // Find the matching intron by locus given a spliced alignment
 static bool findIntron(const Alignment &align, Feature &f)

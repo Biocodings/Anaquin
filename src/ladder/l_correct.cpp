@@ -3,7 +3,7 @@
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 static std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, double fold, Counts size)
 {

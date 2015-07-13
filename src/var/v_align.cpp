@@ -1,7 +1,7 @@
 #include "var/v_align.hpp"
 #include "parsers/parser_sam.hpp"
 
-using namespace Spike;
+using namespace Anaquin;
 
 VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 {

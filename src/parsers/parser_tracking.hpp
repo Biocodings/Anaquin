@@ -5,7 +5,7 @@
 #include "data/types.hpp"
 #include "parsers/parser_cuffs.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     typedef std::string TrackID;
     

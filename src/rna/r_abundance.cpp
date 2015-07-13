@@ -7,7 +7,7 @@
 #include "parsers/parser_tracking.hpp"
 
 using namespace SS;
-using namespace Spike;
+using namespace Anaquin;
 
 static const FileName GTracking = "genes.fpkm_tracking";
 static const FileName ITracking = "isoforms.fpkm_tracking";

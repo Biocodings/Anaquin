@@ -3,7 +3,7 @@
 
 #include "stats/analyzer.hpp"
 
-namespace Spike
+namespace Anaquin
 {
     class RAlign : public RAnalyzer
     {
