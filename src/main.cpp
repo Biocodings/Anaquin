@@ -183,11 +183,8 @@ struct Parsing
     // The sequins that have been filtered
     std::set<SequinID> filters;
 
-    // The first operand for the command
-    std::string opt1;
-    
-    // The second operand for the command
-    std::string opt2;
+    // One or more operands
+    std::vector<std::string> opts;
     
     Command cmd = 0;
     Mode mode = 0;
@@ -579,10 +576,19 @@ void parse(int argc, char ** argv)
     std::vector<Option> opts;
     std::vector<Value>  vals;
 
+    int n = 1;
+
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
         opts.push_back(next);
-        vals.push_back(optarg ? std::string(optarg) : "");
+
+        // Whether this option has an value
+        const bool hasValue = optarg;
+        
+        vals.push_back(hasValue ? std::string(optarg) : "");
+
+        // We'll need it to parse the inputs
+        n += (hasValue ? 2 : 1);
     }
 
     /*
@@ -606,11 +612,20 @@ void parse(int argc, char ** argv)
     std::swap(opts[0], opts[i]);
     std::swap(vals[0], vals[i]);
 
+    /*
+     * Parse the inputs, could be a single input or multiple inputs
+     */
+    
+    for (; n < argc; n++)
+    {
+        std::string s = argv[n];
+        _p.opts.push_back(argv[n]);
+    }
+    
     for (std::size_t i = 0; i < opts.size(); i++)
     {
         const auto opt = opts[i];
         const auto val = vals[i];
-        //const auto &arg = argv[index];
 
         switch (opt)
         {
@@ -631,16 +646,16 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_REF:     { checkFile(_p.ref = optarg);    break; }
-            case OPT_MIXTURE: { checkFile(_p.mix = optarg);    break; }
-            case OPT_OUTPUT:  { checkFile(_p.output = optarg); break; }
-            case OPT_FILTER:  { readFilters(optarg);           break; }
-            case OPT_MAX:     { parseDouble(optarg, _p.max);   break; }
-            case OPT_MIN:     { parseDouble(optarg, _p.min);   break; }
-            case OPT_LOS:     { parseDouble(optarg, _p.los);   break; }
-            case OPT_THREAD:  { parseInt(optarg, _p.threads);  break; }
-            case OPT_PSL_1:   { checkFile(_p.pA = optarg);     break; }
-            case OPT_PSL_2:   { checkFile(_p.pB = optarg);     break; }
+            case OPT_REF:     { checkFile(_p.ref = val);    break; }
+            case OPT_MIXTURE: { checkFile(_p.mix = val);    break; }
+            case OPT_OUTPUT:  { checkFile(_p.output = val); break; }
+            case OPT_FILTER:  { readFilters(val);           break; }
+            case OPT_MAX:     { parseDouble(val, _p.max);   break; }
+            case OPT_MIN:     { parseDouble(val, _p.min);   break; }
+            case OPT_LOS:     { parseDouble(val, _p.los);   break; }
+            case OPT_THREAD:  { parseInt(val, _p.threads);  break; }
+            case OPT_PSL_1:   { checkFile(_p.pA = val);     break; }
+            case OPT_PSL_2:   { checkFile(_p.pB = val);     break; }
 
             case OPT_CMD:
             {
@@ -712,7 +727,7 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_FUSION: { analyze<FFusion>(_p.opt1); break; }
+                case MODE_FUSION: { analyze<FFusion>(_p.opts[0]); break; }
             }
             
             break;
@@ -735,7 +750,7 @@ void parse(int argc, char ** argv)
             switch (mode)
             {
                 case MODE_MIXTURE: { printMixture(LadderDataMix()); break; }
-                case MODE_CORRECT: { analyze<LCorrect>(_p.opt1);    break; }
+                case MODE_CORRECT: { analyze<LCorrect>(_p.opts[0]); break; }
                 case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB); break; }
             }
 
@@ -762,18 +777,18 @@ void parse(int argc, char ** argv)
 
             switch (mode)
             {
-                case MODE_MIXTURE:  { printMixture(RNADataMix());  break; }
-                case MODE_ALIGN:    { analyze<RAlign>(_p.opt1);    break; }
-                case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opt1); break; }
+                case MODE_MIXTURE:  { printMixture(RNADataMix());     break; }
+                case MODE_ALIGN:    { analyze<RAlign>(_p.opts[0]);    break; }
+                case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opts[0]); break; }
                 case MODE_ABUNDANCE:
                 {
-                    analyze<RAbundance>(_p.opt1, detect<RAbundance::Options>(_p.opt1));
+                    analyze<RAbundance>(_p.opts[0], detect<RAbundance::Options>(_p.opts[0]));
                     break;
                 }
 
                 case MODE_DIFFS:
                 {
-                    analyze<RDiffs>(_p.opt1, detect<RDiffs::Options>(_p.opt1));
+                    analyze<RDiffs>(_p.opts[0], detect<RDiffs::Options>(_p.opts[0]));
                     break;
                 }
             }
@@ -801,9 +816,9 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_MIXTURE: { printMixture(VARDataMix()); break; }
-                case MODE_ALIGN:   { analyze<VAlign>(_p.opt1);   break; }
-                case MODE_VARIANT: { analyze<VVariant>(_p.opt1); break; }
+                case MODE_MIXTURE: { printMixture(VARDataMix());   break; }
+                case MODE_ALIGN:   { analyze<VAlign>(_p.opts[0]);   break; }
+                case MODE_VARIANT: { analyze<VVariant>(_p.opts[0]); break; }
             }
 
             break;
@@ -829,8 +844,8 @@ void parse(int argc, char ** argv)
             switch (mode)
             {
                 case MODE_MIXTURE: { printMixture(MetaDataMix()); break; }
-                case MODE_BLAST:   { MBlast::analyze(_p.opt1);      break; }
-                    
+                case MODE_BLAST:   { MBlast::analyze(_p.opts[0]); break; }
+
                 case MODE_DIFFS:
                 {
                     //                            if (_opts.size() != 2 || (!_pA.empty() != !_pB.empty()))
@@ -853,8 +868,8 @@ void parse(int argc, char ** argv)
                     
                     // We'd also take an alignment PSL file from a user
                     o.psl = _p.pA;
-                    
-                    analyze<MAssembly>(_p.opt1, o);
+
+                    analyze<MAssembly>(_p.opts[0], o);
                     break;
                 }
             }
@@ -881,10 +896,18 @@ int parse_options(int argc, char ** argv)
         parse(argc, argv);
         return 0;
     }
-    catch (const MissingOptionError &e)
+    catch (const MissingOptionError &ex)
     {
         const auto format = "A mandatory option is missing. Please specify %1%. Possible values are %2%";
-        printError((boost::format(format) % e.opt % e.range).str());
+        printError((boost::format(format) % ex.opt % ex.range).str());
+    }
+    catch (const MissingMixtureError &ex)
+    {
+        printError("Mixture file is missing. Please specify it with -m.");
+    }
+    catch (const MissingReferenceError &ex)
+    {
+        printError("Reference file is missing. Please specify it with -r.");
     }
     catch (const EmptyFileError &e)
     {
