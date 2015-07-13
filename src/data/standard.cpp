@@ -28,9 +28,8 @@ extern std::string MetaDataBed();
 extern std::string MetaDataMix();
 extern std::string MetaDataTab();
 
-extern std::string DNADataBed();
-extern std::string DNADataMix();
-extern std::string DNADataVCF();
+extern std::string VARDataBed();
+extern std::string VARDataMix();
 
 using namespace Anaquin;
 
@@ -328,8 +327,8 @@ void Standard::meta()
 
 void Standard::variant()
 {
-    v_ref(Reader(DNADataBed(), DataMode::String));
-    v_mix(Reader(DNADataMix(), DataMode::String));
+    v_ref(Reader(VARDataBed(), DataMode::String));
+    v_mix(Reader(VARDataMix(), DataMode::String));
 }
 
 void Standard::r_ref(const Reader &r)

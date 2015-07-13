@@ -3,9 +3,9 @@
 
 using namespace Anaquin;
 
-DVariant::Stats DVariant::analyze(const std::string &file, const Options &options)
+VVariant::Stats VVariant::analyze(const std::string &file, const Options &options)
 {
-    DVariant::Stats stats;
+    VVariant::Stats stats;
     const auto &s = Standard::instance();
 
     ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)

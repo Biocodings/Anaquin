@@ -141,15 +141,15 @@ std::string RNADataMix()
 }
 
 /*
- * DNA Resources
+ * Variant Resources
  */
 
-std::string DNADataMix()
+std::string VARDataMix()
 {
     return ToString(data_dna_DNA_v3_mix_csv);
 }
 
-std::string DNADataBed()
+std::string VARDataBed()
 {
     return ToString(data_dna_DNA_variant_bed);
 }
