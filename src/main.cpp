@@ -319,7 +319,7 @@ static void printVersion()
 }
 
 // Print a file of mixture A and B
-void print(Reader &r)
+static void print(Reader &r)
 {
     /*
      * Format: <ID, Mix A, Mix B>
@@ -348,7 +348,7 @@ void print(Reader &r)
 
 static void printMixture(const std::string &file)
 {
-    Reader r(file, String);
+    Reader r(file);
     print(r);
 }
 
@@ -643,11 +643,6 @@ void parse(int argc, char ** argv)
         _p.opts.push_back(argv[n]);
     }
     
-    if (_p.cmd != CMD_TEST && _p.cmd != CMD_VER && _p.opts.empty())
-    {
-        throw MissingInputError();
-    }
-
     for (std::size_t i = 0; i < opts.size(); i++)
     {
         const auto opt = opts[i];
@@ -720,6 +715,11 @@ void parse(int argc, char ** argv)
     // Exception should've already been thrown if command is not specified
     assert(_p.cmd);
 
+    if (_p.cmd != CMD_TEST && _p.cmd != CMD_VER && _p.opts.empty() && _p.mode != MODE_SEQUINS)
+    {
+        throw MissingInputError();
+    }
+
     auto &s = Standard::instance();
     
     switch (_p.cmd)
@@ -771,11 +771,9 @@ void parse(int argc, char ** argv)
             // Apply custom mixture to ladder analysis
             applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
 
-            extern std::string LadderDataMix();
-
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture(LadderDataMix()); break; }
+                case MODE_SEQUINS: { printMixture(_p.mix);          break; }
                 case MODE_CORRECT: { analyze<LCorrect>(_p.opts[0]); break; }
                 case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB); break; }
             }
@@ -921,6 +919,10 @@ int parse_options(int argc, char ** argv)
     {
         parse(argc, argv);
         return 0;
+    }
+    catch (const InvalidValueError &ex)
+    {
+        printError(ex.value);
     }
     catch (const MissingOptionError &ex)
     {
