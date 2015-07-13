@@ -22,13 +22,13 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-BOOST = /usr/local/Cellar/boost/1.57.0/include
+BOOST = /usr/include/boost_1_58_0
 
 # Required for unit-testing
 CATCH = /usr/include/catch/include
 
 # Linear-algebra library
-EIGEN = /usr/local/Cellar/eigen/3.2.4/include/eigen3
+EIGEN = /usr/include/eigen
 
 # Statistics library
 SS = ../SS
