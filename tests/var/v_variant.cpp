@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 TEST_CASE("Variant_Variant_Simulation")
 {
-    const auto r  = DVariant::analyze("tests/data/dna/VARquin.MixA.v1.vcf");
+    const auto r  = VVariant::analyze("tests/data/dna/VARquin.MixA.v1.vcf");
     const auto lm = r.linear();
 
     REQUIRE(r.m.sp()  == Approx(0.977778));

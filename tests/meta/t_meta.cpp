@@ -2,7 +2,7 @@
 #include <iostream>
 #include <catch.hpp>
 
-extern int parse_options(const std::string &command, std::string &output, std::string &error);
+extern int parse_options(const std::string &, std::string &, std::string &);
 
 // Generate a file for filtering, one line per sequin
 static void generateFilter(const std::string &file, const std::vector<std::string> &sequins)

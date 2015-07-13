@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include "rna/r_align.hpp"
 
-extern int parse_options(const std::string &command, std::string &output, std::string &error);
+extern int parse_options(const std::string &, std::string &, std::string &);
 
 TEST_CASE("T_RNA_Cufflinks")
 {
