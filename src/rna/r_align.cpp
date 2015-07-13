@@ -55,15 +55,17 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 
     std::vector<Alignment> exons, introns;
 
-    options.output->write("Parsing alignments");
-    
+    options.logput("Parsing alignment file");
+
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        // This is done because a typical SAM/BAM file is huge
+        // This is because a typical SAM/BAM file is huge
         if ((p.i % 100000) == 0)
         {
             options.output->write("Processed: " + std::to_string(p.i));
         }
+
+        options.logger->write((boost::format("%1%: %2%") % p.i % align.qName).str());
 
         Feature f;
 
@@ -151,7 +153,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
-    options.logger->write("Counting references");
+    options.logput("Counting references");
     
     /*
      * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
@@ -161,8 +163,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     sums(stats.ce, stats.pe.m.nr);
     sums(stats.ci, stats.pi.m.nr);
 
-    options.logger->write("Merging overlapping bases");
-    options.output->write("Merging overlapping bases");
+    options.logput("Merging overlapping bases");
     
     /*
      * The counts for bases in a query is the total non-overlapping bases of all the exons in the experiment.

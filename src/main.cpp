@@ -510,12 +510,12 @@ template <typename Options> static Options detect(const std::string &file)
     
     if (found_gene && !found_isoform)
     {
-        std::cout << "Calculating for the genes" << std::endl;
+        std::cout << "Detected for the gene level" << std::endl;
         o.level = RNALevel::Gene;
     }
     else if (!found_gene && found_isoform)
     {
-        std::cout << "Calcualting for the isoforms" << std::endl;
+        std::cout << "Detected for the isoform level" << std::endl;
         o.level = RNALevel::Isoform;
     }
     else

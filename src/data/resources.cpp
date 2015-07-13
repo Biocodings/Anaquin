@@ -80,12 +80,12 @@ std::string Manual()
 
 std::string FusDataMix()
 {
-    return ToString(data_fus_FUS_v3_csv);
+    return ToString(data_fusion_FUS_v3_csv);
 }
 
 std::string FusDataRef()
 {
-    return ToString(data_fus_FUS_v1_ref);
+    return ToString(data_fusion_FUS_v1_ref);
 }
 
 /*
@@ -94,7 +94,7 @@ std::string FusDataRef()
 
 std::string LadderDataMix()
 {
-    return ToString(data_con_CON_v3_mix_csv);
+    return ToString(data_ladder_CON_v3_mix_csv);
 }
 
 /*
@@ -120,11 +120,6 @@ std::string MetaDataBed()
  * RNA Resources
  */
 
-//std::string RNADataFA()
-//{
-  //  return ToString(data_rna_chrT_v2_fa);
-//}
-
 std::string RNADataGTF()
 {
     return ToString(data_rna_RNA_v1_gtf);
@@ -146,10 +141,10 @@ std::string RNADataMix()
 
 std::string VARDataMix()
 {
-    return ToString(data_dna_DNA_v3_mix_csv);
+    return ToString(data_var_DNA_v3_mix_csv);
 }
 
 std::string VARDataBed()
 {
-    return ToString(data_dna_DNA_variant_bed);
+    return ToString(data_var_DNA_variant_bed);
 }

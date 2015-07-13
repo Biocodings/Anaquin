@@ -26,15 +26,19 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
                                      % GTracking
                                      % ITracking).str());
     }
-    
+
     // Detect whether it's a file of isoform by the name of file
     const bool isoform = file.find(ITracking) != std::string::npos;
-    
-    ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &)
+
+    options.logput("Parsing input file");
+
+    ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
         // Don't overflow
         const auto fpkm = std::max(0.05, t.fpkm);
 
+        options.logger->write((boost::format("%1%: %2%") % p.i % t.trackID).str());
+        
         if (isoform)
         {
             if (!s.r_seqs_A.count(t.trackID))
@@ -81,19 +85,13 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
-    // Perform a linear regreession
+    options.logput("Fitting a linear regression model");
     stats.linear();
 
-    /*
-     * Write out the statistics
-     */
-    
-    AnalyzeReporter::report("rna_abundance.stats", "abundance.R", stats, "FPKM", c, options.writer);
+    options.logput("Generating an R script");
+    AnalyzeReporter::report("rna_abundance.stats", "rna_abundance.R", stats, "FPKM", c, options.writer);
 
-    /*
-     * Write out results for RNA sequins
-     */
-
+    options.logput("Generating statistics");
     const std::string format = "%1%\t%2%\t%3%";
     
     options.writer->open("rna_sequins.stats");
