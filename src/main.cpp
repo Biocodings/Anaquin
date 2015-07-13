@@ -127,6 +127,7 @@ struct MissingOptionError : public std::exception
 
 struct MissingMixtureError   : public std::exception {};
 struct MissingReferenceError : public std::exception {};
+struct MissingInputError     : public std::exception {};
 
 struct TooManyOptionsError : public std::runtime_error
 {
@@ -642,6 +643,11 @@ void parse(int argc, char ** argv)
         _p.opts.push_back(argv[n]);
     }
     
+    if (_p.cmd != CMD_TEST && _p.cmd != CMD_VER && _p.opts.empty())
+    {
+        throw MissingInputError();
+    }
+
     for (std::size_t i = 0; i < opts.size(); i++)
     {
         const auto opt = opts[i];
@@ -920,6 +926,10 @@ int parse_options(int argc, char ** argv)
     {
         const auto format = "A mandatory option is missing. Please specify %1%. Possible values are %2%";
         printError((boost::format(format) % ex.opt % ex.range).str());
+    }
+    catch (const MissingInputError &ex)
+    {
+        printError("No input file given. Please give an input file and try again.");        
     }
     catch (const MissingMixtureError &ex)
     {
