@@ -1,5 +1,6 @@
 #include <map>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <unistd.h>
 #include <getopt.h>
@@ -186,6 +187,9 @@ struct Parsing
     // One or more operands
     std::vector<std::string> opts;
     
+    // How the software is invoked
+    std::string invoked;
+
     Command cmd = 0;
     Mode mode = 0;
 };
@@ -440,31 +444,41 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 {
     const auto path = _p.output;
 
-    std::cout << "Path: " << path << std::endl;
-
 #ifndef DEBUG
-    o.writer   = std::shared_ptr<FileWriter>(new FileWriter(path));
-    o.logger   = std::shared_ptr<FileWriter>(new FileWriter(path));
-    o.terminal = std::shared_ptr<TerminalWriter>(new TerminalWriter());
+    o.writer = std::shared_ptr<FileWriter>(new FileWriter(path));
+    o.logger = std::shared_ptr<FileWriter>(new FileWriter(path));
+    o.output = std::shared_ptr<TerminalWriter>(new TerminalWriter());
     o.logger->open("anaquin.log");
 #endif
 
-    std::cout << "-----------------------------------------" << std::endl;
-    std::cout << "------------- Sequin Analysis -----------" << std::endl;
-    std::cout << "-----------------------------------------" << std::endl << std::endl;
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+
+    std::stringstream buf;
+    buf << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
     
+    o.logger->write(_p.invoked);
+    o.logger->write(std::string(buf.str()));
+    o.logput("Path: " + path);
+
     for (const auto &filter : (o.filters = _p.filters))
     {
         std::cout << "Filter: " << filter << std::endl;
     }
+
+    std::cout << "-----------------------------------------" << std::endl;
+    std::cout << "------------- Sequin Analysis -----------" << std::endl;
+    std::cout << "-----------------------------------------" << std::endl << std::endl;
     
     std::clock_t begin = std::clock();
     
     f(o);
     
     std::clock_t end = std::clock();
-    const double elapsed = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Completed. Elpased: " << elapsed << " seconds" << std::endl;
+    
+    const auto elapsed = (boost::format("Completed. Elpased %1% seconds")
+                                        % (double(end - begin) / CLOCKS_PER_SEC)).str();
+    o.logput(elapsed);
 
 #ifndef DEBUG
     o.logger->close();
@@ -530,14 +544,12 @@ void parse(int argc, char ** argv)
      * Reconstruct the overall command
      */
     
-    std::string command;
-    
     for (int i = 0; i < argc; i++)
     {
-        command += std::string(argv[i]) + " ";
+        _p.invoked += std::string(argv[i]) + " ";
     }
 
-    assert(!command.empty());
+    assert(!_p.invoked.empty());
 
     // Attempt to parse and store a floating point from string
     auto parseDouble = [&](const std::string &str, double &r)

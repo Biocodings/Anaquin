@@ -12,13 +12,13 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
      * Let's reuse the code for single mixture. We'll create create a histogram for both mixtures.
      */
 
-    options.terminal->write("Analyzing mixuture A: " + fileA);
+    options.output->write("Analyzing mixuture A: " + fileA);
     const auto a = LCorrect::analyze(fileA);
 
-    options.terminal->write("Analyzing mixuture B: " + fileB);
+    options.output->write("Analyzing mixuture B: " + fileB);
     const auto b = LCorrect::analyze(fileB);
 
-    options.terminal->write("Mergin mixtures");
+    options.output->write("Mergin mixtures");
     const auto &s = Standard::instance();
 
     /*
@@ -32,7 +32,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         // Don't bother if the sequin isn't detected in either mixture
         if (!a.actual.at(id) || !b.actual.at(id))
         {
-            options.terminal->write((boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str());
+            options.output->write((boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str());
             continue;
         }
 

@@ -22,13 +22,13 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     // We'll need it to construct expected library size
     std::set<BaseID> baseIDs;
     
-    options.terminal->write("Parsing alignment file");
+    options.logput("Parsing alignment file");
 
     /*
      * Construct a histogram or distribution of the aligned sequins.
      */
     
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
         // Don't repeat the same read if it's spliced
         if (align.i == 0)
@@ -37,14 +37,17 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
             stats.abund[align.id]++;
 
             // Eg: C_1068 to C
-            baseIDs.insert(align.id.substr(0, align.id.find_last_of("_")));
+            const auto baseID = align.id.substr(0, align.id.find_last_of("_"));
+
+            baseIDs.insert(baseID);
+            options.logger->write((boost::format("%1%: %2%") % p.i % baseID).str());
         }
     });
 
     assert(!baseIDs.empty());
     assert(stats.actTotal);
 
-    options.terminal->write("Calculating the expected library size");
+    options.logput("Calculating the expected library size");
 
     const auto &s = Standard::instance();
 
@@ -54,9 +57,11 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     
     for (const auto &id : baseIDs)
     {
+        options.logger->write((boost::format("Calculating for baseID: %1%") % id).str());
+
         if (!s.l_seqs_A.count(id))
         {
-            options.terminal->write("Warning: " + id + " is detected but it's not found in the mixture file");
+            options.output->write("Warning: " + id + " is in alignment but it's not found in the mixture file");
         }
         else
         {
@@ -71,10 +76,10 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     
     if (!stats.expTotal)
     {
-        throw std::runtime_error("Error in conjoint. Unable to find anything that matches with the mixture.");
+        throw std::runtime_error("Unable to find anything in the alignment that matches with the mixture. Usually this is caused by an incorrect mixture file. Please check your mixture file.");
     }
-    
-    options.terminal->write("Linearly correcting the observed abundance");
+
+    options.output->write("Linearly correcting the observed abundance");
     
     for (const auto &i : s.l_seqs_A)
     {
@@ -185,7 +190,7 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
         options.writer->close();
     };
 
-    options.terminal->write("Writing histogram");
+    options.output->write("Writing histogram");
     writeHist("conjoint.stats", stats.abund, stats.expect, stats.actual, stats.correct);
 
 	return stats;

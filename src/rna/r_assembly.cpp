@@ -146,7 +146,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
     stats.pt.m.nr = sequins.size();
 
     options.logger->write("Merging overlapping bases");
-    options.terminal->write("Merging overlapping bases");
+    options.output->write("Merging overlapping bases");
 
     /*
      * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
@@ -168,7 +168,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
     stats.pb.m.nr = s.r_c_exons;
 
     options.logger->write("Calculating LOS");
-    options.terminal->write("Calculating LOS");
+    options.output->write("Calculating LOS");
     
     /*
      * Calculate for the LOS

@@ -178,9 +178,15 @@ namespace Anaquin
     {
         std::set<SequinID> filters;
 
-        std::shared_ptr<Writer> writer   = std::shared_ptr<Writer>(new MockWriter());
-        std::shared_ptr<Writer> logger   = std::shared_ptr<Writer>(new MockWriter());
-        std::shared_ptr<Writer> terminal = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> output = std::shared_ptr<Writer>(new MockWriter());
+
+        inline void logput(const std::string &s) const
+        {
+            logger->write(s);
+            output->write(s);
+        }
     };
 
     struct SingleMixtureOptions : public AnalyzerOptions
