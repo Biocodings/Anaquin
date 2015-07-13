@@ -495,7 +495,7 @@ void Standard::r_mix(const Reader &r)
     {
         if (!r_sequins.count(i.first))
         {
-            std::cout << "Warning: " << i.first << " defined in mixture but not in the model" << std::endl;
+            // TODO: std::cout << "Warning: " << i.first << " defined in mixture but not in the model" << std::endl;
         }
         else
         {

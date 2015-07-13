@@ -57,8 +57,8 @@ typedef std::set<Value> Range;
 #define MODE_DIFFS     286
 #define MODE_VARIANT   287
 #define MODE_CORRECT   289
-#define MODE_MIXTURE   290
-#define MODE_FUSION    291
+#define MODE_FUSION    290
+#define MODE_SEQUINS   291
 
 #define OPT_CMD     320
 #define OPT_MIN     321
@@ -208,13 +208,21 @@ static std::map<Value, Command> _cmds =
     { "clinic", CMD_CLINIC },
 };
 
+/*
+ * Defines the possible modes
+ */
+
 static std::map<Value, Mode> _modes =
 {
+    { "seqs",      MODE_SEQUINS   },
+    { "sequins",   MODE_SEQUINS   },
     { "align",     MODE_ALIGN     },
     { "assembly",  MODE_ASSEMBLY  },
     { "abundance", MODE_ABUNDANCE },
     { "correct",   MODE_CORRECT   },
     { "diffs",     MODE_DIFFS     },
+    { "variant",   MODE_VARIANT   },
+    { "fusion",    MODE_FUSION    },
 };
 
 template<typename T> std::string concat(const std::map<Value, T> &m)
@@ -717,7 +725,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Fusion Analysis" << std::endl;
 
-            if (mode != MODE_MIXTURE && mode != MODE_FUSION)
+            if (mode != MODE_SEQUINS && mode != MODE_FUSION)
             {
                 throw InvalidModeError();
             }
@@ -737,7 +745,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Ladder Analysis" << std::endl;
 
-            if (mode != MODE_MIXTURE && mode != MODE_CORRECT && mode != MODE_DIFFS)
+            if (mode != MODE_SEQUINS && mode != MODE_CORRECT && mode != MODE_DIFFS)
             {
                 throw InvalidModeError();
             }
@@ -749,7 +757,7 @@ void parse(int argc, char ** argv)
 
             switch (mode)
             {
-                case MODE_MIXTURE: { printMixture(LadderDataMix()); break; }
+                case MODE_SEQUINS: { printMixture(LadderDataMix()); break; }
                 case MODE_CORRECT: { analyze<LCorrect>(_p.opts[0]); break; }
                 case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB); break; }
             }
@@ -761,7 +769,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "RNA Analysis" << std::endl;
             
-            if (mode != MODE_MIXTURE   &&
+            if (mode != MODE_SEQUINS   &&
                 mode != MODE_ALIGN     &&
                 mode != MODE_ASSEMBLY  &&
                 mode != MODE_ABUNDANCE &&
@@ -777,7 +785,7 @@ void parse(int argc, char ** argv)
 
             switch (mode)
             {
-                case MODE_MIXTURE:  { printMixture(RNADataMix());     break; }
+                case MODE_SEQUINS:  { printMixture(RNADataMix());     break; }
                 case MODE_ALIGN:    { analyze<RAlign>(_p.opts[0]);    break; }
                 case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opts[0]); break; }
                 case MODE_ABUNDANCE:
@@ -800,7 +808,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Variant Analysis" << std::endl;
             
-            if (mode != MODE_MIXTURE   &&
+            if (mode != MODE_SEQUINS   &&
                 mode != MODE_ALIGN     &&
                 mode != MODE_VARIANT   &&
                 mode != MODE_ABUNDANCE &&
@@ -816,7 +824,7 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_MIXTURE: { printMixture(VARDataMix());   break; }
+                case MODE_SEQUINS: { printMixture(VARDataMix());   break; }
                 case MODE_ALIGN:   { analyze<VAlign>(_p.opts[0]);   break; }
                 case MODE_VARIANT: { analyze<VVariant>(_p.opts[0]); break; }
             }
@@ -828,7 +836,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Metagenomics Analysis" << std::endl;
             
-            if (mode != MODE_MIXTURE &&
+            if (mode != MODE_SEQUINS &&
                 mode != MODE_BLAST   &&
                 mode != MODE_DIFFS   &&
                 mode != MODE_ASSEMBLY)
@@ -843,7 +851,7 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_MIXTURE: { printMixture(MetaDataMix()); break; }
+                case MODE_SEQUINS: { printMixture(MetaDataMix()); break; }
                 case MODE_BLAST:   { MBlast::analyze(_p.opts[0]); break; }
 
                 case MODE_DIFFS:

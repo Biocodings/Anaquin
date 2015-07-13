@@ -81,7 +81,7 @@
 		EFDD6ADB1B0DDB8700450029 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADA1B0DDB8700450029 /* files.c */; };
 		EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADC1B0DE65D00450029 /* vcf.c */; };
 		EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */; };
-		EFE8168F1B5370600004D9BF /* command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* command.cpp */; };
+		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
 		EFECDC191AE7639900F0FD9A /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC161AE7639900F0FD9A /* t_assembly.cpp */; };
 		EFF4FB091ADD248D0008FD04 /* t_ralign.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4FB041ADD248D0008FD04 /* t_ralign.cpp */; };
 /* End PBXBuildFile section */
@@ -217,7 +217,7 @@
 		EFDD6AC71B0DD76C00450029 /* zfio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zfio.c; path = ../src/htslib/cram/zfio.c; sourceTree = "<group>"; };
 		EFDD6ADA1B0DDB8700450029 /* files.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = files.c; path = ../src/htslib/cram/files.c; sourceTree = "<group>"; };
 		EFDD6ADC1B0DE65D00450029 /* vcf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcf.c; path = ../src/htslib/vcf.c; sourceTree = "<group>"; };
-		EFE8168E1B5370600004D9BF /* command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = command.cpp; sourceTree = "<group>"; };
+		EFE8168E1B5370600004D9BF /* cmd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd.cpp; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
 		EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EFECDC101AE7510700F0FD9A /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
@@ -247,7 +247,7 @@
 				EFECDC151AE7635F00F0FD9A /* meta */,
 				EF4BD9AD1ADE4035007BE6AB /* parsers */,
 				EFF4FB021ADD24840008FD04 /* rna */,
-				EFE8168E1B5370600004D9BF /* command.cpp */,
+				EFE8168E1B5370600004D9BF /* cmd.cpp */,
 				EF4270A11B213BF200C9ED4E /* test.cpp */,
 			);
 			name = Tests;
@@ -679,7 +679,7 @@
 				EFDD6ADB1B0DDB8700450029 /* files.c in Sources */,
 				EF76C92A1ADC09FD003D45F9 /* r_diffs.cpp in Sources */,
 				EFDD6AD71B0DD76C00450029 /* thread_pool.c in Sources */,
-				EFE8168F1B5370600004D9BF /* command.cpp in Sources */,
+				EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 TEST_CASE("Ladder_Correct_Test")
 {
-    const auto r = LCorrect::analyze("tests/data/con/aligned_A.sam");
+    const auto r = LCorrect::analyze("tests/data/ladder/aligned_A.sam");
 
     REQUIRE(r.expTotal == 450);
     REQUIRE(r.actTotal == 54);
