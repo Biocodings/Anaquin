@@ -16,13 +16,13 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
     const auto stats_1 = Velvet::parse<MAssembly::Stats, Contig>(file_1);
     const auto stats_2 = Velvet::parse<MAssembly::Stats, Contig>(file_2);
 
-    if (!options.psl_1.empty() && !options.psl_2.empty())
+    if (!options.pA.empty() && !options.pB.empty())
     {
-        std::cout << "Using an aligment file: "  << options.psl_1 << std::endl;
-        std::cout << "Using an aligment file: "  << options.psl_2 << std::endl;
+        std::cout << "Using an aligment file: "  << options.pA << std::endl;
+        std::cout << "Using an aligment file: "  << options.pB << std::endl;
 
-        const auto r1 = MBlast::analyze(options.psl_1);
-        const auto r2 = MBlast::analyze(options.psl_2);
+        const auto r1 = MBlast::analyze(options.pA);
+        const auto r2 = MBlast::analyze(options.pB);
 
         std::cout << "Creating a differential plot" << std::endl;
         

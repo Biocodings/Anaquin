@@ -201,7 +201,7 @@ Standard::Standard()
     clinical();
 }
 
-void Standard::var_mod(const Reader &r)
+void Standard::v_ref(const Reader &r)
 {
     std::vector<std::string> tokens;
     
@@ -241,12 +241,12 @@ void Standard::var_mod(const Reader &r)
     assert(d_vars.size() >= d_seqIDs.size());
 }
 
-void Standard::var_mix(const Reader &r)
+void Standard::v_mix(const Reader &r)
 {
     mergeMix(r, parseMix(r, d_seqs_A, d_seqs_B), d_seqs_A, d_seqs_B, d_seqs_bA, d_seqs_bB);
 }
 
-void Standard::meta_mod(const Reader &r)
+void Standard::m_ref(const Reader &r)
 {
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
@@ -256,7 +256,7 @@ void Standard::meta_mod(const Reader &r)
     assert(!m_model.empty());
 }
 
-void Standard::meta_mix(const Reader &r)
+void Standard::m_mix(const Reader &r)
 {
     mergeMix(r, parseMix(r, m_seqs_A, m_seqs_B), m_seqs_A, m_seqs_B, m_seqs_bA, m_seqs_bB);
 }
@@ -281,7 +281,7 @@ void Standard::f_mix(const Reader &r)
     parseMix(r, f_seqs_A, 2);
 }
 
-void Standard::f_mod(const Reader &r)
+void Standard::f_ref(const Reader &r)
 {
     f_f_fusions.clear();
     f_r_fusions.clear();
@@ -314,25 +314,25 @@ void Standard::ladder()
 void Standard::fusion()
 {
     f_mix(Reader(FusDataMix(), DataMode::String));
-    f_mod(Reader(FusDataRef(), DataMode::String));
+    f_ref(Reader(FusDataRef(), DataMode::String));
 }
 
 void Standard::meta()
 {
     // Apply the default mixture file
-    meta_mix(Reader(MetaDataMix(), DataMode::String));
+    m_mix(Reader(MetaDataMix(), DataMode::String));
 
     // Apply the default annotation file
-    meta_mod(Reader(MetaDataBed(), DataMode::String));
+    m_ref(Reader(MetaDataBed(), DataMode::String));
 }
 
 void Standard::variant()
 {
-    var_mod(Reader(DNADataBed(), DataMode::String));
-    var_mix(Reader(DNADataMix(), DataMode::String));
+    v_ref(Reader(DNADataBed(), DataMode::String));
+    v_mix(Reader(DNADataMix(), DataMode::String));
 }
 
-void Standard::rna_mod(const Reader &r)
+void Standard::r_ref(const Reader &r)
 {
     /*
      * The region occupied by the chromosome is the smallest area contains all features.
@@ -472,7 +472,7 @@ void Standard::rna_mod(const Reader &r)
     CHECK_AND_SORT(r_introns);
 }
 
-void Standard::rna_mix(const Reader &r)
+void Standard::r_mix(const Reader &r)
 {
     mergeMix(r, parseMix(r, r_seqs_A, r_seqs_B), r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
     
@@ -525,6 +525,6 @@ void Standard::clinical()
 
 void Standard::rna()
 {
-    rna_mod(Reader(RNADataGTF(), DataMode::String));
-    rna_mix(Reader(RNADataMix(), DataMode::String));
+    r_ref(Reader(RNADataGTF(), DataMode::String));
+    r_mix(Reader(RNADataMix(), DataMode::String));
 }

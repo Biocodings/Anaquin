@@ -314,34 +314,28 @@ static void printMixture(const std::string &file)
     print(r);
 }
 
-static void printFeatures(const Standard::SequinMap &m)
+template <typename Mixture> void applyMix(Mixture mix)
 {
-    for (const auto &i : m)
-    {
-        std::cout << i.first << " " << i.second.l.start << " " << i.second.l.end << std::endl;
-    }
-}
-
-template <typename Mixture, typename Model> void applyCustom(Mixture mix, Model mod)
-{
-    /*
-     * The mixture and reference are assumed to be valid paths, if defined.
-     */
-    
+    // The mixture is assumed to be a valid path, if defined
     if (_p.mix.empty())
     {
         throw MissingMixtureError();
     }
-    else if (_p.ref.empty())
+    
+    std::cout << "Mixture file: "   << _p.mix << std::endl;
+    mix(Reader(_p.mix));
+}
+
+template <typename Reference> void applyRef(Reference ref)
+{
+    // The reference is assumed to be a valid path, if defined
+    if (_p.ref.empty())
     {
         throw MissingReferenceError();
     }
-    
-    std::cout << "Mixture file: "   << _p.mix << std::endl;
-    std::cout << "Reference file: " << _p.ref << std::endl;
 
-    mix(Reader(_p.mix));
-    mod(Reader(_p.ref));
+    std::cout << "Reference file: " << _p.ref << std::endl;
+    ref(Reader(_p.ref));
 }
 
 // Read sequins from a file, one per line. The identifiers must match.
@@ -628,19 +622,12 @@ void parse(int argc, char ** argv)
             {
                 std::cout << "Fusion Analysis" << std::endl;
                 
-                applyCustom(std::bind(&Standard::f_mix, &s, std::placeholders::_1),
-                            std::bind(&Standard::f_mod, &s, std::placeholders::_1));
-
-                if (mode != MODE_FUSION)
+                applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
+                applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
+                
+                switch (mode)
                 {
-                    //throw InvalidUsageError();
-                }
-                else
-                {
-                    switch (mode)
-                    {
-                        case MODE_FUSION: { analyze<FFusion>(_p.opt1); break; }
-                    }
+                    case MODE_FUSION: { analyze<FFusion>(_p.opt1); break; }
                 }
 
                 break;
@@ -650,25 +637,15 @@ void parse(int argc, char ** argv)
             {
                 std::cout << "Ladder Analysis" << std::endl;
 
-                //applyCustom(std::bind(&Standard::l_mix, &s, std::placeholders::_1),
-                //            std::bind(&Standard::l_mod, &s, std::placeholders::_1));
+                applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
                 
-                if (mode != MODE_MIXTURE &&
-                    mode != MODE_CORRECT &&
-                    mode != MODE_DIFFS)
-                {
-                    //throw InvalidUsageError();
-                }
-                else
-                {
-                    extern std::string LadderDataMix();
+                extern std::string LadderDataMix();
                     
-                    switch (mode)
-                    {
-                        case MODE_MIXTURE: { printMixture(LadderDataMix()); break; }
-                        case MODE_CORRECT: { analyze<LCorrect>(_p.opt1);      break; }
-                        case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB);     break; }
-                    }
+                switch (mode)
+                {
+                    case MODE_MIXTURE: { printMixture(LadderDataMix()); break; }
+                    case MODE_CORRECT: { analyze<LCorrect>(_p.opt1);      break; }
+                    case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB);     break; }
                 }
 
                 break;
@@ -678,38 +655,26 @@ void parse(int argc, char ** argv)
             {
                 std::cout << "RNA Analysis" << std::endl;
 
-                applyCustom(std::bind(&Standard::rna_mix, &s, std::placeholders::_1),
-                            std::bind(&Standard::rna_mod, &s, std::placeholders::_1));
-
-                if (mode != MODE_MIXTURE   &&
-                    mode != MODE_ALIGN     &&
-                    mode != MODE_ASSEMBLY  &&
-                    mode != MODE_ABUNDANCE &&
-                    mode != MODE_DIFFS)
+                applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
+                applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+                
+                extern std::string RNADataMix();
+                
+                switch (mode)
                 {
-                    //throw InvalidUsageError();
-                }
-                else
-                {
-                    extern std::string RNADataMix();
-    
-                    switch (mode)
+                    case MODE_MIXTURE:  { printMixture(RNADataMix()); break; }
+                    case MODE_ALIGN:    { analyze<RAlign>(_p.opt1);     break; }
+                    case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opt1);  break; }
+                    case MODE_ABUNDANCE:
                     {
-                        case MODE_MIXTURE:  { printMixture(RNADataMix()); break; }
-                        case MODE_ALIGN:    { analyze<RAlign>(_p.opt1);     break; }
-                        case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opt1);  break; }
+                        analyze<RAbundance>(_p.opt1, detect<RAbundance::Options>(_p.opt1));
+                        break;
+                    }
 
-                        case MODE_ABUNDANCE:
-                        {
-                            analyze<RAbundance>(_p.opt1, detect<RAbundance::Options>(_p.opt1));
-                            break;
-                        }
-
-                        case MODE_DIFFS:
-                        {
-                            analyze<RDiffs>(_p.opt1, detect<RDiffs::Options>(_p.opt1));
-                            break;
-                        }
+                    case MODE_DIFFS:
+                    {
+                        analyze<RDiffs>(_p.opt1, detect<RDiffs::Options>(_p.opt1));
+                        break;
                     }
                 }
 
@@ -720,23 +685,16 @@ void parse(int argc, char ** argv)
             {
                 std::cout << "Variant Analysis" << std::endl;
                 
-                applyCustom(std::bind(&Standard::var_mix, &s, std::placeholders::_1),
-                            std::bind(&Standard::var_mod, &s, std::placeholders::_1));
-
-                if (mode != MODE_MIXTURE && mode != MODE_ALIGN && mode != MODE_VARIATION)
+                applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
+                applyRef(std::bind(&Standard::v_ref, &s, std::placeholders::_1));
+                
+                extern std::string DNADataMix();
+                
+                switch (mode)
                 {
-                    //throw InvalidUsageError();
-                }
-                else
-                {
-                    extern std::string DNADataMix();
-
-                    switch (mode)
-                    {
-                        case MODE_MIXTURE:   { printMixture(DNADataMix()); break; }
-                        case MODE_ALIGN:     { analyze<VAlign>(_p.opt1);     break; }
-                        case MODE_VARIATION: { analyze<DVariant>(_p.opt1);   break; }
-                    }
+                    case MODE_MIXTURE:   { printMixture(DNADataMix()); break; }
+                    case MODE_ALIGN:     { analyze<VAlign>(_p.opt1);     break; }
+                    case MODE_VARIATION: { analyze<DVariant>(_p.opt1);   break; }
                 }
 
                 break;
@@ -746,49 +704,41 @@ void parse(int argc, char ** argv)
             {
                 std::cout << "Metagenomics Analysis" << std::endl;
                 
-                applyCustom(std::bind(&Standard::meta_mix, &s, std::placeholders::_1),
-                            std::bind(&Standard::meta_mod, &s, std::placeholders::_1));
+                applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
+                applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
 
-                if (mode != MODE_BLAST    && mode != MODE_MIXTURE  &&
-                    mode != MODE_ASSEMBLY && mode != MODE_DIFFS)
+                extern std::string MetaDataMix();
+                
+                switch (mode)
                 {
-                    //throw InvalidUsageError();
-                }
-                else
-                {
-                    extern std::string MetaDataMix();
-
-                    switch (mode)
+                    case MODE_MIXTURE: { printMixture(MetaDataMix()); break; }
+                    case MODE_BLAST:   { MBlast::analyze(_p.opt1);      break; }
+                        
+                    case MODE_DIFFS:
                     {
-                        case MODE_MIXTURE: { printMixture(MetaDataMix()); break; }
-                        case MODE_BLAST:   { MBlast::analyze(_p.opt1);      break; }
-
-                        case MODE_DIFFS:
+                        //                            if (_opts.size() != 2 || (!_pA.empty() != !_pB.empty()))
                         {
-//                            if (_opts.size() != 2 || (!_pA.empty() != !_pB.empty()))
-                            {
-                                //throw InvalidUsageError();
-                            }
-
-                            MDiffs::Options o;
-
-                            o.pA = _p.pA;
-                            o.pB = _p.pB;
-
-                            analyze<MDiffs>(_p.pA, _p.pB, o);
-                            break;
+                            //throw InvalidUsageError();
                         }
-
-                        case MODE_ASSEMBLY:
-                        {
-                            MAssembly::Options o;
-                            
-                            // We'd also take an alignment PSL file from a user
-                            o.psl = _p.pA;
-
-                            analyze<MAssembly>(_p.opt1, o);
-                            break;
-                        }
+                        
+                        MDiffs::Options o;
+                        
+                        o.pA = _p.pA;
+                        o.pB = _p.pB;
+                        
+                        analyze<MDiffs>(_p.pA, _p.pB, o);
+                        break;
+                    }
+                        
+                    case MODE_ASSEMBLY:
+                    {
+                        MAssembly::Options o;
+                        
+                        // We'd also take an alignment PSL file from a user
+                        o.psl = _p.pA;
+                        
+                        analyze<MAssembly>(_p.opt1, o);
+                        break;
                     }
                 }
                 

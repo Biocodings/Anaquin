@@ -110,8 +110,8 @@ namespace Spike
             // Mapping from sequin to gene
             std::map<SequinID, GeneID> r_isoformToGene;
 
-            void rna_mod(const Reader &);
-            void rna_mix(const Reader &);
+            void r_ref(const Reader &);
+            void r_mix(const Reader &);
 
             /*
              * Variant data
@@ -122,8 +122,8 @@ namespace Spike
                 return mix == MixA ? d_seqs_A : d_seqs_B;
             }
 
-            void var_mod(const Reader &);
-            void var_mix(const Reader &);
+            void v_ref(const Reader &);
+            void v_mix(const Reader &);
 
             // Sequins for mixture A and B
             SequinMap d_seqs_A, d_seqs_B;
@@ -154,7 +154,7 @@ namespace Spike
              * Fusion data
              */
 
-            void f_mod(const Reader &);
+            void f_ref(const Reader &);
             void f_mix(const Reader &);
 
             // Locus for each fusion in the forward strand
@@ -170,8 +170,8 @@ namespace Spike
              * Metagenomic data
              */
 
-            void meta_mod(const Reader &);
-            void meta_mix(const Reader &);
+            void m_ref(const Reader &);
+            void m_mix(const Reader &);
 
             // Sequins for mixture A and B
             SequinMap m_seqs_A, m_seqs_B;

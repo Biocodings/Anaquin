@@ -36,8 +36,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
             continue;
         }
 
-        const auto baseID = s.c_map.at(id);
-        
+        const auto baseID = s.l_map.at(id);
+
         // Calculate known fold change between mixture A and B
         const auto known = (b.expect.at(id) / a.expect.at(id));
 
