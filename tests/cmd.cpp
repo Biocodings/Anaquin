@@ -4,6 +4,13 @@ extern int parse_options(const std::string &, std::string &, std::string &);
 
 static std::string _output, _error;
 
+TEST_CASE("Ladder_Sequis")
+{
+    const int s = parse_options("-c ladder -p seqs -m data/ladder/CON.v3.mix.csv", _output, _error);
+    
+    REQUIRE(s == 0);
+}
+
 TEST_CASE("Missing_Mixture_And_Reference")
 {
     const int s = parse_options("-c ladder -p correct tests/data/ladder/aligned_A.sam", _output, _error);
@@ -34,3 +41,5 @@ TEST_CASE("Ladder_Missing_Reference")
     REQUIRE(_output.find("Ladder Analysis") != std::string::npos);
     REQUIRE(_error.find("Mixture file is missing. Please specify it with -m.") != std::string::npos);    
 }
+
+
