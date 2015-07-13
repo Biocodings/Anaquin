@@ -455,11 +455,14 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
+    o.logger->write(_p.invoked);
+
+#ifdef GCC_5_0
     std::stringstream buf;
     buf << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
-    
-    o.logger->write(_p.invoked);
     o.logger->write(std::string(buf.str()));
+#endif
+
     o.logput("Path: " + path);
 
     for (const auto &filter : (o.filters = _p.filters))
