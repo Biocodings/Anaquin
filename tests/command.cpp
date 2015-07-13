@@ -1,11 +1,14 @@
 #include <catch.hpp>
-#include "var/v_align.hpp"
 
-using namespace Anaquin;
+extern int parse_options(const std::string &, std::string &, std::string &);
 
-TEST_CASE("Missing_Mixture_File")
+static std::string _output, _error;
+
+TEST_CASE("Missing_Mixture_And_Reference")
 {
+    const int s = parse_options("-c ladder -p correct tests/data/ladder/aligned_A.sam", _output, _error);
 
+    REQUIRE(s == 1);
 }
 
 //-c ladder -p correct tests/data/ladder/aligned_A.sam
