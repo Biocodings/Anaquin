@@ -455,7 +455,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     auto tm = *std::localtime(&t);
 
     std::stringstream buf;
-    buf << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
+    buf << put_time(&tm, "%d-%m-%Y %H-%M-%S");
     
     o.logger->write(_p.invoked);
     o.logger->write(std::string(buf.str()));
