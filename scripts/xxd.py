@@ -18,12 +18,12 @@ data  = [ 'data/manual.txt',
 
            # ------- Fusion -------
 
-           'data/fus/FUS.v3.csv',
-           'data/fus/FUS.v1.ref',
+           'data/fusion/FUS.v3.csv',
+           'data/fusion/FUS.v1.ref',
 
-           # ------- Conjoint -------
+           # ------- Ladder -------
 
-           'data/con/CON.v3.mix.csv',
+           'data/ladder/CON.v3.mix.csv',
 
            # ---------- RNA ----------
 
@@ -40,11 +40,11 @@ data  = [ 'data/manual.txt',
           'data/meta/META.v6.mix.csv',
           'data/meta/META.v1.tab.bed',
 
-           # ---------- DNA ----------
+           # ---------- Variant ----------
 
-          'data/dna/DNA.usage.txt',
-          'data/dna/DNA.v3.mix.csv',
-          'data/dna/DNA.variant.bed',
+          'data/var/DNA.usage.txt',
+          'data/var/DNA.v3.mix.csv',
+          'data/var/DNA.variant.bed',
         ]
 tests = [ ]
 

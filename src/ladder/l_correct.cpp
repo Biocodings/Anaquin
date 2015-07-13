@@ -79,6 +79,10 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
         throw std::runtime_error("Unable to find anything in the alignment that matches with the mixture. Usually this is caused by an incorrect mixture file. Please check your mixture file.");
     }
 
+    /*
+     * Correcting the observed abundance
+     */
+
     options.logput("Linearly correcting the observed abundance");
 
     for (const auto &i : s.l_seqs_A)
