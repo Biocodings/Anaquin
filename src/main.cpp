@@ -929,7 +929,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const MissingInputError &ex)
     {
-        printError("No input file given. Please give an input file and try again.");        
+        printError("No input file given. Please give an input file and try again.");
     }
     catch (const MissingMixtureError &ex)
     {
@@ -947,13 +947,13 @@ int parse_options(int argc, char ** argv)
     {
         printError((boost::format("%1%%2%") % "Invalid file: " % e.what()).str());
     }
-    catch (const InvalidFilterError &e)
+    catch (const InvalidFilterError &ex)
     {
-        printError((boost::format("%1%%2%") % "Invalid filter: " % e.what()).str());
+        printError((boost::format("%1%%2%") % "Invalid filter: " % ex.what()).str());
     }
-    catch (...)
+    catch (const std::runtime_error &ex)
     {
-        throw;
+        printError(ex.what());
     }
 
     return 1;
