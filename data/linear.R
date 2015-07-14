@@ -29,6 +29,7 @@ p <- p + ylab('Log2 measured coverage (%6%)')
 p <- p + geom_point()
 p <- p + geom_smooth(method = "lm", se=FALSE, formula = y ~ x)
 p <- p + geom_text(x = min(d$x), y = max(d$y), label = lm_eqn(d), parse = TRUE, hjust=0)
+print(p)
 
 # Pearson's correlation
 #p <- cor(x, y)

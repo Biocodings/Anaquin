@@ -49,12 +49,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         stats.y.push_back(log(actual));
     }
     
-    // Perform a linear regreession
-    stats.linear();
+    AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
 
-    options.writer->open("ladder_diffs.R");
-    options.writer->write(RWriter::write(stats.x, stats.y, stats.z, "?", 0.0));
-    options.writer->close();
-    
 	return stats;
 }
