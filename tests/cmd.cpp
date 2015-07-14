@@ -4,10 +4,10 @@ extern int parse_options(const std::string &, std::string &, std::string &);
 
 static std::string _output, _error;
 
-TEST_CASE("Ladder_Sequis")
+TEST_CASE("Ladder_Sequins")
 {
     const int s = parse_options("-c ladder -p seqs -m data/ladder/CON.v3.mix.csv", _output, _error);
-    
+
     REQUIRE(s == 0);
 }
 
