@@ -477,8 +477,8 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
-    o.log(_p.invoked);
-    o.log(date());
+    o.info(_p.invoked);
+    o.info(date());
     o.both("Path: " + path);
 
     for (const auto &filter : (o.filters = _p.filters))

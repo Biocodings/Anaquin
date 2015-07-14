@@ -182,9 +182,27 @@ namespace Anaquin
         std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
         std::shared_ptr<Writer> output = std::shared_ptr<Writer>(new MockWriter());
 
-        inline void log(const std::string &s)  const { logger->write(s); }
+        enum LogLevel
+        {
+            Info,
+            Warn,
+            Error,
+        };
+
+        // Write to logger as warning
+        inline void warn(const std::string &s)  const { logger->write("[WARN]: "  + s); }
+
+        // Write to logger as info
+        inline void info(const std::string &s)  const { logger->write("[INFO]: "  + s); }
+
+        // Write to logger as error
+        inline void error(const std::string &s) const { logger->write("[ERROR]: " + s); }
+
+        // Write to the standard terminal
         inline void out(const std::string &s)  const { output->write(s); }
-        inline void both(const std::string &s) const { log(s); out(s);   }
+
+        // Write to both logger and standard terminal
+        inline void both(const std::string &s) const { info(s); out(s);   }
     };
 
     struct SingleMixtureOptions : public AnalyzerOptions

@@ -1,4 +1,3 @@
-#include <ss/stats.hpp>
 #include "ladder/l_correct.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
@@ -30,13 +29,18 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
+        if ((p.i % 100000) == 0)
+        {
+            options.output->write("Processed: " + std::to_string(p.i));
+        }
+        
         // Don't repeat the same read if it's spliced
         if (align.i == 0)
         {
             stats.actTotal++;
             stats.abund[align.id]++;
 
-            // Eg: C_1068 to C
+            // Eg: C_16_A to C_16
             const auto baseID = align.id.substr(0, align.id.find_last_of("_"));
 
             baseIDs.insert(baseID);
@@ -54,18 +58,19 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     /*
      * Calculate for the expected library size. The size depends on the detected sequins.
      */
-    
-    for (const auto &id : baseIDs)
-    {
-        options.logger->write((boost::format("Calculating for baseID: %1%") % id).str());
 
-        if (!s.l_seqs_A.count(id))
+    for (const auto &baseID : baseIDs)
+    {
+        options.info((boost::format("Calculating for baseID: %1%") % baseID).str());
+
+        if (!s.l_seqs_A.count(baseID))
         {
-            options.output->write("Warning: " + id + " is in alignment but it's not found in the mixture file");
+            options.warn(baseID + " not found in the mixture file");
+            options.out("Warning: " + baseID + " is in alignment but not found in the mixture file");
         }
         else
         {
-            const auto fold = s.l_seqs_A.at(id).abund();
+            const auto fold = s.l_seqs_A.at(baseID).abund();
             
             // Expected size for this particular sequin
             const auto size = 1.0 * fold + 2.0 * fold + 4.0 * fold + 8.0 * fold;
@@ -73,9 +78,10 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
             stats.expTotal += size;
         }
     }
-    
+
     if (!stats.expTotal)
     {
+        options.error("stats.expTotal == 0");
         throw std::runtime_error("Unable to find anything in the alignment that matches with the mixture. Usually this is caused by an incorrect mixture file. Please check your mixture file.");
     }
 

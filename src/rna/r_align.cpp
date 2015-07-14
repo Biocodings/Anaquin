@@ -59,7 +59,6 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        // This is because a typical SAM/BAM file is huge
         if ((p.i % 100000) == 0)
         {
             options.output->write("Processed: " + std::to_string(p.i));
