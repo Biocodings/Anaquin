@@ -1,4 +1,4 @@
-#include "ladder/l_correct.hpp"
+#include "ladder/l_abund.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
 
@@ -14,9 +14,9 @@ static std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, do
     return std::vector<double> { nA, nB, nC, nD };
 }
 
-LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &options)
+LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 {
-    LCorrect::Stats stats;
+    LAbund::Stats stats;
 
     // We'll need it to construct expected library size
     std::set<BaseID> baseIDs;
@@ -168,8 +168,8 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
         options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "actual" % "correct").str());
 
         /*
-         * The argument abund is a histogram of abundance before normalization. It's directly taken off from the alignment file.
-         * Not all sequins would be detected, in fact anything could be in the histogram.
+         * The argument abund is a histogram of abundance before normalization. It's directly taken off from
+         * the alignment file. Not all sequins would be detected, in fact anything could be in the histogram.
          */
         
         assert(expect.size() == actual.size() && expect.size() == correct.size());
@@ -201,7 +201,7 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     };
 
     options.both("Writing histogram");
-    writeHist("conjoint.stats", stats.abund, stats.expect, stats.actual, stats.correct);
+    writeHist("ladder.stats", stats.abund, stats.expect, stats.actual, stats.correct);
 
 	return stats;
 }

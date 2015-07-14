@@ -1,11 +1,11 @@
 #include <catch.hpp>
-#include "ladder/l_correct.hpp"
+#include "ladder/l_abund.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("Ladder_Correct_Test")
+TEST_CASE("Ladder_Abund_Test")
 {
-    const auto r = LCorrect::analyze("tests/data/ladder/aligned_A.sam");
+    const auto r = LAbund::analyze("tests/data/ladder/aligned_A.sam");
 
     REQUIRE(r.expTotal == 450);
     REQUIRE(r.actTotal == 54);

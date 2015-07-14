@@ -1,11 +1,11 @@
-#ifndef GI_L_CORRECT_HPP
-#define GI_L_CORRECT_HPP
+#ifndef GI_L_ABUND_HPP
+#define GI_L_ABUND_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct LCorrect
+    struct LAbund
     {
         struct Options : public SingleMixtureOptions
         {

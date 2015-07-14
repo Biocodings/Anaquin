@@ -19,7 +19,7 @@
 #include "meta/m_assembly.hpp"
 
 #include "ladder/l_diffs.hpp"
-#include "ladder/l_correct.hpp"
+#include "ladder/l_abund.hpp"
 
 #include "fusion/f_fusion.hpp"
 
@@ -51,15 +51,14 @@ typedef std::set<Value> Range;
 #define CMD_STRUCT 272
 #define CMD_CLINIC 273
 
-#define MODE_BLAST     281
-#define MODE_ALIGN     283
-#define MODE_ASSEMBLY  284
-#define MODE_ABUNDANCE 285
-#define MODE_DIFFS     286
-#define MODE_VARIANT   287
-#define MODE_CORRECT   289
-#define MODE_FUSION    290
-#define MODE_SEQUINS   291
+#define MODE_BLAST    281
+#define MODE_ALIGN    283
+#define MODE_ASSEMBLY 284
+#define MODE_ABUND    285
+#define MODE_DIFFS    286
+#define MODE_VARIANT  287
+#define MODE_FUSION   290
+#define MODE_SEQUINS  291
 
 #define OPT_CMD     320
 #define OPT_MIN     321
@@ -238,15 +237,14 @@ static std::map<Value, Command> _cmds =
 
 static std::map<Value, Mode> _modes =
 {
-    { "seqs",      MODE_SEQUINS   },
-    { "sequins",   MODE_SEQUINS   },
-    { "align",     MODE_ALIGN     },
-    { "assembly",  MODE_ASSEMBLY  },
-    { "abundance", MODE_ABUNDANCE },
-    { "correct",   MODE_CORRECT   },
-    { "diffs",     MODE_DIFFS     },
-    { "variant",   MODE_VARIANT   },
-    { "fusion",    MODE_FUSION    },
+    { "seqs",     MODE_SEQUINS  },
+    { "sequins",  MODE_SEQUINS  },
+    { "align",    MODE_ALIGN    },
+    { "assembly", MODE_ASSEMBLY },
+    { "abund",    MODE_ABUND    },
+    { "diffs",    MODE_DIFFS    },
+    { "variant",  MODE_VARIANT  },
+    { "fusion",   MODE_FUSION   },
 };
 
 template<typename T> std::string concat(const std::map<Value, T> &m)
@@ -782,7 +780,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Ladder Analysis" << std::endl;
 
-            if (mode != MODE_SEQUINS && mode != MODE_CORRECT && mode != MODE_DIFFS)
+            if (mode != MODE_SEQUINS && mode != MODE_ABUND && mode != MODE_DIFFS)
             {
                 throw InvalidModeError();
             }
@@ -793,7 +791,7 @@ void parse(int argc, char ** argv)
             switch (mode)
             {
                 case MODE_SEQUINS: { printMixture(_p.mix);          break; }
-                case MODE_CORRECT: { analyze<LCorrect>(_p.opts[0]); break; }
+                case MODE_ABUND:   { analyze<LAbund>(_p.opts[0]);   break; }
                 case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB); break; }
             }
 
@@ -804,10 +802,10 @@ void parse(int argc, char ** argv)
         {
             std::cout << "RNA Analysis" << std::endl;
             
-            if (mode != MODE_SEQUINS   &&
-                mode != MODE_ALIGN     &&
-                mode != MODE_ASSEMBLY  &&
-                mode != MODE_ABUNDANCE &&
+            if (mode != MODE_SEQUINS  &&
+                mode != MODE_ALIGN    &&
+                mode != MODE_ASSEMBLY &&
+                mode != MODE_ABUND    &&
                 mode != MODE_DIFFS)
             {
                 throw InvalidModeError();
@@ -823,7 +821,7 @@ void parse(int argc, char ** argv)
                 case MODE_SEQUINS:  { printMixture(RNADataMix());     break; }
                 case MODE_ALIGN:    { analyze<RAlign>(_p.opts[0]);    break; }
                 case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opts[0]); break; }
-                case MODE_ABUNDANCE:
+                case MODE_ABUND:
                 {
                     analyze<RAbundance>(_p.opts[0], detect<RAbundance::Options>(_p.opts[0]));
                     break;
@@ -843,10 +841,10 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Variant Analysis" << std::endl;
             
-            if (mode != MODE_SEQUINS   &&
-                mode != MODE_ALIGN     &&
-                mode != MODE_VARIANT   &&
-                mode != MODE_ABUNDANCE &&
+            if (mode != MODE_SEQUINS &&
+                mode != MODE_ALIGN   &&
+                mode != MODE_VARIANT &&
+                mode != MODE_ABUND   &&
                 mode != MODE_DIFFS)
             {
                 throw InvalidModeError();

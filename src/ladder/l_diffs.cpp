@@ -1,5 +1,5 @@
 #include "ladder/l_diffs.hpp"
-#include "ladder/l_correct.hpp"
+#include "ladder/l_abund.hpp"
 #include <ss/regression/lm.hpp>
 
 using namespace Anaquin;
@@ -13,10 +13,10 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
      */
 
     options.output->write("Analyzing mixuture A: " + fileA);
-    const auto a = LCorrect::analyze(fileA);
+    const auto a = LAbund::analyze(fileA);
 
     options.output->write("Analyzing mixuture B: " + fileB);
-    const auto b = LCorrect::analyze(fileB);
+    const auto b = LAbund::analyze(fileB);
 
     options.output->write("Mergin mixtures");
     const auto &s = Standard::instance();
