@@ -30,9 +30,6 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
          * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
          */
         
-        std::vector<Coverage> x, y;
-        std::vector<std::string> z;
-        
         // Marginal for mixture A
         std::map<SequinID, Coverage> y1;
         
@@ -132,10 +129,10 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     // Ratio of the marginal concentration
                     const auto measured = y2.at(align.id) / y1.at(align.id);
                     
-                    x.push_back(log(known));
-                    y.push_back(log(measured));
-                    z.push_back(align.id);
-                    
+                    stats.x.push_back(log(known));
+                    stats.y.push_back(log(measured));
+                    stats.z.push_back(align.id);
+
                     SequinDiff d;
                     
                     d.id   = align.id;
@@ -152,7 +149,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
         }
 
         // Generate a R script for a plot of abundance
-        AnalyzeReporter::script("meta_diffs.R", x, y, z, "k-mer average", 0.0, options.writer);
+        AnalyzeReporter::linear(stats, "m_diffs", "k-mer average", options.writer);
     }
     
     /*

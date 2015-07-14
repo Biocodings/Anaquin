@@ -89,7 +89,7 @@ RAbundStats RAbund::analyze(const std::string &file, const Options &options)
     stats.linear();
  
     options.both("Generating an R script");
-    AnalyzeReporter::report("rna_abundance.stats", "rna_abundance.R", stats, "FPKM", c, options.writer);
+    AnalyzeReporter::linear(stats, "r_abund", "FPKM", options.writer);
 
     options.both("Generating statistics");
     const std::string format = "%1%\t%2%\t%3%";

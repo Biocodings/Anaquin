@@ -82,8 +82,8 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
     stats.linear();
     
     // Create a script for allele frequency
-    AnalyzeReporter::script("dna_allele.R", stats.x, stats.y, stats.z, "Allele Frequence", 10.0, options.writer);
-
+    AnalyzeReporter::linear(stats, "dna_allele", "Allele Frequence", options.writer);
+    
     /*
      * Write out results
      */

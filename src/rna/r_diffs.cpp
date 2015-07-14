@@ -87,16 +87,8 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
      * Write out results for statistics
      */
     
-    if (options.level == Gene)
-    {
-        stats.s = Expression::analyze(c, s.r_gene(options.rMix));
-        AnalyzeReporter::report("rna_diffs.stats", "diffs.genes.R", stats, "FPKM", c, options.writer);
-    }
-    else
-    {
-        stats.s = Expression::analyze(c, s.r_sequin(options.rMix));
-        AnalyzeReporter::report("rna_diffs.stats", "diffs.isoform.R", stats, "FPKM", c, options.writer);
-    }
+    stats.s = Expression::analyze(c, s.r_gene(options.rMix));
+    AnalyzeReporter::linear(stats, "rna_diffs", "FPKM", options.writer);
 
     /*
      * Write out results for RNA sequins

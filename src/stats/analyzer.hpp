@@ -274,90 +274,55 @@ namespace Anaquin
 
     struct AnalyzeReporter
     {
-        typedef std::map<Sequin::Group, ColorID> ColorScheme;
-
-        static ColorScheme defaultScheme()
-        {
-            std::map<Sequin::Group, ColorID> m =
-            {
-                { Sequin::Group::A, "red" },
-                { Sequin::Group::B, "blue" },
-                { Sequin::Group::C, "black" },
-                { Sequin::Group::D, "pink" },
-                { Sequin::Group::E, "orange" },
-                { Sequin::Group::F, "yellow" },
-                { Sequin::Group::G, "green" },
-                { Sequin::Group::H, "brown" },
-                { Sequin::Group::I, "silver" },
-                { Sequin::Group::J, "gold" },
-            };
-
-            return m;
-        }
-
         /*
-         * Createa new R script given the coordinates and colors.
+         * Write the following for a linear regression model:
+         *
+         *    - Linear plot
+         *    - Linear statistics
+         *    - Linear CSV (data points)
          */
         
-        template <typename T> static void script
-                    (const std::string &file,
-                     const std::vector<T> &x,
-                     const std::vector<T> &y,
-                     const std::vector<SequinID> &z,
-                     const std::string &units,
-                     T s,
-                     std::shared_ptr<Writer> writer)
+        template <typename Stats, typename Writer>
+        static void linear(const Stats &stats,
+                           const std::string prefix,
+                           const std::string unit,
+                           Writer writer)
         {
-            const auto scheme = AnalyzeReporter::defaultScheme();
+            assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
-            std::vector<ColorID> c;
-
-            for (const auto &id : z)
-            {
-                //if (st.m_seqs_A.count(id))
-                //{
-                    c.push_back("black");
-                //}
-                //else
-                //{
-                //    throw std::runtime_error("Unknown sequin ID: " + id);
-                //}
-            }
-
-            writer->open(file);
-            writer->write(RWriter::write(x, y, z, c, units, s));
-            writer->close();
-        }
-
-        template <typename ID, typename Stats, typename Writer>
-            static void report(const std::string &name,
-                               const std::string &r,
-                               const Stats &stats,
-                               const std::string &units,
-                               const std::map<ID, Counts> &c,
-                               std::shared_ptr<Writer> writer)
-        {
             const std::string format = "%1%\t%2%\t%3%\t%4%";
-            const auto &lm = stats.linear();
-            
-            writer->open(name);
+            const auto lm = stats.linear();
+
+            /*
+             * Generate linear statistics
+             */
+
+            writer->open(prefix + ".stats");
             writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
             writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
             writer->write("\n");
-
-            for (const auto &p : c)
-            {
-                writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
-            }
+            writer->close();
             
+            /*
+             * Generate linear CSV
+             */
+            
+            writer->open(prefix + ".csv");
+            writer->write("ID\expected\tactual");
+            
+            for (std::size_t i = 0; i < stats.x.size(); i++)
+            {
+                writer->write((boost::format("%1%\t%2%\t%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
+            }
+
             writer->close();
 
             /*
-             * Generate a plot for the fold-change relationship
+             * Generate a linear plot
              */
-
-            writer->open(r);
-            writer->write(RWriter::write(stats.x, stats.y, stats.z, units, stats.s.abund));
+            
+            writer->open(prefix + ".R");
+            writer->write(RWriter::write(stats.x, stats.y, stats.z, unit, stats.s.abund));
             writer->close();
         }
 

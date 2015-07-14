@@ -106,7 +106,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
      * Generate a R script for a plot of abundance
      */
 
-    AnalyzeReporter::script("meta_abundance.R", ms.x, ms.y, ms.z, "k-mer average", ms.s.abund, options.writer);
+    AnalyzeReporter::linear(ms, "m_assembly", "k-mer average", options.writer);
     std::cout << "Abundance plot generated" << std::endl;
     
     /*
