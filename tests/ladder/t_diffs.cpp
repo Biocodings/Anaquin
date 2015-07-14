@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-TEST_CASE("Ladder_Diffs_Test")
+TEST_CASE("LDiffs_Test")
 {
     //const auto r = CDiffs::analyze("tests/data/con/aligned_A.sam", "tests/data/con/aligned_B.sam");
 }

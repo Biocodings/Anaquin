@@ -17,17 +17,19 @@ namespace Anaquin
             // Histogram expected
             std::map<TypeID, Coverage> expect;
 
-            // Histogram before normalization and correction
+            // Histogram before normalization and adjustment
             std::map<TypeID, Counts> abund;
 
-            // Histogram after normalization but before correction
+            // Histogram after normalization but before adjustment
             std::map<TypeID, Coverage> actual;
 
-            // Histogram after correction
-            std::map<TypeID, Coverage> correct;
+            // Histogram after adjustment
+            std::map<TypeID, Coverage> adjusted;
             
-            // Corrected abundance for each sequin
-            std::map<SequinID, Coverage> s_correct;
+            // Adjusted abundance for each sequin
+            std::map<SequinID, Coverage> s_adjusted;
+
+            SequinCounter c;
             
             // Expected size of the library
             Counts expTotal = 0;

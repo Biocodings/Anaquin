@@ -13,9 +13,9 @@
 
 namespace Anaquin
 {
-    typedef std::map<Locus, Counts>     LocusCounter;
-    typedef std::map<GeneID, Counts>    GeneCounter;
-    typedef std::map<SequinID, Counts>  SequinCounter;
+    typedef std::map<Locus, Counts>    LocusCounter;
+    typedef std::map<GeneID, Counts>   GeneCounter;
+    typedef std::map<SequinID, Counts> SequinCounter;
 
     // Tracking for each sequin
     typedef std::map<SequinID, std::vector<Locus>> SequinTracker;
@@ -144,17 +144,18 @@ namespace Anaquin
     {
         Sensitivity s;
 
+        // Sequin IDs for each x and y
         std::vector<SequinID> z;
 
         // Known concentration for sequins
         std::vector<Concentration> x;
-        
+
         // Measured coverage for sequins
         std::vector<Coverage> y;
 
-        LinearModel linear() const
+        inline LinearModel linear() const
         {
-            const auto m = SS::lm("y ~ x", SS::data.frame(SS::c(y), SS::c(x)));
+            const auto m = SS::lm("y~x", SS::data.frame(SS::c(y), SS::c(x)));
             
             LinearModel lm;
             

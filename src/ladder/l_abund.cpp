@@ -90,7 +90,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     }
 
     /*
-     * Correcting the observed abundance
+     * Adjusting the observed abundance
      */
 
     options.both("Linearly correcting the observed abundance");
@@ -121,7 +121,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
         // Create a vector for normalized expected coverage
         const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund(), stats.expTotal);
-//        const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund() / s.l_seqs_A.at(base).length, stats.expTotal);
+        //const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund() / s.l_seqs_A.at(base).length, stats.expTotal);
 
         // Make it one so that it can be divided (avoid division by zero)
         double slope = 1.0;
@@ -136,10 +136,10 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
             slope = lm.coeffs[1].v;
         }
         
-        std::vector<double> correct;
-        correct.resize(actual.size());
+        std::vector<double> adjusted;
+        adjusted.resize(actual.size());
 
-        std::transform(actual.begin(), actual.end(), correct.begin(), [&](double c)
+        std::transform(actual.begin(), actual.end(), adjusted.begin(), [&](double c)
         {
             return c / slope;
         });
@@ -159,12 +159,12 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         stats.actual[baseC]  = actual[2];
         stats.actual[baseD]  = actual[3];
         
-        stats.correct[baseA] = correct[0];
-        stats.correct[baseB] = correct[1];
-        stats.correct[baseC] = correct[2];
-        stats.correct[baseD] = correct[3];
+        stats.adjusted[baseA] = adjusted[0];
+        stats.adjusted[baseB] = adjusted[1];
+        stats.adjusted[baseC] = adjusted[2];
+        stats.adjusted[baseD] = adjusted[3];
 
-        stats.s_correct[base] = correct[0] + correct[1] + correct[2] + correct[3];
+        stats.s_adjusted[base] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
     }
     
     /*
@@ -240,7 +240,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     };
 
     options.both("Generating histogram");
-    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.correct);
+    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
 
 	return stats;
 }

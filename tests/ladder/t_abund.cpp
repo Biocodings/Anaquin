@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-TEST_CASE("Ladder_Abund_Test")
+TEST_CASE("LAbund_Test")
 {
     const auto r = LAbund::analyze("tests/data/ladder/aligned_A.sam");
 
