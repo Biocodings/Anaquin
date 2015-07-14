@@ -1,16 +1,16 @@
-#ifndef GI_R_ABUNDANCE_HPP
-#define GI_R_ABUNDANCE_HPP
+#ifndef GI_R_ABUND_HPP
+#define GI_R_ABUND_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct RAbundanceStats : public ModelStats
+    struct RAbundStats : public ModelStats
     {
         // Empty Implementation
     };
 
-    struct RAbundance : public RAnalyzer
+    struct RAbund : public RAnalyzer
     {
         struct Options : public SingleMixtureOptions
         {
@@ -18,7 +18,7 @@ namespace Anaquin
             RNALevel level = Isoform;
         };
 
-        static RAbundanceStats analyze(const std::string &file, const Options &options = Options());
+        static RAbundStats analyze(const std::string &, const Options &options = Options());
     };
 }
 

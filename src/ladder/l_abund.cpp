@@ -95,6 +95,10 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     {
         const std::string &base = i.first;
 
+        /*
+         * Eg: C_19_A, C_19_B, C_19_C and C_19_D, where the base is C_19
+         */
+        
         const auto baseA = base + "_A";
         const auto baseB = base + "_B";
         const auto baseC = base + "_C";
@@ -107,6 +111,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
         // Create a vector for normalized expected coverage
         const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund(), stats.expTotal);
+//        const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund() / s.l_seqs_A.at(base).length, stats.expTotal);
 
         // Make it one so that it can be divided (avoid division by zero)
         double slope = 1.0;
@@ -152,6 +157,35 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         stats.s_correct[base] = correct[0] + correct[1] + correct[2] + correct[3];
     }
     
+    /*
+     * The following will be generated:
+     *
+     *    - R script for abundance
+     *    - Tab
+     */
+
+    options.both("Generating abundance plot");
+
+    // Try for each detected sequin to form an abundance plot
+    for (const auto &i : stats.actual)
+    {
+        const auto &seqID = i.first;
+        const auto baseID = s.l_map.at(seqID);
+        const auto known  = stats.expect.at(seqID);
+        const auto actual = stats.actual.at(seqID);
+
+        stats.z.push_back(seqID);
+        stats.x.push_back(log(known));
+        stats.y.push_back(log(actual));
+    }
+
+    // Perform a linear regreession
+    stats.linear();
+    
+    options.writer->open("ladder_abund.R");
+    options.writer->write(RWriter::write(stats.x, stats.y, stats.z, "?", 0.0));
+    options.writer->close();
+
     /*
      * Write out histogram
      */
@@ -201,7 +235,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     };
 
     options.both("Writing histogram");
-    writeHist("ladder.stats", stats.abund, stats.expect, stats.actual, stats.correct);
+    writeHist("ladder_abund.stats", stats.abund, stats.expect, stats.actual, stats.correct);
 
 	return stats;
 }

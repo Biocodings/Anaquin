@@ -1,6 +1,6 @@
 #include <iostream>
 #include <ss/c.hpp>
-#include "rna/r_abundance.hpp"
+#include "rna/r_abund.hpp"
 #include "writers/r_writer.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_tmap.hpp"
@@ -12,9 +12,9 @@ using namespace Anaquin;
 static const FileName GTracking = "genes.fpkm_tracking";
 static const FileName ITracking = "isoforms.fpkm_tracking";
 
-RAbundanceStats RAbundance::analyze(const std::string &file, const Options &options)
+RAbundStats RAbund::analyze(const std::string &file, const Options &options)
 {
-    RAbundanceStats stats;
+    RAbundStats stats;
     const auto &s = Standard::instance();
 
     auto c = RAnalyzer::sequinCounter();

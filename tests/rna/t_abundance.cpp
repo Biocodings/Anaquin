@@ -1,16 +1,11 @@
 #include <catch.hpp>
-#include "rna/r_abundance.hpp"
+#include "rna/r_abund.hpp"
 
 using namespace Anaquin;
 
 TEST_CASE("RAbundance_Simulations_Isoforms_A1")
 {
-    std::string a = "/Users/tedwong/Projects/RNA/A1/isoforms.fpkm_tracking";
-    RAbundance::analyze(a);
-    
-    
-    
-    const auto r  = RAbundance::analyze("tests/data/rna/A1/isoforms.fpkm_tracking");
+    const auto r  = RAbund::analyze("tests/data/rna/A1/isoforms.fpkm_tracking");
     const auto lm = r.linear();
 
     REQUIRE(lm.r  == Approx(0.8143944753));
@@ -24,7 +19,7 @@ TEST_CASE("RAbundance_Simulations_Isoforms_A1")
 
 TEST_CASE("RAbundance_Simulations_Genes_A1")
 {
-    const auto r  = RAbundance::analyze("tests/data/rna/A1/genes.fpkm_tracking");
+    const auto r  = RAbund::analyze("tests/data/rna/A1/genes.fpkm_tracking");
     const auto lm = r.linear();
     
     REQUIRE(lm.r  == Approx(0.8886262976));

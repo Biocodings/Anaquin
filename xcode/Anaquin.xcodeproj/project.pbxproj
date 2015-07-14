@@ -31,7 +31,7 @@
 		EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */; };
 		EF4BD9AB1ADDFB92007BE6AB /* parser_cdiffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4BD9A91ADDFB92007BE6AB /* parser_cdiffs.cpp */; };
 		EF4BD9B61ADE4054007BE6AB /* t_parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */; };
-		EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C9251ADC09FD003D45F9 /* r_abundance.cpp */; };
+		EF76C9291ADC09FD003D45F9 /* r_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C9251ADC09FD003D45F9 /* r_abund.cpp */; };
 		EF76C92A1ADC09FD003D45F9 /* r_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF76C9271ADC09FD003D45F9 /* r_diffs.cpp */; };
 		EF8ADAE91B220767005E2187 /* m_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF8ADAE71B220767005E2187 /* m_diffs.cpp */; };
 		EFA1A6B21AFC4FAB0066DD9F /* parser_fa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */; };
@@ -155,8 +155,8 @@
 		EF5180E41AE09A56007010F3 /* r_writer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_writer.hpp; path = ../src/writers/r_writer.hpp; sourceTree = "<group>"; };
 		EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_writer.hpp; path = ../src/writers/file_writer.hpp; sourceTree = "<group>"; };
 		EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = mock_writer.hpp; path = ../src/writers/mock_writer.hpp; sourceTree = "<group>"; };
-		EF76C9251ADC09FD003D45F9 /* r_abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_abundance.cpp; path = ../src/rna/r_abundance.cpp; sourceTree = "<group>"; };
-		EF76C9261ADC09FD003D45F9 /* r_abundance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_abundance.hpp; path = ../src/rna/r_abundance.hpp; sourceTree = "<group>"; };
+		EF76C9251ADC09FD003D45F9 /* r_abund.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_abund.cpp; path = ../src/rna/r_abund.cpp; sourceTree = "<group>"; };
+		EF76C9261ADC09FD003D45F9 /* r_abund.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_abund.hpp; path = ../src/rna/r_abund.hpp; sourceTree = "<group>"; };
 		EF76C9271ADC09FD003D45F9 /* r_diffs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_diffs.cpp; path = ../src/rna/r_diffs.cpp; sourceTree = "<group>"; };
 		EF76C9281ADC09FD003D45F9 /* r_diffs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_diffs.hpp; path = ../src/rna/r_diffs.hpp; sourceTree = "<group>"; };
 		EF8ADAE71B220767005E2187 /* m_diffs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_diffs.cpp; sourceTree = "<group>"; };
@@ -311,8 +311,8 @@
 		EF224B4D1ADB5B7C00B989A8 /* rna */ = {
 			isa = PBXGroup;
 			children = (
-				EF76C9251ADC09FD003D45F9 /* r_abundance.cpp */,
-				EF76C9261ADC09FD003D45F9 /* r_abundance.hpp */,
+				EF76C9251ADC09FD003D45F9 /* r_abund.cpp */,
+				EF76C9261ADC09FD003D45F9 /* r_abund.hpp */,
 				EF224B501ADB5B8900B989A8 /* r_assembly.cpp */,
 				EF224B511ADB5B8900B989A8 /* r_assembly.hpp */,
 				EF76C9271ADC09FD003D45F9 /* r_diffs.cpp */,
@@ -634,7 +634,7 @@
 				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
 				EF3211951B1DBC1A0062BB10 /* parser_blast.cpp in Sources */,
 				EFDD6ACB1B0DD76C00450029 /* cram_encode.c in Sources */,
-				EF76C9291ADC09FD003D45F9 /* r_abundance.cpp in Sources */,
+				EF76C9291ADC09FD003D45F9 /* r_abund.cpp in Sources */,
 				EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */,
 				EF175D4E1AE4F43000AC3D6C /* t_diffs.cpp in Sources */,
 				EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */,

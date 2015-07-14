@@ -52,7 +52,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     // Perform a linear regreession
     stats.linear();
 
-    options.writer->open("conjoint_diffs.R");
+    options.writer->open("ladder_diffs.R");
     options.writer->write(RWriter::write(stats.x, stats.y, stats.z, "?", 0.0));
     options.writer->close();
     

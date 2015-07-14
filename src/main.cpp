@@ -8,8 +8,8 @@
 
 #include "rna/r_diffs.hpp"
 #include "rna/r_align.hpp"
+#include "rna/r_abund.hpp"
 #include "rna/r_assembly.hpp"
-#include "rna/r_abundance.hpp"
 
 #include "var/v_align.hpp"
 #include "var/v_variant.hpp"
@@ -363,9 +363,9 @@ static void print(Reader &r)
     }
 }
 
-static void printMixture(const std::string &file)
+static void printMixture()
 {
-    Reader r(file);
+    Reader r(_p.mix);
     print(r);
 }
 
@@ -770,9 +770,10 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_FUSION: { analyze<FFusion>(_p.opts[0]); break; }
+                case MODE_SEQUINS: { printMixture();               break; }
+                case MODE_FUSION:  { analyze<FFusion>(_p.opts[0]); break; }
             }
-            
+
             break;
         }
 
@@ -785,12 +786,11 @@ void parse(int argc, char ** argv)
                 throw InvalidModeError();
             }
 
-            // Apply custom mixture to ladder analysis
             applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
 
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture(_p.mix);          break; }
+                case MODE_SEQUINS: { printMixture();                break; }
                 case MODE_ABUND:   { analyze<LAbund>(_p.opts[0]);   break; }
                 case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB); break; }
             }
@@ -814,19 +814,16 @@ void parse(int argc, char ** argv)
             applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
 
-            extern std::string RNADataMix();
-
             switch (mode)
             {
-                case MODE_SEQUINS:  { printMixture(RNADataMix());     break; }
+                case MODE_SEQUINS:  { printMixture();                 break; }
                 case MODE_ALIGN:    { analyze<RAlign>(_p.opts[0]);    break; }
                 case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opts[0]); break; }
                 case MODE_ABUND:
                 {
-                    analyze<RAbundance>(_p.opts[0], detect<RAbundance::Options>(_p.opts[0]));
+                    analyze<RAbund>(_p.opts[0], detect<RAbund::Options>(_p.opts[0]));
                     break;
                 }
-
                 case MODE_DIFFS:
                 {
                     analyze<RDiffs>(_p.opts[0], detect<RDiffs::Options>(_p.opts[0]));
@@ -853,11 +850,9 @@ void parse(int argc, char ** argv)
             applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::v_ref, &s, std::placeholders::_1));
             
-            extern std::string VARDataMix();
-            
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture(VARDataMix());   break; }
+                case MODE_SEQUINS: { printMixture();                break; }
                 case MODE_ALIGN:   { analyze<VAlign>(_p.opts[0]);   break; }
                 case MODE_VARIANT: { analyze<VVariant>(_p.opts[0]); break; }
             }
@@ -880,13 +875,10 @@ void parse(int argc, char ** argv)
             applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
             
-            extern std::string MetaDataMix();
-            
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture(MetaDataMix()); break; }
+                case MODE_SEQUINS: { printMixture();              break; }
                 case MODE_BLAST:   { MBlast::analyze(_p.opts[0]); break; }
-
                 case MODE_DIFFS:
                 {
                     //                            if (_opts.size() != 2 || (!_pA.empty() != !_pB.empty()))

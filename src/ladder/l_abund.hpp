@@ -12,7 +12,7 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        struct Stats
+        struct Stats : ModelStats
         {
             // Histogram expected
             std::map<TypeID, Coverage> expect;
