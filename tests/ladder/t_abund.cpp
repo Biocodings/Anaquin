@@ -9,40 +9,39 @@ TEST_CASE("LAbund_Test")
 
     REQUIRE(r.expTotal == 4915200);
     REQUIRE(r.actTotal == 834);
-/*
-    REQUIRE(r.expect.count("GA116_A") == 1);
-    REQUIRE(r.expect.count("GA116_B") == 1);
-    REQUIRE(r.expect.count("GA116_C") == 1);
-    REQUIRE(r.expect.count("GA116_D") == 1);
-    
-    REQUIRE(r.abund.count("GA116_A") == 1);
-    REQUIRE(r.abund.count("GA116_B") == 1);
-    REQUIRE(r.abund.count("GA116_C") == 1);
-    REQUIRE(r.abund.count("GA116_D") == 1);
 
-    REQUIRE(r.correct.count("GA116_A") == 1);
-    REQUIRE(r.correct.count("GA116_B") == 1);
-    REQUIRE(r.correct.count("GA116_C") == 1);
-    REQUIRE(r.correct.count("GA116_D") == 1);
+    REQUIRE(r.expect.count("C_16_A") == 1);
+    REQUIRE(r.expect.count("C_16_B") == 1);
+    REQUIRE(r.expect.count("C_16_C") == 1);
+    REQUIRE(r.expect.count("C_16_D") == 1);
 
-    REQUIRE(r.abund.at("GA116_A") == 2);
-    REQUIRE(r.abund.at("GA116_B") == 4);
-    REQUIRE(r.abund.at("GA116_C") == 7);
-    REQUIRE(r.abund.at("GA116_D") == 17);
+    REQUIRE(r.abund.count("C_16_A") == 1);
+    REQUIRE(r.abund.count("C_16_B") == 1);
+    REQUIRE(r.abund.count("C_16_C") == 1);
+    REQUIRE(r.abund.count("C_16_D") == 1);
 
-    REQUIRE(r.actual.at("GA116_A") == Approx(0.037037037));
-    REQUIRE(r.actual.at("GA116_B") == Approx(0.0740740741));
-    REQUIRE(r.actual.at("GA116_C") == Approx(0.1296296296));
-    REQUIRE(r.actual.at("GA116_D") == Approx(0.3148148148));
+    REQUIRE(r.adjusted.count("C_16_A") == 1);
+    REQUIRE(r.adjusted.count("C_16_B") == 1);
+    REQUIRE(r.adjusted.count("C_16_C") == 1);
+    REQUIRE(r.adjusted.count("C_16_D") == 1);
 
-    REQUIRE(r.expect.at("GA116_A") == Approx(0.0444444444));
-    REQUIRE(r.expect.at("GA116_B") == Approx(0.0888888889));
-    REQUIRE(r.expect.at("GA116_C") == Approx(0.1777777778));
-    REQUIRE(r.expect.at("GA116_D") == Approx(0.3555555556));
+    REQUIRE(r.abund.at("C_16_A") == 66);
+    REQUIRE(r.abund.at("C_16_B") == 113);
+    REQUIRE(r.abund.at("C_16_C") == 239);
+    REQUIRE(r.abund.at("C_16_D") == 416);
 
-    REQUIRE(r.correct.at("GA116_A") == Approx(0.0415537489));
-    REQUIRE(r.correct.at("GA116_B") == Approx(0.0831074977));
-    REQUIRE(r.correct.at("GA116_C") == Approx(0.145438121));
-    REQUIRE(r.correct.at("GA116_D") == Approx(0.3532068654));
-*/
+    REQUIRE(r.actual.at("C_16_A") == Approx(0.0791366906));
+    REQUIRE(r.actual.at("C_16_B") == Approx(0.1354916067));
+    REQUIRE(r.actual.at("C_16_C") == Approx(0.2865707434));
+    REQUIRE(r.actual.at("C_16_D") == Approx(0.4988009592));
+
+    REQUIRE(r.expect.at("C_16_A") == Approx(0.0666666667));
+    REQUIRE(r.expect.at("C_16_B") == Approx(0.1333333333));
+    REQUIRE(r.expect.at("C_16_C") == Approx(0.2666666667));
+    REQUIRE(r.expect.at("C_16_D") == Approx(0.5333333333));
+
+    REQUIRE(r.adjusted.at("C_16_A") == Approx(0.0873317225));
+    REQUIRE(r.adjusted.at("C_16_B") == Approx(0.1495224945));
+    REQUIRE(r.adjusted.at("C_16_C") == Approx(0.316246692));
+    REQUIRE(r.adjusted.at("C_16_D") == Approx(0.5504544932));
 }

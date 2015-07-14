@@ -104,6 +104,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         {
             continue;
         }
+
+        stats.c[base]++;
         
         /*
          * Eg: C_19_A, C_19_B, C_19_C and C_19_D, where the base is C_19
@@ -188,6 +190,9 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         stats.x.push_back(log(known));
         stats.y.push_back(log(actual));
     }
+
+    // Calculate for the sensitivity
+    stats.s = Expression::analyze(stats.c, s.r_sequin(options.mix));
 
     AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
 
