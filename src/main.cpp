@@ -76,6 +76,21 @@ typedef std::set<Value> Range;
 
 using namespace Anaquin;
 
+std::string date()
+{
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer[80];
+    
+    time (&rawtime);
+    timeinfo = localtime(&rawtime);
+    
+    strftime(buffer, 80, "%d-%m-%Y %I:%M:%S", timeinfo);
+    std::string str(buffer);
+    
+    return str;
+}
+
 struct InvalidCommandException : public std::exception
 {
     InvalidCommandException(const std::string &data) : data(data) {}
@@ -455,15 +470,9 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
-    o.logger->write(_p.invoked);
-
-#ifdef GCC_5_0
-    std::stringstream buf;
-    buf << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
-    o.logger->write(std::string(buf.str()));
-#endif
-
-    o.logput("Path: " + path);
+    o.log(_p.invoked);
+    o.log(date());
+    o.both("Path: " + path);
 
     for (const auto &filter : (o.filters = _p.filters))
     {
@@ -482,7 +491,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     
     const auto elapsed = (boost::format("Completed. Elpased %1% seconds")
                                         % (double(end - begin) / CLOCKS_PER_SEC)).str();
-    o.logput(elapsed);
+    o.both(elapsed);
 
 #ifndef DEBUG
     o.logger->close();

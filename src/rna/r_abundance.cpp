@@ -30,7 +30,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
     // Detect whether it's a file of isoform by the name of file
     const bool isoform = file.find(ITracking) != std::string::npos;
 
-    options.logput("Parsing input file");
+    options.both("Parsing input file");
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
@@ -85,18 +85,18 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
-    options.logput("Fitting a linear regression model");
+    options.both("Fitting a linear regression model");
     stats.linear();
-
-    options.logput("Generating an R script");
+ 
+    options.both("Generating an R script");
     AnalyzeReporter::report("rna_abundance.stats", "rna_abundance.R", stats, "FPKM", c, options.writer);
 
-    options.logput("Generating statistics");
+    options.both("Generating statistics");
     const std::string format = "%1%\t%2%\t%3%";
     
     options.writer->open("rna_sequins.stats");
     options.writer->write((boost::format(format) % "id" % "spiked" % "measured").str());
-    
+
     for (std::size_t i = 0; i < stats.z.size(); i++)
     {
         options.writer->write((boost::format(format) % stats.z[i] % stats.x[i] % stats.y[i]).str());

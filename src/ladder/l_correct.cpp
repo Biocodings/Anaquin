@@ -22,7 +22,7 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     // We'll need it to construct expected library size
     std::set<BaseID> baseIDs;
     
-    options.logput("Parsing alignment file");
+    options.both("Parsing alignment file");
 
     /*
      * Construct a histogram or distribution of the aligned sequins.
@@ -47,7 +47,7 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
     assert(!baseIDs.empty());
     assert(stats.actTotal);
 
-    options.logput("Calculating the expected library size");
+    options.both("Calculating the expected library size");
 
     const auto &s = Standard::instance();
 
@@ -83,7 +83,7 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
      * Correcting the observed abundance
      */
 
-    options.logput("Linearly correcting the observed abundance");
+    options.both("Linearly correcting the observed abundance");
 
     for (const auto &i : s.l_seqs_A)
     {
@@ -194,7 +194,7 @@ LCorrect::Stats LCorrect::analyze(const std::string &file, const Options &option
         options.writer->close();
     };
 
-    options.logput("Writing histogram");
+    options.both("Writing histogram");
     writeHist("conjoint.stats", stats.abund, stats.expect, stats.actual, stats.correct);
 
 	return stats;

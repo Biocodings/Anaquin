@@ -182,11 +182,9 @@ namespace Anaquin
         std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
         std::shared_ptr<Writer> output = std::shared_ptr<Writer>(new MockWriter());
 
-        inline void logput(const std::string &s) const
-        {
-            logger->write(s);
-            output->write(s);
-        }
+        inline void log(const std::string &s)  const { logger->write(s); }
+        inline void out(const std::string &s)  const { output->write(s); }
+        inline void both(const std::string &s) const { log(s); out(s);   }
     };
 
     struct SingleMixtureOptions : public AnalyzerOptions
