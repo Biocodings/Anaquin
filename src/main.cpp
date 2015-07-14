@@ -134,6 +134,7 @@ struct InvalidValueError : public std::exception
 // A mandatory option is missing, for instance, failing to specify the command
 struct MissingOptionError : public std::exception
 {
+    MissingOptionError(const std::string &opt) : opt(opt) {}
     MissingOptionError(const std::string &opt, const std::string &range) : opt(opt), range(range) {}
 
     // Option that is missing
@@ -732,9 +733,16 @@ void parse(int argc, char ** argv)
     // Exception should've already been thrown if command is not specified
     assert(_p.cmd);
 
-    if (_p.cmd != CMD_TEST && _p.cmd != CMD_VER && _p.opts.empty() && _p.mode != MODE_SEQUINS)
+    if (_p.cmd != CMD_TEST && _p.cmd != CMD_VER)
     {
-        throw MissingInputError();
+        if (_p.opts.empty() && _p.mode != MODE_SEQUINS)
+        {
+            throw MissingInputError();
+        }
+        else if (!_p.mode)
+        {
+            throw MissingOptionError("-p");
+        }
     }
 
     auto &s = Standard::instance();
@@ -919,9 +927,9 @@ int parse_options(int argc, char ** argv)
     auto printError = [&](const std::string &file)
     {
         std::cerr << std::endl;
-        std::cerr << "*********************************************" << std::endl;
+        std::cerr << "*********************************************************************" << std::endl;
         std::cerr << file << std::endl;
-        std::cerr << "*********************************************" << std::endl;
+        std::cerr << "*********************************************************************" << std::endl;
     };
     
     try
@@ -929,14 +937,26 @@ int parse_options(int argc, char ** argv)
         parse(argc, argv);
         return 0;
     }
+    catch (const InvalidModeError &ex)
+    {
+        
+    }
     catch (const InvalidValueError &ex)
     {
         printError(ex.value);
     }
     catch (const MissingOptionError &ex)
     {
-        const auto format = "A mandatory option is missing. Please specify %1%. Possible values are %2%";
-        printError((boost::format(format) % ex.opt % ex.range).str());
+        if (!ex.range.empty())
+        {
+            const auto format = "A mandatory option is missing. Please specify %1%. Possible values are %2%";
+            printError((boost::format(format) % ex.opt % ex.range).str());
+        }
+        else
+        {
+            const auto format = "A mandatory option is missing. Please specify %1%.";
+            printError((boost::format(format) % ex.opt).str());
+        }
     }
     catch (const MissingInputError &ex)
     {
