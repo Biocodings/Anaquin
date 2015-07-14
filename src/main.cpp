@@ -378,7 +378,7 @@ template <typename Mixture> void applyMix(Mixture mix)
         throw MissingMixtureError();
     }
     
-    std::cout << "Mixture file: "   << _p.mix << std::endl;
+    std::cout << "Mixture: "   << _p.mix << std::endl;
     mix(Reader(_p.mix));
 }
 
@@ -390,7 +390,7 @@ template <typename Reference> void applyRef(Reference ref)
         throw MissingReferenceError();
     }
 
-    std::cout << "Reference file: " << _p.ref << std::endl;
+    std::cout << "Reference: " << _p.ref << std::endl;
     ref(Reader(_p.ref));
 }
 

@@ -18,8 +18,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 {
     LAbund::Stats stats;
 
-    // We'll need it to construct expected library size
-    std::set<BaseID> baseIDs;
+    // The sequins detected (eg: C_14, C-_16)
+    std::set<BaseID> actualBaseIDs;
     
     options.both("Parsing alignment file");
 
@@ -29,7 +29,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        if ((p.i % 100000) == 0)
+        if ((p.i % 1000000) == 0)
         {
             options.output->write("Processed: " + std::to_string(p.i));
         }
@@ -43,12 +43,16 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
             // Eg: C_16_A to C_16
             const auto baseID = align.id.substr(0, align.id.find_last_of("_"));
 
-            baseIDs.insert(baseID);
+            actualBaseIDs.insert(baseID);
             options.logger->write((boost::format("%1%: %2%") % p.i % baseID).str());
         }
     });
 
-    assert(!baseIDs.empty());
+    if (actualBaseIDs.empty())
+    {
+        return stats;
+    }
+    
     assert(stats.actTotal);
 
     options.both("Calculating the expected library size");
@@ -59,7 +63,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
      * Calculate for the expected library size. The size depends on the detected sequins.
      */
 
-    for (const auto &baseID : baseIDs)
+    for (const auto &baseID : actualBaseIDs)
     {
         options.info((boost::format("Calculating for baseID: %1%") % baseID).str());
 
@@ -95,6 +99,12 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     {
         const std::string &base = i.first;
 
+        // Skip over any sequin defined in the mixture but undetected
+        if (!actualBaseIDs.count(base))
+        {
+            continue;
+        }
+        
         /*
          * Eg: C_19_A, C_19_B, C_19_C and C_19_D, where the base is C_19
          */
@@ -160,11 +170,11 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     /*
      * The following will be generated:
      *
-     *    - R script for abundance
-     *    - Tab
+     *    - Histogram generated
+     *    - Linear model for abundance
      */
 
-    options.both("Generating abundance plot");
+    options.both("Generating regression plot");
 
     // Try for each detected sequin to form an abundance plot
     for (const auto &i : stats.actual)
@@ -179,12 +189,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         stats.y.push_back(log(actual));
     }
 
-    // Perform a linear regreession
-    stats.linear();
-    
-    options.writer->open("ladder_abund.R");
-    options.writer->write(RWriter::write(stats.x, stats.y, stats.z, "?", 0.0));
-    options.writer->close();
+    AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
 
     /*
      * Write out histogram
@@ -234,8 +239,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         options.writer->close();
     };
 
-    options.both("Writing histogram");
-    writeHist("ladder_abund.stats", stats.abund, stats.expect, stats.actual, stats.correct);
+    options.both("Generating histogram");
+    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.correct);
 
 	return stats;
 }
