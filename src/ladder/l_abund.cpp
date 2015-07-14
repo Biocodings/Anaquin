@@ -192,7 +192,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     }
 
     // Calculate for the sensitivity
-    stats.s = Expression::analyze(stats.c, s.r_sequin(options.mix));
+    stats.s = Expression::analyze(stats.c, s.l_seqs_A);
 
     AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
 
