@@ -204,7 +204,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
         options.writer->open(file);
-        options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "actual" % "correct").str());
+        options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "observed" % "adjusted").str());
 
         /*
          * The argument abund is a histogram of abundance before normalization. It's directly taken off from
