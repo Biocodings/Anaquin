@@ -9,6 +9,12 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
+// Defined in main.cpp
+extern std::string date();
+
+// Defined in main.cpp
+extern std::string __full_command__;
+
 extern std::string LinearR();
 
 namespace Anaquin
@@ -48,12 +54,7 @@ namespace Anaquin
             const auto zs = (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str();
             const auto cs = (boost::format("'%1%'") % boost::algorithm::join(c, "','")).str();
 
-            const auto t = "today";
-            const auto ccc = ".....";
-
-            std::cout << ss.str() << std::endl;
-            
-            return (boost::format(ss.str()) % t % ccc % xs % ys % zs).str();
+            return (boost::format(ss.str()) % date() % __full_command__ % xs % ys % zs % units).str();
         }
     };
 }

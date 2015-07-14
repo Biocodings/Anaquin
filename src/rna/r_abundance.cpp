@@ -93,7 +93,7 @@ RAbundanceStats RAbundance::analyze(const std::string &file, const Options &opti
 
     options.both("Generating statistics");
     const std::string format = "%1%\t%2%\t%3%";
-    
+ 
     options.writer->open("rna_sequins.stats");
     options.writer->write((boost::format(format) % "id" % "spiked" % "measured").str());
 

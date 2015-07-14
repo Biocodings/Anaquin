@@ -76,6 +76,10 @@ typedef std::set<Value> Range;
 
 using namespace Anaquin;
 
+// Shared with other modules
+std::string __full_command__;
+
+// Shared with other modules
 std::string date()
 {
     time_t rawtime;
@@ -459,6 +463,9 @@ static void readFilters(const std::string &file)
 template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::Options o)
 {
     const auto path = _p.output;
+
+    // This might be needed while scripting
+    __full_command__ = _p.invoked;
 
 #ifndef DEBUG
     o.writer = std::shared_ptr<FileWriter>(new FileWriter(path));
