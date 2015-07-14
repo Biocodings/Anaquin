@@ -13,7 +13,7 @@ TEST_CASE("Ladder_Sequis")
 
 TEST_CASE("Missing_Mixture_And_Reference")
 {
-    const int s = parse_options("-c ladder -p correct tests/data/ladder/aligned_A.sam", _output, _error);
+    const int s = parse_options("-c ladder -p abund tests/data/ladder/aligned_A.sam", _output, _error);
 
     REQUIRE(s == 1);
     REQUIRE(_output.find("Ladder Analysis") != std::string::npos);
@@ -28,17 +28,4 @@ TEST_CASE("RNA_Missing_Reference")
     REQUIRE(_output.find("RNA Analysis") != std::string::npos);
     REQUIRE(_error.find("Reference file is missing. Please specify it with -r.") != std::string::npos);
 }
-
-TEST_CASE("Ladder_Missing_Reference")
-{
-    /*
-     * Ladder analysis doesn't require a reference
-     */
-    
-    const int s = parse_options("-c ladder -p correct -m data/ladder/CON.v3.mix.csv tests/data/ladder/aligned_A.sam", _output, _error);
-
-    REQUIRE(s == 1);
-    REQUIRE(_output.find("Ladder Analysis") != std::string::npos);
-}
-
 

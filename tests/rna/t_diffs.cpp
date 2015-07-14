@@ -5,9 +5,6 @@ using namespace Anaquin;
 
 TEST_CASE("Differential_Simulations_Isoforms")
 {
-    RDiffs::analyze("/Users/tedwong/Projects/RNA/D/gene_exp.diff");
-
-    
 //    /*
 //     * The experiment for mixutre B is identical but it has 100 times coverage.
 //     */
