@@ -29,11 +29,28 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     options.logInfo((boost::format("%1% sequins in mix B") % b.actual.size()).str());
     
     /*
-     * Try for each detected sequin
+     * Try for each detected sequin. But only if it's detected in both mixtures. Otherwise, the fold-
+     * change is infinite.
      */
+    
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
+
+    options.writer->open("ladder_hist.csv");
+    options.writer->write((boost::format(format) % "ID"
+                                                 % "abd_A"
+                                                 % "abd_B"
+                                                 % "exp_A"
+                                                 % "exp_B"
+                                                 % "exp_D"
+                                                 % "mea_A"
+                                                 % "mea_B"
+                                                 % "adj_A"
+                                                 % "adj_B"
+                                                 % "adj_D").str());
 
     for (const auto &i : a.actual)
     {
+        // Eg: C_02_C
         const auto &id = i.first;
 
         // Don't bother unless the sequin is detected in both mixtures
@@ -49,17 +66,30 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         const auto known = (b.expect.at(id) / a.expect.at(id));
 
         // Calculate actual fold change between mixture A and B
-        const auto actual = (b.adjusted.at(id) / a.adjusted.at(id));
+        const auto measured = (b.adjusted.at(id) / a.adjusted.at(id));
 
-        options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % actual).str());
+        options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % measured).str());
         
-        std::cout << id << " " << known << "  " << actual << std::endl;
-
         stats.z.push_back(id);
         stats.x.push_back(log(known));
-        stats.y.push_back(log(actual));
+        stats.y.push_back(log(measured));
+        
+        assert(a.abund.count(id) && b.abund.count(id));
+        
+        options.writer->write((boost::format(format) % id
+                                                     % a.abund.at(id)
+                                                     % b.abund.at(id)
+                                                     % a.expect.at(id)
+                                                     % b.expect.at(id)
+                                                     % known
+                                                     % a.actual.at(id)
+                                                     % b.actual.at(id)
+                                                     % a.adjusted.at(id)
+                                                     % b.adjusted.at(id)
+                                                     % measured).str());
     }
     
+    options.writer->close();
     options.logInfo("Checking for sequins in mix B but not in mix A");
 
     /*
@@ -78,66 +108,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         }
     }
 
-    
-    
-    
-    
-    
-    
+    options.info("Generating linear model");
     AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
-
-    /*
-     * Generate a CSV for differential
-     */
-
-    options.info("Writing differential CSV");
-
-    auto writeHist = [&](const std::string &file,
-                         const std::map<SequinID, Counts>   &abund,
-                         const std::map<SequinID, Coverage> &expect,
-                         const std::map<SequinID, Coverage> &actual,
-                         const std::map<SequinID, Coverage> &correct)
-    {
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
-        
-        options.writer->open(file);
-        options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "observed" % "adjusted").str());
-        
-        /*
-         * The argument abund is a histogram of abundance before normalization. It's directly taken off from
-         * the alignment file. Not all sequins would be detected, in fact anything could be in the histogram.
-         */
-        
-        assert(expect.size() == actual.size() && expect.size() == correct.size());
-        
-        for (const auto &i : correct)
-        {
-            // Eg: GA322_B
-            const auto id = i.first;
-            
-            if (abund.count(id))
-            {
-                options.writer->write((boost::format(format) % id
-                                       % abund.at(id)
-                                       % expect.at(id)
-                                       % actual.at(id)
-                                       % correct.at(id)).str());
-            }
-            else
-            {
-                options.writer->write((boost::format(format) % id
-                                       % "NA"
-                                       % "NA"
-                                       % "NA"
-                                       % "NA").str());
-            }
-        }
-        
-        options.writer->close();
-    };
     
-    options.info("Generating histogram");
-//    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
-
 	return stats;
 }

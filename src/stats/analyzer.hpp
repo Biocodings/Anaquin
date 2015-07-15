@@ -125,19 +125,19 @@ namespace Anaquin
     {
         typedef typename I2::value_type Type;
         
-        /*
-         * The features in the query might overlap. We'd need to merge them before analysis.
-         */
-        
         const auto merged = Locus::merge<Type, Locus>(q);
-        assert(!Locus::overlap(merged));
-
+        
         for (const auto &l : merged)
         {
             m.nq   += l.length();
             m.tp() += countOverlaps(r, l, c);
             m.fp()  = m.nq - m.tp();
+            
+            // Make sure we don't run into negative
+            assert(m.nq >= m.tp());
         }
+
+        assert(!Locus::overlap(merged));
     }
 
     struct ModelStats
@@ -350,14 +350,17 @@ namespace Anaquin
         {
             const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
+            const auto sn = p.m.sn();
+            const auto sp = p.m.sp();
+            const auto ss = p.s.abund;
+            
+            assert(ss >= 0);
+            assert(isnan(sn) || (sn >= 0 && sn <= 1.0));
+            assert(isnan(sp) || (sp >= 0 && sp <= 1.0));
+
             writer->open(name);
-            writer->write((boost::format(format) % "sn" % "sp" % "los" % "ss" % "counts").str());
-            writer->write((boost::format(format) % p.m.sn()
-                                                 % p.m.sp()
-                                                 % p.s.id
-                                                 % p.s.abund
-                                                 % p.s.counts).str());
-            writer->write("\n");
+            writer->write((boost::format(format) % "sn" % "sp" % "los"  % "ss" % "counts").str());
+            writer->write((boost::format(format) %  sn  %  sp  % p.s.id %  ss  % p.s.counts).str());
 
             for (const auto &p : c)
             {

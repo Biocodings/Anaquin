@@ -386,7 +386,7 @@ template <typename Mixture> void applyMix(Mixture mix)
         throw MissingMixtureError();
     }
     
-    std::cout << "Mixture: "   << _p.mix << std::endl;
+    std::cout << "Mixture: " << _p.mix << std::endl;
     mix(Reader(_p.mix));
 }
 
@@ -784,8 +784,8 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Fusion Analysis" << std::endl;
 
-            applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
+            applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
             
             switch (mode)
             {
@@ -816,8 +816,8 @@ void parse(int argc, char ** argv)
         {
             std::cout << "RNA Analysis" << std::endl;
             
-            applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+            applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
 
             switch (mode)
             {
@@ -843,8 +843,8 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Variant Analysis" << std::endl;
             
-            applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::v_ref, &s, std::placeholders::_1));
+            applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
             
             switch (mode)
             {
@@ -860,8 +860,8 @@ void parse(int argc, char ** argv)
         {
             std::cout << "Metagenomics Analysis" << std::endl;
             
-            applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
+            applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
             
             switch (mode)
             {

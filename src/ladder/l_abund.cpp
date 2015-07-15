@@ -206,7 +206,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
                          const std::map<SequinID, Counts>   &abund,
                          const std::map<SequinID, Coverage> &expect,
                          const std::map<SequinID, Coverage> &actual,
-                         const std::map<SequinID, Coverage> &correct)
+                         const std::map<SequinID, Coverage> &adjust)
     {
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
@@ -218,9 +218,9 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
          * the alignment file. Not all sequins would be detected, in fact anything could be in the histogram.
          */
         
-        assert(expect.size() == actual.size() && expect.size() == correct.size());
+        assert(expect.size() == actual.size() && expect.size() == adjust.size());
         
-        for (const auto &i : correct)
+        for (const auto &i : adjust)
         {
             // Eg: GA322_B
             const auto id = i.first;
@@ -231,7 +231,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
                                                              % abund.at(id)
                                                              % expect.at(id)
                                                              % actual.at(id)
-                                                             % correct.at(id)).str());
+                                                             % adjust.at(id)).str());
             }
             else
             {

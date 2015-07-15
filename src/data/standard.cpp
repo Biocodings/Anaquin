@@ -18,8 +18,6 @@ extern std::string FusDataRef();
 
 extern std::string LadderDataMix();
 
-extern std::string RNADataFA();
-extern std::string RNADataBed();
 extern std::string RNADataGTF();
 extern std::string RNADataMix();
 
@@ -28,8 +26,8 @@ extern std::string MetaDataBed();
 extern std::string MetaDataMix();
 extern std::string MetaDataTab();
 
-extern std::string VARDataBed();
-extern std::string VARDataMix();
+extern std::string VarDataBed();
+extern std::string VarDataMix();
 
 using namespace Anaquin;
 
@@ -63,6 +61,9 @@ template <typename SequinMap, typename BaseMap> void mergeMix(const Reader &r,
                                                               BaseMap &ba,
                                                               BaseMap &bb)
 {
+    ba.clear();
+    bb.clear();
+    
     for (const auto &baseID : info.baseIDs)
     {
         const auto &typeIDs = baseID.second;
@@ -202,6 +203,7 @@ Standard::Standard()
 
 void Standard::v_ref(const Reader &r)
 {
+    d_vars.clear();
     std::vector<std::string> tokens;
     
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
@@ -247,6 +249,8 @@ void Standard::v_mix(const Reader &r)
 
 void Standard::m_ref(const Reader &r)
 {
+    m_model.clear();
+    
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
         m_model.push_back(f);
@@ -262,6 +266,8 @@ void Standard::m_mix(const Reader &r)
 
 void Standard::l_mix(const Reader &r)
 {
+    l_map.clear();
+
     parseMix(r, l_seqs_A, l_seqs_B);
 
     for (const auto &i : l_seqs_A)
@@ -312,27 +318,34 @@ void Standard::ladder()
 
 void Standard::fusion()
 {
-    f_mix(Reader(FusDataMix(), DataMode::String));
     f_ref(Reader(FusDataRef(), DataMode::String));
+    f_mix(Reader(FusDataMix(), DataMode::String));
 }
 
 void Standard::meta()
 {
-    // Apply the default mixture file
-    m_mix(Reader(MetaDataMix(), DataMode::String));
-
     // Apply the default annotation file
     m_ref(Reader(MetaDataBed(), DataMode::String));
+    
+    // Apply the default mixture file
+    m_mix(Reader(MetaDataMix(), DataMode::String));
 }
 
 void Standard::variant()
 {
-    v_ref(Reader(VARDataBed(), DataMode::String));
-    v_mix(Reader(VARDataMix(), DataMode::String));
+    v_ref(Reader(VarDataBed(), DataMode::String));
+    v_mix(Reader(VarDataMix(), DataMode::String));
 }
 
 void Standard::r_ref(const Reader &r)
 {
+    r_exons.clear();
+    r_genes.clear();
+    r_sequins.clear();
+    r_introns.clear();
+    r_l_exons.clear();
+    r_isoformToGene.clear();
+    
     /*
      * The region occupied by the chromosome is the smallest area contains all features.
      */
@@ -473,6 +486,8 @@ void Standard::r_ref(const Reader &r)
 
 void Standard::r_mix(const Reader &r)
 {
+    r_seqIDs.clear();
+    
     mergeMix(r, parseMix(r, r_seqs_A, r_seqs_B), r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
     
     /*

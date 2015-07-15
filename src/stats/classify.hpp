@@ -33,12 +33,14 @@ namespace Anaquin
         }
         
         /*
-         * The usual formula: tn / (tn + fp) would not work. We don't know
-         * tn, furthermore fp would have been dominated by tn. The formula
-         * below is consistent to cufflink's recommendation. Technically,
-         * we're not calculating specificity but positive predication value.
+         * The usual formula: tn / (tn + fp) would not work. We don't know tn.
+         * Furthermore fp would have been dominated by tn. The formula below is
+         * consistent to cufflink's recommendation. Technically, we're not calculating
+         * specificity but predication accuracy.
+         *
+         * Reference: https://www.biostars.org/p/138438/#148051
          */
-        
+
         inline Percentage sp() const
         {
             return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;

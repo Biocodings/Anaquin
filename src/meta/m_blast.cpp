@@ -25,7 +25,7 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
      * Create data-strucutre for each metaquin
      */
     
-    std::map<MetaQuinID, MetaAlignment> m;
+    std::map<SequinID, MetaAlignment> m;
 
     const auto &mixB = Standard::instance().m_seqs_B;
     

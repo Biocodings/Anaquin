@@ -24,8 +24,6 @@
  * RNA Resources
  */
 
-//#include "resources/chrT.v2.fa"
-#include "resources/RNA.v1.bed"
 #include "resources/RNA.v1.gtf"
 #include "resources/RNA.v4.1.mix"
 #include "resources/RNA.usage.txt"
@@ -125,11 +123,6 @@ std::string RNADataGTF()
     return ToString(data_rna_RNA_v1_gtf);
 }
 
-std::string RNADataBed()
-{
-    return ToString(data_rna_RNA_v1_bed);
-}
-
 std::string RNADataMix()
 {
     return ToString(data_rna_RNA_v4_1_mix);
@@ -139,12 +132,12 @@ std::string RNADataMix()
  * Variant Resources
  */
 
-std::string VARDataMix()
+std::string VarDataMix()
 {
     return ToString(data_var_DNA_v3_mix_csv);
 }
 
-std::string VARDataBed()
+std::string VarDataBed()
 {
     return ToString(data_var_DNA_variant_bed);
 }

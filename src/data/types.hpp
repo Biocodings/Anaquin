@@ -5,12 +5,8 @@
 
 namespace Anaquin
 {
-    typedef std::string ContigID;
-    typedef std::string MetaQuinID;
-
     typedef unsigned long Counts;
-    typedef double Percentage;
-    
+
     typedef std::string Sequence;
     
     // Defined as long long because there could be many reads
@@ -24,12 +20,14 @@ namespace Anaquin
     typedef long long Lines;
     
     typedef double Fold;
+    typedef double Percentage;
 
     typedef std::string TypeID;
     typedef std::string BaseID;
     typedef std::string GeneID;
     typedef std::string ChromoID;
     typedef std::string SequinID;
+    typedef std::string ContigID;
     typedef std::string VariantID;
     typedef std::string TranscriptID;
 

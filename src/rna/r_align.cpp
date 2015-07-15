@@ -161,9 +161,9 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     sums(stats.ci, stats.pi.m.nr);
 
     options.info("Merging overlapping bases");
-    
+
     /*
-     * The counts for bases in a query is the total non-overlapping bases of all the exons in the experiment.
+     * Counts at the base-level is the non-overlapping region of all the exons
      */
 
     countBase(s.r_l_exons, exons, stats.pb.m, stats.cb);
