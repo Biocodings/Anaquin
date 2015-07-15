@@ -48,6 +48,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 
         options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % actual).str());
         
+        std::cout << id << " " << known << "  " << actual << std::endl;
+
         stats.z.push_back(id);
         stats.x.push_back(log(known));
         stats.y.push_back(log(actual));
@@ -71,6 +73,11 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         }
     }
 
+    
+    
+    
+    
+    
     AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
 
     /*
