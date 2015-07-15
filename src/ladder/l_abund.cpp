@@ -245,7 +245,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
         options.writer->close();
     };
- 
+
     options.info("Generating histogram");
     writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
 

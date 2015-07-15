@@ -182,7 +182,6 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     stats.pb.m.nr = s.r_c_exons;
 
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
-    options.logger->write("Calculating LOS");
 
     // The structure depends on the mixture
     const auto seqs = s.r_gene(options.mix);
@@ -191,17 +190,15 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the LOS
      */
 
-    options.info("Calculating LOS - exon level");
+    options.info("Calculating LOS for exons");
     stats.pe.s = Expression::analyze(stats.ce, seqs);
 
-    options.info("Calculating LOS - intron level");
+    options.info("Calculating LOS for introns");
     stats.pi.s = Expression::analyze(stats.ci, seqs);
 
-    options.info("Calculating LOS - base level");
+    options.info("Calculating LOS for bases");
     stats.pb.s = Expression::analyze(stats.cb, seqs);
 
-    options.info("Writing results");
-    
     // Write out general statistics
     //reportGeneral("rna_align_summary.stats", stats, options);
 
@@ -209,8 +206,13 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Write out statistics for various levels
      */
 
-    AnalyzeReporter::report("rna_align_base.stats",    stats.pb, stats.cb, options.writer);
-    AnalyzeReporter::report("rna_align_exon.stats",    stats.pe, stats.ce, options.writer);
+    options.info("Generating base statistics");
+    AnalyzeReporter::report("rna_align_base.stats", stats.pb, stats.cb, options.writer);
+
+    options.info("Generating exon statistics");
+    AnalyzeReporter::report("rna_align_exon.stats", stats.pe, stats.ce, options.writer);
+
+    options.info("Generating intron statistics");
     AnalyzeReporter::report("rna_align_introns.stats", stats.pi, stats.ci, options.writer);
 
 	return stats;
