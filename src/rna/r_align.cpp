@@ -191,16 +191,16 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the LOS
      */
 
-    options.logger->write("Calculating LOS - exon level");
+    options.info("Calculating LOS - exon level");
     stats.pe.s = Expression::analyze(stats.ce, seqs);
 
-    options.logger->write("Calculating LOS - intron level");
+    options.info("Calculating LOS - intron level");
     stats.pi.s = Expression::analyze(stats.ci, seqs);
 
-    options.logger->write("Calculating LOS - base level");
+    options.info("Calculating LOS - base level");
     stats.pb.s = Expression::analyze(stats.cb, seqs);
 
-    options.logger->write("Writing results");
+    options.info("Writing results");
     
     // Write out general statistics
     //reportGeneral("rna_align_summary.stats", stats, options);

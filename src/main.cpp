@@ -148,6 +148,25 @@ struct MissingMixtureError   : public std::exception {};
 struct MissingReferenceError : public std::exception {};
 struct MissingInputError     : public std::exception {};
 
+struct InvalidInputCountError : std::exception
+{
+    InvalidInputCountError(std::size_t expected, std::size_t actual) : expected(expected), actual(actual) {}
+    
+    // Number of inputs detected
+    std::size_t actual;
+    
+    // Number of inputs expected
+    std::size_t expected;
+};
+
+struct TooLessInputError : std::exception
+{
+    TooLessInputError(std::size_t n) : n(n) {}
+    
+    // Number of inputs expected
+    std::size_t n;
+};
+
 struct TooManyOptionsError : public std::runtime_error
 {
     TooManyOptionsError(const std::string &msg) : std::runtime_error(msg) {}
@@ -505,15 +524,25 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 }
 
 // Analyze for a single-sample input
-template <typename Analyzer> void analyze(const std::string &file, typename Analyzer::Options o = typename Analyzer::Options())
+template <typename Analyzer> void analyze_1(typename Analyzer::Options o = typename Analyzer::Options())
 {
-    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o) { Analyzer::analyze(file, o); }, o);
+    if (_p.opts.size() != 1)
+    {
+        throw InvalidInputCountError(1, _p.opts.size());
+    }
+
+    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o) { Analyzer::analyze(_p.opts[0], o); }, o);
 }
 
 // Analyze for two-samples input
-template <typename Analyzer> void analyze(const std::string &f1, const std::string &f2, typename Analyzer::Options o = typename Analyzer::Options())
+template < typename Analyzer> void analyze_2(typename Analyzer::Options o = typename Analyzer::Options())
 {
-    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o) { Analyzer::analyze(f1, f2, o); }, o);
+    if (_p.opts.size() != 2)
+    {
+        throw InvalidInputCountError(2, _p.opts.size());
+    }
+    
+    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o) { Analyzer::analyze(_p.opts[0], _p.opts[1], o); }, o);
 }
 
 template <typename Options> static Options detect(const std::string &file)
@@ -778,8 +807,8 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture();               break; }
-                case MODE_FUSION:  { analyze<FFusion>(_p.opts[0]); break; }
+                case MODE_SEQUINS: { printMixture();       break; }
+                case MODE_FUSION:  { analyze_1<FFusion>(); break; }
             }
 
             break;
@@ -798,9 +827,9 @@ void parse(int argc, char ** argv)
 
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture();                break; }
-                case MODE_ABUND:   { analyze<LAbund>(_p.opts[0]);   break; }
-                case MODE_DIFFS:   { analyze<LDiffs>(_p.pA, _p.pB); break; }
+                case MODE_SEQUINS: { printMixture();      break; }
+                case MODE_ABUND:   { analyze_1<LAbund>(); break; }
+                case MODE_DIFFS:   { analyze_2<LDiffs>(); break; }
             }
 
             break;
@@ -824,17 +853,17 @@ void parse(int argc, char ** argv)
 
             switch (mode)
             {
-                case MODE_SEQUINS:  { printMixture();                 break; }
-                case MODE_ALIGN:    { analyze<RAlign>(_p.opts[0]);    break; }
-                case MODE_ASSEMBLY: { analyze<RAssembly>(_p.opts[0]); break; }
+                case MODE_SEQUINS:  { printMixture();         break; }
+                case MODE_ALIGN:    { analyze_1<RAlign>();    break; }
+                case MODE_ASSEMBLY: { analyze_1<RAssembly>(); break; }
                 case MODE_ABUND:
                 {
-                    analyze<RAbund>(_p.opts[0], detect<RAbund::Options>(_p.opts[0]));
+                    analyze_1<RAbund>(detect<RAbund::Options>(_p.opts[0]));
                     break;
                 }
                 case MODE_DIFFS:
                 {
-                    analyze<RDiffs>(_p.opts[0], detect<RDiffs::Options>(_p.opts[0]));
+                    analyze_1<RDiffs>(detect<RDiffs::Options>(_p.opts[0]));
                     break;
                 }
             }
@@ -860,9 +889,9 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture();                break; }
-                case MODE_ALIGN:   { analyze<VAlign>(_p.opts[0]);   break; }
-                case MODE_VARIANT: { analyze<VVariant>(_p.opts[0]); break; }
+                case MODE_SEQUINS: { printMixture();        break; }
+                case MODE_ALIGN:   { analyze_1<VAlign>();   break; }
+                case MODE_VARIANT: { analyze_1<VVariant>(); break; }
             }
 
             break;
@@ -899,10 +928,10 @@ void parse(int argc, char ** argv)
                     o.pA = _p.pA;
                     o.pB = _p.pB;
                     
-                    analyze<MDiffs>(_p.pA, _p.pB, o);
+                    analyze_2<MDiffs>(o);
                     break;
                 }
-                    
+
                 case MODE_ASSEMBLY:
                 {
                     MAssembly::Options o;
@@ -910,11 +939,11 @@ void parse(int argc, char ** argv)
                     // We'd also take an alignment PSL file from a user
                     o.psl = _p.pA;
 
-                    analyze<MAssembly>(_p.opts[0], o);
+                    analyze_1<MAssembly>(o);
                     break;
                 }
             }
-            
+
             break;
         }
 
