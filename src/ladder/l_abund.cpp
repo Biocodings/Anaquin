@@ -54,7 +54,6 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     }
     
     assert(stats.actTotal);
-
     options.info("Calculating the expected library size");
 
     const auto &s   = Standard::instance();
@@ -70,8 +69,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
         if (!mix.count(baseID))
         {
-            options.warn(baseID + " not found in the mixture file");
-            options.out("Warning: " + baseID + " is in alignment but not found in the mixture file");
+            options.warn(baseID + " is in alignment but not found in the mixture file");
         }
         else
         {
@@ -177,7 +175,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
      *    - Linear model for abundance
      */
 
-    options.info("Generating regression plot");
+    options.info("Comparing expected with measured");
 
     // Try for each detected sequin to form an abundance plot
     for (const auto &i : stats.actual)
@@ -187,15 +185,15 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         const auto known  = stats.expect.at(seqID);
         const auto actual = stats.actual.at(seqID);
 
+        options.logInfo((boost::format("0x1234 - %1% %2% %3%") % seqID % known % actual).str());
+
         stats.z.push_back(seqID);
         stats.x.push_back(log(known));
         stats.y.push_back(log(actual));
     }
 
-    // Calculate for the sensitivity
+    options.info("Calculating sensitivity");
     stats.s = Expression::analyze(stats.c, mix);
-
-    AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
 
     /*
      * Write out histogram
@@ -244,9 +242,12 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
         options.writer->close();
     };
-
+ 
     options.info("Generating histogram");
     writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
+
+    options.info("Generating linear model");
+    AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
 
 	return stats;
 }

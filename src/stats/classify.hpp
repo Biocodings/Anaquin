@@ -19,7 +19,7 @@ namespace Anaquin
             {
                 std::cout << nr << std::endl;
             }
-            else if (nr >= _tp)
+            else if (nr < _tp)
             {
                 std::cout << nr << "   " << _tp << std::endl;
             }

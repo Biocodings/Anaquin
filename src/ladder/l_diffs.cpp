@@ -8,14 +8,19 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 {
     LDiffs::Stats stats;
 
-    options.info("Analyzing mixuture A: " + fileA);
-    const auto a = LAbund::analyze(fileA);
-
-    LAbund::Options m;
-    m.mix = MixB;
+    // Copy the pointers across
+    auto opt = LAbund::Options();
     
+    opt.writer = options.writer;
+    opt.logger = options.writer;
+    opt.output = options.writer;
+
+    options.info("Analyzing mixuture A: " + fileA);
+    const auto a = LAbund::analyze(fileA, opt);
+
+    opt.mix = MixB;
     options.info("Analyzing mixuture B: " + fileB);
-    const auto b = LAbund::analyze(fileB, m);
+    const auto b = LAbund::analyze(fileB, opt);
 
     const auto &s = Standard::instance();
 
@@ -73,6 +78,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         }
     }
 
+    
     
     
     

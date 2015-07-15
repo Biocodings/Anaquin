@@ -309,7 +309,7 @@ namespace Anaquin
             assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
             const std::string format = "%1%\t%2%\t%3%\t%4%";
-            const auto lm = stats.linear();
+            //const auto lm = stats.linear();
 
             /*
              * Generate linear statistics
@@ -317,7 +317,7 @@ namespace Anaquin
 
             writer->open(prefix + ".stats");
             writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
-            writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
+            //writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
             writer->close();
             
             /*
