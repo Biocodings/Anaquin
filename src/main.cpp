@@ -258,6 +258,7 @@ struct MissingOptionError : public std::exception
 struct MissingMixtureError   : public std::exception {};
 struct MissingReferenceError : public std::exception {};
 struct MissingInputError     : public std::exception {};
+struct InvalidModeError      : public std::exception {};
 
 struct InvalidInputCountError : std::exception
 {
@@ -286,11 +287,6 @@ struct TooManyOptionsError : public std::runtime_error
 struct InvalidFilterError : public std::runtime_error
 {
     InvalidFilterError(const std::string &msg) : std::runtime_error(msg) {}
-};
-
-struct InvalidModeError : public std::exception
-{
-    
 };
 
 /*
