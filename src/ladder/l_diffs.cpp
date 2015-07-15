@@ -44,7 +44,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         const auto known = (b.expect.at(id) / a.expect.at(id));
 
         // Calculate actual fold change between mixture A and B
-        const auto actual = (b.actual.at(id) / a.actual.at(id));
+        const auto actual = (b.adjusted.at(id) / a.adjusted.at(id));
 
         options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % actual).str());
         
