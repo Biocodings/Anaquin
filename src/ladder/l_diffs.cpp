@@ -8,31 +8,31 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 {
     LDiffs::Stats stats;
 
-    /*
-     * Let's reuse the code for single mixture. We'll create create a histogram for both mixtures.
-     */
-
-    options.output->write("Analyzing mixuture A: " + fileA);
+    options.both("Analyzing mixuture A: " + fileA);
     const auto a = LAbund::analyze(fileA);
 
-    options.output->write("Analyzing mixuture B: " + fileB);
+    options.both("Analyzing mixuture B: " + fileB);
     const auto b = LAbund::analyze(fileB);
 
-    options.output->write("Mergin mixtures");
+    options.both("Merging mixtures");
     const auto &s = Standard::instance();
 
     /*
-     * Try for each detected sequin in the experiment
+     * Try for each detected sequin
      */
-    
+
     for (const auto &i : a.actual)
     {
         const auto &id = i.first;
 
-        // Don't bother if the sequin isn't detected in either mixture
-        if (!a.actual.at(id) || !b.actual.at(id))
+        // Don't bother unless the sequin is detected in both mixtures
+        if (!b.actual.at(id))
         {
-            options.output->write((boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str());
+            const auto msg = (boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str();
+
+            options.out(msg);
+            options.warn(msg);
+
             continue;
         }
 
@@ -49,7 +49,70 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         stats.y.push_back(log(actual));
     }
     
+    /*
+     * Print a warning message for each sequin detected in B but not in A
+     */
+    
+    for (const auto &i : b.actual)
+    {
+        const auto &id = i.first;
+
+        if (!a.actual.at(id))
+        {
+            const auto msg = (boost::format("Warning: %1% defined in mixture B but not in mixture A") % id).str();
+            options.out(msg);
+            options.warn(msg);
+        }
+    }
+
     AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
+
+    auto writeHist = [&](const std::string &file,
+                         const std::map<SequinID, Counts>   &abund,
+                         const std::map<SequinID, Coverage> &expect,
+                         const std::map<SequinID, Coverage> &actual,
+                         const std::map<SequinID, Coverage> &correct)
+    {
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+        
+        options.writer->open(file);
+        options.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "observed" % "adjusted").str());
+        
+        /*
+         * The argument abund is a histogram of abundance before normalization. It's directly taken off from
+         * the alignment file. Not all sequins would be detected, in fact anything could be in the histogram.
+         */
+        
+        assert(expect.size() == actual.size() && expect.size() == correct.size());
+        
+        for (const auto &i : correct)
+        {
+            // Eg: GA322_B
+            const auto id = i.first;
+            
+            if (abund.count(id))
+            {
+                options.writer->write((boost::format(format) % id
+                                       % abund.at(id)
+                                       % expect.at(id)
+                                       % actual.at(id)
+                                       % correct.at(id)).str());
+            }
+            else
+            {
+                options.writer->write((boost::format(format) % id
+                                       % "NA"
+                                       % "NA"
+                                       % "NA"
+                                       % "NA").str());
+            }
+        }
+        
+        options.writer->close();
+    };
+    
+    options.both("Generating histogram");
+    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
 
 	return stats;
 }
