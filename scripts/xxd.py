@@ -28,7 +28,6 @@ data  = [ 'data/manual.txt',
            # ---------- RNA ----------
 
           'data/rna/RNA.usage.txt',
-          'data/rna/RNA.v1.bed',
           'data/rna/RNA.v1.gtf',
           'data/rna/RNA.v4.1.mix',
 
