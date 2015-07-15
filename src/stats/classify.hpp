@@ -1,6 +1,7 @@
 #ifndef GI_CLASSIFY_HPP
 #define GI_CLASSIFY_HPP
 
+#include <iostream>
 #include "data/standard.hpp"
 #include "stats/sensitivity.hpp"
 #include <ss/data/confusion.hpp>
