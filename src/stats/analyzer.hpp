@@ -191,19 +191,31 @@ namespace Anaquin
         };
 
         // Write to logger as warning
-        inline void warn(const std::string &s)  const { logger->write("[WARN]: "  + s); }
+        inline void warn(const std::string &s) const
+        {
+            logger->write("[WARN]: " + s);
+            output->write("[WARN]: " + s);
+        }
 
         // Write to logger as info
-        inline void info(const std::string &s)  const { logger->write("[INFO]: "  + s); }
+        inline void info(const std::string &s) const
+        {
+            logger->write("[INFO]: " + s);
+            output->write("[INFO]: " + s);
+        }
 
         // Write to logger as error
-        inline void error(const std::string &s) const { logger->write("[ERROR]: " + s); }
+        inline void error(const std::string &s) const
+        {
+            logger->write("[ERROR]: " + s);
+            output->write("[ERROR]: " + s);
+        }
 
         // Write to the standard terminal
-        inline void out(const std::string &s)  const { output->write(s); }
+        inline void log(const std::string &s) const { logger->write(s); }
 
-        // Write to both logger and standard terminal
-        inline void both(const std::string &s) const { info(s); out(s);   }
+        // Write to the standard terminal
+        inline void out(const std::string &s) const { output->write(s); }
     };
 
     struct SingleMixtureOptions : public AnalyzerOptions

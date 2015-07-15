@@ -30,7 +30,7 @@ RAbundStats RAbund::analyze(const std::string &file, const Options &options)
     // Detect whether it's a file of isoform by the name of file
     const bool isoform = file.find(ITracking) != std::string::npos;
 
-    options.both("Parsing input file");
+    options.info("Parsing input file");
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
@@ -85,13 +85,13 @@ RAbundStats RAbund::analyze(const std::string &file, const Options &options)
 
     assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
-    options.both("Fitting a linear regression model");
+    options.info("Fitting a linear regression model");
     stats.linear();
  
-    options.both("Generating an R script");
+    options.info("Generating an R script");
     AnalyzeReporter::linear(stats, "r_abund", "FPKM", options.writer);
 
-    options.both("Generating statistics");
+    options.info("Generating statistics");
     const std::string format = "%1%\t%2%\t%3%";
  
     options.writer->open("rna_sequins.stats");

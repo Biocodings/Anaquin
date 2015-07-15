@@ -8,13 +8,13 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 {
     LDiffs::Stats stats;
 
-    options.both("Analyzing mixuture A: " + fileA);
+    options.info("Analyzing mixuture A: " + fileA);
     const auto a = LAbund::analyze(fileA);
 
-    options.both("Analyzing mixuture B: " + fileB);
+    options.info("Analyzing mixuture B: " + fileB);
     const auto b = LAbund::analyze(fileB);
 
-    options.both("Merging mixtures");
+    options.info("Merging mixtures");
     const auto &s = Standard::instance();
 
     /*
@@ -67,6 +67,12 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 
     AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
 
+    /*
+     * Generate a CSV for differential
+     */
+
+    options.info("Writing differential CSV");
+
     auto writeHist = [&](const std::string &file,
                          const std::map<SequinID, Counts>   &abund,
                          const std::map<SequinID, Coverage> &expect,
@@ -111,8 +117,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         options.writer->close();
     };
     
-    options.both("Generating histogram");
-    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
+    options.info("Generating histogram");
+//    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
 
 	return stats;
 }

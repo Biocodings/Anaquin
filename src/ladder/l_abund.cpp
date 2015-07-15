@@ -21,7 +21,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     // The sequins detected (eg: C_14, C-_16)
     std::set<BaseID> actualBaseIDs;
     
-    options.both("Parsing alignment file");
+    options.info("Parsing alignment file");
 
     /*
      * Construct a histogram or distribution of the aligned sequins.
@@ -55,7 +55,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     
     assert(stats.actTotal);
 
-    options.both("Calculating the expected library size");
+    options.info("Calculating the expected library size");
 
     const auto &s = Standard::instance();
 
@@ -93,7 +93,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
      * Adjusting the observed abundance
      */
 
-    options.both("Linearly correcting the observed abundance");
+    options.info("Linearly correcting the observed abundance");
 
     for (const auto &i : s.l_seqs_A)
     {
@@ -176,7 +176,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
      *    - Linear model for abundance
      */
 
-    options.both("Generating regression plot");
+    options.info("Generating regression plot");
 
     // Try for each detected sequin to form an abundance plot
     for (const auto &i : stats.actual)
@@ -244,7 +244,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         options.writer->close();
     };
 
-    options.both("Generating histogram");
+    options.info("Generating histogram");
     writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
 
 	return stats;

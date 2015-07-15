@@ -55,7 +55,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
 
     std::vector<Alignment> exons, introns;
 
-    options.both("Parsing alignment file");
+    options.info("Parsing alignment file");
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
@@ -152,7 +152,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
-    options.both("Counting references");
+    options.info("Counting references");
     
     /*
      * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
@@ -162,7 +162,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     sums(stats.ce, stats.pe.m.nr);
     sums(stats.ci, stats.pi.m.nr);
 
-    options.both("Merging overlapping bases");
+    options.info("Merging overlapping bases");
     
     /*
      * The counts for bases in a query is the total non-overlapping bases of all the exons in the experiment.

@@ -497,7 +497,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 
     o.info(_p.invoked);
     o.info(date());
-    o.both("Path: " + path);
+    o.info("Path: " + path);
 
     for (const auto &filter : (o.filters = _p.filters))
     {
@@ -516,7 +516,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     
     const auto elapsed = (boost::format("Completed. Elpased %1% seconds")
                                         % (double(end - begin) / CLOCKS_PER_SEC)).str();
-    o.both(elapsed);
+    o.info(elapsed);
 
 #ifndef DEBUG
     o.logger->close();
