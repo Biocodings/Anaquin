@@ -26,7 +26,7 @@ x <- c(%3%)
 y <- c(%4%)
 
 # Names of sequin for each point
-ids <- ids=c(%5%)
+ids <- c(%5%)
 
 d <- data.frame(x=x, y=y, ids=ids)
 

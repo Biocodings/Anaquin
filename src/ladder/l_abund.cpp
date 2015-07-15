@@ -185,11 +185,14 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         const auto known  = stats.expect.at(seqID);
         const auto actual = stats.actual.at(seqID);
 
+        assert(!isnan(known)  && !isinf(known));
+        assert(!isnan(actual) && !isinf(actual));
+
         options.logInfo((boost::format("0x1234 - %1% %2% %3%") % seqID % known % actual).str());
 
         stats.z.push_back(seqID);
         stats.x.push_back(log(known));
-        stats.y.push_back(log(actual));
+        stats.y.push_back(actual ? log(actual) : 0);
     }
 
     options.info("Calculating sensitivity");
