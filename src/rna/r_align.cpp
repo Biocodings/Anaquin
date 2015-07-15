@@ -64,8 +64,6 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
             options.wait(std::to_string(p.i));
         }
 
-        options.logger->write((boost::format("%1%: %2%") % p.i % align.qName).str());
-
         Feature f;
 
         if (!align.mapped)
@@ -83,7 +81,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         // Whether the read has mapped to a feature correctly
         bool succeed = false;
 
-        options.logger->write((boost::format("%1% %2% %3%") % align.id % align.l.start % align.l.end).str());
+        options.logInfo((boost::format("%1% %2% %3%") % align.id % align.l.start % align.l.end).str());
 
         /*
          * Collect statistics at the exon level
