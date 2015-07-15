@@ -18,7 +18,7 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
 
     if (psl.empty())
     {
-        throw EmptyFileError(file);
+        throw InvalidFileError(file);
     }
 
     /*
