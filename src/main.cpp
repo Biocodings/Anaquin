@@ -714,16 +714,16 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_REF:     { checkFile(_p.ref = val);    break; }
-            case OPT_MIXTURE: { checkFile(_p.mix = val);    break; }
-            case OPT_OUTPUT:  { checkFile(_p.output = val); break; }
-            case OPT_FILTER:  { readFilters(val);           break; }
-            case OPT_MAX:     { parseDouble(val, _p.max);   break; }
-            case OPT_MIN:     { parseDouble(val, _p.min);   break; }
-            case OPT_LOS:     { parseDouble(val, _p.los);   break; }
-            case OPT_THREAD:  { parseInt(val, _p.threads);  break; }
-            case OPT_PSL_1:   { checkFile(_p.pA = val);     break; }
-            case OPT_PSL_2:   { checkFile(_p.pB = val);     break; }
+            case OPT_REF:     { checkFile(_p.ref = val);   break; }
+            case OPT_MIXTURE: { checkFile(_p.mix = val);   break; }
+            case OPT_OUTPUT:  { _p.output = val;           break; }
+            case OPT_FILTER:  { readFilters(val);          break; }
+            case OPT_MAX:     { parseDouble(val, _p.max);  break; }
+            case OPT_MIN:     { parseDouble(val, _p.min);  break; }
+            case OPT_LOS:     { parseDouble(val, _p.los);  break; }
+            case OPT_THREAD:  { parseInt(val, _p.threads); break; }
+            case OPT_PSL_1:   { checkFile(_p.pA = val);    break; }
+            case OPT_PSL_2:   { checkFile(_p.pB = val);    break; }
 
             case OPT_CMD:
             {
@@ -998,10 +998,6 @@ int parse_options(int argc, char ** argv)
     catch (const MissingReferenceError &ex)
     {
         printError("Reference file is missing. Please specify it with -r.");
-    }
-    catch (const EmptyFileError &e)
-    {
-        printError((boost::format("%1%%2%") % "Empty file: " % e.what()).str());
     }
     catch (const InvalidFileError &e)
     {

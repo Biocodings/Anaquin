@@ -9,6 +9,12 @@ namespace Anaquin
 {
     struct ReaderInternal;
 
+    enum DataMode
+    {
+        File,
+        String,
+    };
+    
     /*
      * Reader encapsulates the underlying data source. For example, we could source from a memory string
      * or a physical file.

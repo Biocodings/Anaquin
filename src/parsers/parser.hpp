@@ -11,20 +11,11 @@ namespace Anaquin
         long long i = 0;
     };
 
-    struct EmptyFileError : public std::runtime_error
+    struct InvalidFileError : public std::exception
     {
-        EmptyFileError(const std::string &file) : std::runtime_error(file) {}
-    };
+        InvalidFileError(const std::string &file) : file(file) {}
 
-    struct InvalidFileError : public std::runtime_error
-    {
-        InvalidFileError(const std::string &file) : std::runtime_error(file) {}
-    };
-
-    enum DataMode
-    {
-        File,
-        String,
+        const std::string file;
     };
 }
 

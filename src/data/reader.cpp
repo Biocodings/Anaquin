@@ -28,7 +28,7 @@ Reader::Reader(const std::string &file, DataMode mode)
         }
         else if (f->peek() == std::ifstream::traits_type::eof())
         {
-            throw EmptyFileError(file);
+            throw InvalidFileError(file);
         }
 
         _imp->f = f;
@@ -37,7 +37,7 @@ Reader::Reader(const std::string &file, DataMode mode)
     {
         if (file.empty())
         {
-            throw EmptyFileError(file);
+            throw InvalidFileError(file);
         }
 
         _imp->s = std::shared_ptr<std::stringstream>(new std::stringstream(file));
