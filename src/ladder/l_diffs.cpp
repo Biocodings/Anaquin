@@ -11,8 +11,11 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     options.info("Analyzing mixuture A: " + fileA);
     const auto a = LAbund::analyze(fileA);
 
+    LAbund::Options m;
+    m.mix = MixB;
+    
     options.info("Analyzing mixuture B: " + fileB);
-    const auto b = LAbund::analyze(fileB);
+    const auto b = LAbund::analyze(fileB, m);
 
     const auto &s = Standard::instance();
 
@@ -76,16 +79,6 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 
     options.info("Writing differential CSV");
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     auto writeHist = [&](const std::string &file,
                          const std::map<SequinID, Counts>   &abund,
                          const std::map<SequinID, Coverage> &expect,

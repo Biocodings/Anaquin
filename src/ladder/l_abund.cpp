@@ -31,7 +31,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     {
         if ((p.i % 1000000) == 0)
         {
-            options.wait("Processed: " + std::to_string(p.i));
+            options.wait(std::to_string(p.i));
         }
         
         // Don't repeat the same read if it's spliced
@@ -57,7 +57,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
     options.info("Calculating the expected library size");
 
-    const auto &s = Standard::instance();
+    const auto &s   = Standard::instance();
+    const auto &mix = options.mix == MixA ? s.l_seqs_A : s.l_seqs_B;
 
     /*
      * Calculate for the expected library size. The size depends on the detected sequins.
@@ -67,7 +68,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     {
         options.info((boost::format("Calculating for baseID: %1%") % baseID).str());
 
-        if (!s.l_seqs_A.count(baseID))
+        if (!mix.count(baseID))
         {
             options.warn(baseID + " not found in the mixture file");
             options.out("Warning: " + baseID + " is in alignment but not found in the mixture file");
@@ -95,7 +96,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
     options.info("Linearly correcting the observed abundance");
 
-    for (const auto &i : s.l_seqs_A)
+    for (const auto &i : mix)
     {
         const std::string &base = i.first;
 
@@ -122,8 +123,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         const auto actual = create(COUNT(baseA), COUNT(baseB), COUNT(baseC), COUNT(baseD), 1.0, stats.actTotal);
 
         // Create a vector for normalized expected coverage
-        const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund(), stats.expTotal);
-        //const auto expect = create(1.0, 2.0, 4.0, 8.0, s.l_seqs_A.at(base).abund() / s.l_seqs_A.at(base).length, stats.expTotal);
+        const auto expect = create(1.0, 2.0, 4.0, 8.0, mix.at(base).abund(), stats.expTotal);
+        //const auto expect = create(1.0, 2.0, 4.0, 8.0, mix.at(base).abund() / mix.at(base).length, stats.expTotal);
 
         // Make it one so that it can be divided (avoid division by zero)
         double slope = 1.0;
@@ -192,7 +193,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     }
 
     // Calculate for the sensitivity
-    stats.s = Expression::analyze(stats.c, s.l_seqs_A);
+    stats.s = Expression::analyze(stats.c, mix);
 
     AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
 

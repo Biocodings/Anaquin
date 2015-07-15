@@ -61,7 +61,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     {
         if (!align.i && (p.i % 1000000) == 0)
         {
-            options.wait("Processed: " + std::to_string(p.i));
+            options.wait(std::to_string(p.i));
         }
 
         options.logger->write((boost::format("%1%: %2%") % p.i % align.qName).str());
