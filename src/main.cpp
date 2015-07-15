@@ -180,8 +180,8 @@ struct Parsing
     // How the software is invoked
     std::string invoked;
     
+    Mode mode   = 0;
     Command cmd = 0;
-    Mode mode = 0;
 };
 
 // Wrap the variables so that it'll be easier to reset them
@@ -729,14 +729,14 @@ void parse(int argc, char ** argv)
 
             case OPT_MODE:
             {
-                // Either there's no such mode, or it's not supported by the command
-                if (!_modes.count(val) || !_supported.at(cmd).count(_p.mode = _modes.at(val)))
-                {
-                    throw InvalidModeError();
-                }
-                else if (_p.mode)
+                if (_p.mode)
                 {
                     throw RepeatOptionError("-p");
+                }
+                // Either there's no such mode, or it's not supported by the command
+                else if (!_modes.count(val) || !_supported.at(cmd).count(_p.mode = _modes.at(val)))
+                {
+                    throw InvalidModeError();
                 }
 
                 break;
@@ -965,6 +965,10 @@ int parse_options(int argc, char ** argv)
             const auto format = "A mandatory option is missing. Please specify %1%.";
             printError((boost::format(format) % ex.opt).str());
         }
+    }
+    catch (const RepeatOptionError &ex)
+    {
+        printError((boost::format("The option %1% has been repeated. Please check and try again.") % ex.data).str());
     }
     catch (const MissingInputError &ex)
     {

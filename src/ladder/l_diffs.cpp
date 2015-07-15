@@ -44,6 +44,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         // Calculate actual fold change between mixture A and B
         const auto actual = (b.actual.at(id) / a.actual.at(id));
 
+        options.log((boost::format("%1%\t%2%\t%3%") % id % known % actual).str());
+        
         stats.z.push_back(id);
         stats.x.push_back(log(known));
         stats.y.push_back(log(actual));
@@ -73,6 +75,14 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 
     options.info("Writing differential CSV");
 
+    
+    
+    
+    
+    
+    
+    
+    
     auto writeHist = [&](const std::string &file,
                          const std::map<SequinID, Counts>   &abund,
                          const std::map<SequinID, Coverage> &expect,
