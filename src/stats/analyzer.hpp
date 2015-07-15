@@ -263,7 +263,7 @@ namespace Anaquin
                     
                     if (!m.count(id))
                     {
-                        std::cout << "Warning: " << id << " not found in LOS" << std::endl;
+                        //std::cout << "Warning: " << id << " not found in LOS" << std::endl;
                         continue;
                     }
                     
