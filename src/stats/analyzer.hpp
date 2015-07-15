@@ -353,7 +353,7 @@ namespace Anaquin
             const auto sn = p.m.sn();
             const auto sp = p.m.sp();
             const auto ss = p.s.abund;
-            
+
             assert(ss >= 0);
             assert(isnan(sn) || (sn >= 0 && sn <= 1.0));
             assert(isnan(sp) || (sp >= 0 && sp <= 1.0));
