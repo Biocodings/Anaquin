@@ -343,16 +343,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    extern float ChromoVersion();
-    extern float MixtureVersion();
-
-    // Most likely it's chrT
-    extern FileName ChromoName();
-    
-    std::cout << "Version 1.0. Garvan Institute of Medical Research, 2015." << std::endl;
-    std::cout << std::endl;
-    std::cout << "Chromosome: " << ChromoName() << " version " << ChromoVersion() << std::endl;
-    std::cout << "Mixture: version " << MixtureVersion() << std::endl;
+    std::cout << "Anaquin v1.0.00" << std::endl;
 }
 
 // Print a file of mixture A and B
