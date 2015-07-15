@@ -190,29 +190,34 @@ namespace Anaquin
             Error,
         };
 
-        // Write to logger as warning
         inline void warn(const std::string &s) const
         {
             logger->write("[WARN]: " + s);
             output->write("[WARN]: " + s);
         }
 
-        // Write to logger as info
+        inline void wait(const std::string &s) const
+        {
+            logger->write("[WAIT]: " + s);
+            output->write("[WAIT]: " + s);
+        }
+        
         inline void info(const std::string &s) const
         {
-            logger->write("[INFO]: " + s);
+            logInfo(s);
             output->write("[INFO]: " + s);
         }
 
-        // Write to logger as error
+        inline void logInfo(const std::string &s) const
+        {
+            logger->write("[INFO]: " + s);
+        }
+
         inline void error(const std::string &s) const
         {
             logger->write("[ERROR]: " + s);
             output->write("[ERROR]: " + s);
         }
-
-        // Write to the standard terminal
-        inline void log(const std::string &s) const { logger->write(s); }
 
         // Write to the standard terminal
         inline void out(const std::string &s) const { output->write(s); }

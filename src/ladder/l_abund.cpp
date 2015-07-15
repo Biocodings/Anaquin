@@ -31,7 +31,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     {
         if ((p.i % 1000000) == 0)
         {
-            options.output->write("Processed: " + std::to_string(p.i));
+            options.wait("Processed: " + std::to_string(p.i));
         }
         
         // Don't repeat the same read if it's spliced

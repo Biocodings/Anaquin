@@ -14,9 +14,12 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     options.info("Analyzing mixuture B: " + fileB);
     const auto b = LAbund::analyze(fileB);
 
-    options.info("Merging mixtures");
     const auto &s = Standard::instance();
 
+    options.info("Merging mixtures");
+    options.logInfo((boost::format("%1% sequins in mix A") % a.actual.size()).str());
+    options.logInfo((boost::format("%1% sequins in mix B") % b.actual.size()).str());
+    
     /*
      * Try for each detected sequin
      */
@@ -28,11 +31,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         // Don't bother unless the sequin is detected in both mixtures
         if (!b.actual.at(id))
         {
-            const auto msg = (boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str();
-
-            options.out(msg);
-            options.warn(msg);
-
+            options.warn((boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str());
             continue;
         }
 
@@ -44,13 +43,15 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         // Calculate actual fold change between mixture A and B
         const auto actual = (b.actual.at(id) / a.actual.at(id));
 
-        options.log((boost::format("%1%\t%2%\t%3%") % id % known % actual).str());
+        options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % actual).str());
         
         stats.z.push_back(id);
         stats.x.push_back(log(known));
         stats.y.push_back(log(actual));
     }
     
+    options.logInfo("Checking for sequins in mix B but not in mix A");
+
     /*
      * Print a warning message for each sequin detected in B but not in A
      */
@@ -75,6 +76,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 
     options.info("Writing differential CSV");
 
+    
+    
     
     
     
