@@ -35,14 +35,23 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
     std::vector<Feature> q_exons;
     std::map<SequinID, std::vector<Feature>> q_exons_;
 
-    ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &)
+    options.info("Parsing transcript");
+
+    ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &p)
     {
+        if ((p.i % 1000000) == 0)
+        {
+            options.wait(std::to_string(p.i));
+        }
+
         // Don't bother unless the transcript is a sequin or it's been filtered
         if (options.filters.count(f.tID))
         {
             return;
         }
         
+        options.logInfo((boost::format("%1% %2% %3%") % p.i % f.l.start % f.l.end).str());
+
         switch (f.type)
         {
             case Exon:
@@ -130,7 +139,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
         }
     });
 
-    options.logger->write("Counting references");
+    options.info("Counting references");
 
     /*
      * Setting the known references
@@ -145,8 +154,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
     stats.pt.m.nr = sequins.size();
 
-    options.logger->write("Merging overlapping bases");
-    options.output->write("Merging overlapping bases");
+    options.info("Merging overlapping bases");
 
     /*
      * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
@@ -167,35 +175,33 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
     stats.pb.m.nr = s.r_c_exons;
 
-    options.logger->write("Calculating LOS");
-    options.output->write("Calculating LOS");
-    
     /*
      * Calculate for the LOS
      */
 
-    options.logger->write("Calculating LOS - exon level");
+    options.info("Calculating LOS - exon level");
     stats.pe.s = Expression::analyze(stats.ce, sequins);
     
-    options.logger->write("Calculating LOS - transcript level");
+    options.info("Calculating LOS - transcript level");
     stats.pt.s = Expression::analyze(stats.ct, sequins);
     
-    options.logger->write("Calculating LOS - base level");
+    options.info("Calculating LOS - base level");
     stats.pb.s = Expression::analyze(stats.cb, s.r_gene(options.mix));
     
-    options.logger->write("Calculating LOS - intron level");
+    options.info("Calculating LOS - intron level");
     stats.pi.s = Expression::analyze(stats.ci, sequins);
 
-    options.logger->write("Writing results");
+    options.info("Generating base statistics");
+    AnalyzeReporter::stats("assembly.base.stats", stats.pb, stats.cb, options.writer);
 
-    /*
-     * Write out statistics for various levels
-     */
-
-    AnalyzeReporter::report("assembly.base.stats", stats.pb, stats.cb, options.writer);
-    AnalyzeReporter::report("assembly.exons.stats", stats.pe, stats.ce, options.writer);
-    AnalyzeReporter::report("assembly.intron.stats", stats.pi, stats.ci, options.writer);
-    AnalyzeReporter::report("assembly.transcripts.stats", stats.pt, stats.ct, options.writer);
+    options.info("Generating exon statistics");
+    AnalyzeReporter::stats("assembly.exons.stats", stats.pe, stats.ce, options.writer);
+    
+    options.info("Generating intron statistics");
+    AnalyzeReporter::stats("assembly.intron.stats", stats.pi, stats.ci, options.writer);
+    
+    options.info("Generating transcript statistics");
+    AnalyzeReporter::stats("assembly.transcripts.stats", stats.pt, stats.ct, options.writer);
 
     return stats;
 }

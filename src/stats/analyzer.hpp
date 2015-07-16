@@ -300,11 +300,10 @@ namespace Anaquin
          *    - Linear CSV (data points)
          */
         
-        template <typename Stats, typename Writer>
-        static void linear(const Stats &stats,
-                           const std::string prefix,
-                           const std::string unit,
-                           Writer writer)
+        template <typename Stats, typename Writer> static void linear(const Stats &stats,
+                                                                      const std::string prefix,
+                                                                      const std::string unit,
+                                                                      Writer writer)
         {
             assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
@@ -343,10 +342,10 @@ namespace Anaquin
             writer->close();
         }
 
-        template <typename Writer> static void report(const FileName &name,
-                                                      const Performance &p,
-                                                      const Counter &c,
-                                                      Writer writer)
+        template <typename Writer> static void stats(const FileName &name,
+                                                     const Performance &p,
+                                                     const Counter &c,
+                                                     Writer writer)
         {
             const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
 

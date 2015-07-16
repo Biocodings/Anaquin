@@ -8,8 +8,17 @@ FFusion::Stats FFusion::analyze(const std::string &file, const Options &options)
     FFusion::Stats stats;
     const auto &s = Standard::instance();
 
-    ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &)
+    options.info("Parsing alignment file");
+
+    ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &p)
     {
+        if ((p.i % 1000000) == 0)
+        {
+            options.wait(std::to_string(p.i));
+        }
+
+        options.logInfo((boost::format("%1%: %2% %3%") % p.i % f.chr_1 % f.chr_2).str());
+
         SequinID id;
 
         if (classify(stats.p.m, f, [&](const ParserFusion::Fusion &)
@@ -70,11 +79,11 @@ FFusion::Stats FFusion::analyze(const std::string &file, const Options &options)
      * Write out the statistics
      */
 
-    options.writer->open("fusion_coverage.R");
-    options.writer->write(RWriter::write(stats.x, stats.y, stats.z, "?", 0.0));
-    options.writer->close();
-    
-    AnalyzeReporter::report("fusion_discover.stats", stats.p, stats.c, options.writer);
+    options.info("Generating linear model");
+    AnalyzeReporter::linear(stats, "fusion_discover", "FPKM", options.writer);
+
+    options.info("Generating statistics");
+    AnalyzeReporter::stats("fusion_discover.stats", stats.p, stats.c, options.writer);
     
     return stats;
 }

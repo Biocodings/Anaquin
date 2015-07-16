@@ -205,13 +205,13 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      */
 
     options.info("Generating base statistics");
-    AnalyzeReporter::report("rna_align_base.stats", stats.pb, stats.cb, options.writer);
+    AnalyzeReporter::stats("rna_align_base.stats", stats.pb, stats.cb, options.writer);
 
     options.info("Generating exon statistics");
-    AnalyzeReporter::report("rna_align_exon.stats", stats.pe, stats.ce, options.writer);
+    AnalyzeReporter::stats("rna_align_exon.stats", stats.pe, stats.ce, options.writer);
 
     options.info("Generating intron statistics");
-    AnalyzeReporter::report("rna_align_introns.stats", stats.pi, stats.ci, options.writer);
+    AnalyzeReporter::stats("rna_align_introns.stats", stats.pi, stats.ci, options.writer);
 
 	return stats;
 }
