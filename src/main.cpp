@@ -422,12 +422,10 @@ template <typename Mixture> void applyMix(Mixture mix)
 {
     if (_p.mix.empty())
     {
-#ifndef DEBUG
         if (_needMix.at(_p.mode))
         {
-            throw MissingMixtureError();
+            //throw MissingMixtureError();
         }
-#endif
     }
     else
     {
@@ -440,12 +438,10 @@ template <typename Reference> void applyRef(Reference ref)
 {
     if (_p.ref.empty())
     {
-#ifndef DEBUG
         if (_needRef.at(_p.mode))
         {
-            throw MissingReferenceError();
+            //throw MissingReferenceError();
         }
-#endif
     }
     else
     {
