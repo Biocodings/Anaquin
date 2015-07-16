@@ -50,7 +50,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
         }
         else if (align.id != s.id)
         {
-            stats.n_samps++;
+            stats.n_genome++;
             return;
         }
 

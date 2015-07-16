@@ -33,7 +33,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
         }
         else
         {
-            stats.n_samps++;
+            stats.n_genome++;
         }
     });
 

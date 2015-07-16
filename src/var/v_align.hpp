@@ -18,10 +18,10 @@ namespace Anaquin
             Counts n_chrT = 0;
             
             // Total mapped to the samples
-            Counts n_samps = 0;
+            Counts n_genome = 0;
             
             // Fraction of sequin spiked
-            inline Percentage dilution() const { return n_chrT / (n_chrT + n_samps); }
+            inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
 
             Performance p;
             

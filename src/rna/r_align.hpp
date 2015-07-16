@@ -23,7 +23,7 @@ namespace Anaquin
                 GeneTracker g_intron_tracker = RAnalyzer::geneTracker();
 
                 // Fraction of sequin spiked
-                inline Percentage dilution() const { return n_chrT / (n_chrT + n_samps); }
+                inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
 
                 Counter cb = RAnalyzer::geneCounter();
                 Counter ce = RAnalyzer::geneCounter();
