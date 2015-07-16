@@ -66,7 +66,7 @@ RAbund::Stats RAbund::analyze(const std::string &file, const Options &options)
 
             if (t.fpkm)
             {
-                stats.x.push_back(log2(m.abund()) / r->second.length);
+                stats.x.push_back(log2(m.abund() / r->second.length));
                 stats.y.push_back(log2(fpkm));
                 stats.z.push_back(t.geneID);
             }
