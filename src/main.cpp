@@ -422,10 +422,12 @@ template <typename Mixture> void applyMix(Mixture mix)
 {
     if (_p.mix.empty())
     {
+#ifndef DEBUG
         if (_needMix.at(_p.mode))
         {
             throw MissingMixtureError();
         }
+#endif
     }
     else
     {
@@ -438,12 +440,12 @@ template <typename Reference> void applyRef(Reference ref)
 {
     if (_p.ref.empty())
     {
+#ifndef DEBUG
         if (_needRef.at(_p.mode))
         {
-            std::cout << _p.mode << std::endl;
-            
             throw MissingReferenceError();
         }
+#endif
     }
     else
     {
@@ -1040,9 +1042,9 @@ int parse_options(int argc, char ** argv)
     {
         printError("Reference file is missing. Please specify it with -r.");
     }
-    catch (const InvalidFileError &e)
+    catch (const InvalidFileError &ex)
     {
-        printError((boost::format("%1%%2%") % "Invalid file: " % e.what()).str());
+        printError((boost::format("%1%%2%") % "Invalid file: " % ex.file).str());
     }
     catch (const InvalidFilterError &ex)
     {
