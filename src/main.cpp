@@ -386,7 +386,7 @@ template <typename Mixture> void applyMix(Mixture mix)
         throw MissingMixtureError();
     }
     
-    std::cout << "Mixture: " << _p.mix << std::endl;
+    std::cout << "[INFO]: Mixture: " << _p.mix << std::endl;
     mix(Reader(_p.mix));
 }
 
@@ -398,7 +398,7 @@ template <typename Reference> void applyRef(Reference ref)
         throw MissingReferenceError();
     }
 
-    std::cout << "Reference: " << _p.ref << std::endl;
+    std::cout << "[INFO]: Reference: " << _p.ref << std::endl;
     ref(Reader(_p.ref));
 }
 
@@ -770,19 +770,19 @@ void parse(int argc, char ** argv)
 
         case CMD_CANCER:
         {
-            std::cout << "Cancer Analysis" << std::endl;
+            std::cout << "[INFO]: Cancer Analysis" << std::endl;
             break;
         }
             
         case CMD_CLINIC:
         {
-            std::cout << "Clinic Analysis" << std::endl;
+            std::cout << "[INFO]: Clinic Analysis" << std::endl;
             break;
         }
             
         case CMD_FUSION:
         {
-            std::cout << "Fusion Analysis" << std::endl;
+            std::cout << "[INFO]: Fusion Analysis" << std::endl;
 
             applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
@@ -798,7 +798,7 @@ void parse(int argc, char ** argv)
 
         case CMD_LADDER:
         {
-            std::cout << "Ladder Analysis" << std::endl;
+            std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
             applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
 
@@ -814,7 +814,7 @@ void parse(int argc, char ** argv)
 
         case CMD_RNA:
         {
-            std::cout << "RNA Analysis" << std::endl;
+            std::cout << "[INFO]: RNA Analysis" << std::endl;
             
             applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
@@ -841,7 +841,7 @@ void parse(int argc, char ** argv)
             
         case CMD_VAR:
         {
-            std::cout << "Variant Analysis" << std::endl;
+            std::cout << "[INFO]: Variant Analysis" << std::endl;
             
             applyRef(std::bind(&Standard::v_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
@@ -858,7 +858,7 @@ void parse(int argc, char ** argv)
             
         case CMD_META:
         {
-            std::cout << "Metagenomics Analysis" << std::endl;
+            std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
             applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));

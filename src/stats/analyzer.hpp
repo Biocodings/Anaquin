@@ -360,6 +360,7 @@ namespace Anaquin
             writer->open(name);
             writer->write((boost::format(format) % "sn" % "sp" % "los"  % "ss" % "counts").str());
             writer->write((boost::format(format) %  sn  %  sp  % p.s.id %  ss  % p.s.counts).str());
+            writer->write("\n");
 
             for (const auto &p : c)
             {
