@@ -30,7 +30,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         throw std::invalid_argument("Alignment file needs to be specified");
     }
 
-    options.log("Aligment file: " + options.psl);
+    options.info("Aligment file: " + options.psl);
     
     // Analyse the given blast alignment file
     r = MBlast::analyze(options.psl);
