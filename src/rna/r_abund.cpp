@@ -1,34 +1,19 @@
-#include <iostream>
 #include <ss/c.hpp>
 #include "rna/r_abund.hpp"
 #include "writers/r_writer.hpp"
 #include <ss/regression/lm.hpp>
-#include "parsers/parser_tmap.hpp"
 #include "parsers/parser_tracking.hpp"
 
 using namespace SS;
 using namespace Anaquin;
 
-static const FileName GTracking = "genes.fpkm_tracking";
-static const FileName ITracking = "isoforms.fpkm_tracking";
-
-RAbundStats RAbund::analyze(const std::string &file, const Options &options)
+RAbund::Stats RAbund::analyze(const std::string &file, const Options &options)
 {
-    RAbundStats stats;
+    RAbund::Stats stats;
     const auto &s = Standard::instance();
 
-    auto c = RAnalyzer::sequinCounter();
-    unsigned i = 0;
-    
-    if (file.find(GTracking) == std::string::npos && file.find(ITracking) == std::string::npos)
-    {
-        throw std::invalid_argument((boost::format("Unknown file. It must be %1% or %2%")
-                                     % GTracking
-                                     % ITracking).str());
-    }
-
     // Detect whether it's a file of isoform by the name of file
-    const bool isoform = file.find(ITracking) != std::string::npos;
+    const bool isoform = options.level == Isoform;
 
     options.info("Parsing input file");
 
@@ -46,19 +31,18 @@ RAbundStats RAbund::analyze(const std::string &file, const Options &options)
                 return;
             }
             
-            i++;
-            c[t.trackID]++;
+            stats.c[t.trackID]++;
             
             if (t.fpkm)
             {
                 const auto &i = s.r_seqs_A.at(t.trackID);
 
-                stats.x.push_back(log(i.abund() / i.length));
-                stats.y.push_back(log(fpkm));
+                stats.x.push_back(log2(i.abund() / i.length));
+                stats.y.push_back(log2(fpkm));
                 stats.z.push_back(t.trackID);
             }
-            
-            stats.s = Expression::analyze(c, s.r_sequin(options.mix));
+
+            stats.s = Expression::analyze(stats.c, s.r_sequin(options.mix));
         }
         else
         {
@@ -67,8 +51,7 @@ RAbundStats RAbund::analyze(const std::string &file, const Options &options)
                 return;
             }
             
-            i++;
-            c[t.geneID]++;
+            stats.c[t.geneID]++;
             
             const auto &m = s.r_seqs_gA.at(t.geneID);
             
@@ -79,23 +62,20 @@ RAbundStats RAbund::analyze(const std::string &file, const Options &options)
                 stats.z.push_back(t.geneID);
             }
             
-            stats.s = Expression::analyze(c, s.r_gene(options.mix));
+            stats.s = Expression::analyze(stats.c, s.r_gene(options.mix));
         }
     });
 
     assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
-    options.info("Fitting a linear regression model");
-    stats.linear();
- 
     options.info("Generating an R script");
-    AnalyzeReporter::linear(stats, "r_abund", "FPKM", options.writer);
+    AnalyzeReporter::linear(stats, "rna_abund", "FPKM", options.writer);
 
-    options.info("Generating statistics");
+    options.info("Generating statistics for sequin");
     const std::string format = "%1%\t%2%\t%3%";
- 
+
     options.writer->open("rna_sequins.stats");
-    options.writer->write((boost::format(format) % "id" % "spiked" % "measured").str());
+    options.writer->write((boost::format(format) % "id" % "expect" % "measured").str());
 
     for (std::size_t i = 0; i < stats.z.size(); i++)
     {

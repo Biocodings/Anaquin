@@ -12,6 +12,8 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
 
     auto c = (options.level == Gene ? RAnalyzer::geneCounter() : RAnalyzer::sequinCounter());
 
+    options.info("Parsing input file");
+
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
         // The known and observed fold-change
@@ -80,24 +82,16 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
     assert(!c.empty() && !stats.x.empty());
     assert(!stats.x.empty() && stats.x.size() == stats.y.size());
 
-    // Perform a linear-regression model
-    stats.linear();
-
-    /*
-     * Write out results for statistics
-     */
-    
     stats.s = Expression::analyze(c, s.r_gene(options.rMix));
+
+    options.info("Generating an R script");
     AnalyzeReporter::linear(stats, "rna_diffs", "FPKM", options.writer);
 
-    /*
-     * Write out results for RNA sequins
-     */
-    
+    options.info("Generating statistics for sequin");
     const std::string format = "%1%\t%2%\t%3%";
     
     options.writer->open("rna_sequins.stats");
-    options.writer->write((boost::format(format) % "id" % "spiked" % "measured").str());
+    options.writer->write((boost::format(format) % "id" % "expect" % "measured").str());
     
     for (std::size_t i = 0; i < stats.z.size(); i++)
     {

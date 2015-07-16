@@ -5,20 +5,20 @@
 
 namespace Anaquin
 {
-    struct RAbundStats : public ModelStats
-    {
-        // Empty Implementation
-    };
-
     struct RAbund : public RAnalyzer
     {
+        struct Stats : public ModelStats
+        {
+            SequinCounter c = RAnalyzer::sequinCounter();
+        };
+
         struct Options : public SingleMixtureOptions
         {
-            Options() {}
+            //Options() {}
             RNALevel level = Isoform;
         };
 
-        static RAbundStats analyze(const std::string &, const Options &options = Options());
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 
