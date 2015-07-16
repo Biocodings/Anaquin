@@ -14,7 +14,9 @@ namespace Anaquin
 
         struct Options : public SingleMixtureOptions
         {
-            //Options() {}
+	    // This's required by gcc...
+            Options() {}
+
             RNALevel level = Isoform;
         };
 
