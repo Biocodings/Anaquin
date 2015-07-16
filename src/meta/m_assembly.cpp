@@ -30,7 +30,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         throw std::invalid_argument("Alignment file needs to be specified");
     }
 
-    std::cout << "Aligment file: " << options.psl << std::endl;
+    options.log("Aligment file: " + options.psl);
     
     // Analyse the given blast alignment file
     r = MBlast::analyze(options.psl);
@@ -102,26 +102,22 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         assert(!ms.s.id.empty());
     }
 
-    /*
-     * Generate a R script for a plot of abundance
-     */
-
-    AnalyzeReporter::linear(ms, "m_assembly", "k-mer average", options.writer);
-    std::cout << "Abundance plot generated" << std::endl;
+    options.info("Generating linaer model");
+    AnalyzeReporter::linear(ms, "meta_assembly", "k-mer average", options.writer);
     
     /*
      * Write out results for each sequin
      */
     
-    options.writer->open("abundance_stats.stats");
+    options.writer->open("meta_sequins.stats");
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
     options.writer->write((boost::format(format) % "ID"
-                                                 % "Con"
-                                                 % "Status"
-                                                 % "DAlign"
-                                                 % "DSequin"
-                                                 % "Covered").str());
+                                                 % "con"
+                                                 % "status"
+                                                 % "avg_align"
+                                                 % "avg_sequin"
+                                                 % "covered").str());
     
     for (auto &meta : r.metas)
     {
@@ -138,10 +134,6 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     
     options.writer->close();
     
-    /*
-     * Write out assembly results
-     */
-
     options.writer->open("meta_assembly.stats");
     
     if (ms.x.size() <= 1)

@@ -123,6 +123,7 @@ static std::map<Value, Mode> _modes =
     { "diffs",    MODE_DIFFS    },
     { "variant",  MODE_VARIANT  },
     { "fusion",   MODE_FUSION   },
+    { "blast",    MODE_BLAST    },
 };
 
 /*
@@ -136,6 +137,38 @@ static std::map<Command, std::set<Mode>> _supported =
     { CMD_FUSION, std::set<Mode> { MODE_SEQUINS, MODE_FUSION } },
     { CMD_LADDER, std::set<Mode> { MODE_SEQUINS, MODE_ABUND, MODE_DIFFS } },
     { CMD_META,   std::set<Mode> { MODE_SEQUINS, MODE_BLAST, MODE_DIFFS, MODE_ASSEMBLY } },
+};
+
+/*
+ * Defines the mode requires a mixture file
+ */
+
+static std::map<Mode, bool> _needMix =
+{
+    { MODE_SEQUINS,  false },
+    { MODE_ALIGN,    false },
+    { MODE_ASSEMBLY, true  },
+    { MODE_ABUND,    true  },
+    { MODE_DIFFS,    true  },
+    { MODE_FUSION,   true  },
+    { MODE_VARIANT,  true  },
+    { MODE_BLAST,    true  },
+};
+
+/*
+ * Defines the mode requires a reference file
+ */
+
+static std::map<Mode, bool> _needRef =
+{
+    { MODE_SEQUINS,  false },
+    { MODE_ALIGN,    true  },
+    { MODE_ASSEMBLY, true  },
+    { MODE_ABUND,    true  },
+    { MODE_DIFFS,    true  },
+    { MODE_FUSION,   true  },
+    { MODE_VARIANT,  true  },
+    { MODE_BLAST,    false },
 };
 
 /*
@@ -211,6 +244,13 @@ struct InvalidCommandException : public std::exception
 
     // The exact meaning is context-specific
     std::string data;
+};
+
+struct InvalidOptionException : public std::exception
+{
+    InvalidOptionException(const std::string &opt) : opt(opt) {}
+    
+    std::string opt;
 };
 
 /*
@@ -380,26 +420,36 @@ static void printMixture()
 
 template <typename Mixture> void applyMix(Mixture mix)
 {
-    // The mixture is assumed to be a valid path, if defined
     if (_p.mix.empty())
     {
-        throw MissingMixtureError();
+        if (_needMix.at(_p.mode))
+        {
+            throw MissingMixtureError();
+        }
     }
-    
-    std::cout << "[INFO]: Mixture: " << _p.mix << std::endl;
-    mix(Reader(_p.mix));
+    else
+    {
+        std::cout << "[INFO]: Mixture: " << _p.mix << std::endl;
+        mix(Reader(_p.mix));
+    }
 }
 
 template <typename Reference> void applyRef(Reference ref)
 {
-    // The reference is assumed to be a valid path, if defined
     if (_p.ref.empty())
     {
-        throw MissingReferenceError();
+        if (_needRef.at(_p.mode))
+        {
+            std::cout << _p.mode << std::endl;
+            
+            throw MissingReferenceError();
+        }
     }
-
-    std::cout << "[INFO]: Reference: " << _p.ref << std::endl;
-    ref(Reader(_p.ref));
+    else
+    {
+        std::cout << "[INFO]: Reference: " << _p.ref << std::endl;
+        ref(Reader(_p.ref));
+    }
 }
 
 // Read sequins from a file, one per line. The identifiers must match.
@@ -553,7 +603,7 @@ template <typename Options> static Options detect(const std::string &file)
     }
     else
     {
-        throw std::runtime_error("Unknown type. Please check the input file and try again.");
+        throw std::runtime_error("Invalid file. Only genes.fpkm_tracking or isoforms.fpkm_tracking are accepted.");
     }
 
     return o;
@@ -742,7 +792,10 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            default: { assert(false); }
+            default:
+            {
+                throw InvalidOptionException(argv[index]);
+            }
         }
     }
     
@@ -865,13 +918,13 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture();              break; }
-                case MODE_BLAST:   { MBlast::analyze(_p.opts[0]); break; }
+                case MODE_SEQUINS: { printMixture();      break; }
+                case MODE_BLAST:   { analyze_1<MBlast>(); break; }
                 case MODE_DIFFS:
                 {
-                    //                            if (_opts.size() != 2 || (!_pA.empty() != !_pB.empty()))
+                    if (_p.pA.empty () || _p.pB.empty())
                     {
-                        //throw InvalidUsageError();
+                        throw MissingOptionError("Alignment");
                     }
                     
                     MDiffs::Options o;
@@ -944,10 +997,15 @@ int parse_options(int argc, char ** argv)
         {
             if (i.second == _p.cmd)
             {
-                const auto format = "Invalid mode for %1%. Possible values are: %2%.";
+                const auto format = "Invalid mode for %1%. Possibles are: %2%.";
                 printError((boost::format(format) % i.first % str).str());
             }
         }
+    }
+    catch (const InvalidOptionException &ex)
+    {
+        const auto format = "Unknown option: %1%";
+        printError((boost::format(format) % ex.opt).str());
     }
     catch (const InvalidValueError &ex)
     {
@@ -957,7 +1015,7 @@ int parse_options(int argc, char ** argv)
     {
         if (!ex.range.empty())
         {
-            const auto format = "A mandatory option is missing. Please specify %1%. Possible values are %2%";
+            const auto format = "A mandatory option is missing. Please specify %1%. Possibles are %2%";
             printError((boost::format(format) % ex.opt % ex.range).str());
         }
         else

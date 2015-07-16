@@ -8,6 +8,8 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
     VAlign::Stats stats;
     static const auto &s = Standard::instance();
 
+    options.info("Parsing alignment file");
+
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
     {
         const Variation *matched;
@@ -74,12 +76,12 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
     // Perform a linear regreession
     stats.linear();
 
-    options.logger->write("Calculating LOS");
+    options.info("Calculating LOS");
     
     // Calculate for the sensitivity
     stats.p.s = Expression::analyze(stats.c, s.d_seq(options.mix));
 
-    AnalyzeReporter::stats("dalign.stats", stats.p, stats.c, options.writer);
+    AnalyzeReporter::stats("var_align.stats", stats.p, stats.c, options.writer);
     
 	return stats;
 }

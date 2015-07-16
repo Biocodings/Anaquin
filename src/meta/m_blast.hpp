@@ -79,12 +79,17 @@ namespace Anaquin
             std::map<ContigID, MetaAlignment> aligns;
         };
 
+        struct Options : public SingleMixtureOptions
+        {
+            // Empty Implementation
+        };
+
         /*
          * Conduct statistical analysis for an alignment geneated by BLAST relative
          * the sequins. The input file is assumed to be PSL format.
          */
 
-        static Stats analyze(const std::string &, const AnalyzerOptions &options = AnalyzerOptions());
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 

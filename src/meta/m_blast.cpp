@@ -1,5 +1,4 @@
 #include <numeric>
-#include <iostream>
 #include <boost/format.hpp>
 #include "meta/m_blast.hpp"
 #include "data/standard.hpp"
@@ -7,23 +6,13 @@
 
 using namespace Anaquin;
 
-MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &options)
+MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
 {
-    std::map<std::string, ParserBlast::BlastLine> psl;
-
-    ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
-    {
-        psl[l.qName] = l;
-    });
-
-    if (psl.empty())
-    {
-        throw InvalidFileError(file);
-    }
-
     /*
      * Create data-strucutre for each metaquin
      */
+    
+    options.info("Loading mixture file");
     
     std::map<SequinID, MetaAlignment> m;
 
@@ -36,10 +25,8 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
         m[seq.first].seqB = mixB.at(m[seq.first].id);
     }
 
-    /*
-     * Compare each alignment to the metaquins
-     */
-    
+    options.info("Comparing alignment with sequins");
+
     ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
     {
         // Eg: M2_G, M10_G
@@ -61,7 +48,7 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
         }
         else
         {
-            std::cout << "Warning: " << id << " not a metaquin (given in alignment)" << std::endl;
+            options.warn((boost::format("%1% is not a sequin (given in alignment)") % id).str());
         }
     });
 
@@ -134,7 +121,7 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
      * Write out results
      */
 
-    options.writer->open("align_stats.txt");
+    options.writer->open("align_stats.stats");
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
@@ -156,7 +143,6 @@ MBlast::Stats MBlast::analyze(const std::string &file, const AnalyzerOptions &op
                                     % align.second.covered
                                     % align.second.mismatch
                                     % align.second.gaps).str());
-        options.writer->write("\n");
     }
 
     options.writer->close();

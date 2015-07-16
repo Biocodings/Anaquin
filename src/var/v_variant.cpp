@@ -8,6 +8,8 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
     VVariant::Stats stats;
     const auto &s = Standard::instance();
 
+    options.info("Parsing VCF file");
+
     ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)
     {
         Variation match;
@@ -74,15 +76,8 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
     // Measure of variant detection independent to sequencing depth or coverage
     stats.efficiency = stats.m.sn() / stats.covered;
     
-    /*
-     * Created a script for allele frequency
-     */
-
-    // Fit a linear model on allele frequency
-    stats.linear();
-    
     // Create a script for allele frequency
-    AnalyzeReporter::linear(stats, "dna_allele", "Allele Frequence", options.writer);
+    AnalyzeReporter::linear(stats, "var_allele", "Allele Frequence", options.writer);
     
     /*
      * Write out results
@@ -90,7 +85,7 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
 
     const std::string format = "%1%\t%2%\t%3%";
 
-    options.writer->open("dna_variant.stats");
+    options.writer->open("var_variant.stats");
     options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
     options.writer->write((boost::format(format) % stats.m.sn()
                                                  % stats.m.sp()
