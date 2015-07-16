@@ -23,29 +23,7 @@ static bool findIntron(const Alignment &align, Feature &f)
 
 void RAlign::reportGeneral(const std::string &file, const RAlign::Stats &stats, const Options &options)
 {
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
-    options.writer->open(file);
-    options.writer->write((boost::format(format) % "samples"
-                                                 % "chrT"
-                                                 % "dilution"
-                                                 % "sn"
-                                                 % "sp"
-                                                 % "spliced sn"
-                                                 % "spliced sp"
-                                                 % "los").str());
-    options.writer->write((boost::format(format) % stats.n_samps
-                                                 % stats.n_chrT
-                                                 % stats.dilution()
-                                                 //% stats.
-/*
-                                                 % ss.n_seqs
-                                                 % ss.n_samps
-                                                 % ss.dilution()
- */
- 
- ).str());
-    options.writer->close();
 }
 
 RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
@@ -197,9 +175,21 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
     options.info("Calculating LOS for bases");
     stats.pb.s = Expression::analyze(stats.cb, seqs);
 
-    // Write out general statistics
-    //reportGeneral("rna_align_summary.stats", stats, options);
-
+    /*
+     * Write out summary statistics
+     */
+    
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    
+    options.writer->open("rna_align.stats");
+    options.writer->write((boost::format(format) % "genome"
+                                                 % "silco"
+                                                 % "dilution").str());
+    options.writer->write((boost::format(format) % stats.n_genome
+                                                 % stats.n_chrT
+                                                 % stats.dilution()).str());
+    options.writer->close();
+    
     /*
      * Write out statistics for various levels
      */

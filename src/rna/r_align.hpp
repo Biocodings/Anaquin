@@ -13,8 +13,8 @@ namespace Anaquin
                 // Total mapped to the in-silico chromosome
                 Counts n_chrT = 0;
 
-                // Total mapped to the samples
-                Counts n_samps = 0;
+                // Total mapped to the human genome
+                Counts n_genome = 0;
 
                 // Tracker for each exon for each gene
                 GeneTracker g_exon_tracker = RAnalyzer::geneTracker();
