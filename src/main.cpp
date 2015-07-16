@@ -486,7 +486,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 
     o.info(_p.invoked);
     o.info(date());
-    o.info("Path: " + path);
+    o.info("Path: " + path + "\n");
 
     for (const auto &filter : (o.filters = _p.filters))
     {
@@ -543,17 +543,17 @@ template <typename Options> static Options detect(const std::string &file)
     
     if (found_gene && !found_isoform)
     {
-        std::cout << "Detected for the gene level" << std::endl;
+        std::cout << "[INFO]: Gene tracking assumed" << std::endl;
         o.level = RNALevel::Gene;
     }
     else if (!found_gene && found_isoform)
     {
-        std::cout << "Detected for the isoform level" << std::endl;
+        std::cout << "[INFO]: Isoform tracking assumed" << std::endl;
         o.level = RNALevel::Isoform;
     }
     else
     {
-        throw std::runtime_error("Unknown type. Have you specified the level?");
+        throw std::runtime_error("Unknown type. Please check the input file and try again.");
     }
 
     return o;
