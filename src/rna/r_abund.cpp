@@ -54,11 +54,17 @@ RAbund::Stats RAbund::analyze(const std::string &file, const Options &options)
             stats.c[t.geneID]++;
             
             const auto &m = s.r_seqs_gA.at(t.geneID);
+            const auto &r = std::find_if(s.r_seqs_A.begin(), s.r_seqs_A.end(),
+                                [&](const std::pair<SequinID, Sequin> &p)
+                                {
+                                    return p.second.baseID == t.geneID;
+                                });
+            assert(r != s.r_seqs_A.end());
             
             if (t.fpkm)
             {
-                stats.x.push_back(log(m.abund()));
-                stats.y.push_back(log(fpkm));
+                stats.x.push_back(log2(m.abund()) / r->second.length);
+                stats.y.push_back(log2(fpkm));
                 stats.z.push_back(t.geneID);
             }
             

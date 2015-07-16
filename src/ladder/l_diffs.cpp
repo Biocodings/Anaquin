@@ -71,8 +71,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % measured).str());
         
         stats.z.push_back(id);
-        stats.x.push_back(log(known));
-        stats.y.push_back(log(measured));
+        stats.x.push_back(log2(known));
+        stats.y.push_back(log2(measured));
         
         assert(a.abund.count(id) && b.abund.count(id));
         

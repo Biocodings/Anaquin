@@ -66,8 +66,8 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
         // Calculate RPKM for the sequin
         const double measured = (std::pow(10, 9) * static_cast<double>(i.second)) / (n * s.l.length());
 
-        stats.x.push_back(log(known));
-        stats.y.push_back(log(measured));
+        stats.x.push_back(log2(known));
+        stats.y.push_back(log2(measured));
         stats.z.push_back(i.first);
     }
     

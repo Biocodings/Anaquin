@@ -95,8 +95,8 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
             assert(measured != 0);
             
             ms.z.push_back(align.id);
-            ms.x.push_back(log(known));
-            ms.y.push_back(log(measured));
+            ms.x.push_back(log2(known));
+            ms.y.push_back(log2(measured));
         }
         
         assert(!ms.s.id.empty());

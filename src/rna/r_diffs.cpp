@@ -68,8 +68,8 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
                     if (known)
                     {
                         c[t.testID]++;
-                        stats.x.push_back(log(known));
-                        stats.y.push_back(log(measured));
+                        stats.x.push_back(log2(known));
+                        stats.y.push_back(log2(measured));
                         stats.z.push_back(t.testID);
                     }
                 }
