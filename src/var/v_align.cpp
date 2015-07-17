@@ -34,13 +34,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
         if (classify(stats.p.m, align, [&](const Alignment &)
         {
             matched = find(s.v_vars, align, MatchRule::Contains);
-            
-            if (options.filters.count(matched->id))
-            {
-                return Ignore;
-            }
-            
-            return matched ? Positive : Negative;
+            return options.filters.count(matched->id) ? Ignore : matched ? Positive : Negative;
         }))
         {
             stats.c.at(matched->id)++;
