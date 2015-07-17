@@ -80,10 +80,10 @@ FAlign::Stats FAlign::analyze(const std::string &file, const Options &options)
      */
 
     options.info("Generating linear model");
-    AnalyzeReporter::linear(stats, "fusion_discover", "FPKM", options.writer);
+    AnalyzeReporter::linear(stats, "fusion_align", "FPKM", options.writer);
 
     options.info("Generating statistics");
-    AnalyzeReporter::stats("fusion_discover.stats", stats.p, stats.c, options.writer);
-    
+    AnalyzeReporter::stats("fusion_sequins.stats", stats.p, stats.c, options.writer);
+
     return stats;
 }
