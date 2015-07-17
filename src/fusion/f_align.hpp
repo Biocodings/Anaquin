@@ -17,7 +17,7 @@ namespace Anaquin
             // Overall performance
             Performance p;
 
-            SequinHist c = Analyzer::histogram(Standard::instance().f_seqs_A);
+            SequinHist h = Analyzer::histogram(Standard::instance().f_seqs_A);
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

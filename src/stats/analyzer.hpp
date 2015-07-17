@@ -19,9 +19,6 @@ namespace Anaquin
 
     typedef std::map<SequinID, Counts> SequinHist;
 
-    // Tracking for each sequin
-    typedef std::map<SequinID, std::vector<Locus>> SequinTracker;
-
     template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
     {
         std::map<T, Counts> c;
@@ -362,10 +359,10 @@ namespace Anaquin
             writer->close();
         }
 
-        template <typename Writer> static void stats(const FileName &name,
-                                                     const Performance &p,
-                                                     const Counter &c,
-                                                     Writer writer)
+        template <typename Writer, typename Histogram> static void stats(const FileName &name,
+                                                                         const Performance &p,
+                                                                         const Histogram   &h,
+                                                                         Writer writer)
         {
             const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
@@ -382,7 +379,7 @@ namespace Anaquin
             writer->write((boost::format(format) %  sn  %  sp  % p.s.id %  ss  % p.s.counts).str());
             writer->write("\n");
 
-            for (const auto &p : c)
+            for (const auto &p : h)
             {
                 writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
             }

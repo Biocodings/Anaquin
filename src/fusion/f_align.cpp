@@ -64,7 +64,8 @@ FAlign::Stats FAlign::analyze(const std::string &file, const Options &options)
             
             // Measured abundance for the fusion
             const auto measured = f.reads;
-            
+
+            stats.h[seq.id]++;
             stats.x.push_back(log2f(known));
             stats.y.push_back(log2f(measured));
             stats.z.push_back(id);
@@ -74,15 +75,14 @@ FAlign::Stats FAlign::analyze(const std::string &file, const Options &options)
     // The references are simply the known fusion points
     stats.p.m.nr = s.f_f_fusions.size() + s.f_r_fusions.size();
 
-    /*
-     * Write out the statistics
-     */
+    options.info("Calculating limit of sensitivity");
+    stats.p.s = Expression::analyze(stats.h, s.f_seqs_A);
 
     options.info("Generating linear model");
     AnalyzeReporter::linear(stats, "fusion_align", "FPKM", options.writer);
 
     options.info("Generating statistics");
-    AnalyzeReporter::stats("fusion_sequins.stats", stats.p, stats.c, options.writer);
+    AnalyzeReporter::stats("fusion_sequins.stats", stats.p, stats.h, options.writer);
 
     return stats;
 }
