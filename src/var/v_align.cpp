@@ -37,7 +37,14 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
             return options.filters.count(matched->id) ? Ignore : matched ? Positive : Negative;
         }))
         {
-            stats.c.at(matched->id)++;
+            if (!stats.c.count(matched->id))
+            {
+                options.warn((boost::format("%1% found in reference but not in the mixture") % matched->id).str());
+            }
+            else
+            {
+                stats.c.at(matched->id)++;
+            }
         }
     });
 
