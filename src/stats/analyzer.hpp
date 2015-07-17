@@ -17,6 +17,8 @@ namespace Anaquin
     typedef std::map<GeneID, Counts>   GeneCounter;
     typedef std::map<SequinID, Counts> SequinCounter;
 
+    typedef std::map<SequinID, Counts> SequinHist;
+
     // Tracking for each sequin
     typedef std::map<SequinID, std::vector<Locus>> SequinTracker;
 
@@ -51,6 +53,24 @@ namespace Anaquin
 
     struct Analyzer
     {
+        /*
+         * Create a histogram with a key type of R. The key type is usually the SequinID, but can also
+         * be GeneID or anything else. The histogram is initialized to zero.
+         */
+
+        template <typename T1, typename T2, typename R = SequinID> static std::map<R, Counts>
+                    histogram(const std::map<T1, T2> &m)
+        {
+            std::map<R, Counts> c;
+
+            for (const auto &p : m)
+            {
+                c[static_cast<R>(p.first)] = 0;
+            }
+
+            return c;
+        }
+
         template <typename T1, typename T2, typename Iter> static std::map<T1, T2> tracker(const Iter &iter)
         {
             std::map<T1, T2> m;

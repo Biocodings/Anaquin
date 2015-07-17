@@ -18,7 +18,6 @@ FAlign::Stats FAlign::analyze(const std::string &file, const Options &options)
         }
 
         options.logInfo((boost::format("%1%: %2% %3%") % p.i % f.chr_1 % f.chr_2).str());
-
         SequinID id;
 
         if (classify(stats.p.m, f, [&](const ParserFusion::Fusion &)
