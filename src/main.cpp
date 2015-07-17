@@ -21,7 +21,7 @@
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
 
-#include "fusion/f_fusion.hpp"
+#include "fusion/f_align.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
@@ -57,7 +57,6 @@ typedef std::set<Value> Range;
 #define MODE_ABUND    285
 #define MODE_DIFFS    286
 #define MODE_VARIANT  287
-#define MODE_FUSION   290
 #define MODE_SEQUINS  291
 
 #define OPT_CMD     320
@@ -122,7 +121,6 @@ static std::map<Value, Mode> _modes =
     { "abund",    MODE_ABUND    },
     { "diffs",    MODE_DIFFS    },
     { "variant",  MODE_VARIANT  },
-    { "fusion",   MODE_FUSION   },
     { "blast",    MODE_BLAST    },
 };
 
@@ -134,7 +132,7 @@ static std::map<Command, std::set<Mode>> _supported =
 {
     { CMD_RNA,    std::set<Mode> { MODE_SEQUINS, MODE_ALIGN, MODE_ASSEMBLY, MODE_ABUND, MODE_DIFFS } },
     { CMD_VAR,    std::set<Mode> { MODE_SEQUINS, MODE_ALIGN, MODE_VARIANT,  MODE_ABUND, MODE_DIFFS } },
-    { CMD_FUSION, std::set<Mode> { MODE_SEQUINS, MODE_FUSION } },
+    { CMD_FUSION, std::set<Mode> { MODE_SEQUINS, MODE_ALIGN } },
     { CMD_LADDER, std::set<Mode> { MODE_SEQUINS, MODE_ABUND, MODE_DIFFS } },
     { CMD_META,   std::set<Mode> { MODE_SEQUINS, MODE_BLAST, MODE_DIFFS, MODE_ASSEMBLY } },
 };
@@ -150,7 +148,6 @@ static std::map<Mode, bool> _needMix =
     { MODE_ASSEMBLY, true  },
     { MODE_ABUND,    true  },
     { MODE_DIFFS,    true  },
-    { MODE_FUSION,   true  },
     { MODE_VARIANT,  true  },
     { MODE_BLAST,    true  },
 };
@@ -166,7 +163,6 @@ static std::map<Mode, bool> _needRef =
     { MODE_ASSEMBLY, true  },
     { MODE_ABUND,    true  },
     { MODE_DIFFS,    true  },
-    { MODE_FUSION,   true  },
     { MODE_VARIANT,  true  },
     { MODE_BLAST,    false },
 };
@@ -840,8 +836,8 @@ void parse(int argc, char ** argv)
             
             switch (mode)
             {
-                case MODE_SEQUINS: { printMixture();       break; }
-                case MODE_FUSION:  { analyze_1<FFusion>(); break; }
+                case MODE_SEQUINS: { printMixture();      break; }
+                case MODE_ALIGN:   { analyze_1<FAlign>(); break; }
             }
 
             break;

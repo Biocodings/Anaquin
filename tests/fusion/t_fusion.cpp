@@ -1,11 +1,11 @@
 #include <catch.hpp>
-#include "fusion/f_fusion.hpp"
+#include "fusion/f_align.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("FFusion_Test")
+TEST_CASE("FAlign_Test")
 {
-    const auto stats = FFusion::analyze("tests/data/fusion/fusions.out");
+    const auto stats = FAlign::analyze("tests/data/fusion/fusions.out");
 
     REQUIRE(stats.p.m.sn() == Approx(0.7916666667));
     REQUIRE(stats.p.m.sp() == Approx(1.0));

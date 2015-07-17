@@ -1,11 +1,11 @@
-#ifndef GI_F_FUSION_HPP
-#define GI_F_FUSION_HPP
+#ifndef GI_F_ALIGN_HPP
+#define GI_F_ALIGN_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct FFusion
+    struct FAlign
     {
         struct Options : public SingleMixtureOptions
         {

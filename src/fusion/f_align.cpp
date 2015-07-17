@@ -1,11 +1,11 @@
-#include "fusion/f_fusion.hpp"
+#include "fusion/f_align.hpp"
 #include "parsers/parser_fusion.hpp"
 
 using namespace Anaquin;
 
-FFusion::Stats FFusion::analyze(const std::string &file, const Options &options)
+FAlign::Stats FAlign::analyze(const std::string &file, const Options &options)
 {
-    FFusion::Stats stats;
+    FAlign::Stats stats;
     const auto &s = Standard::instance();
 
     options.info("Parsing alignment file");
