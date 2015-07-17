@@ -45,7 +45,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 
     /*
      * Generate an abundance plot for the accuracy of quantification, the measured DNA
-     * standard abundance (in RPKM) relative to the known concentration (in attamoles/ul)
+     * standard abundance (in FPKM) relative to the known concentration (in attamoles/ul)
      * of each DNA standard.
      */
 
