@@ -179,7 +179,7 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
      * Write out summary statistics
      */
     
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    const std::string format = "%1%\t%2%\t%3%";
     
     options.writer->open("rna_align.stats");
     options.writer->write((boost::format(format) % "genome"
