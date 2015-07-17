@@ -52,7 +52,7 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
             return Positive;
         }))
         {
-            stats.c.at(match.id)++;
+            //stats.c.at(match.id)++;
         }
     });
 

@@ -15,15 +15,6 @@ namespace Anaquin
         // Sensitivity, metrics for positive classification
         inline Percentage sn() const
         {
-            if (!nr)
-            {
-                std::cout << nr << std::endl;
-            }
-            else if (nr < _tp)
-            {
-                std::cout << nr << "   " << _tp << std::endl;
-            }
-            
             assert(nr && nr >= _tp);
 
             // Adjust for fn... Refer to the wikipedia for more details
@@ -109,8 +100,6 @@ namespace Anaquin
     {
         for (const auto &i: m)
         {
-            std::cout << i.second.l.start << std::endl;
-            
             const bool matched = (rule == Exact    && i.second.l == t.l) ||
                                  (rule == Contains && i.second.l.contains(t.l));
             if (matched)

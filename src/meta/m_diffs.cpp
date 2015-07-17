@@ -18,13 +18,13 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
 
     if (!options.pA.empty() && !options.pB.empty())
     {
-        std::cout << "Using an aligment file: "  << options.pA << std::endl;
-        std::cout << "Using an aligment file: "  << options.pB << std::endl;
-
+        options.info((boost::format("Using alignment: %1%") % options.pA).str());
+        options.info((boost::format("Using alignment: %2%") % options.pB).str());
+        
         const auto r1 = MBlast::analyze(options.pA);
         const auto r2 = MBlast::analyze(options.pB);
 
-        std::cout << "Creating a differential plot" << std::endl;
+        options.info("Creating a differential plot");
         
         /*
          * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.

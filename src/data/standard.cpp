@@ -204,21 +204,22 @@ Standard::Standard()
 void Standard::v_ref(const Reader &r)
 {
     v_vars.clear();
+
     std::vector<std::string> tokens;
     
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
-        // Eg: D_1_10_R.G/A
-        Tokens::split(f.name, ".", tokens);
+        // Eg: D_1_10_R_G/A
+        Tokens::split(f.name, "_", tokens);
 
         // Eg: D_1_10_R and G/A
-        assert(tokens.size() == 2);
+        assert(tokens.size() == 5);
 
         // Eg: G/GACTCTCATTC
-        const auto var = tokens[1];
+        const auto var = tokens[4];
 
         // Eg: D_1_10
-        const auto id = tokens[0].substr(0, tokens[0].find_last_of("_"));
+        const auto id = tokens[0] + "_" + tokens[1] + "_" + tokens[2];
 
         Variation v;
 
@@ -228,9 +229,10 @@ void Standard::v_ref(const Reader &r)
         // Eg: G and GACTCTCATTC
         assert(tokens.size() == 2);
         
-        v.type = ParserVCF::strToSNP(tokens[0], tokens[1]);
-        v.ref  = tokens[0];
+        v.id   = id;
         v.alt  = tokens[1];
+        v.ref  = tokens[0];
+        v.type = ParserVCF::strToSNP(tokens[0], tokens[1]);
 
         v_vars[v.l = f.l] = v;
     });

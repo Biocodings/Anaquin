@@ -28,23 +28,15 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
         }
         
         stats.n_chrT++;
-
-        const Variation *matched;
+        Feature f;
 
         if (classify(stats.p.m, align, [&](const Alignment &)
         {
-            matched = find(s.v_vars, align, MatchRule::Contains);
-            return options.filters.count(matched->id) ? Ignore : matched ? Positive : Negative;
+            const bool succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
+            return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
         }))
         {
-            if (!stats.c.count(matched->id))
-            {
-                options.warn((boost::format("%1% found in reference but not in the mixture") % matched->id).str());
-            }
-            else
-            {
-                stats.c.at(matched->id)++;
-            }
+            stats.c.at(f.id)++;
         }
     });
 

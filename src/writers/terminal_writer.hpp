@@ -9,17 +9,17 @@ namespace Anaquin
     class TerminalWriter : public Writer
     {
         public:
-            void close() override
+            inline void close() override
             {
                 // Empty Implementation
             }
         
-            void open(const std::string &file) override
+            inline void open(const std::string &file) override
             {
                 // Empty Implementation
             }
 
-            void write(const std::string &str) override
+            inline void write(const std::string &str) override
             {
                 std::cout << str << std::endl;
             }
