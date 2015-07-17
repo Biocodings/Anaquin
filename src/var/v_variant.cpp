@@ -52,18 +52,18 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
             return Positive;
         }))
         {
-            //stats.c.at(match.id)++;
+            stats.h.at(match.l)++;
         }
     });
 
     stats.m.nr = s.v_vars.size();
-    
+
     /*
      * Calculate the proportion of genetic variation with alignment coverage
      */
     
-    stats.covered = std::accumulate(stats.c.begin(), stats.c.end(), 0,
-            [&](int sum, const std::pair<SequinID, Counts> &p)
+    stats.covered = std::accumulate(stats.h.begin(), stats.h.end(), 0,
+            [&](int sum, const std::pair<Locus, Counts> &p)
             {
                 return sum + (p.second ? 1 : 0);
             });
@@ -77,26 +77,22 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
     stats.efficiency = stats.m.sn() / stats.covered;
     
     // Create a script for allele frequency
-    AnalyzeReporter::linear(stats, "var_allele", "Allele Frequence", options.writer);
-    
-    /*
-     * Write out results
-     */
+    AnalyzeReporter::linear(stats, "var_variant_allele", "Allele Frequence", options.writer);
 
     const std::string format = "%1%\t%2%\t%3%";
 
-    options.writer->open("var_variant.stats");
+    options.writer->open("var_variant_metric.stats");
     options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
     options.writer->write((boost::format(format) % stats.m.sn()
                                                  % stats.m.sp()
                                                  % stats.covered).str());
     options.writer->write("\n");
     
-    for (const auto &p : stats.c)
+    for (const auto &p : stats.h)
     {
-        options.writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+        options.writer->write((boost::format("%1%\t%2%") % p.first.start % p.second).str());
     }
-    
+
     options.writer->close();
 
     return stats;

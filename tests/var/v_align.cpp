@@ -3,9 +3,9 @@
 
 using namespace Anaquin;
 
-//TEST_CASE("DAlign_Simulations")
+//TEST_CASE("VAlign_Simulations")
 //{
-//    const auto r = DAlign::analyze("tests/data/dna/aligned.sam");
+//    const auto r = DAlign::analyze("tests/data/var/aligned.sam");
 //
 //    REQUIRE(r.p.m.sp() == Approx(0.999984782));
 //    REQUIRE(r.p.m.sn() == Approx(0.9998288238));

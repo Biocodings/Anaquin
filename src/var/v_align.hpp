@@ -19,14 +19,14 @@ namespace Anaquin
             
             // Total mapped to the samples
             Counts n_genome = 0;
-            
+
             // Fraction of sequin spiked
             inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
 
             Performance p;
 
             // Counts for each sequin
-            SequinHist c = Analyzer::histogram(Standard::instance().v_seqs_A);
+            //SequinHist c = Analyzer::histogram(Standard::instance().v_seqs_A);
         };
 
         static Stats analyze(const std::string &file, const Options &options = Options());

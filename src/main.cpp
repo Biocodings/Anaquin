@@ -131,7 +131,7 @@ static std::map<Value, Mode> _modes =
 static std::map<Command, std::set<Mode>> _supported =
 {
     { CMD_RNA,    std::set<Mode> { MODE_SEQUINS, MODE_ALIGN, MODE_ASSEMBLY, MODE_ABUND, MODE_DIFFS } },
-    { CMD_VAR,    std::set<Mode> { MODE_SEQUINS, MODE_ALIGN, MODE_VARIANT,  MODE_ABUND, MODE_DIFFS } },
+    { CMD_VAR,    std::set<Mode> { MODE_SEQUINS, MODE_ALIGN, MODE_VARIANT } },
     { CMD_FUSION, std::set<Mode> { MODE_SEQUINS, MODE_ALIGN } },
     { CMD_LADDER, std::set<Mode> { MODE_SEQUINS, MODE_ABUND, MODE_DIFFS } },
     { CMD_META,   std::set<Mode> { MODE_SEQUINS, MODE_BLAST, MODE_DIFFS, MODE_ASSEMBLY } },

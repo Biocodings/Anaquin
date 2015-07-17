@@ -221,14 +221,14 @@ void Standard::v_ref(const Reader &r)
         // Eg: D_1_10
         const auto id = tokens[0] + "_" + tokens[1] + "_" + tokens[2];
 
-        Variation v;
-
         // Eg: G/GACTCTCATTC
         Tokens::split(var, "/", tokens);
 
         // Eg: G and GACTCTCATTC
         assert(tokens.size() == 2);
         
+        Variation v;
+
         v.id   = id;
         v.alt  = tokens[1];
         v.ref  = tokens[0];

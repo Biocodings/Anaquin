@@ -17,6 +17,7 @@ namespace Anaquin
     typedef std::map<GeneID, Counts>   GeneCounter;
     typedef std::map<SequinID, Counts> SequinCounter;
 
+    typedef std::map<Locus, Counts>    LocusHist;
     typedef std::map<SequinID, Counts> SequinHist;
 
     template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
