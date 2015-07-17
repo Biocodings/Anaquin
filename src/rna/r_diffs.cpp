@@ -32,11 +32,17 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
          * in the experiment.
          */
 
+        const auto format = "%1% not found in the mixture";
+
         switch (options.level)
         {
             case Gene:
             {
-                if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
+                if (!s.r_seqs_gA.count(t.geneID))
+                {
+                    options.info((boost::format(format) % t.geneID).str());
+                }
+                else if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
                     known = (s.r_seqs_gB.at(t.geneID).abund() /
@@ -56,7 +62,11 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
 
             case Isoform:
             {
-                if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
+                if (!s.r_seqs_A.count(t.testID))
+                {
+                    options.info((boost::format(format) % t.geneID).str());
+                }
+                else if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     // Calculate the known fold-change between B and A
                     known = (s.r_seqs_B.at(t.testID).abund() / s.r_seqs_B.at(t.testID).length) /
@@ -84,7 +94,7 @@ RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
 
     stats.s = Expression::analyze(c, s.r_gene(options.rMix));
 
-    options.info("Generating an R script");
+    options.info("Generating linear model");
     AnalyzeReporter::linear(stats, "rna_diffs", "FPKM", options.writer);
 
     options.info("Generating statistics for sequin");
