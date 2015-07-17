@@ -77,6 +77,7 @@ FAlign::Stats FAlign::analyze(const std::string &file, const Options &options)
 
     options.info("Calculating limit of sensitivity");
     stats.p.s = Expression::analyze(stats.h, s.f_seqs_A);
+    stats.s = stats.p.s; // TODO: Fix this
 
     options.info("Generating linear model");
     AnalyzeReporter::linear(stats, "fusion_align", "FPKM", options.writer);
