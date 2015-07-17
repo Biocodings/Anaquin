@@ -587,12 +587,12 @@ template <typename Options> static Options detect(const std::string &file)
     
     if (found_gene && !found_isoform)
     {
-        std::cout << "[INFO]: Gene tracking assumed" << std::endl;
+        std::cout << "[INFO]: Gene tracking file" << std::endl;
         o.level = RNALevel::Gene;
     }
     else if (!found_gene && found_isoform)
     {
-        std::cout << "[INFO]: Isoform tracking assumed" << std::endl;
+        std::cout << "[INFO]: Isoform tracking file" << std::endl;
         o.level = RNALevel::Isoform;
     }
     else

@@ -1,8 +1,8 @@
 #ifndef GI_PARSER_TRACKING_HPP
 #define GI_PARSER_TRACKING_HPP
 
-#include "stats/analyzer.hpp"
 #include "data/types.hpp"
+#include "stats/analyzer.hpp"
 #include "parsers/parser_cuffs.hpp"
 
 namespace Anaquin
@@ -14,6 +14,8 @@ namespace Anaquin
         TrackID trackID;
         TrackID geneID;
 
+        Locus l;
+        
         FPKM fpkm;
         FPKM lFPKM;
         FPKM uFPKM;

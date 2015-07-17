@@ -40,12 +40,21 @@ namespace Anaquin
 
     struct Base
     {
-        Concentration abund() const
+        inline Concentration abund() const
         {
             return std::accumulate(sequins.begin(), sequins.end(), 0,
                 [&](int sum, const std::pair<TypeID, Sequin> &p)
                 {
                     return sum + p.second.abund();
+                });
+        }
+
+        inline BasePair length() const
+        {
+            return std::accumulate(sequins.begin(), sequins.end(), 0,
+                [&](int sum, const std::pair<TypeID, Sequin> &p)
+                {
+                    return sum + p.second.length;
                 });
         }
 

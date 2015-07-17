@@ -230,6 +230,11 @@ namespace Anaquin
             logger->write("[INFO]: " + s);
         }
 
+        inline void logWarn(const std::string &s) const
+        {
+            logger->write("[WARN]: " + s);
+        }
+        
         inline void error(const std::string &s) const
         {
             logger->write("[ERROR]: " + s);
