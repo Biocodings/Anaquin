@@ -134,7 +134,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     
     options.writer->close();
     
-    options.writer->open("meta_assembly.stats");
+    options.writer->open("meta_assembly_common.stats");
     
     if (ms.x.size() <= 1)
     {
