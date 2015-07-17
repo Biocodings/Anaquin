@@ -117,27 +117,24 @@ namespace Anaquin
              * Variant data
              */
 
-            inline const SequinMap &d_seq(Mixture mix) const
+            inline const SequinMap &v_seq(Mixture mix) const
             {
-                return mix == MixA ? d_seqs_A : d_seqs_B;
+                return mix == MixA ? v_seqs_A : v_seqs_B;
             }
 
             void v_ref(const Reader &);
             void v_mix(const Reader &);
 
             // Sequins for mixture A and B
-            SequinMap d_seqs_A, d_seqs_B;
+            SequinMap v_seqs_A, v_seqs_B;
 
             typedef std::map<BaseID, VariantBase> VariantBaseMap;
 
             // Bases for mixture A and B
-            VariantBaseMap d_seqs_bA, d_seqs_bB;
+            VariantBaseMap v_seqs_bA, v_seqs_bB;
 
             // Indexed by the position
-            std::map<Locus, Variation> d_vars;
-
-            // Sequin IDs for DNA standards
-            std::set<SequinID> d_seqIDs;
+            std::map<Locus, Variation> v_vars;
 
             /*
              * Ladder data

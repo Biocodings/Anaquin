@@ -81,14 +81,6 @@ namespace Anaquin
         }
     };
 
-    struct DAnalyzer
-    {
-        static SequinCounter counterSequins()
-        {
-            return counter<std::set<SequinID>, SequinID>(Standard::instance().d_seqIDs);
-        }
-    };
-
     class RAnalyzer
     {
         public:

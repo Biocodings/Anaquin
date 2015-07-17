@@ -203,7 +203,7 @@ Standard::Standard()
 
 void Standard::v_ref(const Reader &r)
 {
-    d_vars.clear();
+    v_vars.clear();
     std::vector<std::string> tokens;
     
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
@@ -222,9 +222,6 @@ void Standard::v_ref(const Reader &r)
 
         Variation v;
 
-        // Eg: D_1_10
-        d_seqIDs.insert(v.id = id);
-        
         // Eg: G/GACTCTCATTC
         Tokens::split(var, "/", tokens);
 
@@ -235,16 +232,15 @@ void Standard::v_ref(const Reader &r)
         v.ref  = tokens[0];
         v.alt  = tokens[1];
 
-        d_vars[v.l = f.l] = v;
+        v_vars[v.l = f.l] = v;
     });
 
-    assert(!d_vars.empty());
-    assert(d_vars.size() >= d_seqIDs.size());
+    assert(!v_vars.empty());
 }
 
 void Standard::v_mix(const Reader &r)
 {
-    mergeMix(r, parseMix(r, d_seqs_A, d_seqs_B), d_seqs_A, d_seqs_B, d_seqs_bA, d_seqs_bB);
+    mergeMix(r, parseMix(r, v_seqs_A, v_seqs_B), v_seqs_A, v_seqs_B, v_seqs_bA, v_seqs_bB);
 }
 
 void Standard::m_ref(const Reader &r)

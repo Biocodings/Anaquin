@@ -477,9 +477,9 @@ static void readFilters(const std::string &file)
 
             case CMD_VAR:
             {
-                assert(s.d_seqs_A.size() == s.d_seqs_B.size());
+                assert(s.v_seqs_A.size() == s.v_seqs_B.size());
                 
-                if (!s.d_seqs_A.count(line))
+                if (!s.v_seqs_A.count(line))
                 {
                     throw InvalidFilterError("Unknown sequin for DNA: " + line);
                 }

@@ -17,12 +17,12 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
         if (classify(stats.m, var, [&](const VCFVariant &)
         {
             // Can we find this variant?
-            if (!s.d_vars.count(var.l))
+            if (!s.v_vars.count(var.l))
             {
                 return Negative;
             }
 
-            match = s.d_vars.at(var.l);
+            match = s.v_vars.at(var.l);
 
             // Does the variant match with the meta?
             if (match.type != var.type || match.alt != var.alt || match.ref != var.ref)
@@ -30,9 +30,9 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
                 return Negative;
             }
 
-            assert(s.d_seqs_bA.count(match.id));
+            assert(s.v_seqs_bA.count(match.id));
             
-            const auto &base = s.d_seqs_bA.at(match.id);
+            const auto &base = s.v_seqs_bA.at(match.id);
             
             /*
              * Plotting the relative allele frequency that is established by differences
@@ -56,7 +56,7 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
         }
     });
 
-    stats.m.nr = s.d_vars.size();
+    stats.m.nr = s.v_vars.size();
     
     /*
      * Calculate the proportion of genetic variation with alignment coverage
@@ -69,7 +69,7 @@ VVariant::Stats VVariant::analyze(const std::string &file, const Options &option
             });
 
     // The proportion of genetic variation with alignment coverage
-    stats.covered = stats.covered / s.d_vars.size();
+    stats.covered = stats.covered / s.v_vars.size();
 
     assert(stats.covered >= 0 && stats.covered <= 1.0);
 

@@ -24,9 +24,9 @@ namespace Anaquin
             inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
 
             Performance p;
-            
+
             // Counts for each sequin
-            Counter c = DAnalyzer::counterSequins();
+            SequinHist c = Analyzer::histogram(Standard::instance().v_seqs_A);
         };
 
         static Stats analyze(const std::string &file, const Options &options = Options());

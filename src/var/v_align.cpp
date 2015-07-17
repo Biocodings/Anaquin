@@ -20,7 +20,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 
             if (classify(stats.p.m, align, [&](const Alignment &)
             {
-                matched = findMap(s.d_vars, align, MatchRule::Contains);
+                matched = findMap(s.v_vars, align, MatchRule::Contains);
 
                 if (options.filters.count(matched->id))
                 {
@@ -51,7 +51,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
     const auto n = stats.n_chrT;
 
     // Known concentration for the given mixture
-    const auto &m = s.d_seq(options.mix);
+    const auto &m = s.v_seq(options.mix);
 
     for (const auto &i : stats.c)
     {
@@ -62,15 +62,15 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
         
         const auto s = m.at(i.first);
         
-        // Compare the RPKM with the known concentration
+        // Compare the FPKM with the known concentration
         const auto known = s.abund();
         
-        // Calculate RPKM for the sequin
+        // Calculate FPKM for the sequin
         const double measured = (std::pow(10, 9) * static_cast<double>(i.second)) / (n * s.l.length());
 
+        stats.z.push_back(i.first);
         stats.x.push_back(log2(known));
         stats.y.push_back(log2(measured));
-        stats.z.push_back(i.first);
     }
     
     // Perform a linear regreession
@@ -79,7 +79,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
     options.info("Calculating LOS");
     
     // Calculate for the sensitivity
-    stats.p.s = Expression::analyze(stats.c, s.d_seq(options.mix));
+    stats.p.s = Expression::analyze(stats.c, s.v_seq(options.mix));
 
     AnalyzeReporter::stats("var_align.stats", stats.p, stats.c, options.writer);
     
