@@ -109,6 +109,8 @@ namespace Anaquin
     {
         for (const auto &i: m)
         {
+            std::cout << i.second.l.start << std::endl;
+            
             const bool matched = (rule == Exact    && i.second.l == t.l) ||
                                  (rule == Contains && i.second.l.contains(t.l));
             if (matched)
