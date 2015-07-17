@@ -70,10 +70,10 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
             exons.push_back(align);
 
             if (classify(stats.pe.m, align, [&](const Alignment &)
-                {
-                    succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
-                    return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
-                }))
+            {
+                succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
+                return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
+            }))
             {
                 stats.ce.at(s.r_isoformToGene.at(f.tID))++;
             }
@@ -88,10 +88,10 @@ RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
             introns.push_back(align);
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
-                {
-                    succeed = findIntron(align, f);
-                    return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
-                }))
+            {
+                succeed = findIntron(align, f);
+                return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
+            }))
             {
                 stats.ci.at(s.r_isoformToGene.at(f.tID))++;
             }

@@ -133,7 +133,7 @@ namespace Anaquin
             // Bases for mixture A and B
             VariantBaseMap v_seqs_bA, v_seqs_bB;
 
-            // Indexed by the position
+            // Indexed by locus
             std::map<Locus, Variation> v_vars;
 
             /*

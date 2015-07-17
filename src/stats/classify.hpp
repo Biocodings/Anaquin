@@ -87,7 +87,8 @@ namespace Anaquin
         Contains,
     };
 
-    template <typename Iter, typename T> const typename Iter::value_type * find(const Iter &iter, const T &t,MatchRule rule)
+    template <typename Iter, typename T> const typename Iter::value_type * find
+        (const Iter &iter, const T &t, MatchRule rule)
     {
         for (const auto &i : iter)
         {
@@ -103,9 +104,10 @@ namespace Anaquin
     }
 
     // Similar to find(), works on a std::map
-    template <typename Iter, typename T> const typename Iter::mapped_type * findMap(const Iter &map, const T &t, MatchRule rule)
+    template <typename Key, typename Value, typename T> const typename std::map<Key, Value>::mapped_type * find
+        (const std::map<Key, Value> &m, const T &t, MatchRule rule)
     {
-        for (const auto &i: map)
+        for (const auto &i: m)
         {
             const bool matched = (rule == Exact    && i.second.l == t.l) ||
                                  (rule == Contains && i.second.l.contains(t.l));

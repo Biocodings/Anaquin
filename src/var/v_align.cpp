@@ -10,32 +10,40 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 
     options.info("Parsing alignment file");
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        const Variation *matched;
-
-        if (align.id == s.id)
+        if (!align.i && (p.i % 1000000) == 0)
         {
-            stats.n_chrT++;
-
-            if (classify(stats.p.m, align, [&](const Alignment &)
-            {
-                matched = findMap(s.v_vars, align, MatchRule::Contains);
-
-                if (options.filters.count(matched->id))
-                {
-                    return Ignore;
-                }
-                
-                return matched ? Positive : Negative;
-            }))
-            {
-                stats.c.at(matched->id)++;
-            }
+            options.wait(std::to_string(p.i));
         }
-        else
+        
+        if (!align.mapped)
+        {
+            return;
+        }
+        else if (align.id != s.id)
         {
             stats.n_genome++;
+            return;
+        }
+        
+        stats.n_chrT++;
+
+        const Variation *matched;
+
+        if (classify(stats.p.m, align, [&](const Alignment &)
+        {
+            matched = find(s.v_vars, align, MatchRule::Contains);
+            
+            if (options.filters.count(matched->id))
+            {
+                return Ignore;
+            }
+            
+            return matched ? Positive : Negative;
+        }))
+        {
+            stats.c.at(matched->id)++;
         }
     });
 

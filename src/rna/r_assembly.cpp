@@ -91,7 +91,7 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pt.m, f, [&](const Feature &)
                 {
-                    return (match = findMap(sequins, f, Exact));
+                    return (match = find(sequins, f, Exact));
                 }))
                 {
                     stats.ct.at(match->id)++;
