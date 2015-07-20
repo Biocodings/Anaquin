@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-BOOST = /usr/include/boost_1_58_0
+BOOST = /usr/include/boost
 
 # Required for unit-testing
 CATCH = /usr/include/catch/include
