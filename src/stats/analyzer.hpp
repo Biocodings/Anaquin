@@ -69,6 +69,25 @@ namespace Anaquin
             return c;
         }
 
+        
+        
+        static std::map<Locus, Counts> histogram__(const std::map<Locus, Variation> &m)
+        {
+            std::map<Locus, Counts> c;
+            
+            for (const auto &p : m)
+            {
+                c[p.first] = 0;
+            }
+            
+            return c;
+        }
+        
+        
+        
+        
+        
+        
         template <typename T1, typename T2, typename Iter> static std::map<T1, T2> tracker(const Iter &iter)
         {
             std::map<T1, T2> m;

@@ -23,7 +23,7 @@ namespace Anaquin
             // Measure of variant detection independent to sequencing depth or coverage
             double efficiency;
 
-            LocusHist h = Analyzer::histogram<Locus, Variation, Locus>(Standard::instance().v_vars);
+            LocusHist h = Analyzer::histogram__(Standard::instance().v_vars);
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());
