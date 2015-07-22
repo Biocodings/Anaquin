@@ -128,15 +128,5 @@ RAbund::Stats RAbund::analyze(const std::string &file, const Options &options)
     options.info("Generating statistics for sequin");
     const std::string format = "%1%\t%2%\t%3%";
 
-    options.writer->open("rna_sequins.stats");
-    options.writer->write((boost::format(format) % "id" % "expect" % "measured").str());
-
-    for (std::size_t i = 0; i < stats.z.size(); i++)
-    {
-        options.writer->write((boost::format(format) % stats.z[i] % stats.x[i] % stats.y[i]).str());
-    }
-
-    options.writer->close();
-    
     return stats;
 }

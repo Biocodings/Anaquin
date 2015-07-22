@@ -72,11 +72,6 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
                 {
                     stats.ce.at(match->tID)++;
                 }
-                else
-                {
-                    //options.logger->write((boost::format("[Exon]: %1% %2%") % std::to_string(f.l.start)
-                      //                                                      % std::to_string(f.l.end)).str()) ;
-                }
 
                 break;
             }
@@ -192,16 +187,16 @@ RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &opti
     stats.pi.s = Expression::analyze(stats.ci, sequins);
 
     options.info("Generating base statistics");
-    AnalyzeReporter::stats("rna_assembly.base.stats", stats.pb, stats.cb, options.writer);
+    AnalyzeReporter::stats("rna_assembly_base.stats", stats.pb, stats.cb, options.writer);
 
     options.info("Generating exon statistics");
-    AnalyzeReporter::stats("rna_assembly.exons.stats", stats.pe, stats.ce, options.writer);
+    AnalyzeReporter::stats("rna_assembly_exon.stats", stats.pe, stats.ce, options.writer);
     
     options.info("Generating intron statistics");
-    AnalyzeReporter::stats("rna_assembly.intron.stats", stats.pi, stats.ci, options.writer);
+    AnalyzeReporter::stats("rna_assembly_intron.stats", stats.pi, stats.ci, options.writer);
     
     options.info("Generating transcript statistics");
-    AnalyzeReporter::stats("rna_assembly.transcripts.stats", stats.pt, stats.ct, options.writer);
+    AnalyzeReporter::stats("rna_assembly_transcripts.stats", stats.pt, stats.ct, options.writer);
 
     return stats;
 }

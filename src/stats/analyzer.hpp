@@ -358,7 +358,7 @@ namespace Anaquin
              */
             
             writer->open(prefix + ".csv");
-            writer->write("ID\expected\tactual");
+            writer->write("ID\expect\tmeasure");
             
             for (std::size_t i = 0; i < stats.x.size(); i++)
             {
