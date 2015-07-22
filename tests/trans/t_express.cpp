@@ -1,14 +1,14 @@
 #include <catch.hpp>
-#include "rna/r_abund.hpp"
+#include "trans/t_express.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("RAbundance_Simulations_Genes_A1")
+TEST_CASE("TExpress_Simulations_Genes_A1")
 {
-    RAbund::Options opt;
+    TExpress::Options opt;
     opt.level = RNALevel::Gene;
 
-    const auto r  = RAbund::analyze("tests/data/rna/A1/genes.fpkm_tracking", opt);
+    const auto r  = TExpress::analyze("tests/data/rna/A1/genes.fpkm_tracking", opt);
     const auto lm = r.linear();
 
     REQUIRE(lm.r  == Approx(0.8929552651));
@@ -20,9 +20,9 @@ TEST_CASE("RAbundance_Simulations_Genes_A1")
     REQUIRE(r.s.abund == Approx(7.0));
 }
 
-TEST_CASE("RAbundance_Simulations_Isoforms_A1")
+TEST_CASE("TExpress_Simulations_Isoforms_A1")
 {
-    const auto r  = RAbund::analyze("tests/data/rna/A1/isoforms.fpkm_tracking");
+    const auto r  = TExpress::analyze("tests/data/rna/A1/isoforms.fpkm_tracking");
     const auto lm = r.linear();
 
     REQUIRE(lm.r  == Approx(0.8143944753));

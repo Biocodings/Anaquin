@@ -30,6 +30,9 @@
 		EF9ACCEF1B5FB7520085D1B2 /* t_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCE01B5FB5480085D1B2 /* t_align.cpp */; };
 		EF9ACCF01B5FB7520085D1B2 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCE31B5FB5480085D1B2 /* t_assembly.cpp */; };
 		EF9ACCF11B5FB7520085D1B2 /* t_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCE61B5FB5480085D1B2 /* t_diffs.cpp */; };
+		EF9ACCF21B5FB9790085D1B2 /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCEA1B5FB5F20085D1B2 /* t_express.cpp */; };
+		EF9ACCF31B5FB9790085D1B2 /* t_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCEB1B5FB5F20085D1B2 /* t_align.cpp */; };
+		EF9ACCF41B5FB9790085D1B2 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCEC1B5FB5F20085D1B2 /* t_assembly.cpp */; };
 		EFA1A6B21AFC4FAB0066DD9F /* parser_fa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */; };
 		EFACC75B1B1F0C80004A9770 /* m_histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFACC7591B1F0C80004A9770 /* m_histogram.cpp */; };
 		EFB3FF5F1B4A1EDC0065CEA0 /* t_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB3FF5E1B4A1EDC0065CEA0 /* t_fusion.cpp */; };
@@ -152,7 +155,7 @@
 		EF9ACCE41B5FB5480085D1B2 /* t_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = t_assembly.hpp; sourceTree = "<group>"; };
 		EF9ACCE61B5FB5480085D1B2 /* t_diffs.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_diffs.cpp; sourceTree = "<group>"; };
 		EF9ACCE71B5FB5480085D1B2 /* t_diffs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = t_diffs.hpp; sourceTree = "<group>"; };
-		EF9ACCEA1B5FB5F20085D1B2 /* t_abundance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_abundance.cpp; sourceTree = "<group>"; };
+		EF9ACCEA1B5FB5F20085D1B2 /* t_express.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_express.cpp; sourceTree = "<group>"; };
 		EF9ACCEB1B5FB5F20085D1B2 /* t_align.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_align.cpp; sourceTree = "<group>"; };
 		EF9ACCEC1B5FB5F20085D1B2 /* t_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_assembly.cpp; sourceTree = "<group>"; };
 		EF9ACCED1B5FB5F20085D1B2 /* t_diffs.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_diffs.cpp; sourceTree = "<group>"; };
@@ -367,14 +370,14 @@
 		EF9ACCDB1B5FB5480085D1B2 /* trans */ = {
 			isa = PBXGroup;
 			children = (
-				EF9ACCDC1B5FB5480085D1B2 /* t_express.cpp */,
-				EF9ACCDD1B5FB5480085D1B2 /* t_express.hpp */,
 				EF9ACCE01B5FB5480085D1B2 /* t_align.cpp */,
 				EF9ACCE11B5FB5480085D1B2 /* t_align.hpp */,
 				EF9ACCE31B5FB5480085D1B2 /* t_assembly.cpp */,
 				EF9ACCE41B5FB5480085D1B2 /* t_assembly.hpp */,
 				EF9ACCE61B5FB5480085D1B2 /* t_diffs.cpp */,
 				EF9ACCE71B5FB5480085D1B2 /* t_diffs.hpp */,
+				EF9ACCDC1B5FB5480085D1B2 /* t_express.cpp */,
+				EF9ACCDD1B5FB5480085D1B2 /* t_express.hpp */,
 			);
 			name = trans;
 			path = ../src/trans;
@@ -383,7 +386,7 @@
 		EF9ACCE91B5FB5F20085D1B2 /* trans */ = {
 			isa = PBXGroup;
 			children = (
-				EF9ACCEA1B5FB5F20085D1B2 /* t_abundance.cpp */,
+				EF9ACCEA1B5FB5F20085D1B2 /* t_express.cpp */,
 				EF9ACCEB1B5FB5F20085D1B2 /* t_align.cpp */,
 				EF9ACCEC1B5FB5F20085D1B2 /* t_assembly.cpp */,
 				EF9ACCED1B5FB5F20085D1B2 /* t_diffs.cpp */,
@@ -599,6 +602,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF9ACCF21B5FB9790085D1B2 /* t_express.cpp in Sources */,
+				EF9ACCF31B5FB9790085D1B2 /* t_align.cpp in Sources */,
+				EF9ACCF41B5FB9790085D1B2 /* t_assembly.cpp in Sources */,
 				EF9ACCEE1B5FB7520085D1B2 /* t_express.cpp in Sources */,
 				EF9ACCEF1B5FB7520085D1B2 /* t_align.cpp in Sources */,
 				EF9ACCF01B5FB7520085D1B2 /* t_assembly.cpp in Sources */,
@@ -766,7 +772,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/local/Cellar/boost/1.57.0/include,
+					/usr/include/boost/,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 					/usr/include/catch/include/,
 					../include,
@@ -797,7 +803,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/local/Cellar/boost/1.57.0/include,
+					/usr/include/boost/,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 					/usr/include/catch/include/,
 					../include,

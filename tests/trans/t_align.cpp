@@ -3,10 +3,10 @@
 
 using namespace Anaquin;
 
-TEST_CASE("RAlign_Cufflinks")
+TEST_CASE("TAlign_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution
-    const auto r = RAlign::analyze("tests/data/rna/cufflinks.sam");
+    const auto r = TAlign::analyze("tests/data/rna/cufflinks.sam");
 
     REQUIRE(r.pe.m.nq == 0);
     REQUIRE(r.pe.m.nr == 76);
@@ -14,16 +14,16 @@ TEST_CASE("RAlign_Cufflinks")
     REQUIRE(isnan(r.pe.m.sn()));
 }
 
-TEST_CASE("RAlign_Simulations_All_Filtered")
+TEST_CASE("TAlign_Simulations_All_Filtered")
 {
-    RAlign::Options opts;
+    TAlign::Options opts;
     
     for (auto i: Standard::instance().r_seqs_A)
     {
         opts.filters.insert(i.first);
     }
 
-    const auto r = RAlign::analyze("tests/data/rna/A1/accepted_hits.sam", opts);
+    const auto r = TAlign::analyze("tests/data/rna/A1/accepted_hits.sam", opts);
 
     REQUIRE(r.pe.m.nq == 25);
     REQUIRE(r.pe.m.nr == 76);
@@ -38,9 +38,9 @@ TEST_CASE("RAlign_Simulations_All_Filtered")
     REQUIRE(r.pi.s.id == "");
 }
 
-TEST_CASE("RAlign_Simulations")
+TEST_CASE("TAlign_Simulations")
 {
-    const auto r = RAlign::analyze("tests/data/rna/A1/accepted_hits.sam");
+    const auto r = TAlign::analyze("tests/data/rna/A1/accepted_hits.sam");
 
     REQUIRE(r.pb.m.nq == 23712);
     REQUIRE(r.pb.m.nr == 149219);

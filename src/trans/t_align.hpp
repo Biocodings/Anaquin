@@ -38,9 +38,6 @@ namespace Anaquin
             };
 
             static Stats analyze(const std::string &, const Options &options = Options());
-
-        private:
-            void reportGeneral(const std::string &, const Stats &, const Options &);
     };
 }
 
