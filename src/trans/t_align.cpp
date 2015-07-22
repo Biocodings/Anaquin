@@ -161,42 +161,44 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the LOS
      */
 
-    options.info("Calculating LOS for exons");
+    options.info("Calculating limit of sensitivity");
+
     stats.pe.s = Expression::analyze(stats.ce, seqs);
-
-    options.info("Calculating LOS for introns");
     stats.pi.s = Expression::analyze(stats.ci, seqs);
-
-    options.info("Calculating LOS for bases");
     stats.pb.s = Expression::analyze(stats.cb, seqs);
 
     /*
      * Write out summary statistics
      */
     
-    const std::string format = "%1%\t%2%\t%3%";
-    
-    options.writer->open("rna_align.stats");
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+
+    options.writer->open("trans_align_all.stats");
     options.writer->write((boost::format(format) % "genome"
                                                  % "silco"
-                                                 % "dilution").str());
+                                                 % "dilution"
+                                                 % "exon_sn"
+                                                 % "exon_sp"
+                                                 % "exon_los"
+                                                 % "intron_sn"
+                                                 % "intron_sp"
+                                                 % "intron_los"
+                                                 % "base_sn"
+                                                 % "base_sp"
+                                                 % "base_los").str());
     options.writer->write((boost::format(format) % stats.n_genome
                                                  % stats.n_chrT
-                                                 % stats.dilution()).str());
+                                                 % stats.dilution()
+                                                 % stats.pe.m.sn()
+                                                 % stats.pe.m.sp()
+                                                 % stats.pe.s.abund
+                                                 % stats.pi.m.sn()
+                                                 % stats.pi.m.sp()
+                                                 % stats.pi.s.abund
+                                                 % stats.pb.m.sn()
+                                                 % stats.pb.m.sp()
+                                                 % stats.pb.s.abund).str());
     options.writer->close();
-    
-    /*
-     * Write out statistics for various levels
-     */
-
-    options.info("Generating base statistics");
-    AnalyzeReporter::stats("rna_align_base.stats", stats.pb, stats.cb, options.writer);
-
-    options.info("Generating exon statistics");
-    AnalyzeReporter::stats("rna_align_exon.stats", stats.pe, stats.ce, options.writer);
-
-    options.info("Generating intron statistics");
-    AnalyzeReporter::stats("rna_align_introns.stats", stats.pi, stats.ci, options.writer);
 
 	return stats;
 }

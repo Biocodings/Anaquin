@@ -154,6 +154,8 @@ namespace Anaquin
     {
         typedef typename I2::value_type Type;
         
+        assert(!Locus::overlap(r));
+        
         const auto merged = Locus::merge<Type, Locus>(q);
         
         for (const auto &l : merged)

@@ -191,7 +191,7 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
 Standard::Standard()
 {
     id = "chrT";
-    
+
     rna();
     meta();
     cancer();
@@ -361,7 +361,7 @@ void Standard::r_ref(const Reader &r)
      * after parsing.
      */
 
-    ParserGTF::parse(Reader(RNADataGTF(), DataMode::String), [&](const Feature &f, const ParserProgress &)
+    ParserGTF::parse(r, [&](const Feature &f, const ParserProgress &)
     {
         // TODO: Please fix me!
         if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
@@ -480,6 +480,10 @@ void Standard::r_ref(const Reader &r)
 
     assert(!r_introns.empty());
     CHECK_AND_SORT(r_introns);
+    
+    r_l_exons = Locus::merge<RNALocus, RNALocus>(r_l_exons);
+    
+    assert(!r_l_exons.empty());
 }
 
 void Standard::r_mix(const Reader &r)
@@ -492,8 +496,8 @@ void Standard::r_mix(const Reader &r)
      * Merging overlapping regions for the exons
      */
     
-    r_c_exons = countLocus(r_l_exons = Locus::merge<RNALocus, RNALocus>(r_l_exons));
-    
+    r_c_exons = countLocus(r_l_exons);
+
     assert(r_c_exons);
     assert(!r_l_exons.empty());
     assert(!Locus::overlap(r_l_exons));
