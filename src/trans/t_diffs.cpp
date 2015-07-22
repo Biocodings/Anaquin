@@ -1,16 +1,16 @@
-#include "rna/r_diffs.hpp"
+#include "trans/t_diffs.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_cdiffs.hpp"
 
 using namespace SS;
 using namespace Anaquin;
 
-RDiffs::Stats RDiffs::analyze(const std::string &f, const Options &options)
+TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 {
-    RDiffs::Stats stats;
+    TDiffs::Stats stats;
     const auto &s = Standard::instance();
 
-    auto c = (options.level == Gene ? RAnalyzer::geneCounter() : RAnalyzer::sequinCounter());
+    auto c = (options.level == Gene ? TAnalyzer::geneCounter() : TAnalyzer::sequinCounter());
 
     options.info("Parsing input file");
 

@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "rna/r_align.hpp"
+#include "trans/t_align.hpp"
 
 using namespace Anaquin;
 

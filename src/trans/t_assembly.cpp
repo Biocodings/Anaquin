@@ -1,4 +1,4 @@
-#include "rna/r_assembly.hpp"
+#include "trans/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Anaquin;
@@ -24,9 +24,9 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-RAssembly::Stats RAssembly::analyze(const std::string &file, const Options &options)
+TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &options)
 {
-    RAssembly::Stats stats;
+    TAssembly::Stats stats;
     const auto &s = Standard::instance();
 
     // The sequins depends on the mixture

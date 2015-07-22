@@ -1,20 +1,20 @@
-#ifndef GI_R_ABUND_HPP
-#define GI_R_ABUND_HPP
+#ifndef GI_T_ABUND_HPP
+#define GI_T_ABUND_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct RAbund : public RAnalyzer
+    struct TExpress : public TAnalyzer
     {
         struct Stats : public ModelStats
         {
-            SequinCounter c = RAnalyzer::sequinCounter();
+            SequinCounter c = TAnalyzer::sequinCounter();
         };
 
         struct Options : public SingleMixtureOptions
         {
-	    // This's required by gcc...
+            // This's required by gcc...
             Options() {}
 
             RNALevel level = Isoform;

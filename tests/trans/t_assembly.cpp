@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "rna/r_assembly.hpp"
+#include "trans/t_assembly.hpp"
 
 using namespace Anaquin;
 

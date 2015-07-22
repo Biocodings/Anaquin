@@ -101,7 +101,7 @@ namespace Anaquin
         }
     };
 
-    class RAnalyzer
+    class TAnalyzer
     {
         public:
             typedef std::map<SequinID, Performance> GeneTracker;

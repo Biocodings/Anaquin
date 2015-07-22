@@ -1,11 +1,11 @@
-#ifndef GI_R_ALIGN_HPP
-#define GI_R_ALIGN_HPP
+#ifndef GI_T_ALIGN_HPP
+#define GI_T_ALIGN_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    class RAlign : public RAnalyzer
+    class TAlign : public TAnalyzer
     {
         public:
             struct Stats
@@ -17,17 +17,17 @@ namespace Anaquin
                 Counts n_genome = 0;
 
                 // Tracker for each exon for each gene
-                GeneTracker g_exon_tracker = RAnalyzer::geneTracker();
+                GeneTracker g_exon_tracker = TAnalyzer::geneTracker();
 
                 // Tracker for each intron for each gene
-                GeneTracker g_intron_tracker = RAnalyzer::geneTracker();
+                GeneTracker g_intron_tracker = TAnalyzer::geneTracker();
 
                 // Fraction of sequin spiked
                 inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
 
-                Counter cb = RAnalyzer::geneCounter();
-                Counter ce = RAnalyzer::geneCounter();
-                Counter ci = RAnalyzer::geneCounter();
+                Counter cb = TAnalyzer::geneCounter();
+                Counter ce = TAnalyzer::geneCounter();
+                Counter ci = TAnalyzer::geneCounter();
 
                 Performance pb, pe, pi;
             };

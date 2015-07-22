@@ -1,4 +1,4 @@
-#include "rna/r_align.hpp"
+#include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -21,14 +21,9 @@ static bool findIntron(const Alignment &align, Feature &f)
     return false;
 }
 
-void RAlign::reportGeneral(const std::string &file, const RAlign::Stats &stats, const Options &options)
+TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
 {
-
-}
-
-RAlign::Stats RAlign::analyze(const std::string &file, const Options &options)
-{
-    RAlign::Stats stats;
+    TAlign::Stats stats;
     const auto &s = Standard::instance();
 
     std::vector<Alignment> exons, introns;

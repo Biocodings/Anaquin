@@ -1,5 +1,5 @@
 #include <ss/c.hpp>
-#include "rna/r_abund.hpp"
+#include "trans/t_express.hpp"
 #include "writers/r_writer.hpp"
 #include <ss/regression/lm.hpp>
 #include "parsers/parser_tracking.hpp"
@@ -7,9 +7,9 @@
 using namespace SS;
 using namespace Anaquin;
 
-RAbund::Stats RAbund::analyze(const std::string &file, const Options &options)
+TExpress::Stats TExpress::analyze(const std::string &file, const Options &options)
 {
-    RAbund::Stats stats;
+    TExpress::Stats stats;
     const auto &s = Standard::instance();
 
     // Detect whether it's a file of isoform by the name of file

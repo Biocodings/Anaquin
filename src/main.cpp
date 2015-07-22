@@ -6,10 +6,10 @@
 #include <getopt.h>
 #include <execinfo.h>
 
-#include "rna/r_diffs.hpp"
-#include "rna/r_align.hpp"
-#include "rna/r_abund.hpp"
-#include "rna/r_assembly.hpp"
+#include "trans/t_diffs.hpp"
+#include "trans/t_align.hpp"
+#include "trans/t_express.hpp"
+#include "trans/t_assembly.hpp"
 
 #include "var/v_align.hpp"
 #include "var/v_variant.hpp"
@@ -58,6 +58,7 @@ typedef std::set<Value> Range;
 #define MODE_DIFFS    286
 #define MODE_VARIANT  287
 #define MODE_SEQUINS  291
+#define MODE_EXPRESS  292
 
 #define OPT_CMD     320
 #define OPT_MIN     321
@@ -869,16 +870,16 @@ void parse(int argc, char ** argv)
             switch (mode)
             {
                 case MODE_SEQUINS:  { printMixture();         break; }
-                case MODE_ALIGN:    { analyze_1<RAlign>();    break; }
-                case MODE_ASSEMBLY: { analyze_1<RAssembly>(); break; }
+                case MODE_ALIGN:    { analyze_1<TAlign>();    break; }
+                case MODE_ASSEMBLY: { analyze_1<TAssembly>(); break; }
                 case MODE_ABUND:
                 {
-                    analyze_1<RAbund>(detect<RAbund::Options>(_p.opts[0]));
+                    analyze_1<TExpress>(detect<TExpress::Options>(_p.opts[0]));
                     break;
                 }
                 case MODE_DIFFS:
                 {
-                    analyze_1<RDiffs>(detect<RDiffs::Options>(_p.opts[0]));
+                    analyze_1<TDiffs>(detect<TDiffs::Options>(_p.opts[0]));
                     break;
                 }
             }
