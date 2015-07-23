@@ -1,11 +1,11 @@
-#include "var/v_variant.hpp"
+#include "var/v_discover.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Anaquin;
 
-VVariant::Stats VVariant::analyze(const std::string &file, const Options &options)
+VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &options)
 {
-    VVariant::Stats stats;
+    VDiscover::Stats stats;
     const auto &s = Standard::instance();
 
     options.info("Parsing VCF file");

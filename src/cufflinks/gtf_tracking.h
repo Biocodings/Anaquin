@@ -788,12 +788,14 @@ public:
 		// base level
 		baseFP=qbases_all-baseTP;
 		baseFN=rbases_all-baseTP;
-		//exon level:
+
+        //exon level:
 		exonAFP=total_qexons-exonATP;
 		exonFP=total_qexons-exonTP;
 		exonAFN=total_rexons-exonATP;
 		exonFN=total_rexons-exonTP;
-		//intron stats
+		
+        //intron stats
 		intronAFP=total_qintrons-intronATP;
 		intronFP=total_qintrons-intronTP;
 		intronAFN=total_rintrons-intronATP;

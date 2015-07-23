@@ -1,11 +1,11 @@
-#ifndef GI_V_VARIANT_HPP
-#define GI_V_VARIANT_HPP
+#ifndef GI_V_FREQ_HPP
+#define GI_V_FREQ_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VVariant
+    struct VFreq
     {
         struct Options : public SingleMixtureOptions
         {

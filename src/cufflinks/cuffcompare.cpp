@@ -726,29 +726,43 @@ void compareLoci2R(GList<GLocus>& loci, GList<GSuperLocus>& cmpdata,
   GFREE(qinovl);
   GFREE(qtpinovl);
 
-  // ---- now intron-chain and transcript comparison
-  for (int i=0;i<super->qmrnas.Count();i++) {
-    uint istart=super->qmrnas[i]->exons.First()->start;
-    uint iend=super->qmrnas[i]->exons.Last()->end;
-    for (int j=0;j<super->rmrnas.Count();j++) {
-      uint jstart=super->rmrnas[j]->exons.First()->start;
-      uint jend=super->rmrnas[j]->exons.Last()->end;
-      if (iend<jstart) break;
-      if (jend<istart) continue;
-      //--- overlap here --
-      bool exonMatch=false;
-      if ((super->qmrnas[i]->udata & 2)!=0) continue; //already found matching a ref well
-      if ((super->qmrnas[i]->udata & 1) || ichainMatch(super->qmrnas[i],super->rmrnas[j],exonMatch, 5)) { 
-         //fuzzy match
-         //also accepts the possibility that ref's i-chain be a subset of qry's i-chain
-         super->qmrnas[i]->udata|=1;
-         GLocus* qlocus=((CTData*)super->qmrnas[i]->uptr)->locus;
-         GLocus* rlocus=((CTData*)super->rmrnas[j]->uptr)->locus;
-         if (super->qmrnas[i]->exons.Count()>1) {
-              super->ichainATP++;
-              qlocus->ichainATP++;
-              rlocus->ichainATP++;
-              }
+     /*
+      * Intron-chain and transcript comparison
+      */
+     
+     for (int i = 0; i < super->qmrnas.Count(); i++)
+     {
+         uint istart=super->qmrnas[i]->exons.First()->start;
+         uint iend=super->qmrnas[i]->exons.Last()->end;
+
+         for (int j = 0; j < super->rmrnas.Count(); j++)
+         {
+             uint jstart=super->rmrnas[j]->exons.First()->start;
+             uint jend=super->rmrnas[j]->exons.Last()->end;
+
+             if (iend<jstart) break;
+             if (jend<istart) continue;
+
+             //--- overlap here --
+             bool exonMatch=false;
+
+             if ((super->qmrnas[i]->udata & 2)!=0) continue; //already found matching a ref well
+             if ((super->qmrnas[i]->udata & 1) || ichainMatch(super->qmrnas[i],super->rmrnas[j],exonMatch, 5)) {
+
+             //fuzzy match
+             //also accepts the possibility that ref's i-chain be a subset of qry's i-chain
+
+             super->qmrnas[i]->udata|=1;
+             GLocus* qlocus=((CTData*)super->qmrnas[i]->uptr)->locus;
+             GLocus* rlocus=((CTData*)super->rmrnas[j]->uptr)->locus;
+
+             if (super->qmrnas[i]->exons.Count()>1)
+             {
+                 super->ichainATP++;
+                 qlocus->ichainATP++;
+                 rlocus->ichainATP++;
+             }
+                 
          if (exonMatch) {
                 super->mrnaATP++;
                 qlocus->mrnaATP++;
@@ -773,6 +787,7 @@ void compareLoci2R(GList<GLocus>& loci, GList<GSuperLocus>& cmpdata,
          } //fuzzy match
       } //ref mrna loop
     } //qry mrna loop
+     
   for (int ql=0;ql<super->qloci.Count();ql++) {
       if (super->qloci[ql]->ichainTP+super->qloci[ql]->mrnaTP >0 )
                  super->locusQTP++;
@@ -787,7 +802,6 @@ void compareLoci2R(GList<GLocus>& loci, GList<GSuperLocus>& cmpdata,
       }
 
   }//for each unlinked locus
-
 }
 
 //look for qry data for a specific genomic sequence

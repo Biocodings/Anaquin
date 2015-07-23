@@ -6,7 +6,7 @@ using namespace Anaquin;
 TEST_CASE("TExpress_Simulations_Genes_A1")
 {
     TExpress::Options opt;
-    opt.level = RNALevel::Gene;
+    opt.level = Anaquin::TExpress::RNALevel::Gene;
 
     const auto r  = TExpress::analyze("tests/data/rna/A1/genes.fpkm_tracking", opt);
     const auto lm = r.linear();

@@ -11,8 +11,9 @@
 #include "trans/t_express.hpp"
 #include "trans/t_assembly.hpp"
 
+#include "var/v_freq.hpp"
 #include "var/v_align.hpp"
-#include "var/v_variant.hpp"
+#include "var/v_discover.hpp"
 
 #include "meta/m_blast.hpp"
 #include "meta/m_diffs.hpp"
@@ -866,14 +867,14 @@ void parse(int argc, char ** argv)
             
             applyRef(std::bind(&Standard::v_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
-            
+
             switch (_p.tool)
             {
-                //case TOOL_V_ALIGN: { printMixture();        break; }
-                //case TOOL_V_DISCOVER:   { analyze_1<VAlign>();   break; }
-                //case TOOL_V_FREQ: { analyze_1<VVariant>(); break; }
-                //case TOOL_V_DIFF: { analyze_1<VVariant>(); break; }
-                //case TOOL_V_IGV: { analyze_1<VVariant>(); break; }
+                case TOOL_V_ALIGN:    { analyze_1<VAlign>();    break; }
+                case TOOL_V_DISCOVER: { analyze_1<VDiscover>(); break; }
+                case TOOL_V_FREQ:     { analyze_1<VFreq>();     break; }
+                //case TOOL_V_DIFF:     { analyze_1<VVariant>(); break; }
+                //case TOOL_V_IGV:      { analyze_1<VVariant>(); break; }
             }
 
             break;
