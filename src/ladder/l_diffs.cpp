@@ -25,8 +25,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     const auto &s = Standard::instance();
 
     options.info("Merging mixtures");
-    options.logInfo((boost::format("%1% sequins in mix A") % a.actual.size()).str());
-    options.logInfo((boost::format("%1% sequins in mix B") % b.actual.size()).str());
+    options.logInfo((boost::format("%1% sequins in mix A") % a.normalized.size()).str());
+    options.logInfo((boost::format("%1% sequins in mix B") % b.normalized.size()).str());
     
     /*
      * Try for each detected sequin. But only if it's detected in both mixtures. Otherwise, the fold-
@@ -48,13 +48,13 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
                                                  % "adj_B"
                                                  % "adj_D").str());
 
-    for (const auto &i : a.actual)
+    for (const auto &i : a.normalized)
     {
         // Eg: C_02_C
         const auto &id = i.first;
 
         // Don't bother unless the sequin is detected in both mixtures
-        if (!b.actual.at(id))
+        if (!b.normalized.at(id))
         {
             options.warn((boost::format("Warning: %1% defined in mixture A but not in mixture B") % id).str());
             continue;
@@ -74,16 +74,16 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         stats.x.push_back(log2(known));
         stats.y.push_back(log2(measured));
         
-        assert(a.measure.count(id) && b.measure.count(id));
+        assert(a.measured.count(id) && b.measured.count(id));
         
         options.writer->write((boost::format(format) % id
-                                                     % a.measure.at(id)
-                                                     % b.measure.at(id)
+                                                     % a.measured.at(id)
+                                                     % b.measured.at(id)
                                                      % a.expect.at(id)
                                                      % b.expect.at(id)
                                                      % known
-                                                     % a.actual.at(id)
-                                                     % b.actual.at(id)
+                                                     % a.normalized.at(id)
+                                                     % b.normalized.at(id)
                                                      % a.adjusted.at(id)
                                                      % b.adjusted.at(id)
                                                      % measured).str());
@@ -96,11 +96,11 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
      * Print a warning message for each sequin detected in B but not in A
      */
     
-    for (const auto &i : b.actual)
+    for (const auto &i : b.normalized)
     {
         const auto &id = i.first;
 
-        if (!a.actual.at(id))
+        if (!a.normalized.at(id))
         {
             const auto msg = (boost::format("Warning: %1% defined in mixture B but not in mixture A") % id).str();
             options.out(msg);
