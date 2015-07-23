@@ -87,6 +87,8 @@ typedef std::set<Value> Range;
 #define OPT_U_GTRACK 385
 #define OPT_U_ITRACK 386
 #define OPT_U_GTF    387
+#define OPT_U_GDIFF  388
+#define OPT_U_IDIFF  389
 
 using namespace Anaquin;
 
@@ -185,7 +187,7 @@ struct Parsing
     // Context specific input files
     std::string input_1, input_2, input_3;
 
-    std::string name_1, name_2, name_3;
+    int name_1, name_2, name_3;
     
     // Context specific input files
     std::map<Input, std::string> inputs;
@@ -341,9 +343,11 @@ static const struct option long_options[] =
     { "r_bed",    required_argument, 0, OPT_R_BED },
     { "r_gtf",    required_argument, 0, OPT_R_GTF },
 
-    { "u_gtf",    required_argument, 0, OPT_U_GTF },
-    { "u_gtrack", required_argument, 0, OPT_R_GTF },
-    { "u_itrack", required_argument, 0, OPT_R_GTF },
+    { "u_gtf",    required_argument, 0, OPT_U_GTF    },
+    { "u_gtrack", required_argument, 0, OPT_U_GTRACK },
+    { "u_itrack", required_argument, 0, OPT_U_ITRACK },
+    { "u_gdiff",  required_argument, 0, OPT_U_GDIFF  },
+    { "u_idiff",  required_argument, 0, OPT_U_IDIFF  },
 
     { "min", required_argument, 0, OPT_MIN },
     { "max", required_argument, 0, OPT_MAX },
@@ -712,17 +716,19 @@ void parse(int argc, char ** argv)
 
                 break;
             }
+                
+            case OPT_MIXTURE: { checkFile(_p.mix = val);   break; }
 
             case OPT_R_BED:
-            case OPT_R_GTF:
-            {
-                checkFile(_p.ref_1 = val);
-                break;
-            }
+            case OPT_R_GTF:   { checkFile(_p.ref_1 = val); break; }
 
             case OPT_U_GTF:
             case OPT_U_SAM:
             case OPT_U_BAM:
+            case OPT_U_IDIFF:
+            case OPT_U_GDIFF:
+            case OPT_U_GTRACK:
+            case OPT_U_ITRACK:
             {
                 _p.inputs[opt] = val;
                 _p.name_1 = opt;
@@ -778,7 +784,7 @@ void parse(int argc, char ** argv)
                     TExpress::Options o;
                     
                     // The interpreation crticially depends on genes or isoforms
-                    o.level = _inputs.count(OPT_U_GTRACK) ? TExpress::Gene : TExpress::Isoform;
+                    o.level = _p.inputs.count(OPT_U_GTRACK) ? TExpress::Gene : TExpress::Isoform;
                     
                     analyze_1<TExpress>(o);
                     break;
