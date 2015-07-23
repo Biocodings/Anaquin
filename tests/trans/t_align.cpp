@@ -13,7 +13,6 @@ TEST_CASE("TAlign_Cufflinks")
     REQUIRE(isnan(r.pe.m.sp()));
     REQUIRE(isnan(r.pe.m.sn()));
 
-
     const int s = parse_options("-c ladder -p abund tests/data/ladder/aligned_A.sam", _output, _error);
     
     REQUIRE(s == 1);
