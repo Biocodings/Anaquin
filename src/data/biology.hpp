@@ -20,12 +20,6 @@ namespace Anaquin
         double k_cov;
     };
 
-    enum RNALevel
-    {
-        Gene,
-        Isoform
-    };
-
     enum RNAFeature
     {
         CDS,

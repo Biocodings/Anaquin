@@ -7,6 +7,12 @@ namespace Anaquin
 {
     struct TExpress : public TAnalyzer
     {
+        enum RNALevel
+        {
+            Gene,
+            Isoform
+        };
+
         struct Stats : public ModelStats
         {
             SequinCounter c = TAnalyzer::sequinCounter();

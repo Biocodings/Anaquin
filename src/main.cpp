@@ -21,7 +21,7 @@
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
 
-#include "fusion/f_align.hpp"
+#include "fusion/f_discover.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
@@ -32,10 +32,9 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
 
-typedef int Mode;
 typedef int Tool;
-typedef int Option;
 typedef int Input;
+typedef int Option;
 
 typedef std::string Value;
 typedef std::set<Value> Range;
@@ -49,34 +48,44 @@ typedef std::set<Value> Range;
 #define TOOL_T_DIFF     269
 #define TOOL_T_NORM     270
 #define TOOL_T_IGV      271
-
-#define CMD_VAR    566
-#define CMD_META   567
-#define CMD_LADDER 568
-#define CMD_FUSION 569
-#define CMD_FETAL  570
-#define CMD_CANCER 571
-#define CMD_STRUCT 572
-#define CMD_CLINIC 573
+#define TOOL_V_ALIGN    272
+#define TOOL_V_DISCOVER 273
+#define TOOL_V_FREQ     274
+#define TOOL_V_DIFF     275
+#define TOOL_V_IGV      276
+#define TOOL_M_PSL      277
+#define TOOL_M_ALIGN    278
+#define TOOL_M_ABUND    279
+#define TOOL_M_DIFF     280
+#define TOOL_M_IGV      281
+#define TOOL_L_ABUND    282
+#define TOOL_L_DIFF     283
+#define TOOL_L_IGV      284
+#define TOOL_F_DISCOVER 286
+#define TOOL_F_EXPRESS  287
+#define TOOL_F_IGV      288
 
 /*
  * Options specified in the command line
  */
 
-#define OPT_TOOL    320
-#define OPT_MIN     321
-#define OPT_MAX     322
-#define OPT_LOS     323
-#define OPT_PATH    324
-#define OPT_MIXTURE 326
-#define OPT_FILTER  327
-#define OPT_THREAD  328
-#define OPT_VERSION 332
-#define OPT_TEST    333
-#define OPT_R_BED   380
-#define OPT_R_GTF   381
-#define OPT_U_SAM   382
-#define OPT_U_BAM   383
+#define OPT_TOOL     320
+#define OPT_MIN      321
+#define OPT_MAX      322
+#define OPT_LOS      323
+#define OPT_PATH     324
+#define OPT_MIXTURE  326
+#define OPT_FILTER   327
+#define OPT_THREAD   328
+#define OPT_VERSION  332
+#define OPT_TEST     333
+#define OPT_R_BED    380
+#define OPT_R_GTF    381
+#define OPT_U_SAM    382
+#define OPT_U_BAM    383
+#define OPT_U_VCF    384
+#define OPT_U_GTRACK 385
+#define OPT_U_ITRACK 386
 
 using namespace Anaquin;
 
@@ -105,22 +114,41 @@ std::string date()
 
 static std::map<Value, Tool> _tools =
 {
-    { "test", TOOL_TEST },
+    { "test",             TOOL_TEST       },
 
-    { "TransSequin",     TOOL_T_SEQUIN   },
-    { "TransAlign",      TOOL_T_ALIGN    },
-    { "TransAssembly",   TOOL_T_ASSEMBLY },
-    { "TransExpression", TOOL_T_EXPRESS  },
-    { "TransDifferent",  TOOL_T_DIFF     },
-    { "TransNorm",       TOOL_T_NORM     },
-    { "TransIGV",        TOOL_T_IGV      },
-    
-    { "var",    CMD_VAR    },
-    { "meta",   CMD_META   },
-    { "ladder", CMD_LADDER },
-    { "cancer", CMD_CANCER },
-    { "fusion", CMD_FUSION },
-    { "clinic", CMD_CLINIC },
+    { "TransSequin",      TOOL_T_SEQUIN   },
+    { "TransAlign",       TOOL_T_ALIGN    },
+    { "TransAssembly",    TOOL_T_ASSEMBLY },
+    { "TransExpress",     TOOL_T_EXPRESS  },
+    { "TransExpression",  TOOL_T_EXPRESS  },
+    { "TransDiff",        TOOL_T_DIFF     },
+    { "TransDifferent",   TOOL_T_DIFF     },
+    { "TransNorm",        TOOL_T_NORM     },
+    { "TransIGV",         TOOL_T_IGV      },
+
+    { "VarAlign",         TOOL_V_ALIGN    },
+    { "VarDiscover",      TOOL_V_DISCOVER },
+    { "VarFrequency",     TOOL_V_FREQ     },
+    { "VarIGV",           TOOL_V_IGV      },
+
+    { "MetaPSL",          TOOL_M_PSL      },
+    { "MetaAlign",        TOOL_M_ALIGN    },
+    { "MetaAbund",        TOOL_M_ABUND    },
+    { "MetaAbundance",    TOOL_M_ABUND    },
+    { "MetaDiff",         TOOL_M_DIFF     },
+    { "MetaDifferent",    TOOL_M_DIFF     },
+    { "MetaIGV",          TOOL_V_IGV      },
+
+    { "LadderAbund",      TOOL_L_ABUND    },
+    { "LadderAbundance",  TOOL_L_ABUND    },
+    { "LadderDiff",       TOOL_L_DIFF     },
+    { "LadderDifferent",  TOOL_L_DIFF     },
+    { "LadderIGV",        TOOL_L_IGV      },
+
+    { "FusionDiscover",   TOOL_F_DISCOVER },
+    { "FusionExpress",    TOOL_F_EXPRESS  },
+    { "FusionExpression", TOOL_F_EXPRESS  },
+    { "FusionIGV",        TOOL_F_IGV      },
 };
 
 /*
@@ -156,8 +184,12 @@ struct Parsing
     // Context specific input files
     std::string input_1, input_2, input_3;
 
-    // Option names for each of the input variable
     std::string name_1, name_2, name_3;
+    
+    // Context specific input files
+    std::map<Input, std::string> inputs;
+    
+    std::string mix;
     
     // Number of threads
     unsigned threads = 1;
@@ -171,16 +203,12 @@ struct Parsing
     // Custom sensivitiy
     double los;
     
-    // Custom mixture file
-    std::string mix;
-    
     // The sequins that have been filtered
     std::set<SequinID> filters;
     
     // How the software is invoked
     std::string command;
 
-    Mode mode   = 0;
     Tool tool = 0;
 };
 
@@ -264,7 +292,6 @@ struct MissingOptionError : public std::exception
 struct MissingMixtureError   : public std::exception {};
 struct MissingReferenceError : public std::exception {};
 struct MissingInputError     : public std::exception {};
-struct InvalidModeError      : public std::exception {};
 
 struct InvalidInputCountError : std::exception
 {
@@ -308,10 +335,12 @@ static const struct option long_options[] =
     { "t",    required_argument, 0, OPT_TOOL },
     { "tool", required_argument, 0, OPT_TOOL },
 
-    { "usam", required_argument, 0, OPT_U_SAM },
-    { "ubam", required_argument, 0, OPT_U_BAM },
-    { "rbed", required_argument, 0, OPT_R_BED },
-    { "rgtf", required_argument, 0, OPT_R_GTF },
+    { "u_sam",    required_argument, 0, OPT_U_SAM },
+    { "u_bam",    required_argument, 0, OPT_U_BAM },
+    { "r_bed",    required_argument, 0, OPT_R_BED },
+    { "r_gtf",    required_argument, 0, OPT_R_GTF },
+    { "u_gtrack", required_argument, 0, OPT_R_GTF },
+    { "u_itrack", required_argument, 0, OPT_R_GTF },
 
     { "min", required_argument, 0, OPT_MIN },
     { "max", required_argument, 0, OPT_MAX },
@@ -336,7 +365,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    std::cout << "Anaquin v1.0.00" << std::endl;
+    std::cout << "Anaquin v1.1.01" << std::endl;
 }
 
 // Print a file of mixture A and B
@@ -490,6 +519,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.info(_p.command);
     o.info(date());
     o.info("Path: " + path + "\n");
+//    o.info("Threads: " + _p.threads + "\n");
 
     for (const auto &filter : (o.filters = _p.filters))
     {
@@ -543,35 +573,9 @@ template < typename Analyzer> void analyze_2(typename Analyzer::Options o = type
     }, o);
 }
 
-template <typename Options> static Options detect(const std::string &file)
-{
-    const bool found_gene = file.find("gene") != std::string::npos;
-    const bool found_isoform = file.find("isoform") != std::string::npos;
-
-    Options o;
-    
-    if (found_gene && !found_isoform)
-    {
-        std::cout << "[INFO]: Gene tracking file" << std::endl;
-        o.level = RNALevel::Gene;
-    }
-    else if (!found_gene && found_isoform)
-    {
-        std::cout << "[INFO]: Isoform tracking file" << std::endl;
-        o.level = RNALevel::Isoform;
-    }
-    else
-    {
-        throw std::runtime_error("Invalid file. Only genes.fpkm_tracking or isoforms.fpkm_tracking are accepted.");
-    }
-
-    return o;
-}
-
 void parse(int argc, char ** argv)
 {
     auto &tool = _p.tool;
-    auto &mode = _p.mode;
     
     _p = Parsing();
 
@@ -717,6 +721,7 @@ void parse(int argc, char ** argv)
             case OPT_U_SAM:
             case OPT_U_BAM:
             {
+                _p.inputs[opt] = val;
                 _p.name_1 = opt;
                 checkFile(_p.input_1 = val);
                 break;
@@ -728,22 +733,7 @@ void parse(int argc, char ** argv)
             case OPT_MIN:     { parseDouble(val, _p.min);  break; }
             case OPT_LOS:     { parseDouble(val, _p.los);  break; }
             case OPT_THREAD:  { parseInt(val, _p.threads); break; }
-/*
-            case OPT_MODE:
-            {
-                if (_p.mode)
-                {
-                    throw RepeatOptionError("-p");
-                }
-                // Either there's no such mode, or it's not supported by the command
-                else if (!_modes.count(val) || !_supported.at(cmd).count(_p.mode = _modes.at(val)))
-                {
-                    throw InvalidModeError();
-                }
 
-                break;
-            }
-*/
             default:
             {
                 throw InvalidOptionException(argv[index]);
@@ -753,20 +743,6 @@ void parse(int argc, char ** argv)
 
     // Exception should've already been thrown if tool is not specified
     assert(_p.tool);
-
-/*
-    if (_p.tool != TOOL_VERSION)
-    {
-        if (_p.opts.empty() && _p.mode != MODE_SEQUINS)
-        {
-            throw MissingInputError();
-        }
-        else if (!_p.mode)
-        {
-            throw MissingOptionError("-p");
-        }
-    }
-*/
 
     auto &s = Standard::instance();
     
@@ -796,13 +772,23 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_EXPRESS:
                 {
-//                    analyze_1<TExpress>(detect<TExpress::Options>(_p.opts[0]));
+                    TExpress::Options o;
+                    
+                    // The interpreation crticially depends on genes or isoforms
+                    o.level = _inputs.count(OPT_U_GTRACK) ? TExpress::Gene : TExpress::Isoform;
+                    
+                    analyze_1<TExpress>(o);
                     break;
                 }
 
                 case TOOL_T_DIFF:
                 {
-                 //   analyze_1<TDiffs>(detect<TDiffs::Options>(_p.opts[0]));
+                    TDiffs::Options o;
+
+                    // The interpreation crticially depends on genes or isoforms
+                    o.level = _inputs.count(OPT_U_GTRACK) ? TDiffs::Gene : TDiffs::Isoform;
+
+                    analyze_1<TDiffs>(o);
                     break;
                 }
             }
@@ -810,6 +796,7 @@ void parse(int argc, char ** argv)
             break;
         }
 
+/*
         case CMD_CANCER:
         {
             std::cout << "[INFO]: Cancer Analysis" << std::endl;
@@ -821,71 +808,84 @@ void parse(int argc, char ** argv)
             std::cout << "[INFO]: Clinic Analysis" << std::endl;
             break;
         }
+*/
             
-        case CMD_FUSION:
+        case TOOL_F_IGV:
+        case TOOL_F_EXPRESS:
+        case TOOL_F_DISCOVER:
         {
             std::cout << "[INFO]: Fusion Analysis" << std::endl;
 
             applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
-            
-            switch (mode)
+
+            switch (_p.tool)
             {
-               // case MODE_SEQUINS: { printMixture();      break; }
-                //case MODE_ALIGN:   { analyze_1<FAlign>(); break; }
+                case TOOL_F_IGV:      { break; }
+                case TOOL_F_EXPRESS:  { break; }
+                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(); break; }
             }
 
             break;
         }
 
-        case CMD_LADDER:
+        case TOOL_L_IGV:
+        case TOOL_L_DIFF:
+        case TOOL_L_ABUND:
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
             applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
 
-            switch (mode)
+            switch (_p.tool)
             {
-                    /*
-                case MODE_SEQUINS: { printMixture();      break; }
-                case MODE_ABUND:   { analyze_1<LAbund>(); break; }
-                case MODE_DIFFS:   { analyze_2<LDiffs>(); break; }
-                     */
+                case TOOL_L_ABUND: { printMixture();      break; }
+                case TOOL_L_DIFF:  { analyze_1<LAbund>(); break; }
+                case TOOL_L_IGV:   { analyze_2<LDiffs>(); break; }
             }
 
             break;
         }
 
-        case CMD_VAR:
+        case TOOL_V_IGV:
+        case TOOL_V_FREQ:
+        case TOOL_V_DIFF:
+        case TOOL_V_ALIGN:
+        case TOOL_V_DISCOVER:
         {
             std::cout << "[INFO]: Variant Analysis" << std::endl;
             
             applyRef(std::bind(&Standard::v_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
             
-            switch (mode)
+            switch (_p.tool)
             {
-                //case MODE_SEQUINS: { printMixture();        break; }
-                //case MODE_ALIGN:   { analyze_1<VAlign>();   break; }
-                //case MODE_VARIANT: { analyze_1<VVariant>(); break; }
+                //case TOOL_V_ALIGN: { printMixture();        break; }
+                //case TOOL_V_DISCOVER:   { analyze_1<VAlign>();   break; }
+                //case TOOL_V_FREQ: { analyze_1<VVariant>(); break; }
+                //case TOOL_V_DIFF: { analyze_1<VVariant>(); break; }
+                //case TOOL_V_IGV: { analyze_1<VVariant>(); break; }
             }
 
             break;
         }
             
-        case CMD_META:
+        case TOOL_M_PSL:
+        case TOOL_M_ALIGN:
+        case TOOL_M_ABUND:
+        case TOOL_M_DIFF:
+        case TOOL_M_IGV:
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
             applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
             
-            switch (mode)
+            switch (_p.tool)
             {
-                //case MODE_SEQUINS: { printMixture();      break; }
-                //case MODE_BLAST:   { analyze_1<MBlast>(); break; }
-                /*
-                case MODE_DIFFS:
+                case TOOL_M_PSL:   { analyze_1<MBlast>(); break; }
+
+                case TOOL_M_DIFF:
                 {
                     //if (_p.pA.empty () || _p.pB.empty())
                     {
@@ -901,7 +901,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case MODE_ASSEMBLY:
+                case TOOL_M_ABUND:
                 {
                     MAssembly::Options o;
                     
@@ -911,7 +911,6 @@ void parse(int argc, char ** argv)
                     analyze_1<MAssembly>(o);
                     break;
                 }
-                 */
             }
 
             break;
@@ -935,38 +934,6 @@ int parse_options(int argc, char ** argv)
     {
         parse(argc, argv);
         return 0;
-    }
-    catch (const InvalidModeError &ex)
-    {
-//        std::stringstream ss;
-//        
-//        const auto &modes = _supported.at(_p.cmd);
-//        
-//        for (const auto &mode : modes)
-//        {
-//            for (const auto &i : _modes)
-//            {
-//                if (i.second == mode)
-//                {
-//                    ss << i.first + "|";
-//                    break;
-//                }
-//            }
-//        }
-//        
-//        auto str = ss.str();
-//        
-//        // Remove the last "|"
-//        str = str.substr(0, str.length() - 2);
-//
-//        for (const auto i : _cmds)
-//        {
-//            if (i.second == _p.cmd)
-//            {
-//                const auto format = "Invalid mode for %1%. Possibles are: %2%.";
-//                printError((boost::format(format) % i.first % str).str());
-//            }
-//        }
     }
     catch (const InvalidOptionException &ex)
     {

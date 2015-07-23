@@ -7,6 +7,12 @@ namespace Anaquin
 {
     struct TDiffs : public TAnalyzer
     {
+        enum RNALevel
+        {
+            Gene,
+            Isoform
+        };
+
         struct Options : public DoubleMixtureOptions
         {
             RNALevel level;
