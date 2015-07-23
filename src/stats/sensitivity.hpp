@@ -8,9 +8,11 @@ namespace Anaquin
     struct Sensitivity
     {
         SequinID id;
+
+        // Measured abundance for the limited sequin
         Counts counts;
 
-        // The lowest abundance that is still detectable
+        // Expected abundance for the limited sequin
         Concentration abund;
     };
 }
