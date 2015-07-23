@@ -3,26 +3,24 @@
 
 using namespace Anaquin;
 
+static std::string _output, _error;
+
+extern int parse_options(const std::string &, std::string &, std::string &);
+
 TEST_CASE("TAlign_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution
-    const auto r = TAlign::analyze("tests/data/rna/cufflinks.sam");
+    const auto r = TAlign::analyze("tests/data/trans/cufflinks.sam");
 
     REQUIRE(r.pe.m.nq == 0);
     REQUIRE(r.pe.m.nr == 76);
     REQUIRE(isnan(r.pe.m.sp()));
     REQUIRE(isnan(r.pe.m.sn()));
 
-    const int s = parse_options("-c ladder -p abund tests/data/ladder/aligned_A.sam", _output, _error);
+    const int s = parse_options("-t TransAlign -r_gtf data/trans/RNA.v1.gtf -u_bam tests/data/trans/cufflinks.sam", _output, _error);
     
-    REQUIRE(s == 1);
-    REQUIRE(_output.find("Ladder Analysis") != std::string::npos);
-    REQUIRE(_error.find("Mixture file is missing. Please specify it with -m.") != std::string::npos);
-    
-    
-
-
-
+    REQUIRE(s == 0);
+    REQUIRE(_output.find("Transcriptome Analysis") != std::string::npos);
 }
 
 TEST_CASE("TAlign_Simulations_All_Filtered")
@@ -34,7 +32,7 @@ TEST_CASE("TAlign_Simulations_All_Filtered")
         opts.filters.insert(i.first);
     }
 
-    const auto r = TAlign::analyze("tests/data/rna/A1/accepted_hits.sam", opts);
+    const auto r = TAlign::analyze("tests/data/trans/A1/accepted_hits.sam", opts);
 
     REQUIRE(r.pe.m.nq == 25);
     REQUIRE(r.pe.m.nr == 76);
@@ -51,7 +49,7 @@ TEST_CASE("TAlign_Simulations_All_Filtered")
 
 TEST_CASE("TAlign_Simulations")
 {
-    const auto r = TAlign::analyze("tests/data/rna/A1/accepted_hits.sam");
+    const auto r = TAlign::analyze("tests/data/trans/A1/accepted_hits.sam");
 
     REQUIRE(r.pb.m.nq == 23712);
     REQUIRE(r.pb.m.nr == 149219);

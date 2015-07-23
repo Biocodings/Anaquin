@@ -229,7 +229,7 @@ template<typename T> std::string concat(const std::map<Value, T> &m)
 
 static std::string toolRange()
 {
-    return "Transcriptome:\n  TransAlign|TransAssembly|TransExpression|TransDifferent|TransNorm|TransIGV";
+    return "TransAlign,TransAssembly,TransExpression,TransDifferent,TransNorm,TransIGV";
 }
 
 struct InvalidCommandException : public std::exception
@@ -518,8 +518,8 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 
     o.info(_p.command);
     o.info(date());
-    o.info("Path: " + path + "\n");
-//    o.info("Threads: " + _p.threads + "\n");
+    o.info("Path: " + path);
+    o.info("Threads: " + std::to_string(_p.threads) + "\n");
 
     for (const auto &filter : (o.filters = _p.filters))
     {
@@ -535,9 +535,8 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     f(o);
     
     std::clock_t end = std::clock();
-    
-    const auto elapsed = (boost::format("Completed. Elpased %1% seconds")
-                                        % (double(end - begin) / CLOCKS_PER_SEC)).str();
+
+    const auto elapsed = (boost::format("Completed. %1% seconds.") % (double(end - begin) / CLOCKS_PER_SEC)).str();
     o.info(elapsed);
 
 #ifndef DEBUG
@@ -948,7 +947,7 @@ int parse_options(int argc, char ** argv)
     {
         if (!ex.range.empty())
         {
-            const auto format = "A mandatory option is missing. Please specify %1%. Possibles are %2%";
+            const auto format = "A mandatory option is missing. Please specify %1%. Possibilities are %2%";
             printError((boost::format(format) % ex.opt % ex.range).str());
         }
         else

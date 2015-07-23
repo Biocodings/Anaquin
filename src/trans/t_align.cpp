@@ -173,7 +173,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
 
-    options.writer->open("trans_align_all.stats");
+    options.writer->open("trans_align_summary.stats");
     options.writer->write((boost::format(format) % "genome"
                                                  % "silco"
                                                  % "dilution"
