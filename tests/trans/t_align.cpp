@@ -3,24 +3,27 @@
 
 using namespace Anaquin;
 
-const int s = parse_options("-c ladder -p abund tests/data/ladder/aligned_A.sam", _output, _error);
-
-REQUIRE(s == 1);
-REQUIRE(_output.find("Ladder Analysis") != std::string::npos);
-REQUIRE(_error.find("Mixture file is missing. Please specify it with -m.") != std::string::npos);
-
-
 TEST_CASE("TAlign_Cufflinks")
 {
     // The sample file was taken from Cufflink's source distribution
     const auto r = TAlign::analyze("tests/data/rna/cufflinks.sam");
 
-    
-    
     REQUIRE(r.pe.m.nq == 0);
     REQUIRE(r.pe.m.nr == 76);
     REQUIRE(isnan(r.pe.m.sp()));
     REQUIRE(isnan(r.pe.m.sn()));
+
+
+    const int s = parse_options("-c ladder -p abund tests/data/ladder/aligned_A.sam", _output, _error);
+    
+    REQUIRE(s == 1);
+    REQUIRE(_output.find("Ladder Analysis") != std::string::npos);
+    REQUIRE(_error.find("Mixture file is missing. Please specify it with -m.") != std::string::npos);
+    
+    
+
+
+
 }
 
 TEST_CASE("TAlign_Simulations_All_Filtered")
