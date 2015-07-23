@@ -18,7 +18,7 @@ namespace Anaquin
             std::map<TypeID, Coverage> expect;
 
             // Histogram before normalization and adjustment
-            std::map<TypeID, Counts> abund;
+            std::map<TypeID, Counts> measure;
 
             // Histogram after normalization but before adjustment
             std::map<TypeID, Coverage> actual;

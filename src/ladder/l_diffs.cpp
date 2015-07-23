@@ -74,11 +74,11 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         stats.x.push_back(log2(known));
         stats.y.push_back(log2(measured));
         
-        assert(a.abund.count(id) && b.abund.count(id));
+        assert(a.measure.count(id) && b.measure.count(id));
         
         options.writer->write((boost::format(format) % id
-                                                     % a.abund.at(id)
-                                                     % b.abund.at(id)
+                                                     % a.measure.at(id)
+                                                     % b.measure.at(id)
                                                      % a.expect.at(id)
                                                      % b.expect.at(id)
                                                      % known

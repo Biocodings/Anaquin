@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 TEST_CASE("TAssembly_Simulation")
 {
-    const auto r = TAssembly::analyze("tests/data/rna/A1/transcripts.gtf");
+    const auto r = TAssembly::analyze("tests/data/trans/A1/transcripts.gtf");
 
     REQUIRE(r.pe.m.nq == 1200);
     REQUIRE(r.pe.m.nr == 1199);
