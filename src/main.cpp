@@ -86,6 +86,7 @@ typedef std::set<Value> Range;
 #define OPT_U_VCF    384
 #define OPT_U_GTRACK 385
 #define OPT_U_ITRACK 386
+#define OPT_U_GTF    387
 
 using namespace Anaquin;
 
@@ -339,6 +340,8 @@ static const struct option long_options[] =
     { "u_bam",    required_argument, 0, OPT_U_BAM },
     { "r_bed",    required_argument, 0, OPT_R_BED },
     { "r_gtf",    required_argument, 0, OPT_R_GTF },
+
+    { "u_gtf",    required_argument, 0, OPT_U_GTF },
     { "u_gtrack", required_argument, 0, OPT_R_GTF },
     { "u_itrack", required_argument, 0, OPT_R_GTF },
 
@@ -717,6 +720,7 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            case OPT_U_GTF:
             case OPT_U_SAM:
             case OPT_U_BAM:
             {

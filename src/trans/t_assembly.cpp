@@ -174,29 +174,43 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * Calculate for the LOS
      */
 
-    options.info("Calculating LOS - exon level");
+    options.info("Calculating limit of sensitivity");
+    
     stats.pe.s = Expression::analyze(stats.ce, sequins);
-    
-    options.info("Calculating LOS - transcript level");
     stats.pt.s = Expression::analyze(stats.ct, sequins);
-    
-    options.info("Calculating LOS - base level");
     stats.pb.s = Expression::analyze(stats.cb, s.r_gene(options.mix));
-    
-    options.info("Calculating LOS - intron level");
     stats.pi.s = Expression::analyze(stats.ci, sequins);
 
-    options.info("Generating base statistics");
-    AnalyzeReporter::stats("rna_assembly_base.stats", stats.pb, stats.cb, options.writer);
+    options.info("Generating statistics");
 
-    options.info("Generating exon statistics");
-    AnalyzeReporter::stats("rna_assembly_exon.stats", stats.pe, stats.ce, options.writer);
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
     
-    options.info("Generating intron statistics");
-    AnalyzeReporter::stats("rna_assembly_intron.stats", stats.pi, stats.ci, options.writer);
-    
-    options.info("Generating transcript statistics");
-    AnalyzeReporter::stats("rna_assembly_transcripts.stats", stats.pt, stats.ct, options.writer);
+    options.writer->open("trans_assembly_summary.stats");
+    options.writer->write((boost::format(format) % "exon_sp"
+                                                 % "exon_sn"
+                                                 % "exon_ss"
+                                                 % "intron_sp"
+                                                 % "intron_sn"
+                                                 % "intron_ss"
+                                                 % "base_sp"
+                                                 % "base_sn"
+                                                 % "base_ss"
+                                                 % "trans_sp"
+                                                 % "trans_sn"
+                                                 % "trans_ss").str());
+    options.writer->write((boost::format(format) % stats.pe.m.sp()
+                                                 % stats.pe.m.sn()
+                                                 % stats.pe.s.abund
+                                                 % stats.pi.m.sp()
+                                                 % stats.pi.m.sn()
+                                                 % stats.pi.s.abund
+                                                 % stats.pb.m.sp()
+                                                 % stats.pb.m.sn()
+                                                 % stats.pb.s.abund
+                                                 % stats.pt.m.sp()
+                                                 % stats.pi.m.sn()
+                                                 % stats.pi.s.abund).str());
+    options.writer->close();
 
     return stats;
 }

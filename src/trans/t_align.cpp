@@ -179,13 +179,13 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
                                                  % "dilution"
                                                  % "exon_sn"
                                                  % "exon_sp"
-                                                 % "exon_los"
+                                                 % "exon_ss"
                                                  % "intron_sn"
                                                  % "intron_sp"
-                                                 % "intron_los"
+                                                 % "intron_ss"
                                                  % "base_sn"
                                                  % "base_sp"
-                                                 % "base_los").str());
+                                                 % "base_ss").str());
     options.writer->write((boost::format(format) % stats.n_genome
                                                  % stats.n_chrT
                                                  % stats.dilution()
