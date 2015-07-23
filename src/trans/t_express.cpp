@@ -17,9 +17,6 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
 
     options.info("Parsing input file");
 
-    // Whether the de-novo message has been shown
-    bool shown = false;
-    
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
         // Don't overflow
@@ -42,12 +39,6 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
 
                 if (found != s.r_seqs_A.end())
                 {
-                    if (!shown)
-                    {
-                        options.warn("Named sequins not found. De novo assembly assumed.");
-                    }
-
-                    shown = true;
                     r = &(found->second);
                 }
             }
@@ -83,12 +74,6 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
                 
                 if (found != s.r_seqs_A.end())
                 {
-                    if (!shown)
-                    {
-                        options.warn("Named sequins not found. De novo assembly assumed.");
-                    }
-                    
-                    shown = true;
                     r = &(s.r_seqs_gA.at(found->second.baseID));
                 }
             }
@@ -122,11 +107,15 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
         stats.s = Expression::analyze(stats.c, s.r_gene(options.mix));
     }
     
-    options.info("Generating an R script");
+    options.info("Generating statistics");
+
     AnalyzeReporter::linear(stats, "rna_abund", "FPKM", options.writer);
 
     options.info("Generating statistics for sequin");
     const std::string format = "%1%\t%2%\t%3%";
 
+    
+    
+    
     return stats;
 }

@@ -347,19 +347,19 @@ namespace Anaquin
             const auto lm = stats.linear();
 
             /*
-             * Generate linear statistics
+             * Generate summary statistics
              */
 
-            writer->open(prefix + ".stats");
+            writer->open(prefix + "_summary.stats");
             writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
             writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
             writer->close();
             
             /*
-             * Generate linear CSV
+             * Generate CSV for each sequin
              */
             
-            writer->open(prefix + ".csv");
+            writer->open(prefix + "_sequins.csv");
             writer->write("ID\expect\tmeasure");
             
             for (std::size_t i = 0; i < stats.x.size(); i++)
@@ -370,7 +370,7 @@ namespace Anaquin
             writer->close();
 
             /*
-             * Generate a linear plot
+             * Generate a script for data visualization
              */
             
             writer->open(prefix + ".R");
