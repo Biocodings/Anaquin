@@ -43,7 +43,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
             // Eg: C_16_A to C_16
             const auto baseID = align.id.substr(0, align.id.find_last_of("_"));
 
-            actualBaseIDs.insert(baseID);
+            actualBaseIDs.insert(align.id);
             options.logger->write((boost::format("%1%: %2%") % p.i % baseID).str());
         }
     });
