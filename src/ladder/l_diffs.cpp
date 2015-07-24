@@ -46,8 +46,6 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     options.logInfo((boost::format("%1% sequins in mix A") % a.normalized.size()).str());
     options.logInfo((boost::format("%1% sequins in mix B") % b.normalized.size()).str());
     
-    AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
-
     /*
      * Try for each detected sequin. But only if it's detected in both mixtures. Otherwise, the fold-
      * change is infinite.
@@ -110,6 +108,8 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     }
     
     options.writer->close();
+
+    AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer, true, true, false);
 
 	return stats;
 }

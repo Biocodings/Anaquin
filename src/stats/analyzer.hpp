@@ -328,18 +328,13 @@ namespace Anaquin
 
     struct AnalyzeReporter
     {
-        /*
-         * Write the following for a linear regression model:
-         *
-         *    - Linear plot
-         *    - Linear statistics
-         *    - Linear CSV (data points)
-         */
-        
         template <typename Stats, typename Writer> static void linear(const Stats &stats,
                                                                       const std::string prefix,
                                                                       const std::string unit,
-                                                                      Writer writer)
+                                                                      Writer writer,
+                                                                      bool r       = true,
+                                                                      bool summary = true,
+                                                                      bool sequin  = true)
         {
             assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
@@ -350,32 +345,41 @@ namespace Anaquin
              * Generate summary statistics
              */
 
-            writer->open(prefix + "_summary.stats");
-            writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
-            writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
-            writer->close();
-            
+            if (summary)
+            {
+                writer->open(prefix + "_summary.stats");
+                writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
+                writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
+                writer->close();
+            }
+
             /*
              * Generate CSV for each sequin
              */
             
-            writer->open(prefix + "_sequins.csv");
-            writer->write("ID\texpect\tmeasure");
-            
-            for (std::size_t i = 0; i < stats.x.size(); i++)
+            if (sequin)
             {
-                writer->write((boost::format("%1%\t%2%\t%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
+                writer->open(prefix + "_sequins.csv");
+                writer->write("ID\texpect\tmeasure");
+                
+                for (std::size_t i = 0; i < stats.x.size(); i++)
+                {
+                    writer->write((boost::format("%1%\t%2%\t%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
+                }
+                
+                writer->close();
             }
-
-            writer->close();
 
             /*
              * Generate a script for data visualization
              */
             
-            writer->open(prefix + ".R");
-            writer->write(RWriter::write(stats.x, stats.y, stats.z, unit, stats.s.abund));
-            writer->close();
+            if (r)
+            {
+                writer->open(prefix + ".R");
+                writer->write(RWriter::write(stats.x, stats.y, stats.z, unit, stats.s.abund));
+                writer->close();
+            }
         }
 
         template <typename Writer, typename Histogram> static void stats(const FileName &name,
