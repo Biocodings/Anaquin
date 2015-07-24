@@ -55,18 +55,18 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
 
-    options.writer->open("ladder_diffs_summary.csv");
-    options.writer->write((boost::format(format) % "ID"
-                                                 % "abd_A"
-                                                 % "abd_B"
-                                                 % "exp_A"
-                                                 % "exp_B"
-                                                 % "exp_D"
-                                                 % "mea_A"
-                                                 % "mea_B"
-                                                 % "adj_A"
-                                                 % "adj_B"
-                                                 % "adj_D").str());
+    options.writer->open("ladder_diffs_sequins.csv");
+    options.writer->write((boost::format(format) % "id"
+                                                 % "expect_A"
+                                                 % "expect_B"
+                                                 % "expect_D"
+                                                 % "measure_A"
+                                                 % "measure_B"
+                                                 % "norm_A"
+                                                 % "norm_B"
+                                                 % "adjust_A"
+                                                 % "adjust_B"
+                                                 % "adjust_D").str());
 
     for (const auto &i : a.normalized)
     {
@@ -86,27 +86,27 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
         const auto known = (b.expect.at(id) / a.expect.at(id));
 
         // Calculate actual fold change between mixture A and B
-        const auto measured = (b.adjusted.at(id) / a.adjusted.at(id));
+        const auto adjusted = (b.adjusted.at(id) / a.adjusted.at(id));
 
-        options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % measured).str());
-        
+        options.logInfo((boost::format("%1%\t%2%\t%3%") % id % known % adjusted).str());
+
         stats.z.push_back(id);
         stats.x.push_back(log2(known));
-        stats.y.push_back(log2(measured));
+        stats.y.push_back(log2(adjusted));
         
         assert(a.measured.count(id) && b.measured.count(id));
         
         options.writer->write((boost::format(format) % id
-                                                     % a.measured.at(id)
-                                                     % b.measured.at(id)
                                                      % a.expect.at(id)
                                                      % b.expect.at(id)
                                                      % known
+                                                     % a.measured.at(id)
+                                                     % b.measured.at(id)
                                                      % a.normalized.at(id)
                                                      % b.normalized.at(id)
                                                      % a.adjusted.at(id)
                                                      % b.adjusted.at(id)
-                                                     % measured).str());
+                                                     % adjusted).str());
     }
     
     options.writer->close();
