@@ -19,8 +19,8 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
     if (!options.pA.empty() && !options.pB.empty())
     {
         options.info((boost::format("Using alignment: %1%") % options.pA).str());
-        options.info((boost::format("Using alignment: %2%") % options.pB).str());
-        
+        options.info((boost::format("Using alignment: %1%") % options.pB).str());
+
         const auto r1 = MBlast::analyze(options.pA);
         const auto r2 = MBlast::analyze(options.pB);
 

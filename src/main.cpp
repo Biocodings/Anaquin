@@ -89,13 +89,15 @@ typedef std::set<Value> Range;
 #define OPT_U_GTF   387
 #define OPT_GDIFF   388
 #define OPT_IDIFF   389
-#define OPT_SAM_1   390
-#define OPT_SAM_2   391
 #define OPT_BAM_1   392
 #define OPT_BAM_2   393
 #define OPT_PSL_1   394
 #define OPT_PSL_2   395
-#define OPT_U_FA    396
+#define OPT_FA_1    396
+#define OPT_FA_2    397
+#define OPT_FUS     398
+#define OPT_OUT     399
+#define OPT_VCF     400
 
 using namespace Anaquin;
 
@@ -177,7 +179,7 @@ static std::set<Tool> _mixes =
 
 static std::map<Tool, std::set<Input>> _inputs =
 {
-    { TOOL_T_ALIGN, { OPT_R_GTF, OPT_SAM_1, OPT_BAM_1 } }
+    { TOOL_T_ALIGN, { OPT_R_GTF, OPT_BAM_1 } }
 };
 
 /*
@@ -340,17 +342,23 @@ static const struct option long_options[] =
     { "t",    required_argument, 0, OPT_TOOL },
     { "tool", required_argument, 0, OPT_TOOL },
 
-    { "u_sam",    required_argument, 0, OPT_SAM_1 },
+    { "u_sam",    required_argument, 0, OPT_BAM_1 },
     { "u_bam",    required_argument, 0, OPT_BAM_1 },
-    { "u_sam_1",  required_argument, 0, OPT_SAM_1 },
+    { "u_sam_1",  required_argument, 0, OPT_BAM_1 },
     { "u_bam_1",  required_argument, 0, OPT_BAM_1 },
-    { "u_sam_2",  required_argument, 0, OPT_SAM_2 },
+    { "u_sam_2",  required_argument, 0, OPT_BAM_2 },
     { "u_bam_2",  required_argument, 0, OPT_BAM_2 },
+
+    { "r_fus",    required_argument, 0, OPT_FUS },
+    { "u_out",    required_argument, 0, OPT_OUT },
 
     { "r_bed",    required_argument, 0, OPT_R_BED },
     { "r_gtf",    required_argument, 0, OPT_R_GTF },
 
-    { "u_fa",     required_argument, 0, OPT_U_FA   },
+    { "u_vcf",    required_argument, 0, OPT_VCF    },
+    { "u_fa",     required_argument, 0, OPT_FA_1   },
+    { "u_fa_1",   required_argument, 0, OPT_FA_1   },
+    { "u_fa_2",   required_argument, 0, OPT_FA_2   },
     { "u_gtf",    required_argument, 0, OPT_U_GTF  },
     { "u_gtrack", required_argument, 0, OPT_GTRACK },
     { "u_itrack", required_argument, 0, OPT_ITRACK },
@@ -576,17 +584,21 @@ template <typename Analyzer> void analyze_1(typename Analyzer::Options o = typen
     }, o);
 }
 
-// Analyze for two samples
-template < typename Analyzer> void analyze_2(typename Analyzer::Options o = typename Analyzer::Options())
+// Analyze for a single sample
+template <typename Analyzer> void analyze_1(Input x, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    if (_p.input_1.empty() || _p.input_2.empty())
-    {
-        throw InvalidInputCountError(2, 1);
-    }
-
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::analyze(_p.input_1, _p.input_2, o);
+        Analyzer::analyze(_p.inputs.at(x), o);
+    }, o);
+}
+
+// Analyze for two samples
+template < typename Analyzer> void analyze_2(Input x, Input y, typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
+    {
+        Analyzer::analyze(_p.inputs.at(x), _p.inputs.at(y), o);
     }, o);
 }
 
@@ -730,6 +742,7 @@ void parse(int argc, char ** argv)
                 
             case OPT_MIXTURE: { checkFile(_p.mix = val);   break; }
 
+            case OPT_FUS:
             case OPT_R_BED:
             case OPT_R_GTF:   { checkFile(_p.ref_1 = val); break; }
 
@@ -737,8 +750,8 @@ void parse(int argc, char ** argv)
              * Options that take a generated input file for the second sample
              */
 
+            case OPT_FA_2:
             case OPT_PSL_2:
-            case OPT_SAM_2:
             case OPT_BAM_2:
             {
                 _p.inputs[opt] = val;
@@ -747,14 +760,11 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            case OPT_VCF:
+            case OPT_OUT:
+            case OPT_FA_1:
             case OPT_PSL_1: { checkFile(_p.inputs[opt] = val); break; }
                 
-            /*
-             * Options that take a generated input file for the first sample
-             */
-
-            case OPT_U_FA:
-            case OPT_SAM_1:
             case OPT_BAM_1:
             case OPT_U_GTF:
             case OPT_IDIFF:
@@ -864,7 +874,7 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_F_IGV:      { break; }
                 case TOOL_F_EXPRESS:  { break; }
-                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(); break; }
+                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_OUT); break; }
             }
 
             break;
@@ -880,8 +890,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_L_ABUND:  { analyze_1<LAbund>(); break; }
-                case TOOL_L_DIFF:   { analyze_2<LDiffs>(); break; }
+                case TOOL_L_ABUND:  { analyze_1<LAbund>();                     break; }
+                case TOOL_L_DIFF:   { analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break; }
             }
 
             break;
@@ -900,8 +910,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_ALIGN:    { analyze_1<VAlign>();    break; }
-                case TOOL_V_DISCOVER: { analyze_1<VDiscover>(); break; }
+                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);  break; }
+                case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_VCF); break; }
                 case TOOL_V_FREQ:     { analyze_1<VFreq>();     break; }
                 //case TOOL_V_DIFF:     { analyze_1<VVariant>(); break; }
                 //case TOOL_V_IGV:      { analyze_1<VVariant>(); break; }
@@ -932,8 +942,8 @@ void parse(int argc, char ** argv)
                     
                     o.pA = _p.inputs.at(OPT_PSL_1);
                     o.pB = _p.inputs.at(OPT_PSL_2);
-                    
-                    analyze_2<MDiffs>(o);
+
+                    analyze_2<MDiffs>(OPT_FA_1, OPT_FA_2, o);
                     break;
                 }
 

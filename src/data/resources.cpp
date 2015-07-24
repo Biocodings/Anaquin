@@ -76,12 +76,12 @@ std::string Manual()
  * Fusion Resources
  */
 
-std::string FusDataMix()
+std::string FusionDataMix()
 {
     return ToString(data_fusion_FUS_v3_csv);
 }
 
-std::string FusDataRef()
+std::string FusionDataRef()
 {
     return ToString(data_fusion_FUS_v1_ref);
 }

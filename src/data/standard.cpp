@@ -13,8 +13,8 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
-extern std::string FusDataMix();
-extern std::string FusDataRef();
+extern std::string FusionDataMix();
+extern std::string FusionDataRef();
 
 extern std::string LadderDataMix();
 
@@ -316,8 +316,8 @@ void Standard::ladder()
 
 void Standard::fusion()
 {
-    f_ref(Reader(FusDataRef(), DataMode::String));
-    f_mix(Reader(FusDataMix(), DataMode::String));
+    f_ref(Reader(FusionDataRef(), DataMode::String));
+    f_mix(Reader(FusionDataMix(), DataMode::String));
 }
 
 void Standard::meta()

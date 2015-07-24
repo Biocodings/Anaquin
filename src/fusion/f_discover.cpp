@@ -79,10 +79,9 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const Options &opti
     stats.p.s = Expression::analyze(stats.h, s.f_seqs_A);
     stats.s = stats.p.s; // TODO: Fix this
 
-    options.info("Generating linear model");
-    AnalyzeReporter::linear(stats, "fusion_align", "FPKM", options.writer);
-
     options.info("Generating statistics");
+
+    AnalyzeReporter::linear(stats, "fusion_align", "FPKM", options.writer);
     AnalyzeReporter::stats("fusion_sequins.stats", stats.p, stats.h, options.writer);
 
     return stats;
