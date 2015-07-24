@@ -244,8 +244,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         options.writer->close();
     };
 
-    AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
-    //writeHist("ladder_abund_summary.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
+    AnalyzeReporter::linear(stats, "LadderAbundance", "FPKM", options.writer);
+    writeHist("LadderAbundance_hist.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
 
 	return stats;
 }

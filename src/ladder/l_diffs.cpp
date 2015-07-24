@@ -53,7 +53,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
 
-    options.writer->open("ladder_diffs_sequins.csv");
+    options.writer->open("LadderDifferent_hist.csv");
     options.writer->write((boost::format(format) % "id"
                                                  % "expect_A"
                                                  % "expect_B"
@@ -109,7 +109,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     
     options.writer->close();
 
-    AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer, true, true, false);
+    AnalyzeReporter::linear(stats, "LadderDifferent", "FPKM", options.writer, true, true, false);
 
 	return stats;
 }
