@@ -84,6 +84,12 @@ namespace Anaquin
             // The location of the chromosome
             Locus l;
 
+            // Set of prefix IDs shared between all tools
+            std::set<BaseID> baseIDs;
+        
+            // Mapping between sequins to the base shared between all tools
+            std::map<SequinID, BaseID> seq2base;
+        
             /*
              * RNA data
              */
@@ -144,9 +150,7 @@ namespace Anaquin
 
             // Sequins for mixture A and B
             SequinMap l_seqs_A, l_seqs_B;
-
-            std::map<TypeID, SequinID> l_map;
-
+        
             /*
              * Fusion data
              */

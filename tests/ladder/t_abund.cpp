@@ -20,7 +20,7 @@ TEST_CASE("LAbund_Test")
     const auto r = LAbund::analyze("tests/data/ladder/aligned_A.sam");
 
     REQUIRE(r.expTotal == 4915200);
-    REQUIRE(r.actTotal == 834);
+    REQUIRE(r.obsTotal == 834);
 
     REQUIRE(r.expect.count("C_16_A") == 1);
     REQUIRE(r.expect.count("C_16_B") == 1);

@@ -35,7 +35,7 @@ namespace Anaquin
             Counts expTotal = 0;
 
             // Measured size of the library
-            Counts actTotal = 0;
+            Counts obsTotal = 0;
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

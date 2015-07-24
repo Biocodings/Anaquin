@@ -18,13 +18,13 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 {
     LAbund::Stats stats;
 
-    // The sequins detected (eg: C_14, C-_16)
-    std::set<BaseID> actualBaseIDs;
-    
+    // The sequins detected
+    std::set<SequinID> seqIDs;
+
     options.info("Parsing alignment file");
 
     /*
-     * Construct a histogram or distribution of the aligned sequins.
+     * Construct a histogram or distribution
      */
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
@@ -37,54 +37,66 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         // Don't repeat the same read if it's spliced
         if (align.i == 0)
         {
-            stats.actTotal++;
+            stats.obsTotal++;
             stats.measured[align.id]++;
 
             // Eg: C_16_A to C_16
             const auto baseID = align.id.substr(0, align.id.find_last_of("_"));
 
-            actualBaseIDs.insert(align.id);
+            seqIDs.insert(align.id);
             options.logger->write((boost::format("%1%: %2%") % p.i % baseID).str());
         }
     });
 
-    if (actualBaseIDs.empty())
+    if (seqIDs.empty())
     {
+        options.warn("Empty histogram. Please check the inputs and try again.");
         return stats;
     }
+
+    /*
+     * Histogram has been created for detected sequins, such as C_14_C.
+     */
     
-    assert(stats.actTotal);
-    options.info("Calculating the expected library size");
+    assert(stats.obsTotal);
+    options.info("Histogram created. Calculating the expected library size.");
 
     const auto &s   = Standard::instance();
     const auto &mix = options.mix == MixA ? s.l_seqs_A : s.l_seqs_B;
 
     /*
-     * Calculate for the expected library size. The size depends on the detected sequins.
+     * Calculate for the expected library size. The size depends on the sequins detected.
      */
 
-    for (const auto &baseID : actualBaseIDs)
+    for (const auto &seqID : seqIDs)
     {
-        options.info((boost::format("Calculating for baseID: %1%") % baseID).str());
+        options.info((boost::format("Calculating for sequin: %1%") % seqID).str());
 
-        if (!mix.count(baseID))
+        if (!mix.count(seqID))
         {
-            options.warn(baseID + " is in alignment but not found in the mixture file");
+            options.warn(seqID + " is in alignment but not found in the mixture file");
         }
         else
         {
-            const auto fold = s.l_seqs_A.at(baseID).abund();
-            
-            // Expected size for this particular sequin
-            const auto size = 1.0 * fold + 2.0 * fold + 4.0 * fold + 8.0 * fold;
+            const auto typeID = seqID.substr(seqID.size() - 1);
 
-            stats.expTotal += size;
+            const static std::map<TypeID, double> fold =
+            {
+                { "A", 1.0 },
+                { "B", 2.0 },
+                { "C", 4.0 },
+                { "D", 8.0 },
+            };
+
+            stats.expTotal += fold.at(typeID) * s.l_seqs_A.at(seqID).abund();
         }
     }
 
     if (!stats.expTotal)
     {
         options.error("stats.expTotal == 0");
+        
+        // Report a common and useful error message
         throw std::runtime_error("Unable to find anything in the alignment that matches with the mixture. Usually this is caused by an incorrect mixture file. Please check your mixture file.");
     }
 
@@ -92,96 +104,82 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
      * Adjusting the observed abundance
      */
 
-    options.info("Linearly correcting the observed abundance");
+    options.info("Adjusting the measured abundance");
 
-    for (const auto &i : mix)
+    for (const auto &baseID : s.baseIDs)
     {
-        const std::string &base = i.first;
+        const auto A = baseID + "_A";
+        const auto B = baseID + "_B";
+        const auto C = baseID + "_C";
+        const auto D = baseID + "_D";
 
-        // Skip over any sequin defined in the mixture but undetected
-        if (!actualBaseIDs.count(base))
+        // Skip over any ladder defined in the mixture but totally undetected
+        if (!seqIDs.count(A) && !seqIDs.count(B) && !seqIDs.count(C) && !seqIDs.count(D))
         {
             continue;
         }
-
-        stats.c[base]++;
         
+        //stats.c[id]++;
+
+        #define COUNT(x) stats.measured.count(x) ? stats.measured.at(x) : 0
+        
+        // Create a vector for normalized measured coverage
+        const auto normalize = create(COUNT(A), COUNT(B), COUNT(C), COUNT(D), 1.0, stats.obsTotal);
+        
+        // Create a vector for normalized expected coverage
+        const auto expect = create(mix.at(A).abund(),
+                                   mix.at(B).abund(),
+                                   mix.at(C).abund(),
+                                   mix.at(D).abund(), 1.0, stats.expTotal);
+
+        // There must be something detected, otherwise we wouldn't have been here
+        assert(SS::sum(normalize));
+
+        // Fit a linear regression model
+        const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(normalize), SS::c(expect)));
+
+        // Regression slope that we'll correct to 1
+        const double slope = lm.coeffs[1].v;
+
+        std::vector<double> adjusted;
+        adjusted.resize(normalize.size());
+
         /*
-         * Eg: C_19_A, C_19_B, C_19_C and C_19_D, where the base is C_19
+         * This is the key in ladder analysis. Adjust the normalized abundance.
          */
         
-        const auto baseA = base + "_A";
-        const auto baseB = base + "_B";
-        const auto baseC = base + "_C";
-        const auto baseD = base + "_D";
-    
-        #define COUNT(x) stats.measured.count(x) ? stats.measured.at(x) : 0
-
-        // Create a vector for normalized measured coverage
-        const auto actual = create(COUNT(baseA), COUNT(baseB), COUNT(baseC), COUNT(baseD), 1.0, stats.actTotal);
-
-        // Create a vector for normalized expected coverage
-        const auto expect = create(1.0, 2.0, 4.0, 8.0, mix.at(base).abund(), stats.expTotal);
-        //const auto expect = create(1.0, 2.0, 4.0, 8.0, mix.at(base).abund() / mix.at(base).length, stats.expTotal);
-
-        // Make it one so that it can be divided (avoid division by zero)
-        double slope = 1.0;
-
-        // Don't do a linear regression if the slope will be zero
-        if (SS::sum(actual))
-        {
-            // Fit a linear regression model
-            const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(actual), SS::c(expect)));
-            
-            // Regression slope that we'll correct to 1
-            slope = lm.coeffs[1].v;
-        }
-        
-        std::vector<double> adjusted;
-        adjusted.resize(actual.size());
-
-        std::transform(actual.begin(), actual.end(), adjusted.begin(), [&](double c)
+        std::transform(normalize.begin(), normalize.end(), adjusted.begin(), [&](double c)
         {
             return c / slope;
         });
 
-        if (SS::sum(actual))
-        {
-            assert(expect[0] && expect[1] && expect[2] && expect[3]);
-        }
+        assert(expect[0] && expect[1] && expect[2] && expect[3]);
         
-        stats.expect[baseA]  = expect[0];
-        stats.expect[baseB]  = expect[1];
-        stats.expect[baseC]  = expect[2];
-        stats.expect[baseD]  = expect[3];
+        stats.expect[A]  = expect[0];
+        stats.expect[B]  = expect[1];
+        stats.expect[C]  = expect[2];
+        stats.expect[D]  = expect[3];
 
-        stats.normalized[baseA]  = actual[0];
-        stats.normalized[baseB]  = actual[1];
-        stats.normalized[baseC]  = actual[2];
-        stats.normalized[baseD]  = actual[3];
+        stats.normalized[A] = normalize[0];
+        stats.normalized[B] = normalize[1];
+        stats.normalized[C] = normalize[2];
+        stats.normalized[D] = normalize[3];
         
-        stats.adjusted[baseA] = adjusted[0];
-        stats.adjusted[baseB] = adjusted[1];
-        stats.adjusted[baseC] = adjusted[2];
-        stats.adjusted[baseD] = adjusted[3];
+        stats.adjusted[A] = adjusted[0];
+        stats.adjusted[B] = adjusted[1];
+        stats.adjusted[C] = adjusted[2];
+        stats.adjusted[D] = adjusted[3];
 
-        stats.s_adjusted[base] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
+        stats.s_adjusted[baseID] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
     }
     
-    /*
-     * The following will be generated:
-     *
-     *    - Histogram generated
-     *    - Linear model for abundance
-     */
-
     options.info("Comparing expected with measured");
 
     // Try for each detected sequin to form an abundance plot
     for (const auto &i : stats.normalized)
     {
         const auto &seqID = i.first;
-        const auto baseID = s.l_map.at(seqID);
+        const auto baseID = s.seq2base.at(seqID);
         const auto known  = stats.expect.at(seqID);
         const auto actual = stats.normalized.at(seqID);
 
@@ -190,8 +188,6 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
         options.logInfo((boost::format("0x1234 - %1% %2% %3%") % seqID % known % actual).str());
 
-        std::cout << known << "   " << actual << std::endl;
-        
         stats.z.push_back(seqID);
         stats.x.push_back(log2(known));
         stats.y.push_back(actual ? log2(actual) : 0);

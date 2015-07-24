@@ -264,18 +264,14 @@ void Standard::m_mix(const Reader &r)
 
 void Standard::l_mix(const Reader &r)
 {
-    l_map.clear();
-
+    seq2base.clear();
     parseMix(r, l_seqs_A, l_seqs_B);
 
     for (const auto &i : l_seqs_A)
     {
-        const auto &base = i.first;
-
-        l_map[base + "_" + "A"] = base;
-        l_map[base + "_" + "B"] = base;
-        l_map[base + "_" + "C"] = base;
-        l_map[base + "_" + "D"] = base;
+        const auto base = i.first.substr(0, i.first.size() - 2);
+        seq2base[i.first] = base;
+        baseIDs.insert(base);
     }
 }
 
