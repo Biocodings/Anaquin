@@ -57,11 +57,12 @@ typedef std::set<Value> Range;
 #define TOOL_M_PSL      277
 #define TOOL_M_ALIGN    278
 #define TOOL_M_ABUND    279
-#define TOOL_M_DIFF     280
-#define TOOL_M_IGV      281
-#define TOOL_L_ABUND    282
-#define TOOL_L_DIFF     283
-#define TOOL_L_IGV      284
+#define TOOL_M_ASSEMBLY 280
+#define TOOL_M_DIFF     281
+#define TOOL_M_IGV      282
+#define TOOL_L_ABUND    283
+#define TOOL_L_DIFF     284
+#define TOOL_L_IGV      285
 #define TOOL_F_DISCOVER 286
 #define TOOL_F_EXPRESS  287
 #define TOOL_F_IGV      288
@@ -94,6 +95,7 @@ typedef std::set<Value> Range;
 #define OPT_BAM_2   393
 #define OPT_PSL_1   394
 #define OPT_PSL_2   395
+#define OPT_U_FA    396
 
 using namespace Anaquin;
 
@@ -141,6 +143,7 @@ static std::map<Value, Tool> _tools =
 
     { "MetaPSL",          TOOL_M_PSL      },
     { "MetaAlign",        TOOL_M_ALIGN    },
+    { "MetaAssembly",     TOOL_M_ASSEMBLY },
     { "MetaAbund",        TOOL_M_ABUND    },
     { "MetaAbundance",    TOOL_M_ABUND    },
     { "MetaDiff",         TOOL_M_DIFF     },
@@ -271,19 +274,6 @@ struct RepeatOptionError : public InvalidCommandException
     RepeatOptionError(const std::string &opt) : InvalidCommandException(opt) {}
 };
 
-/*
- * The option value isn't one of the expected. The most common scenario is failing
- * to specifying an expected command.
- */
-
-struct InvalidValueError : public std::exception
-{
-    InvalidValueError(const Value &value, const std::string &range) : value(value), range(range) {}
-
-    const Value value;
-    const std::string range;
-};
-
 // A mandatory option is missing, for instance, failing to specify the command
 struct MissingOptionError : public std::exception
 {
@@ -300,6 +290,13 @@ struct MissingOptionError : public std::exception
 struct MissingMixtureError   : public std::exception {};
 struct MissingReferenceError : public std::exception {};
 struct MissingInputError     : public std::exception {};
+
+struct InvalidToolError : public std::exception
+{
+    InvalidToolError(const std::string &value) : value(value) {}
+
+    std::string value;
+};
 
 struct InvalidInputCountError : std::exception
 {
@@ -353,6 +350,7 @@ static const struct option long_options[] =
     { "r_bed",    required_argument, 0, OPT_R_BED },
     { "r_gtf",    required_argument, 0, OPT_R_GTF },
 
+    { "u_fa",     required_argument, 0, OPT_U_FA   },
     { "u_gtf",    required_argument, 0, OPT_U_GTF  },
     { "u_gtrack", required_argument, 0, OPT_GTRACK },
     { "u_itrack", required_argument, 0, OPT_ITRACK },
@@ -721,7 +719,7 @@ void parse(int argc, char ** argv)
             {
                 if (!_tools.count(val))
                 {
-                    throw InvalidValueError("-t", toolRange());
+                    throw InvalidToolError(val);
                 }
 
                 // We'll work with it's internal representation
@@ -749,11 +747,13 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            case OPT_PSL_1: { checkFile(_p.inputs[opt] = val); break; }
+                
             /*
              * Options that take a generated input file for the first sample
              */
-                
-            case OPT_PSL_1:
+
+            case OPT_U_FA:
             case OPT_SAM_1:
             case OPT_BAM_1:
             case OPT_U_GTF:
@@ -910,11 +910,12 @@ void parse(int argc, char ** argv)
             break;
         }
             
+        case TOOL_M_IGV:
         case TOOL_M_PSL:
+        case TOOL_M_DIFF:
         case TOOL_M_ALIGN:
         case TOOL_M_ABUND:
-        case TOOL_M_DIFF:
-        case TOOL_M_IGV:
+        case TOOL_M_ASSEMBLY:
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
@@ -923,30 +924,24 @@ void parse(int argc, char ** argv)
             
             switch (_p.tool)
             {
-                case TOOL_M_PSL:   { analyze_1<MBlast>(); break; }
+                case TOOL_M_PSL: { analyze_1<MBlast>(); break; }
 
                 case TOOL_M_DIFF:
                 {
-                    //if (_p.pA.empty () || _p.pB.empty())
-                    {
-                        throw MissingOptionError("Alignment");
-                    }
-                    
                     MDiffs::Options o;
                     
-                    //o.pA = _p.pA;
-                    //o.pB = _p.pB;
+                    o.pA = _p.inputs.at(OPT_PSL_1);
+                    o.pB = _p.inputs.at(OPT_PSL_2);
                     
                     analyze_2<MDiffs>(o);
                     break;
                 }
 
-                case TOOL_M_ABUND:
+                case TOOL_M_ASSEMBLY:
                 {
                     MAssembly::Options o;
                     
-                    // We'd also take an alignment PSL file from a user
-                    //o.psl = _p.pA;
+                    o.psl = _p.inputs.at(OPT_PSL_1);
 
                     analyze_1<MAssembly>(o);
                     break;
@@ -975,14 +970,14 @@ int parse_options(int argc, char ** argv)
         parse(argc, argv);
         return 0;
     }
+    catch (const InvalidToolError &ex)
+    {
+        printError("Invalid tool: " + ex.value);
+    }
     catch (const InvalidOptionException &ex)
     {
         const auto format = "Unknown option: %1%";
         printError((boost::format(format) % ex.opt).str());
-    }
-    catch (const InvalidValueError &ex)
-    {
-        printError(ex.value);
     }
     catch (const MissingOptionError &ex)
     {

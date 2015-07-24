@@ -148,25 +148,22 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
             }
         }
 
-        // Generate a R script for a plot of abundance
-        AnalyzeReporter::linear(stats, "m_diffs", "k-mer average", options.writer);
+        //AnalyzeReporter::linear(stats, "m_diffs", "k-mer average", options.writer);
     }
     
-    /*
-     * Write out differential results
-     */
-
+    options.info("Generating statistics");
+    
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
     options.writer->open("diff.stats");
-    options.writer->write((boost::format(format) % "ID"
-                                                 % "Exp_A"
-                                                 % "Obs_A"
-                                                 % "Exp_B"
-                                                 % "Obs_B"
-                                                 % "Exp_Fold"
-                                                 % "Obs_Fold").str());
-    
+    options.writer->write((boost::format(format) % "id"
+                                                 % "expect_A"
+                                                 % "expect_B"
+                                                 % "measure_A"
+                                                 % "measure_B"
+                                                 % "expect_fold"
+                                                 % "measure_fold").str());
+
     for (const auto &diff : stats.diffs)
     {
         options.writer->write((boost::format(format) % diff.id

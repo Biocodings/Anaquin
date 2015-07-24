@@ -133,14 +133,13 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     }
     
     options.writer->close();
+
     
-    options.writer->open("meta_assembly_common.stats");
-    
-    if (ms.x.size() <= 1)
     {
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-        
-        options.writer->write((boost::format(format) % "Nodes"
+
+        options.writer->open("meta_assembly_summary.stats");
+        options.writer->write((boost::format(format) % "contigs"
                                                      % "N20"
                                                      % "N50"
                                                      % "N80"
@@ -156,41 +155,8 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                                      % stats.mean
                                                      % stats.max
                                                      % stats.total).str());
+        options.writer->close();
     }
-    else
-    {
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
-
-        // Fit a simple linear regression model by maximum-likehihood
-        const auto lm = ms.linear();
-
-        options.writer->write((boost::format(format) % "Nodes"
-                                                     % "N20"
-                                                     % "N50"
-                                                     % "N80"
-                                                     % "min"
-                                                     % "mean"
-                                                     % "max"
-                                                     % "total"
-                                                     % "r"
-                                                     % "slope"
-                                                     % "r2"
-                                                     % "los").str());
-        options.writer->write((boost::format(format) % stats.contigs.size()
-                                                     % stats.N20
-                                                     % stats.N50
-                                                     % stats.N80
-                                                     % stats.min
-                                                     % stats.mean
-                                                     % stats.max
-                                                     % stats.total
-                                                     % lm.r
-                                                     % lm.m
-                                                     % lm.r2
-                                                     % ms.s.abund).str());
-    }
-    
-    options.writer->close();
 
     return stats;
 }
