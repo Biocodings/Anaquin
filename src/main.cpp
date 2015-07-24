@@ -70,26 +70,28 @@ typedef std::set<Value> Range;
  * Options specified in the command line
  */
 
-#define OPT_TOOL     320
-#define OPT_MIN      321
-#define OPT_MAX      322
-#define OPT_LOS      323
-#define OPT_PATH     324
-#define OPT_MIXTURE  326
-#define OPT_FILTER   327
-#define OPT_THREAD   328
-#define OPT_VERSION  332
-#define OPT_TEST     333
-#define OPT_R_BED    380
-#define OPT_R_GTF    381
-#define OPT_U_SAM    382
-#define OPT_U_BAM    383
-#define OPT_U_VCF    384
-#define OPT_U_GTRACK 385
-#define OPT_U_ITRACK 386
-#define OPT_U_GTF    387
-#define OPT_U_GDIFF  388
-#define OPT_U_IDIFF  389
+#define OPT_TOOL    320
+#define OPT_MIN     321
+#define OPT_MAX     322
+#define OPT_LOS     323
+#define OPT_PATH    324
+#define OPT_MIXTURE 326
+#define OPT_FILTER  327
+#define OPT_THREAD  328
+#define OPT_VERSION 332
+#define OPT_TEST    333
+#define OPT_R_BED   380
+#define OPT_R_GTF   381
+#define OPT_U_VCF   384
+#define OPT_GTRACK  385
+#define OPT_ITRACK  386
+#define OPT_U_GTF   387
+#define OPT_GDIFF   388
+#define OPT_IDIFF   389
+#define OPT_SAM_1   390
+#define OPT_SAM_2   391
+#define OPT_BAM_1   392
+#define OPT_BAM_2   393
 
 using namespace Anaquin;
 
@@ -170,7 +172,7 @@ static std::set<Tool> _mixes =
 
 static std::map<Tool, std::set<Input>> _inputs =
 {
-    { TOOL_T_ALIGN, { OPT_R_GTF, OPT_U_SAM, OPT_U_BAM } }
+    { TOOL_T_ALIGN, { OPT_R_GTF, OPT_SAM_1, OPT_BAM_1 } }
 };
 
 /*
@@ -339,16 +341,21 @@ static const struct option long_options[] =
     { "t",    required_argument, 0, OPT_TOOL },
     { "tool", required_argument, 0, OPT_TOOL },
 
-    { "u_sam",    required_argument, 0, OPT_U_SAM },
-    { "u_bam",    required_argument, 0, OPT_U_BAM },
+    { "u_sam",    required_argument, 0, OPT_SAM_1 },
+    { "u_bam",    required_argument, 0, OPT_BAM_1 },
+    { "u_sam_1",  required_argument, 0, OPT_SAM_1 },
+    { "u_bam_1",  required_argument, 0, OPT_BAM_1 },
+    { "u_sam_2",  required_argument, 0, OPT_SAM_2 },
+    { "u_bam_2",  required_argument, 0, OPT_BAM_2 },
+
     { "r_bed",    required_argument, 0, OPT_R_BED },
     { "r_gtf",    required_argument, 0, OPT_R_GTF },
 
-    { "u_gtf",    required_argument, 0, OPT_U_GTF    },
-    { "u_gtrack", required_argument, 0, OPT_U_GTRACK },
-    { "u_itrack", required_argument, 0, OPT_U_ITRACK },
-    { "u_gdiff",  required_argument, 0, OPT_U_GDIFF  },
-    { "u_idiff",  required_argument, 0, OPT_U_IDIFF  },
+    { "u_gtf",    required_argument, 0, OPT_U_GTF  },
+    { "u_gtrack", required_argument, 0, OPT_GTRACK },
+    { "u_itrack", required_argument, 0, OPT_ITRACK },
+    { "u_gdiff",  required_argument, 0, OPT_GDIFF  },
+    { "u_idiff",  required_argument, 0, OPT_IDIFF  },
 
     { "min", required_argument, 0, OPT_MIN },
     { "max", required_argument, 0, OPT_MAX },
@@ -723,13 +730,22 @@ void parse(int argc, char ** argv)
             case OPT_R_BED:
             case OPT_R_GTF:   { checkFile(_p.ref_1 = val); break; }
 
+            case OPT_SAM_2:
+            case OPT_BAM_2:
+            {
+                _p.inputs[opt] = val;
+                _p.name_2 = opt;
+                checkFile(_p.input_2 = val);
+                break;
+            }
+
+            case OPT_SAM_1:
+            case OPT_BAM_1:
             case OPT_U_GTF:
-            case OPT_U_SAM:
-            case OPT_U_BAM:
-            case OPT_U_IDIFF:
-            case OPT_U_GDIFF:
-            case OPT_U_GTRACK:
-            case OPT_U_ITRACK:
+            case OPT_IDIFF:
+            case OPT_GDIFF:
+            case OPT_GTRACK:
+            case OPT_ITRACK:
             {
                 _p.inputs[opt] = val;
                 _p.name_1 = opt;
@@ -785,7 +801,7 @@ void parse(int argc, char ** argv)
                     TExpress::Options o;
                     
                     // The interpreation crticially depends on genes or isoforms
-                    o.level = _p.inputs.count(OPT_U_GTRACK) ? TExpress::Gene : TExpress::Isoform;
+                    o.level = _p.inputs.count(OPT_GTRACK) ? TExpress::Gene : TExpress::Isoform;
                     
                     analyze_1<TExpress>(o);
                     break;
@@ -796,7 +812,7 @@ void parse(int argc, char ** argv)
                     TDiffs::Options o;
 
                     // The interpreation crticially depends on genes or isoforms
-                    o.level = _inputs.count(OPT_U_GTRACK) ? TDiffs::Gene : TDiffs::Isoform;
+                    o.level = _inputs.count(OPT_GTRACK) ? TDiffs::Gene : TDiffs::Isoform;
 
                     analyze_1<TDiffs>(o);
                     break;
