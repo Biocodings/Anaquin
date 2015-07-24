@@ -190,6 +190,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
 
         options.logInfo((boost::format("0x1234 - %1% %2% %3%") % seqID % known % actual).str());
 
+        std::cout << known << "   " << actual << std::endl;
+        
         stats.z.push_back(seqID);
         stats.x.push_back(log2(known));
         stats.y.push_back(actual ? log2(actual) : 0);
