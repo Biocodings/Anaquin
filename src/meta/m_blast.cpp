@@ -117,32 +117,24 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
         stats.metas[align.id] = align;
     }
 
-    /*
-     * Write out results
-     */
-
-    options.writer->open("align_stats.stats");
+    options.info("Generating statistics");
+    options.writer->open("meta_blast_summary.stats");
     
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
-    options.writer->write((boost::format(format) % "ID"
-                                                 % "ConA"
-                                                 % "ConB"
-                                                 % "Contigs"
-                                                 % "Covered"
-                                                 % "Mismatch"
-                                                 % "Gaps").str());
+    options.writer->write((boost::format(format) % "id"
+                                                 % "contigs"
+                                                 % "cover"
+                                                 % "mismatch"
+                                                 % "gap").str());
 
     for (const auto &align : stats.metas)
     {
-        options.writer->write((boost::format(format)
-                                    % align.second.id
-                                    % align.second.seqA.abund()
-                                    % align.second.seqB.abund()
-                                    % align.second.contigs.size()
-                                    % align.second.covered
-                                    % align.second.mismatch
-                                    % align.second.gaps).str());
+        options.writer->write((boost::format(format) % align.second.id
+                                                     % align.second.contigs.size()
+                                                     % align.second.covered
+                                                     % align.second.mismatch
+                                                     % align.second.gaps).str());
     }
 
     options.writer->close();

@@ -92,6 +92,8 @@ typedef std::set<Value> Range;
 #define OPT_SAM_2   391
 #define OPT_BAM_1   392
 #define OPT_BAM_2   393
+#define OPT_PSL_1   394
+#define OPT_PSL_2   395
 
 using namespace Anaquin;
 
@@ -356,6 +358,9 @@ static const struct option long_options[] =
     { "u_itrack", required_argument, 0, OPT_ITRACK },
     { "u_gdiff",  required_argument, 0, OPT_GDIFF  },
     { "u_idiff",  required_argument, 0, OPT_IDIFF  },
+    { "u_psl",    required_argument, 0, OPT_PSL_1  },
+    { "u_psl_1",  required_argument, 0, OPT_PSL_1  },
+    { "u_psl_2",  required_argument, 0, OPT_PSL_2  },
 
     { "min", required_argument, 0, OPT_MIN },
     { "max", required_argument, 0, OPT_MAX },
@@ -730,6 +735,11 @@ void parse(int argc, char ** argv)
             case OPT_R_BED:
             case OPT_R_GTF:   { checkFile(_p.ref_1 = val); break; }
 
+            /*
+             * Options that take a generated input file for the second sample
+             */
+
+            case OPT_PSL_2:
             case OPT_SAM_2:
             case OPT_BAM_2:
             {
@@ -739,6 +749,11 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            /*
+             * Options that take a generated input file for the first sample
+             */
+                
+            case OPT_PSL_1:
             case OPT_SAM_1:
             case OPT_BAM_1:
             case OPT_U_GTF:
