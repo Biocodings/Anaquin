@@ -24,10 +24,30 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 
     const auto &s = Standard::instance();
 
+    options.logInfo("Checking for sequins in mix B but not in mix A");
+    
+    /*
+     * Print a warning message for each sequin detected in B but not in A
+     */
+    
+    for (const auto &i : b.normalized)
+    {
+        const auto &id = i.first;
+        
+        if (!a.normalized.at(id))
+        {
+            const auto msg = (boost::format("Warning: %1% defined in mixture B but not in mixture A") % id).str();
+            options.out(msg);
+            options.warn(msg);
+        }
+    }
+    
     options.info("Merging mixtures");
     options.logInfo((boost::format("%1% sequins in mix A") % a.normalized.size()).str());
     options.logInfo((boost::format("%1% sequins in mix B") % b.normalized.size()).str());
     
+    AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
+
     /*
      * Try for each detected sequin. But only if it's detected in both mixtures. Otherwise, the fold-
      * change is infinite.
@@ -35,7 +55,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
 
-    options.writer->open("ladder_hist.csv");
+    options.writer->open("ladder_diffs_summary.csv");
     options.writer->write((boost::format(format) % "ID"
                                                  % "abd_A"
                                                  % "abd_B"
@@ -90,26 +110,6 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     }
     
     options.writer->close();
-    options.logInfo("Checking for sequins in mix B but not in mix A");
 
-    /*
-     * Print a warning message for each sequin detected in B but not in A
-     */
-    
-    for (const auto &i : b.normalized)
-    {
-        const auto &id = i.first;
-
-        if (!a.normalized.at(id))
-        {
-            const auto msg = (boost::format("Warning: %1% defined in mixture B but not in mixture A") % id).str();
-            options.out(msg);
-            options.warn(msg);
-        }
-    }
-
-    options.info("Generating linear model");
-    AnalyzeReporter::linear(stats, "ladder_diffs", "FPKM", options.writer);
-    
 	return stats;
 }

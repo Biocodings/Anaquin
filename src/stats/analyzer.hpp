@@ -360,7 +360,7 @@ namespace Anaquin
              */
             
             writer->open(prefix + "_sequins.csv");
-            writer->write("ID\expect\tmeasure");
+            writer->write("ID\texpect\tmeasure");
             
             for (std::size_t i = 0; i < stats.x.size(); i++)
             {

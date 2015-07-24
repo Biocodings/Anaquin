@@ -38,7 +38,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         if (align.i == 0)
         {
             stats.actTotal++;
-            stats.abund[align.id]++;
+            stats.measured[align.id]++;
 
             // Eg: C_16_A to C_16
             const auto baseID = align.id.substr(0, align.id.find_last_of("_"));
@@ -115,7 +115,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         const auto baseC = base + "_C";
         const auto baseD = base + "_D";
     
-        #define COUNT(x) stats.abund.count(x) ? stats.abund.at(x) : 0
+        #define COUNT(x) stats.measured.count(x) ? stats.measured.at(x) : 0
 
         // Create a vector for normalized measured coverage
         const auto actual = create(COUNT(baseA), COUNT(baseB), COUNT(baseC), COUNT(baseD), 1.0, stats.actTotal);
@@ -155,10 +155,10 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         stats.expect[baseC]  = expect[2];
         stats.expect[baseD]  = expect[3];
 
-        stats.actual[baseA]  = actual[0];
-        stats.actual[baseB]  = actual[1];
-        stats.actual[baseC]  = actual[2];
-        stats.actual[baseD]  = actual[3];
+        stats.normalized[baseA]  = actual[0];
+        stats.normalized[baseB]  = actual[1];
+        stats.normalized[baseC]  = actual[2];
+        stats.normalized[baseD]  = actual[3];
         
         stats.adjusted[baseA] = adjusted[0];
         stats.adjusted[baseB] = adjusted[1];
@@ -178,12 +178,12 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     options.info("Comparing expected with measured");
 
     // Try for each detected sequin to form an abundance plot
-    for (const auto &i : stats.actual)
+    for (const auto &i : stats.normalized)
     {
         const auto &seqID = i.first;
         const auto baseID = s.l_map.at(seqID);
         const auto known  = stats.expect.at(seqID);
-        const auto actual = stats.actual.at(seqID);
+        const auto actual = stats.normalized.at(seqID);
 
         assert(!isnan(known)  && !isinf(known));
         assert(!isnan(actual) && !isinf(actual));
@@ -198,10 +198,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     options.info("Calculating sensitivity");
     stats.s = Expression::analyze(stats.c, mix);
 
-    /*
-     * Write out histogram
-     */
-
+    options.info("Generating statistics");
+    
     auto writeHist = [&](const std::string &file,
                          const std::map<SequinID, Counts>   &abund,
                          const std::map<SequinID, Coverage> &expect,
@@ -246,11 +244,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         options.writer->close();
     };
 
-    options.info("Generating histogram");
-    writeHist("ladder_hist.csv", stats.abund, stats.expect, stats.actual, stats.adjusted);
-
-    options.info("Generating linear model");
     AnalyzeReporter::linear(stats, "ladder_abund", "FPKM", options.writer);
+    //writeHist("ladder_abund_summary.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
 
 	return stats;
 }

@@ -849,9 +849,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_L_ABUND: { printMixture();      break; }
-                case TOOL_L_DIFF:  { analyze_1<LAbund>(); break; }
-                case TOOL_L_IGV:   { analyze_2<LDiffs>(); break; }
+                case TOOL_L_ABUND:  { analyze_1<LAbund>(); break; }
+                case TOOL_L_DIFF:   { analyze_2<LDiffs>(); break; }
             }
 
             break;

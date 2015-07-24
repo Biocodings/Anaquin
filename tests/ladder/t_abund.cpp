@@ -1,7 +1,19 @@
 #include <catch.hpp>
 #include "ladder/l_abund.hpp"
 
+static std::string _output, _error;
+
+extern int parse_options(const std::string &, std::string &, std::string &);
+
 using namespace Anaquin;
+
+TEST_CASE("LAbund_Command")
+{
+    const int s = parse_options("-t LadderAbund -m data/ladder/CON.v3.mix.csv -u_sam tests/data/ladder/aligned_A.sam", _output, _error);
+
+    REQUIRE(s == 0);
+    REQUIRE(_output.find("Ladder Analysis") != std::string::npos);
+}
 
 TEST_CASE("LAbund_Test")
 {
