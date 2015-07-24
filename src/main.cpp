@@ -675,12 +675,21 @@ void parse(int argc, char ** argv)
     std::vector<Option> opts;
     std::vector<Value>  vals;
 
+    unsigned n = 0;
+    
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
+        if (next < OPT_TOOL)
+        {
+            throw InvalidOptionException(argv[n+1]);
+        }
+        
         opts.push_back(next);
 
         // Whether this option has an value
         const bool hasValue = optarg;
+        
+        n += hasValue ? 2 : 1;
         
         vals.push_back(hasValue ? std::string(optarg) : "");
     }
