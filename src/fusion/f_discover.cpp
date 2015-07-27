@@ -13,7 +13,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
 
     {
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-        
+
         options.info("Generating summary statistics");
         options.writer->open("FusionDiscover_summary.stats");
         options.writer->write((boost::format(format) % "sn"
@@ -26,8 +26,8 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
                                % stats.m.sp()
                                % stats.m.sp()
                                % stats.s.abund
-                               % 0
-                               % 0).str());
+                               % "?"
+                               % "?").str());
         options.writer->close();
     }
     
@@ -40,8 +40,6 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
 
         options.info("Generating sequins statistics");
         options.writer->open("FusionDiscover_quins.stats");
-        
-        std::cout << stats.h.size() << std::endl;
         
         for (const auto &i : stats.h)
         {

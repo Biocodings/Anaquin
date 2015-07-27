@@ -727,8 +727,8 @@ void parse(int argc, char ** argv)
         {
             case OPT_VERSION:
             {
-                _p.tool = opt;
-                
+                _p.tool = TOOL_VERSION;
+
                 if (argc != 2)
                 {
                     throw TooManyOptionsError("Too many options given for -v");
