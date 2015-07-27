@@ -134,11 +134,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     
     options.writer->close();
 
-    
     {
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
-        options.writer->open("meta_assembly_summary.stats");
+        options.writer->open("MetaAssembly_summary.stats");
         options.writer->write((boost::format(format) % "contigs"
                                                      % "N20"
                                                      % "N50"

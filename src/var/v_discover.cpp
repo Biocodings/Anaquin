@@ -77,11 +77,11 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
     stats.efficiency = stats.m.sn() / stats.covered;
     
     // Create a script for allele frequency
-    AnalyzeReporter::linear(stats, "var_variant_allele", "Allele Frequence", options.writer);
+    AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
 
     const std::string format = "%1%\t%2%\t%3%";
 
-    options.writer->open("var_variant_metric.stats");
+    options.writer->open("VarDiscover_summary.stats");
     options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
     options.writer->write((boost::format(format) % stats.m.sn()
                                                  % stats.m.sp()

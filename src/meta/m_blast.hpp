@@ -1,5 +1,5 @@
-#ifndef GI_M_BLAST_HPP
-#define GI_M_BLAST_HPP
+#ifndef GI_M_PSL_HPP
+#define GI_M_PSL_HPP
 
 #include "data/sequin.hpp"
 #include "stats/analyzer.hpp"
@@ -9,7 +9,7 @@ namespace Anaquin
     /*
      * Represents a contig that has been aligned.
      */
-    
+
     struct AlignedContig
     {
         operator const Locus &() const { return l; }

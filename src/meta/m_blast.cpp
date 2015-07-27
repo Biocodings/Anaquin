@@ -118,26 +118,29 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
     }
 
     options.info("Generating statistics");
-    options.writer->open("meta_blast_summary.stats");
-    
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
-    options.writer->write((boost::format(format) % "id"
-                                                 % "contigs"
-                                                 % "cover"
-                                                 % "mismatch"
-                                                 % "gap").str());
-
-    for (const auto &align : stats.metas)
     {
-        options.writer->write((boost::format(format) % align.second.id
-                                                     % align.second.contigs.size()
-                                                     % align.second.covered
-                                                     % align.second.mismatch
-                                                     % align.second.gaps).str());
+        options.writer->open("MetaPSL_summary.stats");
+        
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+        
+        options.writer->write((boost::format(format) % "id"
+                                                     % "contigs"
+                                                     % "cover"
+                                                     % "mismatch"
+                                                     % "gap").str());
+        
+        for (const auto &align : stats.metas)
+        {
+            options.writer->write((boost::format(format) % align.second.id
+                                                         % align.second.contigs.size()
+                                                         % align.second.covered
+                                                         % align.second.mismatch
+                                                         % align.second.gaps).str());
+        }
+        
+        options.writer->close();
     }
-
-    options.writer->close();
 
     return stats;
 }

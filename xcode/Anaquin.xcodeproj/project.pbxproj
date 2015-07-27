@@ -35,6 +35,8 @@
 		EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E31AD3783A0062D246 /* parser_vcf.cpp */; };
 		EF3B84471B60EA4200C260D0 /* v_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3B84431B60EA4200C260D0 /* v_discover.cpp */; };
 		EF3B84481B60EA4200C260D0 /* v_freq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3B84451B60EA4200C260D0 /* v_freq.cpp */; };
+		EF3CD3061B6671F5005644C4 /* m_abundance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3CD3021B6671F5005644C4 /* m_abundance.cpp */; };
+		EF3CD3071B6671F5005644C4 /* m_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3CD3041B6671F5005644C4 /* m_align.cpp */; };
 		EF4270A01B213B1D00C9ED4E /* t_meta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF42709F1B213B1D00C9ED4E /* t_meta.cpp */; };
 		EF4270A21B213BF200C9ED4E /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270A11B213BF200C9ED4E /* test.cpp */; };
 		EF4270B61B21C21B00C9ED4E /* m_blast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270B41B21C21B00C9ED4E /* m_blast.cpp */; };
@@ -172,6 +174,10 @@
 		EF3B84441B60EA4200C260D0 /* v_discover.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = v_discover.hpp; sourceTree = "<group>"; };
 		EF3B84451B60EA4200C260D0 /* v_freq.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = v_freq.cpp; sourceTree = "<group>"; };
 		EF3B84461B60EA4200C260D0 /* v_freq.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = v_freq.hpp; sourceTree = "<group>"; };
+		EF3CD3021B6671F5005644C4 /* m_abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_abundance.cpp; sourceTree = "<group>"; };
+		EF3CD3031B6671F5005644C4 /* m_abundance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_abundance.hpp; sourceTree = "<group>"; };
+		EF3CD3041B6671F5005644C4 /* m_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_align.cpp; sourceTree = "<group>"; };
+		EF3CD3051B6671F5005644C4 /* m_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_align.hpp; sourceTree = "<group>"; };
 		EF42709F1B213B1D00C9ED4E /* t_meta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_meta.cpp; path = ../tests/meta/t_meta.cpp; sourceTree = "<group>"; };
 		EF4270A11B213BF200C9ED4E /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test.cpp; path = ../tests/test.cpp; sourceTree = "<group>"; };
 		EF4270B41B21C21B00C9ED4E /* m_blast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_blast.cpp; sourceTree = "<group>"; };
@@ -599,6 +605,10 @@
 		EFECDC0C1AE7510700F0FD9A /* meta */ = {
 			isa = PBXGroup;
 			children = (
+				EF3CD3021B6671F5005644C4 /* m_abundance.cpp */,
+				EF3CD3031B6671F5005644C4 /* m_abundance.hpp */,
+				EF3CD3041B6671F5005644C4 /* m_align.cpp */,
+				EF3CD3051B6671F5005644C4 /* m_align.hpp */,
 				EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */,
 				EFECDC101AE7510700F0FD9A /* m_assembly.hpp */,
 				EF4270B41B21C21B00C9ED4E /* m_blast.cpp */,
@@ -689,6 +699,7 @@
 				EFB7FF471B4F8DD20045DC6A /* f_discover.cpp in Sources */,
 				EFB7FF461B4F8D8A0045DC6A /* l_diffs.cpp in Sources */,
 				EF31E82D1B6123A70095F3E8 /* l_norm.cpp in Sources */,
+				EF3CD3071B6671F5005644C4 /* m_align.cpp in Sources */,
 				EF1804A01B65C06F00897D1E /* f_express.cpp in Sources */,
 				EF4270A01B213B1D00C9ED4E /* t_meta.cpp in Sources */,
 				EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */,
@@ -703,6 +714,7 @@
 				EF1DE0B61B21EC6D00DEC381 /* standard.cpp in Sources */,
 				EFDD6AD41B0DD76C00450029 /* rANS_static.c in Sources */,
 				EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */,
+				EF3CD3061B6671F5005644C4 /* m_abundance.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */,
 				EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */,
