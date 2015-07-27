@@ -37,7 +37,9 @@ namespace Anaquin
                 {
                     return;
                 }
-                
+
+                ClassifyResult r = Negative;
+
                 if (classify(stats.m, f, [&](const ParserFusion::Fusion &)
                 {
                     const auto start = f.start_1;
@@ -50,7 +52,8 @@ namespace Anaquin
                             
                             if (i.second.start == start)
                             {
-                                return Positive;
+                                r = Positive;
+                                break;
                             }
                         }
                     }
@@ -62,12 +65,21 @@ namespace Anaquin
                             
                             if (i.second.start == start)
                             {
-                                return Positive;
+                                r = Positive;
+                                break;
                             }
                         }
                     }
 
-                    return Negative;
+                    assert(!id.empty());
+
+                    if (r == Positive && !s.f_seqs_A.count(id))
+                    {
+                        options.warn(id + " is defined in the reference but not in the mixture.");
+                        return Negative;
+                    }
+
+                    return r;
                 }))
                 {
                     assert(!id.empty());

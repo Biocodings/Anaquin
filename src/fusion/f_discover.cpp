@@ -17,20 +17,20 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
         options.info("Generate summary statistics");
         options.writer->open("FusionDiscover_summary.stats");
         options.writer->write((boost::format(format) % "sn"
-                               % "sp"
-                               % "coverage"
-                               % "los"
-                               % "partner_5"
-                               % "partner_3").str());
+                                                     % "sp"
+                                                     % "coverage"
+                                                     % "los"
+                                                     % "partner_5"
+                                                     % "partner_3").str());
         options.writer->write((boost::format(format) % stats.m.sn()
-                               % stats.m.sp()
-                               % stats.m.sp()
-                               % stats.s.abund
-                               % "?"
-                               % "?").str());
+                                                     % stats.m.sp()
+                                                     % stats.m.sp()
+                                                     % stats.s.abund
+                                                     % "?"
+                                                     % "?").str());
         options.writer->close();
     }
-    
+
     /*
      * Generating sequin statistics
      */
