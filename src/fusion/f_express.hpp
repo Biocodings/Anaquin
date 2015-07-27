@@ -1,24 +1,23 @@
 #ifndef GI_F_DISCOVER_HPP
 #define GI_F_DISCOVER_HPP
 
-#include "fusion/f_analyzer.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct FDiscover
+    struct FExpress
     {
         struct Options : public SingleMixtureOptions
         {
             // Empty Implementation
         };
 
-        struct Stats
+        struct Stats : ModelStats
         {
             // Overall performance
-            Confusion m;
+            Performance p;
 
-            // Distribution of the sequins
-            SequinHist h;
+            SequinHist h = Analyzer::histogram(Standard::instance().f_seqs_A);
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

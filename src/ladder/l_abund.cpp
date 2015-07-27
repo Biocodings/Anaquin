@@ -118,8 +118,8 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         {
             continue;
         }
-        
-        //stats.c[id]++;
+
+        stats.h[baseID]++;
 
         #define COUNT(x) stats.measured.count(x) ? stats.measured.at(x) : 0
         
@@ -170,7 +170,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         stats.adjusted[C] = adjusted[2];
         stats.adjusted[D] = adjusted[3];
 
-        stats.s_adjusted[baseID] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
+        stats.sequinAdjusted[baseID] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
     }
     
     options.info("Comparing expected with measured");
@@ -194,7 +194,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     }
 
     options.info("Calculating sensitivity");
-    stats.s = Expression::analyze(stats.c, mix);
+    stats.s = Expression::analyze(stats.h, mix);
 
     options.info("Generating statistics");
     

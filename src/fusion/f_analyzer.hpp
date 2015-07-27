@@ -1,0 +1,110 @@
+#ifndef GI_F_ANALYZER_HPP
+#define GI_F_ANALYZER_HPP
+
+#include "stats/analyzer.hpp"
+#include "parsers/parser_fusion.hpp"
+
+namespace Anaquin
+{
+    struct FAnalyzer
+    {
+        struct Stats : ModelStats
+        {
+            // Overall performance
+            Confusion m;
+            
+            // Fraction of known fusion detected
+            double covered;
+            
+            // Distribution of the sequins
+            SequinHist h = Analyzer::histogram(Standard::instance().f_seqs_A);
+        };
+
+        template <typename Options> static Stats analyze(const std::string &file, const Options &options = Options())
+        {
+            FAnalyzer::Stats stats;
+            const auto &s = Standard::instance();
+
+            options.info("Parsing alignment file");
+
+            ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &p)
+            {
+                options.logInfo((boost::format("%1%: %2% %3%") % p.i % f.chr_1 % f.chr_2).str());
+                SequinID id;
+
+                // Don't bother unles in silico chromosome
+                if (f.chr_1 != s.id || f.chr_2 != s.id)
+                {
+                    return;
+                }
+                
+                if (classify(stats.m, f, [&](const ParserFusion::Fusion &)
+                {
+                    const auto start = f.start_1;
+
+                    if (f.dir_1 == Backward && f.dir_2 == Forward)
+                    {
+                        for (const auto &i : s.seq2locus_2)
+                        {
+                            id = i.first;
+                            
+                            if (i.second.start == start)
+                            {
+                                return Positive;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (const auto &i : s.seq2locus_1)
+                        {
+                            id = i.first;
+                            
+                            if (i.second.start == start)
+                            {
+                                return Positive;
+                            }
+                        }
+                    }
+
+                    return Negative;
+                }))
+                {
+                    assert(!id.empty());
+                    
+                    const auto seq = s.f_seqs_A.at(id);
+                    
+                    // Known abundance for the fusion
+                    const auto known = seq.abund() / seq.length;
+                    
+                    // Measured abundance for the fusion
+                    const auto measured = f.reads;
+                    
+                    stats.h[seq.id]++;
+                    stats.x.push_back(log2f(known));
+                    stats.y.push_back(log2f(measured));
+                    stats.z.push_back(id);
+                }
+            });
+            
+            // The references are simply the known fusion points
+            stats.m.nr = s.seq2locus_1.size() + s.seq2locus_2.size();
+
+            options.info("Calculating limit of sensitivity");
+            stats.s = Expression::analyze(stats.h, s.f_seqs_A);
+            
+            stats.covered = std::accumulate(stats.h.begin(), stats.h.end(), 0,
+                    [&](int sum, const std::pair<SequinID, Counts> &p)
+                    {
+                        return sum + (p.second ? 1 : 0);
+                    });
+            stats.covered = stats.covered / stats.m.nr;
+
+            assert(stats.covered >= 0 && stats.covered <= 1.0);
+            
+            return stats;
+        }
+    };
+}
+
+#endif

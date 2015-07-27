@@ -18,6 +18,7 @@ namespace Anaquin
     typedef std::map<SequinID, Counts> SequinCounter;
 
     typedef std::map<Locus, Counts>    LocusHist;
+    typedef std::map<BaseID, Counts>   BaseHist;
     typedef std::map<SequinID, Counts> SequinHist;
 
     template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
@@ -51,6 +52,18 @@ namespace Anaquin
 
     struct Analyzer
     {
+        template static BaseHist histogram()
+        {
+            BaseHist hist;
+
+            for (const auto &baseID : Standard::instance().baseIDs)
+            {
+                hist[baseID] = 0;
+            }
+
+            return hist;
+        }
+        
         /*
          * Create a histogram with a key type of R. The key type is usually the SequinID, but can also
          * be GeneID or anything else. The histogram is initialized to zero.
@@ -402,10 +415,10 @@ namespace Anaquin
             writer->write((boost::format(format) %  sn  %  sp  % p.s.id %  ss  % p.s.counts).str());
             writer->write("\n");
 
-            for (const auto &p : h)
-            {
-                writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
-            }
+            //for (const auto &p : h)
+            //{
+            //    writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
+            //}
 
             writer->close();
         };

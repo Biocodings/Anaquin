@@ -282,9 +282,6 @@ void Standard::f_mix(const Reader &r)
 
 void Standard::f_ref(const Reader &r)
 {
-    f_f_fusions.clear();
-    f_r_fusions.clear();
-
     ParserCSV::parse(r, [&](const ParserCSV::Fields &f, const ParserProgress &)
     {
         assert(f[0] == "chrT-chrT");
@@ -294,15 +291,15 @@ void Standard::f_ref(const Reader &r)
 
         if (f[3] == "fr")
         {
-            f_f_fusions[id] = l;
+            seq2locus_1[id] = l;
         }
         else
         {
-            f_r_fusions[id] = l;
+            seq2locus_2[id] = l;
         }
     });
 
-    assert(!f_f_fusions.empty() && !f_r_fusions.empty());
+    assert(!seq2locus_1.empty() && !seq2locus_2.empty());
 }
 
 void Standard::ladder()

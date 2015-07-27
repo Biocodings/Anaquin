@@ -15,27 +15,27 @@ namespace Anaquin
         struct Stats : ModelStats
         {
             // Histogram expected
-            std::map<TypeID, Coverage> expect;
+            std::map<SequinID, Coverage> expect;
 
             // Histogram before normalization and adjustment
-            std::map<TypeID, Counts> measured;
+            std::map<SequinID, Counts> measured;
 
             // Histogram after normalization but before adjustment
-            std::map<TypeID, Coverage> normalized;
+            std::map<SequinID, Coverage> normalized;
 
             // Histogram after adjustment
-            std::map<TypeID, Coverage> adjusted;
+            std::map<SequinID, Coverage> adjusted;
             
             // Adjusted abundance for each sequin
-            std::map<SequinID, Coverage> s_adjusted;
+            std::map<BaseID, Coverage> sequinAdjusted;
 
-            SequinCounter c;
-            
             // Expected size of the library
             Counts expTotal = 0;
 
             // Measured size of the library
             Counts obsTotal = 0;
+
+            BaseHist h = Analyzer::histogram();
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

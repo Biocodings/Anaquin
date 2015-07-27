@@ -84,11 +84,21 @@ namespace Anaquin
             // The location of the chromosome
             Locus l;
 
+            /*
+             * Shared variables
+             */
+        
             // Set of prefix IDs shared between all tools
             std::set<BaseID> baseIDs;
         
             // Mapping between sequins to the base shared between all tools
             std::map<SequinID, BaseID> seq2base;
+
+            // Mapping between sequins to locus
+            std::map<SequinID, Locus> seq2locus_1;
+        
+            // Mapping between sequins to locus
+            std::map<SequinID, Locus> seq2locus_2;
         
             /*
              * RNA data
@@ -157,12 +167,6 @@ namespace Anaquin
 
             void f_ref(const Reader &);
             void f_mix(const Reader &);
-
-            // Locus for each fusion in the forward strand
-            std::map<SequinID, Locus> f_f_fusions;
-
-            // Locus for each fusion in the reverse strand
-            std::map<SequinID, Locus> f_r_fusions;
 
             // Mixture for each fusion sequin
             SequinMap f_seqs_A;
