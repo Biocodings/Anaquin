@@ -109,7 +109,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
     
     options.info("Generating statistics");
 
-    AnalyzeReporter::linear(stats, "rna_express", "FPKM", options.writer);
+    AnalyzeReporter::linear(stats, "TransExpression", "FPKM", options.writer);
 
     return stats;
 }

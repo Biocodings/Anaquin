@@ -94,8 +94,8 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 
     stats.s = Expression::analyze(c, s.r_gene(options.rMix));
 
-    options.info("Generating linear model");
-    AnalyzeReporter::linear(stats, "rna_diffs", "FPKM", options.writer);
+    options.info("Generating statistics");
+    AnalyzeReporter::linear(stats, "TransDifferent", "FPKM", options.writer);
 
     return stats;
 }
