@@ -9,7 +9,7 @@ TEST_CASE("Test_Version")
     const int s = parse_options("-v", _output, _error);
     
     REQUIRE(s == 0);
-    REQUIRE(_output == "Anaquin v1.1.01");
+    REQUIRE(_output == "Anaquin v1.1.01\n");
 }
 //
 ///*

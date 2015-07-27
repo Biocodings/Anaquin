@@ -1,9 +1,22 @@
 #include <catch.hpp>
 #include "trans/t_assembly.hpp"
 
+static std::string _output, _error;
+
+extern int parse_options(const std::string &, std::string &, std::string &);
+
 using namespace Anaquin;
 
-TEST_CASE("TAssembly_Simulation")
+TEST_CASE("TAssembly_Command")
+{
+    const auto cmd = "-t TransAssembly -rgtf data/trans/RNA.v1.gtf -ugtf tests/data/trans/A1/transcripts.gtf";
+    const auto status = parse_options(cmd, _output, _error);
+
+    REQUIRE(status == 0);
+    REQUIRE(_output.find("Transcriptome Analysis") != std::string::npos);
+}
+
+TEST_CASE("TAssembly_Test")
 {
     const auto r = TAssembly::analyze("tests/data/trans/A1/transcripts.gtf");
 

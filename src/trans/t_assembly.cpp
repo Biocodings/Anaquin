@@ -185,7 +185,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
     
-    options.writer->open("trans_assembly_summary.stats");
+    options.writer->open("TransAssembly_summary.stats");
     options.writer->write((boost::format(format) % "exon_sp"
                                                  % "exon_sn"
                                                  % "exon_ss"

@@ -95,7 +95,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     if (!stats.expTotal)
     {
         options.error("stats.expTotal == 0");
-        
+
         // Report a common and useful error message
         throw std::runtime_error("Unable to find anything in the alignment that matches with the mixture. Usually this is caused by an incorrect mixture file. Please check your mixture file.");
     }

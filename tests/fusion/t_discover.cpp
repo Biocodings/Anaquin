@@ -10,9 +10,8 @@ using namespace Anaquin;
 TEST_CASE("FDiscover_Command")
 {
     const auto cmd = "-t FusionDiscover -rfus data/fusion/FUS.v1.ref -m data/fusion/FUS.v3.csv -uout tests/data/fusion/fusions.out";
-    
     const auto status = parse_options(cmd, _output, _error);
-    
+
     REQUIRE(status == 0);
 }
 
