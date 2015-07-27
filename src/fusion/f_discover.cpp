@@ -8,13 +8,13 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
     const auto stats = FAnalyzer::analyze(file, options);
 
     /*
-     * Generating summary statistics
+     * Generate summary statistics
      */
 
     {
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
-        options.info("Generating summary statistics");
+        options.info("Generate summary statistics");
         options.writer->open("FusionDiscover_summary.stats");
         options.writer->write((boost::format(format) % "sn"
                                % "sp"

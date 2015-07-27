@@ -8,7 +8,7 @@ ModelStats FExpress::analyze(const std::string &file, const Options &options)
     const auto stats = FAnalyzer::analyze(file, options);
 
     /*
-     * Generating summary statistics
+     * Generate summary statistics
      */
     
     {
