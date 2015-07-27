@@ -1,5 +1,5 @@
-#ifndef GI_F_DISCOVER_HPP
-#define GI_F_DISCOVER_HPP
+#ifndef GI_F_EXPRESS_HPP
+#define GI_F_EXPRESS_HPP
 
 #include "stats/analyzer.hpp"
 
@@ -12,15 +12,7 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        struct Stats : ModelStats
-        {
-            // Overall performance
-            Performance p;
-
-            SequinHist h = Analyzer::histogram(Standard::instance().f_seqs_A);
-        };
-
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static ModelStats analyze(const std::string &, const Options &options = Options());
     };
 }
 

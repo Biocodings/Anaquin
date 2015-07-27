@@ -1,7 +1,7 @@
 #ifndef GI_F_DISCOVER_HPP
 #define GI_F_DISCOVER_HPP
 
-#include "fusion/f_analyzer.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Anaquin
 {

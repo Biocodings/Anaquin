@@ -147,14 +147,20 @@ namespace Anaquin
 
     typedef std::map<std::string, Counts> Counter;
 
+    /*
+     * Represents a simple linear regression fitted by maximum-likehihood estimation.
+     *
+     *   Model: y ~ c + m*x
+     */
+
     struct LinearModel
     {
-        // Least-squared constant coefficient
+        // Constant coefficient
         double c;
 
         // Least-squared slope coefficient
         double m;
-        
+
         // Adjusted R2
         double r2;
 
@@ -186,6 +192,11 @@ namespace Anaquin
 
     struct ModelStats
     {
+        // This is needed to make the compiler happy ...
+        ModelStats() {}
+        
+        ModelStats(const ModelStats &stats) : s(stats.s), z(stats.z), x(stats.x), y(stats.y) {}
+        
         Sensitivity s;
 
         // Sequin IDs for each x and y

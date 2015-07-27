@@ -1,10 +1,20 @@
 #include "fusion/f_express.hpp"
-#include "parsers/parser_fusion.hpp"
+#include "fusion/f_analyzer.hpp"
 
 using namespace Anaquin;
 
-FExpress::Stats FExpress::analyze(const std::string &file, const Options &options)
+ModelStats FExpress::analyze(const std::string &file, const Options &options)
 {
-    FExpress::Stats stats;
-     return stats;
+    const auto stats = FAnalyzer::analyze(file, options);
+
+    /*
+     * Generating summary statistics
+     */
+    
+    {
+        AnalyzeReporter::linear(stats, "FExpress", "FPKM", options.writer);
+    }
+
+    // Conver to the statistics expected
+    return ModelStats(stats);
 }

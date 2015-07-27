@@ -22,6 +22,7 @@
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
 
+#include "fusion/f_express.hpp"
 #include "fusion/f_discover.hpp"
 
 #include "parsers/parser_csv.hpp"
@@ -882,7 +883,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_F_IGV:      { break; }
-                case TOOL_F_EXPRESS:  { break; }
+                case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_OUT);  break; }
                 case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_OUT); break; }
             }
 
