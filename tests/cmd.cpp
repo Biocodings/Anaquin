@@ -1,15 +1,16 @@
-//#include <catch.hpp>
+#include <catch.hpp>
 //
-//extern int parse_options(const std::string &, std::string &, std::string &);
-//
-//static std::string _output, _error;
-//
-//TEST_CASE("Ladder_Sequins")
-//{
-//    const int s = parse_options("-c ladder -p seqs -m data/ladder/CON.v3.mix.csv", _output, _error);
-//
-//    REQUIRE(s == 0);
-//}
+extern int parse_options(const std::string &, std::string &, std::string &);
+
+static std::string _output, _error;
+
+TEST_CASE("Test_Version")
+{
+    const int s = parse_options("-v", _output, _error);
+    
+    REQUIRE(s == 0);
+    REQUIRE(_output == "Anaquin v1.1.01");
+}
 //
 ///*
 //TEST_CASE("Missing_Mixture_And_Reference")
