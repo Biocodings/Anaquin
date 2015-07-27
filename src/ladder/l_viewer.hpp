@@ -5,7 +5,7 @@
 
 namespace Anaquin
 {
-    struct LIGV
+    struct LViewer
     {
     };
 }

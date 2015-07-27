@@ -345,10 +345,10 @@ static const struct option long_options[] =
 
     { "usam",    required_argument, 0, OPT_BAM_1 },
     { "ubam",    required_argument, 0, OPT_BAM_1 },
-    { "usam1",  required_argument, 0, OPT_BAM_1 },
-    { "ubam1",  required_argument, 0, OPT_BAM_1 },
-    { "usam2",  required_argument, 0, OPT_BAM_2 },
-    { "ubam2",  required_argument, 0, OPT_BAM_2 },
+    { "usam1",  required_argument,  0, OPT_BAM_1 },
+    { "ubam1",  required_argument,  0, OPT_BAM_1 },
+    { "usam2",  required_argument,  0, OPT_BAM_2 },
+    { "ubam2",  required_argument,  0, OPT_BAM_2 },
 
     { "rfus",    required_argument, 0, OPT_FUS },
     { "uout",    required_argument, 0, OPT_OUT },
@@ -770,6 +770,10 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            /*
+             * Options that take a generated input file for the first sample
+             */
+                
             case OPT_VCF:
             case OPT_OUT:
             case OPT_FA_1:

@@ -11,6 +11,7 @@
 		EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */; };
 		EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */; };
 		EF1DE0B61B21EC6D00DEC381 /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0B01B21EC6D00DEC381 /* standard.cpp */; };
+		EF21013A1B662E82007313AD /* f_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2101381B662E82007313AD /* f_viewer.cpp */; };
 		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; };
 		EF26156C1B5FF98A00BE8037 /* gdna.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26156A1B5FF98A00BE8037 /* gdna.cpp */; };
 		EF26156D1B5FF98A00BE8037 /* GStr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26156B1B5FF98A00BE8037 /* GStr.cpp */; };
@@ -98,7 +99,7 @@
 		EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */; };
 		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
 		EFECDC191AE7639900F0FD9A /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC161AE7639900F0FD9A /* t_assembly.cpp */; };
-		EFF3F6001B63BA7F00A37957 /* l_igv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF3F5FE1B63BA7F00A37957 /* l_igv.cpp */; };
+		EFF3F6001B63BA7F00A37957 /* l_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF3F5FE1B63BA7F00A37957 /* l_viewer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -135,6 +136,8 @@
 		EF1DE0BA1B21EC8300DEC381 /* classify.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = classify.hpp; path = ../src/stats/classify.hpp; sourceTree = "<group>"; };
 		EF1DE0BC1B21EC8300DEC381 /* sensitivity.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sensitivity.hpp; path = ../src/stats/sensitivity.hpp; sourceTree = "<group>"; };
 		EF1DE0BD1B21ECA600DEC381 /* sequin.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sequin.hpp; path = ../src/data/sequin.hpp; sourceTree = "<group>"; };
+		EF2101381B662E82007313AD /* f_viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_viewer.cpp; sourceTree = "<group>"; };
+		EF2101391B662E82007313AD /* f_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_viewer.hpp; sourceTree = "<group>"; };
 		EF2290351AC0E58000CE76BF /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
 		EF26156A1B5FF98A00BE8037 /* gdna.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gdna.cpp; path = ../src/cufflinks/gdna.cpp; sourceTree = "<group>"; };
 		EF26156B1B5FF98A00BE8037 /* GStr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GStr.cpp; path = ../src/cufflinks/GStr.cpp; sourceTree = "<group>"; };
@@ -258,8 +261,8 @@
 		EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EFECDC101AE7510700F0FD9A /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
 		EFECDC161AE7639900F0FD9A /* t_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_assembly.cpp; path = ../tests/meta/t_assembly.cpp; sourceTree = "<group>"; };
-		EFF3F5FE1B63BA7F00A37957 /* l_igv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = l_igv.cpp; sourceTree = "<group>"; };
-		EFF3F5FF1B63BA7F00A37957 /* l_igv.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_igv.hpp; sourceTree = "<group>"; };
+		EFF3F5FE1B63BA7F00A37957 /* l_viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = l_viewer.cpp; sourceTree = "<group>"; };
+		EFF3F5FF1B63BA7F00A37957 /* l_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_viewer.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -488,8 +491,8 @@
 				EFB7FF2A1B4F79C20045DC6A /* l_diffs.hpp */,
 				EF31E82B1B6123A70095F3E8 /* l_norm.cpp */,
 				EF31E82C1B6123A70095F3E8 /* l_norm.hpp */,
-				EFF3F5FE1B63BA7F00A37957 /* l_igv.cpp */,
-				EFF3F5FF1B63BA7F00A37957 /* l_igv.hpp */,
+				EFF3F5FE1B63BA7F00A37957 /* l_viewer.cpp */,
+				EFF3F5FF1B63BA7F00A37957 /* l_viewer.hpp */,
 			);
 			name = ladder;
 			path = ../src/ladder;
@@ -503,6 +506,8 @@
 				EFB7FF2D1B4F79D00045DC6A /* f_discover.hpp */,
 				EF18049E1B65C06F00897D1E /* f_express.cpp */,
 				EF18049F1B65C06F00897D1E /* f_express.hpp */,
+				EF2101381B662E82007313AD /* f_viewer.cpp */,
+				EF2101391B662E82007313AD /* f_viewer.hpp */,
 			);
 			name = fusion;
 			path = ../src/fusion;
@@ -704,7 +709,7 @@
 				EFDD6A991B0DD76200450029 /* md5.c in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
-				EFF3F6001B63BA7F00A37957 /* l_igv.cpp in Sources */,
+				EFF3F6001B63BA7F00A37957 /* l_viewer.cpp in Sources */,
 				EFDD6ACE1B0DD76C00450029 /* cram_samtools.c in Sources */,
 				EFDD6A971B0DD76200450029 /* knetfile.c in Sources */,
 				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
@@ -750,6 +755,7 @@
 				EF2615801B5FF9F500BE8037 /* codons.cpp in Sources */,
 				EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */,
 				EF26156C1B5FF98A00BE8037 /* gdna.cpp in Sources */,
+				EF21013A1B662E82007313AD /* f_viewer.cpp in Sources */,
 				EFC625531B65FBBD003CFA52 /* t_express.cpp in Sources */,
 				EF2615811B5FF9F500BE8037 /* cuffcompare.cpp in Sources */,
 				EF26157D1B5FF9DC00BE8037 /* gffread.cpp in Sources */,
