@@ -52,7 +52,7 @@ namespace Anaquin
 
     struct Analyzer
     {
-        template static BaseHist histogram()
+        static BaseHist histogram()
         {
             BaseHist hist;
 
