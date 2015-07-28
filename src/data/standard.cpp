@@ -284,8 +284,11 @@ void Standard::f_ref(const Reader &r)
 {
     ParserCSV::parse(r, [&](const ParserCSV::Fields &f, const ParserProgress &)
     {
-        assert(f[0] == "chrT-chrT");
-        
+        if (f[0] != "chrT-chrT")
+        {
+            throw std::runtime_error("Invalid reference file for fusion. chrT-chrT is expected.");
+        }
+
         const auto l  = Locus(stod(f[1]) + 1, stod(f[2]) + 1);
         const auto id = f[4];
 

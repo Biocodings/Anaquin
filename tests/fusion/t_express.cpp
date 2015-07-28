@@ -7,6 +7,15 @@ extern int parse_options(const std::string &, std::string &, std::string &);
 
 using namespace Anaquin;
 
+TEST_CASE("FExpress_10K")
+{
+    const auto cmd = "-t FusionExpress -rfus tests/data/fusion/10K/FUS.v1.ref -m tests/data/fusion/10K/FUSE_mixtures_v3.csv -uout tests/data/fusion/10K/fusions.out";
+    
+    const auto status = parse_options(cmd, _output, _error);
+    
+    REQUIRE(status == 0);
+}
+
 TEST_CASE("FExpress_Test")
 {
     const auto stats = FExpress::analyze("tests/data/fusion/fusions.out");

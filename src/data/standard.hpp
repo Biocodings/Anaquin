@@ -99,7 +99,7 @@ namespace Anaquin
         
             // Mapping between sequins to locus
             std::map<SequinID, Locus> seq2locus_2;
-        
+
             /*
              * RNA data
              */

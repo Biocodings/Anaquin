@@ -42,7 +42,8 @@ namespace Anaquin
 
                 if (classify(stats.m, f, [&](const ParserFusion::Fusion &)
                 {
-                    const auto start = f.start_1;
+                    const auto start_1 = f.start_1;
+                    const auto start_2 = f.start_2;
 
                     if (f.dir_1 == Backward && f.dir_2 == Forward)
                     {
@@ -50,7 +51,16 @@ namespace Anaquin
                         {
                             id = i.first;
                             
-                            if (i.second.start == start)
+                            // Reference locus
+                            const auto &rl = i.second;
+                            
+                            // Starting position of the fusion on the reference chromosome
+                            const auto r_start_1 = rl.start;
+                            
+                            // Starting position of the fusion on the reference chromosome
+                            const auto r_start_2 = rl.end;
+
+                            if (r_start_1 == start_1 && r_start_2 == f.start_2)
                             {
                                 r = Positive;
                                 break;
@@ -63,7 +73,16 @@ namespace Anaquin
                         {
                             id = i.first;
                             
-                            if (i.second.start == start)
+                            // Reference locus
+                            const auto &rl = i.second;
+                            
+                            // Starting position of the fusion on the reference chromosome
+                            const auto r_start_1 = rl.start;
+                            
+                            // Starting position of the fusion on the reference chromosome
+                            const auto r_start_2 = rl.end;
+
+                            if (i.second.start == start_1 && r_start_2 == f.start_2)
                             {
                                 r = Positive;
                                 break;
@@ -91,7 +110,7 @@ namespace Anaquin
                     
                     // Measured abundance for the fusion
                     const auto measured = f.reads;
-                    
+
                     stats.h[seq.id]++;
                     stats.x.push_back(log2f(known));
                     stats.y.push_back(log2f(measured));
