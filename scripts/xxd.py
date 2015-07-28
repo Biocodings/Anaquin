@@ -25,15 +25,13 @@ data  = [ 'data/manual.txt',
 
            'data/ladder/CON.v3.mix.csv',
 
-           # ---------- RNA ----------
+           # ---------- Transcriptome ----------
 
-          'data/rna/RNA.usage.txt',
-          'data/rna/RNA.v1.gtf',
-          'data/rna/RNA.v4.1.mix',
+          'data/trans/RNA.v1.gtf',
+          'data/trans/RNA.v4.1.mix',
 
            # ---------- META ----------
 
-          'data/meta/META.usage.txt',
           'data/meta/META.v1.tab.fa',
           'data/meta/META.v1.tab.fa',
           'data/meta/META.v6.mix.csv',
@@ -41,7 +39,6 @@ data  = [ 'data/manual.txt',
 
            # ---------- Variant ----------
 
-          'data/var/DNA.usage.txt',
           'data/var/DNA.v3.mix.csv',
           'data/var/DNA.variant.bed',
         ]

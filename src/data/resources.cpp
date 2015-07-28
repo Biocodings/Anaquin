@@ -26,13 +26,11 @@
 
 #include "resources/RNA.v1.gtf"
 #include "resources/RNA.v4.1.mix"
-#include "resources/RNA.usage.txt"
 
 /*
  * META Resources
  */
 
-#include "resources/META.usage.txt"
 #include "resources/META.v1.tab.fa"
 #include "resources/META.v6.mix.csv"
 #include "resources/META.v1.tab.bed"
@@ -41,7 +39,6 @@
  * DNA Resources
  */
 
-#include "resources/DNA.usage.txt"
 #include "resources/DNA.v3.mix.csv"
 #include "resources/DNA.variant.bed"
 
@@ -115,17 +112,17 @@ std::string MetaDataBed()
 }
 
 /*
- * RNA Resources
+ * Transcriptome Resources
  */
 
-std::string RNADataGTF()
+std::string TransDataGTF()
 {
-    return ToString(data_rna_RNA_v1_gtf);
+    return ToString(data_trans_RNA_v1_gtf);
 }
 
-std::string RNADataMix()
+std::string TransDataMix()
 {
-    return ToString(data_rna_RNA_v4_1_mix);
+    return ToString(data_trans_RNA_v4_1_mix);
 }
 
 /*

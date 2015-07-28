@@ -18,8 +18,8 @@ extern std::string FusionDataRef();
 
 extern std::string LadderDataMix();
 
-extern std::string RNADataGTF();
-extern std::string RNADataMix();
+extern std::string TransDataGTF();
+extern std::string TransDataMix();
 
 extern std::string MetaDataFA();
 extern std::string MetaDataBed();
@@ -539,6 +539,6 @@ void Standard::clinical()
 
 void Standard::rna()
 {
-    r_ref(Reader(RNADataGTF(), DataMode::String));
-    r_mix(Reader(RNADataMix(), DataMode::String));
+    r_ref(Reader(TransDataGTF(), DataMode::String));
+    r_mix(Reader(TransDataMix(), DataMode::String));
 }
