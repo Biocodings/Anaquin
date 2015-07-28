@@ -122,18 +122,17 @@ namespace Anaquin
              * Find out all the sequins undetected in the experiment
              */
 
+            options.info("There are " + std::to_string(stats.h.size()) + " sequins in the reference");
             options.info("Checking for missing sequins");
             
-            for (const auto &i : s.seq2locus_1)
+            for (const auto &i : s.seqIDs)
             {
-                const auto &seqID = i.first;
+                const auto &seqID = i;
 
-                assert(stats.h.count(seqID));
-                
                 // If the histogram has an entry of zero
                 if (!stats.h.at(seqID))
                 {
-                    if (s.f_seqs_A.count(seqID))
+                    if (!s.f_seqs_A.count(seqID))
                     {
                         options.warn(seqID + " defined in the referene but not in the mixture and it is undetected.");
                         continue;
@@ -146,10 +145,14 @@ namespace Anaquin
                     // Known abundance for the fusion
                     const auto known = seq.abund() / seq.length;
 
+                    stats.y.push_back(0);
+                    stats.z.push_back(seqID);
+                    stats.x.push_back(log2f(known));
+
                     stats.miss.push_back(MissingSequin(seqID, known));
                 }
             }
-            
+           
             // The references are simply the known fusion points
             stats.m.nr = s.seq2locus_1.size() + s.seq2locus_2.size();
 

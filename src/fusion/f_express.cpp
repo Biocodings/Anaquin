@@ -14,6 +14,6 @@ ModelStats FExpress::analyze(const std::string &file, const Options &options)
     {
         AnalyzeReporter::linear(stats, "FExpress", "FPKM", options.writer);
     }
- 
+
     return ModelStats(stats);
 }
