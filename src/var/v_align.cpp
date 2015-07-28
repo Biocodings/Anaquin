@@ -1,11 +1,11 @@
-//#include "var/v_align.hpp"
-//#include "parsers/parser_sam.hpp"
-//
-//using namespace Anaquin;
-//
-//VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
-//{
-//    VAlign::Stats stats;
+#include "var/v_align.hpp"
+#include "parsers/parser_sam.hpp"
+
+using namespace Anaquin;
+
+VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
+{
+    VAlign::Stats stats;
 //    static const auto &s = Standard::instance();
 //
 //    options.info("Parsing alignment file");
@@ -86,5 +86,5 @@
 //
 //    AnalyzeReporter::stats("VarAlign_summary", stats.p, stats.c, options.writer);
 //    
-//	return stats;
-//}
+	return stats;
+}

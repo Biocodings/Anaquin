@@ -18,7 +18,7 @@ namespace Anaquin
         SS::TestStats stats;
 
         // The p-value and q-value under the null-hypothesis
-        SS::P<double> p, q;
+        SS::P p, q;
 
         TrackingStatus status;
     };

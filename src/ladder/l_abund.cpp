@@ -139,7 +139,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
         const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(normalize), SS::c(expect)));
 
         // Regression slope that we'll correct to 1
-        const double slope = lm.coeffs[1].v;
+        const auto slope = lm.coeffs[1].value;
 
         std::vector<double> adjusted;
         adjusted.resize(normalize.size());
