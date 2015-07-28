@@ -13,11 +13,13 @@ namespace Anaquin
             // Overall performance
             Confusion m;
             
-            // Fraction of known fusion detected
+            // Fraction of reference fusion detected
             double covered;
             
             // Distribution of the sequins
-            SequinHist h = Analyzer::histogram(Standard::instance().f_seqs_A);
+            SequinHist h = Analyzer::seqHist();
+
+            MissingSequins miss;
         };
 
         template <typename Options> static Stats analyze(const std::string &file, const Options &options = Options())
@@ -32,7 +34,7 @@ namespace Anaquin
                 options.logInfo((boost::format("%1%: %2% %3%") % p.i % f.chr_1 % f.chr_2).str());
                 SequinID id;
 
-                // Don't bother unles in silico chromosome
+                // Don't bother unless in silico chromosome
                 if (f.chr_1 != s.id || f.chr_2 != s.id)
                 {
                     return;
@@ -43,7 +45,7 @@ namespace Anaquin
                 if (classify(stats.m, f, [&](const ParserFusion::Fusion &)
                 {
                     const auto start_1 = f.start_1;
-                    const auto start_2 = f.start_2;
+                    //const auto start_2 = f.start_2;
 
                     if (f.dir_1 == Backward && f.dir_2 == Forward)
                     {
@@ -77,7 +79,7 @@ namespace Anaquin
                             const auto &rl = i.second;
                             
                             // Starting position of the fusion on the reference chromosome
-                            const auto r_start_1 = rl.start;
+                            //const auto r_start_1 = rl.start;
                             
                             // Starting position of the fusion on the reference chromosome
                             const auto r_start_2 = rl.end;
@@ -103,20 +105,50 @@ namespace Anaquin
                 {
                     assert(!id.empty());
                     
-                    const auto seq = s.f_seqs_A.at(id);
-                    
                     // Known abundance for the fusion
-                    const auto known = seq.abund() / seq.length;
+                    const auto known = s.f_seqs_A.at(id).abund() / s.f_seqs_A.at(id).length;
                     
                     // Measured abundance for the fusion
                     const auto measured = f.reads;
 
-                    stats.h[seq.id]++;
+                    stats.h.at(id)++;
                     stats.x.push_back(log2f(known));
                     stats.y.push_back(log2f(measured));
                     stats.z.push_back(id);
                 }
             });
+            
+            /*
+             * Find out all the sequins undetected in the experiment
+             */
+
+            options.info("Checking for missing sequins");
+            
+            for (const auto &i : s.seq2locus_1)
+            {
+                const auto &seqID = i.first;
+
+                assert(stats.h.count(seqID));
+                
+                // If the histogram has an entry of zero
+                if (!stats.h.at(seqID))
+                {
+                    if (s.f_seqs_A.count(seqID))
+                    {
+                        options.warn(seqID + " defined in the referene but not in the mixture and it is undetected.");
+                        continue;
+                    }
+
+                    options.warn(seqID + " defined in the referene but not detected");
+                    
+                    const auto seq = s.f_seqs_A.at(seqID);
+
+                    // Known abundance for the fusion
+                    const auto known = seq.abund() / seq.length;
+
+                    stats.miss.push_back(MissingSequin(seqID, known));
+                }
+            }
             
             // The references are simply the known fusion points
             stats.m.nr = s.seq2locus_1.size() + s.seq2locus_2.size();
@@ -128,8 +160,7 @@ namespace Anaquin
                     [&](int sum, const std::pair<SequinID, Counts> &p)
                     {
                         return sum + (p.second ? 1 : 0);
-                    });
-            stats.covered = stats.covered / stats.m.nr;
+                    }) / stats.m.nr;
 
             assert(stats.covered >= 0 && stats.covered <= 1.0);
             

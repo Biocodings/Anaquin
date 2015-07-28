@@ -63,6 +63,19 @@ namespace Anaquin
 
             return hist;
         }
+
+        // Initalize a histogram for each of the sequin
+        static SequinHist seqHist()
+        {
+            SequinHist hist;
+            
+            for (const auto &id : Standard::instance().seqIDs)
+            {
+                hist[id] = 0;
+            }
+
+            return hist;
+        }
         
         /*
          * Create a histogram with a key type of R. The key type is usually the SequinID, but can also
@@ -146,6 +159,22 @@ namespace Anaquin
     };
 
     typedef std::map<std::string, Counts> Counter;
+
+    /*
+     * Represents a sequin that is not detected in the experiment
+     */
+    
+    struct MissingSequin
+    {
+        MissingSequin(const SequinID &id, Concentration abund) : id(id), abund(abund) {}
+
+        SequinID id;
+
+        // The expect abundance
+        Concentration abund;
+    };
+    
+    typedef std::vector<MissingSequin> MissingSequins;
 
     /*
      * Represents a simple linear regression fitted by maximum-likehihood estimation.
@@ -362,6 +391,17 @@ namespace Anaquin
         {
             assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
+            /*
+             * Generate a script for data visualization
+             */
+            
+            if (r)
+            {
+                writer->open(prefix + ".R");
+                writer->write(RWriter::write(stats.x, stats.y, stats.z, unit, stats.s.abund));
+                writer->close();
+            }
+            
             const std::string format = "%1%\t%2%\t%3%\t%4%";
             const auto lm = stats.linear();
 
@@ -391,17 +431,6 @@ namespace Anaquin
                     writer->write((boost::format("%1%\t%2%\t%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
                 }
                 
-                writer->close();
-            }
-
-            /*
-             * Generate a script for data visualization
-             */
-            
-            if (r)
-            {
-                writer->open(prefix + ".R");
-                writer->write(RWriter::write(stats.x, stats.y, stats.z, unit, stats.s.abund));
                 writer->close();
             }
         }

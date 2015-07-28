@@ -48,7 +48,7 @@ typedef std::set<std::string> MixtureFilter;
 struct ParseSequinInfo
 {
     // Used to detect duplicates
-    std::set<SequinID> sequinIDs;
+    std::set<SequinID> seqIDs;
     
     // Used to link sequins for each base
     std::map<BaseID, std::set<TypeID>> baseIDs;
@@ -106,9 +106,9 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
         Sequin s;
         
         // Make sure there's no duplicate in the mixture file
-        assert(info.sequinIDs.count(fields[0]) == 0);
+        assert(info.seqIDs.count(fields[0]) == 0);
         
-        info.sequinIDs.insert(s.id = fields[0]);
+        info.seqIDs.insert(s.id = fields[0]);
         
         // Base ID is simply the ID without the last part
         s.baseID = s.id.substr(0, s.id.find_last_of("_"));
@@ -150,9 +150,9 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
         Sequin s;
         
         // Make sure there's no duplicate in the mixture file
-        assert(info.sequinIDs.count(fields[0]) == 0);
+        assert(info.seqIDs.count(fields[0]) == 0);
         
-        info.sequinIDs.insert(s.id = fields[0]);
+        info.seqIDs.insert(s.id = fields[0]);
 
         // Base ID is simply the ID without the last part
         s.baseID = s.id.substr(0, s.id.find_last_of("_"));
@@ -286,7 +286,7 @@ void Standard::f_ref(const Reader &r)
     {
         if (f[0] != "chrT-chrT")
         {
-            throw std::runtime_error("Invalid reference file for fusion. chrT-chrT is expected.");
+            throw std::runtime_error("Invalid reference file. chrT-chrT is expected.");
         }
 
         const auto l  = Locus(stod(f[1]) + 1, stod(f[2]) + 1);
@@ -300,9 +300,11 @@ void Standard::f_ref(const Reader &r)
         {
             seq2locus_2[id] = l;
         }
+        
+        seqIDs.insert(id);
     });
 
-    assert(!seq2locus_1.empty() && !seq2locus_2.empty());
+    assert(!seqIDs.empty() && !seq2locus_1.empty() && !seq2locus_2.empty());
 }
 
 void Standard::ladder()

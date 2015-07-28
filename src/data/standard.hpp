@@ -87,17 +87,20 @@ namespace Anaquin
             /*
              * Shared variables
              */
-        
+
             // Set of prefix IDs shared between all tools
             std::set<BaseID> baseIDs;
+        
+            // Set of sequinIDs shared between all tools
+            std::set<SequinID> seqIDs;
         
             // Mapping between sequins to the base shared between all tools
             std::map<SequinID, BaseID> seq2base;
 
-            // Mapping between sequins to locus
+            // Mapping between sequins to locus (not used by all tools)
             std::map<SequinID, Locus> seq2locus_1;
         
-            // Mapping between sequins to locus
+            // Mapping between sequins to locus (not used by all tools)
             std::map<SequinID, Locus> seq2locus_2;
 
             /*

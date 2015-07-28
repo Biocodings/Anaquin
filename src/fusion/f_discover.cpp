@@ -11,7 +11,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
      * Generate summary statistics
      */
 
-    {
+    { 
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
         options.info("Generate summary statistics");

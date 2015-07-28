@@ -15,6 +15,5 @@ ModelStats FExpress::analyze(const std::string &file, const Options &options)
         AnalyzeReporter::linear(stats, "FExpress", "FPKM", options.writer);
     }
  
-    // Conver to the statistics expected
     return ModelStats(stats);
 }
