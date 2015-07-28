@@ -19,7 +19,7 @@ TEST_CASE("LAbund_Test")
 {
     const auto r = LAbund::analyze("tests/data/ladder/aligned_A.sam");
 
-    REQUIRE(r.expTotal == 4915200);
+    REQUIRE(r.expTotal == 2785280);
     REQUIRE(r.obsTotal == 834);
 
     REQUIRE(r.expect.count("C_16_A") == 1);
@@ -47,13 +47,13 @@ TEST_CASE("LAbund_Test")
     REQUIRE(r.normalized.at("C_16_C") == Approx(0.2865707434));
     REQUIRE(r.normalized.at("C_16_D") == Approx(0.4988009592));
 
-    REQUIRE(r.expect.at("C_16_A") == Approx(0.0666666667));
-    REQUIRE(r.expect.at("C_16_B") == Approx(0.1333333333));
-    REQUIRE(r.expect.at("C_16_C") == Approx(0.2666666667));
-    REQUIRE(r.expect.at("C_16_D") == Approx(0.5333333333));
+    REQUIRE(r.expect.at("C_16_A") == Approx(0.0117647059));
+    REQUIRE(r.expect.at("C_16_B") == Approx(0.0235294118));
+    REQUIRE(r.expect.at("C_16_C") == Approx(0.0470588235));
+    REQUIRE(r.expect.at("C_16_D") == Approx(0.0941176471));
 
-    REQUIRE(r.adjusted.at("C_16_A") == Approx(0.0873317225));
-    REQUIRE(r.adjusted.at("C_16_B") == Approx(0.1495224945));
-    REQUIRE(r.adjusted.at("C_16_C") == Approx(0.316246692));
-    REQUIRE(r.adjusted.at("C_16_D") == Approx(0.5504544932));
+    REQUIRE(r.adjusted.at("C_16_A") == Approx(0.0154114804));
+    REQUIRE(r.adjusted.at("C_16_B") == Approx(0.0263863226));
+    REQUIRE(r.adjusted.at("C_16_C") == Approx(0.0558082398));
+    REQUIRE(r.adjusted.at("C_16_D") == Approx(0.0971390282));
 }
