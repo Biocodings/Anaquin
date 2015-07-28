@@ -221,7 +221,7 @@ namespace Anaquin
             lm.r2 = m.ar2;
             
             // Constant coefficient
-            lm.c = m.coeffs[0].v;
+            lm.c = m.coeffs[0].value;
             
             // Regression slope
             lm.m = m.coeffs[1].v;
