@@ -152,7 +152,7 @@ namespace Anaquin
                     stats.miss.push_back(MissingSequin(seqID, known));
                 }
             }
-           
+
             // The references are simply the known fusion points
             stats.m.nr = s.seq2locus_1.size() + s.seq2locus_2.size();
 

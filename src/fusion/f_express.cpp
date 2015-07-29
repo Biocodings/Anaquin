@@ -7,12 +7,12 @@ ModelStats FExpress::analyze(const std::string &file, const Options &options)
 {
     const auto stats = FAnalyzer::analyze(file, options);
 
-    /*
-     * Generate summary statistics
-     */
+    {
+        AnalyzeReporter::linear(stats, "FusionExpress", "FPKM", options.writer);
+    }
 
     {
-        AnalyzeReporter::linear(stats, "FExpress", "FPKM", options.writer);
+        AnalyzeReporter::missing("FusionExpress_miss.csv", stats, options.writer);
     }
 
     return ModelStats(stats);

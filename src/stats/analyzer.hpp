@@ -381,6 +381,23 @@ namespace Anaquin
 
     struct AnalyzeReporter
     {
+        template <typename Stats, typename Writer> static void missing(const std::string &file,
+                                                                       const Stats &stats,
+                                                                       Writer writer)
+        {
+            const auto format = "%1%\t%2%";
+
+            writer->open(file);
+            writer->write((boost::format(format) % "id" % "abund").str());
+
+            for (const auto &i : stats.miss)
+            {
+                writer->write((boost::format(format) % i.id % i.abund).str());
+            }
+
+            writer->close();
+        }
+
         template <typename Stats, typename Writer> static void linear(const Stats &stats,
                                                                       const std::string prefix,
                                                                       const std::string unit,

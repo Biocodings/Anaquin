@@ -106,10 +106,11 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
     {
         stats.s = Expression::analyze(stats.c, s.r_gene(options.mix));
     }
-    
-    options.info("Generating statistics");
 
-    AnalyzeReporter::linear(stats, "TransExpression", "FPKM", options.writer);
-
+    {
+        options.info("Generating statistics");
+        AnalyzeReporter::linear(stats, "TransExpression", "FPKM", options.writer);
+    }
+        
     return stats;
 }
