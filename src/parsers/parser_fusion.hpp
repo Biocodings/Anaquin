@@ -34,7 +34,7 @@ namespace Anaquin
             
             // Orientation for the second chromosome
             Strand dir_2;
-            
+
             // Number of reads that span the fusion
             Reads reads;
         };

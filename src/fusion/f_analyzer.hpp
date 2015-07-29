@@ -19,6 +19,7 @@ namespace Anaquin
             // Distribution of the sequins
             SequinHist h = Analyzer::seqHist();
 
+            // Sequins failed to detect in the experiment
             MissingSequins miss;
         };
 
@@ -103,7 +104,11 @@ namespace Anaquin
                     return r;
                 }))
                 {
-                    assert(!id.empty());
+                    assert(!id.empty() && s.f_seqs_A.count(id));
+
+                    /*
+                     * Positive identification
+                     */
                     
                     // Known abundance for the fusion
                     const auto known = s.f_seqs_A.at(id).abund() / s.f_seqs_A.at(id).length;
