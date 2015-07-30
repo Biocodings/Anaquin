@@ -241,11 +241,6 @@ template<typename T> std::string concat(const std::map<Value, T> &m)
     return str.substr(0, str.length() - 2);
 }
 
-static std::string toolRange()
-{
-    return "TransAlign,TransAssembly,TransExpression,TransDifferent,TransNorm,TransIGV";
-}
-
 struct InvalidCommandException : public std::exception
 {
     InvalidCommandException(const std::string &data) : data(data) {}
@@ -293,6 +288,7 @@ struct MissingOptionError : public std::exception
 struct MissingMixtureError   : public std::exception {};
 struct MissingReferenceError : public std::exception {};
 struct MissingInputError     : public std::exception {};
+struct InvalidNegativ30Error : public std::exception {};
 
 struct InvalidToolError : public std::exception
 {
@@ -677,13 +673,37 @@ void parse(int argc, char ** argv)
     std::vector<Value>  vals;
 
     unsigned n = 0;
-    
+
+    /*
+     * Detect for weird inputs, such as "–" (invalid ASCII)
+     */
+
+    for (auto i = 0; i < argc; i++)
+    {
+        if (argv[i])
+        {
+            const auto str = std::string(argv[i]);
+            
+            if (str.size() >= 2)
+            {
+                const int key = (int) str[0];
+                
+                if (key == -30) // –
+                {
+                    throw std::runtime_error("Invalid " + std::string(argv[i]) + ". Please note '–' is NOT the character '-' that you see on your keyboard. The given option is therefore invalid, please type the character manually.");
+                }
+            }
+        }
+    }
+
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
         if (next < OPT_TOOL)
         {
             throw InvalidOptionException(argv[n+1]);
         }
+        
+        std::cout << next << std::endl;
         
         opts.push_back(next);
 
@@ -705,7 +725,7 @@ void parse(int argc, char ** argv)
 
     if (iter == opts.end() && (iter  = std::find(opts.begin(), opts.end(), OPT_VERSION))  == opts.end())
     {
-        throw MissingOptionError("-t", toolRange());
+        throw MissingOptionError("-t");
     }
 
     // This is the index that we'll need to swap
@@ -965,9 +985,10 @@ void parse(int argc, char ** argv)
                 {
                     MAssembly::Options o;
                     
+                    // An alignment file is needed to identify contigs
                     o.psl = _p.inputs.at(OPT_PSL_1);
 
-                    analyze_1<MAssembly>(o);
+                    analyze_1<MAssembly>(OPT_FA_1, o);
                     break;
                 }
             }
@@ -1005,16 +1026,8 @@ int parse_options(int argc, char ** argv)
     }
     catch (const MissingOptionError &ex)
     {
-        if (!ex.range.empty())
-        {
-            const auto format = "A mandatory option is missing. Please specify %1%. Possibilities are %2%";
-            printError((boost::format(format) % ex.opt % ex.range).str());
-        }
-        else
-        {
-            const auto format = "A mandatory option is missing. Please specify %1%.";
-            printError((boost::format(format) % ex.opt).str());
-        }
+        const auto format = "A mandatory option is missing. Please specify %1%.";
+        printError((boost::format(format) % ex.opt).str());
     }
     catch (const RepeatOptionError &ex)
     {
