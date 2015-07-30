@@ -703,8 +703,6 @@ void parse(int argc, char ** argv)
             throw InvalidOptionException(argv[n+1]);
         }
         
-        std::cout << next << std::endl;
-        
         opts.push_back(next);
 
         // Whether this option has an value
