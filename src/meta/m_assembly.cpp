@@ -108,8 +108,8 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     /*
      * Write out results for each sequin
      */
-    
-    options.writer->open("meta_sequins.stats");
+
+    options.writer->open("MetaAssembly_quins.stats");
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
     options.writer->write((boost::format(format) % "ID"
