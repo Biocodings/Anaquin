@@ -103,7 +103,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     }
 
     options.info("Generating linaer model");
-    AnalyzeReporter::linear(ms, "meta_assembly", "k-mer average", options.writer);
+    AnalyzeReporter::linear(ms, "MetaAssembly", "k-mer average", options.writer);
     
     /*
      * Write out results for each sequin
