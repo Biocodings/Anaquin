@@ -332,7 +332,7 @@
 		7FC557061AB473A90085C090 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				EF2615691B5FF96400BE8037 /* compare */,
+				EF2615691B5FF96400BE8037 /* cufflinks */,
 				EF4270A31B214F8400C9ED4E /* data */,
 				EFB7FF2B1B4F79D00045DC6A /* fusion */,
 				EFDD6A731B0DD73900450029 /* htslib */,
@@ -366,24 +366,24 @@
 			name = stats;
 			sourceTree = "<group>";
 		};
-		EF2615691B5FF96400BE8037 /* compare */ = {
+		EF2615691B5FF96400BE8037 /* cufflinks */ = {
 			isa = PBXGroup;
 			children = (
-				EF96552D1B60EE1D0027885E /* gtf_tracking.h */,
-				EF26156A1B5FF98A00BE8037 /* gdna.cpp */,
-				EF2615761B5FF9C500BE8037 /* gtf_tracking.cpp */,
-				EF26156E1B5FF99F00BE8037 /* GArgs.cpp */,
-				EF26156F1B5FF99F00BE8037 /* GBase.cpp */,
 				EF26157E1B5FF9F500BE8037 /* codons.cpp */,
 				EF26157F1B5FF9F500BE8037 /* cuffcompare.cpp */,
+				EF26156E1B5FF99F00BE8037 /* GArgs.cpp */,
+				EF26156F1B5FF99F00BE8037 /* GBase.cpp */,
+				EF26156A1B5FF98A00BE8037 /* gdna.cpp */,
+				EF2615721B5FF9AD00BE8037 /* GFaSeqGet.cpp */,
+				EF2615731B5FF9AD00BE8037 /* GFastaIndex.cpp */,
 				EF2615781B5FF9DC00BE8037 /* gff_utils.cpp */,
 				EF2615791B5FF9DC00BE8037 /* gff.cpp */,
 				EF26157A1B5FF9DC00BE8037 /* gffread.cpp */,
-				EF2615721B5FF9AD00BE8037 /* GFaSeqGet.cpp */,
-				EF2615731B5FF9AD00BE8037 /* GFastaIndex.cpp */,
 				EF26156B1B5FF98A00BE8037 /* GStr.cpp */,
+				EF2615761B5FF9C500BE8037 /* gtf_tracking.cpp */,
+				EF96552D1B60EE1D0027885E /* gtf_tracking.h */,
 			);
-			name = compare;
+			name = cufflinks;
 			sourceTree = "<group>";
 		};
 		EF3860D61AD378190062D246 /* parsers */ = {

@@ -172,6 +172,22 @@ void show_usage() {
 
 int main__(int argc, char * const argv[]) {
 
+    char * t[4];
+    
+    t[0] = (char *) malloc(1000);
+    t[1] = (char *) malloc(1000);
+    t[2] = (char *) malloc(1000);
+    t[3] = (char *) malloc(1000);
+    
+    strcpy(t[0], "cuffcompare");
+    strcpy(t[1], "-r");
+    strcpy(t[2], "data/trans/RNA.v1.gtf");
+    strcpy(t[3], "tests/data/trans/A1/transcripts.gtf");
+
+    argc = 4;
+    argv = t;
+    
+    
 #ifdef HEAPROFILE
   if (!IsHeapProfilerRunning())
       HeapProfilerStart("./cuffcompare_dbg.hprof");
@@ -1452,6 +1468,7 @@ void reportStats(FILE* fout, const char* setname, GSuperLocus& stotal,
       fprintf(fout, "          ( %d/%d on forward/reverse strand)\n",
              seqdata->gstats_f.Count(),seqdata->gstats_r.Count());
        }*/
+
     fprintf(fout, "#--------------------|   Sn   |  Sp   |  fSn |  fSp  \n");
     double sp=(100.0*(double)ps->baseTP)/(ps->baseTP+ps->baseFP);
     double sn=(100.0*(double)ps->baseTP)/(ps->baseTP+ps->baseFN);
