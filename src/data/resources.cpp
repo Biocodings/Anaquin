@@ -13,6 +13,8 @@
 
 #include "resources/FUS.v1.ref"
 #include "resources/FUS.v3.csv"
+#include "resources/fusion.bed"
+#include "resources/normal.bed"
 
 /*
  * Conjoint Resources
@@ -25,7 +27,7 @@
  */
 
 #include "resources/RNA.v1.gtf"
-#include "resources/RNA.v4.1.mix"
+#include "resources/RNA.v4.1.csv"
 
 /*
  * META Resources
@@ -83,6 +85,16 @@ std::string FusionDataRef()
     return ToString(data_fusion_FUS_v1_ref);
 }
 
+std::string FusionMutatedRef()
+{
+    return ToString(data_fusion_fusion_bed);
+}
+
+std::string FusionNormalRef()
+{
+    return ToString(data_fusion_normal_bed);
+}
+
 /*
  * Ladder Resources
  */
@@ -122,7 +134,7 @@ std::string TransDataGTF()
 
 std::string TransDataMix()
 {
-    return ToString(data_trans_RNA_v4_1_mix);
+    return ToString(data_trans_RNA_v4_1_csv);
 }
 
 /*

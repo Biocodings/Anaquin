@@ -15,6 +15,8 @@
 
 extern std::string FusionDataMix();
 extern std::string FusionDataRef();
+extern std::string FusionNormalRef();
+extern std::string FusionMutatedRef();
 
 extern std::string LadderDataMix();
 

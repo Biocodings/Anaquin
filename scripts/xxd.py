@@ -20,6 +20,8 @@ data  = [ 'data/manual.txt',
 
            'data/fusion/FUS.v3.csv',
            'data/fusion/FUS.v1.ref',
+           'data/fusion/fusion.bed',
+           'data/fusion/normal.bed',                      
 
            # ------- Ladder -------
 
@@ -28,7 +30,7 @@ data  = [ 'data/manual.txt',
            # ---------- Transcriptome ----------
 
           'data/trans/RNA.v1.gtf',
-          'data/trans/RNA.v4.1.mix',
+          'data/trans/RNA.v4.1.csv',
 
            # ---------- META ----------
 
