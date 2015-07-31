@@ -16,6 +16,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
     const bool isoform = options.level == Isoform;
 
     options.info("Parsing input file");
+    options.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
