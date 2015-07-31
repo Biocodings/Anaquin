@@ -849,9 +849,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_SEQUIN:   { printMixture();         break; }
-                case TOOL_T_ALIGN:    { analyze_1<TAlign>();    break; }
-                case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(); break; }
+                case TOOL_T_SEQUIN:   { printMixture();               break; }
+                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_BAM_1); break; }
+                case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>();       break; }
 
                 case TOOL_T_EXPRESS:
                 {

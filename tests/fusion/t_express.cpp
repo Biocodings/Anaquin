@@ -18,7 +18,7 @@ TEST_CASE("FExpress_10K")
 
 TEST_CASE("FExpress_Simulated")
 {
-    const auto stats = FExpress::analyze("tests/data/fusion/fusions.out");
+    const auto stats = FExpress::analyze("tests/data/fusion/simulated/fusions.out");
 
     // The linear model associated with the expression
     const auto lm = stats.linear();
