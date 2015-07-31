@@ -28,7 +28,7 @@ TEST_CASE("FExpress_Simulated")
     REQUIRE(lm.m  == Approx(0.9451342707));
     REQUIRE(lm.c  == Approx(2.5274566847));
 
-    const auto cmd = "-t FusionExpress -rfus data/fusion/FUS.v1.ref -m data/fusion/FUS.v3.csv -uout tests/data/fusion/fusions.out";
+    const auto cmd = "-t FusionExpress -rfus data/fusion/FUS.v1.ref -m data/fusion/FUS.v3.csv -uout tests/data/fusion/simulated/fusions.out";
     
     const auto status = parse_options(cmd, _output, _error);
     
