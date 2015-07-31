@@ -171,6 +171,12 @@ namespace Anaquin
             void f_ref(const Reader &);
             void f_mix(const Reader &);
 
+            // Mapping for normal genes
+            std::map<SequinID, Locus> f_n_seq2locus;
+
+            // Mapping for fusion genes
+            std::map<SequinID, Locus> f_f_seq2locus;
+
             // Mixture for each fusion sequin
             SequinMap f_seqs_A;
 

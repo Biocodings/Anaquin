@@ -302,10 +302,32 @@ void Standard::f_ref(const Reader &r)
         {
             seq2locus_2[id] = l;
         }
-        
+
         seqIDs.insert(id);
     });
+    
+    f_n_seq2locus.clear();
+    f_f_seq2locus.clear();
+    
+    /*
+     * Read reference file for normal RNA genes
+     */
 
+    ParserBED::parse(Reader(FusionNormalRef(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
+    {
+        f_n_seq2locus[f.name] = f.l;
+    });
+
+    /*
+     * Read reference file for fusion genes
+     */
+    
+    ParserBED::parse(Reader(FusionNormalRef(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
+    {
+        f_f_seq2locus[f.name] = f.l;
+    });
+
+    assert(!f_n_seq2locus.empty() && !f_f_seq2locus.empty());
     assert(!seqIDs.empty() && !seq2locus_1.empty() && !seq2locus_2.empty());
 }
 
