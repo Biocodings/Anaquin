@@ -1,5 +1,5 @@
-#ifndef GI_F_DISCOVER_HPP
-#define GI_F_DISCOVER_HPP
+#ifndef GI_F_VIEWER_HPP
+#define GI_F_VIEWER_HPP
 
 #include "stats/analyzer.hpp"
 
@@ -7,21 +7,12 @@ namespace Anaquin
 {
     struct FViewer
     {
-        struct Options : public SingleMixtureOptions
+        struct Options : public ViewerOptions
         {
             // Empty Implementation
         };
 
-        struct Stats
-        {
-            // Overall performance
-            Confusion m;
-
-            // Distribution of the sequins
-            SequinHist h;
-        };
-
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static void analyze(const std::string &, const ViewerOptions &options = ViewerOptions());
     };
 }
 

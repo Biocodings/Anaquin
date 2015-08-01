@@ -323,6 +323,11 @@ namespace Anaquin
         const Mixture qMix = MixB;
     };
 
+    struct ViewerOptions : public AnalyzerOptions
+    {
+        std::string path;
+    };
+    
     struct Expression
     {
         template <typename Map> static void print(const Map &m)

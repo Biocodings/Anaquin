@@ -22,6 +22,7 @@
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
 
+#include "fusion/f_viewer.hpp"
 #include "fusion/f_express.hpp"
 #include "fusion/f_discover.hpp"
 
@@ -879,20 +880,6 @@ void parse(int argc, char ** argv)
             break;
         }
 
-/*
-        case CMD_CANCER:
-        {
-            std::cout << "[INFO]: Cancer Analysis" << std::endl;
-            break;
-        }
-            
-        case CMD_CLINIC:
-        {
-            std::cout << "[INFO]: Clinic Analysis" << std::endl;
-            break;
-        }
-*/
-            
         case TOOL_F_IGV:
         case TOOL_F_EXPRESS:
         case TOOL_F_DISCOVER:
@@ -904,7 +891,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:      { break; }
+                case TOOL_F_IGV:      { analyze_1<FViewer>(OPT_OUT); break; }
                 //case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_OUT);  break; }
                 case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_OUT); break; }
             }
