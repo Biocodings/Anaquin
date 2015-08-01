@@ -12,13 +12,19 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        struct Stats
+        struct Stats : ModelStats
         {
             // Overall performance
             Confusion m;
-
+            
+            // Fraction of reference fusion detected
+            double covered;
+            
             // Distribution of the sequins
-            SequinHist h;
+            SequinHist h = Analyzer::seqHist();
+            
+            // Sequins failed to detect in the experiment
+            MissingSequins miss;
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

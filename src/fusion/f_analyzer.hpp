@@ -8,6 +8,7 @@ namespace Anaquin
 {
     struct FAnalyzer
     {
+/*
         struct Stats : ModelStats
         {
             // Overall performance
@@ -22,10 +23,11 @@ namespace Anaquin
             // Sequins failed to detect in the experiment
             MissingSequins miss;
         };
+*/
 
-        template <typename Options> static Stats analyze(const std::string &file, const Options &options = Options())
+        template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &options = Options())
         {
-            FAnalyzer::Stats stats;
+            Stats stats;
             const auto &s = Standard::instance();
 
             options.info("Parsing alignment file");

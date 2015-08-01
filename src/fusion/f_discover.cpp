@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Options &options)
 {
-    const auto stats = FAnalyzer::analyze(file, options);
+    const auto stats = FAnalyzer::analyze<FDiscover::Options, FDiscover::Stats>(file, options);
 
     /*
      * Generate summary statistics
@@ -50,14 +50,13 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
         options.writer->close();
     }
 
-    /*
-     * The statistics we need are the subset that we've got, excluding the linear modeling
-     */
+    {
+        AnalyzeReporter::linear(stats, "FusionExpress", "FPKM", options.writer);
+    }
     
-    FDiscover::Stats d_stats;
-    
-    d_stats.m = stats.m;
-    d_stats.h = stats.h;
-    
-    return d_stats;
+    {
+        AnalyzeReporter::missing("FusionExpress_miss.csv", stats, options.writer);
+    }
+
+    return stats;
 }

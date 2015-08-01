@@ -905,7 +905,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_F_IGV:      { break; }
-                case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_OUT);  break; }
+                //case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_OUT);  break; }
                 case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_OUT); break; }
             }
 
@@ -1015,7 +1015,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidToolError &ex)
     {
-        printError("Invalid tool: " + ex.value);
+        printError("Invalid tool: " + ex.value + ". Please refer to the documenation for correct usage.");
     }
     catch (const InvalidOptionException &ex)
     {

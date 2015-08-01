@@ -6,8 +6,8 @@ using namespace Anaquin;
 FAlign::Stats FAlign::analyze(const std::string &file, const Options &options)
 {
     FAlign::Stats stats;
-    const auto &s = Standard::instance();
-    
+    //const auto &s = Standard::instance();
+
     std::vector<Alignment> exons, introns;
     
     options.info("Parsing alignment file");
