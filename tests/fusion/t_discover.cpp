@@ -24,6 +24,7 @@ TEST_CASE("FDiscover_Simulated")
     const auto status = parse_options(cmd, _output, _error);
     
     REQUIRE(status == 0);
+    REQUIRE(_output.find("Fusion Analysis") != std::string::npos);
 }
 
 TEST_CASE("FDiscover_10K")
@@ -33,4 +34,5 @@ TEST_CASE("FDiscover_10K")
     const auto status = parse_options(cmd, _output, _error);
     
     REQUIRE(status == 0);
+    REQUIRE(_output.find("Fusion Analysis") != std::string::npos);
 }
