@@ -8,23 +8,6 @@ namespace Anaquin
 {
     struct FAnalyzer
     {
-/*
-        struct Stats : ModelStats
-        {
-            // Overall performance
-            Confusion m;
-            
-            // Fraction of reference fusion detected
-            double covered;
-            
-            // Distribution of the sequins
-            SequinHist h = Analyzer::seqHist();
-
-            // Sequins failed to detect in the experiment
-            MissingSequins miss;
-        };
-*/
-
         template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &options = Options())
         {
             Stats stats;
@@ -82,9 +65,6 @@ namespace Anaquin
                             const auto &rl = i.second;
                             
                             // Starting position of the fusion on the reference chromosome
-                            //const auto r_start_1 = rl.start;
-                            
-                            // Starting position of the fusion on the reference chromosome
                             const auto r_start_2 = rl.end;
 
                             if (i.second.start == start_1 && r_start_2 == f.start_2)
@@ -111,7 +91,7 @@ namespace Anaquin
                     /*
                      * Positive identification
                      */
-                    
+
                     // Known abundance for the fusion
                     const auto known = s.f_seqs_A.at(id).abund() / s.f_seqs_A.at(id).length;
                     
@@ -152,7 +132,7 @@ namespace Anaquin
                     // Known abundance for the fusion
                     const auto known = seq.abund() / seq.length;
 
-                    stats.y.push_back(0);
+                    stats.y.push_back(0); // TODO: We shouldn't even need to add those missing sequins!
                     stats.z.push_back(seqID);
                     stats.x.push_back(log2f(known));
 

@@ -10,8 +10,6 @@ namespace Anaquin
     class Sequin
     {
         public:
-            enum Group { A, B, C, D, E, F, G, H, I, J, K };
-
             operator Locus()    const { return l;  }
             operator SequinID() const { return id; }
 
@@ -28,10 +26,10 @@ namespace Anaquin
 
             BasePair length;
 
-            // Amount of abundance, a non-const method
+            // Abundance spiked, a non-const method
             Concentration &abund() { return _abund; }
         
-            // Amount of abundance, a const method
+            // Abundance spiked, a const method
             const Concentration &abund() const { return _abund; }
 
         private:

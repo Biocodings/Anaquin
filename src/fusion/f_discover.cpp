@@ -51,11 +51,11 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
     }
 
     {
-        AnalyzeReporter::linear(stats, "FusionExpress", "FPKM", options.writer);
+        AnalyzeReporter::linear(stats, "FusionDiscover", "FPKM", options.writer);
     }
     
     {
-        AnalyzeReporter::missing("FusionExpress_miss.csv", stats, options.writer);
+        AnalyzeReporter::missing("FusionDiscover_miss.csv", stats, options.writer);
     }
 
     return stats;
