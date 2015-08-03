@@ -10,18 +10,27 @@ namespace Anaquin
     {
         struct Fusion
         {
+            inline operator Locus() const
+            {
+                return Locus(std::min(start_1, start_1), std::max(start_1, start_1));
+            }
+            
             // Chromosome for the left and right
-            ChromoID l_chr, r_chr;
+            ChromoID chr_1, chr_2;
 
             // Strand for the left and right
-            Strand l_strand, r_strand;
+            Strand strand_1, strand_2;
 
             // Where the fusion occurs
-            BasePair l_break, r_break;
+            BasePair start_1, start_2;
+            
+            // Number of reads that span the fusion
+            Reads reads;
         };
 
         typedef std::function<void (const Fusion &, const ParserProgress &)> Functor;
 
+        // Parse an output file from FusionStar
         static void parse(const Reader &, Functor);
     };
 }

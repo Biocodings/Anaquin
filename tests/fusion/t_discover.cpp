@@ -7,6 +7,16 @@ extern int parse_options(const std::string &, std::string &, std::string &);
 
 using namespace Anaquin;
 
+TEST_CASE("FDiscover_100K_Star")
+{
+    FDiscover::Options o;
+    
+    // The experiment was run on FusionStar
+    o.soft = Software::Star;
+
+    const auto stats = FDiscover::analyze("tests/data/fusion/100K/star-fusion.fusion_candidates.txt", o);
+}
+
 TEST_CASE("FDiscover_Simulated")
 {
     const auto stats = FDiscover::analyze("tests/data/fusion/simulated/fusions.out");

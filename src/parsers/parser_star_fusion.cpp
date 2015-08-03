@@ -30,7 +30,8 @@ static void parseBreak(const std::string &s, std::string &chr, BasePair &l, Stra
     
     // Eg: chrT
     chr = tokens[0];
-    
+
+    // Eg: 9035684
     l = std::stoi(tokens[1]);
     
     // Eg: '-'
@@ -55,11 +56,14 @@ void ParserStarFusion::parse(const Reader &r, Functor f)
         p.i++;
         Tokens::split(line, "\t", tokens);
         
-        const auto leftGene  = tokens[3];
-        const auto rightGene = tokens[6];
+        const auto leftGene  = tokens[LeftGene];
+        const auto rightGene = tokens[RightGene];
 
-        parseBreak(tokens[4], d.l_chr, d.l_break, d.l_strand);
-        parseBreak(tokens[7], d.r_chr, d.r_break, d.r_strand);
+        parseBreak(tokens[LeftBreakpoint],  d.chr_1, d.start_1, d.strand_1);
+        parseBreak(tokens[RightBreakpoint], d.chr_2, d.start_2, d.strand_2);
+
+        // Measured abundance
+        d.reads = stoi(tokens[JunctionReads]);
 
         f(d, p);
     }

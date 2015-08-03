@@ -21,6 +21,17 @@ namespace Anaquin
     typedef std::map<BaseID, Counts>   BaseHist;
     typedef std::map<SequinID, Counts> SequinHist;
 
+    /*
+     * List of softwares supported by Anaquin
+     */
+    
+    enum Software
+    {
+        Star,
+        TopHat,
+        Cufflink,
+    };
+
     template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
     {
         std::map<T, Counts> c;

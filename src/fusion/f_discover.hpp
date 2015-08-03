@@ -9,20 +9,20 @@ namespace Anaquin
     {
         struct Options : public SingleMixtureOptions
         {
-            // Empty Implementation
+            Software soft = Software::TopHat;
         };
 
         struct Stats : ModelStats
         {
             // Overall performance
             Confusion m;
-            
+
             // Fraction of reference fusion detected
             double covered;
-            
+
             // Distribution of the sequins
             SequinHist h = Analyzer::seqHist();
-            
+
             // Sequins failed to detect in the experiment
             MissingSequins miss;
         };
