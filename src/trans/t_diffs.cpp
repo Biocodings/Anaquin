@@ -12,6 +12,8 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 
     auto c = (options.level == Gene ? TAnalyzer::geneCounter() : TAnalyzer::sequinCounter());
 
+    options.logInfo("options.level == " + std::to_string(options.level));
+
     options.info("Parsing input file");
 
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)

@@ -858,7 +858,7 @@ void parse(int argc, char ** argv)
                 {
                     TExpress::Options o;
                     
-                    // The interpreation crticially depends on genes or isoforms
+                    // The interpretation crticially depends on genes or isoforms
                     o.level = _p.inputs.count(OPT_GTRACK) ? TExpress::Gene : TExpress::Isoform;
                     
                     analyze_1<TExpress>(o);
@@ -869,8 +869,8 @@ void parse(int argc, char ** argv)
                 {
                     TDiffs::Options o;
 
-                    // The interpreation crticially depends on genes or isoforms
-                    o.level = _inputs.count(OPT_GTRACK) ? TDiffs::Gene : TDiffs::Isoform;
+                    // The interpretation crticially depends on genes or isoforms
+                    o.level = _p.inputs.count(OPT_GDIFF) ? TDiffs::Gene : TDiffs::Isoform;
 
                     analyze_1<TDiffs>(o);
                     break;
