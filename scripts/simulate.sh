@@ -1,5 +1,4 @@
 rm -rf RNA_Simulation
-
 python simulate.py RNA
 
 qsub -M twon@garvan.org.au -m beas -V -cwd -pe smp 1 -j y -S /bin/sh A1.pbs

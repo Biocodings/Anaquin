@@ -1,2 +1,2 @@
-tophat -o RNA_B2/aligned combined RNA_B2/reads/simulated_1.fastq RNA_B2/reads/simulated_2.fastq
+tophat -o RNA_B2/aligned combined RNA_B2/simulated_1.fastq RNA_B2/simulated_2.fastq
 cufflinks -o RNA_B2/assembly -G combined.gtf RNA_B2/aligned/accepted_hits.bam
