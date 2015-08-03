@@ -1,0 +1,2 @@
+tophat -o RNA_A1/aligned  combined RNA_A1/reads/simulated_1.fastq  RNA_A1/reads/simulated_2.fastq
+cufflinks -o RNA_A1/assembly -G combined.gtf RNA_A1/aligned/accepted_hits.bam

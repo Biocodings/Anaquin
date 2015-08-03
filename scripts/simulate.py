@@ -47,12 +47,12 @@ def readMixture(file, mix):
             tokens = l.strip().split(split)
 
             #
-            # ID  Length Mix_A  Mix_B
+            # ID  Length MixA  MixB
             #
             
             if (tokens[0] == 'id'):
                 continue
-                
+
             # Create data-structure for the sequin            
             r[tokens[0]] = { 'id':  tokens[0],
                              'len': float(tokens[1]),
@@ -67,11 +67,11 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=0.1, tool=
 
     for f in os.listdir(basePath):
         key = f.split('.')[0]
-        
-        if key in mixFile:            
+
+        if key in mixFile:
             # The concentration level depends on the level
             reads = mixFile[key][mix]
-                
+
             # The concentration needed to be added for the simulation
             reads = c + (s * reads)
 
@@ -105,33 +105,19 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=0.1, tool=
                 print 'Generating: ' + str(reads)
 
                 # Simulate reads from a given sequin
-                if tool == 'wgsim':
-                    i  = path + '/' + key + '.fa'
-                    o1 = path + '/' + key + '.R1.fastq'
-                    o2 = path + '/' + key + '.R2.fastq'                    
+                i  = path + '/' + key + '.fa'
+                o1 = path + '/' + key + '.R1.fastq'
+                o2 = path + '/' + key + '.R2.fastq'                    
 
-                    # Generate single-paired simulated reads
-                    cmd = 'wgsim -e 0 -r 0 -s 0 -d 0 -1 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' /dev/null'
+                cmd = 'wgsim -s 0 -d 0 -1 100 -2 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' ' + o2
+                #cmd = 'wgsim -e 0 -r 0 -s 0 -d 0 -1 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' /dev/null'
 
-                    print cmd
-                    os.system(cmd)
+                print cmd
+                os.system(cmd)
                     
-                    # We'll need this command to merge the simulations...
-                    cmd = 'cp ' + path + '/*.fastq ' + basePath
-                    os.system(cmd)                    
-                else:                    
-                    os.system('mkdir -p ' + os.getcwd() + '/Sherman/' + key)
-                    #cmd = '~/scripts/Sherman -cr 0 -e 0 -n ' + str(reads) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
-                    cmd = '../Sherman -cr 0 -e 0 -n ' + str(reads) + ' -l 101 --genome_folder ' + os.getcwd() + '/Sherman/' + key
-
-                    print cmd
-                    os.system(cmd)
-
-                    # Move the generated FASTQ to the proper directory
-                    print ('mv simulated.fastq ' + os.getcwd() + '/Sherman/' + key)
-                    os.system('mv simulated.fastq ' + os.getcwd() + '/Sherman/' + key + "/")
-                    
-                    os.system('find Sherman/ -name *.fastq -exec cat {} + > simulated.fastq')
+                # We'll need this command to merge the simulations...
+                cmd = 'cp ' + path + '/*.fastq ' + basePath
+                os.system(cmd)                    
             else:
                 print 'Warning: ' + key + ' not generated!'                
         else:
@@ -140,29 +126,36 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=0.1, tool=
     if (tool == 'wgsim'):
         print('Merging the individual simulations...')
         os.system('cat ' + basePath + '*R1.fastq > ' + basePath + 'simulated_1.fastq')
-        #os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
-        #os.system('rm '  + basePath + '/*R1.fastq')
-        #os.system('rm '  + basePath + '/*R2.fastq')
+        os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
 
 def print_usage():
-    print 'Usage: python simulate.py RNA|DNA|META|RNAFlat'
+    print 'Usage: python simulate.py RNA'
 
 if __name__ == '__main__':
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
     elif (sys.argv[1] == 'RNA'):
-        a = ['RNA_A_1', 'RNA_A_2', 'RNA_A_3']              
-        b = ['RNA_B_1', 'RNA_B_2', 'RNA_B_3']
+        a = ['RNA_A1', 'RNA_A2', 'RNA_A3']              
+        b = ['RNA_B1', 'RNA_B2', 'RNA_B3']
+
+        #
+        # Simulate replicates for mixture A
+        #
 
         for i in range(0,len(a)):
-            split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')
-            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'A')
+            split('RNA.v1.fa', 'RNA_Simulation/')
+            simulate('../data/trans/RNA.v4.1.csv', 'RNA_Simulation/', 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
+        #
+        # Simulate replicates for mixture B
+        #
+
         for i in range(0,len(b)):
-            split('../data/rna/RNA.v1.fa', 'RNA_Simulation/')        
-            simulate('../data/rna/RNA.v4.1.mix', 'RNA_Simulation/', 'B')
+            split('RNA.v1.fa', 'RNA_Simulation/')        
+            simulate('../data/trans/RNA.v4.1.csv', 'RNA_Simulation/', 'B')
             os.system('mv RNA_Simulation ' + b[i])
+
     elif (sys.argv[1] == 'META'):
         split('../data/meta/META.v1.tab.fa', 'META_A/')
         split('../data/meta/META.v1.tab.fa', 'META_B/')
