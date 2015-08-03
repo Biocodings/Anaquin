@@ -21,19 +21,26 @@ FExpress::Stats FExpress::analyze(const std::string &file, const Options &option
             if (t.fpkm)
             {
                 auto it = std::find(stats.z.begin(), stats.z.end(), t.geneID);
+
+                // Expected FPKM for the sequin
+                const auto known = r->abund() * r->length / 1000;
+                
+                // Measured FPKM for the sequin
+                const auto measured = fpkm;
+                
                 if (it != stats.z.end())
                 {
                     auto i = std::distance(stats.z.begin(), it);
                     
                     //stats.x[i] += (r->abund() / r->length);
-                    stats.y[i] += (fpkm);
+                    stats.y[i] += (measured);
                 }
                 else
                 {
                     //stats.x.push_back(log2(r->abund()));
                     //stats.y.push_back(log2(fpkm));
-                    stats.x.push_back(r->abund() / r->length);
-                    stats.y.push_back(fpkm);
+                    stats.x.push_back(known);
+                    stats.y.push_back(measured);
                     stats.z.push_back(t.geneID);
                 }
             }
