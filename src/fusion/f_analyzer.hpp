@@ -8,12 +8,23 @@ namespace Anaquin
 {
     struct FAnalyzer
     {
+        enum Software
+        {
+            TopHat,
+            Star,
+        };
+
         template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &options = Options())
         {
             Stats stats;
             const auto &s = Standard::instance();
 
             options.info("Parsing alignment file");
+
+            //if (options.tool == Software::Star)
+            {
+                
+            }
 
             ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &p)
             {
