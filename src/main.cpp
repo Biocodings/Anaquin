@@ -891,9 +891,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:      { analyze_1<FViewer>(OPT_OUT);   break; }
-                case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_OUT);  break; }
-                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_OUT); break; }
+                case TOOL_F_IGV:      { analyze_1<FViewer>(OPT_OUT);     break; }
+                case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_GTRACK); break; }
+                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_OUT);   break; }
             }
 
             break;

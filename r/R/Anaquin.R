@@ -1,4 +1,4 @@
-#  Copyright (C) 2015 - Garvan Institute (Dr Timothey Mercer, Dr Wendy Chen, Ted Wong)
+#  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
 #  Anaquin is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,16 +22,18 @@ LoadMixtures <- function(file)
     else
     {
         # Nothing specified, load the latest mixture available online
-        m <- read.csv('/Users/tedwong/Sources/QA/data/rna/RNA.v4.1.mix', sep='\t')
+        m <- read.csv('/Users/tedwong/Sources/QA/data/trans/RNA.v4.1.csv', sep='\t')
     }
-    
+
     #
-    # The mixture file only gives us the isoforms. We'll need to combine the information for genes
+    # The mixture file only gives us the isoforms. We'll need to combine the information for genes.
     #
     
     m$GeneID <- as.character(m$ID)
     m$GeneID <- substr(as.character(m$GeneID), 1, nchar(m$GeneID)-2)
-    geneIDs  <- unique(m$GeneID)
+
+    # Unique list of genes
+    geneIDs <- unique(m$GeneID)
 
     # Frame to store data for genes
     g <- data.frame(ID=geneIDs,
@@ -49,9 +51,18 @@ LoadMixtures <- function(file)
         #mixB <- sum(sequins$MixB / sequins$Length)
         mixA <- sum(sequins$MixA)
         mixB <- sum(sequins$MixB)
+
+        #
+        # Calculate the expected abundance of mixture A and B
+        #
         
         g[g$ID == gene,]$A <- mixA
         g[g$ID == gene,]$B <- mixB
+        
+        #
+        # Calculate the expected fold-ratio of mixture A and B
+        #
+        
         g[g$ID == gene,]$fold <- mixB / mixA
         g[g$ID == gene,]$logFold <- log2(mixB / mixA)
     }
@@ -207,7 +218,7 @@ Anaquin <- function(r, m=LoadMixtures())
 # # Given a list of BAM files, construct an experimental object for DESEq2 and EdgeR
 # AnaquinExperiment<- function(files, gtf='/Users/tedwong/Sources/QA/data/rna/RNA.ref.gtf')
 # {
-# 	bams <- BamFileList(paste('', files, sep='/'), yieldSize=2000000)	
+# 	bams <- BamFileList(paste('', files, sep='/'), yieldSize=2000000)
 # 
 # 	# Read in the gene model which will be used for counting reads
 # 	model <- makeTranscriptDbFromGFF(gtf, format='gtf')

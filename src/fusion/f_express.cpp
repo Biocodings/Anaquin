@@ -16,7 +16,7 @@ FExpress::Stats FExpress::analyze(const std::string &file, const Options &option
         // Try to match by names if possible
         const auto *r = s.f_seqs_A.count(t.geneID) ? &(s.f_seqs_A.at(t.geneID)) : nullptr;
 
-        if (r && t.geneID[0] == 'F')
+        if (r && t.geneID[0] == 'N')
         {
             if (t.fpkm)
             {
