@@ -9,6 +9,9 @@ namespace Anaquin
     {
         struct Options : public SingleMixtureOptions
         {
+            // GCC requires it...
+            Options() {}
+
             Software soft = Software::TopHat;
         };
 
