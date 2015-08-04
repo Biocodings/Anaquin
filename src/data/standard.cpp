@@ -291,19 +291,20 @@ void Standard::f_ref(const Reader &r)
             throw std::runtime_error("Invalid reference file. chrT-chrT is expected.");
         }
 
-        const auto l  = Locus(stod(f[1]) + 1, stod(f[2]) + 1);
-        const auto id = f[4];
+        FusionBreak b;
+        
+        b.l  = Locus(stod(f[1]) + 1, stod(f[2]) + 1);
+        b.id = f[4];;
+        
+        if      (f[3] == "ff") { b.orient = Orientation::ForwardForward; }
+        else if (f[3] == "fr") { b.orient = Orientation::ForwardReverse; }
+        else if (f[3] == "rf") { b.orient = Orientation::ReverseForward; }
+        else if (f[3] == "rr") { b.orient = Orientation::ReverseReverse; }
+        
+        // Add a new entry for the known fusion point
+        f_breaks.insert(b);
 
-        if (f[3] == "fr")
-        {
-            seq2locus_1[id] = l;
-        }
-        else
-        {
-            seq2locus_2[id] = l;
-        }
-
-        seqIDs.insert(id);
+        seqIDs.insert(b.id);
     });
     
     f_n_seq2locus.clear();
@@ -327,8 +328,8 @@ void Standard::f_ref(const Reader &r)
         f_f_seq2locus[f.name] = f.l;
     });
 
+    assert(!seqIDs.empty() && !f_breaks.empty());
     assert(!f_n_seq2locus.empty() && !f_f_seq2locus.empty());
-    assert(!seqIDs.empty() && !seq2locus_1.empty() && !seq2locus_2.empty());
 }
 
 void Standard::ladder()
@@ -543,7 +544,7 @@ void Standard::r_mix(const Reader &r)
 
             // Make sure it's not an empty range
             assert(i.second.l != Locus());
-            
+
             r_seqIDs.insert(i.first);
         }
     }

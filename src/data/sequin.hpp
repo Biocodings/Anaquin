@@ -36,7 +36,7 @@ namespace Anaquin
             Concentration _abund;
     };
 
-    struct Base
+    struct Base_
     {
         inline Concentration abund() const
         {
@@ -58,8 +58,8 @@ namespace Anaquin
 
         std::map<TypeID, Sequin> sequins;
     };
-    
-    struct VariantBase : public Base
+
+    struct VariantBase : public Base_
     {
         inline double alleleFreq() const
         {

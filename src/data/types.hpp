@@ -36,6 +36,8 @@ namespace Anaquin
 
     // Eg: 388488 from the first matching base
     typedef long long BasePair;
+    
+    typedef long long Base;
 }
 
 #endif

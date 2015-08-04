@@ -2,7 +2,7 @@
 #define GI_F_ANALYZER_HPP
 
 #include "stats/analyzer.hpp"
-#include "parsers/parser_fusion.hpp"
+#include "parsers/parser_top_fusion.hpp"
 #include "parsers/parser_star_fusion.hpp"
 
 namespace Anaquin
@@ -17,69 +17,38 @@ namespace Anaquin
             // Don't bother unless in-silico chromosome
             if (f.chr_1 != s.id || f.chr_2 != s.id)
             {
-                return ClassifyResult::Ignore;
+                return Ignore;
             }
 
             ClassifyResult r = Negative;
-            
-            classify(m, f, [&](const T &)
+
+            if (classify(m, f, [&](const T &)
             {
-                const auto start_1 = f.start_1;
-
-                if (f.strand_1 == Backward && f.strand_1 == Forward)
+                if (f.start_1 == 8168506)
                 {
-                    for (const auto &i : s.seq2locus_2)
-                    {
-                        id = i.first;
-                        
-                        // Reference locus
-                        const auto &rl = i.second;
-                        
-                        // Starting position of the fusion on the reference chromosome
-                        const auto r_start_1 = rl.start;
-                        
-                        // Starting position of the fusion on the reference chromosome
-                        const auto r_start_2 = rl.end;
-                        
-                        if (r_start_1 == start_1 && r_start_2 == f.start_2)
-                        {
-                            r = Positive;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    for (const auto &i : s.seq2locus_1)
-                    {
-                        id = i.first;
-                        
-                        // Reference locus
-                        const auto &rl = i.second;
-                        
-                        // Starting position of the fusion on the reference chromosome
-                        const auto r_start_2 = rl.end;
-                        
-                        if (i.second.start == start_1 && r_start_2 == f.start_2)
-                        {
-                            r = Positive;
-                            break;
-                        }
-                    }
-                }
-                
-                assert(!id.empty());
-                
-                if (r == Positive && !s.f_seqs_A.count(id))
-                {
-                    //options.warn(id + " is defined in the reference but not in the mixture.");
-                    return Negative;
+                    r = Negative;
                 }
 
-                return r;
-            });
+                const auto min = std::min(f.start_1, f.start_2);
+                const auto max = std::max(f.start_1, f.start_2);
 
-            return r;
+                const auto r = std::find_if(s.f_breaks.begin(), s.f_breaks.end(), [&](const FusionBreak &x)
+                {
+                    return min == x.l.start && max == x.l.end;
+                });
+
+                if (r != s.f_breaks.end())
+                {
+                    id = r->id;
+                }
+
+                return (r != s.f_breaks.end()) ? Positive : Negative;
+            }))
+            {
+                return Positive;
+            }
+
+            return Negative;
         }
         
         template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &options = Options())
@@ -123,78 +92,87 @@ namespace Anaquin
             }
             else
             {
-                ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &p)
+                ParserTopFusion::parse(Reader(file), [&](const ParserTopFusion::Fusion &f, const ParserProgress &)
                 {
-                    options.logInfo((boost::format("%1%: %2% %3%") % p.i % f.chr_1 % f.chr_2).str());
-                    
-                    // Don't bother unless in silico chromosome
-                    if (f.chr_1 != s.id || f.chr_2 != s.id)
-                    {
-                        return;
-                    }
-                    
-                    ClassifyResult r = Negative;
-                    
-                    if (classify(stats.m, f, [&](const ParserFusion::Fusion &)
-                    {
-                        const auto start_1 = f.start_1;
-                        
-                        if (f.dir_1 == Backward && f.dir_2 == Forward)
-                        {
-                            for (const auto &i : s.seq2locus_2)
-                            {
-                                id = i.first;
-                                
-                                // Reference locus
-                                const auto &rl = i.second;
-                                
-                                // Starting position of the fusion on the reference chromosome
-                                const auto r_start_1 = rl.start;
-                                
-                                // Starting position of the fusion on the reference chromosome
-                                const auto r_start_2 = rl.end;
-                                
-                                if (r_start_1 == start_1 && r_start_2 == f.start_2)
-                                {
-                                    r = Positive;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            for (const auto &i : s.seq2locus_1)
-                            {
-                                id = i.first;
-                                
-                                // Reference locus
-                                const auto &rl = i.second;
-                                
-                                // Starting position of the fusion on the reference chromosome
-                                const auto r_start_2 = rl.end;
-                                
-                                if (i.second.start == start_1 && r_start_2 == f.start_2)
-                                {
-                                    r = Positive;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        assert(!id.empty());
-                        
-                        if (r == Positive && !s.f_seqs_A.count(id))
-                        {
-                            options.warn(id + " is defined in the reference but not in the mixture.");
-                            return Negative;
-                        }
-
-                        return r;
-                    }))
+                    if (classifyFusion(f, stats.m, id, options) == ClassifyResult::Positive)
                     {
                         positive(id, f.reads);
                     }
                 });
+                
+                
+//                ParserFusion::parse(Reader(file), [&](const ParserFusion::Fusion &f, const ParserProgress &p)
+//                {
+//                    options.logInfo((boost::format("%1%: %2% %3%") % p.i % f.chr_1 % f.chr_2).str());
+//                    
+//                    // Don't bother unless in silico chromosome
+//                    if (f.chr_1 != s.id || f.chr_2 != s.id)
+//                    {
+//                        return;
+//                    }
+//                    
+//                    ClassifyResult r = Negative;
+//                    
+//                    if (classify(stats.m, f, [&](const ParserFusion::Fusion &)
+//                    {
+//                        const auto start_1 = f.start_1;
+//                        
+//                        if (f.dir_1 == Backward && f.dir_2 == Forward)
+//                        {
+//                            for (const auto &i : s.seq2locus_2)
+//                            {
+//                                id = i.first;
+//                                
+//                                // Reference locus
+//                                const auto &rl = i.second;
+//                                
+//                                // Starting position of the fusion on the reference chromosome
+//                                const auto r_start_1 = rl.start;
+//                                
+//                                // Starting position of the fusion on the reference chromosome
+//                                const auto r_start_2 = rl.end;
+//                                
+//                                if (r_start_1 == start_1 && r_start_2 == f.start_2)
+//                                {
+//                                    r = Positive;
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                        else
+//                        {
+//                            for (const auto &i : s.seq2locus_1)
+//                            {
+//                                id = i.first;
+//                                
+//                                // Reference locus
+//                                const auto &rl = i.second;
+//                                
+//                                // Starting position of the fusion on the reference chromosome
+//                                const auto r_start_2 = rl.end;
+//                                
+//                                if (i.second.start == start_1 && r_start_2 == f.start_2)
+//                                {
+//                                    r = Positive;
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                        
+//                        assert(!id.empty());
+//                        
+//                        if (r == Positive && !s.f_seqs_A.count(id))
+//                        {
+//                            options.warn(id + " is defined in the reference but not in the mixture.");
+//                            return Negative;
+//                        }
+//
+//                        return r;
+//                    }))
+//                    {
+//                        positive(id, f.reads);
+//                    }
+//                });
             }
 
             /*
@@ -233,7 +211,7 @@ namespace Anaquin
             }
 
             // The references are simply the known fusion points
-            stats.m.nr = s.seq2locus_1.size() + s.seq2locus_2.size();
+            stats.m.nr = s.f_breaks.size();
 
             options.info("Calculating limit of sensitivity");
             stats.s = Expression::analyze(stats.h, s.f_seqs_A);

@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_FUSION_HPP
-#define GI_PARSER_FUSION_HPP
+#ifndef GI_PARSER_TOP_FUSION_HPP
+#define GI_PARSER_TOP_FUSION_HPP
 
 #include <functional>
 #include "data/locus.hpp"
@@ -8,7 +8,7 @@
 
 namespace Anaquin
 {
-    struct ParserFusion
+    struct ParserTopFusion
     {
         struct Fusion
         {

@@ -9,6 +9,14 @@ namespace Anaquin
         Backward,
     };
 
+    enum Orientation
+    {
+        ForwardForward,
+        ForwardReverse,
+        ReverseForward,
+        ReverseReverse
+    };
+
     struct Contig
     {
         std::string id;
@@ -44,6 +52,20 @@ namespace Anaquin
         HomozygousAlt,
     };
 
+    struct FusionBreak
+    {
+        inline bool operator<(const FusionBreak &x)  const { return id < x.id;  }
+        inline bool operator==(const FusionBreak &x) const { return id == x.id; }
+
+        // Where this fusion belongs
+        SequinID id;
+
+        // The position of the break-point
+        Locus l;
+
+        Orientation orient;
+    };
+    
     template <typename Iter, typename T, typename F> bool find(const Iter &begin, const Iter &end, const T &t, F &r)
     {
         for (auto i = begin; i < end; i++)

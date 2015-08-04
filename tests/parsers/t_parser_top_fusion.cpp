@@ -1,13 +1,13 @@
 #include <catch.hpp>
-#include "parsers/parser_fusion.hpp"
+#include "parsers/parser_top_fusion.hpp"
 
 using namespace Anaquin;
 
 TEST_CASE("Test_ParserFusion")
 {
-    std::vector<ParserFusion::Fusion> fs;
-    
-    ParserFusion::parse(Reader("tests/data/fusion/10K/fusions.out"), [&](const ParserFusion::Fusion &f, const ParserProgress &)
+    std::vector<ParserTopFusion::Fusion> fs;
+
+    ParserTopFusion::parse(Reader("tests/data/fusion/10K/fusions.out"), [&](const ParserTopFusion::Fusion &f, const ParserProgress &)
     {
         fs.push_back(f);
     });

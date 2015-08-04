@@ -1,10 +1,10 @@
 #include <assert.h>
 #include "data/tokens.hpp"
-#include "parsers/parser_fusion.hpp"
+#include "parsers/parser_top_fusion.hpp"
 
 using namespace Anaquin;
 
-void ParserFusion::parse(const Reader &r, Callback x)
+void ParserTopFusion::parse(const Reader &r, Callback x)
 {
     Fusion f;
     ParserProgress p;

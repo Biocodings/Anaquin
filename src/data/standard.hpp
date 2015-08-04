@@ -59,7 +59,7 @@ namespace Anaquin
     class Standard
     {
         public:
-            typedef std::map<BaseID, Base> BaseMap;
+            typedef std::map<BaseID, Base_> BaseMap;
             typedef std::map<SequinID, Sequin> SequinMap;
 
             static Standard& instance()
@@ -96,12 +96,6 @@ namespace Anaquin
         
             // Mapping between sequins to the base shared between all tools
             std::map<SequinID, BaseID> seq2base;
-
-            // Mapping between sequins to locus (not used by all tools)
-            std::map<SequinID, Locus> seq2locus_1;
-        
-            // Mapping between sequins to locus (not used by all tools)
-            std::map<SequinID, Locus> seq2locus_2;
 
             /*
              * RNA data
@@ -176,6 +170,9 @@ namespace Anaquin
 
             // Mapping for fusion genes
             std::map<SequinID, Locus> f_f_seq2locus;
+
+            // Known fusion break-points
+            std::set<FusionBreak> f_breaks;
 
             // Mixture for each fusion sequin
             SequinMap f_seqs_A;

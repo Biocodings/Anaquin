@@ -52,7 +52,7 @@ void ParserStarFusion::parse(const Reader &r, Functor f)
         {
             continue;
         }
-        
+
         p.i++;
         Tokens::split(line, "\t", tokens);
         
