@@ -62,9 +62,16 @@ namespace Anaquin
             typedef std::map<BaseID, Base_> BaseMap;
             typedef std::map<SequinID, Sequin> SequinMap;
 
-            static Standard& instance()
+            static Standard& instance(bool reload = false)
             {
                 static Standard s;
+                
+                // Reload the default resources
+                if (reload)
+                {
+                    s = Standard();
+                }
+                
                 return s;
             }
 
@@ -198,8 +205,7 @@ namespace Anaquin
 
         private:
             Standard();
-            Standard(Standard const&)       = delete;
-            void operator=(Standard const&) = delete;
+            Standard(Standard const&) = delete;
 
             // Apply resources for RNA
             void rna();

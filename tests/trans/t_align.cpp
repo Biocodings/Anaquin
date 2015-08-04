@@ -1,11 +1,8 @@
 #include <catch.hpp>
+#include "unit/test.hpp"
 #include "trans/t_align.hpp"
 
 using namespace Anaquin;
-
-static std::string _output, _error;
-
-extern int parse_options(const std::string &, std::string &, std::string &);
 
 TEST_CASE("TAlign_Cufflinks")
 {
@@ -17,10 +14,10 @@ TEST_CASE("TAlign_Cufflinks")
     REQUIRE(isnan(r.pe.m.sp()));
     REQUIRE(isnan(r.pe.m.sn()));
 
-    const int s = parse_options("-t TransAlign -rgtf data/trans/RNA.v1.gtf -ubam tests/data/trans/cufflinks.sam", _output, _error);
+    const auto t = CommandTest::test("-t TransAlign -rgtf data/trans/RNA.v1.gtf -ubam tests/data/trans/cufflinks.sam");
 
-    REQUIRE(s == 0);
-    REQUIRE(_output.find("Transcriptome Analysis") != std::string::npos);
+    REQUIRE(t.status == 0);
+    REQUIRE(t.output.find("Transcriptome Analysis") != std::string::npos);
 }
 
 TEST_CASE("TAlign_Simulations_All_Filtered")

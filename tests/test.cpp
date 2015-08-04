@@ -2,12 +2,17 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include "unit/test.hpp"
+#include "data/standard.hpp"
 #include <boost/algorithm/string.hpp>
 
-int parse_options(const std::string &command, std::string &output, std::string &error)
-{
-    extern int parse_options(int argc, char ** argv);
+// Defined in main.cpp
+extern int parse_options(int argc, char ** argv);
 
+using namespace Anaquin;
+
+CommandTest CommandTest::test(const std::string &command)
+{
     std::vector<std::string> tokens;
     boost::split(tokens, command, boost::is_any_of(" "));
 
@@ -27,10 +32,11 @@ int parse_options(const std::string &command, std::string &output, std::string &
     std::streambuf * const _errorBuffer  = std::cerr.rdbuf(errorBuffer.rdbuf());
     std::streambuf * const _outputBuffer = std::cout.rdbuf(outputBuffer.rdbuf());
 
-    const int status = parse_options(static_cast<int>(tokens.size()) + 1, argv);
+    CommandTest t;
 
-    error  = errorBuffer.str();
-    output = outputBuffer.str();
+    t.status = parse_options(static_cast<int>(tokens.size()) + 1, argv);
+    t.error  = errorBuffer.str();
+    t.output = outputBuffer.str();
 
     std::cout.rdbuf(_errorBuffer);
     std::cout.rdbuf(_outputBuffer);
@@ -39,6 +45,9 @@ int parse_options(const std::string &command, std::string &output, std::string &
     {
         delete[] argv[i];
     }
+    
+    // Clear off anything made by a unit-test
+    Standard::instance(true);
 
-    return status;
+    return t;
 }

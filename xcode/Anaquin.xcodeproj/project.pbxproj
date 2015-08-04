@@ -925,12 +925,11 @@
 					/usr/include/boost/,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 					/usr/include/catch/include/,
-					../include,
-					../../include,
 					/Users/tedwong/Sources/SS,
 					../../src,
 					../src,
 					src,
+					/Users/tedwong/Sources/QA,
 					/Users/tedwong/Sources/QA/src/htslib,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -956,12 +955,11 @@
 					/usr/include/boost/,
 					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
 					/usr/include/catch/include/,
-					../include,
-					../../include,
 					/Users/tedwong/Sources/SS,
 					../../src,
 					../src,
 					src,
+					/Users/tedwong/Sources/QA,
 					/Users/tedwong/Sources/QA/src/htslib,
 				);
 				LIBRARY_SEARCH_PATHS = (
