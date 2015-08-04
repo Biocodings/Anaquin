@@ -3,12 +3,10 @@
 # This script generates a IGV session for fusion analysis. Rather than keeping the required files in the distribution,
 # the script will download the files online. This saves the bunden of distributing the in-silico chromosome.
 #
-#   - In silico chromosome
-#   - Reference GTF for fusion genes
-#   - Reference GTF for normal genes
-#   - Reference GTF for the RNA standard
+# Requirments:
 #
-#   - Generated alignment file
+#   - SAMTools
+#   - Active Internet connection
 #
 
 import os
@@ -23,16 +21,17 @@ silicoGTF = 'www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
 
 # Generate an index for a SAM/BAM file
 def generateIndex(path, align):
-    # Generate the index
-    os.system('samtools index ' + align + ' ' + os.path.splitext(align)[0])
 
-    # Move the index files to the specified path (samtools creates index to the directory for the alignment file)
-    os.system('mv index.pbi ' + path)
+    # Eg: accepted_hits
+    index = os.path.splitext(os.path.split(align)[-1])[0]
+    
+    # Generate the index
+    os.system('samtools index ' + align + ' ' + path + "/" + index)
 
 # Download the required files and generate a IGV session 
 def generate(path, files):
 
-    # Create a IGV folder
+    # Create a session folder
     os.system('mkdir -p ' + path)
 
     #
@@ -61,7 +60,7 @@ def generateFusion(path, align):
               'http://www.anaquin.org/downloads/fusion/fusion_genes.gtf']
 
     print('Download Files')
-    #generate(path, files)
+    generate(path, files)
     
     print('Generate Index')
     generateIndex(path, align)
