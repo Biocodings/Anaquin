@@ -14,7 +14,7 @@ namespace Anaquin
         {
             inline operator Locus() const
             {
-                return Locus(std::min(start_1, start_1), std::max(start_1, start_1));
+                return Locus(l1, l2);
             }
 
             // The name of the first chromosome
@@ -24,16 +24,16 @@ namespace Anaquin
             std::string chr_2;
 
             // Position of the first chromosome where the fusion occurs
-            BasePair start_1;
+            Base l1;
             
             // Position of the second chromosome where the fusion occurs
-            BasePair start_2;
+            Base l2;
             
             // Orientation for the first chromosome
-            Strand dir_1;
+            Strand s1;
             
             // Orientation for the second chromosome
-            Strand dir_2;
+            Strand s2;
 
             // Number of reads that span the fusion
             Reads reads;

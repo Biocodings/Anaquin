@@ -20,21 +20,20 @@ namespace Anaquin
                 return Ignore;
             }
 
-            ClassifyResult r = Negative;
-
             if (classify(m, f, [&](const T &)
             {
-                if (f.start_1 == 8168506)
-                {
-                    r = Negative;
-                }
-
-                const auto min = std::min(f.start_1, f.start_2);
-                const auto max = std::max(f.start_1, f.start_2);
+                const auto min = std::min(f.l1, f.l2);
+                const auto max = std::max(f.l1, f.l2);
 
                 const auto r = std::find_if(s.f_breaks.begin(), s.f_breaks.end(), [&](const FusionBreak &x)
                 {
-                    return min == x.l.start && max == x.l.end;
+                    // Match in bases?
+                    const auto b_match = (min == x.l1 && max == x.l2);
+
+                    // Match in orientation?
+                    const auto s_match = (x.s1 == f.s1 && x.s2 == f.s2);
+
+                    return b_match && s_match;
                 });
 
                 if (r != s.f_breaks.end())

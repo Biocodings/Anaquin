@@ -59,8 +59,8 @@ void ParserStarFusion::parse(const Reader &r, Functor f)
         const auto leftGene  = tokens[LeftGene];
         const auto rightGene = tokens[RightGene];
 
-        parseBreak(tokens[LeftBreakpoint],  d.chr_1, d.start_1, d.strand_1);
-        parseBreak(tokens[RightBreakpoint], d.chr_2, d.start_2, d.strand_2);
+        parseBreak(tokens[LeftBreakpoint],  d.chr_1, d.l1, d.s1);
+        parseBreak(tokens[RightBreakpoint], d.chr_2, d.l2, d.s2);
 
         // Measured abundance
         d.reads = stoi(tokens[JunctionReads]);

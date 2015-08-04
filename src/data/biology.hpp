@@ -61,9 +61,10 @@ namespace Anaquin
         SequinID id;
 
         // The position of the break-point
-        Locus l;
+        Base l1, l2;
 
-        Orientation orient;
+        // Orientation for each of the
+        Strand s1, s2;
     };
     
     template <typename Iter, typename T, typename F> bool find(const Iter &begin, const Iter &end, const T &t, F &r)

@@ -293,14 +293,15 @@ void Standard::f_ref(const Reader &r)
 
         FusionBreak b;
         
-        b.l  = Locus(stod(f[1]) + 1, stod(f[2]) + 1);
         b.id = f[4];;
-        
-        if      (f[3] == "ff") { b.orient = Orientation::ForwardForward; }
-        else if (f[3] == "fr") { b.orient = Orientation::ForwardReverse; }
-        else if (f[3] == "rf") { b.orient = Orientation::ReverseForward; }
-        else if (f[3] == "rr") { b.orient = Orientation::ReverseReverse; }
-        
+        b.l1 = stod(f[1]) + 1;
+        b.l2 = stod(f[2]) + 1;
+
+        if      (f[3] == "ff") { b.s1 = Strand::Forward;  b.s2 = Strand::Forward;  }
+        else if (f[3] == "fr") { b.s1 = Strand::Forward;  b.s2 = Strand::Backward; }
+        else if (f[3] == "rf") { b.s1 = Strand::Backward; b.s2 = Strand::Forward;  }
+        else if (f[3] == "rr") { b.s1 = Strand::Backward; b.s2 = Strand::Backward; }
+
         // Add a new entry for the known fusion point
         f_breaks.insert(b);
 

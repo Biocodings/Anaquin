@@ -12,17 +12,17 @@ namespace Anaquin
         {
             inline operator Locus() const
             {
-                return Locus(std::min(start_1, start_1), std::max(start_1, start_1));
+                return Locus(l1, l2);
             }
-            
+
             // Chromosome for the left and right
             ChromoID chr_1, chr_2;
 
             // Strand for the left and right
-            Strand strand_1, strand_2;
+            Strand s1, s2;
 
             // Where the fusion occurs
-            BasePair start_1, start_2;
+            Base l1, l2;
             
             // Number of reads that span the fusion
             Reads reads;
