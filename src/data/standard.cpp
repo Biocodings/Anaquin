@@ -56,7 +56,45 @@ struct ParseSequinInfo
     std::map<BaseID, std::set<TypeID>> baseIDs;
 };
 
-template <typename SequinMap, typename BaseMap> void mergeMix(const Reader &r,
+/*
+ * This function is intended to merge related sequins. For example, merging transcripts for a gene.
+ * It should be called after parseMix(). For example, merge(parseMix(..), ... , ...).
+ */
+
+template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo &info, const SequinMap &m, BaseMap &b)
+{
+    // We can't merge something that is empty
+    assert(!m.empty());
+    
+    b.clear();
+
+    for (const auto &i : info.baseIDs)
+    {
+        // Eg: R1_1
+        const auto &baseID = i.first;
+        
+        // Eg: R and V (R1_1_R and R1_1_V)
+        const auto &typeIDs = i.second;
+
+        assert(typeIDs.size() >= 1);
+        
+        typename BaseMap::mapped_type base;
+
+        for (auto iter = typeIDs.begin(); iter != typeIDs.end(); iter++)
+        {
+            // Reconstruct the sequinID
+            const auto seqID = baseID + "_" + *iter;
+
+            base.sequins.insert(std::pair<TypeID, Sequin>(*iter, m.at(seqID)));
+        }
+
+        b[baseID] = base;
+    }
+
+    assert(!b.empty());
+}
+
+template <typename SequinMap, typename BaseMap> void mergeMix__(const Reader &r,
                                                               const ParseSequinInfo &info,
                                                               const SequinMap &a,
                                                               const SequinMap &b,
@@ -65,7 +103,7 @@ template <typename SequinMap, typename BaseMap> void mergeMix(const Reader &r,
 {
     ba.clear();
     bb.clear();
-    
+
     for (const auto &baseID : info.baseIDs)
     {
         const auto &typeIDs = baseID.second;
@@ -100,7 +138,8 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
     
     ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
     {
-        if (p.i == 0)
+        // Don't bother if this is the first line ID,Length,MixA,MixB) or an invalid line
+        if (p.i == 0 || fields.size() <= 1)
         {
             return;
         }
@@ -128,14 +167,14 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
         
         // Create an entry for the mixture
         m[s.id] = s;
-        
+    
         info.baseIDs[s.baseID].insert(s.typeID);
     }, ",");
     
     return info;
 }
 
-template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &a, SequinMap &b)
+template <typename SequinMap> ParseSequinInfo parseMix__(const Reader &r, SequinMap &a, SequinMap &b)
 {
     a.clear();
     b.clear();
@@ -244,7 +283,7 @@ void Standard::v_ref(const Reader &r)
 
 void Standard::v_mix(const Reader &r)
 {
-    mergeMix(r, parseMix(r, v_seqs_A, v_seqs_B), v_seqs_A, v_seqs_B, v_seqs_bA, v_seqs_bB);
+    mergeMix__(r, parseMix__(r, v_seqs_A, v_seqs_B), v_seqs_A, v_seqs_B, v_seqs_bA, v_seqs_bB);
 }
 
 void Standard::m_ref(const Reader &r)
@@ -261,13 +300,14 @@ void Standard::m_ref(const Reader &r)
 
 void Standard::m_mix(const Reader &r)
 {
-    mergeMix(r, parseMix(r, m_seqs_A, m_seqs_B), m_seqs_A, m_seqs_B, m_seqs_bA, m_seqs_bB);
+    merge(parseMix(r, m_seqs_A, 2), m_seqs_A, m_seqs_bA);
+    merge(parseMix(Reader(r), m_seqs_B, 3), m_seqs_B, m_seqs_bB);
 }
 
 void Standard::l_mix(const Reader &r)
 {
     seq2base.clear();
-    parseMix(r, l_seqs_A, l_seqs_B);
+    parseMix__(r, l_seqs_A, l_seqs_B);
 
     for (const auto &i : l_seqs_A)
     {
@@ -514,7 +554,7 @@ void Standard::r_mix(const Reader &r)
 {
     r_seqIDs.clear();
     
-    mergeMix(r, parseMix(r, r_seqs_A, r_seqs_B), r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
+    mergeMix__(r, parseMix__(r, r_seqs_A, r_seqs_B), r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
     
     /*
      * Merging overlapping regions for the exons

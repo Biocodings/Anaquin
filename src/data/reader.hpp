@@ -23,9 +23,13 @@ namespace Anaquin
     class Reader
     {
         public:
+            Reader(const Reader &r);
             Reader(const std::string &, DataMode mode = File);
+
             ~Reader();
 
+            void reset();
+        
             // Returns the next line in the file
             bool nextLine(std::string &) const;
 

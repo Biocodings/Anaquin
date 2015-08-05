@@ -10,9 +10,24 @@ using namespace Anaquin;
 struct Anaquin::ReaderInternal
 {
     std::string t;
+    
+    // Implementation for file
     std::shared_ptr<std::ifstream> f;
+
+    // Implementation for memory
     std::shared_ptr<std::stringstream> s;
 };
+
+Reader::Reader(const Reader &r)
+{
+    _imp = new ReaderInternal();
+    _imp->t = r._imp->t;
+    _imp->f = r._imp->f;
+    _imp->s = r._imp->s;
+
+    // Make sure we start off from the default state
+    reset();
+}
 
 Reader::Reader(const std::string &file, DataMode mode)
 {
@@ -47,6 +62,21 @@ Reader::Reader(const std::string &file, DataMode mode)
 Reader::~Reader()
 {
     delete _imp;
+}
+
+void Reader::reset()
+{
+    if (_imp->f)
+    {
+        _imp->f->clear();
+        _imp->f->seekg(0, std::ios::beg);
+    }
+    
+    if (_imp->s)
+    {
+        _imp->s->clear();
+        _imp->s->seekg(0, std::ios::beg);
+    }
 }
 
 bool Reader::nextLine(std::string &line) const
