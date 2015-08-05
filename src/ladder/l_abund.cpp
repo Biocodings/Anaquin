@@ -62,7 +62,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
     options.info("Histogram created. Calculating the expected library size.");
 
     const auto &s   = Standard::instance();
-    const auto &mix = options.mix == MixA ? s.l_seqs_A : s.l_seqs_B;
+    const auto &mix = options.mix == MixA ? s.seqs_1 : s.seqs_2;
 
     /*
      * Calculate for the expected library size. The size depends on the sequins detected.
@@ -88,7 +88,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &options)
                 { "D", 8.0 },
             };
 
-            stats.expTotal += fold.at(typeID) * s.l_seqs_A.at(seqID).abund();
+            stats.expTotal += fold.at(typeID) * s.seqs_1.at(seqID).abund();
         }
     }
 

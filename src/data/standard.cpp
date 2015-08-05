@@ -166,7 +166,7 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
             m[s.id] = s;
             
             info.baseIDs[s.baseID].insert(s.typeID);
-        }, ",");
+        });
     } catch (...)
     {
         std::cerr << "[Warn]: Error in the mixture file" << std::endl;
@@ -233,7 +233,6 @@ template <typename SequinMap> ParseSequinInfo parseMix__(const Reader &r, Sequin
 Standard::Standard()
 {
      rna();
-     ladder();
      variant();
 }
 
@@ -302,9 +301,11 @@ void Standard::m_mix(const Reader &r)
 void Standard::l_mix(const Reader &r)
 {
     seq2base.clear();
-    parseMix__(r, l_seqs_A, l_seqs_B);
+    
+    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
+    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
 
-    for (const auto &i : l_seqs_A)
+    for (const auto &i : seqs_1)
     {
         const auto base = i.first.substr(0, i.first.size() - 2);
         seq2base[i.first] = base;
@@ -341,7 +342,7 @@ void Standard::f_ref(const Reader &r)
         f_breaks.insert(b);
 
         seqIDs.insert(b.id);
-    });
+    }, "\t");
     
     /*
      * Read reference file for normal RNA genes
@@ -363,11 +364,6 @@ void Standard::f_ref(const Reader &r)
 */
     assert(!seqIDs.empty() && !f_breaks.empty());
 //    assert(!f_n_seq2locus.empty() && !f_f_seq2locus.empty());
-}
-
-void Standard::ladder()
-{
-    l_mix(Reader(LadderDataMix(), DataMode::String));
 }
 
 void Standard::variant()

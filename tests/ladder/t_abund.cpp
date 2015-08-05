@@ -6,6 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("LAbund_Command")
 {
+    Test::ladder();
     const auto r = Test::test("-t LadderAbund -m data/ladder/CON.v3.mix.csv -usam tests/data/ladder/aligned_A.sam");
 
     REQUIRE(r.status == 0);
@@ -14,10 +15,11 @@ TEST_CASE("LAbund_Command")
 
 TEST_CASE("LAbund_Test")
 {
+    Test::ladder();    
     const auto r = LAbund::analyze("tests/data/ladder/aligned_A.sam");
 
-    REQUIRE(r.expTotal == 2785280);
     REQUIRE(r.obsTotal == 834);
+    REQUIRE(r.expTotal == 2785280);
 
     REQUIRE(r.expect.count("C_16_A") == 1);
     REQUIRE(r.expect.count("C_16_B") == 1);

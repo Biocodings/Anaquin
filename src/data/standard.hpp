@@ -168,9 +168,6 @@ namespace Anaquin
 
             void l_mix(const Reader &);
 
-            // Sequins for mixture A and B
-            SequinMap l_seqs_A, l_seqs_B;
-        
             /*
              * Fusion data
              */
@@ -203,9 +200,6 @@ namespace Anaquin
 
             // Apply resources for variant
             void variant();
-
-            // Apply resources for conjoint
-            void ladder();
     };
 }
 

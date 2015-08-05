@@ -15,7 +15,7 @@ namespace Anaquin
         // Callback for parsing a CSV file
         typedef std::function<void (const ParserCSV::Fields &, const ParserProgress &)> Callback;
 
-        static void parse(const Reader &, Callback, const std::string &delim = "\t");
+        static void parse(const Reader &, Callback, const std::string &delim = ",");
     };
 }
 
