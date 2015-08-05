@@ -17,7 +17,7 @@ import urllib
 silicoFA = 'http://www.anaquin.org/downloads/chromo/chrT.fa'
 
 # Returns the URL for the in-silico annotation
-silicoGTF = 'http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
+silicoGTF = 'http://www.anaquin.org/downloads/transcriptome/RNA.v1.gtf'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
@@ -26,6 +26,7 @@ silicoGTF = 'http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
 sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Session genome="{0}chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
     <Resources>
+        <Resource path="accepted_hits.bam"/>        
         {1}
     </Resources>
     <Panel height="239" name="Panel1438759846196" width="1423">
@@ -51,7 +52,7 @@ sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 trackT = """<Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="{0}{1}" name="{1}" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/> """
 
 # Template for a resource such as GTF
-resourceT = """    <Resource path="{0}{1}"/> """
+resourceT = """        <Resource path="{1}"/> """
 
 # Generate an index for a SAM/BAM file
 def index(path, align):
@@ -104,8 +105,8 @@ def session(path, files):
         # {0}: specified directory
         # {1}: resource file
         #
-        
-        res  = res + resourceT.replace('{0}', path).replace('{1}', file)        
+
+        res  = res + resourceT.replace('{0}', path).replace('{1}', file) + '\n'       
         tra  = tra + trackT.replace('{0}', path).replace('{1}', file)        
 
     # Update the specifed directory

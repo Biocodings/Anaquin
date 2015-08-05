@@ -36,16 +36,14 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
         {
             options.wait(std::to_string(p.i));
         }
-
-        Feature f;
-
-        if (!align.mapped)
-        {
-            return;
-        }
-        else if (align.id != s.id)
+        
+        if (align.id != s.id && !align.i)
         {
             stats.n_genome++;
+        }
+
+        if (!align.mapped || align.id != s.id)
+        {
             return;
         }
 
@@ -59,6 +57,8 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
         /*
          * Collect statistics at the exon level
          */
+
+        Feature f;
 
         if (!align.spliced)
         {
