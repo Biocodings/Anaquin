@@ -20,8 +20,10 @@ data  = [ 'data/manual.txt',
 
            'data/fusion/FUS.v3.csv',
            'data/fusion/FUS.v1.ref',
-           'data/fusion/fusion.bed',
-           'data/fusion/normal.bed',                      
+           'data/fusion/FusionGenes.chrTv1.bed',
+           'data/fusion/NormalParentGenes.chrTv1.bed',                      
+           'data/fusion/FusionGenes.chrTv1.gtf',
+           'data/fusion/NormalParentGenes.chrTv1.gtf',
 
            # ------- Ladder -------
 
