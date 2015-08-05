@@ -28,6 +28,14 @@ sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
     <Resources>
         {1}
     </Resources>
+    <Panel height="239" name="Panel1438759846196" width="1423">
+        <Track altColor="0,0,178" autoScale="true" color="175,175,175" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/scripts/Temp/accepted_hits.bam_coverage" name="accepted_hits.bam Coverage" showReference="false" snpThreshold="0.2" sortable="true" visible="true">
+            <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="60.0" minimum="0.0" type="LINEAR"/>
+        </Track>
+        <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="EXPANDED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/scripts/Temp/accepted_hits.bam" name="accepted_hits.bam" showSpliceJunctions="false" sortable="true" visible="true">
+            <RenderOptions colorByTag="" colorOption="UNEXPECTED_PAIR" flagUnmappedPairs="false" groupByTag="" maxInsertSize="1000" minInsertSize="50" shadeBasesOption="QUALITY" shadeCenters="true" showAllBases="false" sortByTag=""/>
+        </Track>
+    </Panel>
     <Panel height="574" name="FeaturePanel" width="1423">
         <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="Reference sequence" name="Reference sequence" sortable="false" visible="true"/>
         {2}
@@ -52,10 +60,13 @@ def index(path, align):
     index = os.path.splitext(os.path.split(align)[-1])[0]
     
     # Generate the index
-    os.system('samtools index ' + align + ' ' + path + "/" + index)
+    os.system('samtools index ' + align)
 
     # Copy the alignment file
     os.system('cp ' + align + ' ' + path)
+
+    # Copy the alignment file
+    os.system('cp ' + align + '.bai ' + path)
 
 # Download the required files and generate a IGV session 
 def download(path, files):

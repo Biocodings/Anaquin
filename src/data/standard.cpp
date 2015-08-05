@@ -304,9 +304,13 @@ void Standard::m_ref(const Reader &r)
     assert(!m_model.empty());
 }
 
-void Standard::m_mix(const Reader &r)
+void Standard::m_mix_1(const Reader &r)
 {
-    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
+    merge(parseMix(Reader(r), seqs_1, 2), seqs_1, bases_1);
+}
+
+void Standard::m_mix_2(const Reader &r)
+{
     merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
 }
 

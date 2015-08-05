@@ -941,14 +941,16 @@ void parse(int argc, char ** argv)
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
             applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
-            applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
-            
+            applyMix(std::bind(&Standard::m_mix_1, &s, std::placeholders::_1));
+
             switch (_p.tool)
             {
-                case TOOL_M_PSL: { analyze_1<MBlast>(); break; }
+                case TOOL_M_PSL: { analyze_1<MBlast>(OPT_PSL_1); break; }
 
                 case TOOL_M_DIFF:
                 {
+                    applyMix(std::bind(&Standard::m_mix_2, &s, std::placeholders::_1));
+                    
                     MDiffs::Options o;
                     
                     o.pA = _p.inputs.at(OPT_PSL_1);

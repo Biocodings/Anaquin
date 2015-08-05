@@ -9,7 +9,7 @@ using namespace Anaquin;
 MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
 {
     /*
-     * Create data-strucutre for each metaquin
+     * Create data-strucutre for each sequin
      */
     
     options.info("Loading mixture file");
@@ -20,9 +20,15 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
 
     for (const auto &seq : Standard::instance().seqs_1)
     {
-        m[seq.first].id   = seq.first;
-        m[seq.first].seqA = seq.second;
-        m[seq.first].seqB = mixB.at(m[seq.first].id);
+        const auto &seqID = seq.first;
+
+        m[seqID].id   = seq.first;
+        m[seqID].seqA = seq.second;
+        
+        if (mixB.count(m[seqID].id))
+        {
+            m[seqID].seqB = mixB.at(m[seqID].id);
+        }
     }
 
     options.info("Comparing alignment with sequins");
@@ -91,7 +97,7 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
                 mismatch += contig.mismatch;
             }
             
-            assert(align.seqA.length == align.seqB.length);
+            //assert(align.seqA.length == align.seqB.length);
             assert(match > mismatch && match > gaps);
             
             // Fraction of sequins covered by alignments
