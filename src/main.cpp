@@ -430,32 +430,24 @@ template <typename Mixture> void applyMix(Mixture mix)
 {
     if (_p.mix.empty())
     {
-        //if (_mixes.at(_p.mode))
-        {
-            //throw MissingMixtureError();
-        }
+        return;
+        //throw MissingMixtureError();
     }
-    else
-    {
-        std::cout << "[INFO]: Mixture: " << _p.mix << std::endl;
-        mix(Reader(_p.mix));
-    }
+
+    std::cout << "[INFO]: Mixture: " << _p.mix << std::endl;
+    mix(Reader(_p.mix));
 }
 
 template <typename Reference> void applyRef(Reference ref)
 {
     if (_p.ref_1.empty())
     {
-        //if (_needRef.at(_p.mode))
-        {
-            //throw MissingReferenceError();
-        }
+        return;
+        //throw MissingReferenceError();
     }
-    else
-    {
-        std::cout << "[INFO]: Reference: " << _p.ref_1 << std::endl;
-        ref(Reader(_p.ref_1));
-    }
+
+    std::cout << "[INFO]: Reference: " << _p.ref_1 << std::endl;
+    ref(Reader(_p.ref_1));
 }
 
 // Read sequins from a file, one per line. The identifiers must match.

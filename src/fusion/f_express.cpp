@@ -14,7 +14,7 @@ FExpress::Stats FExpress::analyze(const std::string &file, const Options &option
         const auto fpkm = std::max(0.05, t.fpkm);
 
         // Try to match by names if possible
-        const auto r = s.f_seqs_A.count(t.geneID) ? &(s.f_seqs_A.at(t.geneID)) : nullptr;
+        const auto r = s.seqs_1.count(t.geneID) ? &(s.seqs_1.at(t.geneID)) : nullptr;
 
         if (r)
         {

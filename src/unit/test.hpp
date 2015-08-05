@@ -5,7 +5,7 @@
 
 namespace Anaquin
 {
-    struct CommandTest
+    struct Test
     {
         // Standard output
         std::string output;
@@ -15,7 +15,10 @@ namespace Anaquin
         
         int status;
 
-        static CommandTest test(const std::string &);
+        // Apply default resources to fusion
+        static void fusion();
+
+        static Test test(const std::string &);
     };
 }
 

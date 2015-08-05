@@ -63,10 +63,10 @@ namespace Anaquin
 
             auto positive = [&](const SequinID &id, Reads reads)
             {
-                assert(!id.empty() && s.f_seqs_A.count(id));
+                assert(!id.empty() && s.seqs_1.count(id));
                 
                 // Known abundance for the fusion
-                const auto known = s.f_seqs_A.at(id).abund() / s.f_seqs_A.at(id).length;
+                const auto known = s.seqs_1.at(id).abund() / s.seqs_1.at(id).length;
                 
                 // Measured abundance for the fusion
                 const auto measured = reads;
@@ -114,7 +114,7 @@ namespace Anaquin
                 // If the histogram has an entry of zero
                 if (!stats.h.at(seqID))
                 {
-                    if (!s.f_seqs_A.count(seqID))
+                    if (!s.seqs_1.count(seqID))
                     {
                         options.warn(seqID + " defined in the referene but not in the mixture and it is undetected.");
                         continue;
@@ -122,7 +122,7 @@ namespace Anaquin
 
                     options.warn(seqID + " defined in the referene but not detected");
                     
-                    const auto seq = s.f_seqs_A.at(seqID);
+                    const auto seq = s.seqs_1.at(seqID);
 
                     // Known abundance for the fusion
                     const auto known = seq.abund() / seq.length;
@@ -139,7 +139,7 @@ namespace Anaquin
             stats.m.nr = s.f_breaks.size();
 
             options.info("Calculating limit of sensitivity");
-            stats.s = Expression::analyze(stats.h, s.f_seqs_A);
+            stats.s = Expression::analyze(stats.h, s.seqs_1);
             
             stats.covered = std::accumulate(stats.h.begin(), stats.h.end(), 0,
                     [&](int sum, const std::pair<SequinID, Counts> &p)

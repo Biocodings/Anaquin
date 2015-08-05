@@ -1,10 +1,13 @@
 #include <catch.hpp>
+#include "unit/test.hpp"
 #include "fusion/f_express.hpp"
 
 using namespace Anaquin;
 
 TEST_CASE("FExpress_Simulated")
 {
+    Test::fusion();
+
     const auto r = FExpress::analyze("tests/data/fusion/simulated/normal/genes.fpkm_tracking");
     
     // The linear model associated with the expression

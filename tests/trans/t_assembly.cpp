@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("TAssembly_Command")
 {
-    const auto r = CommandTest::test("-t TransAssembly -rgtf data/trans/RNA.v1.gtf -ugtf tests/data/trans/A1/transcripts.gtf");
+    const auto r = Test::test("-t TransAssembly -rgtf data/trans/RNA.v1.gtf -ugtf tests/data/trans/A1/transcripts.gtf");
 
     REQUIRE(r.status == 0);
     REQUIRE(r.output.find("Transcriptome Analysis") != std::string::npos);

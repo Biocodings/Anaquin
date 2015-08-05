@@ -19,8 +19,33 @@ silicoFA = 'www.anaquin.org/downloads/chromo/chrT.fa'
 # Returns the URL for the in-silico annotation
 silicoGTF = 'www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
 
+#
+# Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
+#
+
+template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Session genome="/Users/tedwong/Sources/QA/A/chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
+    <Resources>
+        <Resource path="chrT_rna.gtf"/>
+        <Resource path="normal_genes.gtf"/>
+        <Resource path="fusion_genes.gtf"/>
+    </Resources>
+    <Panel height="574" name="FeaturePanel" width="1423">
+        <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="Reference sequence" name="Reference sequence" sortable="false" visible="true"/>
+        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/chrT_rna.gtf" name="chrT_rna.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
+        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/fusion_genes.gtf" name="fusion_genes.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
+        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/normal_genes.gtf" name="normal_genes.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
+    </Panel>
+    <PanelLayout dividerFractions="0.010256410256410256"/>
+    <HiddenAttributes>
+        <Attribute name="DATA FILE"/>
+        <Attribute name="DATA TYPE"/>
+        <Attribute name="NAME"/>
+    </HiddenAttributes>
+</Session>"""
+
 # Generate an index for a SAM/BAM file
-def generateIndex(path, align):
+def index(path, align):
 
     # Eg: accepted_hits
     index = os.path.splitext(os.path.split(align)[-1])[0]
@@ -29,7 +54,7 @@ def generateIndex(path, align):
     os.system('samtools index ' + align + ' ' + path + "/" + index)
 
 # Download the required files and generate a IGV session 
-def generate(path, files):
+def download(path, files):
 
     # Create a session folder
     os.system('mkdir -p ' + path)
@@ -43,15 +68,13 @@ def generate(path, files):
     urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/normal_genes.gtf", path + "/normal_genes.gtf")
     urllib.urlretrieve("http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf", path + "/chrT_rna.gtf")
 
+def session():
     #
     # Generate a IGV session file for the files
     #
 
-    with open ("session.template", "r") as f:
-        session = f.read()
-
     with open(path + "/igv_session.xml", "w") as f:
-        f.write(session)
+        f.write(template)
 
 def generateFusion(path, align):
     files = [ silicoFA,
@@ -60,21 +83,21 @@ def generateFusion(path, align):
               'http://www.anaquin.org/downloads/fusion/fusion_genes.gtf']
 
     print('Download Files')
-    generate(path, files)
+    download(path, files)
     
     print('Generate Index')
-    generateIndex(path, align)
+    index(path, align)
 
+    session()
+    
 if __name__ == '__main__':
 
-    # What to generate    
+    # Where to generate    
     mode = sys.argv[1]
 
     # Where the files should be generated    
     path = sys.argv[2]
-
+    
     if (mode == 'Fusion'):
         generateFusion(path, sys.argv[3])
-
-
 

@@ -85,8 +85,8 @@ namespace Anaquin
                 return mix == Mixture::MixA ? r_seqs_gA : r_seqs_gB;
             }
 
-            // The name of the chromosome (should be chrT)
-            ChromoID id;
+            // The name of the chromosome
+            ChromoID id = "chrT";
 
             // The location of the chromosome
             Locus l;
@@ -178,17 +178,8 @@ namespace Anaquin
             void f_ref(const Reader &);
             void f_mix(const Reader &);
 
-            // Mapping for normal genes
-            std::map<SequinID, Locus> f_n_seq2locus;
-
-            // Mapping for fusion genes
-            std::map<SequinID, Locus> f_f_seq2locus;
-
             // Known fusion break-points
             std::set<FusionBreak> f_breaks;
-
-            // Mixture for each fusion sequin
-            SequinMap f_seqs_A;
 
             /*
              * Metagenomic data
@@ -224,15 +215,6 @@ namespace Anaquin
 
             // Apply resources for conjoint
             void ladder();
-
-            // Apply resources for fusion
-            void fusion();
-
-            // Apply resources for clinical
-            void clinical();
-
-            // Apply resources for cancer
-            void cancer();
     };
 }
 

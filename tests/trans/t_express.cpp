@@ -1,4 +1,5 @@
 #include <catch.hpp>
+#include "unit/test.hpp"
 #include "trans/t_express.hpp"
 
 using namespace Anaquin;

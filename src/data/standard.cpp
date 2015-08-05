@@ -13,11 +13,6 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
-extern std::string FusionDataMix();
-extern std::string FusionDataRef();
-extern std::string FusionNormalRef();
-extern std::string FusionMutatedRef();
-
 extern std::string LadderDataMix();
 
 extern std::string TransDataGTF();
@@ -237,15 +232,10 @@ template <typename SequinMap> ParseSequinInfo parseMix__(const Reader &r, Sequin
 
 Standard::Standard()
 {
-    id = "chrT";
-
-    rna();
-    meta();
-    cancer();
-    fusion();
-    ladder();
-    variant();
-    clinical();
+     rna();
+     meta();
+     ladder();
+     variant();
 }
 
 void Standard::v_ref(const Reader &r)
@@ -325,7 +315,7 @@ void Standard::l_mix(const Reader &r)
 
 void Standard::f_mix(const Reader &r)
 {
-    parseMix(r, f_seqs_A, 2);
+    parseMix(r, seqs_1, 2);
 }
 
 void Standard::f_ref(const Reader &r)
@@ -354,40 +344,31 @@ void Standard::f_ref(const Reader &r)
         seqIDs.insert(b.id);
     });
     
-    f_n_seq2locus.clear();
-    f_f_seq2locus.clear();
-    
     /*
      * Read reference file for normal RNA genes
      */
-
+/*
     ParserBED::parse(Reader(FusionNormalRef(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
     {
         f_n_seq2locus[f.name] = f.l;
     });
-
+*/
     /*
      * Read reference file for fusion genes
      */
-    
+/*
     ParserBED::parse(Reader(FusionNormalRef(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
     {
         f_f_seq2locus[f.name] = f.l;
     });
-
+*/
     assert(!seqIDs.empty() && !f_breaks.empty());
-    assert(!f_n_seq2locus.empty() && !f_f_seq2locus.empty());
+//    assert(!f_n_seq2locus.empty() && !f_f_seq2locus.empty());
 }
 
 void Standard::ladder()
 {
     l_mix(Reader(LadderDataMix(), DataMode::String));
-}
-
-void Standard::fusion()
-{
-    f_ref(Reader(FusionDataRef(), DataMode::String));
-    f_mix(Reader(FusionDataMix(), DataMode::String));
 }
 
 void Standard::meta()
@@ -597,16 +578,6 @@ void Standard::r_mix(const Reader &r)
     }
 
     assert(!r_seqIDs.empty());
-}
-
-void Standard::cancer()
-{
-    // Empty Implementation
-}
-
-void Standard::clinical()
-{
-    // Empty Implementation
 }
 
 void Standard::rna()

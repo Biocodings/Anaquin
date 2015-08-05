@@ -9,9 +9,20 @@
 // Defined in main.cpp
 extern int parse_options(int argc, char ** argv);
 
+extern std::string FusionDataMix();
+extern std::string FusionDataRef();
+extern std::string FusionNormalRef();
+extern std::string FusionMutatedRef();
+
 using namespace Anaquin;
 
-CommandTest CommandTest::test(const std::string &command)
+void Test::fusion()
+{
+    Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
+    Standard::instance().f_mix(Reader(FusionDataMix(), DataMode::String));
+}
+
+Test Test::test(const std::string &command)
 {
     std::vector<std::string> tokens;
     boost::split(tokens, command, boost::is_any_of(" "));
@@ -32,7 +43,7 @@ CommandTest CommandTest::test(const std::string &command)
     std::streambuf * const _errorBuffer  = std::cerr.rdbuf(errorBuffer.rdbuf());
     std::streambuf * const _outputBuffer = std::cout.rdbuf(outputBuffer.rdbuf());
 
-    CommandTest t;
+    Test t;
 
     t.status = parse_options(static_cast<int>(tokens.size()) + 1, argv);
     t.error  = errorBuffer.str();
