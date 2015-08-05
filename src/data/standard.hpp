@@ -104,6 +104,12 @@ namespace Anaquin
             // Mapping between sequins to the base shared between all tools
             std::map<SequinID, BaseID> seq2base;
 
+            // Sequins for first and second sample
+            SequinMap seqs_1, seqs_2;
+
+            // Bases for first and second sample
+            BaseMap bases_1, bases_2;
+
             /*
              * RNA data
              */

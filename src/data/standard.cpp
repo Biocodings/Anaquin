@@ -131,46 +131,52 @@ template <typename SequinMap, typename BaseMap> void mergeMix__(const Reader &r,
     assert(!a.empty() && !b.empty() && !ba.empty() && !bb.empty());
 }
 
-template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &m, unsigned column)
+template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &m, unsigned column=2)
 {
     m.clear();
     ParseSequinInfo info;
-    
-    ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+
+    try
     {
-        // Don't bother if this is the first line ID,Length,MixA,MixB) or an invalid line
-        if (p.i == 0 || fields.size() <= 1)
+        ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
         {
-            return;
-        }
-        
-        Sequin s;
-        
-        // Make sure there's no duplicate in the mixture file
-        assert(info.seqIDs.count(fields[0]) == 0);
-        
-        info.seqIDs.insert(s.id = fields[0]);
-        
-        // Base ID is simply the ID without the last part
-        s.baseID = s.id.substr(0, s.id.find_last_of("_"));
-        
-        // Skip over "_"
-        s.typeID = s.id.substr(s.id.find_last_of("_") + 1);
-        
-        // Length of the sequin
-        s.length = stoi(fields[1]);
-        
-        assert(s.length);
-        
-        // Concentration for the mixture
-        s.abund() = stof(fields[column]);
-        
-        // Create an entry for the mixture
-        m[s.id] = s;
-    
-        info.baseIDs[s.baseID].insert(s.typeID);
-    }, ",");
-    
+            // Don't bother if this is the first line or an invalid line
+            if (p.i == 0 || fields.size() <= 1)
+            {
+                return; 
+            }
+
+            Sequin s;
+            
+            // Make sure there's no duplicate in the mixture file
+            assert(info.seqIDs.count(fields[0]) == 0);
+            
+            info.seqIDs.insert(s.id = fields[0]);
+            
+            // Base ID is simply the ID without the last part
+            s.baseID = s.id.substr(0, s.id.find_last_of("_"));
+            
+            // Skip over "_"
+            s.typeID = s.id.substr(s.id.find_last_of("_") + 1);
+            
+            // Length of the sequin
+            s.length = stoi(fields[1]);
+            
+            assert(s.length);
+            
+            // Concentration for the mixture
+            s.abund() = stof(fields[column]);
+            
+            // Create an entry for the mixture
+            m[s.id] = s;
+            
+            info.baseIDs[s.baseID].insert(s.typeID);
+        }, ",");
+    } catch (...)
+    {
+        std::cerr << "[Warn]: Error in the mixture file" << std::endl;
+    }
+
     return info;
 }
 
