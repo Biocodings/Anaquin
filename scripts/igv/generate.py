@@ -14,17 +14,17 @@ import sys
 import urllib
 
 # URL for the in-silico chromosome
-silicoFA = 'www.anaquin.org/downloads/chromo/chrT.fa'
+silicoFA = 'http://www.anaquin.org/downloads/chromo/chrT.fa'
 
 # Returns the URL for the in-silico annotation
-silicoGTF = 'www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
+silicoGTF = 'http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
 #
 
 sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Session genome="{0}/chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
+<Session genome="{0}chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
     <Resources>
         {1}
     </Resources>
@@ -54,6 +54,9 @@ def index(path, align):
     # Generate the index
     os.system('samtools index ' + align + ' ' + path + "/" + index)
 
+    # Copy the alignment file
+    os.system('cp ' + align + ' ' + path)
+
 # Download the required files and generate a IGV session 
 def download(path, files):
 
@@ -63,13 +66,17 @@ def download(path, files):
     #
     # Download the required files
     #
+    
+    downloads = []
 
-    #urllib.urlretrieve("http://www.anaquin.org/downloads/chromo/chrT.fa", path + "/chrT.fa")
-    #urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/fusion_genes.gtf", path + "fusion_genes.gtf")
-    #urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/normal_genes.gtf", path + "normal_genes.gtf")
-    #urllib.urlretrieve("http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf", path + "chrT_rna.gtf")
+    # We always need the chromosome
+    urllib.urlretrieve(silicoFA, path + 'chrT.fa')    
 
-    return ["chrT_rna.gtf"]
+    for file in files:
+        urllib.urlretrieve(file, path + file.split('/')[-1])
+        downloads.append(file.split('/')[-1])
+
+    return downloads
 
 def session(path, files):
     global resourceT, sessionT, trackT
@@ -101,12 +108,11 @@ def session(path, files):
         f.write(sessionT)
 
 def generateFusion(path, align):
-    files = [ silicoFA,
-              silicoGTF,
+    files = [ silicoGTF,
               'http://www.anaquin.org/downloads/fusion/normal_genes.gtf',
               'http://www.anaquin.org/downloads/fusion/fusion_genes.gtf']
 
-    #index(path, align)
+    index(path, align)
     session(path, download(path, files))
 
 if __name__ == '__main__':

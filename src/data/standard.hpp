@@ -145,14 +145,11 @@ namespace Anaquin
 
             inline const SequinMap &v_seq(Mixture mix) const
             {
-                return mix == MixA ? v_seqs_A : v_seqs_B;
+                return mix == MixA ? seqs_1 : seqs_1;
             }
 
             void v_ref(const Reader &);
             void v_mix(const Reader &);
-
-            // Sequins for mixture A and B
-            SequinMap v_seqs_A, v_seqs_B;
 
             typedef std::map<BaseID, VariantBase> VariantBaseMap;
 

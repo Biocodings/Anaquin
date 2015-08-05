@@ -289,7 +289,7 @@ void Standard::v_ref(const Reader &r)
 
 void Standard::v_mix(const Reader &r)
 {
-    mergeMix__(r, parseMix__(r, v_seqs_A, v_seqs_B), v_seqs_A, v_seqs_B, v_seqs_bA, v_seqs_bB);
+    mergeMix__(r, parseMix__(r, seqs_1, seqs_2), seqs_1, seqs_2, v_seqs_bA, v_seqs_bB);
 }
 
 void Standard::m_ref(const Reader &r)
