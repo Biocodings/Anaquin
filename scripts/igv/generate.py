@@ -23,14 +23,14 @@ silicoGTF = 'www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
 #
 
-template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Session genome="{0}/chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
     <Resources>
         {1}
     </Resources>
     <Panel height="574" name="FeaturePanel" width="1423">
         <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="Reference sequence" name="Reference sequence" sortable="false" visible="true"/>
-        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/chrT_rna.gtf" name="chrT_rna.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
+        {2}
     </Panel>
     <PanelLayout dividerFractions="0.010256410256410256"/>
     <HiddenAttributes>
@@ -39,6 +39,11 @@ template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <Attribute name="NAME"/>
     </HiddenAttributes>
 </Session>"""
+
+trackT = """<Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="{0}{1}" name="{1}" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/> """
+
+# Template for a resource such as GTF
+resourceT = """    <Resource path="{0}{1}"/> """
 
 # Generate an index for a SAM/BAM file
 def index(path, align):
@@ -60,36 +65,40 @@ def download(path, files):
     #
 
     #urllib.urlretrieve("http://www.anaquin.org/downloads/chromo/chrT.fa", path + "/chrT.fa")
-    urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/fusion_genes.gtf", path + "fusion_genes.gtf")
-    urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/normal_genes.gtf", path + "normal_genes.gtf")
-    urllib.urlretrieve("http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf", path + "chrT_rna.gtf")
+    #urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/fusion_genes.gtf", path + "fusion_genes.gtf")
+    #urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/normal_genes.gtf", path + "normal_genes.gtf")
+    #urllib.urlretrieve("http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf", path + "chrT_rna.gtf")
 
     return ["chrT_rna.gtf"]
 
 def session(path, files):
-    global template
-    
+    global resourceT, sessionT, trackT
+
     # IGV assumes a full path
     path = os.path.abspath(path) + '/'
 
-    # Eg: <Resource path="{0}/chrT_rna.gtf"/>
-    res = ''
+    res = ''    
+    tra = ''
 
-    for file in files:        
-        res = res + '<Resource path="' + path + file + '"/>\n'        
-
+    for file in files:
+        
         #
-        # Eg: <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/chrT_rna.gtf" name="chrT_rna.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
+        # {0}: specified directory
+        # {1}: resource file
         #
+        
+        res  = res + resourceT.replace('{0}', path).replace('{1}', file)        
+        tra  = tra + trackT.replace('{0}', path).replace('{1}', file)        
 
     # Update the specifed directory
-    template = template.replace('{0}', path)
+    sessionT = sessionT.replace('{0}', path)
 
     # Update the specifed directory
-    template = template.replace('{1}', res[:-1])
+    sessionT = sessionT.replace('{1}', res[:-1])
+    sessionT = sessionT.replace('{2}', tra[:-1])
 
     with open(path + "/igv_session.xml", "w") as f:
-        f.write(template)
+        f.write(sessionT)
 
 def generateFusion(path, align):
     files = [ silicoFA,
