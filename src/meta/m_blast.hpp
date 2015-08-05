@@ -30,7 +30,7 @@ namespace Anaquin
     };
 
     /*
-     * Represents all alignments for a particular metaquin
+     * Represents alignments for a particular sequin
      */
 
     struct MetaAlignment
@@ -66,6 +66,8 @@ namespace Anaquin
         inline bool operator<(const MetaAlignment &x)  const { return id < x.id;  }
         inline bool operator==(const MetaAlignment &x) const { return id == x.id; }
     };
+
+    typedef std::map<SequinID, MetaAlignment> SequinAlign;
 
     struct MBlast
     {

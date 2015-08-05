@@ -9,12 +9,12 @@ using namespace Anaquin;
 MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
 {
     /*
-     * Create data-strucutre for each sequin
+     * Create data-strucutre for the sequins
      */
     
-    options.info("Loading mixture file");
+    options.info("Loading data structure");
     
-    std::map<SequinID, MetaAlignment> m;
+    SequinAlign m;
 
     const auto &mixB = Standard::instance().seqs_2;
 
@@ -22,7 +22,7 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
     {
         const auto &seqID = seq.first;
 
-        m[seqID].id   = seq.first;
+        m[seqID].id   = seqID;
         m[seqID].seqA = seq.second;
         
         if (mixB.count(m[seqID].id))
@@ -31,7 +31,11 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
         }
     }
 
-    options.info("Comparing alignment with sequins");
+    /*
+     * Create data-strucutre for the alignment
+     */
+
+    options.info("Comparing alignment");
 
     ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
     {
@@ -50,11 +54,12 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
             // Only interested in the target (eg: M10_G)
             contig.gap = l.tGaps;
 
+            // That's because we might have multiple contigs aligned to a sequin
             m.at(id).contigs.push_back(contig);
         }
         else
         {
-            options.warn((boost::format("%1% is not a sequin (given in alignment)") % id).str());
+            options.warn((boost::format("%1% is not a sequin") % id).str());
         }
     });
 
@@ -125,6 +130,10 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
 
     options.info("Generating statistics");
 
+    /*
+     * Generate summary statistics
+     */
+
     {
         options.writer->open("MetaPSL_summary.stats");
         
@@ -136,17 +145,19 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
                                                      % "mismatch"
                                                      % "gap").str());
         
-        for (const auto &align : stats.metas)
+        for (const auto &i : stats.metas)
         {
-            options.writer->write((boost::format(format) % align.second.id
-                                                         % align.second.contigs.size()
-                                                         % align.second.covered
-                                                         % align.second.mismatch
-                                                         % align.second.gaps).str());
+            const auto &align = i.second;
+            
+            options.writer->write((boost::format(format) % align.id
+                                                         % align.contigs.size()
+                                                         % align.covered
+                                                         % align.mismatch
+                                                         % align.gaps).str());
         }
-        
+
         options.writer->close();
     }
-
+    
     return stats;
 }

@@ -40,7 +40,7 @@ sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="Reference sequence" name="Reference sequence" sortable="false" visible="true"/>
         {2}
     </Panel>
-    <PanelLayout dividerFractions="0.010256410256410256"/>
+    <PanelLayout dividerFractions="0.010256410256410256,0.42735042735042733"/>    
     <HiddenAttributes>
         <Attribute name="DATA FILE"/>
         <Attribute name="DATA TYPE"/>
