@@ -9,10 +9,23 @@
 // Defined in main.cpp
 extern int parse_options(int argc, char ** argv);
 
+extern std::string LadderDataMix();
+
 extern std::string FusionDataMix();
 extern std::string FusionDataRef();
 extern std::string FusionNormalRef();
 extern std::string FusionMutatedRef();
+
+extern std::string TransDataGTF();
+extern std::string TransDataMix();
+
+extern std::string MetaDataFA();
+extern std::string MetaDataBed();
+extern std::string MetaDataMix();
+extern std::string MetaDataTab();
+
+extern std::string VarDataBed();
+extern std::string VarDataMix();
 
 using namespace Anaquin;
 
@@ -20,6 +33,29 @@ void Test::fusion()
 {
     Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
     Standard::instance().f_mix(Reader(FusionDataMix(), DataMode::String));
+}
+
+void Test::meta()
+{
+    Standard::instance().m_ref(Reader(MetaDataBed(), DataMode::String));
+    Standard::instance().m_mix(Reader(MetaDataMix(), DataMode::String));
+}
+
+void Test::ladder()
+{
+    Standard::instance().l_mix(Reader(LadderDataMix(), DataMode::String));
+}
+
+void Test::trans()
+{
+    Standard::instance().r_ref(Reader(TransDataGTF(), DataMode::String));
+    Standard::instance().r_mix(Reader(TransDataMix(), DataMode::String));
+}
+
+void Test::variant()
+{
+    Standard::instance().v_ref(Reader(VarDataBed(), DataMode::String));
+    Standard::instance().v_mix(Reader(VarDataMix(), DataMode::String));
 }
 
 Test Test::test(const std::string &command)

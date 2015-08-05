@@ -1,10 +1,12 @@
 #include <catch.hpp>
+#include "unit/test.hpp"
 #include "meta/m_assembly.hpp"
 
 using namespace Anaquin;
 
 TEST_CASE("DNAssembly_Contigs")
 {
+    Test::meta();
     const auto r = Velvet::parse<DNAsssembly::Stats<Contig>, Contig>("tests/data/meta/A/contigs.fa");
     
     REQUIRE(r.contigs.size() == 453);

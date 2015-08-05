@@ -233,7 +233,6 @@ template <typename SequinMap> ParseSequinInfo parseMix__(const Reader &r, Sequin
 Standard::Standard()
 {
      rna();
-     meta();
      ladder();
      variant();
 }
@@ -371,14 +370,13 @@ void Standard::ladder()
     l_mix(Reader(LadderDataMix(), DataMode::String));
 }
 
+/*
 void Standard::meta()
 {
-    // Apply the default annotation file
     m_ref(Reader(MetaDataBed(), DataMode::String));
-    
-    // Apply the default mixture file
     m_mix(Reader(MetaDataMix(), DataMode::String));
 }
+*/
 
 void Standard::variant()
 {

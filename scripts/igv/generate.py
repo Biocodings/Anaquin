@@ -24,9 +24,9 @@ silicoGTF = 'www.anaquin.org/downloads/transcriptome/chrT_rna.gtf'
 #
 
 template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Session genome="/Users/tedwong/Sources/QA/A/chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
+<Session genome="{0}/chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
     <Resources>
-        <Resource path="chrT_rna.gtf"/>
+        <Resource path="{0}/chrT_rna.gtf"/>
         <Resource path="normal_genes.gtf"/>
         <Resource path="fusion_genes.gtf"/>
     </Resources>
@@ -68,10 +68,14 @@ def download(path, files):
     urllib.urlretrieve("http://www.anaquin.org/downloads/fusion/normal_genes.gtf", path + "/normal_genes.gtf")
     urllib.urlretrieve("http://www.anaquin.org/downloads/transcriptome/chrT_rna.gtf", path + "/chrT_rna.gtf")
 
-def session():
-    #
-    # Generate a IGV session file for the files
-    #
+def session(path):
+    global template
+    
+    # IGV assumes a full path
+    path = os.path.abspath(path)
+
+    # Update the specifed directory
+    template = template.replace('{0}', path)
 
     with open(path + "/igv_session.xml", "w") as f:
         f.write(template)
@@ -88,7 +92,7 @@ def generateFusion(path, align):
     print('Generate Index')
     index(path, align)
 
-    session()
+    session(path)
     
 if __name__ == '__main__':
 

@@ -210,9 +210,6 @@ namespace Anaquin
             // Apply resources for variant
             void variant();
 
-            // Apply resources for metagenomics
-            void meta();
-
             // Apply resources for conjoint
             void ladder();
     };

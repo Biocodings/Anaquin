@@ -15,9 +15,12 @@ namespace Anaquin
         
         int status;
 
-        // Apply default resources to fusion
+        static void meta();
+        static void trans();
         static void fusion();
-
+        static void ladder();
+        static void variant();
+        
         static Test test(const std::string &);
     };
 }
