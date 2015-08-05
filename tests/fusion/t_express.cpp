@@ -10,8 +10,7 @@ TEST_CASE("FExpress_Simulated")
     // The linear model associated with the expression
     const auto lm = r.linear();
 
-    
-    
-    //./anaquin -t FusionExpress -ugtrack genes.fpkm_tracking
-    //FExpress::analyze("/Users/tedwong/Sources/QA/genes.fpkm_tracking");
+    REQUIRE(lm.m  == Approx(0.67651639834586408));
+    REQUIRE(lm.r2 == Approx(0.085666237321215699));
+    REQUIRE(lm.r  == Approx(0.35414669160789208));
 }
