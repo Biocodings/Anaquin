@@ -188,12 +188,6 @@ namespace Anaquin
             void m_ref(const Reader &);
             void m_mix(const Reader &);
 
-            // Sequins for mixture A and B
-            SequinMap m_seqs_A, m_seqs_B;
-
-            // Bases for mixture A and B
-            BaseMap m_seqs_bA, m_seqs_bB;
-
             // Sequin IDs for metagenomic standards
             std::set<SequinID> m_seqIDs;
 

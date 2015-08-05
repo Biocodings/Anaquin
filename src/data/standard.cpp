@@ -295,8 +295,8 @@ void Standard::m_ref(const Reader &r)
 
 void Standard::m_mix(const Reader &r)
 {
-    merge(parseMix(r, m_seqs_A, 2), m_seqs_A, m_seqs_bA);
-    merge(parseMix(Reader(r), m_seqs_B, 3), m_seqs_B, m_seqs_bB);
+    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
+    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
 }
 
 void Standard::l_mix(const Reader &r)
@@ -369,14 +369,6 @@ void Standard::ladder()
 {
     l_mix(Reader(LadderDataMix(), DataMode::String));
 }
-
-/*
-void Standard::meta()
-{
-    m_ref(Reader(MetaDataBed(), DataMode::String));
-    m_mix(Reader(MetaDataMix(), DataMode::String));
-}
-*/
 
 void Standard::variant()
 {

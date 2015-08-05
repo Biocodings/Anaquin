@@ -27,14 +27,10 @@ template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Session genome="{0}/chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
     <Resources>
         <Resource path="{0}/chrT_rna.gtf"/>
-        <Resource path="normal_genes.gtf"/>
-        <Resource path="fusion_genes.gtf"/>
     </Resources>
     <Panel height="574" name="FeaturePanel" width="1423">
         <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="Reference sequence" name="Reference sequence" sortable="false" visible="true"/>
-        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/chrT_rna.gtf" name="chrT_rna.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
-        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/fusion_genes.gtf" name="fusion_genes.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
-        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/A/normal_genes.gtf" name="normal_genes.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
+        <Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="{0}/chrT_rna.gtf" name="chrT_rna.gtf" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/>
     </Panel>
     <PanelLayout dividerFractions="0.010256410256410256"/>
     <HiddenAttributes>

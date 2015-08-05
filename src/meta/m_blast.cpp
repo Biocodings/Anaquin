@@ -16,9 +16,9 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
     
     std::map<SequinID, MetaAlignment> m;
 
-    const auto &mixB = Standard::instance().m_seqs_B;
-    
-    for (const auto &seq : Standard::instance().m_seqs_A)
+    const auto &mixB = Standard::instance().seqs_2;
+
+    for (const auto &seq : Standard::instance().seqs_1)
     {
         m[seq.first].id   = seq.first;
         m[seq.first].seqA = seq.second;
@@ -72,10 +72,10 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
 
             // The total non-overlapping bases for the alignments
             const auto total = std::accumulate(merged.begin(), merged.end(), 0, [&](int sum, const Locus &l)
-                               {
-                                   return sum + l.length();
-                               });
-            
+            {
+                return sum + l.length();
+            });
+
             /*
              * Don't consider for overlapping because a base can be matched or mismatched.
              */
