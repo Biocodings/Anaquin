@@ -6,6 +6,8 @@ using namespace Anaquin;
 
 TEST_CASE("TAlign_Cufflinks")
 {
+    Test::trans();
+
     // The sample file was taken from Cufflink's source distribution
     const auto r = TAlign::analyze("tests/data/trans/cufflinks.sam");
 
@@ -22,6 +24,7 @@ TEST_CASE("TAlign_Cufflinks")
 
 TEST_CASE("TAlign_Simulations_All_Filtered")
 {
+    Test::trans();
     TAlign::Options opts;
     
     for (auto i: Standard::instance().r_seqs_A)
@@ -46,6 +49,7 @@ TEST_CASE("TAlign_Simulations_All_Filtered")
 
 TEST_CASE("TAlign_Simulations")
 {
+    Test::trans();
     const auto r = TAlign::analyze("tests/data/trans/A1/accepted_hits.sam");
 
     REQUIRE(r.pb.m.nq == 23712);

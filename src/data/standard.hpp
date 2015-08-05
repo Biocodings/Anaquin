@@ -194,12 +194,6 @@ namespace Anaquin
         private:
             Standard();
             Standard(Standard const&) = delete;
-
-            // Apply resources for RNA
-            void rna();
-
-            // Apply resources for variant
-            void variant();
     };
 }
 

@@ -1,10 +1,13 @@
 #include <catch.hpp>
+#include "unit/test.hpp"
 #include "var/v_discover.hpp"
 
 using namespace Anaquin;
 
 TEST_CASE("VarDiscover_Test")
 {
+    Test::variant();
+    
     const auto r  = VDiscover::analyze("tests/data/var/VARquin.MixA.v1.vcf");
     const auto lm = r.linear();
 

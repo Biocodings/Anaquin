@@ -6,6 +6,8 @@ using namespace Anaquin;
 
 TEST_CASE("TExpress_Simulations_Genes_A1")
 {
+    Test::trans();
+
     TExpress::Options opt;
     opt.level = Anaquin::TExpress::RNALevel::Gene;
 
@@ -23,6 +25,8 @@ TEST_CASE("TExpress_Simulations_Genes_A1")
 
 TEST_CASE("TExpress_Simulations_Isoforms_A1")
 {
+    Test::trans();
+
     const auto r  = TExpress::analyze("tests/data/trans/A1/isoforms.fpkm_tracking");
     const auto lm = r.linear();
 

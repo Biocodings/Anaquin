@@ -13,18 +13,7 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
-extern std::string LadderDataMix();
-
 extern std::string TransDataGTF();
-extern std::string TransDataMix();
-
-extern std::string MetaDataFA();
-extern std::string MetaDataBed();
-extern std::string MetaDataMix();
-extern std::string MetaDataTab();
-
-extern std::string VarDataBed();
-extern std::string VarDataMix();
 
 using namespace Anaquin;
 
@@ -232,8 +221,31 @@ template <typename SequinMap> ParseSequinInfo parseMix__(const Reader &r, Sequin
 
 Standard::Standard()
 {
-     rna();
-     variant();
+    /*
+     * The region occupied by the chromosome is the smallest area contains all features.
+     */
+    
+    l.end   = std::numeric_limits<BasePair>::min();
+    l.start = std::numeric_limits<BasePair>::max();
+    
+    /*
+     * The orders in a GTF file is not guaranteed. For simplicity, we'll defer most of the workloads
+     * after parsing.
+     */
+    
+    ParserGTF::parse(Reader(TransDataGTF(), String), [&](const Feature &f, const ParserProgress &)
+    {
+        // TODO: Please fix me!
+        if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
+        {
+            return; // TODO! To save assembly from crashing!! Defined in the model but not in sequin!
+        }
+        
+        assert(!f.tID.empty() && !f.geneID.empty());
+        
+        l.end   = std::max(l.end, f.l.end);
+        l.start = std::min(l.start, f.l.start);
+    });
 }
 
 void Standard::v_ref(const Reader &r)
@@ -344,32 +356,7 @@ void Standard::f_ref(const Reader &r)
         seqIDs.insert(b.id);
     }, "\t");
     
-    /*
-     * Read reference file for normal RNA genes
-     */
-/*
-    ParserBED::parse(Reader(FusionNormalRef(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
-    {
-        f_n_seq2locus[f.name] = f.l;
-    });
-*/
-    /*
-     * Read reference file for fusion genes
-     */
-/*
-    ParserBED::parse(Reader(FusionNormalRef(), DataMode::String), [&](const BedFeature &f, const ParserProgress &)
-    {
-        f_f_seq2locus[f.name] = f.l;
-    });
-*/
     assert(!seqIDs.empty() && !f_breaks.empty());
-//    assert(!f_n_seq2locus.empty() && !f_f_seq2locus.empty());
-}
-
-void Standard::variant()
-{
-    v_ref(Reader(VarDataBed(), DataMode::String));
-    v_mix(Reader(VarDataMix(), DataMode::String));
 }
 
 void Standard::r_ref(const Reader &r)
@@ -435,15 +422,15 @@ void Standard::r_ref(const Reader &r)
      * Construct a data-structure that maps from sequinID to it's positon
      */
 
-    for (const auto &sequinID : sequinIDs)
+    for (const auto &seqID : sequinIDs)
     {
-        r_sequins[sequinID] = Locus::expand(r_exons, [&](const Feature &f)
+        r_sequins[seqID] = Locus::expand(r_exons, [&](const Feature &f)
         {
-            return f.tID == sequinID;
+            return f.tID == seqID;
         });
 
         // Make sure the position is valid
-        assert(r_sequins.at(sequinID) != Locus());
+        assert(r_sequins.at(seqID) != Locus());
     }
 
     assert(!r_sequins.empty());
@@ -564,10 +551,4 @@ void Standard::r_mix(const Reader &r)
     }
 
     assert(!r_seqIDs.empty());
-}
-
-void Standard::rna()
-{
-    r_ref(Reader(TransDataGTF(), DataMode::String));
-    r_mix(Reader(TransDataMix(), DataMode::String));
 }
