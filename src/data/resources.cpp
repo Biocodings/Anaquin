@@ -13,8 +13,8 @@
 
 #include "resources/FUS.v1.ref"
 #include "resources/FUS.v3.csv"
-#include "resources/fusion.bed"
-#include "resources/normal.bed"
+#include "resources/FusionGenes.chrTv1.bed"
+#include "resources/NormalParentGenes.chrTv1.bed"
 
 /*
  * Conjoint Resources
@@ -87,12 +87,12 @@ std::string FusionDataRef()
 
 std::string FusionMutatedRef()
 {
-    return ToString(data_fusion_fusion_bed);
+    return ToString(data_fusion_FusionGenes_chrTv1_bed);
 }
 
 std::string FusionNormalRef()
 {
-    return ToString(data_fusion_normal_bed);
+    return ToString(data_fusion_NormalParentGenes_chrTv1_bed);
 }
 
 /*
