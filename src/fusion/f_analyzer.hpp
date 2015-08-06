@@ -139,7 +139,7 @@ namespace Anaquin
             stats.m.nr = s.f_breaks.size();
 
             options.info("Calculating limit of sensitivity");
-            stats.s = Expression::analyze(stats.h, s.seqs_1);
+            //stats.s = Expression::analyze(stats.h, s.seqs_1);
             
             stats.covered = std::accumulate(stats.h.begin(), stats.h.end(), 0,
                     [&](int sum, const std::pair<SequinID, Counts> &p)
