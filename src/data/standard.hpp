@@ -19,8 +19,6 @@ namespace Anaquin
         MixB
     };
 
-    typedef std::string Sequence;
-
     struct Variation
     {
         operator const Locus &() const { return l; }
@@ -59,7 +57,7 @@ namespace Anaquin
     class Standard
     {
         public:
-            typedef std::map<BaseID, Base_> BaseMap;
+            typedef std::map<BaseID, BaseSeq>  BaseMap;
             typedef std::map<SequinID, Sequin> SequinMap;
 
             static Standard& instance(bool reload = false)
@@ -131,7 +129,7 @@ namespace Anaquin
             std::vector<Feature> r_introns;
 
             std::vector<RNALocus> r_l_exons;
-            BasePair r_c_exons;
+            Base r_c_exons;
 
             // Mapping from sequin to gene
             std::map<SequinID, GeneID> r_isoformToGene;

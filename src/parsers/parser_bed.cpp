@@ -47,8 +47,8 @@ void ParserBED::parse(const Reader &r, Callback x)
 
                 for (auto i = 0; i < stod(tokens[9]); i++)
                 {
-                    const BasePair start = stod(starts[i]);
-                    const BasePair size  = stod(sizes[i]);
+                    const Base start = stod(starts[i]);
+                    const Base size  = stod(sizes[i]);
 
                     f.blocks.push_back(Locus(f.l.start + start, f.l.start + start + size - 1));
                 }

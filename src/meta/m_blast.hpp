@@ -20,13 +20,13 @@ namespace Anaquin
         Locus l;
 
         // Number of matching bases
-        BasePair match;
+        Base match;
 
         // Number of gaps in the sequin
-        BasePair gap;
+        Base gap;
 
         // Number of mis-matching bases
-        BasePair mismatch;
+        Base mismatch;
     };
 
     /*

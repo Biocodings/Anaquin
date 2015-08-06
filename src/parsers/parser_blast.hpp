@@ -18,22 +18,22 @@ namespace Anaquin
             std::string qName;
             
             // Alignment start position in query
-            BasePair tStart;
+            Base tStart;
 
             // Alignment end position in query
-            BasePair tEnd;
+            Base tEnd;
 
             // Number of gap bases in query
-            BasePair qGaps;
+            Base qGaps;
             
             // Number of gap bases in target
-            BasePair tGaps;
+            Base tGaps;
             
             // Number of matching bases
-            BasePair matches;
+            Base matches;
 
             // Number of mismatching bases
-            BasePair mismatch;
+            Base mismatch;
         };
 
         typedef std::function<void(const BlastLine &, const ParserProgress &)> Callback;

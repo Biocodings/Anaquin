@@ -91,9 +91,9 @@ MBlast::Stats MBlast::analyze(const std::string &file, const Options &options)
              * Don't consider for overlapping because a base can be matched or mismatched.
              */
             
-            BasePair gaps = 0;
-            BasePair match = 0;
-            BasePair mismatch = 0;
+            Base gaps = 0;
+            Base match = 0;
+            Base mismatch = 0;
 
             for (const auto &contig : align.contigs)
             {

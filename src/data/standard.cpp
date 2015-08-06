@@ -17,9 +17,9 @@ extern std::string TransDataGTF();
 
 using namespace Anaquin;
 
-template <typename Iter> BasePair countLocus(const Iter &iter)
+template <typename Iter> Base countLocus(const Iter &iter)
 {
-    BasePair n = 0;
+    Base n = 0;
     
     for (const auto &i : iter)
     {
@@ -225,8 +225,8 @@ Standard::Standard()
      * The region occupied by the chromosome is the smallest area contains all features.
      */
     
-    l.end   = std::numeric_limits<BasePair>::min();
-    l.start = std::numeric_limits<BasePair>::max();
+    l.end   = std::numeric_limits<Base>::min();
+    l.start = std::numeric_limits<Base>::max();
     
     /*
      * The orders in a GTF file is not guaranteed. For simplicity, we'll defer most of the workloads
@@ -376,8 +376,8 @@ void Standard::r_ref(const Reader &r)
      * The region occupied by the chromosome is the smallest area contains all features.
      */
     
-    l.end   = std::numeric_limits<BasePair>::min();
-    l.start = std::numeric_limits<BasePair>::max();
+    l.end   = std::numeric_limits<Base>::min();
+    l.start = std::numeric_limits<Base>::max();
 
     std::vector<Feature> fs;
 
@@ -419,8 +419,8 @@ void Standard::r_ref(const Reader &r)
     
     assert(!r_exons.empty());
     assert(!r_isoformToGene.empty());
-    assert(l.end   != std::numeric_limits<BasePair>::min());
-    assert(l.start != std::numeric_limits<BasePair>::min());
+    assert(l.end   != std::numeric_limits<Base>::min());
+    assert(l.start != std::numeric_limits<Base>::min());
     
     /*
      * Construct a data-structure that maps from sequinID to it's positon
@@ -450,8 +450,8 @@ void Standard::r_ref(const Reader &r)
         // The name of the gene is also the it's ID
         g.id = g.geneID = geneID;
 
-        g.l.end   = std::numeric_limits<BasePair>::min();
-        g.l.start = std::numeric_limits<BasePair>::max();
+        g.l.end   = std::numeric_limits<Base>::min();
+        g.l.start = std::numeric_limits<Base>::max();
         
         /*
          * Add all exons for this gene
@@ -472,8 +472,8 @@ void Standard::r_ref(const Reader &r)
             }
         }
 
-        assert(g.l.end   != std::numeric_limits<BasePair>::min());
-        assert(g.l.start != std::numeric_limits<BasePair>::min());
+        assert(g.l.end   != std::numeric_limits<Base>::min());
+        assert(g.l.start != std::numeric_limits<Base>::min());
         assert(g.l.end > g.l.start);
 
         r_genes.push_back(g);

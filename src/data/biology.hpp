@@ -1,6 +1,8 @@
 #ifndef GI_BIOLOGY_HPP
 #define GI_BIOLOGY_HPP
 
+#include "data/types.hpp"
+
 namespace Anaquin
 {
     enum Strand
@@ -9,23 +11,15 @@ namespace Anaquin
         Backward,
     };
 
-    enum Orientation
-    {
-        ForwardForward,
-        ForwardReverse,
-        ReverseForward,
-        ReverseReverse
-    };
-
     struct Contig
     {
-        std::string id;
+        ContigID id;
 
         // The sequence being assembled
-        std::string seq;
+        Sequence seq;
 
         // Coverage in k-mer
-        double k_cov;
+        Coverage k_cov;
     };
 
     enum RNAFeature
@@ -66,7 +60,7 @@ namespace Anaquin
         // Orientation for each of the
         Strand s1, s2;
     };
-    
+
     template <typename Iter, typename T, typename F> bool find(const Iter &begin, const Iter &end, const T &t, F &r)
     {
         for (auto i = begin; i < end; i++)

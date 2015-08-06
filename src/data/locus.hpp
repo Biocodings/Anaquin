@@ -19,14 +19,14 @@ namespace Anaquin
             start = std::min(l1.start, l2.start);
         }
 
-        Locus(BasePair start = 0, BasePair end = 0) : start(start), end(end) {}
+        Locus(Base start = 0, Base end = 0) : start(start), end(end) {}
 
         template <typename Iter, typename F> static Locus expand(const Iter &iter, F f)
         {
             Locus l;
             
-            l.end   = std::numeric_limits<BasePair>::min();
-            l.start = std::numeric_limits<BasePair>::max();
+            l.end   = std::numeric_limits<Base>::min();
+            l.start = std::numeric_limits<Base>::max();
 
             for (const auto &i : iter)
             {
@@ -108,9 +108,9 @@ namespace Anaquin
             return merged;
         }
         
-        inline BasePair length() const { return (end - start + 1); }
+        inline Base length() const { return (end - start + 1); }
 
-        inline BasePair overlap(const Locus &l) const
+        inline Base overlap(const Locus &l) const
         {
             if (l.start > end || start > l.end)
             {
@@ -158,7 +158,7 @@ namespace Anaquin
             return start < l.start || (start == l.start && end < l.end);
         }
 
-        BasePair start, end;
+        Base start, end;
     };
 
     struct RNALocus : public Locus

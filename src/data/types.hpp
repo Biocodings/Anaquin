@@ -34,9 +34,6 @@ namespace Anaquin
     typedef std::string FileName;
     typedef std::string FeatureName;
 
-    // Eg: 388488 from the first matching base
-    typedef long long BasePair;
-    
     typedef long long Base;
 }
 

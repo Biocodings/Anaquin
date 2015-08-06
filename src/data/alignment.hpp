@@ -27,7 +27,7 @@ namespace Anaquin
         Locus l;
         
         // Only valid if the alignment is spliced
-        BasePair skipped;
+        Base skipped;
     };    
 }
 

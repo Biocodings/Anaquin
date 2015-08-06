@@ -17,7 +17,7 @@ enum Fields
     RightDistFromRefExonSplice,
 };
 
-static void parseBreak(const std::string &s, std::string &chr, BasePair &l, Strand &o)
+static void parseBreak(const std::string &s, std::string &chr, Base &l, Strand &o)
 {
     /*
      * Eg: chrT:9035684:-

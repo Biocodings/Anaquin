@@ -7,12 +7,12 @@
 
 namespace Anaquin
 {
-    struct Region : public std::vector<Locus>
+    struct Region_ : public std::vector<Locus>
     {
         inline Locus region() const
         {
-            auto end   = std::numeric_limits<BasePair>::min();
-            auto start = std::numeric_limits<BasePair>::max();
+            auto end   = std::numeric_limits<Base>::min();
+            auto start = std::numeric_limits<Base>::max();
 
             for (const auto &l : *this)
             {

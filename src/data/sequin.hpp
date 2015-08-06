@@ -24,7 +24,7 @@ namespace Anaquin
 
             Locus l;
 
-            BasePair length;
+            Base length;
 
             // Abundance spiked, a non-const method
             Concentration &abund() { return _abund; }
@@ -36,7 +36,7 @@ namespace Anaquin
             Concentration _abund;
     };
 
-    struct Base_
+    struct BaseSeq
     {
         inline Concentration abund() const
         {
@@ -47,7 +47,7 @@ namespace Anaquin
                 });
         }
 
-        inline BasePair length() const
+        inline Base length() const
         {
             return std::accumulate(sequins.begin(), sequins.end(), 0,
                 [&](int sum, const std::pair<TypeID, Sequin> &p)
@@ -59,7 +59,7 @@ namespace Anaquin
         std::map<TypeID, Sequin> sequins;
     };
 
-    struct VariantBase : public Base_
+    struct VariantBase : public BaseSeq
     {
         inline double alleleFreq() const
         {

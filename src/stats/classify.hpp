@@ -56,9 +56,9 @@ namespace Anaquin
      * The overlap consists of (15,20).
      */
 
-    template <typename Iter, typename T, typename C> BasePair countOverlaps(const Iter &rs, const T &q, C &c)
+    template <typename Iter, typename T, typename C> Base countOverlaps(const Iter &rs, const T &q, C &c)
     {
-        BasePair n = 0;
+        Base n = 0;
 
         for (const auto &x : rs)
         {

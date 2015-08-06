@@ -13,14 +13,14 @@ namespace Anaquin
     {
         template <typename T> struct Stats
         {
-            BasePair mean, min, max;
-            BasePair N20, N50, N80;
+            Base mean, min, max;
+            Base N20, N50, N80;
             
             // Total number of bases in contigs
-            BasePair total;
+            Base total;
             
             // Total number of bases in the assembly
-            BasePair sum;
+            Base sum;
 
             // List of assembled contigs
             std::map<ContigID, T> contigs;
