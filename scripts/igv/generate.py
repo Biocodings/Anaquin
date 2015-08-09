@@ -137,4 +137,6 @@ if __name__ == '__main__':
     
     if (mode == 'Fusion'):
         generateFusion(path, sys.argv[3])
+    else if (mode == 'Fusion'):
+        generateFusion(path, sys.argv[3])
 
