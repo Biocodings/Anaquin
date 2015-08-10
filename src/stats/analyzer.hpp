@@ -462,14 +462,31 @@ namespace Anaquin
         {
             assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
+            std::vector<double> x, y;
+            std::vector<std::string> z;
+
+            /*
+             * Ignore any invalid value...
+             */
+            
+            for (auto i = 0; i < stats.x.size(); i++)
+            {
+                if (!isnan(stats.x[i]) && !isnan(stats.y[i]))
+                {
+                    x.push_back(stats.x[i]);
+                    y.push_back(stats.y[i]);
+                    z.push_back(stats.z[i]);
+                }
+            }
+
             /*
              * Generate a script for data visualization
              */
-            
+
             if (r)
             {
                 writer->open(prefix + ".R");
-                writer->write(RWriter::write(stats.x, stats.y, stats.z, unit, stats.s.abund));
+                writer->write(RWriter::write(x, y, z, unit, stats.s.abund));
                 writer->close();
             }
             
@@ -517,11 +534,6 @@ namespace Anaquin
             writer->write((boost::format(format) % "sn" % "sp" % "los"  % "ss" % "counts").str());
             writer->write((boost::format(format) %  sn  %  sp  % p.s.id %  ss  % p.s.counts).str());
             writer->write("\n");
-
-            //for (const auto &p : h)
-            //{
-            //    writer->write((boost::format("%1%\t%2%") % p.first % p.second).str());
-            //}
 
             writer->close();
         };
