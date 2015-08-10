@@ -7,7 +7,7 @@ using namespace Anaquin;
 TEST_CASE("LAbund_Command")
 {
     Test::ladder();
-    const auto r = Test::test("-t LadderAbund -m data/ladder/CON.v3.mix.csv -usam tests/data/ladder/aligned_A.sam");
+    const auto r = Test::test("-t LadderAbund -m data/ladder/Ladder_v3.csv -usam tests/data/ladder/aligned_A.sam");
 
     REQUIRE(r.status == 0);
     REQUIRE(r.output.find("Ladder Analysis") != std::string::npos);
