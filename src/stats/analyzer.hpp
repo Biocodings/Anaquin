@@ -462,7 +462,7 @@ namespace Anaquin
                 
                 for (std::size_t i = 0; i < stats.x.size(); i++)
                 {
-                    writer->write((boost::format("%1%\t%2%\t%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
+                    writer->write((boost::format("%1%,%2%,%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
                 }
                 
                 writer->close();
