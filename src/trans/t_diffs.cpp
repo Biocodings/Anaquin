@@ -12,85 +12,110 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 
     auto c = (options.level == Gene ? TAnalyzer::geneCounter() : TAnalyzer::sequinCounter());
 
-    options.logInfo("options.level == " + std::to_string(options.level));
-
     options.info("Parsing input file");
 
+    // This is needed to determine any undetected sequin
+    std::set<SequinID> ids;
+    
+    auto g = [&](const GeneID &id, double fpkm_1, double fpkm_2)
+    {
+        // The known and observed fold-change
+        Fold known = NAN;
+        
+        // It's NAN if the sequin defined in reference but not in mixture
+        Fold measured = NAN;
+
+        if (s.r_seqs_gA.count(id))
+        {
+            // Calculate the known fold-change between B and A
+            known = (s.r_seqs_gB.at(id).abund() / s.r_seqs_gA.at(id).abund());
+        }
+
+        if (s.r_seqs_gA.count(id) && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
+        {
+            c[id]++;
+
+            // Measured fold-change between the two mixtures
+            measured = fpkm_2 / fpkm_1;
+        }
+
+        ids.insert(id);
+        stats.z.push_back(id);
+        stats.x.push_back(!isnan(known)    ? log2(known)    : NAN);
+        stats.y.push_back(!isnan(measured) ? log2(measured) : NAN);
+    };
+    
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
         // The known and observed fold-change
-        Fold known, measured;
+        Fold known = NAN;
 
-        /*
-         * By measuring and comparing the observed fold-changes with the known changes,
-         * it's possible to create a linear model. In a perfect experiment, one would
-         * expect perfect correlation.
-         *
-         * For example, let's say R_1_1 is a silico gene. We might have the following table
-         *
-         *        R_1_1, 10000000, 2500000
-         *
-         * This is a fold-change of 2.5. One would expect a similar fold-change observed
-         * in the experiment.
-         */
-
-        const auto format = "%1% not found in the mixture";
+        // It's NAN if the sequin defined in reference but not in mixture
+        Fold measured = NAN;
 
         switch (options.level)
         {
             case Gene:
             {
-                if (!s.r_seqs_gA.count(t.geneID))
+                if (t.status != NoTest)
                 {
-                    options.info((boost::format(format) % t.geneID).str());
+                    g(t.geneID, t.fpkm_1, t.fpkm_2);
                 }
-                else if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
+                else
                 {
-                    // Calculate the known fold-change between B and A
-                    known = (s.r_seqs_gB.at(t.geneID).abund() /
-                             s.r_seqs_gA.at(t.geneID).abund());
-
-                    // Calculate the measured fold-change between B and A
-                    measured = t.fpkm_2 / t.fpkm_1;
-                    
-                    c[t.geneID]++;
-                    stats.x.push_back(log2f(known));
-                    stats.y.push_back(log2f(measured));
-                    stats.z.push_back(t.geneID);
+                    g(t.geneID, NAN, NAN);
                 }
-
+                
                 break;
             }
 
             case Isoform:
             {
-                if (!s.r_seqs_A.count(t.testID))
+                if (s.r_seqs_A.count(t.testID))
                 {
-                    options.info((boost::format(format) % t.geneID).str());
+                    // Known fold-change between the two mixtures
+                    known = s.r_seqs_B.at(t.testID).abund() / s.r_seqs_A.at(t.testID).abund();
                 }
-                else if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
+                
+                if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
-                    // Calculate the known fold-change between B and A
-                    known = (s.r_seqs_B.at(t.testID).abund() / s.r_seqs_B.at(t.testID).length) /
-                            (s.r_seqs_A.at(t.testID).abund() / s.r_seqs_A.at(t.testID).length);
+                    c[t.testID]++;
 
-                    // Calculate the measured fold-change between B and A
+                    // Measured fold-change between the two mixtures
                     measured = t.fpkm_2 / t.fpkm_1;
-
-                    if (known)
-                    {
-                        c[t.testID]++;
-                        stats.x.push_back(log2(known));
-                        stats.y.push_back(log2(measured));
-                        stats.z.push_back(t.testID);
-                    }
                 }
 
+                stats.z.push_back(t.testID);
+                stats.x.push_back(!isnan(known)    ? log2(known)    : NAN);
+                stats.y.push_back(!isnan(measured) ? log2(measured) : NAN);
+                
                 break;
             }
         }
     });
 
+    assert(!ids.empty());
+    
+    /*
+     * Find out the undetected sequins
+     */
+    
+    if (options.level == Gene)
+    {
+        for (const auto &i : s.r_seqs_gA)
+        {
+            const auto &id = i.first;
+            
+            // Not found in the experiment?
+            if (!ids.count(id))
+            {
+                stats.z.push_back(i.first);
+                stats.x.push_back(s.r_seqs_gB.at(id).abund() / s.r_seqs_gA.at(id).abund());
+                stats.y.push_back(NAN);
+            }
+        }
+    }
+    
     assert(!c.empty() && !stats.x.empty());
     assert(!stats.x.empty() && stats.x.size() == stats.y.size());
 

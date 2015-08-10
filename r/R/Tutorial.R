@@ -41,6 +41,7 @@ dds <- DESeq(dds)
 # Extract the estimated log2 fold changes and p-values for the treated condition
 res <- results(dds)
 
+t <- data.frame(id=row.names(res), fold=res$log2FoldChange)
 
 
 

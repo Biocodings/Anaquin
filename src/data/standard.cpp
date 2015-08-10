@@ -235,12 +235,6 @@ Standard::Standard()
     
     ParserGTF::parse(Reader(TransDataGTF(), String), [&](const Feature &f, const ParserProgress &)
     {
-        // TODO: Please fix me!
-        if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
-        {
-            return; // TODO! To save assembly from crashing!! Defined in the model but not in sequin!
-        }
-        
         assert(!f.tID.empty() && !f.geneID.empty());
         
         l.end   = std::max(l.end, f.l.end);

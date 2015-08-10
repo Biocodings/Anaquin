@@ -235,7 +235,7 @@ namespace Anaquin
     {
         // This is needed to make the compiler happy ...
         ModelStats() {}
-        
+
         ModelStats(const ModelStats &stats) : s(stats.s), z(stats.z), x(stats.x), y(stats.y) {}
         
         Sensitivity s;
@@ -243,20 +243,34 @@ namespace Anaquin
         // Sequin IDs for each x and y
         std::vector<SequinID> z;
 
-        // Known concentration for sequins
-        std::vector<Concentration> x;
-
-        // Measured coverage for sequins
-        std::vector<Coverage> y;
+        std::vector<double> x, y;
 
         inline LinearModel linear() const
         {
-            const auto m = SS::lm("y~x", SS::data.frame(SS::c(y), SS::c(x)));
+            std::vector<double> y_;
+            std::vector<double> x_;
+            
+            assert(x.size() == y.size());
+            
+            /*
+             * Ignore any invalid value...
+             */
+            
+            for (auto i = 0; i < x.size(); i++)
+            {
+                if (!isnan(x[i]) && !isnan(y[i]))
+                {
+                    x_.push_back(x[i]);
+                    y_.push_back(y[i]);
+                }
+            }
+
+            const auto m = SS::lm("y~x", SS::data.frame(SS::c(y_), SS::c(x_)));
             
             LinearModel lm;
             
             // Pearson correlation
-            lm.r = SS::cor(x, y);
+            lm.r = SS::cor(x_, y_);
             
             // Adjusted R2
             lm.r2 = m.ar2;
@@ -349,9 +363,9 @@ namespace Anaquin
                 std::cout << iter->first << "  " << iter->second << std::endl;
             }
         }
-        
+
         template <typename T, typename ID, typename S> static Sensitivity
-            analyze(const std::map<T, Counts> &c, const std::map<ID, S> &m)
+                analyze(const std::map<T, Counts> &c, const std::map<ID, S> &m)
         {
             Sensitivity s;
             
@@ -415,6 +429,29 @@ namespace Anaquin
             writer->close();
         }
 
+        template <typename Stats, typename Writer>
+            static void writeCSV(const Stats &stats, const std::string file, Writer writer)
+        {
+            writer->open(file);
+            writer->write("ID,expect,measure");
+
+            /*
+             * Prefer to write results in sorted order
+             */
+
+            std::set<std::string> sorted(stats.z.begin(), stats.z.end());
+
+            for (const auto &s : sorted)
+            {
+                const auto it = std::find(stats.z.begin(), stats.z.end(), s);
+                const auto i  = std::distance(stats.z.begin(), it);
+                
+                writer->write((boost::format("%1%,%2%,%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
+            }
+            
+            writer->close();
+        }
+        
         template <typename Stats, typename Writer> static void linear(const Stats &stats,
                                                                       const std::string prefix,
                                                                       const std::string unit,
@@ -454,18 +491,10 @@ namespace Anaquin
             /*
              * Generate CSV for each sequin
              */
-            
+
             if (sequin)
             {
-                writer->open(prefix + "_quins.csv");
-                writer->write("ID\texpect\tmeasure");
-                
-                for (std::size_t i = 0; i < stats.x.size(); i++)
-                {
-                    writer->write((boost::format("%1%,%2%,%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
-                }
-                
-                writer->close();
+                writeCSV(stats, prefix + "_quins.csv", writer);
             }
         }
 
