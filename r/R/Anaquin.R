@@ -78,7 +78,6 @@ LoadMixtures <- function()
         g[g$ID == id,]$logFold <- 'NA'
     }
     
-        
     # Prefer not to have it as factor variable
     g$ID <- as.character(g$ID)
     
