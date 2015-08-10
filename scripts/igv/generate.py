@@ -81,7 +81,7 @@ def download(path, files):
     
     downloads = []
 
-    # We always need the chromosome
+    # We always need a reference genome
     urllib.urlretrieve(silicoFA, path + 'chrT.fa')    
 
     for file in files:
@@ -127,6 +127,24 @@ def generateFusion(path, align):
     index(path, align)
     session(path, download(path, files))
 
+def generateLadder(path, align):
+    files = []
+
+    index(path, align)
+    session(path, download(path, files))
+	
+def generateTrans(path, align):
+    files = [ silicoGTF ]
+
+    index(path, align)
+    session(path, download(path, files))
+
+def generateVar(path, align):
+    files = [ 'http://www.anaquin.org/downloads/variant/DNA.variant.bed' ]
+
+    index(path, align)
+    session(path, download(path, files))
+
 if __name__ == '__main__':
 
     # Where to generate    
@@ -137,6 +155,10 @@ if __name__ == '__main__':
     
     if (mode == 'Fusion'):
         generateFusion(path, sys.argv[3])
-    else if (mode == 'Fusion'):
-        generateFusion(path, sys.argv[3])
+    else if (mode == 'Transcriptome'):
+        generateTrans(path, sys.argv[3])
+    else if (mode == 'Variant'):
+        generateVar(path, sys.argv[3])
+    else if (mode == 'Ladder'):
+        generateVar(path, sys.argv[3])
 
