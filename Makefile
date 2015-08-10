@@ -25,10 +25,10 @@
 BOOST = /usr/include/boost
 
 # Required for unit-testing
-CATCH = /home/tedwon/Sources/catch/include
+CATCH = /usr/include/catch/include
 
 # Linear-algebra library
-EIGEN = /home/tedwon/Sources/eigen
+EIGEN = /usr/include/eigen
 
 # Statistics library
 SS = ../SS

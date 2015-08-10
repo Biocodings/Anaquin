@@ -85,6 +85,7 @@ namespace Anaquin
                 hist[id] = 0;
             }
 
+            assert(!hist.empty());
             return hist;
         }
         

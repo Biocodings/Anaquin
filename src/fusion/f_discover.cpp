@@ -24,7 +24,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
                                                      % "partner_3").str());
         options.writer->write((boost::format(format) % stats.m.sn()
                                                      % stats.m.sp()
-                                                     % stats.m.sp()
+                                                     % stats.covered
                                                      % stats.s.abund
                                                      % "?"
                                                      % "?").str());
@@ -43,7 +43,6 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
         
         for (const auto &i : stats.h)
         {
-            options.writer->write((boost::format(format) % "id").str());
             options.writer->write((boost::format(format) % i.first).str());
         }
        
@@ -51,7 +50,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
     }
 
     {
-       // AnalyzeReporter::linear(stats, "FusionDiscover", "FPKM", options.writer);
+        AnalyzeReporter::linear(stats, "FusionDiscover", "FPKM", options.writer);
     }
     
     {

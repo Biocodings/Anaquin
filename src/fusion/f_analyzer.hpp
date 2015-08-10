@@ -127,9 +127,9 @@ namespace Anaquin
                     // Known abundance for the fusion
                     const auto known = seq.abund() / seq.length;
 
-                    stats.y.push_back(0); // TODO: We shouldn't even need to add those missing sequins!
-                    stats.z.push_back(seqID);
-                    stats.x.push_back(log2f(known));
+                    //stats.y.push_back(0); // TODO: We shouldn't even need to add those missing sequins!
+                    //stats.z.push_back(seqID);
+                    //stats.x.push_back(log2f(known));
 
                     stats.miss.push_back(MissingSequin(seqID, known));
                 }
@@ -141,11 +141,11 @@ namespace Anaquin
             options.info("Calculating limit of sensitivity");
             //stats.s = Expression::analyze(stats.h, s.seqs_1);
             
-            stats.covered = std::accumulate(stats.h.begin(), stats.h.end(), 0,
-                    [&](int sum, const std::pair<SequinID, Counts> &p)
-                    {
-                        return sum + (p.second ? 1 : 0);
-                    }) / stats.m.nr;
+            stats.covered = static_cast<double>(std::accumulate(stats.h.begin(), stats.h.end(), 0,
+                                [&](int sum, const std::pair<SequinID, Counts> &p)
+                                {
+                                    return sum + (p.second ? 1 : 0);
+                                })) / stats.m.nr;
 
             assert(stats.covered >= 0 && stats.covered <= 1.0);
             
