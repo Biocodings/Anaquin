@@ -561,20 +561,6 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 }
 
 // Analyze for a single sample
-template <typename Analyzer> void analyze_1(typename Analyzer::Options o = typename Analyzer::Options())
-{
-    if (_p.input_1.empty())
-    {
-        throw InvalidInputCountError(1, 1);
-    }
-
-    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
-    {
-        Analyzer::analyze(_p.input_1, o);
-    }, o);
-}
-
-// Analyze for a single sample
 template <typename Analyzer> void analyze_1(Input x, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
@@ -842,18 +828,25 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_SEQUIN:   { printMixture();               break; }
-                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_BAM_1); break; }
-                case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>();       break; }
+                case TOOL_T_SEQUIN:   { printMixture();                  break; }
+                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_BAM_1);    break; }
+                case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_GTF); break; }
 
                 case TOOL_T_EXPRESS:
                 {
                     TExpress::Options o;
                     
-                    // The interpretation crticially depends on genes or isoforms
-                    o.level = _p.inputs.count(OPT_GTRACK) ? TExpress::Gene : TExpress::Isoform;
-                    
-                    analyze_1<TExpress>(o);
+                    if (_p.inputs.count(OPT_GTRACK))
+                    {
+                        o.level = TExpress::Isoform;
+                        analyze_1<TExpress>(OPT_GTRACK);
+                    }
+                    else
+                    {
+                        o.level = TExpress::Isoform;
+                        analyze_1<TExpress>(OPT_ITRACK);
+                    }
+
                     break;
                 }
 
@@ -861,10 +854,21 @@ void parse(int argc, char ** argv)
                 {
                     TDiffs::Options o;
 
-                    // The interpretation crticially depends on genes or isoforms
-                    o.level = _p.inputs.count(OPT_GDIFF) ? TDiffs::Gene : TDiffs::Isoform;
+                    if (_p.inputs.count(OPT_GDIFF))
+                    {
+                        std::cout << "[INFO]: Gene Analysis" << std::endl;
+                        
+                        o.level = TDiffs::Gene;
+                        analyze_1<TDiffs>(OPT_GDIFF);
+                    }
+                    else
+                    {
+                        std::cout << "[INFO]: Isoform Analysis" << std::endl;
 
-                    analyze_1<TDiffs>(o);
+                        o.level = TDiffs::Isoform;
+                        analyze_1<TDiffs>(OPT_IDIFF);
+                    }
+
                     break;
                 }
             }
@@ -901,7 +905,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_L_ABUND:  { analyze_1<LAbund>();                     break; }
+                case TOOL_L_ABUND:  { analyze_1<LAbund>(OPT_BAM_1);            break; }
                 case TOOL_L_DIFF:   { analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break; }
             }
 
@@ -923,7 +927,7 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);  break; }
                 case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_VCF); break; }
-                case TOOL_V_FREQ:     { analyze_1<VFreq>();     break; }
+                //case TOOL_V_FREQ:     { analyze_1<VFreq>();     break; }
                 //case TOOL_V_DIFF:     { analyze_1<VVariant>(); break; }
                 //case TOOL_V_IGV:      { analyze_1<VVariant>(); break; }
             }
