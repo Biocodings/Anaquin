@@ -13,62 +13,67 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Anaquin If not, see <http://www.gnu.org/licenses/>.
 
-LoadMixtures <- function(file)
+library("GenomicFeatures")
+
+IsoformsToGenes <- function(trans)
 {
-    if (hasArg(file))
-    {
-        m <- read.csv(file)
-    }
-    else
-    {
-        # Nothing specified, load the latest mixture available online
-        m <- read.csv('/Users/tedwong/Sources/QA/data/trans/RNA.v4.1.csv', sep='\t')
-    }
+    trans <- as.character(trans)
+    genes <- substr(as.character(trans), 1, nchar(trans)-2)
+    genes
+}
 
-    #
-    # The mixture file only gives us the isoforms. We'll need to combine the information for genes.
-    #
+LoadMixtures <- function()
+{
+    mix <- read.csv(url('http://anaquin.org/downloads/RNA_4_1.csv'))
+
+    ref <- read.csv(url('http://anaquin.org/downloads/RNA_1.gtf'))
+    ref <- makeTranscriptDbFromGFF(file = '/Users/tedwong/Sources/QA/data/trans/RNA_1.gtf', format = "gtf")
+    ref <- unique(IsoformsToGenes(transcripts(ref)$tx_name))
     
-    m$GeneID <- as.character(m$ID)
-    m$GeneID <- substr(as.character(m$GeneID), 1, nchar(m$GeneID)-2)
-
-    # Unique list of genes
-    geneIDs <- unique(m$GeneID)
+    mix$geneID <- IsoformsToGenes(mix$ID)
+    geneIDs  <- unique(mix$geneID)
 
     # Frame to store data for genes
     g <- data.frame(ID=geneIDs,
-                    A=rep(0, length(geneIDs)),
-                    B=rep(0, length(geneIDs)),
+                    a=rep(0, length(geneIDs)),
+                    b=rep(0, length(geneIDs)),
                     fold=rep(0, length(geneIDs)),
                     logFold = rep(0, length(geneIDs)))
 
     for (gene in geneIDs)
     {
         # Filter a list of sequins for the gene
-        sequins <- m[m$GeneID == gene,]
-
-        #mixA <- sum(sequins$MixA / sequins$Length)
-        #mixB <- sum(sequins$MixB / sequins$Length)
-        mixA <- sum(sequins$MixA)
-        mixB <- sum(sequins$MixB)
+        sequins <- m[m$geneID == gene,]
 
         #
-        # Calculate the expected abundance of mixture A and B
+        # Calculate the expected abundance
         #
         
-        g[g$ID == gene,]$A <- mixA
-        g[g$ID == gene,]$B <- mixB
+        g[g$ID == gene,]$a <- sum(sequins$MixA)
+        g[g$ID == gene,]$b <- sum(sequins$MixB)
         
         #
-        # Calculate the expected fold-ratio of mixture A and B
+        # Calculate the expected fold-ratio
         #
         
-        g[g$ID == gene,]$fold <- mixB / mixA
-        g[g$ID == gene,]$logFold <- log2(mixB / mixA)
+        g[g$ID == gene,]$fold    <- g[g$ID == gene,]$b / g[g$ID == gene,]$a
+        g[g$ID == gene,]$logFold <- log2(g[g$ID == gene,]$fold)
     }
 
+    #
+    # We simply can't assume that sequins defined in the mixture and reference are identical.
+    # Here, we find out those sequins that have no mapping in the mixture.
+    #
+
+    i <- !(ref %in% geneIDs)
+    
+    
+    
     # Prefer not to have it as factor variable
     g$ID <- as.character(g$ID)
+    
+    # Sort by ID so that it'll more easier interpreted
+    g <- g[with(g, order(ID)),]
     
     r <- list('data'=data.frame(m), 'genes'=g)
     class(r) <- c("Mixture")

@@ -32,6 +32,8 @@ colData(se) <- DataFrame(meta)
 # We can investigate the resulting SummarizedExperiment by looking at the counts in the assay slot
 #head(assay(se))
 	
+
+
 # Build a one-factor model with DESeq2
 dds <- DESeqDataSet(se, design = ~condition)
 
