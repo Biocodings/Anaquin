@@ -25,50 +25,60 @@ IsoformsToGenes <- function(trans)
 LoadMixtures <- function()
 {
     mix <- read.csv(url('http://anaquin.org/downloads/RNA_4_1.csv'))
-
     ref <- read.csv(url('http://anaquin.org/downloads/RNA_1.gtf'))
-    ref <- makeTranscriptDbFromGFF(file = '/Users/tedwong/Sources/QA/data/trans/RNA_1.gtf', format = "gtf")
+    ref <- makeTranscriptDbFromGFF(file = 'C:/Sources/Anaquin/data/trans/RNA.v1.gtf', format = "gtf")
     ref <- unique(IsoformsToGenes(transcripts(ref)$tx_name))
-    
+
+    # Eg: R1_1 for R1_1_1 and R1_1_2    
     mix$geneID <- IsoformsToGenes(mix$ID)
-    geneIDs  <- unique(mix$geneID)
+    
+    # Genes that are defined in the mixture
+    geneIDs <- unique(mix$geneID)
 
-    # Frame to store data for genes
-    g <- data.frame(ID=geneIDs,
-                    a=rep(0, length(geneIDs)),
-                    b=rep(0, length(geneIDs)),
-                    fold=rep(0, length(geneIDs)),
-                    logFold = rep(0, length(geneIDs)))
-
-    for (gene in geneIDs)
+    # Genes that are defined in reference but not reference and therfore must be ignored as there's no concentration
+    ignored <- ref[!(ref %in% geneIDs)]
+    
+    combined <- c(geneIDs, ignored)
+    
+    g <- data.frame(ID=combined,
+                    a=rep(0, length(combined)),
+                    b=rep(0, length(combined)),
+                    fold=rep(0, length(combined)),
+                    logFold = rep(0, length(combined)))
+    
+    for (id in geneIDs)
     {
-        # Filter a list of sequins for the gene
-        sequins <- m[m$geneID == gene,]
-
+        seqs <- mix[mix$geneID == id,]
+        
         #
         # Calculate the expected abundance
         #
         
-        g[g$ID == gene,]$a <- sum(sequins$MixA)
-        g[g$ID == gene,]$b <- sum(sequins$MixB)
+        g[g$ID == id,]$a <- sum(seqs$MixA)
+        g[g$ID == id,]$b <- sum(seqs$MixB)
         
         #
         # Calculate the expected fold-ratio
         #
         
-        g[g$ID == gene,]$fold    <- g[g$ID == gene,]$b / g[g$ID == gene,]$a
-        g[g$ID == gene,]$logFold <- log2(g[g$ID == gene,]$fold)
+        g[g$ID == id,]$fold    <- g[g$ID == id,]$b / g[g$ID == id,]$a
+        g[g$ID == id,]$logFold <- log2(g[g$ID == id,]$fold)
     }
-
+    
     #
     # We simply can't assume that sequins defined in the mixture and reference are identical.
-    # Here, we find out those sequins that have no mapping in the mixture.
+    # Here, we find out those sequins that are not defined in the mixture.
     #
-
-    i <- !(ref %in% geneIDs)
     
+    for (id in ignored)
+    {
+        g[g$ID == id,]$a       <- 'NA'
+        g[g$ID == id,]$b       <- 'NA'
+        g[g$ID == id,]$fold    <- 'NA'
+        g[g$ID == id,]$logFold <- 'NA'
+    }
     
-    
+        
     # Prefer not to have it as factor variable
     g$ID <- as.character(g$ID)
     
@@ -90,16 +100,16 @@ DESeq2_Analyze <- function(r, m)
 {
     # List of genes in the experiment (samples + sequins)
     measured <- rownames(r)
-
+    
     # List of known genes
     known <- m$genes$ID
-
+    
     # Filter out the overlapping, the index works only for known
     i <- measured %in% known
-  
+    
     # Filter out the overlapping, the index works only for measured
     j <- known %in% measured
-
+    
     known    <- data.frame(ID=c(known[i]))
     measured <- data.frame(ID=c(measured[j]))
     
@@ -112,7 +122,7 @@ DESeq2_Analyze <- function(r, m)
     
     stopifnot(nrow(known) == nrow(measured))
     stopifnot(length(known) == length(measured))
-
+    
     known <- known[with(known, order(ID)),]    
     measured <- measured[with(measured, order(ID)),]
     
@@ -120,16 +130,16 @@ DESeq2_Analyze <- function(r, m)
     
     # Fit a simple-linear regression model
     m <- lm(measured$logFold ~ known$logFold)
-
+    
     # Pearson's correlation
     r <- cor(known$logFold, measured$logFold)
-
+    
     # Coefficients of determination
     r2 <- summary(m)$r.squared
     
     # Regression slope
     slope <- coef(m)["known"]
-
+    
     # Generate a linear plot of the relationship
     plot(known, measured)
     
@@ -142,7 +152,7 @@ EdgeR_Analyze <- function(r, m)
 {
     # List of genes for the experiment (sequins + samples)
     genes <- rownames(r)
-
+    
     # List of all sequins
     sequins <- c(as.vector(m$data$ID))
     
@@ -207,64 +217,3 @@ Anaquin <- function(r, m=LoadMixtures())
         stop('Unknown input. The input must be a result object from DESeq2 or EdgeR')
     }    
 }
-
-
-
-
-
-
-# 
-# 
-# 
-# #
-# # Required: aligned SAM/BAM files
-# #
-# 
-# # Given a list of BAM files, construct an experimental object for DESEq2 and EdgeR
-# AnaquinExperiment<- function(files, gtf='/Users/tedwong/Sources/QA/data/rna/RNA.ref.gtf')
-# {
-# 	bams <- BamFileList(paste('', files, sep='/'), yieldSize=2000000)
-# 
-# 	# Read in the gene model which will be used for counting reads
-# 	model <- makeTranscriptDbFromGFF(gtf, format='gtf')
-# 
-# 	# Load experimental metadata for the samples
-# 	exp <- read.csv(file.path('', "/Users/tedwong/Sources/QA/r/data/experiment.csv"), row.names=1)
-# 	
-# 	# Produces a GRangesList of all the exons grouped by gene
-# 	genes <- exonsBy(model, by="gene")
-# 	
-# 	se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
-# 	
-# 	# The colData slot, so far empty, should contain all the metadata.
-# 	colData(se) <- DataFrame(exp)
-# 
-#   se
-# 	# We can investigate the resulting SummarizedExperiment by looking at the counts in the assay slot
-# 	#head(assay(se))
-# 	
-# 	# Build a one-factor model with DESeq2
-# 	#dds <- DESeqDataSet(se, design = ~condition)
-# 	
-# 	# Run the differential expression
-# 	#dds <- DESeq(dds)
-# 	
-# 	# Extract the estimated log2 fold changes and p-values for the treated condition
-# 	#res <- results(dds)
-# 	
-# 	# p-values for a particular sequin, one'd expect it be signfiicant due to how the simulation was done
-# 	#res['R_1_1',]
-# }
-# 
-# 
-# 
-# 
-# 
-# 
-# #library("airway")
-# #data("airway")
-# #se <- airway
-# #library("DESeq2")
-# #ddsSE <- DESeqDataSet(se, design = ~ cell + dex)
-# #d <- DESeq(ddsSE)
-# #results(d)
