@@ -26,15 +26,15 @@ LoadMixtures <- function()
 {
     mix <- read.csv(url('http://anaquin.org/downloads/RNA_4_1.csv'))
     ref <- read.csv(url('http://anaquin.org/downloads/RNA_1.gtf'))
-    ref <- makeTranscriptDbFromGFF(file = 'C:/Sources/Anaquin/data/trans/RNA.v1.gtf', format = "gtf")
+    ref <- makeTranscriptDbFromGFF(file = '/Users/tedwong/Sources/QA/data/trans/RNA.v1.gtf', format = "gtf")
     ref <- unique(IsoformsToGenes(transcripts(ref)$tx_name))
-
+    
     # Eg: R1_1 for R1_1_1 and R1_1_2    
     mix$geneID <- IsoformsToGenes(mix$ID)
     
     # Genes that are defined in the mixture
     geneIDs <- unique(mix$geneID)
-
+    
     # Genes that are defined in reference but not reference and therfore must be ignored as there's no concentration
     ignored <- ref[!(ref %in% geneIDs)]
     
@@ -84,7 +84,7 @@ LoadMixtures <- function()
     # Sort by ID so that it'll more easier interpreted
     g <- g[with(g, order(ID)),]
     
-    r <- list('data'=data.frame(m), 'genes'=g)
+    r <- list('data'=data.frame(mix), 'genes'=g)
     class(r) <- c("Mixture")
     r
 }
@@ -95,43 +95,38 @@ print.Mixture <- function(x)
     print(head(x$genes))
 }
 
-DESeq2_Analyze <- function(r, m)
+DESeq2 <- function(r, mix)
 {
-    # List of genes in the experiment (samples + sequins)
-    measured <- rownames(r)
-    
     # List of known genes
-    known <- m$genes$ID
+    known <- as.character(mix$genes$ID)
     
-    # Filter out the overlapping, the index works only for known
-    i <- measured %in% known
+    # Sequins that are detected in the experiment    
+    detected <- rownames(r) %in% known
     
-    # Filter out the overlapping, the index works only for measured
-    j <- known %in% measured
+    # Filter out to only the rows with sequins
+    r <- r[detected,]
     
-    known    <- data.frame(ID=c(known[i]))
-    measured <- data.frame(ID=c(measured[j]))
+    # Create a data-frame for each sequin defined in the mixture and reference, whether it's been detected
+    d <- data.frame(id=known, known=rep(NaN, length(known)), measured=rep(NaN, length(known)))
     
-    # Known concentration for each sequin detected in the experiment
-    known$logFold <- m$genes$logFold[i]
+    # For each sequin detected in the experiment
+    for (id in rownames(r))
+    {
+        d[d$id==id,]$known    <- mix$genes[mix$genes$ID==id,]$logFold
+        d[d$id==id,]$measured <- r[id,]$log2FoldChange
+    }
     
-    # Measured log fold-change for each detected sequin
-    measured$logFold <- r$log2FoldChange[j]
-    #measured$logFold <- r$table$logFC[i]
+    #
+    # Fit a linear model for sequins that are detected in the experiment.
+    #
     
-    stopifnot(nrow(known) == nrow(measured))
-    stopifnot(length(known) == length(measured))
-    
-    known <- known[with(known, order(ID)),]    
-    measured <- measured[with(measured, order(ID)),]
-    
-    measured$logFold[is.na(measured$logFold)] <- 0
+    d_ <- d[is.finite(d$measured),]
     
     # Fit a simple-linear regression model
-    m <- lm(measured$logFold ~ known$logFold)
+    m <- lm(d_$known ~ d_$measured)
     
     # Pearson's correlation
-    r <- cor(known$logFold, measured$logFold)
+    r <- cor(as.numeric(d_$known), as.numeric(d_$measured))
     
     # Coefficients of determination
     r2 <- summary(m)$r.squared
@@ -140,14 +135,10 @@ DESeq2_Analyze <- function(r, m)
     slope <- coef(m)["known"]
     
     # Generate a linear plot of the relationship
-    plot(known, measured)
-    
-    r <- list(data=data.frame(known, measured), r=r, r2=r2, slope=slope)
-    class(r) <- c("Anaquin")
-    r
+    plot(d_$known, d_$measured)
 }
 
-EdgeR_Analyze <- function(r, m)
+EdgeR <- function(r, m)
 {
     # List of genes for the experiment (sequins + samples)
     genes <- rownames(r)
@@ -205,11 +196,11 @@ Anaquin <- function(r, m=LoadMixtures())
 {
     if (class(r) == 'DESeqResults')
     {
-        DESeq2_Analyze(r, m)
+        DESeq2(r, m)
     }
     else if (class(r)[1] == 'DGEExact')
     {
-        EdgeR_Analyze(r, m)        
+        EdgeR(r, m)        
     }
     else
     {
