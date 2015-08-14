@@ -47,7 +47,10 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
             return;
         }
 
-        stats.n_chrT++;
+        if (!align.i)
+        {
+            stats.n_chrT++;            
+        }
         
         // Whether the read has mapped to a feature correctly
         bool succeed = false;

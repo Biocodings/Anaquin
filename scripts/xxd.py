@@ -27,24 +27,24 @@ data  = [ 'data/manual.txt',
 
            # ------- Ladder -------
 
-           'data/ladder/CON.v3.mix.csv',
+           'data/ladder/Ladder_v3.csv',
 
            # ---------- Transcriptome ----------
 
-          'data/trans/RNA.v1.gtf',
-          'data/trans/RNA.v4.1.csv',
+          'data/trans/RNA_1.gtf',
+          'data/trans/RNA_4_1.csv',
 
            # ---------- META ----------
 
-          'data/meta/META.v1.tab.fa',
-          'data/meta/META.v1.tab.fa',
-          'data/meta/META.v6.mix.csv',
-          'data/meta/META.v1.tab.bed',
+          'data/meta/META_v6.csv',
+          'data/meta/META_v1_tab.bed',
+          'data/meta/META_v1_tab.fa',
 
            # ---------- Variant ----------
 
-          'data/var/DNA.v3.mix.csv',
+          'data/var/DNA_v3.csv',
           'data/var/DNA.variant.bed',
+          'data/var/DNA.standards.chrT.gtf',
         ]
 tests = [ ]
 
