@@ -13,7 +13,7 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_gtf.hpp"
 
-extern std::string TransDataGTF();
+extern std::string TransStandGTF();
 
 using namespace Anaquin;
 
@@ -143,7 +143,7 @@ Standard::Standard()
      * after parsing.
      */
     
-    ParserGTF::parse(Reader(TransDataGTF(), String), [&](const Feature &f, const ParserProgress &)
+    ParserGTF::parse(Reader(TransStandGTF(), String), [&](const Feature &f, const ParserProgress &)
     {
         assert(!f.tID.empty() && !f.geneID.empty());
         

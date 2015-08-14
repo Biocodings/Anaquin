@@ -20,29 +20,30 @@
  * Conjoint Resources
  */
 
-#include "resources/CON.v3.mix.csv"
+#include "resources/Ladder_v3.csv"
 
 /*
  * RNA Resources
  */
 
-#include "resources/RNA.v1.gtf"
-#include "resources/RNA.v4.1.csv"
+#include "resources/RNA_1.gtf"
+#include "resources/RNA_4_1.csv"
 
 /*
  * META Resources
  */
 
-#include "resources/META.v1.tab.fa"
-#include "resources/META.v6.mix.csv"
-#include "resources/META.v1.tab.bed"
+#include "resources/META_v6.csv"
+#include "resources/META_v1_tab.fa"
+#include "resources/META_v1_tab.bed"
 
 /*
  * DNA Resources
  */
 
-#include "resources/DNA.v3.mix.csv"
+#include "resources/DNA_v3.csv"
 #include "resources/DNA.variant.bed"
+#include "resources/DNA.standards.chrT.gtf"
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
@@ -101,7 +102,7 @@ std::string FusionNormalRef()
 
 std::string LadderDataMix()
 {
-    return ToString(data_ladder_CON_v3_mix_csv);
+    return ToString(data_ladder_Ladder_v3_csv);
 }
 
 /*
@@ -115,7 +116,7 @@ std::string MetaDataTab()
 
 std::string MetaDataMix()
 {
-    return ToString(data_meta_META_v6_mix_csv);
+    return ToString(data_meta_META_v6_csv);
 }
 
 std::string MetaDataBed()
@@ -127,14 +128,14 @@ std::string MetaDataBed()
  * Transcriptome Resources
  */
 
-std::string TransDataGTF()
+std::string TransStandGTF()
 {
-    return ToString(data_trans_RNA_v1_gtf);
+    return ToString(data_trans_RNA_1_gtf);
 }
 
 std::string TransDataMix()
 {
-    return ToString(data_trans_RNA_v4_1_csv);
+    return ToString(data_trans_RNA_4_1_csv);
 }
 
 /*
@@ -143,10 +144,15 @@ std::string TransDataMix()
 
 std::string VarDataMix()
 {
-    return ToString(data_var_DNA_v3_mix_csv);
+    return ToString(data_var_DNA_v3_csv);
 }
 
 std::string VarDataBed()
 {
     return ToString(data_var_DNA_variant_bed);
+}
+
+std::string VarStandardsGTF()
+{
+    return ToString(data_var_DNA_standards_chrT_gtf);
 }

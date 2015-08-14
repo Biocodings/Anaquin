@@ -16,8 +16,8 @@ extern std::string FusionDataRef();
 extern std::string FusionNormalRef();
 extern std::string FusionMutatedRef();
 
-extern std::string TransDataGTF();
 extern std::string TransDataMix();
+extern std::string TransStandGTF();
 
 extern std::string MetaDataFA();
 extern std::string MetaDataBed();
@@ -49,7 +49,7 @@ void Test::ladder()
 
 void Test::trans()
 {
-    Standard::instance().r_ref(Reader(TransDataGTF(), DataMode::String));
+    Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMix(), DataMode::String));
 }
 
