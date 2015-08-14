@@ -861,9 +861,19 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_SEQUIN:   { printMixture();                  break; }
-                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_BAM_1);    break; }
-                case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_GTF); break; }
+                case TOOL_T_SEQUIN: { printMixture();               break; }
+                case TOOL_T_ALIGN:  { analyze_1<TAlign>(OPT_BAM_1); break; }
+                
+                case TOOL_T_ASSEMBLY:
+                {
+                    TAssembly::Options o;
+
+                    o.ref   = _p.opts[OPT_R_GTF];
+                    o.query = _p.opts[OPT_R_GTF];
+                    
+                    analyze_1<TAssembly>(OPT_U_GTF, o);
+                    break;
+                }
 
                 case TOOL_T_EXPRESS:
                 {

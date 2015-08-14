@@ -52,6 +52,12 @@ void ParserGTF::parse(const Reader &r, Callback x)
         }
         
         f.id = tokens[0];
+        
+        if (f.id != "chrT") // TODO: Fix this
+        {
+            continue;
+        }
+        
         f.l  = Locus(stoi(tokens[3]), stoi(tokens[4]));
 
         f.type = mapper[tokens[2]];

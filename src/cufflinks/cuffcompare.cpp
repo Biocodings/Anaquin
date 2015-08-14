@@ -3,6 +3,8 @@
 #include <errno.h>
 #include "gtf_tracking.h"
 
+#include "data/compare.hpp"
+
 #ifdef HAVE_CONFIG_H
 #include "update_check.h"
 #endif
@@ -170,24 +172,25 @@ void show_usage() {
   GMessage("%s\n", USAGE);
   }
 
-int main__(int argc, char * const argv[]) {
+// Defined in t_express.cpp
+extern Anaquin::Compare __cmp__;
 
-    char * t[4];
-    
-    t[0] = (char *) malloc(1000);
-    t[1] = (char *) malloc(1000);
-    t[2] = (char *) malloc(1000);
-    t[3] = (char *) malloc(1000);
-    
-    strcpy(t[0], "cuffcompare");
-    strcpy(t[1], "-r");
-    strcpy(t[2], "data/trans/RNA.v1.gtf");
-    strcpy(t[3], "tests/data/trans/A1/transcripts.gtf");
+int cuffcompare_main(const char *ref, const char *query) {
 
-    argc = 4;
-    argv = t;
+    char * argv[4];
     
+    argv[0] = (char *) malloc(1000);
+    argv[1] = (char *) malloc(1000);
+    argv[2] = (char *) malloc(1000);
+    argv[3] = (char *) malloc(1000);
     
+    strcpy(argv[0], "cuffcompare");
+    strcpy(argv[1], "-r");
+    strcpy(argv[2], ref);
+    strcpy(argv[3], query);
+
+    int argc = 4;
+
 #ifdef HEAPROFILE
   if (!IsHeapProfilerRunning())
       HeapProfilerStart("./cuffcompare_dbg.hprof");
@@ -1438,7 +1441,7 @@ void collectStats(GSuperLocus& stats, GSeqData* seqdata, GSeqData* refdata) {
   }
 }
 
-void reportStats(FILE* fout, const char* setname, GSuperLocus& stotal,
+void reportStats(FILE* fout_, const char* setname, GSuperLocus& stotal,
                           GSeqData* seqdata, GSeqData* refdata) {
   GSuperLocus stats;
   bool finalSummary=(seqdata==NULL && refdata==NULL);
@@ -1450,37 +1453,49 @@ void reportStats(FILE* fout, const char* setname, GSuperLocus& stotal,
     if (!perContigStats) return;
     }
   ps->calcF();
-  if (seqdata!=NULL) fprintf(fout, "#> Genomic sequence: %s \n", setname);
-                else fprintf(fout, "\n#= Summary for dataset: %s :\n", setname);
+    
+  //if (seqdata!=NULL) fprintf(fout, "#> Genomic sequence: %s \n", setname);
+  //              else fprintf(fout, "\n#= Summary for dataset: %s :\n", setname);
 
-  fprintf(fout,   "#     Query mRNAs : %7d in %7d loci  (%d multi-exon transcripts)\n",
-          ps->total_qmrnas, ps->total_qloci, ps->total_qichains);
-  fprintf(fout, "#            (%d multi-transcript loci, ~%.1f transcripts per locus)\n",
-          ps->total_qloci_alt, ((double)ps->total_qmrnas/ps->total_qloci));
+  //fprintf(fout,   "#     Query mRNAs : %7d in %7d loci  (%d multi-exon transcripts)\n",
+  //        ps->total_qmrnas, ps->total_qloci, ps->total_qichains);
+  //fprintf(fout, "#            (%d multi-transcript loci, ~%.1f transcripts per locus)\n",
+  //        ps->total_qloci_alt, ((double)ps->total_qmrnas/ps->total_qloci));
 
   if (haveRefs) {
-    fprintf(fout, "# Reference mRNAs : %7d in %7d loci  (%d multi-exon)\n",
-            ps->total_rmrnas, ps->total_rloci, ps->total_richains);
-    if (ps->baseTP+ps->baseFP==0 || ps->baseTP+ps->baseFN==0) return;
-    fprintf(fout, "# Super-loci w/ reference transcripts:  %7d\n",ps->total_superloci);
+    //fprintf(fout, "# Reference mRNAs : %7d in %7d loci  (%d multi-exon)\n",
+    //        ps->total_rmrnas, ps->total_rloci, ps->total_richains);
+    //if (ps->baseTP+ps->baseFP==0 || ps->baseTP+ps->baseFN==0) return;
+    //fprintf(fout, "# Super-loci w/ reference transcripts:  %7d\n",ps->total_superloci);
 
     /*if (seqdata!=NULL) {
       fprintf(fout, "          ( %d/%d on forward/reverse strand)\n",
              seqdata->gstats_f.Count(),seqdata->gstats_r.Count());
        }*/
 
-    fprintf(fout, "#--------------------|   Sn   |  Sp   |  fSn |  fSp  \n");
+    //fprintf(fout, "#--------------------|   Sn   |  Sp   |  fSn |  fSp  \n");
     double sp=(100.0*(double)ps->baseTP)/(ps->baseTP+ps->baseFP);
     double sn=(100.0*(double)ps->baseTP)/(ps->baseTP+ps->baseFN);
-    fprintf(fout, "        Base level: \t%5.1f\t%5.1f\t  - \t  - \n",sn, sp);
+    
+    //fprintf(fout, "        Base level: \t%5.1f\t%5.1f\t  - \t  - \n",sn, sp);
+    __cmp__.b_sp = sp;
+    __cmp__.b_sn = sn;
+
     sp=(100.0*(double)ps->exonTP)/(ps->exonTP+ps->exonFP);
     sn=(100.0*(double)ps->exonTP)/(ps->exonTP+ps->exonFN);
     double fsp=(100.0*(double)ps->exonATP)/(ps->exonATP+ps->exonAFP);
     double fsn=(100.0*(double)ps->exonATP)/(ps->exonATP+ps->exonAFN);
     if (fsp>100.0) fsp=100.0;
     if (fsn>100.0) fsn=100.0;
-    fprintf(fout, "        Exon level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
-  if (ps->total_rintrons>0) {
+    
+//    fprintf(fout, "        Exon level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
+      __cmp__.e_sp = sp;
+      __cmp__.e_sn = sn;
+      __cmp__.e_fsp = fsp;
+      __cmp__.e_fsn = fsn;
+  
+      
+    if (ps->total_rintrons>0) {
     //intron level
     sp=(100.0*(double)ps->intronTP)/(ps->intronTP+ps->intronFP);
     sn=(100.0*(double)ps->intronTP)/(ps->intronTP+ps->intronFN);
@@ -1488,8 +1503,14 @@ void reportStats(FILE* fout, const char* setname, GSuperLocus& stotal,
     fsn=(100.0*(double)ps->intronATP)/(ps->intronATP+ps->intronAFN);
     if (fsp>100.0) fsp=100.0;
     if (fsn>100.0) fsn=100.0;
-    fprintf(fout, "      Intron level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
-    //intron chains:
+    
+        //fprintf(fout, "      Intron level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
+        __cmp__.i_sp = sp;
+        __cmp__.i_sn = sn;
+        __cmp__.i_fsp = fsp;
+        __cmp__.i_fsn = fsn;
+
+        //intron chains:
     sp=(100.0*(double)ps->ichainTP)/(ps->ichainTP+ps->ichainFP);
     sn=(100.0*(double)ps->ichainTP)/(ps->ichainTP+ps->ichainFN);
     if (sp>100.0) sp=100.0;
@@ -1498,48 +1519,67 @@ void reportStats(FILE* fout, const char* setname, GSuperLocus& stotal,
     fsn=(100.0*(double)ps->ichainATP)/(ps->ichainATP+ps->ichainAFN);
     if (fsp>100.0) fsp=100.0;
     if (fsn>100.0) fsn=100.0;
-    fprintf(fout, "Intron chain level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
+    
+        //fprintf(fout, "Intron chain level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
+        __cmp__.c_sp = sp;
+        __cmp__.c_sn = sn;
+        __cmp__.c_fsp = fsp;
+        __cmp__.c_fsn = fsn;
+
     }
   else {
-    fprintf(fout, "      Intron level: \t  -  \t  -  \t  -  \t  -  \n");
-    fprintf(fout, "Intron chain level: \t  -  \t  -  \t  -  \t  -  \n");
+    //fprintf(fout, "      Intron level: \t  -  \t  -  \t  -  \t  -  \n");
+    //fprintf(fout, "Intron chain level: \t  -  \t  -  \t  -  \t  -  \n");
     }
+      
     sp=(100.0*(double)ps->mrnaTP)/(ps->mrnaTP+ps->mrnaFP);
     sn=(100.0*(double)ps->mrnaTP)/(ps->mrnaTP+ps->mrnaFN);
     fsp=(100.0*(double)ps->mrnaATP)/(ps->mrnaATP+ps->mrnaAFP);
     fsn=(100.0*(double)ps->mrnaATP)/(ps->mrnaATP+ps->mrnaAFN);
     if (fsp>100.0) fsp=100.0;
     if (fsn>100.0) fsn=100.0;
-    fprintf(fout, "  Transcript level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
-    //sp=(100.0*(double)ps->locusTP)/(ps->locusTP+ps->locusFP);
+    
+      //fprintf(fout, "  Transcript level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
+      __cmp__.t_sp = sp;
+      __cmp__.t_sn = sn;
+      __cmp__.t_fsp = fsp;
+      __cmp__.t_fsn = fsn;
+
+      //sp=(100.0*(double)ps->locusTP)/(ps->locusTP+ps->locusFP);
     sp=(100.0*(double)ps->locusQTP)/ps->total_qloci;
     sn=(100.0*(double)ps->locusTP)/ps->total_rloci;  //(ps->locusTP+ps->locusFN);
     fsp=(100.0*(double)ps->locusAQTP)/ps->total_qloci; //(ps->locusATP+ps->locusAFP);
     fsn=(100.0*(double)ps->locusATP)/ps->total_rloci; //(ps->locusATP+ps->locusAFN);
-    fprintf(fout, "       Locus level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
-    //fprintf(fout, "                   (locus TP=%d, total ref loci=%d)\n",ps->locusTP, ps->total_rloci);
-    fprintf(fout,"\n     Matching intron chains: %7d\n",ps->ichainTP);
-    fprintf(fout,  "              Matching loci: %7d\n",ps->locusTP);
-    fprintf(fout, "\n");
+    
+      //fprintf(fout, "       Locus level: \t%5.1f\t%5.1f\t%5.1f\t%5.1f\n",sn, sp, fsn, fsp);
+      __cmp__.l_sp = sp;
+      __cmp__.l_sn = sn;
+      __cmp__.l_fsp = fsp;
+      __cmp__.l_fsn = fsn;
+   
+      //fprintf(fout, "                   (locus TP=%d, total ref loci=%d)\n",ps->locusTP, ps->total_rloci);
+    //fprintf(fout,"\n     Matching intron chains: %7d\n",ps->ichainTP);
+    //fprintf(fout,  "              Matching loci: %7d\n",ps->locusTP);
+    //fprintf(fout, "\n");
     sn=(100.0*(double)ps->m_exons)/(ps->total_rexons);
-    fprintf(fout, "          Missed exons: %7d/%d\t(%5.1f%%)\n",ps->m_exons, ps->total_rexons, sn);
+    //fprintf(fout, "          Missed exons: %7d/%d\t(%5.1f%%)\n",ps->m_exons, ps->total_rexons, sn);
     sn=(100.0*(double)ps->w_exons)/(ps->total_qexons);
-    fprintf(fout, "           Novel exons: %7d/%d\t(%5.1f%%)\n",ps->w_exons, ps->total_qexons,sn);
+    //fprintf(fout, "           Novel exons: %7d/%d\t(%5.1f%%)\n",ps->w_exons, ps->total_qexons,sn);
     if (ps->total_rintrons>0) {
     sn=(100.0*(double)ps->m_introns)/(ps->total_rintrons);
-    fprintf(fout, "        Missed introns: %7d/%d\t(%5.1f%%)\n",ps->m_introns, ps->total_rintrons, sn);
+    //fprintf(fout, "        Missed introns: %7d/%d\t(%5.1f%%)\n",ps->m_introns, ps->total_rintrons, sn);
     }
     if (ps->total_qintrons>0) {
     sn=(100.0*(double)ps->w_introns)/(ps->total_qintrons);
-    fprintf(fout, "         Novel introns: %7d/%d\t(%5.1f%%)\n",ps->w_introns, ps->total_qintrons,sn);
+    //fprintf(fout, "         Novel introns: %7d/%d\t(%5.1f%%)\n",ps->w_introns, ps->total_qintrons,sn);
     }
     if (ps->total_rloci>0) {
     sn=(100.0*(double)ps->m_loci)/(ps->total_rloci);
-    fprintf(fout, "           Missed loci: %7d/%d\t(%5.1f%%)\n",ps->m_loci, ps->total_rloci, sn);
+    //fprintf(fout, "           Missed loci: %7d/%d\t(%5.1f%%)\n",ps->m_loci, ps->total_rloci, sn);
     }
     if (ps->total_qloci>0) {
     sn=(100.0*(double)ps->w_loci)/(ps->total_qloci);
-    fprintf(fout, "            Novel loci: %7d/%d\t(%5.1f%%)\n",ps->w_loci, ps->total_qloci,sn);
+    //fprintf(fout, "            Novel loci: %7d/%d\t(%5.1f%%)\n",ps->w_loci, ps->total_qloci,sn);
     }
 
   }

@@ -276,6 +276,11 @@ void Standard::r_ref(const Reader &r)
 
     ParserGTF::parse(r, [&](const Feature &f, const ParserProgress &)
     {
+        if (f.id != id)
+        {
+            return;
+        }
+        
         // TODO: Please fix me!
         if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
         {
@@ -298,6 +303,16 @@ void Standard::r_ref(const Reader &r)
             r_exons.push_back(f);
         }
     });
+    
+    /*
+     * It's quite likely that an annotation without chrT is given. This is a common error so we'll
+     * need to give a good warning message.
+     */
+    
+    if (r_exons.empty())
+    {
+        throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check your file and try again. You can also download the latest annotation file on http://www.anaquin.org.");
+    }
     
     assert(!r_exons.empty());
     assert(l.end   != std::numeric_limits<Base>::min());

@@ -7,7 +7,11 @@ namespace Anaquin
 {
     struct TAssembly : Analyzer
     {
-        typedef AnalyzerOptions Options;
+        struct Options : AnalyzerOptions
+        {
+            // Path for the reference and query GTF
+            std::string ref, query;
+        };
         
         struct Stats
         {

@@ -1,7 +1,14 @@
+#include "data/compare.hpp"
 #include "trans/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
 
 using namespace Anaquin;
+
+// Defined for cuffcompare
+Compare __cmp__;
+
+// Defined for cuffcompare
+extern int cuffcompare_main(const char *ref, const char *query);
 
 template <typename F> static void extractIntrons(const std::map<SequinID, std::vector<Feature>> &x, F f)
 {
@@ -26,6 +33,21 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
 
 TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &options)
 {
+    assert(!options.ref.empty() && !options.query.empty());
+    
+    /*
+     * Comparing transcripts require constructing intron-chains, this is quite complicated.
+     * We will reuse the code in cuffcompare. The implementation is dirty but it works better
+     * than reinventing the wheel.
+     */
+    
+    const int status = cuffcompare_main(options.ref.c_str(), options.query.c_str());
+    
+    if (status)
+    {
+        throw std::runtime_error("Failed to compare the given transcript. Please check the file and try again.");
+    }
+    
     TAssembly::Stats stats;
     const auto &s = Standard::instance();
 
@@ -199,18 +221,18 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
                                                      % "trans_sp"
                                                      % "trans_sn"
                                                      % "trans_ss").str());
-        options.writer->write((boost::format(format) % stats.pe.m.sp()
-                                                     % stats.pe.m.sn()
+        options.writer->write((boost::format(format) % (__cmp__.e_sp / 100.0)
+                                                     % (__cmp__.e_sn / 100.0)
                                                      % stats.pe.s.abund
-                                                     % stats.pi.m.sp()
-                                                     % stats.pi.m.sn()
+                                                     % (__cmp__.i_sp / 100.0)
+                                                     % (__cmp__.i_sn / 100.0)
                                                      % stats.pi.s.abund
-                                                     % stats.pb.m.sp()
-                                                     % stats.pb.m.sn()
+                                                     % (__cmp__.b_sp / 100.0)
+                                                     % (__cmp__.b_sn / 100.0)
                                                      % stats.pb.s.abund
-                                                     % stats.pt.m.sp()
-                                                     % stats.pi.m.sn()
-                                                     % stats.pi.s.abund).str());
+                                                     % (__cmp__.t_sp / 100.0)
+                                                     % (__cmp__.t_sn / 100.0)
+                                                     % stats.pt.s.abund).str());
         options.writer->close();
     }
 

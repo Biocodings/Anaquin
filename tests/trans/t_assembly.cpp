@@ -18,7 +18,12 @@ TEST_CASE("TAssembly_Test")
 {
     Test::trans();
 
-    const auto r = TAssembly::analyze("tests/data/trans/A1/transcripts.gtf");
+    TAssembly::Options o;
+    
+    o.ref   = "data/trans/RNA_1.gtf";
+    o.query = "tests/data/trans/A1/transcripts.gtf";
+
+    const auto r = TAssembly::analyze("tests/data/trans/A1/transcripts.gtf", o);
 
     REQUIRE(r.pe.m.nq == 1200);
     REQUIRE(r.pe.m.nr == 1199);

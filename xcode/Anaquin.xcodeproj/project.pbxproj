@@ -127,6 +127,7 @@
 
 /* Begin PBXFileReference section */
 		7F7C70521AB4726E00C6EE36 /* Spike */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Spike; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF02A5231B7E0F8D00295799 /* compare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = compare.hpp; path = ../src/data/compare.hpp; sourceTree = "<group>"; };
 		EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = terminal_writer.hpp; path = ../src/writers/terminal_writer.hpp; sourceTree = "<group>"; };
 		EF18049E1B65C06F00897D1E /* f_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_express.cpp; sourceTree = "<group>"; };
 		EF18049F1B65C06F00897D1E /* f_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_express.hpp; sourceTree = "<group>"; };
@@ -437,6 +438,7 @@
 			children = (
 				EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */,
 				EF1DE0A81B21EC6D00DEC381 /* biology.hpp */,
+				EF02A5231B7E0F8D00295799 /* compare.hpp */,
 				EF1DE0A91B21EC6D00DEC381 /* feature.hpp */,
 				EF1DE0AA1B21EC6D00DEC381 /* filter.hpp */,
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,
