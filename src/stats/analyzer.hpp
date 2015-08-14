@@ -13,7 +13,6 @@
 
 namespace Anaquin
 {
-    typedef std::map<Locus, Counts>    LocusCounter;
     typedef std::map<GeneID, Counts>   GeneCounter;
     typedef std::map<SequinID, Counts> SequinCounter;
 
@@ -149,16 +148,6 @@ namespace Anaquin
                 return Analyzer::tracker<GeneID, Performance>(Standard::instance().r_genes);
             }
 
-            static LocusCounter exonCounter()
-            {
-                return counter<std::vector<Feature>, Locus>(Standard::instance().r_exons);
-            }
-
-            static LocusCounter intronCounter()
-            {
-                return counter<std::vector<Feature>, Locus>(Standard::instance().r_introns);
-            }
-        
             static GeneCounter geneCounter()
             {
                 return counter<std::vector<Feature>, GeneID>(Standard::instance().r_genes);
@@ -166,7 +155,7 @@ namespace Anaquin
 
             static SequinCounter sequinCounter()
             {
-                return counter<std::set<SequinID>, SequinID>(Standard::instance().r_seqIDs);
+                return counter<std::set<SequinID>, SequinID>(Standard::instance().seqIDs);
             }
     };
 

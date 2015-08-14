@@ -193,7 +193,6 @@ void Standard::v_mix(const Reader &r)
 {
     merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
     merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
-//    mergeMix__(r, parseMix__(r, seqs_1, seqs_2), seqs_1, seqs_2, v_seqs_bA, v_seqs_bB);
 }
 
 void Standard::m_ref(const Reader &r)
@@ -417,11 +416,8 @@ void Standard::r_ref(const Reader &r)
 
 void Standard::r_mix(const Reader &r)
 {
-    r_seqIDs.clear();
-    
     merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
     merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
-    //mergeMix__(r, parseMix__(r, r_seqs_A, r_seqs_B), r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
     
     /*
      * Merging overlapping regions for the exons
@@ -453,9 +449,9 @@ void Standard::r_mix(const Reader &r)
             // Make sure it's not an empty range
             assert(i.second.l != Locus());
 
-            r_seqIDs.insert(i.first);
+            seqIDs.insert(i.first);
         }
     }
 
-    assert(!r_seqIDs.empty());
+    assert(!seqIDs.empty());
 }

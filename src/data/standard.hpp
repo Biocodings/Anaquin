@@ -102,9 +102,6 @@ namespace Anaquin
              * RNA data
              */
 
-            // Sequin IDs for RNA standards
-            std::set<SequinID> r_seqIDs;
-
             // Sequins and their positions
             std::map<SequinID, Locus> r_sequins;
 
@@ -112,8 +109,8 @@ namespace Anaquin
             std::vector<Feature> r_genes;
             std::vector<Feature> r_introns;
 
-            std::vector<RNALocus> r_l_exons;
             Base r_c_exons;
+            std::vector<RNALocus> r_l_exons;
 
             void r_ref(const Reader &);
             void r_mix(const Reader &);
