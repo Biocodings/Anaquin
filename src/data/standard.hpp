@@ -115,9 +115,6 @@ namespace Anaquin
             std::vector<RNALocus> r_l_exons;
             Base r_c_exons;
 
-            // Mapping from sequin to gene
-            std::map<SequinID, GeneID> r_isoformToGene;
-
             void r_ref(const Reader &);
             void r_mix(const Reader &);
 

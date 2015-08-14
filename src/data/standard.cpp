@@ -220,8 +220,6 @@ void Standard::m_mix_2(const Reader &r)
 
 void Standard::l_mix(const Reader &r)
 {
-    seq2base.clear();
-    
     merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
     merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
 
@@ -274,7 +272,6 @@ void Standard::r_ref(const Reader &r)
     r_sequins.clear();
     r_introns.clear();
     r_l_exons.clear();
-    r_isoformToGene.clear();
     
     /*
      * The region occupied by the chromosome is the smallest area contains all features.
@@ -313,8 +310,8 @@ void Standard::r_ref(const Reader &r)
         fs.push_back(f);
         
         // Construct a mapping between sequinID to geneID
-        r_isoformToGene[f.tID] = f.geneID;
-        
+        seq2base[f.tID] = f.geneID;
+
         if (f.type == Exon)
         {
             r_exons.push_back(f);
@@ -322,7 +319,7 @@ void Standard::r_ref(const Reader &r)
     });
     
     assert(!r_exons.empty());
-    assert(!r_isoformToGene.empty());
+    assert(!seq2base.empty());
     assert(l.end   != std::numeric_limits<Base>::min());
     assert(l.start != std::numeric_limits<Base>::min());
     

@@ -70,7 +70,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
                 return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
             }))
             {
-                stats.ce.at(s.r_isoformToGene.at(f.tID))++;
+                stats.ce.at(s.seq2base.at(f.tID))++;
             }
         }
 
@@ -88,7 +88,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
                 return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
             }))
             {
-                stats.ci.at(s.r_isoformToGene.at(f.tID))++;
+                stats.ci.at(s.seq2base.at(f.tID))++;
             }
         }
 
