@@ -29,8 +29,6 @@ template <typename Iter> Base countLocus(const Iter &iter)
     return n;
 }
 
-typedef std::set<std::string> MixtureFilter;
-
 struct ParseSequinInfo
 {
     // Used to detect duplicates
@@ -68,6 +66,9 @@ template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo
         {
             // Reconstruct the sequinID
             const auto seqID = baseID + "_" + *iter;
+
+            Standard::instance().seq2base[seqID] = baseID;
+            Standard::instance().baseIDs.insert(baseID);
 
             base.sequins.insert(std::pair<TypeID, Sequin>(*iter, m.at(seqID)));
         }
@@ -218,13 +219,6 @@ void Standard::l_mix(const Reader &r)
 {
     merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
     merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
-
-    for (const auto &i : seqs_1)
-    {
-        const auto base = i.first.substr(0, i.first.size() - 2);
-        seq2base[i.first] = base;
-        baseIDs.insert(base);
-    }
 }
 
 void Standard::f_mix(const Reader &r)
@@ -285,7 +279,7 @@ void Standard::r_ref(const Reader &r)
         // TODO: Please fix me!
         if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
         {
-            return; // TODO! To save assembly from crashing!! Defined in the model but not in sequin!
+            return; // TODO! To save assembly from crashing!! Defined in the model but not in mixture!
         }
 
         assert(!f.tID.empty() && !f.geneID.empty());
@@ -299,9 +293,6 @@ void Standard::r_ref(const Reader &r)
         
         fs.push_back(f);
         
-        // Construct a mapping between sequinID to geneID
-        seq2base[f.tID] = f.geneID;
-
         if (f.type == Exon)
         {
             r_exons.push_back(f);
@@ -309,7 +300,6 @@ void Standard::r_ref(const Reader &r)
     });
     
     assert(!r_exons.empty());
-    assert(!seq2base.empty());
     assert(l.end   != std::numeric_limits<Base>::min());
     assert(l.start != std::numeric_limits<Base>::min());
     
@@ -443,6 +433,6 @@ void Standard::r_mix(const Reader &r)
             seqIDs.insert(i.first);
         }
     }
-
-    assert(!seqIDs.empty());
+    
+    assert(!seqIDs.empty() && !baseIDs.empty());
 }

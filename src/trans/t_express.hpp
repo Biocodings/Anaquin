@@ -5,7 +5,7 @@
 
 namespace Anaquin
 {
-    struct TExpress : public TAnalyzer
+    struct TExpress : public Analyzer
     {
         enum RNALevel
         {
@@ -15,7 +15,7 @@ namespace Anaquin
 
         struct Stats : public ModelStats
         {
-            SequinCounter c = TAnalyzer::sequinCounter();
+            SequinHist c = Analyzer::seqHist();
         };
 
         struct Options : public SingleMixtureOptions

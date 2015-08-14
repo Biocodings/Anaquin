@@ -7,11 +7,8 @@ namespace Anaquin
 {
     struct VFreq
     {
-        struct Options : public SingleMixtureOptions
-        {
-            // Empty Implementation
-        };
-
+        typedef SingleMixtureOptions Options;
+        
         struct Stats : public ModelStats
         {
             // Overall performance
@@ -23,7 +20,7 @@ namespace Anaquin
             // Measure of variant detection independent to sequencing depth or coverage
             double efficiency;
 
-            LocusHist h = Analyzer::histogram__(Standard::instance().v_vars);
+            LocusHist h = Analyzer::locusHist(Standard::instance().v_vars);
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

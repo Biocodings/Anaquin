@@ -5,22 +5,31 @@
 
 namespace Anaquin
 {
-    struct TAssembly : TAnalyzer
+    struct TAssembly : Analyzer
     {
-        struct Options : public AnalyzerOptions
-        {
-            // Empty Implementation
-        };
-
+        typedef AnalyzerOptions Options;
+        
         struct Stats
         {
-            Counter cb = TAnalyzer::geneCounter();
-            Counter ce = TAnalyzer::sequinCounter();
-            Counter ci = TAnalyzer::sequinCounter();
-            Counter ct = TAnalyzer::sequinCounter();
+            BaseHist   hb = Analyzer::baseHist();
+            SequinHist he = Analyzer::seqHist();
+            SequinHist hi = Analyzer::seqHist();
+            SequinHist ht = Analyzer::seqHist();
 
-            // Performance for each level
-            Performance p, pb, pe, pt, pi;
+            // Overall performance
+            Performance p;
+            
+            // Performance at the base level
+            Performance pb;
+            
+            // Performance at the exon level
+            Performance pe;
+            
+            // Performance at the transcript level
+            Performance pt;
+            
+            // Performance at the intron level
+            Performance pi;
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

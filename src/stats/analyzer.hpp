@@ -13,9 +13,6 @@
 
 namespace Anaquin
 {
-    typedef std::map<GeneID, Counts>   GeneCounter;
-    typedef std::map<SequinID, Counts> SequinCounter;
-
     typedef std::map<Locus, Counts>    LocusHist;
     typedef std::map<BaseID, Counts>   BaseHist;
     typedef std::map<SequinID, Counts> SequinHist;
@@ -62,104 +59,46 @@ namespace Anaquin
 
     struct Analyzer
     {
-        static BaseHist histogram()
+        static BaseHist baseHist()
         {
-            BaseHist hist;
+            BaseHist h;
 
             for (const auto &baseID : Standard::instance().baseIDs)
             {
-                hist[baseID] = 0;
+                h[baseID] = 0;
             }
 
-            return hist;
+            assert(!h.empty());
+            return h;
         }
 
         // Initalize a histogram for each of the sequin
         static SequinHist seqHist()
         {
-            SequinHist hist;
+            SequinHist h;
             
             for (const auto &id : Standard::instance().seqIDs)
             {
-                hist[id] = 0;
+                h[id] = 0;
             }
 
-            assert(!hist.empty());
-            return hist;
-        }
-        
-        /*
-         * Create a histogram with a key type of R. The key type is usually the SequinID, but can also
-         * be GeneID or anything else. The histogram is initialized to zero.
-         */
-
-        template <typename T1, typename T2, typename R = SequinID> static std::map<R, Counts>
-                    histogram(const std::map<T1, T2> &m)
-        {
-            std::map<R, Counts> c;
-
-            for (const auto &p : m)
-            {
-                c[static_cast<R>(p.first)] = 0;
-            }
-
-            return c;
+            assert(!h.empty());
+            return h;
         }
 
-        
-        
-        static std::map<Locus, Counts> histogram__(const std::map<Locus, Variation> &m)
+        static LocusHist locusHist(const std::map<Locus, Variation> &m)
         {
-            std::map<Locus, Counts> c;
+            std::map<Locus, Counts> h;
             
             for (const auto &p : m)
             {
-                c[p.first] = 0;
+                h[p.first] = 0;
             }
             
-            return c;
-        }
-        
-        
-        
-        
-        
-        
-        template <typename T1, typename T2, typename Iter> static std::map<T1, T2> tracker(const Iter &iter)
-        {
-            std::map<T1, T2> m;
-
-            for (const auto &i : iter)
-            {
-                m[static_cast<T1>(i)] = T2();
-            }
-
-            return m;
+            assert(!h.empty());
+            return h;
         }
     };
-
-    class TAnalyzer
-    {
-        public:
-            typedef std::map<SequinID, Performance> GeneTracker;
-
-            static GeneTracker geneTracker()
-            {
-                return Analyzer::tracker<GeneID, Performance>(Standard::instance().r_genes);
-            }
-
-            static GeneCounter geneCounter()
-            {
-                return counter<std::vector<Feature>, GeneID>(Standard::instance().r_genes);
-            }
-
-            static SequinCounter sequinCounter()
-            {
-                return counter<std::set<SequinID>, SequinID>(Standard::instance().seqIDs);
-            }
-    };
-
-    typedef std::map<std::string, Counts> Counter;
 
     /*
      * Represents a sequin that is not detected in the experiment
@@ -199,7 +138,7 @@ namespace Anaquin
     };
 
     // Classify at the base-level by counting for non-overlapping regions
-    template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m, Counter &c)
+    template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m, SequinHist &c)
     {
         typedef typename I2::value_type Type;
         

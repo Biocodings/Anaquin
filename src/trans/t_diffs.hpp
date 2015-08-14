@@ -5,7 +5,7 @@
 
 namespace Anaquin
 {
-    struct TDiffs : public TAnalyzer
+    struct TDiffs : public Analyzer
     {
         enum RNALevel
         {
@@ -23,7 +23,7 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        static Stats analyze(const std::string &f, const Options &options = Options());
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 

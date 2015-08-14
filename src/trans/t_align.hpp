@@ -5,9 +5,11 @@
 
 namespace Anaquin
 {
-    class TAlign : public TAnalyzer
+    class TAlign : public Analyzer
     {
         public:
+            typedef AnalyzerOptions Options;
+        
             struct Stats
             {
                 // Total mapped to the in-silico chromosome
@@ -16,25 +18,14 @@ namespace Anaquin
                 // Total mapped to the human genome
                 Counts n_genome = 0;
 
-                // Tracker for each exon for each gene
-                GeneTracker g_exon_tracker = TAnalyzer::geneTracker();
-
-                // Tracker for each intron for each gene
-                GeneTracker g_intron_tracker = TAnalyzer::geneTracker();
-
                 // Fraction of sequin spiked
                 inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
 
-                Counter cb = TAnalyzer::geneCounter();
-                Counter ce = TAnalyzer::geneCounter();
-                Counter ci = TAnalyzer::geneCounter();
+                BaseHist hb = Analyzer::baseHist();
+                BaseHist he = Analyzer::baseHist();
+                BaseHist hi = Analyzer::baseHist();
 
                 Performance pb, pe, pi;
-            };
-
-            struct Options : public SingleMixtureOptions
-            {
-                // Empty Implementation
             };
 
             static Stats analyze(const std::string &, const Options &options = Options());

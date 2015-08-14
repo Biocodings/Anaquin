@@ -26,7 +26,7 @@ namespace Anaquin
             Performance p;
 
             // Counts for each sequin
-            SequinHist c = Analyzer::histogram(Standard::instance().seqs_1);
+            SequinHist c = Analyzer::seqHist();
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

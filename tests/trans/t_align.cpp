@@ -12,7 +12,7 @@ TEST_CASE("TAlign_Cufflinks")
     const auto r = TAlign::analyze("tests/data/trans/cufflinks.sam");
 
     REQUIRE(r.pe.m.nq == 0);
-    REQUIRE(r.pe.m.nr == 76);
+    REQUIRE(r.pe.m.nr == 78);
     REQUIRE(isnan(r.pe.m.sp()));
     REQUIRE(isnan(r.pe.m.sn()));
 
@@ -35,13 +35,13 @@ TEST_CASE("TAlign_Simulations_All_Filtered")
     const auto r = TAlign::analyze("tests/data/trans/A1/accepted_hits.sam", opts);
 
     REQUIRE(r.pe.m.nq == 25);
-    REQUIRE(r.pe.m.nr == 76);
+    REQUIRE(r.pe.m.nr == 78);
     REQUIRE(isnan(r.pe.m.sn()));
     REQUIRE(r.pe.m.sp() == 0.0);
     REQUIRE(r.pe.s.id == "");
     
     REQUIRE(r.pi.m.nq == 112);
-    REQUIRE(r.pi.m.nr == 76);
+    REQUIRE(r.pi.m.nr == 78);
     REQUIRE(isnan(r.pi.m.sn()));
     REQUIRE(r.pi.m.sp() == 0.0);
     REQUIRE(r.pi.s.id == "");
@@ -61,17 +61,17 @@ TEST_CASE("TAlign_Simulations")
     REQUIRE(r.pb.s.abund == 1831.0);
 
     REQUIRE(r.pe.m.nq == 6107);
-    REQUIRE(r.pe.m.nr == 6137);
+    REQUIRE(r.pe.m.nr == 6139);
     REQUIRE(r.pe.m.sp() == Approx(0.995906337));
-    REQUIRE(r.pe.m.sn() == Approx(0.9910379664));
+    REQUIRE(r.pe.m.sn() == Approx(0.9907151002));
     REQUIRE(r.pe.s.id == "R2_24");
     REQUIRE(r.pe.s.counts == 1);
     REQUIRE(r.pe.s.abund == Approx(1831.0));
     
     REQUIRE(r.pi.m.nq == 1097);
-    REQUIRE(r.pi.m.nr == 1047);
+    REQUIRE(r.pi.m.nr == 1049);
     REQUIRE(r.pi.m.sp() == Approx(0.8979033728));
-    REQUIRE(r.pi.m.sn() == Approx(0.9407831901));
+    REQUIRE(r.pi.m.sn() == Approx(0.9389895138));
     REQUIRE(r.pi.s.id == "R2_7");
     REQUIRE(r.pi.s.counts == 1);
     REQUIRE(r.pi.s.abund == Approx(117187.0));

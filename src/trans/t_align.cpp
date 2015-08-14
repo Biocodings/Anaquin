@@ -70,7 +70,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
                 return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
             }))
             {
-                stats.ce.at(s.seq2base.at(f.tID))++;
+                stats.he.at(s.seq2base.at(f.tID))++;
             }
         }
 
@@ -88,37 +88,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
                 return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
             }))
             {
-                stats.ci.at(s.seq2base.at(f.tID))++;
-            }
-        }
-
-        /*
-         * Collect statistics at the gene level
-         */
-        
-        const auto geneID = f.tID;
-
-        if (succeed && stats.g_exon_tracker.count(geneID))
-        {
-            if (align.spliced)
-            {
-                auto &p = stats.g_intron_tracker.at(geneID);
-
-                classify(p.m, align, [&](const Alignment &)
-                {
-                    // This is only executed if succeed is true
-                    return Positive;
-                });
-            }
-            else
-            {
-                auto &p = stats.g_exon_tracker.at(geneID);
-
-                classify(p.m, align, [&](const Alignment &)
-                {
-                    // This is only executed if succeed is true
-                    return Positive;
-                });
+                stats.hi.at(s.seq2base.at(f.tID))++;
             }
         }
     });
@@ -130,8 +100,8 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
      * as a reference. Anything that is undetected in the experiment will be counted as a single reference.
      */
 
-    sums(stats.ce, stats.pe.m.nr);
-    sums(stats.ci, stats.pi.m.nr);
+    sums(stats.he, stats.pe.m.nr);
+    sums(stats.hi, stats.pi.m.nr);
 
     options.info("Merging overlapping bases");
 
@@ -139,7 +109,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
      * Counts at the base-level is the non-overlapping region of all the exons
      */
 
-    countBase(s.r_l_exons, exons, stats.pb.m, stats.cb);
+    countBase(s.r_l_exons, exons, stats.pb.m, stats.hb);
 
     /*
      * The counts for references is the total length of all known non-overlapping exons.
@@ -160,9 +130,9 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
 
     options.info("Calculating limit of sensitivity");
 
-    stats.pe.s = Expression::analyze(stats.ce, s.bases_1);
-    stats.pi.s = Expression::analyze(stats.ci, s.bases_1);
-    stats.pb.s = Expression::analyze(stats.cb, s.bases_1);
+    stats.pe.s = Expression::analyze(stats.he, s.bases_1);
+    stats.pi.s = Expression::analyze(stats.hi, s.bases_1);
+    stats.pb.s = Expression::analyze(stats.hb, s.bases_1);
 
     /*
      * Write out summary statistics

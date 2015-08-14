@@ -35,7 +35,7 @@ namespace Anaquin
             // Measured size of the library
             Counts obsTotal = 0;
 
-            BaseHist h = Analyzer::histogram();
+            BaseHist h = Analyzer::baseHist();
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

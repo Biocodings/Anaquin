@@ -70,7 +70,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
                     return (match = find(s.r_exons, f, Exact));
                 }))
                 {
-                    stats.ce.at(match->tID)++;
+                    stats.he.at(match->tID)++;
                 }
 
                 break;
@@ -89,7 +89,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
                     return (match = find(sequins, f, Exact));
                 }))
                 {
-                    stats.ct.at(match->id)++;
+                    stats.ht.at(match->id)++;
                 }
                 else
                 {
@@ -130,7 +130,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
                          return find(s.r_introns, i, Exact);
                      }))
         {
-            stats.ci[i.tID]++;
+            stats.hi[i.tID]++;
         }
     });
 
@@ -140,8 +140,8 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * Setting the known references
      */
     
-    sums(stats.ce, stats.pe.m.nr);
-    sums(stats.ci, stats.pi.m.nr);
+    sums(stats.he, stats.pe.m.nr);
+    sums(stats.hi, stats.pi.m.nr);
 
     /*
      * The counts for references for the transcript level is simply all the sequins.
@@ -157,7 +157,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * experiment with sufficient coverage.
      */
     
-    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.cb);
+    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.hb);
 
     /*
      * The counts for references is the total length of all known non-overlapping exons.
@@ -176,10 +176,10 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
     options.info("Calculating limit of sensitivity");
     
-    stats.pe.s = Expression::analyze(stats.ce, sequins);
-    stats.pt.s = Expression::analyze(stats.ct, sequins);
-    stats.pb.s = Expression::analyze(stats.cb, s.bases_1);
-    stats.pi.s = Expression::analyze(stats.ci, sequins);
+    stats.pe.s = Expression::analyze(stats.he, sequins);
+    stats.pt.s = Expression::analyze(stats.ht, sequins);
+    stats.pb.s = Expression::analyze(stats.hb, s.bases_1);
+    stats.pi.s = Expression::analyze(stats.hi, sequins);
 
     options.info("Generating statistics");
 
