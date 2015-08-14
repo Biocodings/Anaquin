@@ -3,7 +3,6 @@
 
 #include <map>
 #include <vector>
-#include "data/region.hpp"
 #include "data/reader.hpp"
 #include "data/sequin.hpp"
 #include "data/feature.hpp"
@@ -148,9 +147,6 @@ namespace Anaquin
             void m_ref (const Reader &);
             void m_mix_1(const Reader &);
             void m_mix_2(const Reader &);
-
-            // Sequin IDs for metagenomic standards
-            std::set<SequinID> m_seqIDs;
 
             // Metagenomic annotation
             std::vector<BedFeature> m_model;

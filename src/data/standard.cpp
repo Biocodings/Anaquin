@@ -119,7 +119,8 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
             
             info.baseIDs[s.baseID].insert(s.typeID);
         });
-    } catch (...)
+    }
+    catch (...)
     {
         std::cerr << "[Warn]: Error in the mixture file" << std::endl;
     }
@@ -152,8 +153,6 @@ Standard::Standard()
 
 void Standard::v_ref(const Reader &r)
 {
-    v_vars.clear();
-
     std::vector<std::string> tokens;
     
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
@@ -197,8 +196,6 @@ void Standard::v_mix(const Reader &r)
 
 void Standard::m_ref(const Reader &r)
 {
-    m_model.clear();
-    
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
         m_model.push_back(f);
@@ -266,12 +263,6 @@ void Standard::f_ref(const Reader &r)
 
 void Standard::r_ref(const Reader &r)
 {
-    r_exons.clear();
-    r_genes.clear();
-    r_sequins.clear();
-    r_introns.clear();
-    r_l_exons.clear();
-    
     /*
      * The region occupied by the chromosome is the smallest area contains all features.
      */
