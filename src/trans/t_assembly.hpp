@@ -7,7 +7,7 @@ namespace Anaquin
 {
     struct TAssembly : TAnalyzer
     {
-        struct Options : public SingleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };

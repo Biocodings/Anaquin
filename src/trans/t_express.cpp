@@ -28,17 +28,17 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
         if (isoform)
         {
             // Try to match by names if possible
-            const auto *r = s.r_seqs_A.count(t.trackID) ? &(s.r_seqs_A.at(t.trackID)) : nullptr;
+            const auto *r = s.seqs_1.count(t.trackID) ? &(s.seqs_1.at(t.trackID)) : nullptr;
 
             if (!r)
             {
-                const auto found = std::find_if(s.r_seqs_A.begin(), s.r_seqs_A.end(),
+                const auto found = std::find_if(s.seqs_1.begin(), s.seqs_1.end(),
                                                 [&](const std::pair<SequinID, Sequin> &p)
                                                 {
                                                     return p.second.l.contains(t.l);
                                                 });
 
-                if (found != s.r_seqs_A.end())
+                if (found != s.seqs_1.end())
                 {
                     r = &(found->second);
                 }
@@ -63,19 +63,19 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
         else
         {
             // Try to match by names if possible
-            const auto *r = s.r_seqs_gA.count(t.geneID) ? &(s.r_seqs_gA.at(t.geneID)) : nullptr;
+            const auto *r = s.bases_1.count(t.geneID) ? &(s.bases_1.at(t.geneID)) : nullptr;
 
             if (!r)
             {
-                const auto found = std::find_if(s.r_seqs_A.begin(), s.r_seqs_A.end(),
+                const auto found = std::find_if(s.seqs_1.begin(), s.seqs_1.end(),
                                                 [&](const std::pair<SequinID, Sequin> &p)
                                                 {
                                                     return p.second.l.contains(t.l);
                                                 });
                 
-                if (found != s.r_seqs_A.end())
+                if (found != s.seqs_1.end())
                 {
-                    r = &(s.r_seqs_gA.at(found->second.baseID));
+                    r = &(s.bases_1.at(found->second.baseID));
                 }
             }
 
@@ -101,11 +101,11 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
 
     if (isoform)
     {
-        stats.s = Expression::analyze(stats.c, s.r_sequin(options.mix));
+        stats.s = Expression::analyze(stats.c, s.seqs_1);
     }
     else
     {
-        stats.s = Expression::analyze(stats.c, s.r_gene(options.mix));
+        stats.s = Expression::analyze(stats.c, s.bases_1);
     }
 
     {

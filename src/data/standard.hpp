@@ -73,16 +73,6 @@ namespace Anaquin
                 return s;
             }
 
-            inline const SequinMap& r_sequin(Mixture mix) const
-            {
-                return mix == MixA ? r_seqs_A : r_seqs_B;
-            }
-
-            inline const BaseMap & r_gene(Mixture mix) const
-            {
-                return mix == Mixture::MixA ? r_seqs_gA : r_seqs_gB;
-            }
-
             // The name of the chromosome
             ChromoID id = "chrT";
 
@@ -112,12 +102,6 @@ namespace Anaquin
              * RNA data
              */
 
-            // Sequins for mixture A and B
-            SequinMap r_seqs_A,  r_seqs_B;
-
-            // Genes for mixture A and B
-            BaseMap r_seqs_gA, r_seqs_gB;
-
             // Sequin IDs for RNA standards
             std::set<SequinID> r_seqIDs;
 
@@ -141,18 +125,8 @@ namespace Anaquin
              * Variant data
              */
 
-            inline const SequinMap &v_seq(Mixture mix) const
-            {
-                return mix == MixA ? seqs_1 : seqs_1;
-            }
-
             void v_ref(const Reader &);
             void v_mix(const Reader &);
-
-            typedef std::map<BaseID, VariantBase> VariantBaseMap;
-
-            // Bases for mixture A and B
-            VariantBaseMap v_seqs_bA, v_seqs_bB;
 
             // Indexed by locus
             std::map<Locus, Variation> v_vars;

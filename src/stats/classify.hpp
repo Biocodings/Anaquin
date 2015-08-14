@@ -41,6 +41,10 @@ namespace Anaquin
         Counts nr = 0;
     };
 
+    /*
+     * Overall performance for a classifer
+     */
+    
     struct Performance
     {
         Confusion m;

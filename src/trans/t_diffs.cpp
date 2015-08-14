@@ -24,14 +24,14 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
         
         // It's NAN if the sequin defined in reference but not in mixture
         Fold measured = NAN;
-
-        if (s.r_seqs_gA.count(id))
+        
+        if (s.bases_1.count(id))
         {
             // Calculate the known fold-change between B and A
-            known = (s.r_seqs_gB.at(id).abund() / s.r_seqs_gA.at(id).abund());
+            known = (s.bases_2.at(id).abund() / s.bases_1.at(id).abund());
         }
 
-        if (s.r_seqs_gA.count(id) && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
+        if (s.bases_1.count(id) && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
         {
             c[id]++;
 
@@ -71,10 +71,10 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 
             case Isoform:
             {
-                if (s.r_seqs_A.count(t.testID))
+                if (s.seqs_1.count(t.testID))
                 {
                     // Known fold-change between the two mixtures
-                    known = s.r_seqs_B.at(t.testID).abund() / s.r_seqs_A.at(t.testID).abund();
+                    known = s.seqs_2.at(t.testID).abund() / s.seqs_1.at(t.testID).abund();
                 }
                 
                 if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
@@ -102,7 +102,7 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
     
     if (options.level == Gene)
     {
-        for (const auto &i : s.r_seqs_gA)
+        for (const auto &i : s.bases_1)
         {
             const auto &id = i.first;
             
@@ -110,7 +110,7 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
             if (!ids.count(id))
             {
                 stats.z.push_back(i.first);
-                stats.x.push_back(s.r_seqs_gB.at(id).abund() / s.r_seqs_gA.at(id).abund());
+                stats.x.push_back(s.bases_2.at(id).abund() / s.bases_1.at(id).abund());
                 stats.y.push_back(NAN);
             }
         }
@@ -119,7 +119,7 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
     assert(!c.empty() && !stats.x.empty());
     assert(!stats.x.empty() && stats.x.size() == stats.y.size());
 
-    stats.s = Expression::analyze(c, s.r_gene(options.rMix));
+    //stats.s = Expression::analyze(c, s.r_gene(options.rMix));
 
     options.info("Generating statistics");
     AnalyzeReporter::linear(stats, "TransDifferent", "FPKM", options.writer);

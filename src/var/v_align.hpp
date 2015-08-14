@@ -16,7 +16,7 @@ namespace Anaquin
         {
             // Total mapped to the in-silico chromosome
             Counts n_chrT = 0;
-            
+
             // Total mapped to the samples
             Counts n_genome = 0;
 
@@ -29,7 +29,7 @@ namespace Anaquin
             SequinHist c = Analyzer::histogram(Standard::instance().seqs_1);
         };
 
-        static Stats analyze(const std::string &file, const Options &options = Options());
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 

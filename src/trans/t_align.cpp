@@ -154,18 +154,15 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
 
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
 
-    // The structure depends on the mixture
-    const auto seqs = s.r_gene(options.mix);
-
     /*
      * Calculate for the LOS
      */
 
     options.info("Calculating limit of sensitivity");
 
-    stats.pe.s = Expression::analyze(stats.ce, seqs);
-    stats.pi.s = Expression::analyze(stats.ci, seqs);
-    stats.pb.s = Expression::analyze(stats.cb, seqs);
+    stats.pe.s = Expression::analyze(stats.ce, s.bases_1);
+    stats.pi.s = Expression::analyze(stats.ci, s.bases_1);
+    stats.pb.s = Expression::analyze(stats.cb, s.bases_1);
 
     /*
      * Write out summary statistics

@@ -17,13 +17,13 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 //            options.wait(std::to_string(p.i));
 //        }
 //        
-//        if (!align.mapped)
-//        {
-//            return;
-//        }
-//        else if (align.id != s.id)
+//        if (align.id != s.id && !align.i)
 //        {
 //            stats.n_genome++;
+//        }
+//        
+//        if (!align.mapped || align.id != s.id)
+//        {
 //            return;
 //        }
 //        
@@ -85,6 +85,6 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 //    stats.p.s = Expression::analyze(stats.c, s.v_seq(options.mix));
 //
 //    AnalyzeReporter::stats("VarAlign_summary", stats.p, stats.c, options.writer);
-//    
+    
 	return stats;
 }

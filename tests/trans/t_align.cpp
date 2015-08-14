@@ -27,7 +27,7 @@ TEST_CASE("TAlign_Simulations_All_Filtered")
     Test::trans();
     TAlign::Options opts;
     
-    for (auto i: Standard::instance().r_seqs_A)
+    for (auto i: Standard::instance().seqs_1)
     {
         opts.filters.insert(i.first);
     }

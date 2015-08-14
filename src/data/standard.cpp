@@ -78,43 +78,6 @@ template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo
     assert(!b.empty());
 }
 
-template <typename SequinMap, typename BaseMap> void mergeMix__(const Reader &r,
-                                                              const ParseSequinInfo &info,
-                                                              const SequinMap &a,
-                                                              const SequinMap &b,
-                                                              BaseMap &ba,
-                                                              BaseMap &bb)
-{
-    ba.clear();
-    bb.clear();
-
-    for (const auto &baseID : info.baseIDs)
-    {
-        const auto &typeIDs = baseID.second;
-        assert(typeIDs.size() >= 1);
-        
-        auto f = [&](const SequinMap &m, BaseMap &bm)
-        {
-            typename BaseMap::mapped_type base;
-            
-            for (auto iter = typeIDs.begin(); iter != typeIDs.end(); iter++)
-            {
-                // Reconstruct the sequinID
-                const auto id = baseID.first + "_" + *iter;
-                
-                base.sequins.insert(std::pair<TypeID, Sequin>(*iter, m.at(id)));
-            }
-            
-            bm[baseID.first] = base;
-        };
-        
-        f(a, ba);
-        f(b, bb);
-    }
-    
-    assert(!a.empty() && !b.empty() && !ba.empty() && !bb.empty());
-}
-
 template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &m, unsigned column=2)
 {
     m.clear();
@@ -161,61 +124,6 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
         std::cerr << "[Warn]: Error in the mixture file" << std::endl;
     }
 
-    return info;
-}
-
-template <typename SequinMap> ParseSequinInfo parseMix__(const Reader &r, SequinMap &a, SequinMap &b)
-{
-    a.clear();
-    b.clear();
-    
-    ParseSequinInfo info;
-    
-    ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
-    {
-        if (p.i == 0)
-        {
-            return;
-        }
-        
-        Sequin s;
-        
-        // Make sure there's no duplicate in the mixture file
-        assert(info.seqIDs.count(fields[0]) == 0);
-        
-        info.seqIDs.insert(s.id = fields[0]);
-
-        // Base ID is simply the ID without the last part
-        s.baseID = s.id.substr(0, s.id.find_last_of("_"));
-
-        // Skip over "_"
-        s.typeID = s.id.substr(s.id.find_last_of("_") + 1);
-        
-        // Length of the sequin
-        s.length = stoi(fields[1]);
-        
-        // Concentration for mixture A
-        s.abund() = stof(fields[2]);
-        
-        assert(s.length && s.abund());
-        
-        // Create an entry for mixture A
-        a[s.id] = s;
-        
-        // Concentration for mixture B
-        s.abund() = stof(fields[3]);
-        
-        // Create an entry for mixture B
-        b[s.id] = s;
-
-        info.baseIDs[s.baseID].insert(s.typeID);
-
-        // Don't assert s.abund() because there might not be mixture B
-        assert(s.length);
-    });
-
-    assert(!a.empty() && !b.empty());
-    
     return info;
 }
 
@@ -283,7 +191,9 @@ void Standard::v_ref(const Reader &r)
 
 void Standard::v_mix(const Reader &r)
 {
-    mergeMix__(r, parseMix__(r, seqs_1, seqs_2), seqs_1, seqs_2, v_seqs_bA, v_seqs_bB);
+    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
+    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
+//    mergeMix__(r, parseMix__(r, seqs_1, seqs_2), seqs_1, seqs_2, v_seqs_bA, v_seqs_bB);
 }
 
 void Standard::m_ref(const Reader &r)
@@ -512,7 +422,9 @@ void Standard::r_mix(const Reader &r)
 {
     r_seqIDs.clear();
     
-    mergeMix__(r, parseMix__(r, r_seqs_A, r_seqs_B), r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
+    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
+    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
+    //mergeMix__(r, parseMix__(r, r_seqs_A, r_seqs_B), r_seqs_A, r_seqs_B, r_seqs_gA, r_seqs_gB);
     
     /*
      * Merging overlapping regions for the exons
@@ -530,7 +442,7 @@ void Standard::r_mix(const Reader &r)
      * in a mixture file that doesn't not appear in the model.
      */
 
-    for (auto &i: r_seqs_A)
+    for (auto &i: seqs_1)
     {
         if (!r_sequins.count(i.first))
         {

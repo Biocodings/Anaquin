@@ -30,7 +30,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
     const auto &s = Standard::instance();
 
     // The sequins depends on the mixture
-    const auto sequins = s.r_sequin(options.mix);
+    const auto sequins = s.seqs_1;
 
     std::vector<Feature> q_exons;
     std::map<SequinID, std::vector<Feature>> q_exons_;
@@ -178,39 +178,41 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
     
     stats.pe.s = Expression::analyze(stats.ce, sequins);
     stats.pt.s = Expression::analyze(stats.ct, sequins);
-    stats.pb.s = Expression::analyze(stats.cb, s.r_gene(options.mix));
+    stats.pb.s = Expression::analyze(stats.cb, s.bases_1);
     stats.pi.s = Expression::analyze(stats.ci, sequins);
 
     options.info("Generating statistics");
 
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
-    
-    options.writer->open("TransAssembly_summary.stats");
-    options.writer->write((boost::format(format) % "exon_sp"
-                                                 % "exon_sn"
-                                                 % "exon_ss"
-                                                 % "intron_sp"
-                                                 % "intron_sn"
-                                                 % "intron_ss"
-                                                 % "base_sp"
-                                                 % "base_sn"
-                                                 % "base_ss"
-                                                 % "trans_sp"
-                                                 % "trans_sn"
-                                                 % "trans_ss").str());
-    options.writer->write((boost::format(format) % stats.pe.m.sp()
-                                                 % stats.pe.m.sn()
-                                                 % stats.pe.s.abund
-                                                 % stats.pi.m.sp()
-                                                 % stats.pi.m.sn()
-                                                 % stats.pi.s.abund
-                                                 % stats.pb.m.sp()
-                                                 % stats.pb.m.sn()
-                                                 % stats.pb.s.abund
-                                                 % stats.pt.m.sp()
-                                                 % stats.pi.m.sn()
-                                                 % stats.pi.s.abund).str());
-    options.writer->close();
+    {
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
+        
+        options.writer->open("TransAssembly_summary.stats");
+        options.writer->write((boost::format(format) % "exon_sp"
+                                                     % "exon_sn"
+                                                     % "exon_ss"
+                                                     % "intron_sp"
+                                                     % "intron_sn"
+                                                     % "intron_ss"
+                                                     % "base_sp"
+                                                     % "base_sn"
+                                                     % "base_ss"
+                                                     % "trans_sp"
+                                                     % "trans_sn"
+                                                     % "trans_ss").str());
+        options.writer->write((boost::format(format) % stats.pe.m.sp()
+                                                     % stats.pe.m.sn()
+                                                     % stats.pe.s.abund
+                                                     % stats.pi.m.sp()
+                                                     % stats.pi.m.sn()
+                                                     % stats.pi.s.abund
+                                                     % stats.pb.m.sp()
+                                                     % stats.pb.m.sn()
+                                                     % stats.pb.s.abund
+                                                     % stats.pt.m.sp()
+                                                     % stats.pi.m.sn()
+                                                     % stats.pi.s.abund).str());
+        options.writer->close();
+    }
 
     return stats;
 }
