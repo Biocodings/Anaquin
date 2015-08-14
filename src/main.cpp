@@ -36,7 +36,6 @@
 #include <catch.hpp>
 
 typedef int Tool;
-typedef int Input;
 typedef int Option;
 
 typedef std::string Value;
@@ -73,33 +72,37 @@ typedef std::set<Value> Range;
  * Options specified in the command line
  */
 
+#define OPT_TEST    333
 #define OPT_TOOL    320
 #define OPT_MIN     321
 #define OPT_MAX     322
 #define OPT_LOS     323
 #define OPT_PATH    324
-#define OPT_MIXTURE 326
 #define OPT_FILTER  327
 #define OPT_THREAD  328
 #define OPT_VERSION 332
-#define OPT_TEST    333
-#define OPT_R_BED   380
-#define OPT_R_GTF   381
-#define OPT_U_VCF   384
-#define OPT_GTRACK  385
-#define OPT_ITRACK  386
-#define OPT_U_GTF   387
-#define OPT_GDIFF   388
-#define OPT_IDIFF   389
-#define OPT_BAM_1   392
-#define OPT_BAM_2   393
-#define OPT_PSL_1   394
-#define OPT_PSL_2   395
-#define OPT_FA_1    396
-#define OPT_FA_2    397
-#define OPT_FUS     398
-#define OPT_OUT     399
-#define OPT_VCF     400
+
+#define OPT_R_BASE  800
+#define OPT_R_BED   801
+#define OPT_R_GTF   802
+#define OPT_R_FUS   803
+#define OPT_R_VCF   804
+#define OPT_MIXTURE 805
+
+#define OPT_U_BASE  900
+#define OPT_U_VCF   901
+#define OPT_U_GTF   902
+#define OPT_GTRACK  903
+#define OPT_ITRACK  904
+#define OPT_GDIFF   905
+#define OPT_IDIFF   906
+#define OPT_BAM_1   907
+#define OPT_BAM_2   908
+#define OPT_PSL_1   909
+#define OPT_PSL_2   910
+#define OPT_FA_1    911
+#define OPT_FA_2    912
+#define OPT_U_OUT   913
 
 using namespace Anaquin;
 
@@ -167,21 +170,25 @@ static std::map<Value, Tool> _tools =
 };
 
 /*
- * Defines the tools that require a mixture file
+ * Defines the options that are expected
  */
 
-static std::set<Tool> _mixes =
+static std::map<Tool, std::set<Option>> _required =
 {
-    TOOL_T_ASSEMBLY, TOOL_T_EXPRESS, TOOL_T_DIFF, TOOL_T_NORM
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1 } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
+    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE } },
 };
 
 /*
- * Defines the inputs that each tool expects
+ * Defines the options that one of the possibilites must be defined
  */
 
-static std::map<Tool, std::set<Input>> _inputs =
+static std::map<Tool, std::set<Option>> _pick =
 {
-    { TOOL_T_ALIGN, { OPT_R_GTF, OPT_BAM_1 } }
+    { TOOL_T_EXPRESS, { OPT_GTRACK, OPT_ITRACK } },
+    { TOOL_T_DIFF,    { OPT_GDIFF,  OPT_IDIFF  } },
 };
 
 /*
@@ -193,29 +200,19 @@ struct Parsing
     // The path that output files are written
     std::string path = "output";
 
-    // Context specific reference files
-    std::string ref_1, ref_2, ref_3;
-    
-    // Context specific input files
-    std::string input_1, input_2, input_3;
-
-    int name_1, name_2, name_3;
-    
-    // Context specific input files
-    std::map<Input, std::string> inputs;
-    
-    std::string mix;
+    // Context specific options
+    std::map<Option, std::string> opts;
     
     // Number of threads
     unsigned threads = 1;
     
-    // Custom minmium concentration
+    // Minmium concentration
     double min = 0;
     
-    // Custom maximum concentration
+    // Maximum concentration
     double max = std::numeric_limits<double>::max();
-    
-    // Custom sensivitiy
+
+    // Sensivitiy
     double los;
     
     // The sequins that have been filtered
@@ -230,7 +227,7 @@ struct Parsing
 // Wrap the variables so that it'll be easier to reset them
 static Parsing _p;
 
-template<typename T> std::string concat(const std::map<Value, T> &m)
+template<typename T> std::string concat(const std::set<Value, T> &m)
 {
     std::string str;
     
@@ -342,18 +339,18 @@ static const struct option long_options[] =
 
     { "usam",    required_argument, 0, OPT_BAM_1 },
     { "ubam",    required_argument, 0, OPT_BAM_1 },
-    { "usam1",  required_argument,  0, OPT_BAM_1 },
-    { "ubam1",  required_argument,  0, OPT_BAM_1 },
-    { "usam2",  required_argument,  0, OPT_BAM_2 },
-    { "ubam2",  required_argument,  0, OPT_BAM_2 },
+    { "usam1",   required_argument, 0, OPT_BAM_1 },
+    { "ubam1",   required_argument, 0, OPT_BAM_1 },
+    { "usam2",   required_argument, 0, OPT_BAM_2 },
+    { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
-    { "rfus",    required_argument, 0, OPT_FUS },
-    { "uout",    required_argument, 0, OPT_OUT },
+    { "rfus",    required_argument, 0, OPT_R_FUS },
+    { "uout",    required_argument, 0, OPT_U_OUT },
 
     { "rbed",    required_argument, 0, OPT_R_BED },
     { "rgtf",    required_argument, 0, OPT_R_GTF },
 
-    { "uvcf",    required_argument, 0, OPT_VCF    },
+    { "uvcf",    required_argument, 0, OPT_U_VCF  },
     { "ufa",     required_argument, 0, OPT_FA_1   },
     { "ufa1",    required_argument, 0, OPT_FA_1   },
     { "ufa2",    required_argument, 0, OPT_FA_2   },
@@ -380,6 +377,19 @@ static const struct option long_options[] =
 
     {0, 0, 0, 0 }
 };
+
+static std::string optToStr(int opt)
+{
+    for (const auto o : long_options)
+    {
+        if (o.val == opt)
+        {
+            return o.name;
+        }
+    }
+    
+    throw std::runtime_error("Invalid option: " + std::to_string(opt));
+}
 
 static void printUsage()
 {
@@ -420,34 +430,40 @@ static void print(Reader &r)
     }
 }
 
+static std::string mixture()
+{
+    return _p.opts[OPT_MIXTURE];
+}
+
 static void printMixture()
 {
-    Reader r(_p.mix);
+    Reader r(mixture());
     print(r);
 }
 
 template <typename Mixture> void applyMix(Mixture mix)
 {
-    if (_p.mix.empty())
+    if (mixture().empty())
     {
         return;
-        //throw MissingMixtureError();
     }
 
-    std::cout << "[INFO]: Mixture: " << _p.mix << std::endl;
-    mix(Reader(_p.mix));
+    std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
+    mix(Reader(mixture()));
 }
 
 template <typename Reference> void applyRef(Reference ref)
 {
-    if (_p.ref_1.empty())
+    for (const auto &i : _p.opts)
     {
-        return;
-        //throw MissingReferenceError();
+        const auto opt = i.first;
+        
+        if (opt != OPT_MIXTURE && opt > OPT_R_BASE && opt < OPT_U_BASE)
+        {
+            std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
+            ref(Reader(_p.opts[opt]));
+        }
     }
-
-    std::cout << "[INFO]: Reference: " << _p.ref_1 << std::endl;
-    ref(Reader(_p.ref_1));
 }
 
 // Read sequins from a file, one per line. The identifiers must match.
@@ -561,20 +577,20 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 }
 
 // Analyze for a single sample
-template <typename Analyzer> void analyze_1(Input x, typename Analyzer::Options o = typename Analyzer::Options())
+template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::analyze(_p.inputs.at(x), o);
+        Analyzer::analyze(_p.opts.at(x), o);
     }, o);
 }
 
 // Analyze for two samples
-template < typename Analyzer> void analyze_2(Input x, Input y, typename Analyzer::Options o = typename Analyzer::Options())
+template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::analyze(_p.inputs.at(x), _p.inputs.at(y), o);
+        Analyzer::analyze(_p.opts.at(x), _p.opts.at(y), o);
     }, o);
 }
 
@@ -746,48 +762,24 @@ void parse(int argc, char ** argv)
 
                 break;
             }
-                
-            case OPT_MIXTURE: { checkFile(_p.mix = val);   break; }
 
-            case OPT_FUS:
-            case OPT_R_BED:
-            case OPT_R_GTF:   { checkFile(_p.ref_1 = val); break; }
-
-            /*
-             * Options that take a generated input file for the second sample
-             */
-
-            case OPT_FA_2:
-            case OPT_PSL_2:
-            case OPT_BAM_2:
-            {
-                _p.inputs[opt] = val;
-                _p.name_2 = opt;
-                checkFile(_p.input_2 = val);
-                break;
-            }
-
-            /*
-             * Options that take a generated input file for the first sample
-             */
-                
-            case OPT_VCF:
-            case OPT_OUT:
             case OPT_FA_1:
-            case OPT_PSL_1: { checkFile(_p.inputs[opt] = val); break; }
-                
+            case OPT_FA_2:
+            case OPT_R_FUS:
+            case OPT_U_VCF:
+            case OPT_U_OUT:
             case OPT_BAM_1:
             case OPT_U_GTF:
             case OPT_IDIFF:
             case OPT_GDIFF:
+            case OPT_PSL_2:
+            case OPT_BAM_2:
+            case OPT_R_BED:
+            case OPT_R_GTF:
+            case OPT_PSL_1:
             case OPT_GTRACK:
             case OPT_ITRACK:
-            {
-                _p.inputs[opt] = val;
-                _p.name_1 = opt;
-                checkFile(_p.input_1 = val);
-                break;
-            }
+            case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
             case OPT_PATH:    { _p.path = val;             break; }
             case OPT_FILTER:  { readFilters(val);          break; }
@@ -808,6 +800,47 @@ void parse(int argc, char ** argv)
 
     auto &s = Standard::instance();
     
+    /*
+     * Have all the required options given?
+     */
+    
+    if (_required.count(_p.tool))
+    {
+        auto required = _required[_p.tool];
+        
+        for (const auto i : _p.opts)
+        {
+            if (required.count(i.first))
+            {
+                required.erase(i.first);
+            }
+        }
+
+        if (!required.empty())
+        {
+            throw MissingOptionError(optToStr(*required.begin()));
+        }
+    }
+
+    /*
+     * Have all the pick options given?
+     */
+    
+    if (_pick.count(_p.tool))
+    {
+        for (const auto i : _p.opts)
+        {
+            if (_pick[_p.tool].count(i.first))
+            {
+                goto mainSwitch;
+            }
+        }
+        
+        throw MissingInputError();
+    }
+
+    mainSwitch:
+
     switch (_p.tool)
     {
         case TOOL_VERSION: { printVersion();                break; }
@@ -822,7 +855,7 @@ void parse(int argc, char ** argv)
         case TOOL_T_ASSEMBLY:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
-            
+
             applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
 
@@ -836,7 +869,7 @@ void parse(int argc, char ** argv)
                 {
                     TExpress::Options o;
                     
-                    if (_p.inputs.count(OPT_GTRACK))
+                    if (_p.opts.count(OPT_GTRACK))
                     {
                         o.level = TExpress::Isoform;
                         analyze_1<TExpress>(OPT_GTRACK);
@@ -854,7 +887,7 @@ void parse(int argc, char ** argv)
                 {
                     TDiffs::Options o;
 
-                    if (_p.inputs.count(OPT_GDIFF))
+                    if (_p.opts.count(OPT_GDIFF))
                     {
                         std::cout << "[INFO]: Gene Analysis" << std::endl;
                         
@@ -887,9 +920,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:      { analyze_1<FViewer>(OPT_OUT);     break; }
+                case TOOL_F_IGV:      { analyze_1<FViewer>(OPT_U_OUT);   break; }
                 case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_GTRACK); break; }
-                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_OUT);   break; }
+                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_U_OUT); break; }
             }
 
             break;
@@ -925,8 +958,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);  break; }
-                case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_VCF); break; }
+                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);    break; }
+                case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_U_VCF); break; }
                 //case TOOL_V_FREQ:     { analyze_1<VFreq>();     break; }
                 //case TOOL_V_DIFF:     { analyze_1<VVariant>(); break; }
                 //case TOOL_V_IGV:      { analyze_1<VVariant>(); break; }
@@ -957,8 +990,8 @@ void parse(int argc, char ** argv)
                     
                     MDiffs::Options o;
                     
-                    o.pA = _p.inputs.at(OPT_PSL_1);
-                    o.pB = _p.inputs.at(OPT_PSL_2);
+                    o.pA = _p.opts.at(OPT_PSL_1);
+                    o.pB = _p.opts.at(OPT_PSL_2);
 
                     analyze_2<MDiffs>(OPT_FA_1, OPT_FA_2, o);
                     break;
@@ -969,7 +1002,7 @@ void parse(int argc, char ** argv)
                     MAssembly::Options o;
                     
                     // An alignment file is needed to identify contigs
-                    o.psl = _p.inputs.at(OPT_PSL_1);
+                    o.psl = _p.opts.at(OPT_PSL_1);
 
                     analyze_1<MAssembly>(OPT_FA_1, o);
                     break;
@@ -1009,7 +1042,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const MissingOptionError &ex)
     {
-        const auto format = "A mandatory option is missing. Please specify %1%.";
+        const auto format = "A mandatory option is missing. Please specify -%1%.";
         printError((boost::format(format) % ex.opt).str());
     }
     catch (const RepeatOptionError &ex)
