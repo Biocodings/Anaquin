@@ -56,3 +56,15 @@ p <- p + geom_smooth(method = "lm")
 print(p)
 
 
+
+
+# Factor level
+group <- factor(c(1,1,1,2,2,2))
+
+y <- DGEList(counts=assay(se), group=group)
+y <- calcNormFactors(y)
+y <- estimateCommonDisp(y)
+y <- estimateTagwiseDisp(y)
+r <- exactTest(y)
+
+
