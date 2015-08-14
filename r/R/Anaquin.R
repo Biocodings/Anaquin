@@ -13,13 +13,39 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Anaquin If not, see <http://www.gnu.org/licenses/>.
 
+library('edgeR')
+library("DESeq2")
+library("Rsamtools")
 library("GenomicFeatures")
+library("GenomicAlignments")
 
 IsoformsToGenes <- function(trans)
 {
     trans <- as.character(trans)
     genes <- substr(as.character(trans), 1, nchar(trans)-2)
     genes
+}
+
+Count <- function(files, meta)
+{
+    bams <- BamFileList(files)
+    
+    # Read in the gene model which will be used for counting reads
+    model <- makeTranscriptDbFromGFF("/Users/tedwong/Sources/QA/data/trans/RNA.v1.gtf", format='gtf')
+
+    # Produces a GRangesList of all the exons grouped by gene
+    genes <- exonsBy(model, by="gene")
+
+    # Fix the duplicate keys
+    names(bams) <- c("A1.bam", "A2.bam", "A3.bam", "B1.bam", "B2.bam", "B3.bam")
+    
+    se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
+    
+    # Load experimental metadata for the samples
+    meta <- read.csv(file.path('', meta), row.names=1)
+    
+    # The colData slot, so far empty, should contain all the metadata.
+    colData(se) <- DataFrame(meta)    
 }
 
 LoadMixtures <- function()
@@ -136,6 +162,10 @@ DESeq2 <- function(r, mix)
     
     # Generate a linear plot of the relationship
     plot(d_$known, d_$measured)
+
+    r <- list(data=data.frame(known, measured))
+    class(r) <- c("Anaquin")
+    r 
 }
 
 EdgeR <- function(r, m)

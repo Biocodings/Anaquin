@@ -44,3 +44,15 @@ dds <- DESeq(dds)
 res <- results(dds)
 
 t <- data.frame(id=row.names(res), fold=res$log2FoldChange)
+
+
+
+p <- ggplot(data = r, aes(x = r$known, y = r$measured))
+p <- p + xlab('Log2 known coverage')
+p <- p + ylab('Log2 measured log-fold')
+p <- p + geom_point()
+p <- p + theme_classic()
+p <- p + geom_smooth(method = "lm")
+print(p)
+
+

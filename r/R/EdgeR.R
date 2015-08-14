@@ -44,15 +44,11 @@ colData(se) <- DataFrame(meta)
 # We can investigate the resulting SummarizedExperiment by looking at the counts in the assay slot
 #head(assay(se))
 
+
+
+
 # Factor level
 group <- factor(c(1,1,1,2,2,2))
-
-
-
-
-
-
-
 
 y <- DGEList(counts=assay(se), group=group)
 y <- calcNormFactors(y)
