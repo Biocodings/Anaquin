@@ -386,17 +386,17 @@ int cuffcompare_main(const char *ref, const char *query) {
         //   may be the same and clobber each other
         s=sbase;
         s.append(".tmap");
-        tfiles[fi]=fopen(s.chars(),"w");
-        if (tfiles[fi]==NULL)
-          GError("Error creating file '%s'!\n",s.chars());
-        fprintf(tfiles[fi],"ref_gene_id\tref_id\tclass_code\tcuff_gene_id\tcuff_id\tFMI\tFPKM\tFPKM_conf_lo\tFPKM_conf_hi\tcov\tlen\tmajor_iso_id\tref_match_len\n");
+        //tfiles[fi]=fopen(s.chars(),"w");
+        //if (tfiles[fi]==NULL)
+        //  GError("Error creating file '%s'!\n",s.chars());
+        //fprintf(tfiles[fi],"ref_gene_id\tref_id\tclass_code\tcuff_gene_id\tcuff_id\tFMI\tFPKM\tFPKM_conf_lo\tFPKM_conf_hi\tcov\tlen\tmajor_iso_id\tref_match_len\n");
         if (haveRefs) {
           s=sbase;
           s.append(".refmap");
-          rtfiles[fi]=fopen(s.chars(),"w");
-          if (rtfiles[fi]==NULL)
-             GError("Error creating file '%s'!\n",s.chars());
-          fprintf(rtfiles[fi],"ref_gene_id\tref_id\tclass_code\tcuff_id_list\n");
+          //rtfiles[fi]=fopen(s.chars(),"w");
+          //if (rtfiles[fi]==NULL)
+          //   GError("Error creating file '%s'!\n",s.chars());
+          //fprintf(rtfiles[fi],"ref_gene_id\tref_id\tclass_code\tcuff_id_list\n");
           }
         }
 
