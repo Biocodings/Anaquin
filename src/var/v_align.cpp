@@ -39,26 +39,15 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 
         if (classify(stats.p.m, align, [&](const Alignment &)
         {
-            bool succeed = find(s.fs_1.begin(), s.fs_1.end(), align, f);
-
-            std::cout << succeed << std::endl;
-            
-            //                succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
-            
-            //return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
-            
-            
-            
-            return Positive;
+            return find(s.fs_1.begin(), s.fs_1.end(), align, f) ? Positive : Negative;
         }))
         {
-            //                stats.he.at(s.seq2base.at(f.tID))++;
-            
-            // Empty Implementation
+            stats.h_seq.at(f.tID)++;
+            stats.h_base.at(s.seq2base.at(f.tID))++;
         }
     });
 
-    sums(stats.c, stats.p.m.nr);
+    sums(stats.h_seq, stats.p.m.nr);
 
     /*
      * Generate an abundance plot for the accuracy of quantification, the measured DNA
@@ -67,7 +56,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
      */
 
     // The total number of reads aligned
-  //  const auto n = stats.n_chrT;
+//    const auto n = stats.n_chrT;
 
     // Known concentration for the given mixture
 //    const auto &m = s.v_seq(options.mix);
@@ -97,10 +86,10 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 //
 //    options.info("Generating statistics");
 //    
-//    // Calculate for the sensitivity
-//    stats.p.s = Expression::analyze(stats.c, s.v_seq(options.mix));
-//
-//    AnalyzeReporter::stats("VarAlign_summary", stats.p, stats.c, options.writer);
-//    
+    // Calculate for the sensitivity
+    stats.p.s = Expression::analyze(stats.h_seq, s.seqs_1);
+
+    AnalyzeReporter::stats("VarAlign_summary", stats.p, stats.h_seq, options.writer);
+
 	return stats;
 }

@@ -26,7 +26,10 @@ namespace Anaquin
             Performance p;
 
             // Counts for each sequin
-            SequinHist c = Analyzer::seqHist();
+            SequinHist h_seq = Analyzer::seqHist();
+            
+            // Counts for each base
+            SequinHist h_base = Analyzer::baseHist();
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

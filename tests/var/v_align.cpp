@@ -1,18 +1,20 @@
 #include <catch.hpp>
+#include "unit/test.hpp"
 #include "var/v_align.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("VAlign_Simulation")
+TEST_CASE("VAlign_GM_VARMXA")
 {
-    //const auto r = VAlign::analyze("tests/data/var/aligned.sam");
-    const auto r = VAlign::analyze("ABCD.bam");
+    Test::variant();
 
-    REQUIRE(r.p.m.sp() == Approx(0.999984782));
-    REQUIRE(r.p.m.sn() == Approx(0.9998288238));
-    REQUIRE(r.p.m.nq == 262846);
-    REQUIRE(r.p.m.nr == 262887);
-    REQUIRE(r.p.s.id == "D_3_7_R");
-    REQUIRE(r.p.s.counts == 2);
-    REQUIRE(r.p.s.abund == Approx(1.005944252));
+    const auto r = VAlign::analyze("tests/data/GM_VARMXA_CONA/aligned.sam");
+
+    REQUIRE(r.p.m.sp() == Approx(0.9463336876));
+    REQUIRE(r.p.m.sn() == Approx(0.961663067));
+    REQUIRE(r.p.m.nq == 1882);
+    REQUIRE(r.p.m.nr == 1852);
+    REQUIRE(r.p.s.id == "D_1_3_V");
+    REQUIRE(r.p.s.counts == 1781);
+    REQUIRE(r.p.s.abund == Approx(20000));
 }

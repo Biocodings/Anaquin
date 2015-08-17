@@ -117,6 +117,9 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
             // Create an entry for the mixture
             m[s.id] = s;
             
+            // TODO: Should be this be here?
+            //Standard::instance():seqIDs.insert(s.id);
+            
             info.baseIDs[s.baseID].insert(s.typeID);
         });
     }
@@ -153,15 +156,33 @@ Standard::Standard()
 
 void Standard::v_std(const Reader &r)
 {
-     ParserFeature::parse(r, [&](const Feature &f, const ParserProgress &)
-     {
-         fs_1.push_back(f);
-     });
+    // TODO: Fix this
+    seqIDs.clear();
+    
+    ParserFeature::parse(r, [&](const Feature &f, const ParserProgress &)
+    {
+        if (f.type == Exon)
+        {
+            fs_1.push_back(f);
+            
+            /*
+             * TODO: Fix this!!!! Getting sequinIDs should be done somewhere else
+             */
+
+            const auto seqID = f.tID;
+            seqIDs.insert(seqID);
+        }
+    });
+
+    assert(!fs_1.empty());
 }
 
 void Standard::v_var(const Reader &r)
 {
     std::vector<std::string> tokens;
+    
+    // TODO: Fix this!
+    seqIDs.clear();
     
     ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
     {
@@ -171,6 +192,13 @@ void Standard::v_var(const Reader &r)
         // Eg: D_1_10_R and G/A
         assert(tokens.size() == 5);
 
+        /*
+         * TODO: Fix this!!!! Getting sequinIDs should be done somewhere else
+         */
+        
+        const auto seqID = tokens[0] + "_" + tokens[1] + "_" + tokens[2] + "_" + tokens[3];
+        seqIDs.insert(seqID);
+        
         // Eg: G/GACTCTCATTC
         const auto var = tokens[4];
 

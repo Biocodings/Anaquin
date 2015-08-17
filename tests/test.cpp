@@ -32,12 +32,14 @@ using namespace Anaquin;
 
 void Test::fusion()
 {
+    Standard::instance(true);
     Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
     Standard::instance().f_mix(Reader(FusionDataMix(), DataMode::String));
 }
 
 void Test::meta()
 {
+    Standard::instance(true);    
     Standard::instance().m_ref(Reader(MetaDataBed(), DataMode::String));
     Standard::instance().m_mix_1(Reader(MetaDataMix(), DataMode::String));
     Standard::instance().m_mix_2(Reader(MetaDataMix(), DataMode::String));
@@ -45,17 +47,20 @@ void Test::meta()
 
 void Test::ladder()
 {
+    Standard::instance(true);
     Standard::instance().l_mix(Reader(LadderDataMix(), DataMode::String));
 }
 
 void Test::trans()
 {
+    Standard::instance(true);
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMix(), DataMode::String));
 }
 
 void Test::variant()
 {
+    Standard::instance(true);
     Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
     Standard::instance().v_std(Reader(VarStandGTF(), DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMix(),  DataMode::String));
