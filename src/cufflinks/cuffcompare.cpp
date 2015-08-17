@@ -342,13 +342,13 @@ int cuffcompare_main(const char *ref, const char *query) {
         */
         }
 
-  f_out=fopen(outstats, "w");
-  if (f_out==NULL) GError("Error creating output file %s!\n", outstats.chars());
+  //f_out=fopen(outstats, "w");
+  //if (f_out==NULL) GError("Error creating output file %s!\n", outstats.chars());
   if (gtf_tracking_verbose) GMessage("Prefix for output files: %s\n", outprefix.chars());
   //fprintf(f_out, "# Cuffcompare v%s | Command line was:\n#", PACKAGE_VERSION);
-  for (int i=0;i<argc-1;i++) 
-    fprintf(f_out, "%s ", argv[i]);
-  fprintf(f_out, "%s\n#\n", argv[argc-1]);
+  //for (int i=0;i<argc-1;i++)
+  //  fprintf(f_out, "%s ", argv[i]);
+  //fprintf(f_out, "%s\n#\n", argv[argc-1]);
   //int qfileno=0;
   GList<GSeqData>** qrysdata=NULL;
   FILE** tfiles=NULL;
@@ -442,11 +442,11 @@ int cuffcompare_main(const char *ref, const char *query) {
   if (f_mintr!=NULL) fclose(f_mintr);
   gseqtracks.setSorted(&cmpGTrackByName);
   if (gtf_tracking_verbose) GMessage("Tracking transcripts across %d query files..\n", numqryfiles);
-  trackGData(numqryfiles, gseqtracks, outbasename, tfiles, rtfiles);
-  fprintf(f_out, "\n Total union super-loci across all input datasets: %d \n", xlocnum);
+  //trackGData(numqryfiles, gseqtracks, outbasename, tfiles, rtfiles);
+  //fprintf(f_out, "\n Total union super-loci across all input datasets: %d \n", xlocnum);
   if (numqryfiles>1) {
-      fprintf(f_out, "  (%d multi-transcript, ~%.1f transcripts per locus)\n",
-           total_xloci_alt, ((double)(GXConsensus::count))/xlocnum);
+     // fprintf(f_out, "  (%d multi-transcript, ~%.1f transcripts per locus)\n",
+     //      total_xloci_alt, ((double)(GXConsensus::count))/xlocnum);
       }
   if (gtf_tracking_verbose) GMessage("Cleaning up..\n");
   GFREE(cprefix);
