@@ -52,10 +52,11 @@ namespace Anaquin
         // Depth for alternative
         unsigned dp_a;
     };
-    
+
     class Standard
     {
         public:
+            typedef std::vector<Feature>       Features;
             typedef std::map<BaseID, BaseSeq>  BaseMap;
             typedef std::map<SequinID, Sequin> SequinMap;
 
@@ -97,6 +98,12 @@ namespace Anaquin
             // Bases for first and second sample
             BaseMap bases_1, bases_2;
 
+            // Primary features
+            Features fs_1;
+
+            // Secondary features
+            Features fs_2;
+
             /*
              * RNA data
              */
@@ -118,8 +125,13 @@ namespace Anaquin
              * Variant data
              */
 
-            void v_ref(const Reader &);
             void v_mix(const Reader &);
+        
+            // Apply reference for known variants
+            void v_var(const Reader &);
+
+            // Apply reference for variant standard
+            void v_std(const Reader &);
 
             // Indexed by locus
             std::map<Locus, Variation> v_vars;

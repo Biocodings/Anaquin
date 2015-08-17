@@ -152,7 +152,7 @@ std::string VarDataBed()
     return ToString(data_var_DNA_variant_bed);
 }
 
-std::string VarStandardsGTF()
+std::string VarStandGTF()
 {
     return ToString(data_var_DNA_standards_chrT_gtf);
 }

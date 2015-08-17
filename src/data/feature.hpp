@@ -28,7 +28,10 @@ namespace Anaquin
         }
         
         FeatureID id;
-
+        
+        // Forward or reverse strand?
+        Strand strand;
+        
         // The location of the feature relative to the chromosome
         Locus l;
 

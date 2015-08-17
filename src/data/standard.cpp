@@ -8,10 +8,9 @@
 #include "data/tokens.hpp"
 #include "data/standard.hpp"
 #include "parsers/parser_fa.hpp"
-#include "parsers/parser_bed.hpp"
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_vcf.hpp"
-#include "parsers/parser_gtf.hpp"
+#include "parsers/parser_feature.hpp"
 
 extern std::string TransStandGTF();
 
@@ -152,7 +151,15 @@ Standard::Standard()
     });
 }
 
-void Standard::v_ref(const Reader &r)
+void Standard::v_std(const Reader &r)
+{
+     ParserFeature::parse(r, [&](const Feature &f, const ParserProgress &)
+     {
+         fs_1.push_back(f);
+     });
+}
+
+void Standard::v_var(const Reader &r)
 {
     std::vector<std::string> tokens;
     
@@ -291,7 +298,7 @@ void Standard::r_ref(const Reader &r)
         
         l.end   = std::max(l.end, f.l.end);
         l.start = std::min(l.start, f.l.start);
-        
+
         // Automatically filter out the duplicates
         geneIDs.insert(f.geneID);
         sequinIDs.insert(f.tID);

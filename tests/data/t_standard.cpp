@@ -5,5 +5,5 @@ using namespace Anaquin;
 
 TEST_CASE("Standard_ChrT")
 {
-	REQUIRE("chrT" == Standard::instance().id);
+	REQUIRE(Standard::instance().id == "chrT");
 }

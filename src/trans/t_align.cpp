@@ -46,8 +46,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
         {
             return;
         }
-
-        if (!align.i)
+        else if (!align.i)
         {
             stats.n_chrT++;            
         }

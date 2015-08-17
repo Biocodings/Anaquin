@@ -6,54 +6,70 @@ using namespace Anaquin;
 VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 {
     VAlign::Stats stats;
-//    static const auto &s = Standard::instance();
-//
-//    options.info("Parsing alignment file");
-//
-//    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
-//    {
-//        if (!align.i && (p.i % 1000000) == 0)
-//        {
-//            options.wait(std::to_string(p.i));
-//        }
-//        
-//        if (align.id != s.id && !align.i)
-//        {
-//            stats.n_genome++;
-//        }
-//        
-//        if (!align.mapped || align.id != s.id)
-//        {
-//            return;
-//        }
-//        
-//        stats.n_chrT++;
-//
-//        /*
-//         * TODO: We need a reference file that specify the position of each seqion. Not just variations.
-//         */
-//        
-//        if (classify(stats.p.m, align, [&](const Alignment &)
-//        {
-//            return Positive;
-//        }))
-//        {
-//            // Empty Implementation
-//        }
-//    });
-//
-//    sums(stats.c, stats.p.m.nr);
-//
-//    /*
-//     * Generate an abundance plot for the accuracy of quantification, the measured DNA
-//     * standard abundance (in FPKM) relative to the known concentration (in attamoles/ul)
-//     * of each DNA standard.
-//     */
-//
-//    // The total number of reads aligned
-//    const auto n = stats.n_chrT;
-//
-//    // Known concentration for the given mixture
+    static const auto &s = Standard::instance();
+
+    options.info("Parsing alignment file");
+
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
+    {
+        if (!align.i && (p.i % 1000000) == 0)
+        {
+            options.wait(std::to_string(p.i));
+        }
+        
+        if (align.id != s.id && !align.i)
+        {
+            stats.n_genome++;
+        }
+        
+        if (!align.mapped || align.id != s.id)
+        {
+            return;
+        }
+        else if (!align.i)
+        {
+            stats.n_chrT++;
+        }
+
+        /*
+         * Collect statistics for the alignment
+         */
+        
+        Feature f;
+
+        if (classify(stats.p.m, align, [&](const Alignment &)
+        {
+            bool succeed = find(s.fs_1.begin(), s.fs_1.end(), align, f);
+
+            std::cout << succeed << std::endl;
+            
+            //                succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
+            
+            //return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
+            
+            
+            
+            return Positive;
+        }))
+        {
+            //                stats.he.at(s.seq2base.at(f.tID))++;
+            
+            // Empty Implementation
+        }
+    });
+
+    sums(stats.c, stats.p.m.nr);
+
+    /*
+     * Generate an abundance plot for the accuracy of quantification, the measured DNA
+     * standard abundance (in FPKM) relative to the known concentration (in attamoles/ul)
+     * of each DNA standard.
+     */
+
+    // The total number of reads aligned
+  //  const auto n = stats.n_chrT;
+
+    // Known concentration for the given mixture
 //    const auto &m = s.v_seq(options.mix);
 //
 //    for (const auto &i : stats.c)
@@ -85,6 +101,6 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
 //    stats.p.s = Expression::analyze(stats.c, s.v_seq(options.mix));
 //
 //    AnalyzeReporter::stats("VarAlign_summary", stats.p, stats.c, options.writer);
-    
+//    
 	return stats;
 }

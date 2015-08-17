@@ -11,8 +11,8 @@
 #include "trans/t_express.hpp"
 #include "trans/t_assembly.hpp"
 
-#include "var/v_freq.hpp"
 #include "var/v_align.hpp"
+#include "var/v_viewer.hpp"
 #include "var/v_discover.hpp"
 
 #include "meta/m_blast.hpp"
@@ -452,18 +452,38 @@ template <typename Mixture> void applyMix(Mixture mix)
     mix(Reader(mixture()));
 }
 
+#define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
+
+/*
+ * Apply reference resource assuming there is only a single reference source
+ */
+
 template <typename Reference> void applyRef(Reference ref)
 {
     for (const auto &i : _p.opts)
     {
         const auto opt = i.first;
         
-        if (opt != OPT_MIXTURE && opt > OPT_R_BASE && opt < OPT_U_BASE)
+        if (CHECK_REF(opt))
         {
             std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
             ref(Reader(_p.opts[opt]));
         }
     }
+}
+
+/*
+ * Apply two reference resources for two options
+ */
+
+template <typename Reference> void applyRef(Reference ref, Option o1, Option o2)
+{
+    assert(o1 != o2 && CHECK_REF(o1) && CHECK_REF(o2));
+    
+    std::cout << "[INFO]: Reference: " << _p.opts[o1] << std::endl;
+    std::cout << "[INFO]: Reference: " << _p.opts[o2] << std::endl;
+
+    ref(Reader(_p.opts[o1]), Reader(_p.opts[o2]));
 }
 
 // Read sequins from a file, one per line. The identifiers must match.
@@ -956,28 +976,39 @@ void parse(int argc, char ** argv)
         }
 
         case TOOL_V_IGV:
-        case TOOL_V_FREQ:
         case TOOL_V_DIFF:
         case TOOL_V_ALIGN:
         case TOOL_V_DISCOVER:
         {
             std::cout << "[INFO]: Variant Analysis" << std::endl;
-            
-            applyRef(std::bind(&Standard::v_ref, &s, std::placeholders::_1));
+
+            switch (_p.tool)
+            {
+                case TOOL_V_ALIGN:
+                {
+                    applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1)); break;
+                }
+
+                case TOOL_V_DIFF:
+                case TOOL_V_DISCOVER:
+                {
+                    applyRef(std::bind(&Standard::v_var, &s, std::placeholders::_1)); break;
+                }
+            }
+
             applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
 
             switch (_p.tool)
             {
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);    break; }
                 case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_U_VCF); break; }
-                //case TOOL_V_FREQ:     { analyze_1<VFreq>();     break; }
                 //case TOOL_V_DIFF:     { analyze_1<VVariant>(); break; }
-                //case TOOL_V_IGV:      { analyze_1<VVariant>(); break; }
+                case TOOL_V_IGV:      { analyze_1<VViewer>(OPT_PATH);    break; }
             }
 
             break;
         }
-            
+
         case TOOL_M_IGV:
         case TOOL_M_PSL:
         case TOOL_M_DIFF:

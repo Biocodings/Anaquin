@@ -26,6 +26,7 @@ extern std::string MetaDataTab();
 
 extern std::string VarDataBed();
 extern std::string VarDataMix();
+extern std::string VarStandGTF();
 
 using namespace Anaquin;
 
@@ -55,8 +56,9 @@ void Test::trans()
 
 void Test::variant()
 {
-    Standard::instance().v_ref(Reader(VarDataBed(), DataMode::String));
-    Standard::instance().v_mix(Reader(VarDataMix(), DataMode::String));
+    Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().v_std(Reader(VarStandGTF(), DataMode::String));
+    Standard::instance().v_mix(Reader(VarDataMix(),  DataMode::String));
 }
 
 Test Test::test(const std::string &command)

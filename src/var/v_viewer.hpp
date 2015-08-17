@@ -7,7 +7,14 @@ namespace Anaquin
 {
     struct VViewer
     {
+        typedef SingleMixtureOptions Options;
+        
+        struct Stats
+        {
+            // Empty Implementation
+        };
 
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 
