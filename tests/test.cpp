@@ -19,10 +19,8 @@ extern std::string FusionMutatedRef();
 extern std::string TransDataMix();
 extern std::string TransStandGTF();
 
-extern std::string MetaDataFA();
 extern std::string MetaDataBed();
 extern std::string MetaDataMix();
-extern std::string MetaDataTab();
 
 extern std::string VarDataBed();
 extern std::string VarDataMix();

@@ -109,11 +109,6 @@ std::string LadderDataMix()
  * META Resources
  */
 
-std::string MetaDataTab()
-{
-    return ToString(data_meta_META_v1_tab_fa);
-}
-
 std::string MetaDataMix()
 {
     return ToString(data_meta_META_v6_csv);
