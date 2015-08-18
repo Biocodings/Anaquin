@@ -14,19 +14,18 @@ import sys
 import urllib
 
 # URL for the in-silico chromosome
-silicoFA = 'http://www.anaquin.org/downloads/chromo/chrT.fa'
+silicoFA = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-2.1.0.tar.gz'
 
-# Returns the URL for the in-silico annotation
-silicoGTF = 'http://www.anaquin.org/downloads/transcriptome/RNA.v1.gtf'
+# Returns the URL for the transcriptome annotation
+transGTF = 'http://www.anaquin.org/downloads/trans/TransStandard_1.0.gtf'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
 #
 
 sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Session genome="{0}chrT.fa" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
+<Session genome="{0}" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
     <Resources>
-        <Resource path="accepted_hits.bam"/>        
         {1}
     </Resources>
     <Panel height="239" name="Panel1438759846196" width="1423">
@@ -54,24 +53,58 @@ trackT = """<Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.tra
 # Template for a resource such as GTF
 resourceT = """        <Resource path="{1}"/> """
 
+def run(cmd):
+    os.system(cmd)
+
 # Generate an index for a SAM/BAM file
 def index(path, align):
+    print('Generating index for ' + align + ' to ' + path)
 
-    # Eg: accepted_hits
-    index = os.path.splitext(os.path.split(align)[-1])[0]
-    
+    tmp = 'TEMP'
+
+    # Silently create a temporary index directory
+    os.system('mkdir -p ' + tmp)
+
+    # Eg: /home/tedwong/ABCD.sam to ABCD.sam
+    file = os.path.basename(align)
+
+    # Eg: ABCD.sam to ABCD
+    base = os.path.splitext(os.path.split(file)[-1])[0]
+
+    # Create a sorted alignment, this is always needed for generating an index
+    run('samtools sort ' + align + ' ' + tmp + '/' + base)
+
     # Generate the index
-    os.system('samtools index ' + align)
+    run('samtools index ' + tmp + '/' + file)
 
     # Copy the alignment file
-    os.system('cp ' + align + ' ' + path)
+    run('cp ' + tmp + '/' + file + ' ' + path)
 
-    # Copy the alignment file
-    os.system('cp ' + align + '.bai ' + path)
+    # Move the index
+    run('mv ' + tmp + '/*.bai ' + path)
+    
+    # Cleanup the index directory
+    run('rm -rf ' + tmp)
+
+def retrieve(url, path, file):
+    return
+    try:
+        file = path + '/' + file
+        
+        #print('Downloading ' + url + ' to ' + file)
+        urllib.urlretrieve(url, file)
+        
+        if file.endswith('tar'):
+            run('tar -xvf ' + file + ' -C ' + path)
+        elif file.endswith('tar.gz'):
+            run('tar -zxvf ' + file + ' -C ' + path)
+            run('rm -rf ' + file)
+
+    except e:
+        raise Exception('Failed to retrieve: ' + path)        
 
 # Download the required files and generate a IGV session 
 def download(path, files):
-
     # Create a session folder
     os.system('mkdir -p ' + path)
 
@@ -81,16 +114,13 @@ def download(path, files):
     
     downloads = []
 
-    # We always need a reference genome
-    urllib.urlretrieve(silicoFA, path + 'chrT.fa')    
-
     for file in files:
-        urllib.urlretrieve(file, path + file.split('/')[-1])
+        retrieve(file, path, file.split('/')[-1])
         downloads.append(file.split('/')[-1])
 
     return downloads
 
-def session(path, files):
+def session(path, align, files):
     global resourceT, sessionT, trackT
 
     # IGV assumes a full path
@@ -99,24 +129,24 @@ def session(path, files):
     res = ''    
     tra = ''
 
-    for file in files:
-        
-        #
-        # {0}: specified directory
-        # {1}: resource file
-        #
+    for i in range(0, len(files)):
+        if i>0:        
+            tra  = tra + trackT.replace('{0}', path).replace('{1}', files[i])
+            res  = res + resourceT.replace('{0}', path).replace('{1}', files[i]) + '\n'       
 
-        res  = res + resourceT.replace('{0}', path).replace('{1}', file) + '\n'       
-        tra  = tra + trackT.replace('{0}', path).replace('{1}', file)        
+    #tra  = tra + trackT.replace('{0}', path).replace('{1}', align)
+    #res  = res + resourceT.replace('{0}', path).replace('{1}', align) + '\n'
 
-    # Update the specifed directory
-    sessionT = sessionT.replace('{0}', path)
+    # We can assume the first file is always the reference genome and it's released in the GZ format
+    chrT = path + os.path.basename(files[0]).replace('.tar.gz', '.fa')
 
     # Update the specifed directory
+    sessionT = sessionT.replace('{0}', chrT)
+
     sessionT = sessionT.replace('{1}', res[:-1])
     sessionT = sessionT.replace('{2}', tra[:-1])
 
-    with open(path + "/igv_session.xml", "w") as f:
+    with open(path + "/session.xml", "w") as f:
         f.write(sessionT)
 
 def generateFusion(path, align):
@@ -125,40 +155,42 @@ def generateFusion(path, align):
               'http://www.anaquin.org/downloads/fusion/fusion_genes.gtf']
 
     index(path, align)
-    session(path, download(path, files))
+    session(path, align, download(path, files))
 
 def generateLadder(path, align):
-    files = []
-
     index(path, align)
-    session(path, download(path, files))
-	
-def generateTrans(path, align):
-    files = [ silicoGTF ]
-
-    index(path, align)
-    session(path, download(path, files))
+    session(path, align, download(path, []))
 
 def generateVar(path, align):
     files = [ 'http://www.anaquin.org/downloads/variant/DNA.variant.bed' ]
 
     index(path, align)
-    session(path, download(path, files))
+    session(path, align, download(path, files))
+
+def generateTrans(path, align):
+    index(path, align)
+    session(path, align, download(path, [ silicoFA, transGTF ]))
 
 if __name__ == '__main__':
 
     # Where to generate    
     mode = sys.argv[1]
 
-    # Where the files should be generated    
-    path = sys.argv[2]
+    path = sys.argv[2]    
+    path = os.path.dirname(os.path.abspath(path)) + '/' + path
+
+    # Silently create the directory
+    os.system('mkdir -p ' + path)
+        
+    if (os.path.isdir(path) == False):
+        raise Exception('Invalid directory: ' + path)
     
     if (mode == 'Fusion'):
         generateFusion(path, sys.argv[3])
-    else if (mode == 'Transcriptome'):
+    elif (mode == 'Trans'):
         generateTrans(path, sys.argv[3])
-    else if (mode == 'Variant'):
+    elif (mode == 'Variant'):
         generateVar(path, sys.argv[3])
-    else if (mode == 'Ladder'):
+    elif (mode == 'Ladder'):
         generateVar(path, sys.argv[3])
 
