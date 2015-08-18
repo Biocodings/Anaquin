@@ -11,8 +11,29 @@ import urllib
 # URL for the in-silico chromosome
 silicoFA = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-2.1.0.tar.gz'
 
-# Returns the URL for the transcriptome annotation
+# URL of the transcriptome standard
 transGTF = 'http://www.anaquin.org/downloads/trans/TransStandard_1.0.gtf'
+
+# URL for the in-silico chromosome
+variantFA = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-0.5.0.tar.gz'
+
+# URL of the variant standard
+varStand = 'http://www.anaquin.org/downloads/variant/VARStandard_1.0.gtf'
+
+# URL of the known variants
+varVariant = 'http://www.anaquin.org/downloads/variant/VARVariant_1.0.bed'
+
+# URL of the normal standard
+fusNStand = 'http://www.anaquin.org/downloads/fusion/FUSNormalStandard_1.0.gtf'
+
+# URL of the fusion standard
+fusFStand = 'http://www.anaquin.org/downloads/fusion/FUSFusionStandard_1.0.gtf'
+
+# URL of the metagenomic community
+metaComm  = 'http://www.anaquin.org/downloads/meta/MetaCommunity_1.0.fa'
+
+# URL of the metagenomic standard
+metaStand = 'http://www.anaquin.org/downloads/meta/METAStandard_1.0.bed'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
@@ -60,7 +81,6 @@ def run(cmd):
 # Generate an index for a SAM/BAM file
 def index(path, align):    
     print('Generating index for ' + align + ' to ' + path)
-    return
 
     tmp = 'TEMP'
 
@@ -89,7 +109,6 @@ def index(path, align):
     run('rm -rf ' + tmp)
 
 def retrieve(url, path, file):
-    return
     try:
         file = path + '/' + file
         
@@ -167,26 +186,24 @@ def session(path, align, files):
         f.write(sessionT)
 
 def generateFusion(path, align):
-    files = [ silicoGTF,
-              'http://www.anaquin.org/downloads/fusion/normal_genes.gtf',
-              'http://www.anaquin.org/downloads/fusion/fusion_genes.gtf']
-
     index(path, align)
-    session(path, align, download(path, files))
+    session(path, align, download(path, [ silicoFA, transGTF, fusNStand, fusFStand ]))
 
 def generateLadder(path, align):
     index(path, align)
-    session(path, align, download(path, []))
+    session(path, align, download(path, [ variantFA, varStand, varVariant ]))
 
 def generateVar(path, align):
-    files = [ 'http://www.anaquin.org/downloads/variant/DNA.variant.bed' ]
-
     index(path, align)
-    session(path, align, download(path, files))
+    session(path, align, download(path, [ variantFA, varStand, varVariant ]))
 
 def generateTrans(path, align):
     index(path, align)
     session(path, align, download(path, [ silicoFA, transGTF ]))
+
+def generateMeta(path, align):
+    index(path, align)
+    session(path, align, download(path, [ metaComm, metaStand ]))
 
 if __name__ == '__main__':
 
@@ -209,5 +226,6 @@ if __name__ == '__main__':
     elif (mode == 'Variant'):
         generateVar(path, sys.argv[3])
     elif (mode == 'Ladder'):
-        generateVar(path, sys.argv[3])
-
+        generateLadder(path, sys.argv[3])
+    elif (mode == 'Meta'):
+        generateMeta(path, sys.argv[3])
