@@ -1,12 +1,7 @@
 #!/usr/bin/python
+
 #
-# This script generates a IGV session for fusion analysis. Rather than keeping the required files in the distribution,
-# the script will download the files online. This saves the bunden of distributing the in-silico chromosome.
-#
-# Requirments:
-#
-#   - SAMTools
-#   - Active Internet connection
+# This script generates a IGV session for sequin analysis
 #
 
 import os
@@ -24,21 +19,17 @@ transGTF = 'http://www.anaquin.org/downloads/trans/TransStandard_1.0.gtf'
 #
 
 sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Session genome="{0}" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="/Users/tedwong/Sources/QA/A/igv_session.xml" version="8">
+<Session genome="{0}" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="session.xml" version="8">
     <Resources>
         {1}
+        {2}
     </Resources>
     <Panel height="239" name="Panel1438759846196" width="1423">
-        <Track altColor="0,0,178" autoScale="true" color="175,175,175" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/scripts/Temp/accepted_hits.bam_coverage" name="accepted_hits.bam Coverage" showReference="false" snpThreshold="0.2" sortable="true" visible="true">
-            <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="60.0" minimum="0.0" type="LINEAR"/>
-        </Track>
-        <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="EXPANDED" featureVisibilityWindow="-1" fontSize="10" id="/Users/tedwong/Sources/QA/scripts/Temp/accepted_hits.bam" name="accepted_hits.bam" showSpliceJunctions="false" sortable="true" visible="true">
-            <RenderOptions colorByTag="" colorOption="UNEXPECTED_PAIR" flagUnmappedPairs="false" groupByTag="" maxInsertSize="1000" minInsertSize="50" shadeBasesOption="QUALITY" shadeCenters="true" showAllBases="false" sortByTag=""/>
-        </Track>
+        {ALIGN}
     </Panel>
     <Panel height="574" name="FeaturePanel" width="1423">
         <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="Reference sequence" name="Reference sequence" sortable="false" visible="true"/>
-        {2}
+        {3}
     </Panel>
     <PanelLayout dividerFractions="0.010256410256410256,0.42735042735042733"/>    
     <HiddenAttributes>
@@ -48,6 +39,16 @@ sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
     </HiddenAttributes>
 </Session>"""
 
+alignTrackT = """
+        <Track altColor="0,0,178" autoScale="true" color="175,175,175" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="{PATH}/{FILE}_coverage" name="{FILE} Coverage" showReference="false" snpThreshold="0.2" sortable="true" visible="true">
+            <DataRange baseline="0.0" drawBaseline="true" flipAxis="false" maximum="60.0" minimum="0.0" type="LINEAR"/>
+        </Track>
+        <Track altColor="0,0,178" autoScale="false" color="0,0,178" displayMode="EXPANDED" featureVisibilityWindow="-1" fontSize="10" id="{FILE}" name="{FILE}" showSpliceJunctions="false" sortable="true" visible="true">
+            <RenderOptions colorByTag="" colorOption="UNEXPECTED_PAIR" flagUnmappedPairs="false" groupByTag="" maxInsertSize="1000" minInsertSize="50" shadeBasesOption="QUALITY" shadeCenters="true" showAllBases="false" sortByTag=""/>
+        </Track>
+"""
+
+# Template for a custom track
 trackT = """<Track altColor="0,0,178" autoScale="false" clazz="org.broad.igv.track.FeatureTrack" color="0,0,178" displayMode="COLLAPSED" featureVisibilityWindow="-1" fontSize="10" id="{0}{1}" name="{1}" renderer="BASIC_FEATURE" sortable="false" visible="true" windowFunction="count"/> """
 
 # Template for a resource such as GTF
@@ -57,8 +58,9 @@ def run(cmd):
     os.system(cmd)
 
 # Generate an index for a SAM/BAM file
-def index(path, align):
+def index(path, align):    
     print('Generating index for ' + align + ' to ' + path)
+    return
 
     tmp = 'TEMP'
 
@@ -121,7 +123,7 @@ def download(path, files):
     return downloads
 
 def session(path, align, files):
-    global resourceT, sessionT, trackT
+    global resourceT, sessionT, trackT, alignTrackT
 
     # IGV assumes a full path
     path = os.path.abspath(path) + '/'
@@ -135,16 +137,31 @@ def session(path, align, files):
             res  = res + resourceT.replace('{0}', path).replace('{1}', files[i]) + '\n'       
 
     #tra  = tra + trackT.replace('{0}', path).replace('{1}', align)
-    #res  = res + resourceT.replace('{0}', path).replace('{1}', align) + '\n'
+    res  = res + resourceT.replace('{0}', path).replace('{1}', align) + '\n'
 
     # We can assume the first file is always the reference genome and it's released in the GZ format
     chrT = path + os.path.basename(files[0]).replace('.tar.gz', '.fa')
 
-    # Update the specifed directory
+    # Update the reference genome
     sessionT = sessionT.replace('{0}', chrT)
 
-    sessionT = sessionT.replace('{1}', res[:-1])
-    sessionT = sessionT.replace('{2}', tra[:-1])
+    # Update the primary input (usually an alignment file)
+    sessionT = sessionT.replace('{1}', '')
+    
+    #
+    # Create a custom track with coverage for the alignment
+    #
+    
+    alignTrackT = alignTrackT.replace('{FILE}', align)
+    alignTrackT = alignTrackT.replace('{PATH}', path)
+    sessionT    = sessionT.replace('{ALIGN}'  , alignTrackT)
+
+    #
+    # Create resoures for the custom tracks
+    #
+
+    sessionT = sessionT.replace('{2}', res[:-1])
+    sessionT = sessionT.replace('{3}', tra[:-1])
 
     with open(path + "/session.xml", "w") as f:
         f.write(sessionT)
