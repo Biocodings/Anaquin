@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("FDiscover_Simulated")
 {
-    const auto r = Test::test("-t FusionDiscover -rfus data/fusion/FUS.v1.ref -m data/fusion/FUS.v3.csv -uout tests/data/fusion/simulated/fusions.out");
+    const auto r = Test::test("-t FusionDiscover -rfus data/fusion/FUSBreak_1.0.ref -m data/fusion/FUSMixture_3.0.csv -uout tests/data/fusion/simulated/fusions.out");
     
     REQUIRE(r.status == 0);
     REQUIRE(r.output.find("Fusion Analysis") != std::string::npos);
@@ -43,8 +43,8 @@ TEST_CASE("FDiscover_100K_Star")
 
 TEST_CASE("FDiscover_10K")
 {
-    const auto r = Test::test("-t FusionDiscover -rfus tests/data/fusion/10K/FUS.v1.ref -m tests/data/fusion/10K/FUSE_mixtures_v3.csv -uout tests/data/fusion/10K/fusions.out");
-    
+    const auto r = Test::test("-t FusionDiscover -rfus data/fusion/FUSBreak_1.0.ref -m data/fusion/FUSMixture_3.0.csv -uout tests/data/fusion/10K/fusions.out");
+
     REQUIRE(r.status == 0);
     REQUIRE(r.output.find("Fusion Analysis") != std::string::npos);
 }

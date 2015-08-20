@@ -25,7 +25,10 @@ enum VCFField
 
 static const std::map<std::string, Genotype> allele =
 {
-    { "0/0", HomozygousRef } , { "1/1", HomozygousAlt } , { "0/1", Heterzygous }
+    { "0/0", HomozygousRef },
+    { "1/1", HomozygousAlt },
+    { "0/1", Heterzygous   },
+    { "1/2", Heterzygous   },
 };
 
 void ParserVCF::parse(const Reader &r, Callback c)
@@ -52,6 +55,12 @@ void ParserVCF::parse(const Reader &r, Callback c)
         Tokens::split(line, "\t", fields);
 
         v.id = fields[Chromo];
+        
+        if (v.id != "chrT")
+        {
+            continue;
+        }
+        
         v.l.start = v.l.end = stod(fields[Pos]);
 
         /*
@@ -122,14 +131,22 @@ void ParserVCF::parse(const Reader &r, Callback c)
                 else if (formats[j] == "AD")
                 {
                     std::vector<std::string> tokens;
-                    
-                    // Eg: 143,16
+
+                    // Eg: 143,16 or 143
                     Tokens::split(t[j], ",", tokens);
                     
-                    assert(tokens.size() == 2);
-                    
-                    v.dp_r = stod(tokens[0]);
-                    v.dp_a = stod(tokens[1]);
+                    assert(tokens.size() == 1 || tokens.size() == 2);
+
+                    if (tokens.size() == 2)
+                    {
+                        v.dp_r = stod(tokens[0]);
+                        v.dp_a = stod(tokens[1]);
+                    }
+                    else
+                    {
+                        v.dp_r = stod(tokens[0]);
+                        v.dp_a = stod(tokens[0]);
+                    }
                 }
             }
 

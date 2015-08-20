@@ -878,10 +878,13 @@ void parse(int argc, char ** argv)
 
     mainSwitch:
 
-    std::cout << "-----------------------------------------" << std::endl;
-    std::cout << "------------- Sequin Analysis -----------" << std::endl;
-    std::cout << "-----------------------------------------" << std::endl << std::endl;
-    
+    if (_p.tool != TOOL_VERSION)
+    {
+        std::cout << "-----------------------------------------" << std::endl;
+        std::cout << "------------- Sequin Analysis -----------" << std::endl;
+        std::cout << "-----------------------------------------" << std::endl << std::endl;        
+    }
+
     switch (_p.tool)
     {
         case TOOL_VERSION: { printVersion();                break; }

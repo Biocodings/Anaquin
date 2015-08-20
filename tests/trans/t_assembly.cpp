@@ -8,7 +8,7 @@ TEST_CASE("TAssembly_Command")
 {
     Test::trans();
 
-    const auto r = Test::test("-t TransAssembly -m data/trans/RNA_4_1.csv -rgtf data/trans/RNA_1.gtf -ugtf tests/data/trans/A1/transcripts.gtf");
+    const auto r = Test::test("-t TransAssembly -m data/trans/TransMixture_4.1.csv -rgtf data/trans/TransStandard_1.0.gtf -ugtf tests/data/trans/A1/transcripts.gtf");
 
     REQUIRE(r.status == 0);
     REQUIRE(r.output.find("Transcriptome Analysis") != std::string::npos);
@@ -20,7 +20,7 @@ TEST_CASE("TAssembly_Test")
 
     TAssembly::Options o;
     
-    o.ref   = "data/trans/RNA_1.gtf";
+    o.ref   = "data/trans/TransStandard_1.0.gtf";
     o.query = "tests/data/trans/A1/transcripts.gtf";
 
     const auto r = TAssembly::analyze("tests/data/trans/A1/transcripts.gtf", o);

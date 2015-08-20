@@ -16,7 +16,7 @@ TEST_CASE("TAlign_Cufflinks")
     REQUIRE(isnan(r.pe.m.sp()));
     REQUIRE(isnan(r.pe.m.sn()));
 
-    const auto t = Test::test("-t TransAlign -m data/trans/RNA_4_1.csv -rgtf data/trans/RNA_1.gtf -ubam tests/data/trans/cufflinks.sam");
+    const auto t = Test::test("-t TransAlign -m data/trans/TransMixture_4.1.csv -rgtf data/trans/TransStandard_1.0.gtf -ubam tests/data/trans/cufflinks.sam");
 
     REQUIRE(t.status == 0);
     REQUIRE(t.output.find("Transcriptome Analysis") != std::string::npos);
