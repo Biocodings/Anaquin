@@ -443,13 +443,20 @@ static void printMixture()
 
 template <typename Mixture> void applyMix(Mixture mix)
 {
-    if (mixture().empty())
+    try
     {
-        return;
+        if (mixture().empty())
+        {
+            return;
+        }
+        
+        std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
+        mix(Reader(mixture()));
     }
-
-    std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
-    mix(Reader(mixture()));
+    catch (const std::exception &ex)
+    {
+        std::cout << ex.what() << std::endl;
+    }
 }
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
