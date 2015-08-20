@@ -441,6 +441,19 @@ static void printMixture()
     print(r);
 }
 
+static void printError(const std::string &msg)
+{
+    std::cerr << std::endl;
+    std::cerr << "*********************************************************************" << std::endl;
+    std::cout << msg << std::endl;
+    std::cerr << "*********************************************************************" << std::endl;
+}
+
+static void printError(const std::string &msg, const std::exception &ex)
+{
+    printError(msg + "\n" + ex.what());
+}
+
 template <typename Mixture> void applyMix(Mixture mix)
 {
     try
@@ -455,7 +468,8 @@ template <typename Mixture> void applyMix(Mixture mix)
     }
     catch (const std::exception &ex)
     {
-        std::cout << ex.what() << std::endl;
+        printError("Error in reading the mixture file", ex);
+        throw ex;
     }
 }
 
@@ -584,10 +598,6 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     {
         std::cout << "Filter: " << filter << std::endl;
     }
-
-    std::cout << "-----------------------------------------" << std::endl;
-    std::cout << "------------- Sequin Analysis -----------" << std::endl;
-    std::cout << "-----------------------------------------" << std::endl << std::endl;
     
     std::clock_t begin = std::clock();
     
@@ -868,6 +878,10 @@ void parse(int argc, char ** argv)
 
     mainSwitch:
 
+    std::cout << "-----------------------------------------" << std::endl;
+    std::cout << "------------- Sequin Analysis -----------" << std::endl;
+    std::cout << "-----------------------------------------" << std::endl << std::endl;
+    
     switch (_p.tool)
     {
         case TOOL_VERSION: { printVersion();                break; }
@@ -1066,14 +1080,6 @@ void parse(int argc, char ** argv)
 
 int parse_options(int argc, char ** argv)
 {
-    auto printError = [&](const std::string &file)
-    {
-        std::cerr << std::endl;
-        std::cerr << "*********************************************************************" << std::endl;
-        std::cerr << file << std::endl;
-        std::cerr << "*********************************************************************" << std::endl;
-    };
-    
     try
     {
         parse(argc, argv);
