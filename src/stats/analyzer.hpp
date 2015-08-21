@@ -59,44 +59,29 @@ namespace Anaquin
 
     struct Analyzer
     {
+        template <typename Iter> static std::map<typename Iter::value_type, Counts> hist(const Iter &iter)
+        {
+            std::map<typename Iter::value_type, Counts> h;
+
+            for (const auto &i : iter)
+            {
+                h[i] = 0;
+            }
+
+            assert(!h.empty());
+            return h;
+        }
+        
+        // Create a histogram for each of the base
         static BaseHist baseHist()
         {
-            BaseHist h;
-
-            for (const auto &baseID : Standard::instance().baseIDs)
-            {
-                h[baseID] = 0;
-            }
-
-            assert(!h.empty());
-            return h;
+            return hist(Standard::instance().baseIDs);
         }
 
-        // Initalize a histogram for each of the sequin
+        // Create a histogram for each of the sequin
         static SequinHist seqHist()
         {
-            SequinHist h;
-            
-            for (const auto &id : Standard::instance().seqIDs)
-            {
-                h[id] = 0;
-            }
-
-            assert(!h.empty());
-            return h;
-        }
-
-        static LocusHist locusHist(const std::map<Locus, Variation> &m)
-        {
-            std::map<Locus, Counts> h;
-            
-            for (const auto &p : m)
-            {
-                h[p.first] = 0;
-            }
-            
-            assert(!h.empty());
-            return h;
+            return hist(Standard::instance().seqIDs);
         }
     };
 

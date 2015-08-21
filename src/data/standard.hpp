@@ -21,6 +21,8 @@ namespace Anaquin
     struct Variation
     {
         operator const Locus &() const { return l; }
+        
+        inline bool operator<(const Locus &x) const { return l < x; }
 
         SequinID id;
         
@@ -136,6 +138,8 @@ namespace Anaquin
             // Indexed by locus
             std::map<Locus, Variation> v_vars;
 
+            std::set<Variation> __v_vars__;
+        
             /*
              * Ladder data
              */

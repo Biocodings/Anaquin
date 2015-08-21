@@ -69,9 +69,11 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
             return Positive;
         }))
         {
-            stats.h.at(match.l)++;
+            stats.h.at(match)++;
         }
     });
+
+    options.info("Generating statistics");
 
     stats.m.nr = s.v_vars.size();
 
@@ -94,23 +96,28 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
     stats.efficiency = stats.m.sn() / stats.covered;
     
     // Create a script for allele frequency
-    AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
+    //AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
 
-    const std::string format = "%1%\t%2%\t%3%";
-
-    options.writer->open("VarDiscover_summary.stats");
-    options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
-    options.writer->write((boost::format(format) % stats.m.sn()
-                                                 % stats.m.sp()
-                                                 % stats.covered).str());
-    options.writer->write("\n");
-    
-    for (const auto &p : stats.h)
     {
-        options.writer->write((boost::format("%1%\t%2%") % p.first.start % p.second).str());
+        /*
+         * Generate summary statistics
+         */
+        
+        const std::string format = "%1%\t%2%\t%3%";
+        
+        options.writer->open("VarDiscover_summary.stats");
+        options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
+        options.writer->write((boost::format(format) % stats.m.sn()
+                                                     % stats.m.sp()
+                                                     % stats.covered).str());
+        
+        for (const auto &p : stats.h)
+        {
+            options.writer->write((boost::format("%1%-%2%\t%3%") % p.first.id % p.first.l.start % p.second).str());
+        }
+        
+        options.writer->close();
     }
-
-    options.writer->close();
 
     return stats;
 }

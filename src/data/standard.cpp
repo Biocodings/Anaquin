@@ -219,6 +219,7 @@ void Standard::v_var(const Reader &r)
         v.type = ParserVCF::strToSNP(tokens[0], tokens[1]);
 
         v_vars[v.l = f.l] = v;
+        __v_vars__.insert(v);
     });
 
     assert(!v_vars.empty());

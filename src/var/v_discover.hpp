@@ -8,6 +8,7 @@ namespace Anaquin
     struct VDiscover
     {
         typedef SingleMixtureOptions Options;
+        typedef std::map<Variation, Counts> VarHist;
 
         struct Stats : public ModelStats
         {
@@ -20,7 +21,8 @@ namespace Anaquin
             // Measure of variant detection independent to sequencing depth or coverage
             double efficiency;
 
-            LocusHist h = Analyzer::locusHist(Standard::instance().v_vars);
+            // Distribution for the variants
+            VarHist h = Analyzer::hist(Standard::instance().__v_vars__);
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());
