@@ -127,6 +127,11 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
     {
         std::cerr << "[Warn]: Error in the mixture file" << std::endl;
     }
+    
+    if (m.empty())
+    {
+        throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
+    }
 
     return info;
 }

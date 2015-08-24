@@ -456,21 +456,13 @@ static void printError(const std::string &msg, const std::exception &ex)
 
 template <typename Mixture> void applyMix(Mixture mix)
 {
-    try
+    if (mixture().empty())
     {
-        if (mixture().empty())
-        {
-            return;
-        }
-        
-        std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
-        mix(Reader(mixture()));
+        return;
     }
-    catch (const std::exception &ex)
-    {
-        printError("Error in reading the mixture file", ex);
-        throw ex;
-    }
+    
+    std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
+    mix(Reader(mixture()));
 }
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
@@ -1126,7 +1118,7 @@ int parse_options(int argc, char ** argv)
     {
         printError((boost::format("%1%%2%") % "Invalid filter: " % ex.what()).str());
     }
-    catch (const std::runtime_error &ex)
+    catch (const std::exception &ex)
     {
         printError(ex.what());
     }

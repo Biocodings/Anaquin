@@ -50,7 +50,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
     }
 
     {
-        AnalyzeReporter::linear(stats, "FusionDiscover", "FPKM", options.writer);
+        AnalyzeReporter::linear(stats, "FusionDiscoverAbund", "FPKM", options.writer);
     }
     
     {

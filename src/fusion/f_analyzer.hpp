@@ -104,7 +104,7 @@ namespace Anaquin
              * Find out all the sequins undetected in the experiment
              */
 
-            options.info("There are " + std::to_string(stats.h.size()) + " sequins in the reference");
+            options.info("Detected " + std::to_string(stats.h.size()) + " sequins in the reference");
             options.info("Checking for missing sequins");
             
             for (const auto &i : s.seqIDs)
