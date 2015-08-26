@@ -39,7 +39,7 @@ namespace Anaquin
         SequinID id;
 
         // Mixture A and B
-        Sequin seqA, seqB;
+        const MixtureData *seqA, *seqB;
 
         // Contigs aligned to this metaquin
         std::vector<AlignedContig> contigs;
@@ -81,17 +81,23 @@ namespace Anaquin
             std::map<ContigID, MetaAlignment> aligns;
         };
 
-        struct Options : public SingleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             // Empty Implementation
         };
 
         /*
-         * Conduct statistical analysis for an alignment geneated by BLAST relative
+         * Conduct statistical analysis for an alignment geneated by BLAST against
          * the sequins. The input file is assumed to be PSL format.
          */
 
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static Stats stats(const FileName &, const Options &options = Options());
+
+        /*
+         * Generate summary statistics for the alignment
+         */
+
+        static void analyze(const FileName &, const Options &options = Options());
     };
 }
 

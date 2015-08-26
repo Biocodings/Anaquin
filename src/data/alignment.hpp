@@ -2,7 +2,6 @@
 #define GI_ALIGNMENT_HPP
 
 #include "data/locus.hpp"
-#include "data/types.hpp"
 
 namespace Anaquin
 {

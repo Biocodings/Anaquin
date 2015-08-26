@@ -6,17 +6,12 @@
 #include "data/reader.hpp"
 #include "data/sequin.hpp"
 #include "data/feature.hpp"
+#include "data/reference.hpp"
 #include "parsers/parser_bed.hpp"
 
 namespace Anaquin
 {
     #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
-
-    enum Mixture
-    {
-        MixA,
-        MixB
-    };
 
     struct Variation
     {
@@ -160,12 +155,10 @@ namespace Anaquin
              * Metagenomic data
              */
 
-            void m_ref (const Reader &);
             void m_mix_1(const Reader &);
             void m_mix_2(const Reader &);
 
-            // Metagenomic annotation
-            std::vector<BedFeature> m_model;
+            Reference r;
 
         private:
             Standard();

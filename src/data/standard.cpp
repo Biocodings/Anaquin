@@ -78,6 +78,32 @@ template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo
     assert(!b.empty());
 }
 
+void parseMix__(const Reader &r, Mixture m, unsigned column=2)
+{
+    try
+    {
+        ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+        {
+            // Don't bother if this is the first line or an invalid line
+            if (p.i == 0 || fields.size() <= 1)
+            {
+                return;
+            }
+
+            Standard::instance().r.add(fields[0], stoi(fields[1]), stof(fields[column]), m);
+        });
+    }
+    catch (...)
+    {
+        std::cerr << "[Warn]: Error in the mixture file" << std::endl;
+    }
+
+    if (!Standard::instance().r.countMixes())
+    {
+        throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
+    }
+}
+
 template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &m, unsigned column=2)
 {
     m.clear();
@@ -188,8 +214,8 @@ void Standard::v_var(const Reader &r)
     
     // TODO: Fix this!
     seqIDs.clear();
-    
-    ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
+
+    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
         // Eg: D_1_10_R_G/A
         Tokens::split(f.name, "_", tokens);
@@ -236,24 +262,25 @@ void Standard::v_mix(const Reader &r)
     merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
 }
 
-void Standard::m_ref(const Reader &r)
+/*
+void Standard::parseAnnot(const Reader &r)
 {
-    ParserBED::parse(r, [&](const BedFeature &f, const ParserProgress &)
+    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
-        m_model.push_back(f);
+        ref.add(f.name, f.l);
     });
-
-    assert(!m_model.empty());
 }
-
+*/
+ 
 void Standard::m_mix_1(const Reader &r)
 {
-    merge(parseMix(Reader(r), seqs_1, 2), seqs_1, bases_1);
+    parseMix__(r, MixA, 2);
+    //merge(parseMix(Reader(r), seqs_1, 2), seqs_1, bases_1);
 }
 
 void Standard::m_mix_2(const Reader &r)
 {
-    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
+    merge(parseMix(r, seqs_2, 3), seqs_2, bases_2);
 }
 
 void Standard::l_mix(const Reader &r)

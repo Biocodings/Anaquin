@@ -449,11 +449,6 @@ static void printError(const std::string &msg)
     std::cerr << "*********************************************************************" << std::endl;
 }
 
-static void printError(const std::string &msg, const std::exception &ex)
-{
-    printError(msg + "\n" + ex.what());
-}
-
 template <typename Mixture> void applyMix(Mixture mix)
 {
     if (mixture().empty())
@@ -608,6 +603,8 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 // Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
+    Standard::instance().r.valid();
+    
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::analyze(_p.opts.at(x), o);
@@ -617,6 +614,8 @@ template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options
 // Analyze for two samples
 template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyzer::Options o = typename Analyzer::Options())
 {
+    Standard::instance().r.valid();
+
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::analyze(_p.opts.at(x), _p.opts.at(y), o);
@@ -1034,7 +1033,6 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
-            applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::m_mix_1, &s, std::placeholders::_1));
 
             switch (_p.tool)

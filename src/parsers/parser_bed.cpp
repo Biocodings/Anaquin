@@ -7,7 +7,7 @@ using namespace Anaquin;
 
 void ParserBED::parse(const Reader &r, Callback x)
 {
-    BedFeature f;
+    ParserBED::Annotation f;
     ParserProgress p;
 
     std::vector<std::string> sizes, starts, tokens;

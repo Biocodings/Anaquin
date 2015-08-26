@@ -21,8 +21,8 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
         options.info((boost::format("Using alignment: %1%") % options.pA).str());
         options.info((boost::format("Using alignment: %1%") % options.pB).str());
 
-        const auto r1 = MBlast::analyze(options.pA);
-        const auto r2 = MBlast::analyze(options.pB);
+        const auto r1 = MBlast::stats(options.pA);
+        const auto r2 = MBlast::stats(options.pB);
 
         options.info("Creating a differential plot");
         
@@ -124,8 +124,8 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     }
                     
                     // Known concentration
-                    const auto known = align.seqB.abund() / align.seqA.abund();
-                    
+                    const auto known = align.seqB->c / align.seqA->c;
+
                     // Ratio of the marginal concentration
                     const auto measured = y2.at(align.id) / y1.at(align.id);
                     
@@ -136,8 +136,8 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     SequinDiff d;
                     
                     d.id   = align.id;
-                    d.ex_A = align.seqA.abund();
-                    d.ex_B = align.seqB.abund();
+                    d.ex_A = align.seqA->c;
+                    d.ex_B = align.seqB->c;
                     d.ob_A = y1.at(align.id);
                     d.ob_B = y2.at(align.id);
                     d.ex_fold = known;

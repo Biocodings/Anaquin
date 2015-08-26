@@ -15,7 +15,7 @@ namespace Anaquin
         {
             Base mean, min, max;
             Base N20, N50, N80;
-            
+
             // Total number of bases in contigs
             Base total;
             
@@ -36,28 +36,28 @@ namespace Anaquin
              */
             
             ParserFA::parse(file, [&](const FALine &l, const ParserProgress &)
-                            {
-                                C c;
+            {
+                C c;
 
-                                c.id = l.id;
+                c.id = l.id;
 
-                                // Sequence of the config
-                                c.seq = l.seq;
+                // Sequence of the config
+                c.seq = l.seq;
 
-                                // The histogram needs the length of the sequence
-                                h.insert(l.seq.size());
+                // The histogram needs the length of the sequence
+                h.insert(l.seq.size());
 
-                                // Allows to apply operations on a specific assembler
-                                f(c);
+                // Allows to apply operations on a specific assembler
+                f(c);
 
-                                stats.contigs[c.id] = c;
-                            });
-            
+                stats.contigs[c.id] = c;
+            });
+
             // This is copied from printContiguityStats() in Histogram.h of the Abyss source code.
             h = h.trimLow(500);
             
             /*
-             * Reference: https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
+             * https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
              */
             
             stats.sum   = h.sum();
@@ -69,10 +69,10 @@ namespace Anaquin
             stats.N20   = h.weightedPercentile(1 - 0.2);
             stats.sum   = h.sum();
             stats.total = std::accumulate(stats.contigs.begin(), stats.contigs.end(), 0,
-                                           [&](int sum, const std::pair<std::string, C> &p)
-                                           {
-                                               return sum + p.second.seq.size();
-                                           });
+                            [&](int sum, const std::pair<std::string, C> &p)
+                            {
+                                return sum + p.second.seq.size();
+                            });
             return stats;
         }
     };
@@ -82,7 +82,7 @@ namespace Anaquin
         template <typename Stats, typename C> static Stats parse(const std::string &file)
         {
             Stats stats;
-            
+
             /*
              * Read coverage from the contig file. The format looks like:
              *

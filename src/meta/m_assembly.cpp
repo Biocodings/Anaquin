@@ -5,12 +5,9 @@ using namespace Anaquin;
 
 MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &options)
 {
-    /*
-     * The code for a specific assembler is indepenent to alignments. While it's
-     * certinaly a good design, we'll need to link and bridge the details.
-     */
-
     MAssembly::Stats stats;
+
+    assert(!options.psl.empty());
 
     /*
      * Generate statistics from a specific assembler, references not required (de-novo assembly)
@@ -23,17 +20,8 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
 
     ModelStats ms;
 
-    MBlast::Stats r; // TODO: Should this be here?
-
-    if (options.psl.empty())
-    {
-        throw std::invalid_argument("Alignment file needs to be specified");
-    }
-
-    options.info("Aligment file: " + options.psl);
-    
     // Analyse the given blast alignment file
-    r = MBlast::analyze(options.psl);
+    auto r = MBlast::stats(options.psl);
     
     for (auto &meta : r.metas)
     {
@@ -50,10 +38,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
          * concentration while still detectable in the experiment.
          */
         
-        if (ms.s.id.empty() || align.seqA.abund() < ms.s.abund)
+        if (ms.s.id.empty() || align.seqA->c < ms.s.abund)
         {
             ms.s.id     = align.id;
-            ms.s.abund  = align.seqA.abund();
+            ms.s.abund  = align.seqA->c;
             ms.s.counts = align.contigs.size();
         }
         
@@ -64,7 +52,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         if (!align.contigs.empty())
         {
             // Known concentration
-            const auto known = align.seqA.abund();
+            const auto known = align.seqA->c;
             
             /*
              * Measure concentration for this metaquin. Average out the coverage for each aligned contig.
@@ -91,7 +79,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                 meta.second.depthSequin += align.contigs[i].l.length() * contig.k_cov;
             }
             
-            meta.second.depthSequin = meta.second.depthSequin / align.seqA.length;
+            meta.second.depthSequin = meta.second.depthSequin / align.seqA->length;
             assert(measured != 0);
             
             ms.z.push_back(align.id);
@@ -125,7 +113,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                    meta.second.covered == 1.0      ? "Full" : "Partial";
 
         options.writer->write((boost::format(format) % meta.second.id
-                                                     % meta.second.seqA.abund()
+                                                     % meta.second.seqA->c
                                                      % status
                                                      % meta.second.depthAlign
                                                      % meta.second.depthSequin
