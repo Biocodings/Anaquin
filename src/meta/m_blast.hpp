@@ -36,6 +36,8 @@ namespace Anaquin
 
     struct MetaAlignment
     {
+        inline const SequinID &id() const { return seq->id; }
+        
         const SequinData *seq;
 
         // Contigs aligned to this metaquin

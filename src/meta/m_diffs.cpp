@@ -41,7 +41,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
             const auto &align = meta.second;
             
             // If the metaquin has an alignment
-            if (!align.contigs.empty())
+            if (!align->contigs.empty())
             {
                 /*
                  * Calculate measured concentration for this metaquin. Average out
@@ -50,9 +50,9 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                 
                 Concentration measured = 0;
                 
-                for (std::size_t i = 0; i < align.contigs.size(); i++)
+                for (std::size_t i = 0; i < align->contigs.size(); i++)
                 {
-                    const auto &contig = stats_1.contigs.at(align.contigs[i].id);
+                    const auto &contig = stats_1.contigs.at(align->contigs[i].id);
 
                     // Average relative to the size of the contig
                     measured += contig.k_cov / contig.seq.size();
@@ -62,11 +62,11 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                 }
                 
                 assert(measured != 0);
-                y1[align.id] = measured;
+                y1[align->id()] = measured;
             }
             else
             {
-                y1[align.id] = 0;
+                y1[align->id()] = 0;
             }
         }
 
@@ -75,7 +75,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
             const auto &align = meta.second;
             
             // If the metaquin has an alignment
-            if (!align.contigs.empty())
+            if (!align->contigs.empty())
             {
                 /*
                  * Calculate measured concentration for this metaquin. Average out
@@ -84,9 +84,9 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                 
                 Concentration measured = 0;
                 
-                for (std::size_t i = 0; i < align.contigs.size(); i++)
+                for (std::size_t i = 0; i < align->contigs.size(); i++)
                 {
-                    const auto &contig = stats_2.contigs.at(align.contigs[i].id);
+                    const auto &contig = stats_2.contigs.at(align->contigs[i].id);
                     
                     // Average relative to the size of the contig
                     measured += contig.k_cov / contig.seq.size();
@@ -96,11 +96,11 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                 }
                 
                 assert(measured != 0);
-                y2[align.id] = measured;
+                y2[align->id()] = measured;
             }
             else
             {
-                y2[align.id] = 0;
+                y2[align->id()] = 0;
             }
         }
         
@@ -112,34 +112,34 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
             const auto &align = meta.second;
 
             // If the metaquin has an alignment
-            if (!align.contigs.empty())
+            if (!align->contigs.empty())
             {
                 // Only when the sequin has mapping for both mixtures...
-                if (y2.at(align.id) && y1.at(align.id))
+                if (y2.at(align->id()) && y1.at(align->id()))
                 {
                     // Ignore if there's a filter and the sequin is not one of those
-                    if (!options.filters.empty() && !options.filters.count(align.id))
+                    if (!options.filters.empty() && !options.filters.count(align->id()))
                     {
                         continue;
                     }
                     
                     // Known concentration
-                    const auto known = align.seqB->mixes.at(MixB) / align.seqA->mixes.at(MixA);
+                    const auto known = align->seq->mixes.at(MixB) / align->seq->mixes.at(MixA);
 
                     // Ratio of the marginal concentration
-                    const auto measured = y2.at(align.id) / y1.at(align.id);
+                    const auto measured = y2.at(align->id()) / y1.at(align->id());
                     
                     stats.x.push_back(log2(known));
                     stats.y.push_back(log2(measured));
-                    stats.z.push_back(align.id);
+                    stats.z.push_back(align->id());
 
                     SequinDiff d;
                     
-                    d.id   = align.id;
-                    d.ex_A = align.seqA->mixes.at(MixA);
-                    d.ex_B = align.seqB->mixes.at(MixB);
-                    d.ob_A = y1.at(align.id);
-                    d.ob_B = y2.at(align.id);
+                    d.id   = align->id();
+                    d.ex_A = align->seq->mixes.at(MixA);
+                    d.ex_B = align->seq->mixes.at(MixB);
+                    d.ob_A = y1.at(align->id());
+                    d.ob_B = y2.at(align->id());
                     d.ex_fold = known;
                     d.ob_fold = measured;
 
