@@ -36,9 +36,6 @@ namespace Anaquin
 
     struct MetaAlignment
     {
-        // Name of the metaquin
-        SequinID id;
-
         const SequinData *seq;
 
         // Contigs aligned to this metaquin
@@ -63,22 +60,21 @@ namespace Anaquin
         // Average coverage depth across entire sequin
         double depthSequin = 0.0; // TODO: ????
 
-        inline bool operator<(const MetaAlignment &x)  const { return id < x.id;  }
-        inline bool operator==(const MetaAlignment &x) const { return id == x.id; }
+        inline bool operator<(const MetaAlignment &x)  const { return seq->id < x.seq->id;  }
+        inline bool operator==(const MetaAlignment &x) const { return seq->id == x.seq->id; }
     };
 
-    typedef std::map<SequinID, MetaAlignment> SequinAlign;
+    typedef std::map<SequinID, std::shared_ptr<MetaAlignment>> SequinAlign;
 
     struct MBlast
     {
-        // For convenience, the outputs are done in either direction
         struct Stats
         {
             // For each sequin (could be unmapped)
-            std::map<SequinID, MetaAlignment> metas;
+            std::map<SequinID, std::shared_ptr<MetaAlignment>> metas;
 
             // For each contig listed in the alignment file
-            std::map<ContigID, MetaAlignment> aligns;
+            std::map<ContigID, std::shared_ptr<MetaAlignment>> aligns;
         };
 
         struct Options : public AnalyzerOptions

@@ -128,8 +128,6 @@ void Reference::validate()
             }
         }
     }
-    
-    std::cout << _data.size() << std::endl;
 }
 
 void Reference::add(const SequinID &id, Base length, Concentration c, Mixture m)
