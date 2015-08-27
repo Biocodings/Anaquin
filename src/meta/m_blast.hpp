@@ -1,3 +1,4 @@
+
 #ifndef GI_M_PSL_HPP
 #define GI_M_PSL_HPP
 
@@ -38,8 +39,7 @@ namespace Anaquin
         // Name of the metaquin
         SequinID id;
 
-        // Mixture A and B
-        const MixtureData *seqA, *seqB;
+        const SequinData *seq;
 
         // Contigs aligned to this metaquin
         std::vector<AlignedContig> contigs;

@@ -603,7 +603,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 // Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    Standard::instance().r.valid();
+    Standard::instance().r.validate();
     
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
@@ -614,7 +614,7 @@ template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options
 // Analyze for two samples
 template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    Standard::instance().r.valid();
+    Standard::instance().r.validate();
 
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {

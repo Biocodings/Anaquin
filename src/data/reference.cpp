@@ -1,4 +1,4 @@
-#include <set>
+#include <iostream>
 #include "data/locus.hpp"
 #include "data/reference.hpp"
 
@@ -15,9 +15,20 @@ struct AnnotationData
     Locus l;
 };
 
-struct Reference::Stats
+struct MixtureData
 {
-    std::set<SequinID> ids;
+    MixtureData(const SequinID &id, Base length, Concentration abund) : id(id), length(length), abund(abund) {}
+    
+    inline bool operator<(const MixtureData &x)  const { return id < x.id;  }
+    inline bool operator==(const MixtureData &x) const { return id == x.id; }
+    
+    SequinID id;
+    
+    // Length of the sequin
+    Base length;
+    
+    // Amount of spiked-in concentration
+    Concentration abund;
 };
 
 struct Reference::Mixtures : public std::map<Mixture, std::set<MixtureData>>
@@ -32,48 +43,101 @@ struct Reference::Annotations : std::set<AnnotationData>
 
 Reference::Reference()
 {
-    _rawMixes  = std::shared_ptr<Mixtures>(new Mixtures);
-    _rawAnnots = std::shared_ptr<Annotations>(new Annotations);
+    _mixes  = std::shared_ptr<Mixtures>(new Mixtures);
+    _annots = std::shared_ptr<Annotations>(new Annotations);
 }
 
 std::size_t Reference::countMixes() const
 {
-    return _rawMixes->size();
+    return _mixes->size();
 }
 
-const MixtureData & Reference::seq(const SequinID &id, Mixture m) const
+const SequinData * Reference::seq(const SequinID &id) const
 {
-    return *(std::find_if((*_validMixes)[m].begin(), (*_validMixes)[m].end(), [&](const MixtureData &d)
-    {
-        return id == d.id;
-    }));
+    return _data.count(id) ? &_data.at(id) : nullptr;
 }
 
-void Reference::valid()
+void Reference::validate()
 {
-    _stats = std::shared_ptr<Stats>(new Stats());
+    std::vector<SequinID> mixIDs, antIDs;
+    
+    antIDs.resize((*_annots).size());
+    mixIDs.resize((*_mixes)[MixA].size());
 
-    for (const auto &i : (*_rawMixes)[MixA])
+    std::transform((*_mixes)[MixA].begin(), (*_mixes)[MixA].end(), mixIDs.begin(), [&](const MixtureData &m)
     {
-        _stats->ids.insert(i.id);
+        return m.id;
+    });
+    
+    std::transform((*_annots).begin(), (*_annots).end(), antIDs.begin(), [&](const AnnotationData &m)
+    {
+        return m.id;
+    });
+
+    /*
+     * Check for any sequin defined in mixture but not in annotation
+     */
+
+    std::vector<SequinID> diffs, inters;
+
+    std::set_difference(mixIDs.begin(),
+                        mixIDs.end(),
+                        antIDs.begin(),
+                        antIDs.end(),
+                        std::back_inserter(diffs));
+
+    std::set_intersection(mixIDs.begin(),
+                          mixIDs.end(),
+                          antIDs.begin(),
+                          antIDs.end(),
+                          std::back_inserter(inters));
+
+    /*
+     * Construct a set of validated sequins
+     */
+    
+    std::for_each(mixIDs.begin(), mixIDs.end(), [&](const SequinID &id)
+    {
+        auto d = SequinData();
+
+        // The rest of the fields will be filled later...
+        d.id = id;
+
+        // Add a new entry for the validated sequin
+        _data[id] = d;
+    });
+
+    /*
+     * Now, we have a list of validated sequins. Use those sequins to combine information
+     * from mixtures and annotations.
+     */
+
+    for (const auto i : (*_mixes))
+    {
+        // Eg: MixA, MixB etc
+        const auto mix = i.first;
+
+        // For each of the mixture defined
+        for (const auto j : i.second)
+        {
+            // Only if it's a validated sequin
+            if (_data.count(j.id))
+            {
+                _data.at(j.id).length = j.length;
+                _data.at(j.id).mixes[mix] = j.abund;
+            }
+        }
     }
     
-    _validMixes = _rawMixes; // TODO: Fix this
-    
-    assert(!_stats->ids.empty());
-}
-
-const std::set<SequinID> &Reference::seqs() const
-{
-    return _stats->ids;
+    std::cout << _data.size() << std::endl;
 }
 
 void Reference::add(const SequinID &id, Base length, Concentration c, Mixture m)
 {
-    (*_rawMixes)[m].insert(MixtureData(id, length, c));
+    (*_mixes)[m].insert(MixtureData(id, length, c));
 }
 
 void Reference::add(const SequinID &id, const Locus &l)
 {
-    _rawAnnots->insert(AnnotationData(id, l));
+    _annots->insert(AnnotationData(id, l));
 }

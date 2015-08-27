@@ -124,7 +124,7 @@ namespace Anaquin
             Assembler tool = Assembler::Velvet;
         };
 
-        static Stats analyze(const std::string &file, const Options &options = Options());
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 

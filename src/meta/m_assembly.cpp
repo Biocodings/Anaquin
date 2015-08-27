@@ -38,10 +38,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
          * concentration while still detectable in the experiment.
          */
         
-        if (ms.s.id.empty() || align.seqA->c < ms.s.abund)
+        if (ms.s.id.empty() || align.seq->mixes.at(MixA) < ms.s.abund)
         {
             ms.s.id     = align.id;
-            ms.s.abund  = align.seqA->c;
+            ms.s.abund  = align.seq->mixes.at(MixA);
             ms.s.counts = align.contigs.size();
         }
         
@@ -52,13 +52,13 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         if (!align.contigs.empty())
         {
             // Known concentration
-            const auto known = align.seqA->c;
+            const auto known = align.seq->mixes.at(MixA);
             
             /*
              * Measure concentration for this metaquin. Average out the coverage for each aligned contig.
              */
             
-            Concentration measured = 0;
+            Concentration measured = 10;
             
             for (std::size_t i = 0; i < align.contigs.size(); i++)
             {
@@ -79,7 +79,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                 meta.second.depthSequin += align.contigs[i].l.length() * contig.k_cov;
             }
             
-            meta.second.depthSequin = meta.second.depthSequin / align.seqA->length;
+            meta.second.depthSequin = meta.second.depthSequin / align.seq->length;
             assert(measured != 0);
             
             ms.z.push_back(align.id);
@@ -113,7 +113,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                    meta.second.covered == 1.0      ? "Full" : "Partial";
 
         options.writer->write((boost::format(format) % meta.second.id
-                                                     % meta.second.seqA->c
+                                                     % meta.second.seq->mixes.at(MixA)
                                                      % status
                                                      % meta.second.depthAlign
                                                      % meta.second.depthSequin

@@ -8,46 +8,27 @@ using namespace Anaquin;
 MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
 {
     /*
-     * Create data-strucutre for the sequins
+     * Create data-strucutre for the known sequins
      */
     
     SequinAlign m;
 
-    for (const auto &id : Standard::instance().r.seqs())
+    for (const auto &i : Standard::instance().r.data())
     {
-        const auto &d = Standard::instance().r.seq(id, MixA);
-
-        m[id].id   = id;
-        m[id].seqA = &d;
+        m[i.second.id].id  = i.second.id;
+        m[i.second.id].seq = &i.second;
 
         //if (mixB.count(m[seqID].id))
         //{
         //    m[seqID].seqB = mixB.at(m[seqID].id);
         //}
     }
-/*
-    const auto &mixB = Standard::instance().seqs_2;
-    
-    for (const auto &seq : Standard::instance().seqs_1)
-    {
-        const auto &seqID = seq.first;
-        
-        m[seqID].id   = seqID;
-        m[seqID].seqA = seq.second;
-        
-        if (mixB.count(m[seqID].id))
-        {
-            m[seqID].seqB = mixB.at(m[seqID].id);
-        }
-    }
-*/
+
     /*
      * Create data-strucutre for the alignment
      */
     
-    options.info("Comparing alignment");
-    
-    ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
+    ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &p)
     {
         // Eg: M2_G, M10_G
         const SequinID id = l.tName;
@@ -93,9 +74,9 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
             
             // The total non-overlapping bases for the alignments
             const auto total = std::accumulate(merged.begin(), merged.end(), 0, [&](int sum, const Locus &l)
-                                               {
-                                                   return sum + l.length();
-                                               });
+            {
+                return sum + l.length();
+            });
             
             /*
              * Don't consider for overlapping because a base can be matched or mismatched.
@@ -116,8 +97,8 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
             assert(match > mismatch && match > gaps);
             
             // Fraction of sequins covered by alignments
-            align.covered = (double) total / align.seqA->length;
-            
+            align.covered = (double) total / align.seq->length;
+
             // Fraction of mismatch bases in alignments
             align.mismatch = (double) mismatch / match;
             

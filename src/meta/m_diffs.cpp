@@ -124,7 +124,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     }
                     
                     // Known concentration
-                    const auto known = align.seqB->c / align.seqA->c;
+                    const auto known = align.seqB->mixes.at(MixB) / align.seqA->mixes.at(MixA);
 
                     // Ratio of the marginal concentration
                     const auto measured = y2.at(align.id) / y1.at(align.id);
@@ -136,8 +136,8 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     SequinDiff d;
                     
                     d.id   = align.id;
-                    d.ex_A = align.seqA->c;
-                    d.ex_B = align.seqB->c;
+                    d.ex_A = align.seqA->mixes.at(MixA);
+                    d.ex_B = align.seqB->mixes.at(MixB);
                     d.ob_A = y1.at(align.id);
                     d.ob_B = y2.at(align.id);
                     d.ex_fold = known;

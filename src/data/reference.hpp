@@ -1,6 +1,7 @@
 #ifndef GI_REFERENCE_HPP
 #define GI_REFERENCE_HPP
 
+#include <set>
 #include <memory>
 
 namespace Anaquin
@@ -13,22 +14,26 @@ namespace Anaquin
         MixG,
     };
 
-    struct MixtureData
+    struct Stats
     {
-        MixtureData(const SequinID &id, Base length, Concentration c) : id(id), length(length), c(c) {}
-        
-        inline bool operator<(const MixtureData &x)  const { return id < x.id;  }
-        inline bool operator==(const MixtureData &x) const { return id == x.id; }
-        
+    };
+
+    struct SequinData
+    {
+        inline bool operator<(const SequinID &x)  const { return this->id < x;  }
+        inline bool operator==(const SequinID &x) const { return this->id == x; }
+
         SequinID id;
-        
+
         // Length of the sequin
         Base length;
         
-        // Raw amount of spiked-in concentration
-        Concentration c;
+        // Amount of spiked-in concentration
+        std::map<Mixture, Concentration> mixes;
+
+        Locus l;
     };
-    
+
     class Reference
     {
         public:
@@ -43,24 +48,26 @@ namespace Anaquin
             // Returns number of sequins in the mixture
             std::size_t countMixes() const;
 
-            // Returns the valid sequins
-            const std::set<SequinID> &seqs() const;
+            // Returns all validated sequins
+            const std::map<SequinID, SequinData> &data() const { return _data; }
 
-            const MixtureData &seq(const SequinID &id, Mixture m) const;
+            const SequinData *seq(const SequinID &id) const;
 
-            void valid();
+            void validate();
 
         private:
 
-            struct Stats;
             struct Mixtures;
             struct Annotations;
 
-            std::shared_ptr<Stats>       _stats;
-            std::shared_ptr<Mixtures>    _rawMixes;
-            std::shared_ptr<Annotations> _rawAnnots;
-            std::shared_ptr<Mixtures>    _validMixes;
-            std::shared_ptr<Annotations> _validAnnots;
+            // Validated sequins
+            std::map<SequinID, SequinData> _data;
+
+            // Statistics about the sequins, only valid after validate()
+            Stats _stats;
+
+            std::shared_ptr<Mixtures>    _mixes;
+            std::shared_ptr<Annotations> _annots;
     };
 }
 
