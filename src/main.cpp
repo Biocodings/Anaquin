@@ -8,6 +8,7 @@
 
 #include "trans/t_diffs.hpp"
 #include "trans/t_align.hpp"
+#include "trans/t_viewer.hpp"
 #include "trans/t_express.hpp"
 #include "trans/t_assembly.hpp"
 
@@ -369,8 +370,8 @@ static const struct option long_options[] =
     { "m",   required_argument, 0, OPT_MIXTURE },
     { "mix", required_argument, 0, OPT_MIXTURE },
 
-    { "o",      required_argument, 0, OPT_PATH  },
-    { "output", required_argument, 0, OPT_PATH  },
+    { "o",      required_argument, 0, OPT_PATH },
+    { "output", required_argument, 0, OPT_PATH },
 
     { "f",      required_argument, 0, OPT_FILTER },
     { "filter", required_argument, 0, OPT_FILTER },
@@ -598,6 +599,14 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 #ifndef DEBUG
     o.logger->close();
 #endif
+}
+
+template <typename Viewer> void viewer(typename Viewer::Options o = typename Viewer::Options())
+{
+    // Where the session files are generated
+    o.path = _p.path;
+
+    Viewer::generate(_p.opts.at(OPT_BAM_1), o);
 }
 
 // Analyze for a single sample
@@ -949,8 +958,10 @@ void parse(int argc, char ** argv)
 
                     break;
                 }
+
+                case TOOL_T_IGV: { viewer<TViewer>(); break; }
             }
-            
+
             break;
         }
 

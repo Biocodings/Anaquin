@@ -181,7 +181,7 @@
 		EF3860E21AD3783A0062D246 /* parser_sam.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_sam.hpp; path = ../src/parsers/parser_sam.hpp; sourceTree = "<group>"; };
 		EF3860E31AD3783A0062D246 /* parser_vcf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_vcf.cpp; path = ../src/parsers/parser_vcf.cpp; sourceTree = "<group>"; };
 		EF3860E41AD3783A0062D246 /* parser_vcf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_vcf.hpp; path = ../src/parsers/parser_vcf.hpp; sourceTree = "<group>"; };
-		EF3A43FB1B8EDF9400C968F0 /* python.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = python.hpp; path = ../src/data/python.hpp; sourceTree = "<group>"; };
+		EF3A43FB1B8EDF9400C968F0 /* script.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = script.hpp; path = ../src/data/script.hpp; sourceTree = "<group>"; };
 		EF3B84431B60EA4200C260D0 /* v_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = v_discover.cpp; sourceTree = "<group>"; };
 		EF3B84441B60EA4200C260D0 /* v_discover.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = v_discover.hpp; sourceTree = "<group>"; };
 		EF3CD3021B6671F5005644C4 /* m_abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_abundance.cpp; sourceTree = "<group>"; };
@@ -456,7 +456,7 @@
 				EF1DE0B11B21EC6D00DEC381 /* standard.hpp */,
 				EF1DE0B21B21EC6D00DEC381 /* tokens.hpp */,
 				EF1DE0B31B21EC6D00DEC381 /* types.hpp */,
-				EF3A43FB1B8EDF9400C968F0 /* python.hpp */,
+				EF3A43FB1B8EDF9400C968F0 /* script.hpp */,
 			);
 			name = data;
 			sourceTree = "<group>";

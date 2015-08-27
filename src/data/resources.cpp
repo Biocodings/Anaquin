@@ -5,6 +5,7 @@
  */
 
 #include "resources/linear.R"
+#include "resources/viewer.py"
 #include "resources/manual.txt"
 
 /*
@@ -47,19 +48,9 @@
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
-std::string ChromoName()
+std::string ViewerScript()
 {
-    return "chrT";
-}
-
-float ChromoVersion()
-{
-    return 1.0;
-}
-
-float MixtureVersion()
-{
-    return 1.0;
+    return ToString(scripts_viewer_py);
 }
 
 std::string LinearR()
