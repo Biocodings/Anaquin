@@ -78,7 +78,7 @@ template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo
     assert(!b.empty());
 }
 
-void parseMix__(const Reader &r, Mixture m, unsigned column=2)
+void parseMix__(const Reader &r, Reference &ref, Mixture m, unsigned column=2)
 {
     try
     {
@@ -90,7 +90,7 @@ void parseMix__(const Reader &r, Mixture m, unsigned column=2)
                 return;
             }
 
-            Standard::instance().r.add(fields[0], stoi(fields[1]), stof(fields[column]), m);
+            ref.add(fields[0], stoi(fields[1]), stof(fields[column]), m);
         });
     }
     catch (...)
@@ -98,7 +98,7 @@ void parseMix__(const Reader &r, Mixture m, unsigned column=2)
         std::cerr << "[Warn]: Error in the mixture file" << std::endl;
     }
 
-    if (!Standard::instance().r.countMixes())
+    if (!ref.countMixes())
     {
         throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
     }
@@ -274,7 +274,7 @@ void Standard::parseAnnot(const Reader &r)
  
 void Standard::m_mix_1(const Reader &r)
 {
-    parseMix__(r, MixA, 2);
+    parseMix__(r, r_meta, MixA, 2);
     //merge(parseMix(Reader(r), seqs_1, 2), seqs_1, bases_1);
 }
 

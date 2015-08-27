@@ -79,15 +79,15 @@ def run(cmd):
     os.system(cmd)
 
 # Generate an index for a SAM/BAM file
-def index(path, align):    
+def index(path, align):
     print('Generating index for ' + align + ' to ' + path)
 
     tmp = 'TEMP'
 
-    # Silently create a temporary index directory
+    # Silently create a temporary directory for indexing
     os.system('mkdir -p ' + tmp)
 
-    # Eg: /home/tedwong/ABCD.sam to ABCD.sam
+    # Eg: /home/tedwong/ABCD.bam to ABCD.bam
     file = os.path.basename(align)
 
     # Eg: ABCD.sam to ABCD
@@ -122,7 +122,7 @@ def retrieve(url, path, file):
             run('rm -rf ' + file)
 
     except e:
-        raise Exception('Failed to retrieve: ' + path)        
+        raise Exception('Failed to retrieve: ' + path)
 
 # Download the required files and generate a IGV session 
 def download(path, files):
@@ -210,15 +210,21 @@ if __name__ == '__main__':
     # Where to generate    
     mode = sys.argv[1]
 
-    path = sys.argv[2]    
+    path = sys.argv[2]
     path = os.path.dirname(os.path.abspath(path)) + '/' + path
 
     # Silently create the directory
     os.system('mkdir -p ' + path)
-        
+
     if (os.path.isdir(path) == False):
         raise Exception('Invalid directory: ' + path)
     
+    # Eg: accepted_hits.bam
+    align = sys.argv[3]
+
+    if (align.endswith('.sam')):
+        raise Exception('The SAM file format is not supported. Please convert it to the BAM format. Check https://www.biostars.org/p/93559 for further information.')
+
     if (mode == 'Fusion'):
         generateFusion(path, sys.argv[3])
     elif (mode == 'Trans'):

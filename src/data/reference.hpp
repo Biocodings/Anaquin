@@ -1,7 +1,6 @@
 #ifndef GI_REFERENCE_HPP
 #define GI_REFERENCE_HPP
 
-#include <set>
 #include <memory>
 
 namespace Anaquin
@@ -68,6 +67,11 @@ namespace Anaquin
 
             std::shared_ptr<Mixtures>    _mixes;
             std::shared_ptr<Annotations> _annots;
+    };
+
+    class TransReference : public Reference
+    {
+        
     };
 }
 

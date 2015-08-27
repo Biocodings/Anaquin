@@ -13,7 +13,7 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
     
     SequinAlign m;
 
-    for (const auto &i : Standard::instance().r.data())
+    for (const auto &i : Standard::instance().r_meta.data())
     {
         m[i.second.id] = std::shared_ptr<MetaAlignment>(new MetaAlignment());
         m[i.second.id]->seq = &i.second;

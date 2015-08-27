@@ -158,7 +158,7 @@ namespace Anaquin
             void m_mix_1(const Reader &);
             void m_mix_2(const Reader &);
 
-            Reference r;
+            Reference r_meta;
 
         private:
             Standard();
