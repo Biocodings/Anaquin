@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "unit/test.hpp"
-#include "var/v_discover.hpp"
+#include "variant/v_discover.hpp"
 
 using namespace Anaquin;
 

@@ -1,4 +1,4 @@
-#include "var/v_discover.hpp"
+#include "variant/v_discover.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Anaquin;
@@ -96,7 +96,7 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
     stats.efficiency = stats.m.sn() / stats.covered;
     
     // Create a script for allele frequency
-    //AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
+    AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
 
     {
         /*

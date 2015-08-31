@@ -12,9 +12,9 @@
 #include "trans/t_express.hpp"
 #include "trans/t_assembly.hpp"
 
-#include "var/v_align.hpp"
-#include "var/v_viewer.hpp"
-#include "var/v_discover.hpp"
+#include "variant/v_align.hpp"
+#include "variant/v_viewer.hpp"
+#include "variant/v_discover.hpp"
 
 #include "meta/m_blast.hpp"
 #include "meta/m_diffs.hpp"
