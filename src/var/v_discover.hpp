@@ -10,7 +10,7 @@ namespace Anaquin
         typedef SingleMixtureOptions Options;
         typedef std::map<Variation, Counts> VarHist;
 
-        struct Stats : public ModelStats
+        struct Stats : public LinearStats
         {
             // Overall performance
             Confusion m;

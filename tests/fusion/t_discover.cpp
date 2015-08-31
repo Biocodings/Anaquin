@@ -19,7 +19,7 @@ TEST_CASE("FDiscover_F_1000")
     
     const auto stats = FDiscover::analyze("tests/data/F_1000/star-fusion.fusion_candidates.txt",
                                                 FDiscover::Options(Software::Star));
-    const auto lm = stats.linear();
+    const auto lm = stats.cov.linear();
 
     REQUIRE(lm.r  == Approx(0.9729157505));
     REQUIRE(lm.m  == Approx(0.9771885928));

@@ -50,17 +50,13 @@ namespace Anaquin
 
             return Negative;
         }
-        
+
         template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &options = Options())
         {
             Stats stats;
             const auto &s = Standard::instance();
 
             options.info("Parsing alignment file");
-
-            /*
-             * Positive classified. Updated the statistics.
-             */
 
             auto positive = [&](const SequinID &id, Reads reads)
             {
@@ -73,11 +69,15 @@ namespace Anaquin
                 const auto measured = reads;
 
                 stats.h.at(id)++;
-                stats.z.push_back(id);
-                stats.x.push_back(log2f(known));
-                stats.y.push_back(log2f(measured));
+                
+                Point p;
+                
+                p.x = log2f(known);
+                p.y = log2f(measured);
+                
+                stats.cov[id] = p;
             };
-            
+
             SequinID id;
 
             if (options.soft == Software::Star)

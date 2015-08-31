@@ -22,15 +22,14 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
                              "#--------------------|   Sn   |  Sp   |  fSn |  fSp\n"
                              "    Fusion level:       %5%     %6%     %7%    %8%\n"
                              "\n"
-                             "Covered:     %9%"
-        ;
+                             "Covered:     %9%";
 
         options.writer->write((boost::format(summary) % file
                                                       % stats.m.skip
                                                       % stats.m.nq
                                                       % stats.m.nr
-                                                      % stats.m.sp()
                                                       % stats.m.sn()
+                                                      % stats.m.sp()
                                                       % "????"
                                                       % "????"
                                                       % stats.covered).str());
@@ -42,25 +41,54 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
      */
 
     {
-        const auto format = "%1%";
-
         options.info("Generating sequins statistics");
         options.writer->open("FusionDiscover_quins.stats");
         
+        const auto summary = "Summary for dataset: %1% :\n\n"
+                             "   Detected: %2% (%3%) sequins\n"
+                             "   Undetected: %4% (%5%) sequins\n\n"
+                             "#--------------------|   normal   |  fuzzy   |  e_cov |  o_cov\n";
+
+        // Proportion of sequins detected
+        const auto detect = std::count_if(stats.h.begin(), stats.h.end(), [&](const std::pair<SequinID, Counts> &p)
+        {
+            return p.second;
+        });
+        
+        const auto prop = (detect / static_cast<double>(stats.h.size()));
+        
+        options.writer->write((boost::format(summary) % file
+                                                      % detect
+                                                      % prop
+                                                      % (stats.h.size() - detect)
+                                                      % (1 - prop)
+                               ).str());
+
+        const auto format  = "    %1%:       %2%     %3%     %4%    %5%";
+
         for (const auto &i : stats.h)
         {
-            options.writer->write((boost::format(format) % i.first).str());
+            if (i.second)
+            {
+                options.writer->write((boost::format(format) % i.first
+                                                             % "yes"
+                                                             % "-"
+                                                             % stats.cov.at(i.first).x
+                                                             % stats.cov.at(i.first).y
+                                       ).str());
+            }
+            else
+            {
+                options.writer->write((boost::format(format) % i.first
+                                                             % "-"
+                                                             % "-"
+                                                             % "-"
+                                                             % "-"
+                                       ).str());
+            }
         }
 
         options.writer->close();
-    }
-
-    {
-        AnalyzeReporter::linear(stats, "FusionDiscoverAbund", "FPKM", options.writer);
-    }
-    
-    {
-        AnalyzeReporter::missing("FusionDiscover_miss.csv", stats, options.writer);
     }
 
     return stats;

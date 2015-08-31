@@ -18,7 +18,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         case Velvet: { stats = Velvet::parse<MAssembly::Stats, Contig>(file); break; }
     }
 
-    ModelStats ms;
+    LinearStats ms;
 
     // Analyse the given blast alignment file
     auto blat = MBlast::stats(options.psl);

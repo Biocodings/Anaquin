@@ -145,12 +145,17 @@ namespace Anaquin
         assert(!Locus::overlap(merged));
     }
 
-    struct ModelStats
+    struct Point
+    {
+        double x, y;
+    };
+
+    struct LinearStats : public std::map<SequinID, Point>
     {
         // This is needed to make the compiler happy ...
-        ModelStats() {}
+        LinearStats() {}
 
-        ModelStats(const ModelStats &stats) : s(stats.s), z(stats.z), x(stats.x), y(stats.y) {}
+        LinearStats(const LinearStats &stats) : s(stats.s), z(stats.z), x(stats.x), y(stats.y) {}
         
         Sensitivity s;
 

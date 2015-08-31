@@ -12,7 +12,7 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        struct Stats : public ModelStats
+        struct Stats : public LinearStats
         {
             // Total mapped to the in-silico chromosome
             Counts n_chrT = 0;

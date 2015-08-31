@@ -31,7 +31,7 @@ namespace Anaquin
             Coverage ob_fold;
         };
 
-        struct Stats : public ModelStats
+        struct Stats : public LinearStats
         {
             std::vector<SequinDiff> diffs;
         };

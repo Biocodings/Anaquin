@@ -17,7 +17,7 @@ namespace Anaquin
 
     struct FExpress
     {
-        struct Stats : public ModelStats
+        struct Stats : public LinearStats
         {
             // Empty Implementation            
         };

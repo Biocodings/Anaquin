@@ -13,7 +13,7 @@ namespace Anaquin
             Isoform
         };
 
-        struct Stats : public ModelStats
+        struct Stats : public LinearStats
         {
             SequinHist c = Analyzer::seqHist();
         };
