@@ -20,9 +20,10 @@ namespace Anaquin
     /*
      * List of softwares supported by Anaquin
      */
-    
+
     enum Software
     {
+        NA,
         Star,
         TopHat,
         Cufflink,

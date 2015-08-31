@@ -17,6 +17,7 @@ namespace Anaquin
             // Don't bother unless in-silico chromosome
             if (f.chr_1 != s.id || f.chr_2 != s.id)
             {
+                m.skip++;
                 return Ignore;
             }
 

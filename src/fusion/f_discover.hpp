@@ -9,10 +9,15 @@ namespace Anaquin
     {
         struct Options : public SingleMixtureOptions
         {
-            // GCC requires it...
-            Options() {}
+            Options(Software soft = Software::TopHat) : soft(soft)
+            {
+                if (soft != TopHat && soft != Star)
+                {
+                    throw std::runtime_error("Only Tophat-Fusion and Star are supported");
+                }
+            }
 
-            Software soft = Software::TopHat;
+            Software soft;
         };
 
         struct Stats : ModelStats

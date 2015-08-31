@@ -3,11 +3,11 @@
 
 using namespace Anaquin;
 
-TEST_CASE("ParserSFusion_100K")
+TEST_CASE("ParserStarFusion_Test")
 {
     std::vector<ParserStarFusion::Fusion> fs;
 
-    ParserStarFusion::parse(Reader("tests/data/fusion/100K/star-fusion.fusion_candidates.txt"), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
+    ParserStarFusion::parse(Reader("tests/data/F_1000/star-fusion.fusion_candidates.txt"), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
     {
         fs.push_back(f);
     });

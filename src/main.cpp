@@ -73,15 +73,16 @@ typedef std::set<Value> Range;
  * Options specified in the command line
  */
 
-#define OPT_TEST    333
-#define OPT_TOOL    320
-#define OPT_MIN     321
-#define OPT_MAX     322
-#define OPT_LOS     323
-#define OPT_PATH    324
-#define OPT_FILTER  327
-#define OPT_THREAD  328
-#define OPT_VERSION 332
+#define OPT_TEST     320
+#define OPT_TOOL     321
+#define OPT_MIN      322
+#define OPT_MAX      323
+#define OPT_LOS      324
+#define OPT_PATH     325
+#define OPT_FILTER   326
+#define OPT_THREAD   327
+#define OPT_VERSION  338
+#define OPT_SOFTWARE 339
 
 #define OPT_R_BASE  800
 #define OPT_R_BED   801
@@ -176,10 +177,20 @@ static std::map<Value, Tool> _tools =
 
 static std::map<Tool, std::set<Option>> _required =
 {
+    /*
+     * Transcriptome Analysis
+     */
+    
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1 } },
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE } },
+    
+    /*
+     * Fusion Analysis
+     */
+
+    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_MIXTURE, OPT_SOFTWARE, OPT_U_OUT } },
 };
 
 /*
@@ -219,7 +230,7 @@ struct Parsing
     // The sequins that have been filtered
     std::set<SequinID> filters;
     
-    // How the software is invoked
+    // How Anaquin is invoked
     std::string command;
 
     Tool tool = 0;
@@ -228,47 +239,18 @@ struct Parsing
 // Wrap the variables so that it'll be easier to reset them
 static Parsing _p;
 
-template<typename T> std::string concat(const std::set<Value, T> &m)
-{
-    std::string str;
-    
-    for (const auto i : m)
-    {
-        str += i.first + "|";
-    }
-    
-    return str.substr(0, str.length() - 2);
-}
-
-struct InvalidCommandException : public std::exception
-{
-    InvalidCommandException(const std::string &data) : data(data) {}
-
-    // The exact meaning is context-specific
-    std::string data;
-};
-
 struct InvalidOptionException : public std::exception
 {
     InvalidOptionException(const std::string &opt) : opt(opt) {}
     
-    std::string opt;
+    const std::string opt;
 };
 
-/*
- * The type of the argument is invalid, the expected type is integer. For example, giving
- * "ABCD" as the number of threads.
- */
-
-struct InvalidIntegerError : public InvalidCommandException
+struct InvalidValueException : public std::exception
 {
-    InvalidIntegerError(const std::string &arg) : InvalidCommandException(arg) {}
-};
+    InvalidValueException(const std::string &opt, const std::string &value) : opt(opt), value(value) {}
 
-// An option is being given more than once
-struct RepeatOptionError : public InvalidCommandException
-{
-    RepeatOptionError(const std::string &opt) : InvalidCommandException(opt) {}
+    const std::string opt, value;
 };
 
 // A mandatory option is missing, for instance, failing to specify the command
@@ -372,6 +354,9 @@ static const struct option long_options[] =
 
     { "o",      required_argument, 0, OPT_PATH },
     { "output", required_argument, 0, OPT_PATH },
+
+    { "soft",     required_argument, 0, OPT_SOFTWARE },
+    { "software", required_argument, 0, OPT_SOFTWARE },
 
     { "f",      required_argument, 0, OPT_FILTER },
     { "filter", required_argument, 0, OPT_FILTER },
@@ -673,7 +658,28 @@ void parse(int argc, char ** argv)
             throw;
         }
     };
-    
+
+    auto parseSoft = [&](const std::string &str)
+    {
+        const static std::map<std::string, Software> m =
+        {
+            { "star"  ,        Star },
+            { "tophat",        TopHat },
+            { "tophatFusion",  TopHat },
+            { "tophat-fusion", TopHat },
+        };
+        
+        auto copy = str;
+        std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
+
+        if (!m.count(copy))
+        {
+            throw InvalidValueException(argv[index], copy);
+        }
+
+        return m.at(copy);
+    };
+
     // Attempt to parse and store an integer from string
     auto parseInt = [&](const std::string &str, unsigned &r)
     {
@@ -770,8 +776,8 @@ void parse(int argc, char ** argv)
 
     for (std::size_t i = 0; i < opts.size(); i++)
     {
-        const auto opt = opts[i];
-        const auto val = vals[i];
+        auto opt = opts[i];
+        auto val = vals[i];
 
         switch (opt)
         {
@@ -796,9 +802,10 @@ void parse(int argc, char ** argv)
 
                 // We'll work with it's internal representation
                 _p.tool = _tools.at(val);
-
                 break;
             }
+
+            case OPT_SOFTWARE: { _p.opts[opt] = val; break; }
 
             case OPT_FA_1:
             case OPT_FA_2:
@@ -976,9 +983,13 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:      { analyze_1<FViewer>(OPT_U_OUT);   break; }
-                case TOOL_F_EXPRESS:  { analyze_1<FExpress>(OPT_GTRACK); break; }
-                case TOOL_F_DISCOVER: { analyze_1<FDiscover>(OPT_U_OUT); break; }
+                case TOOL_F_IGV:     { analyze_1<FViewer>(OPT_U_OUT);   break; }
+                case TOOL_F_EXPRESS: { analyze_1<FExpress>(OPT_GTRACK); break; }
+                case TOOL_F_DISCOVER:
+                {
+                    analyze_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));
+                    break;
+                }
             }
 
             break;
@@ -1095,17 +1106,16 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidOptionException &ex)
     {
-        const auto format = "Unknown option: %1%";
-        printError((boost::format(format) % ex.opt).str());
+        printError((boost::format("Unknown option: %1%") % ex.opt).str());
+    }
+    catch (const InvalidValueException &ex)
+    {
+        printError((boost::format("%1% not expected in option -%2%") % ex.opt % ex.value).str());
     }
     catch (const MissingOptionError &ex)
     {
         const auto format = "A mandatory option is missing. Please specify -%1%.";
         printError((boost::format(format) % ex.opt).str());
-    }
-    catch (const RepeatOptionError &ex)
-    {
-        printError((boost::format("The option %1% has been repeated. Please check and try again.") % ex.data).str());
     }
     catch (const MissingInputError &ex)
     {

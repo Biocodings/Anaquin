@@ -12,22 +12,28 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
      */
 
     { 
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-
-        options.info("Generate summary statistics");
+        options.info("Generating summary statistics");
         options.writer->open("FusionDiscover_summary.stats");
-        options.writer->write((boost::format(format) % "sn"
-                                                     % "sp"
-                                                     % "coverage"
-                                                     % "los"
-                                                     % "partner_5"
-                                                     % "partner_3").str());
-        options.writer->write((boost::format(format) % stats.m.sn()
-                                                     % stats.m.sp()
-                                                     % stats.covered
-                                                     % stats.s.abund
-                                                     % "?"
-                                                     % "?").str());
+
+        const auto summary = "Summary for dataset: %1% :\n\n"
+                             "   Ignored: %2% fusions not in chrT\n"
+                             "   Query: %3% fusions in chrT\n"
+                             "Reference: %4% sequins\n\n"
+                             "#--------------------|   Sn   |  Sp   |  fSn |  fSp\n"
+                             "    Fusion level:       %5%     %6%     %7%    %8%\n"
+                             "\n"
+                             "Covered:     %9%"
+        ;
+
+        options.writer->write((boost::format(summary) % file
+                                                      % stats.m.skip
+                                                      % stats.m.nq
+                                                      % stats.m.nr
+                                                      % stats.m.sp()
+                                                      % stats.m.sn()
+                                                      % "????"
+                                                      % "????"
+                                                      % stats.covered).str());
         options.writer->close();
     }
 
@@ -45,7 +51,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
         {
             options.writer->write((boost::format(format) % i.first).str());
         }
-       
+
         options.writer->close();
     }
 
