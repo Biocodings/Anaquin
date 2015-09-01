@@ -87,10 +87,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
             if (measured)
             {
                 meta.second->depthSequin = meta.second->depthSequin / align->seq->length;
-
-                ms.z.push_back(align->seq->id);
-                ms.x.push_back(log2(known));
-                ms.y.push_back(log2(measured));
+                ms.add(align->seq->id, log2(known), log2(measured));
             }
         }
         

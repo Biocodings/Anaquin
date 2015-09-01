@@ -54,7 +54,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
         {
             return p.second;
         });
-        
+
         const auto prop = (detect / static_cast<double>(stats.h.size()));
         
         options.writer->write((boost::format(summary) % file

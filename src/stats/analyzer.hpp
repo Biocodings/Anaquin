@@ -147,53 +147,44 @@ namespace Anaquin
 
     struct Point
     {
+        Point(double x = 0.0, double y = 0.0) : x(x), y(y) {}
+        
+        // Data point for the coordinate
         double x, y;
     };
 
     struct LinearStats : public std::map<SequinID, Point>
     {
-        // This is needed to make the compiler happy ...
-        LinearStats() {}
-
-        LinearStats(const LinearStats &stats) : s(stats.s), z(stats.z), x(stats.x), y(stats.y) {}
-        
         Sensitivity s;
 
-        // Sequin IDs for each x and y
-        std::vector<SequinID> z;
-
-        std::vector<double> x, y;
+        inline void add(const SequinID &id, double x, double y)
+        {
+            (*this)[id] = Point(x, y);
+        }
 
         inline LinearModel linear() const
         {
-            std::vector<double> y_;
-            std::vector<double> x_;
+            std::vector<double> x, y;
             
-            assert(x.size() == y.size());
-            
-            /*
-             * Ignore any invalid value...
-             */
-            
-            for (auto i = 0; i < x.size(); i++)
+            for (const auto &p : *this)
             {
-                if (!isnan(x[i]) && !isnan(y[i]))
+                if (!isnan(p.second.x) && !isnan(p.second.y))
                 {
-                    x_.push_back(x[i]);
-                    y_.push_back(y[i]);
+                    x.push_back(p.second.x);
+                    y.push_back(p.second.y);
                 }
             }
 
-            const auto m = SS::lm("y~x", SS::data.frame(SS::c(y_), SS::c(x_)));
-            
+            const auto m = SS::lm("y~x", SS::data.frame(SS::c(y), SS::c(x)));
+
             LinearModel lm;
             
             // Pearson correlation
-            lm.r = SS::cor(x_, y_);
-            
+            lm.r = SS::cor(x, y);
+
             // Adjusted R2
             lm.r2 = m.ar2;
-            
+
             // Constant coefficient
             lm.c = m.coeffs[0].value;
 
@@ -351,24 +342,24 @@ namespace Anaquin
         template <typename Stats, typename Writer>
             static void writeCSV(const Stats &stats, const std::string file, Writer writer)
         {
-            writer->open(file);
-            writer->write("ID,expect,measure");
+            //writer->open(file);
+            //writer->write("ID,expect,measure");
 
             /*
              * Prefer to write results in sorted order
              */
 
-            std::set<std::string> sorted(stats.z.begin(), stats.z.end());
+            //std::set<std::string> sorted(stats.z.begin(), stats.z.end());
 
-            for (const auto &s : sorted)
-            {
-                const auto it = std::find(stats.z.begin(), stats.z.end(), s);
-                const auto i  = std::distance(stats.z.begin(), it);
+            //for (const auto &s : sorted)
+            //{
+              //  const auto it = std::find(stats.z.begin(), stats.z.end(), s);
+                //const auto i  = std::distance(stats.z.begin(), it);
                 
-                writer->write((boost::format("%1%,%2%,%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
-            }
+                //writer->write((boost::format("%1%,%2%,%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
+            //}
             
-            writer->close();
+            //writer->close();
         }
         
         template <typename Stats, typename Writer> static void linear(const Stats &stats,
@@ -379,7 +370,7 @@ namespace Anaquin
                                                                       bool summary = true,
                                                                       bool sequin  = true)
         {
-            assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
+            //assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
 
             std::vector<double> x, y;
             std::vector<std::string> z;
@@ -387,14 +378,14 @@ namespace Anaquin
             /*
              * Ignore any invalid value...
              */
-            
-            for (auto i = 0; i < stats.x.size(); i++)
+
+            for (const auto &p : stats)
             {
-                if (!isnan(stats.x[i]) && !isnan(stats.y[i]))
+                if (!isnan(p.second.x) && !isnan(p.second.y))
                 {
-                    x.push_back(stats.x[i]);
-                    y.push_back(stats.y[i]);
-                    z.push_back(stats.z[i]);
+                    z.push_back(p.first);
+                    x.push_back(p.second.x);
+                    y.push_back(p.second.y);
                 }
             }
 

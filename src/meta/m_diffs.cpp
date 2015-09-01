@@ -129,9 +129,7 @@ MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file
                     // Ratio of the marginal concentration
                     const auto measured = y2.at(align->id()) / y1.at(align->id());
                     
-                    stats.x.push_back(log2(known));
-                    stats.y.push_back(log2(measured));
-                    stats.z.push_back(align->id());
+                    stats.add(align->id(), log2(known), log2(measured));
 
                     SequinDiff d;
                     

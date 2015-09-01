@@ -54,9 +54,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
                 
                 if (t.fpkm)
                 {
-                    stats.x.push_back(log2(r->abund() / r->length));
-                    stats.y.push_back(log2(fpkm));
-                    stats.z.push_back(t.trackID);
+                    stats.add(t.trackID, log2(r->abund() / r->length), log2(fpkm));
                 }
             }
         }
@@ -68,11 +66,11 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
             if (!r)
             {
                 const auto found = std::find_if(s.seqs_1.begin(), s.seqs_1.end(),
-                                                [&](const std::pair<SequinID, Sequin> &p)
-                                                {
-                                                    return p.second.l.contains(t.l);
-                                                });
-                
+                                        [&](const std::pair<SequinID, Sequin> &p)
+                                        {
+                                            return p.second.l.contains(t.l);
+                                        });
+
                 if (found != s.seqs_1.end())
                 {
                     r = &(s.bases_1.at(found->second.baseID));
@@ -89,16 +87,12 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
 
                 if (t.fpkm)
                 {
-                    stats.x.push_back(log2(r->abund() / r->length()));
-                    stats.y.push_back(log2(fpkm));
-                    stats.z.push_back(t.trackID);
+                    stats.add(t.trackID, log2(r->abund() / r->length()), log2(fpkm));
                 }
             }
         }
     });
     
-    assert(!stats.x.empty() && stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
-
     if (isoform)
     {
         stats.s = Expression::analyze(stats.c, s.seqs_1);

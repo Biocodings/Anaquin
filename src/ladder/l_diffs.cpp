@@ -82,10 +82,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
 
         options.logInfo((boost::format("%1%\t%2%\t%3%") % seqID % known % adjusted).str());
 
-        stats.z.push_back(seqID);
-        stats.x.push_back(log2(known));
-        stats.y.push_back(log2(adjusted));
-        
+        stats.add(seqID, log2(known), log2(adjusted));
         assert(a.measured.count(seqID) && b.measured.count(seqID));
         
         options.writer->write((boost::format(format) % seqID

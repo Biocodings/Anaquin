@@ -39,12 +39,10 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
             measured = fpkm_2 / fpkm_1;
         }
 
-        ids.insert(id);
-        stats.z.push_back(id);
-        stats.x.push_back(!isnan(known)    ? log2(known)    : NAN);
-        stats.y.push_back(!isnan(measured) ? log2(measured) : NAN);
+        ids.insert(id);        
+        stats.add(id, !isnan(known) ? log2(known) : NAN, !isnan(measured) ? log2(measured) : NAN);
     };
-    
+
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
         // The known and observed fold-change
@@ -85,10 +83,7 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
                     measured = t.fpkm_2 / t.fpkm_1;
                 }
 
-                stats.z.push_back(t.testID);
-                stats.x.push_back(!isnan(known)    ? log2(known)    : NAN);
-                stats.y.push_back(!isnan(measured) ? log2(measured) : NAN);
-                
+                stats.add(t.testID, !isnan(known) ? log2(known) : NAN, !isnan(measured) ? log2(measured) : NAN);
                 break;
             }
         }
@@ -109,15 +104,13 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
             // Not found in the experiment?
             if (!ids.count(id))
             {
-                stats.z.push_back(i.first);
-                stats.x.push_back(s.bases_2.at(id).abund() / s.bases_1.at(id).abund());
-                stats.y.push_back(NAN);
+                stats.add(i.first, s.bases_2.at(id).abund() / s.bases_1.at(id).abund(), NAN);
             }
         }
     }
     
-    assert(!c.empty() && !stats.x.empty());
-    assert(!stats.x.empty() && stats.x.size() == stats.y.size());
+    //assert(!c.empty() && !stats.x.empty());
+    //assert(!stats.x.empty() && stats.x.size() == stats.y.size());
 
     //stats.s = Expression::analyze(c, s.r_gene(options.rMix));
 

@@ -62,9 +62,7 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
             // The known coverage for allele frequnece
             const auto known = alleleFreq(base);
 
-            stats.x.push_back(known);
-            stats.y.push_back(measured);
-            stats.z.push_back(match.id);
+            stats.add(match.id, known, measured);
   
             return Positive;
         }))

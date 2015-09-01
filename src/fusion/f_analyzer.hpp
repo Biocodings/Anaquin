@@ -7,6 +7,11 @@
 
 namespace Anaquin
 {
+    inline bool compare(Base x, Base y, Base fuzzy = 0.0)
+    {
+        return std::abs(x - y) <= fuzzy;
+    }
+    
     struct FAnalyzer
     {
         template <typename Options, typename T> static ClassifyResult
@@ -29,10 +34,10 @@ namespace Anaquin
                 const auto r = std::find_if(s.f_breaks.begin(), s.f_breaks.end(), [&](const FusionBreak &x)
                 {
                     // Match in bases?
-                    const auto b_match = (min == x.l1 && max == x.l2);
+                    const auto b_match = compare(min, x.l1) && compare(max, x.l2);
 
                     // Match in orientation?
-                    const auto s_match = (x.s1 == f.s1 && x.s2 == f.s2);
+                    const auto s_match = compare(x.s1, f.s1) && compare(x.s2, f.s2);
 
                     return b_match && s_match;
                 });

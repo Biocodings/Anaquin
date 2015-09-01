@@ -20,26 +20,19 @@ FExpress::Stats FExpress::analyze(const std::string &file, const Options &option
         {
             if (t.fpkm)
             {
-                auto it = std::find(stats.z.begin(), stats.z.end(), t.geneID);
-
                 // Expected FPKM for the sequin
                 const auto known = r->abund() / r->length;
-
+                
                 // Measured FPKM for the sequin
                 const auto measured = fpkm;
                 
-                if (it != stats.z.end())
+                if (stats.count(t.geneID))
                 {
-                    auto i = std::distance(stats.z.begin(), it);
-                    
-                    //stats.x[i] += (r->abund() / r->length);
-                    stats.y[i] += (measured);
+                    stats.at(t.geneID).y += measured;
                 }
                 else
                 {
-                    stats.x.push_back(known);
-                    stats.y.push_back(measured);
-                    stats.z.push_back(t.geneID);
+                    stats.add(t.geneID, known, measured);
                 }
             }
         }
@@ -49,10 +42,10 @@ FExpress::Stats FExpress::analyze(const std::string &file, const Options &option
         }
     });
 
-    for (int i = 0; i < stats.z.size(); i++)
+    for (auto &i : stats)
     {
-        stats.x[i] = log2(stats.x[i]);
-        stats.y[i] = log2(stats.y[i]);
+        i.second.x = log2(i.second.x);
+        i.second.y = log2(i.second.y);
     }
 
     AnalyzeReporter::linear(stats, "FusionExpression", "FPKM", options.writer);
