@@ -9,13 +9,15 @@ namespace Anaquin
     {
         struct Options : public SingleMixtureOptions
         {
-            Options(Software soft = Software::TopHat) : soft(soft)
+            Options(Software soft = Software::TopHat, double fuzzy = 0) : soft(soft), fuzzy(fuzzy)
             {
                 if (soft != TopHat && soft != Star)
                 {
                     throw std::runtime_error("Only Tophat-Fusion and Star are supported");
                 }
             }
+            
+            unsigned fuzzy;
 
             Software soft;
         };

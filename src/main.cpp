@@ -90,6 +90,7 @@ typedef std::set<Value> Range;
 #define OPT_R_FUS   803
 #define OPT_R_VCF   804
 #define OPT_MIXTURE 805
+#define OPT_FUZZY   806
 
 #define OPT_U_BASE  900
 #define OPT_U_VCF   901
@@ -233,6 +234,8 @@ struct Parsing
     // How Anaquin is invoked
     std::string command;
 
+    unsigned fuzzy = 0;
+    
     Tool tool = 0;
 };
 
@@ -352,6 +355,8 @@ static const struct option long_options[] =
     { "m",   required_argument, 0, OPT_MIXTURE },
     { "mix", required_argument, 0, OPT_MIXTURE },
 
+    { "fuzzy", required_argument, 0, OPT_FUZZY },
+    
     { "o",      required_argument, 0, OPT_PATH },
     { "output", required_argument, 0, OPT_PATH },
 
@@ -565,7 +570,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.info(_p.command);
     o.info(date());
     o.info("Path: " + path);
-    o.info("Threads: " + std::to_string(_p.threads) + "\n");
+    o.info("Threads: " + std::to_string(_p.threads));
 
     for (const auto &filter : (o.filters = _p.filters))
     {
@@ -603,6 +608,13 @@ template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options
     {
         Analyzer::analyze(_p.opts.at(x), o);
     }, o);
+}
+
+// Analyze for a single sample with fuzzy matching
+template <typename Analyzer> void analyzeFuzzy_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
+{
+    o.fuzzy = _p.fuzzy;
+    return analyze_1<Analyzer>(x, o);
 }
 
 // Analyze for two samples
@@ -805,7 +817,8 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_SOFTWARE: { _p.opts[opt] = val; break; }
+            case OPT_FUZZY:    { parseInt(val, _p.fuzzy); break; }
+            case OPT_SOFTWARE: { _p.opts[opt] = val;      break; }
 
             case OPT_FA_1:
             case OPT_FA_2:
@@ -987,7 +1000,7 @@ void parse(int argc, char ** argv)
                 case TOOL_F_EXPRESS: { analyze_1<FExpress>(OPT_GTRACK); break; }
                 case TOOL_F_DISCOVER:
                 {
-                    analyze_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));
+                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));
                     break;
                 }
             }

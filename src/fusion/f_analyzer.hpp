@@ -11,11 +11,11 @@ namespace Anaquin
     {
         return std::abs(x - y) <= fuzzy;
     }
-    
+
     struct FAnalyzer
     {
         template <typename Options, typename T> static ClassifyResult
-            classifyFusion(const T &f, Confusion &m, SequinID &id, Options &options)
+                classifyFusion(const T &f, Confusion &m, SequinID &id, Options &o)
         {
             const auto &s = Standard::instance();
 
@@ -34,10 +34,10 @@ namespace Anaquin
                 const auto r = std::find_if(s.f_breaks.begin(), s.f_breaks.end(), [&](const FusionBreak &x)
                 {
                     // Match in bases?
-                    const auto b_match = compare(min, x.l1) && compare(max, x.l2);
+                    const auto b_match = compare(min, x.l1, o.fuzzy) && compare(max, x.l2, o.fuzzy);
 
                     // Match in orientation?
-                    const auto s_match = compare(x.s1, f.s1) && compare(x.s2, f.s2);
+                    const auto s_match = compare(x.s1, f.s1, o.fuzzy) && compare(x.s2, f.s2, o.fuzzy);
 
                     return b_match && s_match;
                 });
@@ -56,12 +56,13 @@ namespace Anaquin
             return Negative;
         }
 
-        template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &options = Options())
+        template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &o = Options())
         {
             Stats stats;
             const auto &s = Standard::instance();
 
-            options.info("Parsing alignment file");
+            o.info("Fuzzy level: " + std::to_string(o.fuzzy));
+            o.info("Parsing alignment file");
 
             auto positive = [&](const SequinID &id, Reads reads)
             {
@@ -85,11 +86,11 @@ namespace Anaquin
 
             SequinID id;
 
-            if (options.soft == Software::Star)
+            if (o.soft == Software::Star)
             {
                 ParserStarFusion::parse(Reader(file), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
                 {
-                    if (classifyFusion(f, stats.m, id, options) == ClassifyResult::Positive)
+                    if (classifyFusion(f, stats.m, id, o) == ClassifyResult::Positive)
                     {
                         positive(id, f.reads);
                     }
@@ -99,7 +100,7 @@ namespace Anaquin
             {
                 ParserTopFusion::parse(Reader(file), [&](const ParserTopFusion::Fusion &f, const ParserProgress &)
                 {
-                    if (classifyFusion(f, stats.m, id, options) == ClassifyResult::Positive)
+                    if (classifyFusion(f, stats.m, id, o) == ClassifyResult::Positive)
                     {
                         positive(id, f.reads);
                     }
@@ -110,8 +111,8 @@ namespace Anaquin
              * Find out all the sequins undetected in the experiment
              */
 
-            options.info("Detected " + std::to_string(stats.h.size()) + " sequins in the reference");
-            options.info("Checking for missing sequins");
+            o.info("Detected " + std::to_string(stats.h.size()) + " sequins in the reference");
+            o.info("Checking for missing sequins");
             
             for (const auto &i : s.seqIDs)
             {
@@ -122,12 +123,12 @@ namespace Anaquin
                 {
                     if (!s.seqs_1.count(seqID))
                     {
-                        options.warn(seqID + " defined in the referene but not in the mixture and it is undetected.");
+                        o.warn(seqID + " defined in the referene but not in the mixture and it is undetected.");
                         continue;
                     }
 
-                    options.warn(seqID + " defined in the referene but not detected");
-                    
+                    o.warn(seqID + " defined in the referene but not detected");
+
                     const auto seq = s.seqs_1.at(seqID);
 
                     // Known abundance for the fusion
@@ -144,7 +145,7 @@ namespace Anaquin
             // The references are simply the known fusion points
             stats.m.nr = s.f_breaks.size();
 
-            options.info("Calculating limit of sensitivity");
+            o.info("Calculating limit of sensitivity");
             //stats.s = Expression::analyze(stats.h, s.seqs_1);
             
             stats.covered = static_cast<double>(std::accumulate(stats.h.begin(), stats.h.end(), 0,
