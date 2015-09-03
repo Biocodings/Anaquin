@@ -46,6 +46,7 @@ data  = [ 'data/manual.txt',
           'data/var/AVA009.v032.vcf',
           'data/var/VARMixture_3.0.csv',
           'data/var/VARStandard_1.0.gtf',
+          'data/var/VARVariant_1.0.bed',
         ]
 tests = [ ]
 

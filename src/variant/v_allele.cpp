@@ -30,8 +30,10 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
     ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)
     {
         Variation match;
+        
+        Confusion m;
 
-        if (classify(stats.m, var, [&](const VCFVariant &)
+        if (classify(m, var, [&](const VCFVariant &)
         {
             // Can we find this variant?
             if (!s.v_vars.count(var.l))
@@ -67,7 +69,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
             return Positive;
         }))
         {
-            stats.h.at(match)++;
+            //stats.h.at(match)++;
         }
     });
 
@@ -78,7 +80,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
      */
     
     // Measure of variant detection independent to sequencing depth or coverage
-    stats.efficiency = stats.m.sn() / stats.covered;
+    //stats.efficiency = stats.m.sn() / stats.covered;
     
     // Create a script for allele frequency
     AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
@@ -90,8 +92,9 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
         
         const std::string format = "%1%\t%2%\t%3%";
         
-        options.writer->open("VarAllele_summary.stats");
-        options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
+//        options.writer->open("VarAllele_summary.stats");
+ //       options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
+/*
         options.writer->write((boost::format(format) % stats.m.sn()
                                                      % stats.m.sp()
                                                      % stats.covered).str());
@@ -100,7 +103,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
         {
             options.writer->write((boost::format("%1%-%2%\t%3%") % p.first.id % p.first.l.start % p.second).str());
         }
-        
+*/
         options.writer->close();
     }
 

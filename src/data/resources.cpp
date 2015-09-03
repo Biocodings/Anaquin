@@ -43,6 +43,7 @@
  */
 
 #include "resources/AVA009.v032.vcf"
+#include "resources/VARVariant_1.0.bed"
 #include "resources/VARMixture_3.0.csv"
 #include "resources/VARStandard_1.0.gtf"
 
@@ -138,6 +139,11 @@ std::string VarDataMix()
 std::string VarDataVCF()
 {
     return ToString(data_var_AVA009_v032_vcf);
+}
+
+std::string VarDataBed()
+{
+    return ToString(data_var_VARVariant_1_0_bed);
 }
 
 std::string VarStandGTF()

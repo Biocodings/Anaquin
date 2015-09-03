@@ -210,41 +210,41 @@ void Standard::v_std(const Reader &r)
 
 void Standard::v_var(const Reader &r)
 {
-    std::vector<std::string> tokens;
-    
+    std::vector<std::string> toks;
+
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
         // Eg: D_1_10_R_G/A
-        Tokens::split(f.name, "_", tokens);
+        Tokens::split(f.name, "_", toks);
 
         // Eg: D_1_10_R and G/A
-        assert(tokens.size() == 5);
+        assert(toks.size() == 5);
 
         /*
          * TODO: Fix this!!!! Getting sequinIDs should be done somewhere else
          */
         
-        const auto seqID = tokens[0] + "_" + tokens[1] + "_" + tokens[2] + "_" + tokens[3];
+        const auto seqID = toks[0] + "_" + toks[1] + "_" + toks[2] + "_" + toks[3];
         seqIDs.insert(seqID);
         
         // Eg: G/GACTCTCATTC
-        const auto var = tokens[4];
+        const auto var = toks[4];
 
         // Eg: D_1_10
-        const auto id = tokens[0] + "_" + tokens[1] + "_" + tokens[2];
+        const auto id = toks[0] + "_" + toks[1] + "_" + toks[2];
 
         // Eg: G/GACTCTCATTC
-        Tokens::split(var, "/", tokens);
+        Tokens::split(var, "/", toks);
 
         // Eg: G and GACTCTCATTC
-        assert(tokens.size() == 2);
+        assert(toks.size() == 2);
         
         Variation v;
 
         v.id   = id;
-        v.alt  = tokens[1];
-        v.ref  = tokens[0];
-        v.type = ParserVCF::strToSNP(tokens[0], tokens[1]);
+        v.alt  = toks[1];
+        v.ref  = toks[0];
+        v.type = ParserVCF::strToSNP(toks[0], toks[1]);
 
         v_vars[v.l = f.l] = v;
         __v_vars__.insert(v);
