@@ -1,11 +1,11 @@
-#ifndef GI_V_DISCOVER_HPP
-#define GI_V_DISCOVER_HPP
+#ifndef GI_V_ALLELE_HPP
+#define GI_V_ALLELE_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VDiscover
+    struct VAllele
     {
         typedef SingleMixtureOptions Options;
         typedef std::map<Variation, Counts> VarHist;

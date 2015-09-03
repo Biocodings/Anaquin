@@ -134,7 +134,9 @@ namespace Anaquin
             std::map<Locus, Variation> v_vars;
 
             std::set<Variation> __v_vars__;
-        
+
+            Reference r_var;
+
             /*
              * Ladder data
              */

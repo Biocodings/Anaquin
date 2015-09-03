@@ -1,4 +1,4 @@
-#include "variant/v_discover.hpp"
+#include "variant/v_allele.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Anaquin;
@@ -20,9 +20,9 @@ static double alleleFreq(const BaseSeq &m)
     return v / (r + v);
 }
 
-VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &options)
+VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
 {
-    VDiscover::Stats stats;
+    VAllele::Stats stats;
     const auto &s = Standard::instance();
 
     options.info("Parsing VCF file");
@@ -73,23 +73,10 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
 
     options.info("Generating statistics");
 
-    stats.m.nr = s.v_vars.size();
-
     /*
      * Calculate the proportion of genetic variation with alignment coverage
      */
     
-    stats.covered = std::accumulate(stats.h.begin(), stats.h.end(), 0,
-            [&](int sum, const std::pair<Locus, Counts> &p)
-            {
-                return sum + (p.second ? 1 : 0);
-            });
-
-    // The proportion of genetic variation with alignment coverage
-    stats.covered = stats.covered / s.v_vars.size();
-
-    assert(stats.covered >= 0 && stats.covered <= 1.0);
-
     // Measure of variant detection independent to sequencing depth or coverage
     stats.efficiency = stats.m.sn() / stats.covered;
     
@@ -103,7 +90,7 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
         
         const std::string format = "%1%\t%2%\t%3%";
         
-        options.writer->open("VarDiscover_summary.stats");
+        options.writer->open("VarAllele_summary.stats");
         options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
         options.writer->write((boost::format(format) % stats.m.sn()
                                                      % stats.m.sp()
