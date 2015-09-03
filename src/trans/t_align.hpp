@@ -8,8 +8,12 @@ namespace Anaquin
     class TAlign : public Analyzer
     {
         public:
-            typedef AnalyzerOptions Options;
         
+            struct Options : AnalyzerOptions
+            {
+                double fuzzy = 0;
+            };
+
             struct Stats
             {
                 // Total mapped to the in-silico chromosome

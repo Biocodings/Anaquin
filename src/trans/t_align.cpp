@@ -21,20 +21,20 @@ static bool findIntron(const Alignment &align, Feature &f)
     return false;
 }
 
-TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
+TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 {
     TAlign::Stats stats;
     const auto &s = Standard::instance();
 
     std::vector<Alignment> exons, introns;
 
-    options.info("Parsing alignment file");
+    o.info("Parsing alignment file");
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
         if (!align.i && (p.i % 1000000) == 0)
         {
-            options.wait(std::to_string(p.i));
+            o.wait(std::to_string(p.i));
         }
         
         if (align.id != s.id && !align.i)
@@ -54,7 +54,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
         // Whether the read has mapped to a feature correctly
         bool succeed = false;
 
-        options.logInfo((boost::format("%1% %2% %3%") % align.id % align.l.start % align.l.end).str());
+        o.logInfo((boost::format("%1% %2% %3%") % align.id % align.l.start % align.l.end).str());
 
         /*
          * Collect statistics at the exon level
@@ -69,7 +69,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
             if (classify(stats.pe.m, align, [&](const Alignment &)
             {
                 succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
-                return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
+                return o.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
             }))
             {
                 stats.he.at(s.seq2base.at(f.tID))++;
@@ -87,7 +87,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
             if (classify(stats.pi.m, align, [&](const Alignment &)
             {
                 succeed = findIntron(align, f);
-                return options.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
+                return o.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
             }))
             {
                 stats.hi.at(s.seq2base.at(f.tID))++;
@@ -95,8 +95,8 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
         }
     });
 
-    options.info("Counting references");
-    
+    o.info("Counting references");
+
     /*
      * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
      * as a reference. Anything that is undetected in the experiment will be counted as a single reference.
@@ -105,7 +105,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
     sums(stats.he, stats.pe.m.nr);
     sums(stats.hi, stats.pi.m.nr);
 
-    options.info("Merging overlapping bases");
+    o.info("Merging overlapping bases");
 
     /*
      * Counts at the base-level is the non-overlapping region of all the exons
@@ -130,7 +130,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
      * Calculate for the LOS
      */
 
-    options.info("Calculating limit of sensitivity");
+    o.info("Calculating limit of sensitivity");
 
     stats.pe.s = Expression::analyze(stats.he, s.bases_1);
     stats.pi.s = Expression::analyze(stats.hi, s.bases_1);
@@ -139,35 +139,44 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &options)
     /*
      * Write out summary statistics
      */
-    
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
 
-    options.writer->open("TransAlign_summary.stats");
-    options.writer->write((boost::format(format) % "genome"
-                                                 % "silco"
-                                                 % "dilution"
-                                                 % "exon_sn"
-                                                 % "exon_sp"
-                                                 % "exon_ss"
-                                                 % "intron_sn"
-                                                 % "intron_sp"
-                                                 % "intron_ss"
-                                                 % "base_sn"
-                                                 % "base_sp"
-                                                 % "base_ss").str());
-    options.writer->write((boost::format(format) % stats.n_genome
-                                                 % stats.n_chrT
-                                                 % stats.dilution()
-                                                 % stats.pe.m.sn()
-                                                 % stats.pe.m.sp()
-                                                 % stats.pe.s.abund
-                                                 % stats.pi.m.sn()
-                                                 % stats.pi.m.sp()
-                                                 % stats.pi.s.abund
-                                                 % stats.pb.m.sn()
-                                                 % stats.pb.m.sp()
-                                                 % stats.pb.s.abund).str());
-    options.writer->close();
+    const auto summary = "Summary for dataset: %1% :\n\n"
+                         "   Genome: %2% reads\n"
+                         "   Query: %3% reads\n"
+                         "Reference: %4% exons\n\n"
+                         "Fuzzy: %5%\n\n"
+                         "#--------------------|   Sn   |  Sp   |  fSn |  fSp\n"
+                         "    Exon level:       %6%     %7%     %8%    %9%\n"
+                         "    Intron level:       %10%     %11%     %12%    %13%\n"
+                         "    Base level:       %14%     %15%     %16%    %17%\n"
+                         "\n"
+                         "Dilution:     %18%\n"
+                         "Detection Limit:     %19% (%20%)\n"
+    ;
+
+    o.writer->open("TransAlign_summary.stats");
+    o.writer->write((boost::format(summary) % file
+                                            % stats.n_genome
+                                            % stats.n_chrT
+                                            % stats.pe.m.nr
+                                            % o.fuzzy
+                                            % stats.pe.m.sn()
+                                            % stats.pe.m.sp()
+                                            % "NA"
+                                            % "NA"
+                                            % stats.pi.m.sn()
+                                            % stats.pi.m.sp()
+                                            % "NA"
+                                            % "NA"
+                                            % stats.pb.m.sn()
+                                            % stats.pb.m.sp()
+                                            % "NA"
+                                            % "NA"
+                                            % stats.dilution()
+                                            % stats.pe.s.abund
+                                            % stats.pe.s.id
+                                        ).str());
+    o.writer->close();
 
 	return stats;
 }
