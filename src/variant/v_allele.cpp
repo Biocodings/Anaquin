@@ -15,36 +15,45 @@ static double alleleFreq(const BaseSeq &m)
     
     // Abundance for the variant
     const auto v = m.sequins.at(var).abund();
-    
+
     // Abundance ratio of reference to variant DNA standard
     return v / (r + v);
 }
 
-VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
+VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
 {
     VAllele::Stats stats;
     const auto &s = Standard::instance();
 
-    options.info("Parsing VCF file");
+    long n = 0;
 
-    ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)
+    o.info("Parsing VCF file");
+
+    ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
     {
+        n++;
+        
+        if (v.id != s.id)
+        {
+            return;
+        }
+        
         Variation match;
         
         Confusion m;
 
-        if (classify(m, var, [&](const VCFVariant &)
+        if (classify(m, v, [&](const VCFVariant &)
         {
             // Can we find this variant?
-            if (!s.v_vars.count(var.l))
+            if (!s.v_vars.count(v.l))
             {
                 return Negative;
             }
 
-            match = s.v_vars.at(var.l);
+            match = s.v_vars.at(v.l);
 
             // Does the variant match with the meta?
-            if (match.type != var.type || match.alt != var.alt || match.ref != var.ref)
+            if (match.type != v.type || match.alt != v.alt || match.ref != v.ref)
             {
                 return Negative;
             }
@@ -59,7 +68,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
              */
             
             // The measured coverage is the number of base calls aligned and used in variant calling
-            const auto measured = (double) var.dp_a / (var.dp_r + var.dp_a);
+            const auto measured = (double) v.dp_a / (v.dp_r + v.dp_a);
 
             // The known coverage for allele frequnece
             const auto known = alleleFreq(base);
@@ -73,39 +82,41 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &options)
         }
     });
 
-    options.info("Generating statistics");
+    o.info("Generating statistics");
 
     /*
      * Calculate the proportion of genetic variation with alignment coverage
      */
     
-    // Measure of variant detection independent to sequencing depth or coverage
-    //stats.efficiency = stats.m.sn() / stats.covered;
-    
     // Create a script for allele frequency
-    AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
+  //  AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
 
-    {
-        /*
-         * Generate summary statistics
-         */
-        
-        const std::string format = "%1%\t%2%\t%3%";
-        
-//        options.writer->open("VarAllele_summary.stats");
- //       options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
-/*
-        options.writer->write((boost::format(format) % stats.m.sn()
-                                                     % stats.m.sp()
-                                                     % stats.covered).str());
-        
-        for (const auto &p : stats.h)
-        {
-            options.writer->write((boost::format("%1%-%2%\t%3%") % p.first.id % p.first.l.start % p.second).str());
-        }
-*/
-        options.writer->close();
-    }
+    /*
+     * Generate summary statistics
+     */
+
+    const auto summary = "Summary for dataset: %1% :\n\n"
+                         "   Ignored: %2% variants not in chrT\n"
+                         "   Found: %3% variants in chrT\n"
+                         "Reference: %4% variants\n\n"
+                         "Fuzzy: %5%\n\n"
+                         "\n"
+                         "correlation:     %6%\n"
+                         "slope:     %7%\n"
+                         "r2:     %8%\n"
+    ;
+
+    const auto lm = stats.linear();
+    
+    o.writer->write((boost::format(summary) % file
+                                            % (n - stats.size())
+                                            % stats.size()
+                                            % s.v_vars.size()
+                                            % o.fuzzy
+                                            % lm.r
+                                            % lm.m
+                                            % lm.r2).str());
+    o.writer->close();
 
     return stats;
 }

@@ -7,9 +7,11 @@ namespace Anaquin
 {
     struct VAllele
     {
-        typedef SingleMixtureOptions Options;
-        typedef std::map<Variation, Counts> VarHist;
-
+        struct Options : public AnalyzerOptions
+        {
+            double fuzzy = 0;
+        };
+        
         struct Stats : public LinearStats
         {
             // Distribution for the variants

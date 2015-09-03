@@ -13,6 +13,7 @@
 #include "trans/t_assembly.hpp"
 
 #include "variant/v_align.hpp"
+#include "variant/v_allele.hpp"
 #include "variant/v_viewer.hpp"
 #include "variant/v_discover.hpp"
 
@@ -56,18 +57,19 @@ typedef std::set<Value> Range;
 #define TOOL_V_FREQ     274
 #define TOOL_V_DIFF     275
 #define TOOL_V_IGV      276
-#define TOOL_M_PSL      277
-#define TOOL_M_ALIGN    278
-#define TOOL_M_ABUND    279
-#define TOOL_M_ASSEMBLY 280
-#define TOOL_M_DIFF     281
-#define TOOL_M_IGV      282
-#define TOOL_L_ABUND    283
-#define TOOL_L_DIFF     284
-#define TOOL_L_IGV      285
-#define TOOL_F_DISCOVER 286
-#define TOOL_F_EXPRESS  287
-#define TOOL_F_IGV      288
+#define TOOL_V_ALLELE   277
+#define TOOL_M_PSL      278
+#define TOOL_M_ALIGN    279
+#define TOOL_M_ABUND    280
+#define TOOL_M_ASSEMBLY 281
+#define TOOL_M_DIFF     282
+#define TOOL_M_IGV      283
+#define TOOL_L_ABUND    284
+#define TOOL_L_DIFF     285
+#define TOOL_L_IGV      286
+#define TOOL_F_DISCOVER 287
+#define TOOL_F_EXPRESS  288
+#define TOOL_F_IGV      289
 
 /*
  * Options specified in the command line
@@ -150,6 +152,7 @@ static std::map<Value, Tool> _tools =
     { "VarDiscover",      TOOL_V_DISCOVER },
     { "VarFrequency",     TOOL_V_FREQ     },
     { "VarIGV",           TOOL_V_IGV      },
+    { "VarAllele",        TOOL_V_ALLELE   },
 
     { "MetaPSL",          TOOL_M_PSL      },
     { "MetaAlign",        TOOL_M_ALIGN    },
@@ -1028,6 +1031,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_IGV:
         case TOOL_V_DIFF:
         case TOOL_V_ALIGN:
+        case TOOL_V_ALLELE:
         case TOOL_V_DISCOVER:
         {
             std::cout << "[INFO]: Variant Analysis" << std::endl;
@@ -1040,6 +1044,7 @@ void parse(int argc, char ** argv)
                 }
 
                 case TOOL_V_DIFF:
+                case TOOL_V_ALLELE:
                 case TOOL_V_DISCOVER:
                 {
                     applyRef(std::bind(&Standard::v_var, &s, std::placeholders::_1)); break;
@@ -1052,6 +1057,7 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);    break; }
                 case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_U_VCF); break; }
+                case TOOL_V_ALLELE:   { analyze_1<VAllele>(OPT_U_VCF);   break; }
                 //case TOOL_V_DIFF:     { analyze_1<VVariant>(); break; }
                 case TOOL_V_IGV:      { analyze_1<VViewer>(OPT_PATH);    break; }
             }
