@@ -41,6 +41,8 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * than reinventing the wheel.
      */
     
+    std::cout << options.ref.c_str() << std::endl;
+    
     const int status = cuffcompare_main(options.ref.c_str(), options.query.c_str());
     
     if (status)
@@ -127,10 +129,12 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
         }
     });
 
+    options.info("Transcript parsed");
+
     /*
      * Sort the query exons since there is no guarantee that those are sorted
      */
-    
+
     for (auto &i : q_exons_)
     {
         CHECK_AND_SORT(i.second);
@@ -205,36 +209,49 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
     options.info("Generating statistics");
 
-    {
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
-        
-        options.writer->open("TransAssembly_summary.stats");
-        options.writer->write((boost::format(format) % "exon_sp"
-                                                     % "exon_sn"
-                                                     % "exon_ss"
-                                                     % "intron_sp"
-                                                     % "intron_sn"
-                                                     % "intron_ss"
-                                                     % "base_sp"
-                                                     % "base_sn"
-                                                     % "base_ss"
-                                                     % "trans_sp"
-                                                     % "trans_sn"
-                                                     % "trans_ss").str());
-        options.writer->write((boost::format(format) % (__cmp__.e_sp / 100.0)
-                                                     % (__cmp__.e_sn / 100.0)
-                                                     % stats.pe.s.abund
-                                                     % (__cmp__.i_sp / 100.0)
-                                                     % (__cmp__.i_sn / 100.0)
-                                                     % stats.pi.s.abund
-                                                     % (__cmp__.b_sp / 100.0)
-                                                     % (__cmp__.b_sn / 100.0)
-                                                     % stats.pb.s.abund
-                                                     % (__cmp__.t_sp / 100.0)
-                                                     % (__cmp__.t_sn / 100.0)
-                                                     % stats.pt.s.abund).str());
-        options.writer->close();
-    }
+    const auto summary = "Summary for dataset: %1% :\n\n"
+                         "   Genome: %2% reads\n"
+                         "   Query: %3% reads\n"
+                         "Reference: %4% sequins\n\n"
+                         "Fuzzy: %5%\n\n"
+                         "#--------------------|   Sn   |   Sp   |   Ss   |   fSn   |   fSp\n"
+                         "    Exon level:       %6%     %7%     %8% (%9%)    %10%    %11%\n"
+                         "    Intron level:       %12%     %13%     %14% (%15%)    %16%    %17%\n"
+                         "    Base level:       %18%     %19%     %20% (%21%)    %22%    %23%\n"
+                         "    Transcript level:       %24%     %25%     %26% (%27%)    %28%    %29%\n"
+    ;
+    
+    options.writer->open("TransAssembly_summary.stats");
+    options.writer->write((boost::format(summary) % file
+                                                  % "NA"
+                                                  % "NA"
+                                                  % sequins.size()
+                                                  % options.fuzzy
+                                                  % (__cmp__.e_sp / 100.0)
+                                                  % (__cmp__.e_sn / 100.0)
+                                                  % stats.pe.s.abund
+                                                  % stats.pe.s.id
+                                                  % (__cmp__.e_fsp / 100.0)
+                                                  % (__cmp__.e_fsn / 100.0)
+                                                  % (__cmp__.i_sp / 100.0)
+                                                  % (__cmp__.i_sn / 100.0)
+                                                  % stats.pi.s.abund
+                                                  % stats.pi.s.id
+                                                  % (__cmp__.i_fsp / 100.0)
+                                                  % (__cmp__.i_fsn / 100.0)
+                                                  % (__cmp__.b_sp / 100.0)
+                                                  % (__cmp__.b_sn / 100.0)
+                                                  % stats.pb.s.abund
+                                                  % stats.pb.s.id
+                                                  % "-"
+                                                  % "-"
+                                                  % (__cmp__.t_sp / 100.0)
+                                                  % (__cmp__.t_sn / 100.0)
+                                                  % stats.pt.s.abund
+                                                  % stats.pt.s.id
+                                                  % (__cmp__.t_fsp / 100.0)
+                                                  % (__cmp__.t_fsn / 100.0)).str());
+    options.writer->close();
 
     return stats;
 }

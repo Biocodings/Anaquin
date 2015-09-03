@@ -9,6 +9,8 @@ namespace Anaquin
     {
         struct Options : AnalyzerOptions
         {
+            double fuzzy = 0;
+            
             // Path for the reference and query GTF
             std::string ref, query;
         };
