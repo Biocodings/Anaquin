@@ -89,7 +89,7 @@ VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
     // Calculate for the sensitivity
     stats.p.s = Expression::analyze(stats.h_seq, s.seqs_1);
 
-    AnalyzeReporter::stats("VarAlign_summary.stats", stats.p, stats.h_seq, options.writer);
+    //AnalyzeReporter::stats("VarAlign_summary.stats", stats.p, stats.h_seq, options.writer);
 
 	return stats;
 }

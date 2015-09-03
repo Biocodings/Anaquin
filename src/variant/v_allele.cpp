@@ -85,29 +85,22 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Calculate the proportion of genetic variation with alignment coverage
-     */
-    
-    // Create a script for allele frequency
-  //  AnalyzeReporter::linear(stats, "VarDiscover_allele", "Allele Frequence", options.writer);
-
-    /*
      * Generate summary statistics
      */
 
     const auto summary = "Summary for dataset: %1% :\n\n"
                          "   Ignored: %2% variants not in chrT\n"
                          "   Found: %3% variants in chrT\n"
-                         "Reference: %4% variants\n\n"
+                         "   Reference: %4% variants\n\n"
                          "Fuzzy: %5%\n\n"
-                         "\n"
-                         "correlation:     %6%\n"
-                         "slope:     %7%\n"
-                         "r2:     %8%\n"
+                         "Correlation:     %6%\n"
+                         "Slope:     %7%\n"
+                         "R2:     %8%\n"
     ;
-
+    
     const auto lm = stats.linear();
     
+    o.writer->open("VarAllele_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % (n - stats.size())
                                             % stats.size()
@@ -116,7 +109,10 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
                                             % lm.r
                                             % lm.m
                                             % lm.r2).str());
+    
     o.writer->close();
+
+    AnalyzeReporter::scatter(stats, "VarAllele", "", o.writer);
 
     return stats;
 }

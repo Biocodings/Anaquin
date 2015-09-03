@@ -13,7 +13,6 @@
 
 namespace Anaquin
 {
-    typedef std::map<Locus, Counts>    LocusHist;
     typedef std::map<BaseID, Counts>   BaseHist;
     typedef std::map<SequinID, Counts> SequinHist;
 
@@ -339,29 +338,75 @@ namespace Anaquin
             writer->close();
         }
 
-        template <typename Stats, typename Writer>
-            static void writeCSV(const Stats &stats, const std::string file, Writer writer)
+        template <typename Writer> static void writeCSV(const std::vector<double> &x,
+                                                        const std::vector<double> &y,
+                                                        const std::vector<std::string> &z,
+                                                        const std::string &file,
+                                                        Writer writer)
         {
-            //writer->open(file);
-            //writer->write("ID,expect,measure");
+            writer->open(file);
+            writer->write("ID,expect,measure");
 
             /*
              * Prefer to write results in sorted order
              */
 
-            //std::set<std::string> sorted(stats.z.begin(), stats.z.end());
+            std::set<std::string> sorted(z.begin(), z.end());
 
-            //for (const auto &s : sorted)
-            //{
-              //  const auto it = std::find(stats.z.begin(), stats.z.end(), s);
-                //const auto i  = std::distance(stats.z.begin(), it);
-                
-                //writer->write((boost::format("%1%,%2%,%3%") % stats.z[i] % stats.x[i] % stats.y[i]).str());
-            //}
-            
-            //writer->close();
+            for (const auto &s : sorted)
+            {
+                const auto it = std::find(z.begin(), z.end(), s);
+                const auto i  = std::distance(z.begin(), it);
+
+                writer->write((boost::format("%1%,%2%,%3%") % z.at(i) % x.at(i) % y.at(i)).str());
+            }
+
+            writer->close();
         }
-        
+
+        /*
+         * Provides a common framework for generating a R scatter plot
+         */
+
+        template <typename Stats, typename Writer> static void scatter(const Stats &stats,
+                                                                       const std::string prefix,
+                                                                       const std::string unit,
+                                                                       Writer writer)
+        {
+            //assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
+            
+            std::vector<double> x, y;
+            std::vector<std::string> z;
+            
+            /*
+             * Ignore any invalid value...
+             */
+            
+            for (const auto &p : stats)
+            {
+                if (!isnan(p.second.x) && !isnan(p.second.y))
+                {
+                    z.push_back(p.first);
+                    x.push_back(p.second.x);
+                    y.push_back(p.second.y);
+                }
+            }
+            
+            /*
+             * Generate a script for data visualization
+             */
+            
+            writer->open(prefix + "_plot.R");
+            writer->write(RWriter::write(x, y, z, unit, stats.s.abund));
+            writer->close();
+            
+            /*
+             * Generate CSV for each sequin
+             */
+
+            writeCSV(x, y, z, prefix + "_quins.csv", writer);
+        }
+
         template <typename Stats, typename Writer> static void linear(const Stats &stats,
                                                                       const std::string prefix,
                                                                       const std::string unit,
@@ -421,32 +466,9 @@ namespace Anaquin
 
             if (sequin)
             {
-                writeCSV(stats, prefix + "_quins.csv", writer);
+                //writeCSV(x, y , z, prefix + "_quins.csv", writer);
             }
         }
-
-        template <typename Writer, typename Histogram> static void stats(const FileName &name,
-                                                                         const Performance &p,
-                                                                         const Histogram   &h,
-                                                                         Writer writer)
-        {
-            const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
-
-            const auto sn = p.m.sn();
-            const auto sp = p.m.sp();
-            const auto ss = p.s.abund;
-
-            assert(ss >= 0);
-            assert(isnan(sn) || (sn >= 0 && sn <= 1.0));
-            assert(isnan(sp) || (sp >= 0 && sp <= 1.0));
-
-            writer->open(name);
-            writer->write((boost::format(format) % "sn" % "sp" % "los"  % "ss" % "counts").str());
-            writer->write((boost::format(format) %  sn  %  sp  % p.s.id %  ss  % p.s.counts).str());
-            writer->write("\n");
-
-            writer->close();
-        };
     };
 }
 
