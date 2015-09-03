@@ -41,8 +41,9 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * than reinventing the wheel.
      */
     
-    std::cout << options.ref.c_str() << std::endl;
-    
+    options.logInfo("Invoking cuffcompare: " + options.ref);
+    options.logInfo("Invoking cuffcompare: " + options.query);
+
     const int status = cuffcompare_main(options.ref.c_str(), options.query.c_str());
     
     if (status)
@@ -63,7 +64,11 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &p)
     {
-        if ((p.i % 1000000) == 0)
+        if (f.id != s.id)
+        {
+            return;
+        }
+        else if ((p.i % 1000000) == 0)
         {
             options.wait(std::to_string(p.i));
         }
@@ -229,25 +234,25 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
                                                   % options.fuzzy
                                                   % (__cmp__.e_sp / 100.0)
                                                   % (__cmp__.e_sn / 100.0)
-                                                  % stats.pe.s.abund
+                                                  % (stats.pe.s.id.empty() ? "-" : std::to_string(stats.pe.s.abund))
                                                   % stats.pe.s.id
                                                   % (__cmp__.e_fsp / 100.0)
                                                   % (__cmp__.e_fsn / 100.0)
                                                   % (__cmp__.i_sp / 100.0)
                                                   % (__cmp__.i_sn / 100.0)
-                                                  % stats.pi.s.abund
+                                                  % (stats.pi.s.id.empty() ? "-" : std::to_string(stats.pi.s.abund))
                                                   % stats.pi.s.id
                                                   % (__cmp__.i_fsp / 100.0)
                                                   % (__cmp__.i_fsn / 100.0)
                                                   % (__cmp__.b_sp / 100.0)
                                                   % (__cmp__.b_sn / 100.0)
-                                                  % stats.pb.s.abund
+                                                  % (stats.pb.s.id.empty() ? "-" : std::to_string(stats.pb.s.abund))
                                                   % stats.pb.s.id
                                                   % "-"
                                                   % "-"
                                                   % (__cmp__.t_sp / 100.0)
                                                   % (__cmp__.t_sn / 100.0)
-                                                  % stats.pt.s.abund
+                                                  % (stats.pt.s.id.empty() ? "-" : std::to_string(stats.pt.s.abund))
                                                   % stats.pt.s.id
                                                   % (__cmp__.t_fsp / 100.0)
                                                   % (__cmp__.t_fsn / 100.0)).str());
