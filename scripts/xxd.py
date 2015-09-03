@@ -15,36 +15,37 @@ def xxd(src, dst):
 
 data  = [ 'data/manual.txt',    
           'data/linear.R',
+          'scripts/viewer.py',
 
            # ------- Fusion -------
 
-           'data/fusion/FUS.v3.csv',
-           'data/fusion/FUS.v1.ref',
-           'data/fusion/FusionGenes.chrTv1.bed',
-           'data/fusion/NormalParentGenes.chrTv1.bed',                      
-           'data/fusion/FusionGenes.chrTv1.gtf',
-           'data/fusion/NormalParentGenes.chrTv1.gtf',
+           'data/fusion/FUSMixture_3.0.csv',
+           'data/fusion/FUSBreak_1.0.ref',
+           'data/fusion/FUSFusionStandard_1.0.bed',
+           'data/fusion/FUSFusionStandard_1.0.gtf',                      
+           'data/fusion/FUSNormalStandard_1.0.bed',
+           'data/fusion/FUSNormalStandard_1.0.gtf',
 
            # ------- Ladder -------
 
-           'data/ladder/Ladder_v3.csv',
+           'data/ladder/LadderMixture_3.0.csv',
 
            # ---------- Transcriptome ----------
 
-          'data/trans/RNA_1.gtf',
-          'data/trans/RNA_4_1.csv',
+          'data/trans/TransStandard_1.0.gtf',
+          'data/trans/TransMixture_4.1.csv',
 
            # ---------- META ----------
 
-          'data/meta/META_v6.csv',
-          'data/meta/META_v1_tab.bed',
+          'data/meta/METAMixture_6.0.csv',
+          'data/meta/METAStandard_1.0.bed',
           'data/meta/META_v1_tab.fa',
 
            # ---------- Variant ----------
 
-          'data/var/DNA_v3.csv',
-          'data/var/DNA.variant.bed',
-          'data/var/DNA.standards.chrT.gtf',
+          'data/var/AVA009.v032.vcf',
+          'data/var/VARMixture_3.0.csv',
+          'data/var/VARStandard_1.0.gtf',
         ]
 tests = [ ]
 

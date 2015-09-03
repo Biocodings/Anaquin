@@ -12,39 +12,39 @@
  * Fusion Resources
  */
 
-#include "resources/FUS.v1.ref"
-#include "resources/FUS.v3.csv"
-#include "resources/FusionGenes.chrTv1.bed"
-#include "resources/NormalParentGenes.chrTv1.bed"
+#include "resources/FUSBreak_1.0.ref"
+#include "resources/FUSMixture_3.0.csv"
+#include "resources/FUSFusionStandard_1.0.bed"
+#include "resources/FUSNormalStandard_1.0.bed"
 
 /*
  * Conjoint Resources
  */
 
-#include "resources/Ladder_v3.csv"
+#include "resources/LadderMixture_3.0.csv"
 
 /*
  * RNA Resources
  */
 
-#include "resources/RNA_1.gtf"
-#include "resources/RNA_4_1.csv"
+#include "resources/TransMixture_4.1.csv"
+#include "resources/TransStandard_1.0.gtf"
 
 /*
  * META Resources
  */
 
-#include "resources/META_v6.csv"
 #include "resources/META_v1_tab.fa"
-#include "resources/META_v1_tab.bed"
+#include "resources/METAMixture_6.0.csv"
+#include "resources/METAStandard_1.0.bed"
 
 /*
  * DNA Resources
  */
 
-#include "resources/DNA_v3.csv"
-#include "resources/DNA.variant.bed"
-#include "resources/DNA.standards.chrT.gtf"
+#include "resources/AVA009.v032.vcf"
+#include "resources/VARMixture_3.0.csv"
+#include "resources/VARStandard_1.0.gtf"
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
@@ -69,14 +69,15 @@ std::string Manual()
 
 std::string FusionDataMix()
 {
-    return ToString(data_fusion_FUS_v3_csv);
+    return ToString(data_fusion_FUSMixture_3_0_csv);
 }
 
 std::string FusionDataRef()
 {
-    return ToString(data_fusion_FUS_v1_ref);
+    return ToString(data_fusion_FUSBreak_1_0_ref);
 }
 
+/*
 std::string FusionMutatedRef()
 {
     return ToString(data_fusion_FusionGenes_chrTv1_bed);
@@ -86,6 +87,7 @@ std::string FusionNormalRef()
 {
     return ToString(data_fusion_NormalParentGenes_chrTv1_bed);
 }
+*/
 
 /*
  * Ladder Resources
@@ -93,7 +95,7 @@ std::string FusionNormalRef()
 
 std::string LadderDataMix()
 {
-    return ToString(data_ladder_Ladder_v3_csv);
+    return ToString(data_ladder_LadderMixture_3_0_csv);
 }
 
 /*
@@ -102,12 +104,12 @@ std::string LadderDataMix()
 
 std::string MetaDataMix()
 {
-    return ToString(data_meta_META_v6_csv);
+    return ToString(data_meta_METAMixture_6_0_csv);
 }
 
 std::string MetaDataBed()
 {
-    return ToString(data_meta_META_v1_tab_bed);
+    return ToString(data_meta_METAStandard_1_0_bed);
 }
 
 /*
@@ -116,12 +118,12 @@ std::string MetaDataBed()
 
 std::string TransStandGTF()
 {
-    return ToString(data_trans_RNA_1_gtf);
+    return ToString(data_trans_TransStandard_1_0_gtf);
 }
 
 std::string TransDataMix()
 {
-    return ToString(data_trans_RNA_4_1_csv);
+    return ToString(data_trans_TransMixture_4_1_csv);
 }
 
 /*
@@ -130,15 +132,15 @@ std::string TransDataMix()
 
 std::string VarDataMix()
 {
-    return ToString(data_var_DNA_v3_csv);
+    return ToString(data_var_VARMixture_3_0_csv);
 }
 
-std::string VarDataBed()
+std::string VarDataVCF()
 {
-    return ToString(data_var_DNA_variant_bed);
+    return ToString(data_var_AVA009_v032_vcf);
 }
 
 std::string VarStandGTF()
 {
-    return ToString(data_var_DNA_standards_chrT_gtf);
+    return ToString(data_var_VARStandard_1_0_gtf);
 }

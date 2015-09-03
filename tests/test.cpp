@@ -22,7 +22,7 @@ extern std::string TransStandGTF();
 extern std::string MetaDataBed();
 extern std::string MetaDataMix();
 
-extern std::string VarDataBed();
+extern std::string VarDataVCF();
 extern std::string VarDataMix();
 extern std::string VarStandGTF();
 
@@ -59,7 +59,7 @@ void Test::trans()
 void Test::variant()
 {
     Standard::instance(true);
-    Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().v_var(Reader(VarDataVCF(),  DataMode::String));
     Standard::instance().v_std(Reader(VarStandGTF(), DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMix(),  DataMode::String));
 }

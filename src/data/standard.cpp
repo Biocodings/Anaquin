@@ -212,9 +212,6 @@ void Standard::v_var(const Reader &r)
 {
     std::vector<std::string> tokens;
     
-    // TODO: Fix this!
-    seqIDs.clear();
-
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
         // Eg: D_1_10_R_G/A
