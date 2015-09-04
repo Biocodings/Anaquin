@@ -4,37 +4,31 @@
 
 using namespace Anaquin;
 
-TEST_CASE("TExpress_Simulations_Genes_A1")
+TEST_CASE("TExpress_T_1000_Genes")
 {
-    Test::trans();
-
-    TExpress::Options opt;
-    opt.level = Anaquin::TExpress::RNALevel::Gene;
-
-    const auto r  = TExpress::analyze("tests/data/trans/A1/genes.fpkm_tracking", opt);
-    const auto lm = r.linear();
-
-    REQUIRE(lm.r  == Approx(0.8929552651));
-    REQUIRE(lm.m  == Approx(0.9065369839));
-    REQUIRE(lm.r2 == Approx(0.7920367134));
-    
-    REQUIRE(r.s.id == "R2_33");
-    REQUIRE(r.s.counts == 1);
-    REQUIRE(r.s.abund == Approx(7.0));
+//    Test::trans();
+//
+//    const auto r1 = Test::test("-t TransExpress -m data/trans/TransMixture_4.1.csv -rgtf data/trans/TransStandard_1.0.gtf -ugtrack tests/data/T_1000/B/G/genes.fpkm_tracking");
+//
+//    REQUIRE(r1.status == 0);
+//    
+//    TExpress::Options opt;
+//    opt.level = Anaquin::TExpress::RNALevel::Gene;
+//
+//    const auto r2  = TExpress::analyze("tests/data/T_1000/B/G/genes.fpkm_tracking", opt);
+//    const auto lm = r2.linear();
+//
+//    REQUIRE(lm.r  == Approx(0.8929552651));
+//    REQUIRE(lm.m  == Approx(0.9065369839));
+//    REQUIRE(lm.r2 == Approx(0.7920367134));
+//    
+//    REQUIRE(r2.s.id == "R2_33");
+//    REQUIRE(r2.s.counts == 1);
+//    REQUIRE(r2.s.abund == Approx(7.0));
 }
 
-TEST_CASE("TExpress_Simulations_Isoforms_A1")
+TEST_CASE("TExpress_T_1000_Isoforms")
 {
-    Test::trans();
 
-    const auto r  = TExpress::analyze("tests/data/trans/A1/isoforms.fpkm_tracking");
-    const auto lm = r.linear();
 
-    REQUIRE(lm.r  == Approx(0.8143944753));
-    REQUIRE(lm.m  == Approx(0.9300431127));
-    REQUIRE(lm.r2 == Approx(0.6591315122));
-
-    REQUIRE(r.s.id == "R2_38_1");
-    REQUIRE(r.s.counts == 1);
-    REQUIRE(r.s.abund == Approx(1.0));
 }

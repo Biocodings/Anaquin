@@ -118,6 +118,8 @@ namespace Anaquin
             void r_ref(const Reader &);
             void r_mix(const Reader &);
 
+            Reference r_trans;
+
             /*
              * Variant data
              */

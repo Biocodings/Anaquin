@@ -12,11 +12,10 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
     TExpress::Stats stats;
     const auto &s = Standard::instance();
 
-    // Detect whether it's a file of isoform by the name of file
     const bool isoform = options.level == Isoform;
+    options.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
 
     options.info("Parsing input file");
-    options.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
@@ -102,10 +101,8 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
         stats.s = Expression::analyze(stats.c, s.bases_1);
     }
 
-    {
-        options.info("Generating statistics");
-        AnalyzeReporter::linear(stats, "TransExpression", "FPKM", options.writer);
-    }
-        
+    options.info("Generating statistics");
+    AnalyzeReporter::linear(stats, "TransExpression", "FPKM", options.writer);
+
     return stats;
 }
