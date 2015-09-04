@@ -85,7 +85,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
         {
             case Exon:
             {
-                const Feature *match;
+                const ExonData *d;
 
                 q_exons.push_back(f);
                 q_exons_[f.tID].push_back(f);
@@ -96,10 +96,10 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pe.m, f, [&](const Feature &)
                 {
-                    return (match = find(s.r_exons, f, Exact));
+                    return (d = s.r_trans.findExon(f.l));
                 }))
                 {
-                    stats.he.at(match->tID)++;
+                    stats.he.at(d->iID)++;
                 }
 
                 break;
@@ -157,9 +157,9 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
          */
         
         if (classify(stats.pi.m, i, [&](const Feature &)
-                     {
-                         return find(s.r_introns, i, Exact);
-                     }))
+        {
+            return s.r_trans.findIntrons(i.l);
+        }))
         {
             stats.hi[i.tID]++;
         }
@@ -188,7 +188,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * experiment with sufficient coverage.
      */
     
-    countBase(s.r_l_exons, q_exons, stats.pb.m, stats.hb);
+    //countBase(s.r_l_exons, q_exons, stats.pb.m, stats.hb);
 
     /*
      * The counts for references is the total length of all known non-overlapping exons.
@@ -199,7 +199,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * The length of all the bases is 10+5+4 = 19.
      */
 
-    stats.pb.m.nr = s.r_c_exons;
+    //stats.pb.m.nr = s.r_c_exons;
 
     /*
      * Calculate for the LOS

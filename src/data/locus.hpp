@@ -89,7 +89,7 @@ namespace Anaquin
                 // Look forward until the end of an overlap region
                 for (; j < sorted.size(); j++)
                 {
-                    if (sorted[j].overlap(super))
+                    if (static_cast<Locus>(sorted[j]).overlap(super))
                     {
                         super += sorted[j];
                     }

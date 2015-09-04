@@ -28,7 +28,7 @@ namespace Anaquin
     typedef std::string ChromoID;
     typedef std::string SequinID;
     typedef std::string ContigID;
-    typedef std::string VariantID;
+    typedef std::string IsoformID;
     typedef std::string TranscriptID;
 
     typedef std::string FileName;

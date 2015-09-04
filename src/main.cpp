@@ -923,8 +923,8 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
-            applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
+            applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
 
             switch (_p.tool)
             {

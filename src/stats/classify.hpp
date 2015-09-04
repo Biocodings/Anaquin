@@ -93,8 +93,8 @@ namespace Anaquin
     {
         for (const auto &i : iter)
         {
-            const bool matched = (rule == Exact    && i.l == t.l) ||
-                                 (rule == Contains && i.l.contains(t.l));
+            const bool matched = (rule == Exact    && i.l == static_cast<Locus>(t)) ||
+                                 (rule == Contains && i.l.contains(static_cast<Locus>(t)));
             if (matched)
             {
                 return &i;
@@ -123,7 +123,7 @@ namespace Anaquin
 
     enum ClassifyResult
     {
-        Ignore = -1,
+        Ignore   = -1,
         Negative = 0,
         Positive = 1,
     };
@@ -132,7 +132,7 @@ namespace Anaquin
     {
         const auto &s = Standard::instance();
 
-        if (s.l.contains(static_cast<Locus>(t)))
+        //if (s.l.contains(static_cast<Locus>(t)))
         {
             const auto r = c(t);
 

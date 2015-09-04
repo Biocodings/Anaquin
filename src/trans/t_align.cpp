@@ -4,20 +4,20 @@
 using namespace Anaquin;
 
 // Find the matching intron by locus given a spliced alignment
-static bool findIntron(const Alignment &align, Feature &f)
+static bool findIntron(const Alignment &align, IntronData &d)
 {
     assert(align.spliced);
     const auto &s = Standard::instance();
 
-    for (auto i = 0; i < s.r_introns.size(); i++)
+    for (const auto &i : s.r_trans.sortedIntrons())
     {
-        if (align.l == s.r_introns[i].l)
+        if (align.l == i.l)
         {
-            f = s.r_introns[i];
+            d = i;
             return true;
         }
     }
-
+    
     return false;
 }
 
@@ -60,19 +60,18 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
          * Collect statistics at the exon level
          */
 
-        Feature f;
-
         if (!align.spliced)
         {
             exons.push_back(align);
 
+            const ExonData *d;
+
             if (classify(stats.pe.m, align, [&](const Alignment &)
             {
-                succeed = find(s.r_exons.begin(), s.r_exons.end(), align, f);
-                return o.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
+                return (d = s.r_trans.findExon(align.l));
             }))
             {
-                stats.he.at(s.seq2base.at(f.tID))++;
+                stats.he.at(s.seq2base.at(d->iID))++;
             }
         }
 
@@ -84,13 +83,14 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
         {
             introns.push_back(align);
 
+            const IntronData *d;
+
             if (classify(stats.pi.m, align, [&](const Alignment &)
             {
-                succeed = findIntron(align, f);
-                return o.filters.count(f.tID) ? Ignore : succeed ? Positive : Negative;
+                return (d = s.r_trans.findIntrons(align.l));
             }))
             {
-                stats.hi.at(s.seq2base.at(f.tID))++;
+                stats.hi.at(s.seq2base.at(d->iID))++;
             }
         }
     });
@@ -111,7 +111,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
      * Counts at the base-level is the non-overlapping region of all the exons
      */
 
-    countBase(s.r_l_exons, exons, stats.pb.m, stats.hb);
+    // TODOcountBase(s.r_l_exons, exons, stats.pb.m, stats.hb);
 
     /*
      * The counts for references is the total length of all known non-overlapping exons.
@@ -122,7 +122,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
      * The length of all the bases is 10+5+4 = 19.
      */
     
-    stats.pb.m.nr = s.r_c_exons;
+    // TODOstats.pb.m.nr = s.r_c_exons;
 
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
 

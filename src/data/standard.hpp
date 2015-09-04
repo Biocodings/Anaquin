@@ -74,7 +74,7 @@ namespace Anaquin
             ChromoID id = "chrT";
 
             // The location of the chromosome
-            Locus l;
+            //Locus l;
 
             /*
              * Shared variables
@@ -98,27 +98,14 @@ namespace Anaquin
             // Primary features
             Features fs_1;
 
-            // Secondary features
-            Features fs_2;
-
             /*
              * RNA data
              */
 
-            // Sequins and their positions
-            std::map<SequinID, Locus> r_sequins;
-
-            std::vector<Feature> r_exons;
-            std::vector<Feature> r_genes;
-            std::vector<Feature> r_introns;
-
-            Base r_c_exons;
-            std::vector<RNALocus> r_l_exons;
-
             void r_ref(const Reader &);
             void r_mix(const Reader &);
 
-            Reference r_trans;
+            TransReference r_trans;
 
             /*
              * Variant data
@@ -136,8 +123,6 @@ namespace Anaquin
             std::map<Locus, Variation> v_vars;
 
             std::set<Variation> __v_vars__;
-
-            Reference r_var;
 
             /*
              * Ladder data
@@ -162,7 +147,7 @@ namespace Anaquin
             void m_mix_1(const Reader &);
             void m_mix_2(const Reader &);
 
-            Reference r_meta;
+            Reference<> r_meta;
 
         private:
             Standard();

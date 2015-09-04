@@ -16,18 +16,6 @@ extern std::string TransStandGTF();
 
 using namespace Anaquin;
 
-template <typename Iter> Base countLocus(const Iter &iter)
-{
-    Base n = 0;
-    
-    for (const auto &i : iter)
-    {
-        n += static_cast<Locus>(i).length();
-    }
-
-    return n;
-}
-
 struct ParseSequinInfo
 {
     // Used to detect duplicates
@@ -78,7 +66,7 @@ template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo
     assert(!b.empty());
 }
 
-void parseMix__(const Reader &r, Reference &ref, Mixture m, unsigned column=2)
+template <typename Reference> void readMixture(const Reader &r, Reference &ref, Mixture m, unsigned column=2)
 {
     try
     {
@@ -168,8 +156,8 @@ Standard::Standard()
      * The region occupied by the chromosome is the smallest area contains all features.
      */
     
-    l.end   = std::numeric_limits<Base>::min();
-    l.start = std::numeric_limits<Base>::max();
+    //l.end   = std::numeric_limits<Base>::min();
+    //l.start = std::numeric_limits<Base>::max();
     
     /*
      * The orders in a GTF file is not guaranteed. For simplicity, we'll defer most of the workloads
@@ -180,8 +168,8 @@ Standard::Standard()
     {
         assert(!f.tID.empty() && !f.geneID.empty());
         
-        l.end   = std::max(l.end, f.l.end);
-        l.start = std::min(l.start, f.l.start);
+       // l.end   = std::max(l.end, f.l.end);
+     //   l.start = std::min(l.start, f.l.start);
     });
 }
 
@@ -261,13 +249,12 @@ void Standard::v_mix(const Reader &r)
 
 void Standard::m_mix_1(const Reader &r)
 {
-    parseMix__(r, r_meta, MixA, 2);
-    //merge(parseMix(Reader(r), seqs_1, 2), seqs_1, bases_1);
+    readMixture(r, r_meta, MixA, 2);
 }
 
 void Standard::m_mix_2(const Reader &r)
 {
-    merge(parseMix(r, seqs_2, 3), seqs_2, bases_2);
+    readMixture(r, r_meta, MixA, 3);
 }
 
 void Standard::l_mix(const Reader &r)
@@ -312,199 +299,17 @@ void Standard::f_ref(const Reader &r)
 
 void Standard::r_ref(const Reader &r)
 {
-    /*
-     * The region occupied by the chromosome is the smallest area contains all features.
-     */
-    
-    l.end   = std::numeric_limits<Base>::min();
-    l.start = std::numeric_limits<Base>::max();
-
-    std::vector<Feature> fs;
-
-    std::set<GeneID> geneIDs;
-    std::set<GeneID> sequinIDs;
-
-    /*
-     * The orders in a GTF file is not guaranteed. For simplicity, we'll defer most of the workloads
-     * after parsing.
-     */
-
     ParserGTF::parse(r, [&](const Feature &f, const ParserProgress &)
     {
-        if (f.id != id)
+       if (f.id == id && f.type == Exon)
         {
-            return;
-        }
-        
-        // TODO: Please fix me!
-        if (f.tID == "R1_140_1" || f.tID == "R1_143_1" || f.tID == "R1_53_2")
-        {
-            return; // TODO! To save assembly from crashing!! Defined in the model but not in mixture!
-        }
-
-        assert(!f.tID.empty() && !f.geneID.empty());
-        
-        l.end   = std::max(l.end, f.l.end);
-        l.start = std::min(l.start, f.l.start);
-
-        // Automatically filter out the duplicates
-        geneIDs.insert(f.geneID);
-        sequinIDs.insert(f.tID);
-        
-        fs.push_back(f);
-        
-        if (f.type == Exon)
-        {
-            r_exons.push_back(f);
+            r_trans.adds(f.tID, f.geneID, f.l);
         }
     });
-    
-    /*
-     * It's quite likely that an annotation without chrT is given. This is a common error so we'll
-     * need to give a good warning message.
-     */
-    
-    if (r_exons.empty())
-    {
-        throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check your file and try again. You can also download the latest annotation file on http://www.anaquin.org.");
-    }
-    
-    assert(!r_exons.empty());
-    assert(l.end   != std::numeric_limits<Base>::min());
-    assert(l.start != std::numeric_limits<Base>::min());
-    
-    /*
-     * Construct a data-structure that maps from sequinID to it's positon
-     */
-
-    for (const auto &seqID : sequinIDs)
-    {
-        r_sequins[seqID] = Locus::expand(r_exons, [&](const Feature &f)
-        {
-            return f.tID == seqID;
-        });
-
-        // Make sure the position is valid
-        assert(r_sequins.at(seqID) != Locus());
-    }
-
-    assert(!r_sequins.empty());
-
-    /*
-     * Construct data-structure for each gene
-     */
-    
-    for (const auto &geneID : geneIDs)
-    {
-        Feature g;
-
-        // The name of the gene is also the it's ID
-        g.id = g.geneID = geneID;
-
-        g.l.end   = std::numeric_limits<Base>::min();
-        g.l.start = std::numeric_limits<Base>::max();
-        
-        /*
-         * Add all exons for this gene
-         */
-
-        for (const auto &f : fs)
-        {
-            if (f.geneID == g.id)
-            {
-                g.l.end   = std::max(g.l.end, f.l.end);
-                g.l.start = std::min(g.l.start, f.l.start);
-                
-                if (f.type == Exon)
-                {
-                    // TODO: ????
-                    r_l_exons.push_back(RNALocus(f.geneID, f.l));
-                }
-            }
-        }
-
-        assert(g.l.end   != std::numeric_limits<Base>::min());
-        assert(g.l.start != std::numeric_limits<Base>::min());
-        assert(g.l.end > g.l.start);
-
-        r_genes.push_back(g);
-    }
-
-    assert(!r_l_exons.empty() && !r_genes.empty());
-
-    CHECK_AND_SORT(r_exons);
-    CHECK_AND_SORT(r_genes);
-
-    /*
-     * Extract introns between each successive pair of exons for each gene.
-     * Note that it's only possible once the list has been sorted.
-     */
-    
-    for (std::size_t i = 0; i < r_exons.size(); i++)
-    {
-        if (i && r_exons[i].geneID == r_exons[i-1].geneID)
-        {
-            Feature f;
-            
-            f.id   = id;
-            f.tID  = r_exons[i].tID;
-            f.type = Intron;
-
-            // The locus is simply whatever between the two successive exons
-            f.l = Locus(r_exons[i-1].l.end + 1, r_exons[i].l.start - 1);
-            
-            r_introns.push_back(f);
-        }
-    }
-
-    assert(!r_introns.empty());
-    CHECK_AND_SORT(r_introns);
-    
-    r_l_exons = Locus::merge<RNALocus, RNALocus>(r_l_exons);
-    
-    assert(!r_l_exons.empty());
 }
 
 void Standard::r_mix(const Reader &r)
 {
-    
-
-    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
-    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
-    
-    /*
-     * Merging overlapping regions for the exons
-     */
-    
-    r_c_exons = countLocus(r_l_exons);
-
-    assert(r_c_exons);
-    assert(!r_l_exons.empty());
-    assert(!Locus::overlap(r_l_exons));
-
-    /*
-     * The mixture file is unable to give us the position of a sequin. Here, we'll
-     * merge the information with the model. Note that we might have a sequin defined
-     * in a mixture file that doesn't not appear in the model.
-     */
-
-    for (auto &i: seqs_1)
-    {
-        if (!r_sequins.count(i.first))
-        {
-            // TODO: std::cout << "Warning: " << i.first << " defined in mixture but not in the model" << std::endl;
-        }
-        else
-        {
-            // Note that we're assigning by reference here
-            i.second.l = r_sequins.at(i.first);
-
-            // Make sure it's not an empty range
-            assert(i.second.l != Locus());
-
-            seqIDs.insert(i.first);
-        }
-    }
-    
-    assert(!seqIDs.empty() && !baseIDs.empty());
+    readMixture(r, r_trans, MixA, 2);
+    readMixture(r, r_trans, MixB, 3);
 }
