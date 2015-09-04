@@ -147,7 +147,7 @@ if __name__ == '__main__':
     file = sys.argv[2]
 
     if (mode == '-n'):
-        normalize(file, '/share/Projects/VarQuin/GM_VARMXA_CONA/ABCD.sam')
+        normalize(file, 'resampled.sam')
     elif (mode == '-s' or mode == 'stats'):
         stats(file)
         
