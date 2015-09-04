@@ -7,10 +7,7 @@ namespace Anaquin
 {
     struct VAllele
     {
-        struct Options : public AnalyzerOptions
-        {
-            double fuzzy = 0;
-        };
+        typedef FuzzyOptions Options;
         
         struct Stats : public LinearStats
         {

@@ -7,10 +7,10 @@ namespace Anaquin
 {
     struct VDiscover
     {
-        typedef SingleMixtureOptions Options;
+        typedef FuzzyOptions Options;
         typedef std::map<Variation, Counts> VarHist;
 
-        struct Stats : public LinearStats
+        struct Stats
         {
             // Overall performance
             Confusion m;

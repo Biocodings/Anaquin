@@ -7,10 +7,8 @@ namespace Anaquin
 {
     struct TAssembly : Analyzer
     {
-        struct Options : AnalyzerOptions
+        struct Options : FuzzyOptions
         {
-            double fuzzy = 0;
-            
             // Path for the reference and query GTF
             std::string ref, query;
         };

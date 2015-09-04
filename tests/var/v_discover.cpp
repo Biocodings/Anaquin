@@ -4,14 +4,12 @@
 
 using namespace Anaquin;
 
-TEST_CASE("VarDiscover_Test")
+TEST_CASE("VarDiscover_V_1000")
 {
     Test::variant();
     
-    const auto r  = VDiscover::analyze("tests/data/var/VARquin.MixA.v1.vcf");
-    const auto lm = r.linear();
+    const auto r = VDiscover::analyze("tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
 
-    REQUIRE(r.m.sp()  == Approx(0.977778));
-    REQUIRE(r.m.sn()  == Approx(0.347826));
-    //REQUIRE(r.covered == Approx(0.0553359684));
+    REQUIRE(r.m.sp() == Approx(1.0));
+    REQUIRE(r.m.sn() == Approx(0.5415019763));
 }

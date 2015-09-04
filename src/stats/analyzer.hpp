@@ -247,6 +247,11 @@ namespace Anaquin
         inline void out(const std::string &s) const { output->write(s); }
     };
 
+    struct FuzzyOptions : public AnalyzerOptions
+    {
+        double fuzzy;
+    };
+
     struct SingleMixtureOptions : public AnalyzerOptions
     {
         Mixture mix = MixA;

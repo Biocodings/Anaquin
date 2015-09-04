@@ -8,11 +8,7 @@ namespace Anaquin
     class TAlign : public Analyzer
     {
         public:
-        
-            struct Options : AnalyzerOptions
-            {
-                double fuzzy = 0;
-            };
+            typedef FuzzyOptions Options;
 
             struct Stats
             {
