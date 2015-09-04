@@ -53,6 +53,7 @@
 		EF6930C71B66F4AC00CADFD1 /* m_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6930C51B66F4AC00CADFD1 /* m_viewer.cpp */; };
 		EF72F0ED1B6898940092DA34 /* t_parser_top_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72F0EC1B6898940092DA34 /* t_parser_top_fusion.cpp */; };
 		EF8ADAE91B220767005E2187 /* m_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF8ADAE71B220767005E2187 /* m_diffs.cpp */; };
+		EF98D67C1B993B450019CC3C /* t_abundance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF98D67B1B993B450019CC3C /* t_abundance.cpp */; };
 		EF9ACCEE1B5FB7520085D1B2 /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCDC1B5FB5480085D1B2 /* t_express.cpp */; };
 		EF9ACCEF1B5FB7520085D1B2 /* t_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCE01B5FB5480085D1B2 /* t_align.cpp */; };
 		EF9ACCF01B5FB7520085D1B2 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9ACCE31B5FB5480085D1B2 /* t_assembly.cpp */; };
@@ -219,6 +220,7 @@
 		EF8ADAE71B220767005E2187 /* m_diffs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_diffs.cpp; sourceTree = "<group>"; };
 		EF8ADAE81B220767005E2187 /* m_diffs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_diffs.hpp; sourceTree = "<group>"; };
 		EF96552D1B60EE1D0027885E /* gtf_tracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gtf_tracking.h; path = ../src/cufflinks/gtf_tracking.h; sourceTree = "<group>"; };
+		EF98D67B1B993B450019CC3C /* t_abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_abundance.cpp; sourceTree = "<group>"; };
 		EF9ACCDC1B5FB5480085D1B2 /* t_express.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_express.cpp; sourceTree = "<group>"; };
 		EF9ACCDD1B5FB5480085D1B2 /* t_express.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = t_express.hpp; sourceTree = "<group>"; };
 		EF9ACCE01B5FB5480085D1B2 /* t_align.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_align.cpp; sourceTree = "<group>"; };
@@ -497,6 +499,7 @@
 		EF9ACCE91B5FB5F20085D1B2 /* trans */ = {
 			isa = PBXGroup;
 			children = (
+				EF98D67B1B993B450019CC3C /* t_abundance.cpp */,
 				EF9ACCEA1B5FB5F20085D1B2 /* t_express.cpp */,
 				EF9ACCEB1B5FB5F20085D1B2 /* t_align.cpp */,
 				EF9ACCEC1B5FB5F20085D1B2 /* t_assembly.cpp */,
@@ -758,6 +761,7 @@
 				EFDD6AD61B0DD76C00450029 /* string_alloc.c in Sources */,
 				EF3F743E1B980647008239DB /* v_allele.cpp in Sources */,
 				EF4BD9AB1ADDFB92007BE6AB /* parser_cdiffs.cpp in Sources */,
+				EF98D67C1B993B450019CC3C /* t_abundance.cpp in Sources */,
 				EF3F04A81B6F309E00179B55 /* t_parser_star_fusion.cpp in Sources */,
 				EFB7FF441B4F87170045DC6A /* v_align.cpp in Sources */,
 				EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */,
