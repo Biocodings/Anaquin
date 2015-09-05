@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+#
+# This script provides subsampling to a SAM/BAM file for sequins
+#
+
 import os
 import sys
 import urllib
@@ -27,8 +31,8 @@ def create(file, headers, lines):
 def analyze(file):
     lengths = []  # Length of the reads
     headers = []  # Header lines    
-    humans  = []  # Reads for the human genome
-    synthet = []  # Reads for the synthetic chromosome
+    hg38 = []  # Reads for the human genome
+    chrT = []  # Reads for the synthetic chromosome
 
     # Number of bases sequenced for the human 
     l_humans = 0
@@ -36,12 +40,8 @@ def analyze(file):
     # Number of bases sequenced for the synthetic chromosome
     l_chrT = 0
 
-    n = 0
-
     with open(file) as f:
         for l in f:
-            n = n +1
-            
             if (l[0] == '@'):
                 headers.append(l)
             else:
@@ -54,14 +54,12 @@ def analyze(file):
                     
                     if (toks[2] == 'chrT'):
                         l_chrT = l_chrT + bases
-                        synthet.append({ 'line': l, 'len': bases })
+                        chrT.append({ 'line': l, 'len': bases })
                     else:
                         l_humans = l_humans + bases
-                        humans.append( { 'line': l, 'len': bases })
+                        hg38.append( { 'line': l, 'len': bases })
 
-    return { 'headers': headers,
-             'hg38'   : humans,
-             'chrT'   : synthet }
+    return { 'headers': headers, 'hg38' : hg38, 'chrT' : chrT }
 
 def stats(file):
     r = analyze(file)
@@ -97,6 +95,7 @@ def normalize(input, output):
     # grep -v chrT chrT.v0510.fa | wc -m
     chrT_len = 8457083.0
 
+    #
     # Estimate the coverage by:
     #
     #    number of mapped reads * read length
@@ -134,11 +133,14 @@ def normalize(input, output):
     #
     # Create a new SAM file from the subsampled reads
     #
-    
+
     create('__tmp1__.sam', r['headers'], r['hg38'])
     run('cat __sampled__.sam >> __tmp1__.sam')
     run('mv __tmp1__.sam ' + output)
-    
+
+#
+# Eg: python subsample.py -n <SAM/BAM File>
+#
 if __name__ == '__main__':
 
     mode = sys.argv[1]
@@ -147,8 +149,10 @@ if __name__ == '__main__':
     file = sys.argv[2]
 
     if (mode == '-n'):
-        normalize(file, 'resampled.sam')
-    elif (mode == '-s' or mode == 'stats'):
+        print('Normalizing ' + file)
+        normalize(file, 'subsampled.sam')
+    elif (mode == '-r'):
+        print('Reporting ' + file)
         stats(file)
         
 
