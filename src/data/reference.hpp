@@ -119,59 +119,86 @@ namespace Anaquin
             std::map<Mixture, std::set<MixtureData>> _mixes;
     };
 
-    struct TransSequinData : public SequinData
+    struct LadderData : public SequinData
+    {
+    };
+
+    class LaddeRef : public Reference<LadderData, SequinStats>
+    {
+        
+    };
+    
+    struct MetaData : public SequinData
+    {
+    };
+    
+    class MetaRef : public Reference<MetaData, SequinStats>
+    {
+        
+    };
+    
+    struct VarData : public SequinData
+    {
+    };
+    
+    class VarRef : public Reference<VarData, SequinStats>
+    {
+        
+    };
+    
+    struct TransData : public SequinData
     {
         GeneID gID;
     };
 
-    struct GeneData
-    {
-        inline Locus l() const
-        {
-            Base end   = std::numeric_limits<Base>::min();
-            Base start = std::numeric_limits<Base>::max();
-
-            for (const auto &i : seqs)
-            {
-                end   = std::max(end, i->l.end);
-                start = std::max(end, i->l.end);
-            }
-
-            return Locus(start, end);
-        }
-        
-        inline Base length() const
-        {
-            Base n = 0;
-            
-            for (const auto &i : seqs)
-            {
-                n = std::max(static_cast<Base>(0), i->l.length());
-            }
-
-            return n;
-        }
-        
-        inline Concentration abund(Mixture m = MixA) const
-        {
-            Concentration n = 0;
-            
-            for (const auto &i : seqs)
-            {
-                n += (*i).mixes.at(m);
-            }
-
-            return n;
-        }
-        
-        // Each sequin comprises an isoform
-        std::vector<SequinData *> seqs;
-    };
-
-    class TransRef : public Reference<TransSequinData, SequinStats>
+    class TransRef : public Reference<TransData, SequinStats>
     {
         public:
 
+            struct GeneData
+            {
+                inline Locus l() const
+                {
+                    Base end   = std::numeric_limits<Base>::min();
+                    Base start = std::numeric_limits<Base>::max();
+                
+                    for (const auto &i : seqs)
+                    {
+                        end   = std::max(end, i->l.end);
+                        start = std::max(end, i->l.end);
+                    }
+
+                    return Locus(start, end);
+                }
+
+                inline Base length() const
+                {
+                    Base n = 0;
+                
+                    for (const auto &i : seqs)
+                    {
+                        n = std::max(static_cast<Base>(0), i->l.length());
+                    }
+                
+                    return n;
+                }
+
+                inline Concentration abund(Mixture m = MixA) const
+                {
+                    Concentration n = 0;
+                
+                    for (const auto &i : seqs)
+                    {
+                        n += (*i).mixes.at(m);
+                    }
+                
+                    return n;
+                }
+            
+                // Each sequin comprises an isoform
+                std::vector<SequinData *> seqs;
+            };
+        
             struct ExonData
             {
                 operator const Locus &() const { return l; }
@@ -331,7 +358,7 @@ namespace Anaquin
                     throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check your file and try again.");
                 }
 
-                merge<TransSequinData>(_rawMIDs, _rawIIDs);
+                merge<TransData>(_rawMIDs, _rawIIDs);
 
                 /*
                  * Filter out only those validated exons

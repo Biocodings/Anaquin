@@ -73,9 +73,6 @@ namespace Anaquin
             // The name of the chromosome
             ChromoID id = "chrT";
 
-            // The location of the chromosome
-            //Locus l;
-
             /*
              * Shared variables
              */

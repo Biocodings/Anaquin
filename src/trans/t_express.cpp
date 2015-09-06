@@ -1,4 +1,3 @@
-#include <ss/c.hpp>
 #include "trans/t_express.hpp"
 #include "writers/r_writer.hpp"
 #include <ss/regression/lm.hpp>
@@ -60,7 +59,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
         }
         else
         {
-            const GeneData *m = nullptr;
+            const TransRef::GeneData *m = nullptr;
             
             // Try to match by name if possible
             m = r.findGene(t.geneID);
