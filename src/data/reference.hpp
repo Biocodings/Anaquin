@@ -212,9 +212,9 @@ namespace Anaquin
             {
                 GeneHist h;
             
-                for (const auto &i : _data)
+                for (const auto &i : _genes)
                 {
-                    h[i.second.gID] = 0;
+                    h[i.first] = 0;
                 }
 
                 return h;
@@ -234,6 +234,7 @@ namespace Anaquin
             
                 _rawIIDs.insert(iID);
                 _rawGIDs.insert(gID);
+                _rawMapper[iID] = gID;
             }
 
             template <typename Data> void merge(const std::set<SequinID> &mIDs,
@@ -272,10 +273,13 @@ namespace Anaquin
                 {
                     auto d = Data();
 
-                    d.id = id;
-
+                    d.id  = id;
+                    d.gID = _rawMapper.at(d.id);
+                    
                     // Add a new entry for the validated sequin
                     _data[id] = d;
+                    
+                    assert(!d.id.empty() && !d.gID.empty());
                 });
 
                 /*
@@ -345,8 +349,6 @@ namespace Anaquin
                     }
                 }
 
-                //assert(!_gIDs.empty());
-        
                 /*
                  * Generate a list of sorted exons
                  */
@@ -441,8 +443,6 @@ namespace Anaquin
             // Number of bases for all the reference exons
             Base _exonBase;
 
-            //std::set<GeneID> _gIDs;
-        
             std::map<GeneID, GeneData> _genes;
             std::vector<ExonData>   _mergedExons;
             std::vector<ExonData>   _sortedExons;
@@ -454,6 +454,7 @@ namespace Anaquin
 
             std::set<GeneID>                           _rawGIDs;
             std::set<IsoformID>                        _rawIIDs;
+            std::map<SequinID, GeneID>                 _rawMapper;
             std::map<GeneID, std::vector<ExonData>>    _exonsByGenes;
             std::map<IsoformID, std::vector<ExonData>> _exonsByTrans;
     };
