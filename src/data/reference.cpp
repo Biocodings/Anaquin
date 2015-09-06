@@ -284,7 +284,10 @@ struct VarRef::VarRefImpl
     std::vector<Variation> rawVars;
 };
 
-VarRef::VarRef() : _impl(new VarRefImpl()) {}
+VarRef::VarRef() : _impl(new VarRefImpl())
+{
+    assert(_impl);
+}
 
 std::size_t VarRef::countVars() const
 {

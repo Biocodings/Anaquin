@@ -282,7 +282,7 @@ namespace Anaquin
             {
                 StartOnly,
             };
-        
+
             VarRef();
 
             // Add a reference for a known variant

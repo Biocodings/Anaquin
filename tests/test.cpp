@@ -60,6 +60,9 @@ void Test::trans()
 void Test::variant()
 {
     Standard::instance(true);
+    
+    const auto &abcd = Standard::instance();
+    
     Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
     Standard::instance().v_std(Reader(VarStandGTF(), DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMix(),  DataMode::String));
