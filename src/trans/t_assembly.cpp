@@ -45,17 +45,14 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
     options.logInfo("Invoking cuffcompare: " + options.query);
 
     const int status = cuffcompare_main(options.ref.c_str(), options.query.c_str());
-    
+
     if (status)
     {
         throw std::runtime_error("Failed to compare the given transcript. Please check the file and try again.");
     }
     
     TAssembly::Stats stats;
-    const auto &s = Standard::instance();
-
-    // The sequins depends on the mixture
-    const auto sequins = s.seqs_1;
+    const auto &r = Standard::instance().r_trans;
 
     std::vector<Feature> q_exons;
     std::map<SequinID, std::vector<Feature>> q_exons_;
@@ -64,7 +61,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &p)
     {
-        if (f.id != s.id)
+        if (f.id != Standard::instance().id)
         {
             return;
         }
@@ -96,7 +93,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pe.m, f, [&](const Feature &)
                 {
-                    return (d = s.r_trans.findExon(f.l));
+                    return (d = r.findExon(f.l));
                 }))
                 {
                     stats.he.at(d->iID)++;
@@ -107,7 +104,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
             case Transcript:
             {
-                const Sequin *match;
+                const TransData *match;
 
                 /*
                  * Classify at the transctipt level
@@ -115,15 +112,17 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pt.m, f, [&](const Feature &)
                 {
-                    return (match = find(sequins, f, Exact));
+                    //return (match = find(sequins, f, Exact));
+                    return (match = r.seq(f.l));
                 }))
                 {
                     stats.ht.at(match->id)++;
                 }
                 else
                 {
-                    options.logger->write((boost::format("[Transcript]: %1% %2%") % std::to_string(f.l.start)
-                                                                                  % std::to_string(f.l.end)).str()) ;
+                    options.logger->write(
+                        (boost::format("[Transcript]: %1% %2%") % std::to_string(f.l.start)
+                                                                % std::to_string(f.l.end)).str()) ;
                 }
 
                 break;
@@ -158,7 +157,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
         
         if (classify(stats.pi.m, i, [&](const Feature &)
         {
-            return s.r_trans.findIntron(i.l);
+            return r.findIntron(i.l);
         }))
         {
             stats.hi[i.tID]++;
@@ -178,7 +177,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * The counts for references for the transcript level is simply all the sequins.
      */
 
-    stats.pt.m.nr = sequins.size();
+    stats.pt.m.nr = r.data().size();
 
     options.info("Merging overlapping bases");
 
@@ -207,10 +206,10 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
     options.info("Calculating limit of sensitivity");
     
-    stats.pe.s = Expression::analyze(stats.he, sequins);
-    stats.pt.s = Expression::analyze(stats.ht, sequins);
-    stats.pb.s = Expression::analyze(stats.hb, s.bases_1);
-    stats.pi.s = Expression::analyze(stats.hi, sequins);
+    stats.pe.s = Expression_::calculate(stats.he, r);
+    stats.pt.s = Expression_::calculate(stats.ht, r);
+    stats.pb.s = Expression_::calculate(stats.hb, r);
+    stats.pi.s = Expression_::calculate(stats.hi, r);
 
     options.info("Generating statistics");
 
@@ -230,7 +229,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
     options.writer->write((boost::format(summary) % file
                                                   % "NA"
                                                   % "NA"
-                                                  % sequins.size()
+                                                  % r.data().size()
                                                   % options.fuzzy
                                                   % (__cmp__.e_sp / 100.0)
                                                   % (__cmp__.e_sn / 100.0)

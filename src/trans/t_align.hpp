@@ -21,9 +21,9 @@ namespace Anaquin
                 // Fraction of sequin spiked
                 inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
 
-                BaseHist hb = Analyzer::baseHist();
-                BaseHist he = Analyzer::baseHist();
-                BaseHist hi = Analyzer::baseHist();
+                TransRef::GeneHist hb = Standard::instance().r_trans.histForGene();
+                TransRef::GeneHist he = Standard::instance().r_trans.histForGene();
+                TransRef::GeneHist hi = Standard::instance().r_trans.histForGene();
 
                 Performance pb, pe, pi;
             };

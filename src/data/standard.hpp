@@ -121,12 +121,16 @@ namespace Anaquin
 
             std::set<Variation> __v_vars__;
 
+            VarRef v_ref;
+        
             /*
              * Ladder data
              */
 
             void l_mix(const Reader &);
 
+            LadderRef l_ref;
+        
             /*
              * Fusion data
              */
@@ -137,6 +141,8 @@ namespace Anaquin
             // Known fusion break-points
             std::set<FusionBreak> f_breaks;
 
+            FusionRef r_fus;
+        
             /*
              * Metagenomic data
              */
@@ -144,7 +150,7 @@ namespace Anaquin
             void m_mix_1(const Reader &);
             void m_mix_2(const Reader &);
 
-            Reference<> r_meta;
+            MetaRef r_meta;
 
         private:
             Standard();

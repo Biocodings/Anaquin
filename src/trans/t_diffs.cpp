@@ -8,7 +8,7 @@ using namespace Anaquin;
 TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 {
     TDiffs::Stats stats;
-    const auto &s = Standard::instance();
+    const auto &r = Standard::instance().r_trans;
 
     auto c = (options.level == Gene ? Analyzer::baseHist() : Analyzer::seqHist());
 
@@ -25,13 +25,15 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
         // It's NAN if the sequin defined in reference but not in mixture
         Fold measured = NAN;
         
-        if (s.bases_1.count(id))
+        const auto *g = r.findGene(id);
+        
+        if (g)
         {
             // Calculate the known fold-change between B and A
-            known = (s.bases_2.at(id).abund() / s.bases_1.at(id).abund());
+            known = (g->abund(MixB) / g->abund(MixA));
         }
 
-        if (s.bases_1.count(id) && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
+        if (g && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
         {
             c[id]++;
 
@@ -69,12 +71,14 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 
             case Isoform:
             {
-                if (s.seqs_1.count(t.testID))
+                const auto *seq = r.seq(t.testID);
+
+                if (seq)
                 {
                     // Known fold-change between the two mixtures
-                    known = s.seqs_2.at(t.testID).abund() / s.seqs_1.at(t.testID).abund();
+                    known = seq->abund(MixB) / seq->abund(MixA);
                 }
-                
+
                 if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
                 {
                     c[t.testID]++;
@@ -95,19 +99,19 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
      * Find out the undetected sequins
      */
     
-    if (options.level == Gene)
-    {
-        for (const auto &i : s.bases_1)
-        {
-            const auto &id = i.first;
-            
-            // Not found in the experiment?
-            if (!ids.count(id))
-            {
-                stats.add(i.first, s.bases_2.at(id).abund() / s.bases_1.at(id).abund(), NAN);
-            }
-        }
-    }
+//    if (options.level == Gene)
+//    {
+//        for (const auto &i : seq->abund)
+//        {
+//            const auto &id = i.first;
+//            
+//            // Not found in the experiment?
+//            if (!ids.count(id))
+//            {
+//                stats.add(i.first, s.bases_2.at(id).abund() / s.bases_1.at(id).abund(), NAN);
+//            }
+//        }
+//    }
     
     //assert(!c.empty() && !stats.x.empty());
     //assert(!stats.x.empty() && stats.x.size() == stats.y.size());

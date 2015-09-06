@@ -6,18 +6,18 @@
 using namespace SS;
 using namespace Anaquin;
 
-TExpress::Stats TExpress::analyze(const std::string &file, const Options &options)
+TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
 {
     TExpress::Stats stats;
     const auto &r = Standard::instance().r_trans;
 
-    const bool isoform = options.level == Isoform;
-    options.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
+    const bool isoform = o.level == Isoform;
+    o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
     
     // Construct for a histogram at the appropriate level
     stats.h = isoform ? r.hist() : r.histForGene();
 
-    options.info("Parsing input file");
+    o.info("Parsing input file");
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
@@ -26,36 +26,30 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
 
         if (isoform)
         {
-//            // Try to match by names if possible
-//            const auto *r = s.seqs_1.count(t.trackID) ? &(s.seqs_1.at(t.trackID)) : nullptr;
-//
-//            if (!r)
-//            {
-//                const auto found = std::find_if(s.seqs_1.begin(), s.seqs_1.end(),
-//                                                [&](const std::pair<SequinID, Sequin> &p)
-//                                                {
-//                                                    return p.second.l.contains(t.l);
-//                                                });
-//
-//                if (found != s.seqs_1.end())
-//                {
-//                    r = &(found->second);
-//                }
-//            }
-//
-//            if (!r)
-//            {
-//                options.logWarn((boost::format("%1% not found. Unknown isoform.") % t.trackID).str());
-//            }
-//            else
-//            {
-//                stats.h[t.trackID]++;
-//                
-//                if (t.fpkm)
-//                {
-//                    stats.add(t.trackID, log2(r->abund() / r->length), log2(fpkm));
-//                }
-//            }
+            const TransData *m = nullptr;
+
+            // Try to match by name if possible
+            m = r.seq(t.geneID);
+
+            if (!m)
+            {
+                // Try to match by locus (de-novo assembly)
+                m = r.seq(t.l);
+            }
+
+            if (!m)
+            {
+                o.logWarn((boost::format("%1% not found. Unknown isoform.") % t.trackID).str());
+            }
+            else
+            {
+                stats.h.at(t.geneID)++;
+
+                if (t.fpkm)
+                {
+                    stats.add(t.trackID, log2(m->abund(MixA)), log2(fpkm));
+                }
+            }
         }
         else
         {
@@ -72,7 +66,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
 
             if (!m)
             {
-                options.logWarn((boost::format("%1% not found. Unknown gene.") % t.trackID).str());
+                o.logWarn((boost::format("%1% not found. Unknown gene.") % t.trackID).str());
             }
             else
             {
@@ -80,7 +74,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
 
                 if (t.fpkm)
                 {
-                    stats.add(t.trackID, log2(m->abund() / m->length()), log2(fpkm));
+                    stats.add(t.trackID, log2(m->abund()), log2(fpkm));
                 }
             }
         }
@@ -88,15 +82,38 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &option
     
     if (isoform)
     {
-       // stats.s = Expression::analyze(stats.h, s.seqs_1);
+        stats.s = Expression_::calculate(stats.h, r);
     }
     else
     {
-       // stats.s = Expression::analyze(stats.h, s.bases_1);
+        stats.s = Expression_::calculate(stats.h, r);
     }
+    
+    o.info("Generating statistics");
+    
+    const auto detected = std::count_if(
+                              stats.h.begin(), stats.h.end(), [&](const std::pair<SequinID, Counts> &i)
+                              {
+                                  return i.second;
+                              });
+    
+    const auto summary = "Summary for dataset: %1% :\n\n"
+                         "   Detected: %2%\n"
+                         "   Reference: %3%\n\n"
+                         "Correlation:     %4%\n"
+                         "Slope:     %5%\n"
+                         "R2:     %6%\n"
+    ;
 
-    options.info("Generating statistics");
-    AnalyzeReporter::linear(stats, "TransExpression", "FPKM", options.writer);
+    const auto lm = stats.linear();
 
+    o.writer->write((boost::format(summary) % file
+                                            % detected
+                                            % stats.h.size()
+                                            % lm.r
+                                            % lm.m
+                                            % lm.r2).str());
+    o.writer->close();
+    
     return stats;
 }

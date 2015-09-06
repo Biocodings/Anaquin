@@ -36,6 +36,12 @@ namespace Anaquin
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
         inline bool operator==(const SequinID &x) const { return this->id == x; }
 
+        // Return the normalized abundance
+        inline Concentration abund(Mixture m) const
+        {
+            return mixes.at(m) / length;
+        }
+
         SequinID id;
 
         // Length of the sequin
@@ -68,6 +74,19 @@ namespace Anaquin
             inline const Data *seq(const SequinID &id) const
             {
                 return _data.count(id) ? &_data.at(id) : nullptr;
+            }
+
+            inline const Data *seq(const Locus &l) const
+            {
+                for (const auto &i : _data)
+                {
+                    if (i.second.l.overlap(l))
+                    {
+                        return &i.second;
+                    }
+                }
+
+                return nullptr;
             }
         
             inline SequinHist hist() const
@@ -123,7 +142,7 @@ namespace Anaquin
     {
     };
 
-    class LaddeRef : public Reference<LadderData, SequinStats>
+    class LadderRef : public Reference<LadderData, SequinStats>
     {
         
     };
@@ -132,7 +151,17 @@ namespace Anaquin
     {
     };
     
+    struct FusionData : public SequinData
+    {
+        
+    };
+    
     class MetaRef : public Reference<MetaData, SequinStats>
+    {
+        
+    };
+    
+    class FusionRef : public Reference<FusionData, SequinStats>
     {
         
     };
@@ -171,25 +200,14 @@ namespace Anaquin
                     return Locus(start, end);
                 }
 
-                inline Base length() const
-                {
-                    Base n = 0;
-                
-                    for (const auto &i : seqs)
-                    {
-                        n = std::max(static_cast<Base>(0), i->l.length());
-                    }
-                
-                    return n;
-                }
-
+                // Calcualate the normalized abundance for the gene
                 inline Concentration abund(Mixture m = MixA) const
                 {
                     Concentration n = 0;
                 
                     for (const auto &i : seqs)
                     {
-                        n += (*i).mixes.at(m);
+                        n += ((*i).mixes.at(m) / (*i).length);
                     }
                 
                     return n;
@@ -248,7 +266,7 @@ namespace Anaquin
             }
 
             // Add a new annoation reference
-            inline void adds(const IsoformID &iID, const GeneID &gID, const Locus &l)
+            inline void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l)
             {
                 ExonData e;
             

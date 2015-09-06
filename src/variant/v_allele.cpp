@@ -90,7 +90,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
 
     const auto summary = "Summary for dataset: %1% :\n\n"
                          "   Ignored: %2% variants not in chrT\n"
-                         "   Found: %3% variants in chrT\n"
+                         "   Detected: %3% variants in chrT\n"
                          "   Reference: %4% variants\n\n"
                          "Fuzzy: %5%\n\n"
                          "Correlation:     %6%\n"

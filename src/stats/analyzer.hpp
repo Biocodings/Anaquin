@@ -266,6 +266,51 @@ namespace Anaquin
     {
         std::string path;
     };
+
+    struct Expression_
+    {
+        template <typename Ref> static Sensitivity calculate(const std::map<std::string, Counts> &h, const Ref &r)
+        {
+            Sensitivity s;
+            
+            // The lowest count must be zero because it can't be negative
+            s.counts = std::numeric_limits<unsigned>::max();
+            
+            for (auto iter = h.begin(); iter != h.end(); iter++)
+            {
+                const auto counts = iter->second;
+                
+                /*
+                 * Is this sequin detectable? If it's detectable, what about the concentration?
+                 * By definition, detection limit is defined as the smallest abundance while
+                 * still being detected.
+                 */
+                
+                if (counts)
+                {
+                    const auto &id = iter->first;
+                    const auto seq = r.findGene(id);
+                    
+                    // Hard to believe a sequin in the histogram is undefined
+                    assert(seq);
+                    
+                    if (counts < s.counts || (counts == s.counts && seq->abund(MixA) < s.abund))
+                    {
+                        s.id     = id;
+                        s.counts = counts;
+                        s.abund  = seq->abund(MixA);
+                    }
+                }
+            }
+            
+            if (s.counts == std::numeric_limits<unsigned>::max())
+            {
+                s.counts = 0;
+            }
+            
+            return s;
+        }
+    };
     
     struct Expression
     {
@@ -313,12 +358,12 @@ namespace Anaquin
                     }
                 }
             }
-            
+
             if (s.counts == std::numeric_limits<unsigned>::max())
             {
                 s.counts = 0;
             }
-            
+
             return s;
         }
     };

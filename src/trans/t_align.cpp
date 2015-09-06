@@ -3,28 +3,10 @@
 
 using namespace Anaquin;
 
-// Find the matching intron by locus given a spliced alignment
-static bool findIntron(const Alignment &align, Anaquin::TransRef::IntronData &d)
-{
-    assert(align.spliced);
-    const auto &s = Standard::instance();
-
-    for (const auto &i : s.r_trans.sortedIntrons())
-    {
-        if (align.l == i.l)
-        {
-            d = i;
-            return true;
-        }
-    }
-    
-    return false;
-}
-
 TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 {
     TAlign::Stats stats;
-    const auto &s = Standard::instance();
+    const auto &r = Standard::instance().r_trans;
 
     std::vector<Alignment> exons, introns;
 
@@ -37,12 +19,12 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
             o.wait(std::to_string(p.i));
         }
         
-        if (align.id != s.id && !align.i)
+        if (align.id != Standard::instance().id && !align.i)
         {
             stats.n_genome++;
         }
 
-        if (!align.mapped || align.id != s.id)
+        if (!align.mapped || align.id != Standard::instance().id)
         {
             return;
         }
@@ -68,10 +50,10 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 
             if (classify(stats.pe.m, align, [&](const Alignment &)
             {
-                return (d = s.r_trans.findExon(align.l));
+                return (d = r.findExon(align.l));
             }))
             {
-                stats.he.at(s.seq2base.at(d->iID))++;
+                stats.he.at(d->gID)++;
             }
         }
 
@@ -87,10 +69,10 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
             {
-                return (d = s.r_trans.findIntron(align.l));
+                return (d = r.findIntron(align.l));
             }))
             {
-                stats.hi.at(s.seq2base.at(d->iID))++;
+                stats.he.at(d->gID)++;
             }
         }
     });
@@ -130,11 +112,11 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
      * Calculate for the LOS
      */
 
-    o.info("Calculating limit of sensitivity");
+    o.info("Calculating detection limit");
 
-    stats.pe.s = Expression::analyze(stats.he, s.bases_1);
-    stats.pi.s = Expression::analyze(stats.hi, s.bases_1);
-    stats.pb.s = Expression::analyze(stats.hb, s.bases_1);
+    stats.pe.s = Expression_::calculate(stats.he, r);
+    stats.pi.s = Expression_::calculate(stats.hi, r);
+    stats.pb.s = Expression_::calculate(stats.hb, r);
 
     /*
      * Write out summary statistics

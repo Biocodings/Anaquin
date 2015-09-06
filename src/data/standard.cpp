@@ -284,7 +284,7 @@ void Standard::r_ref(const Reader &r)
     {
        if (f.id == id && f.type == Exon)
         {
-            r_trans.adds(f.tID, f.geneID, f.l);
+            r_trans.addRef(f.tID, f.geneID, f.l);
         }
     });
 }
