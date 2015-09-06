@@ -1,6 +1,8 @@
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
 
+#include <iostream>
+
 using namespace Anaquin;
 
 struct VarRef::VariantPair
@@ -44,13 +46,15 @@ double VarRef::alleleFreq(Mixture m, const BaseID &bID) const
 
 void VarRef::addVar(const Variation &v)
 {
+    assert(!v.bID.empty());
     _impl->rawVars.push_back(v);
 }
 
 void VarRef::validate()
 {
-    _impl->rawVars = _impl->vars;
-    
+    _impl->vars = _impl->rawVars;
+
+    // Validate sequins defined in the mixture
     merge(_rawMIDs, _rawMIDs);
     
    /*

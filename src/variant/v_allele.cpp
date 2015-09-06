@@ -55,7 +55,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
             return Positive;
         }))
         {
-            //stats.h.at(match)++;
+            stats.h.at(match->id)++;
         }
     });
 
