@@ -28,7 +28,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
         if (classify(m, v, [&](const VCFVariant &)
         {
             // Can we find this variant?
-            if ((match = r.findVar(v.l)))
+            if (!(match = r.findVar(v.l)))
             {
                 return Negative;
             }

@@ -27,6 +27,11 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
+std::size_t VarRef::countVars() const
+{
+    return _impl->vars.size();
+}
+
 double VarRef::alleleFreq(Mixture m, const BaseID &bID) const
 {
     const auto &p = _impl->pairs.at(m).at(bID);
