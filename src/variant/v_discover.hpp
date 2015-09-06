@@ -22,7 +22,7 @@ namespace Anaquin
             double efficiency;
 
             // Distribution for the variants
-            VarHist h = Analyzer::hist(Standard::instance().__v_vars__);
+            VarHist h; // = Analyzer::hist(Standard::instance().__v_vars__);
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

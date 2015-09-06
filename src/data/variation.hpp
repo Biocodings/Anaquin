@@ -4,6 +4,7 @@
 #include <string>
 #include <data/types.hpp>
 #include <data/locus.hpp>
+#include <data/biology.hpp>
 
 namespace Anaquin
 {
@@ -12,8 +13,12 @@ namespace Anaquin
         operator const Locus &() const { return l; }
         
         inline bool operator<(const Locus &x) const { return l < x; }
-        
+
+        // Eg: D_1_10
         SequinID id;
+
+        // Eg: D_1_10_R and D_1_10_V
+        BaseID bID;
         
         // The reference position, with the 1st base having position 1
         Locus l;

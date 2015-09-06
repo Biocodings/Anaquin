@@ -3,27 +3,10 @@
 
 using namespace Anaquin;
 
-static double alleleFreq(const BaseSeq &m)
-{
-    assert(m.sequins.size() == 2);
-    
-    const auto ref = m.sequins.begin()->first;
-    const auto var = m.sequins.rbegin()->first;
-    
-    // Abundance for the reference
-    const auto r = m.sequins.at(ref).abund();
-    
-    // Abundance for the variant
-    const auto v = m.sequins.at(var).abund();
-
-    // Abundance ratio of reference to variant DNA standard
-    return v / (r + v);
-}
-
 VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
 {
     VAllele::Stats stats;
-    const auto &s = Standard::instance();
+    const auto &r = Standard::instance().r_var;
 
     long n = 0;
 
@@ -32,48 +15,43 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
     ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
     {
         n++;
-        
-        if (v.id != s.id)
+
+        if (v.id != Standard::instance().id)
         {
             return;
         }
         
-        Variation match;
-        
+        const Variation *match;
+
         Confusion m;
 
         if (classify(m, v, [&](const VCFVariant &)
         {
             // Can we find this variant?
-            if (!s.v_vars.count(v.l))
+            if ((match = r.findVar(v.l)))
             {
                 return Negative;
             }
-
-            match = s.v_vars.at(v.l);
 
             // Does the variant match with the meta?
-            if (match.type != v.type || match.alt != v.alt || match.ref != v.ref)
+            else if (match->type != v.type || match->alt != v.alt || match->ref != v.ref)
             {
                 return Negative;
             }
 
-//            assert(s.bases_1.count(match.id));
-//            const auto &base = s.bases_1.at(match.id);
+            // The known coverage for allele frequnece
+            const auto known = r.alleleFreq(MixA, match->bID);
+
+            // The measured coverage is the number of base calls aligned and used in variant calling
+            const auto measured = (double) v.dp_a / (v.dp_r + v.dp_a);
             
-//            /*
-//             * Plotting the relative allele frequency that is established by differences
-//             * in the concentration of reference and variant DNA standards.
-//             */
-//            
-//            // The measured coverage is the number of base calls aligned and used in variant calling
-//            const auto measured = (double) v.dp_a / (v.dp_r + v.dp_a);
-//
-//            // The known coverage for allele frequnece
-//            const auto known = alleleFreq(base);
-//
-//            stats.add(match.id, known, measured);
-//  
+            /*
+             * Plotting the relative allele frequency that is established by differences
+             * in the concentration of reference and variant DNA standards.
+             */
+
+            stats.add(match->id, known, measured);
+  
             return Positive;
         }))
         {
@@ -103,12 +81,11 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
     o.writer->write((boost::format(summary) % file
                                             % (n - stats.size())
                                             % stats.size()
-                                            % s.v_vars.size()
+                                            % r.countVars()
                                             % o.fuzzy
                                             % lm.r
                                             % lm.m
                                             % lm.r2).str());
-    
     o.writer->close();
 
     AnalyzeReporter::scatter(stats, "VarAllele", "", o.writer);

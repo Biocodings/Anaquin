@@ -25,47 +25,6 @@ struct ParseSequinInfo
     std::map<BaseID, std::set<TypeID>> baseIDs;
 };
 
-/*
- * This function is intended to merge related sequins. For example, merging transcripts for a gene.
- * It should be called after parseMix(). For example, merge(parseMix(..), ... , ...).
- */
-
-template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo &info, const SequinMap &m, BaseMap &b)
-{
-    // We can't merge something that is empty
-    assert(!m.empty());
-    
-    b.clear();
-
-    for (const auto &i : info.baseIDs)
-    {
-        // Eg: R1_1
-        const auto &baseID = i.first;
-        
-        // Eg: R and V (R1_1_R and R1_1_V)
-        const auto &typeIDs = i.second;
-
-        assert(typeIDs.size() >= 1);
-        
-        typename BaseMap::mapped_type base;
-
-        for (auto iter = typeIDs.begin(); iter != typeIDs.end(); iter++)
-        {
-            // Reconstruct the sequinID
-            const auto seqID = baseID + "_" + *iter;
-
-            //TODOStandard::instance().seq2base[seqID] = baseID;
-            //TODOStandard::instance().baseIDs.insert(baseID);
-
-            base.sequins.insert(std::pair<TypeID, Sequin>(*iter, m.at(seqID)));
-        }
-
-        b[baseID] = base;
-    }
-
-    assert(!b.empty());
-}
-
 template <typename Reference> void readMixture(const Reader &r, Reference &ref, Mixture m, unsigned column=2)
 {
     try
@@ -185,11 +144,7 @@ void Standard::v_var(const Reader &r)
         // Eg: D_1_10_R and G/A
         assert(toks.size() == 5);
 
-        /*
-         * TODO: Fix this!!!! Getting sequinIDs should be done somewhere else
-         */
-        
-        const auto seqID = toks[0] + "_" + toks[1] + "_" + toks[2] + "_" + toks[3];
+        //const auto seqID = toks[0] + "_" + toks[1] + "_" + toks[2] + "_" + toks[3];
         //TODOseqIDs.insert(seqID);
         
         // Eg: G/GACTCTCATTC
@@ -211,17 +166,14 @@ void Standard::v_var(const Reader &r)
         v.ref  = toks[0];
         v.type = ParserVCF::strToSNP(toks[0], toks[1]);
 
-        v_vars[v.l = f.l] = v;
-        __v_vars__.insert(v);
+        r_var.addVar(v);
     });
-
-    assert(!v_vars.empty());
 }
 
 void Standard::v_mix(const Reader &r)
 {
-   //TODO merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
-   //TODO merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
+    readMixture(r, r_var, MixA, 2);
+    readMixture(r, r_var, MixB, 3);
 }
 
 void Standard::m_mix_1(const Reader &r)

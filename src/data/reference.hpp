@@ -3,7 +3,7 @@
 
 #include <map>
 #include "data/types.hpp"
-#include "data/locus.hpp"
+#include "data/variation.hpp"
 
 namespace Anaquin
 {
@@ -89,6 +89,10 @@ namespace Anaquin
                 return nullptr;
             }
         
+            /*
+             * Construct a histogram for each validated sequin
+             */
+
             inline SequinHist hist() const
             {
                 SequinHist h;
@@ -101,7 +105,7 @@ namespace Anaquin
                 return h;
             }
 
-            virtual void validate() {};
+            virtual void validate() = 0;
 
         protected:
 
@@ -122,6 +126,79 @@ namespace Anaquin
                 Concentration abund;
             };
 
+            /*
+             * Most sequins can be validated by merging two sets of IDs, typically, a set of
+             * IDs defined in the mixture and a set of IDs defined for the annotation. This
+             * function provides a common framework for merging the two sets.
+             */
+
+            inline void merge(const std::set<SequinID> &x, const std::set<SequinID> &y)
+            {
+                assert(!x.empty() && !y.empty());
+
+                std::vector<SequinID> diffs, inters;
+            
+                /*
+                 * Check for any sequin defined in x but not in y
+                 */
+            
+                std::set_difference(x.begin(),
+                                    x.end(),
+                                    y.begin(),
+                                    y.end(),
+                                    std::back_inserter(diffs));
+
+                /*
+                 * Check for any sequin defined in both sets
+                 */
+            
+                std::set_intersection(x.begin(),
+                                      x.end(),
+                                      y.begin(),
+                                      y.end(),
+                                      std::back_inserter(inters));
+
+                /*
+                 * Construct a set of validated sequins. A valid sequin is one in which it's
+                 * defined in both mixture and annoation.
+                 */
+            
+                std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
+                {
+                    auto d = Data();
+                              
+                    d.id  = id;
+                    
+                    // Add a new entry for the validated sequin
+                    _data[id] = d;
+
+                    assert(!d.id.empty());
+                });
+
+                /*
+                 * Now, we have a list of validated sequins. Use those sequins to merge information.
+                 */
+            
+                for (const auto i : _mixes)
+                {
+                    // Eg: MixA, MixB etc
+                    const auto mix = i.first;
+                
+                    // For each of the mixture defined
+                    for (const auto j : i.second)
+                    {
+                        // Only if it's a validated sequin
+                        if (_data.count(j.id))
+                        {
+                            _data.at(j.id).length = j.length;
+                            _data.at(j.id).mixes[mix] = j.abund;
+                        }
+                    }
+                }
+            
+                assert(!_data.empty());
+            }
+        
             // Validated sequins
             std::map<SequinID, Data> _data;
 
@@ -138,42 +215,99 @@ namespace Anaquin
             std::map<Mixture, std::set<MixtureData>> _mixes;
     };
 
+    /*
+     * -------------------- Ladder Analysis --------------------
+     */
+    
     struct LadderData : public SequinData
     {
     };
 
     class LadderRef : public Reference<LadderData, SequinStats>
     {
+        public:
         
+            inline void validate() override
+            {
+            
+            }
     };
+    
+    /*
+     * -------------------- Metagenomics Analysis --------------------
+     */
     
     struct MetaData : public SequinData
     {
     };
+
+    class MetaRef : public Reference<MetaData, SequinStats>
+    {
+        public:
+        
+            inline void validate() override
+            {
+            
+            }
+    };
+    
+    /*
+     * -------------------- Fusion Analysis --------------------
+     */
     
     struct FusionData : public SequinData
     {
         
     };
-    
-    class MetaRef : public Reference<MetaData, SequinStats>
-    {
-        
-    };
-    
+
     class FusionRef : public Reference<FusionData, SequinStats>
     {
+        public:
         
+            inline void validate() override
+            {
+            
+            }
+    };
+
+    /*
+     * -------------------- Variant Analysis --------------------
+     */
+    
+    class VarRef : public Reference<SequinData, SequinStats>
+    {
+        public:
+
+            enum Matching
+            {
+                StartOnly,
+            };
+        
+            VarRef();
+
+            // Add a reference for a known variant
+            void addVar(const Variation &v);
+
+            // Return the number of validated known variants
+            std::size_t countVars() const;
+
+            void validate() override;
+
+            const Variation *findVar(const Locus &l, double fuzzy = 0, Matching = StartOnly) const;
+
+            double alleleFreq(Mixture m, const BaseID &) const;
+        
+        private:
+
+            struct VarRefImpl;
+            struct VariantPair;
+
+            std::shared_ptr<VarRefImpl> _impl;
     };
     
-    struct VarData : public SequinData
-    {
-    };
-    
-    class VarRef : public Reference<VarData, SequinStats>
-    {
-        
-    };
+    /*
+     * -------------------- Transcriptome Analysis --------------------
+     */
     
     struct TransData : public SequinData
     {
@@ -369,7 +503,7 @@ namespace Anaquin
                 }
             }
 
-            inline void validate()
+            inline void validate() override
             {
                 if (_exonsByGenes.empty())
                 {

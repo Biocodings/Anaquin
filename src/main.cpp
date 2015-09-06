@@ -1053,6 +1053,7 @@ void parse(int argc, char ** argv)
             }
 
             applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
+            Standard::instance().r_var.validate();
 
             switch (_p.tool)
             {

@@ -8,11 +8,10 @@ namespace Anaquin
     struct VAllele
     {
         typedef FuzzyOptions Options;
-        
+
         struct Stats : public LinearStats
         {
-            // Distribution for the variants
-            //VarHist h = Analyzer::hist(Standard::instance().__v_vars__);
+            SequinHist h = Standard::instance().r_var.hist();
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

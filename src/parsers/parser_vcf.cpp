@@ -55,12 +55,6 @@ void ParserVCF::parse(const Reader &r, Callback c)
         Tokens::split(line, "\t", fields);
 
         v.id = fields[Chromo];
-        
-        if (v.id != "chrT")
-        {
-            continue;
-        }
-        
         v.l.start = v.l.end = stod(fields[Pos]);
 
         /*

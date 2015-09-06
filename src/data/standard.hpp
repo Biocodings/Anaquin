@@ -7,7 +7,6 @@
 #include "data/sequin.hpp"
 #include "data/feature.hpp"
 #include "data/reference.hpp"
-#include "data/variation.hpp"
 #include "parsers/parser_bed.hpp"
 
 namespace Anaquin
@@ -57,12 +56,7 @@ namespace Anaquin
             // Apply reference for variant standard
             void v_std(const Reader &);
 
-            // Indexed by locus
-            std::map<Locus, Variation> v_vars;
-
-            std::set<Variation> __v_vars__;
-
-            VarRef v_ref;
+            VarRef r_var;
         
             /*
              * Ladder data

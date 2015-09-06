@@ -9,7 +9,7 @@ TEST_CASE("VarAllele_V_1001")
     Test::variant();
     
     const auto r1 = Test::test("-t VarAllele -m data/var/VARMixture_3.0.csv -rbed data/var/VARVariant_1.0.bed -uvcf tests/data/V_1001/variant.vcf");
-    
+
     REQUIRE(r1.status == 0);
     
     Test::variant();
