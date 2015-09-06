@@ -318,6 +318,8 @@ namespace Anaquin
     {
         public:
 
+            TransRef();
+        
             struct GeneData
             {
                 inline Locus l() const
@@ -387,255 +389,32 @@ namespace Anaquin
             typedef std::map<GeneID, Counts> GeneHist;
 
             // Return a histogram for all the validated genes
-            inline GeneHist histForGene() const
-            {
-                GeneHist h;
-            
-                for (const auto &i : _genes)
-                {
-                    h[i.first] = 0;
-                }
-
-                return h;
-            }
+            GeneHist histForGene() const;
 
             // Add a new annoation reference
-            inline void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l)
-            {
-                ExonData e;
-            
-                e.l   = l;
-                e.iID = iID;
-                e.gID = gID;
-            
-                _exonsByGenes[gID].push_back(e);
-                _exonsByTrans[iID].push_back(e);
-            
-                _rawIIDs.insert(iID);
-                _rawGIDs.insert(gID);
-                _rawMapper[iID] = gID;
-            }
+            void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l);
 
-            template <typename Data> void merge(const std::set<SequinID> &mIDs,
-                                                const std::set<SequinID> &aIDs)
-            {
-                assert(!mIDs.empty() && !aIDs.empty());
-            
-                std::vector<SequinID> diffs, inters;
+            void merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs);
 
-                /*
-                 * Check for any sequin defined in mixture but not in annotation
-                 */
-
-                std::set_difference(mIDs.begin(),
-                                    mIDs.end(),
-                                    aIDs.begin(),
-                                    aIDs.end(),
-                                    std::back_inserter(diffs));
-
-                /*
-                 * Check for any sequin defined in both mixture and annotation
-                 */
-
-                std::set_intersection(mIDs.begin(),
-                                      mIDs.end(),
-                                      aIDs.begin(),
-                                      aIDs.end(),
-                                      std::back_inserter(inters));
-            
-                /*
-                 * Construct a set of validated sequins. A valid sequin is one in which it's
-                 * defined in both mixture and annoation.
-                 */
-
-                std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
-                {
-                    auto d = Data();
-
-                    d.id  = id;
-                    d.gID = _rawMapper.at(d.id);
-                    
-                    // Add a new entry for the validated sequin
-                    _data[id] = d;
-                    
-                    assert(!d.id.empty() && !d.gID.empty());
-                });
-
-                /*
-                 * Now, we have a list of validated sequins. Use those sequins to combine information
-                 * from mixtures and annotations.
-                 */
-            
-                for (const auto i : _mixes)
-                {
-                    // Eg: MixA, MixB etc
-                    const auto mix = i.first;
-                
-                    // For each of the mixture defined
-                    for (const auto j : i.second)
-                    {
-                        // Only if it's a validated sequin
-                        if (_data.count(j.id))
-                        {
-                            _data.at(j.id).length = j.length;
-                            _data.at(j.id).mixes[mix] = j.abund;
-                        }
-                    }
-                }
-
-                assert(!_data.empty());
-                
-                /*
-                 * Compute the locus for each sequin
-                 */
-                
-                for (const auto &i : _exonsByTrans)
-                {
-                    if (_data.count(i.first))
-                    {
-                        _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
-                        {
-                            return true;
-                        });
-
-                        _genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
-                    }
-                }
-            }
-
-            inline void validate() override
-            {
-                if (_exonsByGenes.empty())
-                {
-                    throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check your file and try again.");
-                }
-
-                merge<TransData>(_rawMIDs, _rawIIDs);
-
-                /*
-                 * Filter out only those validated exons
-                 */
-                
-                for (const auto &i : _exonsByTrans)
-                {
-                    if (_data.count(i.first))
-                    {
-                        for (const auto &j : i.second)
-                        {
-                            //_gIDs.insert(j.gID);
-                            _sortedExons.push_back(j);
-                        }
-                    }
-                }
-
-                /*
-                 * Generate a list of sorted exons
-                 */
-            
-                assert(!_sortedExons.empty());
-                std::sort(_sortedExons.begin(), _sortedExons.end(), [](const ExonData &x, const ExonData &y)
-                {
-                    return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-                });
-            
-                /*
-                 * Generate a list of sorted introns, only possible once the exons are sorted.
-                 */
-            
-                for (auto i = 0; i < _sortedExons.size(); i++)
-                {
-                    if (i && _sortedExons[i].gID == _sortedExons[i-1].gID)
-                    {
-                        IntronData d;
-                    
-                        d.gID = _sortedExons[i].gID;
-                        d.iID = _sortedExons[i].iID;
-                        d.l   = Locus(_sortedExons[i-1].l.end + 1, _sortedExons[i].l.start - 1);
-                    
-                        _sortedIntrons.push_back(d);
-                    }
-                }
-            
-                assert(!_sortedIntrons.empty());
-                std::sort(_sortedIntrons.begin(), _sortedIntrons.end(), [](const IntronData &x, const IntronData &y)
-                {
-                    return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-                });
-                
-                // Count number of non-overlapping bases for all exons
-                _exonBase = countLocus(_mergedExons = Locus::merge<ExonData, ExonData>(_sortedExons));
-            }
-
-            // Number of non-overlapping bases in all exons
-            inline Base exonBase() const { return _exonBase; }
+            void validate() override;
         
-            inline const std::vector<ExonData> & mergedExons()     const { return _mergedExons;   }
-            inline const std::vector<ExonData> & sortedExons()     const { return _sortedExons;   }
-            inline const std::vector<IntronData> & sortedIntrons() const { return _sortedIntrons; }
+            // Number of non-overlapping bases in all exons
+            Base exonBase() const;
 
-            inline const GeneData *findGene(const GeneID &id) const
-            {
-                return _genes.count(id) ? &(_genes.at(id)) : nullptr;
-            }
+            const std::vector<ExonData> & mergedExons()     const;
+            const std::vector<ExonData> & sortedExons()     const;
+            const std::vector<IntronData> & sortedIntrons() const;
 
-            inline const GeneData *findGene(const Locus &l) const
-            {
-                for (const auto &i : _genes)
-                {
-                    if (i.second.l().overlap(l))
-                    {
-                        return &i.second;
-                    }
-                }
-
-                return nullptr;
-            }
-
-            inline const ExonData *findExon(const Locus &l) const
-            {
-                for (const auto &i : _sortedExons)
-                {
-                    if (i.l == l)
-                    {
-                        return &i;
-                    }
-                }
-                
-                return nullptr;
-            }
-
-            inline const IntronData *findIntron(const Locus &l) const
-            {
-                for (const auto &i : _sortedIntrons)
-                {
-                    if (i.l == l)
-                    {
-                        return &i;
-                    }
-                }
-            
-                return nullptr;
-            }
+            const GeneData *findGene(const GeneID &id)   const;
+            const GeneData *findGene(const Locus &l)     const;
+            const ExonData   *findExon(const Locus &l)   const;
+            const IntronData *findIntron(const Locus &l) const;
 
         private:
 
-            // Number of bases for all the reference exons
-            Base _exonBase;
+            struct TransRefImpl;
 
-            std::map<GeneID, GeneData> _genes;
-            std::vector<ExonData>   _mergedExons;
-            std::vector<ExonData>   _sortedExons;
-            std::vector<IntronData> _sortedIntrons;
-
-            /*
-             * Raw data - structure before validated
-             */
-
-            std::set<GeneID>                           _rawGIDs;
-            std::set<IsoformID>                        _rawIIDs;
-            std::map<SequinID, GeneID>                 _rawMapper;
-            std::map<GeneID, std::vector<ExonData>>    _exonsByGenes;
-            std::map<IsoformID, std::vector<ExonData>> _exonsByTrans;
+            std::shared_ptr<TransRefImpl> _impl;        
     };
 }
 
