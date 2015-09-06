@@ -605,7 +605,7 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
 // Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    Standard::instance().r_meta.validate();
+    //Standard::instance().r_meta.validate();
 
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
@@ -623,7 +623,7 @@ template <typename Analyzer> void analyzeFuzzy_1(Option x, typename Analyzer::Op
 // Analyze for two samples
 template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    Standard::instance().r_meta.validate();
+    //Standard::instance().r_meta.validate();
 
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
@@ -925,6 +925,7 @@ void parse(int argc, char ** argv)
 
             applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
             applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+            s.r_trans.validate();
 
             switch (_p.tool)
             {
@@ -945,16 +946,16 @@ void parse(int argc, char ** argv)
                 case TOOL_T_EXPRESS:
                 {
                     TExpress::Options o;
-                    
+
                     if (_p.opts.count(OPT_GTRACK))
                     {
-                        o.level = TExpress::Isoform;
-                        analyze_1<TExpress>(OPT_GTRACK);
+                        o.level = TExpress::Gene;
+                        analyze_1<TExpress>(OPT_GTRACK, o);
                     }
                     else
                     {
                         o.level = TExpress::Isoform;
-                        analyze_1<TExpress>(OPT_ITRACK);
+                        analyze_1<TExpress>(OPT_ITRACK, o);
                     }
 
                     break;

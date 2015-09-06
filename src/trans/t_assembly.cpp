@@ -85,7 +85,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
         {
             case Exon:
             {
-                const ExonData *d;
+                const TransRef::ExonData *d;
 
                 q_exons.push_back(f);
                 q_exons_[f.tID].push_back(f);
@@ -158,7 +158,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
         
         if (classify(stats.pi.m, i, [&](const Feature &)
         {
-            return s.r_trans.findIntrons(i.l);
+            return s.r_trans.findIntron(i.l);
         }))
         {
             stats.hi[i.tID]++;

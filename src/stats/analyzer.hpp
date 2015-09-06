@@ -14,7 +14,6 @@
 namespace Anaquin
 {
     typedef std::map<BaseID, Counts>   BaseHist;
-    typedef std::map<SequinID, Counts> SequinHist;
 
     /*
      * List of softwares supported by Anaquin

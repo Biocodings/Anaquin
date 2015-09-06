@@ -4,7 +4,7 @@
 using namespace Anaquin;
 
 // Find the matching intron by locus given a spliced alignment
-static bool findIntron(const Alignment &align, IntronData &d)
+static bool findIntron(const Alignment &align, Anaquin::TransRef::IntronData &d)
 {
     assert(align.spliced);
     const auto &s = Standard::instance();
@@ -64,7 +64,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
         {
             exons.push_back(align);
 
-            const ExonData *d;
+            const TransRef::ExonData *d;
 
             if (classify(stats.pe.m, align, [&](const Alignment &)
             {
@@ -83,11 +83,11 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
         {
             introns.push_back(align);
 
-            const IntronData *d;
+            const TransRef::IntronData *d;
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
             {
-                return (d = s.r_trans.findIntrons(align.l));
+                return (d = s.r_trans.findIntron(align.l));
             }))
             {
                 stats.hi.at(s.seq2base.at(d->iID))++;

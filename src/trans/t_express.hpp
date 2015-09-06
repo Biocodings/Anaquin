@@ -15,7 +15,8 @@ namespace Anaquin
 
         struct Stats : public LinearStats
         {
-            SequinHist c = Analyzer::seqHist();
+            // The keys depend on whether it's a gene or isoform analysis
+            std::map<std::string, Counts> h;
         };
 
         struct Options : public SingleMixtureOptions

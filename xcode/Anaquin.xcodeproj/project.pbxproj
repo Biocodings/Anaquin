@@ -73,7 +73,6 @@
 		EFB7FF471B4F8DD20045DC6A /* f_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF2C1B4F79D00045DC6A /* f_discover.cpp */; };
 		EFB7FF481B4F8DD80045DC6A /* l_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF271B4F79C20045DC6A /* l_abund.cpp */; };
 		EFBB830E1ADF953B0002611E /* parser_sequins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBB830C1ADF953B0002611E /* parser_sequins.cpp */; };
-		EFC0DAC71B8C08CE005F6C85 /* reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC0DAC61B8C08CE005F6C85 /* reference.cpp */; };
 		EFC625521B65FBBD003CFA52 /* t_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC625501B65FBBD003CFA52 /* t_discover.cpp */; };
 		EFC625531B65FBBD003CFA52 /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFC625511B65FBBD003CFA52 /* t_express.cpp */; };
 		EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDD6A701B0DD60500450029 /* libz.dylib */; };
@@ -253,7 +252,6 @@
 		EFBB830C1ADF953B0002611E /* parser_sequins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_sequins.cpp; path = ../src/parsers/parser_sequins.cpp; sourceTree = "<group>"; };
 		EFBB830D1ADF953B0002611E /* parser_sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_sequins.hpp; path = ../src/parsers/parser_sequins.hpp; sourceTree = "<group>"; };
 		EFC0DAC51B8C056F005F6C85 /* reference.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = reference.hpp; path = ../src/data/reference.hpp; sourceTree = "<group>"; };
-		EFC0DAC61B8C08CE005F6C85 /* reference.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reference.cpp; path = ../src/data/reference.cpp; sourceTree = "<group>"; };
 		EFC625501B65FBBD003CFA52 /* t_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_discover.cpp; path = ../tests/fusion/t_discover.cpp; sourceTree = "<group>"; };
 		EFC625511B65FBBD003CFA52 /* t_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_express.cpp; path = ../tests/fusion/t_express.cpp; sourceTree = "<group>"; };
 		EFDD6A701B0DD60500450029 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -452,7 +450,6 @@
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,
 				EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */,
 				EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */,
-				EFC0DAC61B8C08CE005F6C85 /* reference.cpp */,
 				EFC0DAC51B8C056F005F6C85 /* reference.hpp */,
 				EF2907B91B4A85ED00BFBA56 /* region.hpp */,
 				EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */,
@@ -838,7 +835,6 @@
 				EFDD6A931B0DD76200450029 /* hfile.c in Sources */,
 				EF4270BA1B21CA8900C9ED4E /* t_blast.cpp in Sources */,
 				EFDD6ADB1B0DDB8700450029 /* files.c in Sources */,
-				EFC0DAC71B8C08CE005F6C85 /* reference.cpp in Sources */,
 				EFDD6AD71B0DD76C00450029 /* thread_pool.c in Sources */,
 				EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */,
 			);

@@ -152,25 +152,6 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
 
 Standard::Standard()
 {
-    /*
-     * The region occupied by the chromosome is the smallest area contains all features.
-     */
-    
-    //l.end   = std::numeric_limits<Base>::min();
-    //l.start = std::numeric_limits<Base>::max();
-    
-    /*
-     * The orders in a GTF file is not guaranteed. For simplicity, we'll defer most of the workloads
-     * after parsing.
-     */
-    
-    ParserGTF::parse(Reader(TransStandGTF(), String), [&](const Feature &f, const ParserProgress &)
-    {
-        assert(!f.tID.empty() && !f.geneID.empty());
-        
-       // l.end   = std::max(l.end, f.l.end);
-     //   l.start = std::min(l.start, f.l.start);
-    });
 }
 
 void Standard::v_std(const Reader &r)
