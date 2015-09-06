@@ -119,6 +119,15 @@ namespace Anaquin
 
         // Pearson correlation
         double r;
+        
+        // Adjusted R2
+        double ar2;
+
+        double f, p;
+        double sst, ssm, sse;
+
+        // Degree of freedoms
+        unsigned sst_df, ssm_df, sse_df;
     };
 
     // Classify at the base-level by counting for non-overlapping regions
@@ -177,17 +186,20 @@ namespace Anaquin
 
             LinearModel lm;
             
-            // Pearson correlation
-            lm.r = SS::cor(x, y);
+            lm.f   = m.f;
+            lm.p   = m.p;
+            lm.r2  = m.ar2;
+            lm.ar2 = m.ar2;
+            lm.r   = SS::cor(x, y);
+            lm.sst = m.total.ss;
+            lm.ssm = m.model.ss;
+            lm.sse = m.error.ss;
+            lm.c   = m.coeffs[0].value;
+            lm.m   = m.coeffs[1].value;
 
-            // Adjusted R2
-            lm.r2 = m.ar2;
-
-            // Constant coefficient
-            lm.c = m.coeffs[0].value;
-
-            // Regression slope
-            lm.m = m.coeffs[1].value;
+            lm.sst_df = m.total.df;
+            lm.ssm_df = m.model.df;
+            lm.sse_df = m.error.df;
 
             return lm;
         }
@@ -453,7 +465,7 @@ namespace Anaquin
              * Generate CSV for each sequin
              */
 
-            writeCSV(x, y, z, prefix + "_quins.csv", writer);
+            writeCSV(x, y, z, prefix + "_plot.csv", writer);
         }
 
         template <typename Stats, typename Writer> static void linear(const Stats &stats,

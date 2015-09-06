@@ -11,6 +11,9 @@ namespace Anaquin
 
         struct Stats : public LinearStats
         {
+            // Sensitivity
+            double sn;
+            
             SequinHist h = Standard::instance().r_var.hist();
         };
 
