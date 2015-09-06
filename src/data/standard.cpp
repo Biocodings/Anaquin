@@ -54,8 +54,8 @@ template <typename SequinMap, typename BaseMap> void merge(const ParseSequinInfo
             // Reconstruct the sequinID
             const auto seqID = baseID + "_" + *iter;
 
-            Standard::instance().seq2base[seqID] = baseID;
-            Standard::instance().baseIDs.insert(baseID);
+            //TODOStandard::instance().seq2base[seqID] = baseID;
+            //TODOStandard::instance().baseIDs.insert(baseID);
 
             base.sequins.insert(std::pair<TypeID, Sequin>(*iter, m.at(seqID)));
         }
@@ -150,31 +150,27 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
     return info;
 }
 
-Standard::Standard()
-{
-}
-
 void Standard::v_std(const Reader &r)
 {
-    // TODO: Fix this
-    seqIDs.clear();
-    
-    ParserFeature::parse(r, [&](const Feature &f, const ParserProgress &)
-    {
-        if (f.type == Exon)
-        {
-            fs_1.push_back(f);
-            
-            /*
-             * TODO: Fix this!!!! Getting sequinIDs should be done somewhere else
-             */
-
-            const auto seqID = f.tID;
-            seqIDs.insert(seqID);
-        }
-    });
-
-    assert(!fs_1.empty());
+//    // TODO: Fix this
+//    seqIDs.clear();
+//    
+//    ParserFeature::parse(r, [&](const Feature &f, const ParserProgress &)
+//    {
+//        if (f.type == Exon)
+//        {
+//            fs_1.push_back(f);
+//            
+//            /*
+//             * TODO: Fix this!!!! Getting sequinIDs should be done somewhere else
+//             */
+//
+//            const auto seqID = f.tID;
+//            seqIDs.insert(seqID);
+//        }
+//    });
+//
+//    assert(!fs_1.empty());
 }
 
 void Standard::v_var(const Reader &r)
@@ -194,7 +190,7 @@ void Standard::v_var(const Reader &r)
          */
         
         const auto seqID = toks[0] + "_" + toks[1] + "_" + toks[2] + "_" + toks[3];
-        seqIDs.insert(seqID);
+        //TODOseqIDs.insert(seqID);
         
         // Eg: G/GACTCTCATTC
         const auto var = toks[4];
@@ -224,8 +220,8 @@ void Standard::v_var(const Reader &r)
 
 void Standard::v_mix(const Reader &r)
 {
-    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
-    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
+   //TODO merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
+   //TODO merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
 }
 
 void Standard::m_mix_1(const Reader &r)
@@ -240,13 +236,13 @@ void Standard::m_mix_2(const Reader &r)
 
 void Standard::l_mix(const Reader &r)
 {
-    merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
-    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
+ //TODO   merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
+//TODO    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
 }
 
 void Standard::f_mix(const Reader &r)
 {
-    parseMix(r, seqs_1, 2);
+   //TODO parseMix(r, seqs_1, 2);
 }
 
 void Standard::f_ref(const Reader &r)
@@ -272,10 +268,10 @@ void Standard::f_ref(const Reader &r)
         // Add a new entry for the known fusion point
         f_breaks.insert(b);
 
-        seqIDs.insert(b.id);
+      //TODO  seqIDs.insert(b.id);
     }, "\t");
     
-    assert(!seqIDs.empty() && !f_breaks.empty());
+   //TODO assert(!seqIDs.empty() && !f_breaks.empty());
 }
 
 void Standard::r_ref(const Reader &r)

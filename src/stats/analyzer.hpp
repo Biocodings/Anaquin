@@ -71,17 +71,17 @@ namespace Anaquin
             return h;
         }
         
-        // Create a histogram for each of the base
-        static BaseHist baseHist()
-        {
-            return hist(Standard::instance().baseIDs);
-        }
-
-        // Create a histogram for each of the sequin
-        static SequinHist seqHist()
-        {
-            return hist(Standard::instance().seqIDs);
-        }
+//        // Create a histogram for each of the base
+//        static BaseHist baseHist()
+//        {
+//            return hist(Standard::instance().baseIDs);
+//        }
+//
+//        // Create a histogram for each of the sequin
+//        static SequinHist seqHist()
+//        {
+//            return hist(Standard::instance().seqIDs);
+//        }
     };
 
     /*

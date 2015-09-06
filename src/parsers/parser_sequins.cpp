@@ -17,13 +17,13 @@ SequinList ParserSequins::parse(const std::string &file)
     {
         boost::trim(line);
 
-        if (std::find_if(s.seqs_1.begin(), s.seqs_1.end(), [&](const std::pair<SequinID, Sequin> &p)
-        {
-            return p.first == line;
-        }) != s.seqs_1.end())
-        {
-            throw std::runtime_error("Unknown sequin: " + line);
-        }
+//     TODO   if (std::find_if(s.seqs_1.begin(), s.seqs_1.end(), [&](const std::pair<SequinID, Sequin> &p)
+//        {
+//            return p.first == line;
+//        }) != s.seqs_1.end())
+//        {
+//            throw std::runtime_error("Unknown sequin: " + line);
+//        }
 
         l.push_back(line);
     }

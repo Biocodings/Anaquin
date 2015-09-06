@@ -34,7 +34,7 @@ namespace Anaquin
             LinearStats cov;
 
             // Distribution of the sequins
-            SequinHist h = Analyzer::seqHist();
+            SequinHist h;// TODO: = Analyzer::seqHist();
 
             // Sequins failed to detect in the experiment
             MissingSequins miss;

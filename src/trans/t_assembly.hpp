@@ -15,10 +15,10 @@ namespace Anaquin
         
         struct Stats
         {
-            BaseHist   hb = Analyzer::baseHist();
-            SequinHist he = Analyzer::seqHist();
-            SequinHist hi = Analyzer::seqHist();
-            SequinHist ht = Analyzer::seqHist();
+            SequinHist hb; //BaseHist   hb ;//= Analyzer::baseHist();
+            SequinHist he ;//= Analyzer::seqHist();
+            SequinHist hi ;//= Analyzer::seqHist();
+            SequinHist ht ;//= Analyzer::seqHist();
 
             // Overall performance
             Performance p;

@@ -58,23 +58,22 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
                 return Negative;
             }
 
-            assert(s.bases_1.count(match.id));
+//            assert(s.bases_1.count(match.id));
+//            const auto &base = s.bases_1.at(match.id);
             
-            const auto &base = s.bases_1.at(match.id);
-            
-            /*
-             * Plotting the relative allele frequency that is established by differences
-             * in the concentration of reference and variant DNA standards.
-             */
-            
-            // The measured coverage is the number of base calls aligned and used in variant calling
-            const auto measured = (double) v.dp_a / (v.dp_r + v.dp_a);
-
-            // The known coverage for allele frequnece
-            const auto known = alleleFreq(base);
-
-            stats.add(match.id, known, measured);
-  
+//            /*
+//             * Plotting the relative allele frequency that is established by differences
+//             * in the concentration of reference and variant DNA standards.
+//             */
+//            
+//            // The measured coverage is the number of base calls aligned and used in variant calling
+//            const auto measured = (double) v.dp_a / (v.dp_r + v.dp_a);
+//
+//            // The known coverage for allele frequnece
+//            const auto known = alleleFreq(base);
+//
+//            stats.add(match.id, known, measured);
+//  
             return Positive;
         }))
         {

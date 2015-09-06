@@ -66,10 +66,10 @@ namespace Anaquin
 
             auto positive = [&](const SequinID &id, Reads reads)
             {
-                assert(!id.empty() && s.seqs_1.count(id));
+//                assert(!id.empty() && s.seqs_1.count(id));
                 
                 // Known abundance for the fusion
-                const auto known = s.seqs_1.at(id).abund() / s.seqs_1.at(id).length;
+                const auto known = 0;// s.seqs_1.at(id).abund() / s.seqs_1.at(id).length;
                 
                 // Measured abundance for the fusion
                 const auto measured = reads;
@@ -114,33 +114,33 @@ namespace Anaquin
             o.info("Detected " + std::to_string(stats.h.size()) + " sequins in the reference");
             o.info("Checking for missing sequins");
             
-            for (const auto &i : s.seqIDs)
-            {
-                const auto &seqID = i;
-
-                // If the histogram has an entry of zero
-                if (!stats.h.at(seqID))
-                {
-                    if (!s.seqs_1.count(seqID))
-                    {
-                        o.warn(seqID + " defined in the referene but not in the mixture and it is undetected.");
-                        continue;
-                    }
-
-                    o.warn(seqID + " defined in the referene but not detected");
-
-                    const auto seq = s.seqs_1.at(seqID);
-
-                    // Known abundance for the fusion
-                    const auto known = seq.abund() / seq.length;
-
-                    //stats.y.push_back(0); // TODO: We shouldn't even need to add those missing sequins!
-                    //stats.z.push_back(seqID);
-                    //stats.x.push_back(log2f(known));
-
-                    stats.miss.push_back(MissingSequin(seqID, known));
-                }
-            }
+//            for (const auto &i : s.seqIDs)
+//            {
+//                const auto &seqID = i;
+//
+//                // If the histogram has an entry of zero
+//                if (!stats.h.at(seqID))
+//                {
+//                    if (!s.seqs_1.count(seqID))
+//                    {
+//                        o.warn(seqID + " defined in the referene but not in the mixture and it is undetected.");
+//                        continue;
+//                    }
+//
+//                    o.warn(seqID + " defined in the referene but not detected");
+//
+//                    const auto seq = s.seqs_1.at(seqID);
+//
+//                    // Known abundance for the fusion
+//                    const auto known = seq.abund() / seq.length;
+//
+//                    //stats.y.push_back(0); // TODO: We shouldn't even need to add those missing sequins!
+//                    //stats.z.push_back(seqID);
+//                    //stats.x.push_back(log2f(known));
+//
+//                    stats.miss.push_back(MissingSequin(seqID, known));
+//                }
+//            }
 
             // The references are simply the known fusion points
             stats.m.nr = s.f_breaks.size();

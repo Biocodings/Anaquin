@@ -30,7 +30,7 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &opti
                 return Negative;
             }
 
-            assert(s.bases_1.count(match.id));
+            //TODOassert(s.bases_1.count(match.id));
             
             return Positive;
         }))

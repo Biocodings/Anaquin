@@ -10,7 +10,7 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
     TDiffs::Stats stats;
     const auto &r = Standard::instance().r_trans;
 
-    auto c = (options.level == Gene ? Analyzer::baseHist() : Analyzer::seqHist());
+    auto c = std::map<std::string, Counts>(); //TODO (options.level == Gene ? Analyzer::baseHist() : Analyzer::seqHist());
 
     options.info("Parsing input file");
 
