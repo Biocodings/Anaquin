@@ -31,9 +31,9 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &options)
+TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &o)
 {
-    assert(!options.ref.empty() && !options.query.empty());
+    assert(!o.ref.empty() && !o.query.empty());
     
     /*
      * Comparing transcripts require constructing intron-chains, this is quite complicated.
@@ -41,10 +41,10 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * than reinventing the wheel.
      */
     
-    options.logInfo("Invoking cuffcompare: " + options.ref);
-    options.logInfo("Invoking cuffcompare: " + options.query);
+    o.logInfo("Invoking cuffcompare: " + o.ref);
+    o.logInfo("Invoking cuffcompare: " + o.query);
 
-    const int status = cuffcompare_main(options.ref.c_str(), options.query.c_str());
+    const int status = cuffcompare_main(o.ref.c_str(), o.query.c_str());
 
     if (status)
     {
@@ -57,39 +57,39 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
     std::vector<Feature> q_exons;
     std::map<SequinID, std::vector<Feature>> q_exons_;
 
-    options.info("Parsing transcript");
+    o.info("Parsing transcript");
 
     ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &p)
     {
+        if ((p.i % 1000000) == 0)
+        {
+            o.wait(std::to_string(p.i));
+        }
+
         if (f.id != Standard::instance().id)
         {
+            stats.n_hg38++;
             return;
         }
         else if ((p.i % 1000000) == 0)
         {
-            options.wait(std::to_string(p.i));
-        }
-
-        // Don't bother unless the transcript is a sequin or it's been filtered
-        if (options.filters.count(f.tID))
-        {
-            return;
+            o.wait(std::to_string(p.i));
         }
         
-        options.logInfo((boost::format("%1% %2% %3%") % p.i % f.l.start % f.l.end).str());
+        stats.n_chrT++;
 
         switch (f.type)
         {
+            /*
+             * Classify at the exon level
+             */
+
             case Exon:
             {
                 const TransRef::ExonData *d;
 
                 q_exons.push_back(f);
                 q_exons_[f.tID].push_back(f);
-
-                /*
-                 * Classify at the exon level
-                 */
 
                 if (classify(stats.pe.m, f, [&](const Feature &)
                 {
@@ -102,38 +102,31 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
                 break;
             }
 
+            /*
+             * Classify at the transctipt level
+             */
+
             case Transcript:
             {
                 const TransData *match;
 
-                /*
-                 * Classify at the transctipt level
-                 */
-
                 if (classify(stats.pt.m, f, [&](const Feature &)
                 {
-                    //return (match = find(sequins, f, Exact));
                     return (match = r.seq(f.l));
                 }))
                 {
                     stats.ht.at(match->id)++;
                 }
-                else
-                {
-                    options.logger->write(
-                        (boost::format("[Transcript]: %1% %2%") % std::to_string(f.l.start)
-                                                                % std::to_string(f.l.end)).str()) ;
-                }
 
                 break;
             }
 
-            // There're many other possibilties in a GTF file, but we don't need those
+            // There're many other possibilties in a GTF file, but we don't need them
             default: { break; }
         }
     });
 
-    options.info("Transcript parsed");
+    o.info("Generating introns");
 
     /*
      * Sort the query exons since there is no guarantee that those are sorted
@@ -145,16 +138,12 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
     }
 
     /*
-     * Now that the query exons are sorted. We can extract the introns between each pair
+     * Now that the query exons are sorted. We can extract and classify the introns for each pair
      * of successive exon.
      */
 
     extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
     {
-        /*
-         * Classify at the intron level
-         */
-        
         if (classify(stats.pi.m, i, [&](const Feature &)
         {
             return r.findIntron(i.l, TransRef::Exact);
@@ -164,7 +153,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
         }
     });
 
-    options.info("Counting references");
+    o.info("Counting references");
 
     /*
      * Setting the known references
@@ -179,7 +168,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
     stats.pt.m.nr = r.data().size();
 
-    options.info("Merging overlapping bases");
+    o.info("Merging overlapping bases");
 
     /*
      * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
@@ -187,7 +176,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * experiment with sufficient coverage.
      */
     
-    //countBase(s.r_l_exons, q_exons, stats.pb.m, stats.hb);
+    countBase(r.mergedExons(), q_exons, stats.pb.m, stats.hb);
 
     /*
      * The counts for references is the total length of all known non-overlapping exons.
@@ -198,20 +187,21 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
      * The length of all the bases is 10+5+4 = 19.
      */
 
-    //stats.pb.m.nr = s.r_c_exons;
-
+    stats.pb.m.nr = r.exonBase();
+    assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
+    
     /*
      * Calculate for the LOS
      */
 
-    options.info("Calculating limit of sensitivity");
+    o.info("Calculating limit of sensitivity");
     
     stats.pe.s = Expression_::calculate(stats.he, r);
     stats.pt.s = Expression_::calculate(stats.ht, r);
     stats.pb.s = Expression_::calculate(stats.hb, r);
     stats.pi.s = Expression_::calculate(stats.hi, r);
 
-    options.info("Generating statistics");
+    o.info("Generating statistics");
 
     const auto summary = "Summary for dataset: %1% :\n\n"
                          "   Genome: %2% reads\n"
@@ -225,37 +215,37 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
                          "    Transcript level:       %24%     %25%     %26% (%27%)    %28%    %29%\n"
     ;
     
-    options.writer->open("TransAssembly_summary.stats");
-    options.writer->write((boost::format(summary) % file
-                                                  % "NA"
-                                                  % "NA"
-                                                  % r.data().size()
-                                                  % options.fuzzy
-                                                  % (__cmp__.e_sp / 100.0)
-                                                  % (__cmp__.e_sn / 100.0)
-                                                  % (stats.pe.s.id.empty() ? "-" : std::to_string(stats.pe.s.abund))
-                                                  % stats.pe.s.id
-                                                  % (__cmp__.e_fsp / 100.0)
-                                                  % (__cmp__.e_fsn / 100.0)
-                                                  % (__cmp__.i_sp / 100.0)
-                                                  % (__cmp__.i_sn / 100.0)
-                                                  % (stats.pi.s.id.empty() ? "-" : std::to_string(stats.pi.s.abund))
-                                                  % stats.pi.s.id
-                                                  % (__cmp__.i_fsp / 100.0)
-                                                  % (__cmp__.i_fsn / 100.0)
-                                                  % (__cmp__.b_sp / 100.0)
-                                                  % (__cmp__.b_sn / 100.0)
-                                                  % (stats.pb.s.id.empty() ? "-" : std::to_string(stats.pb.s.abund))
-                                                  % stats.pb.s.id
-                                                  % "-"
-                                                  % "-"
-                                                  % (__cmp__.t_sp / 100.0)
-                                                  % (__cmp__.t_sn / 100.0)
-                                                  % (stats.pt.s.id.empty() ? "-" : std::to_string(stats.pt.s.abund))
-                                                  % stats.pt.s.id
-                                                  % (__cmp__.t_fsp / 100.0)
-                                                  % (__cmp__.t_fsn / 100.0)).str());
-    options.writer->close();
+    o.writer->open("TransAssembly_summary.stats");
+    o.writer->write((boost::format(summary) % file
+                                            % "NA"
+                                            % "NA"
+                                            % r.data().size()
+                                            % o.fuzzy
+                                            % (__cmp__.e_sp / 100.0)
+                                            % (__cmp__.e_sn / 100.0)
+                                            % (stats.pe.s.id.empty() ? "-" : std::to_string(stats.pe.s.abund))
+                                            % stats.pe.s.id
+                                            % (__cmp__.e_fsp / 100.0)
+                                            % (__cmp__.e_fsn / 100.0)
+                                            % (__cmp__.i_sp / 100.0)
+                                            % (__cmp__.i_sn / 100.0)
+                                            % (stats.pi.s.id.empty() ? "-" : std::to_string(stats.pi.s.abund))
+                                            % stats.pi.s.id
+                                            % (__cmp__.i_fsp / 100.0)
+                                            % (__cmp__.i_fsn / 100.0)
+                                            % (__cmp__.b_sp / 100.0)
+                                            % (__cmp__.b_sn / 100.0)
+                                            % (stats.pb.s.id.empty() ? "-" : std::to_string(stats.pb.s.abund))
+                                            % stats.pb.s.id
+                                            % "-"
+                                            % "-"
+                                            % (__cmp__.t_sp / 100.0)
+                                            % (__cmp__.t_sn / 100.0)
+                                            % (stats.pt.s.id.empty() ? "-" : std::to_string(stats.pt.s.abund))
+                                            % stats.pt.s.id
+                                            % (__cmp__.t_fsp / 100.0)
+                                            % (__cmp__.t_fsn / 100.0)).str());
+    o.writer->close();
 
     return stats;
 }

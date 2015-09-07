@@ -9,6 +9,7 @@ namespace Anaquin
 {
     struct TrackingDiffs
     {
+        TrackID chromID;
         TrackID testID;
         GeneID  geneID;
 

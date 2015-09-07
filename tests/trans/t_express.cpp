@@ -4,6 +4,8 @@
 
 using namespace Anaquin;
 
+//-t TransExpress -m data/trans/TransMixture_4.1.csv -rgtf data/trans/TransStandard_1.0.gtf -ugtrack genes.fpkm_tracking
+
 TEST_CASE("TExpress_T_1000_Genes")
 {
 //    Test::trans();

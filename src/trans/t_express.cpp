@@ -21,6 +21,16 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
+        static const auto &id = Standard::instance().id;
+        
+        if (t.chromID != id)
+        {
+            stats.n_hg38++;
+            return;
+        }
+
+        stats.n_chrT++;
+
         // Don't overflow
         const auto fpkm = std::max(0.05, t.fpkm);
 

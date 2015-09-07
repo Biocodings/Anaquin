@@ -12,28 +12,16 @@ namespace Anaquin
             // Path for the reference and query GTF
             std::string ref, query;
         };
-        
-        struct Stats
-        {
-            SequinHist hb; //BaseHist   hb ;//= Analyzer::baseHist();
-            SequinHist he ;//= Analyzer::seqHist();
-            SequinHist hi ;//= Analyzer::seqHist();
-            SequinHist ht ;//= Analyzer::seqHist();
 
-            // Overall performance
-            Performance p;
-            
-            // Performance at the base level
-            Performance pb;
-            
-            // Performance at the exon level
-            Performance pe;
-            
-            // Performance at the transcript level
-            Performance pt;
-            
-            // Performance at the intron level
-            Performance pi;
+        struct Stats : public MappingStats
+        {
+            SequinHist hb = Standard::instance().r_trans.histGene();
+            SequinHist he = Standard::instance().r_trans.hist();
+            SequinHist hi = Standard::instance().r_trans.hist();
+            SequinHist ht = Standard::instance().r_trans.hist();
+
+            // Performance at various levels
+            Performance pb, pi, pe, pt;
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

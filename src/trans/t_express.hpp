@@ -13,13 +13,13 @@ namespace Anaquin
             Isoform
         };
 
-        struct Stats : public LinearStats
+        struct Stats : public LinearStats, public MappingStats
         {
             // The keys depend on whether it's a gene or isoform analysis
             std::map<std::string, Counts> h;
         };
 
-        struct Options : public SingleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             // This's required by gcc...
             Options() {}

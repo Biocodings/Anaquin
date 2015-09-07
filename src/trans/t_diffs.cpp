@@ -47,6 +47,16 @@ TDiffs::Stats TDiffs::analyze(const std::string &f, const Options &options)
 
     ParserCDiffs::parse(f, [&](const TrackingDiffs &t, const ParserProgress &)
     {
+        static const auto &id = Standard::instance().id;
+
+        if (t.chromID != id)
+        {
+            stats.n_hg38++;
+            return;
+        }
+        
+        stats.n_chrT++;
+        
         // The known and observed fold-change
         Fold known = NAN;
 
