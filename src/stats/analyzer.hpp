@@ -170,7 +170,7 @@ namespace Anaquin
             
             lm.f   = m.f;
             lm.p   = m.p;
-            lm.r2  = m.ar2;
+            lm.r2  = m.r2;
             lm.ar2 = m.ar2;
             lm.r   = SS::cor(x, y);
             lm.sst = m.total.ss;
