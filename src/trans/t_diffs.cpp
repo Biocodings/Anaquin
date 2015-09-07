@@ -18,8 +18,9 @@ TDiffs::Stats TDiffs::analyze(const std::string &file, const Options &o)
     
     o.info("Parsing tracking file");
 
-    // This is needed to determine any undetected sequin
-    std::set<SequinID> ids;
+    /*
+     * Differential expression at the gene level
+     */
     
     auto g = [&](const GeneID &id, double fpkm_1, double fpkm_2)
     {
@@ -45,7 +46,6 @@ TDiffs::Stats TDiffs::analyze(const std::string &file, const Options &o)
             measured = fpkm_2 / fpkm_1;
         }
 
-        ids.insert(id);        
         stats.add(id, !isnan(known) ? log2(known) : NAN, !isnan(measured) ? log2(measured) : NAN);
     };
 
@@ -106,31 +106,6 @@ TDiffs::Stats TDiffs::analyze(const std::string &file, const Options &o)
             }
         }
     });
-
-    assert(!ids.empty());
-    
-    /*
-     * Find out the undetected sequins
-     */
-    
-//    if (options.level == Gene)
-//    {
-//        for (const auto &i : seq->abund)
-//        {
-//            const auto &id = i.first;
-//            
-//            // Not found in the experiment?
-//            if (!ids.count(id))
-//            {
-//                stats.add(i.first, s.bases_2.at(id).abund() / s.bases_1.at(id).abund(), NAN);
-//            }
-//        }
-//    }
-    
-    //assert(!c.empty() && !stats.x.empty());
-    //assert(!stats.x.empty() && stats.x.size() == stats.y.size());
-
-    //stats.s = Expression::analyze(c, s.r_gene(options.rMix));
 
     o.info("Generating statistics");
 
