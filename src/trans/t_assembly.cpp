@@ -141,15 +141,17 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &o)
      * Now that the query exons are sorted. We can extract and classify the introns for each pair
      * of successive exon.
      */
+    
+    const TransRef::IntronData *m;
 
     extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
     {
         if (classify(stats.pi.m, i, [&](const Feature &)
         {
-            return r.findIntron(i.l, TransRef::Exact);
+            return (m  = r.findIntron(i.l, TransRef::Exact));
         }))
         {
-            stats.hi[i.tID]++;
+            stats.hi.at(m->iID)++;
         }
     });
 
