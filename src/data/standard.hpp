@@ -65,7 +65,7 @@ namespace Anaquin
 
             void l_mix(const Reader &);
 
-            LadderRef l_ref;
+            LadderRef r_lad;
         
             /*
              * Fusion data
@@ -73,9 +73,6 @@ namespace Anaquin
 
             void f_ref(const Reader &);
             void f_mix(const Reader &);
-
-            // Known fusion break-points
-            std::set<FusionBreak> f_breaks;
 
             FusionRef r_fus;
         

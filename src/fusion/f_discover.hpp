@@ -22,7 +22,7 @@ namespace Anaquin
             Software soft;
         };
 
-        struct Stats
+        struct Stats : public LinearStats
         {
             // Overall performance
             Confusion m;
@@ -30,11 +30,8 @@ namespace Anaquin
             // Fraction of reference fusion detected
             double covered;
 
-            // Linear model of the coverage
-            LinearStats cov;
-
             // Distribution of the sequins
-            SequinHist h;// TODO: = Analyzer::seqHist();
+            SequinHist h = Standard::instance().r_fus.hist();
 
             // Sequins failed to detect in the experiment
             MissingSequins miss;

@@ -133,7 +133,7 @@
 		EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = terminal_writer.hpp; path = ../src/writers/terminal_writer.hpp; sourceTree = "<group>"; };
 		EF18049E1B65C06F00897D1E /* f_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_express.cpp; sourceTree = "<group>"; };
 		EF18049F1B65C06F00897D1E /* f_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_express.hpp; sourceTree = "<group>"; };
-		EF1804A41B65C4F500897D1E /* f_analyzer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_analyzer.hpp; sourceTree = "<group>"; };
+		EF1804A41B65C4F500897D1E /* f_classify.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_classify.hpp; sourceTree = "<group>"; };
 		EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/data/alignment.hpp; sourceTree = "<group>"; };
 		EF1DE0A81B21EC6D00DEC381 /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/data/biology.hpp; sourceTree = "<group>"; };
 		EF1DE0A91B21EC6D00DEC381 /* feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = feature.hpp; path = ../src/data/feature.hpp; sourceTree = "<group>"; };
@@ -540,7 +540,7 @@
 			children = (
 				EF5E857B1B6B5B0E00FF61D8 /* f_align.cpp */,
 				EF5E857C1B6B5B0E00FF61D8 /* f_align.hpp */,
-				EF1804A41B65C4F500897D1E /* f_analyzer.hpp */,
+				EF1804A41B65C4F500897D1E /* f_classify.hpp */,
 				EFB7FF2C1B4F79D00045DC6A /* f_discover.cpp */,
 				EFB7FF2D1B4F79D00045DC6A /* f_discover.hpp */,
 				EF18049E1B65C06F00897D1E /* f_express.cpp */,

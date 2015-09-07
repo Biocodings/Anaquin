@@ -1,5 +1,5 @@
-#ifndef GI_F_ANALYZER_HPP
-#define GI_F_ANALYZER_HPP
+#ifndef GI_F_CLASSIFY_HPP
+#define GI_F_CLASSIFY_HPP
 
 #include "stats/analyzer.hpp"
 #include "parsers/parser_top_fusion.hpp"
@@ -7,20 +7,15 @@
 
 namespace Anaquin
 {
-    inline bool compare(Base x, Base y, Base fuzzy = 0.0)
-    {
-        return std::abs(x - y) <= fuzzy;
-    }
-
-    struct FAnalyzer
+    struct FClassify
     {
         template <typename Options, typename T> static ClassifyResult
                 classifyFusion(const T &f, Confusion &m, SequinID &id, Options &o)
         {
-            const auto &s = Standard::instance();
+            const auto &r = Standard::instance().r_fus;
 
             // Don't bother unless in-silico chromosome
-            if (f.chr_1 != s.id || f.chr_2 != s.id)
+            if (f.chr_1 != Standard::instance().id || f.chr_2 != Standard::instance().id)
             {
                 m.skip++;
                 return Ignore;
@@ -31,23 +26,14 @@ namespace Anaquin
                 const auto min = std::min(f.l1, f.l2);
                 const auto max = std::max(f.l1, f.l2);
 
-                const auto r = std::find_if(s.f_breaks.begin(), s.f_breaks.end(), [&](const FusionBreak &x)
+                const auto m = r.find(min, max, f.s1, f.s2, o.fuzzy);
+                
+                if (m)
                 {
-                    // Match in bases?
-                    const auto b_match = compare(min, x.l1, o.fuzzy) && compare(max, x.l2, o.fuzzy);
-
-                    // Match in orientation?
-                    const auto s_match = compare(x.s1, f.s1, o.fuzzy) && compare(x.s2, f.s2, o.fuzzy);
-
-                    return b_match && s_match;
-                });
-
-                if (r != s.f_breaks.end())
-                {
-                    id = r->id;
+                    id = m->id;
                 }
 
-                return (r != s.f_breaks.end()) ? Positive : Negative;
+                return m ? Positive : Negative;
             }))
             {
                 return Positive;
@@ -59,17 +45,17 @@ namespace Anaquin
         template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &o = Options())
         {
             Stats stats;
-            const auto &s = Standard::instance();
+            const auto &r = Standard::instance().r_fus;
 
             o.info("Fuzzy level: " + std::to_string(o.fuzzy));
             o.info("Parsing alignment file");
 
             auto positive = [&](const SequinID &id, Reads reads)
             {
-//                assert(!id.empty() && s.seqs_1.count(id));
+                assert(!id.empty() && r.seq(id));
                 
                 // Known abundance for the fusion
-                const auto known = 0;// s.seqs_1.at(id).abund() / s.seqs_1.at(id).length;
+                const auto known = r.seq(id)->abund(Mix_1);
                 
                 // Measured abundance for the fusion
                 const auto measured = reads;
@@ -80,8 +66,8 @@ namespace Anaquin
                 
                 p.x = log2f(known);
                 p.y = log2f(measured);
-                
-                stats.cov[id] = p;
+
+                stats[id] = p;
             };
 
             SequinID id;
@@ -143,11 +129,11 @@ namespace Anaquin
 //            }
 
             // The references are simply the known fusion points
-            stats.m.nr = s.f_breaks.size();
+            stats.m.nr = r.countFusions();
 
             o.info("Calculating limit of sensitivity");
-            //stats.s = Expression::analyze(stats.h, s.seqs_1);
-            
+            stats.s = r.limit(stats.h);
+
             stats.covered = static_cast<double>(std::accumulate(stats.h.begin(), stats.h.end(), 0,
                                 [&](int sum, const std::pair<SequinID, Counts> &p)
                                 {

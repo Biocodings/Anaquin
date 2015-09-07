@@ -46,10 +46,10 @@ namespace Anaquin
         HomozygousAlt,
     };
 
-    struct FusionBreak
+    struct FusionPoint
     {
-        inline bool operator<(const FusionBreak &x)  const { return id < x.id;  }
-        inline bool operator==(const FusionBreak &x) const { return id == x.id; }
+        inline bool operator<(const FusionPoint &x)  const { return id < x.id;  }
+        inline bool operator==(const FusionPoint &x) const { return id == x.id; }
 
         // Where this fusion belongs
         SequinID id;
@@ -57,7 +57,7 @@ namespace Anaquin
         // The position of the break-point
         Base l1, l2;
 
-        // Orientation for each of the
+        // Orientation for each of the segment
         Strand s1, s2;
     };
 

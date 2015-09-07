@@ -1,11 +1,11 @@
 #include "fusion/f_discover.hpp"
-#include "fusion/f_analyzer.hpp"
+#include "fusion/f_classify.hpp"
 
 using namespace Anaquin;
 
 FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Options &o)
 {
-    const auto stats = FAnalyzer::analyze<FDiscover::Options, FDiscover::Stats>(file, o);
+    const auto stats = FClassify::analyze<FDiscover::Options, FDiscover::Stats>(file, o);
 
     /*
      * Generate summary statistics
@@ -41,6 +41,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
     /*
      * Generating sequin statistics
      */
+    {
 
         o.info("Generating sequins statistics");
         o.writer->open("FusionDiscover_quins.stats");
@@ -76,8 +77,8 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
                 o.writer->write((boost::format(format) % i.first
                                                        % "yes"
                                                        % "-"
-                                                       % stats.cov.at(i.first).x
-                                                       % stats.cov.at(i.first).y
+                                                       % stats.at(i.first).x
+                                                       % stats.at(i.first).y
                                        ).str());
             }
             else
@@ -92,6 +93,7 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
         }
 
         o.writer->close();
+    }
 
     return stats;
 }

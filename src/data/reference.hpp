@@ -262,55 +262,61 @@ namespace Anaquin
      * -------------------- Ladder Analysis --------------------
      */
     
-    struct LadderData : public SequinData
-    {
-    };
-
-    class LadderRef : public Reference<LadderData, SequinStats>
+    class LadderRef : public Reference<SequinData, SequinStats>
     {
         public:
+            LadderRef();
+
+            void validate() override;
+
+        private:
+    
+            struct LadderRefImpl;
         
-            inline void validate() override
-            {
-            
-            }
+            std::shared_ptr<LadderRefImpl> _impl;
     };
     
     /*
      * -------------------- Metagenomics Analysis --------------------
      */
     
-    struct MetaData : public SequinData
-    {
-    };
-
-    class MetaRef : public Reference<MetaData, SequinStats>
+    class MetaRef : public Reference<SequinData, SequinStats>
     {
         public:
+            MetaRef();
         
-            inline void validate() override
-            {
-            
-            }
+            void validate() override;
+
+        private:
+
+            struct MetaRefImpl;
+
+            std::shared_ptr<MetaRefImpl> _impl;
     };
     
     /*
      * -------------------- Fusion Analysis --------------------
      */
     
-    struct FusionData : public SequinData
-    {
-        
-    };
-
-    class FusionRef : public Reference<FusionData, SequinStats>
+    class FusionRef : public Reference<SequinData, SequinStats>
     {
         public:
+            FusionRef();
+
+            // Add a known reference fusion
+            void addBreak(const FusionPoint &);
+
+            void validate() override;
+
+            // Return the number of reference fusions
+            std::size_t countFusions() const;
         
-            inline void validate() override
-            {
-            
-            }
+            const FusionPoint * find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
+
+        private:
+            struct FusionRefImpl;
+
+            std::shared_ptr<FusionRefImpl> _impl;
     };
 
     /*

@@ -130,8 +130,6 @@ namespace Anaquin
     
     template <typename T, typename Classifer> bool classify(Confusion &m, const T &t, Classifer c)
     {
-        const auto &s = Standard::instance();
-
         //if (s.l.contains(static_cast<Locus>(t)))
         {
             const auto r = c(t);

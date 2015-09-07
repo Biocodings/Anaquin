@@ -166,13 +166,13 @@ void Standard::m_mix_2(const Reader &r)
 
 void Standard::l_mix(const Reader &r)
 {
- //TODO   merge(parseMix(r, seqs_1, 2), seqs_1, bases_1);
-//TODO    merge(parseMix(Reader(r), seqs_2, 3), seqs_2, bases_2);
+    readMixture(r, r_lad, Mix_1, 2);
+    readMixture(Reader(r), r_lad, Mix_2, 3);
 }
 
 void Standard::f_mix(const Reader &r)
 {
-   //TODO parseMix(r, seqs_1, 2);
+    readMixture(r, r_fus, Mix_1, 2);
 }
 
 void Standard::f_ref(const Reader &r)
@@ -184,8 +184,8 @@ void Standard::f_ref(const Reader &r)
             throw std::runtime_error("Invalid reference file. chrT-chrT is expected.");
         }
 
-        FusionBreak b;
-        
+        FusionPoint b;
+
         b.id = f[4];;
         b.l1 = stod(f[1]) + 1;
         b.l2 = stod(f[2]) + 1;
@@ -195,13 +195,8 @@ void Standard::f_ref(const Reader &r)
         else if (f[3] == "rf") { b.s1 = Strand::Backward; b.s2 = Strand::Forward;  }
         else if (f[3] == "rr") { b.s1 = Strand::Backward; b.s2 = Strand::Backward; }
 
-        // Add a new entry for the known fusion point
-        f_breaks.insert(b);
-
-      //TODO  seqIDs.insert(b.id);
+        r_fus.addBreak(b);
     }, "\t");
-    
-   //TODO assert(!seqIDs.empty() && !f_breaks.empty());
 }
 
 void Standard::r_ref(const Reader &r)

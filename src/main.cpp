@@ -997,6 +997,7 @@ void parse(int argc, char ** argv)
 
             applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
             applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
+            Standard::instance().r_fus.validate();
 
             switch (_p.tool)
             {
@@ -1019,6 +1020,7 @@ void parse(int argc, char ** argv)
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
             applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
+            Standard::instance().r_lad.validate();
 
             switch (_p.tool)
             {
@@ -1077,6 +1079,7 @@ void parse(int argc, char ** argv)
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
             applyMix(std::bind(&Standard::m_mix_1, &s, std::placeholders::_1));
+            Standard::instance().r_meta.validate();
 
             switch (_p.tool)
             {

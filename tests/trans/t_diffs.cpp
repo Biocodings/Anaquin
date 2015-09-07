@@ -4,6 +4,21 @@
 
 using namespace Anaquin;
 
+TEST_CASE("TDiffs_T_1000_Isoforms")
+{
+    Test::trans();
+    
+    TDiffs::Options o;
+    o.level = TDiffs::Isoform;
+    
+    const auto r  = TDiffs::analyze("tests/data/T_1000/isoform_exp.diff", o);
+    const auto lm = r.linear();
+    
+    REQUIRE(lm.m  == Approx(0.970367203));
+    REQUIRE(lm.r  == Approx(0.8538321793));
+    REQUIRE(lm.r2 == Approx(0.7290293904));
+}
+
 TEST_CASE("TDiffs_T_1000_Genes")
 {
     Test::trans();
@@ -15,21 +30,6 @@ TEST_CASE("TDiffs_T_1000_Genes")
     const auto lm = r.linear();
     
     REQUIRE(lm.m  == Approx(0.9929858312));
-    REQUIRE(lm.r  == Approx(0.9929858312));
-    REQUIRE(lm.r2 == Approx(0.9951255647));
-}
-
-TEST_CASE("TDiffs_T_1000_Isoforms")
-{
-    Test::trans();
-    
-    TDiffs::Options o;
-    o.level = TDiffs::Isoform;
-    
-    const auto r  = TDiffs::analyze("tests/data/T_1000/isoform_exp.diff", o);
-    const auto lm = r.linear();
-
-    REQUIRE(lm.m  == Approx(1.0824361534));
-    REQUIRE(lm.r  == Approx(0.8374341202));
-    REQUIRE(lm.r2 == Approx(0.6863607009));
+    REQUIRE(lm.r  == Approx(0.9951255647));
+    REQUIRE(lm.r2 == Approx(0.9902748896));
 }

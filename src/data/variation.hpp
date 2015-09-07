@@ -1,8 +1,6 @@
 #ifndef GI_VARIATION_HPP
 #define GI_VARIATION_HPP
 
-#include <string>
-#include <data/types.hpp>
 #include <data/locus.hpp>
 #include <data/biology.hpp>
 

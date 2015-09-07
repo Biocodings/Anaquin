@@ -71,13 +71,9 @@ TDiffs::Stats TDiffs::analyze(const std::string &file, const Options &o)
         {
             case Gene:
             {
-                if (t.status != NoTest)
+                if (t.status != NoTest && stats.h.count(t.geneID))
                 {
                     g(t.geneID, t.fpkm_1, t.fpkm_2);
-                }
-                else
-                {
-                    g(t.geneID, NAN, NAN);
                 }
                 
                 break;
@@ -85,6 +81,11 @@ TDiffs::Stats TDiffs::analyze(const std::string &file, const Options &o)
 
             case Isoform:
             {
+                if (t.status == NoTest || !stats.h.count(t.testID))
+                {
+                    return;
+                }
+                
                 const auto *seq = r.seq(t.testID);
 
                 if (seq)

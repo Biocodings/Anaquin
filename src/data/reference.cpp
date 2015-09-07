@@ -3,6 +3,95 @@
 
 using namespace Anaquin;
 
+/*
+ * ------------------------- Metagenomics Analysis -------------------------
+ */
+
+struct MetaRef::MetaRefImpl
+{
+};
+
+MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
+
+/*
+ * ------------------------- Ladder Analysis -------------------------
+ */
+
+struct LadderRef::LadderRefImpl
+{
+};
+
+LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
+
+/*
+ * ------------------------- Fusion Analysis -------------------------
+ */
+
+struct FusionRef::FusionRefImpl
+{
+    std::set<FusionPoint> breaks;
+
+    /*
+     * Raw data - structure before validated
+     */
+
+    std::set<FusionPoint> rawBreaks;
+};
+
+FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
+
+void FusionRef::addBreak(const FusionPoint &f)
+{
+    _impl->rawBreaks.insert(f);
+}
+
+// Return the number of reference fusions
+std::size_t FusionRef::countFusions() const
+{
+    return _impl->breaks.size();
+}
+
+void FusionRef::validate()
+{
+    merge(_rawMIDs, _rawMIDs);
+
+    for (const auto &i : _impl->rawBreaks)
+    {
+        if (_data.count(i.id))
+        {
+            _impl->breaks.insert(i);
+        }
+    }
+}
+
+inline bool compare(Base x, Base y, Base fuzzy = 0.0)
+{
+    return std::abs(x - y) <= fuzzy;
+}
+
+const FusionPoint * FusionRef::find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const
+{
+    for (const auto &f : _impl->breaks)
+    {
+        // Match in bases?
+        const auto b_match = compare(x, f.l1, fuzzy) && compare(y, f.l2, fuzzy);
+        
+        // Match in orientation?
+        const auto s_match = compare(f.s1, f.s1, fuzzy) && compare(f.s2, f.s2, fuzzy);
+        
+        if (b_match && s_match)
+        {
+            return &f;
+        }
+    }
+  
+    return nullptr;
+}
+
+/*
+ * ------------------------- Transcriptome Analysis -------------------------
+ */
+
 template <typename Iter> Base countLocus(const Iter &iter)
 {
     Base n = 0;
@@ -14,10 +103,6 @@ template <typename Iter> Base countLocus(const Iter &iter)
     
     return n;
 }
-
-/*
- * ------------------------- Transcriptome Analysis -------------------------
- */
 
 struct TransRef::TransRefImpl
 {
