@@ -12,14 +12,14 @@ namespace Anaquin
 
             struct Stats : public MappingStats
             {
-                Counts unmapped;
+                Counts unmapped = 0;
+
+                // Metrics at various levels
+                Performance pb, pe, pi;
                 
                 TransRef::GeneHist hb = Standard::instance().r_trans.histGene();
                 TransRef::GeneHist he = Standard::instance().r_trans.histGene();
                 TransRef::GeneHist hi = Standard::instance().r_trans.histGene();
-
-                // Metrics at various levels
-                Performance pb, pe, pi;
             };
 
             static Stats analyze(const std::string &, const Options &options = Options());

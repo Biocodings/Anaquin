@@ -34,6 +34,7 @@ void Test::fusion()
     Standard::instance(true);
     Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
     Standard::instance().f_mix(Reader(FusionDataMix(), DataMode::String));
+    Standard::instance().r_fus.validate();
 }
 
 void Test::meta()
@@ -55,6 +56,7 @@ void Test::trans()
     Standard::instance(true);
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMix(), DataMode::String));
+    Standard::instance().r_trans.validate();
 }
 
 void Test::variant()
@@ -63,6 +65,7 @@ void Test::variant()
     Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
     Standard::instance().v_std(Reader(VarStandGTF(), DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMix(),  DataMode::String));
+    Standard::instance().r_var.validate();
 }
 
 Test Test::test(const std::string &command)
