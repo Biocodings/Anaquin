@@ -33,8 +33,6 @@ TDiffs::Stats TDiffs::analyze(const std::string &file, const Options &o)
 
         if (g)
         {
-            g->abund(Mix_2);
-            
             // Calculate the known fold-change between B and A
             known = (g->abund(Mix_2) / g->abund(Mix_1));
         }

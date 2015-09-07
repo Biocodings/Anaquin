@@ -163,17 +163,17 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
      */
     
     std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
-                  {
-                      auto d = TransData();
-                      
-                      d.id  = id;
-                      d.gID = _impl->rawMapper.at(d.id);
-                      
-                      // Add a new entry for the validated sequin
-                      _data[id] = d;
-                      
-                      assert(!d.id.empty() && !d.gID.empty());
-                  });
+    {
+        auto d = TransData();
+        
+        d.id  = id;
+        d.gID = _impl->rawMapper.at(d.id);
+        
+        // Add a new entry for the validated sequin
+        _data[id] = d;
+        
+        assert(!d.id.empty() && !d.gID.empty());
+    });
     
     /*
      * Now, we have a list of validated sequins. Use those sequins to combine information
@@ -248,10 +248,10 @@ void TransRef::validate()
     
     assert(!_impl->sortedExons.empty());
     std::sort(_impl->sortedExons.begin(), _impl->sortedExons.end(), [](const ExonData &x, const ExonData &y)
-              {
-                  return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-              });
-    
+    {
+        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
+    });
+
     /*
      * Generate a list of sorted introns, only possible once the exons are sorted.
      */
