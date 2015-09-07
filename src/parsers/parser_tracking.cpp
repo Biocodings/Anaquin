@@ -58,13 +58,7 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
         // Eg: chrT:1082119-1190836
         Tokens::split(tokens[T_Locus], ":", temp);
         
-        // Eg: chrT
-        const auto c = temp[0];
-
-        if (c != "chrT")
-        {
-            continue;
-        }
+        t.chromID = temp[0];
         
         // Eg: 1082119-1190836
         Tokens::split(std::string(temp[1]), "-", temp);

@@ -107,16 +107,29 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
                                   return i.second;
                               });
     
-    const auto summary = "Summary for dataset: %1% :\n\n"
-                         "   Detected: %2%\n"
-                         "   Reference: %3%\n\n"
-                         "Correlation:     %4%\n"
-                         "Slope:     %5%\n"
-                         "R2:     %6%\n"
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Genome: %2% reads\n"
+                         "   Query: %3% reads\n"
+                         "   Reference: %4% sequins\n\n"
+                         "   Detected: %2%\n\n"
+                         "   Correlation:\t%9%\n"
+                         "   Slope:\t%10%\n"
+                         "   R2:\t%11%\n"
+                         "   Adjusted R2:\t%12%\n"
+                         "   F-statistic:\t%13%\n"
+                         "   P-value:\t%14%\n"
+                         "   SSM: %15%, DF: %16%\n"
+                         "   SSE: %17%, DF: %18%\n"
+                         "   SST: %19%, DF: %20%\n"
     ;
 
     const auto lm = stats.linear();
 
+    /*
+     * Generate summary statistics
+     */
+    
+    o.writer->open("TransExpress_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % detected
                                             % stats.h.size()
@@ -124,6 +137,12 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
                                             % lm.m
                                             % lm.r2).str());
     o.writer->close();
+
+    /*
+     * Generate R scripts
+     */
     
+    AnalyzeReporter::scatter(stats, "TransExpress", "", o.writer);
+
     return stats;
 }
