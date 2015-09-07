@@ -36,11 +36,6 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
 
         if (isoform)
         {
-            if (!stats.h.count(t.trackID))
-            {
-                return;
-            }
-            
             const TransData *m = nullptr;
 
             // Try to match by name if possible
@@ -58,7 +53,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
             }
             else
             {
-                stats.h.at(t.trackID)++;
+                stats.h.at(m->id)++;
 
                 if (t.fpkm)
                 {
@@ -68,11 +63,6 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
         }
         else
         {
-            if (!stats.h.count(t.geneID))
-            {
-                return;
-            }
-            
             const TransRef::GeneData *m = nullptr;
             
             // Try to match by name if possible
@@ -81,7 +71,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
             if (!m)
             {
                 // Try to match by locus (de-novo assembly)
-                m = r.findGene(t.l, TransRef::Exact);
+                m = r.findGene(t.l, TransRef::Contains);
             }
 
             if (!m)
@@ -90,7 +80,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
             }
             else
             {
-                stats.h.at(t.geneID)++;
+                stats.h.at(m->id)++;
 
                 if (t.fpkm)
                 {

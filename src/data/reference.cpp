@@ -1,6 +1,6 @@
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
-
+#include <iostream>
 using namespace Anaquin;
 
 /*
@@ -306,7 +306,8 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
                                              {
                                                  return true;
                                              });
-            
+
+            _impl->genes[_data[i.first].gID].id = _data[i.first].gID;
             _impl->genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
         }
     }

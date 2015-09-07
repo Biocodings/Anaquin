@@ -375,6 +375,8 @@ namespace Anaquin
 
             struct GeneData
             {
+                GeneID id;
+
                 inline Locus l() const
                 {
                     Base end   = std::numeric_limits<Base>::min();
@@ -383,7 +385,7 @@ namespace Anaquin
                     for (const auto &i : seqs)
                     {
                         end   = std::max(end, i->l.end);
-                        start = std::max(end, i->l.end);
+                        start = std::min(start, i->l.start);
                     }
 
                     return Locus(start, end);
@@ -401,7 +403,7 @@ namespace Anaquin
                 
                     return n;
                 }
-            
+    
                 // Each sequin comprises an isoform
                 std::vector<SequinData *> seqs;
             };
