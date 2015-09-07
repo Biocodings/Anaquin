@@ -12,18 +12,7 @@
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_feature.hpp"
 
-extern std::string TransStandGTF();
-
 using namespace Anaquin;
-
-struct ParseSequinInfo
-{
-    // Used to detect duplicates
-    std::set<SequinID> seqIDs;
-    
-    // Used to link sequins for each base
-    std::map<BaseID, std::set<TypeID>> baseIDs;
-};
 
 template <typename Reference> void readMixture(const Reader &r, Reference &ref, Mixture m, unsigned column=2)
 {
@@ -51,10 +40,9 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
-template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMap &m, unsigned column=2)
+template <typename SequinMap> void parseMix(const Reader &r, SequinMap &m, unsigned column=2)
 {
     m.clear();
-    ParseSequinInfo info;
 
     try
     {
@@ -68,10 +56,7 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
 
             Sequin s;
             
-            // Make sure there's no duplicate in the mixture file
-            assert(info.seqIDs.count(fields[0]) == 0);
-            
-            info.seqIDs.insert(s.id = fields[0]);
+            s.id = fields[0];
             
             // Base ID is simply the ID without the last part
             s.baseID = s.id.substr(0, s.id.find_last_of("_"));
@@ -89,11 +74,6 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
             
             // Create an entry for the mixture
             m[s.id] = s;
-            
-            // TODO: Should be this be here?
-            //Standard::instance():seqIDs.insert(s.id);
-            
-            info.baseIDs[s.baseID].insert(s.typeID);
         });
     }
     catch (...)
@@ -105,8 +85,6 @@ template <typename SequinMap> ParseSequinInfo parseMix(const Reader &r, SequinMa
     {
         throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
     }
-
-    return info;
 }
 
 void Standard::v_std(const Reader &r)
