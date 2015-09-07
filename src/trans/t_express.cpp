@@ -36,10 +36,15 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
 
         if (isoform)
         {
+            if (!stats.h.count(t.trackID))
+            {
+                return;
+            }
+            
             const TransData *m = nullptr;
 
             // Try to match by name if possible
-            m = r.seq(t.geneID);
+            m = r.seq(t.trackID);
 
             if (!m)
             {
@@ -53,7 +58,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
             }
             else
             {
-                stats.h.at(t.geneID)++;
+                stats.h.at(t.trackID)++;
 
                 if (t.fpkm)
                 {
@@ -63,6 +68,11 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
         }
         else
         {
+            if (!stats.h.count(t.geneID))
+            {
+                return;
+            }
+            
             const TransRef::GeneData *m = nullptr;
             
             // Try to match by name if possible

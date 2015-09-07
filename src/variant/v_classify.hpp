@@ -33,10 +33,8 @@ namespace Anaquin
             
             stats.n_chrT++;
             const Variation *match;
-            
-            Confusion m;
-            
-            if (classify(m, v, [&](const VCFVariant &)
+
+            if (classify(stats.m, v, [&](const VCFVariant &)
             {
                 const auto found = (match = r.findVar(v.l)) != nullptr;
                 const auto type  = (match && match->type == v.type);

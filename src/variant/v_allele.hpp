@@ -11,6 +11,8 @@ namespace Anaquin
 
         struct Stats : public LinearStats, public MappingStats
         {
+            Confusion m;
+
             long detected;
             
             // Sensitivity
