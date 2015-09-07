@@ -937,7 +937,7 @@ void parse(int argc, char ** argv)
                     TAssembly::Options o;
 
                     o.ref   = _p.opts[OPT_R_GTF];
-                    o.query = _p.opts[OPT_R_GTF];
+                    o.query = _p.opts[OPT_U_GTF];
                     
                     analyze_1<TAssembly>(OPT_U_GTF, o);
                     break;

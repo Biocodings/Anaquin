@@ -34,7 +34,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
 TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &o)
 {
     assert(!o.ref.empty() && !o.query.empty());
-    
+
     /*
      * Comparing transcripts require constructing intron-chains, this is quite complicated.
      * We will reuse the code in cuffcompare. The implementation is dirty but it works better
