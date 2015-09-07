@@ -111,16 +111,16 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
                          "   Genome: %2% reads\n"
                          "   Query: %3% reads\n"
                          "   Reference: %4% sequins\n\n"
-                         "   Detected: %2%\n\n"
-                         "   Correlation:\t%9%\n"
-                         "   Slope:\t%10%\n"
-                         "   R2:\t%11%\n"
-                         "   Adjusted R2:\t%12%\n"
-                         "   F-statistic:\t%13%\n"
-                         "   P-value:\t%14%\n"
-                         "   SSM: %15%, DF: %16%\n"
-                         "   SSE: %17%, DF: %18%\n"
-                         "   SST: %19%, DF: %20%\n"
+                         "   Detected: %5%\n\n"
+                         "   Correlation:\t%6%\n"
+                         "   Slope:\t%7%\n"
+                         "   R2:\t%8%\n"
+                         "   Adjusted R2:\t%9%\n"
+                         "   F-statistic:\t%10%\n"
+                         "   P-value:\t%11%\n"
+                         "   SSM: %12%, DF: %13%\n"
+                         "   SSE: %14%, DF: %15%\n"
+                         "   SST: %16%, DF: %17%\n"
     ;
 
     const auto lm = stats.linear();
@@ -131,11 +131,22 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
     
     o.writer->open("TransExpress_summary.stats");
     o.writer->write((boost::format(summary) % file
-                                            % detected
+                                            % stats.n_hg38
+                                            % stats.n_chrT
                                             % stats.h.size()
+                                            % detected
                                             % lm.r
                                             % lm.m
-                                            % lm.r2).str());
+                                            % lm.r2
+                                            % lm.ar2
+                                            % lm.f
+                                            % lm.p
+                                            % lm.ssm
+                                            % lm.ssm_df
+                                            % lm.sse
+                                            % lm.sse_df
+                                            % lm.sst
+                                            % lm.sst_df).str());
     o.writer->close();
 
     /*
