@@ -9,13 +9,14 @@ using namespace Anaquin;
 
 struct MetaRef::MetaRefImpl
 {
+    // Empty Implementation
 };
 
 MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
 
 void MetaRef::validate()
 {
-
+    merge(_rawMIDs, _rawMIDs);
 }
 
 /*
@@ -24,13 +25,53 @@ void MetaRef::validate()
 
 struct LadderRef::LadderRefImpl
 {
+    struct JoinData
+    {
+        const SequinData *A, *B, *C, *D;
+    };
+    
+    std::set<JoinID> joinIDs;
+    std::map<JoinID, JoinData> joined;
 };
 
 LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
 
+const std::set<LadderRef::JoinID> & LadderRef::joinIDs() const
+{
+    return _impl->joinIDs;
+}
+
 void LadderRef::validate()
 {
+    merge(_rawMIDs, _rawMIDs);
     
+    std::vector<std::string> toks;
+    
+    for (const auto &i : _data)
+    {
+        Tokens::split(i.first, "_", toks);
+
+        const auto joinID = toks[0] + "_" + toks[1];
+        const auto segID  = toks[2];
+     
+        _impl->joinIDs.insert(joinID);
+        
+        if (segID == "A") { _impl->joined[joinID].A = &i.second; }
+        if (segID == "B") { _impl->joined[joinID].B = &i.second; }
+        if (segID == "C") { _impl->joined[joinID].C = &i.second; }
+        if (segID == "D") { _impl->joined[joinID].D = &i.second; }
+    }
+
+    assert(!_impl->joined.empty());
+}
+
+void LadderRef::abund(const LadderRef::JoinID &id, Concentration &a, Concentration &b, Concentration &c,
+                                                   Concentration &d, Mixture m) const
+{
+    a = _impl->joined.at(id).A->abund(m);
+    b = _impl->joined.at(id).A->abund(m);
+    c = _impl->joined.at(id).A->abund(m);
+    d = _impl->joined.at(id).A->abund(m);
 }
 
 /*

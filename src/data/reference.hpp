@@ -265,9 +265,18 @@ namespace Anaquin
     class LadderRef : public Reference<SequinData, SequinStats>
     {
         public:
+        
+            typedef std::string JoinID;
+        
             LadderRef();
 
             void validate() override;
+
+            const std::set<JoinID> &joinIDs() const;
+
+            // Return abundance for all segments of a particular conjoined
+            void abund(const JoinID &, Concentration &, Concentration &, Concentration &, Concentration &,
+                             Mixture) const;
 
         private:
     

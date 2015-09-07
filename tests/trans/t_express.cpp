@@ -38,10 +38,10 @@ TEST_CASE("TExpress_T_1000_Isoforms")
 
     const auto r  = TExpress::analyze("tests/data/T_1000/B/G/isoforms.fpkm_tracking", o);
     const auto lm = r.linear();
-    
-    REQUIRE(lm.r  == Approx(0.5396707359));
-    REQUIRE(lm.m  == Approx(0.4539170757));
-    REQUIRE(lm.r2 == Approx(0.2912445032));
+
+    REQUIRE(lm.r  == Approx(0.534110868));
+    REQUIRE(lm.m  == Approx(0.4512270455));
+    REQUIRE(lm.r2 == Approx(0.2852744193));
 
     REQUIRE(r.s.id == "R2_46_1");
     REQUIRE(r.s.counts == 1);
