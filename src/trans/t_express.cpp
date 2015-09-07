@@ -92,11 +92,11 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
     
     if (isoform)
     {
-        stats.s = Expression_::calculate(stats.h, r);
+        stats.s = r.limit(stats.h);
     }
     else
     {
-        stats.s = Expression_::calculate(stats.h, r);
+        stats.s = r.limitGene(stats.h);
     }
     
     o.info("Generating statistics");

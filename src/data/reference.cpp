@@ -3,6 +3,18 @@
 
 using namespace Anaquin;
 
+template <typename Iter> Base countLocus(const Iter &iter)
+{
+    Base n = 0;
+    
+    for (const auto &i : iter)
+    {
+        n += static_cast<Locus>(i).length();
+    }
+    
+    return n;
+}
+
 /*
  * ------------------------- Transcriptome Analysis -------------------------
  */
@@ -31,6 +43,15 @@ struct TransRef::TransRefImpl
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
 Base TransRef::exonBase() const { return _impl->exonBase; }
+
+// Limit of detection for the gene level
+Sensitivity TransRef::limitGene(const GeneHist &h) const
+{
+    return Reference<TransData, SequinStats>::limit(h, [&](const GeneID &id)
+    {
+        return findGene(id);
+    });
+}
 
 void TransRef::addRef(const IsoformID &iID, const GeneID &gID, const Locus &l)
 {

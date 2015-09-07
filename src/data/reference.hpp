@@ -2,23 +2,11 @@
 #define GI_REFERENCE_HPP
 
 #include <map>
-#include "data/types.hpp"
 #include "data/variation.hpp"
+#include "stats/sensitivity.hpp"
 
 namespace Anaquin
 {
-    template <typename Iter> Base countLocus(const Iter &iter)
-    {
-        Base n = 0;
-        
-        for (const auto &i : iter)
-        {
-            n += static_cast<Locus>(i).length();
-        }
-        
-        return n;
-    }
-    
     enum Mixture
     {
         MixA,
@@ -58,6 +46,7 @@ namespace Anaquin
     template <typename Data = SequinData, typename Stats = SequinStats> class Reference
     {
         public:
+
             // Add a sequin defined in a mixture file
             void add(const SequinID &id, Base length, Concentration c, Mixture m)
             {
@@ -107,8 +96,62 @@ namespace Anaquin
 
             virtual void validate() = 0;
 
+            inline Sensitivity limit(const SequinHist &h) const
+            {
+                return limit(h, [&](const SequinID &id)
+                {
+                    return this->seq(id);
+                });
+            }
+
         protected:
 
+            /*
+             * Provides a common mechanism to calculate limit of detection given a histogram or a distribution
+             */
+
+            template <typename F> Sensitivity limit(const std::map<std::string, Counts> &h, F f) const
+            {
+                Sensitivity s;
+            
+                // The lowest count must be zero because it can't be negative
+                s.counts = std::numeric_limits<unsigned>::max();
+            
+                for (auto iter = h.begin(); iter != h.end(); iter++)
+                {
+                    const auto counts = iter->second;
+                
+                    /*
+                     * Is this sequin detectable? If it's detectable, what about the concentration?
+                     * By definition, detection limit is defined as the smallest abundance while
+                     * still being detected.
+                     */
+                
+                    if (counts)
+                    {
+                        const auto &id = iter->first;
+                        const auto seq = f(id);
+                    
+                        // Hard to believe a sequin in the histogram is undefined
+                        assert(seq);
+                    
+                        if (counts < s.counts || (counts == s.counts && seq->abund(MixA) < s.abund))
+                        {
+                            s.id     = id;
+                            s.counts = counts;
+                            s.abund  = seq->abund(MixA);
+                        }
+                    }
+                }
+            
+                if (s.counts == std::numeric_limits<unsigned>::max())
+                {
+                    s.counts = 0;
+                }
+            
+                return s;
+            }
+        
             struct MixtureData
             {
                 MixtureData(const SequinID &id, Base length, Concentration abund)
@@ -404,6 +447,9 @@ namespace Anaquin
 
             void validate() override;
         
+            // Return the detection limit at the gene level
+            Sensitivity limitGene(const GeneHist &) const;
+
             // Number of non-overlapping bases in all exons
             Base exonBase() const;
 

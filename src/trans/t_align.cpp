@@ -108,9 +108,9 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 
     o.info("Calculating detection limit");
 
-    stats.pe.s = Expression_::calculate(stats.he, r);
-    stats.pi.s = Expression_::calculate(stats.hi, r);
-    stats.pb.s = Expression_::calculate(stats.hb, r);
+    stats.pe.s = r.limitGene(stats.he);
+    stats.pi.s = r.limitGene(stats.hi);
+    stats.pb.s = r.limitGene(stats.hb);
 
     /*
      * Write out summary statistics

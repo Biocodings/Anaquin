@@ -196,10 +196,10 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &o)
 
     o.info("Calculating limit of sensitivity");
     
-    stats.pe.s = Expression_::calculate(stats.he, r);
-    stats.pt.s = Expression_::calculate(stats.ht, r);
-    stats.pb.s = Expression_::calculate(stats.hb, r);
-    stats.pi.s = Expression_::calculate(stats.hi, r);
+    stats.pe.s = r.limit(stats.he);
+    stats.pt.s = r.limit(stats.ht);
+    stats.pb.s = r.limitGene(stats.hb);
+    stats.pi.s = r.limit(stats.hi);
 
     o.info("Generating statistics");
 
