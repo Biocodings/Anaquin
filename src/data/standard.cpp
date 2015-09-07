@@ -172,18 +172,18 @@ void Standard::v_var(const Reader &r)
 
 void Standard::v_mix(const Reader &r)
 {
-    readMixture(r, r_var, MixA, 2);
-    readMixture(r, r_var, MixB, 3);
+    readMixture(r, r_var, Mix_1, 2);
+    readMixture(r, r_var, Mix_2, 3);
 }
 
 void Standard::m_mix_1(const Reader &r)
 {
-    readMixture(r, r_meta, MixA, 2);
+    readMixture(r, r_meta, Mix_1, 2);
 }
 
 void Standard::m_mix_2(const Reader &r)
 {
-    readMixture(r, r_meta, MixA, 3);
+    readMixture(r, r_meta, Mix_2, 3);
 }
 
 void Standard::l_mix(const Reader &r)
@@ -239,6 +239,6 @@ void Standard::r_ref(const Reader &r)
 
 void Standard::r_mix(const Reader &r)
 {
-    readMixture(r, r_trans, MixA, 2);
-    readMixture(r, r_trans, MixB, 3);
+    readMixture(r, r_trans, Mix_1, 2);
+    readMixture(r, r_trans, Mix_2, 3);
 }

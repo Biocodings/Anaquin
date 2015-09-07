@@ -12,7 +12,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
     {
         //
         // The known coverage for allele frequnece
-        const auto known = r.alleleFreq(MixA, match->bID);
+        const auto known = r.alleleFreq(Mix_1, match->bID);
 
         // The measured coverage is the number of base calls aligned and used in variant calling
         const auto measured = static_cast<double>(v.dp_a) / (v.dp_r + v.dp_a);

@@ -57,7 +57,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
 
                 if (t.fpkm)
                 {
-                    stats.add(t.trackID, log2(m->abund(MixA)), log2(fpkm));
+                    stats.add(t.trackID, log2(m->abund(Mix_1)), log2(fpkm));
                 }
             }
         }
@@ -84,7 +84,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
 
                 if (t.fpkm)
                 {
-                    stats.add(t.trackID, log2(m->abund()), log2(fpkm));
+                    stats.add(t.trackID, log2(m->abund(o.mix)), log2(fpkm));
                 }
             }
         }
@@ -100,13 +100,11 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
     }
     
     o.info("Generating statistics");
-    
-    const auto detected = std::count_if(
-                              stats.h.begin(), stats.h.end(), [&](const std::pair<SequinID, Counts> &i)
-                              {
-                                  return i.second;
-                              });
-    
+
+    /*
+     * Generate summary statistics
+     */
+
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Genome: %2% reads\n"
                          "   Query: %3% reads\n"
@@ -125,16 +123,12 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
 
     const auto lm = stats.linear();
 
-    /*
-     * Generate summary statistics
-     */
-    
     o.writer->open("TransExpress_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % stats.n_hg38
                                             % stats.n_chrT
                                             % stats.h.size()
-                                            % detected
+                                            % countHist(stats.h)
                                             % lm.r
                                             % lm.m
                                             % lm.r2

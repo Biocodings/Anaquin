@@ -20,7 +20,8 @@ namespace Anaquin
 
         struct Stats : public LinearStats, public MappingStats
         {
-            // Empty Implementation
+            // The keys depend on whether it's a gene or isoform analysis
+            std::map<std::string, Counts> h;
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

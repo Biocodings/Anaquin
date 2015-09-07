@@ -18,7 +18,7 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     options.info("Analyzing mixuture A: " + fileA);
     const auto a = LAbund::analyze(fileA, opt);
 
-    opt.mix = MixB;
+    opt.mix = Mix_2;
     options.info("Analyzing mixuture B: " + fileB);
     const auto b = LAbund::analyze(fileB, opt);
 

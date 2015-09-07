@@ -38,19 +38,3 @@ p <- p + theme_classic()
 p <- p + geom_smooth(method = "lm", se=FALSE, formula = y ~ x)
 p <- p + geom_text(x = min(d$x), y = max(d$y), label = lm_eqn(d), parse = TRUE, hjust=0)
 print(p)
-
-
-
-
-
-
-
-
-# Pearson's correlation
-#p <- cor(x, y)
-
-# Fit a simple linear regression model
-#m <- lm(y~x)
-
-# Prints a summary statistics of the model
-#summary(m)

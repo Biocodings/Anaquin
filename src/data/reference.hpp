@@ -9,10 +9,10 @@ namespace Anaquin
 {
     enum Mixture
     {
-        MixA,
-        MixB,
-        MixF,
-        MixG,
+        Mix_1,
+        Mix_2,
+        Mix_3,
+        Mix_4,
     };
 
     struct SequinStats
@@ -135,11 +135,11 @@ namespace Anaquin
                         // Hard to believe a sequin in the histogram is undefined
                         assert(seq);
                     
-                        if (counts < s.counts || (counts == s.counts && seq->abund(MixA) < s.abund))
+                        if (counts < s.counts || (counts == s.counts && seq->abund(Mix_1) < s.abund))
                         {
                             s.id     = id;
                             s.counts = counts;
-                            s.abund  = seq->abund(MixA);
+                            s.abund  = seq->abund(Mix_1);
                         }
                     }
                 }
@@ -384,7 +384,7 @@ namespace Anaquin
                 }
 
                 // Calcualate the normalized abundance for the gene
-                inline Concentration abund(Mixture m = MixA) const
+                inline Concentration abund(Mixture m) const
                 {
                     Concentration n = 0;
                 

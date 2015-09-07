@@ -41,6 +41,14 @@ namespace Anaquin
         assert(c);
     }
 
+    inline std::size_t countHist(const std::map<std::string, Counts> &m)
+    {
+        return std::count_if(m.begin(), m.end(), [&](const std::pair<SequinID, Counts> &i)
+                                                 {
+                                                     return i.second;
+                                                 });
+    }
+
     struct Analyzer
     {
         // Empty Implementation
@@ -239,13 +247,13 @@ namespace Anaquin
 
     struct SingleMixtureOptions : public AnalyzerOptions
     {
-        Mixture mix = MixA;
+        Mixture mix = Mix_1;
     };
 
     struct DoubleMixtureOptions : public AnalyzerOptions
     {
-        const Mixture rMix = MixA;
-        const Mixture qMix = MixB;
+        const Mixture m1 = Mix_1;
+        const Mixture m2 = Mix_2;
     };
 
     struct ViewerOptions : public AnalyzerOptions

@@ -38,10 +38,10 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
          * concentration while still detectable in the experiment.
          */
         
-        if (ms.s.id.empty() || align->seq->mixes.at(MixA) < ms.s.abund)
+        if (ms.s.id.empty() || align->seq->mixes.at(Mix_1) < ms.s.abund)
         {
             ms.s.id     = align->seq->id;
-            ms.s.abund  = align->seq->mixes.at(MixA);
+            ms.s.abund  = align->seq->mixes.at(Mix_1);
             ms.s.counts = align->contigs.size();
         }
         
@@ -52,7 +52,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
         if (!align->contigs.empty())
         {
             // Known concentration
-            const auto known = align->seq->mixes.at(MixA);
+            const auto known = align->seq->mixes.at(Mix_1);
             
             /*
              * Measure concentration for this metaquin. Average out the coverage for each aligned contig.
@@ -117,7 +117,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                                    meta.second->covered == 1.0      ? "Full" : "Partial";
 
         options.writer->write((boost::format(format) % meta.second->seq->id
-                                                     % meta.second->seq->mixes.at(MixA)
+                                                     % meta.second->seq->mixes.at(Mix_1)
                                                      % status
                                                      % meta.second->depthAlign
                                                      % meta.second->depthSequin

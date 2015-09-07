@@ -3,16 +3,12 @@
 
 using namespace Anaquin;
 
-TEST_CASE("Differential_Simulations_Isoforms")
+TEST_CASE("TDiffs_T_1000_Genes")
 {
-//    /*
-//     * The experiment for mixutre B is identical but it has 100 times coverage.
-//     */
-//
-//    RDiffs::Options o;
-//    o.level = RNALevel::Isoform;
-//
-//    const auto r  = RDiffs::analyze("tests/data/rna/isoform_exp.diff", o);
+    TDiffs::Options o;
+    o.level = TDiffs::Gene;
+
+    const auto r  = TDiffs::analyze("gene_exp.diff", o);
 //    const auto lm = r.linear();
 //    
 //    REQUIRE(lm.m  == Approx(0.9771063293));
@@ -20,16 +16,12 @@ TEST_CASE("Differential_Simulations_Isoforms")
 //    REQUIRE(lm.r2 == Approx(0.9268056282));
 }
 
-TEST_CASE("Differential_Simulations_Genes")
+TEST_CASE("TDiffs_T_1000_Isoforms")
 {
-//    /*
-//     * The experiment for mixutre B is identical but it has 100 times coverage.
-//     */
-//
-//    RDiffs::Options o;
-//    o.level = RNALevel::Gene;
-//
-//    const auto r  = RDiffs::analyze("tests/data/rna/gene_exp.diff", o);
+    TDiffs::Options o;
+    o.level = TDiffs::Isoform;
+    
+    const auto r  = TDiffs::analyze("isoform_exp.diff", o);
 //    const auto lm = r.linear();
 //
 //    REQUIRE(lm.m  == Approx(1.0824361534));

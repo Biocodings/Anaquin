@@ -8,15 +8,23 @@ using namespace Anaquin;
 
 enum TrackingField
 {
-    FTestID     = 0,
-    FGeneID     = 1,
-    FStatus     = 6,
-    FFPKM_1     = 7,
-    FFPKM_2     = 8,
-    FLogFold    = 9,
-    FTestStats  = 10,
-    FPValue     = 11,
-    FQValue     = 12,
+    FTestID    = 0,
+    FGeneID    = 1,
+    FLocus     = 3,
+    FStatus    = 6,
+    FFPKM_1    = 7,
+    FFPKM_2    = 8,
+    FLogFold   = 9,
+    FTestStats = 10,
+    FPValue    = 11,
+    FQValue    = 12,
+};
+
+static const std::map<TrackID, TrackingStatus> tok2Status =
+{
+    { "OK", OK },
+    { "HIDATA", HIData },
+    { "NOTEST", NoTest }
 };
 
 void ParserCDiffs::parse(const std::string &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)
@@ -26,7 +34,7 @@ void ParserCDiffs::parse(const std::string &file, std::function<void (const Trac
     ParserProgress p;
 
     std::string line;
-    std::vector<std::string> tokens;
+    std::vector<std::string> toks, temp;
     
     while (i.nextLine(line))
     {
@@ -37,18 +45,24 @@ void ParserCDiffs::parse(const std::string &file, std::function<void (const Trac
             continue;
         }
         
-        Tokens::split(line, "\t", tokens);
+        Tokens::split(line, "\t", toks);
 
-        t.testID  = tokens[FTestID];
-        t.geneID  = tokens[FGeneID];        
-        t.fpkm_1  = stof(tokens[FFPKM_1]);
-        t.fpkm_2  = stof(tokens[FFPKM_2]);
-        t.status  = tok2Status.at(tokens[FStatus]);
-        t.logFold = stof(tokens[FLogFold]);
-        t.stats   = stof(tokens[FTestStats]);
+        t.testID  = toks[FTestID];
+        t.geneID  = toks[FGeneID];        
+        t.fpkm_1  = stof(toks[FFPKM_1]);
+        t.fpkm_2  = stof(toks[FFPKM_2]);
+        t.status  = tok2Status.at(toks[FStatus]);
+        t.logFold = stof(toks[FLogFold]);
+        t.stats   = stof(toks[FTestStats]);
 
-        t.p = SS::P(stof(tokens[FPValue]));
-        t.q = SS::P(stof(tokens[FQValue]));
+        // Eg: chrT:1082119-1190836
+        Tokens::split(toks[FLocus], ":", temp);
+        
+        // Eg: chrT
+        t.chromID = temp[0];
+        
+        t.p = SS::P(stof(toks[FPValue]));
+        t.q = SS::P(stof(toks[FQValue]));
 
         if (t.status != TrackingStatus::HIData)
         {
