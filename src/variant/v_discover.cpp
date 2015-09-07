@@ -1,5 +1,5 @@
 #include "variant/v_discover.hpp"
-#include "parsers/parser_vcf.hpp"
+#include "variant/v_classify.hpp"
 
 using namespace Anaquin;
 
@@ -8,86 +8,40 @@ VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &o)
     VDiscover::Stats stats;
     const auto &r = Standard::instance().r_var;
 
-    o.info("Parsing VCF file");
-    o.writer->open("VarAllele_false.stats");
+    classify(stats, file, o, [&](const VCFVariant &v, const Variation *match)
+    {
+        // Empty Implementation
+    });
     
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    o.info("Generating statistics");
     
-    o.writer->write((boost::format(format) % "start"
-                                           % "matched"
-                                           % "type"
-                                           % "alt"
-                                           % "ref").str());
+    /*
+     * Generate summary statistics
+     */
 
-//    ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)
-//    {
-//        Variation match;
-//
-//        if (classify(stats.m, var, [&](const VCFVariant &)
-//        {
-//            // Can we find this variant?
-//            if (!s.v_vars.count(var.l))
-//            {
-//                return Negative;
-//            }
-//
-//            match = s.v_vars.at(var.l);
-//
-//            // Does the variant match with the meta?
-//            if (match.type != var.type || match.alt != var.alt || match.ref != var.ref)
-//            {
-//                return Negative;
-//            }
-//
-//            //TODOassert(s.bases_1.count(match.id));
-//            
-//            return Positive;
-//        }))
-//        {
-//            stats.h.at(match)++;
-//        }
-//    });
-//
-//    options.info("Generating statistics");
-//
-//    stats.m.nr = s.v_vars.size();
-//
-//    /*
-//     * Calculate the proportion of genetic variation with alignment coverage
-//     */
-//    
-//    stats.covered = std::accumulate(stats.h.begin(), stats.h.end(), 0,
-//            [&](int sum, const std::pair<Locus, Counts> &p)
-//            {
-//                return sum + (p.second ? 1 : 0);
-//            });
-//
-//    // The proportion of genetic variation with alignment coverage
-//    stats.covered = stats.covered / s.v_vars.size();
-//
-//    assert(stats.covered >= 0 && stats.covered <= 1.0);
-//
-//    // Measure of variant detection independent to sequencing depth or coverage
-//    stats.efficiency = stats.m.sn() / stats.covered;
-//    
-//    /*
-//     * Generate summary statistics
-//     */
-//
-//    const std::string format = "%1%\t%2%\t%3%";
-//    
-//    options.writer->open("VarDiscover_summary.stats");
-//    options.writer->write((boost::format(format) % "sn" % "sp" % "detect").str());
-//    options.writer->write((boost::format(format) % stats.m.sn()
-//                           % stats.m.sp()
-//                           % stats.covered).str());
-//    
-//    for (const auto &p : stats.h)
-//    {
-//        options.writer->write((boost::format("%1%-%2%\t%3%") % p.first.id % p.first.l.start % p.second).str());
-//    }
-//    
-//    options.writer->close();
-//
+    const auto summary = "Summary for dataset: %1% :\n\n"
+                         "   Query: %2% variants\n"
+                         "   Filtered: %3% variants (in chrT)\n"
+                         "   Detected: %4% variants\n"
+                         "   False-Pos: %5% variants\n"
+                         "   Reference: %6% variants\n\n"
+                         "   Fuzzy: %7%\n"
+                         "   Sensitivity:\t%8%\n"
+                         "   Specificity:\t%9%"
+    ;
+
+    o.writer->open("VarDiscover_false.stats");
+    o.writer->write((boost::format(summary) % file
+                                            % stats.n_hg38
+                                            % stats.n_chrT
+                                            % stats.detected
+                                            % (stats.n_chrT - stats.detected)
+                                            % r.countVars()
+                                            % o.fuzzy
+                                            % stats.m.sn()
+                                            % stats.m.sp()
+                     ).str());
+    o.writer->close();
+
     return stats;
 }

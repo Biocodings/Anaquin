@@ -10,7 +10,6 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
     
     classify(stats, file, o, [&](const VCFVariant &v, const Variation *match)
     {
-        //
         // The known coverage for allele frequnece
         const auto known = r.alleleFreq(Mix_1, match->bID);
 

@@ -19,9 +19,6 @@ namespace Anaquin
             // The proportion of variations with alignment coverage
             double covered;
 
-            // Measure of variant detection independent to sequencing depth or coverage
-            double efficiency;
-
             SequinHist h = Standard::instance().r_var.hist();
         };
 

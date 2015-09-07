@@ -13,6 +13,11 @@ struct MetaRef::MetaRefImpl
 
 MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
 
+void MetaRef::validate()
+{
+
+}
+
 /*
  * ------------------------- Ladder Analysis -------------------------
  */
@@ -22,6 +27,11 @@ struct LadderRef::LadderRefImpl
 };
 
 LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
+
+void LadderRef::validate()
+{
+    
+}
 
 /*
  * ------------------------- Fusion Analysis -------------------------

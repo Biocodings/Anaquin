@@ -19,7 +19,7 @@ TEST_CASE("VarAllele_V_1001")
 
     REQUIRE(lm.m  == Approx(0.7896156515));
     REQUIRE(lm.r  == Approx(0.8997445631));
-    REQUIRE(lm.r2 == Approx(0.7948895311));
+    REQUIRE(lm.r2 == Approx(0.8095402789));
 }
 
 TEST_CASE("VarAllele_V_1000")
@@ -37,5 +37,5 @@ TEST_CASE("VarAllele_V_1000")
 
     REQUIRE(lm.m  == Approx(1.0346261447));
     REQUIRE(lm.r  == Approx(0.9326489576));
-    REQUIRE(lm.r2 == Approx(0.8660056686));
+    REQUIRE(lm.r2 == Approx(0.8698340781));
 }
