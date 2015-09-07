@@ -42,7 +42,6 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
      * Generating sequin statistics
      */
 
-    {
         o.info("Generating sequins statistics");
         o.writer->open("FusionDiscover_quins.stats");
         
@@ -93,7 +92,6 @@ FDiscover::Stats FDiscover::analyze(const std::string &file, const FDiscover::Op
         }
 
         o.writer->close();
-    }
 
     return stats;
 }

@@ -15,7 +15,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
     
     // Construct for a histogram at the appropriate level
-    stats.h = isoform ? r.hist() : r.histForGene();
+    stats.h = isoform ? r.hist() : r.histGene();
 
     o.info("Parsing input file");
 
@@ -61,7 +61,7 @@ TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
             if (!m)
             {
                 // Try to match by locus (de-novo assembly)
-                m = r.findGene(t.l);
+                m = r.findGene(t.l, TransRef::Exact);
             }
 
             if (!m)

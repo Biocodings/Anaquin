@@ -10,21 +10,15 @@ namespace Anaquin
         public:
             typedef FuzzyOptions Options;
 
-            struct Stats
+            struct Stats : public MappingStats
             {
-                // Total mapped to the in-silico chromosome
-                Counts n_chrT = 0;
+                Counts unmapped;
+                
+                TransRef::GeneHist hb = Standard::instance().r_trans.histGene();
+                TransRef::GeneHist he = Standard::instance().r_trans.histGene();
+                TransRef::GeneHist hi = Standard::instance().r_trans.histGene();
 
-                // Total mapped to the human genome
-                Counts n_genome = 0;
-
-                // Fraction of sequin spiked
-                inline Percentage dilution() const { return n_chrT / (n_chrT + n_genome); }
-
-                TransRef::GeneHist hb = Standard::instance().r_trans.histForGene();
-                TransRef::GeneHist he = Standard::instance().r_trans.histForGene();
-                TransRef::GeneHist hi = Standard::instance().r_trans.histForGene();
-
+                // Metrics at various levels
                 Performance pb, pe, pi;
             };
 

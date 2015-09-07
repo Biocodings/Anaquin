@@ -2,8 +2,6 @@
 #define GI_LOCUS_HPP
 
 #include <set>
-#include <map>
-#include <list>
 #include <vector>
 #include <assert.h>
 #include <algorithm>
@@ -46,7 +44,7 @@ namespace Anaquin
             {
                 for (auto j = i + 1; j < ls.size(); j++)
                 {
-                    if (ls[i].overlap(ls[j]))
+                    if (static_cast<Locus>(ls[i]).overlap(static_cast<Locus>(ls[j])))
                     {
                         return true;
                     }
@@ -159,13 +157,6 @@ namespace Anaquin
         }
 
         Base start, end;
-    };
-
-    struct RNALocus : public Locus
-    {
-        RNALocus(const std::string &gID, const Locus &l) : gID(gID), Locus(l) {}
-
-        std::string gID;
     };
 }
 

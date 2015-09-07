@@ -318,8 +318,12 @@ namespace Anaquin
     {
         public:
 
-            TransRef();
-        
+            enum Matching
+            {
+                Exact,
+                Contains,
+            };
+
             struct GeneData
             {
                 inline Locus l() const
@@ -356,7 +360,7 @@ namespace Anaquin
             struct ExonData
             {
                 operator const Locus &() const { return l; }
-            
+
                 inline bool operator<(const ExonData &x)  const { return l < x.l;  }
                 inline bool operator==(const ExonData &x) const { return l == x.l; }
             
@@ -388,8 +392,10 @@ namespace Anaquin
 
             typedef std::map<GeneID, Counts> GeneHist;
 
+            TransRef();
+
             // Return a histogram for all the validated genes
-            GeneHist histForGene() const;
+            GeneHist histGene() const;
 
             // Add a new annoation reference
             void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l);
@@ -405,10 +411,10 @@ namespace Anaquin
             const std::vector<ExonData> & sortedExons()     const;
             const std::vector<IntronData> & sortedIntrons() const;
 
-            const GeneData *findGene(const GeneID &id)   const;
-            const GeneData *findGene(const Locus &l)     const;
-            const ExonData   *findExon(const Locus &l)   const;
-            const IntronData *findIntron(const Locus &l) const;
+            const GeneData   *findGene  (const GeneID &id)         const;
+            const GeneData   *findGene  (const Locus &l, Matching) const;
+            const ExonData   *findExon  (const Locus &l, Matching) const;
+            const IntronData *findIntron(const Locus &l, Matching) const;
 
         private:
 

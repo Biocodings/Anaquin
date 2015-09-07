@@ -93,7 +93,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
 
                 if (classify(stats.pe.m, f, [&](const Feature &)
                 {
-                    return (d = r.findExon(f.l));
+                    return (d = r.findExon(f.l, TransRef::Exact));
                 }))
                 {
                     stats.he.at(d->iID)++;
@@ -157,7 +157,7 @@ TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &opti
         
         if (classify(stats.pi.m, i, [&](const Feature &)
         {
-            return r.findIntron(i.l);
+            return r.findIntron(i.l, TransRef::Exact);
         }))
         {
             stats.hi[i.tID]++;

@@ -3,9 +3,8 @@
 
 #include <map>
 #include <memory>
-#include "classify.hpp"
-#include "data/types.hpp"
 #include <boost/format.hpp>
+#include "stats/classify.hpp"
 #include <ss/regression/lm.hpp>
 #include "writers/r_writer.hpp"
 #include "stats/sensitivity.hpp"
@@ -13,8 +12,6 @@
 
 namespace Anaquin
 {
-    typedef std::map<BaseID, Counts>   BaseHist;
-
     /*
      * List of softwares supported by Anaquin
      */
@@ -26,18 +23,6 @@ namespace Anaquin
         TopHat,
         Cufflink,
     };
-
-    template <typename Iter, typename T> static std::map<T, Counts> counter(const Iter &iter)
-    {
-        std::map<T, Counts> c;
-        
-        for (const auto &i : iter)
-        {
-            c[static_cast<T>(i)] = 0;
-        }
-        
-        return c;
-    }
 
     template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
     {
@@ -58,32 +43,21 @@ namespace Anaquin
 
     struct Analyzer
     {
-        template <typename Iter> static std::map<typename Iter::value_type, Counts> hist(const Iter &iter)
-        {
-            std::map<typename Iter::value_type, Counts> h;
-
-            for (const auto &i : iter)
-            {
-                h[i] = 0;
-            }
-
-            assert(!h.empty());
-            return h;
-        }
-        
-//        // Create a histogram for each of the base
-//        static BaseHist baseHist()
-//        {
-//            return hist(Standard::instance().baseIDs);
-//        }
-//
-//        // Create a histogram for each of the sequin
-//        static SequinHist seqHist()
-//        {
-//            return hist(Standard::instance().seqIDs);
-//        }
+        // Empty Implementation
     };
 
+    struct MappingStats
+    {
+        // Total mapped to the in-silico chromosome
+        Counts n_chrT = 0;
+
+        // Total mapped to the human genome
+        Counts n_hg38 = 0;
+
+        // Fraction of sequin spiked
+        inline Percentage dilution() const { return n_chrT / (n_chrT + n_hg38); }
+    };
+    
     /*
      * Represents a sequin that is not detected in the experiment
      */
@@ -97,7 +71,7 @@ namespace Anaquin
         // The expect abundance
         Concentration abund;
     };
-    
+
     typedef std::vector<MissingSequin> MissingSequins;
 
     /*

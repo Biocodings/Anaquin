@@ -19,23 +19,18 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
             o.wait(std::to_string(p.i));
         }
         
-        if (align.id != Standard::instance().id && !align.i)
+        if (!align.i)
         {
-            stats.n_genome++;
+            if      (!align.mapped)                       { stats.unmapped++; }
+            else if (align.id != Standard::instance().id) { stats.n_hg38++;   }
+            else                                          { stats.n_chrT++;   }
         }
 
         if (!align.mapped || align.id != Standard::instance().id)
         {
             return;
         }
-        else if (!align.i)
-        {
-            stats.n_chrT++;            
-        }
         
-        // Whether the read has mapped to a feature correctly
-        bool succeed = false;
-
         o.logInfo((boost::format("%1% %2% %3%") % align.id % align.l.start % align.l.end).str());
 
         /*
@@ -50,7 +45,7 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 
             if (classify(stats.pe.m, align, [&](const Alignment &)
             {
-                return (d = r.findExon(align.l));
+                return (d = r.findExon(align.l, TransRef::Contains));
             }))
             {
                 stats.he.at(d->gID)++;
@@ -69,10 +64,10 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
             {
-                return (d = r.findIntron(align.l));
+                return (d = r.findIntron(align.l, TransRef::Exact));
             }))
             {
-                stats.he.at(d->gID)++;
+                stats.hi.at(d->gID)++;
             }
         }
     });
@@ -86,14 +81,14 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
 
     sums(stats.he, stats.pe.m.nr);
     sums(stats.hi, stats.pi.m.nr);
-
+    
     o.info("Merging overlapping bases");
 
     /*
      * Counts at the base-level is the non-overlapping region of all the exons
      */
 
-    // TODOcountBase(s.r_l_exons, exons, stats.pb.m, stats.hb);
+    countBase(r.mergedExons(), exons, stats.pb.m, stats.hb);
 
     /*
      * The counts for references is the total length of all known non-overlapping exons.
@@ -103,9 +98,8 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
      *
      * The length of all the bases is 10+5+4 = 19.
      */
-    
-    // TODOstats.pb.m.nr = s.r_c_exons;
 
+    stats.pb.m.nr = r.exonBase();
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
 
     /*
@@ -122,25 +116,37 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
      * Write out summary statistics
      */
 
-    const auto summary = "Summary for dataset: %1% :\n\n"
-                         "   Genome: %2% reads\n"
-                         "   Query: %3% reads\n"
-                         "Reference: %4% exons\n\n"
-                         "Fuzzy: %5%\n\n"
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Unmapped:  %2% reads\n"
+                         "   Genome:    %3% reads\n"
+                         "   Synthetic: %4% reads\n\n"
+                         "   Reference: %5% exons\n"
+                         "   Reference: %6% introns\n"
+                         "   Reference: %7% bases\n\n"
+                         "   Query: %8% exons\n"
+                         "   Query: %9% introns\n"
+                         "   Query: %10% bases\n\n"
+                         "   Fuzzy: %11%\n\n"
                          "#--------------------|   Sn   |  Sp   |  fSn |  fSp\n"
-                         "    Exon level:       %6%     %7%     %8%    %9%\n"
-                         "    Intron level:       %10%     %11%     %12%    %13%\n"
-                         "    Base level:       %14%     %15%     %16%    %17%\n"
+                         "    Exon level:       %12%     %13%     %14%    %15%\n"
+                         "    Intron level:       %16%     %17%     %18%    %19%\n"
+                         "    Base level:       %20%     %21%     %22%    %23%\n"
                          "\n"
-                         "Dilution:     %18%\n"
-                         "Detection Limit:     %19% (%20%)\n"
+                         "Dilution:     %24%\n"
+                         "Detection Limit:     %25% (%26%)\n"
     ;
 
     o.writer->open("TransAlign_summary.stats");
     o.writer->write((boost::format(summary) % file
-                                            % stats.n_genome
+                                            % stats.unmapped
+                                            % stats.n_hg38
                                             % stats.n_chrT
                                             % stats.pe.m.nr
+                                            % stats.pi.m.nr
+                                            % stats.pb.m.nr
+                                            % stats.pe.m.nq
+                                            % stats.pi.m.nq
+                                            % stats.pb.m.nq
                                             % o.fuzzy
                                             % stats.pe.m.sn()
                                             % stats.pe.m.sp()
@@ -160,5 +166,25 @@ TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
                                         ).str());
     o.writer->close();
 
+    /*
+     * Write out sequin statistics
+     */
+    
+    o.writer->open("TransAlign_quins.stats");
+    o.writer->write((boost::format("Summary for dataset: %1%\n\n") % file).str());
+
+    const auto format = "%1%\t%2%\t%3%\t%4%";
+    o.writer->write((boost::format(format) % "id" % "eCov" % "iCov" % "bCov").str());
+    
+    for (const auto &i : stats.he)
+    {
+        o.writer->write((boost::format(format) % i.first
+                                               % stats.he.at(i.first)
+                                               % stats.hi.at(i.first)
+                                               % stats.hb.at(i.first)).str());
+    }
+    
+    o.writer->close();
+    
 	return stats;
 }

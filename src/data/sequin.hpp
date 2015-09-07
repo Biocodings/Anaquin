@@ -2,7 +2,6 @@
 #define GI_SEQUIN_HPP
 
 #include <numeric>
-#include "data/types.hpp"
 #include "data/locus.hpp"
 
 namespace Anaquin
@@ -34,29 +33,6 @@ namespace Anaquin
 
         private:
             Concentration _abund;
-    };
-
-    struct BaseSeq
-    {
-        inline Concentration abund() const
-        {
-            return std::accumulate(sequins.begin(), sequins.end(), 0,
-                [&](int sum, const std::pair<TypeID, Sequin> &p)
-                {
-                    return sum + p.second.abund();
-                });
-        }
-
-        inline Base length() const
-        {
-            return std::accumulate(sequins.begin(), sequins.end(), 0,
-                [&](int sum, const std::pair<TypeID, Sequin> &p)
-                {
-                    return sum + p.second.length;
-                });
-        }
-
-        std::map<TypeID, Sequin> sequins;
     };
 }
 
