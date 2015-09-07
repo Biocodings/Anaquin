@@ -49,6 +49,7 @@ void Test::ladder()
 {
     Standard::instance(true);
     Standard::instance().l_mix(Reader(LadderDataMix(), DataMode::String));
+    Standard::instance().r_lad.validate();
 }
 
 void Test::trans()
