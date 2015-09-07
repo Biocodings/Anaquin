@@ -8,10 +8,6 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
     VAllele::Stats stats;
     const auto &r = Standard::instance().r_var;
 
-    long queries  = 0;
-    long filtered = 0;
-    long detected = 0;
-
     o.info("Parsing VCF file");
     o.writer->open("VarAllele_false.stats");
     
@@ -25,14 +21,13 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
 
     ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
     {
-        queries++;
-
         if (v.id != Standard::instance().id)
         {
+            stats.n_hg38++;
             return;
         }
         
-        filtered++;
+        stats.n_chrT++;
         const Variation *match;
 
         Confusion m;
@@ -54,7 +49,7 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
                 return Negative;
             }
             
-            detected++;
+            stats.detected++;
             
             // The known coverage for allele frequnece
             const auto known = r.alleleFreq(MixA, match->bID);
@@ -104,14 +99,14 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
     
     const auto lm = stats.linear();
     
-    stats.sn = static_cast<double>(detected) / r.countVars();
+    stats.sn = static_cast<double>(stats.detected) / r.countVars();
 
     o.writer->open("VarAllele_summary.stats");
     o.writer->write((boost::format(summary) % file
-                                            % queries
-                                            % filtered
-                                            % detected
-                                            % (filtered - detected)
+                                            % stats.n_hg38
+                                            % stats.n_chrT
+                                            % stats.detected
+                                            % (stats.n_chrT - stats.detected)
                                             % r.countVars()
                                             % o.fuzzy
                                             % stats.sn

@@ -8,10 +8,11 @@ namespace Anaquin
     struct VDiscover
     {
         typedef FuzzyOptions Options;
-        typedef std::map<Variation, Counts> VarHist;
 
-        struct Stats
+        struct Stats : public MappingStats
         {
+            long detected;
+            
             // Overall performance
             Confusion m;
 
@@ -21,8 +22,7 @@ namespace Anaquin
             // Measure of variant detection independent to sequencing depth or coverage
             double efficiency;
 
-            // Distribution for the variants
-            VarHist h; // = Analyzer::hist(Standard::instance().__v_vars__);
+            SequinHist h = Standard::instance().r_var.hist();
         };
 
         static Stats analyze(const std::string &, const Options &options = Options());

@@ -9,11 +9,13 @@ namespace Anaquin
     {
         typedef FuzzyOptions Options;
 
-        struct Stats : public LinearStats
+        struct Stats : public LinearStats, public MappingStats
         {
+            long detected;
+            
             // Sensitivity
             double sn;
-            
+
             SequinHist h = Standard::instance().r_var.hist();
         };
 

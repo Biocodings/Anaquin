@@ -3,13 +3,22 @@
 
 using namespace Anaquin;
 
-VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &options)
+VDiscover::Stats VDiscover::analyze(const std::string &file, const Options &o)
 {
     VDiscover::Stats stats;
-//    const auto &s = Standard::instance();
-//
-//    options.info("Parsing VCF file");
-//
+    const auto &r = Standard::instance().r_var;
+
+    o.info("Parsing VCF file");
+    o.writer->open("VarAllele_false.stats");
+    
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    
+    o.writer->write((boost::format(format) % "start"
+                                           % "matched"
+                                           % "type"
+                                           % "alt"
+                                           % "ref").str());
+
 //    ParserVCF::parse(file, [&](const VCFVariant &var, const ParserProgress &)
 //    {
 //        Variation match;

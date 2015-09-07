@@ -17,9 +17,9 @@ TEST_CASE("VarAllele_V_1001")
     const auto r2 = VAllele::analyze("tests/data/V_1001/variant.vcf");
     const auto lm = r2.linear();
 
-    REQUIRE(lm.m  == Approx(0.846507615));
-    REQUIRE(lm.r  == Approx(0.9587059597));
-    REQUIRE(lm.r2 == Approx(0.912895357));
+    REQUIRE(lm.m  == Approx(0.7896156515));
+    REQUIRE(lm.r  == Approx(0.8997445631));
+    REQUIRE(lm.r2 == Approx(0.7948895311));
 }
 
 TEST_CASE("VarAllele_V_1000")
