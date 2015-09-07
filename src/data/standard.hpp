@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 #include "data/reader.hpp"
 #include "data/sequin.hpp"
 #include "data/feature.hpp"
