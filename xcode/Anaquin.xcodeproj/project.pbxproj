@@ -206,6 +206,7 @@
 		EF4BD9AC1ADDFBC5007BE6AB /* parser_cuffs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_cuffs.hpp; path = ../src/parsers/parser_cuffs.hpp; sourceTree = "<group>"; };
 		EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_sam.cpp; path = ../tests/parsers/t_parser_sam.cpp; sourceTree = "<group>"; };
 		EF5180E41AE09A56007010F3 /* r_writer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = r_writer.hpp; path = ../src/writers/r_writer.hpp; sourceTree = "<group>"; };
+		EF526C0D1B9D6E4400E21F95 /* v_classify.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = v_classify.hpp; path = ../src/variant/v_classify.hpp; sourceTree = "<group>"; };
 		EF5E857B1B6B5B0E00FF61D8 /* f_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_align.cpp; sourceTree = "<group>"; };
 		EF5E857C1B6B5B0E00FF61D8 /* f_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_align.hpp; sourceTree = "<group>"; };
 		EF6930C21B66F48900CADFD1 /* t_viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_viewer.cpp; sourceTree = "<group>"; };
@@ -676,6 +677,7 @@
 				EF3F743B1B980603008239DB /* v_allele.hpp */,
 				EFED77291B94AC2D001842F4 /* v_discover.cpp */,
 				EFED772A1B94AC2D001842F4 /* v_discover.hpp */,
+				EF526C0D1B9D6E4400E21F95 /* v_classify.hpp */,
 				EFED772B1B94AC2D001842F4 /* v_viewer.cpp */,
 				EFED772C1B94AC2D001842F4 /* v_viewer.hpp */,
 			);

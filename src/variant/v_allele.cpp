@@ -1,5 +1,5 @@
 #include "variant/v_allele.hpp"
-#include "parsers/parser_vcf.hpp"
+#include "variant/v_classify.hpp"
 
 using namespace Anaquin;
 
@@ -7,71 +7,24 @@ VAllele::Stats VAllele::analyze(const std::string &file, const Options &o)
 {
     VAllele::Stats stats;
     const auto &r = Standard::instance().r_var;
-
-    o.info("Parsing VCF file");
-    o.writer->open("VarAllele_false.stats");
     
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    
-    o.writer->write((boost::format(format) % "start"
-                                           % "matched"
-                                           % "type"
-                                           % "alt"
-                                           % "ref").str());
-
-    ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
+    classify(stats, file, o, [&](const VCFVariant &v, const Variation *match)
     {
-        if (v.id != Standard::instance().id)
-        {
-            stats.n_hg38++;
-            return;
-        }
-        
-        stats.n_chrT++;
-        const Variation *match;
+        //
+        // The known coverage for allele frequnece
+        const auto known = r.alleleFreq(MixA, match->bID);
 
-        Confusion m;
+        // The measured coverage is the number of base calls aligned and used in variant calling
+        const auto measured = static_cast<double>(v.dp_a) / (v.dp_r + v.dp_a);
 
-        if (classify(m, v, [&](const VCFVariant &)
-        {
-            const auto found = (match = r.findVar(v.l)) != nullptr;
-            const auto type  = (match && match->type == v.type);
-            const auto alt   = (match && match->alt  == v.alt);
-            const auto ref   = (match && match->ref  == v.ref);
+        /*
+         * Plotting the relative allele frequency that is established by differences
+         * in the concentration of reference and variant DNA standards.
+         */
 
-            if (!found || !type || !alt || !ref)
-            {
-                o.writer->write((boost::format(format) % v.l.start
-                                                       % found
-                                                       % type
-                                                       % alt
-                                                       % ref).str());
-                return Negative;
-            }
-            
-            stats.detected++;
-            
-            // The known coverage for allele frequnece
-            const auto known = r.alleleFreq(MixA, match->bID);
-
-            // The measured coverage is the number of base calls aligned and used in variant calling
-            const auto measured = (double) v.dp_a / (v.dp_r + v.dp_a);
-            
-            /*
-             * Plotting the relative allele frequency that is established by differences
-             * in the concentration of reference and variant DNA standards.
-             */
-
-            stats.add(match->id, known, measured);
-  
-            return Positive;
-        }))
-        {
-            stats.h.at(match->id)++;
-        }
+        stats.add(match->id, known, measured);
     });
-
-    o.writer->close();
+ 
     o.info("Generating statistics");
 
     /*
