@@ -25,9 +25,9 @@ namespace Anaquin
         inline bool operator==(const SequinID &x) const { return this->id == x; }
 
         // Return the normalized abundance
-        inline Concentration abund(Mixture m) const
+        inline Concentration abund(Mixture m, bool norm = true) const
         {
-            return mixes.at(m) / length;
+            return mixes.at(m) / (norm ? length : 1);
         }
 
         SequinID id;

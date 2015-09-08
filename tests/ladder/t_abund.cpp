@@ -8,10 +8,10 @@ TEST_CASE("LAbund_Test")
 {
     Test::ladder();
 
-   // const auto r1 = Test::test("-t LadderAbund -m data/ladder/LadderMixture_3.0.csv -usam tests/data/ladder/aligned_A.sam");
+    const auto r1 = Test::test("-t LadderAbund -m data/ladder/LadderMixture_3.0.csv -usam tests/data/ladder/aligned_A.sam");
     
-   // REQUIRE(r1.status == 0);
-   // REQUIRE(r1.output.find("Ladder Analysis") != std::string::npos);
+    REQUIRE(r1.status == 0);
+    REQUIRE(r1.output.find("Ladder Analysis") != std::string::npos);
 
     Test::ladder();
     const auto r2 = LAbund::analyze("tests/data/ladder/aligned_A.sam");

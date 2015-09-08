@@ -10,7 +10,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
     assert(!options.psl.empty());
 
     /*
-     * Generate statistics from a specific assembler, references not required (de-novo assembly)
+     * Generate statistics for a specific assembler
      */
 
     switch (options.tool)
@@ -70,7 +70,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &opti
                 // Crash if the alignment file doesn't match with the contigs...
                 const auto &contig = stats.contigs.at(align->contigs[i].id);
 
-                // Average relative to the size of the contig
+                // Average relative to the size of contig
                 measured += contig.k_cov / contig.seq.size();
                 
                 // Average relative to the size of the sequin
