@@ -17,7 +17,7 @@ TEST_CASE("TAssembly_T_1000")
     TAssembly::Options o;
     
     o.ref   = "data/trans/TransStandard_1.0.gtf";
-    o.query = "tests/data/T_1000/A/transcripts.gtf";
+    o.query = "tests/data/T_1000/A/G/transcripts.gtf";
 
     const auto r2 = TAssembly::analyze("tests/data/T_1000/A/G/transcripts.gtf", o);
 
