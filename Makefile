@@ -50,13 +50,13 @@ SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -lz -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -lz -ldl -lbfd -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -c $(CC_FLAGS) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} $< -o $@
+	$(CC) -g -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
