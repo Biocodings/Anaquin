@@ -99,9 +99,6 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
 {
     const auto stats = MAssembly::analyze(file, o);
 
-    o.info("Generating linaer model");
-    AnalyzeReporter::linear(stats.lm, "MetaAssembly", "k-mer average", o.writer);
-
     /*
      * Generate summary statistics
      */

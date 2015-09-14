@@ -19,6 +19,7 @@
 
 #include "meta/m_blast.hpp"
 #include "meta/m_diffs.hpp"
+#include "meta/m_abund.hpp"
 #include "meta/m_assembly.hpp"
 
 #include "ladder/l_diffs.hpp"
@@ -1109,6 +1110,17 @@ void parse(int argc, char ** argv)
                     o.psl = _p.opts.at(OPT_PSL_1);
 
                     analyze_1<MAssembly>(OPT_FA_1, o);
+                    break;
+                }
+
+                case TOOL_M_ABUND:
+                {
+                    MAssembly::Options o;
+                    
+                    // An alignment file is needed to identify contigs
+                    o.psl = _p.opts.at(OPT_PSL_1);
+
+                    analyze_1<MAbundance>(OPT_FA_1, o);
                     break;
                 }
             }
