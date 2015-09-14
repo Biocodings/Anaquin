@@ -14,7 +14,7 @@ TEST_CASE("VarAllele_V_1001")
     
     Test::variant();
     
-    const auto r2 = VAllele::analyze("tests/data/V_1001/variant.vcf");
+    const auto r2 = VAllele::report("tests/data/V_1001/variant.vcf");
     const auto lm = r2.linear();
 
     REQUIRE(lm.m  == Approx(0.7896156515));
@@ -32,7 +32,7 @@ TEST_CASE("VarAllele_V_1000")
 
     Test::variant();
 
-    const auto r2 = VAllele::analyze("tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
+    const auto r2 = VAllele::report("tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
     const auto lm = r2.linear();
 
     REQUIRE(lm.m  == Approx(1.0346261447));

@@ -7,7 +7,7 @@ namespace Anaquin
 {
     struct MAlign
     {
-        static Stats analyze(const std::string &file, const Options &options = Options());
+        static Stats report(const std::string &file, const Options &options = Options());
     };
 }
 

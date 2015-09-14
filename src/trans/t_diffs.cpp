@@ -5,7 +5,7 @@
 using namespace SS;
 using namespace Anaquin;
 
-TDiffs::Stats TDiffs::analyze(const std::string &file, const Options &o)
+TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
 {
     TDiffs::Stats stats;
     const auto &r = Standard::instance().r_trans;

@@ -2,7 +2,7 @@
 
 using namespace Anaquin;
 
-VViewer::Stats VViewer::analyze(const std::string &, const VViewer::Options &options)
+VViewer::Stats VViewer::report(const std::string &, const VViewer::Options &options)
 {
     return VViewer::Stats();
 }

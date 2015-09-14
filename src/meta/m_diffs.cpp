@@ -1,10 +1,9 @@
-#include "meta/m_blast.hpp"
 #include "meta/m_diffs.hpp"
 #include "meta/m_assembly.hpp"
 
 using namespace Anaquin;
 
-MDiffs::Stats MDiffs::analyze(const std::string &file_1, const std::string &file_2, const Options &options)
+MDiffs::Stats MDiffs::report(const std::string &file_1, const std::string &file_2, const Options &options)
 {
     MDiffs::Stats stats;
 

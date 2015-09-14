@@ -12,7 +12,7 @@ namespace Anaquin
             // Empty Implementation
         };
 
-        static void analyze(const std::string &, const ViewerOptions &options = ViewerOptions());
+        static void report(const std::string &, const ViewerOptions &options = ViewerOptions());
     };
 }
 

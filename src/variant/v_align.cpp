@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-VAlign::Stats VAlign::analyze(const std::string &file, const Options &options)
+VAlign::Stats VAlign::report(const std::string &file, const Options &options)
 {
     VAlign::Stats stats;
 //    static const auto &s = Standard::instance();

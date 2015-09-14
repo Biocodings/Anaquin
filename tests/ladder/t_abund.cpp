@@ -14,7 +14,7 @@ TEST_CASE("LAbund_Test")
     REQUIRE(r1.output.find("Ladder Analysis") != std::string::npos);
 
     Test::ladder();
-    const auto r2 = LAbund::analyze("tests/data/ladder/aligned_A.sam");
+    const auto r2 = LAbund::report("tests/data/ladder/aligned_A.sam");
 
     REQUIRE(r2.obsTotal == 834);
     REQUIRE(r2.expTotal == 2785280);

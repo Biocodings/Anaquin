@@ -24,7 +24,7 @@ namespace Anaquin
             Performance pb, pi, pe, pt;
         };
 
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static Stats report(const std::string &, const Options &options = Options());
     };
 }
 

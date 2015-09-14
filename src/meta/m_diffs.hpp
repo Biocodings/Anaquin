@@ -45,7 +45,7 @@ namespace Anaquin
             std::string pB;
         };
 
-        static Stats analyze(const std::string &, const std::string &, const Options &options = Options());
+        static Stats report(const std::string &, const std::string &, const Options &options = Options());
     };
 }
 

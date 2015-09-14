@@ -6,7 +6,7 @@
 using namespace SS;
 using namespace Anaquin;
 
-TExpress::Stats TExpress::analyze(const std::string &file, const Options &o)
+TExpress::Stats TExpress::report(const std::string &file, const Options &o)
 {
     TExpress::Stats stats;
     const auto &r = Standard::instance().r_trans;

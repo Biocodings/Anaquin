@@ -31,7 +31,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-TAssembly::Stats TAssembly::analyze(const std::string &file, const Options &o)
+TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 {
     assert(!o.ref.empty() && !o.query.empty());
 

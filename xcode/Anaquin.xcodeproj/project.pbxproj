@@ -34,7 +34,7 @@
 		EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DF1AD3783A0062D246 /* parser_gtf.cpp */; };
 		EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E11AD3783A0062D246 /* parser_sam.cpp */; };
 		EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E31AD3783A0062D246 /* parser_vcf.cpp */; };
-		EF3CD3061B6671F5005644C4 /* m_abundance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3CD3021B6671F5005644C4 /* m_abundance.cpp */; };
+		EF3CD3061B6671F5005644C4 /* m_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3CD3021B6671F5005644C4 /* m_abund.cpp */; };
 		EF3CD3071B6671F5005644C4 /* m_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3CD3041B6671F5005644C4 /* m_align.cpp */; };
 		EF3F04A61B6F2F5000179B55 /* parser_star_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3F04A41B6F2F5000179B55 /* parser_star_fusion.cpp */; };
 		EF3F04A81B6F309E00179B55 /* t_parser_star_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3F04A71B6F309E00179B55 /* t_parser_star_fusion.cpp */; };
@@ -184,8 +184,8 @@
 		EF3860E31AD3783A0062D246 /* parser_vcf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_vcf.cpp; path = ../src/parsers/parser_vcf.cpp; sourceTree = "<group>"; };
 		EF3860E41AD3783A0062D246 /* parser_vcf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_vcf.hpp; path = ../src/parsers/parser_vcf.hpp; sourceTree = "<group>"; };
 		EF3A43FB1B8EDF9400C968F0 /* script.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = script.hpp; path = ../src/data/script.hpp; sourceTree = "<group>"; };
-		EF3CD3021B6671F5005644C4 /* m_abundance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_abundance.cpp; sourceTree = "<group>"; };
-		EF3CD3031B6671F5005644C4 /* m_abundance.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_abundance.hpp; sourceTree = "<group>"; };
+		EF3CD3021B6671F5005644C4 /* m_abund.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_abund.cpp; sourceTree = "<group>"; };
+		EF3CD3031B6671F5005644C4 /* m_abund.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_abund.hpp; sourceTree = "<group>"; };
 		EF3CD3041B6671F5005644C4 /* m_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_align.cpp; sourceTree = "<group>"; };
 		EF3CD3051B6671F5005644C4 /* m_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_align.hpp; sourceTree = "<group>"; };
 		EF3F04A41B6F2F5000179B55 /* parser_star_fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_star_fusion.cpp; path = ../src/parsers/parser_star_fusion.cpp; sourceTree = "<group>"; };
@@ -639,8 +639,8 @@
 		EFECDC0C1AE7510700F0FD9A /* meta */ = {
 			isa = PBXGroup;
 			children = (
-				EF3CD3021B6671F5005644C4 /* m_abundance.cpp */,
-				EF3CD3031B6671F5005644C4 /* m_abundance.hpp */,
+				EF3CD3021B6671F5005644C4 /* m_abund.cpp */,
+				EF3CD3031B6671F5005644C4 /* m_abund.hpp */,
 				EF3CD3041B6671F5005644C4 /* m_align.cpp */,
 				EF3CD3051B6671F5005644C4 /* m_align.hpp */,
 				EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */,
@@ -772,7 +772,7 @@
 				EF72F0ED1B6898940092DA34 /* t_parser_top_fusion.cpp in Sources */,
 				EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */,
 				EF6930C71B66F4AC00CADFD1 /* m_viewer.cpp in Sources */,
-				EF3CD3061B6671F5005644C4 /* m_abundance.cpp in Sources */,
+				EF3CD3061B6671F5005644C4 /* m_abund.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */,
 				EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */,

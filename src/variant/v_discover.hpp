@@ -22,7 +22,7 @@ namespace Anaquin
             SequinHist h = Standard::instance().r_var.hist();
         };
 
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static Stats report(const std::string &, const Options &options = Options());
     };
 }
 

@@ -12,18 +12,6 @@
 
 namespace Anaquin
 {
-    /*
-     * List of softwares supported by Anaquin
-     */
-
-    enum Software
-    {
-        NA,
-        Star,
-        TopHat,
-        Cufflink,
-    };
-
     template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
     {
         for (const auto &i : m)

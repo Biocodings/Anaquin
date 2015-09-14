@@ -118,7 +118,7 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
     return stats;
 }
 
-void MBlast::analyze(const std::string &file, const Options &options)
+void MBlast::report(const std::string &file, const Options &options)
 {
     const auto stats = MBlast::stats(file);
 

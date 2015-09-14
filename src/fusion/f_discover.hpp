@@ -7,11 +7,17 @@ namespace Anaquin
 {
     struct FDiscover
     {
+        enum Software
+        {
+            Star,
+            TopHat,
+        };
+
         struct Options : public SingleMixtureOptions
         {
-            Options(Software soft = Software::TopHat, double fuzzy = 0) : soft(soft), fuzzy(fuzzy)
+            Options(FDiscover::Software soft = Software::TopHat, double fuzzy = 0) : soft(soft), fuzzy(fuzzy)
             {
-                if (soft != TopHat && soft != Star)
+                if (soft != Software::TopHat && soft != Software::Star)
                 {
                     throw std::runtime_error("Only Tophat-Fusion and Star are supported");
                 }
@@ -19,7 +25,7 @@ namespace Anaquin
             
             unsigned fuzzy;
 
-            Software soft;
+            FDiscover::Software soft;
         };
 
         struct Stats : public LinearStats
@@ -37,7 +43,7 @@ namespace Anaquin
             MissingSequins miss;
         };
 
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static Stats report(const std::string &, const Options &options = Options());
     };
 }
 

@@ -13,7 +13,7 @@ TEST_CASE("TAlign_T_1000_First_100")
     REQUIRE(r1.status == 0);
 
     Test::trans();
-    const auto r2 = TAlign::analyze("tests/data/T_1000/B/accepted_hits_1000.sam");
+    const auto r2 = TAlign::report("tests/data/T_1000/B/accepted_hits_1000.sam");
     
     REQUIRE(r2.unmapped  == 0);
     REQUIRE(r2.pe.m.sn() == Approx(0.9301025163));

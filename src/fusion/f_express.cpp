@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-FExpress::Stats FExpress::analyze(const std::string &file, const Options &options)
+FExpress::Stats FExpress::report(const std::string &file, const Options &options)
 {
     FExpress::Stats stats;
 //    const auto &s = Standard::instance();

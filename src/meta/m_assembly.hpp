@@ -5,11 +5,12 @@
 #include "data/tokens.hpp"
 #include "meta/m_histogram.h"
 #include "stats/analyzer.hpp"
+#include "meta/m_blast.hpp"
 #include "parsers/parser_fa.hpp"
 
 namespace Anaquin
 {
-    struct DNAsssembly
+    struct DAsssembly
     {
         template <typename T> struct Stats
         {
@@ -26,7 +27,7 @@ namespace Anaquin
             std::map<ContigID, T> contigs;
         };
 
-        template <typename C = Contig, typename T = DNAsssembly::Stats<C>> static T parse(const std::string &file, std::function<void (C&)> f)
+        template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T parse(const std::string &file, std::function<void (C&)> f)
         {
             T stats;
             Histogram h;
@@ -91,7 +92,7 @@ namespace Anaquin
             
             std::vector<std::string> tokens;
 
-            return DNAsssembly::parse<C, Stats>(file, [&](C &node)
+            return DAsssembly::parse<C, Stats>(file, [&](C &node)
             {
                 Tokens::split(node.id, "_", tokens);
 
@@ -107,23 +108,29 @@ namespace Anaquin
         {
             Velvet,
         };
-        
-        struct Stats : public DNAsssembly::Stats<Contig>
+
+        struct Stats : public DAsssembly::Stats<Contig>
         {
-            // Empty Implementation
+            // Statistics for the blat alignment
+            MBlast::Stats blat;
+
+            // Statistics for abundance
+            LinearStats lm;
         };
 
         struct Options : public SingleMixtureOptions
         {
             Options() {}
-            
+
+            // Alignment file by blat
             FileName psl;
 
             // The type of the assembler used
             Assembler tool = Assembler::Velvet;
         };
 
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static Stats analyze(const std::string &, const Options &options = Options());        
+        static Stats report (const std::string &, const Options &options = Options());
     };
 }
 

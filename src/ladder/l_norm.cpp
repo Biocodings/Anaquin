@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-LNorm::Stats LNorm::analyze(const std::string &fileA, const std::string &fileB, const Options &options)
+LNorm::Stats LNorm::report(const std::string &fileA, const std::string &fileB, const Options &options)
 {
     LNorm::Stats stats;
 

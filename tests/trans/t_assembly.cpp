@@ -19,7 +19,7 @@ TEST_CASE("TAssembly_T_1000")
     o.ref   = "data/trans/TransStandard_1.0.gtf";
     o.query = "tests/data/T_1000/A/G/transcripts.gtf";
 
-    const auto r2 = TAssembly::analyze("tests/data/T_1000/A/G/transcripts.gtf", o);
+    const auto r2 = TAssembly::report("tests/data/T_1000/A/G/transcripts.gtf", o);
 
     REQUIRE(r2.n_hg38 == 0);
     REQUIRE(r2.n_chrT == 1365);

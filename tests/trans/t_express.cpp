@@ -17,7 +17,7 @@ TEST_CASE("TExpress_T_1000_Genes")
     TExpress::Options o;
     o.level = Anaquin::TExpress::RNALevel::Gene;
 
-    const auto r2 = TExpress::analyze("tests/data/T_1000/B/G/genes.fpkm_tracking", o);
+    const auto r2 = TExpress::report("tests/data/T_1000/B/G/genes.fpkm_tracking", o);
     const auto lm = r2.linear();
 
     REQUIRE(lm.r  == Approx(0.6294323776));
@@ -36,7 +36,7 @@ TEST_CASE("TExpress_T_1000_Isoforms")
     TExpress::Options o;
     o.level = Anaquin::TExpress::RNALevel::Isoform;
 
-    const auto r  = TExpress::analyze("tests/data/T_1000/B/G/isoforms.fpkm_tracking", o);
+    const auto r  = TExpress::report("tests/data/T_1000/B/G/isoforms.fpkm_tracking", o);
     const auto lm = r.linear();
 
     REQUIRE(lm.r  == Approx(0.534110868));

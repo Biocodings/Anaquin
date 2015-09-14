@@ -13,7 +13,7 @@ TEST_CASE("TDiffs_T_1000_Isoforms")
     TDiffs::Options o;
     o.level = TDiffs::Isoform;
     
-    const auto r  = TDiffs::analyze("tests/data/T_1000/isoform_exp.diff", o);
+    const auto r  = TDiffs::report("tests/data/T_1000/isoform_exp.diff", o);
     const auto lm = r.linear();
     
     REQUIRE(lm.m  == Approx(0.970367203));
@@ -28,7 +28,7 @@ TEST_CASE("TDiffs_T_1000_Genes")
     TDiffs::Options o;
     o.level = TDiffs::Gene;
 
-    const auto r  = TDiffs::analyze("tests/data/T_1000/gene_exp.diff", o);
+    const auto r  = TDiffs::report("tests/data/T_1000/gene_exp.diff", o);
     const auto lm = r.linear();
     
     REQUIRE(lm.m  == Approx(0.9929858312));

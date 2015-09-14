@@ -1,4 +1,3 @@
-
 #ifndef GI_M_PSL_HPP
 #define GI_M_PSL_HPP
 
@@ -79,11 +78,8 @@ namespace Anaquin
             std::map<ContigID, std::shared_ptr<MetaAlignment>> aligns;
         };
 
-        struct Options : public AnalyzerOptions
-        {
-            // Empty Implementation
-        };
-
+        typedef AnalyzerOptions Options;
+        
         /*
          * Conduct statistical analysis for an alignment geneated by BLAST against
          * the sequins. The input file is assumed to be PSL format.
@@ -95,7 +91,7 @@ namespace Anaquin
          * Generate summary statistics for the alignment
          */
 
-        static void analyze(const FileName &, const Options &options = Options());
+        static void report(const FileName &, const Options &options = Options());
     };
 }
 

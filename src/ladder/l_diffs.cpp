@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB, const Options &options)
+LDiffs::Stats LDiffs::report(const std::string &fileA, const std::string &fileB, const Options &options)
 {
     LDiffs::Stats stats;
 
@@ -16,11 +16,11 @@ LDiffs::Stats LDiffs::analyze(const std::string &fileA, const std::string &fileB
     opt.output = options.output;
 
     options.info("Analyzing mixuture A: " + fileA);
-    const auto a = LAbund::analyze(fileA, opt);
+    const auto a = LAbund::report(fileA, opt);
 
     opt.mix = Mix_2;
     options.info("Analyzing mixuture B: " + fileB);
-    const auto b = LAbund::analyze(fileB, opt);
+    const auto b = LAbund::report(fileB, opt);
 
     options.logInfo("Checking for sequins in mix B but not in mix A");
     

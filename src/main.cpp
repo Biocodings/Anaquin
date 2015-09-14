@@ -605,11 +605,9 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
 // Analyze for a single sample
 template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    //Standard::instance().r_meta.validate();
-
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::analyze(_p.opts.at(x), o);
+        Analyzer::report(_p.opts.at(x), o);
     }, o);
 }
 
@@ -623,11 +621,9 @@ template <typename Analyzer> void analyzeFuzzy_1(Option x, typename Analyzer::Op
 // Analyze for two samples
 template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    //Standard::instance().r_meta.validate();
-
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::analyze(_p.opts.at(x), _p.opts.at(y), o);
+        Analyzer::report(_p.opts.at(x), _p.opts.at(y), o);
     }, o);
 }
 
@@ -676,14 +672,14 @@ void parse(int argc, char ** argv)
 
     auto parseSoft = [&](const std::string &str)
     {
-        const static std::map<std::string, Software> m =
+        const static std::map<std::string, Anaquin::FDiscover::Software> m =
         {
-            { "star"  ,        Star },
-            { "tophat",        TopHat },
-            { "tophatFusion",  TopHat },
-            { "tophat-fusion", TopHat },
+            { "star"  ,        FDiscover::Star   },
+            { "tophat",        FDiscover::TopHat },
+            { "tophatFusion",  FDiscover::TopHat },
+            { "tophat-fusion", FDiscover::TopHat },
         };
-        
+
         auto copy = str;
         std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
 

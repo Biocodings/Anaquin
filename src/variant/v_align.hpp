@@ -32,7 +32,7 @@ namespace Anaquin
             SequinHist h_base;//TODO = Analyzer::baseHist();
         };
 
-        static Stats analyze(const std::string &, const Options &options = Options());
+        static Stats report(const std::string &, const Options &options = Options());
     };
 }
 

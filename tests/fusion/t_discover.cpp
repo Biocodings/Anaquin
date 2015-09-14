@@ -14,7 +14,7 @@ TEST_CASE("FDiscover_F_1001")
     
     Test::fusion();
 
-    const auto stats = FDiscover::analyze("tests/data/F_1001/fusions.out", FDiscover::Options(Software::TopHat, 100));
+    const auto stats = FDiscover::report("tests/data/F_1001/fusions.out", FDiscover::Options(FDiscover::Software::TopHat, 100));
 
     REQUIRE(stats.m.sn() == Approx(0.9166666667));
 }
@@ -29,8 +29,8 @@ TEST_CASE("FDiscover_F_1000")
     
     Test::fusion();
 
-    const auto stats = FDiscover::analyze("tests/data/F_1000/star-fusion.fusion_candidates.txt",
-                                                FDiscover::Options(Software::Star));
+    const auto stats = FDiscover::report("tests/data/F_1000/star-fusion.fusion_candidates.txt",
+                                                FDiscover::Options(FDiscover::Software::Star));
     const auto lm = stats.linear();
 
     REQUIRE(lm.r  == Approx(0.9729157505));

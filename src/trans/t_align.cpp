@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-TAlign::Stats TAlign::analyze(const std::string &file, const Options &o)
+TAlign::Stats TAlign::report(const std::string &file, const Options &o)
 {
     TAlign::Stats stats;
     const auto &r = Standard::instance().r_trans;
