@@ -8,6 +8,8 @@ namespace Anaquin
 {
     class Sequin
     {
+        typedef std::string TypeID;
+        
         public:
             operator Locus()    const { return l;  }
             operator SequinID() const { return id; }

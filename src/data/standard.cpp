@@ -40,53 +40,6 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
-template <typename SequinMap> void parseMix(const Reader &r, SequinMap &m, unsigned column=2)
-{
-    m.clear();
-
-    try
-    {
-        ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
-        {
-            // Don't bother if this is the first line or an invalid line
-            if (p.i == 0 || fields.size() <= 1)
-            {
-                return; 
-            }
-
-            Sequin s;
-            
-            s.id = fields[0];
-            
-            // Base ID is simply the ID without the last part
-            s.baseID = s.id.substr(0, s.id.find_last_of("_"));
-            
-            // Skip over "_"
-            s.typeID = s.id.substr(s.id.find_last_of("_") + 1);
-            
-            // Length of the sequin
-            s.length = stoi(fields[1]);
-            
-            assert(s.length);
-            
-            // Concentration for the mixture
-            s.abund() = stof(fields[column]);
-            
-            // Create an entry for the mixture
-            m[s.id] = s;
-        });
-    }
-    catch (...)
-    {
-        std::cerr << "[Warn]: Error in the mixture file" << std::endl;
-    }
-    
-    if (m.empty())
-    {
-        throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
-    }
-}
-
 void Standard::v_std(const Reader &r)
 {
 //    // TODO: Fix this

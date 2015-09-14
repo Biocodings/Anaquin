@@ -7,7 +7,17 @@ namespace Anaquin
 {
     struct MAbundance
     {
-        static Stats analyze(const std::string &file, const Options &options = Options());
+        struct Stats
+        {
+            
+        };
+        
+        struct Options : public AnalyzerOptions
+        {
+
+        };
+
+        static Stats analyze(const std::string &, const Options &options = Options());
     };
 }
 

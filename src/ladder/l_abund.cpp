@@ -78,7 +78,7 @@ LAbund::Stats LAbund::analyze(const std::string &file, const Options &o)
         {
             const auto typeID = seqID.substr(seqID.size() - 1);
 
-            const static std::map<TypeID, double> fold =
+            const static std::map<std::string, double> fold =
             {
                 { "A", 1.0 },
                 { "B", 2.0 },

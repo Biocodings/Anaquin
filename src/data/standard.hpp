@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 #include "data/reader.hpp"
-#include "data/sequin.hpp"
 #include "data/feature.hpp"
 #include "data/reference.hpp"
 #include "parsers/parser_bed.hpp"
@@ -17,9 +16,6 @@ namespace Anaquin
     class Standard
     {
         public:
-            typedef std::vector<Feature>       Features;
-            typedef std::map<SequinID, Sequin> SequinMap;
-
             static Standard& instance(bool reload = false)
             {
                 static Standard s;
