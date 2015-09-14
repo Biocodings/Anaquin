@@ -4,10 +4,10 @@
 
 using namespace Anaquin;
 
-TEST_CASE("DNAssembly_Contigs")
+TEST_CASE("DAssembly_Contigs")
 {
     Test::meta();
-    const auto r = Velvet::parse<DNAsssembly::Stats<Contig>, Contig>("tests/data/meta/A/contigs.fa");
+    const auto r = Velvet::parse<DAsssembly::Stats<Contig>, Contig>("tests/data/meta/A/contigs.fa");
     
     REQUIRE(r.contigs.size() == 453);
     REQUIRE(r.N80 == 549);
