@@ -5,10 +5,10 @@
 
 using namespace Anaquin;
 
-MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
+MBlast::Stats MBlast::stats(const FileName &file, const Options &o)
 {
     /*
-     * Create data-strucutre for each of the known sequin
+     * Create data-structure for each of the sequin
      */
     
     SequinAlign m;
@@ -20,7 +20,7 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
     }
 
     /*
-     * Create data-strucutre for the alignment
+     * Create data-structure for the alignment
      */
     
     ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
@@ -45,7 +45,7 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
         }
         else
         {
-            options.warn((boost::format("%1% is not a sequin") % id).str());
+            o.warn((boost::format("%1% is not a sequin") % id).str());
         }
     });
 
@@ -55,23 +55,25 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
      */
     
     MBlast::Stats stats;
-    
+
     for (auto &i : m)
     {
-        // The data-structure for the aligment for this particular sequin
-        auto &align = i.second;
+        const auto &id = i.first;
         
+        // Aligments for this particular sequin
+        auto &align = i.second;
+
         if (!align->contigs.empty())
         {
             // Make sure the contigs are non-overlapping
             const auto merged = Locus::merge<AlignedContig, Locus>(align->contigs);
-            
-            // The total non-overlapping bases for the alignments
+
+            // Total non-overlapping bases for the alignments
             const auto total = std::accumulate(merged.begin(), merged.end(), 0, [&](int sum, const Locus &l)
             {
                 return sum + l.length();
             });
-            
+
             /*
              * Don't consider for overlapping because a base can be matched or mismatched.
              */
@@ -88,9 +90,6 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
                 mismatch += contig.mismatch;
                 sums     += (gaps + match + mismatch);
             }
-            
-            //assert(align.seqA.length == align.seqB.length);
-            //assert(match > mismatch && match > gaps);
 
             // Fraction of sequins covered by alignments
             align->covered = (double) total / align->seq->length;
@@ -101,9 +100,11 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
             // Fraction of bases covered by gaps
             align->gaps = (double) gaps / sums;
 
-            assert(align->gaps     >= 0.0 && align->gaps     <= 1.0);
-            assert(align->covered  >= 0.0 && align->covered  <= 1.0);
-            assert(align->mismatch >= 0.0 && align->mismatch <= 1.0);
+            if (align->covered  > 1) { o.warn((boost::format("%1% coverage: %2%") % id % align->covered).str()); }
+            if (align->mismatch > 1) { o.warn((boost::format("%1% mismatch: %2%") % id % align->mismatch).str()); }
+
+            assert(align->gaps    >= 0.0 && align->gaps     <= 1.0);
+            assert(align->covered >= 0.0 && align->mismatch >= 0.0);
             
             // Create an alignment for each contig that aligns to the metaquin
             for (const auto &i : align->contigs)
@@ -118,38 +119,38 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &options)
     return stats;
 }
 
-void MBlast::report(const std::string &file, const Options &options)
+void MBlast::report(const std::string &file, const Options &o)
 {
     const auto stats = MBlast::stats(file);
 
-    options.info("Generating statistics");
+    o.info("Generating statistics");
 
     /*
      * Generate summary statistics
      */
 
     {
-        options.writer->open("MetaPSL_summary.stats");
+        o.writer->open("MetaPSL_summary.stats");
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
-        options.writer->write((boost::format(format) % "id"
-                                                     % "contigs"
-                                                     % "cover"
-                                                     % "mismatch"
-                                                     % "gap").str());
-        
+        o.writer->write((boost::format(format) % "id"
+                                               % "contigs"
+                                               % "cover"
+                                               % "mismatch"
+                                               % "gap").str());
+
         for (const auto &i : stats.metas)
         {
             const auto &align = i.second;
             
-            options.writer->write((boost::format(format) % align->seq->id
-                                                         % align->contigs.size()
-                                                         % align->covered
-                                                         % align->mismatch
-                                                         % align->gaps).str());
+            o.writer->write((boost::format(format) % align->seq->id
+                                                   % align->contigs.size()
+                                                   % align->covered
+                                                   % align->mismatch
+                                                   % align->gaps).str());
         }
 
-        options.writer->close();
+        o.writer->close();
     }
 }

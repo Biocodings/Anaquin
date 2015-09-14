@@ -19,9 +19,9 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
     }
 
     // Analyse the blat alignment file
-    auto blat = MBlast::stats(o.psl);
+    stats.blat = MBlast::stats(o.psl);
 
-    for (auto &meta : blat.metas)
+    for (auto &meta : stats.blat.metas)
     {
         auto &align = meta.second;
 
@@ -97,8 +97,8 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
 
 MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
 {
-    const auto stats = MAssembly::report(file, o);
-    
+    const auto stats = MAssembly::analyze(file, o);
+
     o.info("Generating linaer model");
     AnalyzeReporter::linear(stats.lm, "MetaAssembly", "k-mer average", o.writer);
 
@@ -110,22 +110,27 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
         o.writer->open("MetaAssembly_summary.stats");
-        o.writer->write((boost::format(format) % "contigs"
-                                               % "N20"
-                                               % "N50"
-                                               % "N80"
-                                               % "min"
-                                               % "mean"
-                                               % "max"
-                                               % "total").str());
-        o.writer->write((boost::format(format) % stats.contigs.size()
-                                               % stats.N20
-                                               % stats.N50
-                                               % stats.N80
-                                               % stats.min
-                                               % stats.mean
-                                               % stats.max
-                                               % stats.total).str());
+        
+        const auto summary = "Summary for dataset: %1%\n\n"
+                             "   Number of contigs:  %2%\n"
+                             "   N20:    %3%\n"
+                             "   N50: %4%\n"
+                             "   N80: %5%\n"
+                             "   min: %6%\n"
+                             "   mean: %7%\n"
+                             "   max: %8%\n"
+                             "   total: %9%\n"
+        ;
+        
+        o.writer->write((boost::format(summary) % file
+                                                % stats.contigs.size()
+                                                % stats.N20
+                                                % stats.N50
+                                                % stats.N80
+                                                % stats.min
+                                                % stats.mean
+                                                % stats.max
+                                                % stats.total).str());
         o.writer->close();
     }
 
@@ -136,7 +141,7 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
     {
         o.writer->open("MetaAssembly_quins.stats");
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-        
+
         o.writer->write((boost::format(format) % "ID"
                                                % "con"
                                                % "status"
@@ -147,19 +152,19 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
         for (const auto &meta : stats.blat.metas)
         {
             const auto &align = meta.second;
-            
-            const std::string status = meta.second->contigs.size() == 0 ? "Undetected" :
-                                       meta.second->covered == 1.0      ? "Full" : "Partial";
-            
+            const auto detect = align->contigs.size() != 0;
+            const auto status = detect ? std::to_string(align->covered) : "-";
+
             o.writer->write((boost::format(format) % align->seq->id
                                                    % align->seq->mixes.at(Mix_1)
                                                    % status
-                                                   % align->depthAlign
-                                                   % align->depthSequin
-                                                   % align->covered).str());
+                                                   % (detect ? std::to_string(align->depthAlign)  : "-")
+                                                   % (detect ? std::to_string(align->depthSequin) : "-")
+                                                   % (detect ? std::to_string(align->covered)     : "-")
+                             ).str());
         }
     }
-    
+
     o.writer->close();
 
     return stats;

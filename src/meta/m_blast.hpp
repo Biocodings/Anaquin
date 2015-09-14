@@ -57,7 +57,7 @@ namespace Anaquin
 
         // Average coverage depth across assembled sequence
         double depthAlign = 0.0; // TODO: ????
-        
+
         // Average coverage depth across entire sequin
         double depthSequin = 0.0; // TODO: ????
 

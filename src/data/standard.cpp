@@ -14,27 +14,53 @@
 
 using namespace Anaquin;
 
-template <typename Reference> void readMixture(const Reader &r, Reference &ref, Mixture m, unsigned column=2)
+enum MixtureFormat
 {
-    try
+    ID_Length_Mix, // Eg: MG_33  10  60.23529412
+    ID_Mix,        // Eg: MG_33  60.23529412
+};
+
+template <typename Reference> void readMixture
+                (const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
+{
+    auto f = [&](const std::string &delim)
     {
-        ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+        const auto t = Reader(r);
+
+        try
         {
-            // Don't bother if this is the first line or an invalid line
-            if (p.i == 0 || fields.size() <= 1)
+            ParserCSV::parse(t, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
             {
-                return;
-            }
+                // Don't bother if this is the first line or an invalid line
+                if (p.i == 0 || fields.size() <= 1)
+                {
+                    return;
+                }
+                
+                switch (format)
+                {
+                    case ID_Length_Mix:
+                    {
+                        ref.add(fields[0], stoi(fields[1]), stof(fields[column]), m); break;
+                    }
 
-            ref.add(fields[0], stoi(fields[1]), stof(fields[column]), m);
-        });
-    }
-    catch (...)
-    {
-        std::cerr << "[Warn]: Error in the mixture file" << std::endl;
-    }
+                    case ID_Mix:
+                    {
+                        ref.add(fields[0], 0.0, stof(fields[1]), m); break;
+                    }
+                }
+            }, delim);
 
-    if (!ref.countMixes())
+            return ref.countMixes();
+        }
+        catch (...)
+        {
+            std::cerr << "[Error]: Error in the mixture file" << std::endl;
+            throw;
+        }
+    };
+
+    if (!f("\t") && !f(","))
     {
         throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
     }
@@ -103,29 +129,29 @@ void Standard::v_var(const Reader &r)
 
 void Standard::v_mix(const Reader &r)
 {
-    readMixture(r, r_var, Mix_1, 2);
-    readMixture(Reader(r), r_var, Mix_2, 3);
+    readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
+    readMixture(Reader(r), r_var, Mix_2, ID_Length_Mix, 3);
 }
 
 void Standard::m_mix_1(const Reader &r)
 {
-    readMixture(r, r_meta, Mix_1, 2);
+    readMixture(r, r_meta, Mix_1, ID_Length_Mix);
 }
 
 void Standard::m_mix_2(const Reader &r)
 {
-    readMixture(r, r_meta, Mix_2, 3);
+    readMixture(r, r_meta, Mix_2, ID_Length_Mix);
 }
 
 void Standard::l_mix(const Reader &r)
 {
-    readMixture(r, r_lad, Mix_1, 2);
-    readMixture(Reader(r), r_lad, Mix_2, 3);
+    readMixture(r, r_lad, Mix_1, ID_Length_Mix, 2);
+    readMixture(Reader(r), r_lad, Mix_2, ID_Length_Mix, 3);
 }
 
 void Standard::f_mix(const Reader &r)
 {
-    readMixture(r, r_fus, Mix_1, 2);
+    readMixture(r, r_fus, Mix_1, ID_Length_Mix, 2);
 }
 
 void Standard::f_ref(const Reader &r)
@@ -165,6 +191,6 @@ void Standard::r_ref(const Reader &r)
 
 void Standard::r_mix(const Reader &r)
 {
-    readMixture(r, r_trans, Mix_1, 2);
-    readMixture(Reader(r), r_trans, Mix_2, 3);
+    readMixture(r, r_trans, Mix_1, ID_Length_Mix, 2);
+    readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);
 }

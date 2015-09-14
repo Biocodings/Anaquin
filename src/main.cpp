@@ -176,7 +176,7 @@ static std::map<Value, Tool> _tools =
 };
 
 /*
- * Defines the options that are expected
+ * Defines options that are expected
  */
 
 static std::map<Tool, std::set<Option>> _required =
@@ -205,7 +205,7 @@ static std::map<Tool, std::set<Option>> _required =
 };
 
 /*
- * Defines the options that one of the possibilites must be defined
+ * Defines options that one of the possibilites must be defined
  */
 
 static std::map<Tool, std::set<Option>> _pick =
@@ -381,7 +381,7 @@ static const struct option long_options[] =
 
 static std::string optToStr(int opt)
 {
-    for (const auto o : long_options)
+    for (const auto &o : long_options)
     {
         if (o.val == opt)
         {
@@ -1141,7 +1141,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const MissingOptionError &ex)
     {
-        const auto format = "A mandatory option is missing. Please specify -%1%.";
+        const auto format = "A mandatory option is missing. Please specify %1%.";
         printError((boost::format(format) % ex.opt).str());
     }
     catch (const MissingInputError &ex)

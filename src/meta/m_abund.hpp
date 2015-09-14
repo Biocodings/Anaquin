@@ -1,23 +1,16 @@
 #ifndef GI_M_ABUNDANCE_HPP
 #define GI_M_ABUNDANCE_HPP
 
-#include "stats/analyzer.hpp"
+#include "meta/m_assembly.hpp"
 
 namespace Anaquin
 {
     struct MAbundance
     {
-        struct Stats
-        {
-            
-        };
-        
-        struct Options : public AnalyzerOptions
-        {
+        typedef MAssembly::Stats   Stats;
+        typedef MAssembly::Options Options;
 
-        };
-
-        static Stats report(const std::string &, const Options &options = Options());
+        static Stats report(const std::string &, const Options &o = Options());
     };
 }
 
