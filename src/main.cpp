@@ -186,10 +186,17 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1 } },
-    { TOOL_T_ASSEMBLY, { OPT_R_BED, OPT_MIXTURE, OPT_U_GTF } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE } },
+
+    /*
+     * Metagenomics Analysis
+     */
     
+    { TOOL_M_ASSEMBLY, { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1 } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1 } },
+
     /*
      * Fusion Analysis
      */
