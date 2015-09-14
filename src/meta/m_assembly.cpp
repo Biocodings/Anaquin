@@ -84,11 +84,11 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
             
             if (measured)
             {
-                meta.second->depthSequin = meta.second->depthSequin / align->seq->length;
+                align->depthSequin = meta.second->depthSequin / align->seq->length;
                 stats.lm.add(align->seq->id, log2(known), log2(measured));
             }
         }
-        
+
         assert(!stats.lm.s.id.empty());
     }
 
@@ -103,7 +103,7 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
     AnalyzeReporter::linear(stats.lm, "MetaAssembly", "k-mer average", o.writer);
 
     /*
-     * Write out summary statistics
+     * Generate summary statistics
      */
 
     {
@@ -130,7 +130,7 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
     }
 
     /*
-     * Write out results for each sequin
+     * Generate results for each sequin
      */
 
     {
@@ -146,15 +146,17 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
         
         for (const auto &meta : stats.blat.metas)
         {
+            const auto &align = meta.second;
+            
             const std::string status = meta.second->contigs.size() == 0 ? "Undetected" :
                                        meta.second->covered == 1.0      ? "Full" : "Partial";
             
-            o.writer->write((boost::format(format) % meta.second->seq->id
-                             % meta.second->seq->mixes.at(Mix_1)
-                             % status
-                             % meta.second->depthAlign
-                             % meta.second->depthSequin
-                             % meta.second->covered).str());
+            o.writer->write((boost::format(format) % align->seq->id
+                                                   % align->seq->mixes.at(Mix_1)
+                                                   % status
+                                                   % align->depthAlign
+                                                   % align->depthSequin
+                                                   % align->covered).str());
         }
     }
     
