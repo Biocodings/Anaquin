@@ -26,26 +26,23 @@ namespace Anaquin
                 };
 
                 // Create a copy of the script
-                const auto script = create(code);
+                const auto script = tmpnam(NULL);
+
+                std::ofstream out(script);
+                out << code;
+                out.close();
+                
+                std::cout << script << std::endl;
                 
                 // Run the script with given arguments
                 f(prefix + " " + script + " " + args);
+
+                remove(script);
             }
 
             static void viewer(const std::string &args)
             {
                 return Script::run(ViewerScript(), "python", args);
-            }
-
-        private:
-
-            static std::string create(const std::string &code)
-            {
-                std::ofstream out("python.py");
-                out << code;
-                out.close();
-
-                return "python.py";
             }
     };
 }
