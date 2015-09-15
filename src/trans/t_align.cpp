@@ -141,9 +141,9 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
                                             % stats.unmapped
                                             % stats.n_hg38
                                             % stats.n_chrT
-                                            % stats.pe.m.nr
-                                            % stats.pi.m.nr
-                                            % stats.pb.m.nr
+                                            % r.countSortedExons()
+                                            % r.countSortedIntrons()
+                                            % r.exonBase()
                                             % stats.pe.m.nq
                                             % stats.pi.m.nq
                                             % stats.pb.m.nq

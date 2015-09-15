@@ -205,9 +205,11 @@ void TransRef::addRef(const IsoformID &iID, const GeneID &gID, const Locus &l)
     _impl->rawMapper[iID] = gID;
 }
 
-const std::vector<TransRef::ExonData>   & TransRef::mergedExons()   const { return _impl->mergedExons;   }
-const std::vector<TransRef::ExonData>   & TransRef::sortedExons()   const { return _impl->sortedExons;   }
-const std::vector<TransRef::IntronData> & TransRef::sortedIntrons() const { return _impl->sortedIntrons; }
+long TransRef::countSortedExons()   const { return _impl->sortedExons.size();   }
+long TransRef::countMergedExons()   const { return _impl->mergedExons.size();   }
+long TransRef::countSortedIntrons() const { return _impl->sortedIntrons.size(); }
+
+const std::vector<TransRef::ExonData> & TransRef::mergedExons()   const { return _impl->mergedExons; }
 
 const TransRef::GeneData * TransRef::findGene(const GeneID &id) const
 {
@@ -373,7 +375,6 @@ void TransRef::validate()
         {
             for (const auto &j : i.second)
             {
-                //_gIDs.insert(j.gID);
                 _impl->sortedExons.push_back(j);
             }
         }

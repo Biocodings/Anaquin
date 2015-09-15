@@ -486,9 +486,11 @@ namespace Anaquin
             // Number of non-overlapping bases in all exons
             Base exonBase() const;
 
-            const std::vector<ExonData> & mergedExons()     const;
-            const std::vector<ExonData> & sortedExons()     const;
-            const std::vector<IntronData> & sortedIntrons() const;
+            long countMergedExons()   const;
+            long countSortedExons()   const;
+            long countSortedIntrons() const;
+        
+            const std::vector<ExonData> & mergedExons() const;
 
             const GeneData   *findGene  (const GeneID &id)         const;
             const GeneData   *findGene  (const Locus &l, Matching) const;
