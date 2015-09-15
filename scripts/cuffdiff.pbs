@@ -1,1 +1,0 @@
-cuffdiff -o diffs ~/Sources/QA/data/trans/RNA.v1.gtf RNA_A1/aligned/accepted_hits.bam,RNA_A2/aligned/accepted_hits.bam,RNA_A3/aligned/accepted_hits.bam RNA_B1/aligned/accepted_hits.bam,RNA_B2/aligned/accepted_hits.bam,RNA_B3/aligned/accepted_hits.bam
