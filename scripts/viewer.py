@@ -10,10 +10,10 @@ import sys
 import urllib
 
 # URL for the in-silico chromosome
-silicoFA = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-2.1.0.tar.gz'
+silicoFA   = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-2.1.0.tar.gz'
 
 # URL of the transcriptome standard
-transGTF = 'http://www.anaquin.org/downloads/trans/TransStandard_1.0.gtf'
+transStand = 'http://www.anaquin.org/downloads/trans/TransStandard_1.0.gtf'
 
 # URL for the in-silico chromosome
 variantFA = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-0.5.0.tar.gz'
@@ -188,7 +188,7 @@ def session(path, align, files):
 
 def generateFusion(path, align):
     index(path, align)
-    session(path, align, download(path, [ silicoFA, transGTF, fusNStand, fusFStand ]))
+    session(path, align, download(path, [ silicoFA, transStand, fusNStand, fusFStand ]))
 
 def generateLadder(path, align):
     index(path, align)
@@ -200,7 +200,7 @@ def generateVar(path, align):
 
 def generateTrans(path, align):
     index(path, align)
-    session(path, align, download(path, [ silicoFA, transGTF ]))
+    session(path, align, download(path, [ silicoFA, transStand ]))
 
 def generateMeta(path, align):
     index(path, align)
@@ -225,7 +225,11 @@ if __name__ == '__main__':
 
     mode = sys.argv[1]
     path = sys.argv[2]
-    path = os.path.dirname(os.path.abspath(path)) + '/' + path
+    
+    if (path[0] != '/'):
+        path = os.path.dirname(os.path.abspath(path)) + '/' + path    
+    else:
+        path = os.path.dirname(os.path.abspath(path)) + path
 
     # Silently create the directory
     os.system('mkdir -p ' + path)

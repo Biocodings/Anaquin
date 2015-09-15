@@ -34,20 +34,6 @@ namespace Anaquin
         HomozygousRef,
         HomozygousAlt,
     };
-
-    template <typename Iter, typename T, typename F> bool find(const Iter &begin, const Iter &end, const T &t, F &r)
-    {
-        for (auto i = begin; i < end; i++)
-        {
-            if (i->l.contains(t.l))
-            {
-                r = *i;
-                return true;
-            }
-        }
-        
-        return false;
-    }
 }
 
 #endif
