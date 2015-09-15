@@ -37,9 +37,9 @@ data  = [ 'data/manual.txt',
 
            # ---------- META ----------
 
-          'data/meta/METAMixture_6.0.csv',
-          'data/meta/METAStandard_1.0.bed',
           'data/meta/META_v1_tab.fa',
+          'data/meta/MME023.v013.csv',
+          'data/meta/METAStandard_1.0.bed',
 
            # ---------- Variant ----------
 

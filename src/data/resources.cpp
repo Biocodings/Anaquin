@@ -35,7 +35,7 @@
  */
 
 #include "resources/META_v1_tab.fa"
-#include "resources/METAMixture_6.0.csv"
+#include "resources/MME023.v013.csv"
 #include "resources/METAStandard_1.0.bed"
 
 /*
@@ -105,7 +105,7 @@ std::string LadderDataMix()
 
 std::string MetaDataMix()
 {
-    return ToString(data_meta_METAMixture_6_0_csv);
+    return ToString(data_meta_MME023_v013_csv);
 }
 
 std::string MetaDataBed()

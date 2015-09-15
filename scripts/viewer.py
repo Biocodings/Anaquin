@@ -226,11 +226,9 @@ if __name__ == '__main__':
     mode = sys.argv[1]
     path = sys.argv[2]
     
-    if (path[0] != '/'):
+    if (not os.path.isabs(path)):
         path = os.path.dirname(os.path.abspath(path)) + '/' + path    
-    else:
-        path = os.path.dirname(os.path.abspath(path)) + path
-
+        
     # Silently create the directory
     os.system('mkdir -p ' + path)
 
