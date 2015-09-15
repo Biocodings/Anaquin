@@ -1,2 +1,0 @@
-tophat -o RNA_B3/aligned combined RNA_B3/simulated_1.fastq RNA_B3/simulated_2.fastq
-cufflinks -o RNA_B3/assembly -G combined.gtf RNA_B3/aligned/accepted_hits.bam
