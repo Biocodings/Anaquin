@@ -51,9 +51,9 @@ namespace Anaquin
         Counts n_hg38 = 0;
 
         // Fraction of sequin spiked
-        inline Percentage dilution() const { return n_chrT / (n_chrT + n_hg38); }
+        inline Percentage dilution() const { return static_cast<double>(n_chrT) / (n_chrT + n_hg38); }
     };
-    
+
     /*
      * Represents a sequin that is not detected in the experiment
      */
@@ -239,9 +239,6 @@ namespace Anaquin
     struct ViewerOptions : public AnalyzerOptions
     {
         std::string path;
-
-        // Alignment file, eg: accepted_hits.bam
-        FileName file;
     };
 
     struct SingleMixtureOptions : public AnalyzerOptions

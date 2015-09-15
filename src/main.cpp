@@ -927,9 +927,12 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
-            applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
-            applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
-            s.r_trans.validate();
+            if (_p.tool != TOOL_T_IGV)
+            {
+                applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
+                applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+                s.r_trans.validate();
+            }
 
             switch (_p.tool)
             {
@@ -999,9 +1002,12 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Fusion Analysis" << std::endl;
 
-            applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
-            applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
-            Standard::instance().r_fus.validate();
+            if (_p.tool != TOOL_F_IGV)
+            {
+                applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
+                applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
+                Standard::instance().r_fus.validate();
+            }
 
             switch (_p.tool)
             {
@@ -1023,8 +1029,11 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
-            applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
-            Standard::instance().r_lad.validate();
+            if (_p.tool != TOOL_L_IGV)
+            {
+                applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
+                Standard::instance().r_lad.validate();
+            }
 
             switch (_p.tool)
             {
@@ -1043,23 +1052,28 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            switch (_p.tool)
+            if (_p.tool != TOOL_V_IGV)
             {
-                case TOOL_V_ALIGN:
+                switch (_p.tool)
                 {
-                    applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1)); break;
+                    case TOOL_V_ALIGN:
+                    {
+                        applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1)); break;
+                    }
+                        
+                    case TOOL_V_DIFF:
+                    case TOOL_V_ALLELE:
+                    case TOOL_V_DISCOVER:
+                    {
+                        applyRef(std::bind(&Standard::v_var, &s, std::placeholders::_1)); break;
+                    }
+                        
+                    default: { break; }
                 }
-
-                case TOOL_V_DIFF:
-                case TOOL_V_ALLELE:
-                case TOOL_V_DISCOVER:
-                {
-                    applyRef(std::bind(&Standard::v_var, &s, std::placeholders::_1)); break;
-                }
+                
+                applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
+                Standard::instance().r_var.validate();
             }
-
-            applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
-            Standard::instance().r_var.validate();
 
             switch (_p.tool)
             {
@@ -1082,8 +1096,11 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
-            applyMix(std::bind(&Standard::m_mix_1, &s, std::placeholders::_1));
-            Standard::instance().r_meta.validate();
+            if (_p.tool)
+            {
+                applyMix(std::bind(&Standard::m_mix_1, &s, std::placeholders::_1));
+                Standard::instance().r_meta.validate();
+            }
 
             switch (_p.tool)
             {

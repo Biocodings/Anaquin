@@ -10,9 +10,10 @@ namespace Anaquin
     {
         typedef ViewerOptions Options;
 
-        static void generate(const std::string &, const Options &o = Options())
+        // Generate a IGV session for transcriptome analysis
+        static void generate(const FileName &file, const Options &o = Options())
         {
-            Script::viewer("Trans " + o.path + " " + o.file);
+            Script::viewer("Trans " + o.path + " " + file);
         }
     };
 }

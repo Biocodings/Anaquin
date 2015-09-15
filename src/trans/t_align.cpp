@@ -150,16 +150,16 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
                                             % o.fuzzy
                                             % stats.pe.m.sn()
                                             % stats.pe.m.sp()
-                                            % "NA"
-                                            % "NA"
+                                            % "-"
+                                            % "-"
                                             % stats.pi.m.sn()
                                             % stats.pi.m.sp()
-                                            % "NA"
-                                            % "NA"
+                                            % "-"
+                                            % "-"
                                             % stats.pb.m.sn()
                                             % stats.pb.m.sp()
-                                            % "NA"
-                                            % "NA"
+                                            % "-"
+                                            % "-"
                                             % stats.dilution()
                                             % stats.pe.s.abund
                                             % stats.pe.s.id
@@ -171,7 +171,7 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
      */
     
     o.writer->open("TransAlign_quins.stats");
-    o.writer->write((boost::format("Summary for dataset: %1%\n\n") % file).str());
+    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
 
     const auto format = "%1%\t%2%\t%3%\t%4%";
     o.writer->write((boost::format(format) % "id" % "eCov" % "iCov" % "bCov").str());
