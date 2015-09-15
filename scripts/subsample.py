@@ -6,7 +6,6 @@
 
 import os
 import sys
-import urllib
 
 def run(cmd):
     os.system(cmd)
