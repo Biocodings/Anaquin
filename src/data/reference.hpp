@@ -310,6 +310,22 @@ namespace Anaquin
     class FusionRef : public Reference<SequinData, SequinStats>
     {
         public:
+        
+            struct FusionPoint
+            {
+                inline bool operator<(const FusionPoint &x)  const { return id < x.id;  }
+                inline bool operator==(const FusionPoint &x) const { return id == x.id; }
+            
+                // Where this fusion belongs
+                SequinID id;
+            
+                // The position of the break-point
+                Base l1, l2;
+            
+                // Orientation for each of the segment
+                Strand s1, s2;
+            };
+
             FusionRef();
 
             // Add a known reference fusion

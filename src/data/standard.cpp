@@ -163,7 +163,7 @@ void Standard::f_ref(const Reader &r)
             throw std::runtime_error("Invalid reference file. chrT-chrT is expected.");
         }
 
-        FusionPoint b;
+        FusionRef::FusionPoint b;
 
         b.id = f[4];;
         b.l1 = stod(f[1]) + 1;

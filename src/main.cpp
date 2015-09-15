@@ -565,7 +565,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 {
     const auto path = _p.path;
 
-    // This might be needed while scripting
+    // This might be needed for scripting
     __full_command__ = _p.command;
 
 #ifndef DEBUG

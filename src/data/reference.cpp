@@ -120,7 +120,7 @@ inline bool compare(Base x, Base y, Base fuzzy = 0.0)
     return std::abs(x - y) <= fuzzy;
 }
 
-const FusionPoint * FusionRef::find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const
+const Anaquin::FusionRef::FusionPoint * FusionRef::find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const
 {
     for (const auto &f : _impl->breaks)
     {

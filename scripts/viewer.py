@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 #
-# This script generates a IGV session for sequin analysis
+# This script generates a IGV session for sequin analysis. It is a part of the Anaquin distribution, where it's being used in the
+# C++ code. The script can also run by itself.
 #
 
 import os
@@ -205,11 +206,24 @@ def generateMeta(path, align):
     index(path, align)
     session(path, align, download(path, [ metaComm, metaStand ]))
 
+def printUsage():
+        print '\nProgram: viewer.py (Tool for generating IGV session)'
+        print 'Version: 1.0.0\n'
+        print 'Usage:   python viewer.py <Trans|Fusion|Variant|Ladder|Meta> <output> <alignment file>'
+        print '\nMode: Trans     Transcriptome Analysis'
+        print '      Variant   Variant Analysis'
+        print '      Ladder    Ladder Analysis'
+        print '      Meta      Metagenomics Analysis'
+        print '      Fusion    Fusion Analysis'
+        print ''
+
 if __name__ == '__main__':
 
-    # Where to generate    
-    mode = sys.argv[1]
+    if (len(sys.argv) != 4):
+        printUsage()
+        exit()
 
+    mode = sys.argv[1]
     path = sys.argv[2]
     path = os.path.dirname(os.path.abspath(path)) + '/' + path
 
@@ -235,3 +249,5 @@ if __name__ == '__main__':
         generateLadder(path, sys.argv[3])
     elif (mode == 'Meta'):
         generateMeta(path, sys.argv[3])
+    else:
+        printUsage()

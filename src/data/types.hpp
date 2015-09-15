@@ -31,6 +31,7 @@ namespace Anaquin
     typedef std::string TranscriptID;
 
     typedef std::string FileName;
+    typedef std::string FilePath;
     typedef std::string FeatureName;
 
     typedef long long Base;

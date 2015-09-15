@@ -3,13 +3,24 @@
 
 #include <numeric>
 #include "data/tokens.hpp"
+#include "meta/m_blast.hpp"
 #include "meta/m_histogram.h"
 #include "stats/analyzer.hpp"
-#include "meta/m_blast.hpp"
 #include "parsers/parser_fa.hpp"
 
 namespace Anaquin
 {
+    struct Contig
+    {
+        ContigID id;
+        
+        // The sequence being assembled
+        Sequence seq;
+        
+        // Coverage in k-mer
+        Coverage k_cov;
+    };
+    
     struct DAsssembly
     {
         template <typename T> struct Stats

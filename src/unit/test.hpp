@@ -2,6 +2,7 @@
 #define GI_TEST_HPP
 
 #include <string>
+#include <catch.hpp>
 
 namespace Anaquin
 {

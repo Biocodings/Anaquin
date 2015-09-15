@@ -11,17 +11,6 @@ namespace Anaquin
         Backward,
     };
 
-    struct Contig
-    {
-        ContigID id;
-
-        // The sequence being assembled
-        Sequence seq;
-
-        // Coverage in k-mer
-        Coverage k_cov;
-    };
-
     enum RNAFeature
     {
         CDS,
@@ -44,21 +33,6 @@ namespace Anaquin
         Heterzygous,
         HomozygousRef,
         HomozygousAlt,
-    };
-
-    struct FusionPoint
-    {
-        inline bool operator<(const FusionPoint &x)  const { return id < x.id;  }
-        inline bool operator==(const FusionPoint &x) const { return id == x.id; }
-
-        // Where this fusion belongs
-        SequinID id;
-
-        // The position of the break-point
-        Base l1, l2;
-
-        // Orientation for each of the segment
-        Strand s1, s2;
     };
 
     template <typename Iter, typename T, typename F> bool find(const Iter &begin, const Iter &end, const T &t, F &r)

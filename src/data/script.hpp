@@ -12,6 +12,7 @@ namespace Anaquin
     class Script
     {
         public:
+
             static void run(const std::string &code, const std::string &prefix, const std::string &args)
             {
                 const auto f = [&](const std::string &cmd)

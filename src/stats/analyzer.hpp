@@ -175,14 +175,8 @@ namespace Anaquin
         }
     };
 
-    struct AnalyzerOptions
+    struct WriterOptions
     {
-        std::set<SequinID> filters;
-
-        std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
-        std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
-        std::shared_ptr<Writer> output = std::shared_ptr<Writer>(new MockWriter());
-
         enum LogLevel
         {
             Info,
@@ -190,12 +184,16 @@ namespace Anaquin
             Error,
         };
 
+        std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
+        std::shared_ptr<Writer> output = std::shared_ptr<Writer>(new MockWriter());
+
         inline void warn(const std::string &s) const
         {
             logger->write("[WARN]: " + s);
             output->write("[WARN]: " + s);
         }
-
+        
         inline void wait(const std::string &s) const
         {
             logger->write("[WAIT]: " + s);
@@ -207,12 +205,12 @@ namespace Anaquin
             logInfo(s);
             output->write("[INFO]: " + s);
         }
-
+        
         inline void logInfo(const std::string &s) const
         {
             logger->write("[INFO]: " + s);
         }
-
+        
         inline void logWarn(const std::string &s) const
         {
             logger->write("[WARN]: " + s);
@@ -223,14 +221,27 @@ namespace Anaquin
             logger->write("[ERROR]: " + s);
             output->write("[ERROR]: " + s);
         }
-
+        
         // Write to the standard terminal
         inline void out(const std::string &s) const { output->write(s); }
+    };
+
+    struct AnalyzerOptions : public WriterOptions
+    {
+        std::set<SequinID> filters;
     };
 
     struct FuzzyOptions : public AnalyzerOptions
     {
         double fuzzy;
+    };
+
+    struct ViewerOptions : public AnalyzerOptions
+    {
+        std::string path;
+
+        // Alignment file, eg: accepted_hits.bam
+        FileName file;
     };
 
     struct SingleMixtureOptions : public AnalyzerOptions
@@ -240,13 +251,8 @@ namespace Anaquin
 
     struct DoubleMixtureOptions : public AnalyzerOptions
     {
-        const Mixture m1 = Mix_1;
-        const Mixture m2 = Mix_2;
-    };
-
-    struct ViewerOptions : public AnalyzerOptions
-    {
-        std::string path;
+        Mixture mix_1 = Mix_1;
+        Mixture mix_2 = Mix_2;
     };
 
     struct AnalyzeReporter
