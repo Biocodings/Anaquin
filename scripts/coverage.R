@@ -32,3 +32,31 @@ dev.off()
 
 # Try to do the same to hg38 and show the graphs together...
 
+
+
+    # run('grep -v chrT aligned.sam > hg38.sam')
+    #   run('grep chrT aligned.sam > chrT.sam')
+    #  run('samtools view -bS chrT.sam > chrT.bam')
+    
+    # run('wc hg38.sam') # How many reads? 150586265
+    #run('wc chrT.sam') # How many reads? 150586265
+    
+    #
+    # It's probably too time-consuming to construct a distribution for the genome. Why not just take a sufficent random samples?
+    #
+    
+    
+    
+    #run('samtools view -s 0.1727372 -b chrT.bam > sampled.bam')
+
+    #    run('samtools sort chrT.bam aligned_chrT')
+    #   run('samtools sort sampled.bam aligned_sampled')
+    #  run('bedtools genomecov -bg -ibam aligned_chrT.bam > aligned_chrT.bedgraph')
+    # run('bedtools genomecov -bg -ibam aligned_sampled.bam > aligned_sampled.bedgraph')
+
+    #
+    # Draw each individual bedgraph on the same plot...
+    #
+
+    #    run('grep chrT aligned.bedgraph > chrT.bedgraph')
+    #    run('grep -v chrT aligned.bedgraph > hg38.bedgraph')
