@@ -12,23 +12,15 @@ def run(cmd):
 
 if __name__ == '__main__':
 
-    run('grep chrT aligned.sam > chrT.sam')
-    run('grep -v chrT aligned.sam > hg38.sam')
+    file = sys.argv[1]
 
-    run('samtools view -bS chrT.sam > chrT.bam')
-    run('samtools view -bS hg38.sam > hg38.bam')
 
-    run('samtools sort chrT.bam chrT_sorted')
-    run('samtools sort hg38.bam hg38_sorted')    
-    run('rm chrT.bam')
-    run('rm hg38.bam')        
+    run('samtools view -bS aligned.sam > aligned.bam')
+    run('samtools sort aligned.bam aligned_orderd.bam')
+    run('bedtools genomecov -bg -ibam aligned_ordered.bam > aligned.bedgraph')
 
-    # Get info.csv from Dropbox...
+    run('grep chrT aligned.bedgraph > chrT.bedgraph')
+    run('grep -v chrT aligned.bedgraph > hg38.bedgraph')
 
-    run('bedtools genomecov -bg -ibam chrT_sorted.bam > chrT_sorted.bedgraph')
-    run('bedtools genomecov -bg -ibam hg38_sorted.bam > hg38_sorted.bedgraph')
-
-    # How to draw a distribution plot from bedgraph??
-    
     
     

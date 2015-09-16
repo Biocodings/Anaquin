@@ -97,22 +97,23 @@ def normalize(input, output):
     #
     # Estimate the coverage by:
     #
-    #    number of mapped reads * read length
+    #    number of mapped reads * read length / size of the chromosomes
     #
 
-    hg38_cov  = len(r['hg38']) * 125 / hg38_len
-    chrT_cov  = len(r['chrT']) * 125 / chrT_len    
-    subsample = hg38_cov / chrT_cov
+    hg38_cov = len(r['hg38']) * 125 / hg38_len
+    chrT_cov = len(r['chrT']) * 125 / chrT_len
+    
+    # This is the ratio that we'll need to subsample chrT
+    ratio = hg38_cov / chrT_cov
 
     print('Number of reads for genome: '       + str(len(r['hg38'])))
     print('Number of reads for synthetic: '    + str(len(r['chrT'])))
     print('Estimated coverage for genome: '    + str(hg38_cov))
     print('Estimated coverage for synthetic: ' + str(chrT_cov))
-    print('Need to subample in chrT: '         + str(subsample))
+    print('Need to subample in chrT: '         + str(ratio))
 
     #
-    # Now we have to estimated coverage for both genome and synthetic. We'll have to subsample the synthetic
-    # reads to the coverage expected for the genome. Therefore, we'll randomly select some of the reads
+    # Let's subsample the synthetic reads to match the coverage expected for the genome. Therefore, we'll randomly sample without replacement for the reads
     # aligned to chrT.
     #
 
@@ -124,13 +125,13 @@ def normalize(input, output):
     run('samtools view -bS __tmp__.sam > __tmp__.bam')
 
     #
-    # Ask samtools to do the subsampling
+    # Ask samtools to do the subsampling. Eg: samtools view -s <ratio> <BAM File> > <SAM File>
     #
     
-    run('samtools view -s ' + str(subsample) + ' __tmp__.bam > __sampled__.sam')
+    run('samtools view -s ' + str(ratio) + ' __tmp__.bam > __sampled__.sam')
 
     #
-    # Create a new SAM file from the subsampled reads
+    # Merge the subsampled reads to create a new SAM/BAM file
     #
 
     create('__tmp1__.sam', r['headers'], r['hg38'])
@@ -153,7 +154,6 @@ if __name__ == '__main__':
     elif (mode == '-r'):
         print('Reporting ' + file)
         stats(file)
-        
 
 
 

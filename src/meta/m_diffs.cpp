@@ -54,7 +54,7 @@ MDiffs::Stats MDiffs::report(const std::string &file_1, const std::string &file_
                     const auto &contig = stats_1.contigs.at(align->contigs[i].id);
 
                     // Average relative to the size of the contig
-                    measured += contig.k_cov / contig.seq.size();
+                    measured += contig.k_cov / contig.k_len;
                     
                     // Average relative to the size of the sequin
                     //measured += contig.k_cov / meta.second.seqA.length;
@@ -88,7 +88,7 @@ MDiffs::Stats MDiffs::report(const std::string &file_1, const std::string &file_
                     const auto &contig = stats_2.contigs.at(align->contigs[i].id);
                     
                     // Average relative to the size of the contig
-                    measured += contig.k_cov / contig.seq.size();
+                    measured += contig.k_cov / contig.k_len;
                     
                     // Average relative to the size of the sequin
                     //measured += contig.k_cov / meta.second.seqB.length;

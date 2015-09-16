@@ -14,8 +14,11 @@ namespace Anaquin
     {
         ContigID id;
         
-        // The sequence being assembled
-        Sequence seq;
+        // Length of the sequence being assembled
+        Base len;
+        
+        // Size of the contig in k-mer
+        Base k_len;
         
         // Coverage in k-mer
         Coverage k_cov;
@@ -53,8 +56,8 @@ namespace Anaquin
 
                 c.id = l.id;
 
-                // Sequence of the config
-                c.seq = l.seq;
+                // Size of the config
+                c.len = l.seq.size();
 
                 // The histogram needs the length of the sequence
                 h.insert(l.seq.size());
@@ -83,7 +86,7 @@ namespace Anaquin
             stats.total = std::accumulate(stats.contigs.begin(), stats.contigs.end(), 0,
                             [&](int sum, const std::pair<std::string, C> &p)
                             {
-                                return sum + p.second.seq.size();
+                                return sum + p.second.len;
                             });
             return stats;
         }
@@ -101,14 +104,14 @@ namespace Anaquin
              *      >NODE_77460_length_31_cov_1.129032
              */
             
-            std::vector<std::string> tokens;
+            std::vector<std::string> toks;
 
             return DAsssembly::parse<C, Stats>(file, [&](C &node)
             {
-                Tokens::split(node.id, "_", tokens);
+                Tokens::split(node.id, "_", toks);
 
-                // Parse the k-mer coverage
-                node.k_cov = stod(tokens[tokens.size() - 1]);
+                node.k_len = stoi(toks[3]);
+                node.k_cov = stod(toks[toks.size() - 1]);
             });
         }
     };

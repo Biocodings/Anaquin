@@ -49,7 +49,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
 
         if (!align->contigs.empty())
         {
-            // Known concentration
+            // Known concentration (TODO: We shouldn't use the data structure...)
             const auto known = align->seq->mixes.at(Mix_1);
             
             /*
@@ -69,7 +69,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
                 const auto &contig = stats.contigs.at(align->contigs[i].id);
 
                 // Average relative to the size of contig
-                measured += contig.k_cov / contig.seq.size();
+                measured += contig.k_cov / contig.k_len;
                 
                 // Average relative to the size of the sequin
                 //measured += (double) contig.k_cov / meta.seqA.l.length();
@@ -91,7 +91,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
 
         assert(!stats.lm.s.id.empty());
     }
-
+    
     return stats;
 }
 

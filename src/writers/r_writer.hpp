@@ -38,7 +38,13 @@ namespace Anaquin
             const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
             const auto zs = (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str();
 
-            return (boost::format(ss.str()) % date() % __full_command__ % xs % ys % zs % units).str();
+            return (boost::format(ss.str()) % date()
+                                            % __full_command__
+                                            % xs
+                                            % ys
+                                            % zs
+                                            % units
+                                            % "??").str();
         }
     };
 }
