@@ -20,6 +20,18 @@ enum MixtureFormat
     ID_Mix,        // Eg: MG_33  60.23529412
 };
 
+static unsigned countColumns(const Reader &r)
+{
+    std::size_t n = 0;
+
+    ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+    {
+        n = std::min(n, fields.size());
+    });
+
+    return static_cast<unsigned>(n);
+}
+
 template <typename Reference> void readMixture
                 (const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
 {
@@ -191,6 +203,11 @@ void Standard::r_ref(const Reader &r)
 
 void Standard::r_mix(const Reader &r)
 {
-    readMixture(r, r_trans, Mix_1, ID_Length_Mix, 2);
-    readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);
+    const auto n = countColumns(r);
+    readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
+    
+    if (n >= 3)
+    {
+        readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);        
+    }
 }
