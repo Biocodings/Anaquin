@@ -9,7 +9,8 @@ hg38$coverage = hg38$coverage*2
 chrT$veg <- 'chrT'
 hg38$veg <- 'hg38'
 
-vegLengths <- rbind(chrT, hg38)
+#vegLengths <- rbind(chrT, hg38)
+vegLengths <- rbind(hg38)
 
 ggplot(vegLengths, aes(coverage, fill = veg)) + geom_density(alpha = 0.2)
 ggsave('TimMercer.pdf')
@@ -20,11 +21,12 @@ ggsave('TimMercer.pdf')
 
 
 
-p1 <- hist(chrT$data)
+#p1 <- hist(chrT$data)
 p2 <- hist(hg38$data)
 
-plot(p1, col=rgb(0,0,1,1/4))
-plot(p2, col=rgb(1,0,1,1/4), add=T)
+#plot(p1, col=rgb(0,0,1,1/4))
+#plot(p2, col=rgb(1,0,1,1/4), add=T)
+plot(p2, col=rgb(1,0,1,1/4))
 
 dev.off()
 

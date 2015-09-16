@@ -208,6 +208,6 @@ void Standard::r_mix(const Reader &r)
     
     if (n >= 3)
     {
-        readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);        
+        readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);
     }
 }
