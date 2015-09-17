@@ -35,7 +35,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
 static std::string createFilteredGTF(const std::string &file)
 {
     std::string line;
-    const auto tmp = "ABCD.gtf"; //tmpnam(NULL);
+    const auto tmp = tmpnam(NULL);
     
     std::ofstream out(tmp);
 
@@ -73,11 +73,9 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
     const int status = cuffcompare_main(o.ref.c_str(), query.c_str());
 
-    //std::remove(query);
-    
     if (status)
     {
-        throw std::runtime_error("Failed to compare the given transcript. Please check the file and try again.");
+        throw std::runtime_error("Failed to assess the given transcript. Please check the file and try again.");
     }
     
     TAssembly::Stats stats;
@@ -238,7 +236,6 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
                          "   Genome: %2% features\n"
                          "   Query: %3% features\n"
                          "   Reference: %4% exons\n\n"
-                         "   Reference: %4% introns\n\n"
                          "   Fuzzy: %5%\n\n"
                          "#--------------------|   Sn   |   Sp   |   Ss   |   fSn   |   fSp\n"
                          "    Exon level:       %6%     %7%     %8% (%9%)    %10%    %11%\n"
@@ -246,11 +243,11 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
                          "    Base level:       %18%     %19%     %20% (%21%)    %22%    %23%\n"
                          "    Transcript level:       %24%     %25%     %26% (%27%)    %28%    %29%\n"
     ;
-    
+
     o.writer->open("TransAssembly_summary.stats");
     o.writer->write((boost::format(summary) % file
-                                            % "NA"
-                                            % "NA"
+                                            % stats.n_hg38
+                                            % stats.n_chrT
                                             % r.data().size()
                                             % o.fuzzy
                                             % (__cmp__.e_sp / 100.0)
