@@ -63,6 +63,8 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
         // Eg: 1082119-1190836
         Tokens::split(std::string(temp[1]), "-", temp);
         
+        std::cout << line << std::endl;
+        
         // Eg: 1082119, 1190836
         t.l = Locus(stod(temp[0]), stod(temp[1]));
         

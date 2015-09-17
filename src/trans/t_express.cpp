@@ -17,7 +17,7 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
     // Construct for a histogram at the appropriate level
     stats.h = isoform ? r.hist() : r.histGene();
 
-    o.info("Parsing input file");
+    o.info("Parsing: " + file);
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
