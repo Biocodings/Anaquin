@@ -71,7 +71,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
     o.logInfo("Invoking cuffcompare: " + o.ref);
     o.logInfo("Invoking cuffcompare: " + query);
 
-    const int status = cuffcompare_main(o.ref.c_str(), o.query.c_str());
+    const int status = cuffcompare_main(o.ref.c_str(), query.c_str());
 
     //std::remove(query);
     
@@ -235,9 +235,10 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
     o.info("Generating statistics");
 
     const auto summary = "Summary for dataset: %1% :\n\n"
-                         "   Genome: %2% reads\n"
-                         "   Query: %3% reads\n"
-                         "   Reference: %4% sequins\n\n"
+                         "   Genome: %2% features\n"
+                         "   Query: %3% features\n"
+                         "   Reference: %4% exons\n\n"
+                         "   Reference: %4% introns\n\n"
                          "   Fuzzy: %5%\n\n"
                          "#--------------------|   Sn   |   Sp   |   Ss   |   fSn   |   fSp\n"
                          "    Exon level:       %6%     %7%     %8% (%9%)    %10%    %11%\n"
