@@ -192,7 +192,7 @@ void Standard::f_ref(const Reader &r)
 
 void Standard::r_ref(const Reader &r)
 {
-    ParserGTF::parse(r, [&](const Feature &f, const ParserProgress &)
+    ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
        if (f.id == id && f.type == Exon)
         {

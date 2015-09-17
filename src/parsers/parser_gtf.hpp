@@ -8,7 +8,7 @@ namespace Anaquin
 {
     struct ParserGTF
     {
-        typedef std::function<void (const Feature &, const ParserProgress &)> Callback;
+        typedef std::function<void (const Feature &, const std::string &l, const ParserProgress &)> Callback;
         static void parse(const Reader &, Callback);
     };
 }

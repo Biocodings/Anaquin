@@ -1,3 +1,4 @@
+#include <fstream>
 #include "data/compare.hpp"
 #include "trans/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
@@ -31,21 +32,49 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
+static std::string createFilteredGTF(const std::string &file)
+{
+    std::string line;
+    const auto tmp = "ABCD.gtf"; //tmpnam(NULL);
+    
+    std::ofstream out(tmp);
+
+    ParserGTF::parse(file, [&](const Feature &f, const std::string &l, const ParserProgress &)
+    {
+        if (f.id == Standard::instance().id)
+        {
+            out << l << std::endl;
+        }
+    });
+    
+    out.close();
+    
+    return tmp;
+}
+
 TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 {
     assert(!o.ref.empty() && !o.query.empty());
 
     /*
      * Comparing transcripts require constructing intron-chains, this is quite complicated.
-     * We will reuse the code in cuffcompare. The implementation is dirty but it works better
-     * than reinventing the wheel.
+     * We will reuse the code in cuffcompare. The idea is dirty but it works better than
+     * than reinventing the wheel. However, we'll need to filter out only the features
+     * belong to the synthetic chromosome.
      */
-    
+
+    o.logInfo("Creating a filtered transcript");
+
+    const auto query = createFilteredGTF(file);
+    o.logInfo("Filtered transcript: " + query + " has been created");
+
     o.logInfo("Invoking cuffcompare: " + o.ref);
-    o.logInfo("Invoking cuffcompare: " + o.query);
+    o.logInfo("Invoking cuffcompare: " + query);
 
     const int status = cuffcompare_main(o.ref.c_str(), o.query.c_str());
 
+    //std::remove(query);
+    
     if (status)
     {
         throw std::runtime_error("Failed to compare the given transcript. Please check the file and try again.");
@@ -59,7 +88,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
     o.info("Parsing transcript");
 
-    ParserGTF::parse(file, [&](const Feature &f, const ParserProgress &p)
+    ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
     {
         if ((p.i % 1000000) == 0)
         {

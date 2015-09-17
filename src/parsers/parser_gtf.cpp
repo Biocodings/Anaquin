@@ -84,7 +84,7 @@ void ParserGTF::parse(const Reader &r, Callback x)
                 }
             }
         }
-        
-        x(f, p);
+
+        x(f, line, p);
     }
 }
