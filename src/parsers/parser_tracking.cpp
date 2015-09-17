@@ -52,27 +52,33 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
         assert(!tokens[T_FPKM_HI].empty());
         assert(!tokens[T_Status].empty());
 
-        t.trackID = tokens[T_TrackID];
-        t.geneID  = tokens[T_GeneID];
-
-        // Eg: chrT:1082119-1190836
-        Tokens::split(tokens[T_Locus], ":", temp);
+        try
+        {
+            t.trackID = tokens[T_TrackID];
+            t.geneID  = tokens[T_GeneID];
+            
+            // Eg: chrT:1082119-1190836
+            Tokens::split(tokens[T_Locus], ":", temp);
+            
+            t.chromID = temp[0];
+            
+            // Eg: 1082119-1190836
+            Tokens::split(std::string(temp[1]), "-", temp);
+            
+            // Eg: 1082119, 1190836
+            t.l = Locus(stod(temp[0]), stod(temp[1]));
+            
+            t.fpkm    = stod(tokens[T_FPKM]);
+            t.lFPKM   = stod(tokens[T_FPKM_LO]);
+            t.uFPKM   = stod(tokens[T_FPKM_HI]);
+            t.status  = mapper.at(tokens[T_Status]);
+        }
+        catch (...)
+        {
+            std::cout << line << std::endl;
+            continue;
+        }
         
-        t.chromID = temp[0];
-        
-        // Eg: 1082119-1190836
-        Tokens::split(std::string(temp[1]), "-", temp);
-        
-        std::cout << line << std::endl;
-        
-        // Eg: 1082119, 1190836
-        t.l = Locus(stod(temp[0]), stod(temp[1]));
-        
-        t.fpkm    = stod(tokens[T_FPKM]);
-        t.lFPKM   = stod(tokens[T_FPKM_LO]);
-        t.uFPKM   = stod(tokens[T_FPKM_HI]);
-        t.status  = mapper.at(tokens[T_Status]);
-
         if (t.status != TrackingStatus::HIData)
         {
             f(t, p);
