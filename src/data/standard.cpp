@@ -26,7 +26,7 @@ static unsigned countColumns(const Reader &r)
 
     ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
     {
-        n = std::min(n, fields.size());
+        n = std::max(n, fields.size());
     });
 
     return static_cast<unsigned>(n);
@@ -65,16 +65,20 @@ template <typename Reference> void readMixture
 
             return ref.countMixes();
         }
-        catch (...)
+        catch (const std::exception &ex)
         {
+            std::cout << ex.what() << std::endl;
             std::cerr << "[Error]: Error in the mixture file" << std::endl;
             throw;
         }
     };
 
-    if (!f("\t") && !f(","))
+    if (!f(","))
     {
-        throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
+        if (!f("\t"))
+        {
+            throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
+        }
     }
 }
 
