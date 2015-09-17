@@ -75,7 +75,6 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
         }
         catch (...)
         {
-            std::cout << line << std::endl;
             continue;
         }
         
