@@ -75,6 +75,7 @@ void ParserTracking::parse(const std::string &file, std::function<void (const Tr
         }
         catch (...)
         {
+            // Eg: chr5:115962453-116026416	3322 5.84274e-312 2.04056e-312	0	0.0541712	OK
             continue;
         }
         
