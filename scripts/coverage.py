@@ -26,15 +26,22 @@ if __name__ == '__main__':
     # This is the fraction we'll need to subsample the genome
     ratio = 26011845 / reads
 
-    ratio = 0.1727372
+    ratio = 0.1727372    
     
     #
     # Eg: grep '@\|chrT' aligned.sam > temp.sam
     #
+    run('grep \'@\|chrT\' ' + file + ' > temp.sam')
 
     #
-    # Eg: grep -v chrT aligned.sam | grep -v '*' | samtools view -S -s 0.1727372 - >> temp.sam
+    # Eg: grep -v chrT aligned.sam | grep -v '*'
     #
+    run('grep -v chrT aligned.sam | grep -v \'*\'')
+
+    #
+    # Eg: grep -v chrT aligned.sam | grep -v '*' | samtools view -S -s 0.05 - >> temp.sam
+    #
+    run('grep -v chrT aligned.sam | grep -v '*' | samtools view -S -s 0.05 - >> temp.sam')
     
     #
     # Eg: samtools view -Sb  temp.sam | samtools sort - sorted
@@ -43,6 +50,13 @@ if __name__ == '__main__':
     #
     # Eg: bedtools genomecov -bg -ibam sorted.bam > sorted.bedgraph
     #
+
+    #
+    # Eg: grep -v chrT sorted.bedgraph > hg38.bedgraph
+    # Eg: grep chrT sorted.bedgraph > chrT.bedgraph
+    #
+
+
 
 
 

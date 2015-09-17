@@ -2,6 +2,10 @@
 x <- read.csv('/home/tedwon/Coverage/chrT.bedgraph', header=FALSE, sep='\t')
 y <- read.csv('/home/tedwon/Coverage/hg38.bedgraph', header=FALSE, sep='\t')
 
+
+
+x <- read.csv('/Users/tedwong/Sources/chrT.bedgraph', header=FALSE, sep='\t')
+
 chrT <- data.frame(coverage=x$V4)
 hg38 <- data.frame(coverage=y$V4)
 hg38$coverage = hg38$coverage*2
@@ -9,8 +13,8 @@ hg38$coverage = hg38$coverage*2
 chrT$veg <- 'chrT'
 hg38$veg <- 'hg38'
 
-#vegLengths <- rbind(chrT, hg38)
-vegLengths <- rbind(hg38)
+vegLengths <- rbind(chrT, hg38)
+vegLengths <- rbind(chrT)
 
 ggplot(vegLengths, aes(coverage, fill = veg)) + geom_density(alpha = 0.2)
 ggsave('TimMercer.pdf')
