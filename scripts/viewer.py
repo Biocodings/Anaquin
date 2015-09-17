@@ -83,7 +83,7 @@ def run(cmd):
 def index(path, align):
     print('Generating index for ' + align + ' to ' + path)
 
-    tmp = 'TEMP'
+    tmp = '__temp__'
 
     # Silently create a temporary directory for indexing
     os.system('mkdir -p ' + tmp)
@@ -108,6 +108,8 @@ def index(path, align):
     
     # Cleanup the index directory
     run('rm -rf ' + tmp)
+    
+    return path + '/' + file
 
 def retrieve(url, path, file):
     try:
@@ -165,7 +167,7 @@ def session(path, align, files):
     # Update the reference genome
     sessionT = sessionT.replace('{0}', chrT)
 
-    # Update the primary input (usually an alignment file)
+    # Update the alignment file)
     sessionT = sessionT.replace('{1}', '')
     
     #
@@ -199,7 +201,7 @@ def generateVar(path, align):
     session(path, align, download(path, [ variantFA, varStand, varVariant ]))
 
 def generateTrans(path, align):
-    index(path, align)
+    align = index(path, align)
     session(path, align, download(path, [ silicoFA, transStand ]))
 
 def generateMeta(path, align):

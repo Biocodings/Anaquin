@@ -19,13 +19,10 @@ lm_eqn <- function(d)
     as.character(as.expression(eq));
 }
 
-# X-axis: expected concentration
 x <- c(%3%)
-
-# Y-axis: measured coverage
 y <- c(%4%)
 
-# Names of sequin for each point
+# Names of the sequin for each data-point
 ids <- c(%5%)
 
 d <- data.frame(x=x, y=y, ids=ids)
@@ -34,7 +31,6 @@ p <- ggplot(data = d, aes(x = x, y = y))
 p <- p + xlab(%6%)
 p <- p + ylab(%7%)
 p <- p + geom_point()
-p <- p + theme_classic()
 p <- p + geom_smooth(method = "lm", se=FALSE, formula = y ~ x)
 p <- p + geom_text(x = min(d$x), y = max(d$y), label = lm_eqn(d), parse = TRUE, hjust=0)
 print(p)
