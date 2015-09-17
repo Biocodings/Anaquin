@@ -32,8 +32,10 @@ data  = [ 'data/manual.txt',
 
            # ---------- Transcriptome ----------
 
-          'data/trans/TransStandard_1.0.gtf',
-          'data/trans/TransMixture_4.1.csv',
+          'data/trans/ATR001.v032.gtf',
+          'data/trans/MTR002.v013.csv',
+          'data/trans/MTR003.v013.csv',
+          'data/trans/MTR004.v013.csv',          
 
            # ---------- META ----------
 
