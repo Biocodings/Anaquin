@@ -8,7 +8,7 @@ TEST_CASE("TExpress_T_1000_Genes")
 {
     Test::trans();
 
-    const auto r1 = Test::test("-t TransExpress -m data/trans/MTR002.v013.csv -rgtf data/trans/TransStandard_1.0.gtf -ugtrack tests/data/T_1000/B/G/genes.fpkm_tracking");
+    const auto r1 = Test::test("-t TransExpress -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -ugtrack tests/data/T_1000/B/G/genes.fpkm_tracking");
 
     REQUIRE(r1.status == 0);
 
