@@ -63,10 +63,10 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
      * belong to the synthetic chromosome.
      */
 
-    o.logInfo("Creating a filtered transcript");
+    o.info("Creating a filtered transcript");
 
     const auto query = createFilteredGTF(file);
-    o.logInfo("Filtered transcript: " + query + " has been created");
+    o.info("Filtered transcript: " + query + " has been created");
 
     o.logInfo("Invoking cuffcompare: " + o.ref);
     o.logInfo("Invoking cuffcompare: " + query);
