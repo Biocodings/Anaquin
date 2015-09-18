@@ -112,6 +112,27 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
     stats.pi.s = r.limitGene(stats.hi);
     stats.pb.s = r.limitGene(stats.hb);
 
+    o.logInfo((boost::format("Exon: %1%") % stats.pe.m.nr
+                                          % stats.pe.m.nq
+                                          % stats.pe.m.tp()
+                                          % stats.pe.m.tn()
+                                          % stats.pe.m.fp()
+                                          % stats.pe.m.fn()).str());
+
+    o.logInfo((boost::format("Base: %1%") % stats.pb.m.nr
+                                          % stats.pb.m.nq
+                                          % stats.pb.m.tp()
+                                          % stats.pb.m.tn()
+                                          % stats.pb.m.fp()
+                                          % stats.pb.m.fn()).str());
+    
+    o.logInfo((boost::format("Intron: %1%") % stats.pi.m.nr
+                                            % stats.pi.m.nq
+                                            % stats.pi.m.tp()
+                                            % stats.pi.m.tn()
+                                            % stats.pi.m.fp()
+                                            % stats.pi.m.fn()).str());
+    
     /*
      * Write out summary statistics
      */

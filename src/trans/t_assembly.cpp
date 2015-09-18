@@ -86,6 +86,8 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
     o.info("Parsing transcript");
 
+    Confusion t;
+    
     ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
     {
         if ((p.i % 1000000) == 0)
@@ -118,7 +120,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
                 q_exons.push_back(f);
                 q_exons_[f.tID].push_back(f);
 
-                if (classify(stats.pe.m, f, [&](const Feature &)
+                if (classify(t, f, [&](const Feature &)
                 {
                     return (d = r.findExon(f.l, TransRef::Exact));
                 }))
@@ -137,7 +139,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
             {
                 const TransData *match;
 
-                if (classify(stats.pt.m, f, [&](const Feature &)
+                if (classify(t, f, [&](const Feature &)
                 {
                     return (match = r.seq(f.l));
                 }))
@@ -173,7 +175,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
     extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
     {
-        if (classify(stats.pi.m, i, [&](const Feature &)
+        if (classify(t, i, [&](const Feature &)
         {
             return (m  = r.findIntron(i.l, TransRef::Exact));
         }))
@@ -184,64 +186,36 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
     o.info("Counting references");
 
-    /*
-     * Setting the known references
-     */
-    
-    sums(stats.he, stats.pe.m.nr);
-    sums(stats.hi, stats.pi.m.nr);
-
-    /*
-     * The counts for references for the transcript level is simply all the sequins.
-     */
-
-    stats.pt.m.nr = r.data().size();
-
     o.info("Merging overlapping bases");
 
-    /*
-     * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
-     * The number is expected to approach the reference length (calculated next) for a very large
-     * experiment with sufficient coverage.
-     */
-    
-    countBase(r.mergedExons(), q_exons, stats.pb.m, stats.hb);
-
-    /*
-     * The counts for references is the total length of all known non-overlapping exons.
-     * For example, if we have the following exons:
-     *
-     *    {1,10}, {50,55}, {70,74}
-     *
-     * The length of all the bases is 10+5+4 = 19.
-     */
-
-    stats.pb.m.nr = r.exonBase();
-    assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
-    
     /*
      * Calculate for the LOS
      */
 
     o.info("Calculating limit of sensitivity");
     
-    stats.pe.s = r.limit(stats.he);
-    stats.pt.s = r.limit(stats.ht);
-    stats.pb.s = r.limitGene(stats.hb);
-    stats.pi.s = r.limit(stats.hi);
+    stats.se = r.limit(stats.he);
+    stats.st = r.limit(stats.ht);
+    stats.sb = r.limitGene(stats.hb);
+    stats.si = r.limit(stats.hi);
+
+    std::cout << r.data().size() << std::endl;
+    std::cout << r.countSortedExons() << std::endl;
+    
+    assert(r.data().size() == r.countSortedExons());
 
     o.info("Generating statistics");
 
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Genome: %2% features\n"
-                         "   Query: %3% features\n"
-                         "   Reference: %4% exons\n\n"
-                         "   Fuzzy: %5%\n\n"
-                         "#--------------------|   Sn   |   Sp   |   Ss   |   fSn   |   fSp\n"
-                         "    Exon level:       %6%     %7%     %8% (%9%)    %10%    %11%\n"
-                         "    Intron level:       %12%     %13%     %14% (%15%)    %16%    %17%\n"
-                         "    Base level:       %18%     %19%     %20% (%21%)    %22%    %23%\n"
-                         "    Transcript level:       %24%     %25%     %26% (%27%)    %28%    %29%\n"
+                         "   Query: %3% features\n\n"
+                         "   Reference: %4% exons\n"
+                         "   Reference: %5% introns\n\n"
+                         "#--------------------|   Sn   |   Sp   |   Ss \n"
+                         "    Exon level:\t%6%\t%7%\t%8% (%9%)\n"
+                         "    Intron level:\t%10%\t%11%\t%12% (%13%)\n"
+                         "    Base level:\t%14%\t%15%\t%16% (%17%)\n"
+                         "    Transcript level:\t%18%\t%19%\t%20% (%21%)\n"
     ;
 
     o.writer->open("TransAssembly_summary.stats");
@@ -249,31 +223,21 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
                                             % stats.n_hg38
                                             % stats.n_chrT
                                             % r.data().size()
-                                            % o.fuzzy
+                                            % r.countSortedIntrons()
                                             % (__cmp__.e_sp / 100.0)
                                             % (__cmp__.e_sn / 100.0)
-                                            % (stats.pe.s.id.empty() ? "-" : std::to_string(stats.pe.s.abund))
-                                            % stats.pe.s.id
-                                            % (__cmp__.e_fsp / 100.0)
-                                            % (__cmp__.e_fsn / 100.0)
+                                            % (stats.se.id.empty() ? "-" : std::to_string(stats.se.abund))
+                                            % stats.se.id
                                             % (__cmp__.i_sp / 100.0)
                                             % (__cmp__.i_sn / 100.0)
-                                            % (stats.pi.s.id.empty() ? "-" : std::to_string(stats.pi.s.abund))
-                                            % stats.pi.s.id
-                                            % (__cmp__.i_fsp / 100.0)
-                                            % (__cmp__.i_fsn / 100.0)
+                                            % (stats.si.id.empty() ? "-" : std::to_string(stats.si.abund))
+                                            % stats.si.id
                                             % (__cmp__.b_sp / 100.0)
                                             % (__cmp__.b_sn / 100.0)
-                                            % (stats.pb.s.id.empty() ? "-" : std::to_string(stats.pb.s.abund))
-                                            % stats.pb.s.id
-                                            % "-"
-                                            % "-"
+                                            % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund))
+                                            % stats.sb.id
                                             % (__cmp__.t_sp / 100.0)
-                                            % (__cmp__.t_sn / 100.0)
-                                            % "-"
-                                            % "-"
-                                            % (__cmp__.t_fsp / 100.0)
-                                            % (__cmp__.t_fsn / 100.0)).str());
+                                            % (__cmp__.t_sn / 100.0)).str());
     o.writer->close();
 
     return stats;

@@ -20,8 +20,7 @@ namespace Anaquin
             SequinHist hi = Standard::instance().r_trans.hist();
             SequinHist ht = Standard::instance().r_trans.hist();
 
-            // Performance at various levels
-            Performance pb, pi, pe, pt;
+            Sensitivity sb, si, se, st;
         };
 
         static Stats report(const std::string &, const Options &options = Options());

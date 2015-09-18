@@ -9,14 +9,14 @@ import os
 import sys
 import urllib
 
-# URL for the in-silico chromosome
-silicoFA   = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-2.1.0.tar.gz'
+# URL for the synthetic chromosome
+chrTFA     = 'https://s3.amazonaws.com/anaquin/chromosomes/CTR001.v021.fa'
 
 # URL of the transcriptome standard
-transStand = 'http://www.anaquin.org/downloads/trans/TransStandard_1.0.gtf'
+transStand = 'https://s3.amazonaws.com/anaquin/annotations/ATR001.v032.gtf'
 
 # URL for the in-silico chromosome
-variantFA = 'http://www.anaquin.org/downloads/chromo/1.0.0/chrT-0.5.0.tar.gz'
+variantFA = 'https://s3.amazonaws.com/anaquin/chromosomes/CVA002.v015.fa'
 
 # URL of the variant standard
 varStand = 'http://www.anaquin.org/downloads/variant/VARStandard_1.0.gtf'
@@ -31,7 +31,7 @@ fusNStand = 'http://www.anaquin.org/downloads/fusion/FUSNormalStandard_1.0.gtf'
 fusFStand = 'http://www.anaquin.org/downloads/fusion/FUSFusionStandard_1.0.gtf'
 
 # URL of the metagenomic community
-metaComm  = 'http://www.anaquin.org/downloads/meta/MetaCommunity_1.0.fa'
+metaComm  = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
 
 # URL of the metagenomic standard
 metaStand = 'http://www.anaquin.org/downloads/meta/METAStandard_1.0.bed'
@@ -95,10 +95,10 @@ def index(path, align):
     base = os.path.splitext(os.path.split(file)[-1])[0]
 
     # Create a sorted alignment, this is always needed for generating an index
-    run('samtools sort ' + align + ' ' + tmp + '/' + base)
+    #run('samtools sort ' + align + ' ' + tmp + '/' + base)
 
     # Generate the index
-    run('samtools index ' + tmp + '/' + file)
+    #run('samtools index ' + tmp + '/' + file)
 
     # Copy the alignment file
     run('cp ' + tmp + '/' + file + ' ' + path)
@@ -115,16 +115,16 @@ def retrieve(url, path, file):
     try:
         file = path + '/' + file
         
-        #print('Downloading ' + url + ' to ' + file)
+        print('Downloading ' + url + ' to ' + file)
         urllib.urlretrieve(url, file)
         
         if file.endswith('tar'):
             run('tar -xvf ' + file + ' -C ' + path)
         elif file.endswith('tar.gz'):
+            print('Extracting the file')
             run('tar -zxvf ' + file + ' -C ' + path)
             run('rm -rf ' + file)
-
-    except e:
+    except:
         raise Exception('Failed to retrieve: ' + path)
 
 # Download the required files and generate a IGV session 
@@ -188,9 +188,13 @@ def session(path, align, files):
     with open(path + "/session.xml", "w") as f:
         f.write(sessionT)
 
+def generateTrans(path, align):
+    align = index(path, align)
+    session(path, align, download(path, [ chrTFA, transStand ]))
+
 def generateFusion(path, align):
     index(path, align)
-    session(path, align, download(path, [ silicoFA, transStand, fusNStand, fusFStand ]))
+    session(path, align, download(path, [ chrTFA, transStand, fusNStand, fusFStand ]))
 
 def generateLadder(path, align):
     index(path, align)
@@ -199,10 +203,6 @@ def generateLadder(path, align):
 def generateVar(path, align):
     index(path, align)
     session(path, align, download(path, [ variantFA, varStand, varVariant ]))
-
-def generateTrans(path, align):
-    align = index(path, align)
-    session(path, align, download(path, [ silicoFA, transStand ]))
 
 def generateMeta(path, align):
     index(path, align)
