@@ -16,7 +16,7 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
     
     // Construct for a histogram at the appropriate level
     stats.h = isoform ? r.hist() : r.histGene();
-
+    
     o.info("Parsing: " + file);
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
@@ -101,24 +101,25 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
     
     o.info("Generating statistics");
 
+    const auto units = isoform ? "isoforms" : "genes";
+    
     /*
      * Generate summary statistics
      */
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome: %2% ????\n"
-                         "   Query: %3% ????\n"
-                         "   Reference: %4% ????\n\n"
-                         "   Detected: %5%\n\n"
+                         "   Genome: %2% %17%\n"
+                         "   Query: %3% %17%\n"
+                         "   Reference: %4% %17%\n\n"
+                         "   Detected: %5% %17%\n\n"
                          "   Correlation:\t%6%\n"
                          "   Slope:\t%7%\n"
                          "   R2:\t%8%\n"
-                         "   Adjusted R2:\t%9%\n"  // DELETE THIS
-                         "   F-statistic:\t%10%\n"
-                         "   P-value:\t%11%\n"
-                         "   SSM: %12%, DF: %13%\n"
-                         "   SSE: %14%, DF: %15%\n"
-                         "   SST: %16%, DF: %17%\n"
+                         "   F-statistic:\t%9%\n"
+                         "   P-value:\t%10%\n"
+                         "   SSM: %11%, DF: %12%\n"
+                         "   SSE: %13%, DF: %14%\n"
+                         "   SST: %15%, DF: %16%\n"
     ;
 
     const auto lm = stats.linear();
@@ -132,7 +133,6 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
                                             % lm.r
                                             % lm.m
                                             % lm.r2
-                                            % lm.ar2
                                             % lm.f
                                             % lm.p
                                             % lm.ssm
@@ -140,7 +140,8 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
                                             % lm.sse
                                             % lm.sse_df
                                             % lm.sst
-                                            % lm.sst_df).str());
+                                            % lm.sst_df
+                                            % units).str());
     o.writer->close();
 
     /*

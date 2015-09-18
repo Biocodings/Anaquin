@@ -46,6 +46,8 @@ template <typename Reference> void readMixture
 
         try
         {
+            bool succceed = false;
+            
             ParserCSV::parse(t, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
             {
                 // Don't bother if this is the first line or an invalid line
@@ -58,17 +60,19 @@ template <typename Reference> void readMixture
                 {
                     case ID_Length_Mix:
                     {
+                        succceed = true;
                         ref.add(fields[0], stoi(fields[1]), stof(fields[column]), m); break;
                     }
 
                     case ID_Mix:
                     {
+                        succceed = true;
                         ref.add(fields[0], 0.0, stof(fields[1]), m); break;
                     }
                 }
             }, delim);
 
-            return ref.countMixes();
+            return succceed;
         }
         catch (const std::exception &ex)
         {
@@ -78,9 +82,9 @@ template <typename Reference> void readMixture
         }
     };
 
-    if (!f(","))
+    if (!f("\t"))
     {
-        if (!f("\t"))
+        if (!f(","))
         {
             throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
         }
@@ -212,10 +216,10 @@ void Standard::r_ref(const Reader &r)
 
 void Standard::r_mix(const Reader &r)
 {
-    const auto n = countColumns(r);
+    const auto n = countColumns(r);    
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
     
-    if (n >= 3)
+    if (n >= 4)
     {
         readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);
     }
