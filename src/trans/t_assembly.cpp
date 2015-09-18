@@ -100,10 +100,6 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
             stats.n_hg38++;
             return;
         }
-        else if ((p.i % 1000000) == 0)
-        {
-            o.wait(std::to_string(p.i));
-        }
         
         stats.n_chrT++;
 
@@ -115,17 +111,17 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
             case Exon:
             {
-                const TransRef::ExonData *d;
+                const TransRef::ExonData *match;
 
                 q_exons.push_back(f);
                 q_exons_[f.tID].push_back(f);
 
                 if (classify(t, f, [&](const Feature &)
                 {
-                    return (d = r.findExon(f.l, TransRef::Exact));
+                    return (match = r.findExon(f.l, TransRef::Exact));
                 }))
                 {
-                    stats.he.at(d->iID)++;
+                    stats.he.at(match->iID)++;
                 }
 
                 break;
@@ -171,22 +167,18 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
      * of successive exon.
      */
     
-    const TransRef::IntronData *m;
+    const TransRef::IntronData *match;
 
     extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
     {
         if (classify(t, i, [&](const Feature &)
         {
-            return (m  = r.findIntron(i.l, TransRef::Exact));
+            return (match  = r.findIntron(i.l, TransRef::Exact));
         }))
         {
-            stats.hi.at(m->iID)++;
+            stats.hi.at(match->iID)++;
         }
     });
-
-    o.info("Counting references");
-
-    o.info("Merging overlapping bases");
 
     /*
      * Calculate for the LOS
@@ -198,11 +190,6 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
     stats.st = r.limit(stats.ht);
     stats.sb = r.limitGene(stats.hb);
     stats.si = r.limit(stats.hi);
-
-    std::cout << r.data().size() << std::endl;
-    std::cout << r.countSortedExons() << std::endl;
-    
-    assert(r.data().size() == r.countSortedExons());
 
     o.info("Generating statistics");
 
