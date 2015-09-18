@@ -27,8 +27,13 @@ static unsigned countColumns(const Reader &r)
     ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
     {
         n = std::max(n, fields.size());
-    });
+    }, ",");
 
+    ParserCSV::parse(Reader(r), [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+    {
+        n = std::max(n, fields.size());
+    }, "\t");
+    
     return static_cast<unsigned>(n);
 }
 
