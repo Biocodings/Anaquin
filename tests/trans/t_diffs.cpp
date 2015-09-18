@@ -4,6 +4,21 @@
 
 using namespace Anaquin;
 
+TEST_CASE("TDiffs_T_1000_Genes")
+{
+    Test::transAB();
+    
+    TDiffs::Options o;
+    o.level = TDiffs::Gene;
+    
+    const auto r  = TDiffs::report("tests/data/T_1000/gene_exp.diff", o);
+    const auto lm = r.linear();
+    
+    REQUIRE(lm.m  == Approx(0.9921460476));
+    REQUIRE(lm.r  == Approx(0.9953198807));
+    REQUIRE(lm.r2 == Approx(0.9906616648));
+}
+
 TEST_CASE("TDiffs_T_1000_Isoforms")
 {
     Test::transAB();
@@ -16,22 +31,7 @@ TEST_CASE("TDiffs_T_1000_Isoforms")
     const auto r  = TDiffs::report("tests/data/T_1000/isoform_exp.diff", o);
     const auto lm = r.linear();
     
-    REQUIRE(lm.m  == Approx(0.970367203));
-    REQUIRE(lm.r  == Approx(0.8538321793));
-    REQUIRE(lm.r2 == Approx(0.7290293904));
-}
-
-TEST_CASE("TDiffs_T_1000_Genes")
-{
-    Test::transAB();
-    
-    TDiffs::Options o;
-    o.level = TDiffs::Gene;
-
-    const auto r  = TDiffs::report("tests/data/T_1000/gene_exp.diff", o);
-    const auto lm = r.linear();
-    
-    REQUIRE(lm.m  == Approx(0.9929858312));
-    REQUIRE(lm.r  == Approx(0.9951255647));
-    REQUIRE(lm.r2 == Approx(0.9902748896));
+    REQUIRE(lm.m  == Approx(0.9702549412));
+    REQUIRE(lm.r  == Approx(0.8546476527));
+    REQUIRE(lm.r2 == Approx(0.7304226103));
 }
