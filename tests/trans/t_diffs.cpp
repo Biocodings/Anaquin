@@ -23,8 +23,6 @@ TEST_CASE("TDiffs_T_1000_Isoforms")
 {
     Test::transAB();
 
-//    const auto r1 = Test::test("-t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -ugdiff tests/data/T_1000/A/G/transcripts.gtf");
-
     TDiffs::Options o;
     o.level = TDiffs::Isoform;
     
