@@ -32,8 +32,6 @@ namespace Anaquin
                 out << code;
                 out.close();
                 
-                std::cout << script << std::endl;
-                
                 // Run the script with given arguments
                 f(prefix + " " + script + " " + args);
 
