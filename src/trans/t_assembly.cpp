@@ -224,7 +224,9 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
                                             % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund))
                                             % stats.sb.id
                                             % (__cmp__.t_sp / 100.0)
-                                            % (__cmp__.t_sn / 100.0)).str());
+                                            % (__cmp__.t_sn / 100.0)
+                                            % "-"
+                                            % "-").str());
     o.writer->close();
 
     return stats;
