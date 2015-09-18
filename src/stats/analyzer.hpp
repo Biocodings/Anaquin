@@ -152,7 +152,7 @@ namespace Anaquin
                 }
             }
 
-            const auto m = SS::lm("y~x", SS::data.frame(SS::c(y), SS::c(x)));
+            const auto m = SS::lm("y~x", SS::R::data.frame(SS::R::c(y), SS::R::c(x)));
 
             LinearModel lm;
             
@@ -302,12 +302,11 @@ namespace Anaquin
          */
 
         template <typename Stats, typename Writer> static void scatter(const Stats &stats,
-                                                                       const std::string prefix,
-                                                                       const std::string unit,
+                                                                       const std::string &prefix,
+                                                                       const std::string &xLabel,
+                                                                       const std::string &yLabel,
                                                                        Writer writer)
         {
-            //assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
-            
             std::vector<double> x, y;
             std::vector<std::string> z;
             
@@ -330,7 +329,7 @@ namespace Anaquin
              */
             
             writer->open(prefix + "_plot.R");
-            writer->write(RWriter::write(x, y, z, unit, stats.s.abund));
+            writer->write(RWriter::coverage(x, y, z, xLabel, yLabel, stats.s.abund));
             writer->close();
             
             /*
@@ -338,69 +337,6 @@ namespace Anaquin
              */
 
             writeCSV(x, y, z, prefix + "_plot.csv", writer);
-        }
-
-        template <typename Stats, typename Writer> static void linear(const Stats &stats,
-                                                                      const std::string prefix,
-                                                                      const std::string unit,
-                                                                      Writer writer,
-                                                                      bool r       = true,
-                                                                      bool summary = true,
-                                                                      bool sequin  = true)
-        {
-            //assert(stats.x.size() == stats.y.size() && stats.y.size() == stats.z.size());
-
-            std::vector<double> x, y;
-            std::vector<std::string> z;
-
-            /*
-             * Ignore any invalid value...
-             */
-
-            for (const auto &p : stats)
-            {
-                if (!isnan(p.second.x) && !isnan(p.second.y))
-                {
-                    z.push_back(p.first);
-                    x.push_back(p.second.x);
-                    y.push_back(p.second.y);
-                }
-            }
-
-            /*
-             * Generate a script for data visualization
-             */
-
-            if (r)
-            {
-                writer->open(prefix + ".R");
-                writer->write(RWriter::write(x, y, z, unit, stats.s.abund));
-                writer->close();
-            }
-            
-            const std::string format = "%1%\t%2%\t%3%\t%4%";
-            const auto lm = stats.linear();
-
-            /*
-             * Generate summary statistics
-             */
-
-            if (summary)
-            {
-                writer->open(prefix + "_summary.stats");
-                writer->write((boost::format(format) % "r" % "slope" % "r2" % "ss").str());
-                writer->write((boost::format(format) % lm.r % lm.m % lm.r2 % stats.s.abund).str());
-                writer->close();
-            }
-
-            /*
-             * Generate CSV for each sequin
-             */
-
-            if (sequin)
-            {
-                //writeCSV(x, y , z, prefix + "_quins.csv", writer);
-            }
         }
     };
 }

@@ -15,24 +15,28 @@ extern std::string date();
 // Defined in main.cpp
 extern std::string __full_command__;
 
-extern std::string LinearR();
+extern std::string RScriptCoverage();
 
 namespace Anaquin
 {
     struct RWriter
     {
-        template <typename T> static std::string write
-                    (const std::vector<T> &x,
-                     const std::vector<T> &y,
-                     const std::vector<SequinID> &z,
-                     const std::string units,
-                     T s)
+        // Generate a R script for plotting expected and measured coverage
+        template <typename T> static std::string coverage
+                        (const std::vector<T> &x,
+                         const std::vector<T> &y,
+                         const std::vector<SequinID> &z,
+                         const std::string &xLabel,
+                         const std::string &yLabel,
+                         T s)
         {
+            assert(!xLabel.empty() && !yLabel.empty());
+
             using boost::algorithm::join;
             using boost::adaptors::transformed;
 
             std::stringstream ss;
-            ss << LinearR();
+            ss << RScriptCoverage();
 
             const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
             const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
@@ -43,8 +47,8 @@ namespace Anaquin
                                             % xs
                                             % ys
                                             % zs
-                                            % units
-                                            % "??").str();
+                                            % xLabel
+                                            % yLabel).str();
         }
     };
 }

@@ -147,7 +147,7 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
      * Generate R scripts
      */
     
-    AnalyzeReporter::scatter(stats, "TransExpress", "", o.writer);
+    AnalyzeReporter::scatter(stats, "TransExpress", "Expected concentration (attomol/ul)", "Measured FPKM", o.writer);
 
     return stats;
 }

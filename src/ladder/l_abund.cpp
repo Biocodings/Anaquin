@@ -134,7 +134,7 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
         assert(SS::sum(normalize));
 
         // Fit a linear regression model
-        const auto lm = SS::lm("y ~ x", SS::data.frame(SS::c(normalize), SS::c(expect)));
+        const auto lm = SS::lm("y ~ x", SS::R::data.frame(SS::R::c(normalize), SS::R::c(expect)));
 
         // Regression slope that we'll correct to 1
         const auto slope = lm.coeffs[1].value;
@@ -238,7 +238,7 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
         o.writer->close();
     };
 
-    AnalyzeReporter::linear(stats, "LadderAbundance", "FPKM", o.writer);
+    //AnalyzeReporter::linear(stats, "LadderAbundance", "FPKM", o.writer);
     writeHist("LadderAbundance_hist.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
 
 	return stats;

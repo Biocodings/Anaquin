@@ -8,8 +8,7 @@ MAbundance::Stats MAbundance::report(const std::string &file, const MAbundance::
     
     o.info("Generating linaer model");
 
-    AnalyzeReporter::linear(stats.lm, "MetaAbundance", "k-mer average", o.writer);
-    AnalyzeReporter::scatter(stats.lm, "MetaAbundance", "k-mer average", o.writer);
+    AnalyzeReporter::scatter(stats.lm, "MetaAbundance", "Expected abudnance (attomol/ul)", "K-Mer average", o.writer);
 
     return stats;
 }

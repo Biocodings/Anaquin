@@ -6,9 +6,9 @@ using namespace Anaquin;
 
 TEST_CASE("TDiffs_T_1000_Isoforms")
 {
-    Test::trans();
+    Test::transAB();
 
-//    const auto r1 = Test::test("-t TransDiff -m data/trans/TransMixture_4.1.csv -rgtf data/trans/TransStandard_1.0.gtf -ugdiff tests/data/T_1000/A/G/transcripts.gtf");
+//    const auto r1 = Test::test("-t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -ugdiff tests/data/T_1000/A/G/transcripts.gtf");
 
     TDiffs::Options o;
     o.level = TDiffs::Isoform;
@@ -23,7 +23,7 @@ TEST_CASE("TDiffs_T_1000_Isoforms")
 
 TEST_CASE("TDiffs_T_1000_Genes")
 {
-    Test::trans();
+    Test::transAB();
     
     TDiffs::Options o;
     o.level = TDiffs::Gene;

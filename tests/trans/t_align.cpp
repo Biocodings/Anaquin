@@ -6,13 +6,13 @@ using namespace Anaquin;
 
 TEST_CASE("TAlign_T_1000_First_100")
 {
-    Test::trans();
+    Test::transA();
     
     const auto r1 = Test::test("-t TransAlign -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -usam tests/data/T_1000/B/accepted_hits_1000.sam");
 
     REQUIRE(r1.status == 0);
 
-    Test::trans();
+    Test::transA();
     const auto r2 = TAlign::report("tests/data/T_1000/B/accepted_hits_1000.sam");
     
     REQUIRE(r2.unmapped  == 0);

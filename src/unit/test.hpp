@@ -16,8 +16,11 @@ namespace Anaquin
         
         int status;
 
+        static void transA();
+        static void transB();
+        static void transAB();
+
         static void meta();
-        static void trans();
         static void fusion();
         static void ladder();
         static void variant();

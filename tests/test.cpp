@@ -16,7 +16,9 @@ extern std::string FusionDataRef();
 extern std::string FusionNormalRef();
 extern std::string FusionMutatedRef();
 
-extern std::string TransDataMix();
+extern std::string TransDataMixA();
+extern std::string TransDataMixB();
+extern std::string TransDataMixAB();
 extern std::string TransStandGTF();
 
 extern std::string MetaDataBed();
@@ -52,11 +54,27 @@ void Test::ladder()
     Standard::instance().r_lad.validate();
 }
 
-void Test::trans()
+void Test::transA()
 {
     Standard::instance(true);
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().r_mix(Reader(TransDataMix(), DataMode::String));
+    Standard::instance().r_mix(Reader(TransDataMixA(), DataMode::String));
+    Standard::instance().r_trans.validate();
+}
+
+void Test::transB()
+{
+    Standard::instance(true);
+    Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().r_mix(Reader(TransDataMixB(), DataMode::String));
+    Standard::instance().r_trans.validate();
+}
+
+void Test::transAB()
+{
+    Standard::instance(true);
+    Standard::instance().r_ref(Reader(TransStandGTF(),  DataMode::String));
+    Standard::instance().r_mix(Reader(TransDataMixAB(), DataMode::String));
     Standard::instance().r_trans.validate();
 }
 

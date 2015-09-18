@@ -100,7 +100,7 @@ LDiffs::Stats LDiffs::report(const std::string &fileA, const std::string &fileB,
     
     options.writer->close();
 
-    AnalyzeReporter::linear(stats, "LadderDifferent", "FPKM", options.writer, true, true, false);
+    //AnalyzeReporter::linear(stats, "LadderDifferent", "FPKM", options.writer, true, true, false);
 
 	return stats;
 }

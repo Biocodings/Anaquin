@@ -76,7 +76,7 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
                                             % lm.sst_df).str());
     o.writer->close();
 
-    AnalyzeReporter::scatter(stats, "VarAllele", "", o.writer);
+    AnalyzeReporter::scatter(stats, "VarAllele", "Expected allele frequency", "Measured allele frequency", o.writer);
 
     return stats;
 }

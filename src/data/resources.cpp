@@ -27,8 +27,10 @@
  * RNA Resources
  */
 
-#include "resources/TransMixture_4.1.csv"
-#include "resources/TransStandard_1.0.gtf"
+#include "resources/MTR002.v013.csv"
+#include "resources/MTR003.v013.csv"
+#include "resources/MTR004.v013.csv"
+#include "resources/ATR001.v032.gtf"
 
 /*
  * META Resources
@@ -54,14 +56,18 @@ std::string ViewerScript()
     return ToString(scripts_viewer_py);
 }
 
-std::string LinearR()
-{
-    return ToString(data_linear_R);
-}
-
 std::string Manual()
 {
     return ToString(data_manual_txt);
+}
+
+/*
+ * R script for plotting
+ */
+
+std::string RScriptCoverage()
+{
+    return ToString(data_linear_R);
 }
 
 /*
@@ -119,12 +125,22 @@ std::string MetaDataBed()
 
 std::string TransStandGTF()
 {
-    return ToString(data_trans_TransStandard_1_0_gtf);
+    return ToString(data_trans_ATR001_v032_gtf);
 }
 
-std::string TransDataMix()
+std::string TransDataMixA()
 {
-    return ToString(data_trans_TransMixture_4_1_csv);
+    return ToString(data_trans_MTR002_v013_csv);
+}
+
+std::string TransDataMixB()
+{
+    return ToString(data_trans_MTR003_v013_csv);
+}
+
+std::string TransDataMixAB()
+{
+    return ToString(data_trans_MTR004_v013_csv);
 }
 
 /*
