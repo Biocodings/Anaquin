@@ -141,7 +141,6 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
                                             % lm.r
                                             % lm.m
                                             % lm.r2
-                                            % lm.ar2
                                             % lm.f
                                             % lm.p
                                             % lm.ssm
@@ -149,7 +148,8 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
                                             % lm.sse
                                             % lm.sse_df
                                             % lm.sst
-                                            % lm.sst_df).str());
+                                            % lm.sst_df
+                                            % units).str());
     o.writer->close();
     
     /*
