@@ -229,5 +229,31 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
                                             % "-").str());
     o.writer->close();
 
+    o.writer->open("TransAssembly_quins.stats");
+    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+    
+    auto format = "%1%\t%2%\t%3%\t%4%";
+    o.writer->write((boost::format(format) % "id" % "exon" % "intron" % "transcript").str());
+    
+    for (const auto &i : stats.he)
+    {
+        o.writer->write((boost::format(format) % i.first
+                                               % stats.he.at(i.first)
+                                               % stats.hi.at(i.first)
+                                               % stats.ht.at(i.first)).str());
+    }
+
+    o.writer->write("\n");
+
+    format = "%1%\t%2%";
+    o.writer->write((boost::format(format) % "id" % "base").str());
+    
+    for (const auto &i : stats.hb)
+    {
+        o.writer->write((boost::format(format) % i.first % stats.hb.at(i.first)).str());
+    }
+    
+    o.writer->close();
+    
     return stats;
 }

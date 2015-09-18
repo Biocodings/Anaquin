@@ -112,26 +112,36 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
     stats.pi.s = r.limitGene(stats.hi);
     stats.pb.s = r.limitGene(stats.hb);
 
-    o.logInfo((boost::format("Exon: %1% %2% %3% %4% %5%")
+    stats.pe.m.sn();
+    stats.pb.m.sn();
+    stats.pi.m.sn();
+    
+    o.logInfo((boost::format("Exon: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pe.m.nr
                                           % stats.pe.m.nq
                                           % stats.pe.m.tp()
                                           % stats.pe.m.fp()
-                                          % stats.pe.m.fn()).str());
+                                          % stats.pe.m.fn()
+                                          % stats.pe.m.sn()
+                                          % stats.pe.m.sp()).str());
 
-    o.logInfo((boost::format("Base: %1% %2% %3% %4% %5%")
+    o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pb.m.nr
                                           % stats.pb.m.nq
                                           % stats.pb.m.tp()
                                           % stats.pb.m.fp()
-                                          % stats.pb.m.fn()).str());
+                                          % stats.pb.m.fn()
+                                          % stats.pb.m.sn()
+                                          % stats.pb.m.sp()).str());
     
-    o.logInfo((boost::format("Intron: %1% %2% %3% %4% %5%")
+    o.logInfo((boost::format("Intron: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pi.m.nr
                                           % stats.pi.m.nq
                                           % stats.pi.m.tp()
                                           % stats.pi.m.fp()
-                                          % stats.pi.m.fn()).str());
+                                          % stats.pi.m.fn()
+                                          % stats.pi.m.sn()
+                                          % stats.pi.m.sp()).str());
     
     /*
      * Write out summary statistics
