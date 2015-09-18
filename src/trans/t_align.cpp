@@ -174,7 +174,7 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
     o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
 
     const auto format = "%1%\t%2%\t%3%\t%4%";
-    o.writer->write((boost::format(format) % "id" % "eCov" % "iCov" % "bCov").str());
+    o.writer->write((boost::format(format) % "id" % "exon" % "intron" % "base").str());
     
     for (const auto &i : stats.he)
     {
