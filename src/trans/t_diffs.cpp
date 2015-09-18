@@ -110,24 +110,25 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
 
     o.info("Generating statistics");
 
+    const auto units = isoform ? "isoforms" : "genes";
+
     /*
      * Generate summary statistics
      */
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome: %2% reads\n"
-                         "   Query: %3% reads\n"
-                         "   Reference: %4% sequins\n\n"
-                         "   Detected: %5%\n\n"
+                         "   Genome: %2% %17%\n"
+                         "   Query: %3% %17%\n"
+                         "   Reference: %4% %17%\n\n"
+                         "   Detected: %5% %17%\n\n"
                          "   Correlation:\t%6%\n"
                          "   Slope:\t%7%\n"
                          "   R2:\t%8%\n"
-                         "   Adjusted R2:\t%9%\n"
-                         "   F-statistic:\t%10%\n"
-                         "   P-value:\t%11%\n"
-                         "   SSM: %12%, DF: %13%\n"
-                         "   SSE: %14%, DF: %15%\n"
-                         "   SST: %16%, DF: %17%\n";
+                         "   F-statistic:\t%9%\n"
+                         "   P-value:\t%10%\n"
+                         "   SSM: %11%, DF: %12%\n"
+                         "   SSE: %13%, DF: %14%\n"
+                         "   SST: %15%, DF: %16%\n";
     
     const auto lm = stats.linear();
 
