@@ -155,7 +155,7 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
      * Generate R scripts
      */
     
-    AnalyzeReporter::scatter(stats, "TransDiff", "Expected log-fold", "Measured log-fold", o.writer);
+    AnalyzeReporter::scatter(stats, "TransDiff", "Expected log-fold of mixture A and B", "Measured log-fold of mixture A and B", o.writer);
     
     return stats;
 }
