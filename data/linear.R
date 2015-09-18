@@ -25,7 +25,7 @@ y <- c(%4%)
 # Names of the sequin for each data-point
 ids <- c(%5%)
 
-d <- data.frame(x=x, y=y, ids=ids)
+d <- data.frame(x=log2(x), y=log2(y), ids=ids)
 
 p <- ggplot(data = d, aes(x = x, y = y))
 p <- p + xlab(%6%)
