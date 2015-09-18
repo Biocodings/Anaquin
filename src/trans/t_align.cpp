@@ -126,14 +126,12 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
                          "   Query: %8% exons\n"
                          "   Query: %9% introns\n"
                          "   Query: %10% bases\n\n"
-                         "   Fuzzy: %11%\n\n"
-                         "#--------------------|   Sn   |  Sp   |  fSn |  fSp\n"
-                         "    Exon level:       %12%     %13%     %14%    %15%\n"
-                         "    Intron level:       %16%     %17%     %18%    %19%\n"
-                         "    Base level:       %20%     %21%     %22%    %23%\n"
+                         "#--------------------|   Sn   |  Sp  |  Ss  \n"
+                         "    Exon level:\t%11%\t%12%\t%13% (%14%)\n"
+                         "    Intron level:\t%15%\t%16%\t%17% (%18%)\n"
+                         "    Base level:\t%19%\t%20%\t%21% (%22%)\n"
                          "\n"
-                         "Dilution:     %24%\n"
-                         "Detection Limit:     %25% (%26%)\n"
+                         "Dilution:\t\t%23%\n"
     ;
 
     o.writer->open("TransAlign_summary.stats");
@@ -147,22 +145,19 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
                                             % stats.pe.m.nq
                                             % stats.pi.m.nq
                                             % stats.pb.m.nq
-                                            % o.fuzzy
                                             % stats.pe.m.sn()
                                             % stats.pe.m.sp()
-                                            % "-"
-                                            % "-"
-                                            % stats.pi.m.sn()
-                                            % stats.pi.m.sp()
-                                            % "-"
-                                            % "-"
-                                            % stats.pb.m.sn()
-                                            % stats.pb.m.sp()
-                                            % "-"
-                                            % "-"
-                                            % stats.dilution()
                                             % stats.pe.s.abund
                                             % stats.pe.s.id
+                                            % stats.pi.m.sn()
+                                            % stats.pi.m.sp()
+                                            % stats.pi.s.abund
+                                            % stats.pi.s.id
+                                            % stats.pb.m.sn()
+                                            % stats.pb.m.sp()
+                                            % stats.pb.s.abund
+                                            % stats.pb.s.id
+                                            % stats.dilution()
                                         ).str());
     o.writer->close();
 

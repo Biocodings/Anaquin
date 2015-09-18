@@ -106,14 +106,14 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
      */
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome: %2% reads\n"
-                         "   Query: %3% reads\n"
-                         "   Reference: %4% sequins\n\n"
+                         "   Genome: %2% ????\n"
+                         "   Query: %3% ????\n"
+                         "   Reference: %4% ????\n\n"
                          "   Detected: %5%\n\n"
                          "   Correlation:\t%6%\n"
                          "   Slope:\t%7%\n"
                          "   R2:\t%8%\n"
-                         "   Adjusted R2:\t%9%\n"
+                         "   Adjusted R2:\t%9%\n"  // DELETE THIS
                          "   F-statistic:\t%10%\n"
                          "   P-value:\t%11%\n"
                          "   SSM: %12%, DF: %13%\n"
