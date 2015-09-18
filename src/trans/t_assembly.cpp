@@ -181,6 +181,14 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
     });
 
     /*
+     * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
+     * The number is expected to approach the reference length (calculated next) for a very large
+     * experiment with sufficient coverage.
+     */
+    
+    countBase(r.mergedExons(), q_exons, t, stats.hb);
+
+    /*
      * Calculate for the LOS
      */
 
