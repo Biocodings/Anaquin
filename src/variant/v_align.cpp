@@ -65,7 +65,8 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
                          "   Reference:   %5% genes\n"
                          "   Sensitivity: %6%\n"
                          "   Specificity: %7%\n\n"
-                         "   Dilution:    %8%\n"
+                         "   Limt of sensitivity: %8% (%9%)\n\n"
+                         "   Dilution:    %10%\n"
     ;
 
     o.writer->open("VarAlign_summary.stats");
@@ -76,6 +77,8 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()
                                             % stats.p.m.sp()
+                                            % stats.p.s.abund
+                                            % stats.p.s.id
                                             % stats.dilution()).str());
     o.writer->close();
     
