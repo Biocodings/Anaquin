@@ -4,7 +4,7 @@
 #include <boost/format.hpp>
 #include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
-
+#include <iostream>
 namespace Anaquin
 {
     template <typename Stats, typename Options, typename F> void classify
@@ -43,14 +43,12 @@ namespace Anaquin
                 if (!found || !type || !alt || !ref)
                 {
                     o.writer->write((boost::format(format) % v.l.start
-                                                           % found
-                                                           % type
-                                                           % alt
-                                                           % ref).str());
+                                                           % (found ? "t" : "f")
+                                                           % (type ? "t" : "f")
+                                                           % (alt ? "t" : "f")
+                                                           % (ref ? "t" : "f")).str());
                     return Negative;
                 }
-                
-                stats.detected++;
                 
                 f(v, match);
 

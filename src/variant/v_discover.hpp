@@ -11,13 +11,13 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
-            long detected;
+            long detected = 0;
             
             // Overall performance
             Confusion m;
 
             // The proportion of variations with alignment coverage
-            double covered;
+            double covered = 0;
 
             SequinHist h = Standard::instance().r_var.hist();
         };

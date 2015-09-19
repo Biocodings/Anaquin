@@ -57,6 +57,13 @@ void ParserVCF::parse(const Reader &r, Callback c)
         v.id = fields[Chromo];
         v.l.start = v.l.end = stod(fields[Pos]);
 
+        // Don't bother further parsing if we don't need the information anyway...
+        if (v.id != Standard::instance().id)
+        {
+            c(v, p);
+            continue;
+        }
+        
         /*
          * Each base must be one of A,C,G,T,N (case insensitive). The value in the POS field refers
          * to the position of the first base in the string.

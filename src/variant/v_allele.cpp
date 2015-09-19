@@ -23,7 +23,12 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
          * in the concentration of reference and variant DNA standards.
          */
 
-        stats.add(match->id, known, measured);
+        // Eg: D_1_12_R_G/A
+        const auto id = (boost::format("%1%_%2%/%3%:") % match->id
+                                                       % match->ref
+                                                       % match->alt).str();
+
+        stats.add(id, known, measured);
     });
  
     o.info("Generating statistics");

@@ -14,11 +14,11 @@ VDiscover::Stats VDiscover::report(const std::string &file, const Options &o)
     {
         // Empty Implementation
     });
-    
+
     stats.m.nr = r.countVars();
 
     o.info("Generating statistics");
-    
+
     /*
      * Generate summary statistics
      */
