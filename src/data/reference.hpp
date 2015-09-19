@@ -4,7 +4,7 @@
 #include <map>
 #include "data/variation.hpp"
 #include "stats/sensitivity.hpp"
-
+#include <iostream>
 namespace Anaquin
 {
     enum Mixture

@@ -87,7 +87,7 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
     o.writer->open("VarAlign_quins.stats");
     o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
     
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "id" % "counts (reads)").str());
     
     for (const auto &i : stats.h)

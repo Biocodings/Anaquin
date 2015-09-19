@@ -346,9 +346,9 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
         if (_data.count(i.first))
         {
             _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
-                                             {
-                                                 return true;
-                                             });
+            {
+                return true;
+            });
 
             _impl->genes[_data[i.first].gID].id = _data[i.first].gID;
             _impl->genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
@@ -439,9 +439,6 @@ struct VarRef::VarRefImpl
 
     std::map<Mixture, std::map<PairID, VariantPair>> pairs;
 
-    // Validated standards
-    std::map<SequinID, Locus> seqsByID;
-    
     /*
      * Raw data
      */
@@ -481,7 +478,7 @@ void VarRef::addStand(const SequinID &id, const Locus &l)
 
 std::size_t VarRef::countRefGenes() const
 {
-    return static_cast<std::size_t>(0.5 * _impl->seqsByID.size());
+    return static_cast<std::size_t>(0.5 * data().size());
 }
 
 std::size_t VarRef::countVarGens() const
@@ -517,9 +514,13 @@ void VarRef::validate()
     // Validate sequins defined in the mixture
     merge(_rawMIDs, _rawMIDs);
 
-    _impl->seqsByID = _impl->rawSeqsByID;
-
-    assert(!(_impl->seqsByID.size() % 2));
+    for (const auto &i : _impl->rawSeqsByID)
+    {
+        if (_data.count(i.first))
+        {
+            _data[i.first].l = i.second;
+        }
+    }
     
     /*
      * Construct data structure for homozygous/heterozygous
