@@ -93,25 +93,10 @@ template <typename Reference> void readMixture
 
 void Standard::v_std(const Reader &r)
 {
-//    // TODO: Fix this
-//    seqIDs.clear();
-//    
-//    ParserFeature::parse(r, [&](const Feature &f, const ParserProgress &)
-//    {
-//        if (f.type == Exon)
-//        {
-//            fs_1.push_back(f);
-//            
-//            /*
-//             * TODO: Fix this!!!! Getting sequinIDs should be done somewhere else
-//             */
-//
-//            const auto seqID = f.tID;
-//            seqIDs.insert(seqID);
-//        }
-//    });
-//
-//    assert(!fs_1.empty());
+    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    {
+        r_var.addStand(f.id, f.l);
+    });
 }
 
 void Standard::v_var(const Reader &r)
@@ -155,7 +140,6 @@ void Standard::v_var(const Reader &r)
 void Standard::v_mix(const Reader &r)
 {
     readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
-    readMixture(Reader(r), r_var, Mix_2, ID_Length_Mix, 3);
 }
 
 void Standard::m_mix_1(const Reader &r)

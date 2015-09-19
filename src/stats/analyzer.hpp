@@ -54,6 +54,11 @@ namespace Anaquin
         inline Percentage dilution() const { return static_cast<double>(n_chrT) / (n_chrT + n_hg38); }
     };
 
+    struct AlignmentStats : public MappingStats
+    {
+        Counts unmapped;
+    };
+    
     /*
      * Represents a sequin that is not detected in the experiment
      */

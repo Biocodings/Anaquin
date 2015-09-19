@@ -1,11 +1,11 @@
-//#include <catch.hpp>
-//#include "unit/test.hpp"
-//#include "variant/v_align.hpp"
-//
-//using namespace Anaquin;
-//
-//TEST_CASE("VAlign_GM_VARMXA")
-//{
+#include <catch.hpp>
+#include "unit/test.hpp"
+#include "variant/v_align.hpp"
+
+using namespace Anaquin;
+
+TEST_CASE("VAlign_GM_VARMXA")
+{
 //    Test::variant();
 //
 //    const auto r = VAlign::analyze("tests/data/GM_VARMXA_CONA/aligned.sam");
@@ -17,4 +17,4 @@
 //    REQUIRE(r.p.s.id == "D_1_3_V");
 //    REQUIRE(r.p.s.counts == 1781);
 //    REQUIRE(r.p.s.abund == Approx(20000));
-//}
+}

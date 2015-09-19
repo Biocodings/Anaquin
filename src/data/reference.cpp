@@ -434,25 +434,27 @@ struct VarRef::VarRefImpl
      * Validated variables
      */
 
+    // Validated variants
     std::vector<Variation> vars;
 
-    std::map<Mixture, std::map<BaseID, VariantPair>> pairs;
+    std::map<Mixture, std::map<PairID, VariantPair>> pairs;
+
+    // Validated standards
+    std::map<SequinID, Locus> seqsByID;
     
     /*
-     * Raw variables
+     * Raw data
      */
     
     std::vector<Variation> rawVars;
+
+    // Locus of the sequin
+    std::map<SequinID, Locus> rawSeqsByID;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-std::size_t VarRef::countVars() const
-{
-    return _impl->vars.size();
-}
-
-double VarRef::alleleFreq(Mixture m, const BaseID &bID) const
+double VarRef::alleleFreq(Mixture m, const PairID &bID) const
 {
     const auto &p = _impl->pairs.at(m).at(bID);
     const auto &r = p.r;
@@ -468,16 +470,61 @@ void VarRef::addVar(const Variation &v)
     _impl->rawVars.push_back(v);
 }
 
+void VarRef::addStand(const SequinID &id, const Locus &l)
+{
+    assert(l.length());
+
+    // We're only interested in the position of the sequin
+    _impl->rawSeqsByID[id] += l;
+}
+
+std::size_t VarRef::countVarGens() const
+{
+    return 0;
+}
+
+std::size_t VarRef::countRefGenes() const
+{
+    return 0;
+}
+
+std::size_t VarRef::countIndels() const
+{
+    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variation &v)
+    {
+        return v.type == Insertion || v.type == Deletion;
+    });
+}
+
+std::size_t VarRef::countSNPs() const
+{
+    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variation &v)
+    {
+        return v.type == SNP;
+    });
+}
+
+std::size_t VarRef::countVars() const
+{
+    return _impl->vars.size();
+}
+
 void VarRef::validate()
 {
     _impl->vars = _impl->rawVars;
 
     // Validate sequins defined in the mixture
     merge(_rawMIDs, _rawMIDs);
+
     
-   /*
-    * Construct data structure for homozygous/heterozygous
-    */
+    
+    _impl->seqsByID = _impl->rawSeqsByID;
+    
+    
+    
+    /*
+     * Construct data structure for homozygous/heterozygous
+     */
 
     std::vector<std::string> toks;
     
@@ -503,8 +550,6 @@ void VarRef::validate()
             }
         }
     }
-
-    assert(!_impl->pairs.empty());
 }
 
 const Variation * VarRef::findVar(const Locus &l, double fuzzy, Matching match) const

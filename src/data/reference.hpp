@@ -352,25 +352,48 @@ namespace Anaquin
     {
         public:
 
+            typedef std::string PairID;
+        
             enum Matching
             {
                 StartOnly,
+                Contains,
             };
 
             VarRef();
 
             // Add a reference for a known variant
-            void addVar(const Variation &v);
+            void addVar(const Variation &);
 
-            // Return the number of validated known variants
+            // Add a new standard
+            void addStand(const SequinID &, const Locus &);
+
+            // Return number of validated variants
             std::size_t countVars() const;
 
+            // Return number of validated SNPs
+            std::size_t countSNPs() const;
+        
+            // Return number of validated indels
+            std::size_t countIndels() const;
+        
+            // Return number of validated references, eg: D_1_11_R
+            std::size_t countRefGenes() const;
+
+            // Return number of validated variants, eg: D_1_11_V
+            std::size_t countVarGens() const;
+        
             void validate() override;
 
-            const Variation *findVar(const Locus &l, double fuzzy = 0, Matching = StartOnly) const;
+            // Find a reference gene that contains the given locus
+            const SequinData *findRefGene(const Locus &, double fuzzy = 0, Matching = Contains) const;
 
-            double alleleFreq(Mixture m, const BaseID &) const;
-        
+            // Find a reference variant given a locus
+            const Variation *findVar(const Locus &, double fuzzy = 0, Matching = StartOnly) const;
+
+            // Return
+            double alleleFreq(Mixture, const PairID &) const;
+
         private:
 
             struct VarRefImpl;
