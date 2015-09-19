@@ -118,7 +118,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
                 if (classify(t, f, [&](const Feature &)
                 {
-                    return (match = r.findExon(f.l, TransRef::Exact));
+                    return (match = r.findExon(f.l, Exact));
                 }))
                 {
                     stats.he.at(match->iID)++;
@@ -137,7 +137,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
 
                 if (classify(t, f, [&](const Feature &)
                 {
-                    return (match = r.seq(f.l));
+                    return (match = r.match(f.l, Overlap));
                 }))
                 {
                     stats.ht.at(match->id)++;
@@ -173,7 +173,7 @@ TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
     {
         if (classify(t, i, [&](const Feature &)
         {
-            return (match  = r.findIntron(i.l, TransRef::Exact));
+            return (match  = r.findIntron(i.l, Exact));
         }))
         {
             stats.hi.at(match->iID)++;

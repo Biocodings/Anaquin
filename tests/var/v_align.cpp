@@ -8,6 +8,9 @@ TEST_CASE("VAlign_GM_VARMXA")
 {
 //    Test::variant();
 //
+    
+// ./anaquin -t VarAlign -m data/var/MVA011.v013.csv -rbed data/var/AVA017.v032.bed -ubam aligned.sam
+    
 //    const auto r = VAlign::analyze("tests/data/GM_VARMXA_CONA/aligned.sam");
 //
 //    REQUIRE(r.p.m.sp() == Approx(0.9463336876));

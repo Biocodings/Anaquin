@@ -86,7 +86,7 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
                     return;
                 }
                 
-                const auto *seq = r.seq(t.testID);
+                const auto *seq = r.match(t.testID);
 
                 if (seq)
                 {

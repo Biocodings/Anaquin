@@ -216,11 +216,11 @@ const TransRef::GeneData * TransRef::findGene(const GeneID &id) const
     return _impl->genes.count(id) ? &(_impl->genes.at(id)) : nullptr;
 }
 
-template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, TransRef::Matching m)
+template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)
 {
     for (const auto &i : x)
     {
-        if ((m == TransRef::Exact && i.second.l() == l) || (m == TransRef::Contains && i.second.l().contains(l)))
+        if ((m == Exact && i.second.l() == l) || (m == Contains && i.second.l().contains(l)))
         {
             return &i.second;
         }
@@ -229,11 +229,11 @@ template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x
     return nullptr;
 }
 
-template <typename Iter> const typename Iter::value_type *findList(const Iter &x, const Locus &l, TransRef::Matching m)
+template <typename Iter> const typename Iter::value_type *findList(const Iter &x, const Locus &l, MatchRule m)
 {
     for (const auto &i : x)
     {
-        if ((m == TransRef::Exact && i.l == l) || (m == TransRef::Contains && i.l.contains(l)))
+        if ((m == Exact && i.l == l) || (m == Contains && i.l.contains(l)))
         {
             return &i;
         }
@@ -242,17 +242,17 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
     return nullptr;
 }
 
-const TransRef::GeneData * TransRef::findGene(const Locus &l, TransRef::Matching m) const
+const TransRef::GeneData * TransRef::findGene(const Locus &l, MatchRule m) const
 {
     return findMap(_impl->genes, l, m);
 }
 
-const TransRef::ExonData * TransRef::findExon(const Locus &l, TransRef::Matching m) const
+const TransRef::ExonData * TransRef::findExon(const Locus &l, MatchRule m) const
 {
     return findList(_impl->sortedExons, l, m);
 }
 
-const TransRef::IntronData * TransRef::findIntron(const Locus &l, TransRef::Matching m) const
+const TransRef::IntronData * TransRef::findIntron(const Locus &l, MatchRule m) const
 {
     return findList(_impl->sortedIntrons, l, m);
 }
@@ -473,19 +473,20 @@ void VarRef::addVar(const Variation &v)
 void VarRef::addStand(const SequinID &id, const Locus &l)
 {
     assert(l.length());
+    assert(!_impl->rawSeqsByID.count(id));
 
     // We're only interested in the position of the sequin
-    _impl->rawSeqsByID[id] += l;
-}
-
-std::size_t VarRef::countVarGens() const
-{
-    return 0;
+    _impl->rawSeqsByID[id] = l;
 }
 
 std::size_t VarRef::countRefGenes() const
 {
-    return 0;
+    return static_cast<std::size_t>(0.5 * _impl->seqsByID.size());
+}
+
+std::size_t VarRef::countVarGens() const
+{
+    return countRefGenes();
 }
 
 std::size_t VarRef::countIndels() const
@@ -516,11 +517,9 @@ void VarRef::validate()
     // Validate sequins defined in the mixture
     merge(_rawMIDs, _rawMIDs);
 
-    
-    
     _impl->seqsByID = _impl->rawSeqsByID;
-    
-    
+
+    assert(!(_impl->seqsByID.size() % 2));
     
     /*
      * Construct data structure for homozygous/heterozygous
@@ -552,7 +551,7 @@ void VarRef::validate()
     }
 }
 
-const Variation * VarRef::findVar(const Locus &l, double fuzzy, Matching match) const
+const Variation * VarRef::findVar(const Locus &l, double fuzzy, MatchRule match) const
 {
     for (const auto &i : _impl->vars)
     {

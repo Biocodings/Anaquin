@@ -52,10 +52,10 @@ namespace Anaquin
 
             auto positive = [&](const SequinID &id, Reads reads)
             {
-                assert(!id.empty() && r.seq(id));
+                assert(!id.empty() && r.match(id));
                 
                 // Known abundance for the fusion
-                const auto known = r.seq(id)->abund(Mix_1);
+                const auto known = r.match(id)->abund(Mix_1);
                 
                 // Measured abundance for the fusion
                 const auto measured = reads;

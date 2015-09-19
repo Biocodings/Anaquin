@@ -39,12 +39,12 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
             const TransData *m = nullptr;
 
             // Try to match by name if possible
-            m = r.seq(t.trackID);
+            m = r.match(t.trackID);
 
             if (!m)
             {
                 // Try to match by locus (de-novo assembly)
-                m = r.seq(t.l);
+                m = r.match(t.l, Overlap);
             }
 
             if (!m)
@@ -71,7 +71,7 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
             if (!m)
             {
                 // Try to match by locus (de-novo assembly)
-                m = r.findGene(t.l, TransRef::Contains);
+                m = r.findGene(t.l, Contains);
             }
 
             if (!m)

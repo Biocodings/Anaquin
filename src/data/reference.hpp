@@ -43,6 +43,18 @@ namespace Anaquin
     
     typedef std::map<SequinID, Counts> SequinHist;
 
+    /*
+     * Different rules how two positions can be compared
+     */
+
+    enum MatchRule
+    {
+        Exact,
+        Overlap,
+        StartOnly,
+        Contains,
+    };
+
     template <typename Data = SequinData, typename Stats = SequinStats> class Reference
     {
         public:
@@ -60,16 +72,16 @@ namespace Anaquin
             // Return all validated sequins
             inline const std::map<SequinID, Data> &data() const { return _data; }
 
-            inline const Data *seq(const SequinID &id) const
+            inline const Data *match(const SequinID &id) const
             {
                 return _data.count(id) ? &_data.at(id) : nullptr;
             }
 
-            inline const Data *seq(const Locus &l) const
+            inline const Data *match(const Locus &l, MatchRule m) const
             {
                 for (const auto &i : _data)
                 {
-                    if (i.second.l.overlap(l))
+                    if ((m == Overlap && i.second.l.overlap(l)) || (m == Contains && i.second.l.contains(l)))
                     {
                         return &i.second;
                     }
@@ -100,7 +112,7 @@ namespace Anaquin
             {
                 return limit(h, [&](const SequinID &id)
                 {
-                    return this->seq(id);
+                    return this->match(id);
                 });
             }
 
@@ -354,12 +366,6 @@ namespace Anaquin
 
             typedef std::string PairID;
         
-            enum Matching
-            {
-                StartOnly,
-                Contains,
-            };
-
             VarRef();
 
             // Add a reference for a known variant
@@ -386,12 +392,12 @@ namespace Anaquin
             void validate() override;
 
             // Find a reference gene that contains the given locus
-            const SequinData *findRefGene(const Locus &, double fuzzy = 0, Matching = Contains) const;
+            const SequinData *findRefGene(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
 
             // Find a reference variant given a locus
-            const Variation *findVar(const Locus &, double fuzzy = 0, Matching = StartOnly) const;
+            const Variation *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;
 
-            // Return
+            // Return the proportion of variants for a variant pair
             double alleleFreq(Mixture, const PairID &) const;
 
         private:
@@ -414,12 +420,6 @@ namespace Anaquin
     class TransRef : public Reference<TransData, SequinStats>
     {
         public:
-
-            enum Matching
-            {
-                Exact,
-                Contains,
-            };
 
             struct GeneData
             {
@@ -515,10 +515,10 @@ namespace Anaquin
         
             const std::vector<ExonData> & mergedExons() const;
 
-            const GeneData   *findGene  (const GeneID &id)         const;
-            const GeneData   *findGene  (const Locus &l, Matching) const;
-            const ExonData   *findExon  (const Locus &l, Matching) const;
-            const IntronData *findIntron(const Locus &l, Matching) const;
+            const GeneData   *findGene  (const GeneID &id)          const;
+            const GeneData   *findGene  (const Locus &l, MatchRule) const;
+            const ExonData   *findExon  (const Locus &l, MatchRule) const;
+            const IntronData *findIntron(const Locus &l, MatchRule) const;
 
         private:
 

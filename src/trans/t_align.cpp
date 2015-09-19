@@ -45,7 +45,7 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
 
             if (classify(stats.pe.m, align, [&](const Alignment &)
             {
-                return (d = r.findExon(align.l, TransRef::Contains));
+                return (d = r.findExon(align.l, Contains));
             }))
             {
                 stats.he.at(d->gID)++;
@@ -64,7 +64,7 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
             {
-                return (d = r.findIntron(align.l, TransRef::Exact));
+                return (d = r.findIntron(align.l, Exact));
             }))
             {
                 stats.hi.at(d->gID)++;

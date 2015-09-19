@@ -37,7 +37,7 @@ namespace Anaquin
 
             return l;
         };
-        
+
         template <typename T> static bool overlap(const std::vector<T> &ls)
         {
             for (auto i = 0; i < ls.size(); i++)

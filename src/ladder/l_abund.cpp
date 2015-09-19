@@ -70,7 +70,7 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
     {
         o.info((boost::format("Calculating for sequin: %1%") % seqID).str());
 
-        if (!r.seq(seqID))
+        if (!r.match(seqID))
         {
             o.warn(seqID + " is in alignment but not found in the mixture file");
         }
@@ -86,7 +86,7 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
                 { "D", 8.0 },
             };
 
-            stats.expTotal += fold.at(typeID) * r.seq(seqID)->abund(o.mix, false);
+            stats.expTotal += fold.at(typeID) * r.match(seqID)->abund(o.mix, false);
         }
     }
 
@@ -125,10 +125,10 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
         const auto normalize = create(COUNT(A), COUNT(B), COUNT(C), COUNT(D), 1.0, stats.obsTotal);
         
         // Create a vector for normalized expected coverage
-        const auto expect = create(r.seq(A)->mixes.at(Mix_1),
-                                   r.seq(B)->mixes.at(Mix_1),
-                                   r.seq(C)->mixes.at(Mix_1),
-                                   r.seq(D)->mixes.at(Mix_1), 1.0, stats.expTotal);
+        const auto expect = create(r.match(A)->mixes.at(Mix_1),
+                                   r.match(B)->mixes.at(Mix_1),
+                                   r.match(C)->mixes.at(Mix_1),
+                                   r.match(D)->mixes.at(Mix_1), 1.0, stats.expTotal);
 
         // There must be something detected, otherwise we wouldn't have been here
         assert(SS::sum(normalize));

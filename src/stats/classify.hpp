@@ -82,12 +82,6 @@ namespace Anaquin
         return n;
     }
 
-    enum MatchRule
-    {
-        Exact,
-        Contains,
-    };
-
     template <typename Iter, typename T> const typename Iter::value_type * find
         (const Iter &iter, const T &t, MatchRule rule)
     {
@@ -130,23 +124,20 @@ namespace Anaquin
     
     template <typename T, typename Classifer> bool classify(Confusion &m, const T &t, Classifer c)
     {
-        //if (s.l.contains(static_cast<Locus>(t)))
+        const auto r = c(t);
+        
+        if ((void *) r != (void *) ClassifyResult::Ignore)
         {
-            const auto r = c(t);
-
-            if ((void *) r != (void *) ClassifyResult::Ignore)
+            if ((void *) r == (void *) ClassifyResult::Negative)
             {
-                if ((void *) r == (void *) ClassifyResult::Negative)
-                {
-                    m.nq++;
-                    m.fp()++;
-                }
-                else
-                {
-                    m.nq++;
-                    m.tp()++;
-                    return true;
-                }
+                m.nq++;
+                m.fp()++;
+            }
+            else
+            {
+                m.nq++;
+                m.tp()++;
+                return true;
             }
         }
 

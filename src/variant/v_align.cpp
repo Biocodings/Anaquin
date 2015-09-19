@@ -38,7 +38,7 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
 
         if (classify(stats.p.m, align, [&](const Alignment &)
         {
-            return (match = r.seq(align.id)) ? Positive : Negative;
+            return (match = r.match(align.l, Contains)) ? Positive : Negative;
         }))
         {
             stats.h.at(match->id)++;

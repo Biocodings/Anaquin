@@ -2,7 +2,7 @@
 #include "data/reader.hpp"
 #include "parsers/parser_bed.hpp"
 #include <boost/algorithm/string.hpp>
-
+#include <iostream>
 using namespace Anaquin;
 
 void ParserBED::parse(const Reader &r, Callback x)
