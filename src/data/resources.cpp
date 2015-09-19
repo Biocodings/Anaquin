@@ -166,8 +166,3 @@ std::string VarDataBed()
 {
     return ToString(data_var_AVA008_v032_bed);
 }
-
-std::string VarStandGTF()
-{
-    return ToString(data_var_AVA009_v032_vcf);
-}

@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("VarDiscover_V_1000")
 {
-    Test::variant();
+    Test::variantA();
     
     const auto r = VDiscover::report("tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
 
