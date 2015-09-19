@@ -1,5 +1,5 @@
 #include <numeric>
-#include "meta/m_blast.hpp"
+#include "meta/m_blat.hpp"
 #include <boost/format.hpp>
 #include "parsers/parser_blast.hpp"
 
@@ -51,7 +51,7 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &o)
 
     /*
      * Traverse through all sequins, and calculate statistics for all alignments
-     * to each of those sequin.
+     * for each of those sequin.
      */
     
     MBlast::Stats stats;
@@ -106,7 +106,7 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &o)
             assert(align->gaps    >= 0.0 && align->gaps     <= 1.0);
             assert(align->covered >= 0.0 && align->mismatch >= 0.0);
             
-            // Create an alignment for each contig that aligns to the metaquin
+            // Create an alignment for each contig that aligns to the MetaQuin
             for (const auto &i : align->contigs)
             {
                 stats.aligns[i.id] = align;
@@ -135,10 +135,35 @@ void MBlast::report(const std::string &file, const Options &o)
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
         o.writer->write((boost::format(format) % "id"
+                         % "contigs"
+                         % "covered"
+                         % "mismatch"
+                         % "gaps").str());
+        
+        for (const auto &i : stats.metas)
+        {
+            const auto &align = i.second;
+            
+            o.writer->write((boost::format(format) % align->seq->id
+                             % align->contigs.size()
+                             % align->covered
+                             % align->mismatch
+                             % align->gaps).str());
+        }
+        
+        o.writer->close();
+    }
+
+    {
+        o.writer->open("MetaPSL_quins.stats");
+        
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+        
+        o.writer->write((boost::format(format) % "id"
                                                % "contigs"
-                                               % "cover"
+                                               % "covered"
                                                % "mismatch"
-                                               % "gap").str());
+                                               % "gaps").str());
 
         for (const auto &i : stats.metas)
         {

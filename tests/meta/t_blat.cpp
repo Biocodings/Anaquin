@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "unit/test.hpp"
-#include "meta/m_blast.hpp"
+#include "meta/m_blat.hpp"
 
 using namespace Anaquin;
 

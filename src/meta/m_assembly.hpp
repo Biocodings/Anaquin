@@ -3,7 +3,7 @@
 
 #include <numeric>
 #include "data/tokens.hpp"
-#include "meta/m_blast.hpp"
+#include "meta/m_blat.hpp"
 #include "meta/m_histogram.h"
 #include "stats/analyzer.hpp"
 #include "parsers/parser_fa.hpp"

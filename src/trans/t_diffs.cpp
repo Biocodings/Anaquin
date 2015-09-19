@@ -46,7 +46,7 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
             measured = fpkm_2 / fpkm_1;
         }
 
-        stats.add(id, !isnan(known) ? log2(known) : NAN, !isnan(measured) ? log2(measured) : NAN);
+        stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
     };
 
     ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
@@ -102,7 +102,7 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
                     measured = t.fpkm_2 / t.fpkm_1;
                 }
 
-                stats.add(t.testID, !isnan(known) ? log2(known) : NAN, !isnan(measured) ? log2(measured) : NAN);
+                stats.add(t.testID, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
                 break;
             }
         }

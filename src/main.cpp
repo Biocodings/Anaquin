@@ -17,7 +17,7 @@
 #include "variant/v_viewer.hpp"
 #include "variant/v_discover.hpp"
 
-#include "meta/m_blast.hpp"
+#include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
 #include "meta/m_abund.hpp"
 #include "meta/m_assembly.hpp"
@@ -156,7 +156,6 @@ static std::map<Value, Tool> _tools =
     { "VarAllele",        TOOL_V_ALLELE   },
 
     { "MetaPSL",          TOOL_M_PSL      },
-    { "MetaAlign",        TOOL_M_ALIGN    },
     { "MetaAssembly",     TOOL_M_ASSEMBLY },
     { "MetaAbund",        TOOL_M_ABUND    },
     { "MetaAbundance",    TOOL_M_ABUND    },
@@ -195,8 +194,10 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
-    { TOOL_M_ASSEMBLY, { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1 } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1 } },
+    { TOOL_M_IGV:      { OPT_FA_1                                    } },
+    { TOOL_M_PSL:      { OPT_R_BED, OPT_PSL_1                        } },
+    { TOOL_M_ASSEMBLY, { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
 
     /*
      * Fusion Analysis
@@ -1090,7 +1091,6 @@ void parse(int argc, char ** argv)
         case TOOL_M_IGV:
         case TOOL_M_PSL:
         case TOOL_M_DIFF:
-        case TOOL_M_ALIGN:
         case TOOL_M_ABUND:
         case TOOL_M_ASSEMBLY:
         {
@@ -1104,6 +1104,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_M_IGV: { break; }
+                    
                 case TOOL_M_PSL: { analyze_1<MBlast>(OPT_PSL_1); break; }
 
                 case TOOL_M_DIFF:
