@@ -56,7 +56,7 @@ namespace Anaquin
 
     struct AlignmentStats : public MappingStats
     {
-        Counts unmapped;
+        Counts unmapped = 0;
     };
     
     /*
