@@ -436,8 +436,10 @@ struct VarRef::VarRefImpl
      */
 
     // Validated variants
-    std::vector<Variation> vars;
+    std::set<Variation> vars;
 
+    std::set<SequinID> varIDs;
+    
     // Validated pairs (references + variants)
     std::map<PairID, PairData> _pairs;
 
@@ -447,7 +449,8 @@ struct VarRef::VarRefImpl
      * Raw data
      */
     
-    std::vector<Variation> rawVars;
+    std::set<SequinID> rawVarIDs;
+    std::set<Variation> rawVars;
 
     // Locus of the sequin
     std::map<SequinID, Locus> rawSeqsByID;
@@ -468,7 +471,8 @@ double VarRef::alleleFreq(Mixture m, const PairID &bID) const
 void VarRef::addVar(const Variation &v)
 {
     assert(!v.bID.empty());
-    _impl->rawVars.push_back(v);
+    _impl->rawVars.insert(v);
+    _impl->rawVarIDs.insert(v.id);
 }
 
 void VarRef::addStand(const SequinID &id, const Locus &l)
@@ -556,11 +560,37 @@ Concentration VarRef::PairData::abund(Mixture m) const
 
 void VarRef::validate()
 {
-    _impl->vars = _impl->rawVars;
+    _impl->vars   = _impl->rawVars;
+    _impl->varIDs = _impl->rawVarIDs;
 
-    // Validate sequins defined in the mixture
-    merge(_rawMIDs, _rawMIDs);
-
+    /*
+     * Variant analysis can be validated by mixture, variants and standards. For example, VarDiscover
+     * doesn't take a mixture and standards, therefore it can only be validated by variants.
+     */
+    
+    if (!_rawMIDs.empty())
+    {
+        // Validate by mixture
+        merge(_rawMIDs, _rawMIDs);
+    }
+    else
+    {
+        // Validate by annotation
+        merge(_impl->varIDs, _impl->varIDs);
+    }
+    
+    /*
+     * Construct data-structure for the standards. The purpose is to combine reference and variant
+     * sequins. Although it can also be done for the variants, but it's probably not a good idea.
+     *
+     * Consider:
+     *
+     *     chrT    641707  641708  D_1_10_R_G/A    0       +
+     *     chrT    641714  641715  D_1_10_R_G/A    0       +
+     *
+     * There is no information directly for D_1_1_V. Therefore, we'll only do it for the standards.
+     */
+    
     for (const auto &i : _impl->rawSeqsByID)
     {
         if (_data.count(i.first))

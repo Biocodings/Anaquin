@@ -13,12 +13,11 @@ namespace Anaquin
         const auto &r = Standard::instance().r_var;
         
         o.info("Parsing VCF file");
-        o.writer->open("VarAllele_false.stats");
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
         o.writer->write((boost::format(format) % "start"
-                                               % "matched"
+                                               % "match"
                                                % "type"
                                                % "alt"
                                                % "ref").str());

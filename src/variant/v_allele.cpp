@@ -8,6 +8,8 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
     VAllele::Stats stats;
     const auto &r = Standard::instance().r_var;
     
+    o.writer->open("VarAllele_false.stats");
+
     classify(stats, file, o, [&](const VCFVariant &v, const Variation *match)
     {
         // The known coverage for allele frequnece
@@ -31,22 +33,18 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
      */
 
     const auto summary = "Summary for dataset: %1% :\n\n"
-                         "   Query: %2% variants\n"
-                         "   Filtered: %3% variants (in chrT)\n"
-                         "   Detected: %4% variants\n"
-                         "   False-Pos: %5% variants\n"
-                         "   Reference: %6% variants\n\n"
-                         "   Fuzzy: %7%\n"
-                         "   Sensitivity:\t%8%\n\n"
-                         "   Correlation:\t%9%\n"
-                         "   Slope:\t%10%\n"
-                         "   R2:\t%11%\n"
-                         "   Adjusted R2:\t%12%\n"
-                         "   F-statistic:\t%13%\n"
-                         "   P-value:\t%14%\n"
-                         "   SSM: %15%, DF: %16%\n"
-                         "   SSE: %17%, DF: %18%\n"
-                         "   SST: %19%, DF: %20%\n"
+                         "   Genome: %2% variants\n"
+                         "   Query: %3% variants (in chrT)\n"
+                         "   Reference: %4% variants\n"
+                         "   Detected: %5% variants\n"
+                         "   Correlation:\t%6%\n"
+                         "   Slope:\t%7%\n"
+                         "   R2:\t%8%\n"
+                         "   F-statistic:\t%9%\n"
+                         "   P-value:\t%10%\n"
+                         "   SSM: %11%, DF: %12%\n"
+                         "   SSE: %13%, DF: %14%\n"
+                         "   SST: %15%, DF: %16%\n"
     ;
     
     const auto lm = stats.linear();
@@ -57,15 +55,11 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
     o.writer->write((boost::format(summary) % file
                                             % stats.n_hg38
                                             % stats.n_chrT
-                                            % stats.detected
-                                            % (stats.n_chrT - stats.detected)
                                             % r.countVars()
-                                            % o.fuzzy
-                                            % stats.sn
+                                            % stats.detected
                                             % lm.r
                                             % lm.m
                                             % lm.r2
-                                            % lm.ar2
                                             % lm.f
                                             % lm.p
                                             % lm.ssm
