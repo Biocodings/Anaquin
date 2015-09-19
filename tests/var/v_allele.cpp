@@ -8,7 +8,7 @@ TEST_CASE("VarAllele_V_1001")
 {
     Test::variantA();
     
-    const auto r1 = Test::test("-t VarAllele -m data/var/VARMixture_3.0.csv -rbed data/var/VARVariant_1.0.bed -uvcf tests/data/V_1001/variant.vcf");
+    const auto r1 = Test::test("-t VarAllele -m data/var/MVA011.v013.csv -rbed data/var/AVA008.v032.bed -uvcf tests/data/V_1001/variant.vcf");
 
     REQUIRE(r1.status == 0);
     
@@ -26,7 +26,7 @@ TEST_CASE("VarAllele_V_1000")
 {
     Test::variantA();
 
-    const auto r1 = Test::test("-t VarAllele -m data/var/VARMixture_3.0.csv -rbed data/var/VARVariant_1.0.bed -uvcf tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
+    const auto r1 = Test::test("-t VarAllele -m data/var/MVA011.v013.csv -rbed data/var/AVA008.v032.bed -uvcf tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
 
     REQUIRE(r1.status == 0);
 
