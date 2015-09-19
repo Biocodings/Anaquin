@@ -27,12 +27,15 @@ void ParserSAM::parse(const std::string &file, std::function<void (const Alignme
     {
         p.i++;
         
+        align.i      = 0;
+        align.mapped = false;
+
         if (t->core.tid < 0)
         {
+            x(align, p);
             continue;
         }
 
-        align.i      = 0;
         align.id     = std::string(h->target_name[t->core.tid]);
         align.qName  = bam_get_qname(t);
         align.mapped = !(t->core.flag & BAM_FUNMAP);

@@ -30,6 +30,11 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
+        if (!align.mapped)
+        {
+            return;
+        }
+        
         if (!align.i && (p.i % 1000000) == 0)
         {
             o.wait(std::to_string(p.i));

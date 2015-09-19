@@ -76,8 +76,7 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()
                                             % stats.p.m.sp()
-                                            % stats.dilution()
-                     ).str());
+                                            % stats.dilution()).str());
     o.writer->close();
     
     /*
