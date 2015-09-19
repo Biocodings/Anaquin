@@ -33,7 +33,7 @@
 #include "resources/ATR001.v032.gtf"
 
 /*
- * META Resources
+ * Metagenomics Resources
  */
 
 #include "resources/META_v1_tab.fa"
@@ -41,13 +41,13 @@
 #include "resources/METAStandard_1.0.bed"
 
 /*
- * DNA Resources
+ * Variant Resources
  */
 
 #include "resources/AVA009.v032.vcf"
-#include "resources/VARVariant_1.0.bed"
-#include "resources/VARMixture_3.0.csv"
-#include "resources/VARStandard_1.0.gtf"
+#include "resources/MVA011.v013.csv"
+#include "resources/MVA012.v013.csv"
+#include "resources/AVA008.v032.bed"
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
@@ -147,9 +147,14 @@ std::string TransDataMixAB()
  * Variant Resources
  */
 
-std::string VarDataMix()
+std::string VarDataMixA()
 {
-    return ToString(data_var_VARMixture_3_0_csv);
+    return ToString(data_var_MVA011_v013_csv);
+}
+
+std::string VarDataMixF()
+{
+    return ToString(data_var_MVA012_v013_csv);
 }
 
 std::string VarDataVCF()
@@ -159,10 +164,10 @@ std::string VarDataVCF()
 
 std::string VarDataBed()
 {
-    return ToString(data_var_VARVariant_1_0_bed);
+    return ToString(data_var_AVA008_v032_bed);
 }
 
 std::string VarStandGTF()
 {
-    return ToString(data_var_VARStandard_1_0_gtf);
+    return ToString(data_var_AVA009_v032_vcf);
 }
