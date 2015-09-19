@@ -1019,7 +1019,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:     { analyze_1<FViewer>(OPT_U_OUT);   break; }
+                case TOOL_F_IGV:     { viewer<FViewer>();               break; }
                 case TOOL_F_EXPRESS: { analyze_1<FExpress>(OPT_GTRACK); break; }
                 case TOOL_F_DISCOVER:
                 {
@@ -1088,8 +1088,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);    break; }
                 case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_U_VCF); break; }
                 case TOOL_V_ALLELE:   { analyze_1<VAllele>(OPT_U_VCF);   break; }
-                //case TOOL_V_DIFF:     { analyze_1<VVariant>(); break; }
-                case TOOL_V_IGV:      { analyze_1<VViewer>(OPT_PATH);    break; }
+                case TOOL_V_IGV:      { viewer<VViewer>();              break; }
             }
 
             break;

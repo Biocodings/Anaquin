@@ -19,22 +19,22 @@ transStand = 'https://s3.amazonaws.com/anaquin/annotations/ATR001.v032.gtf'
 variantFA = 'https://s3.amazonaws.com/anaquin/chromosomes/CVA002.v015.fa'
 
 # URL of the variant standard
-varStand = 'http://www.anaquin.org/downloads/variant/VARStandard_1.0.gtf'
+varStand = 'https://s3.amazonaws.com/anaquin/annotations/AVA017.v032.bed'
 
 # URL of the known variants
-varVariant = 'http://www.anaquin.org/downloads/variant/VARVariant_1.0.bed'
+varVariant = 'https://s3.amazonaws.com/anaquin/annotations/AVA009.v032.vcf'
 
 # URL of the normal standard
-fusNStand = 'http://www.anaquin.org/downloads/fusion/FUSNormalStandard_1.0.gtf'
+fusNStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
 
 # URL of the fusion standard
-fusFStand = 'http://www.anaquin.org/downloads/fusion/FUSFusionStandard_1.0.gtf'
+fusFStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
 
 # URL of the metagenomic community
 metaComm  = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
 
 # URL of the metagenomic standard
-metaStand = 'http://www.anaquin.org/downloads/meta/METAStandard_1.0.bed'
+metaStand = 'https://s3.amazonaws.com/anaquin/annotations/meta/????'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
@@ -95,10 +95,10 @@ def index(path, align):
     base = os.path.splitext(os.path.split(file)[-1])[0]
 
     # Create a sorted alignment, this is always needed for generating an index
-    #run('samtools sort ' + align + ' ' + tmp + '/' + base)
+    run('samtools sort ' + align + ' ' + tmp + '/' + base)
 
     # Generate the index
-    #run('samtools index ' + tmp + '/' + file)
+    run('samtools index ' + tmp + '/' + file)
 
     # Copy the alignment file
     run('cp ' + tmp + '/' + file + ' ' + path)
@@ -173,6 +173,8 @@ def session(path, align, files):
     #
     # Create a custom track with coverage for the alignment
     #
+
+    print align
     
     alignTrackT = alignTrackT.replace('{FILE}', align)
     alignTrackT = alignTrackT.replace('{PATH}', path)

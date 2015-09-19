@@ -1,20 +1,20 @@
 #ifndef GI_V_VIEWER_HPP
 #define GI_V_VIEWER_HPP
 
+#include "data/script.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
     struct VViewer
     {
-        typedef SingleMixtureOptions Options;
+        typedef ViewerOptions Options;
         
-        struct Stats
+        // Generate a IGV session for variant analysis
+        static void generate(const FileName &file, const Options &o = Options())
         {
-            // Empty Implementation
-        };
-
-        static Stats report(const std::string &, const Options &options = Options());
+            Script::viewer("Variant " + o.path + " " + file);
+        }
     };
 }
 
