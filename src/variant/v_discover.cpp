@@ -21,28 +21,23 @@ VDiscover::Stats VDiscover::report(const std::string &file, const Options &o)
      * Generate summary statistics
      */
 
-    const auto summary = "Summary for dataset: %1% :\n\n"
-                         "   Query: %2% variants\n"
-                         "   Filtered: %3% variants (in chrT)\n"
-                         "   Detected: %4% variants\n"
-                         "   False-Pos: %5% variants\n"
-                         "   Reference: %6% variants\n\n"
-                         "   Fuzzy: %7%\n"
-                         "   Sensitivity:\t%8%\n"
-                         "   Specificity:\t%9%"
-    ;
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Genome:      %2% variants\n"
+                         "   Synthetic:   %3% variants\n"
+                         "   Reference:   %4% variants\n"
+                         "   Detected:    %5% variants\n"
+                         "   False-Pos:   %6% variants\n\n"
+                         "   Sensitivity: %7%\n"
+                         "   Specificity: %8%";
 
-    o.writer->open("VarDiscover_false.stats");
     o.writer->write((boost::format(summary) % file
                                             % stats.n_hg38
                                             % stats.n_chrT
+                                            % r.countVars()
                                             % stats.detected
                                             % (stats.n_chrT - stats.detected)
-                                            % r.countVars()
-                                            % o.fuzzy
                                             % stats.m.sn()
-                                            % stats.m.sp()
-                     ).str());
+                                            % stats.m.sp()).str());
     o.writer->close();
 
     return stats;
