@@ -34,11 +34,11 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
          * Collect statistics for the alignment
          */
         
-        const SequinData * match;
+        const VarRef::PairData * match;
 
         if (classify(stats.p.m, align, [&](const Alignment &)
         {
-            return (match = r.match(align.l, Contains)) ? Positive : Negative;
+            return (match = r.findPair(align.l, Contains)) ? Positive : Negative;
         }))
         {
             stats.h.at(match->id)++;
@@ -50,8 +50,16 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
     o.info("Calculating limit of sensitivity");
 
     // Calculate for the sensitivity
-    stats.p.s = r.limit(stats.h);
+    stats.p.s = r.limitPair(stats.h);
 
+    o.logInfo((boost::format("Performance: %1% %2% %3% %4% %5% %6% %7%")
+                                    % stats.p.m.nr
+                                    % stats.p.m.nq
+                                    % stats.p.m.tp()
+                                    % stats.p.m.fp()
+                                    % stats.p.m.fn()
+                                    % stats.p.m.sn()
+                                    % stats.p.m.sp()).str());
     o.info("Generating statistics");
 
     /*

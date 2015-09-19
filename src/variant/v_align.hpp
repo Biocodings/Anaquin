@@ -13,11 +13,11 @@ namespace Anaquin
         {
             Performance p;
 
-            // Distribution for the sequins
-            SequinHist h = Standard::instance().r_var.hist();
+            // Distribution for the sequin pairs (reference + variant)
+            VarRef::PairHist h = Standard::instance().r_var.pairHist();
         };
 
-        static Stats report(const std::string &, const Options &o = Options());
+        static Stats report(const FileName &, const Options &o = Options());
     };
 }
 

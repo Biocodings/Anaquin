@@ -365,7 +365,21 @@ namespace Anaquin
         public:
 
             typedef std::string PairID;
-        
+            typedef std::map<PairID, Counts> PairHist;
+
+            struct PairData
+            {
+                PairID id;
+
+                // By definition, it should be same as the reference and variant
+                Locus l;
+                
+                const SequinData *r;
+                const SequinData *v;
+                
+                Concentration abund(Mixture m) const;
+            };
+
             VarRef();
 
             // Add a reference for a known variant
@@ -391,8 +405,17 @@ namespace Anaquin
         
             void validate() override;
 
+            // Return the detection limit at the pair level
+            Sensitivity limitPair(const PairHist &) const;
+       
+            // Return a histogram for all the validated pairs
+            PairHist pairHist() const;
+
             // Find a reference gene that contains the given locus
-            const SequinData *findRefGene(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
+            const PairData *findPair(const PairID &) const;
+        
+            // Find a reference gene that contains the given locus
+            const PairData *findPair(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
 
             // Find a reference variant given a locus
             const Variation *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;
@@ -439,7 +462,7 @@ namespace Anaquin
                     return Locus(start, end);
                 }
 
-                // Calcualate the normalized abundance for the gene
+                // Calculate the normalized abundance for the gene
                 inline Concentration abund(Mixture m) const
                 {
                     Concentration n = 0;

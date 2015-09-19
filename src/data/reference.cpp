@@ -1,6 +1,7 @@
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
-#include <iostream>
+#include <boost/algorithm/string/predicate.hpp>
+
 using namespace Anaquin;
 
 /*
@@ -437,6 +438,9 @@ struct VarRef::VarRefImpl
     // Validated variants
     std::vector<Variation> vars;
 
+    // Validated pairs (references + variants)
+    std::map<PairID, PairData> _pairs;
+
     std::map<Mixture, std::map<PairID, VariantPair>> pairs;
 
     /*
@@ -507,6 +511,49 @@ std::size_t VarRef::countVars() const
     return _impl->vars.size();
 }
 
+VarRef::PairHist VarRef::pairHist() const
+{
+    PairHist h;
+    
+    for (const auto &i : _impl->_pairs)
+    {
+        h[i.first] = 0;
+    }
+    
+    return h;
+}
+
+const VarRef::PairData * VarRef::findPair(const Locus &l, double fuzzy, MatchRule m) const
+{
+    for (const auto &i : _impl->_pairs)
+    {
+        if ((m == Overlap && i.second.l.overlap(l)) || (m == Contains && i.second.l.contains(l)))
+        {
+            return &i.second;
+        }
+    }
+    
+    return nullptr;
+}
+
+Sensitivity VarRef::limitPair(const PairHist &h) const
+{
+    return Reference<SequinData, SequinStats>::limit(h, [&](const VarRef::PairID &id)
+    {
+        return findPair(id);
+    });
+}
+
+const VarRef::PairData * VarRef::findPair(const PairID &id) const
+{
+    return _impl->_pairs.count(id) ? &(_impl->_pairs.at(id)) : nullptr;
+}
+
+Concentration VarRef::PairData::abund(Mixture m) const
+{
+    return r->abund(m) + v->abund(m);
+}
+
 void VarRef::validate()
 {
     _impl->vars = _impl->rawVars;
@@ -519,6 +566,16 @@ void VarRef::validate()
         if (_data.count(i.first))
         {
             _data[i.first].l = i.second;
+
+            const auto pairID = i.first.substr(0, i.first.size() - 2);
+
+            // TODO: Do we need this?
+            _data[i.first].length = i.second.length();
+            
+            _impl->_pairs[pairID].l  = i.second;
+            _impl->_pairs[pairID].id = pairID;
+            _impl->_pairs[pairID].r  = &(_data.at(pairID + "_R"));
+            _impl->_pairs[pairID].v  = &(_data.at(pairID + "_V"));
         }
     }
     
