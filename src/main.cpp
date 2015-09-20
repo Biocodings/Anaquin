@@ -201,7 +201,7 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_M_IGV,      { OPT_FA_1                                    } },
     { TOOL_M_PSL,      { OPT_R_BED, OPT_PSL_1                        } },
-    { TOOL_M_ASSEMBLY, { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
 
     /*

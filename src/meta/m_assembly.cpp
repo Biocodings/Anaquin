@@ -35,21 +35,26 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
          * Calculate the limit of sensitivity. LOS is defined as the sequin with the lowest amount of
          * concentration while still detectable in the experiment.
          */
+        
+        const auto needMixture = align->seq->mixes.count(Mix_1);
 
-        if (stats.lm.s.id.empty() || align->seq->mixes.at(Mix_1) < stats.lm.s.abund)
+        if (needMixture)
         {
-            stats.lm.s.id     = align->seq->id;
-            stats.lm.s.abund  = align->seq->mixes.at(Mix_1);
-            stats.lm.s.counts = align->contigs.size();
+            if (stats.lm.s.id.empty() || align->seq->mixes.at(Mix_1) < stats.lm.s.abund)
+            {
+                stats.lm.s.id     = align->seq->id;
+                stats.lm.s.abund  = align->seq->mixes.at(Mix_1);
+                stats.lm.s.counts = align->contigs.size();
+            }
         }
         
         /*
          * Plot the coverage relative to the known concentration for each assembled contig
          */
 
-        if (!align->contigs.empty())
+        if (needMixture && !align->contigs.empty())
         {
-            // Known concentration (TODO: We shouldn't use the data structure...)
+            // Known concentration
             const auto known = align->seq->mixes.at(Mix_1);
             
             /*
@@ -88,14 +93,12 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
                 stats.lm.add(align->seq->id, log2(known), log2(measured));
             }
         }
-
-        assert(!stats.lm.s.id.empty());
     }
     
     return stats;
 }
 
-MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
+MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
 {
     const auto stats = MAssembly::analyze(file, o);
 
@@ -136,30 +139,30 @@ MAssembly::Stats MAssembly::report(const std::string &file, const Options &o)
      */
 
     {
-        o.writer->open("MetaAssembly_quins.stats");
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-
-        o.writer->write((boost::format(format) % "ID"
-                                               % "con"
-                                               % "status"
-                                               % "avg_align"
-                                               % "avg_sequin"
-                                               % "covered").str());
-        
-        for (const auto &meta : stats.blat.metas)
-        {
-            const auto &align = meta.second;
-            const auto detect = align->contigs.size() != 0;
-            const auto status = detect ? std::to_string(align->covered) : "-";
-
-            o.writer->write((boost::format(format) % align->seq->id
-                                                   % align->seq->mixes.at(Mix_1)
-                                                   % status
-                                                   % (detect ? std::to_string(align->depthAlign)  : "-")
-                                                   % (detect ? std::to_string(align->depthSequin) : "-")
-                                                   % (detect ? std::to_string(align->covered)     : "-")
-                             ).str());
-        }
+//        o.writer->open("MetaAssembly_quins.stats");
+//        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
+//
+//        o.writer->write((boost::format(format) % "ID"
+//                                               % "con"
+//                                               % "status"
+//                                               % "avg_align"
+//                                               % "avg_sequin"
+//                                               % "covered").str());
+//        
+//        for (const auto &meta : stats.blat.metas)
+//        {
+//            const auto &align = meta.second;
+//            const auto detect = align->contigs.size() != 0;
+//            const auto status = detect ? std::to_string(align->covered) : "-";
+//
+//            o.writer->write((boost::format(format) % align->seq->id
+//                                                   % align->seq->mixes.at(Mix_1)
+//                                                   % status
+//                                                   % (detect ? std::to_string(align->depthAlign)  : "-")
+//                                                   % (detect ? std::to_string(align->depthSequin) : "-")
+//                                                   % (detect ? std::to_string(align->covered)     : "-")
+//                             ).str());
+//        }
     }
 
     o.writer->close();
