@@ -343,6 +343,10 @@ namespace Anaquin
             writer->close();
         }
 
+        /*
+         * Provides a common framework to generate a CSV for all sequins
+         */
+        
         template <typename Writer> static void writeCSV(const std::vector<double> &x,
                                                         const std::vector<double> &y,
                                                         const std::vector<std::string> &z,
@@ -363,7 +367,7 @@ namespace Anaquin
                 const auto it = std::find(z.begin(), z.end(), s);
                 const auto i  = std::distance(z.begin(), it);
 
-                writer->write((boost::format("%1%,%2%,%3%") % z.at(i) % x.at(i) % y.at(i)).str());
+                writer->write((boost::format("%1%\t%2%\t%3%") % z.at(i) % x.at(i) % y.at(i)).str());
             }
 
             writer->close();

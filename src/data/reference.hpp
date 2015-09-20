@@ -318,6 +318,8 @@ namespace Anaquin
         
             void validate() override;
 
+            void addStand(const SequinID &, Base l);
+        
         private:
 
             struct MetaRefImpl;

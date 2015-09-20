@@ -10,22 +10,55 @@ using namespace Anaquin;
 
 struct MetaRef::MetaRefImpl
 {
-    // Empty Implementation
+    /*
+     * Validated resources
+     */
+
+    std::set<SequinID> seqID;
+    std::map<SequinID, Base> baseBySeqID;
+
+    /*
+     * Raw resources
+     */
+
+    std::set<SequinID> rawSeqID;
+    std::map<SequinID, Base> rawBaseBySeqID;
 };
 
 MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
+
+void MetaRef::addStand(const SequinID &id, Base l)
+{
+    _impl->rawSeqID.insert(id);
+    _impl->rawBaseBySeqID[id] = l;
+}
 
 void MetaRef::validate()
 {
     /*
      * Validation rule:
      *
-     *     none OR mixture
+     *     mixture OR standards
      */
     
     if (!_rawMIDs.empty())
     {
-        merge(_rawMIDs, _rawMIDs);        
+        merge(_rawMIDs);
+    }
+    else
+    {
+        merge(_impl->rawSeqID);
+    }
+
+    _impl->seqID       = _impl->rawSeqID;
+    _impl->baseBySeqID = _impl->rawBaseBySeqID;
+
+    for (auto &i : _data)
+    {
+        if (_impl->seqID.count(i.first))
+        {
+            i.second.length = _impl->baseBySeqID.at(i.first);
+        }
     }
 }
 

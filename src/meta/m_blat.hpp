@@ -46,7 +46,7 @@ namespace Anaquin
          * The following metrics are only valid if an alignment is available
          */
 
-        // Fraction of bases covered by alignments
+        // Fraction of non-overlapping bases covered by alignments
         double covered = 0.0;
         
         // Fraction of bases not covered by alignments
@@ -69,8 +69,39 @@ namespace Anaquin
 
     struct MBlast
     {
-        struct Stats
+        struct Stats : public MappingStats
         {
+            // Proportion of overlapping bases assembled for all sequins
+            inline double overMatch() const { return static_cast<double>(oMatch) / total; }
+
+            // Proportion of overlapping gaps for all sequins
+            inline double overGaps() const { return static_cast<double>(oGaps) / total; }
+
+            // Proportion of overlapping mismatches for all sequins
+            inline double overMismatch() const { return static_cast<double>(oMismatch) / total; }
+
+            // Proportion of sequins detected & assembled (i.e: at least a single contig)
+            inline double sequin() const
+            {
+                return std::count_if(metas.begin(),metas.end(),
+                            [&](const std::pair<SequinID, std::shared_ptr<MetaAlignment>> &p)
+                            {
+                                return p.second->contigs.empty() ? 0 : 1;
+                            });
+            }
+
+            // Sum of bases for all sequins
+            Base total = 0;
+
+            // Sum of overlapping gaps for all sequins
+            Base oGaps = 0;
+
+            // Sum of overlapping mismatch for all sequins
+            Base oMismatch = 0;
+            
+            // Sum of overlapping matching bases for all sequins
+            Base oMatch = 0;
+            
             // For each sequin (could be unmapped)
             std::map<SequinID, std::shared_ptr<MetaAlignment>> metas;
 

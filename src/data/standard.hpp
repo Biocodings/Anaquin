@@ -76,6 +76,7 @@ namespace Anaquin
              * Metagenomic data
              */
 
+            void m_ref(const Reader &);
             void m_mix_1(const Reader &);
             void m_mix_2(const Reader &);
 

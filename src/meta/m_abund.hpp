@@ -10,7 +10,7 @@ namespace Anaquin
         typedef MAssembly::Stats   Stats;
         typedef MAssembly::Options Options;
 
-        static Stats report(const std::string &, const Options &o = Options());
+        static Stats report(const FileName &, const Options &o = Options());
     };
 }
 

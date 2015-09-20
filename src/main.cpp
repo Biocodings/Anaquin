@@ -1106,6 +1106,11 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
+            if (_p.tool != TOOL_M_IGV)
+            {
+                applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
+            }
+            
             if (_p.tool)
             {
                 applyMix(std::bind(&Standard::m_mix_1, &s, std::placeholders::_1));
@@ -1114,8 +1119,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV: { break; }
-                    
+                case TOOL_M_IGV: { viewer<FViewer>();            break; }
                 case TOOL_M_PSL: { analyze_1<MBlast>(OPT_PSL_1); break; }
 
                 case TOOL_M_DIFF:
