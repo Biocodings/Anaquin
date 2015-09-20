@@ -18,15 +18,14 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
         const auto summary = "Summary for dataset: %1% :\n\n"
                              "   Genome: %2% fusions\n"
                              "   Synthetic: %3% fusions\n"
-                             "   Reference: %4% sequins\n\n"
-                             "   Fuzzy: %5%\n\n"
-                             "#--------------------|   Sn   |  Sp  \n"
-                             "    Fusion level:       %6%     %7%  \n"
-                             "\n"
-                             "Sensitivity:     %8%";
+                             "   Genome-Synthetic: %4% fusions\n"
+                             "   Reference: %5% sequins\n\n"
+                             "   Fuzzy: %6%\n\n"
+                             "   Sensitivity: %7%\n"
+                             "   Specificity: %8%\n";
 
         o.writer->write((boost::format(summary) % file
-                                                % stats.m.skip
+                                                % stats.n_chrT
                                                 % stats.m.nq
                                                 % stats.m.nr
                                                 % o.fuzzy
@@ -41,7 +40,6 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
      */
 
     {
-
         o.info("Generating sequins statistics");
         o.writer->open("FusionDiscover_quins.stats");
         

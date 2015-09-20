@@ -28,7 +28,7 @@ namespace Anaquin
             FDiscover::Software soft;
         };
 
-        struct Stats : public LinearStats
+        struct Stats : public LinearStats, public FusionStats
         {
             // Overall performance
             Confusion m;

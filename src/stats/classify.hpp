@@ -37,9 +37,6 @@ namespace Anaquin
             return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
         }
 
-        // Number of skipped (eg: not chrT)
-        Counts skip = 0;
-        
         // Number of queries
         Counts nq = 0;
         

@@ -135,6 +135,12 @@ namespace Anaquin
         double x, y;
     };
 
+    struct FusionStats : public MappingStats
+    {
+        // Number of fusions spanning across the genome and the synthetic chromosome
+        Counts hg38_chrT;
+    };
+
     struct LinearStats : public std::map<SequinID, Point>
     {
         Sensitivity s;

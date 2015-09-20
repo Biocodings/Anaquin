@@ -44,7 +44,7 @@ const std::set<LadderRef::JoinID> & LadderRef::joinIDs() const
 
 void LadderRef::validate()
 {
-    merge(_rawMIDs, _rawMIDs);
+    merge(_rawMIDs);
     
     std::vector<std::string> toks;
     
@@ -81,10 +81,14 @@ void LadderRef::abund(const LadderRef::JoinID &id, Concentration &a, Concentrati
 
 struct FusionRef::FusionRefImpl
 {
+    /*
+     * Validated data
+     */
+    
     std::set<FusionPoint> breaks;
 
     /*
-     * Raw data - structure before validated
+     * Raw data
      */
 
     std::set<FusionPoint> rawBreaks;
@@ -105,8 +109,21 @@ std::size_t FusionRef::countFusions() const
 
 void FusionRef::validate()
 {
-    merge(_rawMIDs, _rawMIDs);
-
+    /*
+     * Validation rule:
+     *
+     *     mixture OR (mixture AND standards)
+     */
+    
+    if (!_rawMIDs.size())
+    {
+        merge(_impl->rawBreaks);
+    }
+    else
+    {
+        merge(_rawMIDs);
+    }
+    
     for (const auto &i : _impl->rawBreaks)
     {
         if (_data.count(i.id))

@@ -8,7 +8,7 @@ TEST_CASE("FDiscover_F_1001")
 {
     Test::fusionA();
     
-    const auto r = Test::test("-t FusionDiscover -rfus tests/data/F_1000/FUSStandard_1.0.ref -m tests/data/F_1000/FUSMixture_1.0.csv -soft tophat -fuzzy 100 -uout tests/data/F_1001/fusions.out");
+    const auto r = Test::test("-t FusionDiscover -rfus data/fusion/AFU004.v032.ref -soft tophat -fuzzy 100 -uout tests/data/F_1001/fusions.out");
     
     REQUIRE(r.status == 0);
     
@@ -23,7 +23,7 @@ TEST_CASE("FDiscover_F_1000")
 {
     Test::fusionA();
 
-    const auto r = Test::test("-t FusionDiscover -rfus tests/data/F_1000/FUSStandard_1.0.ref -m tests/data/F_1000/FUSMixture_1.0.csv -soft star -uout tests/data/F_1000/star-fusion.fusion_candidates.txt");
+    const auto r = Test::test("-t FusionDiscover -rfus data/fusion/AFU004.v032.ref -soft star -uout tests/data/F_1000/star-fusion.fusion_candidates.txt");
     
     REQUIRE(r.status == 0);
     

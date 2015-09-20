@@ -14,10 +14,8 @@ namespace Anaquin
         {
             const auto &r = Standard::instance().r_fus;
 
-            // Don't bother unless in-silico chromosome
             if (f.chr_1 != Standard::instance().id || f.chr_2 != Standard::instance().id)
             {
-                m.skip++;
                 return Ignore;
             }
 
@@ -54,20 +52,23 @@ namespace Anaquin
             {
                 assert(!id.empty() && r.match(id));
                 
-                // Known abundance for the fusion
-                const auto known = r.match(id)->abund(Mix_1);
-                
-                // Measured abundance for the fusion
-                const auto measured = reads;
+                if (r.match(id)->mixes.count(Mix_1))
+                {
+                    // Known abundance for the fusion
+                    const auto known = r.match(id)->abund(Mix_1);
+                    
+                    // Measured abundance for the fusion
+                    const auto measured = reads;
+                    
+                    stats.h.at(id)++;
 
-                stats.h.at(id)++;
-                
-                Point p;
-                
-                p.x = log2f(known);
-                p.y = log2f(measured);
+                    Point p;
+                    
+                    p.x = log2f(known);
+                    p.y = log2f(measured);
 
-                stats[id] = p;
+                    stats[id] = p;
+                }
             };
 
             SequinID id;
@@ -76,9 +77,13 @@ namespace Anaquin
             {
                 ParserStarFusion::parse(Reader(file), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
                 {
-                    if (classifyFusion(f, stats.m, id, o) == ClassifyResult::Positive)
+                    const auto r = classifyFusion(f, stats.m, id, o);
+                    
+                    switch (r)
                     {
-                        positive(id, f.reads);
+                        case ClassifyResult::Negative: { break; }
+                        case ClassifyResult::Ignore:   { stats.hg38_chrT++;     break; }
+                        case ClassifyResult::Positive: { positive(id, f.reads); break; }
                     }
                 });
             }
@@ -86,9 +91,13 @@ namespace Anaquin
             {
                 ParserTopFusion::parse(Reader(file), [&](const ParserTopFusion::Fusion &f, const ParserProgress &)
                 {
-                    if (classifyFusion(f, stats.m, id, o) == ClassifyResult::Positive)
+                    const auto r = classifyFusion(f, stats.m, id, o);
+                    
+                    switch (r)
                     {
-                        positive(id, f.reads);
+                        case ClassifyResult::Negative: { break; }                            
+                        case ClassifyResult::Ignore:   { stats.hg38_chrT++;     break; }
+                        case ClassifyResult::Positive: { positive(id, f.reads); break; }
                     }
                 });
             }

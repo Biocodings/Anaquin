@@ -194,9 +194,7 @@ static std::map<Tool, std::set<Option>> _required =
     /*
      * Variant Analysis
      */
-    
-    
-    
+
     /*
      * Metagenomics Analysis
      */
@@ -210,7 +208,8 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
-    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_MIXTURE, OPT_SOFTWARE, OPT_U_OUT } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFTWARE, OPT_U_OUT } },
+    { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
 };
 
 /*

@@ -182,13 +182,18 @@ namespace Anaquin
             };
 
             /*
-             * Most sequins can be validated by merging two sets of IDs, typically, a set of
-             * IDs defined in the mixture and a set of IDs defined for the annotation. This
-             * function provides a common framework for merging the two sets.
+             * Provide a common framework for validation. Typically, the sequins can be validated
+             * by two set of IDs, for example, mixtute and annotation. This function can also be
+             * validated a single set of sequins, simply call merge(x, x).
              */
-
-            inline void merge(const std::set<SequinID> &x, const std::set<SequinID> &y)
+        
+            template <typename T> void merge(const std::set<T> &t1, const std::set<T> &t2)
             {
+                std::set<SequinID> x, y;
+                
+                for (const auto &i : t1) { x.insert(static_cast<SequinID>(i)); }
+                for (const auto &i : t2) { y.insert(static_cast<SequinID>(i)); }
+
                 assert(!x.empty() && !y.empty());
 
                 std::vector<SequinID> diffs, inters;
@@ -254,6 +259,11 @@ namespace Anaquin
                 assert(!_data.empty());
             }
         
+            template <typename T> void merge(const std::set<T> &x)
+            {
+                return merge(x, x);
+            }
+
             // Validated sequins
             std::map<SequinID, Data> _data;
 
@@ -327,7 +337,9 @@ namespace Anaquin
             {
                 inline bool operator<(const FusionPoint &x)  const { return id < x.id;  }
                 inline bool operator==(const FusionPoint &x) const { return id == x.id; }
-            
+
+                operator const SequinID &() const { return id; }
+                
                 // Where this fusion belongs
                 SequinID id;
             
