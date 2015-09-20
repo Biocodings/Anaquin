@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-MDiffs::Stats MDiffs::report(const std::string &file_1, const std::string &file_2, const Options &options)
+MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, const Options &o)
 {
     MDiffs::Stats stats;
 
@@ -15,15 +15,15 @@ MDiffs::Stats MDiffs::report(const std::string &file_1, const std::string &file_
     const auto stats_1 = Velvet::parse<MAssembly::Stats, Contig>(file_1);
     const auto stats_2 = Velvet::parse<MAssembly::Stats, Contig>(file_2);
 
-    if (!options.pA.empty() && !options.pB.empty())
+    if (!o.pA.empty() && !o.pB.empty())
     {
-        options.info((boost::format("Using alignment: %1%") % options.pA).str());
-        options.info((boost::format("Using alignment: %1%") % options.pB).str());
+        o.info((boost::format("Using alignment: %1%") % o.pA).str());
+        o.info((boost::format("Using alignment: %1%") % o.pB).str());
 
-        const auto r1 = MBlast::stats(options.pA);
-        const auto r2 = MBlast::stats(options.pB);
+        const auto r1 = MBlast::analyze(o.pA);
+        const auto r2 = MBlast::analyze(o.pB);
 
-        options.info("Creating a differential plot");
+        o.info("Creating a differential plot");
         
         /*
          * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
@@ -117,7 +117,7 @@ MDiffs::Stats MDiffs::report(const std::string &file_1, const std::string &file_
                 if (y2.at(align->id()) && y1.at(align->id()))
                 {
                     // Ignore if there's a filter and the sequin is not one of those
-                    if (!options.filters.empty() && !options.filters.count(align->id()))
+                    if (!o.filters.empty() && !o.filters.count(align->id()))
                     {
                         continue;
                     }
@@ -148,31 +148,31 @@ MDiffs::Stats MDiffs::report(const std::string &file_1, const std::string &file_
         //AnalyzeReporter::linear(stats, "m_diffs", "k-mer average", options.writer);
     }
     
-    options.info("Generating statistics");
+    o.info("Generating statistics");
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
-    options.writer->open("diff.stats");
-    options.writer->write((boost::format(format) % "id"
-                                                 % "expect_A"
-                                                 % "expect_B"
-                                                 % "measure_A"
-                                                 % "measure_B"
-                                                 % "expect_fold"
-                                                 % "measure_fold").str());
+    o.writer->open("diff.stats");
+    o.writer->write((boost::format(format) % "id"
+                                           % "expect_A"
+                                           % "expect_B"
+                                           % "measure_A"
+                                           % "measure_B"
+                                           % "expect_fold"
+                                           % "measure_fold").str());
 
     for (const auto &diff : stats.diffs)
     {
-        options.writer->write((boost::format(format) % diff.id
-                                                     % diff.ex_A
-                                                     % diff.ob_A
-                                                     % diff.ex_B
-                                                     % diff.ob_B
-                                                     % diff.ex_fold
-                                                     % diff.ob_fold).str());
+        o.writer->write((boost::format(format) % diff.id
+                                               % diff.ex_A
+                                               % diff.ob_A
+                                               % diff.ex_B
+                                               % diff.ob_B
+                                               % diff.ex_fold
+                                               % diff.ob_fold).str());
     }
     
-    options.writer->close();
+    o.writer->close();
     
     return stats;
 }

@@ -85,7 +85,7 @@ namespace Anaquin
          * the sequins. The input file is assumed to be PSL format.
          */
 
-        static Stats stats(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
 
         /*
          * Generate summary statistics for the alignment

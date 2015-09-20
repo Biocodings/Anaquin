@@ -17,7 +17,16 @@ MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
 
 void MetaRef::validate()
 {
-    merge(_rawMIDs, _rawMIDs);
+    /*
+     * Validation rule:
+     *
+     *     none OR mixture
+     */
+    
+    if (!_rawMIDs.empty())
+    {
+        merge(_rawMIDs, _rawMIDs);        
+    }
 }
 
 /*

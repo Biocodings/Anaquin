@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
+MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 {
     MAssembly::Stats stats;
 
@@ -19,7 +19,7 @@ MAssembly::Stats MAssembly::analyze(const std::string &file, const Options &o)
     }
 
     // Analyse the blat alignment file
-    stats.blat = MBlast::stats(o.psl);
+    stats.blat = MBlast::analyze(o.psl);
 
     for (auto &meta : stats.blat.metas)
     {

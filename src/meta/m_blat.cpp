@@ -5,7 +5,7 @@
 
 using namespace Anaquin;
 
-MBlast::Stats MBlast::stats(const FileName &file, const Options &o)
+MBlast::Stats MBlast::analyze(const FileName &file, const Options &o)
 {
     /*
      * Create data-structure for each of the sequin
@@ -119,9 +119,9 @@ MBlast::Stats MBlast::stats(const FileName &file, const Options &o)
     return stats;
 }
 
-void MBlast::report(const std::string &file, const Options &o)
+void MBlast::report(const FileName &file, const Options &o)
 {
-    const auto stats = MBlast::stats(file);
+    const auto stats = MBlast::analyze(file);
 
     o.info("Generating statistics");
 
