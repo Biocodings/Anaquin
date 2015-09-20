@@ -36,7 +36,7 @@ data  = [ 'data/manual.txt',
 
            # ---------- META ----------
 
-          'data/meta/AME015.v032.bed',
+          'data/meta/AME013.v032.fa',
           'data/meta/MME023.v013.csv',
           'data/meta/AME015.v032.bed',
 

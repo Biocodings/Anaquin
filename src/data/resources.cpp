@@ -35,9 +35,8 @@
  * Metagenomics Resources
  */
 
-#include "resources/META_v1_tab.fa"
 #include "resources/MME023.v013.csv"
-#include "resources/METAStandard_1.0.bed"
+#include "resources/AME015.v032.bed"
 
 /*
  * Variant Resources
@@ -115,7 +114,7 @@ std::string MetaDataMix()
 
 std::string MetaDataBed()
 {
-    return ToString(data_meta_METAStandard_1_0_bed);
+    return ToString(data_meta_AME015_v032_bed);
 }
 
 /*
