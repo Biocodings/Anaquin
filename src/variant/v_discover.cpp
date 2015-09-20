@@ -37,8 +37,8 @@ VDiscover::Stats VDiscover::report(const std::string &file, const Options &o)
                                             % stats.n_hg38
                                             % stats.n_chrT
                                             % r.countVars()
-                                            % stats.detected
-                                            % (stats.n_chrT - stats.detected)
+                                            % stats.m.tp()
+                                            % (stats.n_chrT - stats.m.tp())
                                             % stats.m.sn()
                                             % stats.m.sp()).str());
     o.writer->close();

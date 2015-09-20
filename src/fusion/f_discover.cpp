@@ -25,13 +25,13 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
                              "   Specificity: %8%\n";
 
         o.writer->write((boost::format(summary) % file
+                                                % stats.n_hg38
                                                 % stats.n_chrT
-                                                % stats.m.nq
+                                                % stats.hg38_chrT
                                                 % stats.m.nr
                                                 % o.fuzzy
                                                 % stats.m.sn()
-                                                % stats.m.sp()
-                                                % stats.covered).str());
+                                                % stats.m.sp()).str());
         o.writer->close();
     }
 

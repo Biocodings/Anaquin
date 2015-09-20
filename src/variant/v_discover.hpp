@@ -16,9 +16,6 @@ namespace Anaquin
             // Overall performance
             Confusion m;
 
-            // The proportion of variations with alignment coverage
-            double covered = 0;
-
             SequinHist h = Standard::instance().r_var.hist();
         };
 

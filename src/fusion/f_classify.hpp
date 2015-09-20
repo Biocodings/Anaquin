@@ -9,14 +9,29 @@ namespace Anaquin
 {
     struct FClassify
     {
-        template <typename Options, typename T> static ClassifyResult
+        enum FusionClassify
+        {
+            Genome     = -2,
+            GenomeChrT = -1,
+            Negative   = 0,
+            Positive   = 1,
+        };
+
+        template <typename Options, typename T> static FusionClassify
                 classifyFusion(const T &f, Confusion &m, SequinID &id, Options &o)
         {
             const auto &r = Standard::instance().r_fus;
 
             if (f.chr_1 != Standard::instance().id || f.chr_2 != Standard::instance().id)
             {
-                return Ignore;
+                if (f.chr_1 != Standard::instance().id && f.chr_2 != Standard::instance().id)
+                {
+                    return Genome;
+                }
+                else
+                {
+                    return GenomeChrT;
+                }
             }
 
             if (classify(m, f, [&](const T &)
@@ -52,6 +67,8 @@ namespace Anaquin
             {
                 assert(!id.empty() && r.match(id));
                 
+                stats.n_chrT++;
+                
                 if (r.match(id)->mixes.count(Mix_1))
                 {
                     // Known abundance for the fusion
@@ -81,9 +98,10 @@ namespace Anaquin
                     
                     switch (r)
                     {
-                        case ClassifyResult::Negative: { break; }
-                        case ClassifyResult::Ignore:   { stats.hg38_chrT++;     break; }
-                        case ClassifyResult::Positive: { positive(id, f.reads); break; }
+                        case FusionClassify::Negative:   { break;                        }
+                        case FusionClassify::Genome:     { stats.n_hg38++;        break; }
+                        case FusionClassify::GenomeChrT: { stats.hg38_chrT++;     break; }
+                        case FusionClassify::Positive:   { positive(id, f.reads); break; }
                     }
                 });
             }
@@ -95,9 +113,10 @@ namespace Anaquin
                     
                     switch (r)
                     {
-                        case ClassifyResult::Negative: { break; }                            
-                        case ClassifyResult::Ignore:   { stats.hg38_chrT++;     break; }
-                        case ClassifyResult::Positive: { positive(id, f.reads); break; }
+                        case FusionClassify::Negative:   { break;                        }
+                        case FusionClassify::Genome:     { stats.n_hg38++;        break; }
+                        case FusionClassify::GenomeChrT: { stats.hg38_chrT++;     break; }
+                        case FusionClassify::Positive:   { positive(id, f.reads); break; }
                     }
                 });
             }
@@ -143,14 +162,6 @@ namespace Anaquin
             o.info("Calculating limit of sensitivity");
             stats.s = r.limit(stats.h);
 
-            stats.covered = static_cast<double>(std::accumulate(stats.h.begin(), stats.h.end(), 0,
-                                [&](int sum, const std::pair<SequinID, Counts> &p)
-                                {
-                                    return sum + (p.second ? 1 : 0);
-                                })) / stats.m.nr;
-
-            assert(stats.covered >= 0 && stats.covered <= 1.0);
-            
             return stats;
         }
     };
