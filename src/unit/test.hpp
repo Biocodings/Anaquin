@@ -23,8 +23,9 @@ namespace Anaquin
         static void variantA();
         static void variantF();
 
+        static void fusionA();
+        
         static void meta();
-        static void fusion();
         static void ladder();
         
         static Test test(const std::string &);

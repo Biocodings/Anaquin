@@ -14,9 +14,9 @@ TEST_CASE("TDiffs_T_1000_Isoforms")
     const auto r  = TDiffs::report("tests/data/T_1000/isoform_exp.diff", o);
     const auto lm = r.linear();
     
-    REQUIRE(lm.m  == Approx(0.3196480888));
-    REQUIRE(lm.r  == Approx(0.0313512503));
-    REQUIRE(lm.r2 == Approx(0.0009829009));
+    REQUIRE(lm.m  == Approx(0.9702549412));
+    REQUIRE(lm.r  == Approx(0.8546476527));
+    REQUIRE(lm.r2 == Approx(0.7304226103));
 }
 
 TEST_CASE("TDiffs_T_1000_Genes")
@@ -29,7 +29,7 @@ TEST_CASE("TDiffs_T_1000_Genes")
     const auto r  = TDiffs::report("tests/data/T_1000/gene_exp.diff", o);
     const auto lm = r.linear();
     
-    REQUIRE(lm.m  == Approx(0.9691960772));
-    REQUIRE(lm.r  == Approx(0.9941174401));
-    REQUIRE(lm.r2 == Approx(0.9882694846));
+    REQUIRE(lm.m  == Approx(0.9921460476));
+    REQUIRE(lm.r  == Approx(0.9953198807));
+    REQUIRE(lm.r2 == Approx(0.9906616648));
 }

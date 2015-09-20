@@ -11,10 +11,8 @@ extern int parse_options(int argc, char ** argv);
 
 extern std::string LadderDataMix();
 
-extern std::string FusionDataMix();
+extern std::string FusionDataMixA();
 extern std::string FusionDataRef();
-extern std::string FusionNormalRef();
-extern std::string FusionMutatedRef();
 
 extern std::string TransDataMixA();
 extern std::string TransDataMixB();
@@ -31,11 +29,11 @@ extern std::string VarDataMixF();
 
 using namespace Anaquin;
 
-void Test::fusion()
+void Test::fusionA()
 {
     Standard::instance(true);
     Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
-    Standard::instance().f_mix(Reader(FusionDataMix(), DataMode::String));
+    Standard::instance().f_mix(Reader(FusionDataMixA(), DataMode::String));
     Standard::instance().r_fus.validate();
 }
 

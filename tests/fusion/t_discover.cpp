@@ -6,13 +6,13 @@ using namespace Anaquin;
 
 TEST_CASE("FDiscover_F_1001")
 {
-    Test::fusion();
+    Test::fusionA();
     
     const auto r = Test::test("-t FusionDiscover -rfus tests/data/F_1000/FUSStandard_1.0.ref -m tests/data/F_1000/FUSMixture_1.0.csv -soft tophat -fuzzy 100 -uout tests/data/F_1001/fusions.out");
     
     REQUIRE(r.status == 0);
     
-    Test::fusion();
+    Test::fusionA();
 
     const auto stats = FDiscover::report("tests/data/F_1001/fusions.out", FDiscover::Options(FDiscover::Software::TopHat, 100));
 
@@ -21,13 +21,13 @@ TEST_CASE("FDiscover_F_1001")
 
 TEST_CASE("FDiscover_F_1000")
 {
-    Test::fusion();
+    Test::fusionA();
 
     const auto r = Test::test("-t FusionDiscover -rfus tests/data/F_1000/FUSStandard_1.0.ref -m tests/data/F_1000/FUSMixture_1.0.csv -soft star -uout tests/data/F_1000/star-fusion.fusion_candidates.txt");
     
     REQUIRE(r.status == 0);
     
-    Test::fusion();
+    Test::fusionA();
 
     const auto stats = FDiscover::report("tests/data/F_1000/star-fusion.fusion_candidates.txt",
                                                 FDiscover::Options(FDiscover::Software::Star));

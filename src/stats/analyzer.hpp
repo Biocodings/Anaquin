@@ -153,12 +153,17 @@ namespace Anaquin
         {
             std::vector<double> x, y;
 
+            auto f = [&](double v)
+            {
+                return shouldLog ? (v ? log2(v) : 0) : v;
+            };
+
             for (const auto &p : *this)
             {
                 if (!isnan(p.second.x) && !isnan(p.second.y))
                 {
-                    x.push_back(shouldLog ? log2(p.second.x) : p.second.x);
-                    y.push_back(shouldLog ? log2(p.second.y) : p.second.y);
+                    x.push_back(f(p.second.x));
+                    y.push_back(f(p.second.y));
                 }
             }
 

@@ -12,10 +12,9 @@
  * Fusion Resources
  */
 
-#include "resources/FUSBreak_1.0.ref"
-#include "resources/FUSMixture_3.0.csv"
-#include "resources/FUSFusionStandard_1.0.bed"
-#include "resources/FUSNormalStandard_1.0.bed"
+#include "resources/AFU004.v032.ref"
+#include "resources/AFU005.v032.bed"
+#include "resources/MFU007.v013.csv"
 
 /*
  * Conjoint Resources
@@ -74,14 +73,14 @@ std::string RScriptCoverage()
  * Fusion Resources
  */
 
-std::string FusionDataMix()
+std::string FusionDataMixA()
 {
-    return ToString(data_fusion_FUSMixture_3_0_csv);
+    return ToString(data_fusion_MFU007_v013_csv);
 }
 
 std::string FusionDataRef()
 {
-    return ToString(data_fusion_FUSBreak_1_0_ref);
+    return ToString(data_fusion_AFU004_v032_ref);
 }
 
 /*
