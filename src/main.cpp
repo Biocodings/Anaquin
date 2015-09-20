@@ -1018,8 +1018,13 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:     { viewer<FViewer>();               break; }
-                case TOOL_F_EXPRESS: { analyze_1<FExpress>(OPT_GTRACK); break; }
+                case TOOL_F_IGV:     { viewer<FViewer>(); break; }
+                case TOOL_F_EXPRESS:
+                {
+                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));
+                    break;
+                }
+
                 case TOOL_F_DISCOVER:
                 {
                     analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));

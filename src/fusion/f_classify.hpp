@@ -55,7 +55,8 @@ namespace Anaquin
             return Negative;
         }
 
-        template <typename Options, typename Stats> static Stats analyze(const std::string &file, const Options &o = Options())
+        template <typename Options, typename Stats> static Stats analyze
+                (const FileName &file, bool shouldMix, const Options &o = Options())
         {
             Stats stats;
             const auto &r = Standard::instance().r_fus;
@@ -68,8 +69,9 @@ namespace Anaquin
                 assert(!id.empty() && r.match(id));
                 
                 stats.n_chrT++;
-                
-                if (r.match(id)->mixes.count(Mix_1))
+                stats.h.at(id)++;
+
+                if (shouldMix)
                 {
                     // Known abundance for the fusion
                     const auto known = r.match(id)->abund(Mix_1);
@@ -77,12 +79,10 @@ namespace Anaquin
                     // Measured abundance for the fusion
                     const auto measured = reads;
                     
-                    stats.h.at(id)++;
-
                     Point p;
                     
-                    p.x = log2f(known);
-                    p.y = log2f(measured);
+                    p.x = known;
+                    p.y = measured;
 
                     stats[id] = p;
                 }
@@ -160,7 +160,11 @@ namespace Anaquin
             stats.m.nr = r.countFusions();
 
             o.info("Calculating limit of sensitivity");
-            stats.s = r.limit(stats.h);
+
+            if (shouldMix)
+            {
+                stats.s = r.limit(stats.h);
+            }
 
             return stats;
         }

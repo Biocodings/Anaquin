@@ -43,7 +43,7 @@ namespace Anaquin
             MissingSequins miss;
         };
 
-        static Stats report(const std::string &, const Options &options = Options());
+        static Stats report(const FileName &, const Options &o = Options());
     };
 }
 

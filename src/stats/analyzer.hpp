@@ -36,7 +36,7 @@ namespace Anaquin
                                                      return i.second;
                                                  });
     }
-
+    
     struct Analyzer
     {
         // Empty Implementation
@@ -274,7 +274,59 @@ namespace Anaquin
 
     struct AnalyzeReporter
     {
-        template <typename Stats, typename Writer> static void missing(const std::string &file,
+        /*
+         * Provides a common framework to report a simple linear regression model
+         */
+        
+        template <typename Writer, typename Stats> static void linear
+            (const FileName &file, const Stats &stats, const std::string &units, Writer writer)
+        {
+            const auto summary = "Summary for dataset: %1%\n\n"
+                                 "   Genome:      %2% %19%\n"
+                                 "   Query:       %3% %19%\n"
+                                 "   Reference:   %4% %19%\n\n"
+                                 "   Sensitivity: %5% (attomol/ul) (%6%)\n"
+                                 "   Detected:    %7% %19%\n\n"
+                                 "   ***\n"
+                                 "   *** The following statistics are computed on the log2 scale\n"
+                                 "   ***\n"
+                                 "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
+                                 "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
+                                 "   ***\n\n"
+                                 "   Correlation:\t%8%\n"
+                                 "   Slope:\t%9%\n"
+                                 "   R2:\t%10%\n"
+                                 "   F-statistic:\t%11%\n"
+                                 "   P-value:\t%12%\n"
+                                 "   SSM: %13%, DF: %14%\n"
+                                 "   SSE: %15%, DF: %16%\n"
+                                 "   SST: %17%, DF: %18%\n";
+            const auto lm = stats.linear();
+            
+            writer->open(file);
+            writer->write((boost::format(summary) % file
+                                                  % stats.n_hg38
+                                                  % stats.n_chrT
+                                                  % stats.h.size()
+                                                  % stats.ss.abund
+                                                  % stats.ss.id
+                                                  % countHist(stats.h)
+                                                  % lm.r
+                                                  % lm.m
+                                                  % lm.r2
+                                                  % lm.f
+                                                  % lm.p
+                                                  % lm.ssm
+                                                  % lm.ssm_df
+                                                  % lm.sse
+                                                  % lm.sse_df
+                                                  % lm.sst
+                                                  % lm.sst_df
+                                                  % units).str());
+            writer->close();
+        }
+        
+        template <typename Stats, typename Writer> static void missing(const FileName &file,
                                                                        const Stats &stats,
                                                                        Writer writer)
         {
