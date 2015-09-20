@@ -144,16 +144,21 @@ namespace Anaquin
             (*this)[id] = Point(x, y);
         }
 
-        inline LinearModel linear() const
+        /*
+         * Compute a simple linear regression model. By default, this function assumes
+         * the values are raw and will attempt to log-transform.
+         */
+
+        inline LinearModel linear(bool shouldLog = true) const
         {
             std::vector<double> x, y;
-            
+
             for (const auto &p : *this)
             {
                 if (!isnan(p.second.x) && !isnan(p.second.y))
                 {
-                    x.push_back(p.second.x);
-                    y.push_back(p.second.y);
+                    x.push_back(shouldLog ? log2(p.second.x) : p.second.x);
+                    y.push_back(shouldLog ? log2(p.second.y) : p.second.y);
                 }
             }
 
@@ -161,17 +166,16 @@ namespace Anaquin
 
             LinearModel lm;
             
-            lm.f   = m.f;
-            lm.p   = m.p;
-            lm.r2  = m.r2;
-            lm.ar2 = m.ar2;
-            lm.r   = SS::cor(x, y);
-            lm.sst = m.total.ss;
-            lm.ssm = m.model.ss;
-            lm.sse = m.error.ss;
-            lm.c   = m.coeffs[0].value;
-            lm.m   = m.coeffs[1].value;
-
+            lm.f      = m.f;
+            lm.p      = m.p;
+            lm.r2     = m.r2;
+            lm.ar2    = m.ar2;
+            lm.r      = SS::cor(x, y);
+            lm.sst    = m.total.ss;
+            lm.ssm    = m.model.ss;
+            lm.sse    = m.error.ss;
+            lm.c      = m.coeffs[0].value;
+            lm.m      = m.coeffs[1].value;
             lm.sst_df = m.total.df;
             lm.ssm_df = m.model.df;
             lm.sse_df = m.error.df;

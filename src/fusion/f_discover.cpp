@@ -16,14 +16,14 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
         o.writer->open("FusionDiscover_summary.stats");
 
         const auto summary = "Summary for dataset: %1% :\n\n"
-                             "   Ignored: %2% fusions not in chrT\n"
-                             "   Query: %3% fusions in chrT\n"
-                             "Reference: %4% sequins\n\n"
-                             "Fuzzy: %5%\n\n"
-                             "#--------------------|   Sn   |  Sp   |  fSn |  fSp\n"
-                             "    Fusion level:       %6%     %7%     %8%    %9%\n"
+                             "   Genome: %2% fusions\n"
+                             "   Synthetic: %3% fusions\n"
+                             "   Reference: %4% sequins\n\n"
+                             "   Fuzzy: %5%\n\n"
+                             "#--------------------|   Sn   |  Sp  \n"
+                             "    Fusion level:       %6%     %7%  \n"
                              "\n"
-                             "Covered:     %10%";
+                             "Sensitivity:     %8%";
 
         o.writer->write((boost::format(summary) % file
                                                 % stats.m.skip
@@ -32,8 +32,6 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
                                                 % o.fuzzy
                                                 % stats.m.sn()
                                                 % stats.m.sp()
-                                                % "????"
-                                                % "????"
                                                 % stats.covered).str());
         o.writer->close();
     }
@@ -41,6 +39,7 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
     /*
      * Generating sequin statistics
      */
+
     {
 
         o.info("Generating sequins statistics");
@@ -50,7 +49,7 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
                              "   Detected: %2% (%3%) sequins\n"
                              "   Undetected: %4% (%5%) sequins\n\n"
                              "   Fuzzy: %6%\n\n"
-                             "#--------------------|   normal   |  fuzzy   |  e_cov |  o_cov\n";
+                             "#--------------------|   normal   |  fuzzy   |  expect (attomol/ul) |  measure (reads)\n";
 
         // Proportion of sequins detected
         const auto detect = std::count_if(stats.h.begin(), stats.h.end(), [&](const std::pair<SequinID, Counts> &p)

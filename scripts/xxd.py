@@ -19,12 +19,9 @@ data  = [ 'data/manual.txt',
 
            # ------- Fusion -------
 
-           'data/fusion/FUSMixture_3.0.csv',
-           'data/fusion/FUSBreak_1.0.ref',
-           'data/fusion/FUSFusionStandard_1.0.bed',
-           'data/fusion/FUSFusionStandard_1.0.gtf',                      
-           'data/fusion/FUSNormalStandard_1.0.bed',
-           'data/fusion/FUSNormalStandard_1.0.gtf',
+           'data/fusion/AFU004.v032.ref',
+           'data/fusion/AFU005.v032.bed',
+           'data/fusion/MFU007.v013.csv',
 
            # ------- Ladder -------
 
