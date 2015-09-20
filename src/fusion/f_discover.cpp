@@ -15,7 +15,7 @@ FDiscover::Stats FDiscover::report(const std::string &file, const FDiscover::Opt
         o.info("Generating summary statistics");
         o.writer->open("FusionDiscover_summary.stats");
 
-        const auto summary = "Summary for dataset: %1% :\n\n"
+        const auto summary = "Summary for dataset: %1%\n\n"
                              "   Genome: %2% fusions\n"
                              "   Synthetic: %3% fusions\n"
                              "   Genome-Synthetic: %4% fusions\n"

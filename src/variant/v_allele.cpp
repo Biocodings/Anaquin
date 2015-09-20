@@ -38,7 +38,7 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
      * Generate summary statistics
      */
 
-    const auto summary = "Summary for dataset: %1% :\n\n"
+    const auto summary = "Summary for dataset: %1%\n\n"
                          "   Genome: %2% variants\n"
                          "   Query: %3% variants (in chrT)\n"
                          "   Reference: %4% variants\n"
