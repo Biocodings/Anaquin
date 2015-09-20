@@ -53,7 +53,7 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
                          "   SST: %15%, DF: %16%\n"
     ;
     
-    const auto lm = stats.linear();
+    const auto lm = stats.linear(false);
     
     stats.sn = static_cast<double>(stats.detected) / r.countVars();
 
