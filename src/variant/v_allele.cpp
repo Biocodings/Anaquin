@@ -23,10 +23,11 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
          * in the concentration of reference and variant DNA standards.
          */
 
-        // Eg: D_1_12_R_G/A
-        const auto id = (boost::format("%1%_%2%/%3%:") % match->id
-                                                       % match->ref
-                                                       % match->alt).str();
+        // Eg: D_1_12_R_373892_G/A
+        const auto id = (boost::format("%1%_%2%_%3%_%4%:") % match->id
+                                                           % match->ref
+                                                           % match->l.start
+                                                           % match->alt).str();
 
         stats.add(id, known, measured);
     });
@@ -75,7 +76,7 @@ VAllele::Stats VAllele::report(const std::string &file, const Options &o)
                                             % lm.sst_df).str());
     o.writer->close();
 
-    AnalyzeReporter::scatter(stats, "VarAllele", "Expected allele frequency (log2)", "Measured allele frequency (log2)", o.writer);
+    AnalyzeReporter::scatter(stats, "VarAllele", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", o.writer);
 
     return stats;
 }
