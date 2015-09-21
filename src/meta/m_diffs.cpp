@@ -149,6 +149,9 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
 
     o.info((boost::format("Detected %1% sequins in estimating differential") % stats.size()).str());
 
+    stats.n_hg38 = std::max(stats_1.n_hg38, stats_2.n_hg38);
+    stats.n_chrT = std::max(stats_1.n_chrT, stats_2.n_chrT);
+
     /*
      * Generating differential comparisons for both samples
      */
