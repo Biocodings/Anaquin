@@ -16,8 +16,8 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     o.info("Analyzing the PSL file");
     
     // Analyse the blat alignment file
-    stats.blat = MBlat::analyze(o.psl);
-
+    const auto t = MBlat::analyze(o.psl);
+ 
     /*
      * Generate statistics for the assembler
      */
@@ -26,8 +26,10 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
     switch (o.tool)
     {
-        case Velvet: { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &stats.blat); break; }
+        case Velvet: { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t); break; }
     }
+    
+    stats.blat = t;
 
     o.info("Analyzing the PSL alignments");
 
@@ -124,24 +126,24 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         const auto summary = "Summary for dataset: %1%\n\n"
                              "   Community: %2%\n"
                              "   Synthetic: %3%\n\n"
-                             "   Contigs: %4%\n"
+                             "   Contigs:   %4%\n"
                              "   Assembled: %5%\n"
                              "   Reference: %6%\n\n"
                              "   ***\n"
-                             "   *** The following statistics on the synthetic community\n"
+                             "   *** The following statistics are computed on the synthetic community\n"
                              "   ***\n\n"
                              "   Contigs:  %7%\n"
-                             "   N20:    %8%\n"
-                             "   N50: %9%\n"
-                             "   N80: %10%\n"
-                             "   min: %11%\n"
-                             "   mean: %12%\n"
-                             "   max: %13%\n"
+                             "   N20:      %8%\n"
+                             "   N50:      %9%\n"
+                             "   N80:      %10%\n"
+                             "   min:      %11%\n"
+                             "   mean:     %12%\n"
+                             "   max:      %13%\n\n"
+                             "   ***\n"
+                             "   *** The following overlapping statistics are computed as proportion\n"
                              "   ***\n\n"
-                             "   *** The following overlapping statistics are computed by proportion\n"
-                             "   ***\n\n"
-                             "   Match: %14%\n"
-                             "   Gaps: %15%\n"
+                             "   Match:    %14%\n"
+                             "   Gaps:     %15%\n"
                              "   Mismatch: %16%\n";
         
         o.writer->write((boost::format(summary) % file

@@ -76,7 +76,7 @@ namespace Anaquin
             });
 
             // This is copied from printContiguityStats() in Histogram.h of the Abyss source code.
-            h = h.trimLow(500);
+            //h = h.trimLow(500);
             
             /*
              * https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
@@ -135,7 +135,7 @@ namespace Anaquin
         {
             // Statistics for the alignment
             MBlat::Stats blat;
-
+            
             // Statistics for abundance
             LinearStats lm;
         };
