@@ -1,6 +1,7 @@
 #ifndef GI_M_DIFFS_HPP
 #define GI_M_DIFFS_HPP
 
+#include "meta/m_blat.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
@@ -33,6 +34,9 @@ namespace Anaquin
 
         struct Stats : public LinearStats
         {
+            // Alignment for the two alignment files
+            MBlat::Stats align_1, align_2;
+            
             std::vector<SequinDiff> diffs;
         };
 

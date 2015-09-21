@@ -41,7 +41,8 @@ namespace Anaquin
             std::map<ContigID, T> contigs;
         };
 
-        template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T parse(const FileName &file, std::function<void (C&)> f)
+        template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T parse
+                (const FileName &file, const MBlat::Stats *blat, std::function<void (C&)> f)
         {
             T stats;
             Histogram h;
@@ -55,6 +56,12 @@ namespace Anaquin
                 C c;
 
                 c.id = l.id;
+                
+                // Don't bother if the contig isn't aligned to the synthetic community...
+                if (blat && !blat->aligns.count(c.id))
+                {
+                    return;
+                }
 
                 // Size of the config
                 c.len = l.seq.size();
@@ -94,7 +101,8 @@ namespace Anaquin
 
     struct Velvet
     {
-        template <typename Stats, typename C> static Stats parse(const std::string &file)
+        template <typename Stats, typename C> static Stats analyze
+                    (const FileName &file, const MBlat::Stats *align = NULL)
         {
             Stats stats;
 
@@ -106,7 +114,7 @@ namespace Anaquin
             
             std::vector<std::string> toks;
 
-            return DAsssembly::parse<C, Stats>(file, [&](C &node)
+            return DAsssembly::parse<C, Stats>(file, align, [&](C &node)
             {
                 Tokens::split(node.id, "_", toks);
 

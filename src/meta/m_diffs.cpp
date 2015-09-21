@@ -7,106 +7,105 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
 {
     MDiffs::Stats stats;
 
+    assert(!o.pA.empty() && !o.pB.empty());
+    
+    o.info((boost::format("Analyzing PSL: %1%") % o.pA).str());
+    stats.align_1 = MBlat::analyze(o.pA);
+
+    o.info((boost::format("Analyzing PSL: %1%") % o.pB).str());
+    stats.align_2 = MBlat::analyze(o.pB);
+
     /*
      * The implementation is very similar to one single sample. The only difference is that
      * we're interested in the log-fold change of the samples.
      */
     
-    const auto stats_1 = Velvet::parse<MAssembly::Stats, Contig>(file_1);
-    const auto stats_2 = Velvet::parse<MAssembly::Stats, Contig>(file_2);
+    const auto stats_1 = Velvet::analyze<MAssembly::Stats, Contig>(file_1, &stats.align_1);
+    const auto stats_2 = Velvet::analyze<MAssembly::Stats, Contig>(file_2, &stats.align_2);
 
-    if (!o.pA.empty() && !o.pB.empty())
+    o.info("Creating a differential plot");
+    
+    /*
+     * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
+     */
+    
+    // Marginal for mixture A
+    std::map<SequinID, Coverage> y1;
+    
+    // Marginal for mixture B
+    std::map<SequinID, Coverage> y2;
+    
+    for (const auto &meta : stats.align_1.metas)
     {
-        o.info((boost::format("Using alignment: %1%") % o.pA).str());
-        o.info((boost::format("Using alignment: %1%") % o.pB).str());
-
-        const auto r1 = MBlat::analyze(o.pA);
-        const auto r2 = MBlat::analyze(o.pB);
-
-        o.info("Creating a differential plot");
+        const auto &align = meta.second;
         
-        /*
-         * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
-         */
-        
-        // Marginal for mixture A
-        std::map<SequinID, Coverage> y1;
-        
-        // Marginal for mixture B
-        std::map<SequinID, Coverage> y2;
-
-        for (const auto &meta : r1.metas)
+        // If the metaquin has an alignment
+        if (!align->contigs.empty())
         {
-            const auto &align = meta.second;
+            /*
+             * Calculate measured concentration for this metaquin. Average out
+             * the coverage for each aligned contig.
+             */
             
-            // If the metaquin has an alignment
-            if (!align->contigs.empty())
+            Concentration measured = 0;
+            
+            for (std::size_t i = 0; i < align->contigs.size(); i++)
             {
-                /*
-                 * Calculate measured concentration for this metaquin. Average out
-                 * the coverage for each aligned contig.
-                 */
+                const auto &contig = stats_1.contigs.at(align->contigs[i].id);
                 
-                Concentration measured = 0;
+                // Average relative to the size of the contig
+                measured += contig.k_cov / contig.k_len;
                 
-                for (std::size_t i = 0; i < align->contigs.size(); i++)
-                {
-                    const auto &contig = stats_1.contigs.at(align->contigs[i].id);
-
-                    // Average relative to the size of the contig
-                    measured += contig.k_cov / contig.k_len;
-                    
-                    // Average relative to the size of the sequin
-                    //measured += contig.k_cov / meta.second.seqA.length;
-                }
-                
-                assert(measured != 0);
-                y1[align->id()] = measured;
+                // Average relative to the size of the sequin
+                //measured += contig.k_cov / meta.second.seqA.length;
             }
-            else
-            {
-                y1[align->id()] = 0;
-            }
+            
+            assert(measured != 0);
+            y1[align->id()] = measured;
         }
-
-        for (const auto &meta : r2.metas)
+        else
         {
-            const auto &align = meta.second;
+            y1[align->id()] = 0;
+        }
+    }
+    
+    for (const auto &meta : stats.align_2.metas)
+    {
+        const auto &align = meta.second;
+        
+        // If the metaquin has an alignment
+        if (!align->contigs.empty())
+        {
+            /*
+             * Calculate measured concentration for this metaquin. Average out
+             * the coverage for each aligned contig.
+             */
             
-            // If the metaquin has an alignment
-            if (!align->contigs.empty())
+            Concentration measured = 0;
+            
+            for (std::size_t i = 0; i < align->contigs.size(); i++)
             {
-                /*
-                 * Calculate measured concentration for this metaquin. Average out
-                 * the coverage for each aligned contig.
-                 */
+                const auto &contig = stats_2.contigs.at(align->contigs[i].id);
                 
-                Concentration measured = 0;
+                // Average relative to the size of the contig
+                measured += contig.k_cov / contig.k_len;
                 
-                for (std::size_t i = 0; i < align->contigs.size(); i++)
-                {
-                    const auto &contig = stats_2.contigs.at(align->contigs[i].id);
-                    
-                    // Average relative to the size of the contig
-                    measured += contig.k_cov / contig.k_len;
-                    
-                    // Average relative to the size of the sequin
-                    //measured += contig.k_cov / meta.second.seqB.length;
-                }
-                
-                assert(measured != 0);
-                y2[align->id()] = measured;
+                // Average relative to the size of the sequin
+                //measured += contig.k_cov / meta.second.seqB.length;
             }
-            else
-            {
-                y2[align->id()] = 0;
-            }
+            
+            assert(measured != 0);
+            y2[align->id()] = measured;
+        }
+        else
+        {
+            y2[align->id()] = 0;
         }
         
         assert(y1.size() == y2.size());
-        assert(r1.metas.size() == r2.metas.size());
+        assert(stats.align_1.metas.size() == stats.align_2.metas.size());
         
-        for (const auto &meta : r1.metas)
+        for (const auto &meta : stats.align_1.metas)
         {
             const auto &align = meta.second;
 
@@ -147,9 +146,13 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
 
         //AnalyzeReporter::linear(stats, "m_diffs", "k-mer average", options.writer);
     }
+
+    /*
+     * Generating summary statistics
+     */
     
     o.info("Generating statistics");
-    
+
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
     o.writer->open("diff.stats");
@@ -173,6 +176,11 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     }
     
     o.writer->close();
+    
+    /*
+     * Generating detailed statistics for each sequin
+     */
+    
     
     return stats;
 }

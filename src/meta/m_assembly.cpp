@@ -10,6 +10,15 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     assert(!o.psl.empty());
 
     /*
+     * Generate statistics for the alignment
+     */
+    
+    o.info("Analyzing the PSL file");
+    
+    // Analyse the blat alignment file
+    stats.blat = MBlat::analyze(o.psl);
+
+    /*
      * Generate statistics for the assembler
      */
 
@@ -17,13 +26,8 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
     switch (o.tool)
     {
-        case Velvet: { stats = Velvet::parse<MAssembly::Stats, Contig>(file); break; }
+        case Velvet: { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &stats.blat); break; }
     }
-
-    o.info("Analyzing the PSL file");
-    
-    // Analyse the blat alignment file
-    stats.blat = MBlat::analyze(o.psl);
 
     o.info("Analyzing the PSL alignments");
 
@@ -133,7 +137,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                              "   min: %11%\n"
                              "   mean: %12%\n"
                              "   max: %13%\n"
-                             "   ***\n"
+                             "   ***\n\n"
                              "   *** The following overlapping statistics are computed by proportion\n"
                              "   ***\n\n"
                              "   Match: %14%\n"

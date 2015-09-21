@@ -7,7 +7,7 @@ using namespace Anaquin;
 TEST_CASE("DAssembly_M_1005")
 {
     Test::meta();
-    const auto r = Velvet::parse<DAsssembly::Stats<Contig>, Contig>("tests/data/M_1005/contigs.fa");
+    const auto r = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>("tests/data/M_1005/contigs.fa");
     
     REQUIRE(r.contigs.size() == 453);
     REQUIRE(r.N80 == 549);
