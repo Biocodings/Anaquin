@@ -23,6 +23,9 @@ namespace Anaquin
 
         struct Options : public MAssembly::Options
         {
+            // Required by the GCC compiler ...
+            Options() {}
+            
             CoverageMethod coverage = KMerCov_Contig;
         };
         
