@@ -167,7 +167,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     
     {
         o.info("Generating R script");
-        AnalyzeReporter::scatter(stats, "MetaDifferent", "Expected log2 fold change (log2)", "Measured log2 fold change", o.writer);
+        AnalyzeReporter::scatter(stats, "", "MetaDifferent", "Expected fold change", "Measured fold change", o.writer);
     }
 
     /*
@@ -185,8 +185,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
         o.writer->write((boost::format(format) % "ID"
                                                % "Expected 1 (attomol/ul)"
                                                % "Expected 2 (attomol/ul)"
-                                               % "Measured 1"
-                                               % "Measured 2"
+                                               % "Measured 1 (k-mer average)"
+                                               % "Measured 2 (k-mer average)"
                                                % "Expected Fold"
                                                % "Measured Fold"
                                                % "Expected Log-Fold"

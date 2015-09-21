@@ -13,7 +13,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
      * Generate statistics for the alignment
      */
     
-    o.info("Analyzing the PSL file");
+    o.analyze(o.psl);
     
     // Analyse the blat alignment file
     const auto t = MBlat::analyze(o.psl);
@@ -22,7 +22,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
      * Generate statistics for the assembler
      */
 
-    o.info("Parsing the contig file: " + file);
+    o.analyze(file);
 
     switch (o.tool)
     {
@@ -98,11 +98,11 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
-        o.writer->write((boost::format(format) % "id"
-                                               % "contigs"
-                                               % "covered"
-                                               % "mismatch"
-                                               % "gaps").str());
+        o.writer->write((boost::format(format) % "ID"
+                                               % "Contigs"
+                                               % "Covered"
+                                               % "Mismatch"
+                                               % "Gaps").str());
         for (const auto &i : stats.blat.metas)
         {
             const auto &align = i.second;

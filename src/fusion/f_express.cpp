@@ -22,7 +22,7 @@ FExpress::Stats FExpress::report(const FileName &file, const FDiscover::Options 
      */
 
     o.info("Generating R script");
-    AnalyzeReporter::scatter(stats, "FusionExpress", "Expected abudnance (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
+    AnalyzeReporter::scatter(stats, "", "FusionExpress", "Expected abudnance (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
     
     return stats;
 }

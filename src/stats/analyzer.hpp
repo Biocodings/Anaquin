@@ -220,6 +220,11 @@ namespace Anaquin
             output->write("[WAIT]: " + s);
         }
         
+        inline void analyze(const std::string &s) const
+        {
+            info("Analyzing: " + s);
+        }
+        
         inline void info(const std::string &s) const
         {
             logInfo(s);
@@ -292,19 +297,19 @@ namespace Anaquin
                                  "   Sensitivity: %5% (attomol/ul) (%6%)\n"
                                  "   Detected:    %7% %20%\n\n"
                                  "   ***\n"
-                                 "   *** The following statistics are computed on the log2 scale\n"
+                                 "   *** The following statistics are computed on the log2 scale.\n"
                                  "   ***\n"
                                  "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
                                  "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
                                  "   ***\n\n"
-                                 "   Correlation:\t%8%\n"
-                                 "   Slope:\t%9%\n"
-                                 "   R2:\t%10%\n"
-                                 "   F-statistic:\t%11%\n"
-                                 "   P-value:\t%12%\n"
-                                 "   SSM: %13%, DF: %14%\n"
-                                 "   SSE: %15%, DF: %16%\n"
-                                 "   SST: %17%, DF: %18%\n";
+                                 "   Correlation: %8%\n"
+                                 "   Slope:       %9%\n"
+                                 "   R2:          %10%\n"
+                                 "   F-statistic: %11%\n"
+                                 "   P-value:     %12%\n"
+                                 "   SSM:         %13%, DF: %14%\n"
+                                 "   SSE:         %15%, DF: %16%\n"
+                                 "   SST:         %17%, DF: %18%\n";
             const auto lm = stats.linear();
 
             writer->open(file);
@@ -355,11 +360,13 @@ namespace Anaquin
         template <typename Writer> static void writeCSV(const std::vector<double> &x,
                                                         const std::vector<double> &y,
                                                         const std::vector<std::string> &z,
-                                                        const std::string &file,
+                                                        const FileName &file,
+                                                        const std::string &xLabel,
+                                                        const std::string &yLabel,
                                                         Writer writer)
         {
             writer->open(file);
-            writer->write("ID,expect,measure");
+            writer->write((boost::format("ID\t%1%\%2%") % xLabel % yLabel).str());
 
             /*
              * Prefer to write results in sorted order
@@ -383,6 +390,7 @@ namespace Anaquin
          */
 
         template <typename Stats, typename Writer> static void scatter(const Stats &stats,
+                                                                       const std::string &title,
                                                                        const std::string &prefix,
                                                                        const std::string &xLabel,
                                                                        const std::string &yLabel,
@@ -417,7 +425,7 @@ namespace Anaquin
              * Generate CSV for each sequin
              */
 
-            writeCSV(x, y, z, prefix + "_plot.csv", writer);
+            writeCSV(x, y, z, prefix + "_quin.csv", writer);
         }
     };
 }
