@@ -53,6 +53,9 @@ namespace Anaquin
 
         struct Options : public DoubleMixtureOptions
         {
+            // Required by the GCC compiler...
+            Options() {}
+            
             MAbundance::CoverageMethod coverage = MAbundance::KMerCov_Contig;
             
             // An optional PSL file for mixture A
