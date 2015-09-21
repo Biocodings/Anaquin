@@ -46,14 +46,14 @@ namespace Anaquin
          * The following metrics are only valid if an alignment is available
          */
 
-        // Fraction of non-overlapping bases covered by alignments
+        // Proportion of non-overlapping bases covered by alignments
         double covered = 0.0;
         
-        // Fraction of bases not covered by alignments
-        double mismatch = 0.0;
+        // Proportion of bases not covered by alignments
+        double oMismatch = 0.0;
 
-        // Fraction of gap bases in alignments
-        double gaps = 0.0;
+        // Proportion of gap bases in alignments
+        double oGaps = 0.0;
 
         // Average coverage depth across assembled sequence
         double depthAlign = 0.0; // TODO: ????
@@ -80,8 +80,8 @@ namespace Anaquin
             // Proportion of overlapping mismatches for all sequins
             inline double overMismatch() const { return static_cast<double>(oMismatch) / total; }
 
-            // Proportion of sequins detected & assembled (i.e: at least a single contig)
-            inline double sequin() const
+            // Total number of sequins that are assembled (i.e: at least a single contig)
+            inline Counts countAssembled() const
             {
                 return std::count_if(metas.begin(),metas.end(),
                             [&](const std::pair<SequinID, std::shared_ptr<MetaAlignment>> &p)

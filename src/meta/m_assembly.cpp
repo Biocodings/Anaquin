@@ -114,13 +114,12 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
 {
     const auto stats = MAssembly::analyze(file, o);
 
-    o.logInfo("Generating summary statistics");
-    
     /*
      * Generate summary statistics
      */
 
     {
+        o.logInfo("Generating summary statistics");
         o.writer->open("MetaAssembly_summary.stats");
         
         const auto summary = "Summary for dataset: %1%\n\n"
@@ -150,7 +149,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                                                 % stats.blat.n_hg38
                                                 % stats.blat.n_chrT
                                                 % stats.blat.aligns.size()
-                                                % stats.blat.sequin()
+                                                % stats.blat.countAssembled()
                                                 % stats.blat.metas.size()
                                                 % stats.contigs.size()
                                                 % stats.N20
@@ -169,9 +168,8 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
      * Generate results for each sequin
      */
 
-    o.logInfo("Generating sequins statistics");
-
     {
+        o.logInfo("Generating sequins statistics");
         o.writer->open("MetaAssembly_quins.stats");
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
@@ -188,8 +186,8 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
             o.writer->write((boost::format(format) % align->seq->id
                                                    % align->contigs.size()
                                                    % align->covered
-                                                   % align->mismatch
-                                                   % align->gaps).str());
+                                                   % align->oMismatch
+                                                   % align->oGaps).str());
         }
         
         o.writer->close();
