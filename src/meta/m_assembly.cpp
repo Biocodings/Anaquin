@@ -189,7 +189,5 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         o.writer->close();
     }
 
-    o.writer->close();
-
     return stats;
 }
