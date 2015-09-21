@@ -70,6 +70,9 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
                 // Crash if the alignment file doesn't match with the contigs...
                 const auto &contig = dnovo.contigs.at(align->contigs[i].id);
 
+                assert(align->seq->l.length());
+                assert(contig.k_cov && contig.k_len);
+                
                 switch (o.coverage)
                 {
                     case KMerCov_Contig: { measured += contig.k_cov / contig.k_len;           break; }
