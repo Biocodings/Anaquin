@@ -111,15 +111,14 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     }
 
     /*
-     * Merging information, note that we can only do a differential comparison if the sequin appears
-     * detected in both samples
+     * Merging data, note that we can only do a differential comparison if the sequin appears
+     * detected in both samples.
      */
     
     for (const auto &meta : stats.align_1.metas)
     {
         const auto &align = meta.second;
         
-        // If the metaquin has an alignment
         if (!align->contigs.empty())
         {
             // Only when the align is detected in both samples
@@ -135,13 +134,13 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
                 
                 SequinDiff d;
                 
-                d.id   = align->id();
-                d.ex_A = align->seq->abund(Mix_1);
-                d.ex_B = align->seq->abund(Mix_2);
-                d.ob_A = y1.at(align->id());
-                d.ob_B = y2.at(align->id());
-                d.ex_fold = known;
-                d.ob_fold = measured;
+                d.id    = align->id();
+                d.e1    = align->seq->abund(Mix_1);
+                d.e2    = align->seq->abund(Mix_2);
+                d.m1    = y1.at(align->id());
+                d.m2    = y2.at(align->id());
+                d.eFold = known;
+                d.mFold = measured;
 
                 stats.diffs.insert(d);
             }
@@ -151,56 +150,60 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     o.info((boost::format("Detected %1% sequins in estimating differential") % stats.size()).str());
 
     /*
-     * Generating summary statistics
-     */
-    
-    o.info("Generating statistics");
-
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
-
-    o.writer->open("MetaDifferent_summary.stats");
-    o.writer->write((boost::format(format) % "id"
-                                           % "expect_A"
-                                           % "expect_B"
-                                           % "measure_A"
-                                           % "measure_B"
-                                           % "expect_fold"
-                                           % "measure_fold").str());
-
-    for (const auto &diff : stats.diffs)
-    {
-        o.writer->write((boost::format(format) % diff.id
-                                               % diff.ex_A
-                                               % diff.ob_A
-                                               % diff.ex_B
-                                               % diff.ob_B
-                                               % diff.ex_fold
-                                               % diff.ob_fold).str());
-    }
-    
-    o.writer->close();
-    
-    /*
-     * Generating detailed statistics for each sequin
-     */
-    
-    o.writer->open("MetaDifferent_quin.stats");
-    
-    o.writer->close();
-    
-    /*
      * Generating differential comparisons for both samples
      */
-
-    o.info("Generating summary statistics");
-    AnalyzeReporter::linear("MetaDifferent_summary.stats", stats, "sequins", o.writer);
+    
+    {
+        o.info("Generating summary statistics");
+        AnalyzeReporter::linear("MetaDifferent_summary.stats", stats, "sequins", o.writer);
+    }
 
     /*
      * Generate an R script
      */
     
-    o.info("Generating R script");
-    AnalyzeReporter::scatter(stats, "MetaDifferent", "Expected log2 fold change (log2)", "Measured log2 fold change", o.writer);
+    {
+        o.info("Generating R script");
+        AnalyzeReporter::scatter(stats, "MetaDifferent", "Expected log2 fold change (log2)", "Measured log2 fold change", o.writer);
+    }
+
+    /*
+     * Generating statistics for each sequin
+     */
+
+    {
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+
+        /*
+         * Generating detailed statistics for each sequin
+         */
     
+        o.writer->open("MetaDifferent_quin.stats");
+        o.writer->write((boost::format(format) % "ID"
+                                               % "Expected 1 (attomol/ul)"
+                                               % "Expected 2 (attomol/ul)"
+                                               % "Measured 1"
+                                               % "Measured 2"
+                                               % "Expected Fold"
+                                               % "Measured Fold"
+                                               % "Expected Log-Fold"
+                                               % "Measured Log-Fold").str());
+
+        for (const auto &diff : stats.diffs)
+        {
+            o.writer->write((boost::format(format) % diff.id
+                                                   % diff.e1
+                                                   % diff.m1
+                                                   % diff.e2
+                                                   % diff.m2
+                                                   % diff.eFold
+                                                   % diff.mFold
+                                                   % log2(diff.eFold)
+                                                   % log2(diff.mFold)).str());
+        }
+
+        o.writer->close();
+    }
+
     return stats;
 }

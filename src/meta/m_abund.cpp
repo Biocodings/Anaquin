@@ -108,7 +108,7 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
 {
     const auto stats = MAbundance::analyze(file, o);
 
-    o.info("Generating linaer model");
+    o.info("Generating summary statistics");
     AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "contigs", o.writer, "sequins");
 
     o.info("Generating R script");

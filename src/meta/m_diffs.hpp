@@ -19,22 +19,22 @@ namespace Anaquin
             SequinID id;
             
             // Expected coverage for mixture A
-            Coverage ex_A;
+            Coverage e1;
             
             // Expected coverage for mixture B
-            Coverage ex_B;
+            Coverage e2;
             
-            // Observed coverage for mixture A
-            Coverage ob_A;
+            // Measured coverage for mixture A
+            Coverage m1;
             
-            // Observed coverage for mixture B
-            Coverage ob_B;
+            // Measured coverage for mixture B
+            Coverage m2;
             
             // Expected fold-change
-            Coverage ex_fold;
+            Coverage eFold;
 
-            // Observed fold-change
-            Coverage ob_fold;
+            // Measured fold-change
+            Coverage mFold;
         };
 
         struct Stats : public LinearStats, public MappingStats
