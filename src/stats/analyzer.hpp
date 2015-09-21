@@ -302,7 +302,7 @@ namespace Anaquin
                                  "   SSE: %15%, DF: %16%\n"
                                  "   SST: %17%, DF: %18%\n";
             const auto lm = stats.linear();
-            
+
             writer->open(file);
             writer->write((boost::format(summary) % file
                                                   % stats.n_hg38

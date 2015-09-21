@@ -49,7 +49,7 @@ void MetaRef::validate()
     {
         merge(_impl->rawSeqID);
     }
-
+    
     _impl->seqID       = _impl->rawSeqID;
     _impl->baseBySeqID = _impl->rawBaseBySeqID;
 

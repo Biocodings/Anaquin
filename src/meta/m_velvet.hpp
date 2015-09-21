@@ -22,7 +22,7 @@ namespace Anaquin
 
     struct DAsssembly
     {
-        template <typename T> struct Stats
+        template <typename T> struct Stats : public MappingStats
         {
             Base mean, min, max;
             Base N20, N50, N80;
@@ -37,7 +37,7 @@ namespace Anaquin
             std::map<ContigID, T> contigs;
         };
         
-        template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T parse
+        template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T analyze
                 (const FileName &file, const MBlat::Stats *blat, std::function<void (C&)> f)
         {
             T stats;
@@ -52,8 +52,11 @@ namespace Anaquin
                 // Don't bother if the contig isn't aligned to the synthetic community...
                 if (blat && !blat->aligns.count(c.id))
                 {
+                    stats.n_hg38++;
                     return;
                 }
+                
+                stats.n_chrT++;
 
                 // Size of the config
                 c.len = l.seq.size();
@@ -105,8 +108,8 @@ namespace Anaquin
              */
             
             std::vector<std::string> toks;
-            
-            return DAsssembly::parse<C, Stats>(file, align, [&](C &node)
+
+            return DAsssembly::analyze<C, Stats>(file, align, [&](C &node)
             {
                 Tokens::split(node.id, "_", toks);
                                                    

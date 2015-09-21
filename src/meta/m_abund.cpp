@@ -20,13 +20,18 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
     o.info("Analyzing contig: " + file);
 
     // Generate statistics for Velvet
-    const auto vStats = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file);
+    const auto dnovo = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file);
+
+    stats.n_chrT = dnovo.n_chrT;
+    stats.n_hg38 = dnovo.n_hg38;
     
     o.info("Analyzing the PSL alignments");
     
     for (auto &meta : bStats.metas)
     {
         auto &align = meta.second;
+        
+        stats.h.at(meta.first)++;
         
         /*
          * Calculate the limit of sensitivity. LOS is defined as the sequin with the lowest amount of
@@ -63,8 +68,8 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
                 }
                 
                 // Crash if the alignment file doesn't match with the contigs...
-                const auto &contig = vStats.contigs.at(align->contigs[i].id);
-                
+                const auto &contig = dnovo.contigs.at(align->contigs[i].id);
+
                 switch (o.coverage)
                 {
                     case KMerCov_Contig: { measured += contig.k_cov / contig.k_len;           break; }
@@ -87,6 +92,8 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
         }
     }
     
+    stats.ss = Standard::instance().r_meta.limit(stats.h);
+
     return stats;
 }
 
@@ -95,8 +102,8 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     const auto stats = MAbundance::analyze(file, o);
 
     o.info("Generating linaer model");
-    AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "...", o.writer);
-    
-    o.info("Generating linaer model");
+    AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "contigs", o.writer);
+
+    o.info("Generating R script");
     AnalyzeReporter::scatter(stats, "MetaAbundance", "Expected abudnance (attomol/ul)", "K-Mer average", o.writer);
 }
