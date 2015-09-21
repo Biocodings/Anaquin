@@ -30,6 +30,7 @@ namespace Anaquin
     typedef std::string IsoformID;
     typedef std::string TranscriptID;
 
+    typedef std::string Units;
     typedef std::string FileName;
     typedef std::string FilePath;
     typedef std::string FeatureName;

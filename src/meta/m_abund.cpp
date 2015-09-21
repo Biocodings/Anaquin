@@ -31,17 +31,15 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
     {
         auto &align = meta.second;
         
-        stats.h.at(meta.first)++;
-        
         /*
          * Calculate the limit of sensitivity. LOS is defined as the sequin with the lowest amount of
          * concentration while still detectable in the experiment.
          */
-        
-        if (stats.s.id.empty() || align->seq->mixes.at(Mix_1) < stats.s.abund)
+
+        if (stats.s.id.empty() || align->seq->abund(Mix_1) < stats.s.abund)
         {
             stats.s.id     = align->seq->id;
-            stats.s.abund  = align->seq->mixes.at(Mix_1);
+            stats.s.abund  = align->seq->abund(Mix_1);
             stats.s.counts = align->contigs.size();
         }
         
@@ -51,13 +49,15 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
         
         if (!align->contigs.empty())
         {
+            stats.h.at(meta.first)++;
+            
             // Known concentration
-            const auto known = align->seq->mixes.at(Mix_1);
+            const auto known = align->seq->abund(Mix_1);
             
             /*
              * Measure concentration for this metaquin. Average out the coverage for each aligned contig.
              */
-            
+
             Concentration measured = 0;
             
             for (auto i = 0; i < align->contigs.size(); i++)
@@ -102,7 +102,7 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     const auto stats = MAbundance::analyze(file, o);
 
     o.info("Generating linaer model");
-    AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "contigs", o.writer);
+    AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "contigs", o.writer, "sequins");
 
     o.info("Generating R script");
     AnalyzeReporter::scatter(stats, "MetaAbundance", "Expected abudnance (attomol/ul)", "K-Mer average", o.writer);

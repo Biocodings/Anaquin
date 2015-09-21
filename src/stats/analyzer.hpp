@@ -277,16 +277,20 @@ namespace Anaquin
         /*
          * Provides a common framework to report a simple linear regression model
          */
-        
+
         template <typename Writer, typename Stats> static void linear
-            (const FileName &file, const Stats &stats, const std::string &units, Writer writer)
+                        (const FileName &file,
+                         const Stats &stats,
+                         const Units &units,
+                         Writer writer,
+                         const Units &ref = "")
         {
             const auto summary = "Summary for dataset: %1%\n\n"
                                  "   Genome:      %2% %19%\n"
                                  "   Query:       %3% %19%\n"
-                                 "   Reference:   %4% %19%\n\n"
+                                 "   Reference:   %4% %20%\n\n"
                                  "   Sensitivity: %5% (attomol/ul) (%6%)\n"
-                                 "   Detected:    %7% %19%\n\n"
+                                 "   Detected:    %7% %20%\n\n"
                                  "   ***\n"
                                  "   *** The following statistics are computed on the log2 scale\n"
                                  "   ***\n"
@@ -322,7 +326,8 @@ namespace Anaquin
                                                   % lm.sse_df
                                                   % lm.sst
                                                   % lm.sst_df
-                                                  % units).str());
+                                                  % units
+                                                  % (ref.empty() ? units : ref)).str());
             writer->close();
         }
         
