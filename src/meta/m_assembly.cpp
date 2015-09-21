@@ -13,13 +13,19 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
      * Generate statistics for the assembler
      */
 
+    o.info("Parsing the contig file: " + file);
+
     switch (o.tool)
     {
         case Velvet: { stats = Velvet::parse<MAssembly::Stats, Contig>(file); break; }
     }
 
+    o.info("Analyzing the PSL file");
+    
     // Analyse the blat alignment file
     stats.blat = MBlat::analyze(o.psl);
+
+    o.info("Analyzing the PSL alignments");
 
     for (auto &meta : stats.blat.metas)
     {
@@ -37,7 +43,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
          */
         
         const auto needMixture = align->seq->mixes.count(Mix_1);
-
+        
         if (needMixture)
         {
             if (stats.lm.s.id.empty() || align->seq->mixes.at(Mix_1) < stats.lm.s.abund)
@@ -102,6 +108,8 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
 {
     const auto stats = MAssembly::analyze(file, o);
 
+    o.logInfo("Generating summary statistics");
+    
     /*
      * Generate summary statistics
      */
@@ -145,7 +153,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                                                 % stats.min
                                                 % stats.mean
                                                 % stats.max
-                                                 % stats.blat.overMatch()
+                                                % stats.blat.overMatch()
                                                 % stats.blat.overGaps()
                                                 % stats.blat.overMismatch()).str());
         o.writer->close();
@@ -154,6 +162,8 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
     /*
      * Generate results for each sequin
      */
+
+    o.logInfo("Generating sequins statistics");
 
     {
         o.writer->open("MetaAssembly_quins.stats");
@@ -177,7 +187,6 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         }
         
         o.writer->close();
-
     }
 
     o.writer->close();
