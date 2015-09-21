@@ -67,7 +67,6 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
                     continue;
                 }
                 
-                // Crash if the alignment file doesn't match with the contigs...
                 const auto &contig = dnovo.contigs.at(align->contigs[i].id);
 
                 assert(align->seq->l.length());
