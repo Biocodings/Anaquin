@@ -1,16 +1,21 @@
-#ifndef GI_M_DIFFS_HPP
-#define GI_M_DIFFS_HPP
+#ifndef M_DIFFS_HPP
+#define M_DIFFS_HPP
 
 #include "meta/m_blat.hpp"
+#include "meta/m_abund.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
     struct MDiffs
     {
-        // Represents a differential result for a metaquin
+        // Represent a differential result for a MetaQuin sequin
         struct SequinDiff
         {
+            inline bool operator<(const SequinDiff &x)  const { return id < x.id;      }
+            inline bool operator==(const SequinDiff &x) const { return id != x.id;     }
+            inline bool operator!=(const SequinDiff &x) const { return !operator==(x); }
+            
             SequinID id;
             
             // Expected coverage for mixture A
@@ -32,24 +37,32 @@ namespace Anaquin
             Coverage ob_fold;
         };
 
-        struct Stats : public LinearStats
+        struct Stats : public LinearStats, public MappingStats
         {
             // Alignment for the two alignment files
             MBlat::Stats align_1, align_2;
+
+            Sensitivity ss;
             
-            std::vector<SequinDiff> diffs;
+            // Distribution of the sequins
+            SequinHist h = Standard::instance().r_meta.hist();
+            
+            // Differential differences
+            std::set<SequinDiff> diffs;
         };
 
         struct Options : public DoubleMixtureOptions
         {
+            MAbundance::CoverageMethod coverage = MAbundance::KMerCov_Contig;
+            
             // An optional PSL file for mixture A
-            std::string pA;
+            FileName pA;
 
             // An optional PSL file for mixture B
-            std::string pB;
+            FileName pB;
         };
 
-        static Stats report(const std::string &, const std::string &, const Options &options = Options());
+        static Stats report(const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

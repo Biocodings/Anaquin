@@ -12,12 +12,12 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
      * Generate statistics for the alignment
      */
     
-    o.info("Analyzing PSL: " + o.psl);
+    o.info("Analyzing: " + o.psl);
 
     // Generate statistics for BLAT
     const auto bStats = MBlat::analyze(o.psl);
 
-    o.info("Analyzing contig: " + file);
+    o.info("Analyzing: " + file);
 
     // Generate statistics for Velvet
     const auto dnovo = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file);
@@ -66,6 +66,11 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
                 {
                     continue;
                 }
+                else if (!dnovo.contigs.count(align->contigs[i].id))
+                {
+                    o.warn((boost::format("%1% not found in the input file") % align->contigs[i].id).str());
+                    continue;
+                }
                 
                 const auto &contig = dnovo.contigs.at(align->contigs[i].id);
 
@@ -107,5 +112,5 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "contigs", o.writer, "sequins");
 
     o.info("Generating R script");
-    AnalyzeReporter::scatter(stats, "MetaAbundance", "Expected abudnance (log2 attomol/ul)", "K-mer coverage (log2)", o.writer);
+    AnalyzeReporter::scatter(stats, "MetaAbundance", "Expected abudnance (log2 attomol/ul)", "Measured coverage (log2 k-mer )", o.writer);
 }

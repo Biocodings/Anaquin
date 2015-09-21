@@ -40,8 +40,7 @@ void Test::fusionA()
 void Test::meta()
 {
     Standard::instance(true);
-    Standard::instance().m_mix_1(Reader(MetaDataMix(), DataMode::String));
-    Standard::instance().m_mix_2(Reader(MetaDataMix(), DataMode::String));
+    Standard::instance().m_mix(Reader(MetaDataMix(), DataMode::String));
     Standard::instance().r_meta.validate();
 }
 

@@ -38,7 +38,7 @@ void MetaRef::validate()
     /*
      * Validation rule:
      *
-     *     mixture OR standards
+     *     standards OR mixture
      */
     
     if (!_rawMIDs.empty())

@@ -197,16 +197,16 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
-    { TOOL_M_IGV,      { OPT_FA_1                                     } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1               } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1  } },
-    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_PSL_2 } },
+    { TOOL_M_IGV,      { OPT_FA_1                                              } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1                        } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1                      } },
+    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
 
     /*
      * Fusion Analysis
      */
 
-    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFTWARE, OPT_U_OUT } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFTWARE, OPT_U_OUT               } },
     { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
 };
 
@@ -1105,12 +1105,16 @@ void parse(int argc, char ** argv)
             
             if (_p.tool != TOOL_M_IGV)
             {
-                applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
-            }
-            
-            if (_p.tool)
-            {
-                applyMix(std::bind(&Standard::m_mix_1, &s, std::placeholders::_1));
+                if (_p.tool == TOOL_M_ASSEMBLY)
+                {
+                    applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
+                }
+                
+                if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF)
+                {
+                    applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
+                }
+                
                 Standard::instance().r_meta.validate();
             }
 
@@ -1119,8 +1123,6 @@ void parse(int argc, char ** argv)
                 case TOOL_M_IGV: { viewer<FViewer>(); break; }
                 case TOOL_M_DIFF:
                 {
-                    applyMix(std::bind(&Standard::m_mix_2, &s, std::placeholders::_1));
-                    
                     MDiffs::Options o;
 
                     o.pA = _p.opts.at(OPT_PSL_1);

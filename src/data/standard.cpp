@@ -155,14 +155,15 @@ void Standard::m_ref(const Reader &r)
     });
 }
 
-void Standard::m_mix_1(const Reader &r)
+void Standard::m_mix(const Reader &r)
 {
+    const auto n = countColumns(r);
     readMixture(r, r_meta, Mix_1, ID_Length_Mix);
-}
 
-void Standard::m_mix_2(const Reader &r)
-{
-    readMixture(r, r_meta, Mix_2, ID_Length_Mix);
+    if (n >= 4)
+    {
+        readMixture(Reader(r), r_meta, Mix_2, ID_Length_Mix, 3);
+    }
 }
 
 void Standard::l_mix(const Reader &r)
@@ -213,7 +214,7 @@ void Standard::r_ref(const Reader &r)
 
 void Standard::r_mix(const Reader &r)
 {
-    const auto n = countColumns(r);    
+    const auto n = countColumns(r);
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
     
     if (n >= 4)

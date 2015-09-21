@@ -153,7 +153,7 @@ TDiffs::Stats TDiffs::report(const std::string &file, const Options &o)
     o.writer->close();
     
     /*
-     * Generate R scripts
+     * Generate an R script
      */
     
     AnalyzeReporter::scatter(stats, "TransDiff", "Expected log-fold of mixture A and B", "Measured log-fold of mixture A and B", o.writer);

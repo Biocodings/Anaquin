@@ -25,7 +25,7 @@ namespace Anaquin
         {
             // Required by the GCC compiler ...
             Options() {}
-            
+
             CoverageMethod coverage = KMerCov_Contig;
         };
         

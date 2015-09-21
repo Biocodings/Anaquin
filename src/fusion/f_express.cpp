@@ -14,12 +14,14 @@ FExpress::Stats FExpress::report(const FileName &file, const FDiscover::Options 
      * Generate summary statistics
      */
 
+    o.info("Generating summary statistics");
     AnalyzeReporter::linear("FusionExpress_summary.stats", stats, "fusions", o.writer);
 
     /*
-     * Generate R scripts
+     * Generate an R script
      */
 
+    o.info("Generating R script");
     AnalyzeReporter::scatter(stats, "FusionExpress", "Expected abudnance (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
     
     return stats;
