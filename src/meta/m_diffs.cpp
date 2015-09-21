@@ -20,8 +20,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
         o.info((boost::format("Using alignment: %1%") % o.pA).str());
         o.info((boost::format("Using alignment: %1%") % o.pB).str());
 
-        const auto r1 = MBlast::analyze(o.pA);
-        const auto r2 = MBlast::analyze(o.pB);
+        const auto r1 = MBlat::analyze(o.pA);
+        const auto r2 = MBlat::analyze(o.pB);
 
         o.info("Creating a differential plot");
         

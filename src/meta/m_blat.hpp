@@ -67,7 +67,7 @@ namespace Anaquin
 
     typedef std::map<SequinID, std::shared_ptr<MetaAlignment>> SequinAlign;
 
-    struct MBlast
+    struct MBlat
     {
         struct Stats : public MappingStats
         {

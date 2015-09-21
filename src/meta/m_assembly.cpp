@@ -19,7 +19,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     }
 
     // Analyse the blat alignment file
-    stats.blat = MBlast::analyze(o.psl);
+    stats.blat = MBlat::analyze(o.psl);
 
     for (auto &meta : stats.blat.metas)
     {
@@ -107,22 +107,37 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
      */
 
     {
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-
         o.writer->open("MetaAssembly_summary.stats");
         
         const auto summary = "Summary for dataset: %1%\n\n"
-                             "   Number of contigs:  %2%\n"
-                             "   N20:    %3%\n"
-                             "   N50: %4%\n"
-                             "   N80: %5%\n"
-                             "   min: %6%\n"
-                             "   mean: %7%\n"
-                             "   max: %8%\n"
-                             "   total: %9%\n"
-        ;
+                             "   Community: %2%\n"
+                             "   Synthetic: %3%\n\n"
+                             "   Contigs: %4%\n"
+                             "   Assembled: %5%\n"
+                             "   Reference: %6%\n\n"
+                             "   ***\n"
+                             "   *** The following statistics on the synthetic community\n"
+                             "   ***\n\n"
+                             "   Contigs:  %7%\n"
+                             "   N20:    %8%\n"
+                             "   N50: %9%\n"
+                             "   N80: %10%\n"
+                             "   min: %11%\n"
+                             "   mean: %12%\n"
+                             "   max: %13%\n"
+                             "   ***\n"
+                             "   *** The following overlapping statistics are computed by proportion\n"
+                             "   ***\n\n"
+                             "   Match: %14%\n"
+                             "   Gaps: %15%\n"
+                             "   Mismatch: %16%\n";
         
         o.writer->write((boost::format(summary) % file
+                                                % stats.blat.n_hg38
+                                                % stats.blat.n_chrT
+                                                % stats.blat.aligns.size()
+                                                % stats.blat.sequin()
+                                                % stats.blat.metas.size()
                                                 % stats.contigs.size()
                                                 % stats.N20
                                                 % stats.N50
@@ -130,39 +145,39 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                                                 % stats.min
                                                 % stats.mean
                                                 % stats.max
-                                                % stats.total).str());
+                                                 % stats.blat.overMatch()
+                                                % stats.blat.overGaps()
+                                                % stats.blat.overMismatch()).str());
         o.writer->close();
     }
-
+    
     /*
      * Generate results for each sequin
      */
 
     {
-//        o.writer->open("MetaAssembly_quins.stats");
-//        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-//
-//        o.writer->write((boost::format(format) % "ID"
-//                                               % "con"
-//                                               % "status"
-//                                               % "avg_align"
-//                                               % "avg_sequin"
-//                                               % "covered").str());
-//        
-//        for (const auto &meta : stats.blat.metas)
-//        {
-//            const auto &align = meta.second;
-//            const auto detect = align->contigs.size() != 0;
-//            const auto status = detect ? std::to_string(align->covered) : "-";
-//
-//            o.writer->write((boost::format(format) % align->seq->id
-//                                                   % align->seq->mixes.at(Mix_1)
-//                                                   % status
-//                                                   % (detect ? std::to_string(align->depthAlign)  : "-")
-//                                                   % (detect ? std::to_string(align->depthSequin) : "-")
-//                                                   % (detect ? std::to_string(align->covered)     : "-")
-//                             ).str());
-//        }
+        o.writer->open("MetaAssembly_quins.stats");
+        
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+        
+        o.writer->write((boost::format(format) % "id"
+                                               % "contigs"
+                                               % "covered"
+                                               % "mismatch"
+                                               % "gaps").str());
+        for (const auto &i : stats.blat.metas)
+        {
+            const auto &align = i.second;
+            
+            o.writer->write((boost::format(format) % align->seq->id
+                                                   % align->contigs.size()
+                                                   % align->covered
+                                                   % align->mismatch
+                                                   % align->gaps).str());
+        }
+        
+        o.writer->close();
+
     }
 
     o.writer->close();

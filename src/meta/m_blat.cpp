@@ -5,7 +5,7 @@
 
 using namespace Anaquin;
 
-MBlast::Stats MBlast::analyze(const FileName &file, const Options &o)
+MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
 {
     /*
      * Create data-structure for each of the sequin
@@ -19,7 +19,7 @@ MBlast::Stats MBlast::analyze(const FileName &file, const Options &o)
         m[i.second.id]->seq = &i.second;
     }
 
-    MBlast::Stats stats;
+    MBlat::Stats stats;
 
     /*
      * Create data-structure for the alignment
@@ -133,9 +133,9 @@ MBlast::Stats MBlast::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-void MBlast::report(const FileName &file, const Options &o)
+void MBlat::report(const FileName &file, const Options &o)
 {
-    const auto stats = MBlast::analyze(file);
+    const auto stats = MBlat::analyze(file);
 
     o.info("Generating statistics");
 

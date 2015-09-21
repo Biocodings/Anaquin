@@ -59,7 +59,6 @@ typedef std::set<Value> Range;
 #define TOOL_V_DIFF     275
 #define TOOL_V_IGV      276
 #define TOOL_V_ALLELE   277
-#define TOOL_M_PSL      278
 #define TOOL_M_ALIGN    279
 #define TOOL_M_ABUND    280
 #define TOOL_M_ASSEMBLY 281
@@ -155,7 +154,6 @@ static std::map<Value, Tool> _tools =
     { "VarIGV",           TOOL_V_IGV      },
     { "VarAllele",        TOOL_V_ALLELE   },
 
-    { "MetaPSL",          TOOL_M_PSL      },
     { "MetaAssembly",     TOOL_M_ASSEMBLY },
     { "MetaAbund",        TOOL_M_ABUND    },
     { "MetaAbundance",    TOOL_M_ABUND    },
@@ -200,9 +198,9 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_M_IGV,      { OPT_FA_1                                    } },
-    { TOOL_M_PSL,      { OPT_R_BED, OPT_PSL_1                        } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1              } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
+    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
 
     /*
      * Fusion Analysis
@@ -1099,7 +1097,6 @@ void parse(int argc, char ** argv)
         }
 
         case TOOL_M_IGV:
-        case TOOL_M_PSL:
         case TOOL_M_DIFF:
         case TOOL_M_ABUND:
         case TOOL_M_ASSEMBLY:
@@ -1119,15 +1116,13 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV: { viewer<FViewer>();            break; }
-                case TOOL_M_PSL: { analyze_1<MBlast>(OPT_PSL_1); break; }
-
+                case TOOL_M_IGV: { viewer<FViewer>(); break; }
                 case TOOL_M_DIFF:
                 {
                     applyMix(std::bind(&Standard::m_mix_2, &s, std::placeholders::_1));
                     
                     MDiffs::Options o;
-                    
+
                     o.pA = _p.opts.at(OPT_PSL_1);
                     o.pB = _p.opts.at(OPT_PSL_2);
 

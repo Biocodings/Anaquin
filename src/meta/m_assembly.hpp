@@ -41,13 +41,13 @@ namespace Anaquin
             std::map<ContigID, T> contigs;
         };
 
-        template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T parse(const std::string &file, std::function<void (C&)> f)
+        template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T parse(const FileName &file, std::function<void (C&)> f)
         {
             T stats;
             Histogram h;
 
             /*
-             * Read a file of assembled contigs. The file is assumed to be in a FA format.
+             * Read a file of assembled contigs. The file is assumed to be in FA format.
              */
             
             ParserFA::parse(file, [&](const FALine &l, const ParserProgress &)
@@ -125,8 +125,8 @@ namespace Anaquin
 
         struct Stats : public DAsssembly::Stats<Contig>
         {
-            // Statistics for the blat alignment
-            MBlast::Stats blat;
+            // Statistics for the alignment
+            MBlat::Stats blat;
 
             // Statistics for abundance
             LinearStats lm;
@@ -143,8 +143,8 @@ namespace Anaquin
             Assembler tool = Assembler::Velvet;
         };
 
-        static Stats analyze(const std::string &, const Options &options = Options());        
-        static Stats report (const std::string &, const Options &options = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static Stats report (const FileName &, const Options &o = Options());
     };
 }
 
