@@ -197,10 +197,10 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
-    { TOOL_M_IGV,      { OPT_FA_1                                    } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1              } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_FA_1 } },
-    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
+    { TOOL_M_IGV,      { OPT_FA_1                                     } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1               } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_FA_1  } },
+    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_R_BED, OPT_PSL_1, OPT_PSL_2 } },
 
     /*
      * Fusion Analysis
@@ -1143,7 +1143,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_M_ABUND:
                 {
-                    MAssembly::Options o;
+                    MAbundance::Options o;
                     
                     // An alignment file is needed to identify contigs
                     o.psl = _p.opts.at(OPT_PSL_1);

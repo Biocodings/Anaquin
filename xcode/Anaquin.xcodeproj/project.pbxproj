@@ -288,6 +288,7 @@
 		EFED772A1B94AC2D001842F4 /* v_discover.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_discover.hpp; path = ../src/variant/v_discover.hpp; sourceTree = "<group>"; };
 		EFED772C1B94AC2D001842F4 /* v_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_viewer.hpp; path = ../src/variant/v_viewer.hpp; sourceTree = "<group>"; };
 		EFF3F5FF1B63BA7F00A37957 /* l_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_viewer.hpp; sourceTree = "<group>"; };
+		EFF820CA1BAFA497009CC6C6 /* m_velvet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_velvet.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -623,6 +624,7 @@
 		EFECDC0C1AE7510700F0FD9A /* meta */ = {
 			isa = PBXGroup;
 			children = (
+				EFF820CA1BAFA497009CC6C6 /* m_velvet.hpp */,
 				EF3CD3021B6671F5005644C4 /* m_abund.cpp */,
 				EF3CD3031B6671F5005644C4 /* m_abund.hpp */,
 				EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */,

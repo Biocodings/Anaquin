@@ -7,10 +7,27 @@ namespace Anaquin
 {
     struct MAbundance
     {
-        typedef MAssembly::Stats   Stats;
-        typedef MAssembly::Options Options;
+        struct Stats : public LinearStats, public MappingStats
+        {
+            Sensitivity ss;
 
-        static Stats report(const FileName &, const Options &o = Options());
+            // Distribution of the sequins
+            SequinHist h = Standard::instance().r_meta.hist();
+        };
+
+        enum CoverageMethod
+        {
+            KMerCov_Contig, // K-mer coverage relative to the size of the contig
+            KMerCov_Sequin, // K-mer coverage relative to the size of the sequin
+        };
+
+        struct Options : public MAssembly::Options
+        {
+            CoverageMethod coverage = KMerCov_Contig;
+        };
+        
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 
