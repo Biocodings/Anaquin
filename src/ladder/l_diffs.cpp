@@ -18,7 +18,7 @@ LDiffs::Stats LDiffs::report(const std::string &fileA, const std::string &fileB,
     options.info("Analyzing mixuture A: " + fileA);
     const auto a = LAbund::report(fileA, opt);
 
-    opt.mix = Mix_2;
+    //opt.mix = Mix_2; TODO: FIX THIS WILL NOT WORK
     options.info("Analyzing mixuture B: " + fileB);
     const auto b = LAbund::report(fileB, opt);
 
