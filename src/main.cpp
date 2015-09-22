@@ -66,7 +66,6 @@ typedef std::set<Value> Range;
 #define TOOL_M_IGV      283
 #define TOOL_L_ABUND    284
 #define TOOL_L_DIFF     285
-#define TOOL_L_IGV      286
 #define TOOL_F_DISCOVER 287
 #define TOOL_F_EXPRESS  288
 #define TOOL_F_IGV      289
@@ -165,7 +164,6 @@ static std::map<Value, Tool> _tools =
     { "LadderAbundance",  TOOL_L_ABUND    },
     { "LadderDiff",       TOOL_L_DIFF     },
     { "LadderDifferent",  TOOL_L_DIFF     },
-    { "LadderIGV",        TOOL_L_IGV      },
 
     { "FusionDiscover",   TOOL_F_DISCOVER },
     { "FusionExpress",    TOOL_F_EXPRESS  },
@@ -1033,17 +1031,13 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_L_IGV:
         case TOOL_L_DIFF:
         case TOOL_L_ABUND:
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
-            if (_p.tool != TOOL_L_IGV)
-            {
-                applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
-                Standard::instance().r_lad.validate();
-            }
+            applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
+            Standard::instance().r_lad.validate();
 
             switch (_p.tool)
             {

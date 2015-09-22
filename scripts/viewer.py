@@ -10,19 +10,19 @@ import sys
 import urllib
 
 # URL for the synthetic chromosome
-chrTFA     = 'https://s3.amazonaws.com/anaquin/chromosomes/CTR001.v021.fa'
+chrTAmazon   = 'https://s3.amazonaws.com/anaquin/chromosomes/CTR001.v021.fa'
 
 # URL of the transcriptome standard
-transStand = 'https://s3.amazonaws.com/anaquin/annotations/ATR001.v032.gtf'
+tStandAmazon = 'https://s3.amazonaws.com/anaquin/annotations/ATR001.v032.gtf'
 
-# URL for the in-silico chromosome
-variantFA = 'https://s3.amazonaws.com/anaquin/chromosomes/CVA002.v015.fa'
+# URL for the in-silico chromosome (variant)
+chrVTAmazon  = 'https://s3.amazonaws.com/anaquin/chromosomes/CVA002.v015.fa'
 
 # URL of the variant standard
-varStand = 'https://s3.amazonaws.com/anaquin/annotations/AVA017.v032.bed'
+vStandAmazon = 'https://s3.amazonaws.com/anaquin/annotations/AVA017.v032.bed'
 
 # URL of the known variants
-varVariant = 'https://s3.amazonaws.com/anaquin/annotations/AVA009.v032.vcf'
+variantAmazon = 'https://s3.amazonaws.com/anaquin/annotations/AVA009.v032.vcf'
 
 # URL of the normal standard
 fusNStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
@@ -139,7 +139,8 @@ def download(path, files):
     downloads = []
 
     for file in files:
-        retrieve(file, path, file.split('/')[-1])
+        if (file.startswith('http')):
+            retrieve(file, path, file.split('/')[-1])
         downloads.append(file.split('/')[-1])
 
     return downloads
@@ -174,8 +175,6 @@ def session(path, align, files):
     # Create a custom track with coverage for the alignment
     #
 
-    print align
-    
     alignTrackT = alignTrackT.replace('{FILE}', align)
     alignTrackT = alignTrackT.replace('{PATH}', path)
     sessionT    = sessionT.replace('{ALIGN}'  , alignTrackT)
@@ -190,35 +189,64 @@ def session(path, align, files):
     with open(path + "/session.xml", "w") as f:
         f.write(sessionT)
 
-def generateTrans(path, align):
-    align = index(path, align)
-    session(path, align, download(path, [ chrTFA, transStand ]))
+#
+# Generate an IGV session for transcriptome analysis
+#
+#     - Synthetic chromosome
+#     - TransQuin standard
+#
 
-def generateFusion(path, align):
-    index(path, align)
+def generateTrans(path, align, chrT=None, standard=None):
+    
+    if chrT is None:
+        chrT = chrTAmazon
+    if standard is None:
+        standard = tStandAmazon
+    
+    align = index(path, align)
+    session(path, align, download(path, [ chrT, standard ]))
+
+#
+# Generate an IGV session for fusion analysis
+#
+
+def generateFusion(path, align, chrT=None, standard=None):
+    align = index(path, align)
     session(path, align, download(path, [ chrTFA, transStand, fusNStand, fusFStand ]))
 
-def generateLadder(path, align):
-    index(path, align)
-    session(path, align, download(path, [ variantFA, varStand, varVariant ]))
+#
+# Generate an IGV session for variant analysis
+#
 
-def generateVar(path, align):
-    index(path, align)
-    session(path, align, download(path, [ variantFA, varStand, varVariant ]))
+def generateVar(path, align, chrT=None, standard=None, variant=None):
+
+    if chrT is None:
+        chrT = chrVTAmazon
+    if standard is None:
+        standard = vStandAmazon
+    if variant is None:
+        variant = variantAmazon
+
+    align = index(path, align)
+    session(path, align, download(path, [ chrT, standard, variant ]))
+
+#
+# Generate an IGV session for metagenomic analysis
+#
 
 def generateMeta(path, align):
-    index(path, align)
+    align = index(path, align)
     session(path, align, download(path, [ metaComm, metaStand ]))
 
 def printUsage():
         print '\nProgram: viewer.py (Tool for generating IGV session)'
         print 'Version: 1.0.0\n'
-        print 'Usage:   python viewer.py <Trans|Fusion|Variant|Ladder|Meta> <output> <alignment file>'
-        print '\nMode: Trans     Transcriptome Analysis'
-        print '      Variant   Variant Analysis'
-        print '      Ladder    Ladder Analysis'
-        print '      Meta      Metagenomics Analysis'
-        print '      Fusion    Fusion Analysis'
+        print 'Usage: python viewer.py <Trans|Fusion|Variant|Meta> <output> <alignment file> <files>'
+        print '\nMode: Trans   -  Transcriptome Analysis'
+        print '      Variant -  Variant Analysis'
+        print '      Ladder  -  Ladder Analysis'
+        print '      Meta    -  Metagenomics Analysis'
+        print '      Fusion  -  Fusion Analysis'
         print ''
 
 if __name__ == '__main__':
@@ -229,6 +257,10 @@ if __name__ == '__main__':
 
     mode = sys.argv[1]
     path = sys.argv[2]
+    file = sys.argv[3]
+    
+    if (not os.path.isfile(file)):
+        raise Exception('Invalid file: ' + file)
     
     if (not os.path.isabs(path)):
         path = os.path.dirname(os.path.abspath(path)) + '/' + path    
@@ -245,15 +277,16 @@ if __name__ == '__main__':
     if (align.endswith('.sam')):
         raise Exception('The SAM file format is not supported. Please convert it to the BAM format. Check https://www.biostars.org/p/93559 for further information.')
 
+    standard = 'data/trans/ATR001.v032.gtf'
+    chrT = 'abcd'
+
+    if (mode == 'Trans'):
+        generateTrans(path, file, chrT, standard)
     if (mode == 'Fusion'):
-        generateFusion(path, sys.argv[3])
-    elif (mode == 'Trans'):
-        generateTrans(path, sys.argv[3])
+        generateFusion(path, file)
     elif (mode == 'Variant'):
-        generateVar(path, sys.argv[3])
-    elif (mode == 'Ladder'):
-        generateLadder(path, sys.argv[3])
+        generateVar(path, file)
     elif (mode == 'Meta'):
-        generateMeta(path, sys.argv[3])
+        generateMeta(path, file)
     else:
         printUsage()

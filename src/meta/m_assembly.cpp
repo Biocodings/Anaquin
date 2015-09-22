@@ -47,7 +47,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         o.writer->open("MetaAssembly_summary.stats");
         
         const auto summary = "Summary for dataset: %1%\n\n"
-                             "   Community: %2%\n"
+                             "   Samples:   %2%\n"
                              "   Synthetic: %3%\n\n"
                              "   Contigs:   %4%\n"
                              "   Assembled: %5%\n"
