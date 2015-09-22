@@ -425,7 +425,7 @@ namespace Anaquin
              * Generate CSV for each sequin
              */
 
-            writeCSV(x, y, z, prefix + "_quin.csv", writer);
+            writeCSV(x, y, z, prefix + "_quin.csv", xLabel, yLabel, writer);
         }
     };
 }
