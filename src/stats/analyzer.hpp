@@ -291,7 +291,7 @@ namespace Anaquin
                          const Units &ref = "")
         {
             const auto summary = "Summary for dataset: %1%\n\n"
-                                 "   Genome:      %2% %3%\n"
+                                 "   Genome:      %2% %5%\n"
                                  "   Query:       %4% %5%\n"
                                  "   Reference:   %6% %7%\n\n"
                                  "   Sensitivity: %8% (attomol/ul) (%9%)\n"

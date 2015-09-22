@@ -23,6 +23,9 @@ x   <- c(%3%)
 y   <- c(%4%)
 ids <- c(%5%)
 
+lx <- log2(x)
+ly <- log2(y)
+
 d <- data.frame(x=log2(x), y=log2(y), ids=ids)
 
 p <- ggplot(data = d, aes(x = x, y = y))
