@@ -296,12 +296,6 @@ namespace Anaquin
                                  "   Reference:   %4% %20%\n\n"
                                  "   Sensitivity: %5% (attomol/ul) (%6%)\n"
                                  "   Detected:    %7% %20%\n\n"
-                                 "   ***\n"
-                                 "   *** The following statistics are computed on the log2 scale.\n"
-                                 "   ***\n"
-                                 "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
-                                 "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
-                                 "   ***\n\n"
                                  "   Correlation: %8%\n"
                                  "   Slope:       %9%\n"
                                  "   R2:          %10%\n"
@@ -309,7 +303,21 @@ namespace Anaquin
                                  "   P-value:     %12%\n"
                                  "   SSM:         %13%, DF: %14%\n"
                                  "   SSE:         %15%, DF: %16%\n"
-                                 "   SST:         %17%, DF: %18%\n";
+                                 "   SST:         %17%, DF: %18%\n\n"
+                                 "   ***\n"
+                                 "   *** The following statistics are computed on the log2 scale.\n"
+                                 "   ***\n"
+                                 "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
+                                 "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
+                                 "   ***\n\n"
+                                 "   Correlation: %18%\n"
+                                 "   Slope:       %19%\n"
+                                 "   R2:          %20%\n"
+                                 "   F-statistic: %21%\n"
+                                 "   P-value:     %22%\n"
+                                 "   SSM:         %23%, DF: %24%\n"
+                                 "   SSE:         %25%, DF: %26%\n"
+                                 "   SST:         %27%, DF: %28%\n";
             const auto lm = stats.linear();
 
             writer->open(file);
