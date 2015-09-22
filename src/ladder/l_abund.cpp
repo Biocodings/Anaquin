@@ -91,7 +91,7 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
                 { "D", 8.0 },
             };
 
-            stats.expTotal += fold.at(typeID) * r.match(seqID)->abund(o.mix, false);
+            stats.expTotal += fold.at(typeID) * r.match(seqID)->abund(Mix_1, false);
         }
     }
 
