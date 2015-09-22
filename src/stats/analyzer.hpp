@@ -291,56 +291,71 @@ namespace Anaquin
                          const Units &ref = "")
         {
             const auto summary = "Summary for dataset: %1%\n\n"
-                                 "   Genome:      %2% %19%\n"
-                                 "   Query:       %3% %19%\n"
-                                 "   Reference:   %4% %20%\n\n"
-                                 "   Sensitivity: %5% (attomol/ul) (%6%)\n"
-                                 "   Detected:    %7% %20%\n\n"
-                                 "   Correlation: %8%\n"
-                                 "   Slope:       %9%\n"
-                                 "   R2:          %10%\n"
-                                 "   F-statistic: %11%\n"
-                                 "   P-value:     %12%\n"
-                                 "   SSM:         %13%, DF: %14%\n"
-                                 "   SSE:         %15%, DF: %16%\n"
-                                 "   SST:         %17%, DF: %18%\n\n"
+                                 "   Genome:      %2% %3%\n"
+                                 "   Query:       %4% %5%\n"
+                                 "   Reference:   %6% %7%\n\n"
+                                 "   Sensitivity: %8% (attomol/ul) (%9%)\n"
+                                 "   Detected:    %10% %7%\n\n"
+                                 "   Correlation: %11%\n"
+                                 "   Slope:       %12%\n"
+                                 "   R2:          %13%\n"
+                                 "   F-statistic: %14%\n"
+                                 "   P-value:     %15%\n"
+                                 "   SSM:         %16%, DF: %17%\n"
+                                 "   SSE:         %18%, DF: %19%\n"
+                                 "   SST:         %20%, DF: %21%\n\n"
                                  "   ***\n"
                                  "   *** The following statistics are computed on the log2 scale.\n"
                                  "   ***\n"
                                  "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
                                  "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
                                  "   ***\n\n"
-                                 "   Correlation: %18%\n"
-                                 "   Slope:       %19%\n"
-                                 "   R2:          %20%\n"
-                                 "   F-statistic: %21%\n"
-                                 "   P-value:     %22%\n"
-                                 "   SSM:         %23%, DF: %24%\n"
-                                 "   SSE:         %25%, DF: %26%\n"
-                                 "   SST:         %27%, DF: %28%\n";
-            const auto lm = stats.linear();
+                                 "   Correlation: %22%\n"
+                                 "   Slope:       %23%\n"
+                                 "   R2:          %24%\n"
+                                 "   F-statistic: %25%\n"
+                                 "   P-value:     %26%\n"
+                                 "   SSM:         %27%, DF: %28%\n"
+                                 "   SSE:         %29%, DF: %30%\n"
+                                 "   SST:         %31%, DF: %32%\n";
+
+            const auto n_lm = stats.linear(false);
+            const auto l_lm = stats.linear(true);
 
             writer->open(file);
-            writer->write((boost::format(summary) % file
+            writer->write((boost::format(summary) % file                         // 1
                                                   % stats.n_hg38
                                                   % stats.n_chrT
                                                   % stats.h.size()
+                                                  % units                        // 5
+                                                  % stats.h.size()
+                                                  % (ref.empty() ? units : ref)
                                                   % stats.ss.abund
                                                   % stats.ss.id
-                                                  % countHist(stats.h)
-                                                  % lm.r
-                                                  % lm.m
-                                                  % lm.r2
-                                                  % lm.f
-                                                  % lm.p
-                                                  % lm.ssm
-                                                  % lm.ssm_df
-                                                  % lm.sse
-                                                  % lm.sse_df
-                                                  % lm.sst
-                                                  % lm.sst_df
-                                                  % units
-                                                  % (ref.empty() ? units : ref)).str());
+                                                  % countHist(stats.h)           // 10
+                                                  % n_lm.r
+                                                  % n_lm.m
+                                                  % n_lm.r2
+                                                  % n_lm.f
+                                                  % n_lm.p
+                                                  % n_lm.ssm
+                                                  % n_lm.ssm_df
+                                                  % n_lm.sse
+                                                  % n_lm.sse_df
+                                                  % n_lm.sst
+                                                  % n_lm.sst_df
+                                                  % l_lm.r                        // 22
+                                                  % l_lm.m
+                                                  % l_lm.r2
+                                                  % l_lm.f
+                                                  % l_lm.p
+                                                  % l_lm.ssm
+                                                  % l_lm.ssm_df
+                                                  % l_lm.sse
+                                                  % l_lm.sse_df
+                                                  % l_lm.sst
+                                                  % l_lm.sst_df
+                                                 ).str());
             writer->close();
         }
         
@@ -430,7 +445,7 @@ namespace Anaquin
              */
 
             writer->open(prefix + "_plot.R");
-            writer->write(RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, stats.s.abund));
+            writer->write(RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.s.abund));
             writer->close();
 
             /*

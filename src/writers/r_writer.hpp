@@ -28,6 +28,7 @@ namespace Anaquin
                          const std::vector<SequinID> &z,
                          const std::string &xLabel,
                          const std::string &yLabel,
+                         const std::string &title,
                          T s)
         {
             assert(!xLabel.empty() && !yLabel.empty());
@@ -48,7 +49,8 @@ namespace Anaquin
                                             % ys
                                             % zs
                                             % xLabel
-                                            % yLabel).str();
+                                            % yLabel
+                                            % "").str();
         }
     };
 }
