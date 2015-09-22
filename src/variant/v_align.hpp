@@ -1,5 +1,5 @@
-#ifndef GI_V_ALIGN_HPP
-#define GI_V_ALIGN_HPP
+#ifndef V_ALIGN_HPP
+#define V_ALIGN_HPP
 
 #include "stats/analyzer.hpp"
 
@@ -7,7 +7,7 @@ namespace Anaquin
 {
     struct VAlign
     {
-        typedef SingleMixtureOptions Options;
+        typedef AnalyzerOptions Options;
         
         struct Stats : public AlignmentStats
         {

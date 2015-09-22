@@ -266,11 +266,6 @@ namespace Anaquin
         std::string path;
     };
 
-    struct SingleMixtureOptions : public AnalyzerOptions
-    {
-        Mixture mix = Mix_1;
-    };
-
     struct DoubleMixtureOptions : public AnalyzerOptions
     {
         Mixture mix_1 = Mix_1;

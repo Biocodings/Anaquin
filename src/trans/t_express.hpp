@@ -19,7 +19,7 @@ namespace Anaquin
             std::map<std::string, Counts> h;
         };
 
-        struct Options : public SingleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             // This's required by gcc...
             Options() {}

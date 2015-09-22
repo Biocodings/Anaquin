@@ -7,11 +7,8 @@ namespace Anaquin
 {
     struct LNorm
     {
-        struct Options : public SingleMixtureOptions
-        {
-            // Empty Implementation
-        };
-
+        typedef AnalyzerOptions Options;
+        
         struct Stats : public LinearStats
         {
             // Empty Implementation

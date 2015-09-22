@@ -7,11 +7,8 @@ namespace Anaquin
 {
     struct LAbund
     {
-        struct Options : public SingleMixtureOptions
-        {
-            // Empty Implementation
-        };
-
+        typedef AnalyzerOptions Options;
+        
         struct Stats : LinearStats
         {
             // Histogram expected

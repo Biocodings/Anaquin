@@ -1,5 +1,5 @@
-#ifndef GI_M_ABUNDANCE_HPP
-#define GI_M_ABUNDANCE_HPP
+#ifndef M_ABUNDANCE_HPP
+#define M_ABUNDANCE_HPP
 
 #include "meta/m_assembly.hpp"
 

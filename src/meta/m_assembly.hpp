@@ -25,7 +25,7 @@ namespace Anaquin
             LinearStats lm;
         };
 
-        struct Options : public SingleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             Options() {}
 

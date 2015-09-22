@@ -84,7 +84,7 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
 
                 if (t.fpkm)
                 {
-                    stats.add(t.trackID, m->abund(o.mix), fpkm);
+                    stats.add(t.trackID, m->abund(Mix_1), fpkm);
                 }
             }
         }

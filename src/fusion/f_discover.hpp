@@ -13,7 +13,7 @@ namespace Anaquin
             TopHat,
         };
 
-        struct Options : public SingleMixtureOptions
+        struct Options : public AnalyzerOptions
         {
             Options(FDiscover::Software soft = Software::TopHat, double fuzzy = 0) : soft(soft), fuzzy(fuzzy)
             {

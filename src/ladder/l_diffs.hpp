@@ -7,17 +7,14 @@ namespace Anaquin
 {
     struct LDiffs
     {
-        struct Options : public SingleMixtureOptions
-        {
-            // Empty Implementation
-        };
+        typedef AnalyzerOptions Options;
 
         struct Stats : public LinearStats
         {
             // Empty Implementation
         };
 
-        static Stats report(const std::string &, const std::string &, const Options &options = Options());
+        static Stats report(const FileName &, const FileName &, const Options &o = Options());
     };
 }
 
