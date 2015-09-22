@@ -66,9 +66,10 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                              "   *** The following overlapping statistics are computed as proportion\n"
                              "   ***\n\n"
                              "   Match:    %14%\n"
-                             "   Gaps:     %15%\n"
-                             "   Mismatch: %16%\n";
-        
+                             "   Mismatch: %15%\n"
+                             "   Gaps (sequins): %16%\n"
+                             "   Gaps (contigs): %17%\n";
+
         o.writer->write((boost::format(summary) % file
                                                 % stats.blat.n_hg38
                                                 % stats.blat.n_chrT
@@ -83,13 +84,14 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                                                 % stats.mean
                                                 % stats.max
                                                 % stats.blat.overMatch()
-                                                % stats.blat.overGaps()
+                                                % stats.blat.overRGaps()
+                                                % stats.blat.overQGaps()
                                                 % stats.blat.overMismatch()).str());
         o.writer->close();
     }
     
     /*
-     * Generate results for each sequin
+     * Generating detailed statistics for each sequin
      */
 
     {
@@ -97,12 +99,15 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         o.writer->open("MetaAssembly_quins.stats");
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
-        
+
         o.writer->write((boost::format(format) % "ID"
                                                % "Contigs"
                                                % "Covered"
+                                               % "Match"
                                                % "Mismatch"
-                                               % "Gaps").str());
+                                               % "TGaps"
+                                               % "QGaps").str());
+
         for (const auto &i : stats.blat.metas)
         {
             const auto &align = i.second;
@@ -111,7 +116,8 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                                                    % align->contigs.size()
                                                    % align->covered
                                                    % align->oMismatch
-                                                   % align->oGaps).str());
+                                                   % align->oRGaps
+                                                   % align->oQGaps).str());
         }
         
         o.writer->close();

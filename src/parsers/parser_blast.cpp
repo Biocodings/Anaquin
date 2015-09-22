@@ -6,10 +6,10 @@ using namespace Anaquin;
 
 enum PSLField
 {
-    PSL_Match,
-    PSL_MisMatch,
-    PSL_RepMatch,
-    PSL_Ns,
+    PSL_Matches,
+    PSL_MisMatches,
+    PSL_RepMatches,
+    PSL_NCount,
     PSL_QGap_Count,
     PSL_QGap_Bases,
     PSL_TGap_Count,
@@ -34,7 +34,7 @@ void ParserBlast::parse(const Reader &r, Callback c)
     ParserProgress p;
 
     std::string line;
-    std::vector<std::string> tokens;
+    std::vector<std::string> toks;
 
     BlastLine l;
     
@@ -45,16 +45,27 @@ void ParserBlast::parse(const Reader &r, Callback c)
             continue;
         }
         
-        Tokens::split(line, "\t", tokens);
+        Tokens::split(line, "\t", toks);
 
-        l.qName    = tokens[PSL_QName];
-        l.tName    = tokens[PSL_TName];
-        l.tStart   = stoi(tokens[PSL_TStart]);
-        l.tEnd     = stoi(tokens[PSL_TEnd]);
-        l.qGaps    = stoi(tokens[PSL_QGap_Bases]);
-        l.tGaps    = stoi(tokens[PSL_TGap_Bases]);
-        l.matches  = stoi(tokens[PSL_Match]);
-        l.mismatch = stoi(tokens[PSL_MisMatch]);
+        l.qName     = toks[PSL_QName];
+        l.tName     = toks[PSL_TName];
+
+        l.tStart    = stoi(toks[PSL_TStart]);
+        l.tEnd      = stoi(toks[PSL_TEnd]);
+        l.tSize     = stoi(toks[PSL_TSize]);
+
+        l.qStart    = stoi(toks[PSL_QStart]);
+        l.qEnd      = stoi(toks[PSL_QEnd]);
+        l.qSize     = stoi(toks[PSL_QSize]);
+
+        l.match     = stoi(toks[PSL_Matches]);
+        l.mismatch  = stoi(toks[PSL_MisMatches]);
+        
+        l.qGap      = stoi(toks[PSL_QGap_Bases]);
+        l.tGap      = stoi(toks[PSL_TGap_Bases]);
+
+        l.qGapCount = stoi(toks[PSL_QGap_Count]);
+        l.tGapCount = stoi(toks[PSL_TGap_Count]);
 
         c(l, p);
     }

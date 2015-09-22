@@ -35,15 +35,26 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             stats.n_chrT++;
 
             AlignedContig contig;
+
+            contig.id = l.qName;
+            contig.l  = Locus(l.tStart, l.tEnd);
             
-            contig.id       = l.qName;
-            contig.l        = Locus(l.tStart, l.tEnd);
-            contig.match    = l.matches;
+            contig.match    = l.match;
             contig.mismatch = l.mismatch;
             
-            // Only interested in the target (eg: M10_G)
-            contig.gap = l.tGaps;
+            contig.rGap   = l.tGap;
+            contig.rStart = l.tStart;
+            contig.rEnd   = l.tEnd;
+            contig.rSize  = l.tSize;
             
+            contig.qGap   = l.qGap;
+            contig.qStart = l.qStart;
+            contig.qEnd   = l.qEnd;
+            contig.qSize  = l.qSize;
+
+            contig.qGapCount = l.qGapCount;
+            contig.rGapCount = l.tGapCount;
+ 
             // That's because we might have multiple contigs aligned to a sequin
             m.at(id)->contigs.push_back(contig);
         }
@@ -81,24 +92,31 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             });
 
             /*
-             * Generating overlapping summary statistic for this sequin
+             * Generating overlapping summary statistic for this sequin. In this context, target refers
+             * to the sequin while query refers to the contig.
              */
 
-            Base oGaps     = 0;
-            Base sums      = 0;
+            Base oRGaps    = 0;
+            Base oQGaps    = 0;
             Base oMatch    = 0;
             Base oMismatch = 0;
+            Base qSums     = 0;
             
             for (const auto &contig : align->contigs)
             {
-                oGaps     += contig.gap;
+                qSums     += contig.qSize;
+                oRGaps    += contig.rGap;
+                oQGaps    += contig.qGap;
                 oMatch    += contig.match;
                 oMismatch += contig.mismatch;
-                sums      += (oGaps + oMatch + oMismatch);
             }
 
             assert(align->seq->length);
 
+            /*
+             * Update statistics for this sequin
+             */
+            
             // Proportion of non-overlapping bases covered or assembled
             align->covered = static_cast<double>(total) / align->seq->length;
             
@@ -106,14 +124,30 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             align->oMismatch = static_cast<double>(oMismatch) / align->seq->length;
 
             // Proportion of overlapping gaps relative to the sequin
-            align->oGaps = static_cast<double>(oGaps) / align->seq->length;
+            align->oRGaps = static_cast<double>(oRGaps) / align->seq->length;
 
-            stats.oGaps     += oGaps;
+            // Proportion of overlapping gaps relative to the sequin
+            align->oQGaps = static_cast<double>(oQGaps) / qSums;
+
+            /*
+             * Update overall statistics for all sequins
+             */
+            
+            // Overall total gaps in all sequins
+            stats.oRGaps    += oRGaps;
+            
+            // Overall total gaps in all contigs
+            stats.oQGaps    += oQGaps;
+
+            // Overall total size in all contigs
+            stats.oQSums    += qSums;
+            
             stats.oMatch    += oMatch;
             stats.oMismatch += oMismatch;
             stats.total     += align->seq->length;
             
-            if (align->oGaps > 1)     { o.warn((boost::format("%1% (ga): %2%") % id % align->oGaps).str());     }
+            if (align->oRGaps > 1)    { o.warn((boost::format("%1% (ga): %2%") % id % align->oRGaps).str());    }
+            if (align->oQGaps > 1)    { o.warn((boost::format("%1% (ga): %2%") % id % align->oQGaps).str());    }
             if (align->covered > 1)   { o.warn((boost::format("%1% (co): %2%") % id % align->covered).str());   }
             if (align->oMismatch > 1) { o.warn((boost::format("%1% (mm): %2%") % id % align->oMismatch).str()); }
             
@@ -156,8 +190,10 @@ void MBlat::report(const FileName &file, const Options &o)
                              "   *** The following overlapping statistics are computed by proportion\n"
                              "   ***\n\n"
                              "   Match: %7%\n"
-                             "   Gaps: %8%\n"
-                             "   Mismatch: %9%\n";
+                             "   Mismatch: %9%\n"
+                             "   Gaps (sequins): %8%\n"
+                             "   Gaps (contigs): %8%\n"
+        ;
 
         o.writer->write((boost::format(summary) % file
                                                 % stats.n_hg38
@@ -166,7 +202,8 @@ void MBlat::report(const FileName &file, const Options &o)
                                                 % stats.countAssembled()
                                                 % stats.metas.size()
                                                 % stats.overMatch()
-                                                % stats.overGaps()
+                                                % stats.overRGaps()
+                                                % stats.overQGaps()
                                                 % stats.overMismatch()).str());
         o.writer->close();
     }
@@ -176,11 +213,13 @@ void MBlat::report(const FileName &file, const Options &o)
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
-        o.writer->write((boost::format(format) % "id"
-                                               % "contigs"
-                                               % "covered"
-                                               % "mismatch"
-                                               % "gaps").str());
+        o.writer->write((boost::format(format) % "ID"
+                                               % "Contigs"
+                                               % "Covered"
+                                               % "Match"
+                                               % "Mismatch"
+                                               % "TGaps"
+                                               % "QGaps").str());
         
         for (const auto &i : stats.metas)
         {
@@ -190,7 +229,8 @@ void MBlat::report(const FileName &file, const Options &o)
                                                    % align->contigs.size()
                                                    % align->covered
                                                    % align->oMismatch
-                                                   % align->oGaps).str());
+                                                   % align->oRGaps
+                                                   % align->oQGaps).str());
         }
 
         o.writer->close();

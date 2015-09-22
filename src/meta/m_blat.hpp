@@ -1,5 +1,5 @@
-#ifndef GI_M_PSL_HPP
-#define GI_M_PSL_HPP
+#ifndef M_PSL_HPP
+#define M_PSL_HPP
 
 #include "data/sequin.hpp"
 #include "stats/analyzer.hpp"
@@ -22,11 +22,38 @@ namespace Anaquin
         // Number of matching bases
         Base match;
 
-        // Number of gaps in the sequin
-        Base gap;
-
-        // Number of mis-matching bases
+        // Number of mismatching bases
         Base mismatch;
+        
+        // Number of gaps in the sequin
+        Base rGap;
+        
+        // Alignment start position in sequin
+        Base rStart;
+        
+        // Alignment end position in sequin
+        Base rEnd;
+        
+        // Target sequin size
+        Base rSize;
+        
+        // Alignment start position in query
+        Base qStart;
+        
+        // Alignment end position in query
+        Base qEnd;
+        
+        // Number of gaps in the query
+        Base qGap;
+        
+        // Query sequence size
+        Base qSize;
+        
+        // Number of inserts in query
+        Counts qGapCount;
+        
+        // Number of inserts in target
+        Counts rGapCount;
     };
 
     /*
@@ -52,9 +79,12 @@ namespace Anaquin
         // Proportion of bases not covered by alignments
         double oMismatch = 0.0;
 
-        // Proportion of gap bases in alignments
-        double oGaps = 0.0;
+        // Proportion of bases that are gaps in the sequin (reference)
+        double oRGaps = 0.0;
 
+        // Proportion of bases that are gaps in all contigs aligned to this sequin
+        double oQGaps = 0.0;
+        
         // Average coverage depth across assembled sequence
         double depthAlign = 0.0; // TODO: ????
 
@@ -74,9 +104,12 @@ namespace Anaquin
             // Proportion of overlapping bases assembled for all sequins
             inline double overMatch() const { return static_cast<double>(oMatch) / total; }
 
-            // Proportion of overlapping gaps for all sequins
-            inline double overGaps() const { return static_cast<double>(oGaps) / total; }
+            // Proportion of overlapping gaps for all sequins (reference)
+            inline double overRGaps() const { return static_cast<double>(oRGaps) / total; }
 
+            // Proportion of overlapping gaps for all sequins (reference)
+            inline double overQGaps() const { return static_cast<double>(oQGaps) / oQSums; }
+            
             // Proportion of overlapping mismatches for all sequins
             inline double overMismatch() const { return static_cast<double>(oMismatch) / total; }
 
@@ -93,9 +126,15 @@ namespace Anaquin
             // Sum of bases for all sequins
             Base total = 0;
 
-            // Sum of overlapping gaps for all sequins
-            Base oGaps = 0;
+            // Sum of overlapping gaps for all sequins (ie: references)
+            Base oRGaps = 0;
 
+            // Sum of overlapping gaps for all contigs aligned
+            Base oQGaps = 0;
+            
+            // Sum of overlapping sizes for all contigs aligned
+            Base oQSums = 0;
+            
             // Sum of overlapping mismatch for all sequins
             Base oMismatch = 0;
             
