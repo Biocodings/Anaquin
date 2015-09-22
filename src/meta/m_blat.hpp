@@ -76,6 +76,8 @@ namespace Anaquin
         // Proportion of non-overlapping bases covered by alignments
         double covered = 0.0;
         
+        double oMatch = 0.0;
+        
         // Proportion of bases not covered by alignments
         double oMismatch = 0.0;
 

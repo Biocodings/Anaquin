@@ -120,6 +120,9 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             // Proportion of non-overlapping bases covered or assembled
             align->covered = static_cast<double>(total) / align->seq->length;
             
+            // Proportion of overlapping matches relative to the sequin
+            align->oMatch = static_cast<double>(oMatch) / align->seq->length;
+            
             // Proportion of overlapping mismatches relative to the sequin
             align->oMismatch = static_cast<double>(oMismatch) / align->seq->length;
 

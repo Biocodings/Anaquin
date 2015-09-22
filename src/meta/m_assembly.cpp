@@ -98,7 +98,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         o.logInfo("Generating sequins statistics");
         o.writer->open("MetaAssembly_quins.stats");
         
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
         o.writer->write((boost::format(format) % "ID"
                                                % "Contigs"
@@ -115,6 +115,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
             o.writer->write((boost::format(format) % align->seq->id
                                                    % align->contigs.size()
                                                    % align->covered
+                                                   % align->oMatch
                                                    % align->oMismatch
                                                    % align->oRGaps
                                                    % align->oQGaps).str());
