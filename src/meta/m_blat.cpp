@@ -117,7 +117,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             if (align->covered > 1)   { o.warn((boost::format("%1% (co): %2%") % id % align->covered).str());   }
             if (align->oMismatch > 1) { o.warn((boost::format("%1% (mm): %2%") % id % align->oMismatch).str()); }
             
-            assert(align->oGaps   >= 0.0 && align->oGaps     <= 1.0);
+            //assert(align->oGaps   >= 0.0 && align->oGaps     <= 1.0);
             assert(align->covered >= 0.0 && align->oMismatch >= 0.0);
             
             // Create an alignment for each contig that aligns to the MetaQuin

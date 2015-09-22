@@ -75,6 +75,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
         }
     }
 
+    o.info((boost::format("Detected %1% sequins in the first sample") % y1.size()).str());
+
     /*
      * Analyzing for the second sample
      */
@@ -110,6 +112,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
         }
     }
 
+    o.info((boost::format("Detected %1% sequins in the second sample") % y1.size()).str());
+
     /*
      * Merging data, note that we can only do a differential comparison if the sequin appears
      * detected in both samples.
@@ -125,7 +129,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
             if (y2.at(align->id()) && y1.at(align->id()))
             {
                 // Known concentration
-                const auto known = align->seq->abund(Mix_2) / align->seq->abund(Mix_1);
+                const auto known = align->seq->abund(Mix_2, false) / align->seq->abund(Mix_1, false);
 
                 // Ratio of the marginal concentration
                 const auto measured = y2.at(align->id()) / y1.at(align->id());
@@ -135,8 +139,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
                 SequinDiff d;
                 
                 d.id    = align->id();
-                d.e1    = align->seq->abund(Mix_1);
-                d.e2    = align->seq->abund(Mix_2);
+                d.e1    = align->seq->abund(Mix_1, false);
+                d.e2    = align->seq->abund(Mix_2, false);
                 d.m1    = y1.at(align->id());
                 d.m2    = y2.at(align->id());
                 d.eFold = known;
@@ -146,8 +150,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
             }
         }
     }
-
-    o.info((boost::format("Detected %1% sequins in estimating differential") % stats.size()).str());
+ 
+    o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.size()).str());
 
     stats.n_hg38 = std::max(stats_1.n_hg38, stats_2.n_hg38);
     stats.n_chrT = std::max(stats_1.n_chrT, stats_2.n_chrT);
