@@ -36,10 +36,10 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
          * concentration while still detectable in the experiment.
          */
 
-        if (stats.s.id.empty() || align->seq->abund(Mix_1) < stats.s.abund)
+        if (stats.s.id.empty() || align->seq->abund(Mix_1, false) < stats.s.abund)
         {
             stats.s.id     = align->seq->id;
-            stats.s.abund  = align->seq->abund(Mix_1);
+            stats.s.abund  = align->seq->abund(Mix_1, false);
             stats.s.counts = align->contigs.size();
         }
         
@@ -52,7 +52,7 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
             stats.h.at(meta.first)++;
             
             // Known concentration
-            const auto known = align->seq->abund(Mix_1);
+            const auto known = align->seq->abund(Mix_1, false);
             
             /*
              * Measure concentration for this metaquin. Average out the coverage for each aligned contig.
@@ -112,5 +112,12 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "contigs", o.writer, "sequins");
 
     o.info("Generating R script");
-    AnalyzeReporter::scatter(stats, "", "MetaAbundance", "Expected abudnance (log2 attomol/ul)", "Measured coverage (log2 k-mer )", o.writer);
+    AnalyzeReporter::scatter(stats,
+                             "Expected abundance vs Measured coverage",
+                             "MetaAbundance",
+                             "Expected abudnance (attomol/ul)",
+                             "Measured coverage (k-mer )",
+                             "Expected abdunance (log2 attomol/ul)",
+                             "Measured coverage (log2 k-mer)",
+                             o.writer);
 }

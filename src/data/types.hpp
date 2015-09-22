@@ -33,6 +33,7 @@ namespace Anaquin
     typedef std::string Units;
     typedef std::string FileName;
     typedef std::string FilePath;
+    typedef std::string AxisLabel;
     typedef std::string FeatureName;
 
     typedef long long Base;

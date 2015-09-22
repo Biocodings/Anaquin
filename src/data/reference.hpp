@@ -4,7 +4,7 @@
 #include <map>
 #include "data/variation.hpp"
 #include "stats/sensitivity.hpp"
-#include <iostream>
+
 namespace Anaquin
 {
     enum Mixture
@@ -17,6 +17,7 @@ namespace Anaquin
 
     struct SequinStats
     {
+        // Empty Implementation
     };
 
     struct SequinData
@@ -24,7 +25,7 @@ namespace Anaquin
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
         inline bool operator==(const SequinID &x) const { return this->id == x; }
 
-        // Return the normalized abundance
+        // Return the abundance for this sequin specified by the mixture        
         inline Concentration abund(Mixture m, bool norm = true) const
         {
             return mixes.at(m) / (norm ? length : 1);

@@ -167,7 +167,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     
     {
         o.info("Generating R script");
-        AnalyzeReporter::scatter(stats, "", "MetaDifferent", "Expected fold change", "Measured fold change", o.writer);
+        AnalyzeReporter::scatter(stats, "", "MetaDifferent", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Measured log2 fold change of mixture A and B", o.writer);
     }
 
     /*

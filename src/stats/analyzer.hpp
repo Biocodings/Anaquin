@@ -392,9 +392,12 @@ namespace Anaquin
         template <typename Stats, typename Writer> static void scatter(const Stats &stats,
                                                                        const std::string &title,
                                                                        const std::string &prefix,
-                                                                       const std::string &xLabel,
-                                                                       const std::string &yLabel,
-                                                                       Writer writer)
+                                                                       const AxisLabel &xLabel,
+                                                                       const AxisLabel &yLabel,
+                                                                       const AxisLabel &xLogLabel,
+                                                                       const AxisLabel &yLogLabel,
+                                                                       Writer writer,
+                                                                       bool shoudLog2 = true)
         {
             std::vector<double> x, y;
             std::vector<std::string> z;
@@ -402,7 +405,7 @@ namespace Anaquin
             /*
              * Ignore any invalid value...
              */
-            
+
             for (const auto &p : stats)
             {
                 if (!isnan(p.second.x) && !isnan(p.second.y))
