@@ -366,7 +366,7 @@ namespace Anaquin
                                                         Writer writer)
         {
             writer->open(file);
-            writer->write((boost::format("ID\t%1%\%2%") % xLabel % yLabel).str());
+            writer->write((boost::format("ID\t%1%\t%2%") % xLabel % yLabel).str());
 
             /*
              * Prefer to write results in sorted order
@@ -389,15 +389,16 @@ namespace Anaquin
          * Provides a common framework for generating a R scatter plot
          */
 
-        template <typename Stats, typename Writer> static void scatter(const Stats &stats,
-                                                                       const std::string &title,
-                                                                       const std::string &prefix,
-                                                                       const AxisLabel &xLabel,
-                                                                       const AxisLabel &yLabel,
-                                                                       const AxisLabel &xLogLabel,
-                                                                       const AxisLabel &yLogLabel,
-                                                                       Writer writer,
-                                                                       bool shoudLog2 = true)
+        template <typename Stats, typename Writer> static void
+                        scatter(const Stats &stats,
+                                const std::string &title,
+                                const std::string &prefix,
+                                const AxisLabel &xLabel,
+                                const AxisLabel &yLabel,
+                                const AxisLabel &xLogLabel,
+                                const AxisLabel &yLogLabel,
+                                Writer writer,
+                                bool shoudLog2 = true)
         {
             std::vector<double> x, y;
             std::vector<std::string> z;
@@ -417,13 +418,13 @@ namespace Anaquin
             }
             
             /*
-             * Generate a script for data visualization
+             * Generate an R script for data visualization
              */
-            
+
             writer->open(prefix + "_plot.R");
-            writer->write(RWriter::coverage(x, y, z, xLabel, yLabel, stats.s.abund));
+            writer->write(RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, stats.s.abund));
             writer->close();
-            
+
             /*
              * Generate CSV for each sequin
              */

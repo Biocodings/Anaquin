@@ -110,13 +110,13 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
 
     o.info("Generating summary statistics");
     AnalyzeReporter::linear("MetaAbundance_summary.stats", stats, "contigs", o.writer, "sequins");
-
+ 
     o.info("Generating R script");
     AnalyzeReporter::scatter(stats,
                              "Expected abundance vs Measured coverage",
                              "MetaAbundance",
                              "Expected abudnance (attomol/ul)",
-                             "Measured coverage (k-mer )",
+                             "Measured coverage (k-mer)",
                              "Expected abdunance (log2 attomol/ul)",
                              "Measured coverage (log2 k-mer)",
                              o.writer);
