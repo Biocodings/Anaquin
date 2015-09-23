@@ -7,6 +7,16 @@ namespace Anaquin
 {
     struct MAbundance
     {
+        template <typename Options> static void logOptions(const Options &o)
+        {
+            switch (o.coverage)
+            {
+                case WendyAlgorithm: { o.logInfo("WendyAlgorithm");            break; }
+                case KMerCov_Contig: { o.logInfo("K-mer coverage per contig"); break; }
+                case KMerCov_Sequin: { o.logInfo("K-mer coverage per sequin"); break; }
+            }
+        };
+
         struct Stats : public LinearStats, public MappingStats
         {
             Sensitivity ss;
@@ -17,6 +27,7 @@ namespace Anaquin
 
         enum CoverageMethod
         {
+            WendyAlgorithm,            
             KMerCov_Contig, // K-mer coverage relative to the size of the contig
             KMerCov_Sequin, // K-mer coverage relative to the size of the sequin
         };
@@ -26,7 +37,7 @@ namespace Anaquin
             // Required by the GCC compiler ...
             Options() {}
 
-            CoverageMethod coverage = KMerCov_Contig;
+            CoverageMethod coverage = WendyAlgorithm;
         };
         
         static Stats analyze(const FileName &, const Options &o = Options());

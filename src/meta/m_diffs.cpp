@@ -5,6 +5,8 @@ using namespace Anaquin;
 
 MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, const Options &o)
 {
+    MAbundance::logOptions(o);
+
     MDiffs::Stats stats;
 
     assert(!o.pA.empty() && !o.pB.empty());

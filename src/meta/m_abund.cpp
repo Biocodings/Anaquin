@@ -4,6 +4,8 @@ using namespace Anaquin;
 
 MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Options &o)
 {
+    MAbundance::logOptions(o);
+    
     MAbundance::Stats stats;
     
     assert(!o.psl.empty());
@@ -79,6 +81,9 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
 
             Concentration measured = 0;
             
+            // Sum of k-mer lengths for all sequins
+            Base sumKLength = 0;
+            
             for (auto i = 0; i < align->contigs.size(); i++)
             {
                 if (!bStats.aligns.count(align->contigs[i].id))
@@ -95,9 +100,12 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
 
                 assert(align->seq->l.length());
                 assert(contig.k_cov && contig.k_len);
+
+                sumKLength += contig.k_len;
                 
                 switch (o.coverage)
                 {
+                    case WendyAlgorithm: { measured += contig.k_len * contig.k_cov;           break; }
                     case KMerCov_Contig: { measured += contig.k_cov / contig.k_len;           break; }
                     case KMerCov_Sequin: { measured += contig.k_cov / align->seq->l.length(); break; }
                 }
@@ -110,9 +118,15 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
                 align->depthSequin += align->contigs[i].l.length() * contig.k_cov;
             }
             
+            if (o.coverage == WendyAlgorithm)
+            {
+                measured = measured / sumKLength;
+            }
+            
             if (measured)
             {
                 align->depthSequin = meta.second->depthSequin / align->seq->length;
+                
                 stats.add(align->seq->id, known, measured);
             }
         }
