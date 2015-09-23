@@ -22,19 +22,19 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
     o.info("Analyzing: " + file);
 
     // Generate statistics for Velvet, filtered by alignments (no use to keep non-synthetic in memory)
-    const auto dnovo = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file, &bStats);
+    const auto dStats = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file, &bStats);
     
-    if (!dnovo.n)
+    if (!dStats.n)
     {
         throw std::runtime_error("No contig detected in the input file. Please check and try again.");
     }
-    else if (dnovo.contigs.empty())
+    else if (dStats.contigs.empty())
     {
         throw std::runtime_error("No contig aligned in the input file. Please check and try again.");
     }
 
-    stats.n_chrT = dnovo.contigs.size();
-    stats.n_hg38 = dnovo.n - stats.n_chrT;
+    stats.n_chrT = dStats.contigs.size();
+    stats.n_hg38 = dStats.n - stats.n_chrT;
 
     o.info("Analyzing the alignments");
 
@@ -62,72 +62,7 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
             stats.s.counts = align->contigs.size();
         }
         
-        /*
-         * Plot the coverage relative to the known concentration for each assembled contig
-         */
-        
-        if (!align->contigs.empty())
-        {
-            stats.h.at(meta.first)++;
-            
-            // Known concentration
-            const auto known = align->seq->abund(Mix_1, false);
-            
-            /*
-             * Measure concentration for this metaquin. Average out the coverage for each aligned contig.
-             */
-
-            Concentration measured = 0;
-            
-            // Sum of k-mer lengths for all sequins
-            Base sumKLength = 0;
-            
-            for (auto i = 0; i < align->contigs.size(); i++)
-            {
-                if (!bStats.aligns.count(align->contigs[i].id))
-                {
-                    continue;
-                }
-                else if (!dnovo.contigs.count(align->contigs[i].id))
-                {
-                    o.warn((boost::format("%1% not found in the input file") % align->contigs[i].id).str());
-                    continue;
-                }
-                
-                const auto &contig = dnovo.contigs.at(align->contigs[i].id);
-
-                assert(align->seq->l.length());
-                assert(contig.k_cov && contig.k_len);
-
-                sumKLength += contig.k_len;
-                
-                switch (o.coverage)
-                {
-                    case WendyAlgorithm: { measured += contig.k_len * contig.k_cov;           break; }
-                    case KMerCov_Contig: { measured += contig.k_cov / contig.k_len;           break; }
-                    case KMerCov_Sequin: { measured += contig.k_cov / align->seq->l.length(); break; }
-                }
-
-                /*
-                 * Calculate for the average depth for alignment and sequin
-                 */
-                
-                align->depthAlign  += align->contigs[i].l.length() * contig.k_cov / align->contigs[i].l.length();
-                align->depthSequin += align->contigs[i].l.length() * contig.k_cov;
-            }
-            
-            if (o.coverage == WendyAlgorithm)
-            {
-                measured = measured / sumKLength;
-            }
-            
-            if (measured)
-            {
-                align->depthSequin = meta.second->depthSequin / align->seq->length;
-                
-                stats.add(align->seq->id, known, measured);
-            }
-        }
+        MAbundance::calculate(stats, bStats, dStats, align->seq->id, *meta.second, o);
     }
     
     stats.ss = Standard::instance().r_meta.limit(stats.h);
