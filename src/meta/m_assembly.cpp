@@ -94,9 +94,9 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
 
     o.writer->open("MetaAssembly_contigs.stats");
     
-    const std::string format = "%1%";
+    const std::string format = "%1%\t%2%";
     
-    o.writer->write((boost::format(format) % "Contig ID%t%Sequin ID").str());
+    o.writer->write((boost::format(format) % "Contig ID\tSequin ID").str());
     
     for (const auto &i : stats.blat.aligns)
     {
