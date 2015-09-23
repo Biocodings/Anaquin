@@ -87,6 +87,23 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                                                 % stats.blat.overMismatch()).str());
         o.writer->close();
     }
+
+    /*
+     * Generating detailed statistics for each contig
+     */
+
+    o.writer->open("MetaAssembly_contigs.stats");
+    
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+    
+    o.writer->write((boost::format(format) % "ID").str());
+    
+    for (const auto &i : stats.blat.metas)
+    {
+        o.writer->write((boost::format(format) % i.first).str());
+    }
+    
+    o.writer->close();
     
     /*
      * Generating detailed statistics for each sequin

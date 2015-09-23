@@ -584,7 +584,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.info(_p.command);
     o.info(date());
     o.info("Path: " + path);
-    o.info("Threads: " + std::to_string(_p.threads));
+    //o.info("Threads: " + std::to_string(_p.threads));
 
     for (const auto &filter : (o.filters = _p.filters))
     {
