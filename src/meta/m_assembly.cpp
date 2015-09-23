@@ -94,7 +94,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
 
     o.writer->open("MetaAssembly_contigs.stats");
     
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+    const std::string format = "%1%";
     
     o.writer->write((boost::format(format) % "ID").str());
     
