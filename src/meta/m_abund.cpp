@@ -36,8 +36,6 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
     stats.n_chrT = dnovo.contigs.size();
     stats.n_hg38 = dnovo.n - stats.n_chrT;
 
-    assert(stats.n_hg38 && stats.n_chrT);
-    
     o.info("Analyzing the alignments");
 
     const auto &r = Standard::instance().r_meta;
