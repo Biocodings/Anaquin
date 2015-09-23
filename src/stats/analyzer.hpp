@@ -263,7 +263,7 @@ namespace Anaquin
 
     struct ViewerOptions : public AnalyzerOptions
     {
-        std::string path;
+        Path path;
     };
 
     struct DoubleMixtureOptions : public AnalyzerOptions
@@ -283,14 +283,15 @@ namespace Anaquin
                          const Stats &stats,
                          const Units &units,
                          Writer writer,
-                         const Units &ref = "")
+                         const Units &ref = "",
+                         const Label &samples = "")
         {
             const auto summary = "Summary for dataset: %1%\n\n"
-                                 "   Genome:      %2% %5%\n"
-                                 "   Query:       %4% %5%\n"
-                                 "   Reference:   %6% %7%\n\n"
-                                 "   Sensitivity: %8% (attomol/ul) (%9%)\n"
+                                 "   %3%:         %2% %5%\n"
+                                 "   Query:       %4% %5%\n\n"
+                                 "   Reference:   %6% %7%\n"
                                  "   Detected:    %10% %7%\n\n"
+                                 "   Sensitivity: %8% (attomol/ul) (%9%)\n\n"
                                  "   Correlation: %11%\n"
                                  "   Slope:       %12%\n"
                                  "   R2:          %13%\n"
@@ -320,8 +321,8 @@ namespace Anaquin
             writer->open(file);
             writer->write((boost::format(summary) % file                         // 1
                                                   % stats.n_hg38
+                                                  % (samples.empty() ? "Genome" : samples)
                                                   % stats.n_chrT
-                                                  % stats.h.size()
                                                   % units                        // 5
                                                   % stats.h.size()
                                                   % (ref.empty() ? units : ref)

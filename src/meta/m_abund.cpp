@@ -19,17 +19,36 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
 
     o.info("Analyzing: " + file);
 
-    // Generate statistics for Velvet
-    const auto dnovo = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file);
+    // Generate statistics for Velvet, filtered by alignments (no use to keep non-synthetic in memory)
+    const auto dnovo = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file, &bStats);
+    
+    if (!dnovo.n)
+    {
+        throw std::runtime_error("No contig detected in the input file. Please check and try again.");
+    }
+    else if (dnovo.contigs.empty())
+    {
+        throw std::runtime_error("No contig aligned in the input file. Please check and try again.");
+    }
 
-    stats.n_chrT = dnovo.n_chrT;
-    stats.n_hg38 = dnovo.n_hg38;
+    stats.n_chrT = dnovo.contigs.size();
+    stats.n_hg38 = dnovo.n - stats.n_chrT;
+
+    assert(stats.n_hg38 && stats.n_chrT);
     
-    o.info("Analyzing the PSL alignments");
-    
+    o.info("Analyzing the alignments");
+
+    const auto &r = Standard::instance().r_meta;
+
     for (auto &meta : bStats.metas)
     {
         auto &align = meta.second;
+        
+        if (!r.match(align->seq->id))
+        {
+            o.warn((boost::format("%1% not defined in the mixture. Skipped.") % align->seq->id).str());
+            continue;
+        }
         
         /*
          * Calculate the limit of sensitivity. LOS is defined as the sequin with the lowest amount of

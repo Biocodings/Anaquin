@@ -33,10 +33,13 @@ namespace Anaquin
             // Total number of bases in the assembly
             Base sum;
             
-            // List of assembled contigs
+            // List of aligned contigs (it's not all contigs)
             std::map<ContigID, T> contigs;
+
+            // Total number of contigs, whether it's aligned or not
+            Counts n = 0;
         };
-        
+
         template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T analyze
                 (const FileName &file, const MBlat::Stats *blat, std::function<void (C&)> f)
         {
@@ -45,19 +48,18 @@ namespace Anaquin
             
             ParserFA::parse(file, [&](const FALine &l, const ParserProgress &)
             {
+                stats.n++;
+                
                 C c;
                 
                 c.id = l.id;
                 
-                // Don't bother if the contig isn't aligned to the synthetic community...
+                // Don't bother if the contig isn't defined in the alignment...
                 if (blat && !blat->aligns.count(c.id))
                 {
-                    stats.n_hg38++;
                     return;
                 }
                 
-                stats.n_chrT++;
-
                 // Size of the config
                 c.len = l.seq.size();
                 
