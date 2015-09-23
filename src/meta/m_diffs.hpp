@@ -57,7 +57,7 @@ namespace Anaquin
             Options() {}
             
             // How the measured coverage is computed
-            MAbundance::CoverageMethod coverage = MAbundance::KMerCov_Contig;
+            MAbundance::CoverageMethod coverage = MAbundance::WendySmooth;
             
             // An optional PSL file for mixture A
             FileName pA;
