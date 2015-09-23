@@ -110,6 +110,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     stats.n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
     stats.n_hg38 = (dStats_1.n + dStats_2.n) - stats.n_chrT;
 
+    stats.ss = Standard::instance().r_meta.limit(stats.h);
+
     o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.size()).str());
 
     /*
