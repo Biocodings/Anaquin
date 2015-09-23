@@ -96,7 +96,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
     
     const std::string format = "%1%\t%2%";
     
-    o.writer->write((boost::format(format) % "Contig ID\tSequin ID").str());
+    o.writer->write((boost::format(format) % "Contig ID" % "Sequin ID").str());
     
     for (const auto &i : stats.blat.aligns)
     {
