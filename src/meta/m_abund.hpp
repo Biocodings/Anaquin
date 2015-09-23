@@ -115,6 +115,7 @@ namespace Anaquin
             // Required by the GCC compiler ...
             Options() {}
 
+            // How the measured coverage is computed
             CoverageMethod coverage = WendySmooth;
         };
         

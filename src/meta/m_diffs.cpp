@@ -48,7 +48,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     {
         const auto &align = meta.second;
 
-        const auto p = MAbundance::calculate(stats, stats.align_1, dStats_1, align->id(), *meta.second, o);
+        const auto p = MAbundance::calculate(stats, stats.align_1, dStats_1, align->id(), *meta.second, o, o.coverage);
         y1[align->id()] = p.y;
     }
 
@@ -64,7 +64,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     {
         const auto &align = meta.second;
 
-        const auto p = MAbundance::calculate(stats, stats.align_2, dStats_2, align->id(), *meta.second, o);
+        const auto p = MAbundance::calculate(stats, stats.align_2, dStats_2, align->id(), *meta.second, o, o.coverage);
         y2[align->id()] = p.y;
     }
 
@@ -81,7 +81,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
         
         if (!align->contigs.empty())
         {
-            // Only when the align is detected in both samples
+            // Only when the alignment is detected in both samples
             if (y2.at(align->id()) && y1.at(align->id()))
             {
                 // Known concentration
@@ -107,6 +107,9 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
         }
     }
  
+    stats.n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
+    stats.n_hg38 = (dStats_1.n + dStats_2.n) - stats.n_chrT;
+
     o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.size()).str());
 
     stats.n_hg38 = std::max(dStats_1.n_hg38, dStats_2.n_hg38);
@@ -118,7 +121,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     
     {
         o.info("Generating summary statistics");
-        AnalyzeReporter::linear("MetaDifferent_summary.stats", stats, "sequins", o.writer);
+        AnalyzeReporter::linear("MetaDifferent_summary.stats", stats, "contigs", o.writer, "sequins");
     }
 
     /*

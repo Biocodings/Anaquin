@@ -56,7 +56,8 @@ namespace Anaquin
             // Required by the GCC compiler...
             Options() {}
             
-            MAbundance::CoverageMethod coverage = MAbundance::KMerCov_Contig;
+            // How the measured coverage is computed
+            MAbundance::CoverageMethod coverage = MAbundance::WendySmooth;
             
             // An optional PSL file for mixture A
             FileName pA;
