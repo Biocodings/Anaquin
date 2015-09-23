@@ -125,7 +125,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     }
 
     /*
-     * Generate an R script
+     * Generating an R script
      */
     
     {
