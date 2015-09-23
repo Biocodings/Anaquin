@@ -96,11 +96,11 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
     
     const std::string format = "%1%";
     
-    o.writer->write((boost::format(format) % "ID").str());
+    o.writer->write((boost::format(format) % "Contig ID%t%Sequin ID").str());
     
     for (const auto &i : stats.blat.aligns)
     {
-        o.writer->write((boost::format(format) % i.first).str());
+        o.writer->write((boost::format(format) % i.first % i.second->id()).str());
     }
     
     o.writer->close();
