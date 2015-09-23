@@ -55,20 +55,19 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                              "   ***\n"
                              "   *** The following statistics are computed on the synthetic community\n"
                              "   ***\n\n"
-                             "   Contigs:  %7%\n"
-                             "   N20:      %8%\n"
-                             "   N50:      %9%\n"
-                             "   N80:      %10%\n"
-                             "   Min:      %11%\n"
-                             "   Mean:     %12%\n"
-                             "   Max:      %13%\n\n"
+                             "   N20:      %7%\n"
+                             "   N50:      %8%\n"
+                             "   N80:      %9%\n"
+                             "   Min:      %10%\n"
+                             "   Mean:     %11%\n"
+                             "   Max:      %12%\n\n"
                              "   ***\n"
                              "   *** The following overlapping statistics are computed as proportion\n"
                              "   ***\n\n"
-                             "   Match:    %14%\n"
-                             "   Mismatch: %15%\n"
-                             "   Gaps (sequins): %16%\n"
-                             "   Gaps (contigs): %17%\n";
+                             "   Match:    %13%\n"
+                             "   Mismatch: %14%\n"
+                             "   Gaps (sequins): %15%\n"
+                             "   Gaps (contigs): %16%\n";
 
         o.writer->write((boost::format(summary) % file
                                                 % stats.blat.n_hg38
@@ -76,7 +75,6 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                                                 % stats.blat.aligns.size()
                                                 % stats.blat.countAssembled()
                                                 % stats.blat.metas.size()
-                                                % stats.contigs.size()
                                                 % stats.N20
                                                 % stats.N50
                                                 % stats.N80
