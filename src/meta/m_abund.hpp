@@ -11,9 +11,9 @@ namespace Anaquin
         {
             switch (o.coverage)
             {
-                case WendyAlgorithm: { o.logInfo("WendyAlgorithm");            break; }
-                case KMerCov_Contig: { o.logInfo("K-mer coverage per contig"); break; }
-                case KMerCov_Sequin: { o.logInfo("K-mer coverage per sequin"); break; }
+                case WendyAlgorithm: { o.info("Wendy Smoothing");           break; }
+                case KMerCov_Contig: { o.info("K-mer coverage per contig"); break; }
+                case KMerCov_Sequin: { o.info("K-mer coverage per sequin"); break; }
             }
         };
 
