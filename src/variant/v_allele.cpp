@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-VAllele::Stats VAllele::report(const std::string &file, const Options &o)
+VAllele::Stats VAllele::report(const FileName &file, const Options &o)
 {
     VAllele::Stats stats;
     const auto &r = Standard::instance().r_var;

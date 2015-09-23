@@ -20,6 +20,7 @@
 #include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
 #include "meta/m_abund.hpp"
+#include "meta/m_align.hpp"
 #include "meta/m_assembly.hpp"
 
 #include "ladder/l_diffs.hpp"
@@ -158,7 +159,8 @@ static std::map<Value, Tool> _tools =
     { "MetaAbundance",    TOOL_M_ABUND    },
     { "MetaDiff",         TOOL_M_DIFF     },
     { "MetaDifferent",    TOOL_M_DIFF     },
-    { "MetaIGV",          TOOL_V_IGV      },
+    { "MetaIGV",          TOOL_M_IGV      },
+    { "MetaAlign",        TOOL_M_ALIGN    },
 
     { "LadderAbund",      TOOL_L_ABUND    },
     { "LadderAbundance",  TOOL_L_ABUND    },
@@ -195,6 +197,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
+    { TOOL_M_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1                     } },
     { TOOL_M_IGV,      { OPT_FA_1                                              } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1                        } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1                      } },
@@ -500,7 +503,7 @@ template <typename Reference> void applyRef(Reference ref, Option o1, Option o2)
 }
 
 // Read sequins from a file, one per line. The identifiers must match.
-static void readFilters(const std::string &file)
+static void readFilters(const FileName &file)
 {
 //    Reader r(file);
 //    std::string line;
@@ -717,7 +720,7 @@ void parse(int argc, char ** argv)
         }
     };
     
-    auto checkFile = [&](const std::string &file)
+    auto checkFile = [&](const FileName &file)
     {
         if (!std::ifstream(file).good())
         {
@@ -1093,18 +1096,19 @@ void parse(int argc, char ** argv)
         case TOOL_M_IGV:
         case TOOL_M_DIFF:
         case TOOL_M_ABUND:
+        case TOOL_M_ALIGN:
         case TOOL_M_ASSEMBLY:
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             
             if (_p.tool != TOOL_M_IGV)
             {
-                if (_p.tool == TOOL_M_ASSEMBLY)
+                if (_p.tool == TOOL_M_ASSEMBLY || _p.tool == TOOL_M_ALIGN)
                 {
                     applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
                 }
                 
-                if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF)
+                if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF || _p.tool == TOOL_M_ALIGN)
                 {
                     applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
                 }
@@ -1114,7 +1118,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV: { viewer<FViewer>(); break; }
+                case TOOL_M_IGV:   { viewer<FViewer>();             break; }
+                case TOOL_M_ALIGN: { analyze_1<MAlign>(OPT_BAM_1); break; }
+
                 case TOOL_M_DIFF:
                 {
                     MDiffs::Options o;

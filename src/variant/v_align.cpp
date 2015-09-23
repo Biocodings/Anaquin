@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-VAlign::Stats VAlign::report(const std::string &file, const Options &o)
+VAlign::Stats VAlign::report(const FileName &file, const Options &o)
 {
     VAlign::Stats stats;
 
@@ -90,7 +90,7 @@ VAlign::Stats VAlign::report(const std::string &file, const Options &o)
     o.writer->close();
     
     /*
-     * Write out sequin statistics
+     * Generating detailed statistics for each sequin
      */
     
     o.writer->open("VarAlign_quins.stats");

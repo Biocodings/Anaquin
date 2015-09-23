@@ -22,7 +22,7 @@ enum TMapField
     F_RefMatchLen = 12,
 };
 
-void ParserTMap::parse(const std::string &file, std::function<void (const TMap &, const ParserProgress &)> f)
+void ParserTMap::parse(const FileName &file, std::function<void (const TMap &, const ParserProgress &)> f)
 {
     Reader i(file);
 

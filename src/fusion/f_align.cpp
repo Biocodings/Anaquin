@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-FAlign::Stats FAlign::report(const std::string &file, const Options &options)
+FAlign::Stats FAlign::report(const FileName &file, const Options &options)
 {
     FAlign::Stats stats;
     //const auto &s = Standard::instance();

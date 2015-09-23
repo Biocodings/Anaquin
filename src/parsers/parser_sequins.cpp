@@ -5,7 +5,7 @@
 
 using namespace Anaquin;
 
-SequinList ParserSequins::parse(const std::string &file)
+SequinList ParserSequins::parse(const FileName &file)
 {
     const auto &s = Standard::instance();    
     Reader f(file);

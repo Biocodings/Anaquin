@@ -10,7 +10,7 @@ namespace Anaquin
 
     struct ParserSequins
     {
-        static SequinList parse(const std::string &file);
+        static SequinList parse(const FileName &file);
     };
 }
 

@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-TAlign::Stats TAlign::report(const std::string &file, const Options &o)
+TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 {
     TAlign::Stats stats;
     const auto &r = Standard::instance().r_trans;
@@ -193,7 +193,7 @@ TAlign::Stats TAlign::report(const std::string &file, const Options &o)
     o.writer->close();
 
     /*
-     * Write out sequin statistics
+     * Generating detailed statistics for each sequin
      */
     
     o.writer->open("TransAlign_quins.stats");

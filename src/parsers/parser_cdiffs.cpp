@@ -27,7 +27,7 @@ static const std::map<TrackID, TrackingStatus> tok2Status =
     { "NOTEST", NoTest }
 };
 
-void ParserCDiffs::parse(const std::string &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)
+void ParserCDiffs::parse(const FileName &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)
 {
     Reader i(file);
     TrackingDiffs t;

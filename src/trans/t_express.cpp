@@ -6,7 +6,7 @@
 using namespace SS;
 using namespace Anaquin;
 
-TExpress::Stats TExpress::report(const std::string &file, const Options &o)
+TExpress::Stats TExpress::report(const FileName &file, const Options &o)
 {
     TExpress::Stats stats;
     const auto &r = Standard::instance().r_trans;
@@ -122,26 +122,12 @@ TExpress::Stats TExpress::report(const std::string &file, const Options &o)
                          "   SST: %15%, DF: %16%\n"
     ;
 
-    const auto lm = stats.linear();
-
-    o.writer->open("TransExpress_summary.stats");
-    o.writer->write((boost::format(summary) % file
-                                            % stats.n_hg38
-                                            % stats.n_chrT
-                                            % stats.h.size()
-                                            % countHist(stats.h)
-                                            % lm.r
-                                            % lm.m
-                                            % lm.r2
-                                            % lm.f
-                                            % lm.p
-                                            % lm.ssm
-                                            % lm.ssm_df
-                                            % lm.sse
-                                            % lm.sse_df
-                                            % lm.sst
-                                            % lm.sst_df
-                                            % units).str());
+    /*
+     * Generating summary statistics
+     */
+    
+    o.info("Generating summary statistics");
+    AnalyzeReporter::linear("TransExpress_summary.stats", stats, "units", o.writer);
     o.writer->close();
 
     /*

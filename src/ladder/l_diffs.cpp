@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-LDiffs::Stats LDiffs::report(const std::string &fileA, const std::string &fileB, const Options &options)
+LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const Options &options)
 {
     LDiffs::Stats stats;
 

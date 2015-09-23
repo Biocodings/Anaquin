@@ -32,7 +32,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-static std::string createFilteredGTF(const std::string &file)
+static std::string createFilteredGTF(const FileName &file)
 {
     std::string line;
     const auto tmp = tmpnam(NULL);
@@ -52,7 +52,7 @@ static std::string createFilteredGTF(const std::string &file)
     return tmp;
 }
 
-TAssembly::Stats TAssembly::report(const std::string &file, const Options &o)
+TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
 {
     assert(!o.ref.empty() && !o.query.empty());
 

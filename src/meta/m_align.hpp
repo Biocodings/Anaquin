@@ -9,15 +9,16 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
 
-        struct Stats : public MappingStats
+        struct Stats : public AlignmentStats
         {
-            Sensitivity ss;
-            
+            Performance p;
+
             // Distribution of the sequins
             SequinHist h = Standard::instance().r_meta.hist();
         };
 
-        static Stats report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

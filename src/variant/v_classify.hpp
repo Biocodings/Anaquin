@@ -8,7 +8,7 @@
 namespace Anaquin
 {
     template <typename Stats, typename Options, typename F> void classify
-                (Stats &stats, const std::string &file, const Options &o, F f)
+                (Stats &stats, const FileName &file, const Options &o, F f)
     {
         const auto &r = Standard::instance().r_var;
         

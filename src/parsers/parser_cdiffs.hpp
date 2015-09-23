@@ -26,7 +26,7 @@ namespace Anaquin
 
     struct ParserCDiffs
     {
-        static void parse(const std::string &file, std::function<void (const TrackingDiffs &, const ParserProgress &)>);
+        static void parse(const FileName &file, std::function<void (const TrackingDiffs &, const ParserProgress &)>);
     };    
 }
 

@@ -16,7 +16,7 @@ enum TrackingField
     T_Status  = 12,
 };
 
-void ParserTracking::parse(const std::string &file, std::function<void (const Tracking &, const ParserProgress &)> f)
+void ParserTracking::parse(const FileName &file, std::function<void (const Tracking &, const ParserProgress &)> f)
 {
     Reader i(file);
 

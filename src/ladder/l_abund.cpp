@@ -14,7 +14,7 @@ static std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, do
     return std::vector<double> { nA, nB, nC, nD };
 }
 
-LAbund::Stats LAbund::report(const std::string &file, const Options &o)
+LAbund::Stats LAbund::report(const FileName &file, const Options &o)
 {
     LAbund::Stats stats;
     const auto &r = Standard::instance().r_lad;
@@ -199,7 +199,7 @@ LAbund::Stats LAbund::report(const std::string &file, const Options &o)
 
     o.info("Generating statistics");
     
-    auto writeHist = [&](const std::string &file,
+    auto writeHist = [&](const FileName &file,
                          const std::map<SequinID, Counts>   &abund,
                          const std::map<SequinID, Coverage> &expect,
                          const std::map<SequinID, Coverage> &actual,

@@ -8,7 +8,7 @@
 
 using namespace Anaquin;
 
-void ParserSAM::parse(const std::string &file, std::function<void (const Alignment &, const ParserProgress &)> x)
+void ParserSAM::parse(const FileName &file, std::function<void (const Alignment &, const ParserProgress &)> x)
 {
     auto f = sam_open(file.c_str(), "r");
     

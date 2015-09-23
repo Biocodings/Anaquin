@@ -14,7 +14,7 @@ namespace Anaquin
                 // Empty Implementation
             }
         
-            inline void open(const std::string &file) override
+            inline void open(const FileName &file) override
             {
                 // Empty Implementation
             }

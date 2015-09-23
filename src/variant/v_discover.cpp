@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-VDiscover::Stats VDiscover::report(const std::string &file, const Options &o)
+VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
 {
     VDiscover::Stats stats;
     const auto &r = Standard::instance().r_var;

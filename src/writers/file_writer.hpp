@@ -17,7 +17,7 @@ namespace Anaquin
                 _o.reset();
             }
 
-            void open(const std::string &file) override
+            void open(const FileName &file) override
             {
                 if (!path.empty())
                 {
