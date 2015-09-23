@@ -102,7 +102,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
     {
         o.writer->write((boost::format(format) % i.first % i.second->id()).str());
     }
-    
+
     o.writer->close();
     
     /*
