@@ -24,7 +24,7 @@ namespace Anaquin
             KMerCov_Sequin, // K-mer coverage relative to the size of the sequin
         };
 
-        template <typename Options, typename Stats, typename DStats> static void calculate
+        template <typename Options, typename Stats, typename DStats> static Point calculate
                     (Stats &stats,
                      const MBlat::Stats &bStats,
                      const DStats &dStats,
@@ -95,10 +95,11 @@ namespace Anaquin
                 if (measured)
                 {
                     align.depthSequin = align.depthSequin / align.seq->length;
-
-                    stats.add(align.seq->id, known, measured);
+                    return Point(known, measured);
                 }
             }
+            
+            return Point(0 ,0);
         }
         
         struct Stats : public LinearStats, public MappingStats

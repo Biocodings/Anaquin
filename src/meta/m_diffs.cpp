@@ -23,10 +23,10 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
      */
     
     o.info((boost::format("Analyzing: %1%") % file_1).str());
-    const auto stats_1 = Velvet::analyze<MAssembly::Stats, Contig>(file_1, &stats.align_1);
+    const auto dStats_1 = Velvet::analyze<MAssembly::Stats, Contig>(file_1, &stats.align_1);
 
     o.info((boost::format("Analyzing: %1%") % file_2).str());
-    const auto stats_2 = Velvet::analyze<MAssembly::Stats, Contig>(file_2, &stats.align_2);
+    const auto dStats_2 = Velvet::analyze<MAssembly::Stats, Contig>(file_2, &stats.align_2);
 
     /*
      * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
@@ -47,34 +47,9 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     for (const auto &meta : stats.align_1.metas)
     {
         const auto &align = meta.second;
-        
-        // If there is an alignment for the sequin...
-        if (!align->contigs.empty())
-        {
-            /*
-             * Average out the coverage for each aligned contig.
-             */
-            
-            Concentration measured = 0;
-            
-            for (auto i = 0; i < align->contigs.size(); i++)
-            {
-                const auto &contig = stats_1.contigs.at(align->contigs[i].id);
 
-                switch (o.coverage)
-                {
-                    case MAbundance::KMerCov_Contig: { measured += contig.k_cov / contig.k_len;           break; }
-                    case MAbundance::KMerCov_Sequin: { measured += contig.k_cov / align->seq->l.length(); break; }
-                }
-            }
-            
-            assert(measured != 0);
-            y1[align->id()] = measured;
-        }
-        else
-        {
-            y1[align->id()] = 0;
-        }
+        const auto p = MAbundance::calculate(stats, stats.align_1, dStats_1, align->seq->id, *meta.second, o);
+        y1[align->id()] = p.y;
     }
 
     o.info((boost::format("Detected %1% sequins in the first sample") % y1.size()).str());
@@ -88,30 +63,9 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     for (const auto &meta : stats.align_2.metas)
     {
         const auto &align = meta.second;
-        
-        // If there is an alignment for the sequin...
-        if (!align->contigs.empty())
-        {
-            Concentration measured = 0;
-            
-            for (auto i = 0; i < align->contigs.size(); i++)
-            {
-                const auto &contig = stats_2.contigs.at(align->contigs[i].id);
-                
-                switch (o.coverage)
-                {
-                    case MAbundance::KMerCov_Contig: { measured += contig.k_cov / contig.k_len;           break; }
-                    case MAbundance::KMerCov_Sequin: { measured += contig.k_cov / align->seq->l.length(); break; }
-                }
-            }
-            
-            assert(measured != 0);
-            y2[align->id()] = measured;
-        }
-        else
-        {
-            y2[align->id()] = 0;
-        }
+
+        const auto p = MAbundance::calculate(stats, stats.align_1, dStats_1, align->seq->id, *meta.second, o);
+        y2[align->id()] = p.y;
     }
 
     o.info((boost::format("Detected %1% sequins in the second sample") % y1.size()).str());
@@ -155,8 +109,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
  
     o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.size()).str());
 
-    stats.n_hg38 = std::max(stats_1.n_hg38, stats_2.n_hg38);
-    stats.n_chrT = std::max(stats_1.n_chrT, stats_2.n_chrT);
+    stats.n_hg38 = std::max(dStats_1.n_hg38, dStats_2.n_hg38);
+    stats.n_chrT = std::max(dStats_1.n_chrT, dStats_2.n_chrT);
 
     /*
      * Generating differential comparisons for both samples

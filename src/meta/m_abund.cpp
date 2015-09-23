@@ -62,7 +62,12 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
             stats.s.counts = align->contigs.size();
         }
         
-        MAbundance::calculate(stats, bStats, dStats, align->seq->id, *meta.second, o);
+        const auto p = MAbundance::calculate(stats, bStats, dStats, align->seq->id, *meta.second, o);
+        
+        if (p.x && p.y)
+        {
+            stats.add(align->seq->id, p.x, p.y);
+        }
     }
     
     stats.ss = Standard::instance().r_meta.limit(stats.h);
