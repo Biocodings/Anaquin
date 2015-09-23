@@ -98,7 +98,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
     
     o.writer->write((boost::format(format) % "ID").str());
     
-    for (const auto &i : stats.blat.metas)
+    for (const auto &i : stats.blat.aligns)
     {
         o.writer->write((boost::format(format) % i.first).str());
     }
