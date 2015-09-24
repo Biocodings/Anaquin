@@ -45,11 +45,11 @@ namespace Anaquin
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
-        o.writer->write((boost::format(format) % "start"
-                                               % "match"
-                                               % "type"
-                                               % "alt"
-                                               % "ref").str());
+        o.writer->write((boost::format(format) % "Start"
+                                               % "Match"
+                                               % "Type"
+                                               % "Alt"
+                                               % "Rqef").str());
 
         ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
         {
