@@ -14,6 +14,11 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
+        if (!align.i && (p.i % 5000000) == 0)
+        {
+            o.wait(std::to_string(p.i));
+        }
+        
         if (!align.i)
         {
             if      (!align.mapped)                       { stats.unmapped++; }
@@ -26,8 +31,6 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
             return;
         }
         
-        o.logInfo((boost::format("%1% %2% %3%") % align.id % align.l.start % align.l.end).str());
-
         /*
          * Collect statistics at the exon level
          */
@@ -209,6 +212,23 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
     }
     
     o.writer->close();
+
+    /*
+     * Generating detailed logs for the histogram
+     */
     
+    {
+        o.info("Generating detailed logs for the histogram");
+
+        o.logInfo("\n\n--------------------- Exon Histogram ---------------------");
+        for (const auto &i : stats.he) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
+
+        o.logInfo("\n\n--------------------- Intron Histogram ---------------------");
+        for (const auto &i : stats.hi) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
+
+        o.logInfo("\n\n--------------------- Base Histogram ---------------------");
+        for (const auto &i : stats.hb) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
+    }
+
 	return stats;
 }
