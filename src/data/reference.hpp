@@ -120,7 +120,8 @@ namespace Anaquin
         protected:
 
             /*
-             * Provides a common mechanism to calculate limit of detection given a histogram or a distribution
+             * Provides a common mechanism to calculate limit of detection given a histogram or a
+             * distribution.
              */
 
             template <typename F> Sensitivity limit
@@ -131,9 +132,9 @@ namespace Anaquin
                 // The lowest count must be zero because it can't be negative
                 s.counts = std::numeric_limits<unsigned>::max();
             
-                for (auto iter = h.begin(); iter != h.end(); iter++)
+                for (auto i = h.begin(); i != h.end(); i++)
                 {
-                    const auto counts = iter->second;
+                    const auto counts = i->second;
                 
                     /*
                      * Is this sequin detectable? If it's detectable, what about the concentration?
@@ -143,12 +144,12 @@ namespace Anaquin
                 
                     if (counts)
                     {
-                        const auto &id = iter->first;
+                        const auto &id = i->first;
                         const auto seq = f(id);
-                    
+
                         // Hard to believe a sequin in the histogram is undefined
                         assert(seq);
-                    
+
                         if (counts < s.counts || (counts == s.counts && seq->abund(m) < s.abund))
                         {
                             s.id     = id;
