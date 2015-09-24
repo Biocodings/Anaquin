@@ -1,6 +1,7 @@
 #ifndef GI_SENSITIVITY_HPP
 #define GI_SENSITIVITY_HPP
 
+#include <math.h>
 #include "data/types.hpp"
 
 namespace Anaquin
@@ -13,7 +14,7 @@ namespace Anaquin
         Counts counts;
 
         // Expected abundance for the limited sequin
-        Concentration abund;
+        Concentration abund = NAN;
     };
 }
 
