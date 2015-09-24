@@ -283,6 +283,7 @@ namespace Anaquin
 
         template <typename Writer, typename Stats> static void linear
                         (const FileName &file,
+                         const FileName &data,
                          const Stats &stats,
                          const Units &units,
                          Writer writer,
@@ -322,7 +323,7 @@ namespace Anaquin
             const auto l_lm = stats.linear(true);
 
             writer->open(file);
-            writer->write((boost::format(summary) % file                         // 1
+            writer->write((boost::format(summary) % data                         // 1
                                                   % stats.n_hg38
                                                   % (samples.empty() ? "Genome" : samples)
                                                   % stats.n_chrT

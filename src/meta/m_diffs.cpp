@@ -120,7 +120,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     
     {
         o.info("Generating summary statistics");
-        AnalyzeReporter::linear("MetaDifferent_summary.stats", stats, "contigs", o.writer, "sequins", "Community");
+        AnalyzeReporter::linear("MetaDifferent_summary.stats", file_1 + " & " + file_2, stats, "contigs", o.writer, "sequins", "Community");
     }
 
     /*

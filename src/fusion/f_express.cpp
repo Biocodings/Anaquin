@@ -11,14 +11,14 @@ FExpress::Stats FExpress::report(const FileName &file, const FDiscover::Options 
     stats.ss = Standard::instance().r_fus.limit(stats.h);
 
     /*
-     * Generate summary statistics
+     * Generating summary statistics
      */
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("FusionExpress_summary.stats", stats, "fusions", o.writer);
+    AnalyzeReporter::linear("FusionExpress_summary.stats", file, stats, "fusions", o.writer);
 
     /*
-     * Generate an R script
+     * Generating an R script
      */
 
     o.info("Generating R script");

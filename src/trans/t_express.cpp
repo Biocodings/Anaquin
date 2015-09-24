@@ -92,16 +92,14 @@ TExpress::Stats TExpress::report(const FileName &file, const Options &o)
     
     stats.ss = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
     
-    o.info("Generating summary statistics");
-
-//    const auto units = isoform ? "isoforms" : "genes";
+    const auto units = isoform ? "isoforms" : "genes";
     
     /*
      * Generating summary statistics
      */
     
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("TransExpress_summary.stats", stats, "units", o.writer);
+    AnalyzeReporter::linear("TransExpress_summary.stats", file, stats, units, o.writer);
 
     /*
      * Generating an R script
