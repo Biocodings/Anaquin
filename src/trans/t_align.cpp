@@ -112,6 +112,13 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
     stats.pi.s = r.limitGene(stats.hi);
     stats.pb.s = r.limitGene(stats.hb);
 
+    
+    auto a = r.findGene("R2_28");
+    std::cout << a->abund(Mix_1) << std::endl;
+
+//        return _impl->genes.count(id) ? &(_impl->genes.at(id)) : nullptr;
+    
+    
     stats.pe.m.sn();
     stats.pb.m.sn();
     stats.pi.m.sn();

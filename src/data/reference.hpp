@@ -477,14 +477,14 @@ namespace Anaquin
                     return Locus(start, end);
                 }
 
-                // Calculate the normalized abundance for the gene
+                // Calculate the abundance for the gene (summing up all the isoforms)
                 inline Concentration abund(Mixture m) const
                 {
                     Concentration n = 0;
                 
                     for (const auto &i : seqs)
                     {
-                        n += ((*i).abund(m) / (*i).length);
+                        n += (*i).abund(m);
                     }
                 
                     return n;
