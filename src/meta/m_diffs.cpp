@@ -89,7 +89,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
 
                 // Ratio of the marginal concentration
                 const auto measured = y2.at(align->id()) / y1.at(align->id());
-                
+
                 stats.add(align->id(), known, measured);
                 
                 SequinDiff d;
