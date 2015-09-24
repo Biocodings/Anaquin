@@ -37,14 +37,12 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
     stats.ss = r.limit(stats.h);
     stats.sn = static_cast<double>(stats.detected) / r.countVars();
     
-    o.info("Generating summary statistics");
-
     /*
      * Generate summary statistics
      */
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("TransExpress_summary.stats", file, stats, "variants", o.writer);
+    AnalyzeReporter::linear("V_summary.stats", file, stats, "variants", o.writer);
 
     AnalyzeReporter::scatter(stats, "", "VarAllele", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", o.writer, false);
 
