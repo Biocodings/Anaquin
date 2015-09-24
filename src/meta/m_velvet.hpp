@@ -54,10 +54,19 @@ namespace Anaquin
                 
                 c.id = l.id;
                 
-                // Don't bother if the contig isn't defined in the alignment...
-                if (blat && !blat->aligns.count(c.id))
+                auto id = c.id;
+                
+                if (blat)
                 {
-                    return;
+                    const auto first = Tokens::first(id, " ");
+
+                    id = blat->aligns.count(id) ? id : "";
+
+                    // Don't bother if the contig isn't defined in the alignment...
+                    if (id.empty())
+                    {
+                        return;
+                    }
                 }
                 
                 // Size of the config
@@ -69,7 +78,7 @@ namespace Anaquin
                 // Allows to apply custom operation
                 f(c);
                 
-                stats.contigs[c.id] = c;
+                stats.contigs[id] = c;
             });
             
             // This is copied from printContiguityStats() in Histogram.h in the Abyss source code
