@@ -123,7 +123,8 @@ namespace Anaquin
              * Provides a common mechanism to calculate limit of detection given a histogram or a distribution
              */
 
-            template <typename F> Sensitivity limit(const std::map<std::string, Counts> &h, F f) const
+            template <typename F> Sensitivity limit
+                                (const std::map<std::string, Counts> &h, F f, Mixture m = Mix_1) const
             {
                 Sensitivity s;
             
@@ -148,11 +149,11 @@ namespace Anaquin
                         // Hard to believe a sequin in the histogram is undefined
                         assert(seq);
                     
-                        if (counts < s.counts || (counts == s.counts && seq->abund(Mix_1) < s.abund))
+                        if (counts < s.counts || (counts == s.counts && seq->abund(m) < s.abund))
                         {
                             s.id     = id;
                             s.counts = counts;
-                            s.abund  = seq->abund(Mix_1);
+                            s.abund  = seq->abund(m);
                         }
                     }
                 }
