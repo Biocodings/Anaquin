@@ -622,8 +622,9 @@ void VarRef::validate()
     _impl->varIDs = _impl->rawVarIDs;
 
     /*
-     * Variant analysis can be validated by mixture, variants and standards. For example, VarDiscover
-     * doesn't take a mixture and standards, therefore it can only be validated by variants.
+     * Validation rule:
+     *
+     *     Standard & Mixture | Variant | Variant & Mixture
      */
     
     if (!_rawMIDs.empty())
