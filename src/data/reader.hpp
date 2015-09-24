@@ -1,5 +1,5 @@
-#ifndef GI_READER_HPP
-#define GI_READER_HPP
+#ifndef READER_HPP
+#define READER_HPP
 
 #include <vector>
 #include <string>

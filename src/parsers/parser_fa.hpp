@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_FA_HPP
-#define GI_PARSER_FA_HPP
+#ifndef PARSER_FA_HPP
+#define PARSER_FA_HPP
 
 #include "stats/analyzer.hpp"
 #include "parsers/parser.hpp"

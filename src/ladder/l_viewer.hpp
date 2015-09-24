@@ -1,5 +1,5 @@
-#ifndef GI_L_IGV_HPP
-#define GI_L_IGV_HPP
+#ifndef L_IGV_HPP
+#define L_IGV_HPP
 
 #include "data/script.hpp"
 #include "stats/analyzer.hpp"

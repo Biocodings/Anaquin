@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_CDIFFS_HPP
-#define GI_PARSER_CDIFFS_HPP
+#ifndef PARSER_CDIFFS_HPP
+#define PARSER_CDIFFS_HPP
 
 #include <ss/p.hpp>
 #include "stats/analyzer.hpp"

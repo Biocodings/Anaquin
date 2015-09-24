@@ -1,5 +1,5 @@
-#ifndef GI_R_WRITER_HPP
-#define GI_R_WRITER_HPP
+#ifndef R_WRITER_HPP
+#define R_WRITER_HPP
 
 #include <string>
 #include <vector>

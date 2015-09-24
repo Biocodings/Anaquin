@@ -1,5 +1,5 @@
-#ifndef GI_TOKENS_HPP
-#define GI_TOKENS_HPP
+#ifndef TOKENS_HPP
+#define TOKENS_HPP
 
 #include <string>
 #include <vector>

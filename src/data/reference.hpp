@@ -1,5 +1,5 @@
-#ifndef GI_REFERENCE_HPP
-#define GI_REFERENCE_HPP
+#ifndef REFERENCE_HPP
+#define REFERENCE_HPP
 
 #include <map>
 #include "data/variation.hpp"

@@ -1,5 +1,5 @@
-#ifndef GI_M_ASSEMBLY_HPP
-#define GI_M_ASSEMBLY_HPP
+#ifndef M_ASSEMBLY_HPP
+#define M_ASSEMBLY_HPP
 
 #include <numeric>
 #include "data/tokens.hpp"

@@ -1,5 +1,5 @@
-#ifndef GI_REGION_HPP
-#define GI_REGION_HPP
+#ifndef REGION_HPP
+#define REGION_HPP
 
 #include <vector>
 #include <numeric>

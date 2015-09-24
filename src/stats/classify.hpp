@@ -1,5 +1,5 @@
-#ifndef GI_CLASSIFY_HPP
-#define GI_CLASSIFY_HPP
+#ifndef CLASSIFY_HPP
+#define CLASSIFY_HPP
 
 #include <iostream>
 #include "data/standard.hpp"

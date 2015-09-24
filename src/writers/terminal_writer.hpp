@@ -1,5 +1,5 @@
-#ifndef GI_TERMINAL_WRITER_HPP
-#define GI_TERMINAL_WRITER_HPP
+#ifndef TERMINAL_WRITER_HPP
+#define TERMINAL_WRITER_HPP
 
 #include <iostream>
 #include "writers/writer.hpp"

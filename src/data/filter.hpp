@@ -1,5 +1,5 @@
-#ifndef GI_FILTER_HPP
-#define GI_FILTER_HPP
+#ifndef FILTER_HPP
+#define FILTER_HPP
 
 namespace Anaquin
 {

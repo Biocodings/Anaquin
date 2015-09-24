@@ -1,5 +1,5 @@
-#ifndef GI_C_DIFFS_HPP
-#define GI_C_DIFFS_HPP
+#ifndef C_DIFFS_HPP
+#define C_DIFFS_HPP
 
 #include "stats/analyzer.hpp"
 

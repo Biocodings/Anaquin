@@ -1,5 +1,5 @@
-#ifndef GI_SENSITIVITY_HPP
-#define GI_SENSITIVITY_HPP
+#ifndef SENSITIVITY_HPP
+#define SENSITIVITY_HPP
 
 #include <math.h>
 #include "data/types.hpp"

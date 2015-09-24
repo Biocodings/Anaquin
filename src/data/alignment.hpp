@@ -1,5 +1,5 @@
-#ifndef GI_ALIGNMENT_HPP
-#define GI_ALIGNMENT_HPP
+#ifndef ALIGNMENT_HPP
+#define ALIGNMENT_HPP
 
 #include "data/locus.hpp"
 

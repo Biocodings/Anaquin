@@ -1,5 +1,5 @@
-#ifndef GI_LOCUS_HPP
-#define GI_LOCUS_HPP
+#ifndef LOCUS_HPP
+#define LOCUS_HPP
 
 #include <set>
 #include <vector>

@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_STAR_FUSION_HPP
-#define GI_PARSER_STAR_FUSION_HPP
+#ifndef PARSER_STAR_FUSION_HPP
+#define PARSER_STAR_FUSION_HPP
 
 #include <functional>
 #include "stats/analyzer.hpp"

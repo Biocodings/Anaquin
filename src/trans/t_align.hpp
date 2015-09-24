@@ -1,5 +1,5 @@
-#ifndef GI_T_ALIGN_HPP
-#define GI_T_ALIGN_HPP
+#ifndef T_ALIGN_HPP
+#define T_ALIGN_HPP
 
 #include "stats/analyzer.hpp"
 

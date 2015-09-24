@@ -1,5 +1,5 @@
-#ifndef GI_WRITER_HPP
-#define GI_WRITER_HPP
+#ifndef WRITER_HPP
+#define WRITER_HPP
 
 #include <string>
 

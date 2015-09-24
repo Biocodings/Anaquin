@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_TOP_FUSION_HPP
-#define GI_PARSER_TOP_FUSION_HPP
+#ifndef PARSER_TOP_FUSION_HPP
+#define PARSER_TOP_FUSION_HPP
 
 #include <functional>
 #include "data/locus.hpp"

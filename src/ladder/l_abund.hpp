@@ -1,5 +1,5 @@
-#ifndef GI_L_ABUND_HPP
-#define GI_L_ABUND_HPP
+#ifndef L_ABUND_HPP
+#define L_ABUND_HPP
 
 #include "stats/analyzer.hpp"
 

@@ -127,7 +127,7 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.info("Generating an R script");
-    AnalyzeReporter::scatter(stats, "", "TransDiff", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    AnalyzeReporter::scatter(stats, "", "TransDifferent", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
     
     return stats;
 }

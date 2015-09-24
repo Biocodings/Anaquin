@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_FEATURE_HPP
-#define GI_PARSER_FEATURE_HPP
+#ifndef PARSER_FEATURE_HPP
+#define PARSER_FEATURE_HPP
 
 #include "parsers/parser_bed.hpp"
 #include "parsers/parser_gtf.hpp"

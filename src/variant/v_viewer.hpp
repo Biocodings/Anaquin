@@ -1,5 +1,5 @@
-#ifndef GI_V_VIEWER_HPP
-#define GI_V_VIEWER_HPP
+#ifndef V_VIEWER_HPP
+#define V_VIEWER_HPP
 
 #include "data/script.hpp"
 #include "stats/analyzer.hpp"

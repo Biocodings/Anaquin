@@ -1,5 +1,5 @@
-#ifndef GI_MOCK_WRITER_HPP
-#define GI_MOCK_WRITER_HPP
+#ifndef MOCK_WRITER_HPP
+#define MOCK_WRITER_HPP
 
 #include "writers/writer.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef GI_STANDARD_HPP
-#define GI_STANDARD_HPP
+#ifndef STANDARD_HPP
+#define STANDARD_HPP
 
 #include <map>
 #include <vector>

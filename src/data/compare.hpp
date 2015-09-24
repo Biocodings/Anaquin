@@ -1,5 +1,5 @@
-#ifndef GI_COMPARE_HPP
-#define GI_COMPARE_HPP
+#ifndef COMPARE_HPP
+#define COMPARE_HPP
 
 #include <math.h>
 

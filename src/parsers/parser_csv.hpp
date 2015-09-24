@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_CSV_HPP
-#define GI_PARSER_CSV_HPP
+#ifndef PARSER_CSV_HPP
+#define PARSER_CSV_HPP
 
 #include <vector>
 #include <functional>

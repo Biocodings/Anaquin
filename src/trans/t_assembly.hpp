@@ -1,5 +1,5 @@
-#ifndef GI_T_ASSEMBLY_HPP
-#define GI_T_ASSEMBLY_HPP
+#ifndef T_ASSEMBLY_HPP
+#define T_ASSEMBLY_HPP
 
 #include "stats/analyzer.hpp"
 

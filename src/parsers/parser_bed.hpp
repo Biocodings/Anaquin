@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_BED_HPP
-#define GI_PARSER_BED_HPP
+#ifndef PARSER_BED_HPP
+#define PARSER_BED_HPP
 
 #include <functional>
 #include "data/types.hpp"

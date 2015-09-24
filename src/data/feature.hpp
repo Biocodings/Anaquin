@@ -1,5 +1,5 @@
-#ifndef GI_FEATURE_HPP
-#define GI_FEATURE_HPP
+#ifndef FEATURE_HPP
+#define FEATURE_HPP
 
 #include "data/locus.hpp"
 #include "data/biology.hpp"

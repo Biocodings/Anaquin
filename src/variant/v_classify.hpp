@@ -1,5 +1,5 @@
-#ifndef GI_V_CLASSIFY_HPP
-#define GI_V_CLASSIFY_HPP
+#ifndef V_CLASSIFY_HPP
+#define V_CLASSIFY_HPP
 
 #include <boost/format.hpp>
 #include "data/standard.hpp"

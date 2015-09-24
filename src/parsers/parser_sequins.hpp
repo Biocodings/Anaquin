@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_SEQUINS_HPP
-#define GI_PARSER_SEQUINS_HPP
+#ifndef PARSER_SEQUINS_HPP
+#define PARSER_SEQUINS_HPP
 
 #include <string>
 #include <vector>

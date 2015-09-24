@@ -1,5 +1,5 @@
-#ifndef GI_TYPES_HPP
-#define GI_TYPES_HPP
+#ifndef TYPES_HPP
+#define TYPES_HPP
 
 #include <string>
 

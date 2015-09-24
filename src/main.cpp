@@ -699,7 +699,7 @@ void parse(int argc, char ** argv)
 
         if (!m.count(copy))
         {
-            throw InvalidValueException(argv[index], copy);
+            throw InvalidValueException(str, copy);
         }
 
         return m.at(copy);

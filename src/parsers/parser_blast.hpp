@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_BLAST_HPP
-#define GI_PARSER_BLAST_HPP
+#ifndef PARSER_BLAST_HPP
+#define PARSER_BLAST_HPP
 
 #include <functional>
 #include "data/types.hpp"

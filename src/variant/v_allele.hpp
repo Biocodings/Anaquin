@@ -1,5 +1,5 @@
-#ifndef GI_V_ALLELE_HPP
-#define GI_V_ALLELE_HPP
+#ifndef V_ALLELE_HPP
+#define V_ALLELE_HPP
 
 #include "stats/analyzer.hpp"
 

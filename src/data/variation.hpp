@@ -1,5 +1,5 @@
-#ifndef GI_VARIATION_HPP
-#define GI_VARIATION_HPP
+#ifndef VARIATION_HPP
+#define VARIATION_HPP
 
 #include <data/locus.hpp>
 #include <data/biology.hpp>

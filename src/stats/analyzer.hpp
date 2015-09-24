@@ -1,5 +1,5 @@
-#ifndef GI_ANALYZER_HPP
-#define GI_ANALYZER_HPP
+#ifndef ANALYZER_HPP
+#define ANALYZER_HPP
 
 #include <map>
 #include <memory>
@@ -141,7 +141,7 @@ namespace Anaquin
     struct FusionStats : public MappingStats
     {
         // Number of fusions spanning across the genome and the synthetic chromosome
-        Counts hg38_chrT;
+        Counts hg38_chrT = 0;
     };
 
     struct LinearStats : public std::map<SequinID, Point>

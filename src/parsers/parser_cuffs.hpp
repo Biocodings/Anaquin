@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_CUFFS_HPP
-#define GI_PARSER_CUFFS_HPP
+#ifndef PARSER_CUFFS_HPP
+#define PARSER_CUFFS_HPP
 
 #include <map>
 #include "data/types.hpp"

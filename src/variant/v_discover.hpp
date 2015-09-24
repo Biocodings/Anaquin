@@ -1,5 +1,5 @@
-#ifndef GI_V_DISCOVER_HPP
-#define GI_V_DISCOVER_HPP
+#ifndef V_DISCOVER_HPP
+#define V_DISCOVER_HPP
 
 #include "stats/analyzer.hpp"
 

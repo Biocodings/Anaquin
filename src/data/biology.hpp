@@ -1,5 +1,5 @@
-#ifndef GI_BIOLOGY_HPP
-#define GI_BIOLOGY_HPP
+#ifndef BIOLOGY_HPP
+#define BIOLOGY_HPP
 
 #include "data/types.hpp"
 

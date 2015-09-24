@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_TMAP_HPP
-#define GI_PARSER_TMAP_HPP
+#ifndef PARSER_TMAP_HPP
+#define PARSER_TMAP_HPP
 
 #include <functional>
 #include "stats/analyzer.hpp"

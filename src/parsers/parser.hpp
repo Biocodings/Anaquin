@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_HPP
-#define GI_PARSER_HPP
+#ifndef PARSER_HPP
+#define PARSER_HPP
 
 #include <string>
 #include <stdexcept>

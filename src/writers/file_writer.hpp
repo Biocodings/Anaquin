@@ -1,5 +1,5 @@
-#ifndef GI_FILE_WRITER_HPP
-#define GI_FILE_WRITER_HPP
+#ifndef FILE_WRITER_HPP
+#define FILE_WRITER_HPP
 
 #include <fstream>
 #include "writers/writer.hpp"

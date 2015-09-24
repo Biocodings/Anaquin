@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_GTF_HPP
-#define GI_PARSER_GTF_HPP
+#ifndef PARSER_GTF_HPP
+#define PARSER_GTF_HPP
 
 #include "data/feature.hpp"
 #include "stats/analyzer.hpp"

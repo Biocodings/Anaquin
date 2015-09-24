@@ -1,5 +1,5 @@
-#ifndef GI_SCRIPT_HPP
-#define GI_SCRIPT_HPP
+#ifndef SCRIPT_HPP
+#define SCRIPT_HPP
 
 #include <fstream>
 #include <iostream>

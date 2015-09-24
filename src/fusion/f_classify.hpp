@@ -1,5 +1,5 @@
-#ifndef GI_F_CLASSIFY_HPP
-#define GI_F_CLASSIFY_HPP
+#ifndef F_CLASSIFY_HPP
+#define F_CLASSIFY_HPP
 
 #include "stats/analyzer.hpp"
 #include "parsers/parser_top_fusion.hpp"

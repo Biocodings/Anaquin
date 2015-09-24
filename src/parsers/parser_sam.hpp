@@ -1,5 +1,5 @@
-#ifndef GI_PARSER_SAM_HPP
-#define GI_PARSER_SAM_HPP
+#ifndef PARSER_SAM_HPP
+#define PARSER_SAM_HPP
 
 #include "data/alignment.hpp"
 #include "stats/analyzer.hpp"

@@ -1,5 +1,5 @@
-#ifndef GI_SEQUIN_HPP
-#define GI_SEQUIN_HPP
+#ifndef SEQUIN_HPP
+#define SEQUIN_HPP
 
 #include <numeric>
 #include "data/locus.hpp"

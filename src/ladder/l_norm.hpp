@@ -1,5 +1,5 @@
-#ifndef GI_L_NORM_HPP
-#define GI_L_NORM_HPP
+#ifndef L_NORM_HPP
+#define L_NORM_HPP
 
 #include "stats/analyzer.hpp"
 
