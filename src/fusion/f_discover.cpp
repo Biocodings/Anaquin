@@ -8,7 +8,7 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
     const auto stats = FClassify::analyze<FDiscover::Options, FDiscover::Stats>(file, false, o);
 
     /*
-     * Generate summary statistics
+     * Generating summary statistics
      */
 
     { 
@@ -45,13 +45,12 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
 
         const auto format = "%1%\t%2%";
 
-        o.writer->write((boost::format(format) % "id" % "counts").str());
+        o.writer->write((boost::format(format) % "ID" % "Counts").str());
 
         for (const auto &i : stats.h)
         {
                 o.writer->write((boost::format(format) % i.first
-                                                       % i.second
-                                       ).str());
+                                                       % i.second).str());
         }
 
         o.writer->close();
