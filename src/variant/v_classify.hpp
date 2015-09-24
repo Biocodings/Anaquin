@@ -4,9 +4,38 @@
 #include <boost/format.hpp>
 #include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
-#include <iostream>
+
 namespace Anaquin
 {
+    struct VClassify
+    {
+        struct Stats
+        {
+            struct FalsePositive
+            {
+                inline bool operator<(const Locus &l) const  { return this->l < l;    }
+                inline bool operator!=(const Locus &l) const { return !operator==(l); }
+                inline bool operator==(const Locus &l) const { return this->l == l;   }
+                
+                Locus l;
+                
+                // Matching for position?
+                bool pos;
+                
+                // Matching for variant type?
+                bool type;
+                
+                // Matchinf for allele?
+                bool alt;
+                
+                // Matching for reference?
+                bool ref;
+            };
+            
+            std::set<FalsePositive> fps;
+        };
+    };
+    
     template <typename Stats, typename Options, typename F> void classify
                 (Stats &stats, const FileName &file, const Options &o, F f)
     {
