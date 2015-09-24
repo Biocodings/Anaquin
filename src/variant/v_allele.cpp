@@ -29,52 +29,22 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
                                                            % match->l.start
                                                            % match->alt).str();
 
+        stats.h.at(match->id)++;
+
         stats.add(id, known, measured);
     });
  
+    stats.ss = r.limit(stats.h);
+    stats.sn = static_cast<double>(stats.detected) / r.countVars();
+    
     o.info("Generating summary statistics");
 
     /*
      * Generate summary statistics
      */
 
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome: %2% variants\n"
-                         "   Query: %3% variants (in chrT)\n"
-                         "   Reference: %4% variants\n"
-                         "   Detected: %5% variants\n"
-                         "   Correlation:\t%6%\n"
-                         "   Slope:\t%7%\n"
-                         "   R2:\t%8%\n"
-                         "   F-statistic:\t%9%\n"
-                         "   P-value:\t%10%\n"
-                         "   SSM: %11%, DF: %12%\n"
-                         "   SSE: %13%, DF: %14%\n"
-                         "   SST: %15%, DF: %16%\n"
-    ;
-    
-    const auto lm = stats.linear(false);
-    
-    stats.sn = static_cast<double>(stats.detected) / r.countVars();
-
-    o.writer->open("VarAllele_summary.stats");
-    o.writer->write((boost::format(summary) % file
-                                            % stats.n_hg38
-                                            % stats.n_chrT
-                                            % r.countVars()
-                                            % stats.detected
-                                            % lm.r
-                                            % lm.m
-                                            % lm.r2
-                                            % lm.f
-                                            % lm.p
-                                            % lm.ssm
-                                            % lm.ssm_df
-                                            % lm.sse
-                                            % lm.sse_df
-                                            % lm.sst
-                                            % lm.sst_df).str());
-    o.writer->close();
+    o.info("Generating summary statistics");
+    AnalyzeReporter::linear("TransExpress_summary.stats", file, stats, "variants", o.writer);
 
     AnalyzeReporter::scatter(stats, "", "VarAllele", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", o.writer, false);
 

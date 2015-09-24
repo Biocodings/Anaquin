@@ -56,7 +56,6 @@ typedef std::set<Value> Range;
 #define TOOL_T_IGV      271
 #define TOOL_V_ALIGN    272
 #define TOOL_V_DISCOVER 273
-#define TOOL_V_FREQ     274
 #define TOOL_V_DIFF     275
 #define TOOL_V_IGV      276
 #define TOOL_V_ALLELE   277
@@ -150,9 +149,9 @@ static std::map<Value, Tool> _tools =
 
     { "VarAlign",         TOOL_V_ALIGN    },
     { "VarDiscover",      TOOL_V_DISCOVER },
-    { "VarFrequency",     TOOL_V_FREQ     },
     { "VarIGV",           TOOL_V_IGV      },
     { "VarAllele",        TOOL_V_ALLELE   },
+    { "VarDiff",          TOOL_V_DIFF     },
 
     { "MetaAssembly",     TOOL_M_ASSEMBLY },
     { "MetaAbund",        TOOL_M_ABUND    },
@@ -209,6 +208,16 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFTWARE, OPT_U_OUT               } },
     { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
+
+    /*
+     * Variant Analysis
+     */
+    
+    //{ TOOL_V_ALIGN, { OPT_MIXTURE, OPT_BAM_1               } },
+    //{ TOOL_V_DIFF,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
+    { TOOL_V_ALLELE,   { OPT_MIXTURE, OPT_R_BED  } },
+    //{ TOOL_V_DISCOVER,  { OPT_R_BED , OPT_R_BED } },
+    //{ TOOL_V_IGV,  { OPT_U } },
 };
 
 /*
