@@ -36,8 +36,7 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
     }
 
     /*
-     * Generating statistics for sequins
-     
+     * Generating detailed statistics for sequins     
      */
 
     {

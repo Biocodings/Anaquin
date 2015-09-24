@@ -17,7 +17,7 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
 
     stats.m.nr = r.countVars();
 
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
 
     /*
      * Generate summary statistics

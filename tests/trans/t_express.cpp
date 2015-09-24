@@ -18,9 +18,9 @@ TEST_CASE("TExpress_T_1000_Isoforms")
     REQUIRE(lm.m  == Approx(0.4511315372));
     REQUIRE(lm.r2 == Approx(0.2852237379));
     
-    REQUIRE(r.s.id == "R2_38_1");
-    REQUIRE(r.s.counts == 1);
-    REQUIRE(r.s.abund == Approx(0.0000047454));
+    REQUIRE(r.ss.id == "R2_38_1");
+    REQUIRE(r.ss.counts == 1);
+    REQUIRE(r.ss.abund == Approx(0.0000047454));
 }
 
 TEST_CASE("TExpress_T_1000_Genes")
@@ -43,7 +43,7 @@ TEST_CASE("TExpress_T_1000_Genes")
     REQUIRE(lm.m  == Approx(0.5927763272));
     REQUIRE(lm.r2 == Approx(0.396161515));
     
-    REQUIRE(r2.s.id == "R2_53");
-    REQUIRE(r2.s.counts == 1);
-    REQUIRE(r2.s.abund == Approx(0.000066038));
+    REQUIRE(r2.ss.id == "R2_53");
+    REQUIRE(r2.ss.counts == 1);
+    REQUIRE(r2.ss.abund == Approx(0.000066038));
 }

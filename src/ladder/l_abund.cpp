@@ -197,7 +197,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
     o.info("Calculating sensitivity");
     //stats.s = Expression::analyze(stats.h, mix);
 
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
     
     auto writeHist = [&](const FileName &file,
                          const std::map<SequinID, Counts>   &abund,

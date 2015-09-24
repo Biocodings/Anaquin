@@ -67,7 +67,7 @@ void MAlign::report(const FileName &file, const Options &o)
 {
     const auto stats = MAlign::analyze(file, o);
     
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
     
     /*
      * Write out summary statistics

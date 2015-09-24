@@ -51,7 +51,10 @@ namespace Anaquin
         Counts n_hg38 = 0;
 
         // Fraction of sequin spiked
-        inline Percentage dilution() const { return static_cast<double>(n_chrT) / (n_chrT + n_hg38); }
+        inline Percentage dilution() const
+        {
+            return (n_chrT + n_hg38) ? static_cast<double>(n_chrT) / (n_chrT + n_hg38) : NAN;
+        }
     };
 
     struct AlignmentStats : public MappingStats

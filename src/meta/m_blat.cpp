@@ -174,7 +174,7 @@ void MBlat::report(const FileName &file, const Options &o)
 {
     const auto stats = MBlat::analyze(file);
 
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
 
     /*
      * Generate summary statistics

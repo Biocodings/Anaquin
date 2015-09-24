@@ -199,7 +199,7 @@ TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
     stats.sb = r.limitGene(stats.hb);
     stats.si = r.limit(stats.hi);
 
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
 
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Genome: %2% features\n"

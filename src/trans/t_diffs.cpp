@@ -108,7 +108,7 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
         }
     });
 
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
 
     const auto units = isoform ? "isoforms" : "genes";
 

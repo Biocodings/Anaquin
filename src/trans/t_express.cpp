@@ -90,48 +90,21 @@ TExpress::Stats TExpress::report(const FileName &file, const Options &o)
         }
     });
     
-    if (isoform)
-    {
-        stats.s = r.limit(stats.h);
-    }
-    else
-    {
-        stats.s = r.limitGene(stats.h);
-    }
+    stats.ss = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
     
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
 
-    const auto units = isoform ? "isoforms" : "genes";
+//    const auto units = isoform ? "isoforms" : "genes";
     
-    /*
-     * Generate summary statistics
-     */
-
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome: %2% %17%\n"
-                         "   Query: %3% %17%\n"
-                         "   Reference: %4% %17%\n\n"
-                         "   Detected: %5% %17%\n\n"
-                         "   Correlation:\t%6%\n"
-                         "   Slope:\t%7%\n"
-                         "   R2:\t%8%\n"
-                         "   F-statistic:\t%9%\n"
-                         "   P-value:\t%10%\n"
-                         "   SSM: %11%, DF: %12%\n"
-                         "   SSE: %13%, DF: %14%\n"
-                         "   SST: %15%, DF: %16%\n"
-    ;
-
     /*
      * Generating summary statistics
      */
     
     o.info("Generating summary statistics");
     AnalyzeReporter::linear("TransExpress_summary.stats", stats, "units", o.writer);
-    o.writer->close();
 
     /*
-     * Generate an R script
+     * Generating an R script
      */
     
     AnalyzeReporter::scatter(stats, "", "TransExpress", "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);

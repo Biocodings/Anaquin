@@ -32,7 +32,7 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
         stats.add(id, known, measured);
     });
  
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
 
     /*
      * Generate summary statistics

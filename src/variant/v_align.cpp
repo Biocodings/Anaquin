@@ -60,7 +60,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                     % stats.p.m.fn()
                                     % stats.p.m.sn()
                                     % stats.p.m.sp()).str());
-    o.info("Generating statistics");
+    o.info("Generating summary statistics");
 
     /*
      * Write out summary statistics
