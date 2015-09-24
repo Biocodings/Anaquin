@@ -46,6 +46,7 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
             measured = fpkm_2 / fpkm_1;
         }
 
+        stats.h.at(id)++;
         stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
     };
 
@@ -102,7 +103,9 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
                     measured = t.fpkm_2 / t.fpkm_1;
                 }
 
+                stats.h.at(t.testID)++;
                 stats.add(t.testID, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+
                 break;
             }
         }
@@ -113,49 +116,17 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
     const auto units = isoform ? "isoforms" : "genes";
 
     /*
-     * Generate summary statistics
+     * Generating summary statistics
      */
-
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome: %2% %17%\n"
-                         "   Query: %3% %17%\n"
-                         "   Reference: %4% %17%\n\n"
-                         "   Detected: %5% %17%\n\n"
-                         "   Correlation:\t%6%\n"
-                         "   Slope:\t%7%\n"
-                         "   R2:\t%8%\n"
-                         "   F-statistic:\t%9%\n"
-                         "   P-value:\t%10%\n"
-                         "   SSM: %11%, DF: %12%\n"
-                         "   SSE: %13%, DF: %14%\n"
-                         "   SST: %15%, DF: %16%\n";
     
-    const auto lm = stats.linear();
+    o.info("Generating summary statistics");
+    AnalyzeReporter::linear("TransDifferent_summary.stats", file, stats, units, o.writer);
 
-    o.writer->open("TransDiff_summary.stats");
-    o.writer->write((boost::format(summary) % file
-                                            % stats.n_hg38
-                                            % stats.n_chrT
-                                            % stats.h.size()
-                                            % countHist(stats.h)
-                                            % lm.r
-                                            % lm.m
-                                            % lm.r2
-                                            % lm.f
-                                            % lm.p
-                                            % lm.ssm
-                                            % lm.ssm_df
-                                            % lm.sse
-                                            % lm.sse_df
-                                            % lm.sst
-                                            % lm.sst_df
-                                            % units).str());
-    o.writer->close();
-    
     /*
-     * Generate an R script
+     * Generating an R script
      */
     
+    o.info("Generating an R script");
     AnalyzeReporter::scatter(stats, "", "TransDiff", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
     
     return stats;

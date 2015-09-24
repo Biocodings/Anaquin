@@ -105,6 +105,7 @@ TExpress::Stats TExpress::report(const FileName &file, const Options &o)
      * Generating an R script
      */
     
+    o.info("Generating an R script");
     AnalyzeReporter::scatter(stats, "", "TransExpress", "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
 
     return stats;
