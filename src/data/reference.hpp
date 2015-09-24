@@ -484,7 +484,7 @@ namespace Anaquin
                 
                     for (const auto &i : seqs)
                     {
-                        n += ((*i).mixes.at(m) / (*i).length);
+                        n += ((*i).abund(m) / (*i).length);
                     }
                 
                     return n;
@@ -540,8 +540,8 @@ namespace Anaquin
             void merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs);
 
             void validate() override;
-        
-            // Return the detection limit at the gene level
+
+            // Calculate the detection limit at the gene level
             Sensitivity limitGene(const GeneHist &) const;
 
             // Number of non-overlapping bases in all exons

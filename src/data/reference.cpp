@@ -240,7 +240,6 @@ TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
 Base TransRef::exonBase() const { return _impl->exonBase; }
 
-// Limit of detection for the gene level
 Sensitivity TransRef::limitGene(const GeneHist &h) const
 {
     return Reference<TransData, SequinStats>::limit(h, [&](const GeneID &id)
