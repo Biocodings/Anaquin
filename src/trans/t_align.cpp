@@ -14,11 +14,6 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        if (!align.i && (p.i % 1000000) == 0)
-        {
-            o.wait(std::to_string(p.i));
-        }
-        
         if (!align.i)
         {
             if      (!align.mapped)                       { stats.unmapped++; }
@@ -112,6 +107,9 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
     stats.pi.s = r.limitGene(stats.hi);
     stats.pb.s = r.limitGene(stats.hb);
 
+    assert(stats.he.size() == stats.hi.size());
+    assert(stats.hi.size() == stats.hb.size());
+
     stats.pe.m.sn();
     stats.pb.m.sn();
     stats.pi.m.sn();
@@ -142,7 +140,7 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
                                           % stats.pi.m.fn()
                                           % stats.pi.m.sn()
                                           % stats.pi.m.sp()).str());
-    
+
     /*
      * Write out summary statistics
      */
