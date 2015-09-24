@@ -46,7 +46,6 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
             measured = fpkm_2 / fpkm_1;
         }
 
-        stats.h.at(id)++;
         stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
     };
 
@@ -103,7 +102,6 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
                     measured = t.fpkm_2 / t.fpkm_1;
                 }
 
-                stats.h.at(t.testID)++;
                 stats.add(t.testID, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
 
                 break;
@@ -111,7 +109,9 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
         }
     });
 
-    o.info("Generating summary statistics");
+    o.info("Calculating limit of sensitivity");
+
+    stats.ss = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
 
     const auto units = isoform ? "isoforms" : "genes";
 
