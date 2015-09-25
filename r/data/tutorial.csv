@@ -1,7 +1,7 @@
-K_RMXA,G_RMXB
-A1,Replicate 1
-A2,Replicate 2
-A3,Replicate 3
-B1,Replicate 1
-B2,Replicare 2
-B3,Replicate 3
+Replicate,Sample
+A1,K_RMXA
+A2,K_RMXA
+A3,K_RMXA
+B1,G_RMXB
+B2,G_RMXB
+B3,G_RMXB

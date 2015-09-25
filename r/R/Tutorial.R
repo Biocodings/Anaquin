@@ -21,7 +21,7 @@ meta <- read.csv(file.path('', "/Users/tedwong/Sources/QA/r/data/experiment.csv"
 # Produces a GRangesList of all the exons grouped by gene
 genes <- exonsBy(model, by="gene")
 
-# Fix the duplicat keys
+# Fix the duplicate keys
 names(bams) <- c("A1.bam", "A2.bam", "A3.bam", "B1.bam", "B2.bam", "B3.bam")
 
 se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
