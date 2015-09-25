@@ -67,12 +67,12 @@ void MAlign::report(const FileName &file, const Options &o)
 {
     const auto stats = MAlign::analyze(file, o);
     
-    o.info("Generating summary statistics");
-    
     /*
-     * Write out summary statistics
+     * Generating summary statistics
      */
-    
+
+    o.info("Generating summary statistics");
+
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Unmapped:    %2% reads\n"
                          "   Genome:      %3% reads\n"
