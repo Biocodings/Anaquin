@@ -2,7 +2,6 @@
 #define L_IGV_HPP
 
 #include "data/script.hpp"
-#include "stats/analyzer.hpp"
 
 namespace Anaquin
 {

@@ -2,7 +2,6 @@
 #define M_VIEWER_HPP
 
 #include "data/script.hpp"
-#include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
