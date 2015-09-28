@@ -3,11 +3,11 @@
 \alias{Anaquin}
 \docType{package}
 \title{
-What the package does (short line)
+Hello World Package Documentation
 ~~ package title ~~
 }
 \description{
-More about what it does (maybe more than one line)
+Hello World Package Documentation (MORE)
 ~~ A concise (1-5 lines) description of the package ~~
 }
 \details{
