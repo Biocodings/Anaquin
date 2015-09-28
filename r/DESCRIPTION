@@ -1,9 +1,10 @@
 Package: Anaquin
 Type: Package
-Title: What the package does (short line)
+Title: Statistical analysi of sequins
 Version: 1.0
-Date: 2015-07-01
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Date: 2015-07-08
+Author: Ted Wong
+Maintainer: Ted Wong <ted.wong@garvan.org.au>
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
