@@ -47,7 +47,7 @@ AQ_Prepare <- function(files, meta)
 	se
 }
 
-IsoformsToGenes <- function(trans),
+IsoformsToGenes <- function(trans)
 {
     trans <- as.character(trans)
     genes <- substr(as.character(trans), 1, nchar(trans)-2)
@@ -76,47 +76,62 @@ Count <- function(files, meta)
     colData(se) <- DataFrame(meta)    
 }
 
-LoadMixtures <- function()
+#
+# Load the mixture into an R object that can be used with other Anaquin functions
+#
+
+AQ_Mixture <- function()
 {
-    mix <- read.csv(url('http://anaquin.org/downloads/RNA_4_1.csv'))
-    ref <- read.csv(url('http://anaquin.org/downloads/RNA_1.gtf'))
-    ref <- makeTranscriptDbFromGFF(file = '/Users/tedwong/Sources/QA/data/trans/RNA.v1.gtf', format = "gtf")
-    ref <- unique(IsoformsToGenes(transcripts(ref)$tx_name))
+    mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), sep='\t')
+
+    #ref <- read.csv(url('http://anaquin.org/downloads/RNA_1.gtf'))
+    #ref <- makeTranscriptDbFromGFF(file = '/Users/tedwong/Sources/QA/data/trans/RNA.v1.gtf', format = "gtf")
+    #ref <- unique(IsoformsToGenes(transcripts(ref)$tx_name))
     
     # Eg: R1_1 for R1_1_1 and R1_1_2    
-    mix$geneID <- IsoformsToGenes(mix$ID)
+    mix$GeneID <- IsoformsToGenes(mix$ID)
     
     # Genes that are defined in the mixture
-    geneIDs <- unique(mix$geneID)
-    
+    geneIDs <- unique(mix$GeneID)
+
     # Genes that are defined in reference but not reference and therfore must be ignored as there's no concentration
-    ignored <- ref[!(ref %in% geneIDs)]
+    #ignored <- ref[!(ref %in% geneIDs)]    
+    #combined <- c(geneIDs, ignored)
     
-    combined <- c(geneIDs, ignored)
-    
-    g <- data.frame(ID=combined,
-                    a=rep(0, length(combined)),
-                    b=rep(0, length(combined)),
-                    fold=rep(0, length(combined)),
-                    logFold = rep(0, length(combined)))
+    g <- data.frame(ID=geneIDs,
+                    A=rep(0, length(geneIDs)),
+                    B=rep(0, length(geneIDs)),
+                    Fold=rep(0, length(geneIDs)),
+                    LogFold = rep(0, length(geneIDs)))
+
+	#
+	# Calculate the expected log-fold between mixture A and B
+	#
     
     for (id in geneIDs)
     {
-        seqs <- mix[mix$geneID == id,]
+        seqs <- mix[mix$GeneID == id,]
         
         #
-        # Calculate the expected abundance
+        # Calculate the expected abundance. We assume the following format:
+		#
+		#      ID     Length     Mix A      Mix B
+		#    -------------------------------------
+		#     R1_11    703     161.13281    5.0354
+		#
+		# 
+		# We shouldn't assume anything for the column names.
+		#
+		
+	    g[g$ID == id,]$A <- sum(seqs[,3])
+        g[g$ID == id,]$B <- sum(seqs[,4])
+
+        #
+        # Calculate the expected fold change
         #
         
-        g[g$ID == id,]$a <- sum(seqs$MixA)
-        g[g$ID == id,]$b <- sum(seqs$MixB)
-        
-        #
-        # Calculate the expected fold-ratio
-        #
-        
-        g[g$ID == id,]$fold    <- g[g$ID == id,]$b / g[g$ID == id,]$a
-        g[g$ID == id,]$logFold <- log2(g[g$ID == id,]$fold)
+        g[g$ID == id,]$Fold    <- g[g$ID == id,]$B / g[g$ID == id,]$A
+        g[g$ID == id,]$LogFold <- log2(g[g$ID == id,]$Fold)
     }
     
     #
@@ -124,13 +139,13 @@ LoadMixtures <- function()
     # Here, we find out those sequins that are not defined in the mixture.
     #
     
-    for (id in ignored)
-    {
-        g[g$ID == id,]$a       <- 'NA'
-        g[g$ID == id,]$b       <- 'NA'
-        g[g$ID == id,]$fold    <- 'NA'
-        g[g$ID == id,]$logFold <- 'NA'
-    }
+    #for (id in ignored)
+    #{
+    #    g[g$ID == id,]$a       <- 'NA'
+    #    g[g$ID == id,]$b       <- 'NA'
+    #    g[g$ID == id,]$fold    <- 'NA'
+    #    g[g$ID == id,]$logFold <- 'NA'
+    #}
     
     # Prefer not to have it as factor variable
     g$ID <- as.character(g$ID)
@@ -138,7 +153,7 @@ LoadMixtures <- function()
     # Sort by ID so that it'll more easier interpreted
     g <- g[with(g, order(ID)),]
     
-    r <- list('data'=data.frame(mix), 'genes'=g)
+    r <- list('Data'=data.frame(mix), 'Genes'=g)
     class(r) <- c("Mixture")
     r
 }
@@ -151,36 +166,43 @@ print.Mixture <- function(x)
 
 DESeq2 <- function(r, mix)
 {
-    # List of known genes
-    known <- as.character(mix$genes$ID)
+    # List of known sequins
+    known <- as.character(mix$Genes$ID)
     
-    # Sequins that are detected in the experiment    
+    # Genes that have been detected in the experiment    
     detected <- rownames(r) %in% known
     
     # Filter out to only the rows with sequins
     r <- r[detected,]
     
-    # Create a data-frame for each sequin defined in the mixture and reference, whether it's been detected
-    d <- data.frame(id=known, known=rep(NaN, length(known)), measured=rep(NaN, length(known)))
-    
-    # For each sequin detected in the experiment
+	print(sprintf("Detected %d known sequins", length(known)))	
+	print(sprintf("Detected %d experimental genes", length(rownames(r))))
+	print(sprintf("%d sequins failed to detect", length(known) - length(rownames(r))))
+	
+    # Create a data-frame for each sequin defined, whether it's detected
+    d <- data.frame(ID=known, Known=rep(NaN, length(known)), Measured=rep(NaN, length(known)))
+
+    # For each sequin detected, calculate it's known and measured log-fold change
     for (id in rownames(r))
     {
-        d[d$id==id,]$known    <- mix$genes[mix$genes$ID==id,]$logFold
-        d[d$id==id,]$measured <- r[id,]$log2FoldChange
+        d[d$ID==id,]$Known    <- mix$Genes[mix$Genes$ID==id,]$LogFold
+        d[d$ID==id,]$Measured <- r[id,]$log2FoldChange
     }
-    
+	
     #
     # Fit a linear model for sequins that are detected in the experiment.
     #
     
-    d_ <- d[is.finite(d$measured),]
-    
+    d <- d[is.finite(d$Measured),]
+
+	known    <- d$Known
+	measured <- d$Measured
+
     # Fit a simple-linear regression model
-    m <- lm(d_$known ~ d_$measured)
+    m <- lm(known ~ measured)
     
     # Pearson's correlation
-    r <- cor(as.numeric(d_$known), as.numeric(d_$measured))
+    r <- cor(as.numeric(known), as.numeric(measured))
     
     # Coefficients of determination
     r2 <- summary(m)$r.squared
@@ -189,7 +211,7 @@ DESeq2 <- function(r, mix)
     slope <- coef(m)["known"]
     
     # Generate a linear plot of the relationship
-    plot(d_$known, d_$measured)
+    plot(known, measured)
 
     r <- list(data=data.frame(known, measured))
     class(r) <- c("Anaquin")
@@ -250,15 +272,17 @@ EdgeR <- function(r, m)
     r 
 }
 
-Anaquin <- function(r, m=LoadMixtures())
+Anaquin <- function(r, m=AQ_Mixture())
 {
     if (class(r) == 'DESeqResults')
     {
+		print('Analyzing DESeq2 object' )
         DESeq2(r, m)
     }
     else if (class(r)[1] == 'DGEExact')
     {
-        EdgeR(r, m)        
+		print('Analyzing edgeR' )
+        EdgeR(r, m)
     }
     else
     {
