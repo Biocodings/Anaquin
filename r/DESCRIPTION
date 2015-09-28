@@ -1,0 +1,11 @@
+Package: Anaquin
+Type: Package
+Title: Statistical analysis of sequins
+Version: 1.0
+Date: 2015-09-28
+Author: Ted Wong
+Maintainer: Ted Wong <t.wong@garvan.org.au>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+Suggests: knitr
+VignetteBuilder: knitr
