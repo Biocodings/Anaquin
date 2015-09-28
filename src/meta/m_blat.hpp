@@ -1,7 +1,6 @@
 #ifndef M_PSL_HPP
 #define M_PSL_HPP
 
-#include "data/sequin.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin

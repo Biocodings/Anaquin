@@ -30,27 +30,29 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        if (!align.mapped)
-        {
-            return;
-        }
-        
-        if (!align.i && (p.i % 1000000) == 0)
+        if (!align.i && (p.i % 5000000) == 0)
         {
             o.wait(std::to_string(p.i));
         }
+
+        if (!align.i)
+        {
+            if      (!align.mapped)                       { stats.unmapped++; }
+            else if (align.id != Standard::instance().id) { stats.n_hg38++;   }
+            else                                          { stats.n_chrT++;   }
+        }
         
+        if (!align.mapped || align.id != Standard::instance().id)
+        {
+            return;
+        }
+
         // Don't repeat the same read if it's spliced
         if (align.i == 0)
         {
             stats.obsTotal++;
             stats.measured[align.id]++;
-
-            // Eg: C_16_A to C_16
-            const auto baseID = align.id.substr(0, align.id.find_last_of("_"));
-
             seqIDs.insert(align.id);
-            o.logger->write((boost::format("%1%: %2%") % p.i % baseID).str());
         }
     });
 
@@ -65,11 +67,12 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
      */
     
     assert(stats.obsTotal);
-    o.info("Histogram created. Calculating the expected library size.");
 
     /*
-     * Calculate for the expected library size. The size depends on the sequins detected.
+     * Estimating for the expected library size. The size depends on the detected sequins.
      */
+
+    o.info("Histogram created. Estimating the expected library size.");
 
     for (const auto &seqID : seqIDs)
     {
@@ -77,7 +80,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
 
         if (!r.match(seqID))
         {
-            o.warn(seqID + " is in alignment but not found in the mixture file");
+            o.warn(seqID + " is in alignment but not found in the reference");
         }
         else
         {
@@ -91,7 +94,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
                 { "D", 8.0 },
             };
 
-            stats.expTotal += fold.at(typeID) * r.match(seqID)->abund(Mix_1, false);
+            stats.expTotal += fold.at(typeID) * r.match(seqID)->abund(Mix_1);
         }
     }
 
@@ -100,14 +103,14 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         o.error("stats.expTotal == 0");
 
         // Report a common and useful error message
-        throw std::runtime_error("Unable to find anything in the alignment that matches with the mixture. Usually this is caused by an incorrect mixture file. Please check your mixture file.");
+        throw std::runtime_error("Unable to find anything in the alignment that matches with the reference. Usually this is caused by an incorrect mixture file. Please check and try again.");
     }
 
     /*
      * Adjusting the observed abundance
      */
 
-    o.info("Adjusting the measured abundance");
+    o.info("Adjusting observations");
 
     for (const auto &jID : r.joinIDs())
     {
@@ -191,7 +194,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
 
         o.logInfo((boost::format("0x1234 - %1% %2% %3%") % seqID % known % actual).str());
 
-        stats.add(seqID, log2(known), actual ? log2(actual) : 0);
+        stats.add(seqID, known, actual);
     }
 
     o.info("Calculating sensitivity");

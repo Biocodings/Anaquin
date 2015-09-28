@@ -9,7 +9,7 @@ namespace Anaquin
     struct LViewer
     {
         typedef ViewerOptions Options;
-        
+
         // Generate a IGV session for ladder analysis
         static void generate(const FileName &file, const Options &o = Options())
         {

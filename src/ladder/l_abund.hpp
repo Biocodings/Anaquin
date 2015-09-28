@@ -8,8 +8,8 @@ namespace Anaquin
     struct LAbund
     {
         typedef AnalyzerOptions Options;
-        
-        struct Stats : LinearStats
+
+        struct Stats : public LinearStats, public AlignmentStats
         {
             // Histogram expected
             std::map<SequinID, Coverage> expect;
@@ -32,11 +32,10 @@ namespace Anaquin
             // Measured size of the library
             Counts obsTotal = 0;
 
-            //BaseHist h = Analyzer::baseHist();
-            //SequinStats h; // TODO = Analyzer::baseHist();
+            SequinHist h = Standard::instance().r_lad.hist();
         };
 
-        static Stats report(const std::string &, const Options &options = Options());
+        static Stats report(const FileName &, const Options &o = Options());
     };
 }
 

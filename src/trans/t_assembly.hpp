@@ -10,7 +10,7 @@ namespace Anaquin
         struct Options : FuzzyOptions
         {
             // Path for the reference and query GTF
-            std::string ref, query;
+            FileName ref, query;
         };
 
         struct Stats : public MappingStats

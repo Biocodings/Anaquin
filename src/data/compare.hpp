@@ -6,7 +6,7 @@
 namespace Anaquin
 {
     /*
-     * This is a data-wrapper for cuffcompare
+     * This class represents a data-wrapper for cuffcompare
      */
 
     struct Compare
