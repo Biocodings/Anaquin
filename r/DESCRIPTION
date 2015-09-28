@@ -1,10 +1,10 @@
 Package: Anaquin
 Type: Package
-Title: Statistical analysi of sequins
+Title: Statistical analysis of sequins
 Version: 1.0
 Date: 2015-07-08
 Author: Ted Wong
 Maintainer: Ted Wong <ted.wong@garvan.org.au>
-Description: More about what it does (maybe more than one line)
+Description: Statistical analysis of sequins
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
