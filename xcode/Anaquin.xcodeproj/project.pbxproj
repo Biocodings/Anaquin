@@ -134,7 +134,6 @@
 		EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/data/alignment.hpp; sourceTree = "<group>"; };
 		EF1DE0A81B21EC6D00DEC381 /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/data/biology.hpp; sourceTree = "<group>"; };
 		EF1DE0A91B21EC6D00DEC381 /* feature.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = feature.hpp; path = ../src/data/feature.hpp; sourceTree = "<group>"; };
-		EF1DE0AA1B21EC6D00DEC381 /* filter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = filter.hpp; path = ../src/data/filter.hpp; sourceTree = "<group>"; };
 		EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = locus.hpp; path = ../src/data/locus.hpp; sourceTree = "<group>"; };
 		EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reader.cpp; path = ../src/data/reader.cpp; sourceTree = "<group>"; };
 		EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = reader.hpp; path = ../src/data/reader.hpp; sourceTree = "<group>"; };
@@ -146,7 +145,6 @@
 		EF1DE0B91B21EC8300DEC381 /* analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = analyzer.hpp; path = ../src/stats/analyzer.hpp; sourceTree = "<group>"; };
 		EF1DE0BA1B21EC8300DEC381 /* classify.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = classify.hpp; path = ../src/stats/classify.hpp; sourceTree = "<group>"; };
 		EF1DE0BC1B21EC8300DEC381 /* sensitivity.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sensitivity.hpp; path = ../src/stats/sensitivity.hpp; sourceTree = "<group>"; };
-		EF1DE0BD1B21ECA600DEC381 /* sequin.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sequin.hpp; path = ../src/data/sequin.hpp; sourceTree = "<group>"; };
 		EF2101391B662E82007313AD /* f_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_viewer.hpp; sourceTree = "<group>"; };
 		EF2106AA1BB193670045325B /* m_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_align.cpp; sourceTree = "<group>"; };
 		EF2106AB1BB193670045325B /* m_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_align.hpp; sourceTree = "<group>"; };
@@ -163,7 +161,6 @@
 		EF26157A1B5FF9DC00BE8037 /* gffread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gffread.cpp; path = ../src/cufflinks/gffread.cpp; sourceTree = "<group>"; };
 		EF26157E1B5FF9F500BE8037 /* codons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = codons.cpp; path = ../src/cufflinks/codons.cpp; sourceTree = "<group>"; };
 		EF26157F1B5FF9F500BE8037 /* cuffcompare.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cuffcompare.cpp; path = ../src/cufflinks/cuffcompare.cpp; sourceTree = "<group>"; };
-		EF2907B91B4A85ED00BFBA56 /* region.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = region.hpp; path = ../src/data/region.hpp; sourceTree = "<group>"; };
 		EF31E82B1B6123A70095F3E8 /* l_norm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = l_norm.cpp; sourceTree = "<group>"; };
 		EF31E82C1B6123A70095F3E8 /* l_norm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_norm.hpp; sourceTree = "<group>"; };
 		EF3211931B1DBC1A0062BB10 /* parser_blast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_blast.cpp; path = ../src/parsers/parser_blast.cpp; sourceTree = "<group>"; };
@@ -443,15 +440,12 @@
 				EF1DE0A81B21EC6D00DEC381 /* biology.hpp */,
 				EF02A5231B7E0F8D00295799 /* compare.hpp */,
 				EF1DE0A91B21EC6D00DEC381 /* feature.hpp */,
-				EF1DE0AA1B21EC6D00DEC381 /* filter.hpp */,
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,
 				EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */,
 				EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */,
 				EFC0DAC51B8C056F005F6C85 /* reference.hpp */,
 				EF9F70ED1B9C397900B8BD7B /* reference.cpp */,
-				EF2907B91B4A85ED00BFBA56 /* region.hpp */,
 				EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */,
-				EF1DE0BD1B21ECA600DEC381 /* sequin.hpp */,
 				EF1DE0B01B21EC6D00DEC381 /* standard.cpp */,
 				EF1DE0B11B21EC6D00DEC381 /* standard.hpp */,
 				EF1DE0B21B21EC6D00DEC381 /* tokens.hpp */,
