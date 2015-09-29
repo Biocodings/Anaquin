@@ -37,7 +37,6 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         }
     }
     
-    o.info("Merging mixtures");
     o.info((boost::format("%1% sequins in mix A") % a.normalized.size()).str());
     o.info((boost::format("%1% sequins in mix B") % b.normalized.size()).str());
 
@@ -85,13 +84,17 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         // Known fold change between mixture A and B
         const auto known = (b.expect.at(seqID) / a.expect.at(seqID));
 
-        // Measured fold change between mixture A and B
+        // Measured normalized fold change between mixture A and B
+        const auto normalized = (b.normalized.at(seqID) / a.normalized.at(seqID));
+
+        // Measured adjusted fold change between mixture A and B
         const auto adjusted = (b.adjusted.at(seqID) / a.adjusted.at(seqID));
 
         assert(a.measured.count(seqID) && b.measured.count(seqID));
 
-        stats.add(seqID, log2(known), log2(adjusted));
-        
+        stats.add(seqID, known, normalized);
+        //stats.add(seqID, known, adjusted);
+
         o.writer->write((boost::format(format) % seqID
                                                % a.expect.at(seqID)
                                                % b.expect.at(seqID)
