@@ -431,7 +431,7 @@ namespace Anaquin
                                 const AxisLabel &yLogLabel,
                                 Writer writer,
                                 bool shoudLog2 = true,
-                                bool shouldCSV = true,)
+                                bool shouldCSV = true)
         {
             std::vector<double> x, y;
             std::vector<std::string> z;
