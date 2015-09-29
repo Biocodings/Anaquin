@@ -144,7 +144,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
         });
 
         assert(expect[0] && expect[1] && expect[2] && expect[3]);
-        
+
         stats.expect[A]  = expect[0];
         stats.expect[B]  = expect[1];
         stats.expect[C]  = expect[2];
@@ -160,7 +160,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
         stats.adjusted[C] = adjusted[2];
         stats.adjusted[D] = adjusted[3];
 
-        stats.sequinAdjusted[jID] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
+        stats.joinAdjusted[jID] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
     }
 
     o.info("Comparing expected with measured");

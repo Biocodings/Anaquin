@@ -23,8 +23,8 @@ namespace Anaquin
             // Histogram after adjustment
             std::map<SequinID, Coverage> adjusted;
             
-            // Adjusted abundance for each sequin
-            std::map<BaseID, Coverage> sequinAdjusted;
+            // Adjusted abundance at the joined level
+            std::map<LadderRef::JoinID, Coverage> joinAdjusted;
 
             // Expected size of the library
             Counts expTotal = 0;

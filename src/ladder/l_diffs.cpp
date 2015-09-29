@@ -44,20 +44,21 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
      * Try for each detected sequin. But only if it's detected in both mixtures.
      */
     
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%";
 
     o.writer->open("LadderDifferent_quin.csv");
     o.writer->write((boost::format(format) % "ID"
                                            % "Expect A"
                                            % "Expect B"
-                                           % "Expect D"
+                                           % "Expect B/A"
                                            % "Measure A"
                                            % "Measure B"
                                            % "Norm A"
                                            % "Norm B"
+                                           % "Norm B/A"
                                            % "Adjust A"
                                            % "Adjust B"
-                                           % "Adjust_D").str());
+                                           % "Adjust B/A").str());
 
     for (const auto &i : a.normalized)
     {
@@ -68,6 +69,7 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         if (!b.normalized.at(seqID))
         {
             o.writer->write((boost::format(format) % seqID
+                                                   % "NA"
                                                    % "NA"
                                                    % "NA"
                                                    % "NA"
@@ -95,8 +97,6 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         stats.add(seqID, known, normalized);
         //stats.add(seqID, known, adjusted);
 
-        std::cout << known << "   " << normalized << std::endl;
-        
         o.writer->write((boost::format(format) % seqID
                                                % a.expect.at(seqID)
                                                % b.expect.at(seqID)
@@ -105,6 +105,7 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
                                                % b.measured.at(seqID)
                                                % a.normalized.at(seqID)
                                                % b.normalized.at(seqID)
+                                               % normalized
                                                % a.adjusted.at(seqID)
                                                % b.adjusted.at(seqID)
                                                % adjusted).str());

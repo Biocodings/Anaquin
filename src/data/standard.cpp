@@ -67,7 +67,7 @@ template <typename Reference> void readMixture
                     case ID_Mix:
                     {
                         succceed = true;
-                        ref.add(fields[0], 0.0, stof(fields[1]), m); break;
+                        ref.add(fields[0], 0.0, stof(fields[column]), m); break;
                     }
                 }
             }, delim);
@@ -168,8 +168,8 @@ void Standard::m_mix(const Reader &r)
 
 void Standard::l_mix(const Reader &r)
 {
-    readMixture(r, r_lad, Mix_1, ID_Mix, 2);
-    readMixture(Reader(r), r_lad, Mix_2, ID_Mix, 3);
+    readMixture(r, r_lad, Mix_1, ID_Mix, 1);
+    readMixture(Reader(r), r_lad, Mix_2, ID_Mix, 2);
 }
 
 void Standard::f_mix(const Reader &r)
