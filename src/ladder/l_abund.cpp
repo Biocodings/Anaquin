@@ -169,7 +169,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
     for (const auto &i : stats.normalized)
     {
         const auto &seqID = i.first;
-        
+
         const auto known  = stats.expect.at(seqID);
         const auto actual = stats.normalized.at(seqID);
 
@@ -210,10 +210,15 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
                          const std::map<SequinID, Coverage> &actual,
                          const std::map<SequinID, Coverage> &adjust)
     {
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
         
         o.writer->open(file);
-        o.writer->write((boost::format(format) % "ID" % "Abund (counts)" % "Expected (attomol/ul)" % "Observed (normalized counts)" % "Adjusted (normalized counts)").str());
+        o.writer->write((boost::format(format) % "ID"
+                                               % "Abund (counts)"
+                                               % "Expected (attomol/ul)"
+                                               % "Observed (normalized counts)"
+                                               % "Adjusted (normalized counts)"
+                                               % "Ratio").str());
 
         /*
          * The argument abund is a histogram of abundance before normalization. It's directly taken off from
@@ -233,11 +238,13 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
                                                        % abund.at(id)
                                                        % expect.at(id)
                                                        % actual.at(id)
-                                                       % adjust.at(id)).str());
+                                                       % adjust.at(id)
+                                                       % (adjust.at(id) / actual.at(id))).str());
             }
             else
             {
                 o.writer->write((boost::format(format) % id
+                                                       % "NA"
                                                        % "NA"
                                                        % "NA"
                                                        % "NA"
@@ -248,7 +255,11 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         o.writer->close();
     };
 
-    writeHist("LadderAbundance_quin.stats", stats.measured, stats.expect, stats.normalized, stats.adjusted);
+    /*
+     * Generating unjoined adjustments
+     */
+    
+    writeHist("LadderAbundance_quin.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
 
   	return stats;
 }
