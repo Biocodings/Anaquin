@@ -125,7 +125,7 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
      */
     
     o.info("Generating R script");
-    AnalyzeReporter::scatter(stats, "", "LadderDifferent", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
+    AnalyzeReporter::scatter(stats, "", "LadderDifferent", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
 
 	return stats;
 }

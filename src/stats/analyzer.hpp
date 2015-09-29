@@ -430,7 +430,8 @@ namespace Anaquin
                                 const AxisLabel &xLogLabel,
                                 const AxisLabel &yLogLabel,
                                 Writer writer,
-                                bool shoudLog2 = true)
+                                bool shoudLog2 = true,
+                                bool shouldCSV = true,)
         {
             std::vector<double> x, y;
             std::vector<std::string> z;
@@ -461,7 +462,10 @@ namespace Anaquin
              * Generate CSV for each sequin
              */
 
-            writeCSV(x, y, z, prefix + "_quin.csv", xLabel, yLabel, writer);
+            if (shouldCSV)
+            {
+                writeCSV(x, y, z, prefix + "_quin.csv", xLabel, yLabel, writer);                
+            }
         }
     };
 }
