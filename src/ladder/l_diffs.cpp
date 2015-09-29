@@ -16,11 +16,9 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
     opt.output = o.output;
 
     opt.mix = Mix_1;
-    o.analyze(fileA);
     const auto a = LAbund::report(fileA, opt);
 
     opt.mix = Mix_2;
-    o.analyze(fileB);
     const auto b = LAbund::report(fileB, opt);
 
     /*
