@@ -1,10 +1,9 @@
 #include "ladder/l_abund.hpp"
-#include <ss/regression/lm.hpp>
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
 
-static std::vector<double> create(Counts rA, Counts rB, Counts rC, Counts rD, double fold, Counts size)
+static std::vector<double> create(Coverage rA, Coverage rB, Coverage rC, Coverage rD, double fold, Counts size)
 {
     const auto nA = rA * (fold / size);
     const auto nB = rB * (fold / size);
@@ -19,36 +18,34 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
     LAbund::Stats stats;
     const auto &r = Standard::instance().r_lad;
 
-    // The sequins detected
+    // Sequins detected in the experiment
     std::set<SequinID> seqIDs;
 
-    o.info("Parsing alignment file");
+    o.analyze(file);
 
     /*
-     * Construct a histogram or distribution
+     * Constructing a histogram or distribution
      */
-    
+
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        if (!align.i && (p.i % 5000000) == 0)
+        if (!align.i && !(p.i % 1000000))
         {
             o.wait(std::to_string(p.i));
         }
 
         if (!align.i)
         {
-            if      (!align.mapped)                       { stats.unmapped++; }
-            else if (align.id != Standard::instance().id) { stats.n_hg38++;   }
-            else                                          { stats.n_chrT++;   }
+            if      (!align.mapped)      { stats.unmapped++; }
+            else if (!r.match(align.id)) { stats.n_hg38++;   }
+            else                         { stats.n_chrT++;   }
         }
-        
-        if (!align.mapped || align.id != Standard::instance().id)
+
+        if (!align.mapped || !r.match(align.id))
         {
             return;
         }
-
-        // Don't repeat the same read if it's spliced
-        if (align.i == 0)
+        else if (!align.i)
         {
             stats.obsTotal++;
             stats.measured[align.id]++;
@@ -58,52 +55,32 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
 
     if (seqIDs.empty())
     {
-        o.warn("Empty histogram. Please check the inputs and try again.");
+        o.warn("No sequin detected. Please check the inputs and try again.");
         return stats;
     }
 
-    /*
-     * Histogram has been created for detected sequins, such as C_14_C.
-     */
-    
     assert(stats.obsTotal);
 
+    o.info((boost::format("Detected %1% sequins in reference") % r.data().size()).str());
+    o.info((boost::format("Detected %1% sequins in query")     % seqIDs.size()).str());
+
+    o.info("Estimating the expected library size.");
+
     /*
-     * Estimating for the expected library size. The size depends on the detected sequins.
+     * Estimating expected library size. The size depends on the detected sequins.
      */
 
-    o.info("Histogram created. Estimating the expected library size.");
+    o.info("Estimating the expected library size.");
 
     for (const auto &seqID : seqIDs)
     {
-        o.info((boost::format("Calculating for sequin: %1%") % seqID).str());
-
-        if (!r.match(seqID))
-        {
-            o.warn(seqID + " is in alignment but not found in the reference");
-        }
-        else
-        {
-            const auto typeID = seqID.substr(seqID.size() - 1);
-
-            const static std::map<std::string, double> fold =
-            {
-                { "A", 1.0 },
-                { "B", 2.0 },
-                { "C", 4.0 },
-                { "D", 8.0 },
-            };
-
-            stats.expTotal += fold.at(typeID) * r.match(seqID)->abund(Mix_1);
-        }
+        stats.expTotal += r.match(seqID)->abund(o.mix);
     }
 
     if (!stats.expTotal)
     {
-        o.error("stats.expTotal == 0");
-
-        // Report a common and useful error message
-        throw std::runtime_error("Unable to find anything in the alignment that matches with the reference. Usually this is caused by an incorrect mixture file. Please check and try again.");
+        o.error("Expected library size == 0");
+        throw std::runtime_error("Error in mixture input. Please check and try again.");
     }
 
     /*
@@ -119,25 +96,32 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         const auto C = jID + "_C";
         const auto D = jID + "_D";
 
-        // Skip over any ladder defined in the mixture but totally undetected
+        // Skip over any ladder defined but not undetected at all
         if (!seqIDs.count(A) && !seqIDs.count(B) && !seqIDs.count(C) && !seqIDs.count(D))
         {
             continue;
         }
 
-        //stats.h[jID]++;
+        stats.h_joined[jID]++;
+        
+        if (seqIDs.count(A)) { stats.h[A]++; }
+        if (seqIDs.count(B)) { stats.h[B]++; }
+        if (seqIDs.count(C)) { stats.h[C]++; }
+        if (seqIDs.count(D)) { stats.h[D]++; }
 
         #define COUNT(x) stats.measured.count(x) ? stats.measured.at(x) : 0
         
         // Create a vector for normalized measured coverage
         const auto normalize = create(COUNT(A), COUNT(B), COUNT(C), COUNT(D), 1.0, stats.obsTotal);
-        
-        // Create a vector for normalized expected coverage
-        const auto expect = create(r.match(A)->mixes.at(Mix_1),
-                                   r.match(B)->mixes.at(Mix_1),
-                                   r.match(C)->mixes.at(Mix_1),
-                                   r.match(D)->mixes.at(Mix_1), 1.0, stats.expTotal);
 
+        // Create a vector for normalized expected coverage
+        const auto expect = create(r.match(A)->abund(o.mix),
+                                   r.match(B)->abund(o.mix),
+                                   r.match(C)->abund(o.mix),
+                                   r.match(D)->abund(o.mix), 1.0, stats.expTotal);
+
+        assert(SS::sum(expect));
+        
         // There must be something detected, otherwise we wouldn't have been here
         assert(SS::sum(normalize));
 
@@ -151,7 +135,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         adjusted.resize(normalize.size());
 
         /*
-         * This is the key in ladder analysis. Adjust the normalized abundance.
+         * This is the key in ladder analysis, adjusting the normalized abundance
          */
         
         std::transform(normalize.begin(), normalize.end(), adjusted.begin(), [&](double c)
@@ -185,22 +169,40 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
     for (const auto &i : stats.normalized)
     {
         const auto &seqID = i.first;
-        //const auto baseID = s.seq2base.at(seqID);
+        
         const auto known  = stats.expect.at(seqID);
         const auto actual = stats.normalized.at(seqID);
 
+        if (!known || !actual)
+        {
+            continue;
+        }
+        
         assert(!isnan(known)  && !isinf(known));
         assert(!isnan(actual) && !isinf(actual));
-
-        o.logInfo((boost::format("0x1234 - %1% %2% %3%") % seqID % known % actual).str());
 
         stats.add(seqID, known, actual);
     }
 
-    o.info("Calculating sensitivity");
-    //stats.s = Expression::analyze(stats.h, mix);
+    o.info("Calculating detection limit (joined level)");
+    stats.s_joined = r.limitJoin(stats.h_joined);
 
+    o.info("Calculating detection limit (unjoined level)");
+    stats.ss = r.limit(stats.h);
+
+    /*
+     * Generating summary statistics
+     */
+    
     o.info("Generating summary statistics");
+    AnalyzeReporter::linear("LadderAbundance_summary.stats", file, stats, "sequins", o.writer);
+    
+    /*
+     * Generating an R script
+     */
+    
+    o.info("Generating R script");
+    AnalyzeReporter::scatter(stats, "", "LadderAbundance", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
     
     auto writeHist = [&](const FileName &file,
                          const std::map<SequinID, Counts>   &abund,
@@ -211,7 +213,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         
         o.writer->open(file);
-        o.writer->write((boost::format(format) % "ID" % "abund" % "expect" % "observed" % "adjusted").str());
+        o.writer->write((boost::format(format) % "ID" % "Abund (counts)" % "Expected (attomol/ul)" % "Observed (normalized counts)" % "Adjusted (normalized counts)").str());
 
         /*
          * The argument abund is a histogram of abundance before normalization. It's directly taken off from
@@ -223,8 +225,8 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         for (const auto &i : adjust)
         {
             // Eg: GA322_B
-            const auto id = i.first;
-            
+            const auto &id = i.first;
+
             if (abund.count(id))
             {
                 o.writer->write((boost::format(format) % id
@@ -246,8 +248,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         o.writer->close();
     };
 
-    //AnalyzeReporter::linear(stats, "LadderAbundance", "FPKM", o.writer);
-    writeHist("LadderAbundance_hist.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
+    writeHist("LadderAbundance_quin.stats", stats.measured, stats.expect, stats.normalized, stats.adjusted);
 
-	return stats;
+  	return stats;
 }

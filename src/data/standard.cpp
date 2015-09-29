@@ -168,8 +168,8 @@ void Standard::m_mix(const Reader &r)
 
 void Standard::l_mix(const Reader &r)
 {
-    readMixture(r, r_lad, Mix_1, ID_Length_Mix, 2);
-    readMixture(Reader(r), r_lad, Mix_2, ID_Length_Mix, 3);
+    readMixture(r, r_lad, Mix_1, ID_Mix, 2);
+    readMixture(Reader(r), r_lad, Mix_2, ID_Mix, 3);
 }
 
 void Standard::f_mix(const Reader &r)

@@ -1,6 +1,7 @@
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
 #include <boost/algorithm/string/predicate.hpp>
+#include <iostream>
 
 using namespace Anaquin;
 
@@ -71,17 +72,58 @@ struct LadderRef::LadderRefImpl
     struct JoinData
     {
         const SequinData *A, *B, *C, *D;
+        
+        inline Concentration abund(Mixture m) const
+        {
+            return A->abund(m) + B->abund(m) + C->abund(m) + D->abund(m);
+        }
     };
+
+    /*
+     * Validated data
+     */
     
-    std::set<JoinID> joinIDs;
     std::map<JoinID, JoinData> joined;
+
+    /*
+     * Raw data
+     */
+    
+    std::map<JoinID, JoinData> rawJoined;
 };
 
 LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
 
-const std::set<LadderRef::JoinID> & LadderRef::joinIDs() const
+Sensitivity LadderRef::limitJoin(const JoinHist &h) const
 {
-    return _impl->joinIDs;
+    return Reference<SequinData, SequinStats>::limit(h, [&](const JoinID &id)
+    {
+        return &(_impl->joined.at(id));
+    });
+}
+
+LadderRef::JoinIDs LadderRef::joinIDs() const
+{
+    JoinIDs ids;
+
+    for (const auto &i : _impl->joined)
+    {
+        ids.insert(i.first);
+    }
+    
+    return ids;
+}
+
+LadderRef::JoinHist LadderRef::joinHist() const
+{
+    JoinHist h;
+    
+    for (const auto &i : _impl->joined)
+    {
+        h[i.first] = 0;
+    }
+
+    return h;
 }
 
 void LadderRef::validate()
@@ -92,17 +134,19 @@ void LadderRef::validate()
     
     for (const auto &i : _data)
     {
+        // Eg: C_01_A
         Tokens::split(i.first, "_", toks);
 
+        // Eg: C_01
         const auto joinID = toks[0] + "_" + toks[1];
-        const auto segID  = toks[2];
-     
-        _impl->joinIDs.insert(joinID);
         
-        if (segID == "A") { _impl->joined[joinID].A = &i.second; }
-        if (segID == "B") { _impl->joined[joinID].B = &i.second; }
-        if (segID == "C") { _impl->joined[joinID].C = &i.second; }
-        if (segID == "D") { _impl->joined[joinID].D = &i.second; }
+        // Eg: A
+        const auto typeID = toks[2];
+     
+        if (typeID == "A") { _impl->joined[joinID].A = &i.second; }
+        if (typeID == "B") { _impl->joined[joinID].B = &i.second; }
+        if (typeID == "C") { _impl->joined[joinID].C = &i.second; }
+        if (typeID == "D") { _impl->joined[joinID].D = &i.second; }
     }
 
     assert(!_impl->joined.empty());

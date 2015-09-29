@@ -7,7 +7,7 @@ namespace Anaquin
 {
     struct LAbund
     {
-        typedef AnalyzerOptions Options;
+        typedef SingleMixtureOption Options;
 
         struct Stats : public LinearStats, public AlignmentStats
         {
@@ -15,7 +15,7 @@ namespace Anaquin
             std::map<SequinID, Coverage> expect;
 
             // Histogram before normalization and adjustment
-            std::map<SequinID, Counts> measured;
+            SequinHist measured;
 
             // Histogram after normalization but before adjustment
             std::map<SequinID, Coverage> normalized;
@@ -32,6 +32,16 @@ namespace Anaquin
             // Measured size of the library
             Counts obsTotal = 0;
 
+            // Sensitivity at the joined level
+            Sensitivity s_joined;
+
+            // Histogram at the joined level
+            LadderRef::JoinHist h_joined  = Standard::instance().r_lad.joinHist();
+
+            // Sensitivity at the unjoined level
+            Sensitivity ss;
+
+            // Histogram at the unjoined level
             SequinHist h = Standard::instance().r_lad.hist();
         };
 

@@ -14,7 +14,7 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
-        if (!align.i && (p.i % 5000000) == 0)
+        if (!align.i && !(p.i % 1000000))
         {
             o.wait(std::to_string(p.i));
         }

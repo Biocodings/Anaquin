@@ -29,12 +29,13 @@ namespace Anaquin
         assert(c);
     }
 
-    inline std::size_t countHist(const std::map<std::string, Counts> &m)
+    // Number of elements in the histogram with at least an entry
+    inline std::size_t detectHist(const std::map<std::string, Counts> &m)
     {
-        return std::count_if(m.begin(), m.end(), [&](const std::pair<SequinID, Counts> &i)
-                                                 {
-                                                     return i.second;
-                                                 });
+        return std::count_if(m.begin(), m.end(), [&](const std::pair<std::string, Counts> &i)
+        {
+            return i.second ? 1 : 0;
+        });
     }
     
     struct Analyzer
@@ -164,6 +165,9 @@ namespace Anaquin
 
             auto f = [&](double v)
             {
+                // Don't log zero...
+                assert(!shouldLog || v);
+
                 return shouldLog ? (v ? log2(v) : 0) : v;
             };
 
@@ -259,6 +263,11 @@ namespace Anaquin
         std::set<SequinID> filters;
     };
 
+    struct SingleMixtureOption : public AnalyzerOptions
+    {
+        Mixture mix = Mix_1;
+    };
+
     struct FuzzyOptions : public AnalyzerOptions
     {
         double fuzzy;
@@ -332,7 +341,7 @@ namespace Anaquin
                                                   % (ref.empty() ? units : ref)
                                                   % stats.ss.abund
                                                   % stats.ss.id
-                                                  % countHist(stats.h)           // 10
+                                                  % detectHist(stats.h)           // 10
                                                   % n_lm.r
                                                   % n_lm.m
                                                   % n_lm.r2

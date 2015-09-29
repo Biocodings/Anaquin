@@ -292,12 +292,25 @@ namespace Anaquin
         public:
         
             typedef std::string JoinID;
+            typedef std::string UnjoinID;
         
+            typedef std::set<JoinID>   JoinIDs;
+            typedef std::set<UnjoinID> UnjoinIDs;
+
+            typedef std::map<JoinID, Counts> JoinHist;
+
             LadderRef();
 
             void validate() override;
 
-            const std::set<JoinID> &joinIDs() const;
+            // Return a list of sequin IDs at the joined level
+            JoinIDs joinIDs() const;
+
+            // Construct a histogram at the joined level
+            JoinHist joinHist() const;
+
+            // Calculate the limit of detection at the joined level
+            Sensitivity limitJoin(const JoinHist &) const;
 
             // Return abundance for all segments of a particular conjoined
             void abund(const JoinID &, Concentration &, Concentration &, Concentration &, Concentration &,
@@ -393,7 +406,7 @@ namespace Anaquin
                 
                 const SequinData *r;
                 const SequinData *v;
-                
+
                 Concentration abund(Mixture m) const;
             };
 

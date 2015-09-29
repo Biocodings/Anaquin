@@ -39,7 +39,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
     const auto stats = MAssembly::analyze(file, o);
 
     /*
-     * Generate summary statistics
+     * Generating summary statistics
      */
 
     {

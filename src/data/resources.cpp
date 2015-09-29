@@ -104,7 +104,7 @@ std::string LadderDataMixAB()
 }
 
 /*
- * META Resources
+ * Metagenomics Resources
  */
 
 std::string MetaDataMix()

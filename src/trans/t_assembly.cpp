@@ -90,7 +90,7 @@ TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
     
     ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
     {
-        if ((p.i % 1000000) == 0)
+        if (!(p.i % 1000000))
         {
             o.wait(std::to_string(p.i));
         }
