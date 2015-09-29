@@ -289,7 +289,6 @@
 		EFED77291B94AC2D001842F4 /* v_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_discover.cpp; path = ../src/variant/v_discover.cpp; sourceTree = "<group>"; };
 		EFED772A1B94AC2D001842F4 /* v_discover.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_discover.hpp; path = ../src/variant/v_discover.hpp; sourceTree = "<group>"; };
 		EFED772C1B94AC2D001842F4 /* v_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_viewer.hpp; path = ../src/variant/v_viewer.hpp; sourceTree = "<group>"; };
-		EFF3F5FF1B63BA7F00A37957 /* l_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_viewer.hpp; sourceTree = "<group>"; };
 		EFF820CA1BAFA497009CC6C6 /* m_velvet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_velvet.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -514,7 +513,6 @@
 				EFB7FF2A1B4F79C20045DC6A /* l_diffs.hpp */,
 				EF31E82B1B6123A70095F3E8 /* l_norm.cpp */,
 				EF31E82C1B6123A70095F3E8 /* l_norm.hpp */,
-				EFF3F5FF1B63BA7F00A37957 /* l_viewer.hpp */,
 			);
 			name = ladder;
 			path = ../src/ladder;
