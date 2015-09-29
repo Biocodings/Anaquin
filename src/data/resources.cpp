@@ -17,10 +17,12 @@
 #include "resources/MFU007.v013.csv"
 
 /*
- * Conjoint Resources
+ * Ladder Resources
  */
 
-#include "resources/LadderMixture_3.0.csv"
+#include "resources/MLA014.v013.csv"
+#include "resources/MLA016.v013.csv"
+#include "resources/MLA020.v013.csv"
 
 /*
  * RNA Resources
@@ -83,24 +85,22 @@ std::string FusionDataRef()
 }
 
 /*
-std::string FusionMutatedRef()
-{
-    return ToString(data_fusion_FusionGenes_chrTv1_bed);
-}
-
-std::string FusionNormalRef()
-{
-    return ToString(data_fusion_NormalParentGenes_chrTv1_bed);
-}
-*/
-
-/*
  * Ladder Resources
  */
 
-std::string LadderDataMix()
+std::string LadderDataMixA()
 {
-    return ToString(data_ladder_LadderMixture_3_0_csv);
+    return ToString(data_ladder_MLA014_v013_csv);
+}
+
+std::string LadderDataMixB()
+{
+    return ToString(data_ladder_MLA016_v013_csv);
+}
+
+std::string LadderDataMixAB()
+{
+    return ToString(data_ladder_MLA020_v013_csv);
 }
 
 /*

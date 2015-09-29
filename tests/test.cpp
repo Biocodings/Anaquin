@@ -9,7 +9,9 @@
 // Defined in main.cpp
 extern int parse_options(int argc, char ** argv);
 
-extern std::string LadderDataMix();
+extern std::string LadderDataMixA();
+extern std::string LadderDataMixB();
+extern std::string LadderDataMixAB();
 
 extern std::string FusionDataMixA();
 extern std::string FusionDataRef();
@@ -44,10 +46,10 @@ void Test::meta()
     Standard::instance().r_meta.validate();
 }
 
-void Test::ladder()
+void Test::ladderA()
 {
     Standard::instance(true);
-    Standard::instance().l_mix(Reader(LadderDataMix(), DataMode::String));
+    Standard::instance().l_mix(Reader(LadderDataMixA(), DataMode::String));
     Standard::instance().r_lad.validate();
 }
 

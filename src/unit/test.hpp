@@ -1,5 +1,5 @@
-#ifndef GI_TEST_HPP
-#define GI_TEST_HPP
+#ifndef TEST_HPP
+#define TEST_HPP
 
 #include <string>
 #include <catch.hpp>
@@ -24,9 +24,12 @@ namespace Anaquin
         static void variantF();
 
         static void fusionA();
-        
+
+        static void ladderA();
+        static void ladderB();
+        static void ladderAB();
+
         static void meta();
-        static void ladder();
         
         static Test test(const std::string &);
     };
