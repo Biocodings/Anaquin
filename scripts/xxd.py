@@ -25,8 +25,10 @@ data  = [ 'data/manual.txt',
 
            # ------- Ladder -------
 
-           'data/ladder/LadderMixture_3.0.csv',
-
+           'data/ladder/MLA014.v013.csv',
+           'data/ladder/MLA016.v013.csv',
+           'data/ladder/MLA020.v013.csv',
+           
            # ---------- Transcriptome ----------
 
           'data/trans/ATR001.v032.gtf',
