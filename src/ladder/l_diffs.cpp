@@ -16,10 +16,10 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
     opt.output = o.output;
 
     opt.mix = Mix_1;
-    const auto a = LAbund::report(fileA, opt);
+    const auto a = LAbund::analyze(fileA, opt);
 
     opt.mix = Mix_2;
-    const auto b = LAbund::report(fileB, opt);
+    const auto b = LAbund::analyze(fileB, opt);
 
     /*
      * Print a warning message for each sequin detected in B but not in A
@@ -106,6 +106,20 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
     }
     
     o.writer->close();
+
+    /*
+     * Generating summary statistics
+     */
+    
+    o.info("Generating summary statistics");
+    AnalyzeReporter::linear("LadderDifferent_summary.stats", fileA + " " + fileB, stats, "sequins", o.writer);
+    
+    /*
+     * Generating an R script
+     */
+    
+    o.info("Generating R script");
+    AnalyzeReporter::scatter(stats, "", "LadderDifferent", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
 
 	return stats;
 }

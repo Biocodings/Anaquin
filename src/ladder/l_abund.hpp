@@ -45,7 +45,8 @@ namespace Anaquin
             SequinHist h = Standard::instance().r_lad.hist();
         };
 
-        static Stats report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

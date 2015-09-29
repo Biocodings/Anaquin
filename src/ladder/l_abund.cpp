@@ -13,7 +13,7 @@ static std::vector<double> create(Coverage rA, Coverage rB, Coverage rC, Coverag
     return std::vector<double> { nA, nB, nC, nD };
 }
 
-LAbund::Stats LAbund::report(const FileName &file, const Options &o)
+LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
 {
     LAbund::Stats stats;
     const auto &r = Standard::instance().r_lad;
@@ -190,6 +190,13 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
     o.info("Calculating detection limit (unjoined level)");
     stats.ss = r.limit(stats.h);
 
+  	return stats;
+}
+
+void LAbund::report(const FileName &file, const Options &o)
+{
+    const auto stats = LAbund::analyze(file, o);
+    
     /*
      * Generating summary statistics
      */
@@ -219,7 +226,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
                                                % "Observed (normalized counts)"
                                                % "Adjusted (normalized counts)"
                                                % "Ratio").str());
-
+        
         /*
          * The argument abund is a histogram of abundance before normalization. It's directly taken off from
          * the alignment file. Not all sequins would be detected, in fact anything could be in the histogram.
@@ -231,7 +238,7 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
         {
             // Eg: GA322_B
             const auto &id = i.first;
-
+            
             if (abund.count(id))
             {
                 o.writer->write((boost::format(format) % id
@@ -251,15 +258,13 @@ LAbund::Stats LAbund::report(const FileName &file, const Options &o)
                                                        % "NA").str());
             }
         }
-
+        
         o.writer->close();
     };
-
+    
     /*
      * Generating unjoined adjustments
      */
-    
-    writeHist("LadderAbundance_quin.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
 
-  	return stats;
+    writeHist("LadderAbundance_quin.csv", stats.measured, stats.expect, stats.normalized, stats.adjusted);
 }
