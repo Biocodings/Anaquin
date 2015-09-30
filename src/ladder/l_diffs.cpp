@@ -96,8 +96,6 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         stats.add(seqID, known, normalized);
         //stats.add(seqID, known, adjusted);
 
-        std::cout << known << "  " << normalized << std::endl;
-        
         o.writer->write((boost::format(format) % seqID
                                                % a.expect.at(seqID)
                                                % b.expect.at(seqID)
