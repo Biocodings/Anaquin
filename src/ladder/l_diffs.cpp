@@ -52,6 +52,7 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
                                            % "Expected B/A"
                                            % "Measured A"
                                            % "Measured B"
+                                           % "Measured B/A"
                                            % "Normalized A"
                                            % "Normalized B"
                                            % "Normalized B/A"
@@ -78,6 +79,7 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
                                                    % "NA"
                                                    % "NA"
                                                    % "NA"
+                                                   % "NA"
                                                    % "NA").str());
             continue;
         }
@@ -85,7 +87,10 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         // Known fold change between mixture A and B
         const auto known = (b.expect.at(seqID) / a.expect.at(seqID));
 
-        // Measured normalized fold change between mixture A and B
+        // Measured fold change between mixture A and B
+        const auto measured = (b.measured.at(seqID) / a.measured.at(seqID));
+
+        // Normalized fold change between mixture A and B
         const auto normalized = (b.normalized.at(seqID) / a.normalized.at(seqID));
 
         // Measured adjusted fold change between mixture A and B
@@ -102,6 +107,7 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
                                                % known
                                                % a.measured.at(seqID)
                                                % b.measured.at(seqID)
+                                               % measured
                                                % a.normalized.at(seqID)
                                                % b.normalized.at(seqID)
                                                % normalized
