@@ -287,6 +287,107 @@ namespace Anaquin
     struct AnalyzeReporter
     {
         /*
+         * Provides a common framework to report a linear regression model for two samples, typically
+         * mixture A and B.
+         */
+
+        template <typename Writer, typename Stats_1, typename Stats_2, typename Stats> static void linear
+                        (const FileName &f,
+                         const FileName &d1,
+                         const FileName &d2,
+                         const Stats_1  &s1,
+                         const Stats_2  &s2,
+                         const Stats    &s,
+                         const Units    &units,
+                         Writer writer,
+                         const Units &ref = "",
+                         const Label &samples = "")
+        {
+            const auto summary = "Summary for dataset: %1% and %2%\n\n"
+                                 "   %3% (A):       %4% %5%\n"
+                                 "   Query (A):     %6% %5%\n\n"
+                                 "   %3% (B):       %7% %5%\n"
+                                 "   Query (B):     %8% %5%\n\n"
+                                 "   Reference (A):   %9% %10%\n"
+                                 "   Reference (B):   %11% %10%\n\n"
+                                 "   Detected A:    %12% %10%\n"
+                                 "   Detected B:    %13% %10%\n\n"
+                                 "   Sensitivity A:    %14% %15%\n"
+                                 "   Sensitivity B:    %16% %17%\n\n"
+                                 "   Sensitivity:    %18% (attomol/ul) (%19%)\n\n"
+                                 "   Correlation: %20%\n"
+                                 "   Slope:       %21%\n"
+                                 "   R2:          %22%\n"
+                                 "   F-statistic: %23%\n"
+                                 "   P-value:     %24%\n"
+                                 "   SSM:         %25%, DF: %26%\n"
+                                 "   SSE:         %27%, DF: %28%\n"
+                                 "   SST:         %29%, DF: %30%\n\n"
+                                 "   ***\n"
+                                 "   *** The following statistics are computed on the log2 scale.\n"
+                                 "   ***\n"
+                                 "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
+                                 "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
+                                 "   ***\n\n"
+                                 "   Correlation: %31%\n"
+                                 "   Slope:       %32%\n"
+                                 "   R2:          %33%\n"
+                                 "   F-statistic: %34%\n"
+                                 "   P-value:     %35%\n"
+                                 "   SSM:         %36%, DF: %37%\n"
+                                 "   SSE:         %38%, DF: %39%\n"
+                                 "   SST:         %40%, DF: %41%\n";
+
+            const auto n_lm = s.linear(false);
+            const auto l_lm = s.linear(true);
+            
+            writer->open(f);
+            writer->write((boost::format(summary) % d1                          // 1
+                                                  % d2
+                                                  % (samples.empty() ? "Genome" : samples)
+                                                  % s1.n_hg38
+                                                  % units
+                                                  % s1.n_chrT
+                                                  % s2.n_hg38
+                                                  % s2.n_chrT
+                                                  % s1.h.size()
+                                                  % (ref.empty() ? units : ref) // 10
+                                                  % s2.h.size()
+                                                  % detectHist(s1.h)            // 12
+                                                  % detectHist(s2.h)            // 13
+                                                  % s1.ss.abund
+                                                  % s1.ss.id
+                                                  % s2.ss.abund
+                                                  % s2.ss.id                    // 17
+                                                  % s.ss.abund                  // 18
+                                                  % s.ss.id                     // 19
+                                                  % n_lm.r                      // 20
+                                                  % n_lm.m
+                                                  % n_lm.r2
+                                                  % n_lm.f
+                                                  % n_lm.p                      // 24
+                                                  % n_lm.ssm                    // 25
+                                                  % n_lm.ssm_df
+                                                  % n_lm.sse
+                                                  % n_lm.sse_df
+                                                  % n_lm.sst
+                                                  % n_lm.sst_df                 // 30
+                                                  % l_lm.r                      // 31
+                                                  % l_lm.m
+                                                  % l_lm.r2
+                                                  % l_lm.f
+                                                  % l_lm.p                      // 35
+                                                  % l_lm.ssm                    // 36
+                                                  % l_lm.ssm_df
+                                                  % l_lm.sse
+                                                  % l_lm.sse_df
+                                                  % l_lm.sst
+                                                  % l_lm.sst_df                 // 40
+                           ).str());
+            writer->close();
+        }
+
+        /*
          * Provides a common framework to report a simple linear regression model
          */
 

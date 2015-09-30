@@ -92,8 +92,8 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             });
 
             /*
-             * Generating overlapping summary statistic for this sequin. In this context, target refers
-             * to the sequin while query refers to the contig.
+             * Generating overlapping statistics for this sequin. In this context, target refers
+             * to the sequin whereas query refers to the contig.
              */
 
             Base oRGaps    = 0;

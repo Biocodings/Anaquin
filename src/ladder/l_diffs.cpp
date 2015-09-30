@@ -1,6 +1,5 @@
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
-#include <ss/regression/lm.hpp>
 
 using namespace Anaquin;
 
@@ -97,6 +96,8 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         stats.add(seqID, known, normalized);
         //stats.add(seqID, known, adjusted);
 
+        std::cout << known << "  " << normalized << std::endl;
+        
         o.writer->write((boost::format(format) % seqID
                                                % a.expect.at(seqID)
                                                % b.expect.at(seqID)
@@ -118,8 +119,8 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
      */
     
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("LadderDifferent_summary.stats", fileA + " " + fileB, stats, "sequins", o.writer);
-    
+    AnalyzeReporter::linear("LadderDifferent_summary.stats", fileA, fileB, a, b, stats, "sequins", o.writer);
+
     /*
      * Generating an R script
      */
