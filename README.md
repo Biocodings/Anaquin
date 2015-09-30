@@ -3,7 +3,7 @@ Anaquin
 
 Anaquin is a C++/R bioinformatics framework for spiked-ins that provide qualitative and quantitative control for next-generation sequencing. 
 
-The project was started in 2015 by Garvan Institute of Medical Research. See <a href='http://www.anaquin.org'>www.anaquin.org</a> for further details. In particular, the <a href='http://www.anaquin.org/about/introduction/'>introduction page</a> should be helpful.
+The project was started in 2015 by <a href='https://www.google.com.au/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0CB4QFjAAahUKEwiWt5b-7p3IAhWEjJQKHcxhDMg&url=http%3A%2F%2Fwww.garvan.org.au%2F&usg=AFQjCNF03pFvjJsIYqEbmxMV3SBTC5PJxg&sig2=jxHlEHfy_CNSJ4cZyVfvVQ'>Garvan Institute of Medical Research</a>. See <a href='http://www.anaquin.org'>www.anaquin.org</a> for further details. In particular, the <a href='http://www.anaquin.org/about/introduction/'>introduction page</a> should be helpful.
 
 The project is maintained by <b>Ted Wong</b>, binformatics software engineer at Garvan Institute.
 
