@@ -1,7 +1,7 @@
 Anaquin
 =======
 
-Authors: `Ted Wong`, `Dr Timothy Mercer`, `Dr Wendy Chen`
+`Ted Wong`, `Dr Timothy Mercer`, `Dr Wendy Chen`
 
 Anaquin is a C++/R bioinformatics framework for spiked-ins that provide qualitative and quantitative control for next-generation sequencing. 
 
