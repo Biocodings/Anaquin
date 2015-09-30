@@ -47,17 +47,17 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
 
     o.writer->open("LadderDifferent_quin.csv");
     o.writer->write((boost::format(format) % "ID"
-                                           % "Expect A"
-                                           % "Expect B"
-                                           % "Expect B/A"
-                                           % "Measure A"
-                                           % "Measure B"
-                                           % "Norm A"
-                                           % "Norm B"
-                                           % "Norm B/A"
-                                           % "Adjust A"
-                                           % "Adjust B"
-                                           % "Adjust B/A").str());
+                                           % "Expected A"
+                                           % "Expected B"
+                                           % "Expected B/A"
+                                           % "Measured A"
+                                           % "Measured B"
+                                           % "Normalized A"
+                                           % "Normalized B"
+                                           % "Normalized B/A"
+                                           % "Adjusted A"
+                                           % "Adjusted B"
+                                           % "Adjusted B/A").str());
 
     for (const auto &i : a.normalized)
     {
