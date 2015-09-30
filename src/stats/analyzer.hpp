@@ -314,29 +314,28 @@ namespace Anaquin
                                  "   Detected B:    %13% %10%\n\n"
                                  "   Sensitivity A:    %14% %15%\n"
                                  "   Sensitivity B:    %16% %17%\n\n"
-                                 "   Sensitivity:    %18% (attomol/ul) (%19%)\n\n"
-                                 "   Correlation: %20%\n"
-                                 "   Slope:       %21%\n"
-                                 "   R2:          %22%\n"
-                                 "   F-statistic: %23%\n"
-                                 "   P-value:     %24%\n"
-                                 "   SSM:         %25%, DF: %26%\n"
-                                 "   SSE:         %27%, DF: %28%\n"
-                                 "   SST:         %29%, DF: %30%\n\n"
+                                 "   Correlation: %18%\n"
+                                 "   Slope:       %19%\n"
+                                 "   R2:          %20%\n"
+                                 "   F-statistic: %21%\n"
+                                 "   P-value:     %22%\n"
+                                 "   SSM:         %23%, DF: %24%\n"
+                                 "   SSE:         %25%, DF: %26%\n"
+                                 "   SST:         %27%, DF: %28%\n\n"
                                  "   ***\n"
                                  "   *** The following statistics are computed on the log2 scale.\n"
                                  "   ***\n"
                                  "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
                                  "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
                                  "   ***\n\n"
-                                 "   Correlation: %31%\n"
-                                 "   Slope:       %32%\n"
-                                 "   R2:          %33%\n"
-                                 "   F-statistic: %34%\n"
-                                 "   P-value:     %35%\n"
-                                 "   SSM:         %36%, DF: %37%\n"
-                                 "   SSE:         %38%, DF: %39%\n"
-                                 "   SST:         %40%, DF: %41%\n";
+                                 "   Correlation: %29%\n"
+                                 "   Slope:       %30%\n"
+                                 "   R2:          %31%\n"
+                                 "   F-statistic: %32%\n"
+                                 "   P-value:     %33%\n"
+                                 "   SSM:         %34%, DF: %35%\n"
+                                 "   SSE:         %36%, DF: %37%\n"
+                                 "   SST:         %38%, DF: %39%\n";
 
             const auto n_lm = s.linear(false);
             const auto l_lm = s.linear(true);
@@ -355,34 +354,32 @@ namespace Anaquin
                                                   % s2.h.size()
                                                   % detectHist(s1.h)            // 12
                                                   % detectHist(s2.h)            // 13
-                                                  % s1.ss.abund
-                                                  % s1.ss.id
-                                                  % s2.ss.abund
+                                                  % s1.ss.abund                 // 14
+                                                  % s1.ss.id                    // 15
+                                                  % s2.ss.abund                 // 16
                                                   % s2.ss.id                    // 17
-                                                  % s.ss.abund                  // 18
-                                                  % s.ss.id                     // 19
-                                                  % n_lm.r                      // 20
+                                                  % n_lm.r                      // 18
                                                   % n_lm.m
                                                   % n_lm.r2
                                                   % n_lm.f
-                                                  % n_lm.p                      // 24
-                                                  % n_lm.ssm                    // 25
+                                                  % n_lm.p                      // 22
+                                                  % n_lm.ssm                    // 23
                                                   % n_lm.ssm_df
                                                   % n_lm.sse
                                                   % n_lm.sse_df
                                                   % n_lm.sst
-                                                  % n_lm.sst_df                 // 30
-                                                  % l_lm.r                      // 31
+                                                  % n_lm.sst_df                 // 28
+                                                  % l_lm.r                      // 29
                                                   % l_lm.m
                                                   % l_lm.r2
                                                   % l_lm.f
-                                                  % l_lm.p                      // 35
-                                                  % l_lm.ssm                    // 36
+                                                  % l_lm.p                      // 32
+                                                  % l_lm.ssm                    // 33
                                                   % l_lm.ssm_df
                                                   % l_lm.sse
                                                   % l_lm.sse_df
                                                   % l_lm.sst
-                                                  % l_lm.sst_df                 // 40
+                                                  % l_lm.sst_df                 // 38
                            ).str());
             writer->close();
         }
