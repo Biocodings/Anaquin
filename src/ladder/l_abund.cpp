@@ -209,7 +209,7 @@ void LAbund::report(const FileName &file, const Options &o)
      */
     
     o.info("Generating R script");
-    AnalyzeReporter::scatter(stats, "", "LadderAbundance", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
+    AnalyzeReporter::scatter(stats, "", "LadderAbundance", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
     
     auto writeHist = [&](const FileName &file,
                          const std::map<SequinID, Counts>   &abund,
