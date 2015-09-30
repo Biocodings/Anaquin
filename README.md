@@ -26,7 +26,7 @@ Architecture
 ============
 
 <ul>
-<li> Statistical library
+<li> Custom statistical library
 <li> Linear algebra library (<a href='http://eigen.tuxfamily.org'>Eigen</a>)
 <li> Unit-testing library (<a href='https://github.com/philsquared/Catch'>Catch</a>)
 <li> <a href='http://cole-trapnell-lab.github.io/cufflinks/cuffcompare/'>Cuffcompare</a>
