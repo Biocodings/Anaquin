@@ -31,6 +31,12 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
 
         stats.h.at(match->id)++;
 
+        // TODO: How to handle a case where variant is reported but with zero counts?
+        if (v.dp_a == 0)
+        {
+            return;
+        }
+
         stats.add(id, known, measured);
     });
  
@@ -42,7 +48,7 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
      */
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("V_summary.stats", file, stats, "variants", o.writer);
+    AnalyzeReporter::linear("VarAllele_summary.stats", file, stats, "variants", o.writer);
 
     AnalyzeReporter::scatter(stats, "", "VarAllele", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", o.writer, false);
 
