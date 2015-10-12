@@ -11,7 +11,7 @@ FAlign::Stats FAlign::report(const FileName &file, const Options &options)
     std::vector<Alignment> exons, introns;
     
     options.info("Parsing alignment file");
-    
+
     ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
     {
         

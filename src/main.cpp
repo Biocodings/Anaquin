@@ -16,6 +16,7 @@
 #include "variant/v_allele.hpp"
 #include "variant/v_viewer.hpp"
 #include "variant/v_discover.hpp"
+#include "variant/v_coverage.hpp"
 
 #include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
@@ -69,6 +70,11 @@ typedef std::set<Value> Range;
 #define TOOL_F_DISCOVER 287
 #define TOOL_F_EXPRESS  288
 #define TOOL_F_IGV      289
+#define TOOL_T_COVERAGE 290
+#define TOOL_V_COVERAGE 291
+#define TOOL_M_COVERAGE 292
+#define TOOL_L_COVERAGE 293
+#define TOOL_F_COVERAGE 294
 
 /*
  * Options specified in the command line
@@ -146,12 +152,14 @@ static std::map<Value, Tool> _tools =
     { "TransDifferent",   TOOL_T_DIFF     },
     { "TransNorm",        TOOL_T_NORM     },
     { "TransIGV",         TOOL_T_IGV      },
+    { "TransCoverage",    TOOL_T_COVERAGE },
 
     { "VarAlign",         TOOL_V_ALIGN    },
     { "VarDiscover",      TOOL_V_DISCOVER },
     { "VarIGV",           TOOL_V_IGV      },
     { "VarAllele",        TOOL_V_ALLELE   },
     { "VarDiff",          TOOL_V_DIFF     },
+    { "VarCoverage",      TOOL_V_COVERAGE },
 
     { "MetaAssembly",     TOOL_M_ASSEMBLY },
     { "MetaAbund",        TOOL_M_ABUND    },
@@ -160,16 +168,19 @@ static std::map<Value, Tool> _tools =
     { "MetaDifferent",    TOOL_M_DIFF     },
     { "MetaIGV",          TOOL_M_IGV      },
     { "MetaAlign",        TOOL_M_ALIGN    },
+    { "MetaCoverage",     TOOL_M_COVERAGE },
 
     { "LadderAbund",      TOOL_L_ABUND    },
     { "LadderAbundance",  TOOL_L_ABUND    },
     { "LadderDiff",       TOOL_L_DIFF     },
     { "LadderDifferent",  TOOL_L_DIFF     },
+    { "LadderCoverage",   TOOL_L_COVERAGE },
 
     { "FusionDiscover",   TOOL_F_DISCOVER },
     { "FusionExpress",    TOOL_F_EXPRESS  },
     { "FusionExpression", TOOL_F_EXPRESS  },
     { "FusionIGV",        TOOL_F_IGV      },
+    { "FusionCoverage",   TOOL_F_COVERAGE },
 };
 
 /*
@@ -187,10 +198,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE            } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE            } },
-
-    /*
-     * Variant Analysis
-     */
 
     /*
      * Metagenomics Analysis
@@ -939,6 +946,7 @@ void parse(int argc, char ** argv)
         case TOOL_T_SEQUIN:
         case TOOL_T_EXPRESS:
         case TOOL_T_ASSEMBLY:
+        case TOOL_T_COVERAGE:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
@@ -1014,6 +1022,7 @@ void parse(int argc, char ** argv)
         case TOOL_F_IGV:
         case TOOL_F_EXPRESS:
         case TOOL_F_DISCOVER:
+        case TOOL_F_COVERAGE:
         {
             std::cout << "[INFO]: Fusion Analysis" << std::endl;
 
@@ -1045,6 +1054,7 @@ void parse(int argc, char ** argv)
 
         case TOOL_L_DIFF:
         case TOOL_L_ABUND:
+        case TOOL_L_COVERAGE:
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
@@ -1065,10 +1075,11 @@ void parse(int argc, char ** argv)
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
         case TOOL_V_DISCOVER:
+        case TOOL_V_COVERAGE:
         {
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            if (_p.tool != TOOL_V_IGV)
+            if (_p.tool != TOOL_V_IGV && _p.tool != TOOL_V_COVERAGE)
             {
                 switch (_p.tool)
                 {
@@ -1093,10 +1104,11 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_BAM_1); break; }
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);    break; }
                 case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_U_VCF); break; }
                 case TOOL_V_ALLELE:   { analyze_1<VAllele>(OPT_U_VCF);   break; }
-                case TOOL_V_IGV:      { viewer<VViewer>();              break; }
+                case TOOL_V_IGV:      { viewer<VViewer>();               break; }
             }
 
             break;
@@ -1107,6 +1119,7 @@ void parse(int argc, char ** argv)
         case TOOL_M_ABUND:
         case TOOL_M_ALIGN:
         case TOOL_M_ASSEMBLY:
+        case TOOL_M_COVERAGE:
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
             

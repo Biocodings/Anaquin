@@ -1,8 +1,9 @@
-#ifndef COVERAGE_HPP
-#define COVERAGE_HPP
+#ifndef COVERAGE_TOOL_HPP
+#define COVERAGE_TOOL_HPP
 
 #include <vector>
 #include "parsers/parser.hpp"
+#include "stats/analyzer.hpp"
 #include "parsers/parser_sam.hpp"
 
 namespace Anaquin
@@ -36,9 +37,6 @@ namespace Anaquin
 
         // Analyze a BAM file sorted by position
         static Stats analyze(const FileName &, Functor);
-
-        // Report a BAM file sorted by position
-        static void report(const FileName &, const FileName &, Functor);
     };
 }
 
