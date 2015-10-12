@@ -1,6 +1,6 @@
 #include "trans/t_express.hpp"
 #include "writers/r_writer.hpp"
-#include <ss/regression/lm.hpp>
+#include <ss/regression/linear.hpp>
 #include "parsers/parser_tracking.hpp"
 
 using namespace SS;

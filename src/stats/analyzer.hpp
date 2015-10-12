@@ -5,10 +5,10 @@
 #include <memory>
 #include <boost/format.hpp>
 #include "stats/classify.hpp"
-#include <ss/regression/lm.hpp>
 #include "writers/r_writer.hpp"
 #include "stats/sensitivity.hpp"
 #include "writers/mock_writer.hpp"
+#include <ss/regression/linear.hpp>
 
 namespace Anaquin
 {
@@ -180,7 +180,7 @@ namespace Anaquin
                 }
             }
 
-            const auto m = SS::lm("y~x", SS::R::data.frame(SS::R::c(y), SS::R::c(x)));
+            const auto m = SS::lm(SS::R::data.frame(SS::R::c(y), SS::R::c(x)));
 
             LinearModel lm;
             
