@@ -29,7 +29,7 @@ TEST_CASE("TDiffs_T_1000_Genes")
     const auto r  = TDiffs::report("tests/data/T_1000/gene_exp.diff", o);
     const auto lm = r.linear();
     
-    REQUIRE(lm.m  == Approx(0.9921460476));
-    REQUIRE(lm.r  == Approx(0.9953198807));
-    REQUIRE(lm.r2 == Approx(0.9906616648));
+    REQUIRE(lm.m  == Approx(1.008622458));
+    REQUIRE(lm.r  == Approx(0.9901448447));
+    REQUIRE(lm.r2 == Approx(0.9803868135));
 }

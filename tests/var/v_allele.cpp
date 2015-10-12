@@ -35,7 +35,7 @@ TEST_CASE("VarAllele_V_1000")
     const auto r2 = VAllele::report("tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
     const auto lm = r2.linear();
 
-    REQUIRE(lm.m  == Approx(-0.0475476706));
-    REQUIRE(lm.r  == Approx(-0.0630244678));
-    REQUIRE(lm.r2 == Approx(0.0039720835));
+    REQUIRE(lm.m  == Approx(0.7711513894));
+    REQUIRE(lm.r  == Approx(0.928788282));
+    REQUIRE(lm.r2 == Approx(0.8626476727));
 }

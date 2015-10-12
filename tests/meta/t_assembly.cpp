@@ -11,9 +11,9 @@ TEST_CASE("DAssembly_M_1005")
     
     REQUIRE(r.contigs.size() == 453);
     REQUIRE(r.N80 == 61);
-    REQUIRE(r.N50 == 649);
-    REQUIRE(r.N20 == 1994);
-    REQUIRE(r.min == 511);
+    REQUIRE(r.N50 == 153);
+    REQUIRE(r.N20 == 440);
+    REQUIRE(r.min == 61);
     REQUIRE(r.max == 1994);
-    REQUIRE(r.sum == 7805);
+    REQUIRE(r.sum == 57338);
 }

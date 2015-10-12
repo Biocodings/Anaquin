@@ -1,12 +1,28 @@
 #include <catch.hpp>
-#include "unit/test.hpp"
+#include "tools/coverage.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("Test_Version")
+TEST_CASE("CoverageTool_Test")
 {
-    const auto r = Test::test("-v");
+    /*
+     * bedtools genomecov -ibam intersected.bam -bg
+     */
     
-    REQUIRE(r.status == 0);
-    REQUIRE(r.output == "Anaquin v1.1.01\n");
+    
+    
+    CoverageTool::report("intersected.bam", "abcd.bedgraph", [&](const Alignment &align, const ParserProgress &p)
+    {
+        return true;
+    });
+    
+    
+    
+    
+  //  const auto stats = CoverageTool::analyze("intersected.bam", [&](const Alignment &align, const ParserProgress /&p)
+    //{
+      //  return true;
+    //});
+
+    
 }

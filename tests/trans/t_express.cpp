@@ -14,13 +14,13 @@ TEST_CASE("TExpress_T_1000_Isoforms")
     const auto r  = TExpress::report("tests/data/T_1000/B/G/isoforms.fpkm_tracking", o);
     const auto lm = r.linear();
     
-    REQUIRE(lm.r  == Approx(0.5340634212));
-    REQUIRE(lm.m  == Approx(0.4511315372));
-    REQUIRE(lm.r2 == Approx(0.2852237379));
+    REQUIRE(lm.r  == Approx(0.5303389953));
+    REQUIRE(lm.m  == Approx(0.4560194933));
+    REQUIRE(lm.r2 == Approx(0.2812594499));
     
     REQUIRE(r.ss.id == "R2_38_1");
     REQUIRE(r.ss.counts == 1);
-    REQUIRE(r.ss.abund == Approx(0.0000047454));
+    REQUIRE(r.ss.abund == Approx(0.003933907));
 }
 
 TEST_CASE("TExpress_T_1000_Genes")
@@ -39,11 +39,11 @@ TEST_CASE("TExpress_T_1000_Genes")
     const auto r2 = TExpress::report("tests/data/T_1000/B/G/genes.fpkm_tracking", o);
     const auto lm = r2.linear();
     
-    REQUIRE(lm.r  == Approx(0.6294136279));
-    REQUIRE(lm.m  == Approx(0.5927763272));
-    REQUIRE(lm.r2 == Approx(0.396161515));
+    REQUIRE(lm.r  == Approx(0.6447104779));
+    REQUIRE(lm.m  == Approx(0.6184389099));
+    REQUIRE(lm.r2 == Approx(0.4156516003));
     
-    REQUIRE(r2.ss.id == "R2_53");
+    REQUIRE(r2.ss.id == "R2_33");
     REQUIRE(r2.ss.counts == 1);
-    REQUIRE(r2.ss.abund == Approx(0.000066038));
+    REQUIRE(r2.ss.abund == Approx(0.0590085983));
 }

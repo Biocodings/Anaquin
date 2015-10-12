@@ -18,7 +18,7 @@ TEST_CASE("FExpress_F_1000")
                                          FDiscover::Options(FDiscover::Software::Star));
     const auto lm = stats.linear();
     
-    REQUIRE(lm.r  == Approx(0.9729157505));
-    REQUIRE(lm.m  == Approx(0.9770652147));
-    REQUIRE(lm.r2 == Approx(0.9465650576));
+    REQUIRE(lm.r  == Approx(0.9774354586));
+    REQUIRE(lm.m  == Approx(0.9785515313));
+    REQUIRE(lm.r2 == Approx(0.9553800758));
 }
