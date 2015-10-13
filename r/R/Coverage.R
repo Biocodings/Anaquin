@@ -11,9 +11,33 @@
 #
 
 library('Sushi')
+library(rtracklayer)
+library(GenomicRanges)
 
 plotDensity <- function(src, ref)
 {
-    src <- read.csv(src, header=FALSE, sep='\t')    
+    # Read the source file
+    src <- read.csv(src, header=FALSE, sep='\t')
+    
+    colnames(src) <- c('chrom', 'start',  'end',  'value')
+    
+    # Read the reference annotation
+    ref <- import.bed(con=ref, asRangedData=F)
+    
+    # Loop over all sequins defined in the reference...
+    for (i in length(ref))
+    {
+        seq <- ref[i,]
+        
+        png(filename=paste(paste("/Users/tedwong/Desktop/Coverage/", seq$name, sep=''), '.png', sep=''))
+        
+        # Construct a density plot for the sequin
+        plotBedgraph(src, 'chrT', start(seq), end(seq))
+    }
 }
+
+plotDensity('/Users/tedwong/Sources/QA/output/VarCoverage_summary.bedgraph', '/Users/tedwong/Sources/QA/data/var/AVA017.v032.bed')
+
+
+
 
