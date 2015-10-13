@@ -5,7 +5,7 @@
 library('Sushi')
 
 # Generated coverage
-chrT <- read.csv('/Users/tedwong/Desktop/test.bedgraph', header=FALSE, sep='\t')
+chrT <- read.csv('/Users/tedwong/Sources/QA/output/VarCoverage_summary.bedgraph', header=FALSE, sep='\t')
 
 # Sequin seqserences
 r_seqs <- read.csv('/Users/tedwong/Sources/QA/data/var/AVA017.v032.bed', sep='\t', header=FALSE)
