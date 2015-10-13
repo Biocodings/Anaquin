@@ -25,11 +25,9 @@ plotDensity <- function(src, ref)
     ref <- import.bed(con=ref, asRangedData=F)
     
     # Loop over all sequins defined in the reference...
-    for (i in length(ref))
+    for (i in 1:length(ref))
     {
         seq <- ref[i,]
-        
-        png(filename=paste(paste("/Users/tedwong/Desktop/Coverage/", seq$name, sep=''), '.png', sep=''))
         
         # Construct a density plot for the sequin
         plotBedgraph(src, 'chrT', start(seq), end(seq))
