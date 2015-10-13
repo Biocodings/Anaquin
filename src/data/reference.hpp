@@ -397,7 +397,11 @@ namespace Anaquin
             typedef std::string PairID;
             typedef std::map<PairID, Counts> PairHist;
 
-            struct PairData
+            /*
+             * In VarQuin, we emulate the homozygous and heterozygous genotype
+             */
+        
+            struct GenotypeData
             {
                 PairID id;
 
@@ -442,10 +446,10 @@ namespace Anaquin
             PairHist pairHist() const;
 
             // Find a reference gene that contains the given locus
-            const PairData *findPair(const PairID &) const;
+            const GenotypeData *findGeno(const PairID &) const;
         
             // Find a reference gene that contains the given locus
-            const PairData *findPair(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
+            const GenotypeData *findGeno(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
 
             // Find a reference variant given a locus
             const Variation *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;

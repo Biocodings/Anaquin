@@ -95,7 +95,7 @@ void Standard::v_std(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
-        r_var.addStand(f.id, f.l);
+        r_var.addStand(f.name, f.l);
     });
 }
 

@@ -198,6 +198,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE            } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE            } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF } },
 
     /*
      * Metagenomics Analysis
@@ -208,6 +209,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1                        } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1                      } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
+    { TOOL_M_COVERAGE, { OPT_R_GTF } },
 
     /*
      * Fusion Analysis
@@ -223,6 +225,7 @@ static std::map<Tool, std::set<Option>> _required =
     //{ TOOL_V_ALIGN, { OPT_MIXTURE, OPT_BAM_1               } },
     //{ TOOL_V_DIFF,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
     { TOOL_V_ALLELE,   { OPT_MIXTURE, OPT_R_BED  } },
+    { TOOL_V_COVERAGE, { OPT_R_BED } },
     //{ TOOL_V_DISCOVER,  { OPT_R_BED , OPT_R_BED } },
     //{ TOOL_V_IGV,  { OPT_U } },
 };
@@ -1079,11 +1082,12 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            if (_p.tool != TOOL_V_IGV && _p.tool != TOOL_V_COVERAGE)
+            if (_p.tool != TOOL_V_IGV)
             {
                 switch (_p.tool)
                 {
                     case TOOL_V_ALIGN:
+                    case TOOL_V_COVERAGE:
                     {
                         applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1)); break;
                     }

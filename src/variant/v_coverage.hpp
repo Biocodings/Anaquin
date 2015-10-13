@@ -1,15 +1,17 @@
 #ifndef V_COVERAGE_HPP
 #define V_COVERAGE_HPP
 
-#include "analyzers/coverage.hpp"
+#include "tools/coverage.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
     struct VCoverage
     {
         typedef AnalyzerOptions Options;
-        typedef CoverageAnalyzer::Stats Stats;
-        
+        typedef CoverageTool::Stats Stats;
+
+        static Stats stats(const FileName &, const Options &o = Options());
         static void report(const FileName &, const Options &o = Options());
     };
 }

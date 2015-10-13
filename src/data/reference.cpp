@@ -542,8 +542,8 @@ struct VarRef::VarRefImpl
 
     std::set<SequinID> varIDs;
     
-    // Validated pairs (references + variants)
-    std::map<PairID, PairData> _pairs;
+    // Validated genotypes (references + variants)
+    std::map<PairID, GenotypeData> genos;
 
     std::map<Mixture, std::map<PairID, VariantPair>> pairs;
 
@@ -551,8 +551,8 @@ struct VarRef::VarRefImpl
      * Raw data
      */
     
-    std::set<SequinID> rawVarIDs;
     std::set<Variation> rawVars;
+    std::set<SequinID>  rawVarIDs;
 
     // Locus of the sequin
     std::map<SequinID, Locus> rawSeqsByID;
@@ -621,7 +621,7 @@ VarRef::PairHist VarRef::pairHist() const
 {
     PairHist h;
     
-    for (const auto &i : _impl->_pairs)
+    for (const auto &i : _impl->genos)
     {
         h[i.first] = 0;
     }
@@ -629,9 +629,14 @@ VarRef::PairHist VarRef::pairHist() const
     return h;
 }
 
-const VarRef::PairData * VarRef::findPair(const Locus &l, double fuzzy, MatchRule m) const
+const VarRef::GenotypeData * VarRef::findGeno(const PairID &id) const
 {
-    for (const auto &i : _impl->_pairs)
+    return _impl->genos.count(id) ? &(_impl->genos.at(id)) : nullptr;
+}
+
+const VarRef::GenotypeData * VarRef::findGeno(const Locus &l, double fuzzy, MatchRule m) const
+{
+    for (const auto &i : _impl->genos)
     {
         if ((m == Overlap && i.second.l.overlap(l)) || (m == Contains && i.second.l.contains(l)))
         {
@@ -646,16 +651,11 @@ Sensitivity VarRef::limitPair(const PairHist &h) const
 {
     return Reference<SequinData, SequinStats>::limit(h, [&](const VarRef::PairID &id)
     {
-        return findPair(id);
+        return findGeno(id);
     });
 }
 
-const VarRef::PairData * VarRef::findPair(const PairID &id) const
-{
-    return _impl->_pairs.count(id) ? &(_impl->_pairs.at(id)) : nullptr;
-}
-
-Concentration VarRef::PairData::abund(Mixture m) const
+Concentration VarRef::GenotypeData::abund(Mixture m) const
 {
     return r->abund(m) + v->abund(m);
 }
@@ -666,20 +666,44 @@ void VarRef::validate()
     _impl->varIDs = _impl->rawVarIDs;
 
     /*
-     * Validation rule:
+     * Validation rules:
      *
-     *     Standard & Mixture | Variant | Variant & Mixture
+     *   1: annotation (eg: VarCoverage)
+     *   2: annotation & mixture (eg: VarAlign)
+     *   3: variants (eg: VarDiscover)
+     *   4: variants & mixture (eg: VarAllele)
      */
     
+    // Rule: 2 and 4
     if (!_rawMIDs.empty())
     {
         // Validate by mixture
-        merge(_rawMIDs, _rawMIDs);
+        merge(_rawMIDs);
+    }
+    
+    // Rule: 3
+    else if (!_impl->varIDs.empty())
+    {
+        // Validate by variants
+        merge(_impl->varIDs);
+    }
+    
+    // Rule: 1
+    else if (!_impl->rawSeqsByID.empty())
+    {
+        std::set<SequinID> ids;
+        
+        for (const auto &i : _impl->rawSeqsByID)
+        {
+            ids.insert(i.first);
+        }
+
+        // Validate by annotation
+        merge(ids);
     }
     else
     {
-        // Validate by annotation
-        merge(_impl->varIDs, _impl->varIDs);
+        throw std::runtime_error("Failed to validate for VarQuin");
     }
     
     /*
@@ -705,10 +729,10 @@ void VarRef::validate()
             // TODO: Do we need this?
             _data[i.first].length = i.second.length();
             
-            _impl->_pairs[pairID].l  = i.second;
-            _impl->_pairs[pairID].id = pairID;
-            _impl->_pairs[pairID].r  = &(_data.at(pairID + "_R"));
-            _impl->_pairs[pairID].v  = &(_data.at(pairID + "_V"));
+            _impl->genos[pairID].l  = i.second;
+            _impl->genos[pairID].id = pairID;
+            _impl->genos[pairID].r  = &(_data.at(pairID + "_R"));
+            _impl->genos[pairID].v  = &(_data.at(pairID + "_V"));
         }
     }
     

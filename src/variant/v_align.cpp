@@ -33,12 +33,12 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
         /*
          * Collect statistics for the alignment
          */
-        
-        const VarRef::PairData * match;
+
+        const VarRef::GenotypeData * match;
 
         if (classify(stats.p.m, align, [&](const Alignment &)
         {
-            return (match = r.findPair(align.l, Contains)) ? Positive : Negative;
+            return (match = r.findGeno(align.l, Contains)) ? Positive : Negative;
         }))
         {
             stats.h.at(match->id)++;

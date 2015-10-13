@@ -35,8 +35,20 @@ namespace Anaquin
         // Whether to proceed with the alignment
         typedef std::function<bool (const Alignment &, const ParserProgress &)> Functor;
 
+        struct CoverageToolOptions
+        {
+            // Filename for the generated bedgraph
+            FileName bedGraph;
+            
+            // Where the data should be written
+            std::shared_ptr<Writer> writer;
+        };
+        
         // Analyze a BAM file sorted by position
-        static Stats analyze(const FileName &, Functor);
+        static Stats stats(const FileName &, Functor);
+
+        // Report a BAM file sorted by position
+        static void report(const Stats &, const CoverageToolOptions &);
     };
 }
 
