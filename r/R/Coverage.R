@@ -1,3 +1,4 @@
+#
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
 #  Written by Ted Wong, Bioinformatic Engineer at Garvan Institute.
@@ -6,15 +7,13 @@
 #
 # Tools for visualizing synthetic chromosome 
 #
-
-#
-# Plot coverage data stored in bed file format.
+#    - Density plot for coverage
 #
 
-plotCoverage <- function(file, ref)
+library('Sushi')
+
+plotDensity <- function(src, ref)
 {
-    
-    
-    
+    src <- read.csv(src, header=FALSE, sep='\t')    
 }
 
