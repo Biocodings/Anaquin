@@ -168,15 +168,26 @@ void LadderRef::abund(const LadderRef::JoinID &id, Concentration &a, Concentrati
 struct FusionRef::FusionRefImpl
 {
     /*
-     * Validated data
+     * Validated variables
      */
-    
+
+    // Fusion breaks
     std::set<FusionPoint> breaks;
 
+    // Normal genes in the standards
+    std::map<SequinID, Locus> normals;
+
+    // Fusion genes in the standards
+    std::map<SequinID, std::vector<Locus>> fusions;
+    
     /*
-     * Raw data
+     * Raw variables
      */
 
+    // Standards (fusion genes will have two loci)
+    std::map<SequinID, std::vector<Locus>> rawStands;
+    
+    // Fusion breaks
     std::set<FusionPoint> rawBreaks;
 };
 
@@ -193,23 +204,95 @@ std::size_t FusionRef::countFusions() const
     return _impl->breaks.size();
 }
 
+void FusionRef::addStand(const SequinID &id, const Locus &l)
+{
+    _impl->rawStands[id].push_back(l);
+}
+
+const SequinData *FusionRef::findNormal(const Locus &l, MatchRule m) const
+{
+    assert(!_impl->normals.empty());
+    
+    for (auto &i : _impl->normals)
+    {
+        if (i.second.contains(l))
+        {
+            return &(_data.at(i.first));
+        }
+    }
+
+    return nullptr;
+}
+
+const SequinData *FusionRef::findFusion(const Locus &l, MatchRule m) const
+{
+    assert(!_impl->fusions.empty());
+    
+    for (auto &i : _impl->fusions)
+    {
+        if (i.second[0].contains(l) || i.second[1].contains(l))
+        {
+            return &(_data.at(i.first));
+        }
+    }
+    
+    return nullptr;
+}
+
 void FusionRef::validate()
 {
     /*
-     * Validation rule:
+     * Validation rules:
      *
-     *     mixture OR (mixture AND standards)
+     *   1: Mixtures (eg: FusionExpress)
+     *   2: Breaks (eg: FusionDiscover)
+     *   3: Standards & mixtures (eg: FusionAlign)
      */
     
-    if (!_rawMIDs.size())
+    // Case 3
+    if (!_rawMIDs.empty() && !_impl->rawStands.empty())
     {
-        merge(_impl->rawBreaks);
+        merge(_rawMIDs);
+
+        for (const auto &i : _impl->rawStands)
+        {
+            if (_data.count(i.first))
+            {
+                // Is this a fusion gene?
+                if (i.second.size() == 2)
+                {
+                    _impl->fusions[i.first] = i.second;
+                }
+                
+                // This must be a normal gene
+                else
+                {
+                    _impl->normals[i.first] = i.second[0];
+                }
+            }
+        }
+
+        // That's because fusion genes are formed by breaking of normal genes
+        assert(_impl->fusions.size() == _impl->normals.size());
     }
-    else
+    
+    // Case 1
+    else if (!_rawMIDs.empty())
     {
         merge(_rawMIDs);
     }
     
+    // Case 2
+    else if (!_impl->rawBreaks.empty())
+    {
+        merge(_impl->rawBreaks);
+    }
+
+    else
+    {
+        throw std::runtime_error("Unknown validation");
+    }
+
     for (const auto &i : _impl->rawBreaks)
     {
         if (_data.count(i.id))
@@ -261,6 +344,10 @@ template <typename Iter> Base countLocus(const Iter &iter)
 
 struct TransRef::TransRefImpl
 {
+    /*
+     * Validated variables
+     */
+    
     // Number of bases for all the reference exons
     Base exonBase;
 
@@ -270,7 +357,7 @@ struct TransRef::TransRefImpl
     std::vector<IntronData>    sortedIntrons;
 
     /*
-     * Raw data - structure before validated
+     * Raw variables
      */
     
     std::set<GeneID>                           rawGIDs;
@@ -668,10 +755,10 @@ void VarRef::validate()
     /*
      * Validation rules:
      *
-     *   1: annotation (eg: VarCoverage)
-     *   2: annotation & mixture (eg: VarAlign)
-     *   3: variants (eg: VarDiscover)
-     *   4: variants & mixture (eg: VarAllele)
+     *   1: Annotation (eg: VarCoverage)
+     *   2: Annotation & mixture (eg: VarAlign)
+     *   3: Variants (eg: VarDiscover)
+     *   4: Variants & mixture (eg: VarAllele)
      */
     
     // Rule: 2 and 4

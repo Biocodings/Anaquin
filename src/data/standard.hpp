@@ -67,7 +67,13 @@ namespace Anaquin
              * Fusion data
              */
 
+            // Breaks for FuseQuin
             void f_ref(const Reader &);
+
+            // Standards for FuseQuin
+            void f_std(const Reader &);
+
+            // Mixture for FuseQuin
             void f_mix(const Reader &);
 
             FusionRef r_fus;

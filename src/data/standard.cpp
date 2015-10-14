@@ -177,6 +177,14 @@ void Standard::f_mix(const Reader &r)
     readMixture(r, r_fus, Mix_1, ID_Length_Mix, 2);
 }
 
+void Standard::f_std(const Reader &r)
+{
+    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    {
+        r_fus.addStand(f.name, f.l);
+    });
+}
+
 void Standard::f_ref(const Reader &r)
 {
     ParserCSV::parse(r, [&](const ParserCSV::Fields &f, const ParserProgress &)

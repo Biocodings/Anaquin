@@ -20,6 +20,11 @@ namespace Anaquin
         // Empty Implementation
     };
 
+    /*
+     * Generic template for a sequin. The definitions are appropriate for all sequins. Specalized
+     * sequins are expected to derive from this class.
+     */
+    
     struct SequinData
     {
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
@@ -364,7 +369,7 @@ namespace Anaquin
     class FusionRef : public Reference<SequinData, SequinStats>
     {
         public:
-        
+
             struct FusionPoint
             {
                 inline bool operator<(const FusionPoint &x)  const { return id < x.id;  }
@@ -387,7 +392,13 @@ namespace Anaquin
             // Add a known reference fusion
             void addBreak(const FusionPoint &);
 
+            // Add fusion or normal genes comprised of the standards
+            void addStand(const SequinID &, const Locus &);
+        
             void validate() override;
+
+            const SequinData *findNormal(const Locus &, MatchRule = Contains) const;
+            const SequinData *findFusion(const Locus &, MatchRule = Contains) const;
 
             // Return the number of reference fusions
             std::size_t countFusions() const;

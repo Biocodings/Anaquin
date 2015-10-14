@@ -9,12 +9,12 @@ namespace Anaquin
     {
         public:
 
-            struct Stats
+            struct Stats : public AlignmentStats
             {
             };
         
             typedef AnalyzerOptions Options;
-        
+
             static Stats report(const FileName &, const Options &o = Options());
     };
 }

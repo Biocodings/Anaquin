@@ -27,6 +27,7 @@
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
 
+#include "fusion/f_align.hpp"
 #include "fusion/f_viewer.hpp"
 #include "fusion/f_express.hpp"
 #include "fusion/f_discover.hpp"
@@ -46,35 +47,37 @@ typedef int Option;
 typedef std::string Value;
 typedef std::set<Value> Range;
 
-#define TOOL_VERSION    'v'
-#define TOOL_TEST       264
-#define TOOL_T_SEQUIN   265
-#define TOOL_T_ALIGN    266
-#define TOOL_T_ASSEMBLY 267
-#define TOOL_T_EXPRESS  268
-#define TOOL_T_DIFF     269
-#define TOOL_T_NORM     270
-#define TOOL_T_IGV      271
-#define TOOL_V_ALIGN    272
-#define TOOL_V_DISCOVER 273
-#define TOOL_V_DIFF     275
-#define TOOL_V_IGV      276
-#define TOOL_V_ALLELE   277
-#define TOOL_M_ALIGN    279
-#define TOOL_M_ABUND    280
-#define TOOL_M_ASSEMBLY 281
-#define TOOL_M_DIFF     282
-#define TOOL_M_IGV      283
-#define TOOL_L_ABUND    284
-#define TOOL_L_DIFF     285
-#define TOOL_F_DISCOVER 287
-#define TOOL_F_EXPRESS  288
-#define TOOL_F_IGV      289
-#define TOOL_T_COVERAGE 290
-#define TOOL_V_COVERAGE 291
-#define TOOL_M_COVERAGE 292
-#define TOOL_L_COVERAGE 293
-#define TOOL_F_COVERAGE 294
+#define TOOL_VERSION     'v'
+#define TOOL_TEST        264
+#define TOOL_T_SEQUIN    265
+#define TOOL_T_ALIGN     266
+#define TOOL_T_ASSEMBLY  267
+#define TOOL_T_EXPRESS   268
+#define TOOL_T_DIFF      269
+#define TOOL_T_NORM      270
+#define TOOL_T_IGV       271
+#define TOOL_V_ALIGN     272
+#define TOOL_V_DISCOVER  273
+#define TOOL_V_DIFF      274
+#define TOOL_V_IGV       275
+#define TOOL_V_ALLELE    276
+#define TOOL_M_ALIGN     277
+#define TOOL_M_ABUND     278
+#define TOOL_M_ASSEMBLY  279
+#define TOOL_M_DIFF      280
+#define TOOL_M_IGV       281
+#define TOOL_L_ABUND     282
+#define TOOL_L_DIFF      283
+#define TOOL_F_DISCOVER  284
+#define TOOL_F_EXPRESS   285
+#define TOOL_F_IGV       286
+#define TOOL_T_COVERAGE  287
+#define TOOL_V_COVERAGE  288
+#define TOOL_M_COVERAGE  289
+#define TOOL_L_COVERAGE  290
+#define TOOL_F_COVERAGE  291
+#define TOOL_F_ALIGN     292
+#define TOOL_V_SUBSAMPLE 293
 
 /*
  * Options specified in the command line
@@ -141,46 +144,48 @@ std::string date()
 
 static std::map<Value, Tool> _tools =
 {
-    { "test",             TOOL_TEST       },
+    { "test",             TOOL_TEST        },
 
-    { "TransSequin",      TOOL_T_SEQUIN   },
-    { "TransAlign",       TOOL_T_ALIGN    },
-    { "TransAssembly",    TOOL_T_ASSEMBLY },
-    { "TransExpress",     TOOL_T_EXPRESS  },
-    { "TransExpression",  TOOL_T_EXPRESS  },
-    { "TransDiff",        TOOL_T_DIFF     },
-    { "TransDifferent",   TOOL_T_DIFF     },
-    { "TransNorm",        TOOL_T_NORM     },
-    { "TransIGV",         TOOL_T_IGV      },
-    { "TransCoverage",    TOOL_T_COVERAGE },
+    { "TransSequin",      TOOL_T_SEQUIN    },
+    { "TransAlign",       TOOL_T_ALIGN     },
+    { "TransAssembly",    TOOL_T_ASSEMBLY  },
+    { "TransExpress",     TOOL_T_EXPRESS   },
+    { "TransExpression",  TOOL_T_EXPRESS   },
+    { "TransDiff",        TOOL_T_DIFF      },
+    { "TransDifferent",   TOOL_T_DIFF      },
+    { "TransNorm",        TOOL_T_NORM      },
+    { "TransIGV",         TOOL_T_IGV       },
+    { "TransCoverage",    TOOL_T_COVERAGE  },
 
-    { "VarAlign",         TOOL_V_ALIGN    },
-    { "VarDiscover",      TOOL_V_DISCOVER },
-    { "VarIGV",           TOOL_V_IGV      },
-    { "VarAllele",        TOOL_V_ALLELE   },
-    { "VarDiff",          TOOL_V_DIFF     },
-    { "VarCoverage",      TOOL_V_COVERAGE },
+    { "VarAlign",         TOOL_V_ALIGN     },
+    { "VarDiscover",      TOOL_V_DISCOVER  },
+    { "VarIGV",           TOOL_V_IGV       },
+    { "VarAllele",        TOOL_V_ALLELE    },
+    { "VarDiff",          TOOL_V_DIFF      },
+    { "VarCoverage",      TOOL_V_COVERAGE  },
+    { "VarSubsample",     TOOL_V_SUBSAMPLE },
 
-    { "MetaAssembly",     TOOL_M_ASSEMBLY },
-    { "MetaAbund",        TOOL_M_ABUND    },
-    { "MetaAbundance",    TOOL_M_ABUND    },
-    { "MetaDiff",         TOOL_M_DIFF     },
-    { "MetaDifferent",    TOOL_M_DIFF     },
-    { "MetaIGV",          TOOL_M_IGV      },
-    { "MetaAlign",        TOOL_M_ALIGN    },
-    { "MetaCoverage",     TOOL_M_COVERAGE },
+    { "MetaAssembly",     TOOL_M_ASSEMBLY  },
+    { "MetaAbund",        TOOL_M_ABUND     },
+    { "MetaAbundance",    TOOL_M_ABUND     },
+    { "MetaDiff",         TOOL_M_DIFF      },
+    { "MetaDifferent",    TOOL_M_DIFF      },
+    { "MetaIGV",          TOOL_M_IGV       },
+    { "MetaAlign",        TOOL_M_ALIGN     },
+    { "MetaCoverage",     TOOL_M_COVERAGE  },
 
-    { "LadderAbund",      TOOL_L_ABUND    },
-    { "LadderAbundance",  TOOL_L_ABUND    },
-    { "LadderDiff",       TOOL_L_DIFF     },
-    { "LadderDifferent",  TOOL_L_DIFF     },
-    { "LadderCoverage",   TOOL_L_COVERAGE },
+    { "LadderAbund",      TOOL_L_ABUND     },
+    { "LadderAbundance",  TOOL_L_ABUND     },
+    { "LadderDiff",       TOOL_L_DIFF      },
+    { "LadderDifferent",  TOOL_L_DIFF      },
+    { "LadderCoverage",   TOOL_L_COVERAGE  },
 
-    { "FusionDiscover",   TOOL_F_DISCOVER },
-    { "FusionExpress",    TOOL_F_EXPRESS  },
-    { "FusionExpression", TOOL_F_EXPRESS  },
-    { "FusionIGV",        TOOL_F_IGV      },
-    { "FusionCoverage",   TOOL_F_COVERAGE },
+    { "FusionAlign",      TOOL_F_ALIGN     },
+    { "FusionDiscover",   TOOL_F_DISCOVER  },
+    { "FusionExpress",    TOOL_F_EXPRESS   },
+    { "FusionExpression", TOOL_F_EXPRESS   },
+    { "FusionIGV",        TOOL_F_IGV       },
+    { "FusionCoverage",   TOOL_F_COVERAGE  },
 };
 
 /*
@@ -215,6 +220,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
+    { TOOL_F_ALIGN,    { OPT_R_BED, OPT_MIXTURE,                          } },
     { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFTWARE, OPT_U_OUT               } },
     { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
 
@@ -487,6 +493,13 @@ template <typename Mixture> void applyMix(Mixture mix)
     mix(Reader(mixture()));
 }
 
+// Apply a reference source given where it comes from
+template <typename Reference> void applyRef(Reference ref, Option opt)
+{
+    std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
+    ref(Reader(_p.opts[opt]));
+}
+
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
 
 /*
@@ -501,8 +514,8 @@ template <typename Reference> void applyRef(Reference ref)
         
         if (CHECK_REF(opt))
         {
-            std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
-            ref(Reader(_p.opts[opt]));
+            applyRef(ref, opt);
+            break;
         }
     }
 }
@@ -1023,22 +1036,43 @@ void parse(int argc, char ** argv)
         }
 
         case TOOL_F_IGV:
+        case TOOL_F_ALIGN:
         case TOOL_F_EXPRESS:
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
         {
             std::cout << "[INFO]: Fusion Analysis" << std::endl;
 
+            switch (_p.tool)
+            {
+                case TOOL_F_ALIGN:
+                {
+                    applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::f_std, &s, std::placeholders::_1), OPT_R_BED);
+                    break;
+                }
+
+                case TOOL_F_EXPRESS:
+                case TOOL_F_DISCOVER:
+                {
+                    applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
+                    applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
+                    break;
+                }
+                    
+                default: { break; }
+            }
+            
             if (_p.tool != TOOL_F_IGV)
             {
-                applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
-                applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
                 Standard::instance().r_fus.validate();
             }
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:     { viewer<FViewer>(); break; }
+                case TOOL_F_IGV:   { viewer<FViewer>();            break; }
+                case TOOL_F_ALIGN: { analyze_1<FAlign>(OPT_BAM_1); break; }
+
                 case TOOL_F_EXPRESS:
                 {
                     analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));
