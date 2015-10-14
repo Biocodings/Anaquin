@@ -151,11 +151,12 @@ void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageToolOp
                                             % stats.n_chrT
                                             % o.refs
                                             % o.size
-                                            % chrT.min
-                                            % chrT.max
-                                            % chrT.mean
-                                            % chrT.p25
-                                            % chrT.p50
-                                            % chrT.p75).str());
+                                            % "NA" //chrT.min
+                                            % "NA" //chrT.max
+                                            % "NA" //chrT.mean
+                                            % "NA" //chrT.p25
+                                            % "NA" //chrT.p50
+                                            % "NA" //chrT.p75
+                     ).str());
     o.writer->close();
 }
