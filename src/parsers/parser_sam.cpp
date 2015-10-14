@@ -23,8 +23,6 @@ void ParserSAM::parse(const FileName &file, Callback x)
     Alignment align;
     AlignmentInfo info;
     
-    std::cout << *(h->target_len) << std::endl;
-    
     while (sam_read1(f, h, t) >= 0)
     {
         info.p.i++;
