@@ -11,8 +11,8 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
     /*
      * Reference: https://github.com/arq5x/bedtools2/blob/master/src/genomeCoverageBed/genomeCoverageBed.cpp
      */
-    
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
+
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
         auto addCoverage = [&](const ChromoID &id, Base start, Base end)
         {
@@ -35,13 +35,20 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
             }
         };
         
+        if (!align.i)
+        {
+            if      (!align.mapped)                       { stats.unmapped++; }
+            else if (align.id != Standard::instance().id) { stats.n_hg38++;   }
+            else                                          { stats.n_chrT++;   }
+        }
+
         // Proceed with the alignment?
-        if (f(align, p))
+        if (f(align, info.p))
         {
             if (!stats.chroms.count(align.id))
             {
                 stats.chroms[align.id].name = align.id;
-                stats.chroms[align.id].size = 8457082;
+                stats.chroms[align.id].size = info.size;
                 stats.chroms[align.id].covs.resize(stats.chroms[align.id].size);
             }
 

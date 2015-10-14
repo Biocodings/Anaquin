@@ -27,11 +27,11 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
      * Constructing a histogram or distribution
      */
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
-        if (!align.i && !(p.i % 1000000))
+        if (!align.i && !(info.p.i % 1000000))
         {
-            o.wait(std::to_string(p.i));
+            o.wait(std::to_string(info.p.i));
         }
 
         if (!align.i)

@@ -8,7 +8,17 @@ namespace Anaquin
 {
     struct ParserSAM
     {
-        static void parse(const FileName &file, std::function<void (const Alignment &, const ParserProgress &)>);
+        struct AlignmentInfo
+        {
+            ParserProgress p;
+
+            // Size of the chromosome of the alignment
+            Base size;
+        };
+        
+        typedef std::function<void (const Alignment &, const AlignmentInfo &)> Callback;
+        
+        static void parse(const FileName &file, std::function<void (const Alignment &, const AlignmentInfo &)>);
     };
 }
 

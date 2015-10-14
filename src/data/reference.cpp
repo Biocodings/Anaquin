@@ -548,7 +548,7 @@ struct VarRef::VarRefImpl
     std::map<Mixture, std::map<PairID, VariantPair>> pairs;
 
     /*
-     * Raw data
+     * Raw variables
      */
     
     std::set<Variation> rawVars;

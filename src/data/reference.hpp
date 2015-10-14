@@ -36,12 +36,12 @@ namespace Anaquin
         // Length of the sequin
         Base length;
 
-        // Amount of spiked-in concentration
+        // Spiked-in concentration (not available if no mixture provided)
         std::map<Mixture, Concentration> mixes;
 
         Locus l;
     };
-    
+
     typedef std::map<SequinID, Counts> SequinHist;
 
     /*
@@ -105,6 +105,20 @@ namespace Anaquin
                 }
 
                 return h;
+            }
+
+            // Calculate the total size of all sequins in the reference
+            inline Base size() const
+            {
+                Base n;
+                
+                for (const auto &i : _data)
+                {
+                    n += i.second.l.size();
+                }
+                
+                assert(n);
+                return n;
             }
 
             virtual void validate() = 0;

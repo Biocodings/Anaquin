@@ -10,15 +10,15 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     std::vector<Alignment> exons, introns;
 
-    o.info("Parsing alignment file");
+    o.analyze(file);
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
-        if (!align.i && !(p.i % 1000000))
+        if (!align.i && !(info.p.i % 1000000))
         {
-            o.wait(std::to_string(p.i));
+            o.wait(std::to_string(info.p.i));
         }
-        
+
         if (!align.i)
         {
             if      (!align.mapped)                       { stats.unmapped++; }

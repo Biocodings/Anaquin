@@ -16,7 +16,7 @@ namespace Anaquin
             Base ends;
         };
 
-        struct Chromosome
+        struct ChromoCoverage
         {
             ChromoID name;
 
@@ -26,10 +26,10 @@ namespace Anaquin
             // Base coverage for the chromosome
             std::vector<Depth> covs;
         };
-        
-        struct Stats
+
+        struct Stats : public AlignmentStats
         {
-            std::map<ChromoID, Chromosome> chroms;
+            std::map<ChromoID, ChromoCoverage> chroms;
         };
 
         // Whether to proceed with the alignment

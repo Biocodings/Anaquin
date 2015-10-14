@@ -12,7 +12,7 @@ FAlign::Stats FAlign::report(const FileName &file, const Options &options)
     
     options.info("Parsing alignment file");
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserProgress &p)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &)
     {
         
     });

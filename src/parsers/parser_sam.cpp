@@ -8,7 +8,7 @@
 
 using namespace Anaquin;
 
-void ParserSAM::parse(const FileName &file, std::function<void (const Alignment &, const ParserProgress &)> x)
+void ParserSAM::parse(const FileName &file, Callback x)
 {
     auto f = sam_open(file.c_str(), "r");
     
@@ -21,18 +21,21 @@ void ParserSAM::parse(const FileName &file, std::function<void (const Alignment 
     auto t = bam_init1();
 
     Alignment align;
-    ParserProgress p;
-
+    AlignmentInfo info;
+    
+    std::cout << *(h->target_len) << std::endl;
+    
     while (sam_read1(f, h, t) >= 0)
     {
-        p.i++;
-        
+        info.p.i++;
+        info.size = h->target_len[t->core.tid];
+
         align.i      = 0;
         align.mapped = false;
 
         if (t->core.tid < 0)
         {
-            x(align, p);
+            x(align, info);
             continue;
         }
 
@@ -73,12 +76,12 @@ void ParserSAM::parse(const FileName &file, std::function<void (const Alignment 
                     align.spliced = true;
                 }
 
-                x(align, p);
+                x(align, info);
             }
         }
         else
         {
-            x(align, p);
+            x(align, info);
         }
     }
 
