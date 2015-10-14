@@ -143,8 +143,8 @@ if __name__ == '__main__':
         #
 
         for i in range(0,len(a)):
-            split('RNA.v1.fa', 'RNA_Simulation/')
-            simulate('../data/trans/RNA.v4.1.csv', 'RNA_Simulation/', 'A')
+            split('ATR003.v032.fa', 'RNA_Simulation/')
+            simulate('../data/trans/MTR004.v013.csv', 'RNA_Simulation/', 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
         #
@@ -152,8 +152,8 @@ if __name__ == '__main__':
         #
 
         for i in range(0,len(b)):
-            split('RNA.v1.fa', 'RNA_Simulation/')        
-            simulate('../data/trans/RNA.v4.1.csv', 'RNA_Simulation/', 'B')
+            split('ATR003.v032.fa', 'RNA_Simulation/')        
+            simulate('../data/trans/MTR004.v013.csv', 'RNA_Simulation/', 'B')
             os.system('mv RNA_Simulation ' + b[i])
 
     elif (sys.argv[1] == 'META'):
