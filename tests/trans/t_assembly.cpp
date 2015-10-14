@@ -21,6 +21,6 @@ TEST_CASE("TAssembly_T_1000")
 
     const auto r2 = TAssembly::report("tests/data/T_1000/A/G/transcripts.gtf", o);
 
-    REQUIRE(r2.n_hg38 == 0);
+    REQUIRE(r2.n_expT == 0);
     REQUIRE(r2.n_chrT == 1365);
 }
