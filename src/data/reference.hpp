@@ -114,9 +114,9 @@ namespace Anaquin
                 
                 for (const auto &i : _data)
                 {
-                    n += i.second.l.size();
+                    n += i.second.l.length();
                 }
-                
+
                 assert(n);
                 return n;
             }

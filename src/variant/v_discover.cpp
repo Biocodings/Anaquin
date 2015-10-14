@@ -34,7 +34,7 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
 
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % file
-                                            % stats.n_hg38
+                                            % stats.n_expT
                                             % stats.n_chrT
                                             % r.countVars()
                                             % stats.m.tp()

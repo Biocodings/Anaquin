@@ -4,62 +4,12 @@
 
 using namespace Anaquin;
 
-template <typename T> void forBedGraph(const CoverageTool::Stats &stats, T t)
-{
-    Base depth = 0;
-    long lastStart = -1;
-    long lastDepth = -1;
-    
-    for (auto i : stats.chroms)
-    {
-        const auto &chr = i.second;
-
-        for (auto j = 0; j < chr.size; j++)
-        {
-            depth += chr.covs[j].starts;
-            
-            if (depth != lastDepth)
-            {
-                /*
-                 * Coverage depth has changed, print the last interval coverage (if any)
-                 *
-                 * Print if:
-                 *
-                 *   (1) depth>0  (the default running mode),
-                 *   (2) depth==0 and the user requested to print zero covered regions
-                 */
-                
-                if ((lastDepth != -1) && (lastDepth > 0))
-                {
-                    t(chr.name, lastStart, j, lastDepth);
-                    //std::cout << chr.name << "\t" << lastStart << "\t" << j << "\t" << lastDepth << std::endl;
-                }
-                
-                // Set current position as the new interval start + depth
-                lastStart = j;
-                lastDepth = depth;
-            }
-            
-            /*
-             * Default: the depth has not changed, so we will not print anything. Proceed until the depth
-             * changes.
-             */
-            
-            depth = depth - chr.covs[j].ends;
-        }
-        
-        // Print information about the last position
-        if ((lastDepth != -1) && (lastDepth > 0))
-        {
-            t(chr.name, lastStart, chr.size, lastDepth);
-        }
-    }
-}
-
 CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
 {
     CoverageTool::Stats stats;
 
+    stats.src = file;
+    
     /*
      * Reference: https://github.com/arq5x/bedtools2/blob/master/src/genomeCoverageBed/genomeCoverageBed.cpp
      */
@@ -90,7 +40,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
         if (!align.i)
         {
             if      (!align.mapped)                       { stats.unmapped++; }
-            else if (align.id != Standard::instance().id) { stats.n_hg38++;   }
+            else if (align.id != Standard::instance().id) { stats.n_expT++;   }
             else                                          { stats.n_chrT++;   }
         }
 
@@ -112,6 +62,52 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
         }
     });
 
+    // Find the depth for ith percentile
+    auto percent = [&](Percentage p, const std::map<Base, Counts> &depths)
+    {
+        Percentage i = 0;
+        
+        for (const auto &depth : depths)
+        {
+            i += depth.second;
+            
+            // Have we reached our percentile?
+            if (i >= p)
+            {
+                return depth.second;
+            }
+        }
+        
+        return depths.end()->second;
+    };
+
+    /*
+     * Calculate descriptive statistics
+     */
+    
+    for (auto &chrom : stats.chroms)
+    {
+        Counts n = 0;
+        Coverage sums = 0;
+        std::map<Base, Counts> depths;
+
+        chrom.second.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+        {
+            n++;
+            sums += depth;
+            depths[depth]++;
+        });
+        
+        assert(n);
+        
+        stats.chroms[chrom.first].mean = sums / n;
+        stats.chroms[chrom.first].min  = percent(0, depths);
+        stats.chroms[chrom.first].max  = percent(n, depths);
+        stats.chroms[chrom.first].p25  = percent(0.25 * n, depths);
+        stats.chroms[chrom.first].p50  = percent(0.50 * n, depths);
+        stats.chroms[chrom.first].p75  = percent(0.75 * n, depths);
+    }
+    
     return stats;
 }
 
@@ -119,13 +115,47 @@ void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageToolOp
 {
     o.writer->open(o.bedGraph);
 
-    forBedGraph(stats, [&](const ChromoID &id, Base i, Base j, Base depth)
+    // Coverage for chrT
+    const auto &chrT = stats.chroms.at(Standard::instance().id);
+
+    chrT.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
     {
         o.writer->write((boost::format("%1%\t%2%\t%3%\t%4%") % id
                                                              % i
                                                              % j
                                                              % depth).str());
     });
+    
+    o.writer->close();
 
+    /*
+     * Generating summary statistics
+     */
+
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Experiment: %2%\n"
+                         "   Synthetic: %3%\n\n"
+                         "   Reference: %4%\n"
+                         "   Reference Bases: %5%\n\n"
+                         "   Minimum: %6%\n"
+                         "   Maximum: %7%\n"
+                         "   Mean:    %8%\n"
+                         "   25th: %9%\n"
+                         "   50th: %10%\n"
+                         "   75th: %11%\n"
+    ;
+
+    o.writer->open(o.summary);
+    o.writer->write((boost::format(summary) % stats.src
+                                            % stats.n_expT
+                                            % stats.n_chrT
+                                            % o.refs
+                                            % o.size
+                                            % chrT.min
+                                            % chrT.max
+                                            % chrT.mean
+                                            % chrT.p25
+                                            % chrT.p50
+                                            % chrT.p75).str());
     o.writer->close();
 }

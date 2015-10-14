@@ -21,7 +21,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
         if (!align.i)
         {
             if      (!align.mapped)                       { stats.unmapped++; }
-            else if (align.id != Standard::instance().id) { stats.n_hg38++;   }
+            else if (align.id != Standard::instance().id) { stats.n_expT++;   }
             else                                          { stats.n_chrT++;   }
         }
         
@@ -79,7 +79,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     o.writer->open("VarAlign_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % stats.unmapped
-                                            % stats.n_hg38
+                                            % stats.n_expT
                                             % stats.n_chrT
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()

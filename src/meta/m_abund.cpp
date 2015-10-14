@@ -34,7 +34,7 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
     }
 
     stats.n_chrT = dStats.contigs.size();
-    stats.n_hg38 = dStats.n - stats.n_chrT;
+    stats.n_expT = dStats.n - stats.n_chrT;
 
     o.info("Analyzing the alignments");
 

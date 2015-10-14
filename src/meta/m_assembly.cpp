@@ -70,7 +70,7 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
                              "   Gaps (contigs): %16%\n";
 
         o.writer->write((boost::format(summary) % file
-                                                % stats.blat.n_hg38
+                                                % stats.blat.n_expT
                                                 % stats.blat.n_chrT
                                                 % stats.blat.aligns.size()
                                                 % stats.blat.countAssembled()

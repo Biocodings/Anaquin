@@ -55,7 +55,7 @@ namespace Anaquin
         {
             if (v.id != Standard::instance().id)
             {
-                stats.n_hg38++;
+                stats.n_expT++;
                 return;
             }
             

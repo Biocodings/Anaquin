@@ -40,7 +40,7 @@ namespace Anaquin
             SequinHist h = Standard::instance().r_fus.hist();
 
             // Sequins failed to detect in the experiment
-            MissingSequins miss;
+            //MissingSequins miss;
         };
 
         static Stats report(const FileName &, const Options &o = Options());

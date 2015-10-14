@@ -37,7 +37,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
         if (!align.i)
         {
             if      (!align.mapped)      { stats.unmapped++; }
-            else if (!r.match(align.id)) { stats.n_hg38++;   }
+            else if (!r.match(align.id)) { stats.n_expT++;   }
             else                         { stats.n_chrT++;   }
         }
 

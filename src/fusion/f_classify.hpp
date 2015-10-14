@@ -99,7 +99,7 @@ namespace Anaquin
                     switch (r)
                     {
                         case FusionClassify::Negative:   { break;                        }
-                        case FusionClassify::Genome:     { stats.n_hg38++;        break; }
+                        case FusionClassify::Genome:     { stats.n_expT++;        break; }
                         case FusionClassify::GenomeChrT: { stats.hg38_chrT++;     break; }
                         case FusionClassify::Positive:   { positive(id, f.reads); break; }
                     }
@@ -114,7 +114,7 @@ namespace Anaquin
                     switch (r)
                     {
                         case FusionClassify::Negative:   { break;                        }
-                        case FusionClassify::Genome:     { stats.n_hg38++;        break; }
+                        case FusionClassify::Genome:     { stats.n_expT++;        break; }
                         case FusionClassify::GenomeChrT: { stats.hg38_chrT++;     break; }
                         case FusionClassify::Positive:   { positive(id, f.reads); break; }
                     }

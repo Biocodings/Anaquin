@@ -54,7 +54,7 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
 
         if (t.chromID != id)
         {
-            stats.n_hg38++;
+            stats.n_expT++;
             return;
         }
         

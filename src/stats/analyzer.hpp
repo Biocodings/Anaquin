@@ -42,42 +42,47 @@ namespace Anaquin
     {
         // Empty Implementation
     };
+    
+    struct SingleInputStats
+    {
+        FileName src;
+    };
 
     struct MappingStats
     {
         // Total mapped to the in-silico chromosome
         Counts n_chrT = 0;
 
-        // Total mapped to the human genome
-        Counts n_hg38 = 0;
+        // Total mapped to the experiment
+        Counts n_expT = 0;
 
         // Fraction of sequin spiked
         inline Percentage dilution() const
         {
-            return (n_chrT + n_hg38) ? static_cast<double>(n_chrT) / (n_chrT + n_hg38) : NAN;
+            return (n_chrT + n_expT) ? static_cast<double>(n_chrT) / (n_chrT + n_expT) : NAN;
         }
     };
 
-    struct AlignmentStats : public MappingStats
+    struct AlignmentStats : public MappingStats, public SingleInputStats
     {
         Counts unmapped = 0;
     };
     
-    /*
-     * Represents a sequin that is not detected in the experiment
-     */
-    
-    struct MissingSequin
-    {
-        MissingSequin(const SequinID &id, Concentration abund) : id(id), abund(abund) {}
-
-        SequinID id;
-
-        // The expect abundance
-        Concentration abund;
-    };
-
-    typedef std::vector<MissingSequin> MissingSequins;
+//    /*
+//     * Represents a sequin that is not detected in the experiment
+//     */
+//    
+//    struct MissingSequin
+//    {
+//        MissingSequin(const SequinID &id, Concentration abund) : id(id), abund(abund) {}
+//
+//        SequinID id;
+//
+//        // The expect abundance
+//        Concentration abund;
+//    };
+//
+//    typedef std::vector<MissingSequin> MissingSequins;
 
     /*
      * Represents a simple linear regression fitted by maximum-likehihood estimation.
@@ -344,10 +349,10 @@ namespace Anaquin
             writer->write((boost::format(summary) % d1                          // 1
                                                   % d2
                                                   % (samples.empty() ? "Genome" : samples)
-                                                  % s1.n_hg38
+                                                  % s1.n_expT
                                                   % units
                                                   % s1.n_chrT
-                                                  % s2.n_hg38
+                                                  % s2.n_expT
                                                   % s2.n_chrT
                                                   % s1.h.size()
                                                   % (ref.empty() ? units : ref) // 10
@@ -431,7 +436,7 @@ namespace Anaquin
 
             writer->open(file);
             writer->write((boost::format(summary) % data                         // 1
-                                                  % stats.n_hg38
+                                                  % stats.n_expT
                                                   % (samples.empty() ? "Genome" : samples)
                                                   % stats.n_chrT
                                                   % units                        // 5

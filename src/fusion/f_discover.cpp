@@ -25,7 +25,7 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
                              "   Specificity: %8%\n";
 
         o.writer->write((boost::format(summary) % file
-                                                % stats.n_hg38
+                                                % stats.n_expT
                                                 % stats.n_chrT
                                                 % stats.hg38_chrT
                                                 % stats.m.nr

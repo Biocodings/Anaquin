@@ -24,13 +24,17 @@ VCoverage::Stats VCoverage::stats(const FileName &file, const Options &o)
 
 void VCoverage::report(const FileName &file, const VCoverage::Options &o)
 {
+    const auto &r    = Standard::instance();
     const auto stats = VCoverage::stats(file, o);
 
     CoverageTool::CoverageToolOptions to;
 
     to.writer   = o.writer;
+    to.summary  = "VarCoverage_summary.stats";
     to.bedGraph = "VarCoverage_summary.bedgraph";
-    
+    to.refs     = r.r_var.hist().size();
+    to.size     = r.r_var.size();
+
     // Reuse a generic tool for coverage
     CoverageTool::report(stats, to);
 }
