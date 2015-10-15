@@ -28,7 +28,14 @@ FAlign::Stats FAlign::report(const FileName &file, const Options &o)
         
         if ((data = r.findNormal(align.l)) || (data = r.findFusion(align.l)))
         {
-            std::cout << "1" << std::endl;
+            if ((data = r.findFusion(align.l)))
+            {
+                std::cout << "Fusion" << std::endl;
+            }
+            else
+            {
+                std::cout << "Normal" << std::endl;
+            }
         }
     });
 

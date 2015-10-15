@@ -1,10 +1,8 @@
-#include <vector>
 #include <fstream>
 #include <sstream>
-#include <assert.h>
 #include <htslib/sam.h>
+#include <klib/khash.h>
 #include "parsers/parser_sam.hpp"
-#include <boost/algorithm/string.hpp>
 
 using namespace Anaquin;
 

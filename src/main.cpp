@@ -229,12 +229,13 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
     
-    { TOOL_V_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1 } },
-    { TOOL_V_DIFF,     { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
-    { TOOL_V_ALLELE,   { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
-    { TOOL_V_COVERAGE, { OPT_R_BED_1, OPT_R_BED_2, OPT_BAM_1 } },
-    { TOOL_V_DISCOVER, { OPT_R_VCF, OPT_U_VCF                } },
-    { TOOL_V_IGV,      { OPT_BAM_1                           } },
+    { TOOL_V_ALIGN,     { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1 } },
+    { TOOL_V_DIFF,      { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
+    { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
+    { TOOL_V_COVERAGE,  { OPT_R_BED_1, OPT_BAM_1              } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_U_VCF                } },
+    { TOOL_V_IGV,       { OPT_BAM_1                           } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED_1, OPT_R_BED_2, OPT_BAM_1 } },
 };
 
 /*
@@ -1124,7 +1125,7 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_V_COVERAGE:
+                    case TOOL_V_SUBSAMPLE:
                     {
                         applyRef(std::bind(&Standard::v_std,    &s, std::placeholders::_1), OPT_R_BED_1);
                         applyRef(std::bind(&Standard::v_inters, &s, std::placeholders::_1), OPT_R_BED_2);
@@ -1132,6 +1133,7 @@ void parse(int argc, char ** argv)
                     }
 
                     case TOOL_V_ALIGN:
+                    case TOOL_V_COVERAGE:
                     {
                         applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1), OPT_R_BED_1);
                         break;
