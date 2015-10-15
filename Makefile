@@ -35,6 +35,8 @@ SS = ../SS
 
 HLIB = src/htslib
 
+KLIB = /usr/include
+
 # Where the header are stored
 INCLUDE = src
 
@@ -53,10 +55,10 @@ $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
 	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -lbfd -lz -ldl -o $(EXEC)
 
 %.o: %.c
-	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} $< -o $@
+	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 %.o: %.cpp
-	$(CC) -g -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} $< -o $@
+	$(CC) -g -DBACKWARD_HAS_BFD -c $(CC_FLAGS) -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
 
 clean:
 	rm -f $(EXEC) $(OBJECTS) $(OBJECTS_TEST)
