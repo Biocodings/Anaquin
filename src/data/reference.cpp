@@ -630,9 +630,12 @@ struct VarRef::VarRefImpl
     std::set<SequinID> varIDs;
     
     // Validated genotypes (references + variants)
-    std::map<PairID, GenotypeData> genos;
+    std::map<GenoID, GenotypeData> genos;
 
-    std::map<Mixture, std::map<PairID, VariantPair>> pairs;
+    std::map<Mixture, std::map<GenoID, VariantPair>> pairs;
+
+    // Reference intervals (eg: chr21)
+    std::map<ChromoID, Intervals> inters;
 
     /*
      * Raw variables
@@ -641,13 +644,16 @@ struct VarRef::VarRefImpl
     std::set<Variation> rawVars;
     std::set<SequinID>  rawVarIDs;
 
+    // Reference intervals (eg: chr21)
+    std::map<ChromoID, Intervals> rawInters;
+    
     // Locus of the sequin
     std::map<SequinID, Locus> rawSeqsByID;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-double VarRef::alleleFreq(Mixture m, const PairID &bID) const
+double VarRef::alleleFreq(Mixture m, const GenoID &bID) const
 {
     const auto &p = _impl->pairs.at(m).at(bID);
     const auto &r = p.r;
@@ -662,6 +668,11 @@ void VarRef::addVar(const Variation &v)
     assert(!v.bID.empty());
     _impl->rawVars.insert(v);
     _impl->rawVarIDs.insert(v.id);
+}
+
+void VarRef::addInterval(const ChromoID &id, const Interval &i)
+{
+    _impl->rawInters[id].add(i);
 }
 
 void VarRef::addStand(const SequinID &id, const Locus &l)
@@ -704,9 +715,9 @@ std::size_t VarRef::countVars() const
     return _impl->vars.size();
 }
 
-VarRef::PairHist VarRef::pairHist() const
+VarRef::GenoHist VarRef::genoHist() const
 {
-    PairHist h;
+    GenoHist h;
     
     for (const auto &i : _impl->genos)
     {
@@ -716,7 +727,7 @@ VarRef::PairHist VarRef::pairHist() const
     return h;
 }
 
-const VarRef::GenotypeData * VarRef::findGeno(const PairID &id) const
+const VarRef::GenotypeData * VarRef::findGeno(const GenoID &id) const
 {
     return _impl->genos.count(id) ? &(_impl->genos.at(id)) : nullptr;
 }
@@ -734,9 +745,9 @@ const VarRef::GenotypeData * VarRef::findGeno(const Locus &l, double fuzzy, Matc
     return nullptr;
 }
 
-Sensitivity VarRef::limitPair(const PairHist &h) const
+Sensitivity VarRef::limitGeno(const GenoHist &h) const
 {
-    return Reference<SequinData, SequinStats>::limit(h, [&](const VarRef::PairID &id)
+    return Reference<SequinData, SequinStats>::limit(h, [&](const VarRef::GenoID &id)
     {
         return findGeno(id);
     });
@@ -751,6 +762,7 @@ void VarRef::validate()
 {
     _impl->vars   = _impl->rawVars;
     _impl->varIDs = _impl->rawVarIDs;
+    _impl->inters = _impl->rawInters;
 
     /*
      * Validation rules:
@@ -853,12 +865,20 @@ void VarRef::validate()
     }
 }
 
+const Interval * VarRef::findInterval(const ChromoID &chr, const Locus &l) const
+{
+    if (!_impl->inters.count(chr))
+    {
+        throw std::runtime_error("Failed to find " + chr + " in the reference intervals");
+    }
+    
+    return _impl->inters.at(chr).find(l);
+}
+
 const Variation * VarRef::findVar(const Locus &l, double fuzzy, MatchRule match) const
 {
     for (const auto &i : _impl->vars)
     {
-        assert(i.l.length());
-
         if (match == StartOnly && i.l.start == l.start)
         {
             return &i;

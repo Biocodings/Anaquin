@@ -38,23 +38,18 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
     return stats;
 }
 
-void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageReportOptions &o, CoverageFunctor f)
+void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o, CoverageFunctor f)
 {
-    o.writer->open(o.bedGraph);
-
-    // Coverage for the synthetic chromosome
-    const auto synth = stats.inters.find(Standard::instance().id);
-
-    if (!synth)
-    {
-        throw std::runtime_error("Failed to find coverage for the synthetic chromosome");
-    }
-
-    /*
-     * Generating a bedgraph of coverage
-     */
+    o.writer->open(o.file);
     
-    synth->bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+    const auto chr = stats.inters.find(o.chr);
+
+    if (!chr)
+    {
+        return;
+    }
+    
+    chr->bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
     {
         if (depth)
         {
@@ -64,14 +59,24 @@ void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageReport
                                                                  % depth).str());
         }
     });
-
+    
     o.writer->close();
+}
 
+void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageReportOptions &o, CoverageFunctor f)
+{
+    const auto chrT = stats.inters.find(Standard::instance().id);
+    
+    if (!chrT)
+    {
+        throw std::runtime_error("Failed to find the synthetic chromosome");
+    }
+    
     /*
      * Generating summary statistics
      */
 
-    const auto sstats  = synth->stats(f);
+    const auto sstats  = chrT->stats(f);
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Experiment: %2%\n"
                          "   Synthetic: %3%\n\n"

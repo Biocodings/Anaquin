@@ -2,6 +2,7 @@
 #define REFERENCE_HPP
 
 #include <map>
+#include "data/intervals.hpp"
 #include "data/variation.hpp"
 #include "stats/sensitivity.hpp"
 
@@ -419,20 +420,20 @@ namespace Anaquin
     {
         public:
 
-            typedef std::string PairID;
-            typedef std::map<PairID, Counts> PairHist;
-
             /*
              * In VarQuin, we emulate the homozygous and heterozygous genotype
              */
-        
+
+            typedef std::string GenoID;
+            typedef std::map<GenoID, Counts> GenoHist;
+
             struct GenotypeData
             {
-                PairID id;
+                GenoID id;
 
                 // By definition, it should be same as the reference and variant
                 Locus l;
-                
+
                 const SequinData *r;
                 const SequinData *v;
 
@@ -441,11 +442,14 @@ namespace Anaquin
 
             VarRef();
 
-            // Add a reference for a known variant
+            // Add a known variant
             void addVar(const Variation &);
 
-            // Add a new standard
+            // Add a sequin in the standards
             void addStand(const SequinID &, const Locus &);
+
+            // Add a reference interval (eg: chr21)
+            void addInterval(const ChromoID &, const Interval &);
 
             // Return number of validated variants
             std::size_t countVars() const;
@@ -465,22 +469,25 @@ namespace Anaquin
             void validate() override;
 
             // Return the detection limit at the pair level
-            Sensitivity limitPair(const PairHist &) const;
+            Sensitivity limitGeno(const GenoHist &) const;
        
             // Return a histogram for all the validated pairs
-            PairHist pairHist() const;
+            GenoHist genoHist() const;
 
             // Find a reference gene that contains the given locus
-            const GenotypeData *findGeno(const PairID &) const;
-        
+            const GenotypeData *findGeno(const GenoID &) const;
+
             // Find a reference gene that contains the given locus
             const GenotypeData *findGeno(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
 
-            // Find a reference variant given a locus
+            // Find a reference variant from a locus
             const Variation *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;
 
-            // Return the proportion of variants for a variant pair
-            double alleleFreq(Mixture, const PairID &) const;
+            // Find a reference interval from a locus
+            const Interval *findInterval(const ChromoID &, const Locus &) const;
+
+            // Return the proportion of variants for a genotype
+            double alleleFreq(Mixture, const GenoID &) const;
 
         private:
 

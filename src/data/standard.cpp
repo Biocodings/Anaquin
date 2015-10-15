@@ -91,6 +91,18 @@ template <typename Reference> void readMixture
     }
 }
 
+void Standard::v_inters(const Reader &r)
+{
+    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    {
+        /*
+         * Eg: chr21   27047922        27048922        Chr21_RanInt_14
+         */
+
+        r_var.addInterval(f.id, Interval(f.name, f.l));
+    });
+}
+
 void Standard::v_std(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)

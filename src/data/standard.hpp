@@ -47,12 +47,15 @@ namespace Anaquin
 
             void v_mix(const Reader &);
         
-            // Apply reference for known variants
+            // Apply known variants to the referene
             void v_var(const Reader &);
 
-            // Apply reference for variant standard
+            // Apply standards to the reference
             void v_std(const Reader &);
 
+            // Apply intervals to the reference
+            void v_inters(const Reader &);
+        
             VarRef r_var;
         
             /*

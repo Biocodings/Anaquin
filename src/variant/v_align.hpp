@@ -14,7 +14,7 @@ namespace Anaquin
             Performance p;
 
             // Distribution for the sequin pairs (reference + variant)
-            VarRef::PairHist h = Standard::instance().r_var.pairHist();
+            VarRef::GenoHist h = Standard::instance().r_var.genoHist();
         };
 
         static Stats report(const FileName &, const Options &o = Options());

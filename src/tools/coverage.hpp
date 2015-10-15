@@ -28,9 +28,6 @@ namespace Anaquin
             // Filename for the summary statistics
             FileName summary;
             
-            // Filename for the generated bedgraph
-            FileName bedGraph;
-
             // Number of sequins
             Counts refs;
             
@@ -41,8 +38,23 @@ namespace Anaquin
             std::shared_ptr<Writer> writer;
         };
         
+        struct CoverageBedGraphOptions
+        {
+            // Filename for the generated bedgraph
+            FileName file;
+            
+            // The chromosome from which the coverage is generated
+            ChromoID chr;
+            
+            // Where the data should be written
+            std::shared_ptr<Writer> writer;
+        };
+        
         // Analyze a BAM file sorted by position
         static Stats stats(const FileName &, AlignFunctor);
+
+        // Generate a bedgraph for the coverage
+        static void bedGraph(const Stats &, const CoverageBedGraphOptions &, CoverageFunctor);
 
         // Report a BAM file sorted by position
         static void report(const Stats &, const CoverageReportOptions &, CoverageFunctor);

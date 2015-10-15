@@ -8,7 +8,7 @@ namespace Anaquin
 {
     struct VCoverage
     {
-        typedef AnalyzerOptions Options;
+        typedef AnalyzerOptions Options;        
         typedef CoverageTool::Stats Stats;
 
         static Stats stats(const FileName &, const Options &o = Options());

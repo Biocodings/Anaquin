@@ -50,7 +50,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     o.info("Calculating limit of sensitivity");
 
     // Calculate for the sensitivity
-    stats.p.s = r.limitPair(stats.h);
+    stats.p.s = r.limitGeno(stats.h);
 
     o.logInfo((boost::format("Performance: %1% %2% %3% %4% %5% %6% %7%")
                                     % stats.p.m.nr

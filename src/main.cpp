@@ -95,12 +95,13 @@ typedef std::set<Value> Range;
 #define OPT_SOFTWARE 339
 
 #define OPT_R_BASE  800
-#define OPT_R_BED   801
-#define OPT_R_GTF   802
-#define OPT_R_FUS   803
-#define OPT_R_VCF   804
-#define OPT_MIXTURE 805
-#define OPT_FUZZY   806
+#define OPT_R_BED_1 801
+#define OPT_R_BED_2 802
+#define OPT_R_GTF   803
+#define OPT_R_FUS   804
+#define OPT_R_VCF   805
+#define OPT_MIXTURE 806
+#define OPT_FUZZY   807
 
 #define OPT_U_BASE  900
 #define OPT_U_VCF   901
@@ -211,7 +212,7 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_M_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1                     } },
     { TOOL_M_IGV,      { OPT_FA_1                                              } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1                        } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1                        } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1                      } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
     { TOOL_M_COVERAGE, { OPT_R_GTF } },
@@ -220,20 +221,20 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
-    { TOOL_F_ALIGN,    { OPT_R_BED, OPT_MIXTURE,                          } },
-    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFTWARE, OPT_U_OUT               } },
-    { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
+    { TOOL_F_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE,                          } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFTWARE, OPT_U_OUT               } },
+    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
 
     /*
      * Variant Analysis
      */
     
-    //{ TOOL_V_ALIGN, { OPT_MIXTURE, OPT_BAM_1               } },
-    //{ TOOL_V_DIFF,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
-    { TOOL_V_ALLELE,   { OPT_MIXTURE, OPT_R_BED  } },
-    { TOOL_V_COVERAGE, { OPT_R_BED } },
-    //{ TOOL_V_DISCOVER,  { OPT_R_BED , OPT_R_BED } },
-    //{ TOOL_V_IGV,  { OPT_U } },
+    { TOOL_V_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1 } },
+    { TOOL_V_DIFF,     { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
+    { TOOL_V_ALLELE,   { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
+    { TOOL_V_COVERAGE, { OPT_R_BED_1, OPT_R_BED_2, OPT_BAM_1 } },
+    { TOOL_V_DISCOVER, { OPT_R_VCF, OPT_U_VCF                } },
+    { TOOL_V_IGV,      { OPT_BAM_1                           } },
 };
 
 /*
@@ -366,17 +367,19 @@ static const struct option long_options[] =
     { "tool", required_argument, 0, OPT_TOOL },
 
     { "usam",    required_argument, 0, OPT_BAM_1 },
-    { "ubam",    required_argument, 0, OPT_BAM_1 },
     { "usam1",   required_argument, 0, OPT_BAM_1 },
-    { "ubam1",   required_argument, 0, OPT_BAM_1 },
     { "usam2",   required_argument, 0, OPT_BAM_2 },
+    { "ubam",    required_argument, 0, OPT_BAM_1 },
+    { "ubam1",   required_argument, 0, OPT_BAM_1 },
     { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
     { "rfus",    required_argument, 0, OPT_R_FUS },
     { "uout",    required_argument, 0, OPT_U_OUT },
 
-    { "rbed",    required_argument, 0, OPT_R_BED },
-    { "rgtf",    required_argument, 0, OPT_R_GTF },
+    { "rbed",    required_argument, 0, OPT_R_BED_1 },
+    { "rbed1",   required_argument, 0, OPT_R_BED_1 },
+    { "rbed2",   required_argument, 0, OPT_R_BED_2 },
+    { "rgtf",    required_argument, 0, OPT_R_GTF   },
 
     { "uvcf",    required_argument, 0, OPT_U_VCF  },
     { "ufa",     required_argument, 0, OPT_FA_1   },
@@ -876,11 +879,12 @@ void parse(int argc, char ** argv)
             case OPT_GDIFF:
             case OPT_PSL_2:
             case OPT_BAM_2:
-            case OPT_R_BED:
             case OPT_R_GTF:
             case OPT_PSL_1:
             case OPT_GTRACK:
             case OPT_ITRACK:
+            case OPT_R_BED_1:
+            case OPT_R_BED_2:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
             case OPT_PATH:    { _p.path = val;             break; }
@@ -1048,7 +1052,7 @@ void parse(int argc, char ** argv)
                 case TOOL_F_ALIGN:
                 {
                     applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::f_std, &s, std::placeholders::_1), OPT_R_BED);
+                    applyRef(std::bind(&Standard::f_std, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
                 }
 
@@ -1120,12 +1124,19 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_V_ALIGN:
                     case TOOL_V_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1)); break;
+                        applyRef(std::bind(&Standard::v_std,    &s, std::placeholders::_1), OPT_R_BED_1);
+                        applyRef(std::bind(&Standard::v_inters, &s, std::placeholders::_1), OPT_R_BED_2);
+                        break;
                     }
-                        
+
+                    case TOOL_V_ALIGN:
+                    {
+                        applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1), OPT_R_BED_1);
+                        break;
+                    }
+
                     case TOOL_V_DIFF:
                     case TOOL_V_ALLELE:
                     case TOOL_V_DISCOVER:
