@@ -4,7 +4,7 @@
 
 using namespace Anaquin;
 
-CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
+CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
 {
     CoverageTool::Stats stats;
 
@@ -16,25 +16,6 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
-        auto addCoverage = [&](const ChromoID &id, Base start, Base end)
-        {
-            const auto size = stats.chroms.at(id).size;
-            assert(size);
-            
-            if (start < size)
-            {
-                stats.chroms.at(id).covs[start].starts++;
-            }
-            if (end < size)
-            {
-                stats.chroms.at(id).covs[end].ends++;
-            }
-            else
-            {
-                stats.chroms.at(id).covs.back().ends++;
-            }
-        };
-        
         if (!align.i)
         {
             if      (!align.mapped)                       { stats.unmapped++; }
@@ -45,96 +26,59 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
         // Proceed with the alignment?
         if (f(align, info.p))
         {
-            if (!stats.chroms.count(align.id))
+            if (!stats.inters.find(align.id))
             {
-                stats.chroms[align.id].name = align.id;
-                stats.chroms[align.id].size = info.size;
-                stats.chroms[align.id].covs.resize(stats.chroms[align.id].size);
+                stats.inters.add(Interval(align.id, Locus(0, info.size-1)));
             }
 
-            /*
-             * This is like looping for blocks in AddBlockedCoverage()
-             */
-
-            addCoverage(align.id, align.l.start, align.l.end);
+            stats.inters.find(align.id)->add(align.l);
         }
     });
 
-    // Find the depth for ith percentile
-    auto percent = [&](Percentage p, const std::map<Base, Counts> &depths)
-    {
-        Percentage i = 0;
-        
-        for (const auto &depth : depths)
-        {
-            i += depth.second;
-            
-            // Have we reached our percentile?
-            if (i >= p)
-            {
-                return depth.second;
-            }
-        }
-        
-        return depths.end()->second;
-    };
-
-    /*
-     * Calculate descriptive statistics
-     */
-    
-    for (auto &chrom : stats.chroms)
-    {
-        Counts n = 0;
-        Coverage sums = 0;
-        std::map<Base, Counts> depths;
-
-        chrom.second.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
-        {
-            n++;
-            sums += depth;
-            depths[depth]++;
-        });
-        
-        assert(n);
-        
-        stats.chroms[chrom.first].mean = sums / n;
-        stats.chroms[chrom.first].min  = percent(0, depths);
-        stats.chroms[chrom.first].max  = percent(n, depths);
-        stats.chroms[chrom.first].p25  = percent(0.25 * n, depths);
-        stats.chroms[chrom.first].p50  = percent(0.50 * n, depths);
-        stats.chroms[chrom.first].p75  = percent(0.75 * n, depths);
-    }
-    
     return stats;
 }
 
-void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageToolOptions &o)
+void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageReportOptions &o, CoverageFunctor f)
 {
     o.writer->open(o.bedGraph);
 
-    // Coverage for chrT
-    const auto &chrT = stats.chroms.at(Standard::instance().id);
+    // Coverage for the synthetic chromosome
+    const auto synth = stats.inters.find(Standard::instance().id);
 
-    chrT.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+    if (!synth)
     {
-        o.writer->write((boost::format("%1%\t%2%\t%3%\t%4%") % id
-                                                             % i
-                                                             % j
-                                                             % depth).str());
-    });
+        throw std::runtime_error("Failed to find coverage for the synthetic chromosome");
+    }
+
+    /*
+     * Generating a bedgraph of coverage
+     */
     
+    synth->bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+    {
+        if (depth)
+        {
+            o.writer->write((boost::format("%1%\t%2%\t%3%\t%4%") % id
+                                                                 % i
+                                                                 % j
+                                                                 % depth).str());
+        }
+    });
+
     o.writer->close();
 
     /*
      * Generating summary statistics
      */
 
+    const auto sstats  = synth->stats(f);
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Experiment: %2%\n"
                          "   Synthetic: %3%\n\n"
                          "   Reference: %4%\n"
                          "   Reference Bases: %5%\n\n"
+                         "   Minimum: %6%\n"
+                         "   Maximum: %7%\n\n"
                          "   Minimum: %6%\n"
                          "   Maximum: %7%\n"
                          "   Mean:    %8%\n"
@@ -148,13 +92,13 @@ void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageToolOp
                                             % stats.n_expT
                                             % stats.n_chrT
                                             % o.refs
-                                            % o.size
-                                            % "NA" //chrT.min
-                                            % "NA" //chrT.max
-                                            % "NA" //chrT.mean
-                                            % "NA" //chrT.p25
-                                            % "NA" //chrT.p50
-                                            % "NA" //chrT.p75
+                                            % o.length
+                                            % sstats.min
+                                            % sstats.max
+                                            % sstats.mean
+                                            % sstats.p25
+                                            % sstats.p50
+                                            % sstats.p75
                      ).str());
     o.writer->close();
 }

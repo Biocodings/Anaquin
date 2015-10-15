@@ -115,7 +115,7 @@ namespace Anaquin
             // Calculate the total size of all sequins in the reference
             inline Base size() const
             {
-                Base n;
+                Base n = 0;
                 
                 for (const auto &i : _data)
                 {
