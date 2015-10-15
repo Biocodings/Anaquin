@@ -21,8 +21,6 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, Functor f)
             const auto size = stats.chroms.at(id).size;
             assert(size);
             
-            // process the first line for this chromosome.
-            // make sure the coordinates fit within the chrom
             if (start < size)
             {
                 stats.chroms.at(id).covs[start].starts++;

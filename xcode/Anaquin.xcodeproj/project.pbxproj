@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EF0E21751BA7BD91002326EB /* t_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0E21741BA7BD91002326EB /* t_viewer.cpp */; };
+		EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF17D29C1BCF246700F503F7 /* t_intervals.cpp */; settings = {ASSET_TAGS = (); }; };
 		EF1804A01B65C06F00897D1E /* f_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF18049E1B65C06F00897D1E /* f_express.cpp */; };
 		EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */; };
 		EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */; };
@@ -130,6 +131,7 @@
 		EF02A5231B7E0F8D00295799 /* compare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = compare.hpp; path = ../src/data/compare.hpp; sourceTree = "<group>"; };
 		EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = terminal_writer.hpp; path = ../src/writers/terminal_writer.hpp; sourceTree = "<group>"; };
 		EF0E21741BA7BD91002326EB /* t_viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_viewer.cpp; sourceTree = "<group>"; };
+		EF17D29C1BCF246700F503F7 /* t_intervals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_intervals.cpp; path = ../tests/data/t_intervals.cpp; sourceTree = "<group>"; };
 		EF18049E1B65C06F00897D1E /* f_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_express.cpp; sourceTree = "<group>"; };
 		EF18049F1B65C06F00897D1E /* f_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_express.hpp; sourceTree = "<group>"; };
 		EF1804A41B65C4F500897D1E /* f_classify.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_classify.hpp; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 		EF1DE0B91B21EC8300DEC381 /* analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = analyzer.hpp; path = ../src/stats/analyzer.hpp; sourceTree = "<group>"; };
 		EF1DE0BA1B21EC8300DEC381 /* classify.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = classify.hpp; path = ../src/stats/classify.hpp; sourceTree = "<group>"; };
 		EF1DE0BC1B21EC8300DEC381 /* sensitivity.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sensitivity.hpp; path = ../src/stats/sensitivity.hpp; sourceTree = "<group>"; };
+		EF2002531BCEFD6900F8CE08 /* intervals.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = intervals.hpp; path = ../src/data/intervals.hpp; sourceTree = "<group>"; };
 		EF2101391B662E82007313AD /* f_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_viewer.hpp; sourceTree = "<group>"; };
 		EF2106AA1BB193670045325B /* m_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_align.cpp; sourceTree = "<group>"; };
 		EF2106AB1BB193670045325B /* m_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_align.hpp; sourceTree = "<group>"; };
@@ -211,7 +214,6 @@
 		EF7908AC1B81759100B7C8AF /* parser_feature.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_feature.hpp; path = ../src/parsers/parser_feature.hpp; sourceTree = "<group>"; };
 		EF8ADAE71B220767005E2187 /* m_diffs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_diffs.cpp; sourceTree = "<group>"; };
 		EF8ADAE81B220767005E2187 /* m_diffs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_diffs.hpp; sourceTree = "<group>"; };
-		EF96552D1B60EE1D0027885E /* gtf_tracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gtf_tracking.h; path = ../src/cufflinks/gtf_tracking.h; sourceTree = "<group>"; };
 		EF9ACCDC1B5FB5480085D1B2 /* t_express.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_express.cpp; sourceTree = "<group>"; };
 		EF9ACCDD1B5FB5480085D1B2 /* t_express.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = t_express.hpp; sourceTree = "<group>"; };
 		EF9ACCE01B5FB5480085D1B2 /* t_align.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_align.cpp; sourceTree = "<group>"; };
@@ -399,7 +401,6 @@
 				EF26157A1B5FF9DC00BE8037 /* gffread.cpp */,
 				EF26156B1B5FF98A00BE8037 /* GStr.cpp */,
 				EF2615761B5FF9C500BE8037 /* gtf_tracking.cpp */,
-				EF96552D1B60EE1D0027885E /* gtf_tracking.h */,
 			);
 			name = cufflinks;
 			sourceTree = "<group>";
@@ -447,17 +448,18 @@
 				EF1DE0A81B21EC6D00DEC381 /* biology.hpp */,
 				EF02A5231B7E0F8D00295799 /* compare.hpp */,
 				EF1DE0A91B21EC6D00DEC381 /* feature.hpp */,
+				EF2002531BCEFD6900F8CE08 /* intervals.hpp */,
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,
 				EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */,
 				EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */,
-				EFC0DAC51B8C056F005F6C85 /* reference.hpp */,
 				EF9F70ED1B9C397900B8BD7B /* reference.cpp */,
+				EFC0DAC51B8C056F005F6C85 /* reference.hpp */,
 				EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */,
+				EF3A43FB1B8EDF9400C968F0 /* script.hpp */,
 				EF1DE0B01B21EC6D00DEC381 /* standard.cpp */,
 				EF1DE0B11B21EC6D00DEC381 /* standard.hpp */,
 				EF1DE0B21B21EC6D00DEC381 /* tokens.hpp */,
 				EF1DE0B31B21EC6D00DEC381 /* types.hpp */,
-				EF3A43FB1B8EDF9400C968F0 /* script.hpp */,
 				EF9F70EC1B9C331200B8BD7B /* variation.hpp */,
 			);
 			name = data;
@@ -562,6 +564,7 @@
 			isa = PBXGroup;
 			children = (
 				EFB7FF381B4F848D0045DC6A /* t_locus.cpp */,
+				EF17D29C1BCF246700F503F7 /* t_intervals.cpp */,
 			);
 			name = data;
 			sourceTree = "<group>";
@@ -751,6 +754,7 @@
 				EF3F04A91B6F342F00179B55 /* t_diffs.cpp in Sources */,
 				EF9ACCF21B5FB9790085D1B2 /* t_express.cpp in Sources */,
 				EF9ACCF31B5FB9790085D1B2 /* t_align.cpp in Sources */,
+				EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */,
 				EF9ACCF41B5FB9790085D1B2 /* t_assembly.cpp in Sources */,
 				EF0E21751BA7BD91002326EB /* t_viewer.cpp in Sources */,
 				EF9ACCEE1B5FB7520085D1B2 /* t_express.cpp in Sources */,
