@@ -13,12 +13,18 @@ namespace Anaquin
             ParserProgress p;
 
             // Size of the chromosome of the alignment
-            Base size;
+            Base length;
+            
+            // Internal data representation
+            void *data;
+            
+            // Internal data representation
+            void *header;
         };
         
-        typedef std::function<void (const Alignment &, const AlignmentInfo &)> Callback;
-        
-        static void parse(const FileName &file, std::function<void (const Alignment &, const AlignmentInfo &)>);
+        typedef std::function<void (const Alignment &, const AlignmentInfo &)> Functor;
+
+        static void parse(const FileName &file, Functor);
     };
 }
 

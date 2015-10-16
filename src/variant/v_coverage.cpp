@@ -27,7 +27,7 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     CoverageTool::CoverageBedGraphOptions bo;
 
     /*
-     * Generating bedgraph for synthetic chromosome
+     * Generating bedgraph for the standards
      */
     
     bo.writer = o.writer;
@@ -36,6 +36,7 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
+        // Filter to the regions in the standards
         return r.r_var.findGeno(Locus(i, j));
     });
 
@@ -50,8 +51,9 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     to.refs     = r.r_var.hist().size();
     to.length   = r.r_var.size();
 
-    CoverageTool::report(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
-        return static_cast<bool>(r.r_var.findGeno(Locus(i, j)));
+        // Filter to the regions in the standards
+        return r.r_var.findGeno(Locus(i, j));
     });
 }

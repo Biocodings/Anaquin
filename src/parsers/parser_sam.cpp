@@ -1,12 +1,9 @@
-#include <fstream>
-#include <sstream>
 #include <htslib/sam.h>
-#include <klib/khash.h>
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
 
-void ParserSAM::parse(const FileName &file, Callback x)
+void ParserSAM::parse(const FileName &file, Functor x)
 {
     auto f = sam_open(file.c_str(), "r");
     
@@ -15,8 +12,8 @@ void ParserSAM::parse(const FileName &file, Callback x)
         throw std::runtime_error("Failed to open: " + file);
     }
 
-    auto h = sam_hdr_read(f);
     auto t = bam_init1();
+    auto h = sam_hdr_read(f);
 
     Alignment align;
     AlignmentInfo info;
@@ -24,10 +21,12 @@ void ParserSAM::parse(const FileName &file, Callback x)
     while (sam_read1(f, h, t) >= 0)
     {
         info.p.i++;
-        info.size = h->target_len[t->core.tid];
+        info.length = h->target_len[t->core.tid];
 
         align.i      = 0;
         align.mapped = false;
+        info.data    = t;
+        info.header  = h;
 
         if (t->core.tid < 0)
         {

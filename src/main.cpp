@@ -17,6 +17,7 @@
 #include "variant/v_viewer.hpp"
 #include "variant/v_discover.hpp"
 #include "variant/v_coverage.hpp"
+#include "variant/v_subsample.hpp"
 
 #include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
@@ -1118,6 +1119,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_ALLELE:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
+        case TOOL_V_SUBSAMPLE:
         {
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
@@ -1155,11 +1157,12 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_BAM_1); break; }
-                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_BAM_1);    break; }
-                case TOOL_V_DISCOVER: { analyze_1<VDiscover>(OPT_U_VCF); break; }
-                case TOOL_V_ALLELE:   { analyze_1<VAllele>(OPT_U_VCF);   break; }
-                case TOOL_V_IGV:      { viewer<VViewer>();               break; }
+                case TOOL_V_IGV:       { viewer<VViewer>();                break; }
+                case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_BAM_1);     break; }
+                case TOOL_V_ALLELE:    { analyze_1<VAllele>(OPT_U_VCF);    break; }
+                case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_BAM_1);  break; }
+                case TOOL_V_DISCOVER:  { analyze_1<VDiscover>(OPT_U_VCF);  break; }
+                case TOOL_V_SUBSAMPLE: { analyze_1<VSubsample>(OPT_BAM_1); break; }
             }
 
             break;

@@ -7,10 +7,12 @@ namespace Anaquin
 {
     struct Alignment
     {
+        typedef std::string AlignmentID;
+
         operator const Locus &() const { return l; }
 
-        std::string id;
-        
+        AlignmentID id;
+
         // Eg: B7_591:6:155:12:674
         std::string qName;
         
@@ -24,7 +26,7 @@ namespace Anaquin
         
         // Location of the alignment relative to the chromosome
         Locus l;
-        
+
         // Only valid if the alignment is spliced
         Base skipped;
     };    

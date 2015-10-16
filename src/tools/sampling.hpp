@@ -1,27 +1,27 @@
-#ifndef SUBSAMPLER_HPP
-#define SUBSAMPLER_HPP
+#ifndef SAMPLING_HPP
+#define SAMPLING_HPP
 
+#include <string>
 #include <klib/khash.h>
 
 namespace Anaquin
 {
-    class Subsampler
+    class SamplingTool
     {
         public:
-            Subsampler(const std::string &hash, double prob) : _hash(hash), _prob(prob)
+
+            SamplingTool(double prob) : _prob(prob)
             {
                 _seed = rand();
             }
 
-            inline bool select() const
+            inline bool select(const std::string &hash) const
             {
-                const uint32_t k = __ac_Wang_hash(__ac_X31_hash_string(_hash.c_str()) ^ _seed);
+                const uint32_t k = __ac_Wang_hash(__ac_X31_hash_string(hash.c_str()) ^ _seed);
                 return ((double)(k&0xffffff) / 0x1000000 >= _prob);
             }
 
         private:
-        
-            const std::string _hash;
         
             // Random seed
             int _seed;

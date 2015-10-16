@@ -56,8 +56,8 @@ namespace Anaquin
         // Generate a bedgraph for the coverage
         static void bedGraph(const Stats &, const CoverageBedGraphOptions &, CoverageFunctor);
 
-        // Report a BAM file sorted by position
-        static void report(const Stats &, const CoverageReportOptions &, CoverageFunctor);
+        // Generate summary statistics for the coverage
+        static void summary(const Stats &, const CoverageReportOptions &, CoverageFunctor);
     };
 }
 

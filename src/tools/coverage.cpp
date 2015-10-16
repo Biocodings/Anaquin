@@ -28,7 +28,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
         {
             if (!stats.inters.find(align.id))
             {
-                stats.inters.add(Interval(align.id, Locus(0, info.size-1)));
+                stats.inters.add(Interval(align.id, Locus(0, info.length-1)));
             }
 
             stats.inters.find(align.id)->add(align.l);
@@ -63,7 +63,7 @@ void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o
     o.writer->close();
 }
 
-void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageReportOptions &o, CoverageFunctor f)
+void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageReportOptions &o, CoverageFunctor f)
 {
     const auto chrT = stats.inters.find(Standard::instance().id);
     
@@ -89,8 +89,7 @@ void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageReport
                          "   Mean:    %8%\n"
                          "   25th: %9%\n"
                          "   50th: %10%\n"
-                         "   75th: %11%\n"
-    ;
+                         "   75th: %11%\n";
 
     o.writer->open(o.summary);
     o.writer->write((boost::format(summary) % stats.src
@@ -103,7 +102,6 @@ void CoverageTool::report(const CoverageTool::Stats &stats, const CoverageReport
                                             % sstats.mean
                                             % sstats.p25
                                             % sstats.p50
-                                            % sstats.p75
-                     ).str());
+                                            % sstats.p75).str());
     o.writer->close();
 }
