@@ -1,12 +1,12 @@
-#ifndef V_SUBSAMPLE_HPP
-#define V_SUBSAMPLE_HPP
+#ifndef V_SAMPLE_HPP
+#define V_SAMPLE_HPP
 
 #include "tools/coverage.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VSubsample
+    struct VSample
     {
         // How coverage is determined
         enum CoverageMethod

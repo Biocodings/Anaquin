@@ -1,11 +1,11 @@
 #include "tools/sampling.hpp"
+#include "variant/v_sample.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/writer_sam.hpp"
-#include "variant/v_subsample.hpp"
 
 using namespace Anaquin;
 
-VSubsample::Stats VSubsample::stats(const FileName &file, const Options &o)
+VSample::Stats VSample::stats(const FileName &file, const Options &o)
 {
     Stats stats;
 
@@ -86,9 +86,9 @@ VSubsample::Stats VSubsample::stats(const FileName &file, const Options &o)
 }
 
 // Generate and report statistics for subsampling
-void VSubsample::report(const FileName &file, const Options &o)
+void VSample::report(const FileName &file, const Options &o)
 {
-    const auto stats = VSubsample::stats(file, o);
+    const auto stats = VSample::stats(file, o);
     
     /*
      * Generating summary statistics
