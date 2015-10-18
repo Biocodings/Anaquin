@@ -36,7 +36,9 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     stats.chrT = stats.cov.inters.find(r.id)->stats();
 
     o.info("Generating statistics for chr21");
-    stats.hg38 = stats.cov.inters.find(r.id)->stats();
+    stats.hg38 = stats.cov.inters.find("chr21")->stats();
+    
+    assert(stats.chrT.mean && stats.hg38.mean);
     
     /*
      * Now we have the data, we'll need to compare the coverage and determine what fraction that
@@ -101,11 +103,13 @@ void VSample::report(const FileName &file, const Options &o)
      * the genome and synthetic chromosome.
      */
     
-    o.info("Subsampling the alignment");
+    o.info("Sampling the alignment");
+
+    assert(!o.working.empty());
     
     WriterSAM writer;
-    writer.open("/Users/tedwong/Sources/QA/abcd.sam");
-    
+    writer.open(o.working + "/VarSample_sampled.bam");
+
     SamplingTool sampler(1 - stats.fract());
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
@@ -113,10 +117,11 @@ void VSample::report(const FileName &file, const Options &o)
         const bam1_t *b    = reinterpret_cast<bam1_t *>(info.data);
         const bam_hdr_t *h = reinterpret_cast<bam_hdr_t *>(info.header);
 
+        // Only once per read
         if (!align.i)
         {
             /*
-             * This is the key, randomly write the reads with certain probability
+             * This is the key, randomly write the read with certain probability
              */
 
             if (sampler.select(bam_get_qname(b)))

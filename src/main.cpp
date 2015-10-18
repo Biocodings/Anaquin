@@ -618,6 +618,8 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.logger->open("anaquin.log");
 #endif
 
+    o.working = path;
+    
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 

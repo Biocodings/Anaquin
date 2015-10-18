@@ -216,6 +216,9 @@ namespace Anaquin
             Error,
         };
 
+        // Working directory
+        FilePath working;
+        
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
         std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
         std::shared_ptr<Writer> output = std::shared_ptr<Writer>(new MockWriter());
