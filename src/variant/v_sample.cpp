@@ -119,6 +119,11 @@ void VSample::report(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
+        if (!align.i && !(info.p.i % 1000000))
+        {
+            o.wait(std::to_string(info.p.i));
+        }
+        
         const bam1_t *b    = reinterpret_cast<bam1_t *>(info.data);
         const bam_hdr_t *h = reinterpret_cast<bam_hdr_t *>(info.header);
 
