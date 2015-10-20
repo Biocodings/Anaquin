@@ -1168,8 +1168,8 @@ void parse(int argc, char ** argv)
                 {
                     VSample::Options o;
                     
-                    // TODO: Fix this
-                    o.queryID = "chrT";
+                    // TODO: Fix this (need to support multiple chromosomes)
+                    o.queryID = "chr21";
 
                     analyze_1<VSample>(OPT_BAM_1, o);
                     break;
