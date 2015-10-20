@@ -50,7 +50,7 @@ namespace Anaquin
              * chromosome and almost certianly will have the highest coverage.
              */
             
-            inline double sample() const { return chrTC / queryC; }
+            inline double sample() const { return queryC / chrTC; }
         };
 
         // Generate statistics for subsampling

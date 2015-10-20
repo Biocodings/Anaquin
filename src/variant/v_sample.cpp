@@ -54,10 +54,16 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     o.info(std::to_string(stats.cov.inters.size()) + " intervals generated");
 
     o.info("Generating statistics for " + r.id);
-    stats.chrT = stats.cov.inters.find(r.id)->stats();
+    stats.chrT = stats.cov.inters.find(r.id)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+    {
+        return static_cast<bool>(r.r_var.findGeno(Locus(i, j)));
+    });
 
     o.info("Generating statistics for " + o.queryID);
-    stats.query = stats.cov.inters.find(o.queryID)->stats();
+    stats.query = stats.cov.inters.find(o.queryID)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+    {
+        return static_cast<bool>(r.r_var.findQuery(o.queryID, Locus(i, j)));
+    });
 
     assert(stats.chrT.mean && stats.query.mean);
 
@@ -124,6 +130,15 @@ void VSample::sample(const FileName &src, const FileName &dst, const Stats &stat
     WriterSAM writer;
     writer.open(dst);
 
+    if (stats.sample() == 0.0)
+    {
+        o.warn("Sampling fraction is zero. This could be an error in the inputs.");
+    }
+    else if (stats.sample() == 1.0)
+    {
+        o.warn("Sampling fraction is one. This could be an error in the inputs.");
+    }
+    
     SamplingTool sampler(1 - stats.sample());
     
     ParserSAM::parse(src, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
@@ -135,14 +150,14 @@ void VSample::sample(const FileName &src, const FileName &dst, const Stats &stat
                          
         const bam1_t *b    = reinterpret_cast<bam1_t *>(info.data);
         const bam_hdr_t *h = reinterpret_cast<bam_hdr_t *>(info.header);
-                         
+        
         if (!align.i)
         {
             /*
              * This is the key, randomly write the read with certain probability
              */
             
-            if (sampler.select(bam_get_qname(b)))
+            if (align.id != Standard::instance().id || sampler.select(bam_get_qname(b)))
             {
                 writer.write(h, b);
             }
@@ -189,11 +204,15 @@ void VSample::report(const FileName &file, const Options &o)
                          "   Synthetic:   %4% alignments\n\n"
                          "   Reference:   %5% sequins\n\n"
                          "   Method: %6%\n\n"
+                         "   ***********************\n"
                          "   Before subsampling:\n"
+                         "   ***********************\n\n"
                          "   Alignments: %7%\n"
                          "   Query Coverage: %8%\n"
                          "   Synthetic Coverage: %9%\n\n"
-                         "   Before subsampling:\n"
+                         "   ***********************\n"
+                         "   After subsampling:\n"
+                         "   ***********************\n\n"
                          "   Alignments: %10%\n"
                          "   Query Coverage: %11%\n"
                          "   Synthetic Coverage: %12%\n";

@@ -2,6 +2,7 @@
 #define SAMPLING_HPP
 
 #include <string>
+#include <assert.h>
 #include <klib/khash.h>
 
 namespace Anaquin
@@ -12,6 +13,7 @@ namespace Anaquin
 
             SamplingTool(double prob) : _prob(prob)
             {
+                assert(prob >= 0.0);
                 _seed = rand();
             }
 
