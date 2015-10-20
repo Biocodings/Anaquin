@@ -74,9 +74,9 @@ void MAlign::report(const FileName &file, const Options &o)
     o.info("Generating summary statistics");
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Unmapped:    %2% reads\n"
-                         "   Genome:      %3% reads\n"
-                         "   Synthetic:   %4% reads\n\n"
+                         "   Unmapped:    %2% alignments\n"
+                         "   Genome:      %3% alignments\n"
+                         "   Synthetic:   %4% alignments\n\n"
                          "   Reference:   %5% sequins\n"
                          "   Sensitivity: %6%\n"
                          "   Specificity: %7%\n\n"

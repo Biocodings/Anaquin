@@ -865,7 +865,7 @@ void VarRef::validate()
     }
 }
 
-const Interval * VarRef::findInterval(const ChromoID &chr, const Locus &l) const
+const Interval * VarRef::findQuery(const ChromoID &chr, const Locus &l) const
 {
     if (!_impl->inters.count(chr))
     {

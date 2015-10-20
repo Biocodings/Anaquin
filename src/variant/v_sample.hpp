@@ -11,7 +11,7 @@ namespace Anaquin
         // How coverage is determined
         enum CoverageMethod
         {
-            ArithmeticAverage,
+            ArithAverage,
             Maximum,
             Median,
             Percentile75,
@@ -19,7 +19,11 @@ namespace Anaquin
 
         struct Options : public AnalyzerOptions
         {
-            CoverageMethod method;
+            // The chromosome to be compared
+            ChromoID queryID;
+
+            // How coverage is calculated
+            CoverageMethod method = ArithAverage;
         };
 
         struct Stats
@@ -27,8 +31,8 @@ namespace Anaquin
             // Coverage statistics for chrT
             Interval::Stats chrT;
             
-            // Coverage statistics for human genome
-            Interval::Stats hg38;
+            // Coverage statistics for query (eg: chr21)
+            Interval::Stats query;
 
             // Raw coverage
             CoverageTool::Stats cov;
@@ -36,16 +40,23 @@ namespace Anaquin
             // Calculated coverage for chrT
             Coverage chrTC;
 
-            // Calculated coverage for hg38
-            Coverage hg38C;
+            // Calculated coverage for the query (eg: chr21)
+            Coverage queryC;
 
-            // Fraction required to subsample in chrT
-            inline double fract() const { return chrTC / hg38C; }
+            /*
+             * Fraction required to subsample in chrT. This works because chrT is a short
+             * chromosome and almost certianly will have the highest coverage.
+             */
+            
+            inline double sample() const { return chrTC / queryC; }
         };
 
         // Generate statistics for subsampling
         static Stats stats(const FileName &, const Options &o = Options());
 
+        // Subsample an alignment file
+        static void sample(const FileName &, const FileName &, const Stats &, const Options &o = Options());
+        
         // Generate and report statistics for subsampling
         static void report(const FileName &, const Options &o = Options());
     };

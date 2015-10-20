@@ -483,8 +483,8 @@ namespace Anaquin
             // Find a reference variant from a locus
             const Variation *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;
 
-            // Find a reference interval from a locus
-            const Interval *findInterval(const ChromoID &, const Locus &) const;
+            // Find a reference interval
+            const Interval *findQuery(const ChromoID &, const Locus &) const;
 
             // Return the proportion of variants for a genotype
             double alleleFreq(Mixture, const GenoID &) const;

@@ -1164,7 +1164,16 @@ void parse(int argc, char ** argv)
                 case TOOL_V_ALLELE:    { analyze_1<VAllele>(OPT_U_VCF);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_BAM_1);  break; }
                 case TOOL_V_DISCOVER:  { analyze_1<VDiscover>(OPT_U_VCF);  break; }
-                case TOOL_V_SUBSAMPLE: { analyze_1<VSample>(OPT_BAM_1);    break; }
+                case TOOL_V_SUBSAMPLE:
+                {
+                    VSample::Options o;
+                    
+                    // TODO: Fix this
+                    o.queryID = "chrT";
+
+                    analyze_1<VSample>(OPT_BAM_1, o);
+                    break;
+                }
             }
 
             break;

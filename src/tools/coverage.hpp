@@ -1,8 +1,6 @@
 #ifndef COVERAGE_TOOL_HPP
 #define COVERAGE_TOOL_HPP
 
-#include <vector>
-#include "data/types.hpp"
 #include "parsers/parser.hpp"
 #include "stats/analyzer.hpp"
 #include "data/intervals.hpp"

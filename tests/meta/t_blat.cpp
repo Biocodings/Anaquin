@@ -7,5 +7,5 @@ using namespace Anaquin;
 TEST_CASE("MBlast_Empty")
 {
     Test::meta();
-    REQUIRE_THROWS(MBlat::report("tests/data/empty.psl"));
+    REQUIRE_THROWS(MBlat::report("tests/examples/empty.psl"));
 }

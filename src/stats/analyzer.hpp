@@ -12,6 +12,29 @@
 
 namespace Anaquin
 {
+    /*
+     * Histogram manipulations and operations
+     */
+
+    template <typename T> static Counts sums(const std::map<T, Counts> &m)
+    {
+        Counts c = 0;
+
+        for (const auto &i : m)
+        {
+            if (i.second == 0)
+            {
+                c++;
+            }
+            else
+            {
+                c += i.second;
+            }
+        }
+        
+        return c;
+    }
+    
     template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
     {
         for (const auto &i : m)
@@ -30,7 +53,7 @@ namespace Anaquin
     }
 
     // Number of elements in the histogram with at least an entry
-    inline std::size_t detectHist(const std::map<std::string, Counts> &m)
+    inline Counts detectHist(const std::map<std::string, Counts> &m)
     {
         return std::count_if(m.begin(), m.end(), [&](const std::pair<std::string, Counts> &i)
         {
@@ -50,6 +73,9 @@ namespace Anaquin
 
     struct MappingStats
     {
+        // The distribution of counts across chromosomes
+        std::map<ChromoID, Counts> hist;
+
         // Total mapped to the in-silico chromosome
         Counts n_chrT = 0;
 

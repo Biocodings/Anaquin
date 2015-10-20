@@ -10,21 +10,14 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
 
     stats.src = file;
     
-    /*
-     * Reference: https://github.com/arq5x/bedtools2/blob/master/src/genomeCoverageBed/genomeCoverageBed.cpp
-     */
-
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
         if (!align.i)
         {
-            if      (!align.mapped)                       { stats.unmapped++; }
-            else if (align.id != Standard::instance().id) { stats.n_expT++;   }
-            else                                          { stats.n_chrT++;   }
+            stats.hist[align.mapped ? align.id : "NA"]++;
         }
 
-        // Proceed with the alignment?
-        if (f(align, info.p))
+        if (align.mapped && f(align, info.p))
         {
             if (!stats.inters.find(align.id))
             {

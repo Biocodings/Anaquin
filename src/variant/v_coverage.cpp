@@ -7,7 +7,6 @@ VCoverage::Stats VCoverage::stats(const FileName &file, const Options &o)
     o.analyze(file);
     
     const auto &r = Standard::instance();
-
     Stats stats;
     
     // Calculate coverage for the synthetic chromosome
