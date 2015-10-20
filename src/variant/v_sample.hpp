@@ -19,11 +19,13 @@ namespace Anaquin
 
         struct Options : public AnalyzerOptions
         {
+	    Options() {}
+
             // The chromosome to be compared
             ChromoID queryID;
 
             // How coverage is calculated
-            CoverageMethod method = ArithAverage;
+            CoverageMethod method = CoverageMethod::ArithAverage;
         };
 
         struct Stats
