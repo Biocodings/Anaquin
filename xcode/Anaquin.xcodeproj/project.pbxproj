@@ -63,6 +63,10 @@
 		EF9F29051BCCB289007449A1 /* v_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9F29041BCCB289007449A1 /* v_coverage.cpp */; settings = {ASSET_TAGS = (); }; };
 		EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9F70ED1B9C397900B8BD7B /* reference.cpp */; };
 		EFA1A6B21AFC4FAB0066DD9F /* parser_fa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */; };
+		EFA347321BD5E444009ED5DC /* t_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA347301BD5E444009ED5DC /* t_coverage.cpp */; settings = {ASSET_TAGS = (); }; };
+		EFA347351BD5E46D009ED5DC /* m_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA347331BD5E46D009ED5DC /* m_coverage.cpp */; settings = {ASSET_TAGS = (); }; };
+		EFA347381BD5E47D009ED5DC /* l_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA347361BD5E47D009ED5DC /* l_coverage.cpp */; settings = {ASSET_TAGS = (); }; };
+		EFA3473B1BD5E491009ED5DC /* f_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA347391BD5E491009ED5DC /* f_coverage.cpp */; settings = {ASSET_TAGS = (); }; };
 		EFA9DE731BCB7D6100780182 /* coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE711BCB7D6100780182 /* coverage.cpp */; settings = {ASSET_TAGS = (); }; };
 		EFA9DE7A1BCB8C6A00780182 /* v_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE781BCB8C6A00780182 /* v_coverage.cpp */; settings = {ASSET_TAGS = (); }; };
 		EFACC75B1B1F0C80004A9770 /* m_histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFACC7591B1F0C80004A9770 /* m_histogram.cpp */; };
@@ -237,6 +241,14 @@
 		EF9F70ED1B9C397900B8BD7B /* reference.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reference.cpp; path = ../src/data/reference.cpp; sourceTree = "<group>"; };
 		EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_fa.cpp; path = ../src/parsers/parser_fa.cpp; sourceTree = "<group>"; };
 		EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_fa.hpp; path = ../src/parsers/parser_fa.hpp; sourceTree = "<group>"; };
+		EFA347301BD5E444009ED5DC /* t_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_coverage.cpp; sourceTree = "<group>"; };
+		EFA347311BD5E444009ED5DC /* t_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = t_coverage.hpp; sourceTree = "<group>"; };
+		EFA347331BD5E46D009ED5DC /* m_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_coverage.cpp; sourceTree = "<group>"; };
+		EFA347341BD5E46D009ED5DC /* m_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_coverage.hpp; sourceTree = "<group>"; };
+		EFA347361BD5E47D009ED5DC /* l_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = l_coverage.cpp; sourceTree = "<group>"; };
+		EFA347371BD5E47D009ED5DC /* l_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_coverage.hpp; sourceTree = "<group>"; };
+		EFA347391BD5E491009ED5DC /* f_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_coverage.cpp; sourceTree = "<group>"; };
+		EFA3473A1BD5E491009ED5DC /* f_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_coverage.hpp; sourceTree = "<group>"; };
 		EFA9DE711BCB7D6100780182 /* coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = coverage.cpp; path = ../src/tools/coverage.cpp; sourceTree = "<group>"; };
 		EFA9DE721BCB7D6100780182 /* coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = coverage.hpp; path = ../src/tools/coverage.hpp; sourceTree = "<group>"; };
 		EFA9DE781BCB8C6A00780182 /* v_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_coverage.cpp; path = ../src/variant/v_coverage.cpp; sourceTree = "<group>"; };
@@ -493,6 +505,8 @@
 		EF9ACCDB1B5FB5480085D1B2 /* trans */ = {
 			isa = PBXGroup;
 			children = (
+				EFA347301BD5E444009ED5DC /* t_coverage.cpp */,
+				EFA347311BD5E444009ED5DC /* t_coverage.hpp */,
 				EF9ACCE01B5FB5480085D1B2 /* t_align.cpp */,
 				EF9ACCE11B5FB5480085D1B2 /* t_align.hpp */,
 				EF9ACCE31B5FB5480085D1B2 /* t_assembly.cpp */,
@@ -551,6 +565,8 @@
 			children = (
 				EFB7FF271B4F79C20045DC6A /* l_abund.cpp */,
 				EFB7FF281B4F79C20045DC6A /* l_abund.hpp */,
+				EFA347361BD5E47D009ED5DC /* l_coverage.cpp */,
+				EFA347371BD5E47D009ED5DC /* l_coverage.hpp */,
 				EFB7FF291B4F79C20045DC6A /* l_diffs.cpp */,
 				EFB7FF2A1B4F79C20045DC6A /* l_diffs.hpp */,
 				EF31E82B1B6123A70095F3E8 /* l_norm.cpp */,
@@ -566,6 +582,8 @@
 				EF5E857B1B6B5B0E00FF61D8 /* f_align.cpp */,
 				EF5E857C1B6B5B0E00FF61D8 /* f_align.hpp */,
 				EF1804A41B65C4F500897D1E /* f_classify.hpp */,
+				EFA347391BD5E491009ED5DC /* f_coverage.cpp */,
+				EFA3473A1BD5E491009ED5DC /* f_coverage.hpp */,
 				EFB7FF2C1B4F79D00045DC6A /* f_discover.cpp */,
 				EFB7FF2D1B4F79D00045DC6A /* f_discover.hpp */,
 				EF18049E1B65C06F00897D1E /* f_express.cpp */,
@@ -664,19 +682,21 @@
 		EFECDC0C1AE7510700F0FD9A /* meta */ = {
 			isa = PBXGroup;
 			children = (
-				EF2106AA1BB193670045325B /* m_align.cpp */,
-				EF2106AB1BB193670045325B /* m_align.hpp */,
-				EFF820CA1BAFA497009CC6C6 /* m_velvet.hpp */,
 				EF3CD3021B6671F5005644C4 /* m_abund.cpp */,
 				EF3CD3031B6671F5005644C4 /* m_abund.hpp */,
+				EF2106AA1BB193670045325B /* m_align.cpp */,
+				EF2106AB1BB193670045325B /* m_align.hpp */,
 				EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */,
 				EFECDC101AE7510700F0FD9A /* m_assembly.hpp */,
 				EF4270B41B21C21B00C9ED4E /* m_blat.cpp */,
 				EF4270B51B21C21B00C9ED4E /* m_blat.hpp */,
+				EFA347331BD5E46D009ED5DC /* m_coverage.cpp */,
+				EFA347341BD5E46D009ED5DC /* m_coverage.hpp */,
 				EF8ADAE71B220767005E2187 /* m_diffs.cpp */,
 				EF8ADAE81B220767005E2187 /* m_diffs.hpp */,
 				EFACC7591B1F0C80004A9770 /* m_histogram.cpp */,
 				EFACC75A1B1F0C80004A9770 /* m_histogram.h */,
+				EFF820CA1BAFA497009CC6C6 /* m_velvet.hpp */,
 				EF6930C61B66F4AC00CADFD1 /* m_viewer.hpp */,
 			);
 			name = meta;
@@ -789,6 +809,7 @@
 				EF4270A01B213B1D00C9ED4E /* t_different.cpp in Sources */,
 				EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */,
 				EFB3FF621B4A30DC0065CEA0 /* parser_top_fusion.cpp in Sources */,
+				EFA347381BD5E47D009ED5DC /* l_coverage.cpp in Sources */,
 				EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */,
 				EFDD6AD61B0DD76C00450029 /* string_alloc.c in Sources */,
 				EF3F743E1B980647008239DB /* v_allele.cpp in Sources */,
@@ -808,6 +829,8 @@
 				EFDD6A991B0DD76200450029 /* md5.c in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
+				EFA3473B1BD5E491009ED5DC /* f_coverage.cpp in Sources */,
+				EFA347351BD5E46D009ED5DC /* m_coverage.cpp in Sources */,
 				EFDD6ACE1B0DD76C00450029 /* cram_samtools.c in Sources */,
 				EFDD6A971B0DD76200450029 /* knetfile.c in Sources */,
 				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
@@ -835,6 +858,7 @@
 				EF3860E81AD3783A0062D246 /* parser_tracking.cpp in Sources */,
 				EFDD6AC91B0DD76C00450029 /* cram_codecs.c in Sources */,
 				EFC625521B65FBBD003CFA52 /* t_discover.cpp in Sources */,
+				EFA347321BD5E444009ED5DC /* t_coverage.cpp in Sources */,
 				EF2615701B5FF99F00BE8037 /* GArgs.cpp in Sources */,
 				EF26156D1B5FF98A00BE8037 /* GStr.cpp in Sources */,
 				EFDD6ACA1B0DD76C00450029 /* cram_decode.c in Sources */,
