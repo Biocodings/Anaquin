@@ -73,9 +73,6 @@ namespace Anaquin
                 _rawMIDs.insert(id);
             }
 
-            // Return number of sequins in the mixture
-            inline std::size_t countMixes() const { return _mixes.size(); }
-
             // Return all validated sequins
             inline const std::map<SequinID, Data> &data() const { return _data; }
 
@@ -98,7 +95,7 @@ namespace Anaquin
             }
         
             /*
-             * Construct a histogram for each validated sequin
+             * Construct a histogram for each sequin
              */
 
             inline SequinHist hist() const
@@ -113,7 +110,7 @@ namespace Anaquin
                 return h;
             }
 
-            // Calculate the total size of all sequins in the reference
+            // Calculate the total length of all sequins in the reference
             inline Base size() const
             {
                 Base n = 0;
@@ -129,6 +126,7 @@ namespace Anaquin
 
             virtual void validate() = 0;
 
+            // Calculate the detection limits
             inline Sensitivity limit(const SequinHist &h) const
             {
                 return limit(h, [&](const SequinID &id)

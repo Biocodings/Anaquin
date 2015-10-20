@@ -1,8 +1,8 @@
-#include "variant/v_coverage.hpp"
+#include "meta/m_coverage.hpp"
 
 using namespace Anaquin;
 
-VCoverage::Stats VCoverage::stats(const FileName &file, const Options &o)
+MCoverage::Stats MCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
@@ -11,16 +11,16 @@ VCoverage::Stats VCoverage::stats(const FileName &file, const Options &o)
     
     stats = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
     {
-        return align.id == r.id ? static_cast<bool>(r.r_var.findGeno(align.l)) : false;
+        return align.id == r.id ? static_cast<bool>(r.r_meta.match(align.l, MatchRule::Contains)) : false;
     });
 
     return stats;
 }
 
-void VCoverage::report(const FileName &file, const VCoverage::Options &o)
+void MCoverage::report(const FileName &file, const MCoverage::Options &o)
 {
     const auto &r    = Standard::instance();
-    const auto stats = VCoverage::stats(file, o);
+    const auto stats = MCoverage::stats(file, o);
 
     CoverageTool::CoverageBedGraphOptions bo;
 
@@ -29,13 +29,13 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
      */
     
     bo.writer = o.writer;
-    bo.file   = "VarCoverage_chrT.bedgraph";
+    bo.file   = "MetaCoverage_chrT.bedgraph";
     bo.chr    = "chrT";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
-        return r.r_var.findGeno(Locus(i, j));
+        return r.r_meta.match(Locus(i, j), MatchRule::Contains);
     });
 
     /*
@@ -45,13 +45,13 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     CoverageTool::CoverageReportOptions to;
     
     to.writer   = o.writer;
-    to.summary  = "VarCoverage_summary.stats";
+    to.summary  = "MetaCoverage_summary.stats";
     to.refs     = r.r_var.hist().size();
     to.length   = r.r_var.size();
 
     CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
-        return r.r_var.findGeno(Locus(i, j));
+        return r.r_meta.match(Locus(i, j), MatchRule::Contains);
     });
 }
