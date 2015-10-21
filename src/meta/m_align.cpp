@@ -18,12 +18,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
             o.wait(std::to_string(info.p.i));
         }
 
-        if (!align.i)
-        {
-            if      (!align.mapped)                       { stats.unmapped++; }
-            else if (align.id != Standard::instance().id) { stats.n_expT++;   }
-            else                                          { stats.n_chrT++;   }
-        }
+        stats.update(align);
         
         if (!align.mapped || align.id != Standard::instance().id)
         {

@@ -7,14 +7,11 @@ LCoverage::Stats LCoverage::stats(const FileName &file, const Options &o)
     o.analyze(file);
     
     const auto &r = Standard::instance();
-    Stats stats;
-    
-    stats = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
+
+    return CoverageTool::stats(file,  [&](const Alignment &align, const ParserProgress &)
     {
         return align.id == r.id ? static_cast<bool>(r.r_lad.match(align.l, MatchRule::Contains)) : false;
     });
-
-    return stats;
 }
 
 void LCoverage::report(const FileName &file, const LCoverage::Options &o)

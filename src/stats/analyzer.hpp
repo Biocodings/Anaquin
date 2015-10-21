@@ -92,8 +92,18 @@ namespace Anaquin
     struct AlignmentStats : public MappingStats, public SingleInputStats
     {
         Counts unmapped = 0;
+        
+        template <typename T> void update(const T &t)
+        {
+            if (!t.i)
+            {
+                if      (!t.mapped)                       { unmapped++; }
+                else if (t.id != Standard::instance().id) { n_expT++;   }
+                else                                      { n_chrT++;   }
+            }
+        }
     };
-    
+
 //    /*
 //     * Represents a sequin that is not detected in the experiment
 //     */

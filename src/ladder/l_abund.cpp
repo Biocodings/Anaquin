@@ -34,12 +34,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
             o.wait(std::to_string(info.p.i));
         }
 
-        if (!align.i)
-        {
-            if      (!align.mapped)      { stats.unmapped++; }
-            else if (!r.match(align.id)) { stats.n_expT++;   }
-            else                         { stats.n_chrT++;   }
-        }
+        stats.update(align);
 
         if (!align.mapped || !r.match(align.id))
         {

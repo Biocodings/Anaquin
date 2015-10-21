@@ -16,6 +16,8 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
         {
             stats.hist[align.mapped ? align.id : "NA"]++;
         }
+        
+        stats.update(align);
 
         if (align.mapped && f(align, info.p))
         {
