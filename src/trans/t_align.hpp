@@ -10,7 +10,7 @@ namespace Anaquin
         public:
             typedef FuzzyOptions Options;
 
-            struct Stats : public MappingStats
+            struct Stats : public AlignmentStats
             {
                 Counts unmapped = 0;
 
