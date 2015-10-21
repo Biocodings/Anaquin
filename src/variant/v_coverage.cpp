@@ -27,10 +27,9 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     /*
      * Generating bedgraph for the standards
      */
-    
+
     bo.writer = o.writer;
     bo.file   = "VarCoverage_chrT.bedgraph";
-    bo.chr    = "chrT";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {

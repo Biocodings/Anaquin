@@ -5,6 +5,22 @@
 
 using namespace Anaquin;
 
+static bool checkGenoQuery(const ChromoID &queryID, const ChromoID &id, const Locus &l)
+{
+    const auto &r = Standard::instance();
+
+    if (id == r.id)
+    {
+        return r.r_var.findGeno(l);
+    }
+    else if (id == queryID)
+    {
+        return r.r_var.findQuery(queryID, l);
+    }
+
+    return false;
+}
+
 VSample::Stats VSample::stats(const FileName &file, const Options &o)
 {
     assert(!o.queryID.empty());
@@ -27,16 +43,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
             o.wait(std::to_string(p.i));
         }
         
-        if (align.id == r.id)
-        {
-            return static_cast<bool>(r.r_var.findGeno(align.l));
-        }
-        else if (align.id == o.queryID)
-        {
-            return static_cast<bool>(r.r_var.findQuery(o.queryID, align.l));
-        }
-
-        return false;
+        return checkGenoQuery(o.queryID, align.id, align.l);
     });
 
     if (!stats.cov.hist.count(r.id))
@@ -191,6 +198,34 @@ void VSample::report(const FileName &file, const Options &o)
 
     // Statistics after alignment
     const auto after = VSample::stats(o.working + "/VarSample_sampled.bam", o);
+
+    /*
+     * Generating bedgraph for the pre-statistics
+     */
+    
+    auto pre = CoverageTool::CoverageBedGraphOptions();
+    
+    pre.writer = o.writer;
+    pre.file   = "VarSample_before.bedgraph";
+
+    CoverageTool::bedGraph(before.cov, pre, [&](const ChromoID &id, Base i, Base j, Coverage)
+    {
+        return checkGenoQuery(o.queryID, id, Locus(i, j));
+    });
+
+    /*
+     * Generating statistics for the post-statistics
+     */
+    
+    auto post = CoverageTool::CoverageBedGraphOptions();
+
+    post.writer = o.writer;
+    post.file   = "VarSample_after.bedgraph";
+
+    CoverageTool::bedGraph(after.cov, pre, [&](const ChromoID &id, Base i, Base j, Coverage)
+    {
+        return checkGenoQuery(o.queryID, id, Locus(i, j));
+    });
     
     /*
      * Generating summary statistics

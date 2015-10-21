@@ -30,7 +30,6 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     
     bo.writer = o.writer;
     bo.file   = "MetaCoverage_chrT.bedgraph";
-    bo.chr    = "chrT";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {

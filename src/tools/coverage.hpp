@@ -38,13 +38,10 @@ namespace Anaquin
         
         struct CoverageBedGraphOptions
         {
-            // Filename for the generated bedgraph
+            // Where the bedgraph should be generated
             FileName file;
             
-            // The chromosome from which the coverage is generated
-            ChromoID chr;
-            
-            // Where the data should be written
+            // How the data should be written
             std::shared_ptr<Writer> writer;
         };
         

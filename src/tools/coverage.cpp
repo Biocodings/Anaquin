@@ -34,25 +34,23 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
 void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o, CoverageFunctor f)
 {
     o.writer->open(o.file);
-    
-    const auto chr = stats.inters.find(o.chr);
 
-    if (!chr)
+    for (const auto &i : stats.inters.map())
     {
-        return;
-    }
-    
-    chr->bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
-    {
-        if (depth)
+        const auto chr = i.second;
+
+        chr.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
-            o.writer->write((boost::format("%1%\t%2%\t%3%\t%4%") % id
-                                                                 % i
-                                                                 % j
-                                                                 % depth).str());
-        }
-    });
-    
+            if (depth && f(id, i, j, depth))
+            {
+                o.writer->write((boost::format("%1%\t%2%\t%3%\t%4%") % id
+                                                                     % i
+                                                                     % j
+                                                                     % depth).str());
+            }
+        });
+    }
+
     o.writer->close();
 }
 

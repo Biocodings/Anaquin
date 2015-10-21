@@ -30,7 +30,6 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
     
     bo.writer = o.writer;
     bo.file   = "FusionCoverage_chrT.bedgraph";
-    bo.chr    = "chrT";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {

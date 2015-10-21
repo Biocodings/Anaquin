@@ -30,7 +30,6 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     
     bo.writer = o.writer;
     bo.file   = "TransCoverage_chrT.bedgraph";
-    bo.chr    = "chrT";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {

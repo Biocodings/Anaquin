@@ -30,7 +30,6 @@ void LCoverage::report(const FileName &file, const LCoverage::Options &o)
     
     bo.writer = o.writer;
     bo.file   = "LadderCoverage_chrT.bedgraph";
-    bo.chr    = "chrT";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
