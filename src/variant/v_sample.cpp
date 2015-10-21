@@ -222,7 +222,7 @@ void VSample::report(const FileName &file, const Options &o)
     post.writer = o.writer;
     post.file   = "VarSample_after.bedgraph";
 
-    CoverageTool::bedGraph(after.cov, pre, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::bedGraph(after.cov, post, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
         return checkGenoQuery(o.queryID, id, Locus(i, j));
     });
