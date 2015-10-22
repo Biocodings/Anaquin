@@ -67,7 +67,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                          "   Synthetic:   %4% reads\n\n"
                          "   Reference:   %5% genes\n"
                          "   Sensitivity: %6%\n"
-                         "   Specificity: %7%\n\n"
+                         "   Accuracy:    %7%\n\n"
                          "   Detection limit: %8% (%9%)\n\n"
                          "   Dilution:    %10%\n";
 
