@@ -99,7 +99,7 @@ void MAlign::report(const FileName &file, const Options &o)
     o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
     
     const auto format = "%1%\t%2%";
-    o.writer->write((boost::format(format) % "id" % "counts (reads)").str());
+    o.writer->write((boost::format(format) % "ID" % "Counts (reads)").str());
     
     for (const auto &i : stats.h)
     {
