@@ -1,6 +1,7 @@
 #include "variant/v_align.hpp"
 #include "variant/v_sample.hpp"
 #include "parsers/parser_sam.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace Anaquin;
 
@@ -16,12 +17,18 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     
     for (auto &i : r.data())
     {
-        Interval in(i.first, i.second.l);
-        std::cout << i.first << " " << i.second.l.start << " " << i.second.l.end << std::endl;
+        if (boost::algorithm::ends_with(i.first, "_V"))
+        {
+            continue;
+        }
+        
+        const auto id = i.first.substr(0, i.first.size() - 2);
+        
+        Interval in(id, i.second.l);
+        std::cout << id << " " << i.second.l.start << " " << i.second.l.end << std::endl;
         ii.add(in);
     }
-    
-    
+
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
         if (!align.i && !(info.p.i % 1000000))
@@ -47,7 +54,10 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
             return (match = r.findGeno(align.l, Contains)) ? Positive : Negative;
         }))
         {
-            ii.find(match->id)->add(align.l);
+            const auto l = ii.find(match->id);
+            Locus t = Locus(align.l.start - l->l().start, align.l.end - l->l().end);
+            ii.find(match->id)->add(t);
+ 
             stats.h.at(match->id)++;
         }
     });
