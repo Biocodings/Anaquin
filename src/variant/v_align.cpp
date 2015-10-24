@@ -47,7 +47,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
             return (match = r.findGeno(align.l, Contains)) ? Positive : Negative;
         }))
         {
-            ii.find(align.id)->add(align.l);
+            ii.find(match->id)->add(align.l);
             stats.h.at(match->id)++;
         }
     });
@@ -69,9 +69,15 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                     % stats.p.m.sp()).str());
     o.info("Generating summary statistics");
 
-    const auto ss = ii.find("chrT")->stats();
+    double covered = 0;
     
-    std::cout << ss.covered() << std::endl;
+    for (auto i : ii.map())
+    {
+        covered += i.second.stats().covered();
+        std::cout << i.second.stats().covered() << std::endl;
+    }
+    
+    covered = covered / ii.map().size();
     
     /*
      * Write out summary statistics
@@ -96,7 +102,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()
                                             % stats.p.m.sp()
-                                            % ss.covered()
+                                            % covered
                                             % stats.p.s.abund
                                             % stats.p.s.id
                                             % stats.dilution()).str());
