@@ -1,4 +1,5 @@
 #include "variant/v_align.hpp"
+#include "variant/v_sample.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -11,6 +12,16 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
 
     o.info("Parsing alignment file");
 
+    Intervals ii;
+    
+    for (auto &i : r.data())
+    {
+        Interval in(i.first, i.second.l);
+        std::cout << i.first << " " << i.second.l.start << " " << i.second.l.end << std::endl;
+        ii.add(in);
+    }
+    
+    
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
         if (!align.i && !(info.p.i % 1000000))
@@ -36,6 +47,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
             return (match = r.findGeno(align.l, Contains)) ? Positive : Negative;
         }))
         {
+            ii.find(align.id)->add(align.l);
             stats.h.at(match->id)++;
         }
     });
@@ -57,6 +69,10 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                     % stats.p.m.sp()).str());
     o.info("Generating summary statistics");
 
+    const auto ss = ii.find("chrT")->stats();
+    
+    std::cout << ss.covered() << std::endl;
+    
     /*
      * Write out summary statistics
      */
@@ -68,8 +84,9 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                          "   Reference:   %5% genes\n"
                          "   Sensitivity: %6%\n"
                          "   Accuracy:    %7%\n\n"
-                         "   Detection limit: %8% (%9%)\n\n"
-                         "   Dilution:    %10%\n";
+                         "   Base Covered:    %8%\n\n"
+                         "   Detection limit: %9% (%10%)\n\n"
+                         "   Dilution:    %11%\n";
 
     o.writer->open("VarAlign_summary.stats");
     o.writer->write((boost::format(summary) % file
@@ -79,6 +96,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()
                                             % stats.p.m.sp()
+                                            % ss.covered()
                                             % stats.p.s.abund
                                             % stats.p.s.id
                                             % stats.dilution()).str());
