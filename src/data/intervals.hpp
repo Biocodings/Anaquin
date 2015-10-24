@@ -38,6 +38,8 @@ namespace Anaquin
 
                 // Number of bases with zero coverage
                 Counts zeros = 0;
+
+                inline double covered() const { return nonZeros / length; }
             };
 
             Interval(const IntervalID &id, const Locus &l) : _id(id), _l(l)
