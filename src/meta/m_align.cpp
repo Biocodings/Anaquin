@@ -200,14 +200,6 @@ void MAlign::report(const FileName &file, const Options &o)
         const auto a = i.second;
         const auto ss  = i.second.stats();
 
-        if (i.first == "M9_G")
-        {
-            double b = ss.covered();
-            int a = 1;
-            std::cout << b << std::endl;
-            a = 1;
-        }
-        
         o.writer->write((boost::format(format) % i.first
                                                % sh.at(i.first)
                                                % bh.at(i.first)
