@@ -11,10 +11,17 @@ namespace Anaquin
 
         struct Stats : public AlignmentStats
         {
-            Performance p;
+            // Overall performance
+            std::map<PerfLevel, Performance> p;
 
-            // Distribution of the sequins
-            SequinHist h = Standard::instance().r_meta.hist();
+            // Performance for all species at the base level
+            std::map<GenomeID, Performance> base;
+
+            // Performance for all species at the sequin level
+            std::map<GenomeID, Performance> seq;
+            
+            // Reference species
+            Intervals inters;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

@@ -156,14 +156,9 @@ void Standard::v_mix(const Reader &r)
 
 void Standard::m_ref(const Reader &r)
 {
-    /*
-     * MG_15   1       4720    MG_15   1       +
-     * MG_19   1       4216    MG_19   1       +
-     */
-    
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
-        r_meta.addStand(f.id, f.l.length());
+        r_meta.addStand(f.id, f.l);
     });
 }
 

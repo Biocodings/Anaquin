@@ -2,6 +2,7 @@
 #define INTERVALS_HPP
 
 #include <map>
+#include <numeric>
 #include "data/locus.hpp"
 #include "data/types.hpp"
 
@@ -53,6 +54,21 @@ namespace Anaquin
                 if (l.end < _covs.size())   { _covs[l.end].ends++;     }
                 else                        { _covs.back().ends++;     }
             };
+
+            inline Base add_(const Locus &l)
+            {
+                const auto start = std::max(_l.start, l.start);
+                const auto end   = std::min(_l.end,   l.end);
+                
+                if (start <= end)
+                {
+                    _covs[start].starts++;
+                    _covs[end].ends++;
+                }
+                
+                return ((l.start < _l.start) ? _l.start -  l.start : 0) +
+                       ((l.end   > _l.end)   ?  l.end   - _l.end   : 0);
+            }
 
             template <typename T> Stats stats(T t) const
             {
@@ -160,7 +176,7 @@ namespace Anaquin
             Locus _l;
             IntervalID _id;
 
-            // One for each base in the interval
+            // For each base in the interval
             std::vector<Depth> _covs;
     };
 
@@ -175,17 +191,17 @@ namespace Anaquin
                 _inters.insert(std::map<Interval::IntervalID, Interval>::value_type(i.id(), i));
             }
 
-            inline Interval *find(const Interval::IntervalID &id)
+            inline Interval * find(const Interval::IntervalID &id)
             {
                 return _inters.count(id) ? &(_inters.at(id)) : nullptr;
             }
 
-            inline const Interval *find(const Interval::IntervalID &id) const
+            inline const Interval * find(const Interval::IntervalID &id) const
             {
                 return _inters.count(id) ? &(_inters.at(id)) : nullptr;
             }
-        
-            inline Interval *find(const Locus &l)
+
+            inline Interval * contains(const Locus &l)
             {
                 for (auto &i : _inters)
                 {
@@ -198,10 +214,32 @@ namespace Anaquin
                 return nullptr;
             }
 
+            inline Interval *overlap(const Locus &l)
+            {
+                for (auto &i : _inters)
+                {
+                    if (i.second.l().overlap(l))
+                    {
+                        return &i.second;
+                    }
+                }
+
+                return nullptr;
+            }
+        
             inline const IntervalMap &map() const { return _inters; }
 
             // Number of intervals
             inline std::size_t size() const { return _inters.size(); }
+
+            inline Base length() const
+            {
+                return std::accumulate(_inters.begin(), _inters.end(), 0,
+                          [&](int sums, const std::pair<Interval::IntervalID, Interval> & p)
+                          {
+                              return sums + p.second.l().length();
+                          });
+            }
 
         private:
             IntervalMap _inters;

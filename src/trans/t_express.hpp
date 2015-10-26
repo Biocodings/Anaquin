@@ -15,7 +15,7 @@ namespace Anaquin
 
         struct Stats : public LinearStats, public MappingStats
         {
-            Sensitivity ss;
+            Limit ss;
 
             // The keys depend on whether it's a gene or isoform analysis
             std::map<std::string, Counts> h;

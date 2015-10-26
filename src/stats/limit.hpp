@@ -1,12 +1,12 @@
-#ifndef SENSITIVITY_HPP
-#define SENSITIVITY_HPP
+#ifndef LIMIT_HPP
+#define LIMIT_HPP
 
 #include <math.h>
 #include "data/types.hpp"
 
 namespace Anaquin
 {
-    struct Sensitivity
+    struct Limit
     {
         SequinID id;
 

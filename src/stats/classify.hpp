@@ -2,8 +2,8 @@
 #define CLASSIFY_HPP
 
 #include <iostream>
+#include "stats/limit.hpp"
 #include "data/standard.hpp"
-#include "stats/sensitivity.hpp"
 #include <ss/data/confusion.hpp>
 
 namespace Anaquin
@@ -45,13 +45,28 @@ namespace Anaquin
     };
 
     /*
-     * Overall performance for a classifer
+     * Overall performance for a metric
      */
     
     struct Performance
     {
         Confusion m;
-        Sensitivity s;
+
+        // Detection limit
+        Limit s;
+
+        // Distribution of the performance
+        SequinHist h;
+    };
+
+    /*
+     * Possible levels for the performance
+     */
+
+    enum PerfLevel
+    {
+        BasePerf,
+        SequinPerf,
     };
 
     /*

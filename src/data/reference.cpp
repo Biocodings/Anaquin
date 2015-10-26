@@ -1,9 +1,19 @@
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
-#include <boost/algorithm/string/predicate.hpp>
 #include <iostream>
-
 using namespace Anaquin;
+
+template <typename Key, typename Value> std::set<Key> getKeys(const std::map<Key, Value> &m)
+{
+    std::set<Key> keys;
+
+    for(auto i: m)
+    {
+        keys.insert(i.first);
+    }
+    
+    return keys;
+}
 
 /*
  * ------------------------- Metagenomics Analysis -------------------------
@@ -12,26 +22,17 @@ using namespace Anaquin;
 struct MetaRef::MetaRefImpl
 {
     /*
-     * Validated resources
+     * Raw data
      */
 
-    std::set<SequinID> seqID;
-    std::map<SequinID, Base> baseBySeqID;
-
-    /*
-     * Raw resources
-     */
-
-    std::set<SequinID> rawSeqID;
-    std::map<SequinID, Base> rawBaseBySeqID;
+    std::map<SequinID, Locus> rawStands;
 };
 
 MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
 
-void MetaRef::addStand(const SequinID &id, Base l)
+void MetaRef::addStand(const SequinID &id, const Locus &l)
 {
-    _impl->rawSeqID.insert(id);
-    _impl->rawBaseBySeqID[id] = l;
+    _impl->rawStands[id] = l;
 }
 
 void MetaRef::validate()
@@ -39,28 +40,35 @@ void MetaRef::validate()
     /*
      * Validation rule:
      *
-     *     standards OR mixture
+     *   1: Standards & Mixtures (eg: MetaAlign)
+     *   2: Mixtures (eg: MetaAssembly, MetaExpress)
      */
     
-    if (!_rawMIDs.empty())
+    if (!_rawMIDs.empty() && !_impl->rawStands.empty()) // Case 1
+    {
+        merge(_rawMIDs, getKeys(_impl->rawStands));
+    }
+    else if (!_rawMIDs.empty())                         // Case 2
     {
         merge(_rawMIDs);
     }
     else
     {
-        merge(_impl->rawSeqID);
+        throw std::runtime_error("Unknown validation error");
     }
-    
-    _impl->seqID       = _impl->rawSeqID;
-    _impl->baseBySeqID = _impl->rawBaseBySeqID;
 
-    for (auto &i : _data)
+    for (const auto &i : _impl->rawStands)
     {
-        if (_impl->seqID.count(i.first))
+        if (_data.count(i.first))
         {
-            i.second.length = _impl->baseBySeqID.at(i.first);
+            _data.at(i.first).l = i.second;
         }
     }
+}
+
+const SequinData * MetaRef::contains(const GenomeID &id, const Locus &l) const
+{
+    return _data.count(id) && _data.at(id).l.contains(l) ? &(_data.at(id)) : nullptr;
 }
 
 /*
@@ -94,7 +102,7 @@ struct LadderRef::LadderRefImpl
 
 LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
 
-Sensitivity LadderRef::limitJoin(const JoinHist &h) const
+Limit LadderRef::limitJoin(const JoinHist &h) const
 {
     return Reference<SequinData, SequinStats>::limit(h, [&](const JoinID &id)
     {
@@ -371,7 +379,7 @@ TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
 Base TransRef::exonBase() const { return _impl->exonBase; }
 
-Sensitivity TransRef::limitGene(const GeneHist &h) const
+Limit TransRef::limitGene(const GeneHist &h) const
 {
     return Reference<TransData, SequinStats>::limit(h, [&](const GeneID &id)
     {
@@ -745,7 +753,7 @@ const VarRef::GenotypeData * VarRef::findGeno(const Locus &l, double fuzzy, Matc
     return nullptr;
 }
 
-Sensitivity VarRef::limitGeno(const GenoHist &h) const
+Limit VarRef::limitGeno(const GenoHist &h) const
 {
     return Reference<SequinData, SequinStats>::limit(h, [&](const VarRef::GenoID &id)
     {
@@ -871,8 +879,8 @@ const Interval * VarRef::findQuery(const ChromoID &chr, const Locus &l) const
     {
         throw std::runtime_error("Failed to find " + chr + " in the reference intervals");
     }
-    
-    return _impl->inters.at(chr).find(l);
+
+    return _impl->inters.at(chr).contains(l);
 }
 
 const Variation * VarRef::findVar(const Locus &l, double fuzzy, MatchRule match) const

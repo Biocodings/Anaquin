@@ -3,10 +3,10 @@
 
 #include <map>
 #include <memory>
+#include "stats/limit.hpp"
 #include <boost/format.hpp>
 #include "stats/classify.hpp"
 #include "writers/r_writer.hpp"
-#include "stats/sensitivity.hpp"
 #include "writers/mock_writer.hpp"
 #include <ss/regression/linear.hpp>
 
@@ -188,7 +188,7 @@ namespace Anaquin
 
     struct LinearStats : public std::map<SequinID, Point>
     {
-        Sensitivity s;
+        Limit s;
 
         inline void add(const SequinID &id, double x, double y)
         {

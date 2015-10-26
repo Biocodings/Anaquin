@@ -2,9 +2,9 @@
 #define REFERENCE_HPP
 
 #include <map>
+#include "stats/limit.hpp"
 #include "data/intervals.hpp"
 #include "data/variation.hpp"
-#include "stats/sensitivity.hpp"
 
 namespace Anaquin
 {
@@ -66,8 +66,20 @@ namespace Anaquin
     {
         public:
 
+            inline Intervals intervals() const
+            {
+                Intervals inters;
+
+                for (const auto &i : _data)
+                {
+                    inters.add(Interval(i.first, i.second.l));
+                }
+                
+                return inters;
+            }
+        
             // Add a sequin defined in a mixture file
-            void add(const SequinID &id, Base length, Concentration c, Mixture m)
+            inline void add(const SequinID &id, Base length, Concentration c, Mixture m)
             {
                 _mixes[m].insert(MixtureData(id, length, c));
                 _rawMIDs.insert(id);
@@ -127,7 +139,7 @@ namespace Anaquin
             virtual void validate() = 0;
 
             // Calculate the detection limits
-            inline Sensitivity limit(const SequinHist &h) const
+            inline Limit limit(const SequinHist &h) const
             {
                 return limit(h, [&](const SequinID &id)
                 {
@@ -142,10 +154,10 @@ namespace Anaquin
              * distribution.
              */
 
-            template <typename F> Sensitivity limit
+            template <typename F> Limit limit
                                 (const std::map<std::string, Counts> &h, F f, Mixture m = Mix_1) const
             {
-                Sensitivity s;
+                Limit s;
             
                 // The lowest count must be zero because it can't be negative
                 s.counts = std::numeric_limits<unsigned>::max();
@@ -188,8 +200,8 @@ namespace Anaquin
             struct MixtureData
             {
                 MixtureData(const SequinID &id, Base length, Concentration abund)
-                    : id(id), length(length), abund(abund) {}
-            
+                        : id(id), length(length), abund(abund) {}
+
                 inline bool operator<(const MixtureData &x)  const { return id < x.id;  }
                 inline bool operator==(const MixtureData &x) const { return id == x.id; }
             
@@ -292,7 +304,7 @@ namespace Anaquin
             Stats _stats;
 
             /*
-             * Raw data - structure before validated
+             * Raw data - before validation
              */
         
             // Set of IDs defined in the mixture
@@ -328,7 +340,7 @@ namespace Anaquin
             JoinHist joinHist() const;
 
             // Calculate the limit of detection at the joined level
-            Sensitivity limitJoin(const JoinHist &) const;
+            Limit limitJoin(const JoinHist &) const;
 
             // Return abundance for all segments of a particular conjoined
             void abund(const JoinID &, Concentration &, Concentration &, Concentration &, Concentration &,
@@ -352,8 +364,11 @@ namespace Anaquin
         
             void validate() override;
 
-            void addStand(const SequinID &, Base l);
-        
+            void addStand(const SequinID &, const Locus &);
+
+            // Whether the locus is contained in one of the genomes
+            const SequinData * contains(const GenomeID &, const Locus &) const;
+
         private:
 
             struct MetaRefImpl;
@@ -467,7 +482,7 @@ namespace Anaquin
             void validate() override;
 
             // Return the detection limit at the pair level
-            Sensitivity limitGeno(const GenoHist &) const;
+            Limit limitGeno(const GenoHist &) const;
        
             // Return a histogram for all the validated pairs
             GenoHist genoHist() const;
@@ -591,7 +606,7 @@ namespace Anaquin
             void validate() override;
 
             // Calculate the detection limit at the gene level
-            Sensitivity limitGene(const GeneHist &) const;
+            Limit limitGene(const GeneHist &) const;
 
             // Number of non-overlapping bases in all exons
             Base exonBase() const;

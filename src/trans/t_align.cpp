@@ -14,10 +14,7 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
-        if (!align.i && !(info.p.i % 1000000))
-        {
-            o.wait(std::to_string(info.p.i));
-        }
+        REPORT_STATUS();
 
         stats.update(align);
 
@@ -69,7 +66,7 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     /*
      * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
-     * as a reference. Anything that is undetected in the experiment will be counted as a single reference.
+     * as a reference. Anything that is undetected will be counted as a single reference.
      */
 
     sums(stats.he, stats.pe.m.nr);

@@ -11,7 +11,7 @@ namespace Anaquin
 
         struct Stats : public FDiscover::Stats
         {
-            Sensitivity ss;
+            Limit ss;
         };
 
         static Stats report(const FileName &, const Options &o = Options());

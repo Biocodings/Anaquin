@@ -42,7 +42,7 @@ namespace Anaquin
             // Alignment for the two alignment files
             MBlat::Stats align_1, align_2;
 
-            Sensitivity ss;
+            Limit ss;
             
             // Distribution of the sequins
             SequinHist h = Standard::instance().r_meta.hist();

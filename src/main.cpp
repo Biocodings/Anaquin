@@ -211,12 +211,12 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
-    { TOOL_M_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1                     } },
+    { TOOL_M_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1                   } },
     { TOOL_M_IGV,      { OPT_FA_1                                              } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1                        } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1                      } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
-    { TOOL_M_COVERAGE, { OPT_R_GTF } },
+    { TOOL_M_COVERAGE, { OPT_R_BED_1 } },
 
     /*
      * Fusion Analysis
@@ -1205,7 +1205,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV:   { viewer<FViewer>();             break; }
+                case TOOL_M_IGV:   { viewer<FViewer>();            break; }
                 case TOOL_M_ALIGN: { analyze_1<MAlign>(OPT_BAM_1); break; }
 
                 case TOOL_M_DIFF:

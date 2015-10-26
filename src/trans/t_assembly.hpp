@@ -20,7 +20,7 @@ namespace Anaquin
             SequinHist hi = Standard::instance().r_trans.hist();
             SequinHist ht = Standard::instance().r_trans.hist();
 
-            Sensitivity sb, si, se, st;
+            Limit sb, si, se, st;
         };
 
         static Stats report(const std::string &, const Options &o = Options());

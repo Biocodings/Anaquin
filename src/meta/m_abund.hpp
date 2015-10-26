@@ -104,7 +104,7 @@ namespace Anaquin
         
         struct Stats : public LinearStats, public MappingStats
         {
-            Sensitivity ss;
+            Limit ss;
 
             // Distribution of the sequins
             SequinHist h = Standard::instance().r_meta.hist();
