@@ -15,11 +15,8 @@ namespace Anaquin
             std::map<PerfLevel, Performance> p;
 
             // Performance for all species at the base level
-            std::map<GenomeID, Performance> base;
+            std::map<GenomeID, Confusion> base;
 
-            // Performance for all species at the sequin level
-            std::map<GenomeID, Performance> seq;
-            
             // Reference species
             Intervals inters;
         };

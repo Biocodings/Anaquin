@@ -92,6 +92,16 @@ namespace Anaquin
     struct AlignmentStats : public MappingStats, public SingleInputStats
     {
         Counts unmapped = 0;
+
+        template <typename T, typename F> void update(const T &t, F f)
+        {
+            if (!t.i)
+            {
+                if      (!t.mapped) { unmapped++; }
+                else if (!f(t))     { n_expT++;   }
+                else                { n_chrT++;   }
+            }
+        }
         
         template <typename T> void update(const T &t)
         {

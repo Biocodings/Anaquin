@@ -43,21 +43,26 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     for (const auto &i : stats.inters.map())
     {
-        fps[i.first] = i.second.l().length();
+        fps[i.first] = 0;
+        stats.base[i.first];
     }
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
         REPORT_STATUS();
 
-        stats.update(align);
-        
+        // Does this alignment belongs to one of the synthetic species?
+        Interval * const match = stats.inters.find(align.id);
+
+        stats.update(align, [&](const Alignment &)
+        {
+            return match;
+        });
+
         if (!align.mapped)
         {
             return;
         }
-
-        Interval * match = stats.inters.find(align.id);
 
         if (match)
         {
@@ -94,7 +99,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     
     for (const auto &i : stats.inters.map())
     {
-        auto &m  = stats.base[i.first].m;
+        auto &m  = stats.base.at(i.first);
         auto &in = i.second;
 
         // Update the overall performance
@@ -140,19 +145,19 @@ void MAlign::report(const FileName &file, const Options &o)
     o.info("Generating summary statistics");
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Unmapped:    %2% alignments\n"
-                         "   Community:   %3% alignments\n"
-                         "   Synthetic:   %4% alignments\n\n"
+                         "   Unmapped:    %2% reads\n"
+                         "   Community:   %3% reads\n"
+                         "   Synthetic:   %4% reads\n\n"
                          "   Reference:   %5% sequins\n\n"
-                         "   ************ Sequin Level ************\n"
+                         "   ************ Sequin Level ************\n\n"
                          "   Sensitivity:     %6%\n"
                          "   Accuracy:        %7%\n"
                          "   Detection Limit: %8% (%9%)\n\n"
-                         "   ************ Base Level ************\n"
+                         "   ************ Base Level ************\n\n"
                          "   Sensitivity:     %10%\n"
                          "   Accuracy:        %11%\n\n"
                          "   Detection limit: %12% (%13%)\n\n"
-                         "   Dilution:    %14%\n";
+                         "   Dilution: %14%\n";
 
     o.writer->open("MetaAlign_summary.stats");
     o.writer->write((boost::format(summary) % file
@@ -177,14 +182,39 @@ void MAlign::report(const FileName &file, const Options &o)
     
     o.writer->open("MetaAlign_quins.stats");
     o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
-    
-    const auto format = "%1%\t%2%";
-    o.writer->write((boost::format(format) % "ID" % "Counts (reads)").str());
-    
-    for (const auto &i : stats.p.at(PerfLevel::SequinPerf).h)
+
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    o.writer->write((boost::format(format) % "ID"
+                                           % "Counts (Sequin)"
+                                           % "Counts (Base)"
+                                           % "Sensitivity"
+                                           % "Accuracy"
+                     ).str());
+
+    for (const auto &i : stats.inters.map())
     {
-        o.writer->write((boost::format(format) % i.first % stats.p.at(PerfLevel::SequinPerf).h.at(i.first)).str());
+        const auto &b  = stats.base.at(i.first);
+        const auto &bh = stats.p.at(PerfLevel::BasePerf).h;
+        const auto &sh = stats.p.at(PerfLevel::SequinPerf).h;
+        
+        const auto a = i.second;
+        const auto ss  = i.second.stats();
+
+        if (i.first == "M9_G")
+        {
+            double b = ss.covered();
+            int a = 1;
+            std::cout << b << std::endl;
+            a = 1;
+        }
+        
+        o.writer->write((boost::format(format) % i.first
+                                               % sh.at(i.first)
+                                               % bh.at(i.first)
+                                               % ss.covered()
+                                               % (isnan(b.sp()) ? "-" : std::to_string(b.sp()))
+                        ).str());
     }
-    
+
     o.writer->close();
 }
