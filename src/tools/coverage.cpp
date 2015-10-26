@@ -58,18 +58,18 @@ void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o
 
 void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageReportOptions &o, CoverageFunctor f)
 {
-    const auto chrT = stats.inters.find(Standard::instance().id);
-    
-    if (!chrT)
+    const auto inter = stats.inters.find(o.id);
+
+    if (!inter)
     {
-        throw std::runtime_error("Failed to find the synthetic chromosome");
+        return;
     }
-    
+
     /*
      * Generating summary statistics
      */
 
-    const auto sstats  = chrT->stats(f);
+    const auto sstats  = inter->stats(f);
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Experiment: %2%\n"
                          "   Synthetic: %3%\n\n"

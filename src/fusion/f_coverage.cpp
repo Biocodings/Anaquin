@@ -45,8 +45,8 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
     
     to.writer   = o.writer;
     to.summary  = "FusionCoverage_summary.stats";
-    to.refs     = r.r_var.hist().size();
-    to.length   = r.r_var.size();
+    to.refs     = r.r_fus.hist().size();
+    to.length   = r.r_fus.size();
 
     CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
     {

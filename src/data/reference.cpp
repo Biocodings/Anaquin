@@ -41,7 +41,8 @@ void MetaRef::validate()
      * Validation rule:
      *
      *   1: Standards & Mixtures (eg: MetaAlign)
-     *   2: Mixtures (eg: MetaAssembly, MetaExpress)
+     *   2: Mixtures  (eg: MetaAssembly, MetaExpress)
+     *   3: Standards (eg: MetaCoverage)
      */
     
     if (!_rawMIDs.empty() && !_impl->rawStands.empty()) // Case 1
@@ -51,6 +52,10 @@ void MetaRef::validate()
     else if (!_rawMIDs.empty())                         // Case 2
     {
         merge(_rawMIDs);
+    }
+    else if (!_impl->rawStands.empty())
+    {
+        merge(getKeys(_impl->rawStands));
     }
     else
     {

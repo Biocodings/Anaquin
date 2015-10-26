@@ -11,6 +11,7 @@
 #include "trans/t_viewer.hpp"
 #include "trans/t_express.hpp"
 #include "trans/t_assembly.hpp"
+#include "trans/t_coverage.hpp"
 
 #include "variant/v_align.hpp"
 #include "variant/v_allele.hpp"
@@ -24,14 +25,17 @@
 #include "meta/m_abund.hpp"
 #include "meta/m_align.hpp"
 #include "meta/m_assembly.hpp"
+#include "meta/m_coverage.hpp"
 
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
+#include "ladder/l_coverage.hpp"
 
 #include "fusion/f_align.hpp"
 #include "fusion/f_viewer.hpp"
 #include "fusion/f_express.hpp"
 #include "fusion/f_discover.hpp"
+#include "fusion/f_coverage.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
@@ -205,7 +209,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE            } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE            } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_BAM_1              } },
 
     /*
      * Metagenomics Analysis
@@ -213,10 +217,10 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_M_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1                   } },
     { TOOL_M_IGV,      { OPT_FA_1                                              } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1                        } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1                      } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1                      } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
-    { TOOL_M_COVERAGE, { OPT_R_BED_1 } },
+    { TOOL_M_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                } },
 
     /*
      * Fusion Analysis
@@ -225,6 +229,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_F_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE,                          } },
     { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFTWARE, OPT_U_OUT               } },
     { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
+    { TOOL_F_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                             } },
 
     /*
      * Variant Analysis
@@ -976,16 +981,31 @@ void parse(int argc, char ** argv)
 
             if (_p.tool != TOOL_T_IGV)
             {
-                applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
-                applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+                switch (_p.tool)
+                {
+                    case TOOL_F_COVERAGE:
+                    {
+                        applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+                        break;
+                    }
+
+                    default:
+                    {
+                        applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+                        break;
+                    }
+                }
+
                 s.r_trans.validate();
             }
 
             switch (_p.tool)
             {
-                case TOOL_T_SEQUIN: { printMixture();               break; }
-                case TOOL_T_ALIGN:  { analyze_1<TAlign>(OPT_BAM_1); break; }
-                
+                case TOOL_T_SEQUIN:   { printMixture();                  break; }
+                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_BAM_1);    break; }
+                case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_BAM_1); break; }
+
                 case TOOL_T_ASSEMBLY:
                 {
                     TAssembly::Options o;
@@ -1053,6 +1073,12 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_F_COVERAGE:
+                {
+                    applyRef(std::bind(&Standard::f_std, &s, std::placeholders::_1), OPT_R_BED_1);
+                    break;
+                }
+
                 case TOOL_F_ALIGN:
                 {
                     applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
@@ -1078,8 +1104,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:   { viewer<FViewer>();            break; }
-                case TOOL_F_ALIGN: { analyze_1<FAlign>(OPT_BAM_1); break; }
+                case TOOL_F_IGV:      { viewer<FViewer>();               break; }
+                case TOOL_F_ALIGN:    { analyze_1<FAlign>(OPT_BAM_1);    break; }
+                case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_BAM_1); break; }
 
                 case TOOL_F_EXPRESS:
                 {
@@ -1108,8 +1135,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_L_ABUND:  { analyze_1<LAbund>(OPT_BAM_1);            break; }
-                case TOOL_L_DIFF:   { analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break; }
+                case TOOL_L_ABUND:    { analyze_1<LAbund>(OPT_BAM_1);            break; }
+                case TOOL_L_DIFF:     { analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break; }
+                case TOOL_L_COVERAGE: { analyze_1<LCoverage>(OPT_BAM_1);         break; }
             }
 
             break;
@@ -1187,14 +1215,22 @@ void parse(int argc, char ** argv)
         case TOOL_M_COVERAGE:
         {
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
-            
+
             if (_p.tool != TOOL_M_IGV)
             {
-                if (_p.tool == TOOL_M_ASSEMBLY || _p.tool == TOOL_M_ALIGN)
+                switch (_p.tool)
                 {
-                    applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
+                    case TOOL_M_ALIGN:
+                    case TOOL_M_ASSEMBLY:
+                    case TOOL_M_COVERAGE:
+                    {
+                        applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
+                        break;
+                    }
+
+                    default: { break; }
                 }
-                
+
                 if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF || _p.tool == TOOL_M_ALIGN)
                 {
                     applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
@@ -1205,9 +1241,10 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV:   { viewer<FViewer>();            break; }
-                case TOOL_M_ALIGN: { analyze_1<MAlign>(OPT_BAM_1); break; }
-
+                case TOOL_M_IGV:      { viewer<FViewer>();               break; }
+                case TOOL_M_ALIGN:    { analyze_1<MAlign>(OPT_BAM_1);    break; }
+                case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_BAM_1); break; }
+                    
                 case TOOL_M_DIFF:
                 {
                     MDiffs::Options o;

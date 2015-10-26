@@ -42,8 +42,8 @@ void LCoverage::report(const FileName &file, const LCoverage::Options &o)
     
     to.writer   = o.writer;
     to.summary  = "LadderCoverage_summary.stats";
-    to.refs     = r.r_var.hist().size();
-    to.length   = r.r_var.size();
+    to.refs     = r.r_lad.hist().size();
+    to.length   = r.r_lad.size();
 
     CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
     {

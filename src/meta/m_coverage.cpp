@@ -5,21 +5,17 @@ using namespace Anaquin;
 MCoverage::Stats MCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
+    const auto &r = Standard::instance().r_meta;
     
-    const auto &r = Standard::instance();
-    Stats stats;
-    
-    stats = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
+    return CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
     {
-        return align.id == r.id ? static_cast<bool>(r.r_meta.match(align.l, MatchRule::Contains)) : false;
+        return r.match(align.id) && r.match(align.id)->l.contains(align.l);
     });
-
-    return stats;
 }
 
 void MCoverage::report(const FileName &file, const MCoverage::Options &o)
 {
-    const auto &r    = Standard::instance();
+    const auto &r    = Standard::instance().r_meta;
     const auto stats = MCoverage::stats(file, o);
 
     CoverageTool::CoverageBedGraphOptions bo;
@@ -29,13 +25,36 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
      */
     
     bo.writer = o.writer;
-    bo.file   = "MetaCoverage_chrT.bedgraph";
+    bo.file   = "MetaCoverage_community.bedgraph";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
-        return r.r_meta.match(Locus(i, j), MatchRule::Contains);
+        return r.match(Locus(i, j), MatchRule::Contains);
     });
+
+    /*
+     * Generating summary statistics for each specie
+     */
+    
+    const auto inters = r.intervals();
+    
+    for (const auto &i : inters.map())
+    {
+        CoverageTool::CoverageReportOptions to;
+        
+        to.writer  = o.writer;
+        to.summary = "MetaCoverage_" + i.first + ".stats";
+        to.refs    = r.hist().size();
+        to.length  = r.size();
+        to.id      = i.first;
+        
+        CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
+        {
+            // Filter to the regions in the standards
+            return r.match(Locus(i, j), MatchRule::Contains);
+        });
+    }
 
     /*
      * Generating summary statistics
@@ -45,12 +64,15 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     
     to.writer   = o.writer;
     to.summary  = "MetaCoverage_summary.stats";
-    to.refs     = r.r_var.hist().size();
-    to.length   = r.r_var.size();
+    to.refs     = r.hist().size();
+    to.length   = r.size();
 
+/*
+ TODO: Need to give a fake name
     CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_meta.match(Locus(i, j), MatchRule::Contains);
     });
+*/
 }

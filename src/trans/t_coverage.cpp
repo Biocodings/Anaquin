@@ -45,8 +45,8 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     
     to.writer   = o.writer;
     to.summary  = "TransCoverage_summary.stats";
-    to.refs     = r.r_var.hist().size();
-    to.length   = r.r_var.size();
+    to.refs     = r.r_trans.hist().size();
+    to.length   = r.r_trans.size();
 
     CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
