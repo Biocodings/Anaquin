@@ -1,4 +1,6 @@
 #include "fusion/f_fraction.hpp"
+#include "fusion/f_discover.hpp"
+#include "fusion/f_classify.hpp"
 #include "parsers/parser_stab.hpp"
 #include "parsers/parser_star_fusion.hpp"
 
@@ -16,32 +18,53 @@ FFraction::Stats FFraction::stats(const FileName &chim, const FileName &splice, 
     std::map<SequinID, Counts> fusions;
     
     /*
-     * Read the normal junctions
+     * Parse the normal junctions
      */
     
-    const SequinData *match;
-
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        if (c.unique == 878034)
-        {
-            match = match;
-        }
-        
+        const SequinData *match;
+
         if ((match = r.findSplice(c.l)))
         {
-            //std::cout << match->id << std::endl;
+            normals[match->id] = c.unique;
         }
     });
 
     /*
-     * Read the chimeric junctions
+     * Parse the chimeric junctions
      */
     
     ParserStarFusion::parse(Reader(chim), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
     {
-//        std::cout << f. f.reads << std::endl;
+        const auto r = FClassify::classifyFusion(f, o);
+
+        if (r.code == FClassify::Code::Positive)
+        {
+            fusions[r.match->id] = f.reads;
+        }
     });
+
+    o.info("Found " + std::to_string(normals.size()) + " introns");
+    o.info("Found " + std::to_string(fusions.size()) + " fusions");
+    
+    /*
+     * Compare those related genes that are detected in both conditions
+     */
+    
+    for (const auto &i : normals)
+    {
+        for (const auto &j : fusions)
+        {
+            if (r.normalToFusion(i.first) == j.first)
+            {
+                // Either the normal ID or fusion ID is sufficient
+                const auto expected = r.findSpliceChim(i.first);
+                
+                stats.add(i.first + "_" + j.first, expected->fold(), i.second / j.second);
+            }
+        }
+    }
 
     return stats;
 }
@@ -53,8 +76,14 @@ void FFraction::report(const FileName &splice, const FileName &chim, const Optio
     /*
      * Generating summary statistics
      */
+
+    o.info("Generating summary statistics");
+    AnalyzeReporter::linear("FusionFraction_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
+
+    /*
+     * Generating Bioconductor
+     */
     
-    
-    
-    
+    o.info("Generating Bioconductor");
+    AnalyzeReporter::scatter(stats, "", "FusionFraction", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }

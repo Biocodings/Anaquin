@@ -102,10 +102,10 @@ TExpress::Stats TExpress::report(const FileName &file, const Options &o)
     AnalyzeReporter::linear("TransExpress_summary.stats", file, stats, units, o.writer);
 
     /*
-     * Generating an R script
+     * Generating Bioconductor
      */
     
-    o.info("Generating an R script");
+    o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats, "", "TransExpress", "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
 
     return stats;

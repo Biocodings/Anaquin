@@ -9,7 +9,7 @@ namespace Anaquin
 {
     struct FClassify
     {
-        enum FusionClassify
+        enum Code
         {
             Genome     = -2,
             GenomeChrT = -1,
@@ -17,7 +17,38 @@ namespace Anaquin
             Positive   = 1,
         };
 
-        template <typename Options, typename T> static FusionClassify
+        struct Results
+        {
+            Results(Code code, const FusionRef::FusionPoint *match = nullptr) : code(code), match(match) {}
+
+            Code code;
+
+            // Where the fusion matches
+            const FusionRef::FusionPoint *match;
+        };
+
+        template <typename Options, typename T> static Results classifyFusion(const T &f, Options &o)
+        {
+            if (f.chr_1 != Standard::chrT || f.chr_2 != Standard::chrT)
+            {
+                if (f.chr_1 != Standard::chrT && f.chr_2 != Standard::chrT)
+                {
+                    return Results(Genome);
+                }
+                else
+                {
+                    return Results(GenomeChrT);
+                }
+            }
+            
+            const auto min = std::min(f.l1, f.l2);
+            const auto max = std::max(f.l1, f.l2);
+            const auto m   = Standard::instance().r_fus.find(min, max, f.s1, f.s2, o.fuzzy);
+
+            return Results(m ? Code::Positive : Code::Negative, m);
+        }
+        
+        template <typename Options, typename T> static Code
                 classifyFusion(const T &f, Confusion &m, SequinID &id, Options &o)
         {
             const auto &r = Standard::instance().r_fus;
@@ -98,10 +129,10 @@ namespace Anaquin
                     
                     switch (r)
                     {
-                        case FusionClassify::Negative:   { break;                        }
-                        case FusionClassify::Genome:     { stats.n_expT++;        break; }
-                        case FusionClassify::GenomeChrT: { stats.hg38_chrT++;     break; }
-                        case FusionClassify::Positive:   { positive(id, f.reads); break; }
+                        case Code::Negative:   { break;                        }
+                        case Code::Genome:     { stats.n_expT++;        break; }
+                        case Code::GenomeChrT: { stats.hg38_chrT++;     break; }
+                        case Code::Positive:   { positive(id, f.reads); break; }
                     }
                 });
             }
@@ -113,10 +144,10 @@ namespace Anaquin
                     
                     switch (r)
                     {
-                        case FusionClassify::Negative:   { break;                        }
-                        case FusionClassify::Genome:     { stats.n_expT++;        break; }
-                        case FusionClassify::GenomeChrT: { stats.hg38_chrT++;     break; }
-                        case FusionClassify::Positive:   { positive(id, f.reads); break; }
+                        case Code::Negative:   { break;                        }
+                        case Code::Genome:     { stats.n_expT++;        break; }
+                        case Code::GenomeChrT: { stats.hg38_chrT++;     break; }
+                        case Code::Positive:   { positive(id, f.reads); break; }
                     }
                 });
             }

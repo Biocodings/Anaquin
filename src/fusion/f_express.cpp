@@ -18,10 +18,10 @@ FExpress::Stats FExpress::report(const FileName &file, const FDiscover::Options 
     AnalyzeReporter::linear("FusionExpress_summary.stats", file, stats, "fusions", o.writer);
 
     /*
-     * Generating an R script
+     * Generating Bioconductor
      */
 
-    o.info("Generating R script");
+    o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats, "", "FusionExpress", "Expected concentration (attomol/ul)", "Measured coverage (reads)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
     
     return stats;

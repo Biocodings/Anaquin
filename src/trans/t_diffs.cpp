@@ -122,10 +122,10 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
     AnalyzeReporter::linear("TransDifferent_summary.stats", file, stats, units, o.writer);
 
     /*
-     * Generating an R script
+     * Generating Bioconductor
      */
     
-    o.info("Generating an R script");
+    o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats, "", "TransDifferent", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
     
     return stats;

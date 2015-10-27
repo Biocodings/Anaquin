@@ -126,10 +126,10 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
     AnalyzeReporter::linear("LadderDifferent_summary.stats", fileA, fileB, a, b, stats, "sequins", o.writer);
 
     /*
-     * Generating an R script
+     * Generating Bioconductor
      */
     
-    o.info("Generating R script");
+    o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats, "", "LadderDifferent", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
 
 	return stats;

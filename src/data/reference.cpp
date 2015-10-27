@@ -221,6 +221,16 @@ struct FusionRef::FusionRefImpl
 
 FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
 
+const FusionRef::SpliceChimeric * FusionRef::findSpliceChim(const SequinID &id) const
+{
+    return _impl->spliceChim.count(id) ? &_impl->spliceChim.at(id) : nullptr;
+}
+
+SequinID FusionRef::normalToFusion(const SequinID &id) const
+{
+    return _impl->normToFus.at(id);
+}
+
 void FusionRef::addBreak(const FusionPoint &f)
 {
     _impl->rawBreaks.insert(f);

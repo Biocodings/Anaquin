@@ -11,8 +11,6 @@
 
 namespace Anaquin
 {
-    #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
-
     class Standard
     {
         public:
@@ -32,6 +30,8 @@ namespace Anaquin
             // The name of the chromosome
             ChromoID id = "chrT";
 
+            static constexpr const char * chrT = "chrT";
+        
             /*
              * RNA data
              */

@@ -413,8 +413,7 @@ namespace Anaquin
                 // Concentration for the fusion chimeria
                 Concent fusion;
 
-                Fold fold;
-                Fold logFold;
+                inline Fold fold() const { return normal / fusion; }
             };
 
             FusionRef();
@@ -434,6 +433,9 @@ namespace Anaquin
             const SequinData *findFusion(const Locus &) const;
             const SequinData *findSplice(const Locus &) const;
             const SpliceChimeric *findSpliceChim(const SequinID &) const;
+        
+            // Convert the normal gene to it's equivalent fusion (eg: NG1_1_P1 to FG1_1_P1)
+            SequinID normalToFusion(const SequinID &) const;
 
             Counts countFusion() const;
             Counts countSplice() const;

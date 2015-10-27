@@ -3,6 +3,8 @@
 #include "trans/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
 
+#define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
+
 using namespace Anaquin;
 
 // Defined for cuffcompare

@@ -200,10 +200,10 @@ void LAbund::report(const FileName &file, const Options &o)
     AnalyzeReporter::linear("LadderAbundance_summary.stats", file, stats, "sequins", o.writer);
     
     /*
-     * Generating an R script
+     * Generating Bioconductor
      */
     
-    o.info("Generating R script");
+    o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats, "", "LadderAbundance", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
     
     auto writeHist = [&](const FileName &file,

@@ -7,12 +7,12 @@ namespace Anaquin
 {
     struct FFraction
     {
-        typedef AnalyzerOptions Options;
+        typedef FuzzyOptions Options;
 
-        struct Stats
+        struct Stats : public LinearStats, public FusionStats
         {
-            
-            
+            SequinHist h;
+            Limit ss;
         };
 
         static Stats stats(const FileName &, const FileName &, const Options &o = Options());

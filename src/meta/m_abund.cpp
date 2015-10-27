@@ -82,7 +82,7 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     o.info("Generating summary statistics");
     AnalyzeReporter::linear("MetaAbundance_summary.stats", file, stats, "contigs", o.writer, "sequins", "Community");
  
-    o.info("Generating R script");
+    o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats,
                              "Expected abundance vs Measured coverage",
                              "MetaAbundance",
