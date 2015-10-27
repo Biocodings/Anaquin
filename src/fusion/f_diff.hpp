@@ -1,11 +1,11 @@
-#ifndef F_FRACTION_HPP
-#define F_FRACTION_HPP
+#ifndef F_DIFF_HPP
+#define F_DIFF_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct FFraction
+    struct FDiff
     {
         typedef FuzzyOptions Options;
 

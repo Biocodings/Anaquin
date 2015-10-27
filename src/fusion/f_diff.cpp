@@ -1,4 +1,4 @@
-#include "fusion/f_fraction.hpp"
+#include "fusion/f_diff.hpp"
 #include "fusion/f_discover.hpp"
 #include "fusion/f_classify.hpp"
 #include "parsers/parser_stab.hpp"
@@ -6,9 +6,9 @@
 
 using namespace Anaquin;
 
-FFraction::Stats FFraction::stats(const FileName &chim, const FileName &splice, const Options &o)
+FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Options &o)
 {
-    FFraction::Stats stats;
+    FDiff::Stats stats;
     const auto &r = Standard::instance().r_fus;
 
     // Measured abundance for the normal genes
@@ -72,9 +72,9 @@ FFraction::Stats FFraction::stats(const FileName &chim, const FileName &splice, 
     return stats;
 }
 
-void FFraction::report(const FileName &splice, const FileName &chim, const Options &o)
+void FDiff::report(const FileName &splice, const FileName &chim, const Options &o)
 {
-    const auto stats = FFraction::stats(splice, chim, o);
+    const auto stats = FDiff::stats(splice, chim, o);
 
     /*
      * Generating summary statistics

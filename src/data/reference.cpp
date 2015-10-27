@@ -302,11 +302,19 @@ void FusionRef::validate()
      *   1: Mixtures & Fusions (eg: FusionExpress)
      *   2: Fusions (eg: FusionDiscover)
      *   3: Standards & Mixtures (eg: FusionAlign)
-     *   4: Splicing & Fusions & Mixtures (eg: FusionFraction)
+     *   4: Splicing & Fusions & Mixtures (eg: FusionDiff)
+     *   5: Splicing & Mixtures (eg: FusionNormal)
      */
 
+    // Case 5
+    if (!_rawMIDs.empty() && !_impl->rawSplices.empty())
+    {
+        merge(_rawMIDs);        
+        _impl->splice = _impl->rawSplices;
+    }
+
     // Case 4
-    if (!_rawMIDs.empty() && !_impl->rawBreaks.empty() && !_impl->rawSplices.empty())
+    else if (!_rawMIDs.empty() && !_impl->rawBreaks.empty() && !_impl->rawSplices.empty())
     {
         if (_impl->rawBreaks.size() != _impl->rawSplices.size())
         {
