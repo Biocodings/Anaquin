@@ -63,10 +63,6 @@ AQ_Mixture <- function()
     # Genes that are defined in the mixture
     geneIDs <- unique(mix$GeneID)
 
-    # Genes that are defined in reference but not reference and therfore must be ignored as there's no concentration
-    #ignored <- ref[!(ref %in% geneIDs)]    
-    #combined <- c(geneIDs, ignored)
-    
     g <- data.frame(ID=geneIDs,
                     A=rep(0, length(geneIDs)),
                     B=rep(0, length(geneIDs)),
@@ -102,19 +98,6 @@ AQ_Mixture <- function()
         g[g$ID == id,]$Fold    <- g[g$ID == id,]$B / g[g$ID == id,]$A
         g[g$ID == id,]$LogFold <- log2(g[g$ID == id,]$Fold)
     }
-    
-    #
-    # We simply can't assume that sequins defined in the mixture and reference are identical.
-    # Here, we find out those sequins that are not defined in the mixture.
-    #
-    
-    #for (id in ignored)
-    #{
-    #    g[g$ID == id,]$a       <- 'NA'
-    #    g[g$ID == id,]$b       <- 'NA'
-    #    g[g$ID == id,]$fold    <- 'NA'
-    #    g[g$ID == id,]$logFold <- 'NA'
-    #}
     
     # Prefer not to have it as factor variable
     g$ID <- as.character(g$ID)
