@@ -227,6 +227,8 @@ namespace Anaquin
                 return nullptr;
             }
         
+            Interval::Stats stats() const;
+        
             inline const IntervalMap &map() const { return _inters; }
 
             // Number of intervals

@@ -21,7 +21,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     CoverageTool::CoverageBedGraphOptions bo;
 
     /*
-     * Generating bedgraph for the standards
+     * Generating bedgraph for the community
      */
     
     bo.writer = o.writer;
@@ -34,31 +34,76 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     });
 
     /*
-     * Generating summary statistics for each specie
+     * Generating detailed statistics for each MetaQuin
      */
+
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    
+    o.writer->open("MetaCoverage_quins.csv");
+    o.writer->write((boost::format(format) % "ID"
+                                           % "Length"
+                                           % "Min"
+                                           % "Max"
+                                           % "Mean"
+                                           % "P25"
+                                           % "P50"
+                                           % "P75"
+                                           % "Covered").str());
+
+    
+    
+    
+    
+    
+//    stats
+    
+    
     
     const auto inters = r.intervals();
     
     for (const auto &i : inters.map())
     {
-        CoverageTool::CoverageReportOptions to;
+        const auto &stats = i.second.stats();
         
-        to.writer  = o.writer;
-        to.summary = "MetaCoverage_" + i.first + ".stats";
-        to.refs    = r.hist().size();
-        to.length  = r.size();
-        to.id      = i.first;
-        
-        CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
-        {
-            // Filter to the regions in the standards
-            return r.match(Locus(i, j), MatchRule::Contains);
-        });
+        o.writer->write((boost::format(format) % i.first
+                                               % stats.length
+                                               % stats.min
+                                               % stats.max
+                                               % stats.mean
+                                               % stats.p25
+                                               % stats.p50
+                                               % stats.p75
+                                               % stats.covered()).str());
     }
-
+    
+    o.writer->close();
+    
     /*
      * Generating summary statistics
      */
+    
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Experiment: %2%\n"
+                         "   Synthetic: %3%\n\n"
+                         "   ************ References ************\n\n"
+                         "   Sequins: %4%\n"
+                         "   Bases:   %5%\n\n"
+                         "   ************ Statistics ************\n\n"
+                         "   Minimum: %6%\n"
+                         "   Maximum: %7%\n"
+                         "   Mean:    %8%\n"
+                         "   Covered  %9%\n";
+
+    const auto overallStats = inters.stats();
+
+    
+    
+    
+    
+    
+    
+    
+    
     
     CoverageTool::CoverageReportOptions to;
     

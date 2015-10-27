@@ -76,8 +76,6 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
                          "   Reference: %4%\n"
                          "   Reference Bases: %5%\n\n"
                          "   Minimum: %6%\n"
-                         "   Maximum: %7%\n\n"
-                         "   Minimum: %6%\n"
                          "   Maximum: %7%\n"
                          "   Mean:    %8%\n"
                          "   25th: %9%\n"
