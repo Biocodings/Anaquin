@@ -58,10 +58,13 @@ FFraction::Stats FFraction::stats(const FileName &chim, const FileName &splice, 
         {
             if (r.normalToFusion(i.first) == j.first)
             {
-                // Either the normal ID or fusion ID is sufficient
+                // Either the normal ID or fusion ID can be used
                 const auto expected = r.findSpliceChim(i.first);
                 
-                stats.add(i.first + "_" + j.first, expected->fold(), i.second / j.second);
+                // Measured fold change between normal and fusion gene
+                const auto measured = static_cast<double>(i.second) / j.second;
+                
+                stats.add(i.first + " - " + j.first, expected->fold(), measured);
             }
         }
     }
@@ -85,5 +88,5 @@ void FFraction::report(const FileName &splice, const FileName &chim, const Optio
      */
     
     o.info("Generating Bioconductor");
-    AnalyzeReporter::scatter(stats, "", "FusionFraction", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    AnalyzeReporter::scatter(stats, "", "FusionFraction", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }
