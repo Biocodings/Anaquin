@@ -4,31 +4,41 @@
 
 using namespace Anaquin;
 
-FFraction::Stats FFraction::stats(const FileName &splice, const FileName &chim, const Options &o)
+FFraction::Stats FFraction::stats(const FileName &chim, const FileName &splice, const Options &o)
 {
     FFraction::Stats stats;
     const auto &r = Standard::instance().r_fus;
 
+    // Measured abundance for the normal genes
+    std::map<SequinID, Counts> normals;
     
-    
-    
+    // Measured abundance for the fusion genes
+    std::map<SequinID, Counts> fusions;
     
     /*
      * Read the normal junctions
      */
     
-    ParserSTab::parse(Reader(chim), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
+    const SequinData *match;
+
+    ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-            const auto rr = r.match(c.l, MatchRule::Contains);
-            std::cout << c.l.start << " " << c.l.end << " " << c.unique << std::endl;
+        if (c.unique == 878034)
+        {
+            match = match;
+        }
+        
+        if ((match = r.findSplice(c.l)))
+        {
+            //std::cout << match->id << std::endl;
+        }
     });
-    
-    
+
     /*
-     * Read the splicing junctions (eg: star-fusion.fusion_candidates.txt)
+     * Read the chimeric junctions
      */
     
-    ParserStarFusion::parse(Reader(splice), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
+    ParserStarFusion::parse(Reader(chim), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
     {
 //        std::cout << f. f.reads << std::endl;
     });

@@ -196,6 +196,10 @@ struct FusionRef::FusionRefImpl
     // Fusion genes in the standards
     std::map<SequinID, std::vector<Locus>> fusions;
 
+    /*
+     * Mapping table, fusion to normal and vice versa
+     */
+    
     std::map<SequinID, SequinID> normToFus;
     std::map<SequinID, SequinID> fusToNorm;
 
@@ -241,7 +245,7 @@ const SequinData *FusionRef::findNormal(const Locus &l, MatchRule m) const
     
     for (auto &i : _impl->normals)
     {
-        if (i.second.contains(l))
+        if (i.second == l)
         {
             return &(_data.at(i.first));
         }
@@ -300,6 +304,8 @@ void FusionRef::validate()
         }
 
         merge(_rawMIDs);
+        
+        _impl->splice = _impl->rawSplices;
         
         /*
          * Constructing a mapping between splicing and fusion. While we can't assume the orders, we can
