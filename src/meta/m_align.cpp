@@ -110,10 +110,10 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
             if (depth)
             {
                 // Update the sequin performance
-                m.tp() += (j - i + 1);
+                m.tp() += j - i;
                 
                 // Update the overall performance
-                bp.m.tp() += (j - i + 1);
+                bp.m.tp() += j - i;
 
                 bp.h.at(id)++;
             }
@@ -121,6 +121,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
         m.nr = in.l().length();
         m.nq = m.tp() + fps.at(i.first);
+        
+        assert(m.nr >= m.tp());
         
         bp.m.nr += in.l().length();
         bp.m.nq  = bp.m.tp() + bp.m.fp();
