@@ -192,6 +192,14 @@ void Standard::f_std(const Reader &r)
     });
 }
 
+void Standard::f_splice(const Reader &r)
+{
+    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    {
+        r_fus.addSplice(f.name, f.l);
+    });
+}
+
 void Standard::f_ref(const Reader &r)
 {
     ParserCSV::parse(r, [&](const ParserCSV::Fields &f, const ParserProgress &)

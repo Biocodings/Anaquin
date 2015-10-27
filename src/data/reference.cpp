@@ -184,6 +184,9 @@ struct FusionRef::FusionRefImpl
      * Validated variables
      */
 
+    // Normal splicing
+    std::map<SequinID, Locus> splice;
+
     // Fusion breaks
     std::set<FusionPoint> breaks;
 
@@ -192,6 +195,11 @@ struct FusionRef::FusionRefImpl
 
     // Fusion genes in the standards
     std::map<SequinID, std::vector<Locus>> fusions;
+
+    std::map<SequinID, SequinID> normToFus;
+    std::map<SequinID, SequinID> fusToNorm;
+
+    std::map<SequinID, SpliceChimeric> spliceChim;
     
     /*
      * Raw variables
@@ -202,6 +210,9 @@ struct FusionRef::FusionRefImpl
     
     // Fusion breaks
     std::set<FusionPoint> rawBreaks;
+    
+    // Normal splicing
+    std::map<SequinID, Locus> rawSplices;
 };
 
 FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
@@ -211,11 +222,13 @@ void FusionRef::addBreak(const FusionPoint &f)
     _impl->rawBreaks.insert(f);
 }
 
-// Return the number of reference fusions
-std::size_t FusionRef::countFusions() const
+void FusionRef::addSplice(const SequinID &id, const Locus &l)
 {
-    return _impl->breaks.size();
+    _impl->rawSplices[id] = l;
 }
+
+Counts FusionRef::countFusion() const { return _impl->breaks.size(); }
+Counts FusionRef::countSplice() const { return _impl->splice.size(); }
 
 void FusionRef::addStand(const SequinID &id, const Locus &l)
 {
@@ -237,7 +250,7 @@ const SequinData *FusionRef::findNormal(const Locus &l, MatchRule m) const
     return nullptr;
 }
 
-const SequinData *FusionRef::findFusion(const Locus &l, MatchRule m) const
+const SequinData *FusionRef::findFusion(const Locus &l) const
 {
     assert(!_impl->fusions.empty());
     
@@ -252,18 +265,90 @@ const SequinData *FusionRef::findFusion(const Locus &l, MatchRule m) const
     return nullptr;
 }
 
+const SequinData *FusionRef::findSplice(const Locus &l) const
+{
+    assert(!_impl->splice.empty());
+    
+    for (auto &i : _impl->splice)
+    {
+        if (i.second == l)
+        {
+            return &(_data.at(i.first));
+        }
+    }
+
+    return nullptr;
+}
+
 void FusionRef::validate()
 {
     /*
-     * Validation rules:
+     * Validation:
      *
-     *   1: Mixtures (eg: FusionExpress)
-     *   2: Breaks (eg: FusionDiscover)
-     *   3: Standards & mixtures (eg: FusionAlign)
+     *   1: Mixtures & Fusions (eg: FusionExpress)
+     *   2: Fusions (eg: FusionDiscover)
+     *   3: Standards & Mixtures (eg: FusionAlign)
+     *   4: Splicing & Fusions & Mixtures (eg: FusionFraction)
      */
-    
+
+    // Case 4
+    if (!_rawMIDs.empty() && !_impl->rawBreaks.empty() && !_impl->rawSplices.empty())
+    {
+        if (_impl->rawBreaks.size() != _impl->rawSplices.size())
+        {
+            throw std::runtime_error("Number of fusions not equal to splicing. Please check and try again.");
+        }
+
+        merge(_rawMIDs);
+        
+        /*
+         * Constructing a mapping between splicing and fusion. While we can't assume the orders, we can
+         * assume like: "FG1_12_P2" and "NG1_12_P2".
+         */
+        
+        auto f = [&](const SequinID &x, const SequinID &y)
+        {
+            return x.substr(2, x.size()-1) == y.substr(2, y.size()-1);
+        };
+        
+        for (auto &i: _impl->rawBreaks)
+        {
+            for (auto &j : _impl->rawSplices)
+            {
+                if (f(i.id, j.first))
+                {
+                    _impl->fusToNorm[i.id] = j.first;
+                    _impl->normToFus[j.first] = i.id;
+                    break;
+                }
+            }
+        }
+        
+        if (_impl->fusToNorm.size() != _impl->rawBreaks.size())
+        {
+            throw std::runtime_error("Failed to construct a mapping table. Please check and try again.");
+        }
+        
+        for (const auto &i : _impl->normToFus)
+        {
+            SpliceChimeric s;
+            
+            // Normal gene
+            const auto normal = match(i.first);
+            
+            // Fusion gene
+            const auto fusion = match(i.second);
+            
+            s.normal = normal->abund(Mix_1);
+            s.fusion = fusion->abund(Mix_1);
+            
+            _impl->spliceChim[i.first]  = s;
+            _impl->spliceChim[i.second] = s;
+        }
+    }
+
     // Case 3
-    if (!_rawMIDs.empty() && !_impl->rawStands.empty())
+    else if (!_rawMIDs.empty() && !_impl->rawStands.empty())
     {
         merge(_rawMIDs);
 

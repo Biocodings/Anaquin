@@ -401,22 +401,43 @@ namespace Anaquin
                 Strand s1, s2;
             };
 
+            /*
+             * This class represents the concentration between normal and fusion gene
+             */
+
+            struct SpliceChimeric
+            {
+                // Concentration for the normal splicing
+                Concent normal;
+                
+                // Concentration for the fusion chimeria
+                Concent fusion;
+
+                Fold fold;
+                Fold logFold;
+            };
+
             FusionRef();
 
-            // Add a known reference fusion
-            void addBreak(const FusionPoint &);
-
-            // Add fusion or normal genes comprised of the standards
-            void addStand(const SequinID &, const Locus &);
-        
             void validate() override;
 
-            const SequinData *findNormal(const Locus &, MatchRule = Contains) const;
-            const SequinData *findFusion(const Locus &, MatchRule = Contains) const;
-
-            // Return the number of reference fusions
-            std::size_t countFusions() const;
+            void addBreak(const FusionPoint &);
         
+            // Add splicing for an intron in the normal gene
+            void addSplice(const SequinID &, const Locus &);
+        
+            // Add fusion or normal genes comprised of the standards
+            void addStand(const SequinID &, const Locus &);
+
+            const SequinData *findNormal(const Locus &, MatchRule = Contains) const;
+        
+            const SequinData *findFusion(const Locus &) const;
+            const SequinData *findSplice(const Locus &) const;
+            const SpliceChimeric *findSpliceChim(const SequinID &) const;
+
+            Counts countFusion() const;
+            Counts countSplice() const;
+
             const FusionPoint * find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
 
         private:

@@ -13,6 +13,7 @@ namespace Anaquin
     typedef long long Reads;
     
     typedef double FPKM;
+    typedef double Concent;
     typedef double Coverage;
     typedef double Concentration;
 

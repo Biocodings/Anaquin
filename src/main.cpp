@@ -36,6 +36,7 @@
 #include "fusion/f_express.hpp"
 #include "fusion/f_discover.hpp"
 #include "fusion/f_coverage.hpp"
+#include "fusion/f_fraction.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
@@ -61,28 +62,29 @@ typedef std::set<Value> Range;
 #define TOOL_T_DIFF      269
 #define TOOL_T_NORM      270
 #define TOOL_T_IGV       271
-#define TOOL_V_ALIGN     272
-#define TOOL_V_DISCOVER  273
-#define TOOL_V_DIFF      274
-#define TOOL_V_IGV       275
-#define TOOL_V_ALLELE    276
-#define TOOL_M_ALIGN     277
-#define TOOL_M_ABUND     278
-#define TOOL_M_ASSEMBLY  279
-#define TOOL_M_DIFF      280
-#define TOOL_M_IGV       281
-#define TOOL_L_ABUND     282
-#define TOOL_L_DIFF      283
-#define TOOL_F_DISCOVER  284
-#define TOOL_F_EXPRESS   285
-#define TOOL_F_IGV       286
-#define TOOL_T_COVERAGE  287
-#define TOOL_V_COVERAGE  288
-#define TOOL_M_COVERAGE  289
-#define TOOL_L_COVERAGE  290
-#define TOOL_F_COVERAGE  291
-#define TOOL_F_ALIGN     292
-#define TOOL_V_SUBSAMPLE 293
+#define TOOL_T_COVERAGE  272
+#define TOOL_V_ALIGN     273
+#define TOOL_V_DISCOVER  274
+#define TOOL_V_DIFF      275
+#define TOOL_V_IGV       276
+#define TOOL_V_ALLELE    277
+#define TOOL_V_COVERAGE  278
+#define TOOL_V_SUBSAMPLE 279
+#define TOOL_M_ALIGN     280
+#define TOOL_M_ABUND     281
+#define TOOL_M_ASSEMBLY  282
+#define TOOL_M_DIFF      283
+#define TOOL_M_IGV       284
+#define TOOL_M_COVERAGE  285
+#define TOOL_L_ABUND     286
+#define TOOL_L_DIFF      287
+#define TOOL_L_COVERAGE  288
+#define TOOL_F_DISCOVER  289
+#define TOOL_F_EXPRESS   290
+#define TOOL_F_IGV       291
+#define TOOL_F_COVERAGE  292
+#define TOOL_F_ALIGN     293
+#define TOOL_F_FRACTION  294
 
 /*
  * Options specified in the command line
@@ -122,6 +124,7 @@ typedef std::set<Value> Range;
 #define OPT_FA_1    911
 #define OPT_FA_2    912
 #define OPT_U_OUT   913
+#define OPT_U_TAB   914
 
 using namespace Anaquin;
 
@@ -192,6 +195,7 @@ static std::map<Value, Tool> _tools =
     { "FusionExpression", TOOL_F_EXPRESS   },
     { "FusionIGV",        TOOL_F_IGV       },
     { "FusionCoverage",   TOOL_F_COVERAGE  },
+    { "FusionFraction",   TOOL_F_FRACTION  },
 };
 
 /*
@@ -226,10 +230,11 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
-    { TOOL_F_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE,                          } },
-    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFTWARE, OPT_U_OUT               } },
-    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT } },
-    { TOOL_F_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                             } },
+    { TOOL_F_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE,                                 } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFTWARE, OPT_U_OUT                      } },
+    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT        } },
+    { TOOL_F_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                    } },
+    { TOOL_F_FRACTION, { OPT_R_BED_1, OPT_R_FUS, OPT_U_OUT, OPT_U_TAB, OPT_MIXTURE } },
 
     /*
      * Variant Analysis
@@ -382,6 +387,7 @@ static const struct option long_options[] =
 
     { "rfus",    required_argument, 0, OPT_R_FUS },
     { "uout",    required_argument, 0, OPT_U_OUT },
+    { "utab",    required_argument, 0, OPT_U_TAB },
 
     { "rbed",    required_argument, 0, OPT_R_BED_1 },
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
@@ -843,7 +849,7 @@ void parse(int argc, char ** argv)
      * Now, the first option is also the tool option.
      */
 
-    for (std::size_t i = 0; i < opts.size(); i++)
+    for (auto i = 0; i < opts.size(); i++)
     {
         auto opt = opts[i];
         auto val = vals[i];
@@ -890,6 +896,7 @@ void parse(int argc, char ** argv)
             case OPT_BAM_2:
             case OPT_R_GTF:
             case OPT_PSL_1:
+            case OPT_U_TAB:
             case OPT_GTRACK:
             case OPT_ITRACK:
             case OPT_R_BED_1:
@@ -983,7 +990,7 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_F_COVERAGE:
+                    case TOOL_T_COVERAGE:
                     {
                         applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
                         break;
@@ -1068,11 +1075,20 @@ void parse(int argc, char ** argv)
         case TOOL_F_EXPRESS:
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
+        case TOOL_F_FRACTION:
         {
             std::cout << "[INFO]: Fusion Analysis" << std::endl;
 
             switch (_p.tool)
             {
+                case TOOL_F_FRACTION:
+                {
+                    applyMix(std::bind(&Standard::f_mix,    &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::f_ref,    &s, std::placeholders::_1), OPT_R_FUS);
+                    applyRef(std::bind(&Standard::f_splice, &s, std::placeholders::_1), OPT_R_BED_1);
+                    break;
+                }
+
                 case TOOL_F_COVERAGE:
                 {
                     applyRef(std::bind(&Standard::f_std, &s, std::placeholders::_1), OPT_R_BED_1);
@@ -1107,6 +1123,11 @@ void parse(int argc, char ** argv)
                 case TOOL_F_IGV:      { viewer<FViewer>();               break; }
                 case TOOL_F_ALIGN:    { analyze_1<FAlign>(OPT_BAM_1);    break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_BAM_1); break; }
+                case TOOL_F_FRACTION:
+                {
+                    analyze_2<FFraction>(OPT_U_OUT, OPT_U_TAB);
+                    break;
+                }
 
                 case TOOL_F_EXPRESS:
                 {

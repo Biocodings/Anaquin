@@ -27,7 +27,7 @@ namespace Anaquin
         }
 
         typedef std::function<void (const VCFVariant &, const ParserProgress &)> Callback;
-        static void parse(const Reader &r, Callback);
+        static void parse(const Reader &, Callback);
     };
 }
 

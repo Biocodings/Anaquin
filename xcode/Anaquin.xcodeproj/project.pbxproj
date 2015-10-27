@@ -71,6 +71,7 @@
 		EFA9DE731BCB7D6100780182 /* coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE711BCB7D6100780182 /* coverage.cpp */; settings = {ASSET_TAGS = (); }; };
 		EFA9DE7A1BCB8C6A00780182 /* v_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE781BCB8C6A00780182 /* v_coverage.cpp */; settings = {ASSET_TAGS = (); }; };
 		EFACC75B1B1F0C80004A9770 /* m_histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFACC7591B1F0C80004A9770 /* m_histogram.cpp */; };
+		EFB2F8881BDEF0C200A9F0AB /* f_fraction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB2F8861BDEF0C200A9F0AB /* f_fraction.cpp */; settings = {ASSET_TAGS = (); }; };
 		EFB3FF621B4A30DC0065CEA0 /* parser_top_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB3FF601B4A30DC0065CEA0 /* parser_top_fusion.cpp */; };
 		EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF381B4F848D0045DC6A /* t_locus.cpp */; };
 		EFB7FF3F1B4F84B40045DC6A /* t_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF3D1B4F84B40045DC6A /* t_abund.cpp */; };
@@ -258,6 +259,9 @@
 		EFACC7591B1F0C80004A9770 /* m_histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_histogram.cpp; sourceTree = "<group>"; };
 		EFACC75A1B1F0C80004A9770 /* m_histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_histogram.h; sourceTree = "<group>"; };
 		EFB1E0421B0098F300F093A2 /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
+		EFB2F8861BDEF0C200A9F0AB /* f_fraction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_fraction.cpp; sourceTree = "<group>"; };
+		EFB2F8871BDEF0C200A9F0AB /* f_fraction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_fraction.hpp; sourceTree = "<group>"; };
+		EFB2F8891BDEFB9800A9F0AB /* parser_stab.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_stab.hpp; path = ../src/parsers/parser_stab.hpp; sourceTree = "<group>"; };
 		EFB3FF601B4A30DC0065CEA0 /* parser_top_fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_top_fusion.cpp; path = ../src/parsers/parser_top_fusion.cpp; sourceTree = "<group>"; };
 		EFB3FF611B4A30DC0065CEA0 /* parser_top_fusion.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_top_fusion.hpp; path = ../src/parsers/parser_top_fusion.hpp; sourceTree = "<group>"; };
 		EFB7FF271B4F79C20045DC6A /* l_abund.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = l_abund.cpp; sourceTree = "<group>"; };
@@ -447,6 +451,7 @@
 				EF3860E21AD3783A0062D246 /* parser_sam.hpp */,
 				EFBB830C1ADF953B0002611E /* parser_sequins.cpp */,
 				EFBB830D1ADF953B0002611E /* parser_sequins.hpp */,
+				EFB2F8891BDEFB9800A9F0AB /* parser_stab.hpp */,
 				EF3F04A41B6F2F5000179B55 /* parser_star_fusion.cpp */,
 				EF3F04A51B6F2F5000179B55 /* parser_star_fusion.hpp */,
 				EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */,
@@ -591,6 +596,8 @@
 				EFB7FF2D1B4F79D00045DC6A /* f_discover.hpp */,
 				EF18049E1B65C06F00897D1E /* f_express.cpp */,
 				EF18049F1B65C06F00897D1E /* f_express.hpp */,
+				EFB2F8861BDEF0C200A9F0AB /* f_fraction.cpp */,
+				EFB2F8871BDEF0C200A9F0AB /* f_fraction.hpp */,
 				EF2101391B662E82007313AD /* f_viewer.hpp */,
 			);
 			name = fusion;
@@ -835,6 +842,7 @@
 				EFA3473B1BD5E491009ED5DC /* f_coverage.cpp in Sources */,
 				EFA347351BD5E46D009ED5DC /* m_coverage.cpp in Sources */,
 				EFDD6ACE1B0DD76C00450029 /* cram_samtools.c in Sources */,
+				EFB2F8881BDEF0C200A9F0AB /* f_fraction.cpp in Sources */,
 				EFDD6A971B0DD76200450029 /* knetfile.c in Sources */,
 				EFDD6AD21B0DD76C00450029 /* open_trace_file.c in Sources */,
 				EF3211951B1DBC1A0062BB10 /* parser_blast.cpp in Sources */,

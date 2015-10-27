@@ -26,7 +26,7 @@ namespace Anaquin
             FeatureName name;
             
             // Locations of the sorted blocks
-            std::vector<Locus> blocks;
+            //std::vector<Locus> blocks;
         };
 
         typedef std::function<void(const Annotation &, const ParserProgress &)> Callback;

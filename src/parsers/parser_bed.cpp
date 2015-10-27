@@ -2,7 +2,7 @@
 #include "data/reader.hpp"
 #include "parsers/parser_bed.hpp"
 #include <boost/algorithm/string.hpp>
-#include <iostream>
+
 using namespace Anaquin;
 
 void ParserBED::parse(const Reader &r, Callback x)
@@ -20,8 +20,6 @@ void ParserBED::parse(const Reader &r, Callback x)
             return;
         }
 
-        f.blocks.clear();
-
         // Name of the chromosome
         f.id = tokens[0];
 
@@ -38,21 +36,6 @@ void ParserBED::parse(const Reader &r, Callback x)
         {
             // Name of the BED line (eg: gene)
             f.name = tokens[3];
-
-            if (tokens.size() >= 10)
-            {
-                boost::split(sizes,  tokens[10], boost::is_any_of(","));
-                boost::split(starts, tokens[11], boost::is_any_of(","));
-                assert(sizes.size() == starts.size());
-
-                for (auto i = 0; i < stod(tokens[9]); i++)
-                {
-                    const Base start = stod(starts[i]);
-                    const Base size  = stod(sizes[i]);
-
-                    f.blocks.push_back(Locus(f.l.start + start, f.l.start + start + size - 1));
-                }
-            }
         }
 
         x(f, p);

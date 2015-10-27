@@ -157,7 +157,7 @@ namespace Anaquin
 //            }
 
             // The references are simply the known fusion points
-            stats.m.nr = r.countFusions();
+            stats.m.nr = r.countFusion();
 
             o.info("Calculating limit of sensitivity");
 
