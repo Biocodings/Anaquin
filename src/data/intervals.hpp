@@ -57,13 +57,22 @@ namespace Anaquin
 
             inline Base add_(const Locus &l)
             {
-                const auto start = std::max(_l.start, l.start);
-                const auto end   = std::min(_l.end,   l.end);
+                auto start = std::max(_l.start, l.start) - _l.start;
+                auto end   = std::min(_l.end,   l.end)   - _l.start;
+
+                /*
+                 * For example, if the interval is (2,2038) and the locus is (2028,2042).
+                 *
+                 *     start = 2028 -> 2026
+                 *     end   = 2038 -> 2036
+                 */
                 
                 if (start <= end)
                 {
                     _covs[start].starts++;
                     _covs[end].ends++;
+                    
+                    assert(start < _covs.size() && end < _covs.size());
                 }
                 
                 return ((l.start < _l.start) ? _l.start -  l.start : 0) +
