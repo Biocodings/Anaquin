@@ -32,8 +32,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     stats.inters = r.intervals();
     o.analyze(file);
 
-    stats.p[PerfLevel::BasePerf].h   = Standard::instance().r_meta.hist();
-    stats.p[PerfLevel::SequinPerf].h = Standard::instance().r_meta.hist();
+    stats.bp.h = stats.sp.h = Standard::instance().r_meta.hist();
 
     // False positives for each specie
     std::map<GenomeID, Base> fps;
@@ -63,18 +62,16 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
         if (match)
         {
-            auto &sp = stats.p.at(PerfLevel::SequinPerf);
-
             /*
              * Calculating at the sequin level
              */
             
-            if (classify(sp.m, align, [&](const Alignment &)
+            if (classify(stats.sp.m, align, [&](const Alignment &)
             {
                 return match->l().contains(align.l);
             }))
             {
-                sp.h.at(match->id())++;
+                stats.sp.h.at(match->id())++;
             };
             
             /*
@@ -88,16 +85,11 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     o.info("Calculating references");
     
-    auto sp = &(stats.p.at(PerfLevel::SequinPerf));
-    auto bp = &(stats.p.at(PerfLevel::BasePerf));
+    sums(stats.sp.h, stats.sp.m.nr);
 
-    sums(sp->h, sp->m.nr);
-    
     /*
      * Metrics at the base level for all reference genomes
      */
-    
-    bp->m.tp() = bp->m.fp() = bp->m.nq = 0;
     
     for (const auto &i : stats.inters.map())
     {
@@ -105,8 +97,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
         auto &in = i.second;
 
         // Update the overall performance
-        bp->m.fp() += fps.at(i.first);
-        
+        stats.bp.m.fp() += fps.at(i.first);
+
         in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
             if (depth)
@@ -115,9 +107,9 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
                 m.tp() += j - i;
                 
                 // Update the overall performance
-                bp->m.tp() += j - i;
+                stats.bp.m.tp() += j - i;
 
-                bp->h.at(id)++;
+                stats.bp.h.at(id)++;
             }
         });
 
@@ -126,14 +118,14 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
         
         assert(m.nr >= m.tp());
         
-        bp->m.nr += in.l().length();
-        bp->m.nq  = bp->m.tp() + bp->m.fp();
+        stats.bp.m.nr += in.l().length();
+        stats.bp.m.nq  = stats.bp.m.tp() + stats.bp.m.fp();
     }
 
     o.info("Calculating detection limit");
     
-    stats.p.at(PerfLevel::BasePerf).s = r.limit(stats.p.at(PerfLevel::BasePerf).h);
-    sp->s = r.limit(sp->h);
+    stats.bp.s = r.limit(stats.bp.h);
+    stats.sp.s = r.limit(stats.sp.h);
 
     return stats;
 }
@@ -169,14 +161,14 @@ void MAlign::report(const FileName &file, const Options &o)
                                             % stats.n_expT
                                             % stats.n_chrT
                                             % stats.inters.size()                       // 5
-                                            % stats.p.at(PerfLevel::SequinPerf).m.sn()
-                                            % stats.p.at(PerfLevel::SequinPerf).m.sp()
-                                            % stats.p.at(PerfLevel::SequinPerf).s.id
-                                            % stats.p.at(PerfLevel::SequinPerf).s.abund
-                                            % stats.p.at(PerfLevel::BasePerf).m.sn()    // 10
-                                            % stats.p.at(PerfLevel::BasePerf).m.sp()
-                                            % stats.p.at(PerfLevel::BasePerf).s.id
-                                            % stats.p.at(PerfLevel::BasePerf).s.abund
+                                            % stats.sp.m.sn()
+                                            % stats.sp.m.sp()
+                                            % stats.sp.s.id
+                                            % stats.sp.s.abund
+                                            % stats.bp.m.sn()    // 10
+                                            % stats.bp.m.sp()
+                                            % stats.bp.s.id
+                                            % stats.bp.s.abund
                                             % stats.dilution()).str());
     o.writer->close();
 
@@ -197,16 +189,12 @@ void MAlign::report(const FileName &file, const Options &o)
 
     for (const auto &i : stats.inters.map())
     {
-        const auto &b  = stats.base.at(i.first);
-        const auto &bh = stats.p.at(PerfLevel::BasePerf).h;
-        const auto &sh = stats.p.at(PerfLevel::SequinPerf).h;
-        
-        const auto a = i.second;
-        const auto ss  = i.second.stats();
+        const auto &b = stats.base.at(i.first);
+        const auto ss = i.second.stats();
 
         o.writer->write((boost::format(format) % i.first
-                                               % sh.at(i.first)
-                                               % bh.at(i.first)
+                                               % stats.sp.h.at(i.first)
+                                               % stats.bp.h.at(i.first)
                                                % ss.covered()
                                                % (isnan(b.sp()) ? "-" : std::to_string(b.sp()))
                         ).str());

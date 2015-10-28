@@ -11,13 +11,16 @@ namespace Anaquin
 
         struct Stats : public AlignmentStats
         {
-            // Overall performance
-            std::map<PerfLevel, Performance> p;
-
+            // Performance at the base level
+            Performance bp;
+            
+            // Performance at the sequin level
+            Performance sp;
+            
             // Performance for all species at the base level
             std::map<GenomeID, Confusion> base;
 
-            // Reference species
+            // Reference community
             Intervals inters;
         };
 

@@ -60,16 +60,6 @@ namespace Anaquin
     };
 
     /*
-     * Possible levels for the performance
-     */
-
-    enum PerfLevel
-    {
-        BasePerf,
-        SequinPerf,
-    };
-
-    /*
      * Given references, this function computes total overalap of a query to the references.
      * For example:
      *
