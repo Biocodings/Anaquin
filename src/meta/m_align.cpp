@@ -84,8 +84,9 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     });
 
     o.info("Calculating references");
-    
-    sums(stats.sp.h, stats.sp.m.nr);
+
+    // Use the distribution to compute the references
+    stats.sp.inferRefFromHist();
 
     /*
      * Metrics at the base level for all reference genomes

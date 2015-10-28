@@ -34,7 +34,7 @@ namespace Anaquin
         
         return c;
     }
-    
+
     template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
     {
         for (const auto &i : m)
