@@ -14,16 +14,19 @@ FNormal::Stats FNormal::stats(const FileName &splice, const Options &o)
         else                        { stats.n_expT++; }
         
         const SequinData *match;
-
+ 
         if ((match = r.findSplice(c.l)))
         {
             const auto expected = match->mixes.at(Mix_1);
             const auto measured = c.unique;
 
             stats.add(match->id, expected, measured);
+            stats.h.at(match->id)++;
         }
     });
 
+    stats.ss = Standard::instance().r_fus.limit(stats.h);
+    
     return stats;
 }
 

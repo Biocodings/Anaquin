@@ -38,9 +38,6 @@ namespace Anaquin
 
             // Distribution of the sequins
             SequinHist h = Standard::instance().r_fus.hist();
-
-            // Sequins failed to detect in the experiment
-            //MissingSequins miss;
         };
 
         static Stats report(const FileName &, const Options &o = Options());

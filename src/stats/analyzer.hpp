@@ -448,37 +448,36 @@ namespace Anaquin
                          const Stats &stats,
                          const Units &units,
                          Writer writer,
-                         const Units &ref = "",
-                         const Label &samples = "")
+                         const Units &ref = "")
         {
             const auto summary = "Summary for dataset: %1%\n\n"
-                                 "   %3%:         %2% %5%\n"
-                                 "   Query:       %4% %5%\n\n"
-                                 "   Reference:   %6% %7%\n"
-                                 "   Detected:    %10% %7%\n\n"
-                                 "   Sensitivity: %8% (attomol/ul) (%9%)\n\n"
-                                 "   Correlation: %11%\n"
-                                 "   Slope:       %12%\n"
-                                 "   R2:          %13%\n"
-                                 "   F-statistic: %14%\n"
-                                 "   P-value:     %15%\n"
-                                 "   SSM:         %16%, DF: %17%\n"
-                                 "   SSE:         %18%, DF: %19%\n"
-                                 "   SST:         %20%, DF: %21%\n\n"
+                                 "   Experiment:  %2% %4%\n"
+                                 "   Synthetic:   %3% %4%\n\n"
+                                 "   Reference:   %5% %6%\n"
+                                 "   Detected:    %9% %6%\n\n"
+                                 "   Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+                                 "   Correlation: %10%\n"
+                                 "   Slope:       %11%\n"
+                                 "   R2:          %12%\n"
+                                 "   F-statistic: %13%\n"
+                                 "   P-value:     %14%\n"
+                                 "   SSM:         %15%, DF: %16%\n"
+                                 "   SSE:         %17%, DF: %18%\n"
+                                 "   SST:         %19%, DF: %20%\n\n"
                                  "   ***\n"
                                  "   *** The following statistics are computed on the log2 scale.\n"
                                  "   ***\n"
                                  "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
                                  "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
                                  "   ***\n\n"
-                                 "   Correlation: %22%\n"
-                                 "   Slope:       %23%\n"
-                                 "   R2:          %24%\n"
-                                 "   F-statistic: %25%\n"
-                                 "   P-value:     %26%\n"
-                                 "   SSM:         %27%, DF: %28%\n"
-                                 "   SSE:         %29%, DF: %30%\n"
-                                 "   SST:         %31%, DF: %32%\n";
+                                 "   Correlation: %21%\n"
+                                 "   Slope:       %22%\n"
+                                 "   R2:          %23%\n"
+                                 "   F-statistic: %24%\n"
+                                 "   P-value:     %25%\n"
+                                 "   SSM:         %26%, DF: %27%\n"
+                                 "   SSE:         %28%, DF: %29%\n"
+                                 "   SST:         %30%, DF: %31%\n";
 
             const auto n_lm = stats.linear(false);
             const auto l_lm = stats.linear(true);
@@ -486,15 +485,14 @@ namespace Anaquin
             writer->open(file);
             writer->write((boost::format(summary) % data                         // 1
                                                   % stats.n_expT
-                                                  % (samples.empty() ? "Experiment" : samples)
                                                   % stats.n_chrT
-                                                  % units                        // 5
-                                                  % stats.h.size()
+                                                  % units
+                                                  % stats.h.size()               // 5
                                                   % (ref.empty() ? units : ref)
                                                   % stats.ss.abund
                                                   % stats.ss.id
-                                                  % detectHist(stats.h)           // 10
-                                                  % n_lm.r
+                                                  % detectHist(stats.h)
+                                                  % n_lm.r                        // 10
                                                   % n_lm.m
                                                   % n_lm.r2
                                                   % n_lm.f
@@ -505,8 +503,8 @@ namespace Anaquin
                                                   % n_lm.sse_df
                                                   % n_lm.sst
                                                   % n_lm.sst_df
-                                                  % l_lm.r                        // 22
-                                                  % l_lm.m
+                                                  % l_lm.r
+                                                  % l_lm.m                        // 22
                                                   % l_lm.r2
                                                   % l_lm.f
                                                   % l_lm.p
@@ -515,7 +513,7 @@ namespace Anaquin
                                                   % l_lm.sse
                                                   % l_lm.sse_df
                                                   % l_lm.sst
-                                                  % l_lm.sst_df
+                                                  % l_lm.sst_df                   // 31
                                                  ).str());
             writer->close();
         }

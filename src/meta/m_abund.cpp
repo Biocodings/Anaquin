@@ -80,7 +80,7 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     const auto stats = MAbundance::analyze(file, o);
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("MetaAbundance_summary.stats", file, stats, "contigs", o.writer, "sequins", "Community");
+    AnalyzeReporter::linear("MetaAbundance_summary.stats", file, stats, "contigs", o.writer, "sequins");
  
     o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats,

@@ -107,20 +107,22 @@ namespace Anaquin
             }
         
             /*
-             * Construct a histogram for each sequin
+             * Histogram for distribution
              */
 
-            inline SequinHist hist() const
+            template <typename T> SequinHist hist(const T &data) const
             {
                 SequinHist h;
             
-                for (const auto &i : _data)
+                for (const auto &i : data)
                 {
                     h[i.first] = 0;
                 }
 
                 return h;
             }
+
+            inline SequinHist hist() const { return hist(_data); }
 
             // Calculate the total length of all sequins in the reference
             inline Base size() const
@@ -420,15 +422,21 @@ namespace Anaquin
 
             void validate() override;
 
+            /*
+             * Manipulate operations
+             */
+        
             void addBreak(const FusionPoint &);
         
             // Add splicing for an intron in the normal gene
             void addSplice(const SequinID &, const Locus &);
-        
+
             // Add fusion or normal genes comprised of the standards
             void addStand(const SequinID &, const Locus &);
 
-            const SequinData *findNormal(const Locus &, MatchRule = Contains) const;
+            /*
+             * Query operations
+             */
         
             const SequinData *findFusion(const Locus &) const;
             const SequinData *findSplice(const Locus &) const;

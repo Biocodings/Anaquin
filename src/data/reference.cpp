@@ -221,6 +221,9 @@ struct FusionRef::FusionRefImpl
 
 FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
 
+Counts FusionRef::countFusion() const { return _impl->breaks.size(); }
+Counts FusionRef::countSplice() const { return _impl->splice.size(); }
+
 const FusionRef::SpliceChimeric * FusionRef::findSpliceChim(const SequinID &id) const
 {
     return _impl->spliceChim.count(id) ? &_impl->spliceChim.at(id) : nullptr;
@@ -241,27 +244,9 @@ void FusionRef::addSplice(const SequinID &id, const Locus &l)
     _impl->rawSplices[id] = l;
 }
 
-Counts FusionRef::countFusion() const { return _impl->breaks.size(); }
-Counts FusionRef::countSplice() const { return _impl->splice.size(); }
-
 void FusionRef::addStand(const SequinID &id, const Locus &l)
 {
     _impl->rawStands[id].push_back(l);
-}
-
-const SequinData *FusionRef::findNormal(const Locus &l, MatchRule m) const
-{
-    assert(!_impl->normals.empty());
-    
-    for (auto &i : _impl->normals)
-    {
-        if (i.second == l)
-        {
-            return &(_data.at(i.first));
-        }
-    }
-
-    return nullptr;
 }
 
 const SequinData *FusionRef::findFusion(const Locus &l) const
@@ -309,7 +294,7 @@ void FusionRef::validate()
     // Case 5
     if (!_rawMIDs.empty() && !_impl->rawSplices.empty())
     {
-        merge(_rawMIDs);        
+        merge(_rawMIDs, getKeys(_impl->rawSplices));
         _impl->splice = _impl->rawSplices;
     }
 

@@ -1,6 +1,5 @@
 #include "trans/t_express.hpp"
 #include "writers/r_writer.hpp"
-#include <ss/regression/linear.hpp>
 #include "parsers/parser_tracking.hpp"
 
 using namespace SS;
@@ -13,7 +12,7 @@ TExpress::Stats TExpress::report(const FileName &file, const Options &o)
 
     const bool isoform = o.level == Isoform;
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
-    
+
     // Construct for a histogram at the appropriate level
     stats.h = isoform ? r.hist() : r.histGene();
     
