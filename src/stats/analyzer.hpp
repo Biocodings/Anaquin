@@ -456,7 +456,7 @@ namespace Anaquin
                                  "   Reference:   %5% %6%\n"
                                  "   Detected:    %9% %6%\n\n"
                                  "   ***\n"
-                                 "   ***Detection Limits\n"
+                                 "   *** Detection Limits\n"
                                  "   ***\n\n"
                                  "   Absolute:    %7% (attomol/ul) (%8%)\n"
                                  "   Refraction:  --- (attomol/ul) (---)\n\n"
