@@ -228,7 +228,7 @@ void Standard::r_ref(const Reader &r)
 {
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
-       if (f.id == id && f.type == Exon)
+       if (f.id == Standard::chrT && f.type == Exon)
         {
             r_trans.addRef(f.tID, f.geneID, f.l);
         }

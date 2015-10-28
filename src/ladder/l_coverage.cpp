@@ -10,7 +10,7 @@ LCoverage::Stats LCoverage::stats(const FileName &file, const Options &o)
 
     return CoverageTool::stats(file,  [&](const Alignment &align, const ParserProgress &)
     {
-        return align.id == r.id ? static_cast<bool>(r.r_lad.match(align.l, MatchRule::Contains)) : false;
+        return align.id == Standard::chrT ? static_cast<bool>(r.r_lad.match(align.l, MatchRule::Contains)) : false;
     });
 }
 

@@ -10,7 +10,7 @@ namespace Anaquin
 {
     struct CoverageTool
     {
-        struct Stats : public AlignmentStats
+        struct Stats : public AlignmentStats, public SingleInputStats
         {
             Intervals inters;
         };
@@ -35,7 +35,7 @@ namespace Anaquin
             // Where the data should be written
             std::shared_ptr<Writer> writer;
 
-            Interval::IntervalID id = Standard::instance().id;
+            Interval::IntervalID id = Standard::chrT;
         };
         
         struct CoverageBedGraphOptions

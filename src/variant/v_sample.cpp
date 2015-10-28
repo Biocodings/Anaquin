@@ -9,7 +9,7 @@ static bool checkGenoQuery(const ChromoID &queryID, const ChromoID &id, const Lo
 {
     const auto &r = Standard::instance();
 
-    if (id == r.id)
+    if (id == Standard::chrT)
     {
         return r.r_var.findGeno(l);
     }
@@ -46,9 +46,9 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
         return checkGenoQuery(o.queryID, align.id, align.l);
     });
 
-    if (!stats.cov.hist.count(r.id))
+    if (!stats.cov.hist.count(Standard::chrT))
     {
-        throw std::runtime_error("Failed to find any alignment for " + r.id);
+        throw std::runtime_error("Failed to find any alignment for " + std::string(Standard::chrT));
     }
     else if (!stats.cov.hist.count((o.queryID)))
     {
@@ -56,12 +56,12 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     }
     
     o.info(std::to_string(sums(stats.cov.hist)) + " alignments in total");
-    o.info(std::to_string(stats.cov.hist.at(r.id)) + " alignments to chrT");
+    o.info(std::to_string(stats.cov.hist.at(Standard::chrT)) + " alignments to chrT");
     o.info(std::to_string(stats.cov.hist.at(o.queryID)) + " alignments to " + o.queryID);
     o.info(std::to_string(stats.cov.inters.size()) + " intervals generated");
 
-    o.info("Generating statistics for " + r.id);
-    stats.chrT = stats.cov.inters.find(r.id)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+    o.info("Generating statistics for " + std::string(Standard::chrT));
+    stats.chrT = stats.cov.inters.find(Standard::chrT)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
         return static_cast<bool>(r.r_var.findGeno(Locus(i, j)));
     });
@@ -74,7 +74,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
 
     assert(stats.chrT.mean && stats.query.mean);
 
-    o.info("Calculating coverage for " + r.id + " and " + o.queryID);
+    o.info("Calculating coverage for " + std::string(Standard::chrT) + " and " + o.queryID);
 
     /*
      * Now we have the data, we'll need to compare the coverage and determine what fraction that
@@ -164,7 +164,7 @@ void VSample::sample(const FileName &src, const FileName &dst, const Stats &stat
              * This is the key, randomly write the read with certain probability
              */
             
-            if (align.id != Standard::instance().id || sampler.select(bam_get_qname(b)))
+            if (align.id != Standard::chrT || sampler.select(bam_get_qname(b)))
             {
                 writer.write(h, b);
             }

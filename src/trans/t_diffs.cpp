@@ -50,7 +50,7 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
 
     ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
     {
-        static const auto &id = Standard::instance().id;
+        static const auto &id = Standard::chrT;
 
         if (t.chromID != id)
         {

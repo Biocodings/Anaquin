@@ -53,7 +53,7 @@ namespace Anaquin
 
         ParserVCF::parse(file, [&](const VCFVariant &v, const ParserProgress &)
         {
-            if (v.id != Standard::instance().id)
+            if (v.id != Standard::chrT)
             {
                 stats.n_expT++;
                 return;

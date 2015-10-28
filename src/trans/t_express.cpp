@@ -21,7 +21,7 @@ TExpress::Stats TExpress::report(const FileName &file, const Options &o)
 
     ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
     {
-        static const auto &id = Standard::instance().id;
+        static const auto &id = Standard::chrT;
         
         if (t.chromID != id)
         {

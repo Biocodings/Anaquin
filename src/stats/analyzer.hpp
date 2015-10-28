@@ -89,7 +89,7 @@ namespace Anaquin
         }
     };
 
-    struct AlignmentStats : public MappingStats, public SingleInputStats
+    struct AlignmentStats : public MappingStats
     {
         Counts unmapped = 0;
 
@@ -107,9 +107,9 @@ namespace Anaquin
         {
             if (!t.i)
             {
-                if      (!t.mapped)                       { unmapped++; }
-                else if (t.id != Standard::instance().id) { n_expT++;   }
-                else                                      { n_chrT++;   }
+                if      (!t.mapped)              { unmapped++; }
+                else if (t.id != Standard::chrT) { n_expT++;   }
+                else                             { n_chrT++;   }
             }
         }
     };
@@ -190,7 +190,7 @@ namespace Anaquin
         double x, y;
     };
 
-    struct FusionStats : public MappingStats
+    struct FusionStats : public AlignmentStats
     {
         // Number of fusions spanning across the genome and the synthetic chromosome
         Counts hg38_chrT = 0;

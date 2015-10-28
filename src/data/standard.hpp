@@ -27,9 +27,6 @@ namespace Anaquin
                 return s;
             }
 
-            // The name of the chromosome
-            ChromoID id = "chrT";
-
             static constexpr const char * chrT = "chrT";
         
             /*

@@ -43,7 +43,7 @@ static std::string createFilteredGTF(const FileName &file)
 
     ParserGTF::parse(file, [&](const Feature &f, const std::string &l, const ParserProgress &)
     {
-        if (f.id == Standard::instance().id)
+        if (f.id == Standard::chrT)
         {
             out << l << std::endl;
         }
@@ -97,7 +97,7 @@ TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
             o.wait(std::to_string(p.i));
         }
 
-        if (f.id != Standard::instance().id)
+        if (f.id != Standard::chrT)
         {
             stats.n_expT++;
             return;

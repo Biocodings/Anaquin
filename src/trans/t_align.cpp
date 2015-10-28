@@ -18,7 +18,7 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
         stats.update(align);
 
-        if (!align.mapped || align.id != Standard::instance().id)
+        if (!align.mapped || align.id != Standard::chrT)
         {
             return;
         }

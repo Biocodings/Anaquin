@@ -11,7 +11,7 @@ TCoverage::Stats TCoverage::stats(const FileName &file, const Options &o)
     
     stats = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
     {
-        return align.id == r.id ? static_cast<bool>(r.r_trans.match(align.l, MatchRule::Contains)) : false;
+        return align.id == Standard::chrT ? static_cast<bool>(r.r_trans.match(align.l, MatchRule::Contains)) : false;
     });
 
     return stats;

@@ -53,9 +53,9 @@ namespace Anaquin
         {
             const auto &r = Standard::instance().r_fus;
 
-            if (f.chr_1 != Standard::instance().id || f.chr_2 != Standard::instance().id)
+            if (f.chr_1 != Standard::chrT || f.chr_2 != Standard::chrT)
             {
-                if (f.chr_1 != Standard::instance().id && f.chr_2 != Standard::instance().id)
+                if (f.chr_1 != Standard::chrT && f.chr_2 != Standard::chrT)
                 {
                     return Genome;
                 }
