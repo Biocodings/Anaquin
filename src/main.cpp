@@ -328,8 +328,6 @@ struct MissingOptionError : public std::exception
     const std::string range;
 };
 
-struct MissingMixtureError   : public std::exception {};
-struct MissingReferenceError : public std::exception {};
 struct MissingInputError     : public std::exception {};
 struct InvalidNegativ30Error : public std::exception {};
 
@@ -1342,20 +1340,12 @@ int parse_options(int argc, char ** argv)
     }
     catch (const MissingOptionError &ex)
     {
-        const auto format = "A mandatory option is missing. Please specify %1%.";
+        const auto format = "A mandatory option is missing. Please specify -%1%.";
         printError((boost::format(format) % ex.opt).str());
     }
     catch (const MissingInputError &ex)
     {
         printError("No input file given. Please give an input file and try again.");
-    }
-    catch (const MissingMixtureError &ex)
-    {
-        printError("Mixture file is missing. Please specify it with -m.");
-    }
-    catch (const MissingReferenceError &ex)
-    {
-        printError("Reference file is missing. Please specify it with -r.");
     }
     catch (const InvalidFileError &ex)
     {
