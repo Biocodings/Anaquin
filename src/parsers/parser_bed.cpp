@@ -24,7 +24,7 @@ void ParserBED::parse(const Reader &r, Callback x)
         f.id = tokens[0];
 
         // Position of the feature in standard chromosomal coordinates
-        f.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
+        f.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]) + 1);
 
         if (tokens.size() >= 6)
         {
