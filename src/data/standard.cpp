@@ -14,6 +14,12 @@
 
 using namespace Anaquin;
 
+//const string A::RECTANGLE = "rectangle";
+
+//Standard::chrT;
+
+//            static constexpr const char * chrT = "chrT";
+
 enum MixtureFormat
 {
     ID_Length_Mix, // Eg: MG_33  10  60.23529412

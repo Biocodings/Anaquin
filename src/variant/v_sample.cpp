@@ -5,6 +5,8 @@
 
 using namespace Anaquin;
 
+constexpr const char * Standard::chrT;
+
 static bool checkGenoQuery(const ChromoID &queryID, const ChromoID &id, const Locus &l)
 {
     const auto &r = Standard::instance();

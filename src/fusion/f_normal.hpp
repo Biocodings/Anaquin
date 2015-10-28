@@ -11,8 +11,8 @@ namespace Anaquin
 
         struct Stats : public LinearStats, public FusionStats
         {
-            //SequinHist h;
-            //Limit ss;
+            SequinHist h;
+            Limit ss;
         };
 
         static Stats stats(const FileName &, const Options &o = Options());
