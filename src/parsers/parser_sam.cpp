@@ -62,11 +62,11 @@ void ParserSAM::parse(const FileName &file, Functor x)
                 // We'll need it for the next operation
                 n += ol;
                 
-                /*
-                 * TODO: Insertion and deletion are not handled
-                 */
-                
-                if (op == BAM_CMATCH || op == BAM_CINS || op == BAM_CDEL)
+                if (op == BAM_CINS || op == BAM_CDEL)
+                {
+                    continue;
+                }
+                else if (op == BAM_CMATCH)
                 {
                     align.spliced = false;
                 }
