@@ -40,7 +40,9 @@ TransNorm <- function(r, m, mode, k=1)
     W <- svdWa$u[, (first:k), drop = FALSE]
     alpha <- solve(t(W) %*% W) %*% t(W) %*% Y
     correctedY <- Y - W %*% alpha
-    if(!isLog & all(.isWholeNumber(x))) {
+    
+    if (!isLog & all(.isWholeNumber(x)))
+    {
         if(round) {
             correctedY <- round(exp(correctedY) - epsilon)
             correctedY[correctedY<0] <- 0
@@ -48,14 +50,7 @@ TransNorm <- function(r, m, mode, k=1)
             correctedY <- exp(correctedY) - epsilon
         }
     }
+
     colnames(W) <- paste("W", seq(1, ncol(W)), sep="_")
     return(list(W = W, normalizedCounts = t(correctedY)))
 }
-
-#definition = function(x, cIdx, k, drop=0, center=TRUE, round=TRUE, epsilon=1, tolerance=1e-8, isLog=FALSE)
-#{
-#    
-#    
-#}
-
-
