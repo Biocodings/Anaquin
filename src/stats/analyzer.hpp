@@ -483,42 +483,82 @@ namespace Anaquin
                                  "   SSE:         %28%, DF: %29%\n"
                                  "   SST:         %30%, DF: %31%\n";
 
-            const auto n_lm = stats.linear(false);
-            const auto l_lm = stats.linear(true);
-
             writer->open(file);
-            writer->write((boost::format(summary) % data                         // 1
-                                                  % stats.n_expT
-                                                  % stats.n_chrT
-                                                  % units
-                                                  % stats.h.size()               // 5
-                                                  % (ref.empty() ? units : ref)
-                                                  % stats.ss.abund
-                                                  % stats.ss.id
-                                                  % detectHist(stats.h)
-                                                  % n_lm.r                        // 10
-                                                  % n_lm.m
-                                                  % n_lm.r2
-                                                  % n_lm.f
-                                                  % n_lm.p
-                                                  % n_lm.ssm
-                                                  % n_lm.ssm_df
-                                                  % n_lm.sse
-                                                  % n_lm.sse_df
-                                                  % n_lm.sst
-                                                  % n_lm.sst_df
-                                                  % l_lm.r
-                                                  % l_lm.m                        // 22
-                                                  % l_lm.r2
-                                                  % l_lm.f
-                                                  % l_lm.p
-                                                  % l_lm.ssm
-                                                  % l_lm.ssm_df
-                                                  % l_lm.sse
-                                                  % l_lm.sse_df
-                                                  % l_lm.sst
-                                                  % l_lm.sst_df                   // 31
-                                                 ).str());
+            
+            if (stats.empty())
+            {
+                writer->write((boost::format(summary) % data                         // 1
+                                                      % stats.n_expT
+                                                      % stats.n_chrT
+                                                      % units
+                                                      % stats.h.size()               // 5
+                                                      % (ref.empty() ? units : ref)
+                                                      % "-"
+                                                      % "-"
+                                                      % detectHist(stats.h)
+                                                      % "-"                        // 10
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"                        // 22
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"
+                                                      % "-"                   // 31
+                               ).str());
+            }
+            else
+            {
+                const auto n_lm = stats.linear(false);
+                const auto l_lm = stats.linear(true);
+
+                writer->write((boost::format(summary) % data                         // 1
+                                                      % stats.n_expT
+                                                      % stats.n_chrT
+                                                      % units
+                                                      % stats.h.size()               // 5
+                                                      % (ref.empty() ? units : ref)
+                                                      % stats.ss.abund
+                                                      % stats.ss.id
+                                                      % detectHist(stats.h)
+                                                      % n_lm.r                        // 10
+                                                      % n_lm.m
+                                                      % n_lm.r2
+                                                      % n_lm.f
+                                                      % n_lm.p
+                                                      % n_lm.ssm
+                                                      % n_lm.ssm_df
+                                                      % n_lm.sse
+                                                      % n_lm.sse_df
+                                                      % n_lm.sst
+                                                      % n_lm.sst_df
+                                                      % l_lm.r
+                                                      % l_lm.m                        // 22
+                                                      % l_lm.r2
+                                                      % l_lm.f
+                                                      % l_lm.p
+                                                      % l_lm.ssm
+                                                      % l_lm.ssm_df
+                                                      % l_lm.sse
+                                                      % l_lm.sse_df
+                                                      % l_lm.sst
+                                                      % l_lm.sst_df                   // 31
+                               ).str());
+            }
+            
             writer->close();
         }
         
