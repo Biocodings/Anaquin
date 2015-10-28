@@ -95,7 +95,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Unmapped:    %2% reads\n"
-                         "   Genome:      %3% reads\n"
+                         "   Experiment:  %3% reads\n"
                          "   Synthetic:   %4% reads\n\n"
                          "   Reference:   %5% genes\n"
                          "   Sensitivity: %6%\n"

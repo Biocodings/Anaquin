@@ -32,11 +32,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     stats.inters = r.intervals();
     o.analyze(file);
 
-    auto &bp = stats.p[PerfLevel::BasePerf];
-    auto &sp = stats.p[PerfLevel::SequinPerf];
-
-    sp.h = Standard::instance().r_meta.hist();
-    bp.h = Standard::instance().r_meta.hist();
+    stats.p[PerfLevel::BasePerf].h   = Standard::instance().r_meta.hist();
+    stats.p[PerfLevel::SequinPerf].h = Standard::instance().r_meta.hist();
 
     // False positives for each specie
     std::map<GenomeID, Base> fps;
@@ -66,6 +63,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
         if (match)
         {
+            auto &sp = stats.p.at(PerfLevel::SequinPerf);
+
             /*
              * Calculating at the sequin level
              */
@@ -89,8 +88,10 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     o.info("Calculating references");
     
+    auto &sp = stats.p.at(PerfLevel::SequinPerf);
+    auto &bp = stats.p.at(PerfLevel::BasePerf);
     sums(sp.h, sp.m.nr);
-
+    
     /*
      * Metrics at the base level for all reference genomes
      */

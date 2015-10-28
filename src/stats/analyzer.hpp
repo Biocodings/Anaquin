@@ -486,7 +486,7 @@ namespace Anaquin
             writer->open(file);
             writer->write((boost::format(summary) % data                         // 1
                                                   % stats.n_expT
-                                                  % (samples.empty() ? "Genome" : samples)
+                                                  % (samples.empty() ? "Experiment" : samples)
                                                   % stats.n_chrT
                                                   % units                        // 5
                                                   % stats.h.size()

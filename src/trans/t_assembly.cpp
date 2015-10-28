@@ -204,7 +204,7 @@ TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
     o.info("Generating summary statistics");
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome: %2% features\n"
+                         "   Experiment: %2% features\n"
                          "   Query: %3% features\n\n"
                          "   Reference: %4% exons\n"
                          "   Reference: %5% introns\n\n"

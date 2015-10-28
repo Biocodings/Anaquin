@@ -1,8 +1,5 @@
 #include "fusion/f_normal.hpp"
-#include "fusion/f_discover.hpp"
-#include "fusion/f_classify.hpp"
 #include "parsers/parser_stab.hpp"
-#include "parsers/parser_star_fusion.hpp"
 
 using namespace Anaquin;
 

@@ -24,7 +24,7 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
      */
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Genome:      %2% variants\n"
+                         "   Experiment:  %2% variants\n"
                          "   Synthetic:   %3% variants\n"
                          "   Reference:   %4% variants\n"
                          "   Detected:    %5% variants\n"

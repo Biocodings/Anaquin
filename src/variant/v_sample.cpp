@@ -235,7 +235,7 @@ void VSample::report(const FileName &file, const Options &o)
     
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Unmapped:    %2% alignments\n"
-                         "   Genome:      %3% alignments\n"
+                         "   Experiment:  %3% alignments\n"
                          "   Synthetic:   %4% alignments\n\n"
                          "   Reference:   %5% sequins\n\n"
                          "   Method: %6%\n\n"

@@ -16,7 +16,7 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
         o.writer->open("FusionDiscover_summary.stats");
 
         const auto summary = "Summary for dataset: %1%\n\n"
-                             "   Genome: %2% fusions\n"
+                             "   Experiment: %2% fusions\n"
                              "   Synthetic: %3% fusions\n"
                              "   Genome-Synthetic: %4% fusions\n"
                              "   Reference: %5% sequins\n\n"
