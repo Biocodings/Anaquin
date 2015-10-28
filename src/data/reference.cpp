@@ -291,15 +291,8 @@ void FusionRef::validate()
      *   5: Splicing & Mixtures (eg: FusionNormal)
      */
 
-    // Case 5
-    if (!_rawMIDs.empty() && !_impl->rawSplices.empty())
-    {
-        merge(_rawMIDs, getKeys(_impl->rawSplices));
-        _impl->splice = _impl->rawSplices;
-    }
-
     // Case 4
-    else if (!_rawMIDs.empty() && !_impl->rawBreaks.empty() && !_impl->rawSplices.empty())
+    if (!_rawMIDs.empty() && !_impl->rawBreaks.empty() && !_impl->rawSplices.empty())
     {
         if (_impl->rawBreaks.size() != _impl->rawSplices.size())
         {
@@ -326,8 +319,12 @@ void FusionRef::validate()
             {
                 if (f(i.id, j.first))
                 {
+                    // Fusion to normal
                     _impl->fusToNorm[i.id] = j.first;
+                    
+                    // Normal to fusion
                     _impl->normToFus[j.first] = i.id;
+
                     break;
                 }
             }
@@ -338,22 +335,30 @@ void FusionRef::validate()
             throw std::runtime_error("Failed to construct a mapping table. Please check and try again.");
         }
         
+        /*
+         * Constructing differential between normal and fusion genes
+         */
+        
         for (const auto &i : _impl->normToFus)
         {
             SpliceChimeric s;
             
-            // Normal gene
             const auto normal = match(i.first);
-            
-            // Fusion gene
             const auto fusion = match(i.second);
-            
+
             s.normal = normal->abund(Mix_1);
             s.fusion = fusion->abund(Mix_1);
             
             _impl->spliceChim[i.first]  = s;
             _impl->spliceChim[i.second] = s;
         }
+    }
+
+    // Case 5
+    else if (!_rawMIDs.empty() && !_impl->rawSplices.empty())
+    {
+        merge(_rawMIDs, getKeys(_impl->rawSplices));
+        _impl->splice = _impl->rawSplices;
     }
 
     // Case 3
@@ -400,6 +405,10 @@ void FusionRef::validate()
         throw std::runtime_error("Unknown validation");
     }
 
+    /*
+     * Copy fusion points (no harm if none provided)
+     */
+    
     for (const auto &i : _impl->rawBreaks)
     {
         if (_data.count(i.id))

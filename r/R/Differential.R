@@ -10,34 +10,6 @@ library("Rsamtools")
 library("GenomicFeatures")
 library("GenomicAlignments")
 
-#
-# Given a list of alignment files, this function computes a count matrix for it.
-#
-
-AQ_Prepare <- function(files, meta)
-{
-	bams <- BamFileList(files)
-
-	# Read in the gene model which will be used for counting reads
-	model <- makeTranscriptDbFromGFF("/home/tedwon/Sources/QA/data/trans/ATR001.v032.gtf", format='gtf')
-
-	# Load experimental metadata for the samples
-	meta <- read.csv(file.path('', meta), row.names=1)
-
-	# Produces a GRangesList of all the exons grouped by gene
-	genes <- exonsBy(model, by="gene")
-
-	# Fix the duplicate keys…
-	names(bams) <- c("A1.bam", "A2.bam", "A3.bam", "B1.bam", "B2.bam", "B3.bam")
-
-	se <- summarizeOverlaps(features=genes, reads=bams, mode="Union", singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
-
-	# The colData slot is so far empty, should contain all the metadata
-	colData(se) <- DataFrame(meta)
-	
-	se
-}
-
 IsoformsToGenes <- function(trans)
 {
     trans <- as.character(trans)

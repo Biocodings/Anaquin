@@ -11,8 +11,10 @@ namespace Anaquin
 
         struct Stats : public LinearStats, public FusionStats
         {
-            SequinHist h;
             Limit ss;
+
+            // Sequin distribution
+            SequinHist h = Standard::instance().r_fus.hist();;
         };
 
         static Stats stats(const FileName &, const FileName &, const Options &o = Options());

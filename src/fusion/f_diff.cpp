@@ -23,11 +23,15 @@ FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Op
     
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
+        if (c.id == Standard::chrT) { stats.n_chrT++; }
+        else                        { stats.n_expT++; }
+
         const SequinData *match;
 
-        if ((match = r.findSplice(c.l)))
+        if (c.id == Standard::chrT && (match = r.findSplice(c.l)))
         {
             normals[match->id] = c.unique;
+            stats.h.at(match->id)++;
         }
     });
 
@@ -39,9 +43,18 @@ FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Op
     {
         const auto r = FClassify::classifyFusion(f, o);
 
+        switch (r.code)
+        {
+            case FClassify::Code::Genome:
+            case FClassify::Code::GenomeChrT: { stats.n_expT++; }
+            case FClassify::Code::Positive:
+            case FClassify::Code::Negative:   { stats.n_chrT++; }
+        }
+        
         if (r.code == FClassify::Code::Positive)
         {
             fusions[r.match->id] = f.reads;
+            stats.h.at(r.match->id)++;
         }
     });
 
@@ -49,7 +62,7 @@ FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Op
     o.info("Found " + std::to_string(fusions.size()) + " fusions");
     
     /*
-     * Compare those related genes that are detected in both conditions
+     * Compare the genes that are detected in both conditions.
      */
     
     for (const auto &i : normals)
@@ -69,6 +82,8 @@ FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Op
         }
     }
 
+    stats.ss = Standard::instance().r_fus.limit(stats.h);
+
     return stats;
 }
 
@@ -81,12 +96,12 @@ void FDiff::report(const FileName &splice, const FileName &chim, const Options &
      */
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("FusionFraction_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
+    AnalyzeReporter::linear("FusionDiff_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
 
     /*
      * Generating Bioconductor
      */
     
     o.info("Generating Bioconductor");
-    AnalyzeReporter::scatter(stats, "", "FusionFraction", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    AnalyzeReporter::scatter(stats, "", "FusionDiff", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }
