@@ -132,7 +132,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     o.info("Calculating detection limit");
     
-    bp->s = r.limit(bp->h);
+    stats.p.at(PerfLevel::BasePerf).s = r.limit(stats.p.at(PerfLevel::BasePerf).h);
     sp->s = r.limit(sp->h);
 
     return stats;
