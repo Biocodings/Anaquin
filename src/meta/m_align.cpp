@@ -88,15 +88,16 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     o.info("Calculating references");
     
-    auto &sp = stats.p.at(PerfLevel::SequinPerf);
-    auto &bp = stats.p.at(PerfLevel::BasePerf);
-    sums(sp.h, sp.m.nr);
+    auto sp = &(stats.p.at(PerfLevel::SequinPerf));
+    auto bp = &(stats.p.at(PerfLevel::BasePerf));
+
+    sums(sp->h, sp->m.nr);
     
     /*
      * Metrics at the base level for all reference genomes
      */
     
-    bp.m.tp() = bp.m.fp() = bp.m.nq = 0;
+    bp->m.tp() = bp->m.fp() = bp->m.nq = 0;
     
     for (const auto &i : stats.inters.map())
     {
@@ -104,7 +105,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
         auto &in = i.second;
 
         // Update the overall performance
-        bp.m.fp() += fps.at(i.first);
+        bp->m.fp() += fps.at(i.first);
         
         in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
@@ -114,9 +115,9 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
                 m.tp() += j - i;
                 
                 // Update the overall performance
-                bp.m.tp() += j - i;
+                bp->m.tp() += j - i;
 
-                bp.h.at(id)++;
+                bp->h.at(id)++;
             }
         });
 
@@ -125,14 +126,14 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
         
         assert(m.nr >= m.tp());
         
-        bp.m.nr += in.l().length();
-        bp.m.nq  = bp.m.tp() + bp.m.fp();
+        bp->m.nr += in.l().length();
+        bp->m.nq  = bp->m.tp() + bp->m.fp();
     }
 
     o.info("Calculating detection limit");
     
-    bp.s = r.limit(bp.h);
-    sp.s = r.limit(sp.h);
+    bp->s = r.limit(bp->h);
+    sp->s = r.limit(sp->h);
 
     return stats;
 }
