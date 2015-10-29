@@ -12,6 +12,7 @@
 #
 
 library('Sushi')
+library('ggplot2')
 library(rtracklayer)
 library(GenomicRanges)
 library(plyr)
@@ -21,19 +22,26 @@ library(plyr)
 # defined by a mixture file with the measured coverage.
 #
 
-plotScatter <- function(x, y, ids)
+plotScatter <- function(x, y, ids, isLog=FALSE)
 {
-    d <- data.frame(x=log2(x), y=log2(y), ids=ids)
-    
+    if (!isLog)
+    {
+        d <- data.frame(x=log2(x), y=log2(y), ids=ids)
+    }
+    else
+    {
+        d <- data.frame(x=x, y=y, ids=ids)
+    }
+
     p <- ggplot(data = d, aes(x = x, y = y))
     p <- p + xlab('Expected log2 fold change of mixture A and B')
     p <- p + ylab('Measured log2 fold change of mixture A and B')
     p <- p + geom_point()
     p <- p + ggtitle('')
-    p <- p + xlim(min(lx)-1, max(lx)+1)
-    p <- p + ylim(min(ly)-2, max(ly)+2)
+    p <- p + xlim(min(d$x)-2, max(d$x)+2)
+    p <- p + ylim(min(d$y)-2, max(d$y)+2)
     p <- p + geom_smooth(method = 'lm', formula = y ~ x)
-    p + geom_text(x = 0, y = max(d$y), label = lm_eqn(d), parse = TRUE)
+    #p + geom_text(x = 0, y = max(d$y), label = lm_eqn(d), parse = TRUE)
     print(p)
 }
 

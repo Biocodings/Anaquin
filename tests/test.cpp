@@ -36,21 +36,21 @@ void Test::fusionA()
     Standard::instance(true);
     Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
     Standard::instance().f_mix(Reader(FusionDataMixA(), DataMode::String));
-    Standard::instance().r_fus.validate();
+    Standard::instance().r_fus.finalize();
 }
 
 void Test::meta()
 {
     Standard::instance(true);
     Standard::instance().m_mix(Reader(MetaDataMix(), DataMode::String));
-    Standard::instance().r_meta.validate();
+    Standard::instance().r_meta.finalize();
 }
 
 void Test::ladderA()
 {
     Standard::instance(true);
     Standard::instance().l_mix(Reader(LadderDataMixA(), DataMode::String));
-    Standard::instance().r_lad.validate();
+    Standard::instance().r_lad.finalize();
 }
 
 void Test::transA()
@@ -58,7 +58,7 @@ void Test::transA()
     Standard::instance(true);
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMixA(), DataMode::String));
-    Standard::instance().r_trans.validate();
+    Standard::instance().r_trans.finalize();
 }
 
 void Test::transB()
@@ -66,7 +66,7 @@ void Test::transB()
     Standard::instance(true);
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMixB(), DataMode::String));
-    Standard::instance().r_trans.validate();
+    Standard::instance().r_trans.finalize();
 }
 
 void Test::transAB()
@@ -74,25 +74,23 @@ void Test::transAB()
     Standard::instance(true);
     Standard::instance().r_ref(Reader(TransStandGTF(),  DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMixAB(), DataMode::String));
-    Standard::instance().r_trans.validate();
+    Standard::instance().r_trans.finalize();
 }
 
 void Test::variantA()
 {
     Standard::instance(true);
     Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
-    //Standard::instance().v_std(Reader(VarStandGTF(), DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMixA(),  DataMode::String));
-    Standard::instance().r_var.validate();
+    Standard::instance().r_var.finalize();
 }
 
 void Test::variantF()
 {
     Standard::instance(true);
     Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
-    //Standard::instance().v_std(Reader(VarStandGTF(), DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMixA(),  DataMode::String));
-    Standard::instance().r_var.validate();
+    Standard::instance().r_var.finalize();
 }
 
 Test Test::test(const std::string &command)
