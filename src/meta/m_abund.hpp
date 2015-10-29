@@ -94,7 +94,8 @@ namespace Anaquin
                 
                 if (measured)
                 {
-                    align.depthSequin = align.depthSequin / align.seq->length;
+                    assert(align.seq->l.length());
+                    align.depthSequin = align.depthSequin / align.seq->l.length();
                     return Point(known, measured);
                 }
             }

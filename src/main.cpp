@@ -1006,7 +1006,7 @@ void parse(int argc, char ** argv)
                     }
                 }
 
-                s.r_trans.validate();
+                s.r_trans.finalize();
             }
 
             switch (_p.tool)
@@ -1125,7 +1125,7 @@ void parse(int argc, char ** argv)
             
             if (_p.tool != TOOL_F_IGV)
             {
-                Standard::instance().r_fus.validate();
+                Standard::instance().r_fus.finalize();
             }
 
             switch (_p.tool)
@@ -1164,7 +1164,7 @@ void parse(int argc, char ** argv)
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
             applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
-            Standard::instance().r_lad.validate();
+            Standard::instance().r_lad.finalize();
 
             switch (_p.tool)
             {
@@ -1215,7 +1215,7 @@ void parse(int argc, char ** argv)
                 }
                 
                 applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
-                Standard::instance().r_var.validate();
+                Standard::instance().r_var.finalize();
             }
 
             switch (_p.tool)
@@ -1269,7 +1269,7 @@ void parse(int argc, char ** argv)
                     applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
                 }
                 
-                Standard::instance().r_meta.validate();
+                Standard::instance().r_meta.finalize();
             }
 
             switch (_p.tool)

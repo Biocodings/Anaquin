@@ -635,7 +635,7 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
             // Only if it's a validated sequin
             if (_data.count(j.id))
             {
-                _data.at(j.id).length = j.length;
+                //_data.at(j.id).length = j.length;
                 _data.at(j.id).mixes[mix] = j.abund;
             }
         }
@@ -942,7 +942,7 @@ void VarRef::validate()
             const auto pairID = i.first.substr(0, i.first.size() - 2);
 
             // TODO: Do we need this?
-            _data[i.first].length = i.second.length();
+            //_data[i.first].length = i.second.length();
             
             _impl->genos[pairID].l  = i.second;
             _impl->genos[pairID].id = pairID;

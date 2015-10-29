@@ -34,13 +34,10 @@ namespace Anaquin
         // Return the abundance for this sequin specified by the mixture        
         inline Concentration abund(Mixture m, bool norm = false) const
         {
-            return mixes.at(m) / (norm ? length : 1);
+            return mixes.at(m) / (norm ? l.length() : 1);
         }
 
         SequinID id;
-
-        // Length of the sequin
-        Base length;
 
         // Spiked-in concentration (not available if no mixture provided)
         std::map<Mixture, Concentration> mixes;
@@ -138,8 +135,19 @@ namespace Anaquin
                 return n;
             }
 
-            virtual void validate() = 0;
-
+            inline void finalize()
+            {
+                validate();
+                
+                for (auto &i : _data)
+                {
+                    if (!i.second.l.length())
+                    {
+                        throw std::runtime_error("Validation failed. Zero length in data.");
+                    }
+                }
+            }
+        
             // Calculate the detection limits
             inline Limit limit(const SequinHist &h) const
             {
@@ -150,6 +158,8 @@ namespace Anaquin
             }
 
         protected:
+
+            virtual void validate() = 0;
 
             /*
              * Provides a common mechanism to calculate limit of detection given a histogram or a
@@ -285,7 +295,7 @@ namespace Anaquin
                         // Only if it's a validated sequin
                         if (_data.count(j.id))
                         {
-                            _data.at(j.id).length = j.length;
+                            //_data.at(j.id).length = j.length;
                             _data.at(j.id).mixes[mix] = j.abund;
                         }
                     }
@@ -333,8 +343,6 @@ namespace Anaquin
 
             LadderRef();
 
-            void validate() override;
-
             // Return a list of sequin IDs at the joined level
             JoinIDs joinIDs() const;
 
@@ -347,6 +355,10 @@ namespace Anaquin
             // Return abundance for all segments of a particular conjoined
             void abund(const JoinID &, Concentration &, Concentration &, Concentration &, Concentration &,
                              Mixture) const;
+
+        protected:
+
+            void validate() override;
 
         private:
     
@@ -363,16 +375,18 @@ namespace Anaquin
     {
         public:
             MetaRef();
-        
-            void validate() override;
 
             void addStand(const SequinID &, const Locus &);
 
             // Whether the locus is contained in one of the genomes
             const SequinData * contains(const GenomeID &, const Locus &) const;
 
-        private:
+        protected:
 
+            void validate() override;
+        
+        private:
+        
             struct MetaRefImpl;
 
             std::shared_ptr<MetaRefImpl> _impl;
@@ -420,8 +434,6 @@ namespace Anaquin
 
             FusionRef();
 
-            void validate() override;
-
             /*
              * Manipulate operations
              */
@@ -450,7 +462,12 @@ namespace Anaquin
 
             const FusionPoint * find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
 
+        protected:
+        
+            void validate() override;
+
         private:
+        
             struct FusionRefImpl;
 
             std::shared_ptr<FusionRefImpl> _impl;
@@ -510,8 +527,6 @@ namespace Anaquin
             // Return number of validated variants, eg: D_1_11_V
             std::size_t countVarGens() const;
         
-            void validate() override;
-
             // Return the detection limit at the pair level
             Limit limitGeno(const GenoHist &) const;
        
@@ -532,6 +547,10 @@ namespace Anaquin
 
             // Return the proportion of variants for a genotype
             double alleleFreq(Mixture, const GenoID &) const;
+
+        protected:
+
+            void validate() override;
 
         private:
 
@@ -634,8 +653,6 @@ namespace Anaquin
 
             void merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs);
 
-            void validate() override;
-
             // Calculate the detection limit at the gene level
             Limit limitGene(const GeneHist &) const;
 
@@ -652,6 +669,10 @@ namespace Anaquin
             const GeneData   *findGene  (const Locus &l, MatchRule) const;
             const ExonData   *findExon  (const Locus &l, MatchRule) const;
             const IntronData *findIntron(const Locus &l, MatchRule) const;
+
+        protected:
+        
+            void validate() override;
 
         private:
 

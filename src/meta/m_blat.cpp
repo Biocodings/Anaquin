@@ -147,7 +147,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             
             stats.oMatch += oMatch;
             stats.oMismatch += oMismatch;
-            stats.total     += align->seq->length;
+            stats.total     += align->seq->l.length();
             
             if (align->oRGaps > 1)    { o.warn((boost::format("%1% (ga): %2%") % id % align->oRGaps).str());    }
             if (align->oQGaps > 1)    { o.warn((boost::format("%1% (ga): %2%") % id % align->oQGaps).str());    }
