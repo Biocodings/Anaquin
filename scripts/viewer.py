@@ -30,18 +30,18 @@ fusNStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
 # URL of the fusion standard
 fusFStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
 
-# URL of the metagenomic community
+# URL of the synthetic metagenomic community
 metaComm  = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
 
 # URL of the metagenomic standard
-metaStand = 'https://s3.amazonaws.com/anaquin/annotations/meta/????'
+metaStand = 'https://s3.amazonaws.com/anaquin/annotations/AME015.v032.bed'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
 #
 
 sessionT = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Session genome="{0}" hasGeneTrack="false" hasSequenceTrack="true" locus="chrT:1-44566700" path="session.xml" version="8">
+<Session genome="{0}" hasGeneTrack="false" hasSequenceTrack="true" path="session.xml" version="8">
     <Resources>
         {1}
         {2}
@@ -277,11 +277,14 @@ if __name__ == '__main__':
     if (align.endswith('.sam')):
         raise Exception('The SAM file format is not supported. Please convert it to the BAM format. Check https://www.biostars.org/p/93559 for further information.')
 
-    standard = 'data/trans/ATR001.v032.gtf'
-    chrT = 'abcd'
+    # Custom file for the standards (eg: annotation for the genes)
+    annot = None
+
+    # Custom file for the reference genome (eg: synthetic chromosome)
+    synth = None
 
     if (mode == 'Trans'):
-        generateTrans(path, file, chrT, standard)
+        generateTrans(path, file, synth, annot)
     if (mode == 'Fusion'):
         generateFusion(path, file)
     elif (mode == 'Variant'):
