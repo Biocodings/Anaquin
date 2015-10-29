@@ -31,10 +31,10 @@ fusNStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
 fusFStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
 
 # URL of the synthetic metagenomic community
-metaComm  = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
+commAmazon = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
 
 # URL of the metagenomic standard
-metaStand = 'https://s3.amazonaws.com/anaquin/annotations/AME015.v032.bed'
+mStandAmazon = 'https://s3.amazonaws.com/anaquin/annotations/AME015.v032.bed'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
@@ -236,7 +236,7 @@ def generateVar(path, align, chrT=None, standard=None, variant=None):
 
 def generateMeta(path, align):
     align = index(path, align)
-    session(path, align, download(path, [ metaComm, metaStand ]))
+    session(path, align, download(path, [ commAmazon, mStandAmazon ]))
 
 def printUsage():
         print '\nProgram: viewer.py (Tool for generating IGV session)'
