@@ -111,23 +111,23 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
                 oMismatch += contig.mismatch;
             }
 
-            assert(align->seq->length);
-
             /*
              * Update statistics for this sequin
              */
             
+            const auto l = align->seq->l.length();
+            
             // Proportion of non-overlapping bases covered or assembled
-            align->covered = static_cast<double>(total) / align->seq->length;
+            align->covered = static_cast<double>(total) / l;
             
             // Proportion of overlapping matches relative to the sequin
-            align->oMatch = static_cast<double>(oMatch) / align->seq->length;
+            align->oMatch = static_cast<double>(oMatch) / l;
             
             // Proportion of overlapping mismatches relative to the sequin
-            align->oMismatch = static_cast<double>(oMismatch) / align->seq->length;
+            align->oMismatch = static_cast<double>(oMismatch) / l;
 
             // Proportion of overlapping gaps relative to the sequin
-            align->oRGaps = static_cast<double>(oRGaps) / align->seq->length;
+            align->oRGaps = static_cast<double>(oRGaps) / l;
 
             // Proportion of overlapping gaps relative to the sequin
             align->oQGaps = static_cast<double>(oQGaps) / qSums;
@@ -137,15 +137,15 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
              */
             
             // Overall total gaps in all sequins
-            stats.oRGaps    += oRGaps;
+            stats.oRGaps += oRGaps;
             
             // Overall total gaps in all contigs
-            stats.oQGaps    += oQGaps;
+            stats.oQGaps += oQGaps;
 
             // Overall total size in all contigs
-            stats.oQSums    += qSums;
+            stats.oQSums += qSums;
             
-            stats.oMatch    += oMatch;
+            stats.oMatch += oMatch;
             stats.oMismatch += oMismatch;
             stats.total     += align->seq->length;
             
