@@ -22,11 +22,10 @@ By combining sequins at different concentrations to from a mixture, we can also 
 
 Finally, to aid in the analysis of sequins, we have also developed a software toolkit we call <b>Anaquin</b>. This contains a wide range of tools for some of the most common analysis or problems that use sequins. This includes quality control and troubleshooting steps in your NGS pipeline, providing quantitative measurements of sequence libraries, or assess third-party bioinformatic software. However, this toolkit is simply a starting point to a huge range of statistical analysis made possible by sequins.
 
-Architecture
+Dependencies
 ============
 
 <ul>
-<li> Custom statistical library
 <li> <a href='http://eigen.tuxfamily.org'>Eigen</a>
 <li> <a href='https://github.com/philsquared/Catch'>Catch</a>
 <li> <a href='http://cole-trapnell-lab.github.io/cufflinks/cuffcompare/'>Cuffcompare</a>
