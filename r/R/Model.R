@@ -34,8 +34,8 @@ softLimit <- function(x, y)
     
     plm <- function(i)
     {
-        d1 <- head(d,i)
-        d2 <- tail(d,-i)
+        d1 <- head(d,i-1)
+        d2 <- tail(d,-i+1)
         m1 <- lm(y~x, data=d1)
         m2 <- lm(y~x, data=d2)
         
