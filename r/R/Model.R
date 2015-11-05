@@ -13,37 +13,63 @@ softLimit <- function(x, y)
 {
     #
     # Fit a piecewise linear model for each point. Note that this method always give the
-    # optimial point, we should intrepret the result carefully. Generally speaking, it's
-    # a proper soft limit if:
+    # optimial point, therefore we should intrepret the result carefully. Generally speaking,
+    # it's a proper limit if:
     #
-    #   - Lowly expressed
+    #   - Low concentration
     #   - The models are significant
     #   - The reduction in SSE is signficiant
-    #   - Confirmed visually
+    #   - Visual confirmation
     #
- 
-    #
-    # For x=1,2,3,...,n, we would only fit b=2,3,...,n-1. Therefore the length of the frame is
-    # n-2;
-    #
-
-    d <- data.frame(breaks=rep(0,length(x)-2),
-                    models=rep(0,length(x)-2),
-                    sums=rep(0,length(x)-2))
     
-    lapply(2:(length(x)-2), function(i)
+    #
+    # For x=1,2,3,...,n, we would only fit b=3,4,...,n-2. Therefore the length of the frame is
+    # n-4.
+    #
+    
+    d <- data.frame(x=x, y=y)
+    d <- d[order(x),]
+    r <- data.frame(k=rep(0,length(x)-4),
+                    sums=rep(0,length(x)-4))
+    
+    plm <- function(i)
     {
-        d$breaks <- i
-    })    
-
+        d1 <- head(d,i)
+        d2 <- tail(d,-i)
+        m1 <- lm(y~x, data=d1)
+        m2 <- lm(y~x, data=d2)
+        
+        r <- list(m1, m2)
+        r
+    }
     
-    d
+    lapply(3:(nrow(d)-2), function(i)
+    {
+        r$k[i-2] <<- d[i,]$x
+        
+        # Fit a piecewise linear model
+        m <- plm(i)
+        
+        # Add up the sum of squares for residuals
+        r$sums[i-2] <<- sum((m[[1]]$residuals)^2) + sum((m[[2]]$residuals)^2)
+    })
     
-#    for (i in 1:(nrow(d)-2))
- #   {
-  #      lm.shift(i+1)
-  #  }
+    #
+    # Construct a plot of breaks vs total SSE
+    #
     
+    p <- ggplot(data = r, aes(x = k, y = sums))
+    p <- p + xlab('Break point')
+    p <- p + ylab('Total sum of squares')
+    p <- p + geom_line()
+    print(p)
     
+    # The optimial breakpoint is where the minimum SSE is.
+    b <- r[which.min(r$sums),]    
     
+    # Fit the model again
+    m <- plm(which.min(r$sums))
+    
+    r <- list(b, m, r)
+    r
 }
