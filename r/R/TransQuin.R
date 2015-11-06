@@ -6,11 +6,6 @@
 #  Credits: RUV source package (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
 
-.isWholeNumber <- function(x, tol = .Machine$double.eps^0.5)
-{
-    abs(x - round(x)) < tol
-}
-
 #
 # RNA normalization by RUVg (Remove Unwanted Variation)
 #
