@@ -6,42 +6,33 @@
 #  Credits: RUV source package (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
 
-#
-# Apply RNA normalization to a count matrix. The following modes are supported:
-#
-#    'RUV' -> Remove Unwanted Variation (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
-#
-
 .isWholeNumber <- function(x, tol = .Machine$double.eps^0.5)
 {
     abs(x - round(x)) < tol
 }
 
-TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+#
+# RNA normalization by RUVg (Remove Unwanted Variation)
+#
+
+.RUVgNorm <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
-    # Only interested in the names of the reference genes
-    m <- m$genes$ID
-
-    if(!all(.isWholeNumber(x)) | isLog) {
-        stop(paste0("The count matrix should contain only positive numbers."))
-    } else {
-        Y <- t(log(x+epsilon))
-    }
-    
+    # Log-linear GLM
     Y <- t(log(x+epsilon))
-
+    
+    # Scale to a zero-mean matrix
     Ycenter <- apply(Y, 2, function(x) scale(x, center = TRUE, scale=FALSE))
-
+    
     m <- nrow(Y)
     n <- ncol(Y)
-
-    svdWa <- svd(Ycenter[, m])
+    
+    # Perform a SVD decomposition for the control genes
+    svdWa <- svd(Ycenter[, cIdx])
     
     drop <- 0
-    
     first <- 1 + drop
     k <- min(k, max(which(svdWa$d > tolerance)))
-
+    
     W <- svdWa$u[, (first:k), drop = FALSE]
     alpha <- solve(t(W) %*% W) %*% t(W) %*% Y
     correctedY <- Y - W %*% alpha
@@ -55,9 +46,20 @@ TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=
             correctedY <- exp(correctedY) - epsilon
         }
     }
-
+    
     colnames(W) <- paste("W", seq(1, ncol(W)), sep="_")
-    return(list(W = W, normalizedCounts = t(correctedY)))
+    return(list(W = W, normalizedCounts = t(correctedY)))    
+}
+
+#
+# Apply RNA normalization to a count matrix. The following modes are supported:
+#
+#    'RUV' -> Remove Unwanted Variation (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
+#
+
+TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+{
+    .RUVgNorm(x, m$genes$ID)
 }
 
 #
