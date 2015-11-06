@@ -27,9 +27,14 @@
     drop <- 0
     first <- 1 + drop
     k <- min(k, max(which(svdWa$d > tolerance)))
-    
+
+    # Extract the first k principal components    
     W <- svdWa$u[, (first:k), drop = FALSE]
+
+    # Estimate the parameter for the unwanted variation    
     alpha <- solve(t(W) %*% W) %*% t(W) %*% Y
+    
+    # Estimate the biological variation
     correctedY <- Y - W %*% alpha
     
     if (!isLog & all(.isWholeNumber(x)))
