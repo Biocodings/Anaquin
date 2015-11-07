@@ -11,11 +11,29 @@
 #    - Density plot for coverage
 #
 
-library('Sushi')
-library('ggplot2')
+library(EDASeq)
+library(Sushi)
+library(ggplot2)
 library(rtracklayer)
 library(GenomicRanges)
 library(plyr)
+
+library(RColorBrewer)
+colors <- brewer.pal(3, "Set2")
+
+plotPCA <- function(m)
+{
+    x <- as.factor(rep(c("MixA", "MixB"), each=3))
+    s <- newSeqExpressionSet(as.matrix(m), phenoData=data.frame(x, row.names=colnames(m)))
+    EDASeq::plotPCA(s, outline=FALSE, col=colors[x])
+}
+
+plotRLE <- function(m)
+{
+    x <- as.factor(rep(c("MixA", "MixB"), each=3))
+    s <- newSeqExpressionSet(as.matrix(m), phenoData=data.frame(x, row.names=colnames(m)))    
+    EDASeq::plotRLE(s, outline=FALSE, col=colors[x])
+}
 
 #
 # Scatter plot is the most common data visualization tool in Anaquin. It plots the expected concentration
@@ -32,7 +50,7 @@ plotScatter <- function(x, y, ids, isLog=FALSE)
     {
         d <- data.frame(x=x, y=y, ids=ids)
     }
-
+    
     p <- ggplot(data = d, aes(x = x, y = y))
     p <- p + xlab('Expected log2 fold change of mixture A and B')
     p <- p + ylab('Measured log2 fold change of mixture A and B')
@@ -59,7 +77,7 @@ plotDensity <- function(src, ref)
     for (i in 1:length(ref))
     {
         seq <- ref[i,]
-
+        
         # Construct a density plot for the sequin
         plotBedgraph(src,
                      'chrT',
@@ -69,13 +87,13 @@ plotDensity <- function(src, ref)
                      color='#ADC2E6',
                      xlab=seq$name,
                      ylab='Coverage')
-
+        
         ticks  <- 5
         range  <- c(min(src[src$start >= start(seq) & src$end <= end(seq),]$value),
                     max(src[src$start >= start(seq) & src$end <= end(seq),]$value))
         scaled <- range / ticks
         scaled <- round_any(scaled, 100, f = ceiling)
-
+        
         axis(side=2, at=seq(0, ticks * scaled[2], by=scaled[2]))
     }
 }
