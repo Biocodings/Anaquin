@@ -1,12 +1,19 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Written by Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
 #
 
 library("Rsamtools")
 library("GenomicFeatures")
 library("GenomicAlignments")
+
+.isoformsToGenes <- function(trans)
+{
+    trans <- as.character(trans)
+    genes <- substr(as.character(trans), 1, nchar(trans)-2)
+    genes
+}
 
 #
 # Load the mixture into an R object that can be used in other Anaquin functions
@@ -14,13 +21,13 @@ library("GenomicAlignments")
 
 loadMixture <- function(mix)
 {
-    if (!hasArg(z))
+    if (!hasArg(mix))
     {
         mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), sep='\t')
     }
 
     # Eg: R1_1 for R1_1_1 and R1_1_2    
-    mix$GeneID <- IsoformsToGenes(mix$ID)
+    mix$GeneID <- .isoformsToGenes(mix$ID)
     
     # Genes that are defined in the mixture
     geneIDs <- unique(mix$GeneID)

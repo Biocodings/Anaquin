@@ -1,7 +1,7 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Written by Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
 #
 
 #
@@ -13,7 +13,7 @@ softLimit <- function(x, y)
 {
     #
     # Fit a piecewise linear model for each point. Note that this method always give the
-    # optimial point, therefore we should intrepret the result carefully. Generally speaking,
+    # optimial point, therefore the result should be intrepreted carefully. Generally speaking,
     # it's a proper limit if:
     #
     #   - Low concentration
@@ -29,13 +29,23 @@ softLimit <- function(x, y)
     
     d <- data.frame(x=x, y=y)
     d <- d[order(x),]
-    r <- data.frame(k=rep(0,length(x)-4),
-                    sums=rep(0,length(x)-4))
+    r <- data.frame(k=rep(0,length(x)-4), sums=rep(0,length(x)-4))
     
     plm <- function(i)
     {
-        d1 <- head(d,i-1)
-        d2 <- tail(d,-i+1)
+        #
+        # Eg: (1,2,3,4) and i==2
+        #
+        #   -> (1,2) and (3,4). The index points to the last element in the first region as suggested
+        #      in http://stats.stackexchange.com/questions/5700/finding-the-change-point-in-data-from-a-piecewise-linear-function
+        #
+        
+        d1 <- head(d,i)
+        d2 <- tail(d,-i)
+        
+        # Make sure we've divided the region perfectly        
+        stopifnot(nrow(d1)+nrow(d2) == nrow(d))
+        
         m1 <- lm(y~x, data=d1)
         m2 <- lm(y~x, data=d2)
         
@@ -43,7 +53,7 @@ softLimit <- function(x, y)
         r
     }
     
-    lapply(3:(nrow(d)-2), function(i)
+    lapply(2:(nrow(d)-3), function(i)
     {
         r$k[i-2] <<- d[i,]$x
         

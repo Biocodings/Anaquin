@@ -1,7 +1,7 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Written by Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
 #
 #  Credits: RUV source package (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
@@ -10,8 +10,10 @@
 # RNA normalization by RUVg (Remove Unwanted Variation)
 #
 
-.RUVgNorm <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+.RUVgNorm <- function(x, cIdx, round=TRUE, k=2, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
+    print(k)
+    
     # Log-linear GLM
     Y <- t(log(x+epsilon))
     
@@ -37,7 +39,7 @@
     # Estimate the biological variation
     correctedY <- Y - W %*% alpha
     
-    if (!isLog & all(.isWholeNumber(x)))
+    if (!isLog)
     {
         if(round) {
             correctedY <- round(exp(correctedY) - epsilon)
@@ -48,7 +50,9 @@
     }
     
     colnames(W) <- paste("W", seq(1, ncol(W)), sep="_")
-    return(list(W = W, normalizedCounts = t(correctedY)))    
+
+    r <- list(W = W, normalizedCounts = t(correctedY))
+    r
 }
 
 #
@@ -59,7 +63,14 @@
 
 TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
-    .RUVgNorm(x, m$genes$ID)
+    # Known control genes
+    known <- m$genes$ID
+    
+    # The control genes detected in the experiment
+    detected <- rownames(x) %in% known    
+    
+    r <- .RUVgNorm(x, detected)
+    r
 }
 
 #
