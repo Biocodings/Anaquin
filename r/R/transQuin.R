@@ -10,10 +10,8 @@
 # RNA normalization by RUVg (Remove Unwanted Variation)
 #
 
-.RUVgNorm <- function(x, cIdx, round=TRUE, k=2, epsilon=1, tolerance=1e-8, isLog=FALSE)
+.RUVgNorm <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
-    print(k)
-    
     # Log-linear GLM
     Y <- t(log(x+epsilon))
     
