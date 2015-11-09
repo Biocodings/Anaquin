@@ -9,7 +9,7 @@ namespace Anaquin
 
     typedef std::string Sequence;
     
-    // Defined as long long because there could be many reads
+    typedef long long KMers;
     typedef long long Reads;
     
     typedef double FPKM;

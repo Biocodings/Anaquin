@@ -7,7 +7,7 @@ namespace Anaquin
 {
     struct FDiscover
     {
-        enum Software
+        enum Aligner
         {
             Star,
             TopHat,
@@ -15,9 +15,9 @@ namespace Anaquin
 
         struct Options : public AnalyzerOptions
         {
-            Options(FDiscover::Software soft = Software::TopHat, double fuzzy = 0) : soft(soft), fuzzy(fuzzy)
+            Options(FDiscover::Aligner soft = Aligner::TopHat, double fuzzy = 0) : soft(soft), fuzzy(fuzzy)
             {
-                if (soft != Software::TopHat && soft != Software::Star)
+                if (soft != Aligner::TopHat && soft != Aligner::Star)
                 {
                     throw std::runtime_error("Only Tophat-Fusion and Star are supported");
                 }
@@ -25,7 +25,7 @@ namespace Anaquin
             
             unsigned fuzzy;
 
-            FDiscover::Software soft;
+            FDiscover::Aligner soft;
         };
 
         struct Stats : public LinearStats, public FusionStats

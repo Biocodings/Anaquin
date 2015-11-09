@@ -23,7 +23,7 @@ TEST_CASE("FDiscover_F_1001")
     
     Test::fusionA();
 
-    const auto stats = FDiscover::report("tests/data/F_1001/fusions.out", FDiscover::Options(FDiscover::Software::TopHat, 100));
+    const auto stats = FDiscover::report("tests/data/F_1001/fusions.out", FDiscover::Options(FDiscover::Aligner::TopHat, 100));
 
     REQUIRE(stats.m.sn() == Approx(0.9166666667));
 }

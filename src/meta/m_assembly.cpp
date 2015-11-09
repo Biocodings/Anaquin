@@ -1,5 +1,6 @@
 #include "meta/m_blat.hpp"
 #include "meta/m_assembly.hpp"
+#include "parsers/parser_tsv.hpp"
 
 using namespace Anaquin;
 
@@ -8,6 +9,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     MAssembly::Stats stats;
 
     assert(!o.psl.empty());
+    assert(o.tool != MetaAssembler::RayMeta || !o.contigs.empty());
 
     /*
      * Generate statistics for the alignment
@@ -18,6 +20,8 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     // Analyse the blat alignment file
     const auto t = MBlat::analyze(o.psl);
  
+    o.info("Found: " + std::to_string(t.aligns.size()) + " in " + o.psl);
+    
     /*
      * Generate statistics for the assembler
      */
@@ -26,7 +30,30 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
     switch (o.tool)
     {
-        case Velvet: { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t); break; }
+        case Velvet:  { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t); break; }
+        case RayMeta:
+        {
+            o.analyze(o.contigs);
+           
+            std::map<ContigID, KMers> covs;
+            
+            ParseTSV::parse(Reader(o.contigs), [&](const ParseTSV::TSV &t, const ParserProgress &)
+            {
+                covs[t.id] = t.kmer;
+            });
+            
+            o.info("Found: " + std::to_string(covs.size()) + " in " + o.contigs);
+            
+            stats = RayMeta::analyze<MAssembly::Stats, Contig>(file, &t, [&](const ContigID &id, KMers &kmers)
+            {
+                if (covs.count(id))
+                {
+                    kmers = covs.at(id);
+                }
+                
+                return covs.count(id);
+            }); break;
+        }
     }
     
     stats.blat = t;
@@ -92,18 +119,33 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
      * Generating detailed statistics for each contig
      */
 
-    o.writer->open("MetaAssembly_contigs.stats");
-    
-    const std::string format = "%1%\t%2%";
-    
-    o.writer->write((boost::format(format) % "Contig ID" % "Sequin ID").str());
-    
-    for (const auto &i : stats.blat.aligns)
     {
-        o.writer->write((boost::format(format) % i.first % i.second->id()).str());
-    }
+        o.writer->open("MetaAssembly_contigs.stats");
+        
+        const std::string format = "%1%\t%2%\t%3%";
+        
+        o.writer->write((boost::format(format) % "ID" % "Sequin ID" % "Coverage").str());
+        
+        for (const auto &i : stats.blat.aligns)
+        {
+            if (stats.contigs.count(i.first))
+            {
+                const auto &contig = stats.contigs.at(i.first);
+                
+                o.writer->write((boost::format(format) % i.first
+                                                       % i.second->id()
+                                                       % contig.k_cov).str());
+            }
+            else
+            {
+                o.writer->write((boost::format(format) % i.first
+                                                       % i.second->id()
+                                                       % "-").str());
+            }
+        }
 
-    o.writer->close();
+        o.writer->close();
+    }
     
     /*
      * Generating detailed statistics for each sequin

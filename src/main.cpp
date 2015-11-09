@@ -127,6 +127,7 @@ typedef std::set<Value> Range;
 #define OPT_FA_2    912
 #define OPT_U_OUT   913
 #define OPT_U_TAB   914
+#define OPT_U_COV   915
 
 using namespace Anaquin;
 
@@ -222,12 +223,12 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
-    { TOOL_M_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1                   } },
-    { TOOL_M_IGV,      { OPT_FA_1                                              } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1                      } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1                      } },
-    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2 } },
-    { TOOL_M_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                } },
+    { TOOL_M_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1                                 } },
+    { TOOL_M_IGV,      { OPT_FA_1                                                            } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1, OPT_SOFTWARE                      } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1, OPT_SOFTWARE                      } },
+    { TOOL_M_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                              } },
+    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2, OPT_SOFTWARE } },
 
     /*
      * Fusion Analysis
@@ -390,6 +391,7 @@ static const struct option long_options[] =
     { "rfus",    required_argument, 0, OPT_R_FUS },
     { "uout",    required_argument, 0, OPT_U_OUT },
     { "utab",    required_argument, 0, OPT_U_TAB },
+    { "ucov",    required_argument, 0, OPT_U_COV },
 
     { "rbed",    required_argument, 0, OPT_R_BED_1 },
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
@@ -693,6 +695,19 @@ template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyz
     }, o);
 }
 
+template <typename T> T parseSoft(const std::string &str, const std::map<std::string, T> &m)
+{
+    auto copy = str;
+    std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
+    
+    if (!m.count(copy))
+    {
+        throw InvalidValueException(str, "soft");
+    }
+    
+    return m.at(copy);
+};
+
 void parse(int argc, char ** argv)
 {
     auto &tool = _p.tool;
@@ -736,9 +751,9 @@ void parse(int argc, char ** argv)
         }
     };
 
-    auto parseSoft = [&](const std::string &str)
+    auto parseFusionAligner = [&](const std::string &str)
     {
-        const static std::map<std::string, Anaquin::FDiscover::Software> m =
+        const static std::map<std::string, FDiscover::Aligner> m =
         {
             { "star"  ,        FDiscover::Star   },
             { "tophat",        FDiscover::TopHat },
@@ -746,17 +761,22 @@ void parse(int argc, char ** argv)
             { "tophat-fusion", FDiscover::TopHat },
         };
 
-        auto copy = str;
-        std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
-
-        if (!m.count(copy))
-        {
-            throw InvalidValueException(str, copy);
-        }
-
-        return m.at(copy);
+        return parseSoft(str, m);
     };
 
+    auto parseMetaAssembler = [&](const std::string &str)
+    {
+        const static std::map<std::string, MetaAssembler> m =
+        {
+            { "velvet"  , MetaAssembler::Velvet  },
+            { "ray",      MetaAssembler::RayMeta },
+            { "raymeta",  MetaAssembler::RayMeta },
+            { "ray-meta", MetaAssembler::RayMeta },
+        };
+
+        return parseSoft(str, m);
+    };
+    
     // Attempt to parse and store an integer from string
     auto parseInt = [&](const std::string &str, unsigned &r)
     {
@@ -768,7 +788,7 @@ void parse(int argc, char ** argv)
         }
         catch (...)
         {
-            throw std::runtime_error("eeee");
+            throw std::runtime_error("Failed to parse: " + std::to_string(r));
         }
     };
     
@@ -887,6 +907,7 @@ void parse(int argc, char ** argv)
 
             case OPT_FA_1:
             case OPT_FA_2:
+            case OPT_U_COV:
             case OPT_R_FUS:
             case OPT_U_VCF:
             case OPT_U_OUT:
@@ -1143,13 +1164,13 @@ void parse(int argc, char ** argv)
 
                 case TOOL_F_EXPRESS:
                 {
-                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));
+                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseFusionAligner(_p.opts.at(OPT_SOFTWARE))));
                     break;
                 }
 
                 case TOOL_F_DISCOVER:
                 {
-                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseSoft(_p.opts.at(OPT_SOFTWARE))));
+                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseFusionAligner(_p.opts.at(OPT_SOFTWARE))));
                     break;
                 }
             }
@@ -1279,36 +1300,64 @@ void parse(int argc, char ** argv)
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_BAM_1); break; }
                     
                 case TOOL_M_DIFF:
-                {
-                    MDiffs::Options o;
-
-                    o.pA = _p.opts.at(OPT_PSL_1);
-                    o.pB = _p.opts.at(OPT_PSL_2);
-
-                    analyze_2<MDiffs>(OPT_FA_1, OPT_FA_2, o);
-                    break;
-                }
-
+                case TOOL_M_ABUND:
                 case TOOL_M_ASSEMBLY:
                 {
-                    MAssembly::Options o;
+                    // Only defined for certain assemblers
+                    FileName conts;
                     
-                    // An alignment file is needed to identify contigs
-                    o.psl = _p.opts.at(OPT_PSL_1);
-
-                    analyze_1<MAssembly>(OPT_FA_1, o);
-                    break;
-                }
-
-                case TOOL_M_ABUND:
-                {
-                    MAbundance::Options o;
+                    const auto tool = parseMetaAssembler(_p.opts.at(OPT_SOFTWARE));
                     
-                    // An alignment file is needed to identify contigs
-                    o.psl = _p.opts.at(OPT_PSL_1);
+                    if (tool == MetaAssembler::RayMeta)
+                    {
+                        if (!_p.opts.count(OPT_U_COV))
+                        {
+                            throw MissingOptionError("-cov");
+                        }
+                        
+                        conts = _p.opts.at(OPT_U_COV);
+                    }
+                    
+                    switch (_p.tool)
+                    {
+                        case TOOL_M_DIFF:
+                        {
+                            MDiffs::Options o;
+                            
+                            o.pA = _p.opts.at(OPT_PSL_1);
+                            o.pB = _p.opts.at(OPT_PSL_2);
+                            
+                            analyze_2<MDiffs>(OPT_FA_1, OPT_FA_2, o);
+                            break;
+                        }
+                            
+                        case TOOL_M_ASSEMBLY:
+                        {
+                            MAssembly::Options o;
+                            
+                            o.tool    = tool;
+                            o.contigs = conts;
+                            
+                            // An alignment file is needed to identify contigs
+                            o.psl = _p.opts.at(OPT_PSL_1);
+                            
+                            analyze_1<MAssembly>(OPT_FA_1, o);
+                            break;
+                        }
+                            
+                        case TOOL_M_ABUND:
+                        {
+                            MAbundance::Options o;
+                            
+                            // An alignment file is needed to identify contigs
+                            o.psl = _p.opts.at(OPT_PSL_1);
+                            
+                            analyze_1<MAbundance>(OPT_FA_1, o);
+                            break;
+                        }
 
-                    analyze_1<MAbundance>(OPT_FA_1, o);
-                    break;
+                        default: { break; }
+                    }
                 }
             }
 
@@ -1336,7 +1385,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidValueException &ex)
     {
-        printError((boost::format("%1% not expected in option -%2%") % ex.opt % ex.value).str());
+        printError((boost::format("%1% not expected for option -%2%") % ex.opt % ex.value).str());
     }
     catch (const MissingOptionError &ex)
     {

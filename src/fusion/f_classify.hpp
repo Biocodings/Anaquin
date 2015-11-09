@@ -121,7 +121,7 @@ namespace Anaquin
 
             SequinID id;
 
-            if (o.soft == FDiscover::Software::Star)
+            if (o.soft == FDiscover::Aligner::Star)
             {
                 ParserStarFusion::parse(Reader(file), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
                 {

@@ -4,18 +4,19 @@
 #include <numeric>
 #include "data/tokens.hpp"
 #include "meta/m_blat.hpp"
-#include "meta/m_velvet.hpp"
 #include "stats/analyzer.hpp"
+#include "meta/m_assembler.hpp"
 
 namespace Anaquin
 {
+    enum MetaAssembler
+    {
+        Velvet,
+        RayMeta,
+    };
+    
     struct MAssembly
     {
-        enum Assembler
-        {
-            Velvet,
-        };
-
         struct Stats : public DAsssembly::Stats<Contig>
         {
             // Statistics for the alignment
@@ -29,11 +30,18 @@ namespace Anaquin
         {
             Options() {}
 
+            /*
+             * Metagenomics assembler report results differently. For example, RayMeta generates
+             * "Contigs.tsv" which specifies the coverage of the contigs.
+             */
+            
+            FileName contigs;
+            
             // Alignment file by blat
             FileName psl;
 
             // The type of the assembler used
-            Assembler tool = Assembler::Velvet;
+            MetaAssembler tool = MetaAssembler::Velvet;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

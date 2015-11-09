@@ -15,7 +15,7 @@ TEST_CASE("FExpress_F_1000")
     Test::fusionA();
     
     const auto stats = FExpress::report("tests/data/F_1000/star-fusion.fusion_candidates.txt",
-                                         FDiscover::Options(FDiscover::Software::Star));
+                                         FDiscover::Options(FDiscover::Star));
     const auto lm = stats.linear();
     
     REQUIRE(lm.r  == Approx(0.9774354586));
