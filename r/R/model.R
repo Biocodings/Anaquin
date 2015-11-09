@@ -57,7 +57,7 @@ softLimit <- function(x, y)
     {
         r$k[i-2] <<- d[i,]$x
         
-        # Fit a piecewise linear model
+        # Fit two piecewise linear models
         m <- plm(i)
         
         # Add up the sum of squares for residuals
