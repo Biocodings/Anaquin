@@ -72,11 +72,14 @@ namespace Anaquin
                     
                     sumKLength += contig.k_len;
                     
+                    // Normalized k-mer coverage
+                    const auto n_cov = contig.normalized();
+
                     switch (cov)
                     {
-                        case WendySmooth:    { measured += contig.k_len * contig.k_cov;          break; }
-                        case KMerCov_Contig: { measured += contig.k_cov / contig.k_len;          break; }
-                        case KMerCov_Sequin: { measured += contig.k_cov / align.seq->l.length(); break; }
+                        case WendySmooth:    { measured += n_cov * contig.k_len;          break; }
+                        case KMerCov_Contig: { measured += n_cov / contig.k_len;          break; }
+                        case KMerCov_Sequin: { measured += n_cov / align.seq->l.length(); break; }
                     }
                     
                     /*
@@ -105,6 +108,11 @@ namespace Anaquin
         
         struct Stats : public LinearStats, public MappingStats
         {
+            MBlat::Stats blat;
+            
+            // Statistics for the assembly
+            DAsssembly::Stats<Contig> assembly;
+            
             Limit ss;
 
             // Distribution of the sequins

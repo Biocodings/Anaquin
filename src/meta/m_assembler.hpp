@@ -3,6 +3,7 @@
 
 #include "meta/m_histogram.h"
 #include "parsers/parser_fa.hpp"
+#include "parsers/parser_tsv.hpp"
 
 namespace Anaquin
 {
@@ -15,9 +16,12 @@ namespace Anaquin
         
         // Size of the contig in k-mer
         Base k_len;
-        
-        // Coverage in k-mer
+
+        // Unnormalized k-mer coverage
         Coverage k_cov;
+        
+        // Normalized k-mer coverage
+        inline Coverage normalized() const { return k_cov / k_len; }
     };
 
     struct DAsssembly
@@ -123,26 +127,34 @@ namespace Anaquin
                 Tokens::split(node.id, "_", toks);
 
                 node.k_len = stoi(toks[3]);
-                node.k_cov = stod(toks[toks.size() - 1]);
+                node.k_cov = stod(toks[toks.size() - 1]) * node.k_len;
             });
         }
     };
     
     struct RayMeta
     {
-        template <typename Stats, typename C, typename F> static Stats analyze
-                    (const FileName &file, const MBlat::Stats *align, F f)
+        template <typename Stats, typename C> static Stats analyze
+                    (const FileName &file, const FileName &contigs, const MBlat::Stats *align)
         {
+            std::map<ContigID, KMers> covs, lens;
+            
+            ParseTSV::parse(Reader(contigs), [&](const ParseTSV::TSV &t, const ParserProgress &)
+            {
+                covs[t.id] = t.kmer;
+                lens[t.id] = t.klen;
+            });
+            
             Stats stats;
             
             return DAsssembly::analyze<C, Stats>(file, align, [&](C &node)
             {
-                KMers kmers;
+                const auto id = Tokens::first(node.id, " ");
                 
-                if (f(Tokens::first(node.id, " "), kmers))
-                {                    
-                    //node.k_len = stoi(toks[3]);
-                    node.k_cov = kmers;
+                if (covs.count(id))
+                {
+                    node.k_len = lens.at(id);
+                    node.k_cov = covs.at(id);
                 }
             });
         }

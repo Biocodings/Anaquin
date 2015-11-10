@@ -30,30 +30,8 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
     switch (o.tool)
     {
-        case Velvet:  { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t); break; }
-        case RayMeta:
-        {
-            o.analyze(o.contigs);
-           
-            std::map<ContigID, KMers> covs;
-            
-            ParseTSV::parse(Reader(o.contigs), [&](const ParseTSV::TSV &t, const ParserProgress &)
-            {
-                covs[t.id] = t.kmer;
-            });
-            
-            o.info("Found: " + std::to_string(covs.size()) + " in " + o.contigs);
-            
-            stats = RayMeta::analyze<MAssembly::Stats, Contig>(file, &t, [&](const ContigID &id, KMers &kmers)
-            {
-                if (covs.count(id))
-                {
-                    kmers = covs.at(id);
-                }
-                
-                return covs.count(id);
-            }); break;
-        }
+        case Velvet:  { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
+        case RayMeta: { stats = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
     }
     
     stats.blat = t;
@@ -61,7 +39,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
+void MAssembly::report(const FileName &file, const Options &o)
 {
     const auto stats = MAssembly::analyze(file, o);
 
@@ -122,26 +100,13 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
     {
         o.writer->open("MetaAssembly_contigs.stats");
         
-        const std::string format = "%1%\t%2%\t%3%";
+        const std::string format = "%1%\t%2%";
         
-        o.writer->write((boost::format(format) % "ID" % "Sequin ID" % "Coverage").str());
+        o.writer->write((boost::format(format) % "ID" % "Sequin ID").str());
         
         for (const auto &i : stats.blat.aligns)
         {
-            if (stats.contigs.count(i.first))
-            {
-                const auto &contig = stats.contigs.at(i.first);
-                
-                o.writer->write((boost::format(format) % i.first
-                                                       % i.second->id()
-                                                       % contig.k_cov).str());
-            }
-            else
-            {
-                o.writer->write((boost::format(format) % i.first
-                                                       % i.second->id()
-                                                       % "-").str());
-            }
+            o.writer->write((boost::format(format) % i.first % i.second->id()).str());
         }
 
         o.writer->close();
@@ -180,6 +145,4 @@ MAssembly::Stats MAssembly::report(const FileName &file, const Options &o)
         
         o.writer->close();
     }
-
-    return stats;
 }

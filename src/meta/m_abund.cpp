@@ -17,30 +17,39 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
     o.info("Analyzing: " + o.psl);
 
     // Generate statistics for BLAT
-    const auto bStats = MBlat::analyze(o.psl);
+    auto t = MBlat::analyze(o.psl);
 
+    /*
+     * Generate statistics for the assembly
+     */
+ 
     o.info("Analyzing: " + file);
 
-    // Generate statistics for Velvet, filtered by alignments (no use to keep non-synthetic in memory)
-    const auto dStats = Velvet::analyze<DAsssembly::Stats<Contig>, Contig>(file, &bStats);
-    
-    if (!dStats.n)
+    switch (o.tool)
+    {
+        case Velvet:  { stats.assembly = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
+        case RayMeta: { stats.assembly = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
+    }
+
+    stats.blat = t;
+
+    if (!stats.assembly.n)
     {
         throw std::runtime_error("No contig detected in the input file. Please check and try again.");
     }
-    else if (dStats.contigs.empty())
+    else if (stats.assembly.contigs.empty())
     {
         throw std::runtime_error("No contig aligned in the input file. Please check and try again.");
     }
 
-    stats.n_chrT = dStats.contigs.size();
-    stats.n_expT = dStats.n - stats.n_chrT;
+    stats.n_chrT = stats.assembly.contigs.size();
+    stats.n_expT = stats.assembly.n - stats.n_chrT;
 
     o.info("Analyzing the alignments");
 
     const auto &r = Standard::instance().r_meta;
 
-    for (auto &meta : bStats.metas)
+    for (auto &meta : stats.blat.metas)
     {
         auto &align = meta.second;
         
@@ -62,7 +71,7 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
             stats.s.counts = align->contigs.size();
         }
         
-        const auto p = MAbundance::calculate(stats, bStats, dStats, align->seq->id, *meta.second, o, o.coverage);
+        const auto p = MAbundance::calculate(stats, stats.blat, stats.assembly, align->seq->id, *meta.second, o, o.coverage);
         
         if (p.x && p.y)
         {
@@ -80,7 +89,7 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     const auto stats = MAbundance::analyze(file, o);
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("MetaAbundance_summary.stats", file, stats, "contigs", o.writer, "sequins");
+    AnalyzeReporter::linear("MetaAbund_summary.stats", file, stats, "contigs", o.writer, "sequins");
  
     o.info("Generating Bioconductor");
     AnalyzeReporter::scatter(stats,
@@ -91,4 +100,46 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
                              "Expected abdunance (log2 attomol/ul)",
                              "Measured coverage (log2 k-mer)",
                              o.writer);
+    
+    /*
+     * Generating detailed statistics for each contig
+     */
+    
+    {
+        o.writer->open("MetaAbund_contigs.stats");
+        
+        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+
+        o.writer->write((boost::format(format) % "ID"
+                                               % "Sequin ID"
+                                               % "Length"
+                                               % "Coverage"
+                                               % "Normalized").str());
+        
+        for (const auto &i : stats.blat.aligns)
+        {
+            if (stats.assembly.contigs.count(i.first))
+            {
+                const auto &contig = stats.assembly.contigs.at(i.first);
+                
+                o.writer->write((boost::format(format) % i.first
+                                                       % i.second->id()
+                                                       % contig.k_len
+                                                       % contig.k_cov
+                                                       % contig.normalized()
+                                 ).str());
+            }
+            else
+            {
+                o.writer->write((boost::format(format) % i.first
+                                                       % i.second->id()
+                                                       % "-"
+                                                       % "-"
+                                                       % "-"
+                                 ).str());
+            }
+        }
+        
+        o.writer->close();
+    }
 }

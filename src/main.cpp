@@ -1312,7 +1312,7 @@ void parse(int argc, char ** argv)
                     {
                         if (!_p.opts.count(OPT_U_COV))
                         {
-                            throw MissingOptionError("-cov");
+                            throw MissingOptionError("ucov");
                         }
                         
                         conts = _p.opts.at(OPT_U_COV);
@@ -1348,6 +1348,9 @@ void parse(int argc, char ** argv)
                         case TOOL_M_ABUND:
                         {
                             MAbundance::Options o;
+                            
+                            o.tool    = tool;
+                            o.contigs = conts;
                             
                             // An alignment file is needed to identify contigs
                             o.psl = _p.opts.at(OPT_PSL_1);

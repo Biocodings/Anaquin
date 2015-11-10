@@ -23,9 +23,12 @@ namespace Anaquin
         struct TSV
         {
             ContigID id;
-            
-            // K-mer observations (before normalization)
+
+            // Unnormalized k-mer observations
             KMers kmer;
+            
+            // K-mer length
+            Base klen;
         };
 
         typedef std::function<void(const TSV &, const ParserProgress &)> Functor;
@@ -61,6 +64,7 @@ namespace Anaquin
                 
                 t.id   = toks[Contig];
                 t.kmer = stoi(toks[KMerObs]);
+                t.klen = stoi(toks[ContigLength]);
                 
                 f(t, p);
             }
