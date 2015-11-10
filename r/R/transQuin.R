@@ -66,7 +66,7 @@ TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=
     
     # The control genes detected in the experiment
     detected <- rownames(x) %in% known    
-    
+
     r <- .RUVgNorm(x, detected)
     r
 }
