@@ -27,10 +27,10 @@
     drop <- 0
     first <- 1 + drop
     k <- min(k, max(which(svdWa$d > tolerance)))
-
+    
     # Extract the first k principal components    
     W <- svdWa$u[, (first:k), drop = FALSE]
-
+    
     # Estimate the parameter for the unwanted variation    
     alpha <- solve(t(W) %*% W) %*% t(W) %*% Y
     
@@ -48,7 +48,7 @@
     }
     
     colnames(W) <- paste("W", seq(1, ncol(W)), sep="_")
-
+    
     r <- list(W = W, normalizedCounts = t(correctedY))
     r
 }
@@ -66,7 +66,7 @@ TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=
     
     # The control genes detected in the experiment
     detected <- rownames(x) %in% known    
-
+    
     r <- .RUVgNorm(x, detected)
     r
 }
@@ -83,6 +83,9 @@ TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=
     # Genes that have been detected in the experiment    
     detected <- rownames(r) %in% known
     
+    # Level of significance
+    p <- 0.1
+    
     # Filter out to only the rows with sequins
     r <- r[detected,]
     
@@ -90,33 +93,49 @@ TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=
     print(sprintf("Detected %d experimental genes", length(rownames(r))))
     print(sprintf("%d sequins failed to detect", length(known) - length(rownames(r))))
     
-    # Create a data-frame for each sequin defined, whether it's detected
-    d <- data.frame(ID=known, known=rep(NaN, length(known)), measured=rep(NaN, length(known)))
+    #
+    # Create a data-frame for all sequins defined, whether it's detected. The fold-changes are
+    # on the logarithmic scale.
+    #
     
-    # For each sequin detected, calculate it's known and measured log-fold change
-    for (id in rownames(r))
+    d <- data.frame(ID=known,
+                    known=rep(NaN, length(known)),
+                    measured=rep(NaN, length(known)),
+                    padj=rep(NaN, length(known)),
+                    classify=rep(NaN, length(known)),
+                    expressed=rep(NaN, length(known)))
+    
+    #
+    # In this context, NaN refers to undetected sequins while Na refers to detected
+    # but untested sequins
+    #
+    
+    for (id in known)
     {
-        d[d$ID==id,]$known    <- mix$genes[mix$genes$ID==id,]$LogFold
-        d[d$ID==id,]$measured <- r[id,]$log2FoldChange
+        d[d$ID==id,]$known <- mix$genes[mix$genes$ID==id,]$LogFold
     }
     
-    #
-    # Fit a linear model for sequins that are detected in the experiment.
-    #
+    for (id in rownames(r))
+    {
+        d[d$ID==id,]$padj      <- r[id,]$padj
+        d[d$ID==id,]$measured  <- r[id,]$log2FoldChange
+        d[d$ID==id,]$expressed <- ifelse(r[id,]$padj <= p, 'T', 'F')
+    }
     
-    d <- d[is.finite(d$measured),]
+    # Sort by adjusted p-values just that the expressed genes are at the front
+    d <- d[with(d, order(padj)),]
     
-    # Fit a simple-linear regression model
-    m <- lm(d$known ~ d$measured)
+    # Fit a simple-linear regression model on the filtered sequins
+    m <- lm(known ~ measured, d[is.finite(d$measured),])
     
-    # Pearson's correlation
-    r <- cor(as.numeric(d$known), as.numeric(d$measured))
-    
-    # Coefficients of determination
-    r2 <- summary(m)$r.squared
-    
-    # Regression slope
+    r     <- cor(as.numeric(d$known), as.numeric(d$measured))
+    r2    <- summary(m)$r.squared
     slope <- coef(m)["known"]
+    
+    #
+    # Check for negatives and positives. By definition, anything that has a fold-change other than
+    # 1 at the gene level should be differential expressed.
+    #
     
     plotScatter(d$known, d$measured, d$ID, isLog=TRUE)
     
@@ -173,11 +192,15 @@ TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=
     slope <- coef(m)["known"]
     
     plotScatter(d$known, d$measured, d$ID, isLog=TRUE)
-
+    
     r <- d
     class(r) <- c("TransDiff")
     r 
 }
+
+#
+# Compare the empirical differential results with expectation
+#
 
 TransDiff <- function(r, m=loadMixture())
 {

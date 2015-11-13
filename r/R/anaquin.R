@@ -36,7 +36,8 @@ loadMixture <- function(mix)
                     A=rep(0, length(geneIDs)),
                     B=rep(0, length(geneIDs)),
                     Fold=rep(0, length(geneIDs)),
-                    LogFold = rep(0, length(geneIDs)))
+                    LogFold=rep(0, length(geneIDs),
+                    Type=rep(NA, length(geneIDs))))
 
 	#
 	# Calculate the expected log-fold between mixture A and B
@@ -66,6 +67,14 @@ loadMixture <- function(mix)
         
         g[g$ID == id,]$Fold    <- g[g$ID == id,]$B / g[g$ID == id,]$A
         g[g$ID == id,]$LogFold <- log2(g[g$ID == id,]$Fold)
+        
+        #
+        # Type A: Fold change of 1 (negative control)
+        # Type B: Fold change other than 1
+        #
+    
+
+        
     }
     
     # Prefer not to have it as factor variable
