@@ -54,6 +54,3 @@
     r <- list(W = W, normalizedCounts = t(correctedY))
     r
 }
-
-
-

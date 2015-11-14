@@ -4,21 +4,61 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
 #
 
+.filter <- function(d, mix)
+{
+    # List of known sequins
+    known <- as.character(mix$genes$ID)
+    
+    # Genes that have been detected in the experiment    
+    detected <- rownames(d) %in% known
+    
+    d <- d[detected,]
+    d
+}
+
+sequin <- function(id, mix=loadMixture())
+{
+    r <- mix$genes[mix$genes==id,]
+    r
+}
+
+fold <- function(d)
+{
+    r <- d$Fold
+    r
+}
+
 #
 # Apply RNA normalization to a count matrix. The following modes are supported:
 #
 #    'RUV' -> Remove Unwanted Variation (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
 
-TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+TransNorm <- function(d, mix=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
-    # Known control genes
-    known <- m$genes$ID
+    #
+    # The RUVg package doesn't address the positive control genes. Instead it writes: "Note that one
+    # can relax the negative control gene assumption by requiring insread the identification of a set
+    # of positive and negative controls, with a .... One can then use the centered counts .. for
+    # normalization purposes."
+    #
+    # Here, we'll scale the counts for all the positve control genes.
+    #
     
-    # The control genes detected in the experiment
-    detected <- rownames(x) %in% known    
+    # Filter out only to sequins
+    f <- d <- .filter(d, mix)
     
-    r <- .RUVgNorm(x, detected)
+    for (id in rownames(f))
+    {
+        # What's the expected fold-change for this sequin?
+        expect <- fold(sequin(id, mix))
+        
+        f[id,]$B1 <- f[id,]$B1 / expect
+        f[id,]$B2 <- f[id,]$B2 / expect
+        f[id,]$B3 <- f[id,]$B3 / expect
+    }
+    
+    r <- .RUVgNorm(f, rownames(f))
     r
 }
 
@@ -34,11 +74,11 @@ TransNorm <- function(x, m=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=
     # Genes that have been detected in the experiment    
     detected <- rownames(r) %in% known
     
-    # Level of significance
-    p <- 0.1
-    
     # Filter out to only the rows with sequins
     r <- r[detected,]
+    
+    # Level of significance
+    p <- 0.1
     
     print(sprintf("Detected %d known sequins", length(known)))	
     print(sprintf("Detected %d experimental genes", length(rownames(r))))

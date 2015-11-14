@@ -9,6 +9,7 @@ library(RUVSeq)
 
 testRMXA <- function()
 {
+    setwd('/Users/tedwong/Sources/QA/r/tests')    
     d  <- read.csv('data/data.csv', row.names=1)
     colnames(d) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')
 
@@ -27,6 +28,7 @@ testRMXA <- function()
 
 testRMXA_1 <- function()
 {
+    setwd('/Users/tedwong/Sources/QA/r/tests')    
     d  <- read.csv('data/data.csv', row.names=1)
     colnames(d) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')
     
@@ -47,11 +49,3 @@ testRMXA_1 <- function()
     
     checkTrue(identical(r1,r2))
 }
-
-#plotPCA(r1$normalizedCounts)
-#plotRLE(r1$normalizedCounts)
-
-
-
-
-
