@@ -62,7 +62,7 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=0.1, tool='wgsim'):
+def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=50, tool='wgsim'):
     mixFile = readMixture(file, mix)
 
     for f in os.listdir(basePath):
@@ -121,6 +121,7 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=0.1, tool=
             else:
                 print 'Warning: ' + key + ' not generated!'                
         else:
+            raise 'ddd'
             print '-------- Warning --------: ' + key + ' not found in the mixture!'            
 
     if (tool == 'wgsim'):
@@ -138,19 +139,13 @@ if __name__ == '__main__':
         a = ['RNA_A1', 'RNA_A2', 'RNA_A3']              
         b = ['RNA_B1', 'RNA_B2', 'RNA_B3']
 
-        #
         # Simulate replicates for mixture A
-        #
-
         for i in range(0,len(a)):
             split('ATR003.v032.fa', 'RNA_Simulation/')
             simulate('../data/trans/MTR004.v013.csv', 'RNA_Simulation/', 'A')
             os.system('mv RNA_Simulation ' + a[i])
 
-        #
         # Simulate replicates for mixture B
-        #
-
         for i in range(0,len(b)):
             split('ATR003.v032.fa', 'RNA_Simulation/')        
             simulate('../data/trans/MTR004.v013.csv', 'RNA_Simulation/', 'B')
