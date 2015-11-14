@@ -83,7 +83,7 @@ loadMixture <- function(mix)
     # Sort by ID so that it'll more easier interpreted
     g <- g[with(g, order(ID)),]
     
-    r <- list('data'=data.frame(mix), 'genes'=g)
+    r <- list('isoforms'=data.frame(mix), 'genes'=g)
     class(r) <- c("Mixture")
     r
 }

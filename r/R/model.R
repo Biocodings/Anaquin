@@ -41,11 +41,6 @@ softLimit <- function(x, y)
         m1 <- lm(y~x, data=d1)
         m2 <- lm(y~x, data=d2)
         
-        if (d[i,]$x == 0 || d[i,]$x == 1)
-        {
-            i = i
-        }
-        
         r <- list(d[i,]$x, m1, m2)
         r
     }
@@ -57,13 +52,6 @@ softLimit <- function(x, y)
         
         r$k[i]    <<- m[[1]]
         r$sums[i] <<- sum((m[[2]]$residuals)^2) + sum((m[[3]]$residuals)^2)
-        
-        if (r$k[i] == 0 || r$k[i] == 1)
-        {
-            i = i           
-            m <- plm(i)            
-        }
-        
     })
     
     r <- r[!is.na(r$k),]

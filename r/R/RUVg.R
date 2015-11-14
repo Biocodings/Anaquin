@@ -7,7 +7,9 @@
 #
 
 #
-# RNA normalization by RUVg (Remove Unwanted Variation)
+# RNA normalization by RUVg (Remove Unwanted Variation). The code is slighlty different to the original
+# R package. It includes positive and negative control, furthermore it also supports differential expression
+# at the exon level.
 #
 
 .RUVgNorm <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
@@ -52,3 +54,6 @@
     r <- list(W = W, normalizedCounts = t(correctedY))
     r
 }
+
+
+
