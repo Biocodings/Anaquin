@@ -121,7 +121,6 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=50, tool='
             else:
                 print 'Warning: ' + key + ' not generated!'                
         else:
-            raise 'ddd'
             print '-------- Warning --------: ' + key + ' not found in the mixture!'            
 
     if (tool == 'wgsim'):
