@@ -22,7 +22,7 @@
 #    'RUV' -> Remove Unwanted Variation (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
 
-TransNorm <- function(d, mix=loadMixture(), round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+TransNorm <- function(d, mix=loadMixture(), method='negative', round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
     #
     # The RUVg package doesn't address the positive control genes. Instead it writes: "Note that one
@@ -30,23 +30,32 @@ TransNorm <- function(d, mix=loadMixture(), round=TRUE, k=1, epsilon=1, toleranc
     # of positive and negative controls, with a .... One can then use the centered counts .. for
     # normalization purposes."
     #
-    # Here, we'll scale the counts for all the positve control genes.
-    #
-    
+
     # Filter out only to sequins
     f <- d <- .filter(d, mix)
     
-    for (id in rownames(f))
+    if (method == 'neg')
     {
-        # What's the expected fold-change for this sequin?
-        expect <- fold(sequin(id, mix))
-        
-        f[id,]$B1 <- f[id,]$B1 / expect
-        f[id,]$B2 <- f[id,]$B2 / expect
-        f[id,]$B3 <- f[id,]$B3 / expect
+        # Only use the negative sequins recommended by Simon
+        seqs <- c('R1_21', 'R1_23', 'R1_71', 'R1_81', 'R2_117', 'R2_140', 'R2_152', 'R2_18','R2_20','R2_45','R2_54','R2_65','R2_7','R2_71')
+
+        # Filter out only those sequins with expected fold-change of 1
+        f <- f[rownames(f) %in% seqs,]
+    }
+    else if (method == 'neg_pos')
+    {
+        for (id in rownames(d))
+        {
+            # What's the expected fold-change for this sequin?
+            expect <- fold(sequin(id, mix))
+            
+            f[id,]$B1 <- f[id,]$B1 / expect
+            f[id,]$B2 <- f[id,]$B2 / expect
+            f[id,]$B3 <- f[id,]$B3 / expect
+        }
     }
     
-    r <- .RUVaNorm(f, rownames(f))
+    r <- .RUVa(d, rownames(f))
     r
 }
 
@@ -75,7 +84,6 @@ TransNorm <- function(d, mix=loadMixture(), round=TRUE, k=1, epsilon=1, toleranc
     #
     # Create a data-frame for all sequins defined, whether it's detected. The fold-changes are
     # on the logarithmic scale.
-    #
     #
     # In this context, NaN refers to undetected sequins while NA refers to detected
     # but untested sequins
