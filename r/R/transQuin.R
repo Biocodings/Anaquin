@@ -16,18 +16,6 @@
     d
 }
 
-sequin <- function(id, mix=loadMixture())
-{
-    r <- mix$genes[mix$genes==id,]
-    r
-}
-
-fold <- function(d)
-{
-    r <- d$Fold
-    r
-}
-
 #
 # Apply RNA normalization to a count matrix. The following modes are supported:
 #
@@ -80,7 +68,7 @@ TransNorm <- function(d, mix=loadMixture(), round=TRUE, k=1, epsilon=1, toleranc
     # Level of significance
     p <- 0.1
     
-    print(sprintf("Detected %d known sequins", length(known)))	
+    print(sprintf("Detected %d known sequins", length(known)))
     print(sprintf("Detected %d experimental genes", length(rownames(r))))
     print(sprintf("%d sequins failed to detect", length(known) - length(rownames(r))))
     
@@ -150,6 +138,12 @@ TransNorm <- function(d, mix=loadMixture(), round=TRUE, k=1, epsilon=1, toleranc
     
     p <- d[!is.nan(d$padj),]
     p <- d[!is.na(d$padj),]
+    
+    print(sprintf("Detected %d false positives", nrow(p[p$class=='FP',])))
+    print(sprintf("Detected %d true positives",  nrow(p[p$class=='TP',])))
+    print(sprintf("Detected %d true negatives",  nrow(p[p$class=='TN',])))
+    print(sprintf("Detected %d false negatives", nrow(p[p$class=='FN',])))    
+    
     plotScatter(p$known, p$measured, rownames(p), isLog=TRUE)
     
     r <- list(data=d, r=r, r2=r2, slope=slope, m=m)

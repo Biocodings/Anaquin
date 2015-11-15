@@ -15,6 +15,18 @@ library("GenomicAlignments")
     genes
 }
 
+sequin <- function(id, mix=loadMixture())
+{
+    r <- mix$genes[mix$genes==id,]
+    r
+}
+
+fold <- function(d)
+{
+    r <- d$Fold
+    r
+}
+
 #
 # Load the mixture into an R object that can be used in other Anaquin functions
 #
