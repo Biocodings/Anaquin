@@ -12,7 +12,7 @@
 # at the exon level.
 #
 
-.RUVgNorm <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+.RUVaNorm <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
     # Log-linear GLM
     Y <- t(log(x+epsilon))

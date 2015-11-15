@@ -46,7 +46,7 @@ TransNorm <- function(d, mix=loadMixture(), round=TRUE, k=1, epsilon=1, toleranc
         f[id,]$B3 <- f[id,]$B3 / expect
     }
     
-    r <- .RUVgNorm(f, rownames(f))
+    r <- .RUVaNorm(f, rownames(f))
     r
 }
 

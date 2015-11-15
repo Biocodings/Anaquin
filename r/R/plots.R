@@ -107,5 +107,3 @@ plotDensity <- function(src, ref)
         axis(side=2, at=seq(0, ticks * scaled[2], by=scaled[2]))
     }
 }
-
-#plotDensity('/Users/tedwong/Sources/QA/output/VarCoverage_summary.bedgraph', '/Users/tedwong/Sources/QA/data/var/AVA017.v032.bed')
