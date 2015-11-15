@@ -4,9 +4,9 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
 #
 
-library("Rsamtools")
-library("GenomicFeatures")
-library("GenomicAlignments")
+#library("Rsamtools")
+#library("GenomicFeatures")
+#library("GenomicAlignments")
 
 .isoformsToGenes <- function(trans)
 {
@@ -36,24 +36,25 @@ loadMixture <- function(mix)
     if (!hasArg(mix))
     {
         mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), sep='\t')
+        colnames(mix) <- c('ID', 'Length', 'Mix.A', 'Mix.B')
     }
-
+    
     # Eg: R1_1 for R1_1_1 and R1_1_2    
     mix$GeneID <- .isoformsToGenes(mix$ID)
     
     # Genes that are defined in the mixture
     geneIDs <- unique(mix$GeneID)
-
+    
     g <- data.frame(ID=geneIDs,
                     A=rep(0, length(geneIDs)),
                     B=rep(0, length(geneIDs)),
                     Fold=rep(0, length(geneIDs)),
-                    LogFold=rep(0, length(geneIDs),
-                    Type=rep(NA, length(geneIDs))))
-
-	#
-	# Calculate the expected log-fold between mixture A and B
-	#
+                    LogFold=rep(0, length(geneIDs)),
+                    type=rep(0, length(geneIDs)))
+    
+    #
+    # Calculate the expected log-fold between mixture A and B
+    #
     
     for (id in geneIDs)
     {
@@ -61,18 +62,18 @@ loadMixture <- function(mix)
         
         #
         # Calculate the expected abundance. We assume the following format:
-		#
-		#      ID     Length     Mix A      Mix B
-		#    -------------------------------------
-		#     R1_11    703     161.13281    5.0354
-		#
-		# 
-		# We shouldn't assume anything for the column names.
-		#
-		
-	    g[g$ID == id,]$A <- sum(seqs[,3])
+        #
+        #      ID     Length     Mix A      Mix B
+        #    -------------------------------------
+        #     R1_11    703     161.13281    5.0354
+        #
+        # 
+        # We shouldn't assume anything for the column names.
+        #
+        
+        g[g$ID == id,]$A <- sum(seqs[,3])
         g[g$ID == id,]$B <- sum(seqs[,4])
-
+        
         #
         # Calculate the expected fold change (B/A)
         #
@@ -81,12 +82,26 @@ loadMixture <- function(mix)
         g[g$ID == id,]$LogFold <- log2(g[g$ID == id,]$Fold)
         
         #
-        # Type A: Fold change of 1 (negative control)
-        # Type B: Fold change other than 1
+        # For each gene, we will classify it as:
         #
-    
-
+        #    'E' - equal concentration across mixtures
+        #    'A' - concentration in the first mixture is higher
+        #    'B' - concentration in the second mixture is higher
+        #
         
+        # We'll need that because we might have variable number of isoforms
+        type = ''
+        
+        for (i in seqs$ID)
+        {
+            seq <- seqs[seqs$ID==i,]
+            
+            if (seq$Mix.A > seq$Mix.B)      { type <- paste(type, 'A', sep='') }
+            else if (seq$Mix.B > seq$Mix.A) { type <- paste(type, 'B', sep='') }
+            else                            { type <- paste(type, 'E', sep='') }
+        }
+        
+        g[g$ID == id,]$type <- type
     }
     
     # Prefer not to have it as factor variable
@@ -95,7 +110,10 @@ loadMixture <- function(mix)
     # Sort by ID so that it'll more easier interpreted
     g <- g[with(g, order(ID)),]
     
-    r <- list('isoforms'=data.frame(mix), 'genes'=g)
+    i <- data.frame(mix)
+    i <- i[with(i, order(ID)),]
+    
+    r <- list('isoforms'=i, 'genes'=g)
     class(r) <- c("Mixture")
     r
 }

@@ -72,7 +72,7 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=0, s=50, tool='
             # The concentration level depends on the level
             reads = mixFile[key][mix]
 
-            # The concentration needed to be added for the simulation
+            # The concentration needed to be added for the simulation. The number of reads is proportional to the expected concentration.
             reads = c + (s * reads)
 
             # Length of the sequin
