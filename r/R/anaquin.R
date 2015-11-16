@@ -31,14 +31,20 @@ fold <- function(d)
 # Load the mixture into an R object that can be used in other Anaquin functions
 #
 
-loadMixture <- function(mix)
+loadMixture <- function(mix=NULL, exons=NULL)
 {
-    if (!hasArg(mix))
+    if (is.null(mix))
     {
         mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), sep='\t')
         colnames(mix) <- c('ID', 'Length', 'Mix.A', 'Mix.B')
     }
-    
+
+    if (is.null(exons))
+    {
+        exons <- read.csv('/Users/tedwong/Desktop/exons.csv', row.names=1)
+        exons$logFold <- as.numeric(as.character(exons$logFold))
+    }
+
     # Eg: R1_1 for R1_1_1 and R1_1_2    
     mix$GeneID <- .isoformsToGenes(mix$ID)
     
@@ -112,8 +118,8 @@ loadMixture <- function(mix)
     
     i <- data.frame(mix)
     i <- i[with(i, order(ID)),]
-    
-    r <- list('isoforms'=i, 'genes'=g)
+
+    r <- list('isoforms'=i, 'genes'=g, 'exons'=exons)
     class(r) <- c("Mixture")
     r
 }

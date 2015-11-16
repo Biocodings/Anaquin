@@ -7,7 +7,7 @@
 #
 
 #
-# RNA normalization by RUVg (Remove Unwanted Variation). The code is slighlty different to the original
+# RNA normalization by RUV (Remove Unwanted Variation). The code is slighlty different to the original
 # R package. It includes positive and negative control, furthermore it also supports differential expression
 # at the exon level.
 #

@@ -14,7 +14,6 @@ library(RUVSeq)
 .data <- function()
 {
     d  <- read.csv('/Users/tedwong/Sources/QA/r/tests/data/data.csv', row.names=1)
-    colnames(d) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')
     d
 }
 
