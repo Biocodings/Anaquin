@@ -62,7 +62,8 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, tool='wgsim'):
+#def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=60000): # For length normalized 
+def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=1, s=100):
     mixFile = readMixture(file, mix)
 
     for f in os.listdir(basePath):
@@ -71,8 +72,9 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, too
         if key in mixFile:
 
             # The reads depend on the concentration level and sequin length
-            reads = mixFile[key][mix] / mixFile[key]['len']
-
+            #reads = mixFile[key][mix] / mixFile[key]['len'] # Length normalization
+            reads = mixFile[key][mix]
+            
             # The concentration needed to be added for the simulation. The number of reads is proportional to the expected concentration.
             reads = c + (s * reads)
 
