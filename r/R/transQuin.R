@@ -22,7 +22,7 @@
 #    'RUV' -> Remove Unwanted Variation (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
 
-TransNorm <- function(d, mix=loadMixture(), method='negative', round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+TransNorm <- function(d, mix=loadMixture(), spikes=NULL, method='negative', round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
     #
     # The RUVg package doesn't address the positive control genes. Instead it writes: "Note that one
@@ -32,30 +32,38 @@ TransNorm <- function(d, mix=loadMixture(), method='negative', round=TRUE, k=1, 
     #
 
     # Filter out only to sequins
-    f <- d <- .filter(d, mix)
-    
-    if (method == 'neg')
+    x <- .filter(d, mix)
+
+    if (!is.null(spikes))
+    {
+        x <- x[rownames(x) %in% spikes,]        
+    }
+    else if (method == 'all')
+    {
+        # Empty implementation
+    }
+    else if (method == 'neg')
     {
         # Only use the negative sequins recommended by Simon
         seqs <- c('R1_21', 'R1_23', 'R1_71', 'R1_81', 'R2_117', 'R2_140', 'R2_152', 'R2_18','R2_20','R2_45','R2_54','R2_65','R2_7','R2_71')
 
         # Filter out only those sequins with expected fold-change of 1
-        f <- f[rownames(f) %in% seqs,]
+        x <- x[rownames(x) %in% seqs,]
     }
     else if (method == 'neg_pos')
     {
-        for (id in rownames(d))
+        for (id in rownames(x))
         {
             # What's the expected fold-change for this sequin?
             expect <- fold(sequin(id, mix))
             
-            f[id,]$B1 <- f[id,]$B1 / expect
-            f[id,]$B2 <- f[id,]$B2 / expect
-            f[id,]$B3 <- f[id,]$B3 / expect
+            x[id,]$B1 <- x[id,]$B1 / expect
+            x[id,]$B2 <- x[id,]$B2 / expect
+            x[id,]$B3 <- x[id,]$B3 / expect
         }
     }
     
-    r <- .RUVa(d, rownames(f))
+    r <- .RUVa(d, rownames(x))
     r
 }
 
