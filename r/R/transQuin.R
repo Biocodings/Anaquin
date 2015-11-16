@@ -67,6 +67,10 @@ TransNorm <- function(d, mix=loadMixture(), spikes=NULL, method='negative', roun
     r
 }
 
+#
+# Generic function to analyze a differential result object
+#
+
 .analyzeResult <- function(r, m, p, logFC, units)
 {
     r <- data.frame(r)
