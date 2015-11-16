@@ -107,8 +107,8 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, too
 
                 # Simulate reads from a given sequin
                 i  = path + '/' + key + '.fa'
-                o1 = path + '/' + key + '.R1.fastq'
-                o2 = path + '/' + key + '.R2.fastq'                    
+                o1 = path + '/' + key + '.R1.fq'
+                o2 = path + '/' + key + '.R2.fq'
 
                 cmd = 'wgsim -s 0 -d 0 -1 100 -2 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' ' + o2
                 #cmd = 'wgsim -e 0 -r 0 -s 0 -d 0 -1 100 -S ' + str(randint(1,100)) + ' -N ' + str(reads) + ' ' + i + ' ' + o1 + ' /dev/null'
@@ -124,10 +124,9 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, too
         else:
             print '-------- Warning --------: ' + key + ' not found in the mixture!'            
 
-    if (tool == 'wgsim'):
-        print('Merging the individual simulations...')
-        os.system('cat ' + basePath + '*R1.fastq > ' + basePath + 'simulated_1.fastq')
-        os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
+    print('Merging the individual simulations...')
+    os.system('cat ' + basePath + '*R1.fastq > ' + basePath + 'simulated_1.fastq')
+    os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
 
 def print_usage():
     print 'Usage: python simulate.py RNA'
