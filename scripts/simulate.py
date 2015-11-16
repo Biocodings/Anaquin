@@ -69,6 +69,7 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, too
         key = f.split('.')[0]
 
         if key in mixFile:
+
             # The reads depend on the concentration level and sequin length
             reads = mixFile[key][mix] / mixFile[key]['len']
 
@@ -135,8 +136,8 @@ if __name__ == '__main__':
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print_usage()
     elif (sys.argv[1] == 'RNA'):
-        a = ['RNA_A1', 'RNA_A2', 'RNA_A3']              
-        b = ['RNA_B1', 'RNA_B2', 'RNA_B3']
+        a = ['A1', 'A2', 'A3']              
+        b = ['B1', 'B2', 'B3']
 
         # Simulate replicates for mixture A
         for i in range(0,len(a)):
@@ -149,15 +150,5 @@ if __name__ == '__main__':
             split('ATR003.v032.fa', 'RNA_Simulation/')        
             simulate('../data/trans/MTR004.v013.csv', 'RNA_Simulation/', 'B')
             os.system('mv RNA_Simulation ' + b[i])
-
-    elif (sys.argv[1] == 'META'):
-        split('../data/meta/META.v1.tab.fa', 'META_A/')
-        split('../data/meta/META.v1.tab.fa', 'META_B/')
-
-        # Generate simulation for mixture A (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_A/', 'A', 0, 1.0)
-
-        # Generate simulation for mixture B (5% of the origianl concentration to save time)
-        simulate('../data/meta/META.v6.mix.csv', 'META_B/', 'B', 0, 1.0)
     else:
         print_usage()
