@@ -117,7 +117,7 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, too
                 os.system(cmd)
                     
                 # We'll need this command to merge the simulations...
-                cmd = 'cp ' + path + '/*.fastq ' + basePath
+                cmd = 'cp ' + path + '/*.fq ' + basePath
                 os.system(cmd)                    
             else:
                 print 'Warning: ' + key + ' not generated!'                
@@ -125,8 +125,8 @@ def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, too
             print '-------- Warning --------: ' + key + ' not found in the mixture!'            
 
     print('Merging the individual simulations...')
-    os.system('cat ' + basePath + '*R1.fastq > ' + basePath + 'simulated_1.fastq')
-    os.system('cat ' + basePath + '*R2.fastq > ' + basePath + 'simulated_2.fastq')
+    os.system('cat ' + basePath + '*R1.fq > ' + basePath + 'simulated_1.fastq')
+    os.system('cat ' + basePath + '*R2.fq > ' + basePath + 'simulated_2.fastq')
 
 def print_usage():
     print 'Usage: python simulate.py RNA'
