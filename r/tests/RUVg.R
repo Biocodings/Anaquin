@@ -8,7 +8,7 @@ library(RUnit)
 library(RUVSeq)
 
 #
-# Unit tests for RUVa normalization with TransQuin sequins.
+# Unit tests for RUVg normalization with TransQuin genes
 #
 
 .data <- function()
