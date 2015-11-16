@@ -63,7 +63,7 @@ def readMixture(file, mix):
 
 # Generate simulated reads for each sequin for a given mixture
 #def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=60000): # For length normalized 
-def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=1, s=100):
+def simulate(file, basePath, mix, min_=0, max_=sys.maxint, c=1, s=50):
     mixFile = readMixture(file, mix)
 
     for f in os.listdir(basePath):
