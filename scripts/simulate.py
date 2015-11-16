@@ -62,7 +62,7 @@ def readMixture(file, mix):
     return r
 
 # Generate simulated reads for each sequin for a given mixture
-def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=10000, tool='wgsim'):
+def simulate(file, basePath, mix='A', min_=0, max_=sys.maxint, c=1, s=20000, tool='wgsim'):
     mixFile = readMixture(file, mix)
 
     for f in os.listdir(basePath):
