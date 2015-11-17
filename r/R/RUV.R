@@ -1,7 +1,7 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 #  Credits: RUV source package (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
@@ -12,7 +12,7 @@
 # at the exon level.
 #
 
-.RUVa <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+.RUV <- function(x, cIdx, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
     # Log-linear GLM
     Y <- t(log(x+epsilon))

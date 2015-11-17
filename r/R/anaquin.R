@@ -28,6 +28,35 @@ fold <- function(d)
 }
 
 #
+# Returns a list of exon bins that can be used as negative control for normalization (ie: FC==1)
+#
+
+negativeExonBins <- function(m = loadMixture())
+{
+    exons <- m$exons[m$exons$fold==1,]
+
+    # Make sure the corresponding logFolds are correct
+    stopifnot(nrow(exons[exons$logFold != 0,]) == 0)
+
+    #
+    # For example, the names of bins can be accessed by row.names(exons)
+    #
+    
+    exons
+}
+
+expExonBins <- function(m = loadMixture())
+{
+    r <- negativeExonBins()
+    r <- r[c('R2_71:E001', 'R2_71:E002', 'R2_71:E003', 'R2_71:E004', 'R2_71:E005', 'R2_71:E006', 'R2_71:E007', 'R2_71:E008'),]
+    r
+}
+
+
+
+
+
+#
 # Load the mixture into an R object that can be used in other Anaquin functions
 #
 

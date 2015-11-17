@@ -1,7 +1,7 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
 library(RUnit)
@@ -17,24 +17,55 @@ library(RUVSeq)
     d
 }
 
+.files <- function()
+{
+    d <- c('/Users/tedwong/Sources/QA/r/tests/data/simon_experiment/K_RMXA1v2.DEXSeq.counts.txt',
+           '/Users/tedwong/Sources/QA/r/tests/data/simon_experiment/K_RMXA2v2.DEXSeq.counts.txt',
+           '/Users/tedwong/Sources/QA/r/tests/data/simon_experiment/K_RMXA3v2.DEXSeq.counts.txt',
+           '/Users/tedwong/Sources/QA/r/tests/data/simon_experiment/G_RMXB1v2.DEXSeq.counts.txt',
+           '/Users/tedwong/Sources/QA/r/tests/data/simon_experiment/G_RMXB2v2.DEXSeq.counts.txt',
+           '/Users/tedwong/Sources/QA/r/tests/data/simon_experiment/G_RMXB3v2.DEXSeq.counts.txt')
+    d
+}
+
+.sampleData <- function()
+{
+    d <- data.frame(row.names = c("A1", "A2", "A3", "B1", "B2", "B3"), condition = c("A", "A", "A", "B", "B", "B"))
+    d
+}
+
+.flattenGTF <- function()
+{
+    r <- '~/Sources/QA/data/trans/ATR001.v032.flatten.gtf'
+    r
+}
+
+#
+# This test demostrates a simple usage of normalization by exons
+#
+
 testExons_1 <- function()
 {
-    d <- .data()   
+    # Load Simon's data, obviously it's unnormalized
+    d <- DEXSeqDataSetFromHTSeq(.files(), sampleData=.sampleData(), design=~sample+exon+condition:exon, flattenedfile=.flattenGTF())
     
+    f <- counts(d)
+    f <- f[,c(1:6)]
+    colnames(f) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')
+
+    # What does the RLE plot look like before normalization? In a real experiment, we would probably need a filter.
+    plotRLE(f)
     
+    # What does the PCA plot look like before normalization?
+    plotPCA(f)
+
+    # Let's normalize the counts by exon bins
+    r <- TransNorm(f, level='exons')
+
+    # What does the RLE plot look like after normalization?
+    plotRLE(r$normalizedCounts)
     
-    
-    colnames(d) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')
-
-    filter <- apply(d, 1, function(x) length(x[x>5])>=2)
-    d <- d[filter,]
-
-    m <- loadMixture()
-    detected <- rownames(d) %in% m$genes$ID
-    spikes   <- rownames(d[detected,])
-
-    r1 <- RUVg(as.matrix(d), spikes, k=1)
-    r2 <- TransNorm(d, method='all')
-
-    checkTrue(identical(r1,r2))
+    # What does the PCA plot look like after normalization?
+    plotPCA(r$normalizedCounts)
 }
+

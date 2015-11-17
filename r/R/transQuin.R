@@ -1,18 +1,16 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.filter <- function(d, mix)
+.filter <- function(d, mix, level='genes')
 {
-    # List of known sequins
-    known <- as.character(mix$genes$ID)
+    if      (level == 'genes') { known <- as.character(mix$genes$ID) }
+    else if (level == 'exons') { known <- row.names(m$exons) }
+    else                       {}
     
-    # Genes that have been detected in the experiment    
-    detected <- rownames(d) %in% known
-    
-    d <- d[detected,]
+    d <- d[rownames(d) %in% known,]
     d
 }
 
@@ -21,49 +19,63 @@
 #
 #    'RUV' -> Remove Unwanted Variation (http://bioconductor.org/packages/release/bioc/html/RUVSeq.html)
 #
+# The RUVg package doesn't address the positive control genes. Instead it writes: "Note that one
+# can relax the negative control gene assumption by requiring instead the identification of a set
+# of positive and negative controls, with a .... One can then use the centered counts .. for
+# normalization purposes."
+#
 
-TransNorm <- function(d, mix=loadMixture(), spikes=NULL, method='negative', round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+TransNorm <- function(d, mix=loadMixture(), level='genes', spikes=NULL, method='negative', round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
-    #
-    # The RUVg package doesn't address the positive control genes. Instead it writes: "Note that one
-    # can relax the negative control gene assumption by requiring insread the identification of a set
-    # of positive and negative controls, with a .... One can then use the centered counts .. for
-    # normalization purposes."
-    #
-
+    stopifnot(level == 'genes' || level == 'isoforms' || level == 'exons')
+    
     # Filter out only to sequins
-    x <- .filter(d, mix)
+    x <- .filter(d, mix, level)
 
-    if (!is.null(spikes))
+    # Normalization at the exon-bin levels
+    if (level == 'exons')
     {
-        x <- x[rownames(x) %in% spikes,]        
+        #print('Applying negative exon bins')
+        #x <- x[rownames(x) %in% row.names(negativeExonBins(mix)),]
+        
+        print('Applying experimental negative exon bins')
+        x <- x[rownames(x) %in% row.names(expExonBins(mix)),]
     }
-    else if (method == 'all')
+    
+    # Normalization at the genes levels
+    else if (level == 'genes')
     {
-        # Empty implementation
-    }
-    else if (method == 'neg')
-    {
-        # Only use the negative sequins recommended by Simon
-        seqs <- c('R1_21', 'R1_23', 'R1_71', 'R1_81', 'R2_117', 'R2_140', 'R2_152', 'R2_18','R2_20','R2_45','R2_54','R2_65','R2_7','R2_71')
-
-        # Filter out only those sequins with expected fold-change of 1
-        x <- x[rownames(x) %in% seqs,]
-    }
-    else if (method == 'neg_pos')
-    {
-        for (id in rownames(x))
+        if (!is.null(spikes))
         {
-            # What's the expected fold-change for this sequin?
-            expect <- fold(sequin(id, mix))
+            x <- x[rownames(x) %in% spikes,]        
+        }
+        else if (method == 'all')
+        {
+            # Empty implementation
+        }
+        else if (method == 'neg')
+        {
+            # Only use the negative sequins recommended by Simon
+            seqs <- c('R1_21', 'R1_23', 'R1_71', 'R1_81', 'R2_117', 'R2_140', 'R2_152', 'R2_18','R2_20','R2_45','R2_54','R2_65','R2_7','R2_71')
             
-            x[id,]$B1 <- x[id,]$B1 / expect
-            x[id,]$B2 <- x[id,]$B2 / expect
-            x[id,]$B3 <- x[id,]$B3 / expect
+            # Filter out only those sequins with expected fold-change of 1
+            x <- x[rownames(x) %in% seqs,]
+        }
+        else if (method == 'neg_pos')
+        {
+            for (id in rownames(x))
+            {
+                # What's the expected fold-change for this sequin?
+                expect <- fold(sequin(id, m))
+                
+                x[id,]$B1 <- x[id,]$B1 / expect
+                x[id,]$B2 <- x[id,]$B2 / expect
+                x[id,]$B3 <- x[id,]$B3 / expect
+            }
         }
     }
     
-    r <- .RUVa(d, rownames(x))
+    r <- .RUV(d, rownames(x))
     r
 }
 
