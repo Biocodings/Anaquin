@@ -25,13 +25,16 @@
 # normalization purposes."
 #
 
-TransNorm <- function(d, mix=loadMixture(), level='genes', spikes=NULL, method='negative', round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
+TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=NULL, round=TRUE, k=1, epsilon=1, tolerance=1e-8, isLog=FALSE)
 {
     stopifnot(level == 'genes' || level == 'isoforms' || level == 'exons')
     
     # Filter out only to sequins
     x <- .filter(d, mix, level)
 
+    # If this condition is not met, most likely the input is wrong
+    stopifnot(nrow(x) > 0)
+    
     # Normalization at the exon-bin levels
     if (level == 'exons')
     {

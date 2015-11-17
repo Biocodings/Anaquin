@@ -14,13 +14,44 @@ library(RUVSeq)
 .data <- function()
 {
     d  <- read.csv('/Users/tedwong/Sources/QA/r/tests/data/data.csv', row.names=1)
+    colnames(d) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')    
     d
+}
+
+.sequins <- function()
+{
+    d <- .filter(.data(), loadMixture())
+    d
+}
+
+#
+# Test with the negative controls at the gene level. No filter is needed since only sequins are involved.
+#
+test_1 <- function()
+{
+    # Load Simon's data, obviously it's unnormalized
+    d <- .sequins()
+
+    # What does the RLE plot look like before normalization? In a real experiment, we would probably need a filter.
+    plotRLE(d)
+    
+    # What does the PCA plot look like before normalization?
+    plotPCA(d)
+    
+    # Let's normalize the counts by exon bins
+    r <- TransNorm(d, level='genes')
+    
+    # What does the RLE plot look like after normalization?
+    plotRLE(r$normalizedCounts)
+    
+    # What does the PCA plot look like after normalization?
+    plotPCA(r$normalizedCounts)
 }
 
 #
 # Test with all sequins, note that this is generally not a good idea but we're only concern the result here
 #
-testRMXA_1 <- function()
+test_2 <- function()
 {
     setwd('/Users/tedwong/Sources/QA/r/tests')    
     d  <- read.csv('data/data.csv', row.names=1)
@@ -42,7 +73,7 @@ testRMXA_1 <- function()
 #
 # Repeat the previous test but with a subset of sequins
 #
-testRMXA_2 <- function()
+test_3 <- function()
 {
     setwd('/Users/tedwong/Sources/QA/r/tests')    
     d  <- read.csv('data/data.csv', row.names=1)
@@ -68,17 +99,17 @@ testRMXA_2 <- function()
 #
 # What happens to a perfect experiement where all the negative control sequins really are truly unaffected?
 #
-testRMXA_3 <- function()
+test_4 <- function()
 {
+    set.seed(1234)
+
     d <- .data()
     m <- loadMixture()
-
-    detected <- rownames(d) %in% m$genes$ID
 
     # This is used to generate pseduo counts    
     i <- 1
     
-    for (id in row.names(d[detected,]))
+    for (id in row.names(d[rownames(d) %in% m$genes$ID,]))
     {
         d[id,]$A1 <-  (10 * i) + rnorm(1, 5, 2)
         d[id,]$A2 <-  (10 * i) + rnorm(1, 5, 2)
@@ -90,19 +121,30 @@ testRMXA_3 <- function()
     }
     
     r <- TransNorm(d, method='all')
+
+    checkTrue(sum(c(r$normalizedCounts['R2_76',])) == 4595)
 }
 
 #
 # What happens to a perfect experiement where all the negative control sequins have been biased two-times?
 #
-testRMXA_4 <- function()
+test_5 <- function()
 {
+    set.seed(1234)
+
     d <- .data()
     m <- loadMixture()
     
     # This is used to generate pseduo counts    
     i <- 1
     
+    #
+    # Let's pretend we have a library bias (eg: library size) that makes the second mixture have twice
+    # number of counts. This is an unwanted variation, our RUV method should be able to normalize the
+    # counts back to what it should have been if there was no bias. For example, the fold-change of two
+    # could make differentially expressed, when it shouldn't.
+    #
+
     for (id in row.names(d[rownames(d) %in% m$genes$ID,]))
     {
         d[id,]$A1 <- (10 * i) + rnorm(1, 5, 2)
@@ -115,4 +157,5 @@ testRMXA_4 <- function()
     }
 
     r <- TransNorm(d, method='all')
+    checkTrue(all(c(r$normalizedCounts['R2_76',]) == c(1086, 1088, 1081, 1086, 1088, 1081)))
 }
