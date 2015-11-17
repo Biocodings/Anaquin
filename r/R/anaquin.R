@@ -45,16 +45,30 @@ negativeExonBins <- function(m = loadMixture())
     exons
 }
 
+#
+# Returns a list of isoforms that can be used as negative control for normalization (ie: FC==1)
+#
+
+negativeIsoforms <- function(m = loadMixture())
+{
+    i <- m$isoforms[m$isoforms$fold==1,]
+    
+    # Make sure the corresponding logFolds are correct
+    stopifnot(nrow(i[i$logFold != 0,]) == 0)
+    
+    #
+    # For example, the names of bins can be accessed by row.names(exons)
+    #
+    
+    i
+}
+
 expExonBins <- function(m = loadMixture())
 {
     r <- negativeExonBins()
     r <- r[c('R2_71:E001', 'R2_71:E002', 'R2_71:E003', 'R2_71:E004', 'R2_71:E005', 'R2_71:E006', 'R2_71:E007', 'R2_71:E008'),]
     r
 }
-
-
-
-
 
 #
 # Load the mixture into an R object that can be used in other Anaquin functions
@@ -64,8 +78,8 @@ loadMixture <- function(mix=NULL, exons=NULL)
 {
     if (is.null(mix))
     {
-        mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), sep='\t')
-        colnames(mix) <- c('ID', 'Length', 'Mix.A', 'Mix.B')
+        mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), row.names=1, sep='\t')
+        colnames(mix) <- c('Length', 'Mix.A', 'Mix.B')
     }
 
     if (is.null(exons))
@@ -73,9 +87,12 @@ loadMixture <- function(mix=NULL, exons=NULL)
         exons <- read.csv('/Users/tedwong/Desktop/exons.csv', row.names=1)
         exons$logFold <- as.numeric(as.character(exons$logFold))
     }
+    
+    mix$fold    <- mix$Mix.B / mix$Mix.A
+    mix$logFold <- log(mix$fold)
 
     # Eg: R1_1 for R1_1_1 and R1_1_2    
-    mix$GeneID <- .isoformsToGenes(mix$ID)
+    mix$GeneID <- .isoformsToGenes(row.names(mix))
     
     # Genes that are defined in the mixture
     geneIDs <- unique(mix$GeneID)
@@ -105,7 +122,7 @@ loadMixture <- function(mix=NULL, exons=NULL)
         # 
         # We shouldn't assume anything for the column names.
         #
-        
+
         g[g$ID == id,]$A <- sum(seqs[,3])
         g[g$ID == id,]$B <- sum(seqs[,4])
         
@@ -146,7 +163,7 @@ loadMixture <- function(mix=NULL, exons=NULL)
     g <- g[with(g, order(ID)),]
     
     i <- data.frame(mix)
-    i <- i[with(i, order(ID)),]
+    i <- i[with(i, order(row.names(i))),]
 
     r <- list('isoforms'=i, 'genes'=g, 'exons'=exons)
     class(r) <- c("Mixture")

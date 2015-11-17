@@ -7,8 +7,8 @@
 .filter <- function(d, mix, level='genes')
 {
     if      (level == 'genes') { known <- as.character(mix$genes$ID) }
-    else if (level == 'exons') { known <- row.names(m$exons) }
-    else                       {}
+    else if (level == 'exons') { known <- row.names(m$exons)         }
+    else                       { known <- row.names(m$isoforms)      }
     
     d <- d[rownames(d) %in% known,]
     d
@@ -35,7 +35,7 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
     # If this condition is not met, most likely the input is wrong
     stopifnot(nrow(x) > 0)
     
-    # Normalization at the exon-bin levels
+    # Normalization at the exon-bin level
     if (level == 'exons')
     {
         #print('Applying negative exon bins')
@@ -45,7 +45,17 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
         x <- x[rownames(x) %in% row.names(expExonBins(mix)),]
     }
     
-    # Normalization at the genes levels
+    # Normalization at the isoform level
+    else if (level == 'isoforms')
+    {
+        if (method == 'neg')
+        {
+            print('Applying negative isoforms')
+            x <- x[rownames(x) %in% row.names(negativeIsoforms(m)),]
+        }
+    }
+    
+    # Normalization at the genes level
     else if (level == 'genes')
     {
         if (!is.null(spikes))
@@ -77,7 +87,7 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
             }
         }
     }
-    
+
     r <- .RUV(d, rownames(x))
     r
 }
