@@ -7,8 +7,8 @@
 .filter <- function(d, mix, level='genes')
 {
     if      (level == 'genes') { known <- as.character(mix$genes$ID) }
-    else if (level == 'exons') { known <- row.names(m$exons)         }
-    else                       { known <- row.names(m$isoforms)      }
+    else if (level == 'exons') { known <- row.names(mix$exons)         }
+    else                       { known <- row.names(mix$isoforms)      }
     
     d <- d[rownames(d) %in% known,]
     d
@@ -51,7 +51,7 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
         if (method == 'neg')
         {
             print('Applying negative isoforms')
-            x <- x[rownames(x) %in% row.names(negativeIsoforms(m)),]
+            x <- x[rownames(x) %in% row.names(negativeIsoforms(mix)),]
         }
     }
     
