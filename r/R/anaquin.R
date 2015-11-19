@@ -97,11 +97,11 @@ loadMixture <- function(mix=NULL, exons=NULL)
     # Genes that are defined in the mixture
     geneIDs <- unique(mix$GeneID)
     
-    g <- data.frame(ID=geneIDs,
+    g <- data.frame(row.names=geneIDs,
                     A=rep(0, length(geneIDs)),
                     B=rep(0, length(geneIDs)),
-                    Fold=rep(0, length(geneIDs)),
-                    LogFold=rep(0, length(geneIDs)),
+                    fold=rep(0, length(geneIDs)),
+                    logFold=rep(0, length(geneIDs)),
                     type=rep(0, length(geneIDs)))
     
     #
@@ -111,7 +111,7 @@ loadMixture <- function(mix=NULL, exons=NULL)
     for (id in geneIDs)
     {
         seqs <- mix[mix$GeneID == id,]
-        
+
         #
         # Calculate the expected abundance. We assume the following format:
         #
@@ -123,15 +123,15 @@ loadMixture <- function(mix=NULL, exons=NULL)
         # We shouldn't assume anything for the column names.
         #
 
-        g[g$ID == id,]$A <- sum(seqs[,3])
-        g[g$ID == id,]$B <- sum(seqs[,4])
+        g[id,]$A <- sum(seqs[,2])
+        g[id,]$B <- sum(seqs[,3])
         
         #
         # Calculate the expected fold change (B/A)
         #
         
-        g[g$ID == id,]$Fold    <- g[g$ID == id,]$B / g[g$ID == id,]$A
-        g[g$ID == id,]$LogFold <- log2(g[g$ID == id,]$Fold)
+        g[id,]$fold    <- g[id,]$B / g[id,]$A
+        g[id,]$logFold <- log2(g[id,]$fold)
         
         #
         # For each gene, we will classify it as:
@@ -153,19 +153,13 @@ loadMixture <- function(mix=NULL, exons=NULL)
             else                            { type <- paste(type, 'E', sep='') }
         }
         
-        g[g$ID == id,]$type <- type
+        g[id,]$type <- type
     }
-    
-    # Prefer not to have it as factor variable
-    g$ID <- as.character(g$ID)
-    
-    # Sort by ID so that it'll more easier interpreted
-    g <- g[with(g, order(ID)),]
     
     i <- data.frame(mix)
     i <- i[with(i, order(row.names(i))),]
 
-    r <- list('isoforms'=i, 'genes'=g, 'exons'=exons)
+    r <- list('isoforms'=i, 'genes'=g[with(g, order(row.names(g))),], 'exons'=exons)
     class(r) <- c("Mixture")
     r
 }

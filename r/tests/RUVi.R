@@ -53,7 +53,7 @@ testIsoforms <- function()
     plotRLE(r$normalizedCounts)
 
     # What does the PCA plot look like after normalization?
-    plotPCA(r$normalizedCounts)    
+    plotPCA(r$normalizedCounts)
 }
 
 testGenes <- function()
@@ -65,7 +65,7 @@ testGenes <- function()
     
     # What does the RLE plot look like before normalization? In a real experiment, we would probably need a filter.
     plotRLE(d)
-    
+
     # What does the PCA plot look like before normalization?
     plotPCA(d)
     
@@ -76,5 +76,5 @@ testGenes <- function()
     plotRLE(r$normalizedCounts)
     
     # What does the PCA plot look like after normalization?
-    plotPCA(r$normalizedCounts)    
+    plotPCA(r$normalizedCounts)
 }

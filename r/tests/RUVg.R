@@ -13,8 +13,8 @@ library(RUVSeq)
 
 .data <- function()
 {
-    d  <- read.csv('/Users/tedwong/Sources/QA/r/tests/data/data.csv', row.names=1)
-    colnames(d) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')    
+    d  <- read.csv('/Users/tedwong/Dropbox/Sequins/Manuscripts/RNA/RUV/Real/genes.csv', row.names=1)
+    colnames(d) <- c('A1', 'A2', 'A3', 'B1', 'B2', 'B3')
     d
 }
 
@@ -22,6 +22,49 @@ library(RUVSeq)
 {
     d <- .filter(.data(), loadMixture())
     d
+}
+
+#
+# Demonstrate how RUVg can be used to normalize samples with sequins, with the real data
+#
+caseStudy <- function()
+{
+    # Load the data, including real gene and sequins
+    d <- .data()
+
+    # Filter by 5 reads
+    d <- d[apply(d, 1, function(x) length(x[x>5])>=2),]
+
+    # Negative control genes
+    spikes <- c('R1_21', 'R1_23', 'R1_71', 'R1_81', 'R2_117', 'R2_140', 'R2_152', 'R2_18','R2_20','R2_45','R2_54','R2_65','R2_7','R2_71')
+    #spikes <- c('R1_21')
+    
+    #
+    # Let's try to reuse the original package. To make things simpler, we'll prefer SeqExpressionSet.
+    #
+
+    x2 <- as.factor(rep(c('A', 'B'), each=3))
+    s2 <- newSeqExpressionSet(as.matrix(d), phenoData=data.frame(x2, data.frame(x2, row.names=colnames(d))))
+
+    library(RColorBrewer)
+    colors <- brewer.pal(3, 'Set2')
+    EDASeq::plotRLE(s2, outline=FALSE, ylim=c(-4, 4), col=colors[x])
+    EDASeq::plotPCA(s2, col=colors[x], cex=1.2)
+
+    r2 <- RUVSeq::RUVg(s2, rownames(d[rownames(d) %in% spikes,]), k=1)
+    EDASeq::plotRLE(r2, outline=FALSE, ylim=c(-4, 4), col=colors[x])
+    EDASeq::plotPCA(r2, col=colors[x], cex=1.2)
+
+    #
+    # Let's repeat the analysis with our RUV implementation
+    #
+        
+    r1 <- TransNorm(d, level='genes', method='neg', spikes=spikes)
+    x1  <- as.factor(rep(c('A', 'B'), each=3))
+    s1 <- newSeqExpressionSet(as.matrix(r1$normalizedCounts), phenoData=data.frame(x1, data.frame(x1, row.names=colnames(d))))
+
+    EDASeq::plotRLE(s1, outline=FALSE, ylim=c(-4, 4), col=colors[x])
+    EDASeq::plotPCA(s1, col=colors[x], cex=1.2)
 }
 
 #
@@ -38,7 +81,7 @@ test_1 <- function()
     # What does the PCA plot look like before normalization?
     plotPCA(d)
     
-    # Let's normalize the counts by exon bins
+    # Let's normalize the counts by genes
     r <- TransNorm(d, level='genes')
     
     # What does the RLE plot look like after normalization?
