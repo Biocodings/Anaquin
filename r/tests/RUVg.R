@@ -37,8 +37,7 @@ caseStudy <- function()
 
     # Negative control genes
     spikes <- c('R1_21', 'R1_23', 'R1_71', 'R1_81', 'R2_117', 'R2_140', 'R2_152', 'R2_18','R2_20','R2_45','R2_54','R2_65','R2_7','R2_71')
-    #spikes <- c('R1_21')
-    
+
     #
     # Let's try to reuse the original package. To make things simpler, we'll prefer SeqExpressionSet.
     #
@@ -48,17 +47,17 @@ caseStudy <- function()
 
     library(RColorBrewer)
     colors <- brewer.pal(3, 'Set2')
-    EDASeq::plotRLE(s2, outline=FALSE, ylim=c(-4, 4), col=colors[x])
-    EDASeq::plotPCA(s2, col=colors[x], cex=1.2)
+    EDASeq::plotRLE(s2, outline=FALSE, ylim=c(-4, 4), col=colors[x2])
+    EDASeq::plotPCA(s2, col=colors[x2], cex=1.2)
 
     r2 <- RUVSeq::RUVg(s2, rownames(d[rownames(d) %in% spikes,]), k=1)
-    EDASeq::plotRLE(r2, outline=FALSE, ylim=c(-4, 4), col=colors[x])
-    EDASeq::plotPCA(r2, col=colors[x], cex=1.2)
+    EDASeq::plotRLE(r2, outline=FALSE, ylim=c(-4, 4), col=colors[x2])
+    EDASeq::plotPCA(r2, col=colors[x2], cex=1.2)
 
     #
     # Let's repeat the analysis with our RUV implementation
     #
-        
+
     r1 <- TransNorm(d, level='genes', method='neg', spikes=spikes)
     x1  <- as.factor(rep(c('A', 'B'), each=3))
     s1 <- newSeqExpressionSet(as.matrix(r1$normalizedCounts), phenoData=data.frame(x1, data.frame(x1, row.names=colnames(d))))
