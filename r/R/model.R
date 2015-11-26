@@ -1,7 +1,7 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
 #
