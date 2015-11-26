@@ -1,6 +1,7 @@
+#include <boost/format.hpp>
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
-#include <iostream>
+
 using namespace Anaquin;
 
 template <typename Key, typename Value> std::set<Key> getKeys(const std::map<Key, Value> &m)
@@ -555,12 +556,47 @@ const TransRef::GeneData * TransRef::findGene(const Locus &l, MatchRule m) const
 
 const TransRef::ExonData * TransRef::findExon(const Locus &l, MatchRule m) const
 {
+    
+
+    
+    
+    
     return findList(_impl->sortedExons, l, m);
 }
 
 const TransRef::IntronData * TransRef::findIntron(const Locus &l, MatchRule m) const
 {
     return findList(_impl->sortedIntrons, l, m);
+}
+
+Intervals<TransRef::ExonInterval> TransRef::exonInters() const
+{
+    Intervals<ExonInterval> inters;
+    
+    for (const auto &i : _impl->sortedExons)
+    {
+        inters.add(ExonInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%_") % i.gID
+                                                                                 % i.iID
+                                                                                 % i.l.start
+                                                                                 % i.l.end).str(), i.l));
+    }
+    
+    return inters;
+}
+
+Intervals<TransRef::IntronInterval> TransRef::intronInters() const
+{
+    Intervals<IntronInterval> inters;
+    
+    for (const auto &i : _impl->sortedExons)
+    {
+        inters.add(IntronInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%_") % i.gID
+                                                                                   % i.iID
+                                                                                   % i.l.start
+                                                                                   % i.l.end).str(), i.l));
+    }
+
+    return inters;
 }
 
 TransRef::GeneHist TransRef::histGene() const
@@ -751,7 +787,7 @@ struct VarRef::VarRefImpl
     std::map<Mixture, std::map<GenoID, VariantPair>> pairs;
 
     // Reference intervals (eg: chr21)
-    std::map<ChromoID, Intervals> inters;
+    std::map<ChromoID, Intervals<>> inters;
 
     /*
      * Raw variables
@@ -761,7 +797,7 @@ struct VarRef::VarRefImpl
     std::set<SequinID>  rawVarIDs;
 
     // Reference intervals (eg: chr21)
-    std::map<ChromoID, Intervals> rawInters;
+    std::map<ChromoID, Intervals<>> rawInters;
     
     // Locus of the sequin
     std::map<SequinID, Locus> rawSeqsByID;

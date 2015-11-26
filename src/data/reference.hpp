@@ -63,9 +63,9 @@ namespace Anaquin
     {
         public:
 
-            inline Intervals intervals() const
+            inline Intervals<> intervals() const
             {
-                Intervals inters;
+                Intervals<> inters;
 
                 for (const auto &i : _data)
                 {
@@ -573,6 +573,23 @@ namespace Anaquin
     {
         public:
 
+            struct ExonInterval : public Interval
+            {
+                ExonInterval(const GeneID gID,
+                             const IsoformID iID,
+                             const IntervalID &id,
+                             const Locus &l) : Interval(id, l), gID(gID), iID(iID) {}
+
+                void operator=(const ExonInterval &i)
+                {
+                }
+
+                const GeneID gID;
+                const IsoformID iID;
+            };
+        
+            typedef ExonInterval IntronInterval;
+        
             struct GeneData
             {
                 GeneID id;
@@ -607,16 +624,18 @@ namespace Anaquin
                 // Each sequin comprises an isoform
                 std::vector<SequinData *> seqs;
             };
-        
+
             struct ExonData
             {
                 operator const Locus &() const { return l; }
 
-                inline bool operator<(const ExonData &x)  const { return l < x.l;  }
+                inline bool operator<(const  ExonData &x) const { return l < x.l;  }
                 inline bool operator==(const ExonData &x) const { return l == x.l; }
-            
-                inline bool operator!=(const Locus &l) const { return !operator==(l); }
-                inline bool operator==(const Locus &l) const { return this->l.start == l.start && this->l.end == l.end; }
+                inline bool operator!=(const Locus &l)    const { return !operator==(l); }
+                inline bool operator==(const Locus &l)    const
+                {
+                    return this->l.start == l.start && this->l.end == l.end;
+                }
             
                 inline void operator+=(const ExonData &x)
                 {
@@ -648,6 +667,12 @@ namespace Anaquin
             // Return a histogram for all the validated genes
             GeneHist histGene() const;
 
+            // Intervals for reference exons
+            Intervals<ExonInterval> exonInters() const;
+        
+            // Intervals for reference introns
+            Intervals<IntronInterval> intronInters() const;
+        
             // Add a new annoation reference
             void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l);
 

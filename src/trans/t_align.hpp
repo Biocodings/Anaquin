@@ -8,7 +8,7 @@ namespace Anaquin
     class TAlign : public Analyzer
     {
         public:
-            typedef FuzzyOptions Options;
+            typedef AnalyzerOptions Options;
 
             struct Stats : public AlignmentStats
             {
@@ -16,10 +16,12 @@ namespace Anaquin
 
                 // Metrics at various levels
                 Performance pb, pe, pi;
+
+                // Intervals for exons in TransQuin reference
+                Intervals<TransRef::ExonInterval> exonInters;
                 
-                TransRef::GeneHist hb = Standard::instance().r_trans.histGene();
-                TransRef::GeneHist he = Standard::instance().r_trans.histGene();
-                TransRef::GeneHist hi = Standard::instance().r_trans.histGene();
+                // Intervals for introns in TransQuin reference
+                Intervals<TransRef::IntronInterval> intronInters;
             };
 
             static Stats report(const std::string &, const Options &options = Options());

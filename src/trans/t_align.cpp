@@ -8,6 +8,11 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
     TAlign::Stats stats;
     const auto &r = Standard::instance().r_trans;
 
+    stats.pb.h = stats.pe.h = stats.pi.h = r.histGene();
+
+    stats.exonInters   = r.exonInters();
+    stats.intronInters = r.intronInters();
+    
     std::vector<Alignment> exons, introns;
 
     o.analyze(file);
@@ -22,7 +27,7 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
         {
             return;
         }
-        
+
         /*
          * Collect statistics at the exon level
          */
@@ -31,14 +36,14 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
         {
             exons.push_back(align);
 
-            const TransRef::ExonData *d;
+            const TransRef::ExonInterval * match;
 
             if (classify(stats.pe.m, align, [&](const Alignment &)
             {
-                return (d = r.findExon(align.l, Contains));
+                return (match = stats.exonInters.contains(align.l)); // exact?
             }))
             {
-                stats.he.at(d->gID)++;
+                stats.pe.h.at(match->gID)++;
             }
         }
 
@@ -50,14 +55,14 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
         {
             introns.push_back(align);
 
-            const TransRef::IntronData *d;
+            const TransRef::IntronInterval * match;
 
             if (classify(stats.pi.m, align, [&](const Alignment &)
             {
-                return (d = r.findIntron(align.l, Exact));
+                return (match = stats.intronInters.contains(align.l));
             }))
             {
-                stats.hi.at(d->gID)++;
+                stats.pi.h.at(match->gID)++;
             }
         }
     });
@@ -69,16 +74,16 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
      * as a reference. Anything that is undetected will be counted as a single reference.
      */
 
-    sums(stats.he, stats.pe.m.nr);
-    sums(stats.hi, stats.pi.m.nr);
-    
+    sums(stats.pe.h, stats.pe.m.nr);
+    sums(stats.pi.h, stats.pi.m.nr);
+
     o.info("Merging overlapping bases");
 
     /*
      * Counts at the base-level is the non-overlapping region of all the exons
      */
 
-    countBase(r.mergedExons(), exons, stats.pb.m, stats.hb);
+    countBase(r.mergedExons(), exons, stats.pb.m, stats.pb.h);
 
     /*
      * The counts for references is the total length of all known non-overlapping exons.
@@ -98,12 +103,9 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     o.info("Calculating detection limit");
 
-    stats.pe.s = r.limitGene(stats.he);
-    stats.pi.s = r.limitGene(stats.hi);
-    stats.pb.s = r.limitGene(stats.hb);
-
-    assert(stats.he.size() == stats.hi.size());
-    assert(stats.hi.size() == stats.hb.size());
+    stats.pe.s = r.limitGene(stats.pe.h);
+    stats.pi.s = r.limitGene(stats.pi.h);
+    stats.pb.s = r.limitGene(stats.pb.h);
 
     stats.pe.m.sn();
     stats.pb.m.sn();
@@ -195,14 +197,14 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
     const auto format = "%1%\t%2%\t%3%\t%4%";
     o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Base").str());
 
-    for (const auto &i : stats.he)
+    for (const auto &i : stats.pe.h)
     {
         o.writer->write((boost::format(format) % i.first
-                                               % stats.he.at(i.first)
-                                               % stats.hi.at(i.first)
-                                               % stats.hb.at(i.first)).str());
+                                               % stats.pe.h.at(i.first)
+                                               % stats.pi.h.at(i.first)
+                                               % stats.pb.h.at(i.first)).str());
     }
-    
+
     o.writer->close();
 
     /*
@@ -213,13 +215,13 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
         o.info("Generating detailed logs for the histogram");
 
         o.logInfo("\n\n--------------------- Exon Histogram ---------------------");
-        for (const auto &i : stats.he) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
+        for (const auto &i : stats.pe.h) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
 
         o.logInfo("\n\n--------------------- Intron Histogram ---------------------");
-        for (const auto &i : stats.hi) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
+        for (const auto &i : stats.pi.h) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
 
         o.logInfo("\n\n--------------------- Base Histogram ---------------------");
-        for (const auto &i : stats.hb) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
+        for (const auto &i : stats.pb.h) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
     }
 
 	return stats;

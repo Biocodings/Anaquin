@@ -13,7 +13,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
 
     o.info("Parsing alignment file");
 
-    Intervals ii;
+    Intervals<> ii;
     
     for (auto &i : r.data())
     {

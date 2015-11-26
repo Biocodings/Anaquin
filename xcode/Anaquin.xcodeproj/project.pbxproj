@@ -45,7 +45,6 @@
 		EF4270A21B213BF200C9ED4E /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270A11B213BF200C9ED4E /* test.cpp */; };
 		EF4270B61B21C21B00C9ED4E /* m_blat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270B41B21C21B00C9ED4E /* m_blat.cpp */; };
 		EF4270BA1B21CA8900C9ED4E /* t_blat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4270B91B21CA8900C9ED4E /* t_blat.cpp */; };
-		EF43E79B1BDE100800B47312 /* intervals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF43E79A1BDE100800B47312 /* intervals.cpp */; };
 		EF44A81F1AF78FA20036C894 /* parser_tmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */; };
 		EF4BD9AB1ADDFB92007BE6AB /* parser_cdiffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4BD9A91ADDFB92007BE6AB /* parser_cdiffs.cpp */; };
 		EF4BD9B61ADE4054007BE6AB /* t_parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF4BD9B11ADE4054007BE6AB /* t_parser_sam.cpp */; };
@@ -206,7 +205,6 @@
 		EF4270B41B21C21B00C9ED4E /* m_blat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_blat.cpp; sourceTree = "<group>"; };
 		EF4270B51B21C21B00C9ED4E /* m_blat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_blat.hpp; sourceTree = "<group>"; };
 		EF4270B91B21CA8900C9ED4E /* t_blat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_blat.cpp; path = ../tests/meta/t_blat.cpp; sourceTree = "<group>"; };
-		EF43E79A1BDE100800B47312 /* intervals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = intervals.cpp; path = ../src/data/intervals.cpp; sourceTree = "<group>"; };
 		EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_tmap.cpp; path = ../src/parsers/parser_tmap.cpp; sourceTree = "<group>"; };
 		EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_tmap.hpp; path = ../src/parsers/parser_tmap.hpp; sourceTree = "<group>"; };
 		EF4BD9A91ADDFB92007BE6AB /* parser_cdiffs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_cdiffs.cpp; path = ../src/parsers/parser_cdiffs.cpp; sourceTree = "<group>"; };
@@ -480,7 +478,6 @@
 				EF02A5231B7E0F8D00295799 /* compare.hpp */,
 				EF1DE0A91B21EC6D00DEC381 /* feature.hpp */,
 				EF2002531BCEFD6900F8CE08 /* intervals.hpp */,
-				EF43E79A1BDE100800B47312 /* intervals.cpp */,
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,
 				EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */,
 				EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */,
@@ -866,7 +863,6 @@
 				EFDD6AD91B0DD76C00450029 /* zfio.c in Sources */,
 				EFDD6AD31B0DD76C00450029 /* pooled_alloc.c in Sources */,
 				EFB7FF3F1B4F84B40045DC6A /* t_abund.cpp in Sources */,
-				EF43E79B1BDE100800B47312 /* intervals.cpp in Sources */,
 				EF2106AC1BB193670045325B /* m_align.cpp in Sources */,
 				EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */,
 				EFA9DE7A1BCB8C6A00780182 /* v_coverage.cpp in Sources */,

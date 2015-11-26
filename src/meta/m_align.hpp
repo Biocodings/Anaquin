@@ -21,7 +21,7 @@ namespace Anaquin
             std::map<GenomeID, Confusion> base;
 
             // Reference community
-            Intervals inters;
+            Intervals<> inters;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

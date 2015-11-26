@@ -29,7 +29,9 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     const auto &r = Standard::instance().r_meta;
 
+    // Intervals for the reference community
     stats.inters = r.intervals();
+
     o.analyze(file);
 
     stats.bp.h = stats.sp.h = Standard::instance().r_meta.hist();

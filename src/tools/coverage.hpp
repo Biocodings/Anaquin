@@ -12,7 +12,7 @@ namespace Anaquin
     {
         struct Stats : public AlignmentStats, public SingleInputStats
         {
-            Intervals inters;
+            Intervals<> inters;
         };
 
         // Whether to proceed with the alignment

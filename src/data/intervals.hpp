@@ -4,7 +4,6 @@
 #include <map>
 #include <numeric>
 #include "data/locus.hpp"
-#include "data/types.hpp"
 
 namespace Anaquin
 {
@@ -189,28 +188,31 @@ namespace Anaquin
             std::vector<Depth> _covs;
     };
 
-    class Intervals
+    template <typename T = Interval> class Intervals
     {
         public:
 
-            typedef std::map<Interval::IntervalID, Interval> IntervalMap;
+            typedef std::map<Interval::IntervalID, T> IntervalMap;
 
-            inline void add(const Interval &i)
+            inline void add(const T &i)
             {
-                _inters.insert(std::map<Interval::IntervalID, Interval>::value_type(i.id(), i));
+               // _inters[i.id()] = i;
+                
+                _inters.insert(typename std::map<Interval::IntervalID, T>::value_type(i.id(), i));
+//                _inters.insert(std::map<Interval::IntervalID, Interval>::value_type(i.id(), i));
             }
 
-            inline Interval * find(const Interval::IntervalID &id)
-            {
-                return _inters.count(id) ? &(_inters.at(id)) : nullptr;
-            }
-
-            inline const Interval * find(const Interval::IntervalID &id) const
+            inline T * find(const typename T::IntervalID &id)
             {
                 return _inters.count(id) ? &(_inters.at(id)) : nullptr;
             }
 
-            inline Interval * contains(const Locus &l)
+            inline const T * find(const typename T::IntervalID &id) const
+            {
+                return _inters.count(id) ? &(_inters.at(id)) : nullptr;
+            }
+
+            inline T * contains(const Locus &l)
             {
                 for (auto &i : _inters)
                 {
@@ -223,7 +225,7 @@ namespace Anaquin
                 return nullptr;
             }
 
-            inline Interval *overlap(const Locus &l)
+            inline T *overlap(const Locus &l)
             {
                 for (auto &i : _inters)
                 {
@@ -236,7 +238,31 @@ namespace Anaquin
                 return nullptr;
             }
         
-            Interval::Stats stats() const;
+            typename T::Stats stats() const
+            {
+                Interval::Stats stats;
+                
+                for (const auto &i : _inters)
+                {
+                    const auto s = i.second.stats();
+                    
+                    stats.sums     += s.sums;
+                    stats.length   += s.length;
+                    stats.nonZeros += s.nonZeros;
+                    stats.zeros    += s.zeros;
+                    stats.min       = std::min(stats.min, s.min);
+                    stats.max       = std::max(stats.max, s.max);
+                    
+                    for (const auto &j : s.hist)
+                    {
+                        stats.hist[j.first] += j.second;
+                    }
+                }
+                
+                stats.mean = stats.sums / stats.length;
+                
+                return stats;
+            }
         
             inline const IntervalMap &map() const { return _inters; }
 
