@@ -102,33 +102,34 @@ namespace Anaquin
                 else                { n_chrT++;   }
             }
         }
-        
+
         template <typename T> void update(const T &t)
         {
-            if (!t.i)
+            return update(t, [&](const T &t)
             {
-                if      (!t.mapped)              { unmapped++; }
-                else if (t.id != Standard::chrT) { n_expT++;   }
-                else                             { n_chrT++;   }
-            }
+                return t.id != Standard::chrT;
+            });
         }
     };
 
-//    /*
-//     * Represents a sequin that is not detected in the experiment
-//     */
-//    
-//    struct MissingSequin
-//    {
-//        MissingSequin(const SequinID &id, Concentration abund) : id(id), abund(abund) {}
-//
-//        SequinID id;
-//
-//        // The expect abundance
-//        Concentration abund;
-//    };
-//
-//    typedef std::vector<MissingSequin> MissingSequins;
+    struct MissingSequin
+    {
+        MissingSequin(const SequinID &id, Concentration abund) : id(id), abund(abund) {}
+
+        const SequinID id;
+        const Concentration abund;
+    };
+    
+    struct UnknownAlignment
+    {
+        UnknownAlignment(const std::string &id, const Locus &l) : l(l) {}
+
+        // Eg: HISEQ:132:C7F8BANXX:7:1116:11878:9591
+        std::string id;
+        
+        // The position of the alignment
+        Locus l;
+    };
 
     /*
      * Represents a simple linear regression fitted by maximum-likehihood estimation.

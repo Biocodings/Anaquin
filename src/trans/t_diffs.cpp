@@ -13,7 +13,7 @@ TDiffs::Stats TDiffs::report(const FileName &file, const Options &o)
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
     
     // Construct for a histogram at the appropriate level
-    stats.h = isoform ? r.hist() : r.histGene();
+    stats.h = isoform ? r.hist() : r.geneHist();
     
     o.info("Parsing tracking file");
 

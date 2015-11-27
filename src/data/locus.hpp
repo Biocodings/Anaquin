@@ -1,7 +1,6 @@
 #ifndef LOCUS_HPP
 #define LOCUS_HPP
 
-#include <set>
 #include <vector>
 #include <assert.h>
 #include <algorithm>
@@ -17,7 +16,13 @@ namespace Anaquin
             start = std::min(l1.start, l2.start);
         }
 
-        Locus(Base start = 0, Base end = 0) : start(start), end(end) {}
+        Locus(Base start = 0, Base end = 0) : start(start), end(end)
+        {
+            if (end < start)
+            {
+                throw std::runtime_error("Locus: end < start");
+            }
+        }
 
         template <typename Iter, typename F> static Locus expand(const Iter &iter, F f)
         {

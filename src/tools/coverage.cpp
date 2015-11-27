@@ -37,7 +37,7 @@ void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o
 {
     o.writer->open(o.file);
 
-    for (const auto &i : stats.inters.map())
+    for (const auto &i : stats.inters.data())
     {
         const auto chr = i.second;
 

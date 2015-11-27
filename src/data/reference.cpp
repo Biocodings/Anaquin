@@ -588,7 +588,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters() const
 {
     Intervals<IntronInterval> inters;
     
-    for (const auto &i : _impl->sortedExons)
+    for (const auto &i : _impl->sortedIntrons)
     {
         inters.add(IntronInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%_") % i.gID
                                                                                    % i.iID
@@ -599,7 +599,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters() const
     return inters;
 }
 
-TransRef::GeneHist TransRef::histGene() const
+TransRef::GeneHist TransRef::geneHist() const
 {
     GeneHist h;
     
@@ -721,12 +721,13 @@ void TransRef::validate()
             }
         }
     }
-    
+
+    assert(!_impl->sortedExons.empty());
+
     /*
      * Generate a list of sorted exons
      */
     
-    assert(!_impl->sortedExons.empty());
     std::sort(_impl->sortedExons.begin(), _impl->sortedExons.end(), [](const ExonData &x, const ExonData &y)
     {
         return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
@@ -736,26 +737,40 @@ void TransRef::validate()
      * Generate a list of sorted introns, only possible once the exons are sorted.
      */
     
-    for (auto i = 0; i < _impl->sortedExons.size(); i++)
+    std::map<SequinID, std::vector<const ExonData *>> sorted;
+
+    for (const auto &i : _impl->sortedExons)
     {
-        if (i && _impl->sortedExons[i].gID == _impl->sortedExons[i-1].gID)
+        sorted[i.iID].push_back(&i);
+    }
+
+    for (const auto &i : sorted)
+    {
+        for (auto j = 1; j < i.second.size(); j++)
         {
+            const auto &x = i.second[j-1];
+            const auto &y = i.second[j];
+
             IntronData d;
-            
-            d.gID = _impl->sortedExons[i].gID;
-            d.iID = _impl->sortedExons[i].iID;
-            d.l   = Locus(_impl->sortedExons[i-1].l.end + 1, _impl->sortedExons[i].l.start - 1);
-            
+
+            d.gID = x->gID;
+            d.iID = x->iID;
+            d.l   = Locus(x->l.end + 1, y->l.start - 1);
+
             _impl->sortedIntrons.push_back(d);
         }
     }
     
+    /*
+     * Generate a list of sorted introns
+     */
+
+    std::sort(_impl->sortedIntrons.begin(), _impl->sortedIntrons.end(), [](const IntronData &x, const IntronData &y)
+    {
+        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
+    });
+    
     assert(!_impl->sortedIntrons.empty());
-    std::sort(_impl->sortedIntrons.begin(), _impl->sortedIntrons.end(),
-                [](const IntronData &x, const IntronData &y)
-                {
-                    return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-                });
 
     // Count number of non-overlapping bases for all exons
     _impl->exonBase = countLocus(_impl->mergedExons = Locus::merge<ExonData, ExonData>(_impl->sortedExons));

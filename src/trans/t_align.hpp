@@ -12,16 +12,22 @@ namespace Anaquin
 
             struct Stats : public AlignmentStats
             {
-                Counts unmapped = 0;
-
-                // Metrics at various levels
+                // Overall performance at various levels
                 Performance pb, pe, pi;
 
-                // Intervals for exons in TransQuin reference
-                Intervals<TransRef::ExonInterval> exonInters;
-                
-                // Intervals for introns in TransQuin reference
-                Intervals<TransRef::IntronInterval> intronInters;
+                // Individual performance for each sequin
+                std::map<GeneID, Confusion> sb, se, si;
+
+                // Intervals for exons in TransQuin
+                Intervals<TransRef::ExonInterval> eInters;
+
+                // Intervals for introns in TransQuin
+                Intervals<TransRef::IntronInterval> iInters;
+
+                std::map<SequinID, MissingSequin> missings;
+
+                // Alignments that have no mapping
+                std::vector<UnknownAlignment> unknowns;
             };
 
             static Stats report(const std::string &, const Options &options = Options());

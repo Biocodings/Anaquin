@@ -3,20 +3,108 @@
 
 using namespace Anaquin;
 
+static TAlign::Stats init()
+{
+    const auto &r = Standard::instance().r_trans;
+    
+    TAlign::Stats stats;
+
+    // Initalize the distributions
+    stats.pb.h = stats.pe.h = stats.pi.h = r.geneHist();
+
+    for (const auto &i : stats.pe.h)
+    {
+        stats.sb[i.first];
+        stats.se[i.first];
+        stats.si[i.first];
+    }
+    
+    stats.eInters = r.exonInters();
+    stats.iInters = r.intronInters();
+
+    return stats;
+}
+
+typedef std::map<GenomeID, Base> FPStats;
+
+static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, FPStats &fps)
+{
+    TransRef::ExonInterval * match = nullptr;
+
+    // Can we find an exon that contains the alignment?
+    if (classify(stats.pe.m, align, [&](const Alignment &)
+    {
+        return (match = stats.eInters.contains(align.l));
+    }))
+    {
+        // Update the statistics for the sequin
+        classifyTP(stats.se.at(match->gID), align);
+
+        stats.pe.h.at(match->gID)++;
+    }
+
+    // Can we find an exon that overlaps the alignment?
+    else if ((match = stats.eInters.overlap(align.l)))
+    {
+        // Update the statistics for the sequin
+        classifyFP(stats.se.at(match->gID), align);
+
+        // Anything that fails to being mapped is counted as FP
+        fps.at(match->gID) += match->map(align.l);
+    }
+    
+    return match;
+}
+
+static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats, FPStats &fps)
+{
+    TransRef::IntronInterval * match = nullptr;
+    
+    if (classify(stats.pi.m, align, [&](const Alignment &)
+    {
+        return (match = stats.iInters.contains(align.l));
+    }))
+    {
+        // Update the statistics for the sequin
+        classifyTP(stats.si.at(match->gID), align);
+
+        stats.pi.h.at(match->gID)++;
+    }
+    else if ((match = stats.iInters.overlap(align.l)))
+    {
+        // Update the statistics for the sequin
+        classifyFP(stats.si.at(match->gID), align);
+
+        // Anything that fails to being mapped is counted as FP
+        fps.at(match->gID) += match->map(align.l);
+    }
+    
+    return match;
+}
+
 TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 {
-    TAlign::Stats stats;
     const auto &r = Standard::instance().r_trans;
 
-    stats.pb.h = stats.pe.h = stats.pi.h = r.histGene();
-
-    stats.exonInters   = r.exonInters();
-    stats.intronInters = r.intronInters();
-    
-    std::vector<Alignment> exons, introns;
+    TAlign::Stats stats = init();
 
     o.analyze(file);
 
+    /*
+     * Loop through each of the alignments and calculate various metrics at the exon, intron and
+     * base level.
+     *
+     * Exon level is defined as the performance per exon. An alignment that is not mapped entirely
+     * within an exon is considered as a FP. The intron level is similar.
+     *
+     * Base level is defined as the performance per nucleotide. A partial mapped read will have
+     * FP and TP.
+     *
+     * If we can find an exact match, this is obviously a TP. Otherwise, if we
+     */
+
+    FPStats fps = stats.pb.h;
+    
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
         REPORT_STATUS();
@@ -28,73 +116,68 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
             return;
         }
 
-        /*
-         * Collect statistics at the exon level
-         */
-
+        const Interval *match = nullptr;
+        
         if (!align.spliced)
         {
-            exons.push_back(align);
-
-            const TransRef::ExonInterval * match;
-
-            if (classify(stats.pe.m, align, [&](const Alignment &)
-            {
-                return (match = stats.exonInters.contains(align.l)); // exact?
-            }))
-            {
-                stats.pe.h.at(match->gID)++;
-            }
+            // Calculating statistics at the exon level
+            match = matchExon(align, stats, fps);
         }
-
-        /*
-         * Collect statistics at the intron level
-         */
-
         else
         {
-            introns.push_back(align);
-
-            const TransRef::IntronInterval * match;
-
-            if (classify(stats.pi.m, align, [&](const Alignment &)
-            {
-                return (match = stats.intronInters.contains(align.l));
-            }))
-            {
-                stats.pi.h.at(match->gID)++;
-            }
+            // Calculating statistis at the intron level
+            match = matchIntron(align, stats, fps);
+        }
+        
+        if (!match)
+        {
+            stats.unknowns.push_back(UnknownAlignment(align.id, align.l));
         }
     });
 
     o.info("Counting references");
+    
+    stats.pe.inferRefFromHist();
+    stats.pi.inferRefFromHist();
 
     /*
-     * Calculate for references. The idea is similar to cuffcompare, each true-positive is counted
-     * as a reference. Anything that is undetected will be counted as a single reference.
+     * Calculating metrics for all sequins.
      */
 
-    sums(stats.pe.h, stats.pe.m.nr);
-    sums(stats.pi.h, stats.pi.m.nr);
+    for (const auto &i : stats.eInters.data())
+    {
+        auto &m  = stats.sb.at(i.second.gID);
+        auto &in = i.second;
+
+        // Update the overall performance
+        stats.pb.m.fp() += fps.at(i.second.gID);
+
+        in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+        {
+            if (depth)
+            {
+                // Update the sequin performance
+                m.tp() += j - i;
+                
+                // Update the overall performance
+                stats.pb.m.tp() += j - i;
+
+                // Update the distribution
+                stats.pb.h.at(id)++;
+            }
+        });
+        
+        m.nr = in.l().length();
+        m.nq = m.tp() + fps.at(i.second.gID);
+        
+        assert(m.nr >= m.tp());
+        
+        stats.pb.m.nr += in.l().length();
+        stats.pb.m.nq  = stats.pb.m.tp() + stats.pb.m.fp();
+    }
 
     o.info("Merging overlapping bases");
 
-    /*
-     * Counts at the base-level is the non-overlapping region of all the exons
-     */
-
-    countBase(r.mergedExons(), exons, stats.pb.m, stats.pb.h);
-
-    /*
-     * The counts for references is the total length of all known non-overlapping exons.
-     * For example, if we have the following exons:
-     *
-     *    {1,10}, {50,55}, {70,74}
-     *
-     * The length of all the bases is 10+5+4 = 19.
-     */
-
-    stats.pb.m.nr = r.exonBase();
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
 
     /*
@@ -103,9 +186,9 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
 
     o.info("Calculating detection limit");
 
-    stats.pe.s = r.limitGene(stats.pe.h);
-    stats.pi.s = r.limitGene(stats.pi.h);
-    stats.pb.s = r.limitGene(stats.pb.h);
+    stats.pe.hl = r.limitGene(stats.pe.h);
+    stats.pi.hl = r.limitGene(stats.pi.h);
+    stats.pb.hl = r.limitGene(stats.pb.h);
 
     stats.pe.m.sn();
     stats.pb.m.sn();
@@ -173,16 +256,16 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
                                             % stats.pb.m.nq
                                             % stats.pe.m.sn()
                                             % stats.pe.m.sp()
-                                            % stats.pe.s.abund
-                                            % stats.pe.s.id
+                                            % stats.pe.hl.abund
+                                            % stats.pe.hl.id
                                             % stats.pi.m.sn()
                                             % stats.pi.m.sp()
-                                            % stats.pi.s.abund
-                                            % stats.pi.s.id
+                                            % stats.pi.hl.abund
+                                            % stats.pi.hl.id
                                             % stats.pb.m.sn()
                                             % stats.pb.m.sp()
-                                            % stats.pb.s.abund
-                                            % stats.pb.s.id
+                                            % stats.pb.hl.abund
+                                            % stats.pb.hl.id
                                             % stats.dilution()
                                         ).str());
     o.writer->close();

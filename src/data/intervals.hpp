@@ -54,7 +54,7 @@ namespace Anaquin
                 else                        { _covs.back().ends++;     }
             };
 
-            inline Base add_(const Locus &l)
+            inline Base map(const Locus &l)
             {
                 auto start = std::max(_l.start, l.start) - _l.start;
                 auto end   = std::min(_l.end,   l.end)   - _l.start;
@@ -192,14 +192,11 @@ namespace Anaquin
     {
         public:
 
-            typedef std::map<Interval::IntervalID, T> IntervalMap;
+            typedef std::map<typename T::IntervalID, T> IntervalData;
 
             inline void add(const T &i)
             {
-               // _inters[i.id()] = i;
-                
-                _inters.insert(typename std::map<Interval::IntervalID, T>::value_type(i.id(), i));
-//                _inters.insert(std::map<Interval::IntervalID, Interval>::value_type(i.id(), i));
+                _inters.insert(typename std::map<typename T::IntervalID, T>::value_type(i.id(), i));
             }
 
             inline T * find(const typename T::IntervalID &id)
@@ -264,7 +261,7 @@ namespace Anaquin
                 return stats;
             }
         
-            inline const IntervalMap &map() const { return _inters; }
+            inline const IntervalData &data() const { return _inters; }
 
             // Number of intervals
             inline std::size_t size() const { return _inters.size(); }
@@ -278,8 +275,8 @@ namespace Anaquin
                           });
             }
 
-        private:
-            IntervalMap _inters;
+        //private:
+            IntervalData _inters;
     };
 }
 

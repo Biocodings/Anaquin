@@ -1,6 +1,7 @@
 #ifndef REFERENCE_HPP
 #define REFERENCE_HPP
 
+#include <set>
 #include <map>
 #include "stats/limit.hpp"
 #include "data/intervals.hpp"
@@ -45,6 +46,7 @@ namespace Anaquin
         Locus l;
     };
 
+    typedef std::map<SequinID, Counts> Hist;
     typedef std::map<SequinID, Counts> SequinHist;
 
     /*
@@ -580,10 +582,6 @@ namespace Anaquin
                              const IntervalID &id,
                              const Locus &l) : Interval(id, l), gID(gID), iID(iID) {}
 
-                void operator=(const ExonInterval &i)
-                {
-                }
-
                 const GeneID gID;
                 const IsoformID iID;
             };
@@ -665,7 +663,7 @@ namespace Anaquin
             TransRef();
 
             // Return a histogram for all the validated genes
-            GeneHist histGene() const;
+            GeneHist geneHist() const;
 
             // Intervals for reference exons
             Intervals<ExonInterval> exonInters() const;

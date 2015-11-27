@@ -39,7 +39,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     // False positives for each specie
     std::map<GenomeID, Base> fps;
 
-    for (const auto &i : stats.inters.map())
+    for (const auto &i : stats.inters.data())
     {
         fps[i.first] = 0;
         stats.base[i.first];
@@ -81,7 +81,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
              * consider overlapping.
              */
 
-            fps.at(align.id) += match->add_(align.l);
+            fps.at(align.id) += match->map(align.l);
         }
     });
 
@@ -91,10 +91,10 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
     stats.sp.inferRefFromHist();
 
     /*
-     * Metrics at the base level for all reference genomes
+     * Calculating metrics for all references at the base level.
      */
     
-    for (const auto &i : stats.inters.map())
+    for (const auto &i : stats.inters.data())
     {
         auto &m  = stats.base.at(i.first);
         auto &in = i.second;
@@ -127,8 +127,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     o.info("Calculating detection limit");
     
-    stats.bp.s = r.limit(stats.bp.h);
-    stats.sp.s = r.limit(stats.sp.h);
+    stats.bp.hl = r.limit(stats.bp.h);
+    stats.sp.hl = r.limit(stats.sp.h);
 
     return stats;
 }
@@ -166,12 +166,12 @@ void MAlign::report(const FileName &file, const Options &o)
                                             % stats.inters.size()                       // 5
                                             % stats.sp.m.sn()
                                             % stats.sp.m.sp()
-                                            % stats.sp.s.id
-                                            % stats.sp.s.abund
+                                            % stats.sp.hl.id
+                                            % stats.sp.hl.abund
                                             % stats.bp.m.sn()    // 10
                                             % stats.bp.m.sp()
-                                            % stats.bp.s.id
-                                            % stats.bp.s.abund
+                                            % stats.bp.hl.id
+                                            % stats.bp.hl.abund
                                             % stats.dilution()).str());
     o.writer->close();
 
@@ -190,7 +190,7 @@ void MAlign::report(const FileName &file, const Options &o)
                                            % "Accuracy"
                      ).str());
 
-    for (const auto &i : stats.inters.map())
+    for (const auto &i : stats.inters.data())
     {
         const auto &b = stats.base.at(i.first);
         const auto ss = i.second.stats();

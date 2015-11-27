@@ -15,7 +15,7 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
-            SequinHist hb = Standard::instance().r_trans.histGene();
+            SequinHist hb = Standard::instance().r_trans.geneHist();
             SequinHist he = Standard::instance().r_trans.hist();
             SequinHist hi = Standard::instance().r_trans.hist();
             SequinHist ht = Standard::instance().r_trans.hist();

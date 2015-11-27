@@ -5,8 +5,6 @@
 
 namespace Anaquin
 {
-    typedef unsigned long Counts;
-
     typedef std::string Sequence;
     
     typedef long long KMers;
@@ -41,6 +39,7 @@ namespace Anaquin
     typedef std::string FeatureName;
 
     typedef long long Base;
+    typedef long long Counts;
 }
 
 #endif

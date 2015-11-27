@@ -52,12 +52,15 @@ namespace Anaquin
     {
         Confusion m;
 
-        // Detection limit
-        Limit s;
+        // Hard detection limit
+        Limit hl;
 
-        // Distribution of the performance
-        SequinHist h;
-        
+        // Soft detection limit
+        Limit sl;
+
+        // Histogram of distribution
+        Hist h;
+
         // Calculate the references from the distribution
         inline void inferRefFromHist()
         {
@@ -122,7 +125,7 @@ namespace Anaquin
     {
         for (const auto &i: m)
         {
-            const bool matched = (rule == Exact    && i.second.l == t.l) ||
+            const auto matched = (rule == Exact    && i.second.l == t.l) ||
                                  (rule == Contains && i.second.l.contains(t.l));
             if (matched)
             {
@@ -160,6 +163,22 @@ namespace Anaquin
         }
 
         return false;
+    }
+    
+    template <typename T> bool classifyTP(Confusion &m, const T &t)
+    {
+        return classify(m, t, [&](const T &t)
+        {
+            return true;
+        });
+    }
+
+    template <typename T> bool classifyFP(Confusion &m, const T &t)
+    {
+        return classify(m, t, [&](const T &t)
+        {
+            return false;
+        });
     }
 }
 
