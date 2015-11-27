@@ -82,7 +82,7 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
     return match;
 }
 
-TAlign::Stats TAlign::report(const FileName &file, const Options &o)
+TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -193,6 +193,14 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
     stats.pe.m.sn();
     stats.pb.m.sn();
     stats.pi.m.sn();
+
+    return stats;
+}
+
+void TAlign::report(const FileName &file, const Options &o)
+{
+    const auto &r = Standard::instance().r_trans;
+    const auto stats = TAlign::stats(file, o);
     
     o.logInfo((boost::format("Exon: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pe.m.nr
@@ -306,6 +314,4 @@ TAlign::Stats TAlign::report(const FileName &file, const Options &o)
         o.logInfo("\n\n--------------------- Base Histogram ---------------------");
         for (const auto &i : stats.pb.h) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
     }
-
-	return stats;
 }

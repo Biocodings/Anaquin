@@ -30,7 +30,8 @@ namespace Anaquin
                 std::vector<UnknownAlignment> unknowns;
             };
 
-            static Stats report(const std::string &, const Options &options = Options());
+            static Stats stats (const FileName &, const Options &options = Options());
+            static void  report(const FileName &, const Options &options = Options());
     };
 }
 
