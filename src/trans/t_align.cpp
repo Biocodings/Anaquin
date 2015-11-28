@@ -140,6 +140,8 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
     stats.pe.inferRefFromHist();
     stats.pi.inferRefFromHist();
 
+    o.info("Calculating metrics for all sequins");
+
     /*
      * Calculating metrics for all sequins.
      */
