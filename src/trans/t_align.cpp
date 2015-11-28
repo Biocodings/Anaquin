@@ -48,10 +48,12 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
     {
         // Update the statistics for the sequin
         classifyFP(stats.se.at(match->gID), align);
-
-        // Anything that fails to being mapped is counted as FP
-        fps.at(match->gID) += match->map(align.l);
     }
+    
+//    std::cout << match->id() << std::endl;
+    
+    // Anything that fails to being mapped is counted as FP
+    fps.at(match->gID) += match->map(align.l);
     
     return match;
 }
@@ -74,11 +76,11 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
     {
         // Update the statistics for the sequin
         classifyFP(stats.si.at(match->gID), align);
-
-        // Anything that fails to being mapped is counted as FP
-        fps.at(match->gID) += match->map(align.l);
     }
-
+    
+    // Anything that fails to being mapped is counted as FP
+    fps.at(match->gID) += match->map(align.l);
+    
     return match;
 }
 
@@ -151,8 +153,10 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         auto &m  = stats.sb.at(i.second.gID);
         auto &in = i.second;
 
+        const auto &gID = i.second.gID;
+        
         // Update the overall performance
-        stats.pb.m.fp() += fps.at(i.second.gID);
+        stats.pb.m.fp() += fps.at(gID);
 
         in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
@@ -165,13 +169,13 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
                 stats.pb.m.tp() += j - i;
 
                 // Update the distribution
-                stats.pb.h.at(id)++;
+                stats.pb.h.at(gID)++;
             }
         });
         
-        m.nr = in.l().length();
-        m.nq = m.tp() + fps.at(i.second.gID);
-        
+        m.nr += in.l().length();
+        m.nq += m.tp() + fps.at(i.second.gID);
+
         assert(m.nr >= m.tp());
         
         stats.pb.m.nr += in.l().length();

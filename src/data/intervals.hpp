@@ -73,9 +73,12 @@ namespace Anaquin
                     
                     assert(start < _covs.size() && end < _covs.size());
                 }
+                
+                // Bases that have failed to being mapped
+                const auto outside = ((l.start < _l.start) ? _l.start -  l.start : 0) +
+                                     ((l.end   > _l.end)   ?  l.end   - _l.end   : 0);
 
-                return ((l.start < _l.start) ? _l.start -  l.start : 0) +
-                       ((l.end   > _l.end)   ?  l.end   - _l.end   : 0);
+                return outside;
             }
 
             template <typename T> Stats stats(T t) const
