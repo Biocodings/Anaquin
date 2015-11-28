@@ -50,10 +50,11 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
         classifyFP(stats.se.at(match->gID), align);
     }
     
-//    std::cout << match->id() << std::endl;
-    
-    // Anything that fails to being mapped is counted as FP
-    fps.at(match->gID) += match->map(align.l);
+    if (match)
+    {
+        // Anything that fails to being mapped is counted as FP
+        fps.at(match->gID) += match->map(align.l);
+    }
     
     return match;
 }
@@ -78,8 +79,11 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
         classifyFP(stats.si.at(match->gID), align);
     }
     
-    // Anything that fails to being mapped is counted as FP
-    fps.at(match->gID) += match->map(align.l);
+    if (match)
+    {
+        // Anything that fails to being mapped is counted as FP
+        fps.at(match->gID) += match->map(align.l);        
+    }
     
     return match;
 }
