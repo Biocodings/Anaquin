@@ -78,7 +78,7 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
         // Anything that fails to being mapped is counted as FP
         fps.at(match->gID) += match->map(align.l);
     }
-    
+
     return match;
 }
 
@@ -128,7 +128,7 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
             // Calculating statistis at the intron level
             match = matchIntron(align, stats, fps);
         }
-        
+
         if (!match)
         {
             stats.unknowns.push_back(UnknownAlignment(align.id, align.l));
