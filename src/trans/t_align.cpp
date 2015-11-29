@@ -117,6 +117,8 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         rFPS[i.first];
     }
     
+    Interval base("Base", Locus(0, 44566700));
+    
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
         REPORT_STATUS();
@@ -145,13 +147,24 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         {
             stats.unknowns.push_back(UnknownAlignment(align.qName, align.l));
             
-            // Anything that fails to map is a FP
-            stats.pb.m.fp() += align.l.length();
+            // We can't simply add it to statistics because we'll need to account for overlapping
+            base.map(align.l);
         }
     });
     
-    assert(stats.pb.m.tp() == 0);
+    assert(stats.pb.m.tp() == 0 && stats.pb.m.fp() == 0);
 
+    o.info("Calculating for non-overlapping at the base level");
+
+    base.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+    {
+        if (depth)
+        {
+            // Everything here has no mapping and therefore FP
+            stats.pb.m.fp() += j - i;
+        }
+    });
+    
     o.info("Counting references");
     
     stats.pe.inferRefFromHist();
@@ -159,6 +172,9 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
 
     o.info("Calculating metrics for all sequins");
 
+    std::cout << stats.pb.m.tp() << std::endl;
+    std::cout << stats.pb.m.fp() << std::endl;
+    
     /*
      * Calculating metrics for all sequins.
      */
@@ -225,6 +241,8 @@ void TAlign::report(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto stats = TAlign::stats(file, o);
+    
+    std::cout << stats.pb.m.accuracy() << std::endl;
     
     o.logInfo((boost::format("Exon: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pe.m.nr
