@@ -54,7 +54,7 @@ namespace Anaquin
                 else                        { _covs.back().ends++;     }
             };
 
-            inline Base map(const Locus &l)
+            inline Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr)
             {
                 const auto start = std::max(_l.start, l.start) - _l.start;
                 const auto end   = std::min(_l.end,   l.end)   - _l.start;
@@ -70,13 +70,19 @@ namespace Anaquin
                 {
                     _covs[start].starts++;
                     _covs[end].ends++;
-                    
                     assert(start < _covs.size() && end < _covs.size());
                 }
-                
-                // Bases that have failed to being mapped
-                return ((l.start < _l.start) ? _l.start -  l.start : 0) +
-                       ((l.end   > _l.end)   ?  l.end   - _l.end   : 0);
+
+                // Bases to the left of the interval fails to map
+                const auto left  = ((l.start < _l.start) ? _l.start -  l.start : 0);
+
+                // Bases to the right of the interval fails to map
+                const auto right = ((l.end   > _l.end)   ?  l.end   - _l.end   : 0);
+
+                if (lp) { *lp = left;  }
+                if (rp) { *rp = right; }
+
+                return left + right;
             }
 
             template <typename T> Stats stats(T t) const
@@ -182,10 +188,12 @@ namespace Anaquin
                 Base ends;
             };
         
+            // The represented interval
             Locus _l;
+        
             IntervalID _id;
 
-            // For each base in the interval
+            // For each base in the interval (relative to the beginning of the interval)
             std::vector<Depth> _covs;
     };
 

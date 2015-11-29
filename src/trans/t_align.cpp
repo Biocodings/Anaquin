@@ -26,9 +26,9 @@ static TAlign::Stats init()
     return stats;
 }
 
-typedef std::map<GenomeID, Base> FPStats;
+typedef std::map<GeneID, Base> FPStats;
 
-static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, FPStats &fps)
+static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, FPStats &lFPS, FPStats &rFPS)
 {
     TransRef::ExonInterval * match = nullptr;
 
@@ -44,7 +44,7 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
         stats.pe.h.at(match->gID)++;
     }
 
-    // Can we find an exon that overlaps the alignment?
+    // Can we find an exon that overlaps the alignment? (assuming only a single exon is overlapped)
     else if ((match = stats.eInters.overlap(align.l)))
     {
         // Update the statistics for the sequin
@@ -53,8 +53,13 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
     
     if (match)
     {
+        Base lp, rp;
+        
         // Anything that fails to being mapped is counted as FP
-        fps.at(match->gID) += match->map(align.l);
+        match->map(align.l, &lp, &rp);
+
+        lFPS.at(match->gID) = std::max(lFPS.at(match->gID), lp);
+        rFPS.at(match->gID) = std::max(rFPS.at(match->gID), rp);
     }
     
     return match;
@@ -104,7 +109,13 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
      * If we can find an exact match, this is obviously a TP. Otherwise, if we
      */
 
-    FPStats fps = stats.pb.h;
+    FPStats lFPS, rFPS;
+
+    for (const auto &i : stats.pb.h)
+    {
+        lFPS[i.first];
+        rFPS[i.first];
+    }
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
@@ -122,7 +133,7 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         if (!align.spliced)
         {
             // Calculating statistics at the exon level
-            match = matchExon(align, stats, fps);
+            match = matchExon(align, stats, lFPS, rFPS);
         }
         else
         {
@@ -132,9 +143,14 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
 
         if (!match)
         {
-            stats.unknowns.push_back(UnknownAlignment(align.id, align.l));
+            stats.unknowns.push_back(UnknownAlignment(align.qName, align.l));
+            
+            // Anything that fails to map is a FP
+            stats.pb.m.fp() += align.l.length();
         }
     });
+    
+    assert(stats.pb.m.tp() == 0);
 
     o.info("Counting references");
     
@@ -154,8 +170,11 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
 
         const auto &gID = i.second.gID;
         
-        // Update the overall performance
-        stats.pb.m.fp() += fps.at(gID);
+        // Update the FP at the gene level
+        m.fp() = lFPS.at(gID) + rFPS.at(gID);
+        
+        // Update the FP at the overall level
+        stats.pb.m.fp() += m.fp();
 
         in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
@@ -173,7 +192,7 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         });
         
         m.nr += in.l().length();
-        m.nq += m.tp() + fps.at(i.second.gID);
+        m.nq += m.tp() + m.fp();
 
         assert(m.nr >= m.tp());
         

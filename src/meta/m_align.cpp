@@ -3,26 +3,6 @@
 
 using namespace Anaquin;
 
-template <typename T, typename Classifer> bool classifyBase(Confusion &m, const T &t, Classifer c)
-{
-    const auto data = c(t);
-
-    if (data)
-    {
-        const auto overs = data->l().overlap(t.l);
-
-        /*
-         * Anything overlaps is a true-positive, while everything else is a false negative.
-         */
-
-        m.nq   += t.l.length();
-        m.tp() += overs;
-        m.fp() += (m.nq - m.tp());
-    }
-
-    return data;
-}
-
 MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 {
     MAlign::Stats stats;
