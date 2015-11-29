@@ -330,35 +330,28 @@ void TAlign::report(const FileName &file, const Options &o)
         const auto format = "%1%\t%2%\t%3%\t%4%";
 
         o.writer->write((boost::format(format) % "ID"
-                                               % "Exon"
-                                               % "Intron"
-                                               % "Base").str());
+                                               % "Sensitivity (Exon)"
+                                               % "Accuracy (Exon)"
+                                               % "Sensitivity (Intron)"
+                                               % "Accuracy (Intron)"
+                                               % "Sensitivity (Base)"
+                                               % "Accuracy (Base)"
+                                               % "Covered").str());
         
         for (const auto &i : stats.pe.h)
         {
+            const auto estats = stats.eInters.find(i.first)->stats();
+            
             o.writer->write((boost::format(format) % i.first
-                                                   % stats.pe.h.at(i.first)
-                                                   % stats.pi.h.at(i.first)
-                                                   % stats.pb.h.at(i.first)).str());
+                                                   % stats.se.at(i.first).sn()
+                                                   % stats.se.at(i.first).accuracy()
+                                                   % stats.si.at(i.first).sn()
+                                                   % stats.si.at(i.first).accuracy()
+                                                   % stats.sb.at(i.first).sn()
+                                                   % stats.sb.at(i.first).accuracy()
+                                                   % estats.covered()).str());
         }
         
         o.writer->close();
-    }
-
-    /*
-     * Generating detailed logs for the histogram
-     */
-    
-    {
-        o.info("Generating detailed logs for the histogram");
-
-        o.logInfo("\n\n--------------------- Exon Histogram ---------------------");
-        for (const auto &i : stats.pe.h) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
-
-        o.logInfo("\n\n--------------------- Intron Histogram ---------------------");
-        for (const auto &i : stats.pi.h) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
-
-        o.logInfo("\n\n--------------------- Base Histogram ---------------------");
-        for (const auto &i : stats.pb.h) { o.logInfo((boost::format("%1% %2%") % i.first % i.second).str()); }
     }
 }
