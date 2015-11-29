@@ -31,9 +31,14 @@ extern std::string VarDataMixF();
 
 using namespace Anaquin;
 
-void Test::fusionA()
+void Test::clear()
 {
     Standard::instance(true);
+}
+
+void Test::fusionA()
+{
+    Test::clear();
     Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
     Standard::instance().f_mix(Reader(FusionDataMixA(), DataMode::String));
     Standard::instance().r_fus.finalize();
@@ -41,21 +46,21 @@ void Test::fusionA()
 
 void Test::meta()
 {
-    Standard::instance(true);
+    Test::clear();
     Standard::instance().m_mix(Reader(MetaDataMix(), DataMode::String));
     Standard::instance().r_meta.finalize();
 }
 
 void Test::ladderA()
 {
-    Standard::instance(true);
+    Test::clear();
     Standard::instance().l_mix(Reader(LadderDataMixA(), DataMode::String));
     Standard::instance().r_lad.finalize();
 }
 
 void Test::transA()
 {
-    Standard::instance(true);
+    Test::clear();
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMixA(), DataMode::String));
     Standard::instance().r_trans.finalize();
@@ -63,7 +68,7 @@ void Test::transA()
 
 void Test::transB()
 {
-    Standard::instance(true);
+    Test::clear();
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMixB(), DataMode::String));
     Standard::instance().r_trans.finalize();
@@ -71,7 +76,7 @@ void Test::transB()
 
 void Test::transAB()
 {
-    Standard::instance(true);
+    Test::clear();
     Standard::instance().r_ref(Reader(TransStandGTF(),  DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMixAB(), DataMode::String));
     Standard::instance().r_trans.finalize();
@@ -79,7 +84,7 @@ void Test::transAB()
 
 void Test::variantA()
 {
-    Standard::instance(true);
+    Test::clear();
     Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMixA(),  DataMode::String));
     Standard::instance().r_var.finalize();
@@ -87,7 +92,7 @@ void Test::variantA()
 
 void Test::variantF()
 {
-    Standard::instance(true);
+    Test::clear();
     Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
     Standard::instance().v_mix(Reader(VarDataMixA(),  DataMode::String));
     Standard::instance().r_var.finalize();

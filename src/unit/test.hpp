@@ -16,6 +16,8 @@ namespace Anaquin
         
         int status;
 
+        static void clear();
+
         static void transA();
         static void transB();
         static void transAB();

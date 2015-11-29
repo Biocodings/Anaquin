@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("TAssembly_T_1000")
 {
-    Test::transA();
+    Test::clear();
 
     const auto r1 = Test::test("-t TransAssembly -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -ugtf tests/data/T_1000/A/G/transcripts.gtf");
 

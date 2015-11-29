@@ -25,7 +25,7 @@ TEST_CASE("TExpress_T_1000_Isoforms")
 
 TEST_CASE("TExpress_T_1000_Genes")
 {
-    Test::transA();
+    Test::clear();
     
     const auto r1 = Test::test("-t TransExpress -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -ugtrack tests/data/T_1000/B/G/genes.fpkm_tracking");
     

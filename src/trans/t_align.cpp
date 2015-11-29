@@ -1,3 +1,4 @@
+#include <iostream>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
 
@@ -162,7 +163,7 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
             {
                 // Update the sequin performance
                 m.tp() += j - i;
-                
+
                 // Update the overall performance
                 stats.pb.m.tp() += j - i;
 

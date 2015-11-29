@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 TEST_CASE("TAlign_T_1000_First_100")
 {
-    Test::transA();
+    Test::clear();
     
     const auto r1 = Test::test("-t TransAlign -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -usam tests/data/T_1000/B/accepted_hits_1000.sam");
 

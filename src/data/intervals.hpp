@@ -75,10 +75,8 @@ namespace Anaquin
                 }
                 
                 // Bases that have failed to being mapped
-                const auto outside = ((l.start < _l.start) ? _l.start -  l.start : 0) +
-                                     ((l.end   > _l.end)   ?  l.end   - _l.end   : 0);
-
-                return outside;
+                return ((l.start < _l.start) ? _l.start -  l.start : 0) +
+                       ((l.end   > _l.end)   ?  l.end   - _l.end   : 0);
             }
 
             template <typename T> Stats stats(T t) const

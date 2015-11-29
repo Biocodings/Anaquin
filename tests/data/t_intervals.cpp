@@ -76,5 +76,45 @@ TEST_CASE("Interval_Test_2")
     REQUIRE(r.p75      == 5);
 }
     
+TEST_CASE("Interval_Test_3")
+{
+    Interval i("Test", Locus(0, 9));
+    
+    i.add(Locus(4, 6));
+    i.add(Locus(4, 6));
+    i.add(Locus(4, 6));
+    i.add(Locus(1, 2));
+    i.add(Locus(3, 3));
+    
+    std::vector<Base> x, y, z;
+    
+    i.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+    {
+        x.push_back(i);
+        y.push_back(j);
+        z.push_back(depth);
+    });
+
+    REQUIRE(x.size() == 4);
+    REQUIRE(y.size() == 4);
+    REQUIRE(z.size() == 4);
+    
+    REQUIRE(x[0] == 0);
+    REQUIRE(x[1] == 1);
+    REQUIRE(x[2] == 4);
+    REQUIRE(x[3] == 7);
+
+    REQUIRE(y[0] == 1);
+    REQUIRE(y[1] == 4);
+    REQUIRE(y[2] == 7);
+    REQUIRE(y[3] == 10);
+
+    REQUIRE(z[0] == 0);
+    REQUIRE(z[1] == 1);
+    REQUIRE(z[2] == 3);
+    REQUIRE(z[3] == 0);
+}
+
+
 
 
