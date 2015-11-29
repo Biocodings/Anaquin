@@ -96,19 +96,6 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
 
     o.analyze(file);
 
-    /*
-     * Loop through each of the alignments and calculate various metrics at the exon, intron and
-     * base level.
-     *
-     * Exon level is defined as the performance per exon. An alignment that is not mapped entirely
-     * within an exon is considered as a FP. The intron level is similar.
-     *
-     * Base level is defined as the performance per nucleotide. A partial mapped read will have
-     * FP and TP.
-     *
-     * If we can find an exact match, this is obviously a TP. Otherwise, if we
-     */
-
     FPStats lFPS, rFPS;
 
     for (const auto &i : stats.pb.h)
@@ -285,12 +272,12 @@ void TAlign::report(const FileName &file, const Options &o)
                              "   ***\n"
                              "   *** The following statistics are computed at the exon, intron and base level.\n"
                              "   ***\n"
-                             "   ***   Exon level is defined as the performance per exon. An alignment that\n"
-                             "   ***   is not mapped entirely withing an exon is considered as a FP. The\n"
-                             "   ***   intron level is similar.\n"
+                             "   *** Exon level is defined by the performance per exon. An alignment that\n"
+                             "   *** is not mapped entirely within an exon is considered as a FP. The\n"
+                             "   *** intron level is similar.\n"
                              "   ***\n"
-                             "   ***   Base level is defined as the performance per nucleotide. A partial\n"
-                             "   ***   mapped read will have FP and TP.\n"
+                             "   *** Base level is defined by the performance per nucleotide. A partial\n"
+                             "   *** mapped read will have FP and TP.\n"
                              "   ***\n\n"
                              "   -------------------- Exon level --------------------\n\n"
                              "   Sensitivity: %11%\n"
