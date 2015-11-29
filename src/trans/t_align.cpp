@@ -224,12 +224,6 @@ void TAlign::report(const FileName &file, const Options &o)
                                           % stats.pi.m.sn()
                                           % stats.pi.m.accuracy()).str());
 
-    //Base: 218156 398763340546     153784 398763186762      64372 0.704927 3.85652e-07
-    
-    //
-    // tp()) / (tp() + fp())     153784 / (153784 + 398763340546) FP >> TP
-    //
-    
     o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pb.m.nr
                                           % stats.pb.m.nq
@@ -251,9 +245,20 @@ void TAlign::report(const FileName &file, const Options &o)
                              "   Reference:  %5% exons\n"
                              "   Reference:  %6% introns\n"
                              "   Reference:  %7% bases\n\n"
-                             "   Query: %8% exons\n"
-                             "   Query: %9% introns\n"
-                             "   Query: %10% bases\n\n"
+                             "   Query:      %8% exons\n"
+                             "   Query:      %9% introns\n"
+                             "   Query:      %10% bases\n\n"
+                             "   Dilution:   %23%\n\n"
+                             "   ***\n"
+                             "   *** The following statistics are computed at the exon, intron and base level.\n"
+                             "   ***\n"
+                             "   ***   Exon level is defined as the performance per exon. An alignment that\n"
+                             "   ***   is not mapped entirely withing an exon is considered as a FP. The\n"
+                             "   ***   intron level is similar.\n"
+                             "   ***\n"
+                             "   ***   Base level is defined as the performance per nucleotide. A partial\n"
+                             "   ***   mapped read will have FP and TP.\n"
+                             "   ***\n\n"
                              "   -------------------- Exon level --------------------\n\n"
                              "   Sensitivity: %11%\n"
                              "   Accuarcy:    %12%\n"
@@ -265,8 +270,7 @@ void TAlign::report(const FileName &file, const Options &o)
                              "   -------------------- Base level --------------------\n\n"
                              "   Sensitivity: %19%\n"
                              "   Accuarcy:    %20%\n"
-                             "   Detection:   %21% (%22%)\n\n"
-                             "   Dilution:    %23%\n";
+                             "   Detection:   %21% (%22%)\n";
         
         o.writer->open("TransAlign_summary.stats");
         o.writer->write((boost::format(summary) % file
@@ -304,14 +308,18 @@ void TAlign::report(const FileName &file, const Options &o)
         o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
         
         const auto format = "%1%\t%2%\t%3%\t%4%";
-        o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Base").str());
+
+        o.writer->write((boost::format(format) % "ID"
+                                               % "Exon"
+                                               % "Intron"
+                                               % "Base").str());
         
         for (const auto &i : stats.pe.h)
         {
             o.writer->write((boost::format(format) % i.first
-                             % stats.pe.h.at(i.first)
-                             % stats.pi.h.at(i.first)
-                             % stats.pb.h.at(i.first)).str());
+                                                   % stats.pe.h.at(i.first)
+                                                   % stats.pi.h.at(i.first)
+                                                   % stats.pb.h.at(i.first)).str());
         }
         
         o.writer->close();

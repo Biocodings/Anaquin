@@ -24,6 +24,7 @@ namespace Anaquin
                 // Intervals for introns in TransQuin
                 Intervals<TransRef::IntronInterval> iInters;
 
+                // Sequins that have failed to be detected
                 std::map<SequinID, MissingSequin> missings;
 
                 // Alignments that have no mapping
