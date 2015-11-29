@@ -172,9 +172,6 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
 
     o.info("Calculating metrics for all sequins");
 
-    std::cout << stats.pb.m.tp() << std::endl;
-    std::cout << stats.pb.m.fp() << std::endl;
-    
     /*
      * Calculating metrics for all sequins.
      */
@@ -241,8 +238,6 @@ void TAlign::report(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto stats = TAlign::stats(file, o);
-    
-    std::cout << stats.pb.m.accuracy() << std::endl;
     
     o.logInfo((boost::format("Exon: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pe.m.nr
