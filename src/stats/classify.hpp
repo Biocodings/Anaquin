@@ -1,7 +1,6 @@
 #ifndef CLASSIFY_HPP
 #define CLASSIFY_HPP
 
-#include <iostream>
 #include "stats/limit.hpp"
 #include "data/standard.hpp"
 #include <ss/data/confusion.hpp>
@@ -10,7 +9,7 @@ namespace Anaquin
 {
     struct Confusion : public SS::Confusion
     {
-        inline Counts &tn() const { throw std::runtime_error("tn() is unsupported"); }
+        inline Counts &tn() const { throw std::runtime_error("TN is unsupported"); }
 
         // Sensitivity, metrics for positive classification
         inline Percentage sn() const
@@ -24,10 +23,10 @@ namespace Anaquin
         }
         
         /*
-         * The usual formula: tn / (tn + fp) would not work. We don't know tn.
+         * The usual formula: tn / (tn + fp) would not work because we don't know tn.
          * Furthermore fp would have been dominated by tn. The formula below is
          * consistent to cufflink's recommendation. Technically, we're not calculating
-         * specificity but predication accuracy.
+         * specificity but prediction accuracy.
          *
          * Reference: https://www.biostars.org/p/138438/#148051
          */
@@ -36,11 +35,16 @@ namespace Anaquin
         {
             return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
         }
+        
+        inline Percentage accuracy() const
+        {
+            return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
+        }
 
-        // Number of queries
+        // Counts of queries
         Counts nq = 0;
         
-        // Number of references
+        // Counts of references
         Counts nr = 0;
     };
 

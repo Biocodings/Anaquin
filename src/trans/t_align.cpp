@@ -219,17 +219,8 @@ void TAlign::report(const FileName &file, const Options &o)
                                           % stats.pe.m.fp()
                                           % stats.pe.m.fn()
                                           % stats.pe.m.sn()
-                                          % stats.pe.m.sp()).str());
+                                          % stats.pe.m.accuracy()).str());
 
-    o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
-                                          % stats.pb.m.nr
-                                          % stats.pb.m.nq
-                                          % stats.pb.m.tp()
-                                          % stats.pb.m.fp()
-                                          % stats.pb.m.fn()
-                                          % stats.pb.m.sn()
-                                          % stats.pb.m.sp()).str());
-    
     o.logInfo((boost::format("Intron: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pi.m.nr
                                           % stats.pi.m.nq
@@ -237,28 +228,49 @@ void TAlign::report(const FileName &file, const Options &o)
                                           % stats.pi.m.fp()
                                           % stats.pi.m.fn()
                                           % stats.pi.m.sn()
-                                          % stats.pi.m.sp()).str());
+                                          % stats.pi.m.accuracy()).str());
+
+    //Base: 218156 398763340546 153784 398763186762 64372 0.704927 3.85652e-07
+    
+    //
+    //
+    
+    o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
+                                          % stats.pb.m.nr
+                                          % stats.pb.m.nq
+                                          % stats.pb.m.tp()
+                                          % stats.pb.m.fp()
+                                          % stats.pb.m.fn()
+                                          % stats.pb.m.sn()
+                                          % stats.pb.m.accuracy()).str());
 
     /*
      * Write out summary statistics
      */
 
     const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Unmapped:  %2% reads\n"
-                         "   Experiment:    %3% reads\n"
-                         "   Synthetic: %4% reads\n\n"
-                         "   Reference: %5% exons\n"
-                         "   Reference: %6% introns\n"
-                         "   Reference: %7% bases\n\n"
+                         "   Unmapped:   %2% reads\n"
+                         "   Experiment: %3% reads\n"
+                         "   Synthetic:  %4% reads\n\n"
+                         "   Reference:  %5% exons\n"
+                         "   Reference:  %6% introns\n"
+                         "   Reference:  %7% bases\n\n"
                          "   Query: %8% exons\n"
                          "   Query: %9% introns\n"
                          "   Query: %10% bases\n\n"
-                         "#--------------------|   Sn   |  Sp  |  Ss  \n"
-                         "    Exon level:\t%11%\t%12%\t%13% (%14%)\n"
-                         "    Intron level:\t%15%\t%16%\t%17% (%18%)\n"
-                         "    Base level:\t%19%\t%20%\t%21% (%22%)\n"
-                         "\n"
-                         "Dilution:\t\t%23%\n"
+                         "   -------------------- Exon level --------------------\n\n"
+                         "   Sensitivity: %11%\n"
+                         "   Accuarcy:    %12%\n"
+                         "   Detection:   %13% (%14%)\n\n"
+                         "   -------------------- Intron level --------------------\n\n"
+                         "   Sensitivity: %15%\n"
+                         "   Accuarcy:    %16%\n"
+                         "   Detection:   %17% (%18%)\n\n"
+                         "   -------------------- Base level --------------------\n\n"
+                         "   Sensitivity: %19%\n"
+                         "   Accuarcy:    %20%\n"
+                         "   Detection:   %21% (%22%)\n\n"
+                         "   Dilution:    %23%\n"
     ;
 
     o.writer->open("TransAlign_summary.stats");
@@ -273,15 +285,15 @@ void TAlign::report(const FileName &file, const Options &o)
                                             % stats.pi.m.nq
                                             % stats.pb.m.nq
                                             % stats.pe.m.sn()
-                                            % stats.pe.m.sp()
+                                            % stats.pe.m.accuracy()
                                             % stats.pe.hl.abund
                                             % stats.pe.hl.id
                                             % stats.pi.m.sn()
-                                            % stats.pi.m.sp()
+                                            % stats.pi.m.accuracy()
                                             % stats.pi.hl.abund
                                             % stats.pi.hl.id
                                             % stats.pb.m.sn()
-                                            % stats.pb.m.sp()
+                                            % stats.pb.m.accuracy()
                                             % stats.pb.hl.abund
                                             % stats.pb.hl.id
                                             % stats.dilution()

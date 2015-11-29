@@ -25,7 +25,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
         const auto id = i.first.substr(0, i.first.size() - 2);
         
         Interval in(id, i.second.l);
-        std::cout << id << " " << i.second.l.start << " " << i.second.l.end << std::endl;
+        //std::cout << id << " " << i.second.l.start << " " << i.second.l.end << std::endl;
         ii.add(in);
     }
 
@@ -84,7 +84,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     for (auto i : ii.data())
     {
         covered += i.second.stats().covered();
-        std::cout << i.second.stats().covered() << std::endl;
+        //std::cout << i.second.stats().covered() << std::endl;
     }
     
     covered = covered / ii.data().size();
