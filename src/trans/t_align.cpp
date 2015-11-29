@@ -59,7 +59,7 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
     return match;
 }
 
-static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats, FPStats &fps)
+static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats)
 {
     TransRef::IntronInterval * match = nullptr;
     
@@ -77,12 +77,6 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
     {
         // Update the statistics for the sequin
         classifyFP(stats.si.at(match->gID), align);
-    }
-    
-    if (match)
-    {
-        // Anything that fails to being mapped is counted as FP
-        fps.at(match->gID) += match->map(align.l);        
     }
     
     return match;
@@ -132,7 +126,7 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         else
         {
             // Calculating statistis at the intron level
-            match = matchIntron(align, stats, fps);
+            match = matchIntron(align, stats);
         }
 
         if (!match)
@@ -230,9 +224,10 @@ void TAlign::report(const FileName &file, const Options &o)
                                           % stats.pi.m.sn()
                                           % stats.pi.m.accuracy()).str());
 
-    //Base: 218156 398763340546 153784 398763186762 64372 0.704927 3.85652e-07
+    //Base: 218156 398763340546     153784 398763186762      64372 0.704927 3.85652e-07
     
     //
+    // tp()) / (tp() + fp())     153784 / (153784 + 398763340546) FP >> TP
     //
     
     o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
@@ -248,77 +243,79 @@ void TAlign::report(const FileName &file, const Options &o)
      * Write out summary statistics
      */
 
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Unmapped:   %2% reads\n"
-                         "   Experiment: %3% reads\n"
-                         "   Synthetic:  %4% reads\n\n"
-                         "   Reference:  %5% exons\n"
-                         "   Reference:  %6% introns\n"
-                         "   Reference:  %7% bases\n\n"
-                         "   Query: %8% exons\n"
-                         "   Query: %9% introns\n"
-                         "   Query: %10% bases\n\n"
-                         "   -------------------- Exon level --------------------\n\n"
-                         "   Sensitivity: %11%\n"
-                         "   Accuarcy:    %12%\n"
-                         "   Detection:   %13% (%14%)\n\n"
-                         "   -------------------- Intron level --------------------\n\n"
-                         "   Sensitivity: %15%\n"
-                         "   Accuarcy:    %16%\n"
-                         "   Detection:   %17% (%18%)\n\n"
-                         "   -------------------- Base level --------------------\n\n"
-                         "   Sensitivity: %19%\n"
-                         "   Accuarcy:    %20%\n"
-                         "   Detection:   %21% (%22%)\n\n"
-                         "   Dilution:    %23%\n"
-    ;
-
-    o.writer->open("TransAlign_summary.stats");
-    o.writer->write((boost::format(summary) % file
-                                            % stats.unmapped
-                                            % stats.n_expT
-                                            % stats.n_chrT
-                                            % r.countSortedExons()
-                                            % r.countSortedIntrons()
-                                            % r.exonBase()
-                                            % stats.pe.m.nq
-                                            % stats.pi.m.nq
-                                            % stats.pb.m.nq
-                                            % stats.pe.m.sn()
-                                            % stats.pe.m.accuracy()
-                                            % stats.pe.hl.abund
-                                            % stats.pe.hl.id
-                                            % stats.pi.m.sn()
-                                            % stats.pi.m.accuracy()
-                                            % stats.pi.hl.abund
-                                            % stats.pi.hl.id
-                                            % stats.pb.m.sn()
-                                            % stats.pb.m.accuracy()
-                                            % stats.pb.hl.abund
-                                            % stats.pb.hl.id
-                                            % stats.dilution()
-                                        ).str());
-    o.writer->close();
+    {
+        const auto summary = "Summary for dataset: %1%\n\n"
+                             "   Unmapped:   %2% reads\n"
+                             "   Experiment: %3% reads\n"
+                             "   Synthetic:  %4% reads\n\n"
+                             "   Reference:  %5% exons\n"
+                             "   Reference:  %6% introns\n"
+                             "   Reference:  %7% bases\n\n"
+                             "   Query: %8% exons\n"
+                             "   Query: %9% introns\n"
+                             "   Query: %10% bases\n\n"
+                             "   -------------------- Exon level --------------------\n\n"
+                             "   Sensitivity: %11%\n"
+                             "   Accuarcy:    %12%\n"
+                             "   Detection:   %13% (%14%)\n\n"
+                             "   -------------------- Intron level --------------------\n\n"
+                             "   Sensitivity: %15%\n"
+                             "   Accuarcy:    %16%\n"
+                             "   Detection:   %17% (%18%)\n\n"
+                             "   -------------------- Base level --------------------\n\n"
+                             "   Sensitivity: %19%\n"
+                             "   Accuarcy:    %20%\n"
+                             "   Detection:   %21% (%22%)\n\n"
+                             "   Dilution:    %23%\n";
+        
+        o.writer->open("TransAlign_summary.stats");
+        o.writer->write((boost::format(summary) % file
+                                                % stats.unmapped
+                                                % stats.n_expT
+                                                % stats.n_chrT
+                                                % r.countSortedExons()
+                                                % r.countSortedIntrons()
+                                                % r.exonBase()
+                                                % stats.pe.m.nq
+                                                % stats.pi.m.nq
+                                                % stats.pb.m.nq
+                                                % stats.pe.m.sn()
+                                                % stats.pe.m.accuracy()
+                                                % stats.pe.hl.abund
+                                                % stats.pe.hl.id
+                                                % stats.pi.m.sn()
+                                                % stats.pi.m.accuracy()
+                                                % stats.pi.hl.abund
+                                                % stats.pi.hl.id
+                                                % stats.pb.m.sn()
+                                                % stats.pb.m.accuracy()
+                                                % stats.pb.hl.abund
+                                                % stats.pb.hl.id
+                                                % stats.dilution()).str());
+        o.writer->close();
+    }
 
     /*
      * Generating detailed statistics for each sequin
      */
     
-    o.writer->open("TransAlign_quins.stats");
-    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
-
-    const auto format = "%1%\t%2%\t%3%\t%4%";
-    o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Base").str());
-
-    for (const auto &i : stats.pe.h)
     {
-        o.writer->write((boost::format(format) % i.first
-                                               % stats.pe.h.at(i.first)
-                                               % stats.pi.h.at(i.first)
-                                               % stats.pb.h.at(i.first)).str());
+        o.writer->open("TransAlign_quins.stats");
+        o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+        
+        const auto format = "%1%\t%2%\t%3%\t%4%";
+        o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Base").str());
+        
+        for (const auto &i : stats.pe.h)
+        {
+            o.writer->write((boost::format(format) % i.first
+                             % stats.pe.h.at(i.first)
+                             % stats.pi.h.at(i.first)
+                             % stats.pb.h.at(i.first)).str());
+        }
+        
+        o.writer->close();
     }
-
-    o.writer->close();
 
     /*
      * Generating detailed logs for the histogram
