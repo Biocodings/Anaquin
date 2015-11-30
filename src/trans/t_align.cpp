@@ -247,6 +247,39 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     return stats;
 }
 
+static void update(const ParseImpl &impl, const Alignment &align, const ParserSAM::AlignmentInfo &info, const TAlign::Options &o)
+{
+    REPORT_STATUS();
+    
+    impl.stats->update(align);
+    
+    if (!align.mapped || align.id != Standard::chrT)
+    {
+        return;
+    }
+    
+    const Interval *match = nullptr;
+    
+    if (!align.spliced)
+    {
+        // Calculating statistics at the exon level
+        match = matchExon(align, *(impl.stats), *(impl.lFPS), *(impl.rFPS));
+    }
+    else
+    {
+        // Calculating statistis at the intron level
+        match = matchIntron(align, *(impl.stats));
+    }
+    
+    if (!match)
+    {
+        impl.stats->unknowns.push_back(UnknownAlignment(align.qName, align.l));
+        
+        // We can't simply add it to statistics because we'll need to account for overlapping
+        impl.base->map(align.l);
+    }
+}
+
 TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
@@ -255,35 +288,7 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
-            REPORT_STATUS();
-            
-            impl.stats->update(align);
-            
-            if (!align.mapped || align.id != Standard::chrT)
-            {
-                return;
-            }
-            
-            const Interval *match = nullptr;
-            
-            if (!align.spliced)
-            {
-                // Calculating statistics at the exon level
-                match = matchExon(align, *(impl.stats), *(impl.lFPS), *(impl.rFPS));
-            }
-            else
-            {
-                // Calculating statistis at the intron level
-                match = matchIntron(align, *(impl.stats));
-            }
-            
-            if (!match)
-            {
-                impl.stats->unknowns.push_back(UnknownAlignment(align.qName, align.l));
-                
-                // We can't simply add it to statistics because we'll need to account for overlapping
-                impl.base->map(align.l);
-            }
+            update(impl, align, info, o);
         });
     });
 }
