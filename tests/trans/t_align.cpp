@@ -4,22 +4,41 @@
 
 using namespace Anaquin;
 
-TEST_CASE("TAlign_T_1000_First_100")
+TEST_CASE("TAlign_All_FalsePositives")
 {
     Test::clear();
+  
+    std::vector<Alignment> aligns;
     
-    const auto r1 = Test::test("-t TransAlign -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -usam tests/data/T_1000/B/accepted_hits_1000.sam");
+    for (auto i = 0; i < 100; i++)
+    {
+        Alignment align;
+        
+        align.id      = "chrT";
+        align.qName   = "__test__";
+        align.i       = 0;
+        align.mapped  = true;
+        align.spliced = false;
+        align.l       = Locus(1, 1);
 
-    REQUIRE(r1.status == 0);
+        aligns.push_back(align);
+    }
+    
+    const auto r = TAlign::stats(aligns);
+    
+    REQUIRE(r.unknowns.size() == 100);
 
-    Test::transA();
-    const auto r2 = TAlign::stats("tests/data/T_1000/B/accepted_hits_1000.sam");
+    REQUIRE(r.pb.h.size() == 0);
+    REQUIRE(r.pe.h.size() == 0);
+    REQUIRE(r.pi.h.size() == 0);
 
-    REQUIRE(r2.unmapped  == 0);
-    REQUIRE(r2.pe.m.sn() == Approx(0.9301025163));
-    REQUIRE(r2.pe.m.sp() == Approx(0.9900793651));
-    REQUIRE(r2.pi.m.sn() == Approx(0.8613678373));
-    REQUIRE(r2.pi.m.sp() == Approx(1.0));
-    REQUIRE(r2.pb.m.sn() == Approx(0.0012799979));
-    REQUIRE(r2.pb.m.sp() == Approx(0.9845360825));
+    REQUIRE(r.pb.m.nr() == 0);
+    REQUIRE(r.pb.m.nq() == 0);
+    REQUIRE(r.pb.m.tp() == 0);
+    REQUIRE(r.pb.m.fp() == 0);
+    
+    //                Performance pb, pe, pi;
+//                static Stats stats (const std::vector<Alignment> &, const Options &options = Options());
+    
 }
+

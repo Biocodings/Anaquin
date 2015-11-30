@@ -3,49 +3,49 @@
 
 #include "stats/limit.hpp"
 #include "data/standard.hpp"
-#include <ss/data/confusion.hpp>
 
 namespace Anaquin
 {
-    struct Confusion : public SS::Confusion
+    class Confusion
     {
-        inline Counts &tn() const { throw std::runtime_error("TN is unsupported"); }
-
-        // Sensitivity, metrics for positive classification
-        inline Percentage sn() const
-        {
-            assert(nr && nr >= _tp);
-
-            // Adjust for fn... Refer to the wikipedia for more details
-            _fn = nr - _tp;
-
-            return SS::Confusion::sn();
-        }
+        public:
         
-        /*
-         * The usual formula: tn / (tn + fp) would not work because we don't know tn.
-         * Furthermore fp would have been dominated by tn. The formula below is
-         * consistent to cufflink's recommendation. Technically, we're not calculating
-         * specificity but prediction accuracy.
-         *
-         * Reference: https://www.biostars.org/p/138438/#148051
-         */
+            inline Counts &tp() const { return _tp; }
+            inline Counts &fp() const { return _fp; }
+            inline Counts &tn() const { return _tn; }
+            inline Counts &fn() const { return _fn; }
+            inline Counts &nr() const { return _nr; }
+            inline Counts &nq() const { return _nq; }
 
-        inline Percentage sp() const
-        {
-            return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
-        }
-
-        inline Percentage acc() const
-        {
-            return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
-        }
-
-        // Counts of queries
-        Counts nq = 0;
+            inline Counts n() const
+            {
+                return _fp + _tp + _fn + _tn;
+            }
         
-        // Counts of references
-        Counts nr = 0;
+            // Sensitivity, metrics for positive classification
+            inline Percentage sn() const
+            {
+                assert(_nr && _nr >= _tp);
+
+                // Adjust for fn... Refer to the wikipedia for more details
+                _fn = _nr - _tp;
+
+                return _tp && (_tp + _fn) ? static_cast<Percentage>(_tp) / (_tp + _fn) : NAN;
+            }
+        
+            inline Percentage ac() const
+            {
+                return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
+            }
+
+        private:
+        
+            mutable Counts _fp = 0;
+            mutable Counts _tp = 0;
+            mutable Counts _fn = 0;
+            mutable Counts _tn = 0;
+            mutable Counts _nq = 0;
+            mutable Counts _nr = 0;
     };
 
     /*
@@ -72,11 +72,11 @@ namespace Anaquin
             {
                 if (i.second == 0)
                 {
-                    m.nr++;
+                    m.nr()++;
                 }
                 else
                 {
-                    m.nr += i.second;
+                    m.nr() += i.second;
                 }
             }
         }
@@ -155,12 +155,12 @@ namespace Anaquin
         {
             if ((void *) r == (void *) ClassifyResult::Negative)
             {
-                m.nq++;
+                m.nq()++;
                 m.fp()++;
             }
             else
             {
-                m.nq++;
+                m.nq()++;
                 m.tp()++;
                 return true;
             }

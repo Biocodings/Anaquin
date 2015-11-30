@@ -28,10 +28,10 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
                                                 % stats.n_expT
                                                 % stats.n_chrT
                                                 % stats.hg38_chrT
-                                                % stats.m.nr
+                                                % stats.m.nr()
                                                 % o.fuzzy
                                                 % stats.m.sn()
-                                                % stats.m.sp()).str());
+                                                % stats.m.ac()).str());
         o.writer->close();
     }
 

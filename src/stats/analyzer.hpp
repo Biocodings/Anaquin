@@ -172,12 +172,12 @@ namespace Anaquin
         
         for (const auto &l : merged)
         {
-            m.nq   += l.length();
+            m.nq() += l.length();
             m.tp() += countOverlaps(r, l, c);
-            m.fp()  = m.nq - m.tp();
+            m.fp()  = m.nq() - m.tp();
             
             // Make sure we don't run into negative
-            assert(m.nq >= m.tp());
+            assert(m.nq() >= m.tp());
         }
 
         assert(!Locus::overlap(merged));

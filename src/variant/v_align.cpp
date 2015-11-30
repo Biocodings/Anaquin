@@ -62,7 +62,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
         }
     });
 
-    sums(stats.h, stats.p.m.nr);
+    sums(stats.h, stats.p.m.nr());
 
     o.info("Calculating limit of sensitivity");
 
@@ -70,13 +70,13 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     stats.p.hl = r.limitGeno(stats.h);
 
     o.logInfo((boost::format("Performance: %1% %2% %3% %4% %5% %6% %7%")
-                                    % stats.p.m.nr
-                                    % stats.p.m.nq
+                                    % stats.p.m.nr()
+                                    % stats.p.m.nq()
                                     % stats.p.m.tp()
                                     % stats.p.m.fp()
                                     % stats.p.m.fn()
                                     % stats.p.m.sn()
-                                    % stats.p.m.sp()).str());
+                                    % stats.p.m.ac()).str());
     o.info("Generating summary statistics");
 
     double covered = 0;
@@ -111,7 +111,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                             % stats.n_chrT
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()
-                                            % stats.p.m.sp()
+                                            % stats.p.m.ac()
                                             % covered
                                             % stats.p.hl.abund
                                             % stats.p.hl.id

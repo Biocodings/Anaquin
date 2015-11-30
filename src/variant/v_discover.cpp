@@ -15,7 +15,7 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
         // Empty Implementation
     });
 
-    stats.m.nr = r.countVars();
+    stats.m.nr() = r.countVars();
 
     o.info("Generating summary statistics");
 
@@ -40,7 +40,7 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
                                             % stats.m.tp()
                                             % (stats.n_chrT - stats.m.tp())
                                             % stats.m.sn()
-                                            % stats.m.sp()).str());
+                                            % stats.m.ac()).str());
     o.writer->close();
 
     /*

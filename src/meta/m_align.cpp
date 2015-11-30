@@ -96,13 +96,13 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
             }
         });
 
-        m.nr = in.l().length();
-        m.nq = m.tp() + fps.at(i.first);
+        m.nr() = in.l().length();
+        m.nq() = m.tp() + fps.at(i.first);
         
-        assert(m.nr >= m.tp());
+        assert(m.nr() >= m.tp());
         
-        stats.bp.m.nr += in.l().length();
-        stats.bp.m.nq  = stats.bp.m.tp() + stats.bp.m.fp();
+        stats.bp.m.nr() += in.l().length();
+        stats.bp.m.nq()  = stats.bp.m.tp() + stats.bp.m.fp();
     }
 
     o.info("Calculating detection limit");
@@ -145,11 +145,11 @@ void MAlign::report(const FileName &file, const Options &o)
                                             % stats.n_chrT
                                             % stats.inters.size()                       // 5
                                             % stats.sp.m.sn()
-                                            % stats.sp.m.sp()
+                                            % stats.sp.m.ac()
                                             % stats.sp.hl.id
                                             % stats.sp.hl.abund
                                             % stats.bp.m.sn()    // 10
-                                            % stats.bp.m.sp()
+                                            % stats.bp.m.ac()
                                             % stats.bp.hl.id
                                             % stats.bp.hl.abund
                                             % stats.dilution()).str());
@@ -179,7 +179,7 @@ void MAlign::report(const FileName &file, const Options &o)
                                                % stats.sp.h.at(i.first)
                                                % stats.bp.h.at(i.first)
                                                % ss.covered()
-                                               % (isnan(b.sp()) ? "-" : std::to_string(b.sp()))
+                                               % (isnan(b.ac()) ? "-" : std::to_string(b.ac()))
                         ).str());
     }
 

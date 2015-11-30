@@ -2,6 +2,7 @@
 #define T_ALIGN_HPP
 
 #include "stats/analyzer.hpp"
+#include "data/alignment.hpp"
 
 namespace Anaquin
 {
@@ -32,6 +33,8 @@ namespace Anaquin
             };
 
             static Stats stats (const FileName &, const Options &options = Options());
+            static Stats stats (const std::vector<Alignment> &, const Options &options = Options());
+
             static void  report(const FileName &, const Options &options = Options());
     };
 }
