@@ -88,61 +88,50 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
     return match;
 }
 
-TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
+struct ParseImpl
+{
+    TAlign::Stats *stats;
+    
+    FPStats  *lFPS;
+    FPStats  *rFPS;
+
+    Interval *base;
+};
+
+// Internal implementation
+typedef std::function<void (const ParseImpl &)> Functor;
+
+TAlign::Stats calculate(const TAlign::Options &o, Functor f)
 {
     const auto &r = Standard::instance().r_trans;
-
+    
     TAlign::Stats stats = init();
-
-    o.analyze(file);
-
+    
     FPStats lFPS, rFPS;
-
+    
     for (const auto &i : stats.pb.h)
     {
         lFPS[i.first];
         rFPS[i.first];
     }
     
+    // This is needed to track the FP at the base level
     Interval base("Base", Locus(0, 44566700));
     
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
-    {
-        REPORT_STATUS();
-
-        stats.update(align);
-
-        if (!align.mapped || align.id != Standard::chrT)
-        {
-            return;
-        }
-
-        const Interval *match = nullptr;
-        
-        if (!align.spliced)
-        {
-            // Calculating statistics at the exon level
-            match = matchExon(align, stats, lFPS, rFPS);
-        }
-        else
-        {
-            // Calculating statistis at the intron level
-            match = matchIntron(align, stats);
-        }
-
-        if (!match)
-        {
-            stats.unknowns.push_back(UnknownAlignment(align.qName, align.l));
-            
-            // We can't simply add it to statistics because we'll need to account for overlapping
-            base.map(align.l);
-        }
-    });
+    ParseImpl impl;
     
+    impl.lFPS  = &lFPS;
+    impl.rFPS  = &rFPS;
+    impl.base  = &base;
+    impl.stats = &stats;
+
+    // It's the caller job to handle the parsing
+    f(impl);
+
     assert(stats.pb.m.tp() == 0 && stats.pb.m.fp() == 0);
-
+    
     o.info("Calculating for non-overlapping at the base level");
-
+    
     base.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
     {
         if (depth)
@@ -156,18 +145,18 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
     
     stats.pe.inferRefFromHist();
     stats.pi.inferRefFromHist();
-
+    
     o.info("Calculating metrics for all sequins");
-
+    
     /*
      * Calculating metrics for all sequins.
      */
-
+    
     for (const auto &i : stats.eInters.data())
     {
         auto &m  = stats.sb.at(i.second.gID);
         auto &in = i.second;
-
+        
         const auto &gID = i.second.gID;
         
         // Update the FP at the gene level
@@ -175,17 +164,17 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         
         // Update the FP at the overall level
         stats.pb.m.fp() += m.fp();
-
+        
         in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
             if (depth)
             {
                 // Update the sequin performance
                 m.tp() += j - i;
-
+                            
                 // Update the overall performance
                 stats.pb.m.tp() += j - i;
-
+                            
                 // Update the distribution
                 stats.pb.h.at(gID)++;
             }
@@ -193,32 +182,69 @@ TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
         
         m.nr += in.l().length();
         m.nq += m.tp() + m.fp();
-
+        
         assert(m.nr >= m.tp());
         
         stats.pb.m.nr += in.l().length();
         stats.pb.m.nq  = stats.pb.m.tp() + stats.pb.m.fp();
     }
-
+    
     o.info("Merging overlapping bases");
-
+    
     assert(stats.pe.m.nr && stats.pi.m.nr && stats.pb.m.nr);
-
-    /*
-     * Calculate for the LOS
-     */
-
+    
     o.info("Calculating detection limit");
-
+    
     stats.pe.hl = r.limitGene(stats.pe.h);
     stats.pi.hl = r.limitGene(stats.pi.h);
     stats.pb.hl = r.limitGene(stats.pb.h);
-
+    
     stats.pe.m.sn();
     stats.pb.m.sn();
     stats.pi.m.sn();
-
+    
     return stats;
+}
+
+TAlign::Stats TAlign::stats(const FileName &file, const Options &o)
+{
+    o.analyze(file);
+    
+    return calculate(o, [&](const ParseImpl &impl)
+    {
+        ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+        {
+            REPORT_STATUS();
+            
+            impl.stats->update(align);
+            
+            if (!align.mapped || align.id != Standard::chrT)
+            {
+                return;
+            }
+            
+            const Interval *match = nullptr;
+            
+            if (!align.spliced)
+            {
+                // Calculating statistics at the exon level
+                match = matchExon(align, *(impl.stats), *(impl.lFPS), *(impl.rFPS));
+            }
+            else
+            {
+                // Calculating statistis at the intron level
+                match = matchIntron(align, *(impl.stats));
+            }
+            
+            if (!match)
+            {
+                impl.stats->unknowns.push_back(UnknownAlignment(align.qName, align.l));
+                
+                // We can't simply add it to statistics because we'll need to account for overlapping
+                impl.base->map(align.l);
+            }
+        });
+    });
 }
 
 void TAlign::report(const FileName &file, const Options &o)
@@ -327,7 +353,7 @@ void TAlign::report(const FileName &file, const Options &o)
         o.writer->open("TransAlign_quins.stats");
         o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
         
-        const auto format = "%1%\t%2%\t%3%\t%4%";
+        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
         o.writer->write((boost::format(format) % "ID"
                                                % "Sensitivity (Exon)"
@@ -340,8 +366,24 @@ void TAlign::report(const FileName &file, const Options &o)
         
         for (const auto &i : stats.pe.h)
         {
-            const auto estats = stats.eInters.find(i.first)->stats();
+            Base length   = 0;
+            Base nonZeros = 0;
             
+            for (const auto &j : stats.eInters.data())
+            {
+               if (j.second.gID == i.first)
+               {
+                   const auto eStats = j.second.stats();
+                   
+                   length   += eStats.length;
+                   nonZeros += eStats.nonZeros;
+                   
+                   assert(length >= nonZeros);
+               }
+            }
+            
+            const auto covered = static_cast<double>(nonZeros) / length;
+/*
             o.writer->write((boost::format(format) % i.first
                                                    % stats.se.at(i.first).sn()
                                                    % stats.se.at(i.first).accuracy()
@@ -349,7 +391,8 @@ void TAlign::report(const FileName &file, const Options &o)
                                                    % stats.si.at(i.first).accuracy()
                                                    % stats.sb.at(i.first).sn()
                                                    % stats.sb.at(i.first).accuracy()
-                                                   % estats.covered()).str());
+                                                   % covered).str());
+ */
         }
         
         o.writer->close();
