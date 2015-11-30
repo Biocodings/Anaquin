@@ -72,6 +72,9 @@ softLimit <- function(x, y)
     # Fit the model again
     m <- plm(which.min(r$sums))
     
-    r <- list(b, m, r)
+    r <- list(m, r, b)
     r
 }
+
+
+
