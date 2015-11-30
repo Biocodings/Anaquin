@@ -84,8 +84,8 @@ loadMixture <- function(mix=NULL, exons=NULL)
 
     if (is.null(exons))
     {
-        exons <- read.csv('/Users/tedwong/Desktop/exons.csv', row.names=1)
-        exons$logFold <- as.numeric(as.character(exons$logFold))
+        #exons <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR006.v013.csv'), row.names=1)
+        #exons$logFold <- as.numeric(as.character(exons$logFold))
     }
     
     mix$fold    <- mix$Mix.B / mix$Mix.A
