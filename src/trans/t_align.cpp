@@ -1,8 +1,22 @@
-#include <iostream>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
+
+typedef std::map<GeneID, Base> FPStats;
+
+struct ParseImpl
+{
+    TAlign::Stats *stats;
+    
+    FPStats  *lFPS;
+    FPStats  *rFPS;
+    
+    Interval *base;
+};
+
+// Internal implementation
+typedef std::function<void (const ParseImpl &)> Functor;
 
 static TAlign::Stats init()
 {
@@ -60,8 +74,6 @@ static TAlign::Stats init()
     
     return stats;
 }
-
-typedef std::map<GeneID, Base> FPStats;
 
 static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, FPStats &lFPS, FPStats &rFPS)
 {
@@ -128,19 +140,6 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
     
     return match;
 }
-
-struct ParseImpl
-{
-    TAlign::Stats *stats;
-    
-    FPStats  *lFPS;
-    FPStats  *rFPS;
-
-    Interval *base;
-};
-
-// Internal implementation
-typedef std::function<void (const ParseImpl &)> Functor;
 
 TAlign::Stats calculate(const TAlign::Options &o, Functor f)
 {
