@@ -35,8 +35,8 @@ namespace Anaquin
         {
             return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
         }
-        
-        inline Percentage accuracy() const
+
+        inline Percentage acc() const
         {
             return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
         }

@@ -16,13 +16,48 @@ static TAlign::Stats init()
     for (const auto &i : stats.pe.h)
     {
         stats.sb[i.first];
-        stats.se[i.first];
         stats.si[i.first];
+        stats.se[i.first];
     }
     
     stats.eInters = r.exonInters();
     stats.iInters = r.intronInters();
 
+    /*
+     * Initalize the references
+     */
+    
+    for (auto &i : stats.se)
+    {
+        for (const auto &j : stats.eInters.data())
+        {
+            if (i.first == j.second.gID)
+            {
+                i.second.nr++;
+            }
+        }
+        
+        assert(i.second.nr);
+    }
+
+    for (auto &i : stats.si)
+    {
+        for (const auto &j : stats.iInters.data())
+        {
+            if (i.first == j.second.gID)
+            {
+                i.second.nr++;
+            }
+        }
+        
+        if (i.second.nr == 0)
+        {
+            i.second.nr = 1;
+        }
+        
+        assert(i.second.nr);
+    }
+    
     return stats;
 }
 
@@ -41,6 +76,7 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
         // Update the statistics for the sequin
         classifyTP(stats.se.at(match->gID), align);
 
+        stats.se.at(match->gID).nr++;
         stats.pe.h.at(match->gID)++;
     }
 
@@ -49,6 +85,8 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
     {
         // Update the statistics for the sequin
         classifyFP(stats.se.at(match->gID), align);
+        
+        stats.se.at(match->gID).nr++;
     }
     
     if (match)
@@ -77,12 +115,15 @@ static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats
         // Update the statistics for the sequin
         classifyTP(stats.si.at(match->gID), align);
 
+        stats.si.at(match->gID).nr++;
         stats.pi.h.at(match->gID)++;
     }
     else if ((match = stats.iInters.overlap(align.l)))
     {
         // Update the statistics for the sequin
         classifyFP(stats.si.at(match->gID), align);
+        
+        stats.si.at(match->gID).nr++;
     }
     
     return match;
@@ -259,7 +300,7 @@ void TAlign::report(const FileName &file, const Options &o)
                                           % stats.pe.m.fp()
                                           % stats.pe.m.fn()
                                           % stats.pe.m.sn()
-                                          % stats.pe.m.accuracy()).str());
+                                          % stats.pe.m.acc()).str());
 
     o.logInfo((boost::format("Intron: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pi.m.nr
@@ -268,7 +309,7 @@ void TAlign::report(const FileName &file, const Options &o)
                                           % stats.pi.m.fp()
                                           % stats.pi.m.fn()
                                           % stats.pi.m.sn()
-                                          % stats.pi.m.accuracy()).str());
+                                          % stats.pi.m.acc()).str());
 
     o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
                                           % stats.pb.m.nr
@@ -277,7 +318,7 @@ void TAlign::report(const FileName &file, const Options &o)
                                           % stats.pb.m.fp()
                                           % stats.pb.m.fn()
                                           % stats.pb.m.sn()
-                                          % stats.pb.m.accuracy()).str());
+                                          % stats.pb.m.acc()).str());
 
     /*
      * Write out summary statistics
@@ -330,15 +371,15 @@ void TAlign::report(const FileName &file, const Options &o)
                                                 % stats.pi.m.nq
                                                 % stats.pb.m.nq
                                                 % stats.pe.m.sn()
-                                                % stats.pe.m.accuracy()
+                                                % stats.pe.m.acc()
                                                 % stats.pe.hl.abund
                                                 % stats.pe.hl.id
                                                 % stats.pi.m.sn()
-                                                % stats.pi.m.accuracy()
+                                                % stats.pi.m.acc()
                                                 % stats.pi.hl.abund
                                                 % stats.pi.hl.id
                                                 % stats.pb.m.sn()
-                                                % stats.pb.m.accuracy()
+                                                % stats.pb.m.acc()
                                                 % stats.pb.hl.abund
                                                 % stats.pb.hl.id
                                                 % stats.dilution()).str());
@@ -383,16 +424,15 @@ void TAlign::report(const FileName &file, const Options &o)
             }
             
             const auto covered = static_cast<double>(nonZeros) / length;
-/*
+
             o.writer->write((boost::format(format) % i.first
                                                    % stats.se.at(i.first).sn()
-                                                   % stats.se.at(i.first).accuracy()
+                                                   % stats.se.at(i.first).acc()
                                                    % stats.si.at(i.first).sn()
-                                                   % stats.si.at(i.first).accuracy()
+                                                   % stats.si.at(i.first).acc()
                                                    % stats.sb.at(i.first).sn()
-                                                   % stats.sb.at(i.first).accuracy()
+                                                   % stats.sb.at(i.first).acc()
                                                    % covered).str());
- */
         }
         
         o.writer->close();
