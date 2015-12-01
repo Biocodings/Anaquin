@@ -575,10 +575,10 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters() const
     
     for (const auto &i : _impl->sortedExons)
     {
-        inters.add(ExonInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%_") % i.gID
-                                                                                 % i.iID
-                                                                                 % i.l.start
-                                                                                 % i.l.end).str(), i.l));
+        inters.add(ExonInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%") % i.gID
+                                                                                % i.iID
+                                                                                % i.l.start
+                                                                                % i.l.end).str(), i.l));
     }
     
     return inters;
@@ -590,10 +590,10 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters() const
     
     for (const auto &i : _impl->sortedIntrons)
     {
-        inters.add(IntronInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%_") % i.gID
-                                                                                   % i.iID
-                                                                                   % i.l.start
-                                                                                   % i.l.end).str(), i.l));
+        inters.add(IntronInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%") % i.gID
+                                                                                  % i.iID
+                                                                                  % i.l.start
+                                                                                  % i.l.end).str(), i.l));
     }
 
     return inters;

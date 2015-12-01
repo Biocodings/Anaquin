@@ -1,8 +1,6 @@
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
-
 #include <iostream>
-
 using namespace Anaquin;
 
 typedef std::map<GeneID, Base> FPStats;
@@ -31,13 +29,36 @@ static TAlign::Stats init()
 
     for (const auto &i : stats.pe.h)
     {
-        stats.sb[i.first];
-        stats.si[i.first];
-        stats.se[i.first];
+        const auto gID = i.first;
+        
+        stats.sb[gID];
+        stats.si[gID];
+        stats.se[gID];
+        stats.detectExons[gID];
+        stats.undetectExons[gID];
+        stats.detectIntrons[gID];
+        stats.undetectIntrons[gID];
     }
     
     stats.eInters = r.exonInters();
     stats.iInters = r.intronInters();
+
+    for (const auto &i : stats.eInters.data())
+    {
+        stats.eContains[i.first];
+        stats.eOverlaps[i.first];
+        stats.exonToGene[i.second.id()] = i.second.gID;
+    }
+    
+    for (const auto &i : stats.iInters.data())
+    {
+        stats.iContains[i.first];
+        stats.iOverlaps[i.first];
+        stats.intronToGene[i.second.id()] = i.second.gID;
+    }
+    
+    assert(!stats.eContains.empty() && !stats.eOverlaps.empty());
+    assert(!stats.iContains.empty() && !stats.iOverlaps.empty());
 
     /*
      * Initalize the references
@@ -52,10 +73,8 @@ static TAlign::Stats init()
                 i.second.nr()++;
             }
         }
-        
-        assert(i.second.nr());
     }
-
+    
     for (auto &i : stats.si)
     {
         for (const auto &j : stats.iInters.data())
@@ -65,43 +84,36 @@ static TAlign::Stats init()
                 i.second.nr()++;
             }
         }
-        
-        if (i.second.nr() == 0)
-        {
-            i.second.nr() = 1;
-        }
-        
-        assert(i.second.nr());
     }
     
     return stats;
 }
 
-static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, FPStats &lFPS, FPStats &rFPS)
+template <typename T> const T * matchT(const Alignment &align,
+                                       Intervals<T> &inters,
+                                       std::map<std::string, Counts> &contains,
+                                       std::map<std::string, Counts> &overlaps,
+                                       FPStats *lFPS = nullptr,
+                                       FPStats *rFPS = nullptr)
 {
-    TransRef::ExonInterval * match = nullptr;
+    T * match = nullptr;
 
     // Can we find an exon that contains the alignment?
-    if (classify(stats.pe.m, align, [&](const Alignment &)
-    {
-        return (match = stats.eInters.contains(align.l));
-    }))
-    {
-        // Update the statistics for the sequin
-        classifyTP(stats.se.at(match->gID), align);
+    match = inters.contains(align.l);
 
-        stats.se.at(match->gID).nr()++;
-        stats.pe.h.at(match->gID)++;
+    if (match)
+    {
+        contains.at(match->id())++;
     }
-
-    // Can we find an exon that overlaps the alignment? (assuming only a single exon is overlapped)
-    else if ((match = stats.eInters.overlap(align.l)))
+    else
     {
-        // Update the statistics for the sequin
-        classifyFP(stats.se.at(match->gID), align);
-        
-        std::cout << match->id() << std::endl;
-        stats.se.at(match->gID).nr()++;
+        // Maybe we can find an exon that overlaps the alignment?
+        match = inters.overlap(align.l);
+
+        if (match)
+        {
+            overlaps.at(match->id())++;
+        }
     }
     
     if (match)
@@ -111,34 +123,11 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
         // Anything that fails to being mapped is counted as FP
         match->map(align.l, &lp, &rp);
 
-        lFPS.at(match->gID) = std::max(lFPS.at(match->gID), lp);
-        rFPS.at(match->gID) = std::max(rFPS.at(match->gID), rp);
-    }
-    
-    return match;
-}
-
-static const Interval * matchIntron(const Alignment &align, TAlign::Stats &stats)
-{
-    TransRef::IntronInterval * match = nullptr;
-    
-    if (classify(stats.pi.m, align, [&](const Alignment &)
-    {
-        return (match = stats.iInters.contains(align.l));
-    }))
-    {
-        // Update the statistics for the sequin
-        classifyTP(stats.si.at(match->gID), align);
-
-        stats.si.at(match->gID).nr()++;
-        stats.pi.h.at(match->gID)++;
-    }
-    else if ((match = stats.iInters.overlap(align.l)))
-    {
-        // Update the statistics for the sequin
-        classifyFP(stats.si.at(match->gID), align);
-        
-        stats.si.at(match->gID).nr()++;
+        if (lFPS && rFPS)
+        {
+            lFPS->at(match->gID) = std::max(lFPS->at(match->gID), lp);
+            rFPS->at(match->gID) = std::max(rFPS->at(match->gID), rp);
+        }
     }
     
     return match;
@@ -189,12 +178,75 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     stats.pe.inferRefFromHist();
     stats.pi.inferRefFromHist();
     
-    o.info("Calculating metrics for all sequins");
+    /*
+     * Calculating statistics for all sequins
+     */
+
+    o.info("Calculating statistics for all sequins");
+
+    assert(!stats.pe.m.tp());
     
     /*
-     * Calculating metrics for all sequins.
+     * Calculating overall metrics for the exon and intron level.
+     *
+     * Exon:
+     *
+     *    TP -> for each detected exon
+     *    FN -> for each undetected exon
+     *
+     * This is done for measuring the sensitivity at exon level. For example, if an experiment
+     * is only able to detect half of the exons, the sensitivity would be 50%.
+     *
+     * Unfortunately, there is no concept of FP here. Therefore, FP is undefined. Intron is similar.
      */
     
+    auto overall = [&](const std::map<ExonID, Counts> &contains, Confusion &m)
+    {
+        for (const auto &i : contains)
+        {
+            if (i.second)
+            {
+                // It's TP because it's contained
+                m.tp()++;
+            }
+            else
+            {
+                // It's FP because it is overlapped or outside
+                m.fn()++;
+            }
+        }
+    };
+
+    overall(stats.eContains, stats.pe.m);
+    overall(stats.iContains, stats.pi.m);
+    
+    stats.pe.m.fp() = stats.eUnknown;
+    stats.pi.m.fp() = stats.iUnknown;
+
+    /*
+     * Calculating alignment statistics. They can be used for accuracy at the exon and intron level.
+     */
+    
+    auto aligns = [](Counts mapped, Counts unknown, const std::map<ExonID, Counts> &overlaps, Confusion &m)
+    {
+        m.tp() = mapped;
+        m.fp() = unknown;
+        
+        for (const auto &i : overlaps)
+        {
+            m.fp() += i.second;
+        }
+    };
+
+    aligns(stats.eMapped, stats.eUnknown, stats.eOverlaps, stats.ae);
+    aligns(stats.iMapped, stats.iUnknown, stats.iOverlaps, stats.ai);
+    
+    /*
+     * Calculating metrics at the base level.
+     */
+
+    o.info("Calculating statistics for each sequin");
+
     for (const auto &i : stats.eInters.data())
     {
         auto &m  = stats.sb.at(i.second.gID);
@@ -207,15 +259,16 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         
         // Update the FP at the overall level
         stats.pb.m.fp() += m.fp();
-        auto a = m.tp();
+        
+        Base covered = 0;
         
         in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
             if (depth)
             {
                 // Update the sequin performance
-                m.tp() += j - i;
-                            
+                covered += j - i;
+                
                 // Update the overall performance
                 stats.pb.m.tp() += j - i;
                             
@@ -223,7 +276,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
                 stats.pb.h.at(gID)++;
             }
         });
-        
+
+        m.tp() += covered;
         m.nr() += in.l().length();
         m.nq()  = m.tp() + m.fp();
         
@@ -233,6 +287,78 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         stats.pb.m.nq()  = stats.pb.m.tp() + stats.pb.m.fp();
     }
     
+    /*
+     * Exon:
+     *
+     *    TP -> for all alignments contained
+     *    FP -> for all alignments overlapped
+     *    FN -> if TP is zero (the gene is undetected)
+     *
+     * Intron is similar.
+     */
+    
+    auto indiv = [](std::map<GeneID, Confusion> &m,
+                    std::map<std::string, std::string> &mapper,
+                    std::map<GeneID, Counts> &detects,
+                    std::map<GeneID, Counts> &undetects,
+                    const std::map<std::string, Counts> &contains,
+                    const std::map<std::string, Counts> &overlaps)
+    {
+        for (auto &i : m)
+        {
+            Counts detect = 0;
+            
+            for (auto &j : contains)
+            {
+                if (i.first == mapper.at(j.first))
+                {
+                    i.second.tp() += j.second;
+                    
+                    if (j.second)
+                    {
+                        detect++;
+                        
+                        //
+                        detects.at(i.first)++;
+                    }
+                }
+            }
+            
+            for (auto &j : overlaps)
+            {
+                if (i.first == mapper.at(j.first))
+                {
+                    i.second.fp() += j.second;
+                }
+            }
+
+            /*
+             * How many exons/introns mapped to the gene?
+             */
+            
+            Counts n = 0;
+            
+            for (const auto &j : mapper)
+            {
+                if (i.first == j.second)
+                {
+                    n++;
+                }
+            }
+            
+            // Obviously we can't detect more than what we have
+            assert(detect <= n);
+            
+            i.second.fn() = n - detect;
+            i.second.nr() = i.second.tp() + i.second.fn();
+
+            undetects.at(i.first) = n - detect;
+        }
+    };
+    
+    indiv(stats.se, stats.exonToGene, stats.detectExons, stats.undetectExons, stats.eContains, stats.eOverlaps);
+    indiv(stats.si, stats.intronToGene, stats.detectIntrons, stats.undetectIntrons, stats.iContains, stats.iOverlaps);
+
     o.info("Calculating detection limit");
     
     stats.pe.hl = r.limitGene(stats.pe.h);
@@ -257,15 +383,35 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
     
     if (!align.spliced)
     {
-        // Calculating statistics at the exon level
-        match = matchExon(align, *(impl.stats), *(impl.lFPS), *(impl.rFPS));
+        if ((match = matchT(align,
+                            impl.stats->eInters,
+                            impl.stats->eContains,
+                            impl.stats->eOverlaps,
+                            impl.lFPS,
+                            impl.rFPS)))
+        {
+            impl.stats->eMapped++;
+        }
+        else
+        {
+            impl.stats->eUnknown++;
+        }
     }
     else
     {
-        // Calculating statistis at the intron level
-        match = matchIntron(align, *(impl.stats));
+        if ((match = matchT(align,
+                            impl.stats->iInters,
+                            impl.stats->iContains,
+                            impl.stats->iOverlaps)))
+        {
+            impl.stats->iMapped++;
+        }
+        else
+        {
+            impl.stats->iUnknown++;
+        }
     }
-    
+
     if (!match)
     {
         impl.stats->unknowns.push_back(UnknownAlignment(align.qName, align.l));
