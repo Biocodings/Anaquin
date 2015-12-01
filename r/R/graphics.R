@@ -1,7 +1,7 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
 #
@@ -22,6 +22,17 @@ library(plyr)
 
 library(RColorBrewer)
 colors <- brewer.pal(3, "Set2")
+
+#
+# Create a scatter plot for the first two principal components for RUVg.
+#
+
+plotROC <- function()
+{
+    
+}
+
+
 
 #
 # Create a scatter plot for the first two principal components for RUVg.
