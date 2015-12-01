@@ -12,7 +12,6 @@ namespace Anaquin
         
             inline Counts &tp() const { return _tp; }
             inline Counts &fp() const { return _fp; }
-            inline Counts &tn() const { return _tn; }
             inline Counts &fn() const { return _fn; }
             inline Counts &nr() const { return _nr; }
             inline Counts &nq() const { return _nq; }
@@ -30,7 +29,7 @@ namespace Anaquin
                 // Adjust for fn... Refer to the wikipedia for more details
                 _fn = _nr - _tp;
 
-                return _tp && (_tp + _fn) ? static_cast<Percentage>(_tp) / (_tp + _fn) : NAN;
+                return (_tp + _fn) ? static_cast<Percentage>(_tp) / (_tp + _fn) : NAN;
             }
         
             inline Percentage ac() const
