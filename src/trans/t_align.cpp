@@ -1,6 +1,8 @@
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
 
+#include <iostream>
+
 using namespace Anaquin;
 
 typedef std::map<GeneID, Base> FPStats;
@@ -98,6 +100,7 @@ static const Interval * matchExon(const Alignment &align, TAlign::Stats &stats, 
         // Update the statistics for the sequin
         classifyFP(stats.se.at(match->gID), align);
         
+        std::cout << match->id() << std::endl;
         stats.se.at(match->gID).nr()++;
     }
     
@@ -198,12 +201,13 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         auto &in = i.second;
         
         const auto &gID = i.second.gID;
-        
+
         // Update the FP at the gene level
         m.fp() = lFPS.at(gID) + rFPS.at(gID);
         
         // Update the FP at the overall level
         stats.pb.m.fp() += m.fp();
+        auto a = m.tp();
         
         in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
         {
@@ -221,7 +225,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         });
         
         m.nr() += in.l().length();
-        m.nq() += m.tp() + m.fp();
+        m.nq()  = m.tp() + m.fp();
         
         assert(m.nr() >= m.tp());
         

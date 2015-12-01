@@ -11,7 +11,7 @@ TEST_CASE("TAlign_All_AllRepeats")
     std::vector<Alignment> aligns;
     
     /*
-     * Create synthetic alignments that have no mapping to any sequin
+     * Create synthetic alignments that have mapping only to R2_24
      */
     
     for (auto i = 0; i < 100; i++)
@@ -64,6 +64,65 @@ TEST_CASE("TAlign_All_AllRepeats")
     REQUIRE(r.pi.m.tp() == 0);
     REQUIRE(r.pi.m.fp() == 0);
     REQUIRE(r.pi.m.fn() == 76);
+    
+    for (auto &i : r.si)
+    {
+        REQUIRE(i.second.sn() == 0);
+        REQUIRE(isnan(i.second.ac()));
+        REQUIRE(i.second.nr() != 0); // Number of introns
+        REQUIRE(i.second.nq() == 0);
+        REQUIRE(i.second.tp() == 0);
+        REQUIRE(i.second.fp() == 0);
+        REQUIRE(i.second.fn() == i.second.nr());
+    }
+    
+    for (auto &i : r.sb)
+    {
+        if (i.first == "R2_24")
+        {
+            REQUIRE(i.second.sn() == Approx(0.00147645));
+            REQUIRE(i.second.ac() == 1.0);
+            REQUIRE(i.second.nr() == 6773);
+            REQUIRE(i.second.tp() == 10);
+            REQUIRE(i.second.fp() == 0);
+            REQUIRE(i.second.nq() == 10);
+            REQUIRE(i.second.fn() == 6763);
+        }
+        else
+        {
+            REQUIRE(i.second.sn() == 0);
+            REQUIRE(isnan(i.second.ac()));
+            REQUIRE(i.second.nr() != 0); // Number of bases
+            REQUIRE(i.second.nq() == 0);
+            REQUIRE(i.second.tp() == 0);
+            REQUIRE(i.second.fp() == 0);
+            REQUIRE(i.second.fn() == i.second.nr());
+        }
+    }
+    
+    for (auto &i : r.se)
+    {
+        if (i.first == "R2_24")
+        {
+            REQUIRE(i.second.sn() == Approx(0.6711409396));
+            REQUIRE(i.second.ac() == 1.0);
+            REQUIRE(i.second.nr() != 0); // Number of exons
+            REQUIRE(i.second.nq() == 100);
+            REQUIRE(i.second.tp() == 100);
+            REQUIRE(i.second.fp() == 0);
+            REQUIRE(i.second.fn() == 49);
+        }
+        else
+        {
+            REQUIRE(i.second.sn() == 0);
+            REQUIRE(isnan(i.second.ac()));
+            REQUIRE(i.second.nr() != 0); // Number of exons
+            REQUIRE(i.second.nq() == 0);
+            REQUIRE(i.second.tp() == 0);
+            REQUIRE(i.second.fp() == 0);
+            REQUIRE(i.second.fn() == i.second.nr());
+        }
+    }
 }
 
 TEST_CASE("TAlign_All_FalsePositives")
