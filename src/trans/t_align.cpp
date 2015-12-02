@@ -221,8 +221,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     overall(stats.eContains, stats.pe.m);
     overall(stats.iContains, stats.pi.m);
     
-    stats.pe.m.fp() = stats.eUnknown + sum(stats.eContains);
-    stats.pi.m.fp() = stats.iUnknown + sum(stats.iContains);
+    stats.pe.m.fp() = stats.eUnknown + sum(stats.eOverlaps);
+    stats.pi.m.fp() = stats.iUnknown + sum(stats.iOverlaps);
 
     /*
      * Calculating alignment statistics. They can be used for accuracy at the exon and intron level.
