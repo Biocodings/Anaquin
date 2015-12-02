@@ -27,6 +27,10 @@ static TAlign::Stats init()
     // Initalize the distributions
     stats.pb.h = stats.pe.h = stats.pi.h = r.geneHist();
 
+    stats.eInters = r.exonInters();
+    stats.iInters = r.intronInters();
+
+    // For each gene...
     for (const auto &i : stats.pe.h)
     {
         const auto gID = i.first;
@@ -40,9 +44,6 @@ static TAlign::Stats init()
         stats.undetectIntrons[gID];
     }
     
-    stats.eInters = r.exonInters();
-    stats.iInters = r.intronInters();
-
     // For each exon bin...
     for (const auto &i : stats.eInters.data())
     {
@@ -51,7 +52,7 @@ static TAlign::Stats init()
         stats.exonToGene[i.second.id()] = i.second.gID;
     }
     
-    // For each intron bin..
+    // For each intron bin...
     for (const auto &i : stats.iInters.data())
     {
         stats.iContains[i.first];

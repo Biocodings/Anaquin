@@ -461,6 +461,14 @@ template <typename Iter> Base countLocus(const Iter &iter)
 
 struct TransRef::TransRefImpl
 {
+    static BinID createBinID(const GeneID &gID, const IsoformID &iID, const Locus &l)
+    {
+        return (boost::format("%1%_%2%_%3%_%4%") % gID
+                                                 % iID
+                                                 % l.start
+                                                 % l.end).str();
+    }
+    
     /*
      * Validated variables
      */
@@ -556,11 +564,6 @@ const TransRef::GeneData * TransRef::findGene(const Locus &l, MatchRule m) const
 
 const TransRef::ExonData * TransRef::findExon(const Locus &l, MatchRule m) const
 {
-    
-
-    
-    
-    
     return findList(_impl->sortedExons, l, m);
 }
 
@@ -575,10 +578,7 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters() const
     
     for (const auto &i : _impl->sortedExons)
     {
-        inters.add(ExonInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%") % i.gID
-                                                                                % i.iID
-                                                                                % i.l.start
-                                                                                % i.l.end).str(), i.l));
+        inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
     }
     
     return inters;
@@ -590,10 +590,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters() const
     
     for (const auto &i : _impl->sortedIntrons)
     {
-        inters.add(IntronInterval(i.gID, i.iID, (boost::format("%1%_%2%_%3%_%4%") % i.gID
-                                                                                  % i.iID
-                                                                                  % i.l.start
-                                                                                  % i.l.end).str(), i.l));
+        inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
     }
 
     return inters;
