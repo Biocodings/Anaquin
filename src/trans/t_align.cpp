@@ -43,6 +43,7 @@ static TAlign::Stats init()
     stats.eInters = r.exonInters();
     stats.iInters = r.intronInters();
 
+    // For each exon bin...
     for (const auto &i : stats.eInters.data())
     {
         stats.eContains[i.first];
@@ -50,6 +51,7 @@ static TAlign::Stats init()
         stats.exonToGene[i.second.id()] = i.second.gID;
     }
     
+    // For each intron bin..
     for (const auto &i : stats.iInters.data())
     {
         stats.iContains[i.first];
@@ -135,8 +137,6 @@ template <typename T> const T * matchT(const Alignment &align,
 
 TAlign::Stats calculate(const TAlign::Options &o, Functor f)
 {
-    const auto &r = Standard::instance().r_trans;
-    
     TAlign::Stats stats = init();
     
     FPStats lFPS, rFPS;
@@ -220,7 +220,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     overall(stats.eContains, stats.pe.m);
     overall(stats.iContains, stats.pi.m);
     
-    stats.pe.m.fp() = stats.eUnknown;
+    stats.pe.m.fp() = stats.eUnknown; // TODO: add overlaps
     stats.pi.m.fp() = stats.iUnknown;
 
     /*
@@ -361,6 +361,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
 
     o.info("Calculating detection limit");
     
+    const auto &r = Standard::instance().r_trans;
+
     stats.pe.hl = r.limitGene(stats.pe.h);
     stats.pi.hl = r.limitGene(stats.pi.h);
     stats.pb.hl = r.limitGene(stats.pb.h);
