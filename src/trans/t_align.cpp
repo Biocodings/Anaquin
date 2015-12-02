@@ -33,15 +33,13 @@ static TAlign::Stats init()
     // For each gene...
     for (const auto &i : stats.pe.h)
     {
-        const auto gID = i.first;
-        
-        stats.sb[gID];
-        stats.si[gID];
-        stats.se[gID];
-        stats.detectExons[gID];
-        stats.undetectExons[gID];
-        stats.detectIntrons[gID];
-        stats.undetectIntrons[gID];
+        stats.sb[i.first];
+        stats.si[i.first];
+        stats.se[i.first];
+        stats.detectExons[i.first];
+        stats.undetectExons[i.first];
+        stats.detectIntrons[i.first];
+        stats.undetectIntrons[i.first];
     }
     
     // For each exon bin...
@@ -99,25 +97,27 @@ template <typename T> const T * matchT(const Alignment &align,
                                        FPStats *lFPS = nullptr,
                                        FPStats *rFPS = nullptr)
 {
-    T * match = nullptr;
+    T * oMatch = nullptr;
 
     // Can we find an exon that contains the alignment?
-    match = inters.contains(align.l);
+    T * cMatch = inters.contains(align.l);
 
-    if (match)
+    if (cMatch)
     {
-        contains.at(match->id())++;
+        contains.at(cMatch->id())++;
     }
     else
     {
         // Maybe we can find an exon that overlaps the alignment?
-        match = inters.overlap(align.l);
+        oMatch = inters.overlap(align.l);
 
-        if (match)
+        if (oMatch)
         {
-            overlaps.at(match->id())++;
+            overlaps.at(oMatch->id())++;
         }
     }
+    
+    T * match = cMatch ? cMatch : oMatch;
     
     if (match)
     {
@@ -133,7 +133,7 @@ template <typename T> const T * matchT(const Alignment &align,
         }
     }
     
-    return match;
+    return cMatch;
 }
 
 TAlign::Stats calculate(const TAlign::Options &o, Functor f)
