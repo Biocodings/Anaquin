@@ -344,36 +344,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     assert(!stats.pe.m.tp() && !stats.pe.m.fp() && !stats.pe.m.fn());
     assert(!stats.pi.m.tp() && !stats.pi.m.fp() && !stats.pi.m.fn());
 
-    auto overall = [&](const std::map<BinID, Counts> &contains, Confusion &m)
-    {
-        for (const auto &i : contains)
-        {
-            if (i.second)
-            {
-                // It's TP because it's contained
-                m.tp()++;
-            }
-            else
-            {
-                // It's FP because it is overlapped or outside
-                m.fn()++;
-            }
-        }
-    };
-    
-/*
-    overall(stats.eContains, stats.pe.m);
-    overall(stats.iContains, stats.pi.m);
-    
-    stats.pe.m.fp() = stats.eUnknown + sum(stats.eOverlaps);
-    stats.pi.m.fp() = stats.iUnknown + sum(stats.iOverlaps);
-
- o.info("Counting references");
- 
- stats.pe.inferRefFromHist();
- stats.pi.inferRefFromHist();
-*/
-    
+    // Combinating statistics for exons
     for (const auto &i : stats.se)
     {
         stats.pe.m.tp() += i.second.tp();
@@ -383,6 +354,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         stats.pe.m.nr() += i.second.nr();
     }
 
+    // Combinating statistics for introns
     for (const auto &i : stats.si)
     {
         stats.pi.m.tp() += i.second.tp();
@@ -391,8 +363,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         stats.pi.m.nq() += i.second.nq();
         stats.pi.m.nr() += i.second.nr();
     }
-    
-    
+
     /*
      * Calculating detection limit
      */
