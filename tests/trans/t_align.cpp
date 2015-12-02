@@ -293,13 +293,14 @@ TEST_CASE("TAlign_R2_33_1")
     REQUIRE(r.pb.m.nq() == 283);
     
     REQUIRE(r.pe.m.sn() == Approx(0.0263157895));
-    REQUIRE(r.ae.ac() == 1.0);   // Remember r.pe.m.ac() is undefined
+    REQUIRE(r.ac(TAlign::Stats::AlignMetrics::Exon) == 1.0);
     REQUIRE(r.pe.m.nr() == 76);
     REQUIRE(r.pe.m.tp() == 2);
     REQUIRE(r.pe.m.fn() == 74);
     
     REQUIRE(r.pi.m.sn() == 0);
-    REQUIRE(isnan(r.pi.m.ac())); // Remember r.pi.m.ac() is undefined
+    REQUIRE(isnan(r.ac(TAlign::Stats::AlignMetrics::Intron)));
+    
     REQUIRE(r.pi.m.nr() == 76);
     REQUIRE(r.pi.m.tp() == 0);
     REQUIRE(r.pi.m.fn() == 76);

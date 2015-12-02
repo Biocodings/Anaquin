@@ -201,6 +201,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
      * Unfortunately, there is no concept of FP here. Therefore, FP is undefined. Intron is similar.
      */
     
+    o.info("Calculating overall statistics");
+
     auto overall = [&](const std::map<ExonID, Counts> &contains, Confusion &m)
     {
         for (const auto &i : contains)
@@ -225,9 +227,11 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     stats.pi.m.fp() = stats.iUnknown + sum(stats.iOverlaps);
 
     /*
-     * Calculating alignment statistics. They can be used for accuracy at the exon and intron level.
+     * 2. Calculating alignment statistics. Those can be used for accuracy at the exon and intron level.
      */
     
+    o.info("Calculating alignment statistics");
+
     auto aligns = [](Counts mapped, Counts unknown, const std::map<ExonID, Counts> &overlaps, Confusion &m)
     {
         m.tp() = mapped;
@@ -243,10 +247,10 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     aligns(stats.iMapped, stats.iUnknown, stats.iOverlaps, stats.ai);
     
     /*
-     * Calculating metrics at the base level.
+     * 3. Calculating metrics at the base level.
      */
 
-    o.info("Calculating statistics for each sequin");
+    o.info("Calculating base statistics");
 
     for (const auto &i : stats.eInters.data())
     {
@@ -289,6 +293,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     }
     
     /*
+     * 4. Calculating statistics for sequins (at the gene level due to alternative splicing)
+     *
      * Exon:
      *
      *    TP -> for all alignments contained
@@ -298,6 +304,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
      * Intron is similar.
      */
     
+    o.info("Calculating statistics for sequins");
+
     auto indiv = [](std::map<GeneID, Confusion> &m,
                     std::map<std::string, std::string> &mapper,
                     std::map<GeneID, Counts> &detects,
@@ -315,11 +323,14 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
                 {
                     i.second.tp() += j.second;
                     
+                    /*
+                     * How to define detection? It's detected if there is at least a single contained
+                     * alignment. This can be potentially enhanced to a custom rule.
+                     */
+                    
                     if (j.second)
                     {
                         detect++;
-                        
-                        //
                         detects.at(i.first)++;
                     }
                 }
@@ -361,6 +372,10 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     indiv(stats.si, stats.intronToGene, stats.detectIntrons, stats.undetectIntrons, stats.iContains, stats.iOverlaps);
 
     o.info("Calculating detection limit");
+    
+    /*
+     * Calculaing the hard detection limit. The limit is estimated with the frequency distribution.
+     */
     
     const auto &r = Standard::instance().r_trans;
 

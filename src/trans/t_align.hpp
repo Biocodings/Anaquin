@@ -67,10 +67,16 @@ namespace Anaquin
                 // Overall accuracy
                 inline double ac(enum AlignMetrics l) const
                 {
+                    /*
+                     * It's important to note pe.m.ac() and pi.m.ac() are both undefined. The two
+                     * confusion matrices for used for measuring sensivitiy and measued in numbers
+                     * of exons/introns.
+                     */
+                    
                     switch (l)
                     {
-                        case Exon:   { return pe.m.ac(); }
-                        case Intron: { return pi.m.ac(); }
+                        case Exon:   { return ae.ac(); }
+                        case Intron: { return ai.ac(); }
                         case Base:   { return pb.m.ac(); }
                     }
                 }
