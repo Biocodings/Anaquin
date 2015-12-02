@@ -21,6 +21,7 @@ namespace Anaquin
     typedef double Fold;
     typedef double Percentage;
 
+    typedef std::string BinID;
     typedef std::string BaseID;
     typedef std::string GeneID;
     typedef std::string ExonID;
