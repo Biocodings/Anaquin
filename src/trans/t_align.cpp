@@ -188,7 +188,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     assert(!stats.pe.m.tp());
     
     /*
-     * Calculating overall metrics for the exon and intron level.
+     * 1. Calculating overall metrics for the exon and intron level.
      *
      * Exon:
      *

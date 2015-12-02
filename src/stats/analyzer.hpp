@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <numeric>
 #include "stats/limit.hpp"
 #include <boost/format.hpp>
 #include "stats/classify.hpp"
@@ -12,44 +13,13 @@
 
 namespace Anaquin
 {
-    /*
-     * Histogram manipulations and operations
-     */
-
-    template <typename T> static Counts sums(const std::map<T, Counts> &m)
+    template <typename T> static Counts sum(const std::map<T, Counts> &x)
     {
-        Counts c = 0;
-
-        for (const auto &i : m)
+        return std::accumulate(std::begin(x), std::end(x), 0,
+                               [](Counts c, const std::pair<T, Counts>& p)
         {
-            if (i.second == 0)
-            {
-                c++;
-            }
-            else
-            {
-                c += i.second;
-            }
-        }
-        
-        return c;
-    }
-
-    template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
-    {
-        for (const auto &i : m)
-        {
-            if (i.second == 0)
-            {
-                c++;
-            }
-            else
-            {
-                c += i.second;
-            }
-        }
-
-        assert(c);
+            return c + p.second;
+        });
     }
 
     // Number of elements in the histogram with at least an entry

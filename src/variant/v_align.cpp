@@ -5,6 +5,23 @@
 
 using namespace Anaquin;
 
+template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
+{
+    for (const auto &i : m)
+    {
+        if (i.second == 0)
+        {
+            c++;
+        }
+        else
+        {
+            c += i.second;
+        }
+    }
+    
+    assert(c);
+}
+
 VAlign::Stats VAlign::report(const FileName &file, const Options &o)
 {
     VAlign::Stats stats;

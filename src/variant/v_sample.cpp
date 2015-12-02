@@ -5,6 +5,29 @@
 
 using namespace Anaquin;
 
+/*
+ * Histogram manipulations and operations
+ */
+
+template <typename T> static Counts sums(const std::map<T, Counts> &m)
+{
+    Counts c = 0;
+    
+    for (const auto &i : m)
+    {
+        if (i.second == 0)
+        {
+            c++;
+        }
+        else
+        {
+            c += i.second;
+        }
+    }
+    
+    return c;
+}
+
 constexpr const char * Standard::chrT;
 
 static bool checkGenoQuery(const ChromoID &queryID, const ChromoID &id, const Locus &l)
