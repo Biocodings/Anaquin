@@ -64,6 +64,17 @@ namespace Anaquin
                 // Alignments that have no mapping
                 std::vector<UnknownAlignment> unknowns;
 
+                // Overall sensitivity
+                inline double sn(enum AlignMetrics l) const
+                {
+                    switch (l)
+                    {
+                        case Exon:   { return pe.m.sn(); }
+                        case Intron: { return pi.m.sn(); }
+                        case Base:   { return pb.m.sn(); }
+                    }
+                }
+                
                 // Overall accuracy
                 inline double ac(enum AlignMetrics l) const
                 {

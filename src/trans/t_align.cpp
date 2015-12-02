@@ -174,60 +174,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         }
     });
     
-    o.info("Counting references");
-    
-    stats.pe.inferRefFromHist();
-    stats.pi.inferRefFromHist();
-    
     /*
-     * Calculating statistics for all sequins
-     */
-
-    o.info("Calculating statistics for all sequins");
-
-    assert(!stats.pe.m.tp());
-    
-    /*
-     * 1. Calculating overall metrics for the exon and intron level.
-     *
-     * Exon:
-     *
-     *    TP -> for each detected exon
-     *    FN -> for each undetected exon
-     *
-     * This is done for measuring the sensitivity at exon level. For example, if an experiment
-     * is only able to detect half of the exons, the sensitivity would be 50%.
-     *
-     * Unfortunately, there is no concept of FP here. Therefore, FP is undefined. Intron is similar.
-     */
-    
-    o.info("Calculating overall statistics");
-
-    auto overall = [&](const std::map<ExonID, Counts> &contains, Confusion &m)
-    {
-        for (const auto &i : contains)
-        {
-            if (i.second)
-            {
-                // It's TP because it's contained
-                m.tp()++;
-            }
-            else
-            {
-                // It's FP because it is overlapped or outside
-                m.fn()++;
-            }
-        }
-    };
-
-    overall(stats.eContains, stats.pe.m);
-    overall(stats.iContains, stats.pi.m);
-    
-    stats.pe.m.fp() = stats.eUnknown + sum(stats.eOverlaps);
-    stats.pi.m.fp() = stats.iUnknown + sum(stats.iOverlaps);
-
-    /*
-     * 2. Calculating alignment statistics. Those can be used for accuracy at the exon and intron level.
+     * 1. Calculating alignment statistics. Those can be used for accuracy at the exon and intron level.
      */
     
     o.info("Calculating alignment statistics");
@@ -247,7 +195,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     aligns(stats.iMapped, stats.iUnknown, stats.iOverlaps, stats.ai);
     
     /*
-     * 3. Calculating metrics at the base level.
+     * 2. Calculating metrics at the base level.
      */
 
     o.info("Calculating base statistics");
@@ -293,7 +241,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     }
     
     /*
-     * 4. Calculating statistics for sequins (at the gene level due to alternative splicing)
+     * 3. Calculating statistics for sequins (at the gene level due to alternative splicing)
      *
      * Exon:
      *
@@ -306,12 +254,12 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     
     o.info("Calculating statistics for sequins");
 
-    auto indiv = [](std::map<GeneID, Confusion> &m,
-                    std::map<std::string, std::string> &mapper,
-                    std::map<GeneID, Counts> &detects,
-                    std::map<GeneID, Counts> &undetects,
-                    const std::map<std::string, Counts> &contains,
-                    const std::map<std::string, Counts> &overlaps)
+    auto sequins = [](std::map<GeneID, Confusion> &m,
+                      std::map<std::string, std::string> &mapper,
+                      std::map<GeneID, Counts> &detects,
+                      std::map<GeneID, Counts> &undetects,
+                      const std::map<std::string, Counts> &contains,
+                      const std::map<std::string, Counts> &overlaps)
     {
         for (auto &i : m)
         {
@@ -321,6 +269,12 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
             {
                 if (i.first == mapper.at(j.first))
                 {
+                    /*
+                     * Eg: If there're 100 alignments contained, they're all TP.
+                     *
+                     *    j.second == 100
+                     */
+                    
                     i.second.tp() += j.second;
                     
                     /*
@@ -368,9 +322,81 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         }
     };
     
-    indiv(stats.se, stats.exonToGene, stats.detectExons, stats.undetectExons, stats.eContains, stats.eOverlaps);
-    indiv(stats.si, stats.intronToGene, stats.detectIntrons, stats.undetectIntrons, stats.iContains, stats.iOverlaps);
+    sequins(stats.se, stats.exonToGene, stats.detectExons, stats.undetectExons, stats.eContains, stats.eOverlaps);
+    sequins(stats.si, stats.intronToGene, stats.detectIntrons, stats.undetectIntrons, stats.iContains, stats.iOverlaps);
 
+    /*
+     * 4. Calculating overall metrics for exons and introns.
+     *
+     * Exon:
+     *
+     *    TP -> for each detected exon
+     *    FN -> for each undetected exon
+     *
+     * This is done for measuring the sensitivity at exon level. For example, if an experiment
+     * is only able to detect half of the exons, the sensitivity would be 50%.
+     *
+     * Unfortunately, there is no concept of FP here. Therefore, FP is undefined. Intron is similar.
+     */
+    
+    o.info("Calculating overall statistics");
+
+    assert(!stats.pe.m.tp() && !stats.pe.m.fp() && !stats.pe.m.fn());
+    assert(!stats.pi.m.tp() && !stats.pi.m.fp() && !stats.pi.m.fn());
+
+    auto overall = [&](const std::map<BinID, Counts> &contains, Confusion &m)
+    {
+        for (const auto &i : contains)
+        {
+            if (i.second)
+            {
+                // It's TP because it's contained
+                m.tp()++;
+            }
+            else
+            {
+                // It's FP because it is overlapped or outside
+                m.fn()++;
+            }
+        }
+    };
+    
+/*
+    overall(stats.eContains, stats.pe.m);
+    overall(stats.iContains, stats.pi.m);
+    
+    stats.pe.m.fp() = stats.eUnknown + sum(stats.eOverlaps);
+    stats.pi.m.fp() = stats.iUnknown + sum(stats.iOverlaps);
+
+ o.info("Counting references");
+ 
+ stats.pe.inferRefFromHist();
+ stats.pi.inferRefFromHist();
+*/
+    
+    for (const auto &i : stats.se)
+    {
+        stats.pe.m.tp() += i.second.tp();
+        stats.pe.m.fp() += i.second.fp();
+        stats.pe.m.fn() += i.second.fn();
+        stats.pe.m.nq() += i.second.nq();
+        stats.pe.m.nr() += i.second.nr();
+    }
+
+    for (const auto &i : stats.si)
+    {
+        stats.pi.m.tp() += i.second.tp();
+        stats.pi.m.fp() += i.second.fp();
+        stats.pi.m.fn() += i.second.fn();
+        stats.pi.m.nq() += i.second.nq();
+        stats.pi.m.nr() += i.second.nr();
+    }
+    
+    
+    /*
+     * Calculating detection limit
+     */
+    
     o.info("Calculating detection limit");
     
     /*
@@ -602,14 +628,33 @@ void TAlign::report(const FileName &file, const Options &o)
             
             const auto covered = static_cast<double>(nonZeros) / length;
 
-            o.writer->write((boost::format(format) % i.first
-                                                   % stats.se.at(i.first).sn()
-                                                   % stats.se.at(i.first).ac()
-                                                   % stats.si.at(i.first).sn()
-                                                   % stats.si.at(i.first).ac()
-                                                   % stats.sb.at(i.first).sn()
-                                                   % stats.sb.at(i.first).ac()
-                                                   % covered).str());
+            const auto &me = stats.se.at(i.first);
+            const auto &mi = stats.si.at(i.first);
+            const auto &mb = stats.sb.at(i.first);
+
+            // Not all sequins have an intron...
+            if (mi.nr())
+            {
+                o.writer->write((boost::format(format) % i.first
+                                                       % me.sn()
+                                                       % me.ac()
+                                                       % mi.sn()
+                                                       % mi.ac()
+                                                       % mb.sn()
+                                                       % mb.ac()
+                                                       % covered).str());
+            }
+            else
+            {
+                o.writer->write((boost::format(format) % i.first
+                                                       % me.sn()
+                                                       % me.ac()
+                                                       % "--"
+                                                       % "--"
+                                                       % mb.sn()
+                                                       % mb.ac()
+                                                       % covered).str());
+            }
         }
         
         o.writer->close();
