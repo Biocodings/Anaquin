@@ -1,0 +1,24 @@
+---
+output: pdf_document
+---
+\documentclass{article}
+
+\title{Bibliography management: \texttt{natbib} package}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+
+This document is an example of \texttt{natbib} package using in bibliography management. Three items are cited: \textit{The Companion} book {latexcompanion}, the Einstein journal paper einstein, and the Donald Knuth's website {knuthwebsite}. The related items are {latexcompanion,knuthwebsite}. 
+
+\medskip
+
+\bibliography{sample}
+
+
+
+
+
+\end{document}
