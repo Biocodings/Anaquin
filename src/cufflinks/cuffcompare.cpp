@@ -1493,8 +1493,7 @@ void reportStats(FILE* fout_, const char* setname, GSuperLocus& stotal,
       __cmp__.e_sn = sn;
       __cmp__.e_fsp = fsp;
       __cmp__.e_fsn = fsn;
-  
-      
+
     if (ps->total_rintrons>0) {
     //intron level
     sp=(100.0*(double)ps->intronTP)/(ps->intronTP+ps->intronFP);
