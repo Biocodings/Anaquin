@@ -54,13 +54,93 @@ static std::string createFilteredGTF(const FileName &file)
     return tmp;
 }
 
-TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
+void TAssembly::report(const FileName &file, const Options &o)
+{
+    const auto &r = Standard::instance().r_trans;
+    const auto stats = TAssembly::analyze(file, o);
+
+    o.info("Generating summary statistics");
+    
+    const auto summary = "Summary for dataset: %1%\n\n"
+    "   Experiment: %2% features\n"
+    "   Synthetic:  %3% features\n\n"
+    "   Reference:  %4% exons\n"
+    "   Reference:  %5% introns\n\n"
+    "   -------------------- Exon level --------------------\n\n"
+    "   Sensitivity: %6%\n"
+    "   Accuarcy:    %7%\n"
+    "   Detection:   %8% (%9%)\n\n"
+    "   -------------------- Intron level --------------------\n\n"
+    "   Sensitivity: %10%\n"
+    "   Accuarcy:    %11%\n"
+    "   Detection:   %12% (%13%)\n\n"
+    "   -------------------- Base level --------------------\n\n"
+    "   Sensitivity: %14%\n"
+    "   Accuarcy:    %15%\n"
+    "   Detection:   %16% (%17%)\n\n"
+    "   -------------------- Transcript level --------------------\n\n"
+    "   Sensitivity: %18%\n"
+    "   Accuarcy:    %19%\n"
+    "   Detection:   %20% (%21%)\n\n";
+    
+    o.writer->open("TransAssembly_summary.stats");
+    o.writer->write((boost::format(summary) % file
+                     % stats.n_expT
+                     % stats.n_chrT
+                     % r.data().size()
+                     % r.countSortedIntrons()
+                     % (__cmp__.e_sp / 100.0)
+                     % (__cmp__.e_sn / 100.0)
+                     % (stats.se.id.empty() ? "-" : std::to_string(stats.se.abund))
+                     % stats.se.id
+                     % (__cmp__.i_sp / 100.0)
+                     % (__cmp__.i_sn / 100.0)
+                     % (stats.si.id.empty() ? "-" : std::to_string(stats.si.abund))
+                     % stats.si.id
+                     % (__cmp__.b_sp / 100.0)
+                     % (__cmp__.b_sn / 100.0)
+                     % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund))
+                     % stats.sb.id
+                     % (__cmp__.t_sp / 100.0)
+                     % (__cmp__.t_sn / 100.0)
+                     % "-"
+                     % "-").str());
+    o.writer->close();
+    
+    o.writer->open("TransAssembly_quins.stats");
+    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+    
+    auto format = "%1%\t%2%\t%3%\t%4%";
+    o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());
+    
+    for (const auto &i : stats.he)
+    {
+        o.writer->write((boost::format(format) % i.first
+                         % stats.he.at(i.first)
+                         % stats.hi.at(i.first)
+                         % stats.ht.at(i.first)).str());
+    }
+    
+    o.writer->write("\n");
+    
+    format = "%1%\t%2%";
+    o.writer->write((boost::format(format) % "id" % "base").str());
+    
+    for (const auto &i : stats.hb)
+    {
+        o.writer->write((boost::format(format) % i.first % stats.hb.at(i.first)).str());
+    }
+    
+    o.writer->close();
+}
+
+TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 {
     assert(!o.ref.empty() && !o.query.empty());
 
     /*
-     * Comparing transcripts require constructing intron-chains, this is quite complicated.
-     * We will reuse the code in cuffcompare. The idea is dirty but it works better than
+     * Comparing transcripts require constructing intron-chains, it is quite complicated.
+     * We will reuse the code in Cuffcompare. The idea is dirty but it works better than
      * than reinventing the wheel. However, we'll need to filter out only the features
      * belong to the synthetic chromosome.
      */
@@ -70,14 +150,14 @@ TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
     const auto query = createFilteredGTF(file);
     o.logInfo("Filtered transcript: " + query + " has been created");
 
-    o.logInfo("Invoking cuffcompare: " + o.ref);
-    o.logInfo("Invoking cuffcompare: " + query);
+    o.logInfo("Invoking Cuffcompare: " + o.ref);
+    o.logInfo("Invoking Cuffcompare: " + query);
 
-    const int status = cuffcompare_main(o.ref.c_str(), query.c_str());
+    const auto status = cuffcompare_main(o.ref.c_str(), query.c_str());
 
     if (status)
     {
-        throw std::runtime_error("Failed to assess the given transcript. Please check the file and try again.");
+        throw std::runtime_error("Failed to analyze the given transcript. Please check the file and try again.");
     }
     
     TAssembly::Stats stats;
@@ -201,69 +281,5 @@ TAssembly::Stats TAssembly::report(const FileName &file, const Options &o)
     stats.sb = r.limitGene(stats.hb);
     stats.si = r.limit(stats.hi);
 
-    o.info("Generating summary statistics");
-
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Experiment: %2% features\n"
-                         "   Query: %3% features\n\n"
-                         "   Reference: %4% exons\n"
-                         "   Reference: %5% introns\n\n"
-                         "#--------------------|   Sn   |   Sp   |   Ss \n"
-                         "    Exon level:\t%6%\t%7%\t%8% (%9%)\n"
-                         "    Intron level:\t%10%\t%11%\t%12% (%13%)\n"
-                         "    Base level:\t%14%\t%15%\t%16% (%17%)\n"
-                         "    Transcript level:\t%18%\t%19%\t%20% (%21%)\n"
-    ;
-
-    o.writer->open("TransAssembly_summary.stats");
-    o.writer->write((boost::format(summary) % file
-                                            % stats.n_expT
-                                            % stats.n_chrT
-                                            % r.data().size()
-                                            % r.countSortedIntrons()
-                                            % (__cmp__.e_sp / 100.0)
-                                            % (__cmp__.e_sn / 100.0)
-                                            % (stats.se.id.empty() ? "-" : std::to_string(stats.se.abund))
-                                            % stats.se.id
-                                            % (__cmp__.i_sp / 100.0)
-                                            % (__cmp__.i_sn / 100.0)
-                                            % (stats.si.id.empty() ? "-" : std::to_string(stats.si.abund))
-                                            % stats.si.id
-                                            % (__cmp__.b_sp / 100.0)
-                                            % (__cmp__.b_sn / 100.0)
-                                            % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund))
-                                            % stats.sb.id
-                                            % (__cmp__.t_sp / 100.0)
-                                            % (__cmp__.t_sn / 100.0)
-                                            % "-"
-                                            % "-").str());
-    o.writer->close();
-
-    o.writer->open("TransAssembly_quins.stats");
-    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
-    
-    auto format = "%1%\t%2%\t%3%\t%4%";
-    o.writer->write((boost::format(format) % "id" % "exon" % "intron" % "transcript").str());
-    
-    for (const auto &i : stats.he)
-    {
-        o.writer->write((boost::format(format) % i.first
-                                               % stats.he.at(i.first)
-                                               % stats.hi.at(i.first)
-                                               % stats.ht.at(i.first)).str());
-    }
-
-    o.writer->write("\n");
-
-    format = "%1%\t%2%";
-    o.writer->write((boost::format(format) % "id" % "base").str());
-    
-    for (const auto &i : stats.hb)
-    {
-        o.writer->write((boost::format(format) % i.first % stats.hb.at(i.first)).str());
-    }
-    
-    o.writer->close();
-    
     return stats;
 }

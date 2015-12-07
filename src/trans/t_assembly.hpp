@@ -23,7 +23,8 @@ namespace Anaquin
             Limit sb, si, se, st;
         };
 
-        static Stats report(const std::string &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

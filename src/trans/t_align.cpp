@@ -162,7 +162,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     f(impl);
 
     assert(stats.pb.m.tp() == 0 && stats.pb.m.fp() == 0);
-    
+/*
     o.info("Calculating for non-overlapping at the base level");
     
     base.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
@@ -173,7 +173,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
             stats.pb.m.fp() += j - i;
         }
     });
-    
+*/
     /*
      * 1. Calculating alignment statistics. Those can be used for accuracy at the exon and intron level.
      */
