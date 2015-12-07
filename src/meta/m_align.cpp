@@ -107,8 +107,8 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
 
     o.info("Calculating detection limit");
     
-    stats.bp.hl = r.limit(stats.bp.h);
-    stats.sp.hl = r.limit(stats.sp.h);
+    stats.bp.limit = r.limit(stats.bp.h);
+    stats.sp.limit = r.limit(stats.sp.h);
 
     return stats;
 }
@@ -146,12 +146,12 @@ void MAlign::report(const FileName &file, const Options &o)
                                             % stats.inters.size()                       // 5
                                             % stats.sp.m.sn()
                                             % stats.sp.m.ac()
-                                            % stats.sp.hl.id
-                                            % stats.sp.hl.abund
+                                            % stats.sp.limit.id
+                                            % stats.sp.limit.abund
                                             % stats.bp.m.sn()    // 10
                                             % stats.bp.m.ac()
-                                            % stats.bp.hl.id
-                                            % stats.bp.hl.abund
+                                            % stats.bp.limit.id
+                                            % stats.bp.limit.abund
                                             % stats.dilution()).str());
     o.writer->close();
 

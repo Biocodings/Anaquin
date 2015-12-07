@@ -3,10 +3,6 @@ output: pdf_document
 ---
 \documentclass{article}
 
-\title{Bibliography management: \texttt{natbib} package}
-
-\begin{document}
-\SweaveOpts{concordance=TRUE}
 
 \maketitle
 

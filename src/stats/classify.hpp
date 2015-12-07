@@ -56,10 +56,7 @@ namespace Anaquin
         Confusion m;
 
         // Hard detection limit
-        Limit hl;
-
-        // Soft detection limit
-        Limit sl;
+        Limit limit;
 
         // Histogram of distribution
         Hist h;

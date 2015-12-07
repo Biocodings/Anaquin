@@ -49,8 +49,18 @@ namespace Anaquin
                 // Intervals for introns in TransQuin
                 Intervals<TransRef::IntronInterval> iInters;
 
-                // Performance for the alignments at exon and intron level
-                Confusion ae, ai;
+                /*
+                 * Alignment performance for both exons and introns. For example, if there are 10000 alignments, a possible
+                 * scenario would be:
+                 *
+                 *    - 9000  TP
+                 *    - 1000  FP
+                 *    - 10000 NQ
+                 *
+                 * The statistics are used for measuring accuracy, thus NR is not defined.
+                 */
+                
+                Performance alignExon, alignIntron;
                 
                 // Overall performance at various levels
                 Performance pb, pe, pi;
@@ -63,6 +73,15 @@ namespace Anaquin
 
                 // Alignments that have no mapping
                 std::vector<UnknownAlignment> unknowns;
+
+                // Number of exons in the query
+                inline Counts qExons() const   { return alignExon.m.nq(); }
+                
+                // Number of introns in the query
+                inline Counts qIntrons() const { return alignIntron.m.nq(); }
+                
+                // Number of bases in the query
+                inline Counts qBases() const { return pb.m.nq(); }
 
                 // Overall sensitivity
                 inline double sn(enum AlignMetrics l) const
@@ -86,9 +105,9 @@ namespace Anaquin
                     
                     switch (l)
                     {
-                        case Exon:   { return ae.ac(); }
-                        case Intron: { return ai.ac(); }
-                        case Base:   { return pb.m.ac(); }
+                        case Exon:   { return alignExon.m.ac();   }
+                        case Intron: { return alignIntron.m.ac(); }
+                        case Base:   { return pb.m.ac();          }
                     }
                 }
 

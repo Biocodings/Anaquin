@@ -25,7 +25,7 @@ static TAlign::Stats init()
     TAlign::Stats stats;
 
     // Initalize the distributions
-    stats.pb.h = stats.pe.h = stats.pi.h = r.geneHist();
+    stats.pb.h = stats.pe.h = stats.pi.h = stats.alignExon.h = stats.alignIntron.h = r.geneHist();
 
     stats.eInters = r.exonInters();
     stats.iInters = r.intronInters();
@@ -180,19 +180,19 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     
     o.info("Calculating alignment statistics");
 
-    auto aligns = [](Counts mapped, Counts unknown, const std::map<ExonID, Counts> &overlaps, Confusion &m)
+    auto aligns = [](Counts mapped, Counts unknown, const std::map<ExonID, Counts> &overlaps, Performance &p)
     {
-        m.tp() = mapped;
-        m.fp() = unknown;
-        
+        p.m.tp() = mapped;
+        p.m.fp() = unknown;
+
         for (const auto &i : overlaps)
         {
-            m.fp() += i.second;
+            p.m.fp() += i.second;
         }
     };
 
-    aligns(stats.eMapped, stats.eUnknown, stats.eOverlaps, stats.ae);
-    aligns(stats.iMapped, stats.iUnknown, stats.iOverlaps, stats.ai);
+    aligns(stats.eMapped, stats.eUnknown, stats.eOverlaps, stats.alignExon);
+    aligns(stats.iMapped, stats.iUnknown, stats.iOverlaps, stats.alignIntron);
     
     /*
      * 2. Calculating metrics at the base level.
@@ -376,9 +376,9 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     
     const auto &r = Standard::instance().r_trans;
 
-    stats.pe.hl = r.limitGene(stats.pe.h);
-    stats.pi.hl = r.limitGene(stats.pi.h);
-    stats.pb.hl = r.limitGene(stats.pb.h);
+    stats.pb.limit          = r.limitGene(stats.pb.h);
+    stats.alignExon.limit   = r.limitGene(stats.alignExon.h);
+    stats.alignIntron.limit = r.limitGene(stats.alignIntron.h);
     
     return stats;
 }
@@ -405,6 +405,8 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
                             impl.lFPS,
                             impl.rFPS)))
         {
+            impl.stats->exonToGene.at(match->id());
+            impl.stats->alignExon.h.at(impl.stats->exonToGene.at(match->id()))++;
             impl.stats->eMapped++;
         }
         else
@@ -419,6 +421,7 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
                             impl.stats->iContains,
                             impl.stats->iOverlaps)))
         {
+            impl.stats->alignIntron.h.at(impl.stats->intronToGene.at(match->id()))++;
             impl.stats->iMapped++;
         }
         else
@@ -500,9 +503,9 @@ void TAlign::report(const FileName &file, const Options &o)
 
     {
         const auto summary = "Summary for dataset: %1%\n\n"
-                             "   Unmapped:   %2% reads\n"
-                             "   Experiment: %3% reads\n"
-                             "   Synthetic:  %4% reads\n\n"
+                             "   Unmapped:   %2% alignments\n"
+                             "   Experiment: %3% alignments\n"
+                             "   Synthetic:  %4% alignments\n\n"
                              "   Reference:  %5% exons\n"
                              "   Reference:  %6% introns\n"
                              "   Reference:  %7% bases\n\n"
@@ -513,11 +516,11 @@ void TAlign::report(const FileName &file, const Options &o)
                              "   ***\n"
                              "   *** The following statistics are computed at the exon, intron and base level.\n"
                              "   ***\n"
-                             "   *** Exon level is defined by the performance per exon. An alignment that\n"
+                             "   *** Exon level is defined by performance per exon. An alignment that\n"
                              "   *** is not mapped entirely within an exon is considered as a FP. The\n"
                              "   *** intron level is similar.\n"
                              "   ***\n"
-                             "   *** Base level is defined by the performance per nucleotide. A partial\n"
+                             "   *** Base level is defined by performance per nucleotide. A partial\n"
                              "   *** mapped read will have FP and TP.\n"
                              "   ***\n\n"
                              "   -------------------- Exon level --------------------\n\n"
@@ -541,21 +544,21 @@ void TAlign::report(const FileName &file, const Options &o)
                                                 % r.countSortedExons()
                                                 % r.countSortedIntrons()
                                                 % r.exonBase()
-                                                % stats.pe.m.nq()
-                                                % stats.pi.m.nq()
-                                                % stats.pb.m.nq()
-                                                % stats.pe.m.sn()
-                                                % stats.pe.m.ac()
-                                                % stats.pe.hl.abund
-                                                % stats.pe.hl.id
-                                                % stats.pi.m.sn()
-                                                % stats.pi.m.ac()
-                                                % stats.pi.hl.abund
-                                                % stats.pi.hl.id
-                                                % stats.pb.m.sn()
-                                                % stats.pb.m.ac()
-                                                % stats.pb.hl.abund
-                                                % stats.pb.hl.id
+                                                % stats.qExons()
+                                                % stats.qIntrons()
+                                                % stats.qBases()
+                                                % stats.sn(Stats::AlignMetrics::Exon)
+                                                % stats.ac(Stats::AlignMetrics::Exon)
+                                                % stats.alignExon.limit.abund
+                                                % stats.alignExon.limit.id
+                                                % stats.sn(Stats::AlignMetrics::Intron)
+                                                % stats.ac(Stats::AlignMetrics::Intron)
+                                                % stats.alignIntron.limit.abund
+                                                % stats.alignIntron.limit.id
+                                                % stats.sn(Stats::AlignMetrics::Base)
+                                                % stats.ac(Stats::AlignMetrics::Base)
+                                                % stats.pb.limit.abund
+                                                % stats.pb.limit.id
                                                 % stats.dilution()).str());
         o.writer->close();
     }
@@ -571,13 +574,13 @@ void TAlign::report(const FileName &file, const Options &o)
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
         o.writer->write((boost::format(format) % "ID"
+                                               % "Covered"
                                                % "Sensitivity (Exon)"
                                                % "Accuracy (Exon)"
                                                % "Sensitivity (Intron)"
                                                % "Accuracy (Intron)"
                                                % "Sensitivity (Base)"
-                                               % "Accuracy (Base)"
-                                               % "Covered").str());
+                                               % "Accuracy (Base)").str());
         
         for (const auto &i : stats.pe.h)
         {
@@ -607,13 +610,13 @@ void TAlign::report(const FileName &file, const Options &o)
             if (mi.nr())
             {
                 o.writer->write((boost::format(format) % i.first
+                                                       % covered
                                                        % me.sn()
                                                        % me.ac()
                                                        % mi.sn()
                                                        % mi.ac()
                                                        % mb.sn()
-                                                       % mb.ac()
-                                                       % covered).str());
+                                                       % mb.ac()).str());
             }
             else
             {
