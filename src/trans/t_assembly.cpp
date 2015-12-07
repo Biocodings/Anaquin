@@ -62,49 +62,49 @@ void TAssembly::report(const FileName &file, const Options &o)
     o.info("Generating summary statistics");
     
     const auto summary = "Summary for dataset: %1%\n\n"
-    "   Experiment: %2% features\n"
-    "   Synthetic:  %3% features\n\n"
-    "   Reference:  %4% exons\n"
-    "   Reference:  %5% introns\n\n"
-    "   -------------------- Exon level --------------------\n\n"
-    "   Sensitivity: %6%\n"
-    "   Accuarcy:    %7%\n"
-    "   Detection:   %8% (%9%)\n\n"
-    "   -------------------- Intron level --------------------\n\n"
-    "   Sensitivity: %10%\n"
-    "   Accuarcy:    %11%\n"
-    "   Detection:   %12% (%13%)\n\n"
-    "   -------------------- Base level --------------------\n\n"
-    "   Sensitivity: %14%\n"
-    "   Accuarcy:    %15%\n"
-    "   Detection:   %16% (%17%)\n\n"
-    "   -------------------- Transcript level --------------------\n\n"
-    "   Sensitivity: %18%\n"
-    "   Accuarcy:    %19%\n"
-    "   Detection:   %20% (%21%)\n\n";
+                         "   Experiment: %2% features\n"
+                         "   Synthetic:  %3% features\n\n"
+                         "   Reference:  %4% exons\n"
+                         "   Reference:  %5% introns\n\n"
+                         "   -------------------- Exon level --------------------\n\n"
+                         "   Sensitivity: %6%\n"
+                         "   Accuarcy:    %7%\n"
+                         "   Detection:   %8% (%9%)\n\n"
+                         "   -------------------- Intron level --------------------\n\n"
+                         "   Sensitivity: %10%\n"
+                         "   Accuarcy:    %11%\n"
+                         "   Detection:   %12% (%13%)\n\n"
+                         "   -------------------- Base level --------------------\n\n"
+                         "   Sensitivity: %14%\n"
+                         "   Accuarcy:    %15%\n"
+                         "   Detection:   %16% (%17%)\n\n"
+                         "   -------------------- Transcript level --------------------\n\n"
+                         "   Sensitivity: %18%\n"
+                         "   Accuarcy:    %19%\n"
+                         "   Detection:   %20% (%21%)\n\n";
     
     o.writer->open("TransAssembly_summary.stats");
     o.writer->write((boost::format(summary) % file
-                     % stats.n_expT
-                     % stats.n_chrT
-                     % r.data().size()
-                     % r.countSortedIntrons()
-                     % (__cmp__.e_sp / 100.0)
-                     % (__cmp__.e_sn / 100.0)
-                     % (stats.se.id.empty() ? "-" : std::to_string(stats.se.abund))
-                     % stats.se.id
-                     % (__cmp__.i_sp / 100.0)
-                     % (__cmp__.i_sn / 100.0)
-                     % (stats.si.id.empty() ? "-" : std::to_string(stats.si.abund))
-                     % stats.si.id
-                     % (__cmp__.b_sp / 100.0)
-                     % (__cmp__.b_sn / 100.0)
-                     % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund))
-                     % stats.sb.id
-                     % (__cmp__.t_sp / 100.0)
-                     % (__cmp__.t_sn / 100.0)
-                     % "-"
-                     % "-").str());
+                                            % stats.n_expT
+                                            % stats.n_chrT
+                                            % r.data().size()
+                                            % r.countSortedIntrons()
+                                            % (__cmp__.e_sp / 100.0)
+                                            % (__cmp__.e_sn / 100.0)
+                                            % (stats.se.id.empty() ? "-" : std::to_string(stats.se.abund))
+                                            % stats.se.id
+                                            % (__cmp__.i_sp / 100.0)
+                                            % (__cmp__.i_sn / 100.0)
+                                            % (stats.si.id.empty() ? "-" : std::to_string(stats.si.abund))
+                                            % stats.si.id
+                                            % (__cmp__.b_sp / 100.0)
+                                            % (__cmp__.b_sn / 100.0)
+                                            % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund))
+                                            % stats.sb.id
+                                            % (__cmp__.t_sp / 100.0)
+                                            % (__cmp__.t_sn / 100.0)
+                                            % "-"
+                                            % "-").str());
     o.writer->close();
     
     o.writer->open("TransAssembly_quins.stats");
@@ -124,7 +124,7 @@ void TAssembly::report(const FileName &file, const Options &o)
     o.writer->write("\n");
     
     format = "%1%\t%2%";
-    o.writer->write((boost::format(format) % "id" % "base").str());
+    o.writer->write((boost::format(format) % "ID" % "Base").str());
     
     for (const auto &i : stats.hb)
     {
@@ -187,10 +187,6 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
         switch (f.type)
         {
-            /*
-             * Classify at the exon level
-             */
-
             case Exon:
             {
                 const TransRef::ExonData *match;
@@ -208,10 +204,6 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
                 break;
             }
-
-            /*
-             * Classify at the transctipt level
-             */
 
             case Transcript:
             {
@@ -236,7 +228,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     o.info("Generating introns");
 
     /*
-     * Sort the query exons since there is no guarantee that those are sorted
+     * Sort the query exons as there is no guarantee that those are sorted
      */
 
     for (auto &i : q_exons_)
@@ -263,23 +255,30 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     });
 
     /*
-     * The counts for query bases is the total non-overlapping length of all the exons in the experiment.
-     * The number is expected to approach the reference length (calculated next) for a very large
-     * experiment with sufficient coverage.
+     * The counts for query bases is the total non-overlapping bases of all the exons in the experiment.
      */
     
     countBase(r.mergedExons(), q_exons, t, stats.hb);
 
     /*
-     * Calculate for the LOS
+     * Calculate for detection limit
      */
 
-    o.info("Calculating limit of sensitivity");
+    o.info("Calculating limit of detection");
     
     stats.se = r.limit(stats.he);
     stats.st = r.limit(stats.ht);
     stats.sb = r.limitGene(stats.hb);
     stats.si = r.limit(stats.hi);
+
+    stats.exonSN   = std::min(__cmp__.e_sn / 100.0, 1.0);
+    stats.exonSP   = std::min(__cmp__.e_sp / 100.0, 1.0);
+    stats.baseSN   = std::min(__cmp__.b_sn / 100.0, 1.0);
+    stats.baseSP   = std::min(__cmp__.b_sp / 100.0, 1.0);
+    stats.transSN  = std::min(__cmp__.t_sn / 100.0, 1.0);
+    stats.transSP  = std::min(__cmp__.t_sp / 100.0, 1.0);
+    stats.intronSN = std::min(__cmp__.i_sn / 100.0, 1.0);
+    stats.intronSP = std::min(__cmp__.i_sp / 100.0, 1.0);
 
     return stats;
 }

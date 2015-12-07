@@ -20,6 +20,11 @@ namespace Anaquin
             SequinHist hi = Standard::instance().r_trans.hist();
             SequinHist ht = Standard::instance().r_trans.hist();
 
+            double exonSP,   exonSN;
+            double baseSP,   baseSN;
+            double transSP,  transSN;
+            double intronSP, intronSN;
+            
             Limit sb, si, se, st;
         };
 

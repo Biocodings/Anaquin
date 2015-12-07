@@ -4,23 +4,30 @@
 
 using namespace Anaquin;
 
-TEST_CASE("TAssembly_T_1000")
+TEST_CASE("TAssembly_Reference")
 {
-    Test::clear();
-
-    const auto r1 = Test::test("-t TransAssembly -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -ugtf tests/data/T_1000/A/G/transcripts.gtf");
-
-    REQUIRE(r1.status == 0);
-    
     Test::transA();
     
     TAssembly::Options o;
     
     o.ref   = "data/trans/ATR001.v032.gtf";
-    o.query = "tests/data/T_1000/A/G/transcripts.gtf";
+    o.query = "data/trans/ATR001.v032.gtf";
 
-    const auto r2 = TAssembly::report("tests/data/T_1000/A/G/transcripts.gtf", o);
+    const auto r = TAssembly::analyze("data/trans/ATR001.v032.gtf", o);
 
-    REQUIRE(r2.n_expT == 0);
-    REQUIRE(r2.n_chrT == 1365);
+    REQUIRE(r.n_expT == 0);
+    REQUIRE(r.n_chrT == 2730);
+
+    /*
+     * It's highly likely cuffcompare is just wrong. Everything here should be 1.0.
+     */
+    
+    REQUIRE(r.exonSN   == 1.0);
+    REQUIRE(r.exonSP   == 1.0);
+    REQUIRE(r.intronSN == 1.0);
+    REQUIRE(r.intronSP == 1.0);
+    REQUIRE(r.baseSN   == 1.0);
+    REQUIRE(r.baseSP   == 1.0);
+    REQUIRE(r.transSN  == 1.0);
+    REQUIRE(r.transSP  == 1.0);
 }

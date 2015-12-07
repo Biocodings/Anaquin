@@ -11,6 +11,38 @@ namespace Anaquin
         public:
             typedef AnalyzerOptions Options;
 
+            typedef std::map<BinID, Counts> BinCounts;
+
+            struct MergedConfusion
+            {
+                /*
+                 * Alignment statistics
+                 */
+                
+                Counts aTP = 0;
+                Counts aFP = 0;
+            
+                /*
+                 * Level statistics (eg: exons and introns)
+                 */
+                
+                Counts lTP = 0;
+                Counts lNR = 0;
+
+                inline Counts aNQ() const { return aTP + aFP; }
+                inline Counts lFN() const { return lNR - lTP; }
+
+                inline double sn() const
+                {
+                    return (lTP + lFN()) ? static_cast<double>(lTP) / (lTP + lFN()) : NAN;
+                }
+                
+                inline double ac() const
+                {
+                    return (aTP + aFP) ? static_cast<double>(aTP) / (aTP + aFP) : NAN;
+                }
+            };
+
             struct Stats : public AlignmentStats
             {
                 enum AlignMetrics
@@ -19,29 +51,12 @@ namespace Anaquin
                     Intron,
                     Base
                 };
-
+                
                 std::map<ExonID,   GeneID> exonToGene;
                 std::map<IntronID, GeneID> intronToGene;
                 
-                std::map<ExonID,   Counts> eContains, eOverlaps;
-                std::map<IntronID, Counts> iContains, iOverlaps;
-
-                // Number of exons detected for each gene
-                std::map<GeneID, Counts> detectExons;
-                
-                // Number of exons undetected for each gene
-                std::map<GeneID, Counts> undetectExons;
-
-                // Number of introns detected for each gene
-                std::map<GeneID, Counts> detectIntrons;
-
-                // Number of introns undetected for each gene
-                std::map<GeneID, Counts> undetectIntrons;
-
-                Counts eMapped  = 0;
-                Counts iMapped  = 0;
-                Counts eUnknown = 0;
-                Counts iUnknown = 0;
+                BinCounts eContains, eOverlaps;
+                BinCounts iContains, iOverlaps;
 
                 // Intervals for exons in TransQuin
                 Intervals<TransRef::ExonInterval> eInters;
@@ -50,23 +65,25 @@ namespace Anaquin
                 Intervals<TransRef::IntronInterval> iInters;
 
                 /*
-                 * Alignment performance for both exons and introns. For example, if there are 10000 alignments, a possible
-                 * scenario would be:
-                 *
-                 *    - 9000  TP
-                 *    - 1000  FP
-                 *    - 10000 NQ
-                 *
-                 * The statistics are used for measuring accuracy, thus NR is not defined.
+                 * Overall statistics
                  */
                 
-                Performance alignExon, alignIntron;
+                MergedConfusion overE, overI;
+
+                Hist  histE,  histI;
+                Limit limitE, limitI;
+                
+                /*
+                 * Individual statistics for each gene (due to alternative splicing)
+                 */
+                
+                std::map<GeneID, MergedConfusion> geneE, geneI;
                 
                 // Overall performance at various levels
-                Performance pb, pe, pi;
+                Performance pb;
 
                 // Individual performance for each sequin
-                std::map<GeneID, Confusion> sb, se, si;
+                std::map<GeneID, Confusion> sb;
 
                 // Sequins that have failed to be detected
                 std::vector<MissingSequin> missings;
@@ -75,10 +92,10 @@ namespace Anaquin
                 std::vector<UnknownAlignment> unknowns;
 
                 // Number of exons in the query
-                inline Counts qExons() const   { return alignExon.m.nq(); }
+                inline Counts qExons() const   { return 0;  }
                 
                 // Number of introns in the query
-                inline Counts qIntrons() const { return alignIntron.m.nq(); }
+                inline Counts qIntrons() const { return 0; }
                 
                 // Number of bases in the query
                 inline Counts qBases() const { return pb.m.nq(); }
@@ -88,9 +105,9 @@ namespace Anaquin
                 {
                     switch (l)
                     {
-                        case Exon:   { return pe.m.sn(); }
-                        case Intron: { return pi.m.sn(); }
-                        case Base:   { return pb.m.sn(); }
+                        case Exon:   { return overE.sn(); }
+                        case Intron: { return overI.sn(); }
+                        case Base:   { return pb.m.sn();  }
                     }
                 }
                 
@@ -105,37 +122,22 @@ namespace Anaquin
                     
                     switch (l)
                     {
-                        case Exon:   { return alignExon.m.ac();   }
-                        case Intron: { return alignIntron.m.ac(); }
-                        case Base:   { return pb.m.ac();          }
+                        case Exon:   { return overE.ac(); }
+                        case Intron: { return overI.ac(); }
+                        case Base:   { return pb.m.ac();  }
                     }
                 }
 
                 // Sensitivity at the gene level
                 inline double sn(const GeneID &id) const
                 {
-                    /*
-                     * Sensitivity for the gene level is defined as:
-                     *
-                     *                 detected exons
-                     *     ------------------------------------
-                     *        detected exons + undetected exons
-                     *
-                     * For example, if we're able to detect half of the exons in a gene.
-                     * The sensitivty would be 50%.
-                     */
-                    
-                    const auto succeed = detectExons.at(id);
-                    const auto failed  = undetectExons.at(id);
-                    
-                    return static_cast<double>(succeed) / (succeed + failed);
+                    return geneE.at(id).sn();
                 }
             };
 
-            static Stats stats (const FileName &, const Options &options = Options());
-            static Stats stats (const std::vector<Alignment> &, const Options &options = Options());
-
-            static void  report(const FileName &, const Options &options = Options());
+            static Stats analyze(const FileName &, const Options &options = Options());
+            static Stats analyze(const std::vector<Alignment> &, const Options &options = Options());
+            static void  report (const FileName &, const Options &options = Options());
     };
 }
 

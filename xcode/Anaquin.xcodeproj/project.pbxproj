@@ -102,6 +102,7 @@
 		EFE4F2B81BDF987B00C8B691 /* f_normal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE4F2B61BDF987B00C8B691 /* f_normal.cpp */; };
 		EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */; };
 		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
+		EFE88F961C15A7DD00B46829 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE88F951C15A7DD00B46829 /* t_assembly.cpp */; };
 		EFED772D1B94AC2D001842F4 /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFED77271B94AC2D001842F4 /* v_align.cpp */; };
 		EFED772E1B94AC2D001842F4 /* v_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFED77291B94AC2D001842F4 /* v_discover.cpp */; };
 /* End PBXBuildFile section */
@@ -283,6 +284,7 @@
 		EFE4F2B61BDF987B00C8B691 /* f_normal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_normal.cpp; sourceTree = "<group>"; };
 		EFE4F2B71BDF987B00C8B691 /* f_normal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_normal.hpp; sourceTree = "<group>"; };
 		EFE8168E1B5370600004D9BF /* cmd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd.cpp; sourceTree = "<group>"; };
+		EFE88F951C15A7DD00B46829 /* t_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_assembly.cpp; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
 		EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EFECDC101AE7510700F0FD9A /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
@@ -499,6 +501,7 @@
 			isa = PBXGroup;
 			children = (
 				EF9ACCEB1B5FB5F20085D1B2 /* t_align.cpp */,
+				EFE88F951C15A7DD00B46829 /* t_assembly.cpp */,
 			);
 			name = trans;
 			path = ../tests/trans;
@@ -748,6 +751,7 @@
 				EF5E857D1B6B5B0E00FF61D8 /* f_align.cpp in Sources */,
 				EFDD6AD41B0DD76C00450029 /* rANS_static.c in Sources */,
 				EF72F0ED1B6898940092DA34 /* t_parser_top_fusion.cpp in Sources */,
+				EFE88F961C15A7DD00B46829 /* t_assembly.cpp in Sources */,
 				EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */,
 				EF3CD3061B6671F5005644C4 /* m_abund.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
