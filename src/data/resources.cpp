@@ -25,13 +25,14 @@
 #include "resources/MLA020.v013.csv"
 
 /*
- * RNA Resources
+ * Transcriptome Resources
  */
 
+#include "resources/ATR001.v032.gtf"
 #include "resources/MTR002.v013.csv"
 #include "resources/MTR003.v013.csv"
 #include "resources/MTR004.v013.csv"
-#include "resources/ATR001.v032.gtf"
+#include "resources/MTR005.v013.csv"
 
 /*
  * Metagenomics Resources
@@ -134,6 +135,11 @@ std::string TransDataMixA()
 std::string TransDataMixB()
 {
     return ToString(data_trans_MTR003_v013_csv);
+}
+
+std::string TransDataMixF()
+{
+    return ToString(data_trans_MTR005_v013_csv);
 }
 
 std::string TransDataMixAB()

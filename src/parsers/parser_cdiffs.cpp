@@ -47,19 +47,19 @@ void ParserCDiffs::parse(const FileName &file, std::function<void (const Trackin
         
         Tokens::split(line, "\t", toks);
 
-        t.testID  = toks[FTestID];
-        t.geneID  = toks[FGeneID];        
-        t.fpkm_1  = stof(toks[FFPKM_1]);
-        t.fpkm_2  = stof(toks[FFPKM_2]);
-        t.status  = tok2Status.at(toks[FStatus]);
-        t.logFold = stof(toks[FLogFold]);
-        t.stats   = stof(toks[FTestStats]);
+        t.id     = toks[FGeneID];
+        t.testID = toks[FTestID];
+        t.fpkm_1 = stof(toks[FFPKM_1]);
+        t.fpkm_2 = stof(toks[FFPKM_2]);
+        t.status = tok2Status.at(toks[FStatus]);
+        t.logF   = stof(toks[FLogFold]);
+        t.stats  = stof(toks[FTestStats]);
 
         // Eg: chrT:1082119-1190836
         Tokens::split(toks[FLocus], ":", temp);
         
         // Eg: chrT
-        t.chromID = temp[0];
+        t.cID = temp[0];
         
         t.p = SS::P(stof(toks[FPValue]));
         t.q = SS::P(stof(toks[FQValue]));
@@ -70,5 +70,3 @@ void ParserCDiffs::parse(const FileName &file, std::function<void (const Trackin
         }
     }
 }
-
-

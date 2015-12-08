@@ -7,6 +7,12 @@ namespace Anaquin
 {
     struct TExpress : public Analyzer
     {
+        enum Assembler
+        {
+            Cufflinks,
+            StringTie,
+        };
+        
         enum RNALevel
         {
             Gene,
@@ -26,10 +32,16 @@ namespace Anaquin
             // This's required by gcc...
             Options() {}
 
+            // Only valid for Cuffdiffs
+            Assembler soft;
+            
             RNALevel level = Isoform;
         };
 
-        static Stats report(const std::string &, const Options &options = Options());
+        static Stats analyze(const FileName &, const Options &o);
+        static Stats analyze(const std::vector<Expression> &, const Options &);
+
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

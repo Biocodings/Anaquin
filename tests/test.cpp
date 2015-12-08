@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <iostream>
+//#include <iostream>
 #include "unit/test.hpp"
 #include "data/standard.hpp"
 #include <boost/algorithm/string.hpp>
@@ -18,6 +18,7 @@ extern std::string FusionDataRef();
 
 extern std::string TransDataMixA();
 extern std::string TransDataMixB();
+extern std::string TransDataMixF();
 extern std::string TransDataMixAB();
 extern std::string TransStandGTF();
 
@@ -71,6 +72,14 @@ void Test::transB()
     Test::clear();
     Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
     Standard::instance().r_mix(Reader(TransDataMixB(), DataMode::String));
+    Standard::instance().r_trans.finalize();
+}
+
+void Test::transF()
+{
+    Test::clear();
+    Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().r_mix(Reader(TransDataMixF(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 

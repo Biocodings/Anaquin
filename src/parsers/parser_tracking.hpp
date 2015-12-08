@@ -6,15 +6,10 @@
 
 namespace Anaquin
 {
-    struct Tracking
+    struct Tracking : public Expression
     {
-        TrackID chromID;
         TrackID trackID;
-        TrackID geneID;
 
-        Locus l;
-        
-        FPKM fpkm;
         FPKM lFPKM;
         FPKM uFPKM;
         

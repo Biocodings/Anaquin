@@ -577,8 +577,8 @@ namespace Anaquin
 
             struct ExonInterval : public Interval
             {
-                ExonInterval(const GeneID gID,
-                             const IsoformID iID,
+                ExonInterval(const GeneID    &gID,
+                             const IsoformID &iID,
                              const IntervalID &id,
                              const Locus &l) : Interval(id, l), gID(gID), iID(iID) {}
 

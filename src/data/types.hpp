@@ -19,6 +19,7 @@ namespace Anaquin
     typedef long long Lines;
     
     typedef double Fold;
+    typedef double LogFold;
     typedef double Percentage;
 
     typedef std::string BinID;
@@ -31,6 +32,7 @@ namespace Anaquin
     typedef std::string ContigID;
     typedef std::string IntronID;
     typedef std::string IsoformID;
+    typedef std::string GenericID;
     typedef std::string TranscriptID;
 
     typedef std::string Path;

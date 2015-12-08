@@ -5,93 +5,135 @@
 using namespace SS;
 using namespace Anaquin;
 
-TExpress::Stats TExpress::report(const FileName &file, const Options &o)
+template <typename T> void update(TExpress::Stats &stats, const T &t, const GenericID &id, bool isoform, const TExpress::Options &o)
 {
-    TExpress::Stats stats;
+    if (t.cID != Standard::chrT)
+    {
+        stats.n_expT++;
+        return;
+    }
+    
+    stats.n_chrT++;
+    
+    /*
+     * There're two possibilities here, comparing at the isoform or gene level. While the workflow is similar, the underlying
+     * data-structure is different.
+     */
+
     const auto &r = Standard::instance().r_trans;
 
-    const bool isoform = o.level == Isoform;
-    o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
-
-    // Construct for a histogram at the appropriate level
-    stats.h = isoform ? r.hist() : r.geneHist();
-    
-    o.info("Parsing: " + file);
-
-    ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
+    if (isoform)
     {
-        static const auto &id = Standard::chrT;
+        const TransData *m = nullptr;
         
-        if (t.chromID != id)
+        // Try to match by name if possible
+        m = r.match(id);
+        
+        if (!m)
         {
-            stats.n_expT++;
-            return;
+            // Try to match by locus (de-novo assembly)
+            m = r.match(t.l, Overlap);
         }
-
-        stats.n_chrT++;
-
-        // Don't overflow
-        const auto fpkm = std::max(0.05, t.fpkm);
-
-        if (isoform)
+        
+        if (!m)
         {
-            const TransData *m = nullptr;
-
-            // Try to match by name if possible
-            m = r.match(t.trackID);
-
-            if (!m)
-            {
-                // Try to match by locus (de-novo assembly)
-                m = r.match(t.l, Overlap);
-            }
-
-            if (!m)
-            {
-                o.logWarn((boost::format("%1% not found. Unknown isoform.") % t.trackID).str());
-            }
-            else
-            {
-                stats.h.at(m->id)++;
-
-                if (t.fpkm)
-                {
-                    stats.add(t.trackID, m->abund(Mix_1), fpkm);
-                }
-            }
+            o.logWarn((boost::format("%1% not found. Unknown isoform.") % id).str());
         }
         else
         {
-            const TransRef::GeneData *m = nullptr;
+            stats.h.at(m->id)++;
             
-            // Try to match by name if possible
-            m = r.findGene(t.geneID);
-
-            if (!m)
+            if (t.fpkm)
             {
-                // Try to match by locus (de-novo assembly)
-                m = r.findGene(t.l, Contains);
-            }
-
-            if (!m)
-            {
-                o.logWarn((boost::format("%1% not found. Unknown gene.") % t.trackID).str());
-            }
-            else
-            {
-                stats.h.at(m->id)++;
-
-                if (t.fpkm)
-                {
-                    stats.add(t.trackID, m->abund(Mix_1), fpkm);
-                }
+                stats.add(id, m->abund(Mix_1), t.fpkm);
             }
         }
+    }
+    else
+    {
+        const TransRef::GeneData *m = nullptr;
+        
+        // Try to match by name if possible
+        m = r.findGene(id);
+        
+        if (!m)
+        {
+            // Try to match by locus (de-novo assembly)
+            m = r.findGene(t.l, Contains);
+        }
+        
+        if (!m)
+        {
+            o.logWarn((boost::format("%1% not found. Unknown gene.") % id).str());
+        }
+        else
+        {
+            stats.h.at(m->id)++;
+            
+            if (t.fpkm)
+            {
+                stats.add(id, m->abund(Mix_1), t.fpkm);
+            }
+        }
+    }
+}
+
+template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o, Functor f)
+{
+    TExpress::Stats stats;
+    
+    const bool isoform = o.level == TExpress::Isoform;
+    o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
+    
+    f(stats);
+    
+    return stats;
+}
+
+TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Options &o)
+{
+    return calculate(o, [&](TExpress::Stats &stats)
+    {
+        const auto &r = Standard::instance().r_trans;
+        
+        // Construct for a histogram at the appropriate level
+        stats.h = o.level == TExpress::Isoform ? r.hist() : r.geneHist();
+        
+        for (const auto &i : exps)
+        {
+            update(stats, i, i.id, o.level == TExpress::Isoform, o);
+        }
+        
+        stats.ss = (o.level == TExpress::Isoform) ? r.limit(stats.h) : r.limitGene(stats.h);
     });
-    
-    stats.ss = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
-    
-    const auto units = isoform ? "isoforms" : "genes";
+}
+
+TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
+{
+    o.info("Parsing: " + file);
+
+    return calculate(o, [&](TExpress::Stats &stats)
+    {
+        const auto &r = Standard::instance().r_trans;
+        
+        // Construct for a histogram at the appropriate level
+        stats.h = o.level == TExpress::Isoform ? r.hist() : r.geneHist();
+
+        const auto isIsoform = o.level == TExpress::Isoform;
+        
+        ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
+        {
+            update(stats, t, isIsoform ? t.trackID : t.id, isIsoform, o);
+        });
+        
+        stats.ss = isIsoform ? r.limit(stats.h) : r.limitGene(stats.h);
+    });
+}
+
+void TExpress::report(const FileName &file, const Options &o)
+{
+    const auto stats = TExpress::analyze(file, o);
+    const auto units = (o.level == Isoform) ? "isoforms" : "genes";
     
     /*
      * Generating summary statistics
@@ -99,13 +141,11 @@ TExpress::Stats TExpress::report(const FileName &file, const Options &o)
     
     o.info("Generating summary statistics");
     AnalyzeReporter::linear("TransExpress_summary.stats", file, stats, units, o.writer);
-
+    
     /*
-     * Generating Bioconductor
+     * Generating scatter plot
      */
     
-    o.info("Generating Bioconductor");
+    o.info("Generating scatter plot");
     AnalyzeReporter::scatter(stats, "", "TransExpress", "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
-
-    return stats;
 }

@@ -4,46 +4,96 @@
 
 using namespace Anaquin;
 
-TEST_CASE("TExpress_T_1000_Isoforms")
+TEST_CASE("TExpress_Perfect")
 {
     Test::transA();
     
-    TExpress::Options o;
-    o.level = Anaquin::TExpress::RNALevel::Isoform;
+    std::vector<Expression> exps;
     
-    const auto r  = TExpress::report("tests/data/T_1000/B/G/isoforms.fpkm_tracking", o);
-    const auto lm = r.linear();
+    for (const auto &i : Standard::instance().r_trans.data())
+    {
+        Expression exp;
+        
+        exp.cID  = "chrT";
+        exp.id   = i.first;
+        exp.fpkm = i.second.mixes.at(Mix_1);
+        exps.push_back(exp);
+    }
     
-    REQUIRE(lm.r  == Approx(0.5303389953));
-    REQUIRE(lm.m  == Approx(0.4560194933));
-    REQUIRE(lm.r2 == Approx(0.2812594499));
-    
-    REQUIRE(r.ss.id == "R2_38_1");
-    REQUIRE(r.ss.counts == 1);
-    REQUIRE(r.ss.abund == Approx(0.003933907));
+    const auto r = TExpress::analyze(exps, TExpress::Options());
+    const auto stats = r.linear();
+
+    REQUIRE(stats.r  == Approx(1.0));
+    REQUIRE(stats.m  == Approx(1.0));
+    REQUIRE(stats.r2 == Approx(1.0));
 }
 
-TEST_CASE("TExpress_T_1000_Genes")
+TEST_CASE("TExpress_NoSynthetic")
 {
-    Test::clear();
-    
-    const auto r1 = Test::test("-t TransExpress -m data/trans/MTR002.v013.csv -rgtf data/trans/ATR001.v032.gtf -ugtrack tests/data/T_1000/B/G/genes.fpkm_tracking");
-    
-    REQUIRE(r1.status == 0);
-    
     Test::transA();
     
-    TExpress::Options o;
-    o.level = Anaquin::TExpress::RNALevel::Gene;
+    std::vector<Expression> exps;
     
-    const auto r2 = TExpress::report("tests/data/T_1000/B/G/genes.fpkm_tracking", o);
-    const auto lm = r2.linear();
+    for (const auto &i : Standard::instance().r_trans.data())
+    {
+        Expression exp;
+        
+        // The tool shouldn't process it unless it's chrT
+        exp.cID = "Anaquin";
+    }
     
-    REQUIRE(lm.r  == Approx(0.6447104779));
-    REQUIRE(lm.m  == Approx(0.6184389099));
-    REQUIRE(lm.r2 == Approx(0.4156516003));
+    const auto r = TExpress::analyze(exps, TExpress::Options());
+    const auto stats = r.linear();
     
-    REQUIRE(r2.ss.id == "R2_33");
-    REQUIRE(r2.ss.counts == 1);
-    REQUIRE(r2.ss.abund == Approx(0.0590085983));
+    REQUIRE(isnan(stats.r));
+    REQUIRE(isnan(stats.m));
+    REQUIRE(isnan(stats.r2));
+}
+
+TEST_CASE("TExpress_AllZeros")
+{
+    Test::transA();
+    
+    std::vector<Expression> exps;
+    
+    for (const auto &i : Standard::instance().r_trans.data())
+    {
+        Expression exp;
+        
+        exp.cID  = "chrT";
+        exp.id   = i.first;
+        exp.fpkm = 0.0;
+        exps.push_back(exp);
+    }
+    
+    const auto r = TExpress::analyze(exps, TExpress::Options());
+    const auto stats = r.linear();
+    
+    REQUIRE(isnan(stats.r));
+    REQUIRE(isnan(stats.m));
+    REQUIRE(isnan(stats.r2));
+}
+
+TEST_CASE("TExpress_FlatMix")
+{
+    Test::transF();
+    
+    std::vector<Expression> exps;
+    
+    for (const auto &i : Standard::instance().r_trans.data())
+    {
+        Expression exp;
+        
+        exp.cID  = "chrT";
+        exp.id   = i.first;
+        exp.fpkm = 100 * rand();
+        exps.push_back(exp);
+    }
+    
+    const auto r = TExpress::analyze(exps, TExpress::Options());
+    const auto stats = r.linear();
+    
+    REQUIRE(isnan(stats.r));
+    REQUIRE(isnan(stats.m));
+    REQUIRE(isnan(stats.r2));
 }

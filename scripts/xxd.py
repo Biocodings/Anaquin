@@ -35,6 +35,7 @@ data  = [ 'data/manual.txt',
           'data/trans/MTR002.v013.csv',
           'data/trans/MTR003.v013.csv',
           'data/trans/MTR004.v013.csv',          
+          'data/trans/MTR005.v013.csv',
 
            # ---------- META ----------
 

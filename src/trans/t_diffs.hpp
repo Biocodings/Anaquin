@@ -7,6 +7,13 @@ namespace Anaquin
 {
     struct TDiffs : public Analyzer
     {
+        enum Assembler
+        {
+            Cuffdiffs,
+            DESeq2,
+            EdgeR,
+        };
+        
         enum RNALevel
         {
             Gene,
@@ -15,6 +22,9 @@ namespace Anaquin
 
         struct Options : public DoubleMixtureOptions
         {
+            Assembler soft;
+
+            // Only valid for Cuffdiffs
             RNALevel level;
         };
 
@@ -26,7 +36,9 @@ namespace Anaquin
             std::map<std::string, Counts> h;
         };
 
-        static Stats report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o);
+        static Stats analyze(const std::vector<DiffTest> &, const Options &o);
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

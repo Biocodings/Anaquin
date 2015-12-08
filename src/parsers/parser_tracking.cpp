@@ -54,13 +54,13 @@ void ParserTracking::parse(const FileName &file, std::function<void (const Track
 
         try
         {
+            t.id = tokens[T_GeneID];            
             t.trackID = tokens[T_TrackID];
-            t.geneID  = tokens[T_GeneID];
             
             // Eg: chrT:1082119-1190836
             Tokens::split(tokens[T_Locus], ":", temp);
             
-            t.chromID = temp[0];
+            t.cID = temp[0];
             
             // Eg: 1082119-1190836
             Tokens::split(std::string(temp[1]), "-", temp);

@@ -319,12 +319,7 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
                             impl.lFPS,
                             impl.rFPS)))
         {
-            impl.stats->exonToGene.at(match->id());
-            //impl.stats->alignExon.h.at(impl.stats->exonToGene.at(match->id()))++;
-        }
-        else
-        {
-            //impl.stats->eUnknown++;
+            o.logInfo((boost::format("Exon (match): %1% %2%") % align.id % match->id()).str());
         }
     }
     else
@@ -334,12 +329,7 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
                             impl.stats->iContains,
                             impl.stats->iOverlaps)))
         {
-            //impl.stats->alignIntron.h.at(impl.stats->intronToGene.at(match->id()))++;
-            //impl.stats->iMapped++;
-        }
-        else
-        {
-            //impl.stats->iUnknown++;
+            o.logInfo((boost::format("Intron (match): %1% %2%") % align.id % match->id()).str());
         }
     }
 

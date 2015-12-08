@@ -31,6 +31,32 @@ namespace Anaquin
         });
     }
     
+    struct DiffTest
+    {
+        ChromoID cID;
+
+        // Subject, eg: gene ID (testing for genes) or sequin ID (testing for isoforms)
+        GenericID id;
+        
+        // Log-fold ratio
+        LogFold logF;
+        
+        // The p-value and q-value under null-hypothesis
+        SS::P p, q;
+    };
+    
+    struct Expression
+    {
+        ChromoID cID;
+        
+        GenericID id;
+        
+        Locus l;
+
+        // The expression for signal
+        FPKM fpkm;
+    };
+
     struct Analyzer
     {
         // Empty Implementation
@@ -202,23 +228,47 @@ namespace Anaquin
                 }
             }
 
-            const auto m = SS::lm(SS::R::data.frame(SS::R::c(y), SS::R::c(x)));
-
             LinearModel lm;
-            
-            lm.f      = m.f;
-            lm.p      = m.p;
-            lm.r2     = m.r2;
-            lm.ar2    = m.ar2;
-            lm.r      = SS::cor(x, y);
-            lm.sst    = m.total.ss;
-            lm.ssm    = m.model.ss;
-            lm.sse    = m.error.ss;
-            lm.c      = m.coeffs[0].value;
-            lm.m      = m.coeffs[1].value;
-            lm.sst_df = m.total.df;
-            lm.ssm_df = m.model.df;
-            lm.sse_df = m.error.df;
+
+            try
+            {
+                if (std::adjacent_find(x.begin(), x.end(), std::not_equal_to<double>()) == x.end())
+                {
+                    throw std::runtime_error("Failed to perform linear regression. Flat mixture.");
+                }
+
+                const auto m = SS::lm(SS::R::data.frame(SS::R::c(y), SS::R::c(x)));
+
+                lm.f      = m.f;
+                lm.p      = m.p;
+                lm.r      = SS::cor(x, y);
+                lm.c      = m.coeffs[0].value;
+                lm.m      = m.coeffs[1].value;
+                lm.r2     = m.r2;
+                lm.ar2    = m.ar2;
+                lm.sst    = m.total.ss;
+                lm.ssm    = m.model.ss;
+                lm.sse    = m.error.ss;
+                lm.sst_df = m.total.df;
+                lm.ssm_df = m.model.df;
+                lm.sse_df = m.error.df;
+            }
+            catch(...)
+            {
+                lm.f      = NAN;
+                lm.p      = NAN;
+                lm.r      = NAN;
+                lm.c      = NAN;
+                lm.m      = NAN;
+                lm.r2     = NAN;
+                lm.ar2    = NAN;
+                lm.sst    = NAN;
+                lm.ssm    = NAN;
+                lm.sse    = NAN;
+                lm.sst_df = NAN;
+                lm.ssm_df = NAN;
+                lm.sse_df = NAN;
+            }
 
             return lm;
         }

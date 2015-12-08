@@ -18,19 +18,40 @@ namespace Anaquin
 
         static void clear();
 
+        /*
+         * Transcriptome analayis
+         */
+        
         static void transA();
         static void transB();
+        static void transF();
         static void transAB();
 
+        /*
+         * Variant analayis
+         */
+        
         static void variantA();
         static void variantF();
 
+        /*
+         * Fusion analayis
+         */
+        
         static void fusionA();
 
+        /*
+         * Ladder analayis
+         */
+        
         static void ladderA();
         static void ladderB();
         static void ladderAB();
 
+        /*
+         * Metagenomics analayis
+         */
+        
         static void meta();
         
         static Test test(const std::string &);
