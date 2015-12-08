@@ -702,8 +702,25 @@ void TransRef::validate()
         throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check your file and try again.");
     }
     
-    merge(_rawMIDs, _impl->rawIIDs);
+    /*
+     * Validation rules:
+     *
+     *   1: Annotation (eg: TransCoverage)
+     *   2: Evertyhing (eg: TransAlign)
+     */
+
+    // Rule 1
+    if (_rawMIDs.empty())
+    {
+        merge(_impl->rawIIDs, _impl->rawIIDs);
+    }
     
+    // Rule 2
+    else
+    {
+        merge(_rawMIDs, _impl->rawIIDs);
+    }
+
     /*
      * Filter out only those validated exons
      */

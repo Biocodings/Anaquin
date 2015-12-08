@@ -16,6 +16,12 @@ Command
 
 anaquin -pdf -t TransAlign -rgtf ATR001.v032.gtf -m MTR002.v013.csv
 
+
+
+
+
+
+
 Alignment
 ---
 
