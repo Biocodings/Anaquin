@@ -166,12 +166,12 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("TransDifferent_summary.stats", file, stats, units, o.writer);
+    AnalyzeReporter::linear("TransDiff_summary.stats", file, stats, units, o.writer);
     
     /*
      * Generating scatter plot
      */
     
     o.info("Generating scatter plot");
-    AnalyzeReporter::scatter(stats, "", "TransDifferent", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    AnalyzeReporter::scatter(stats, "", "TransDiff", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }

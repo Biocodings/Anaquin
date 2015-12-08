@@ -22,7 +22,7 @@ namespace Anaquin
 
         struct Options : public DoubleMixtureOptions
         {
-            Assembler soft;
+            Assembler soft = Assembler::Cuffdiffs;
 
             // Only valid for Cuffdiffs
             RNALevel level;

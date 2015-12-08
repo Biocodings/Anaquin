@@ -93,7 +93,8 @@ plotScatter <- function(x, y, ids, isLog=FALSE)
 # ----------------------- Density Plot -----------------------
 #
 # Density plot tabulates the coverage across sequins.
-#plotDensity('/Users/tedwong/Sources/QA/output/TransCoverage_chrT.bedgraph', '/Users/tedwong/Sources/QA/data/trans/ATR002.v032.bed', seqIDs=c('R2_14_1'))
+#plotDensity('/Users/tedwong/Sources/QA/TransCoverage_chrT.bedgraph', '/Users/tedwong/Sources/QA/data/trans/ATR002.v032.bed', seqIDs=c('R2_14_1'))
+#plotDensity('/Users/tedwong/Sources/QA/TransCoverage_chrT.bedgraph', '/Users/tedwong/Sources/QA/data/trans/ATR002.v032.bed')
 
 plotDensity <- function(src, ref, seqIDs = NULL, minBase = NULL, maxBase = NULL)
 {
@@ -111,17 +112,17 @@ plotDensity <- function(src, ref, seqIDs = NULL, minBase = NULL, maxBase = NULL)
     for (i in 1:length(ref))
     {
         seq_ <- ref[i,]
-
+        
         if (is.null(seqIDs) || seq_$name %in% seqIDs)
         {
             startL <- start(seq_)
             endL   <- end(seq_)
-
+            
             if ((is.null(minBase) || startL >= minBase) && (is.null(maxBase) || endL <= maxBase))
             {
                 Sushi::plotBedgraph(src, 'chrT', start(seq_), end(seq_), transparency=0.50, color='#ADC2E6', xlab=seq_$name, ylab='Coverage')
                 #Sushi::plotBedgraph(src, 'chrT', 6535259, 6536017, transparency=0.50, color='#ADC2E6', xlab=seq_$name, ylab='Coverage')
-
+                
                 ticks  <- 5
                 range  <- c(min(src[src$start >= start(seq_) & src$end <= end(seq_),]$value),
                             max(src[src$start >= start(seq_) & src$end <= end(seq_),]$value))
