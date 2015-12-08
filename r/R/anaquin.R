@@ -4,10 +4,6 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
 #
 
-#library("Rsamtools")
-#library("GenomicFeatures")
-#library("GenomicAlignments")
-
 .isoformsToGenes <- function(trans)
 {
     trans <- as.character(trans)

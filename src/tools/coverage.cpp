@@ -33,6 +33,23 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
     return stats;
 }
 
+CoverageTool::Stats stats(const std::vector<CoverageTool::Mapping> &maps, const std::map<GenericID, Base> &ref)
+{
+    CoverageTool::Stats stats;
+    
+    for (const auto &m : maps)
+    {
+        if (!stats.inters.find(m.id))
+        {
+            stats.inters.add(Interval(m.id, Locus(0, ref.at(m.id))));
+        }
+        
+        stats.inters.find(m.id)->add(m.l);
+    }
+
+    return stats;
+}
+
 void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o, CoverageFunctor f)
 {
     o.writer->open(o.file);

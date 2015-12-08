@@ -14,7 +14,6 @@
 #
 
 library(EDASeq)
-library(Sushi)
 library(ggplot2)
 library(rtracklayer)
 library(GenomicRanges)
@@ -24,7 +23,9 @@ library(RColorBrewer)
 colors <- brewer.pal(3, "Set2")
 
 #
-# Create a scatter plot for the first two principal components for RUVg.
+# ----------------------- ROC Plot -----------------------
+#
+# Create a ROC plot for the first two principal components for RUVg.
 #
 
 plotROC <- function()
@@ -32,8 +33,8 @@ plotROC <- function()
     
 }
 
-
-
+#
+# ----------------------- PCA Plot -----------------------
 #
 # Create a scatter plot for the first two principal components for RUVg.
 #
@@ -46,6 +47,8 @@ plotPCA <- function(m)
 }
 
 #
+# ----------------------- RLE Plot -----------------------
+#
 # Create a plot for relative likehihood expression for RUVg.
 #
 
@@ -56,6 +59,8 @@ plotRLE <- function(m)
     EDASeq::plotRLE(s, outline=FALSE, col=colors[x])
 }
 
+#
+# ----------------------- Scatter Plot -----------------------
 #
 # Scatter plot is the most common data visualization tool in Anaquin. It plots the expected concentration
 # defined by a mixture file with the measured coverage.
@@ -84,37 +89,47 @@ plotScatter <- function(x, y, ids, isLog=FALSE)
     print(p)
 }
 
-plotDensity <- function(src, ref)
+#
+# ----------------------- Density Plot -----------------------
+#
+# Density plot tabulates the coverage across sequins.
+#plotDensity('/Users/tedwong/Sources/QA/output/TransCoverage_chrT.bedgraph', '/Users/tedwong/Sources/QA/data/trans/ATR002.v032.bed', seqIDs=c('R2_14_1'))
+
+plotDensity <- function(src, ref, seqIDs = NULL, minBase = NULL, maxBase = NULL)
 {
+    require(Sushi)
+    
     # Read the source file
     src <- read.csv(src, header=FALSE, sep='\t')
     
     colnames(src) <- c('chrom', 'start',  'end',  'value')
     
     # Read the reference annotation
-    ref <- import.bed(con=ref, asRangedData=F)
+    ref <- import.bed(con=ref)
     
-    # Loop over all sequins defined in the reference...
+    # Loop over all sequins defined...
     for (i in 1:length(ref))
     {
-        seq <- ref[i,]
-        
-        # Construct a density plot for the sequin
-        plotBedgraph(src,
-                     'chrT',
-                     start(seq),
-                     end(seq),
-                     transparency=0.50,
-                     color='#ADC2E6',
-                     xlab=seq$name,
-                     ylab='Coverage')
-        
-        ticks  <- 5
-        range  <- c(min(src[src$start >= start(seq) & src$end <= end(seq),]$value),
-                    max(src[src$start >= start(seq) & src$end <= end(seq),]$value))
-        scaled <- range / ticks
-        scaled <- round_any(scaled, 100, f = ceiling)
-        
-        axis(side=2, at=seq(0, ticks * scaled[2], by=scaled[2]))
+        seq_ <- ref[i,]
+
+        if (is.null(seqIDs) || seq_$name %in% seqIDs)
+        {
+            startL <- start(seq_)
+            endL   <- end(seq_)
+
+            if ((is.null(minBase) || startL >= minBase) && (is.null(maxBase) || endL <= maxBase))
+            {
+                Sushi::plotBedgraph(src, 'chrT', start(seq_), end(seq_), transparency=0.50, color='#ADC2E6', xlab=seq_$name, ylab='Coverage')
+                #Sushi::plotBedgraph(src, 'chrT', 6535259, 6536017, transparency=0.50, color='#ADC2E6', xlab=seq_$name, ylab='Coverage')
+
+                ticks  <- 5
+                range  <- c(min(src[src$start >= start(seq_) & src$end <= end(seq_),]$value),
+                            max(src[src$start >= start(seq_) & src$end <= end(seq_),]$value))
+                scaled <- range / ticks
+                scaled <- round_any(scaled, 100, f = ceiling)
+                
+                axis(side=2, at=seq(0, ticks * scaled[2], by=scaled[2]))
+            }
+        }
     }
 }

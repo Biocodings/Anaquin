@@ -14,6 +14,14 @@ namespace Anaquin
         {
             Intervals<> inters;
         };
+        
+        struct Mapping
+        {
+            GenericID id;
+            
+            // Where the mapping occurs
+            Locus l;
+        };
 
         // Whether to proceed with the alignment
         typedef std::function<bool (const Alignment &, const ParserProgress &)> AlignFunctor;
@@ -50,6 +58,9 @@ namespace Anaquin
         // Analyze a BAM file sorted by position
         static Stats stats(const FileName &, AlignFunctor);
 
+        // Analyze a list of mappings assume sorted
+        static Stats stats(const std::vector<Mapping> &, const std::map<GenericID, Base> &);
+        
         // Generate a bedgraph for the coverage
         static void bedGraph(const Stats &, const CoverageBedGraphOptions &, CoverageFunctor);
 
