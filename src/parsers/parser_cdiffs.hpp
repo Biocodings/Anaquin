@@ -10,11 +10,9 @@ namespace Anaquin
     {
         TrackID testID;
 
-        FPKM fpkm_1, fpkm_2;
-
         SS::TestStats stats;
 
-        TrackingStatus status;
+        //TrackingStatus status;
     };
 
     struct ParserCDiffs

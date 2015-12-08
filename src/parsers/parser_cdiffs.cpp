@@ -20,11 +20,11 @@ enum TrackingField
     FQValue    = 12,
 };
 
-static const std::map<TrackID, TrackingStatus> tok2Status =
+static const std::map<TrackID, DiffTest::DiffStatus> tok2Status =
 {
-    { "OK", OK },
-    { "HIDATA", HIData },
-    { "NOTEST", NoTest }
+    { "OK",     Anaquin::DiffTest::DiffStatus::StatusTested    },
+    { "HIDATA", Anaquin::DiffTest::DiffStatus::StatusNotTested },
+    { "NOTEST", Anaquin::DiffTest::DiffStatus::StatusNotTested },
 };
 
 void ParserCDiffs::parse(const FileName &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)

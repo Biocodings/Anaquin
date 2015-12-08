@@ -1,10 +1,10 @@
 #include "trans/t_diffs.hpp"
 #include "parsers/parser_cdiffs.hpp"
-
+#include <iostream>
 using namespace SS;
 using namespace Anaquin;
 
-static void update(TDiffs::Stats &stats, const TrackingDiffs &t, bool isoform, const TDiffs::Options &o)
+template <typename T> void update(TDiffs::Stats &stats, const T &t, const GenericID &id, bool isoform, const TDiffs::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     
@@ -67,12 +67,12 @@ static void update(TDiffs::Stats &stats, const TrackingDiffs &t, bool isoform, c
             
         case TDiffs::Isoform:
         {
-            if (t.status == NoTest || !stats.h.count(t.testID))
+            if (t.status == NoTest || !stats.h.count(id))
             {
                 return;
             }
             
-            const auto *seq = r.match(t.testID);
+            const auto *seq = r.match(id);
             
             if (seq)
             {
@@ -82,13 +82,14 @@ static void update(TDiffs::Stats &stats, const TrackingDiffs &t, bool isoform, c
             
             if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
             {
-                stats.h.at(t.testID)++;
+                stats.h.at(id)++;
                 
                 // Measured fold-change between the two mixtures
                 measured = t.fpkm_2 / t.fpkm_1;
             }
             
-            stats.add(t.testID, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+            //stats.add(t.testID, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+            stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             
             break;
         }
@@ -100,7 +101,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     TDiffs::Stats stats;
     const auto &r = Standard::instance().r_trans;
     
-    const bool isoform = o.level == TDiffs::Isoform;
+    const auto isoform = o.level == TDiffs::Isoform;
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
     
     // Construct for a histogram at the appropriate level
@@ -117,6 +118,17 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     return stats;
 }
 
+TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options &o)
+{
+    return calculate(o, [&](TDiffs::Stats &stats)
+    {
+        for (auto &test : tests)
+        {
+            update(stats, test, test.id, o.level == TDiffs::Isoform, o);
+        }
+    });
+}
+
 TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 {
     return calculate(o, [&](TDiffs::Stats &stats)
@@ -125,9 +137,11 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
         {
             case Cuffdiffs:
             {
+                const auto isIsoform = o.level == TDiffs::Isoform;
+                
                 ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
                 {
-                    update(stats, t, o.level == TDiffs::Isoform, o);
+                    update(stats, t, isIsoform ? t.testID : t.id, isIsoform, o);
                 });
 
                 break;
@@ -145,7 +159,6 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 void TDiffs::report(const FileName &file, const Options &o)
 {
     const auto stats = TDiffs::analyze(file, o);
-    
     const auto units = (o.level == Isoform) ? "isoforms" : "genes";
     
     /*
@@ -156,9 +169,9 @@ void TDiffs::report(const FileName &file, const Options &o)
     AnalyzeReporter::linear("TransDifferent_summary.stats", file, stats, units, o.writer);
     
     /*
-     * Generating Bioconductor
+     * Generating scatter plot
      */
     
-    o.info("Generating Bioconductor");
+    o.info("Generating scatter plot");
     AnalyzeReporter::scatter(stats, "", "TransDifferent", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }
