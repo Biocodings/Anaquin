@@ -279,7 +279,10 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         stats.pb.m.nr() += in.l().length();
         stats.pb.m.nq()  = stats.pb.m.tp() + stats.pb.m.fp();
     }
-    
+
+    o.info("Base (TP): " + std::to_string(stats.pb.m.tp()));
+    o.info("Base (FP): " + std::to_string(stats.pb.m.fp()));
+
     /*
      * Calculating detection limit
      */

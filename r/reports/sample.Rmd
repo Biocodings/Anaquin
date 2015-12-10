@@ -55,11 +55,11 @@ Summary for dataset: K_RMXA1v2.accepted_hits.sorted.bam
    Detection:   0.0590086 (R2_33)
 ```
 
-* Transctiptome Assembly
+# Transctiptome Assembly
 
 
-* Expression Analysis
+# Expression Analysis
 
 
-* Differential Analysis
+# Differential Analysis
 

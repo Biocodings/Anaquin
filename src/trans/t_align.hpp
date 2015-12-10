@@ -92,7 +92,7 @@ namespace Anaquin
                 std::vector<UnknownAlignment> unknowns;
 
                 // Number of exons in the query
-                inline Counts qExons() const   { return overE.aNQ();  }
+                inline Counts qExons() const   { return overE.aNQ(); }
                 
                 // Number of introns in the query
                 inline Counts qIntrons() const { return overI.aNQ(); }
