@@ -1576,16 +1576,16 @@ void reportStats(FILE* fout_, const char* setname, GSuperLocus& stotal,
       if (ps->total_rintrons>0) {
           sn=(100.0*(double)ps->m_introns)/(ps->total_rintrons);
           //fprintf(fout, "        Missed introns: %7d/%d\t(%5.1f%%)\n",ps->m_introns, ps->total_rintrons, sn);
-          __cmp__.missedIntronsN = ps->w_exons;
-          __cmp__.missedIntronsR = ps->total_qexons;
+          __cmp__.missedIntronsN = ps->m_introns;
+          __cmp__.missedIntronsR = ps->total_rintrons;
           __cmp__.missedIntronsP = sn;
       }
       
       if (ps->total_qintrons>0) {
         sn=(100.0*(double)ps->w_introns)/(ps->total_qintrons);
           //fprintf(fout, "         Novel introns: %7d/%d\t(%5.1f%%)\n",ps->w_introns, ps->total_qintrons,sn);
-          __cmp__.novelIntronsN = ps->w_exons;
-          __cmp__.novelIntronsR = ps->total_qexons;
+          __cmp__.novelIntronsN = ps->w_introns;
+          __cmp__.novelIntronsR = ps->total_qintrons;
           __cmp__.novelIntronsP = sn;
       }
       
