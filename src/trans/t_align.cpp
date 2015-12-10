@@ -390,9 +390,9 @@ void TAlign::report(const FileName &file, const Options &o)
 
     {
         const auto summary = "Summary for dataset: %1%\n\n"
-                             "   Unmapped:   %2% alignments\n"
-                             "   Experiment: %3% alignments\n"
-                             "   Synthetic:  %4% alignments\n\n"
+                             "   Unmapped:   %2% (%24%) reads\n"
+                             "   Experiment: %3% (%25%) reads\n"
+                             "   Synthetic:  %4% reads\n\n"
                              "   Reference:  %5% exons\n"
                              "   Reference:  %6% introns\n"
                              "   Reference:  %7% bases\n\n"
@@ -412,15 +412,15 @@ void TAlign::report(const FileName &file, const Options &o)
                              "   ***\n\n"
                              "   -------------------- Exon level --------------------\n\n"
                              "   Sensitivity: %11%\n"
-                             "   Accuarcy:    %12%\n"
+                             "   Specificity: %12%\n"
                              "   Detection:   %13% (%14%)\n\n"
                              "   -------------------- Intron level --------------------\n\n"
                              "   Sensitivity: %15%\n"
-                             "   Accuarcy:    %16%\n"
+                             "   Specificity: %16%\n"
                              "   Detection:   %17% (%18%)\n\n"
                              "   -------------------- Base level --------------------\n\n"
                              "   Sensitivity: %19%\n"
-                             "   Accuarcy:    %20%\n"
+                             "   Specificity: %20%\n"
                              "   Detection:   %21% (%22%)\n";
         
         o.writer->open("TransAlign_summary.stats");
@@ -435,18 +435,21 @@ void TAlign::report(const FileName &file, const Options &o)
                                                 % stats.qIntrons()
                                                 % stats.qBases()
                                                 % stats.sn(Stats::AlignMetrics::Exon)
-                                                % stats.ac(Stats::AlignMetrics::Exon)
+                                                % stats.precise(Stats::AlignMetrics::Exon)
                                                 % stats.limitE.abund
                                                 % stats.limitE.id
                                                 % stats.sn(Stats::AlignMetrics::Intron)
-                                                % stats.ac(Stats::AlignMetrics::Intron)
+                                                % stats.precise(Stats::AlignMetrics::Intron)
                                                 % stats.limitI.abund
                                                 % stats.limitI.id
                                                 % stats.sn(Stats::AlignMetrics::Base)
-                                                % stats.ac(Stats::AlignMetrics::Base)
+                                                % stats.precise(Stats::AlignMetrics::Base)
                                                 % stats.pb.limit.abund
                                                 % stats.pb.limit.id
-                                                % stats.dilution()).str());
+                                                % stats.dilution()
+                                                % stats.exp()
+                                                % stats.chrT()
+                         ).str());
         o.writer->close();
     }
 
@@ -463,11 +466,11 @@ void TAlign::report(const FileName &file, const Options &o)
         o.writer->write((boost::format(format) % "ID"
                                                % "Covered"
                                                % "Sensitivity (Exon)"
-                                               % "Accuracy (Exon)"
+                                               % "Specificity (Exon)"
                                                % "Sensitivity (Intron)"
-                                               % "Accuracy (Intron)"
+                                               % "Specificity (Intron)"
                                                % "Sensitivity (Base)"
-                                               % "Accuracy (Base)").str());
+                                               % "Specificity (Base)").str());
         
         for (const auto &i : stats.pb.h)
         {
@@ -499,9 +502,9 @@ void TAlign::report(const FileName &file, const Options &o)
                 o.writer->write((boost::format(format) % i.first
                                                        % covered
                                                        % me.sn()
-                                                       % me.ac()
+                                                       % me.precise()
                                                        % mi.sn()
-                                                       % mi.ac()
+                                                       % mi.precise()
                                                        % mb.sn()
                                                        % mb.ac()).str());
             }
@@ -509,7 +512,7 @@ void TAlign::report(const FileName &file, const Options &o)
             {
                 o.writer->write((boost::format(format) % i.first
                                                        % me.sn()
-                                                       % me.ac()
+                                                       % me.precise()
                                                        % "--"
                                                        % "--"
                                                        % mb.sn()

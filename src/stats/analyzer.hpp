@@ -88,7 +88,16 @@ namespace Anaquin
         // Total mapped to the experiment
         Counts n_expT = 0;
 
-        // Fraction of sequin spiked
+        inline Percentage exp() const
+        {
+            return (n_chrT + n_expT) ? static_cast<double>(n_expT) / (n_chrT + n_expT) : NAN;
+        }
+        
+        inline Percentage chrT() const
+        {
+            return dilution();
+        }
+        
         inline Percentage dilution() const
         {
             return (n_chrT + n_expT) ? static_cast<double>(n_chrT) / (n_chrT + n_expT) : NAN;

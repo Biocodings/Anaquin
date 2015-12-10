@@ -37,7 +37,7 @@ namespace Anaquin
                     return (lTP + lFN()) ? static_cast<double>(lTP) / (lTP + lFN()) : NAN;
                 }
                 
-                inline double ac() const
+                inline double precise() const
                 {
                     return (aTP + aFP) ? static_cast<double>(aTP) / (aTP + aFP) : NAN;
                 }
@@ -111,8 +111,8 @@ namespace Anaquin
                     }
                 }
                 
-                // Overall accuracy
-                inline double ac(enum AlignMetrics l) const
+                // Overall precision
+                inline double precise(enum AlignMetrics l) const
                 {
                     /*
                      * It's important to note pe.m.ac() and pi.m.ac() are both undefined. The two
@@ -122,9 +122,9 @@ namespace Anaquin
                     
                     switch (l)
                     {
-                        case Exon:   { return overE.ac(); }
-                        case Intron: { return overI.ac(); }
-                        case Base:   { return pb.m.ac();  }
+                        case Exon:   { return overE.precise(); }
+                        case Intron: { return overI.precise(); }
+                        case Base:   { return pb.m.ac();       }
                     }
                 }
 
