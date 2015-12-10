@@ -393,9 +393,9 @@ void TAlign::report(const FileName &file, const Options &o)
 
     {
         const auto summary = "Summary for dataset: %1%\n\n"
-                             "   Unmapped:   %2% (%24%) reads\n"
-                             "   Experiment: %3% (%25%) reads\n"
-                             "   Synthetic:  %4% reads\n\n"
+                             "   Unmapped:   %2% reads\n"
+                             "   Experiment: %3% (%24%%) reads\n"
+                             "   Synthetic:  %4% (%25%%) reads\n\n"
                              "   Reference:  %5% exons\n"
                              "   Reference:  %6% introns\n"
                              "   Reference:  %7% bases\n\n"
@@ -450,8 +450,8 @@ void TAlign::report(const FileName &file, const Options &o)
                                                 % stats.pb.limit.abund
                                                 % stats.pb.limit.id
                                                 % stats.dilution()
-                                                % stats.exp()
-                                                % stats.chrT()
+                                                % (100.0 * stats.exp())
+                                                % (100.0 * stats.chrT())
                          ).str());
         o.writer->close();
     }

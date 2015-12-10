@@ -113,8 +113,8 @@ namespace Anaquin
             if (!t.i)
             {
                 if      (!t.mapped) { unmapped++; }
-                else if (!f(t))     { n_expT++;   }
-                else                { n_chrT++;   }
+                else if (!f(t))     { n_chrT++;   }
+                else                { n_expT++;   }
             }
         }
 

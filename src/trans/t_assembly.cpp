@@ -66,22 +66,26 @@ void TAssembly::report(const FileName &file, const Options &o)
                          "   Synthetic:  %3% features\n\n"
                          "   Reference:  %4% exons\n"
                          "   Reference:  %5% introns\n\n"
+                         "   ***\n"
+                         "   *** The following statistics are computed for exact and fuzzy.\n"
+                         "   ***\n"
+                         "   *** The fuzzy level is 10 nucleotides.\n"
+                         "   ***\n\n"
                          "   -------------------- Exon level --------------------\n\n"
-                         "   Sensitivity: %6%\n"
-                         "   Accuarcy:    %7%\n"
-                         "   Detection:   %8% (%9%)\n\n"
+                         "   Sensitivity: %6% (%7%)\n"
+                         "   Specificity: %8% (%9%)\n"
+                         "   Detection:   %10% (%11%)\n\n"
                          "   -------------------- Intron level --------------------\n\n"
-                         "   Sensitivity: %10%\n"
-                         "   Accuarcy:    %11%\n"
-                         "   Detection:   %12% (%13%)\n\n"
-                         "   -------------------- Base level --------------------\n\n"
-                         "   Sensitivity: %14%\n"
-                         "   Accuarcy:    %15%\n"
+                         "   Sensitivity: %12% (%13%)\n"
+                         "   Specificity: %14% (%15%)\n"
                          "   Detection:   %16% (%17%)\n\n"
-                         "   -------------------- Transcript level --------------------\n\n"
+                         "   -------------------- Base level --------------------\n\n"
                          "   Sensitivity: %18%\n"
-                         "   Accuarcy:    %19%\n"
-                         "   Detection:   %20% (%21%)\n\n";
+                         "   Specificity: %19%\n"
+                         "   Detection:   %20% (%21%)\n\n"
+                         "   -------------------- Transcript level --------------------\n\n"
+                         "   Sensitivity: %22% (%23%)\n"
+                         "   Specificity: %24% (%25%)\n";
     
     o.writer->open("TransAssembly_summary.stats");
     o.writer->write((boost::format(summary) % file
@@ -89,22 +93,26 @@ void TAssembly::report(const FileName &file, const Options &o)
                                             % stats.n_chrT
                                             % r.data().size()
                                             % r.countSortedIntrons()
-                                            % (__cmp__.e_sp / 100.0)
-                                            % (__cmp__.e_sn / 100.0)
+                                            % (__cmp__.e_sn  / 100.0) // 6
+                                            % (__cmp__.e_fsn / 100.0)
+                                            % (__cmp__.e_sp  / 100.0)
+                                            % (__cmp__.e_fsp / 100.0)
                                             % (stats.se.id.empty() ? "-" : std::to_string(stats.se.abund))
-                                            % stats.se.id
-                                            % (__cmp__.i_sp / 100.0)
-                                            % (__cmp__.i_sn / 100.0)
+                                            %  stats.se.id
+                                            % (__cmp__.i_sn  / 100.0) // 12
+                                            % (__cmp__.i_fsn / 100.0)
+                                            % (__cmp__.i_sp  / 100.0)
+                                            % (__cmp__.i_fsp / 100.0)
                                             % (stats.si.id.empty() ? "-" : std::to_string(stats.si.abund))
-                                            % stats.si.id
+                                            %  stats.si.id
+                                            % (__cmp__.b_sn / 100.0) // 18
                                             % (__cmp__.b_sp / 100.0)
-                                            % (__cmp__.b_sn / 100.0)
-                                            % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund))
-                                            % stats.sb.id
-                                            % (__cmp__.t_sp / 100.0)
-                                            % (__cmp__.t_sn / 100.0)
-                                            % "-"
-                                            % "-").str());
+                                            % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund)) // 20
+                                            %  stats.sb.id
+                                            % (__cmp__.t_sn  / 100.0)
+                                            % (__cmp__.t_fsn / 100.0)
+                                            % (__cmp__.t_sp  / 100.0)
+                                            % (__cmp__.t_fsp / 100.0)).str());
     o.writer->close();
     
     o.writer->open("TransAssembly_quins.stats");
@@ -116,13 +124,13 @@ void TAssembly::report(const FileName &file, const Options &o)
     for (const auto &i : stats.he)
     {
         o.writer->write((boost::format(format) % i.first
-                         % stats.he.at(i.first)
-                         % stats.hi.at(i.first)
-                         % stats.ht.at(i.first)).str());
+                                               % stats.he.at(i.first)
+                                               % stats.hi.at(i.first)
+                                               % stats.ht.at(i.first)).str());
     }
-    
+/*
     o.writer->write("\n");
-    
+
     format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "ID" % "Base").str());
     
@@ -130,7 +138,7 @@ void TAssembly::report(const FileName &file, const Options &o)
     {
         o.writer->write((boost::format(format) % i.first % stats.hb.at(i.first)).str());
     }
-    
+*/
     o.writer->close();
 }
 
