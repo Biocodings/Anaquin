@@ -1560,18 +1560,35 @@ void reportStats(FILE* fout_, const char* setname, GSuperLocus& stotal,
     //fprintf(fout,"\n     Matching intron chains: %7d\n",ps->ichainTP);
     //fprintf(fout,  "              Matching loci: %7d\n",ps->locusTP);
     //fprintf(fout, "\n");
-    sn=(100.0*(double)ps->m_exons)/(ps->total_rexons);
-    //fprintf(fout, "          Missed exons: %7d/%d\t(%5.1f%%)\n",ps->m_exons, ps->total_rexons, sn);
-    sn=(100.0*(double)ps->w_exons)/(ps->total_qexons);
-    //fprintf(fout, "           Novel exons: %7d/%d\t(%5.1f%%)\n",ps->w_exons, ps->total_qexons,sn);
-    if (ps->total_rintrons>0) {
-    sn=(100.0*(double)ps->m_introns)/(ps->total_rintrons);
-    //fprintf(fout, "        Missed introns: %7d/%d\t(%5.1f%%)\n",ps->m_introns, ps->total_rintrons, sn);
-    }
-    if (ps->total_qintrons>0) {
-    sn=(100.0*(double)ps->w_introns)/(ps->total_qintrons);
-    //fprintf(fout, "         Novel introns: %7d/%d\t(%5.1f%%)\n",ps->w_introns, ps->total_qintrons,sn);
-    }
+    
+      sn=(100.0*(double)ps->m_exons)/(ps->total_rexons);
+      //fprintf(fout, "          Missed exons: %7d/%d\t(%5.1f%%)\n",ps->m_exons, ps->total_rexons, sn);
+      __cmp__.missedExonsN = ps->m_exons;
+      __cmp__.missedExonsR = ps->total_rexons;
+      __cmp__.missedExonsP = sn;
+      
+      sn=(100.0*(double)ps->w_exons)/(ps->total_qexons);
+      //fprintf(fout, "           Novel exons: %7d/%d\t(%5.1f%%)\n",ps->w_exons, ps->total_qexons,sn);
+      __cmp__.novelExonsN = ps->w_exons;
+      __cmp__.novelExonsR = ps->total_qexons;
+      __cmp__.novelExonsP = sn;
+      
+      if (ps->total_rintrons>0) {
+          sn=(100.0*(double)ps->m_introns)/(ps->total_rintrons);
+          //fprintf(fout, "        Missed introns: %7d/%d\t(%5.1f%%)\n",ps->m_introns, ps->total_rintrons, sn);
+          __cmp__.missedIntronsN = ps->w_exons;
+          __cmp__.missedIntronsR = ps->total_qexons;
+          __cmp__.missedIntronsP = sn;
+      }
+      
+      if (ps->total_qintrons>0) {
+        sn=(100.0*(double)ps->w_introns)/(ps->total_qintrons);
+          //fprintf(fout, "         Novel introns: %7d/%d\t(%5.1f%%)\n",ps->w_introns, ps->total_qintrons,sn);
+          __cmp__.novelIntronsN = ps->w_exons;
+          __cmp__.novelIntronsR = ps->total_qexons;
+          __cmp__.novelIntronsP = sn;
+      }
+      
     if (ps->total_rloci>0) {
     sn=(100.0*(double)ps->m_loci)/(ps->total_rloci);
     //fprintf(fout, "           Missed loci: %7d/%d\t(%5.1f%%)\n",ps->m_loci, ps->total_rloci, sn);

@@ -28,6 +28,12 @@ namespace Anaquin
 
         // Metrics at the transcript level
         double t_sp, t_sn, t_fsp, t_fsn;
+
+        double missedExonsN,   missedExonsR,   missedExonsP;
+        double missedIntronsN, missedIntronsR, missedIntronsP;
+
+        double novelExonsN,   novelExonsR,   novelExonsP;
+        double novelIntronsN, novelIntronsR, novelIntronsP;
     };
 }
 
