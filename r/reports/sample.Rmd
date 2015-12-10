@@ -12,8 +12,8 @@ output:
 Summary for dataset: K_RMXA1v2.accepted_hits.sorted.bam
 
    Unmapped:   0 reads
-   Experiment: 36484961 reads
-   Synthetic:  11440146 reads
+   Experiment: 36484961 (76.13%) reads
+   Synthetic:  11440146 (23.87%) reads
 
    Reference:  1190 exons
    Reference:  1028 introns
@@ -39,24 +39,68 @@ Summary for dataset: K_RMXA1v2.accepted_hits.sorted.bam
    -------------------- Exon level --------------------
 
    Sensitivity: 0.997479
-   Accuarcy:    0.984404
+   Specificity: 0.984404
    Detection:   0.0590086 (R2_33)
 
    -------------------- Intron level --------------------
 
    Sensitivity: 0.993191
-   Accuarcy:    1
+   Specificity: 1
    Detection:   0.0590086 (R2_33)
 
    -------------------- Base level --------------------
 
    Sensitivity: 0.703341
-   Accuarcy:    1
+   Specificity: 1
    Detection:   0.0590086 (R2_33)
 ```
 
 # Transctiptome Assembly
 
+```{r eval=FALSE}
+Summary for dataset: transcripts.gtf
+
+   Experiment: 1897 features
+   Synthetic:  799 features
+
+   Reference:  162 exons
+   Reference:  1028 introns
+
+   ***
+   *** The following statistics are computed for exact and fuzzy.
+   ***
+   *** The fuzzy level is 10 nucleotides.
+   ***
+
+   -------------------- Exon level --------------------
+
+   Sensitivity: 0.547018 (0.566514)
+   Specificity: 0.952096 (0.986028)
+   Detection:   0.015736 (R2_72_1)
+
+   -------------------- Intron level --------------------
+
+   Sensitivity: 0.521164 (0.52381)
+   Specificity: 0.987469 (0.992481)
+   Detection:   0.015736 (R2_72_1)
+
+   -------------------- Base level --------------------
+
+   Sensitivity: 0.570883
+   Specificity: 0.906859
+   Detection:   0.472069 (R2_28)
+
+   -------------------- Transcript level --------------------
+
+   Sensitivity: 0.393939 (0.393939)
+   Specificity: 0.555556 (0.555556)
+
+   Missing exons: 385/872 (0.441514)
+   Missing introns: 324/756 (0.428571)
+
+   Novel exons: 23/501 (0.0459082)
+   Novel introns: 1/399 (0.00250627)
+```
 
 # Expression Analysis
 

@@ -210,7 +210,7 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
 .analyzeDESeq2 <- function(r, mix, p=0.1, logFC=0)
 {
     # List of known sequins
-    known <- as.character(mix$genes$ID)
+    known <- as.character(row.names(mix$genes))
     
     # Genes that have been detected in the experiment    
     detected <- rownames(r) %in% known
@@ -239,7 +239,7 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
     
     for (id in known)
     {
-        d[id,]$known <- mix$genes[mix$genes$ID==id,]$LogFold
+        d[id,]$known <- mix$genes[row.names(mix$genes)==id,]$logFold
     }
     
     for (id in rownames(r))
@@ -281,7 +281,7 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
         else
         {
             # Non-differential expressed sequin
-            d[id,]$class <- ifelse(abs(d[id,]$known) <= logFC, 'TN', 'FN')            
+            d[id,]$class <- ifelse(abs(d[id,]$known) <= logFC, 'TP', 'FP')            
         }
     }
     

@@ -13,24 +13,30 @@
 #    - Boxplot for RLE for RUVg
 #
 
-library(EDASeq)
-library(ggplot2)
-library(rtracklayer)
-library(GenomicRanges)
-library(plyr)
-
-library(RColorBrewer)
-colors <- brewer.pal(3, "Set2")
-
 #
 # ----------------------- ROC Plot -----------------------
 #
-# Create a ROC plot for the first two principal components for RUVg.
-#
 
-plotROC <- function()
+plotROC <- function(d, labels)
 {
+    require(ROCR)
     
+    d <- d[!is.nan(d$measured),]
+
+    # 
+    # From the package's reference manual:
+    #
+    # ... labels should be supplied as ordered factor(s), the lower level corresponding to the negative class, the upper level
+    #     to the positive class ...
+    #
+    d$label <- ifelse(d$class == 'TP', 2, 1)
+    
+    d$scores <- 1 - d$padj
+
+    pred <- prediction(d$scores, d$label, label.ordering=c(1,2))
+    perf <- performance(pred, "tpr","fpr")
+    
+    plot(perf, colorize=TRUE, cex.lab=2, cex.main=2, lwd=10)    
 }
 
 #
@@ -68,6 +74,8 @@ plotRLE <- function(m)
 
 plotScatter <- function(x, y, ids, isLog=FALSE)
 {
+    require(ggplot2)
+    
     if (!isLog)
     {
         d <- data.frame(x=log2(x), y=log2(y), ids=ids)
