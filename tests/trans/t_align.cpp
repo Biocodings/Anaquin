@@ -325,12 +325,12 @@ TEST_CASE("TAlign_All_AllRepeats")
     REQUIRE(r.pb.m.fn() == 218146);
     
     REQUIRE(r.ac(TAlign::Stats::AlignMetrics::Exon) == 1.0);
-    REQUIRE(r.overE.aTP   == 100);
+    REQUIRE(r.overE.aTP   == 200);
     REQUIRE(r.overE.aFP   == 0);
-    REQUIRE(r.overE.aNQ() == 100);
-    REQUIRE(r.overE.lTP   == 1);
+    REQUIRE(r.overE.aNQ() == 200);
+    REQUIRE(r.overE.lTP   == 2);
     REQUIRE(r.overE.lNR   == 1190);
-    REQUIRE(r.overE.lFN() == 1189);
+    REQUIRE(r.overE.lFN() == 1188);
     
     REQUIRE(isnan(r.ac(TAlign::Stats::AlignMetrics::Intron)));
     REQUIRE(r.overI.aTP   == 0);
@@ -340,14 +340,14 @@ TEST_CASE("TAlign_All_AllRepeats")
     REQUIRE(r.overI.lNR   == 1028);
     REQUIRE(r.overI.lFN() == 1028);
     
-    REQUIRE(r.sn(TAlign::Stats::AlignMetrics::Exon)   == Approx(0.0008403361));
+    REQUIRE(r.sn(TAlign::Stats::AlignMetrics::Exon)   == Approx(0.0016806723));
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::Intron) == 0);
     
     for (auto &i : r.histE)
     {
         if (i.first == "R2_24")
         {
-            REQUIRE(i.second == 100);
+            REQUIRE(i.second == 200);
         }
         else
         {
@@ -366,13 +366,13 @@ TEST_CASE("TAlign_All_AllRepeats")
         
         if (i.first == "R2_24")
         {
-            REQUIRE(r.sn("R2_24")  == Approx(0.0204082));
+            REQUIRE(r.sn("R2_24")  == Approx(0.0408163265));
             REQUIRE(i.second.ac()  == Approx(1.0));
-            REQUIRE(i.second.sn()  == Approx(0.02040816));
-            REQUIRE(i.second.aTP   == 100);
+            REQUIRE(i.second.sn()  == Approx(0.0408163265));
+            REQUIRE(i.second.aTP   == 200);
             REQUIRE(i.second.aFP   == 0);
-            REQUIRE(i.second.aNQ() == 100);
-            REQUIRE(i.second.lTP   == 1);
+            REQUIRE(i.second.aNQ() == 200);
+            REQUIRE(i.second.lTP   == 2);
             REQUIRE(i.second.lNR   == 49);
         }
         else

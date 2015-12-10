@@ -347,19 +347,19 @@
 		7FC557061AB473A90085C090 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				EFA9DE741BCB897D00780182 /* analyzers */,
-				EF2615691B5FF96400BE8037 /* cufflinks */,
-				EF4270A31B214F8400C9ED4E /* data */,
-				EFB7FF2B1B4F79D00045DC6A /* fusion */,
-				EFDD6A731B0DD73900450029 /* htslib */,
-				EFB7FF261B4F79C20045DC6A /* ladder */,
-				EFECDC0C1AE7510700F0FD9A /* meta */,
-				EF3860D61AD378190062D246 /* parsers */,
-				EF1DE0B81B21EC7C00DEC381 /* stats */,
-				EF9ACCDB1B5FB5480085D1B2 /* trans */,
-				EFA9DE701BCB7D5A00780182 /* tools */,
-				EFED77261B94AC26001842F4 /* variant */,
-				EFE9A01D1AD3B10900557829 /* writers */,
+				EFA9DE741BCB897D00780182 /* Analyzers */,
+				EF2615691B5FF96400BE8037 /* Cufflinks */,
+				EF4270A31B214F8400C9ED4E /* Data */,
+				EFB7FF2B1B4F79D00045DC6A /* Fusion */,
+				EFDD6A731B0DD73900450029 /* Htslib */,
+				EFB7FF261B4F79C20045DC6A /* Ladder */,
+				EFECDC0C1AE7510700F0FD9A /* Meta */,
+				EF3860D61AD378190062D246 /* Parsers */,
+				EF1DE0B81B21EC7C00DEC381 /* Stats */,
+				EF9ACCDB1B5FB5480085D1B2 /* Trans */,
+				EFA9DE701BCB7D5A00780182 /* Tools */,
+				EFED77261B94AC26001842F4 /* Variant */,
+				EFE9A01D1AD3B10900557829 /* Writers */,
 				EF2290351AC0E58000CE76BF /* main.cpp */,
 			);
 			name = Sources;
@@ -373,17 +373,17 @@
 			name = Framework;
 			sourceTree = "<group>";
 		};
-		EF1DE0B81B21EC7C00DEC381 /* stats */ = {
+		EF1DE0B81B21EC7C00DEC381 /* Stats */ = {
 			isa = PBXGroup;
 			children = (
 				EF1DE0B91B21EC8300DEC381 /* analyzer.hpp */,
 				EF1DE0BA1B21EC8300DEC381 /* classify.hpp */,
 				EF1DE0BC1B21EC8300DEC381 /* limit.hpp */,
 			);
-			name = stats;
+			name = Stats;
 			sourceTree = "<group>";
 		};
-		EF2615691B5FF96400BE8037 /* cufflinks */ = {
+		EF2615691B5FF96400BE8037 /* Cufflinks */ = {
 			isa = PBXGroup;
 			children = (
 				EF26157E1B5FF9F500BE8037 /* codons.cpp */,
@@ -399,10 +399,10 @@
 				EF26156B1B5FF98A00BE8037 /* GStr.cpp */,
 				EF2615761B5FF9C500BE8037 /* gtf_tracking.cpp */,
 			);
-			name = cufflinks;
+			name = Cufflinks;
 			sourceTree = "<group>";
 		};
-		EF3860D61AD378190062D246 /* parsers */ = {
+		EF3860D61AD378190062D246 /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
 				EF3860D71AD3783A0062D246 /* parser_bed.cpp */,
@@ -437,10 +437,10 @@
 				EF3860E41AD3783A0062D246 /* parser_vcf.hpp */,
 				EFB1E0421B0098F300F093A2 /* parser.hpp */,
 			);
-			name = parsers;
+			name = Parsers;
 			sourceTree = "<group>";
 		};
-		EF4270A31B214F8400C9ED4E /* data */ = {
+		EF4270A31B214F8400C9ED4E /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */,
@@ -461,7 +461,7 @@
 				EF1DE0B31B21EC6D00DEC381 /* types.hpp */,
 				EF9F70EC1B9C331200B8BD7B /* variation.hpp */,
 			);
-			name = data;
+			name = Data;
 			sourceTree = "<group>";
 		};
 		EF4BD9AD1ADE4035007BE6AB /* parsers */ = {
@@ -482,7 +482,7 @@
 			name = tools;
 			sourceTree = "<group>";
 		};
-		EF9ACCDB1B5FB5480085D1B2 /* trans */ = {
+		EF9ACCDB1B5FB5480085D1B2 /* Trans */ = {
 			isa = PBXGroup;
 			children = (
 				EFA347301BD5E444009ED5DC /* t_coverage.cpp */,
@@ -497,7 +497,7 @@
 				EF9ACCDD1B5FB5480085D1B2 /* t_express.hpp */,
 				EF6930C31B66F48900CADFD1 /* t_viewer.hpp */,
 			);
-			name = trans;
+			name = Trans;
 			path = ../src/trans;
 			sourceTree = "<group>";
 		};
@@ -513,24 +513,24 @@
 			path = ../tests/trans;
 			sourceTree = "<group>";
 		};
-		EFA9DE701BCB7D5A00780182 /* tools */ = {
+		EFA9DE701BCB7D5A00780182 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
 				EFA9DE711BCB7D6100780182 /* coverage.cpp */,
 				EFA9DE721BCB7D6100780182 /* coverage.hpp */,
 				EF6D05F01BD3E5DF0048044F /* sampling.hpp */,
 			);
-			name = tools;
+			name = Tools;
 			sourceTree = "<group>";
 		};
-		EFA9DE741BCB897D00780182 /* analyzers */ = {
+		EFA9DE741BCB897D00780182 /* Analyzers */ = {
 			isa = PBXGroup;
 			children = (
 			);
-			name = analyzers;
+			name = Analyzers;
 			sourceTree = "<group>";
 		};
-		EFB7FF261B4F79C20045DC6A /* ladder */ = {
+		EFB7FF261B4F79C20045DC6A /* Ladder */ = {
 			isa = PBXGroup;
 			children = (
 				EFB7FF271B4F79C20045DC6A /* l_abund.cpp */,
@@ -542,11 +542,11 @@
 				EF31E82B1B6123A70095F3E8 /* l_norm.cpp */,
 				EF31E82C1B6123A70095F3E8 /* l_norm.hpp */,
 			);
-			name = ladder;
+			name = Ladder;
 			path = ../src/ladder;
 			sourceTree = "<group>";
 		};
-		EFB7FF2B1B4F79D00045DC6A /* fusion */ = {
+		EFB7FF2B1B4F79D00045DC6A /* Fusion */ = {
 			isa = PBXGroup;
 			children = (
 				EF5E857B1B6B5B0E00FF61D8 /* f_align.cpp */,
@@ -564,7 +564,7 @@
 				EFE4F2B71BDF987B00C8B691 /* f_normal.hpp */,
 				EF2101391B662E82007313AD /* f_viewer.hpp */,
 			);
-			name = fusion;
+			name = Fusion;
 			path = ../src/fusion;
 			sourceTree = "<group>";
 		};
@@ -577,7 +577,7 @@
 			name = data;
 			sourceTree = "<group>";
 		};
-		EFDD6A731B0DD73900450029 /* htslib */ = {
+		EFDD6A731B0DD73900450029 /* Htslib */ = {
 			isa = PBXGroup;
 			children = (
 				EFDD6A741B0DD75300450029 /* cram */,
@@ -594,7 +594,7 @@
 				EFDD6A751B0DD75B00450029 /* bgzf.c */,
 				EFDD6ADC1B0DE65D00450029 /* vcf.c */,
 			);
-			name = htslib;
+			name = Htslib;
 			sourceTree = "<group>";
 		};
 		EFDD6A741B0DD75300450029 /* cram */ = {
@@ -621,7 +621,7 @@
 			name = cram;
 			sourceTree = "<group>";
 		};
-		EFE9A01D1AD3B10900557829 /* writers */ = {
+		EFE9A01D1AD3B10900557829 /* Writers */ = {
 			isa = PBXGroup;
 			children = (
 				EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */,
@@ -630,10 +630,10 @@
 				EF5180E41AE09A56007010F3 /* r_writer.hpp */,
 				EFE9A01E1AD3B11F00557829 /* writer.hpp */,
 			);
-			name = writers;
+			name = Writers;
 			sourceTree = "<group>";
 		};
-		EFECDC0C1AE7510700F0FD9A /* meta */ = {
+		EFECDC0C1AE7510700F0FD9A /* Meta */ = {
 			isa = PBXGroup;
 			children = (
 				EF3CD3021B6671F5005644C4 /* m_abund.cpp */,
@@ -653,11 +653,11 @@
 				EFF820CA1BAFA497009CC6C6 /* m_assembler.hpp */,
 				EF6930C61B66F4AC00CADFD1 /* m_viewer.hpp */,
 			);
-			name = meta;
+			name = Meta;
 			path = ../src/meta;
 			sourceTree = "<group>";
 		};
-		EFED77261B94AC26001842F4 /* variant */ = {
+		EFED77261B94AC26001842F4 /* Variant */ = {
 			isa = PBXGroup;
 			children = (
 				EFED77271B94AC2D001842F4 /* v_align.cpp */,
@@ -673,7 +673,7 @@
 				EF6D05F51BD3E67E0048044F /* v_sample.hpp */,
 				EFED772C1B94AC2D001842F4 /* v_viewer.hpp */,
 			);
-			name = variant;
+			name = Variant;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

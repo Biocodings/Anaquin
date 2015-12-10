@@ -85,7 +85,7 @@ namespace Anaquin
                 // Individual performance for each sequin
                 std::map<GeneID, Confusion> sb;
 
-                // Sequins that have failed to be detected
+                // Sequins that are failed to be detected
                 std::vector<MissingSequin> missings;
 
                 // Alignments that have no mapping

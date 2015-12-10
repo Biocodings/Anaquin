@@ -1,6 +1,7 @@
+#include <iostream>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
-#include <iostream>
+
 using namespace Anaquin;
 
 typedef std::map<GeneID, Base> FPStats;
@@ -67,43 +68,44 @@ template <typename T> const T * matchT(const Alignment &align,
                                        FPStats *lFPS = nullptr,
                                        FPStats *rFPS = nullptr)
 {
-    T * oMatch = nullptr;
-
-    // Can we find an exon that contains the alignment?
-    T * cMatch = inters.contains(align.l);
-
-    if (cMatch)
+    std::vector<T *> oMatches, cMatches;
+    
+    if (inters.contains(align.l, cMatches))
     {
-        contains.at(cMatch->id())++;
+        for (auto &i : cMatches)
+        {
+            contains.at(i->id())++;
+        }
     }
     else
     {
         // Maybe we can find an exon that overlaps the alignment?
-        oMatch = inters.overlap(align.l);
-
-        if (oMatch)
+        if (inters.contains(align.l, oMatches))
         {
-            overlaps.at(oMatch->id())++;
+            for (auto &i : cMatches)
+            {
+                overlaps.at(i->id())++;
+            }
         }
     }
     
-    T * match = cMatch ? cMatch : oMatch;
+    auto matches = !cMatches.empty() ? &cMatches : &oMatches;
     
-    if (match)
+    if (!matches->empty())
     {
         Base lp, rp;
         
         // Anything that fails to being mapped is counted as FP
-        match->map(align.l, &lp, &rp);
+        (*matches)[0]->map(align.l, &lp, &rp);
 
         if (lFPS && rFPS)
         {
-            lFPS->at(match->gID) = std::max(lFPS->at(match->gID), lp);
-            rFPS->at(match->gID) = std::max(rFPS->at(match->gID), rp);
+            lFPS->at((*matches)[0]->gID) = std::max(lFPS->at((*matches)[0]->gID), lp);
+            rFPS->at((*matches)[0]->gID) = std::max(rFPS->at((*matches)[0]->gID), rp);
         }
     }
     
-    return cMatch;
+    return !cMatches.empty() ? cMatches[0] : nullptr;
 }
 
 TAlign::Stats calculate(const TAlign::Options &o, Functor f)

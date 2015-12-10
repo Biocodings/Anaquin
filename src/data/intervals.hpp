@@ -230,6 +230,26 @@ namespace Anaquin
 
                 return nullptr;
             }
+        
+            inline T * contains(const Locus &l, std::vector<T *> &r)
+            {
+                T * match = nullptr;
+                
+                for (auto &i : _inters)
+                {
+                    if (i.second.l().contains(l))
+                    {
+                        if (!match)
+                        {
+                            match = &i.second;
+                        }
+                        
+                        r.push_back(&i.second);
+                    }
+                }
+                
+                return match;
+            }
 
             inline T *overlap(const Locus &l)
             {
@@ -242,6 +262,26 @@ namespace Anaquin
                 }
 
                 return nullptr;
+            }
+
+            inline T * overlaps(const Locus &l, std::vector<T *> &r)
+            {
+                T * match = nullptr;
+            
+                for (auto &i : _inters)
+                {
+                    if (i.second.l().overlaps(l))
+                    {
+                        if (!match)
+                        {
+                            match = &i.second;
+                        }
+                    
+                        r.push_back(&i.second);
+                    }
+                }
+            
+                return match;
             }
         
             typename T::Stats stats() const
