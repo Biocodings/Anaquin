@@ -117,18 +117,18 @@ void TAssembly::report(const FileName &file, const Options &o)
                                             % (__cmp__.t_fsn / 100.0)
                                             % (__cmp__.t_sp  / 100.0)
                                             % (__cmp__.t_fsp / 100.0) // 25
-                                            % (__cmp__.missedExonsN  / 100.0)
-                                            % (__cmp__.missedExonsR  / 100.0)
-                                            % (__cmp__.missedExonsP  / 100.0)
-                                            % (__cmp__.missedIntronsN  / 100.0)
-                                            % (__cmp__.missedIntronsR  / 100.0) // 30
-                                            % (__cmp__.missedIntronsP  / 100.0)
-                                            % (__cmp__.novelExonsN  / 100.0)
-                                            % (__cmp__.novelExonsR  / 100.0)
-                                            % (__cmp__.novelExonsP  / 100.0)
-                                            % (__cmp__.novelIntronsN  / 100.0)
-                                            % (__cmp__.novelIntronsR  / 100.0)  // 36
-                                            % (__cmp__.novelIntronsP  / 100.0)).str());
+                                            % (__cmp__.missedExonsN)
+                                            % (__cmp__.missedExonsR)
+                                            % (__cmp__.missedExonsP / 100.0)
+                                            % (__cmp__.missedIntronsN)
+                                            % (__cmp__.missedIntronsR) // 30
+                                            % (__cmp__.missedIntronsP / 100.0)
+                                            % (__cmp__.novelExonsN)
+                                            % (__cmp__.novelExonsR)
+                                            % (__cmp__.novelExonsP / 100.0)
+                                            % (__cmp__.novelIntronsN)
+                                            % (__cmp__.novelIntronsR)  // 36
+                                            % (__cmp__.novelIntronsP / 100.0)).str());
     o.writer->close();
     
     o.writer->open("TransAssembly_quins.stats");
