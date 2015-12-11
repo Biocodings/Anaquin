@@ -212,12 +212,12 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,      { OPT_BAM_1                         } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1 } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
-    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE            } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE            } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_BAM_1              } },
+    { TOOL_T_IGV,      { OPT_BAM_1                            } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1    } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF    } },
+    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFTWARE } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFTWARE } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_BAM_1                 } },
 
     /*
      * Metagenomics Analysis
@@ -1007,6 +1007,17 @@ void parse(int argc, char ** argv)
         case TOOL_T_ASSEMBLY:
         case TOOL_T_COVERAGE:
         {
+            auto parseAssembler = [&](const std::string &str)
+            {
+                const static std::map<std::string, TExpress::Assembler> m =
+                {
+                    { "cufflinks", TExpress::Assembler::Cufflinks },
+                    { "stringtie", TExpress::Assembler::StringTie },
+                };
+                
+                return parseSoft(str, m);
+            };
+
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
             if (_p.tool != TOOL_T_IGV)
@@ -1050,6 +1061,8 @@ void parse(int argc, char ** argv)
                 case TOOL_T_EXPRESS:
                 {
                     TExpress::Options o;
+                    
+                    o.tool = parseAssembler(_p.opts.at(OPT_SOFTWARE));
 
                     if (_p.opts.count(OPT_GTRACK))
                     {

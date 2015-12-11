@@ -18,7 +18,7 @@ namespace Anaquin
     
     struct ParserTracking
     {
-        static void parse(const std::string &, std::function<void (const Tracking &, const ParserProgress &)>);
+        static void parse(const FileName &, std::function<void (const Tracking &, const ParserProgress &)>);
     };    
 }
 

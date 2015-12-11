@@ -161,6 +161,7 @@
 		EF26157A1B5FF9DC00BE8037 /* gffread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gffread.cpp; path = ../src/cufflinks/gffread.cpp; sourceTree = "<group>"; };
 		EF26157E1B5FF9F500BE8037 /* codons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = codons.cpp; path = ../src/cufflinks/codons.cpp; sourceTree = "<group>"; };
 		EF26157F1B5FF9F500BE8037 /* cuffcompare.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cuffcompare.cpp; path = ../src/cufflinks/cuffcompare.cpp; sourceTree = "<group>"; };
+		EF2947F81C1A5BFA00F48EFB /* parser_stringtie.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_stringtie.hpp; path = ../src/parsers/parser_stringtie.hpp; sourceTree = "<group>"; };
 		EF31E82B1B6123A70095F3E8 /* l_norm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = l_norm.cpp; sourceTree = "<group>"; };
 		EF31E82C1B6123A70095F3E8 /* l_norm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_norm.hpp; sourceTree = "<group>"; };
 		EF3211931B1DBC1A0062BB10 /* parser_blast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_blast.cpp; path = ../src/parsers/parser_blast.cpp; sourceTree = "<group>"; };
@@ -426,6 +427,7 @@
 				EFB2F8891BDEFB9800A9F0AB /* parser_stab.hpp */,
 				EF3F04A41B6F2F5000179B55 /* parser_star_fusion.cpp */,
 				EF3F04A51B6F2F5000179B55 /* parser_star_fusion.hpp */,
+				EF2947F81C1A5BFA00F48EFB /* parser_stringtie.hpp */,
 				EF44A81D1AF78FA20036C894 /* parser_tmap.cpp */,
 				EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */,
 				EFB3FF601B4A30DC0065CEA0 /* parser_top_fusion.cpp */,

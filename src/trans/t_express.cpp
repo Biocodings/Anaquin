@@ -1,6 +1,7 @@
 #include "trans/t_express.hpp"
 #include "writers/r_writer.hpp"
 #include "parsers/parser_tracking.hpp"
+#include "parsers/parser_stringtie.hpp"
 
 using namespace SS;
 using namespace Anaquin;
@@ -121,10 +122,38 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 
         const auto isIsoform = o.level == TExpress::Isoform;
         
-        ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
+        switch (o.tool)
         {
-            update(stats, t, isIsoform ? t.trackID : t.id, isIsoform, o);
-        });
+            case Cufflinks:
+            {
+                ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
+                {
+                    update(stats, t, isIsoform ? t.trackID : t.id, isIsoform, o);
+                });
+                
+                break;
+            }
+                
+            case StringTie:
+            {
+                if (isIsoform)
+                {
+                    ParserStringTie::parseIsoforms(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
+                    {
+                        update(stats, t, t.id, isIsoform, o);
+                    });
+                }
+                else
+                {
+                    ParserStringTie::parseGenes(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
+                    {
+                        update(stats, t, t.id, isIsoform, o);
+                    });
+                }
+
+                break;
+            }
+        }
         
         stats.ss = isIsoform ? r.limit(stats.h) : r.limitGene(stats.h);
     });

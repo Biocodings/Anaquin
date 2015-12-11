@@ -32,8 +32,7 @@ namespace Anaquin
             // This's required by gcc...
             Options() {}
 
-            // Only valid for Cuffdiffs
-            Assembler soft;
+            Assembler tool;
             
             RNALevel level = Isoform;
         };
