@@ -83,6 +83,9 @@ void TAssembly::report(const FileName &file, const Options &o)
                          "   Sensitivity: %18%\n"
                          "   Specificity: %19%\n"
                          "   Detection:   %20% (%21%)\n\n"
+                         "   -------------------- Intron Chain level --------------------\n\n"
+                         "   Sensitivity: %38% (%39%)\n"
+                         "   Specificity: %40% (%41%)\n\n"
                          "   -------------------- Transcript level --------------------\n\n"
                          "   Sensitivity: %22% (%23%)\n"
                          "   Specificity: %24% (%25%)\n\n"
@@ -121,14 +124,18 @@ void TAssembly::report(const FileName &file, const Options &o)
                                             % (__cmp__.missedExonsR)
                                             % (__cmp__.missedExonsP / 100.0)
                                             % (__cmp__.missedIntronsN)
-                                            % (__cmp__.missedIntronsR) // 30
+                                            % (__cmp__.missedIntronsR)         // 30
                                             % (__cmp__.missedIntronsP / 100.0)
                                             % (__cmp__.novelExonsN)
                                             % (__cmp__.novelExonsR)
                                             % (__cmp__.novelExonsP / 100.0)
                                             % (__cmp__.novelIntronsN)
-                                            % (__cmp__.novelIntronsR)  // 36
-                                            % (__cmp__.novelIntronsP / 100.0)).str());
+                                            % (__cmp__.novelIntronsR)          // 36
+                                            % (__cmp__.novelIntronsP / 100.0)
+                                            % (__cmp__.c_sn  / 100.0)
+                                            % (__cmp__.c_fsn / 100.0)
+                                            % (__cmp__.c_sp  / 100.0)
+                                            % (__cmp__.c_fsp / 100.0)).str());
     o.writer->close();
     
     o.writer->open("TransAssembly_quins.stats");

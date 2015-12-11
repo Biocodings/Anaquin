@@ -36,7 +36,8 @@ plotROC <- function(d, labels)
     pred <- prediction(d$scores, d$label, label.ordering=c(1,2))
     perf <- performance(pred, "tpr","fpr")
     
-    plot(perf, colorize=TRUE, cex.lab=2, cex.main=2, lwd=10)    
+#    plot(perf, colorize=TRUE, cex.lab=2, cex.main=2, lwd=10)    
+    plot(perf)
 }
 
 #
