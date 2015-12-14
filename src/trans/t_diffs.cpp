@@ -57,7 +57,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
     {
         case TDiffs::Gene:
         {
-            if (t.status != NoTest && stats.h.count(t.id))
+            if ((t.status != NoTest) && stats.h.count(t.id))
             {
                 g(t.id, t.fpkm_1, t.fpkm_2);
             }
@@ -67,7 +67,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
             
         case TDiffs::Isoform:
         {
-            if (t.status == NoTest || !stats.h.count(id))
+            if ((t.status == NoTest) || !stats.h.count(id))
             {
                 return;
             }
@@ -80,7 +80,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
                 known = seq->abund(Mix_2) / seq->abund(Mix_1);
             }
             
-            if (t.status != NoTest && t.fpkm_1 && t.fpkm_2)
+            if ((t.status != NoTest) && t.fpkm_1 && t.fpkm_2)
             {
                 stats.h.at(id)++;
                 
