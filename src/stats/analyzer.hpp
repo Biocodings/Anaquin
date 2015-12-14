@@ -13,19 +13,18 @@
 
 namespace Anaquin
 {
-    template <typename T> static Counts sum(const std::map<T, Counts> &x)
+    template <typename T> Counts sum(const std::map<T, Counts> &x)
     {
-        return std::accumulate(std::begin(x), std::end(x), 0,
-                               [](Counts c, const std::pair<T, Counts>& p)
+        return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)
         {
             return c + p.second;
         });
     }
 
     // Number of elements in the histogram with at least an entry
-    inline Counts detectHist(const std::map<std::string, Counts> &m)
+    template <typename T> Counts detect(const std::map<T, Counts> &m)
     {
-        return std::count_if(m.begin(), m.end(), [&](const std::pair<std::string, Counts> &i)
+        return std::count_if(m.begin(), m.end(), [&](const std::pair<T, Counts> &i)
         {
             return i.second ? 1 : 0;
         });
@@ -127,14 +126,37 @@ namespace Anaquin
         }
     };
 
-    struct MissingSequin
+    /*
+     * Represents something that is missing or undetected. It could be an exon, intron, isoform, gene etc.
+     */
+    
+    struct Missing
     {
-        MissingSequin(const SequinID &id, Concentration abund) : id(id), abund(abund) {}
+        Missing(const GenericID &id) : id(id) {}
+        
+        inline bool operator==(const Missing &m) const { return id == m.id; }
+        inline bool operator< (const Missing &m) const { return id <  m.id; }
 
-        const SequinID id;
-        const Concentration abund;
+        const GenericID id;
     };
     
+    struct CountPercent
+    {
+        CountPercent(Counts i, Counts n) : i(i), n(n) {}
+        
+        // Relevant number of counts
+        Counts i;
+        
+        // Total number of counts
+        Counts n;
+
+        inline double percent() const
+        {
+            assert(i <= n);
+            return static_cast<double>(i) / n;
+        }
+    };
+
     struct UnknownAlignment
     {
         UnknownAlignment(const std::string &id, const Locus &l) : l(l) {}
@@ -446,8 +468,8 @@ namespace Anaquin
                                                   % s1.h.size()
                                                   % (ref.empty() ? units : ref) // 10
                                                   % s2.h.size()
-                                                  % detectHist(s1.h)            // 12
-                                                  % detectHist(s2.h)            // 13
+                                                  % detect(s1.h)                // 12
+                                                  % detect(s2.h)                // 13
                                                   % s1.ss.abund                 // 14
                                                   % s1.ss.id                    // 15
                                                   % s2.ss.abund                 // 16
@@ -535,7 +557,7 @@ namespace Anaquin
                                                       % (ref.empty() ? units : ref)
                                                       % "-"
                                                       % "-"
-                                                      % detectHist(stats.h)
+                                                      % detect(stats.h)
                                                       % "-"                        // 10
                                                       % "-"
                                                       % "-"
@@ -573,7 +595,7 @@ namespace Anaquin
                                                       % (ref.empty() ? units : ref)
                                                       % stats.ss.abund
                                                       % stats.ss.id
-                                                      % detectHist(stats.h)
+                                                      % detect(stats.h)
                                                       % n_lm.r                        // 10
                                                       % n_lm.m
                                                       % n_lm.r2

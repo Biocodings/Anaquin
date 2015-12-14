@@ -153,6 +153,7 @@ Summary for dataset: stringout_sub0.01_guided_B/stringout_sub0.01_guided_genes.t
 ![alt text](1.jpeg)
 
 \pagebreak
+
 # Expression Analysis (Isoforms)
 
 ```{r eval=FALSE}
@@ -200,7 +201,101 @@ Summary for dataset: stringout_sub0.01_guided_B/t_data.ctab
 
 \pagebreak
 
-# Differential Analysis
+# Differential Analysis (Genes)
+
+```{r eval=FALSE}
+Summary for dataset: gene_exp.diff
+
+   Experiment:  9682 genes
+   Synthetic:   67 genes
+
+   Reference:   76 genes
+   Detected:    65 genes
+
+   ***
+   *** Detection Limits
+   ***
+
+   Absolute:    0.0590086 (attomol/ul) (R2_33)
+
+   Correlation: 0.56272
+   Slope:       0.411349
+   R2:          0.316654
+   F-statistic: 29.1934
+   P-value:     1.06667e-06
+   SSM:         244.21, DF: 1
+   SSE:         527.011, DF: 63
+   SST:         771.221, DF: 64
+
+   ***
+   *** The following statistics are computed on the log2 scale.
+   ***
+   ***   Eg: If the data points are (1,1), (2,2). The correlation will
+   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))
+   ***
+
+   Correlation: 0.769414
+   Slope:       0.545994
+   R2:          0.591998
+   F-statistic: 91.4108
+   P-value:     7.00551e-14
+   SSM:         116.382, DF: 1
+   SSE:         80.21, DF: 63
+   SST:         196.592, DF: 64
+```
+
+![alt text](4.jpeg)
+
+\pagebreak
+
+# Differential Analysis (Isoforms)
+
+```{r eval=FALSE}
+Summary for dataset: gene_exp.diff
+
+   Experiment:  9682 genes
+   Synthetic:   67 genes
+
+   Reference:   76 genes
+   Detected:    65 genes
+
+   ***
+   *** Detection Limits
+   ***
+
+   Absolute:    0.0590086 (attomol/ul) (R2_33)
+
+   Correlation: 0.56272
+   Slope:       0.411349
+   R2:          0.316654
+   F-statistic: 29.1934
+   P-value:     1.06667e-06
+   SSM:         244.21, DF: 1
+   SSE:         527.011, DF: 63
+   SST:         771.221, DF: 64
+
+   ***
+   *** The following statistics are computed on the log2 scale.
+   ***
+   ***   Eg: If the data points are (1,1), (2,2). The correlation will
+   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))
+   ***
+
+   Correlation: 0.769414
+   Slope:       0.545994
+   R2:          0.591998
+   F-statistic: 91.4108
+   P-value:     7.00551e-14
+   SSM:         116.382, DF: 1
+   SSE:         80.21, DF: 63
+   SST:         196.592, DF: 64
+```
+
+![alt text](5.jpeg)
+
+![alt text](3.jpeg)
+
+
 
 
 

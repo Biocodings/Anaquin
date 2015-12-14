@@ -313,7 +313,7 @@ namespace Anaquin
             inline const IntervalData &data() const { return _inters; }
 
             // Number of intervals
-            inline std::size_t size() const { return _inters.size(); }
+            inline Counts size() const { return _inters.size(); }
 
             inline Base length() const
             {

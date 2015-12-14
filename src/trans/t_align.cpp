@@ -1,4 +1,3 @@
-#include <iostream>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
 
@@ -26,15 +25,15 @@ static TAlign::Stats init()
     TAlign::Stats stats;
 
     // Initalize the distributions
-    stats.pb.h = stats.histE = stats.histI = r.geneHist();
+    stats.overB.h = stats.histE = stats.histI = r.geneHist();
 
     stats.eInters = r.exonInters();
     stats.iInters = r.intronInters();
 
     // For each gene...
-    for (const auto &i : stats.pb.h)
+    for (const auto &i : stats.overB.h)
     {
-        stats.sb[i.first];
+        stats.geneB[i.first];
         stats.geneE[i.first];
         stats.geneI[i.first];
     }
@@ -69,7 +68,13 @@ template <typename T> const T * matchT(const Alignment &align,
                                        FPStats *rFPS = nullptr)
 {
     std::vector<T *> oMatches, cMatches;
-    
+
+    /*
+     * It's quite likely there'll be more than a match. Note that it's not possible to distinguish the individuals due to
+     * alternative splicing. Thus, we simply increment for all the possible matches. Consequently, it's not possible to detect
+     * anything at the isoform level.
+     */
+
     if (inters.contains(align.l, cMatches))
     {
         for (auto &i : cMatches)
@@ -79,7 +84,6 @@ template <typename T> const T * matchT(const Alignment &align,
     }
     else
     {
-        // Maybe we can find an exon that overlaps the alignment?
         if (inters.contains(align.l, oMatches))
         {
             for (auto &i : cMatches)
@@ -114,7 +118,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     
     FPStats lFPS, rFPS;
     
-    for (const auto &i : stats.pb.h)
+    for (const auto &i : stats.overB.h)
     {
         lFPS[i.first];
         rFPS[i.first];
@@ -133,7 +137,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     // It's the caller job to handle the parsing
     f(impl);
 
-    assert(stats.pb.m.tp() == 0 && stats.pb.m.fp() == 0);
+    assert(stats.overB.m.tp() == 0 && stats.overB.m.fp() == 0);
 
     /*
      * 1. Calculating alignment statistics.
@@ -242,7 +246,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
 
     for (const auto &i : stats.eInters.data())
     {
-        auto &m  = stats.sb.at(i.second.gID);
+        auto &m  = stats.geneB.at(i.second.gID);
         auto &in = i.second;
         
         const auto &gID = i.second.gID;
@@ -251,7 +255,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         m.fp() = lFPS.at(gID) + rFPS.at(gID);
         
         // Update the FP at the overall level
-        stats.pb.m.fp() += m.fp();
+        stats.overB.m.fp() += m.fp();
         
         Base covered = 0;
         
@@ -263,10 +267,10 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
                 covered += j - i;
                 
                 // Update the overall performance
-                stats.pb.m.tp() += j - i;
+                stats.overB.m.tp() += j - i;
                             
                 // Update the distribution
-                stats.pb.h.at(gID)++;
+                stats.overB.h.at(gID)++;
             }
         });
 
@@ -276,12 +280,12 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         
         assert(m.nr() >= m.tp());
         
-        stats.pb.m.nr() += in.l().length();
-        stats.pb.m.nq()  = stats.pb.m.tp() + stats.pb.m.fp();
+        stats.overB.m.nr() += in.l().length();
+        stats.overB.m.nq()  = stats.overB.m.tp() + stats.overB.m.fp();
     }
 
-    o.info("Base (TP): " + std::to_string(stats.pb.m.tp()));
-    o.info("Base (FP): " + std::to_string(stats.pb.m.fp()));
+    o.info("Base (TP): " + std::to_string(stats.overB.m.tp()));
+    o.info("Base (FP): " + std::to_string(stats.overB.m.fp()));
 
     /*
      * Calculating detection limit
@@ -289,15 +293,61 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     
     o.info("Calculating detection limit");
     
-    /*
-     * Calculaing the hard detection limit. The limit is estimated with the frequency distribution.
-     */
-    
     const auto &r = Standard::instance().r_trans;
 
-    stats.limitE   = r.limitGene(stats.histE);
-    stats.limitI   = r.limitGene(stats.histI);
-    stats.pb.limit = r.limitGene(stats.pb.h);
+    stats.limitE = r.limitGene(stats.histE);
+    stats.limitI = r.limitGene(stats.histI);
+    stats.overB.limit = r.limitGene(stats.overB.h);
+    
+    /*
+     * Calculating for missing statistics
+     */
+    
+    {
+        o.info("Calculating missing statistics");
+        
+        auto missing = [&](std::set<Missing> &misses, const TAlign::BinCounts &bins)
+        {
+            for (const auto &bin : bins)
+            {
+                if (!bin.second)
+                {
+                    misses.insert(bin.first);
+                }
+            }
+        };
+        
+        // An exon is missing if no alignment aligns to it
+        missing(stats.missE, stats.eContains);
+
+        // An intron is missing if no alignment aligns to it
+        missing(stats.missI, stats.iContains);
+        
+        /*
+         * A gene is considered missing if not all exons have alignment aligned to it
+         */
+        
+        for (const auto &gene : stats.histE)
+        {
+            bool missing = false;
+            
+            for (const auto &bin : stats.eContains)
+            {
+                if (gene.first == stats.exonToGene.at(bin.first))
+                {
+                    if ((missing = (bin.second == 0)))
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            if (missing)
+            {
+                stats.missG.insert(Missing(gene.first));
+            }
+        }
+    }
     
     return stats;
 }
@@ -379,13 +429,13 @@ void TAlign::report(const FileName &file, const Options &o)
     const auto stats = TAlign::analyze(file, o);
     
     o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
-                                          % stats.pb.m.nr()
-                                          % stats.pb.m.nq()
-                                          % stats.pb.m.tp()
-                                          % stats.pb.m.fp()
-                                          % stats.pb.m.fn()
-                                          % stats.pb.m.sn()
-                                          % stats.pb.m.ac()).str());
+                                          % stats.overB.m.nr()
+                                          % stats.overB.m.nq()
+                                          % stats.overB.m.tp()
+                                          % stats.overB.m.fp()
+                                          % stats.overB.m.fn()
+                                          % stats.overB.m.sn()
+                                          % stats.overB.m.ac()).str());
 
     /*
      * Write out summary statistics
@@ -437,18 +487,18 @@ void TAlign::report(const FileName &file, const Options &o)
                                                 % stats.qExons()
                                                 % stats.qIntrons()
                                                 % stats.qBases()
-                                                % stats.sn(Stats::AlignMetrics::Exon)
-                                                % stats.precise(Stats::AlignMetrics::Exon)
+                                                % stats.sn(Stats::AlignMetrics::AlignExon)
+                                                % stats.pc(Stats::AlignMetrics::AlignExon)
                                                 % stats.limitE.abund
                                                 % stats.limitE.id
-                                                % stats.sn(Stats::AlignMetrics::Intron)
-                                                % stats.precise(Stats::AlignMetrics::Intron)
+                                                % stats.sn(Stats::AlignMetrics::AlignIntron)
+                                                % stats.pc(Stats::AlignMetrics::AlignIntron)
                                                 % stats.limitI.abund
                                                 % stats.limitI.id
-                                                % stats.sn(Stats::AlignMetrics::Base)
-                                                % stats.precise(Stats::AlignMetrics::Base)
-                                                % stats.pb.limit.abund
-                                                % stats.pb.limit.id
+                                                % stats.sn(Stats::AlignMetrics::AlignBase)
+                                                % stats.pc(Stats::AlignMetrics::AlignBase)
+                                                % stats.overB.limit.abund
+                                                % stats.overB.limit.id
                                                 % stats.dilution()
                                                 % (100.0 * stats.exp())
                                                 % (100.0 * stats.chrT())
@@ -475,7 +525,7 @@ void TAlign::report(const FileName &file, const Options &o)
                                                % "Sensitivity (Base)"
                                                % "Specificity (Base)").str());
         
-        for (const auto &i : stats.pb.h)
+        for (const auto &i : stats.overB.h)
         {
             Base length   = 0;
             Base nonZeros = 0;
@@ -495,7 +545,7 @@ void TAlign::report(const FileName &file, const Options &o)
         
             const auto covered = static_cast<double>(nonZeros) / length;
 
-            const auto &mb = stats.sb.at(i.first);
+            const auto &mb = stats.geneB.at(i.first);
             const auto &me = stats.geneE.at(i.first);
             const auto &mi = stats.geneI.at(i.first);
 

@@ -47,9 +47,16 @@ namespace Anaquin
             {
                 enum AlignMetrics
                 {
-                    Exon,
-                    Intron,
-                    Base
+                    AlignExon,
+                    AlignIntron,
+                    AlignBase
+                };
+                
+                enum MissingMetrics
+                {
+                    MissingExon,
+                    MissingIntron,
+                    MissingGene
                 };
                 
                 std::map<ExonID,   GeneID> exonToGene;
@@ -70,6 +77,9 @@ namespace Anaquin
                 
                 MergedConfusion overE, overI;
 
+                // Overall performance at the base level
+                Performance overB;
+                
                 Hist  histE,  histI;
                 Limit limitE, limitI;
                 
@@ -79,59 +89,67 @@ namespace Anaquin
                 
                 std::map<GeneID, MergedConfusion> geneE, geneI;
                 
-                // Overall performance at various levels
-                Performance pb;
-
-                // Individual performance for each sequin
-                std::map<GeneID, Confusion> sb;
-
-                // Sequins that are failed to be detected
-                std::vector<MissingSequin> missings;
+                // Individual performance at the base level
+                std::map<GeneID, Confusion> geneB;
 
                 // Alignments that have no mapping
                 std::vector<UnknownAlignment> unknowns;
 
+                /*
+                 * Missing statistics
+                 */
+
+                std::set<Missing> missE, missI, missG;
+                
+                /*
+                 * Accessor functions
+                 */
+
                 // Number of exons in the query
-                inline Counts qExons() const   { return overE.aNQ(); }
+                inline Counts qExons() const { return overE.aNQ(); }
                 
                 // Number of introns in the query
                 inline Counts qIntrons() const { return overI.aNQ(); }
 
                 // Number of bases in the query
-                inline Counts qBases() const { return pb.m.nq(); }
+                inline Counts qBases() const { return overB.m.nq(); }
+
+                inline CountPercent missing(enum MissingMetrics m) const
+                {
+                    switch (m)
+                    {
+                        case MissingGene:   { return CountPercent(missG.size(), histE.size());     }
+                        case MissingExon:   { return CountPercent(missE.size(), eContains.size()); }
+                        case MissingIntron: { return CountPercent(missI.size(), iContains.size()); }
+                    }
+                }
 
                 // Overall sensitivity
-                inline double sn(enum AlignMetrics l) const
+                inline double sn(enum AlignMetrics m) const
                 {
-                    switch (l)
+                    switch (m)
                     {
-                        case Exon:   { return overE.sn(); }
-                        case Intron: { return overI.sn(); }
-                        case Base:   { return pb.m.sn();  }
+                        case AlignExon:   { return overE.sn();   }
+                        case AlignBase:   { return overB.m.sn(); }
+                        case AlignIntron: { return overI.sn();   }
                     }
                 }
                 
-                // Overall precision
-                inline double precise(enum AlignMetrics l) const
-                {
-                    /*
-                     * It's important to note pe.m.ac() and pi.m.ac() are both undefined. The two
-                     * confusion matrices for used for measuring sensivitiy and measued in numbers
-                     * of exons/introns.
-                     */
-                    
-                    switch (l)
-                    {
-                        case Exon:   { return overE.precise(); }
-                        case Intron: { return overI.precise(); }
-                        case Base:   { return pb.m.ac();       }
-                    }
-                }
-
                 // Sensitivity at the gene level
                 inline double sn(const GeneID &id) const
                 {
                     return geneE.at(id).sn();
+                }
+                
+                // Overall precision
+                inline double pc(enum AlignMetrics m) const
+                {
+                    switch (m)
+                    {
+                        case AlignExon:   { return overE.precise(); }
+                        case AlignBase:   { return overB.m.ac();    }
+                        case AlignIntron: { return overI.precise(); }
+                    }
                 }
             };
 
