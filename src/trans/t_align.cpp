@@ -454,8 +454,8 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
 
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Unmapped:   %2% reads\n"
-                         "   Experiment: %3% (%24%%) reads\n"
-                         "   Synthetic:  %4% (%25%%) reads\n\n"
+                         "   Experiment: %3% (%24%%%) reads\n"
+                         "   Synthetic:  %4% (%25%%%) reads\n\n"
                          "   Reference:  %5% exons\n"
                          "   Reference:  %6% introns\n"
                          "   Reference:  %7% bases\n\n"
@@ -561,24 +561,24 @@ static void writeSequins(const TAlign::Stats &stats, const FileName &file, const
         if (mi.lNR)
         {
             o.writer->write((boost::format(format) % i.first
-                             % covered
-                             % me.sn()
-                             % me.precise()
-                             % mi.sn()
-                             % mi.precise()
-                             % mb.sn()
-                             % mb.ac()).str());
+                                                   % covered
+                                                   % me.sn()
+                                                   % me.precise()
+                                                   % mi.sn()
+                                                   % mi.precise()
+                                                   % mb.sn()
+                                                   % mb.ac()).str());
         }
         else
         {
             o.writer->write((boost::format(format) % i.first
-                             % me.sn()
-                             % me.precise()
-                             % "--"
-                             % "--"
-                             % mb.sn()
-                             % mb.ac()
-                             % covered).str());
+                                                   % me.sn()
+                                                   % me.precise()
+                                                   % "--"
+                                                   % "--"
+                                                   % mb.sn()
+                                                   % mb.ac()
+                                                   % covered).str());
         }
     }
     
