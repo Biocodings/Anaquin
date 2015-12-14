@@ -482,7 +482,11 @@ static std::string summary()
            "   -------------------- Base level --------------------\n\n"
            "   Sensitivity: %22%\n"
            "   Specificity: %23%\n"
-           "   Detection:   %24% (%25%)\n";
+           "   Detection:   %24% (%25%)\n\n"
+           "   -------------------- Undetected --------------------\n\n"
+           "   Exon:   %26% (%27%%%)\n"
+           "   Intron: %28% (%29%%%)\n"
+           "   Gene:   %30% (%31%%%)\n";
 }
 
 // Write summary statistics for a single replicate
@@ -657,24 +661,30 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     
     for (const auto &stat : stats)
     {
-        acc.add("Unmapped",    stat.unmapped);
-        acc.add("Experiment",  stat.n_expT);
-        acc.add("Synthetic",   stat.n_chrT);
-        acc.add("QExon",       stat.qExons());
-        acc.add("QIntron",     stat.qIntrons());
-        acc.add("QBase",       stat.qBases());
-        acc.add("Dilution",    stat.n_chrT);
-        acc.add("ExonSN",      stat.sn(TAlign::Stats::AlignMetrics::AlignExon));
-        acc.add("ExonPC",      stat.pc(TAlign::Stats::AlignMetrics::AlignExon));
-        acc.add("IntronSN",    stat.sn(TAlign::Stats::AlignMetrics::AlignIntron));
-        acc.add("IntronPC",    stat.pc(TAlign::Stats::AlignMetrics::AlignIntron));
-        acc.add("BaseSN",      stat.sn(TAlign::Stats::AlignMetrics::AlignBase));
-        acc.add("BasePC",      stat.pc(TAlign::Stats::AlignMetrics::AlignBase));
-        acc.add("ExpPercent",  100.0 * stat.exp());
-        acc.add("ChrTPercent", 100.0 * stat.chrT());
-        acc.add("LimitE",      stat.limitE);
-        acc.add("LimitI",      stat.limitI);
-        acc.add("LimitB",      stat.overB.limit);
+        acc.add("Unmapped",       stat.unmapped);
+        acc.add("Experiment",     stat.n_expT);
+        acc.add("Synthetic",      stat.n_chrT);
+        acc.add("QExon",          stat.qExons());
+        acc.add("QIntron",        stat.qIntrons());
+        acc.add("QBase",          stat.qBases());
+        acc.add("Dilution",       stat.n_chrT);
+        acc.add("ExonSN",         stat.sn(TAlign::Stats::AlignMetrics::AlignExon));
+        acc.add("ExonPC",         stat.pc(TAlign::Stats::AlignMetrics::AlignExon));
+        acc.add("IntronSN",       stat.sn(TAlign::Stats::AlignMetrics::AlignIntron));
+        acc.add("IntronPC",       stat.pc(TAlign::Stats::AlignMetrics::AlignIntron));
+        acc.add("BaseSN",         stat.sn(TAlign::Stats::AlignMetrics::AlignBase));
+        acc.add("BasePC",         stat.pc(TAlign::Stats::AlignMetrics::AlignBase));
+        acc.add("ExpPercent",     100.0 * stat.exp());
+        acc.add("ChrTPercent",    100.0 * stat.chrT());
+        acc.add("LimitE",         stat.limitE);
+        acc.add("LimitI",         stat.limitI);
+        acc.add("LimitB",         stat.overB.limit);
+        acc.add("MissingExonI",   stat.missing(TAlign::Stats::MissingMetrics::MissingExon).i);
+        acc.add("MissingExonP",   stat.missing(TAlign::Stats::MissingMetrics::MissingExon).percent());
+        acc.add("MissingIntronI", stat.missing(TAlign::Stats::MissingMetrics::MissingIntron).i);
+        acc.add("MissingIntronP", stat.missing(TAlign::Stats::MissingMetrics::MissingIntron).percent());
+        acc.add("MissingGeneI",   stat.missing(TAlign::Stats::MissingMetrics::MissingGene).i);
+        acc.add("MissingGeneP",   stat.missing(TAlign::Stats::MissingMetrics::MissingGene).percent());
     }
     
     o.writer->open("TransAlign_summary.stats");
@@ -703,6 +713,12 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
                                               % acc.value("BasePC")()   // 23
                                               % acc.limits("LimitB").abund
                                               % acc.limits("LimitB").id
+                                              % acc.value("MissingExonI")()
+                                              % acc.value("MissingExonP")()
+                                              % acc.value("MissingIntronI")()
+                                              % acc.value("MissingIntronP")()
+                                              % acc.value("MissingGeneI")()
+                                              % acc.value("MissingGeneP")()
                      ).str());
     o.writer->close();
 }
