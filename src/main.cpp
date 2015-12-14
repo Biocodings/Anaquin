@@ -270,9 +270,12 @@ static std::map<Tool, std::set<Option>> _pick =
 
 struct Parsing
 {
-    // The path that output files are written
+    // The path that outputs are written
     std::string path = "output";
 
+    // Input files
+    std::vector<FileName> inputs;
+    
     // Context specific options
     std::map<Option, std::string> opts;
     
@@ -285,8 +288,8 @@ struct Parsing
     // Maximum concentration
     double max = std::numeric_limits<double>::max();
 
-    // Sensivitiy
-    double los;
+    // Limit of detection
+    double limit;
     
     // The sequins that have been filtered
     std::set<SequinID> filters;
@@ -381,10 +384,10 @@ static const struct option long_options[] =
     { "t",    required_argument, 0, OPT_TOOL },
     { "tool", required_argument, 0, OPT_TOOL },
 
-    { "usam",    required_argument, 0, OPT_BAM_1 },
+    { "usams",   required_argument, 0, OPT_BAM_1 },
     { "usam1",   required_argument, 0, OPT_BAM_1 },
     { "usam2",   required_argument, 0, OPT_BAM_2 },
-    { "ubam",    required_argument, 0, OPT_BAM_1 },
+    { "ubams",   required_argument, 0, OPT_BAM_1 },
     { "ubam1",   required_argument, 0, OPT_BAM_1 },
     { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
@@ -670,13 +673,32 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
     Viewer::generate(_p.opts.at(OPT_BAM_1), o);
 }
 
-// Analyze for a single sample
-template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
+/*
+ * Template functions for analyzing
+ */
+
+// Analyze a single sample file
+template <typename Analyzer> void analyze(const FileName &file, typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::report(_p.opts.at(x), o);
+        Analyzer::report(file, o);
     }, o);
+}
+
+// Analyze multiple replicate files
+template <typename Analyzer> void analyze(const std::vector<FileName> &files, typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
+    {
+        Analyzer::report(files, o);
+    }, o);
+}
+
+// Analyze for a single sample
+template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return analyze<Analyzer>(_p.opts.at(x), o);
 }
 
 // Analyze for a single sample with fuzzy matching
@@ -905,13 +927,24 @@ void parse(int argc, char ** argv)
             case OPT_FUZZY:    { parseInt(val, _p.fuzzy); break; }
             case OPT_SOFTWARE: { _p.opts[opt] = val;      break; }
 
+            case OPT_BAM_1:
+            {
+                Tokens::split(val, ",", _p.inputs);
+
+                for (auto i = _p.inputs.size(); i-- > 0;)
+                {
+                    checkFile(_p.opts[opt] = _p.inputs[i]);
+                }
+                
+                break;
+            }
+
             case OPT_FA_1:
             case OPT_FA_2:
             case OPT_U_COV:
             case OPT_R_FUS:
             case OPT_U_VCF:
             case OPT_U_OUT:
-            case OPT_BAM_1:
             case OPT_U_GTF:
             case OPT_IDIFF:
             case OPT_GDIFF:
@@ -926,12 +959,12 @@ void parse(int argc, char ** argv)
             case OPT_R_BED_2:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
-            case OPT_PATH:    { _p.path = val;             break; }
-            case OPT_FILTER:  { readFilters(val);          break; }
-            case OPT_MAX:     { parseDouble(val, _p.max);  break; }
-            case OPT_MIN:     { parseDouble(val, _p.min);  break; }
-            case OPT_LOS:     { parseDouble(val, _p.los);  break; }
-            case OPT_THREAD:  { parseInt(val, _p.threads); break; }
+            case OPT_PATH:    { _p.path = val;              break; }
+            case OPT_FILTER:  { readFilters(val);           break; }
+            case OPT_MAX:     { parseDouble(val, _p.max);   break; }
+            case OPT_MIN:     { parseDouble(val, _p.min);   break; }
+            case OPT_LOS:     { parseDouble(val, _p.limit); break; }
+            case OPT_THREAD:  { parseInt(val, _p.threads);  break; }
 
             default:
             {
@@ -1044,8 +1077,21 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_T_SEQUIN:   { printMixture();                  break; }
-                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_BAM_1);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_BAM_1); break; }
+
+                case TOOL_T_ALIGN:
+                {
+                    if (_p.inputs.size() > 1)
+                    {
+                        analyze<TAlign>(_p.inputs);
+                    }
+                    else
+                    {
+                        analyze_1<TAlign>(OPT_BAM_1);
+                    }
+                    
+                    break;
+                }
 
                 case TOOL_T_ASSEMBLY:
                 {
@@ -1311,7 +1357,7 @@ void parse(int argc, char ** argv)
                 case TOOL_M_IGV:      { viewer<FViewer>();               break; }
                 case TOOL_M_ALIGN:    { analyze_1<MAlign>(OPT_BAM_1);    break; }
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_BAM_1); break; }
-                    
+
                 case TOOL_M_DIFF:
                 case TOOL_M_ABUND:
                 case TOOL_M_ASSEMBLY:
