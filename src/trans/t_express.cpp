@@ -109,6 +109,18 @@ TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Opt
     });
 }
 
+std::vector<TExpress::Stats> TExpress::analyze(const std::vector<FileName> &files, const Options &o)
+{
+    std::vector<TExpress::Stats> stats;
+    
+    for (const auto &file : files)
+    {
+        stats.push_back(analyze(file, o));
+    }
+
+    return stats;
+}
+
 TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 {
     o.info("Parsing: " + file);
@@ -177,4 +189,42 @@ void TExpress::report(const FileName &file, const Options &o)
     
     o.info("Generating scatter plot");
     AnalyzeReporter::scatter(stats, "", "TransExpress", "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
+}
+
+void TExpress::report(const std::vector<FileName> &files, const Options &o)
+{
+    const auto stats = TExpress::analyze(files, o);
+    const auto units = (o.level == Isoform) ? "isoforms" : "genes";
+    
+    /*
+     * Generating summary statistics for each replicate
+     */
+    
+    o.info("Generating summary statistics");
+    
+    for (auto i = 0; i < files.size(); i++)
+    {
+        AnalyzeReporter::linear((boost::format("TransExpress_%1%_summary.stats") % files[i]).str(),
+                                files[i],
+                                stats[i],
+                                units,
+                                o.writer);
+    }
+
+    /*
+     * Generating scatter plot for each replicate
+     */
+    
+    o.info("Generating scatter plot");
+
+    for (auto i = 0; i < files.size(); i++)
+    {
+        const auto file = (boost::format("TransExpress_%1%") % files[i]).str();
+        AnalyzeReporter::scatter(stats[i], "", file, "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
+    }
+    
+    /*
+     * Generating summary statistics
+     */
+    
 }

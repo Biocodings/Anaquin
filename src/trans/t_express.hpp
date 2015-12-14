@@ -37,10 +37,17 @@ namespace Anaquin
             RNALevel level = Isoform;
         };
 
+        // Analyze for a single sample
         static Stats analyze(const FileName &, const Options &o);
+        
+        // Analyze for a single sample
         static Stats analyze(const std::vector<Expression> &, const Options &);
 
-        static void  report (const FileName &, const Options &o = Options());
+        // Analyze for multiple replicates
+        static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o);
+
+        static void report(const FileName &, const Options &o = Options());
+        static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
 

@@ -156,6 +156,18 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     });
 }
 
+std::vector<TDiffs::Stats> TDiffs::analyze(const std::vector<FileName> &files, const Options &o)
+{
+    std::vector<TDiffs::Stats> stats;
+    
+    for (const auto &file : files)
+    {
+        stats.push_back(analyze(file, o));
+    }
+
+    return stats;
+}
+
 void TDiffs::report(const FileName &file, const Options &o)
 {
     const auto stats = TDiffs::analyze(file, o);
@@ -174,4 +186,35 @@ void TDiffs::report(const FileName &file, const Options &o)
     
     o.info("Generating scatter plot");
     AnalyzeReporter::scatter(stats, "", "TransDiff", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+}
+
+void TDiffs::report(const std::vector<FileName> &files, const Options &o)
+{
+    const auto stats = analyze(files, o);
+    const auto units = (o.level == Isoform) ? "isoforms" : "genes";
+
+    /*
+     * Generating summary statistics for each replicate
+     */
+    
+    for (auto i = 0; i < files.size(); i++)
+    {
+        const auto file = (boost::format("TransDiff_%1%_summary.stats") % files[i]).str();
+        AnalyzeReporter::linear(file, files[i], stats[i], units, o.writer);
+    }
+    
+    /*
+     * Generating scatter plots for each replicate
+     */
+
+    for (auto i = 0; i < files.size(); i++)
+    {
+        const auto file = (boost::format("TransDiff_%1%_summary.stats") % files[i]).str();
+        AnalyzeReporter::scatter(stats[i], "", file, "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    }
+    
+    /*
+     * Generating summary statistics for all replicates
+     */
+    
 }

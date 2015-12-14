@@ -28,8 +28,14 @@ namespace Anaquin
             Limit sb, si, se, st;
         };
 
+        // Analyze a single sample
         static Stats analyze(const FileName &, const Options &o = Options());
-        static void  report (const FileName &, const Options &o = Options());
+        
+        // Analyze multiple replicates
+        static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o = Options());
+
+        static void report(const FileName &, const Options &o = Options());
+        static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
 
