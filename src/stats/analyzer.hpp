@@ -13,6 +13,8 @@
 
 namespace Anaquin
 {
+    typedef std::map<BinID, Counts> BinCounts;
+
     template <typename T> Counts sum(const std::map<T, Counts> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)

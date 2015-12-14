@@ -149,8 +149,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
                      TAlign::MergedConfusion &over,
                      Hist &h,
                      Counts unknowns,
-                     const TAlign::BinCounts &contains,
-                     const TAlign::BinCounts &overlaps,
+                     const BinCounts &contains,
+                     const BinCounts &overlaps,
                      const std::map<BinID, GeneID> &m)
     {
         /*
@@ -306,7 +306,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     {
         o.info("Calculating missing statistics");
         
-        auto missing = [&](std::set<Missing> &misses, const TAlign::BinCounts &bins)
+        auto missing = [&](std::set<Missing> &misses, const BinCounts &bins)
         {
             for (const auto &bin : bins)
             {
@@ -423,157 +423,183 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     });
 }
 
-void TAlign::report(const FileName &file, const Options &o)
+std::vector<TAlign::Stats> TAlign::analyze(const std::vector<FileName> &files, const Options &o)
+{
+    std::vector<TAlign::Stats> stats;
+    
+    for (const auto &file : files)
+    {
+        stats.push_back(analyze(file, o));
+    }
+    
+    return stats;
+}
+
+std::vector<TAlign::Stats> TAlign::analyze(const std::vector<std::vector<Alignment>> &aligns, const Options &o)
+{
+    std::vector<TAlign::Stats> stats;
+    
+    for (const auto &align : aligns)
+    {
+        stats.push_back(analyze(align, o));
+    }
+    
+    return stats;
+}
+
+// Write summary statistics for a single replicate
+static void writeSummary(const TAlign::Stats &stats, const FileName &file, const TAlign::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-    const auto stats = TAlign::analyze(file, o);
+
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Unmapped:   %2% reads\n"
+                         "   Experiment: %3% (%24%%) reads\n"
+                         "   Synthetic:  %4% (%25%%) reads\n\n"
+                         "   Reference:  %5% exons\n"
+                         "   Reference:  %6% introns\n"
+                         "   Reference:  %7% bases\n\n"
+                         "   Query:      %8% exons\n"
+                         "   Query:      %9% introns\n"
+                         "   Query:      %10% bases\n\n"
+                         "   Dilution:   %23%\n\n"
+                         "   ***\n"
+                         "   *** The following statistics are computed at the exon, intron and base level.\n"
+                         "   ***\n"
+                         "   *** Exon level is defined by performance per exon. An alignment that\n"
+                         "   *** is not mapped entirely within an exon is considered as a FP. The\n"
+                         "   *** intron level is similar.\n"
+                         "   ***\n"
+                         "   *** Base level is defined by performance per nucleotide. A partial\n"
+                         "   *** mapped read will have FP and TP.\n"
+                         "   ***\n\n"
+                         "   -------------------- Exon level --------------------\n\n"
+                         "   Sensitivity: %11%\n"
+                         "   Specificity: %12%\n"
+                         "   Detection:   %13% (%14%)\n\n"
+                         "   -------------------- Intron level --------------------\n\n"
+                         "   Sensitivity: %15%\n"
+                         "   Specificity: %16%\n"
+                         "   Detection:   %17% (%18%)\n\n"
+                         "   -------------------- Base level --------------------\n\n"
+                         "   Sensitivity: %19%\n"
+                         "   Specificity: %20%\n"
+                         "   Detection:   %21% (%22%)\n";
     
-    o.logInfo((boost::format("Base: %1% %2% %3% %4% %5% %6% %7%")
-                                          % stats.overB.m.nr()
-                                          % stats.overB.m.nq()
-                                          % stats.overB.m.tp()
-                                          % stats.overB.m.fp()
-                                          % stats.overB.m.fn()
-                                          % stats.overB.m.sn()
-                                          % stats.overB.m.ac()).str());
+    o.writer->open(file);
+    o.writer->write((boost::format(summary) % file
+                                            % stats.unmapped
+                                            % stats.n_expT
+                                            % stats.n_chrT
+                                            % r.countSortedExons()
+                                            % r.countSortedIntrons()
+                                            % r.exonBase()
+                                            % stats.qExons()
+                                            % stats.qIntrons()
+                                            % stats.qBases()
+                                            % stats.sn(TAlign::Stats::AlignMetrics::AlignExon)
+                                            % stats.pc(TAlign::Stats::AlignMetrics::AlignExon)
+                                            % stats.limitE.abund
+                                            % stats.limitE.id
+                                            % stats.sn(TAlign::Stats::AlignMetrics::AlignIntron)
+                                            % stats.pc(TAlign::Stats::AlignMetrics::AlignIntron)
+                                            % stats.limitI.abund
+                                            % stats.limitI.id
+                                            % stats.sn(TAlign::Stats::AlignMetrics::AlignBase)
+                                            % stats.pc(TAlign::Stats::AlignMetrics::AlignBase)
+                                            % stats.overB.limit.abund
+                                            % stats.overB.limit.id
+                                            % stats.dilution()
+                                            % (100.0 * stats.exp())
+                                            % (100.0 * stats.chrT())
+                     ).str());
+    o.writer->close();
+}
 
-    /*
-     * Write out summary statistics
-     */
-
-    {
-        const auto summary = "Summary for dataset: %1%\n\n"
-                             "   Unmapped:   %2% reads\n"
-                             "   Experiment: %3% (%24%%) reads\n"
-                             "   Synthetic:  %4% (%25%%) reads\n\n"
-                             "   Reference:  %5% exons\n"
-                             "   Reference:  %6% introns\n"
-                             "   Reference:  %7% bases\n\n"
-                             "   Query:      %8% exons\n"
-                             "   Query:      %9% introns\n"
-                             "   Query:      %10% bases\n\n"
-                             "   Dilution:   %23%\n\n"
-                             "   ***\n"
-                             "   *** The following statistics are computed at the exon, intron and base level.\n"
-                             "   ***\n"
-                             "   *** Exon level is defined by performance per exon. An alignment that\n"
-                             "   *** is not mapped entirely within an exon is considered as a FP. The\n"
-                             "   *** intron level is similar.\n"
-                             "   ***\n"
-                             "   *** Base level is defined by performance per nucleotide. A partial\n"
-                             "   *** mapped read will have FP and TP.\n"
-                             "   ***\n\n"
-                             "   -------------------- Exon level --------------------\n\n"
-                             "   Sensitivity: %11%\n"
-                             "   Specificity: %12%\n"
-                             "   Detection:   %13% (%14%)\n\n"
-                             "   -------------------- Intron level --------------------\n\n"
-                             "   Sensitivity: %15%\n"
-                             "   Specificity: %16%\n"
-                             "   Detection:   %17% (%18%)\n\n"
-                             "   -------------------- Base level --------------------\n\n"
-                             "   Sensitivity: %19%\n"
-                             "   Specificity: %20%\n"
-                             "   Detection:   %21% (%22%)\n";
-        
-        o.writer->open("TransAlign_summary.stats");
-        o.writer->write((boost::format(summary) % file
-                                                % stats.unmapped
-                                                % stats.n_expT
-                                                % stats.n_chrT
-                                                % r.countSortedExons()
-                                                % r.countSortedIntrons()
-                                                % r.exonBase()
-                                                % stats.qExons()
-                                                % stats.qIntrons()
-                                                % stats.qBases()
-                                                % stats.sn(Stats::AlignMetrics::AlignExon)
-                                                % stats.pc(Stats::AlignMetrics::AlignExon)
-                                                % stats.limitE.abund
-                                                % stats.limitE.id
-                                                % stats.sn(Stats::AlignMetrics::AlignIntron)
-                                                % stats.pc(Stats::AlignMetrics::AlignIntron)
-                                                % stats.limitI.abund
-                                                % stats.limitI.id
-                                                % stats.sn(Stats::AlignMetrics::AlignBase)
-                                                % stats.pc(Stats::AlignMetrics::AlignBase)
-                                                % stats.overB.limit.abund
-                                                % stats.overB.limit.id
-                                                % stats.dilution()
-                                                % (100.0 * stats.exp())
-                                                % (100.0 * stats.chrT())
-                         ).str());
-        o.writer->close();
-    }
-
-    /*
-     * Generating detailed statistics for each sequin
-     */
+// Write sequin statistics for a single replicate
+static void writeSequins(const TAlign::Stats &stats, const FileName &file, const TAlign::Options &o)
+{
+    o.writer->open(file);
+    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
     
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    
+    o.writer->write((boost::format(format) % "ID"
+                                           % "Covered"
+                                           % "Sensitivity (Exon)"
+                                           % "Specificity (Exon)"
+                                           % "Sensitivity (Intron)"
+                                           % "Specificity (Intron)"
+                                           % "Sensitivity (Base)"
+                                           % "Specificity (Base)").str());
+    
+    for (const auto &i : stats.overB.h)
     {
-        o.writer->open("TransAlign_quins.stats");
-        o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+        Base length   = 0;
+        Base nonZeros = 0;
         
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-
-        o.writer->write((boost::format(format) % "ID"
-                                               % "Covered"
-                                               % "Sensitivity (Exon)"
-                                               % "Specificity (Exon)"
-                                               % "Sensitivity (Intron)"
-                                               % "Specificity (Intron)"
-                                               % "Sensitivity (Base)"
-                                               % "Specificity (Base)").str());
-        
-        for (const auto &i : stats.overB.h)
+        for (const auto &j : stats.eInters.data())
         {
-            Base length   = 0;
-            Base nonZeros = 0;
-            
-            for (const auto &j : stats.eInters.data())
+            if (j.second.gID == i.first)
             {
-               if (j.second.gID == i.first)
-               {
-                   const auto eStats = j.second.stats();
-                   
-                   length   += eStats.length;
-                   nonZeros += eStats.nonZeros;
-                   
-                   assert(length >= nonZeros);
-               }
-            }
-        
-            const auto covered = static_cast<double>(nonZeros) / length;
-
-            const auto &mb = stats.geneB.at(i.first);
-            const auto &me = stats.geneE.at(i.first);
-            const auto &mi = stats.geneI.at(i.first);
-
-            // Not all sequins have an intron...
-            if (mi.lNR)
-            {
-                o.writer->write((boost::format(format) % i.first
-                                                       % covered
-                                                       % me.sn()
-                                                       % me.precise()
-                                                       % mi.sn()
-                                                       % mi.precise()
-                                                       % mb.sn()
-                                                       % mb.ac()).str());
-            }
-            else
-            {
-                o.writer->write((boost::format(format) % i.first
-                                                       % me.sn()
-                                                       % me.precise()
-                                                       % "--"
-                                                       % "--"
-                                                       % mb.sn()
-                                                       % mb.ac()
-                                                       % covered).str());
+                const auto eStats = j.second.stats();
+                
+                length   += eStats.length;
+                nonZeros += eStats.nonZeros;
+                
+                assert(length >= nonZeros);
             }
         }
         
-        o.writer->close();
+        const auto covered = static_cast<double>(nonZeros) / length;
+        
+        const auto &mb = stats.geneB.at(i.first);
+        const auto &me = stats.geneE.at(i.first);
+        const auto &mi = stats.geneI.at(i.first);
+        
+        // Not all sequins have an intron...
+        if (mi.lNR)
+        {
+            o.writer->write((boost::format(format) % i.first
+                             % covered
+                             % me.sn()
+                             % me.precise()
+                             % mi.sn()
+                             % mi.precise()
+                             % mb.sn()
+                             % mb.ac()).str());
+        }
+        else
+        {
+            o.writer->write((boost::format(format) % i.first
+                             % me.sn()
+                             % me.precise()
+                             % "--"
+                             % "--"
+                             % mb.sn()
+                             % mb.ac()
+                             % covered).str());
+        }
     }
+    
+    o.writer->close();
+}
+
+void TAlign::report(const std::vector<FileName> &files, const Options &o)
+{
+    const auto stats = TAlign::analyze(files, o);
+    
+    for (auto i = 0; i < files.size(); i++)
+    {
+        writeSummary(stats[i], (boost::format("TransAlign_%1%_summary.stats") % files[i]).str(), o);
+        writeSequins(stats[i], (boost::format("TransAlign_%1%_quins.stats")   % files[i]).str(), o);
+    }
+}
+
+void TAlign::report(const FileName &file, const Options &o)
+{
+    const auto stats = TAlign::analyze(file, o);
+    
+    writeSummary(stats, "TransAlign_summary.stats", o);
+    writeSequins(stats, "TransAlign_quins.stats", o);
 }

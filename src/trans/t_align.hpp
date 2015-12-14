@@ -11,8 +11,6 @@ namespace Anaquin
         public:
             typedef AnalyzerOptions Options;
 
-            typedef std::map<BinID, Counts> BinCounts;
-
             struct MergedConfusion
             {
                 /*
@@ -153,9 +151,20 @@ namespace Anaquin
                 }
             };
 
-            static Stats analyze(const FileName &, const Options &options = Options());
-            static Stats analyze(const std::vector<Alignment> &, const Options &options = Options());
-            static void  report (const FileName &, const Options &options = Options());
+            // Analyze a single sample
+            static Stats analyze(const FileName &, const Options &o = Options());
+        
+            // Analyze a single sample
+            static Stats analyze(const std::vector<Alignment> &, const Options &o = Options());
+
+            // Analyze multiple replicates
+            static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o = Options());
+
+            // Analyze multiple replicates
+            static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &, const Options &o = Options());
+
+            static void report(const FileName &, const Options &o = Options());
+            static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
 
