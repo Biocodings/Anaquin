@@ -1,3 +1,4 @@
+#include <ss/stats.hpp>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
 
@@ -447,6 +448,43 @@ std::vector<TAlign::Stats> TAlign::analyze(const std::vector<std::vector<Alignme
     return stats;
 }
 
+static std::string summary()
+{
+    return "Summary for dataset: %1%\n\n"
+           "   Unmapped:   %2% reads\n"
+           "   Experiment: %3% (%4%%%) reads\n"
+           "   Synthetic:  %5% (%6%%%) reads\n\n"
+           "   Reference:  %7% exons\n"
+           "   Reference:  %8% introns\n"
+           "   Reference:  %9% bases\n\n"
+           "   Query:      %10% exons\n"
+           "   Query:      %11% introns\n"
+           "   Query:      %12% bases\n\n"
+           "   Dilution:   %13%\n\n"
+           "   ***\n"
+           "   *** The following statistics are computed at the exon, intron and base level.\n"
+           "   ***\n"
+           "   *** Exon level is defined by performance per exon. An alignment that\n"
+           "   *** is not mapped entirely within an exon is considered as a FP. The\n"
+           "   *** intron level is similar.\n"
+           "   ***\n"
+           "   *** Base level is defined by performance per nucleotide. A partial\n"
+           "   *** mapped read will have FP and TP.\n"
+           "   ***\n\n"
+           "   -------------------- Exon level --------------------\n\n"
+           "   Sensitivity: %14%\n"
+           "   Specificity: %15%\n"
+           "   Detection:   %16% (%17%)\n\n"
+           "   -------------------- Intron level --------------------\n\n"
+           "   Sensitivity: %18%\n"
+           "   Specificity: %19%\n"
+           "   Detection:   %20% (%21%)\n\n"
+           "   -------------------- Base level --------------------\n\n"
+           "   Sensitivity: %22%\n"
+           "   Specificity: %23%\n"
+           "   Detection:   %24% (%25%)\n";
+}
+
 // Write summary statistics for a single replicate
 static void writeSummary(const TAlign::Stats &stats, const FileName &file, const TAlign::Options &o)
 {
@@ -585,15 +623,152 @@ static void writeSequins(const TAlign::Stats &stats, const FileName &file, const
     o.writer->close();
 }
 
+template <typename T> class Accumulator
+{
+    public:
+    
+        typedef std::string Key;
+    
+        struct Deviation
+        {
+            // First moment
+            T mean;
+
+            // Standard deviation
+            T sd;
+
+            inline std::string operator()() const
+            {
+                return (boost::format("%1% \u00B1 %2%") % mean % sd).str();
+            }
+        };
+    
+        void add(const Key &key, double value)
+        {
+            _data[key].push_back(value);
+        }
+
+        void add(const Key &key, const Limit &l)
+        {
+            _limits[key].push_back(l);
+        }
+    
+        Deviation value(const std::string &key) const
+        {
+            Deviation d;
+            
+            d.sd   = SS::sd(_data.at(key));
+            d.mean = SS::mean(_data.at(key));
+            
+            return d;
+        }
+    
+        const Limit & limits(const Key &key) const
+        {
+            const Limit *min = nullptr;
+        
+            for (const auto &limit : _limits.at(key))
+            {
+                if (!min || limit.abund < min->abund)
+                {
+                    min = &limit;
+                }
+            }
+
+            return *min;
+        }
+
+    private:
+    
+        // Used for comparing limit of detection
+        std::map<Key, std::vector<Limit>> _limits;
+    
+        // Used for regular mappings
+        std::map<Key, std::vector<double>> _data;
+};
+
 void TAlign::report(const std::vector<FileName> &files, const Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+
     const auto stats = TAlign::analyze(files, o);
     
     for (auto i = 0; i < files.size(); i++)
     {
-        writeSummary(stats[i], (boost::format("TransAlign_%1%_summary.stats") % files[i]).str(), o);
         writeSequins(stats[i], (boost::format("TransAlign_%1%_quins.stats")   % files[i]).str(), o);
+        writeSummary(stats[i], (boost::format("TransAlign_%1%_summary.stats") % files[i]).str(), o);
     }
+
+    /*
+     * Write pooled summary statistics
+     */
+
+    std::string concated;
+    
+    for (const auto &file : files)
+    {
+        if (concated.empty())
+        {
+            concated = file;
+        }
+        else
+        {
+            concated = concated + "\n                     " + file;
+        }
+    }
+    
+    Accumulator<double> acc;
+    
+    for (const auto &stat : stats)
+    {
+        acc.add("Unmapped",    stat.unmapped);
+        acc.add("Experiment",  stat.n_expT);
+        acc.add("Synthetic",   stat.n_chrT);
+        acc.add("QExon",       stat.qExons());
+        acc.add("QIntron",     stat.qIntrons());
+        acc.add("QBase",       stat.qBases());
+        acc.add("Dilution",    stat.n_chrT);
+        acc.add("ExonSN",      stat.sn(TAlign::Stats::AlignMetrics::AlignExon));
+        acc.add("ExonPC",      stat.pc(TAlign::Stats::AlignMetrics::AlignExon));
+        acc.add("IntronSN",    stat.sn(TAlign::Stats::AlignMetrics::AlignIntron));
+        acc.add("IntronPC",    stat.pc(TAlign::Stats::AlignMetrics::AlignIntron));
+        acc.add("BaseSN",      stat.sn(TAlign::Stats::AlignMetrics::AlignBase));
+        acc.add("BasePC",      stat.pc(TAlign::Stats::AlignMetrics::AlignBase));
+        acc.add("ExpPercent",  100.0 * stat.exp());
+        acc.add("ChrTPercent", 100.0 * stat.chrT());
+        acc.add("LimitE",      stat.limitE);
+        acc.add("LimitI",      stat.limitI);
+        acc.add("LimitB",      stat.overB.limit);
+    }
+    
+    o.writer->open("TransAlign_summary.stats");
+    o.writer->write((boost::format(summary()) % concated
+                                              % acc.value("Unmapped")()
+                                              % acc.value("Experiment")()
+                                              % acc.value("ExpPercent")()  // 4
+                                              % acc.value("Synthetic")()
+                                              % acc.value("ChrTPercent")() // 6
+                                              % r.countSortedExons()
+                                              % r.countSortedIntrons()
+                                              % r.exonBase()
+                                              % acc.value("QExon")()
+                                              % acc.value("QIntron")()
+                                              % acc.value("QBase")()
+                                              % acc.value("Dilution")() // 13
+                                              % acc.value("ExonSN")()   // 14
+                                              % acc.value("ExonPC")()   // 15
+                                              % acc.limits("LimitE").abund
+                                              % acc.limits("LimitE").id
+                                              % acc.value("IntronSN")() // 18
+                                              % acc.value("IntronPC")() // 19
+                                              % acc.limits("LimitI").abund
+                                              % acc.limits("LimitI").id
+                                              % acc.value("BaseSN")()   // 22
+                                              % acc.value("BasePC")()   // 23
+                                              % acc.limits("LimitB").abund
+                                              % acc.limits("LimitB").id
+                     ).str());
+    o.writer->close();
 }
 
 void TAlign::report(const FileName &file, const Options &o)

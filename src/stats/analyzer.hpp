@@ -169,7 +169,7 @@ namespace Anaquin
         // The position of the alignment
         Locus l;
     };
-
+    
     /*
      * Represents a simple linear regression fitted by maximum-likehihood estimation.
      *
