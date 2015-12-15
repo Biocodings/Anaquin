@@ -40,70 +40,70 @@ void Test::clear()
 void Test::fusionA()
 {
     Test::clear();
-    Standard::instance().f_ref(Reader(FusionDataRef(), DataMode::String));
-    Standard::instance().f_mix(Reader(FusionDataMixA(), DataMode::String));
+    Standard::instance().addFRef(Reader(FusionDataRef(), DataMode::String));
+    Standard::instance().addFMix(Reader(FusionDataMixA(), DataMode::String));
     Standard::instance().r_fus.finalize();
 }
 
 void Test::meta()
 {
     Test::clear();
-    Standard::instance().m_mix(Reader(MetaDataMix(), DataMode::String));
+    Standard::instance().addMMix(Reader(MetaDataMix(), DataMode::String));
     Standard::instance().r_meta.finalize();
 }
 
 void Test::ladderA()
 {
     Test::clear();
-    Standard::instance().l_mix(Reader(LadderDataMixA(), DataMode::String));
+    Standard::instance().addLMix(Reader(LadderDataMixA(), DataMode::String));
     Standard::instance().r_lad.finalize();
 }
 
 void Test::transA()
 {
     Test::clear();
-    Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().r_mix(Reader(TransDataMixA(), DataMode::String));
+    Standard::instance().addTSRef(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().addTMix(Reader(TransDataMixA(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
 void Test::transB()
 {
     Test::clear();
-    Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().r_mix(Reader(TransDataMixB(), DataMode::String));
+    Standard::instance().addTSRef(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().addTMix(Reader(TransDataMixB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
 void Test::transF()
 {
     Test::clear();
-    Standard::instance().r_ref(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().r_mix(Reader(TransDataMixF(), DataMode::String));
+    Standard::instance().addTSRef(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().addTMix(Reader(TransDataMixF(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
 void Test::transAB()
 {
     Test::clear();
-    Standard::instance().r_ref(Reader(TransStandGTF(),  DataMode::String));
-    Standard::instance().r_mix(Reader(TransDataMixAB(), DataMode::String));
+    Standard::instance().addTSRef(Reader(TransStandGTF(),  DataMode::String));
+    Standard::instance().addVMix(Reader(TransDataMixAB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
 void Test::variantA()
 {
     Test::clear();
-    Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
-    Standard::instance().v_mix(Reader(VarDataMixA(),  DataMode::String));
+    Standard::instance().addVVar(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().addVMix(Reader(VarDataMixA(),  DataMode::String));
     Standard::instance().r_var.finalize();
 }
 
 void Test::variantF()
 {
     Test::clear();
-    Standard::instance().v_var(Reader(VarDataBed(),  DataMode::String));
-    Standard::instance().v_mix(Reader(VarDataMixA(),  DataMode::String));
+    Standard::instance().addVVar(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().addVMix(Reader(VarDataMixA(),  DataMode::String));
     Standard::instance().r_var.finalize();
 }
 

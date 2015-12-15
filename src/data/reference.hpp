@@ -297,7 +297,6 @@ namespace Anaquin
                         // Only if it's a validated sequin
                         if (_data.count(j.id))
                         {
-                            //_data.at(j.id).length = j.length;
                             _data.at(j.id).mixes[mix] = j.abund;
                         }
                     }
@@ -671,9 +670,16 @@ namespace Anaquin
             // Intervals for reference introns
             Intervals<IntronInterval> intronInters() const;
         
+            /*
+             *
+             */
+        
             // Add a new annoation reference
             void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l);
 
+        
+        
+        
             void merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs);
 
             // Calculate the detection limit at the gene level

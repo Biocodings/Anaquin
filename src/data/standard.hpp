@@ -28,65 +28,71 @@ namespace Anaquin
             }
 
             static constexpr const char * chrT = "chrT";
-        
+
             /*
-             * RNA data
+             * ---------------- Transcriptome analysis ----------------
              */
 
-            void r_ref(const Reader &);
-            void r_mix(const Reader &);
+            // Add a reference annotation for the synthetic chromosome
+            void addTSRef(const Reader &);
+
+            // Add a reference annotation for the genocode
+            void addTGRef(const Reader &);
+        
+            // Add a mixture file for transcriptome
+            void addTMix(const Reader &);
 
             TransRef r_trans;
 
             /*
-             * Variant data
+             * ---------------- Variant analysis ----------------
              */
 
-            void v_mix(const Reader &);
+            void addVMix(const Reader &);
         
             // Apply known variants to the referene
-            void v_var(const Reader &);
+            void addVVar(const Reader &);
 
             // Apply standards to the reference
-            void v_std(const Reader &);
+            void addVStd(const Reader &);
 
             // Apply intervals to the reference
-            void v_inters(const Reader &);
+            void addVInters(const Reader &);
         
             VarRef r_var;
         
             /*
-             * Ladder data
+             * Ladder analysis
              */
 
-            void l_mix(const Reader &);
+            void addLMix(const Reader &);
 
             LadderRef r_lad;
         
             /*
-             * Fusion data
+             * Fusion analysis
              */
 
             // Fusions for FuseQuin
-            void f_ref(const Reader &);
+            void addFRef(const Reader &);
 
             // Standards for FuseQuin
-            void f_std(const Reader &);
+            void addFStd(const Reader &);
 
             // Splicing for FuseQuin
-            void f_splice(const Reader &);
+            void addFSplice(const Reader &);
         
             // Mixture for FuseQuin
-            void f_mix(const Reader &);
+            void addFMix(const Reader &);
 
             FusionRef r_fus;
         
             /*
-             * Metagenomic data
+             * ---------------- Metagenomic analysis ----------------
              */
 
-            void m_ref(const Reader &);
-            void m_mix(const Reader &);
+            void addMRef(const Reader &);
+            void addMMix(const Reader &);
 
             MetaRef r_meta;
 

@@ -91,7 +91,7 @@ template <typename Reference> void readMixture
     }
 }
 
-void Standard::v_inters(const Reader &r)
+void Standard::addVInters(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
@@ -103,7 +103,7 @@ void Standard::v_inters(const Reader &r)
     });
 }
 
-void Standard::v_std(const Reader &r)
+void Standard::addVStd(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
@@ -111,7 +111,7 @@ void Standard::v_std(const Reader &r)
     });
 }
 
-void Standard::v_var(const Reader &r)
+void Standard::addVVar(const Reader &r)
 {
     std::vector<std::string> toks;
 
@@ -149,12 +149,12 @@ void Standard::v_var(const Reader &r)
     });
 }
 
-void Standard::v_mix(const Reader &r)
+void Standard::addVMix(const Reader &r)
 {
     readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
 }
 
-void Standard::m_ref(const Reader &r)
+void Standard::addMRef(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
@@ -162,7 +162,7 @@ void Standard::m_ref(const Reader &r)
     });
 }
 
-void Standard::m_mix(const Reader &r)
+void Standard::addMMix(const Reader &r)
 {
     const auto n = countColumns(r);
     readMixture(r, r_meta, Mix_1, ID_Length_Mix);
@@ -173,18 +173,18 @@ void Standard::m_mix(const Reader &r)
     }
 }
 
-void Standard::l_mix(const Reader &r)
+void Standard::addLMix(const Reader &r)
 {
     readMixture(r, r_lad, Mix_1, ID_Mix, 1);
     readMixture(Reader(r), r_lad, Mix_2, ID_Mix, 2);
 }
 
-void Standard::f_mix(const Reader &r)
+void Standard::addFMix(const Reader &r)
 {
     readMixture(r, r_fus, Mix_1, ID_Length_Mix, 2);
 }
 
-void Standard::f_std(const Reader &r)
+void Standard::addFStd(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
@@ -192,7 +192,7 @@ void Standard::f_std(const Reader &r)
     });
 }
 
-void Standard::f_splice(const Reader &r)
+void Standard::addFSplice(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
@@ -200,7 +200,7 @@ void Standard::f_splice(const Reader &r)
     });
 }
 
-void Standard::f_ref(const Reader &r)
+void Standard::addFRef(const Reader &r)
 {
     ParserCSV::parse(r, [&](const ParserCSV::Fields &f, const ParserProgress &)
     {
@@ -224,18 +224,29 @@ void Standard::f_ref(const Reader &r)
     }, "\t");
 }
 
-void Standard::r_ref(const Reader &r)
+void Standard::addTSRef(const Reader &r)
 {
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
-       if (f.id == Standard::chrT && f.type == Exon)
+        if (f.id == Standard::chrT && f.type == Exon)
         {
             r_trans.addRef(f.tID, f.geneID, f.l);
         }
     });
 }
 
-void Standard::r_mix(const Reader &r)
+void Standard::addTGRef(const Reader &r)
+{
+    ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
+    {
+        if (f.id != Standard::chrT && f.type == Exon)
+        {
+            r_trans.addRef(f.tID, f.geneID, f.l);
+        }
+    });
+}
+
+void Standard::addTMix(const Reader &r)
 {
     const auto n = countColumns(r);
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);

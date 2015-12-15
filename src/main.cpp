@@ -1059,14 +1059,14 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_T_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addTSRef, &s, std::placeholders::_1));
                         break;
                     }
 
                     default:
                     {
-                        applyMix(std::bind(&Standard::r_mix, &s, std::placeholders::_1));
-                        applyRef(std::bind(&Standard::r_ref, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addTMix,  &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addTSRef, &s, std::placeholders::_1));
                         break;
                     }
                 }
@@ -1166,37 +1166,37 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_F_NORMAL:
                 {
-                    applyMix(std::bind(&Standard::f_mix,    &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::f_splice, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
                 }
 
                 case TOOL_F_DIFF:
                 {
-                    applyMix(std::bind(&Standard::f_mix,    &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::f_ref,    &s, std::placeholders::_1), OPT_R_FUS);
-                    applyRef(std::bind(&Standard::f_splice, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::addFRef,    &s, std::placeholders::_1), OPT_R_FUS);
+                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
                 }
 
                 case TOOL_F_COVERAGE:
                 {
-                    applyRef(std::bind(&Standard::f_std, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
                 }
 
                 case TOOL_F_ALIGN:
                 {
-                    applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::f_std, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
                 }
 
                 case TOOL_F_EXPRESS:
                 case TOOL_F_DISCOVER:
                 {
-                    applyRef(std::bind(&Standard::f_ref, &s, std::placeholders::_1));
-                    applyMix(std::bind(&Standard::f_mix, &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
+                    applyMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
                     break;
                 }
                     
@@ -1243,7 +1243,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
-            applyMix(std::bind(&Standard::l_mix, &s, std::placeholders::_1));
+            applyMix(std::bind(&Standard::addLMix, &s, std::placeholders::_1));
             Standard::instance().r_lad.finalize();
 
             switch (_p.tool)
@@ -1272,15 +1272,15 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::v_std,    &s, std::placeholders::_1), OPT_R_BED_1);
-                        applyRef(std::bind(&Standard::v_inters, &s, std::placeholders::_1), OPT_R_BED_2);
+                        applyRef(std::bind(&Standard::addVStd,    &s, std::placeholders::_1), OPT_R_BED_1);
+                        applyRef(std::bind(&Standard::addVInters, &s, std::placeholders::_1), OPT_R_BED_2);
                         break;
                     }
 
                     case TOOL_V_ALIGN:
                     case TOOL_V_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::v_std, &s, std::placeholders::_1), OPT_R_BED_1);
+                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED_1);
                         break;
                     }
 
@@ -1288,13 +1288,13 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALLELE:
                     case TOOL_V_DISCOVER:
                     {
-                        applyRef(std::bind(&Standard::v_var, &s, std::placeholders::_1)); break;
+                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1)); break;
                     }
                         
                     default: { break; }
                 }
                 
-                applyMix(std::bind(&Standard::v_mix, &s, std::placeholders::_1));
+                applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                 Standard::instance().r_var.finalize();
             }
 
@@ -1337,7 +1337,7 @@ void parse(int argc, char ** argv)
                     case TOOL_M_ASSEMBLY:
                     case TOOL_M_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::m_ref, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addMRef, &s, std::placeholders::_1));
                         break;
                     }
 
@@ -1346,7 +1346,7 @@ void parse(int argc, char ** argv)
 
                 if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF || _p.tool == TOOL_M_ALIGN)
                 {
-                    applyMix(std::bind(&Standard::m_mix, &s, std::placeholders::_1));
+                    applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
                 }
                 
                 Standard::instance().r_meta.finalize();
