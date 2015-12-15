@@ -626,11 +626,13 @@ const TransRef::IntronData * TransRef::findIntron(const Locus &l, MatchRule m) c
     return findList(_impl->cValid.sortedIntrons, l, m);
 }
 
-Intervals<TransRef::ExonInterval> TransRef::exonInters() const
+Intervals<TransRef::ExonInterval> TransRef::exonInters(Source src) const
 {
     Intervals<ExonInterval> inters;
     
-    for (const auto &i : _impl->cValid.sortedExons)
+    const auto exons = (src == SyntheticSrc ? &_impl->cValid.sortedExons : &_impl->gValid.sortedExons);
+
+    for (const auto &i : *exons)
     {
         inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
     }
@@ -638,11 +640,13 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters() const
     return inters;
 }
 
-Intervals<TransRef::IntronInterval> TransRef::intronInters() const
+Intervals<TransRef::IntronInterval> TransRef::intronInters(Source src) const
 {
     Intervals<IntronInterval> inters;
     
-    for (const auto &i : _impl->cValid.sortedIntrons)
+    const auto introns = (src == SyntheticSrc ? &_impl->cValid.sortedExons : &_impl->gValid.sortedExons);
+
+    for (const auto &i : *introns)
     {
         inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
     }

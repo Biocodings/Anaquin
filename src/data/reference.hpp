@@ -674,10 +674,10 @@ namespace Anaquin
             GeneHist geneHist() const;
 
             // Intervals for reference exons
-            Intervals<ExonInterval> exonInters() const;
+            Intervals<ExonInterval> exonInters(Source) const;
         
             // Intervals for reference introns
-            Intervals<IntronInterval> intronInters() const;
+            Intervals<IntronInterval> intronInters(Source) const;
         
             // Add a new annoation reference
             void addRef(Source, const IsoformID &iID, const GeneID &gID, const Locus &l);

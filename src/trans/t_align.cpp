@@ -4,24 +4,10 @@
 
 using namespace Anaquin;
 
-typedef std::map<GeneID, Base> FPStats;
-
 struct ParseImpl
 {
-    struct SyntheticImpl
-    {
-        FPStats  *lFPS;
-        FPStats  *rFPS;
-        
-        Interval *base;
-    };
-    
-    typedef SyntheticImpl GenocodeImpl;
-    
+    Interval *base;
     TAlign::Stats *stats;
-
-    SyntheticImpl chrT;
-    GenocodeImpl  gCode;
 };
 
 // Internal implementation
@@ -33,13 +19,23 @@ static TAlign::Stats init()
     
     TAlign::Stats stats;
 
+    /*
+     * Create structure for both chrT and gencode
+     */
+    
     stats.chrT = std::shared_ptr<TAlign::Stats::ChrT>(new TAlign::Stats::ChrT());
     
     // Initalize the distributions
     stats.chrT->overB.h = stats.chrT->histE = stats.chrT->histI = r.geneHist();
 
-    stats.chrT->eInters = r.exonInters();
-    stats.chrT->iInters = r.intronInters();
+    /*
+     * Initialize intervals for exons and introns
+     */
+    
+    stats.chrT->eInters  = r.exonInters(SyntheticSrc);
+    stats.chrT->iInters  = r.intronInters(SyntheticSrc);
+    //???stats.gcode->eInters = r.exonInters(ExperimentSrc);
+    //???stats.gcode->iInters = r.intronInters(ExperimentSrc);
 
     // For each gene...
     for (const auto &i : stats.chrT->overB.h)
@@ -75,8 +71,8 @@ template <typename T> const T * matchT(const Alignment &align,
                                        Intervals<T> &inters,
                                        std::map<std::string, Counts> &contains,
                                        std::map<std::string, Counts> &overlaps,
-                                       FPStats *lFPS = nullptr,
-                                       FPStats *rFPS = nullptr)
+                                       TAlign::FPStats *lFPS = nullptr,
+                                       TAlign::FPStats *rFPS = nullptr)
 {
     std::vector<T *> oMatches, cMatches;
 
@@ -124,8 +120,8 @@ template <typename T> const T * matchT(const Alignment &align,
 }
 
 template <typename T> void collect(T &t,
-                                   const FPStats  &lFPS,
-                                   const FPStats  &rFPS,
+                                   const TAlign::FPStats &lFPS,
+                                   const TAlign::FPStats &rFPS,
                                    const Interval &base,
                                    const TAlign::Options &o)
 {
@@ -351,16 +347,22 @@ template <typename T> void collect(T &t,
     }
 }
 
-TAlign::Stats calculate(const TAlign::Options &o, Functor parser)
+TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
 {
+    /*
+     * 1: Initalize the statistics
+     */
+    
     TAlign::Stats stats = init();
     
-    FPStats lFPS, rFPS;
+    /*
+     * 2: Prepare for parsing
+     */
     
     for (const auto &i : stats.chrT->overB.h)
     {
-        lFPS[i.first];
-        rFPS[i.first];
+        stats.chrT->lFPS[i.first];
+        stats.chrT->rFPS[i.first];
     }
     
     // This is needed to track the FP at the base level
@@ -368,83 +370,96 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor parser)
     
     ParseImpl impl;
 
-    impl.stats     = &stats;
-    impl.chrT.lFPS = &lFPS;
-    impl.chrT.rFPS = &rFPS;
-    impl.chrT.base = &base;
+    impl.base  = &base;
+    impl.stats = &stats;
 
     /*
-     * 2: Parsing the inputs. For instance, parsing an input file.
+     * 3: Parsing the inputs. For instance, parsing an input file.
      */
     
-    parser(impl);
+    calculator(impl);
 
     /*
      * 3: Collecting statistics
      */
 
     // Collect for synthetic chromosome
-    collect(stats.chrT, *impl.chrT.lFPS, *impl.chrT.rFPS, *impl.chrT.base, o);
-   
+    collect(stats.chrT, stats.chrT->lFPS, stats.chrT->rFPS, *impl.base, o);
+
+    // Collect for human genocode
+    
     return stats;
 }
 
-template <typename T> void classify(Source src,
-                                    T &t,
-                                    const ParseImpl &impl,
-                                    const Alignment &align,
-                                    const ParserSAM::AlignmentInfo &info,
-                                    const TAlign::Options &o)
+template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
 {
-    // This could happen, for instance, the gencode annoation is not supplied
-    if (!t)
-    {
-        return;
-    }
-    
-    const auto shouldSkip = (src == SyntheticSrc  && align.id != Standard::chrT) ||
-                            (src == ExperimentSrc && align.id == Standard::chrT);
-
-    REPORT_STATUS();
-    
-    t->update(align);
-    
-    if (!align.mapped || shouldSkip)
-    {
-        return;
-    }
-    
     const Interval *match = nullptr;
     
     if (!align.spliced)
     {
-        if ((match = matchT(align,
-                            t->eInters,
-                            t->eContains,
-                            t->eOverlaps,
-                            impl.chrT.lFPS,
-                            impl.chrT.rFPS)))
-        {
-            o.logInfo((boost::format("Exon (match): %1% %2%") % align.id % match->id()).str());
-        }
+        match = matchT(align,
+                       t->eInters,
+                       t->eContains,
+                       t->eOverlaps,
+                       &(t->lFPS),
+                       &(t->rFPS));
     }
     else
     {
-        if ((match = matchT(align,
-                            t->iInters,
-                            t->iContains,
-                            t->iOverlaps)))
-        {
-            o.logInfo((boost::format("Intron (match): %1% %2%") % align.id % match->id()).str());
-        }
+        match = matchT(align,
+                       t->iInters,
+                       t->iContains,
+                       t->iOverlaps);
     }
 
-    if (!match)
+    return match;
+}
+
+/*
+ * Classify for the gencode. Note that the base statistics are not needed.
+ */
+
+static void classifyGen(std::shared_ptr<TAlign::Stats::Gencode> t,
+                        const Alignment &align,
+                        const ParserSAM::AlignmentInfo &info,
+                        const TAlign::Options &o)
+{
+    if (!align.mapped || align.id == Standard::chrT)
+    {
+        return;
+    }
+
+    if (!matchAlign(t, align))
+    {
+        t->unknowns.push_back(UnknownAlignment(align.qName, align.l));
+    }
+}
+
+/*
+ * Classify for the synthetic chromosome.
+ */
+
+static void classifyChrT(std::shared_ptr<TAlign::Stats::ChrT> t,
+                         const ParseImpl &impl,
+                         const Alignment &align,
+                         const ParserSAM::AlignmentInfo &info,
+                         const TAlign::Options &o)
+{
+    REPORT_STATUS();
+    
+    t->update(align);
+    
+    if (!align.mapped || align.id != Standard::chrT)
+    {
+        return;
+    }
+
+    if (!matchAlign(t, align))
     {
         t->unknowns.push_back(UnknownAlignment(align.qName, align.l));
         
         // We can't simply add it to statistics because we'll need to account for overlapping
-        impl.chrT.base->map(align.l);
+        impl.base->map(align.l);
     }
 }
 
@@ -456,8 +471,11 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         
         for (const auto &align : aligns)
         {
-            classify(SyntheticSrc,  impl.stats->chrT,  impl, align, info, o);
-            classify(ExperimentSrc, impl.stats->gcode, impl, align, info, o);
+            // Analyze for the synthetic chromosome
+            classifyChrT(impl.stats->chrT, impl, align, info, o);
+
+            // Analyze for the gencode
+            classifyGen(impl.stats->gcode, align, info, o);
         }
     });
 }
@@ -470,8 +488,11 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
-            classify(SyntheticSrc,  impl.stats->chrT,  impl, align, info, o);
-            classify(ExperimentSrc, impl.stats->gcode, impl, align, info, o);
+            // Analyze for the synthetic chromosome
+            classifyChrT(impl.stats->chrT,  impl, align, info, o);
+
+            // Analyze for the gencode
+            classifyGen(impl.stats->gcode, align, info, o);
         });
     });
 }

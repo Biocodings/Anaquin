@@ -9,7 +9,9 @@ namespace Anaquin
     class TAlign : public Analyzer
     {
         public:
+
             typedef AnalyzerOptions Options;
+            typedef std::map<GeneID, Base> FPStats;
 
             struct MergedConfusion
             {
@@ -100,9 +102,12 @@ namespace Anaquin
                      */
                     
                     std::set<Missing> missE, missI, missG;
+
+                    // False positives (left and right)
+                    FPStats lFPS, rFPS;
                 };
-                
-                struct Gencode : public AlignmentStats
+
+                struct Gencode
                 {
                     // Intervals for exons in TransQuin
                     Intervals<TransRef::ExonInterval> eInters;
@@ -115,8 +120,17 @@ namespace Anaquin
                     
                     BinCounts eContains, eOverlaps;
                     BinCounts iContains, iOverlaps;
+
+                    /*
+                     * Missing statistics
+                     */
+                    
+                    std::set<Missing> missE, missI, missG;
+
+                    // False positives (left and right)
+                    FPStats lFPS, rFPS;
                 };
-                
+
                 // Statistics for the synthetic chromosome
                 std::shared_ptr<ChrT> chrT;
 
