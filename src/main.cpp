@@ -111,6 +111,7 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
+#define OPT_R_GCODE 808
 
 #define OPT_U_BASE  900
 #define OPT_U_VCF   901
@@ -400,6 +401,7 @@ static const struct option long_options[] =
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
     { "rbed2",   required_argument, 0, OPT_R_BED_2 },
     { "rgtf",    required_argument, 0, OPT_R_GTF   },
+    { "rgcode",  required_argument, 0, OPT_R_GCODE },
 
     { "uvcf",    required_argument, 0, OPT_U_VCF  },
     { "ufa",     required_argument, 0, OPT_FA_1   },
@@ -510,7 +512,7 @@ static void readFilters(const FileName &file)
     // Empty Implementation
 }
 
-template <typename Mixture> void applyMix(Mixture mix)
+template <typename Mixture> void addMix(Mixture mix)
 {
     if (mixture().empty())
     {
@@ -539,6 +541,36 @@ template <typename Reference> void addRef(Source src, Reference ref)
         {
             addRef(src, ref, _p.opts[opt]);
             break;
+        }
+    }
+}
+
+/*
+ * This provideds a convenient function for adding reference annotations. Experimental annotations are also added if found.
+ */
+
+template <typename Reference> void addRef(Reference ref)
+{
+    for (const auto &i : _p.opts)
+    {
+        const auto opt = i.first;
+        
+        if (CHECK_REF(opt))
+        {
+            switch (opt)
+            {
+                case OPT_R_GCODE:
+                {
+                    addRef(ExperimentSrc, ref, _p.opts[opt]);
+                    break;
+                }
+
+                default:
+                {
+                    addRef(SyntheticSrc, ref, _p.opts[opt]);
+                    break;
+                }
+            }
         }
     }
 }
@@ -1005,15 +1037,14 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_T_COVERAGE:
                     {
-                        addRef(SyntheticSrc, std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
+                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
                         break;
                     }
-                        
 
                     default:
                     {
-                        applyMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
-                        addRef(SyntheticSrc, std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
+                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
                         break;
                     }
                 }
@@ -1113,14 +1144,14 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_F_NORMAL:
                 {
-                    applyMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
+                    addMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
                 }
 
                 case TOOL_F_DIFF:
                 {
-                    applyMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
+                    addMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addFRef,    &s, std::placeholders::_1), OPT_R_FUS);
                     applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
@@ -1134,7 +1165,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_F_ALIGN:
                 {
-                    applyMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
+                    addMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED_1);
                     break;
                 }
@@ -1143,7 +1174,7 @@ void parse(int argc, char ** argv)
                 case TOOL_F_DISCOVER:
                 {
                     applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
-                    applyMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
+                    addMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
                     break;
                 }
                     
@@ -1190,7 +1221,7 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
-            applyMix(std::bind(&Standard::addLMix, &s, std::placeholders::_1));
+            addMix(std::bind(&Standard::addLMix, &s, std::placeholders::_1));
             Standard::instance().r_lad.finalize();
 
             switch (_p.tool)
@@ -1241,7 +1272,7 @@ void parse(int argc, char ** argv)
                     default: { break; }
                 }
                 
-                applyMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+                addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                 Standard::instance().r_var.finalize();
             }
 
@@ -1293,7 +1324,7 @@ void parse(int argc, char ** argv)
 
                 if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF || _p.tool == TOOL_M_ALIGN)
                 {
-                    applyMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
+                    addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
                 }
                 
                 Standard::instance().r_meta.finalize();
