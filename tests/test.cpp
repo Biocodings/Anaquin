@@ -87,7 +87,7 @@ void Test::transAB()
 {
     Test::clear();
     Standard::instance().addTRef(SyntheticSrc, Reader(TransStandGTF(),  DataMode::String));
-    Standard::instance().addVMix(Reader(TransDataMixAB(), DataMode::String));
+    Standard::instance().addTMix(Reader(TransDataMixAB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 

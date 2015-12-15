@@ -44,7 +44,7 @@ TEST_CASE("TDiff_AllExpressed")
     }
     
     const auto r = TDiffs::analyze(tests, TDiffs::Options());
-    const auto stats = r.linear();
+    const auto stats = r.chrT->linear();
     
     REQUIRE(stats.r  == 1.0);
     REQUIRE(stats.m  == 1.0);
@@ -91,7 +91,7 @@ TEST_CASE("TDiff_NoneExpressed")
     }
     
     const auto r = TDiffs::analyze(tests, TDiffs::Options());
-    const auto stats = r.linear();
+    const auto stats = r.chrT->linear();
     
     REQUIRE(stats.r  == 1.0);
     REQUIRE(stats.m  == 1.0);
@@ -120,7 +120,7 @@ TEST_CASE("TDiff_NoSynthetic")
     }
     
     const auto r = TDiffs::analyze(tests, TDiffs::Options());
-    const auto stats = r.linear();
+    const auto stats = r.chrT->linear();
     
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));

@@ -28,7 +28,7 @@ namespace Anaquin
             RNALevel level;
         };
 
-        struct Stats : public LinearStats, public MappingStats
+        struct Stats
         {
             struct ChrT : public LinearStats, public MappingStats
             {
