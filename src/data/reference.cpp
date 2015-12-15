@@ -468,7 +468,7 @@ struct TransRef::TransRefImpl
                                                  % l.start
                                                  % l.end).str();
     }
-    
+
     struct ValidatedData
     {
         // Number of bases for all the reference exons
@@ -491,14 +491,10 @@ struct TransRef::TransRefImpl
     
     void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
     {
-        TransRef::ExonData e;
+        const auto exon = ExonData(iID, gID, l);
         
-        e.l   = l;
-        e.iID = iID;
-        e.gID = gID;
-        
-        raw.exonsByGenes[gID].push_back(e);
-        raw.exonsByTrans[iID].push_back(e);
+        raw.exonsByGenes[gID].push_back(exon);
+        raw.exonsByTrans[iID].push_back(exon);
         
         raw.rawIIDs.insert(iID);
         raw.rawGIDs.insert(gID);
@@ -513,10 +509,9 @@ struct TransRef::TransRefImpl
     ValidatedData cValid;
 
     /*
-     * Human Gencode
+     * Human Gencode (merging is unnecessary)
      */
 
-    RawData gRaw;
     ValidatedData gValid;
 };
 
@@ -539,8 +534,17 @@ void TransRef::addRef(Source src, const IsoformID &iID, const GeneID &gID, const
 {
     switch (src)
     {
-        case SyntheticSrc:  { _impl->addRef(iID, gID, l, _impl->cRaw); break; }
-        case ExperimentSrc: { _impl->addRef(iID, gID, l, _impl->gRaw); break; }
+        case SyntheticSrc:
+        {
+            _impl->addRef(iID, gID, l, _impl->cRaw);
+            break;
+        }
+
+        case ExperimentSrc:
+        {
+            _impl->gValid.sortedExons.push_back(ExonData(iID, gID, l));
+            break;
+        }
     }
 }
 
@@ -723,10 +727,10 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
         if (_data.count(i.first))
         {
             _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
-            {
-                return true;
-            });
-
+                                             {
+                                                 return true;
+                                             });
+            
             _impl->cValid.genes[_data[i.first].gID].id = _data[i.first].gID;
             _impl->cValid.genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
         }
@@ -777,55 +781,74 @@ void TransRef::validate()
     assert(!_impl->cValid.sortedExons.empty());
 
     /*
-     * Generate a list of sorted exons
+     * Generate the appropriate data-structure for analysis.
+     *
+     *   1. Sort the list of exons
+     *   2. Use the sorted exons to generate sorted introns
+     *   3. Count the number of non-overlapping bases for the exons
+     *
+     * These steps are shared for synthetic and experiments.
      */
     
-    std::sort(_impl->cValid.sortedExons.begin(), _impl->cValid.sortedExons.end(), [](const ExonData &x, const ExonData &y)
+    auto f = [&](std::vector<ExonData>   &exons,
+                 std::vector<IntronData> &introns,
+                 std::vector<ExonData>   &mergedExons,
+                 Base &bases)
     {
-        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-    });
-
-    /*
-     * Generate a list of sorted introns, only possible once the exons are sorted.
-     */
-    
-    std::map<SequinID, std::vector<const ExonData *>> sorted;
-
-    for (const auto &i : _impl->cValid.sortedExons)
-    {
-        sorted[i.iID].push_back(&i);
-    }
-
-    for (const auto &i : sorted)
-    {
-        for (auto j = 1; j < i.second.size(); j++)
+        // Sort the exons
+        std::sort(exons.begin(), exons.end(), [](const ExonData &x, const ExonData &y)
         {
-            const auto &x = i.second[j-1];
-            const auto &y = i.second[j];
-
-            IntronData d;
-
-            d.gID = x->gID;
-            d.iID = x->iID;
-            d.l   = Locus(x->l.end + 1, y->l.start - 1);
-
-            _impl->cValid.sortedIntrons.push_back(d);
+            return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
+        });
+        
+        /*
+         * Generate a list of sorted introns, only possible once the exons are sorted.
+         */
+        
+        std::map<SequinID, std::vector<const ExonData *>> sorted;
+        
+        for (const auto &i : exons)
+        {
+            sorted[i.iID].push_back(&i);
         }
-    }
-    
-    /*
-     * Generate a list of sorted introns
-     */
+        
+        for (const auto &i : sorted)
+        {
+            for (auto j = 1; j < i.second.size(); j++)
+            {
+                const auto &x = i.second[j-1];
+                const auto &y = i.second[j];
+                
+                IntronData d;
+                
+                d.gID = x->gID;
+                d.iID = x->iID;
+                d.l   = Locus(x->l.end + 1, y->l.start - 1);
 
-    std::sort(_impl->cValid.sortedIntrons.begin(), _impl->cValid.sortedIntrons.end(), [](const IntronData &x, const IntronData &y)
-    {
-        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-    });
+                introns.push_back(d);
+            }
+        }
+        
+        // Sort the introns
+        std::sort(introns.begin(), introns.end(), [](const IntronData &x, const IntronData &y)
+        {
+            return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
+        });
+        
+        assert(!introns.empty());
+        
+        // Count number of non-overlapping bases for all exons
+        bases = countLocus(mergedExons = Locus::merge<ExonData, ExonData>(exons));
+    };
     
-    assert(!_impl->cValid.sortedIntrons.empty());
+    // Do it for the synthetic chromosome
+    f(_impl->cValid.sortedExons,
+      _impl->cValid.sortedIntrons,
+      _impl->cValid.mergedExons,
+      _impl->cValid.exonBase);
 
-    // Count number of non-overlapping bases for all exons
-    _impl->cValid.exonBase = countLocus(_impl->cValid.mergedExons = Locus::merge<ExonData, ExonData>(_impl->cValid.sortedExons));
+    // Do it for the experiment
+    //f(...)
 }
 
 /*

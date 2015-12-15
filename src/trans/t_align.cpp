@@ -117,6 +117,9 @@ template <typename T> const T * matchT(const Alignment &align,
 
 TAlign::Stats calculate(const TAlign::Options &o, Functor f)
 {
+   // const auto abcd = Standard::instance().r_trans.
+    
+    
     TAlign::Stats stats = init();
     
     FPStats lFPS, rFPS;
@@ -137,9 +140,16 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     impl.base  = &base;
     impl.stats = &stats;
 
+    
+    
+    
     // It's the caller job to handle the parsing
     f(impl);
 
+    
+    
+    
+    
     assert(stats.chrT->overB.m.tp() == 0 && stats.chrT->overB.m.fp() == 0);
 
     /*
@@ -418,7 +428,7 @@ static void classify(TAlign::Stats &stats,
                      const TAlign::Options &o)
 {
     classify(stats.chrT, impl, align, info, o);
-    //classify(stats.gcode, impl, align, info, o);
+    classify(stats.gcode, impl, align, info, o);
 }
 
 TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Options &o)
