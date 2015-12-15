@@ -6,7 +6,7 @@
 
 using namespace Anaquin;
 
-FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Options &o)
+FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const Options &o)
 {
     FDiff::Stats stats;
     const auto &r = Standard::instance().r_fus;
@@ -23,15 +23,15 @@ FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Op
     
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        if (c.id == Standard::chrT) { stats.n_chrT++; }
-        else                        { stats.n_expT++; }
+        if (c.id == Standard::chrT) { stats.chrT->n_chrT++; }
+        else                        { stats.chrT->n_expT++; }
 
         const SequinData *match;
 
         if (c.id == Standard::chrT && (match = r.findSplice(c.l)))
         {
             normals[match->id] = c.unique;
-            stats.h.at(match->id)++;
+            stats.chrT->h.at(match->id)++;
         }
     });
 
@@ -46,15 +46,15 @@ FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Op
         switch (r.code)
         {
             case FClassify::Code::Genome:
-            case FClassify::Code::GenomeChrT: { stats.n_expT++; }
+            case FClassify::Code::GenomeChrT: { stats.chrT->n_expT++; }
             case FClassify::Code::Positive:
-            case FClassify::Code::Negative:   { stats.n_chrT++; }
+            case FClassify::Code::Negative:   { stats.chrT->n_chrT++; }
         }
         
         if (r.code == FClassify::Code::Positive)
         {
             fusions[r.match->id] = f.reads;
-            stats.h.at(r.match->id)++;
+            stats.chrT->h.at(r.match->id)++;
         }
     });
 
@@ -77,19 +77,19 @@ FDiff::Stats FDiff::stats(const FileName &chim, const FileName &splice, const Op
                 // Measured fold change between normal and fusion gene
                 const auto measured = static_cast<double>(i.second) / j.second;
                 
-                stats.add(i.first + " - " + j.first, expected->fold(), measured);
+                stats.chrT->add(i.first + " - " + j.first, expected->fold(), measured);
             }
         }
     }
 
-    stats.ss = Standard::instance().r_fus.limit(stats.h);
+    stats.chrT->ss = Standard::instance().r_fus.limit(stats.chrT->h);
 
     return stats;
 }
 
 void FDiff::report(const FileName &splice, const FileName &chim, const Options &o)
 {
-    const auto stats = FDiff::stats(splice, chim, o);
+    const auto stats = FDiff::analyze(splice, chim, o);
 
     /*
      * Generating summary statistics

@@ -15,7 +15,7 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
         // Empty Implementation
     });
 
-    stats.m.nr() = r.countVars();
+    stats.chrT->m.nr() = r.countVars();
 
     o.info("Generating summary statistics");
 
@@ -34,13 +34,13 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
 
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % file
-                                            % stats.n_expT
-                                            % stats.n_chrT
+                                            % stats.chrT->n_expT
+                                            % stats.chrT->n_chrT
                                             % r.countVars()
-                                            % stats.m.tp()
-                                            % (stats.n_chrT - stats.m.tp())
-                                            % stats.m.sn()
-                                            % stats.m.ac()).str());
+                                            % stats.chrT->m.tp()
+                                            % (stats.chrT->n_chrT - stats.chrT->m.tp())
+                                            % stats.chrT->m.sn()
+                                            % stats.chrT->m.ac()).str());
     o.writer->close();
 
     /*
@@ -53,9 +53,9 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
     const auto format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "id" % "detected").str());
 
-    for (const auto &i : stats.h)
+    for (const auto &i : stats.chrT->h)
     {
-        o.writer->write((boost::format(format) % i.first % stats.h.at(i.first)).str());
+        o.writer->write((boost::format(format) % i.first % stats.chrT->h.at(i.first)).str());
     }
     
     o.writer->close();

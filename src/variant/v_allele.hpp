@@ -9,18 +9,23 @@ namespace Anaquin
     {
         typedef FuzzyOptions Options;
 
-        struct Stats : public LinearStats, public MappingStats
+        struct Stats
         {
-            Limit ss;
+            struct ChrT : public LinearStats, public MappingStats
+            {
+                Limit ss;
+                
+                Confusion m;
+                
+                long detected;
+                
+                // Sensitivity
+                double sn;
+                
+                SequinHist h = Standard::instance().r_var.hist();
+            };
 
-            Confusion m;
-
-            long detected;
-            
-            // Sensitivity
-            double sn;
-
-            SequinHist h = Standard::instance().r_var.hist();
+            std::shared_ptr<ChrT> chrT;
         };
 
         static Stats report(const FileName &, const Options &o = Options());

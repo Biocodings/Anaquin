@@ -99,8 +99,8 @@ namespace Anaquin
             {
                 assert(!id.empty() && r.match(id));
                 
-                stats.n_chrT++;
-                stats.h.at(id)++;
+                stats.chrT->n_chrT++;
+                stats.chrT->h.at(id)++;
 
                 if (shouldMix)
                 {
@@ -115,7 +115,7 @@ namespace Anaquin
                     p.x = known;
                     p.y = measured;
 
-                    stats[id] = p;
+                    (*(stats.chrT))[id] = p;
                 }
             };
 
@@ -125,13 +125,13 @@ namespace Anaquin
             {
                 ParserStarFusion::parse(Reader(file), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
                 {
-                    const auto r = classifyFusion(f, stats.m, id, o);
+                    const auto r = classifyFusion(f, stats.chrT->m, id, o);
                     
                     switch (r)
                     {
                         case Code::Negative:   { break;                        }
-                        case Code::Genome:     { stats.n_expT++;        break; }
-                        case Code::GenomeChrT: { stats.hg38_chrT++;     break; }
+                        case Code::Genome:     { stats.chrT->n_expT++;        break; }
+                        case Code::GenomeChrT: { stats.chrT->hg38_chrT++;     break; }
                         case Code::Positive:   { positive(id, f.reads); break; }
                     }
                 });
@@ -140,13 +140,13 @@ namespace Anaquin
             {
                 ParserTopFusion::parse(Reader(file), [&](const ParserTopFusion::Fusion &f, const ParserProgress &)
                 {
-                    const auto r = classifyFusion(f, stats.m, id, o);
+                    const auto r = classifyFusion(f, stats.chrT->m, id, o);
                     
                     switch (r)
                     {
                         case Code::Negative:   { break;                        }
-                        case Code::Genome:     { stats.n_expT++;        break; }
-                        case Code::GenomeChrT: { stats.hg38_chrT++;     break; }
+                        case Code::Genome:     { stats.chrT->n_expT++;        break; }
+                        case Code::GenomeChrT: { stats.chrT->hg38_chrT++;     break; }
                         case Code::Positive:   { positive(id, f.reads); break; }
                     }
                 });
@@ -156,7 +156,7 @@ namespace Anaquin
              * Find out all the sequins undetected in the experiment
              */
 
-            o.info("Detected " + std::to_string(stats.h.size()) + " sequins in the reference");
+            o.info("Detected " + std::to_string(stats.chrT->h.size()) + " sequins in the reference");
             o.info("Checking for missing sequins");
             
 //            for (const auto &i : s.seqIDs)
@@ -188,13 +188,13 @@ namespace Anaquin
 //            }
 
             // The references are simply the known fusion points
-            stats.m.nr() = r.countFusion();
+            stats.chrT->m.nr() = r.countFusion();
 
             o.info("Calculating limit of sensitivity");
 
             if (shouldMix)
             {
-                stats.s = r.limit(stats.h);
+                stats.chrT->s = r.limit(stats.chrT->h);
             }
 
             return stats;

@@ -55,14 +55,14 @@ namespace Anaquin
         {
             if (v.id != Standard::chrT)
             {
-                stats.n_expT++;
+                stats.chrT->n_expT++;
                 return;
             }
             
-            stats.n_chrT++;
+            stats.chrT->n_chrT++;
             const Variation *match;
 
-            if (classify(stats.m, v, [&](const VCFVariant &)
+            if (classify(stats.chrT->m, v, [&](const VCFVariant &)
             {
                 const auto found = (match = r.findVar(v.l)) != nullptr;
                 const auto type  = (match && match->type == v.type);
@@ -84,7 +84,7 @@ namespace Anaquin
                 return Positive;
             }))
             {
-                stats.h.at(match->id)++;
+                stats.chrT->h.at(match->id)++;
             }
         });
         

@@ -9,15 +9,22 @@ namespace Anaquin
     {
         typedef FuzzyOptions Options;
 
-        struct Stats : public LinearStats, public FusionStats
+        struct Stats
         {
-            Limit ss;
+            struct ChrT : public LinearStats, public FusionStats
+            {
+                Limit ss;
+                
+                // Sequin distribution
+                SequinHist h = Standard::instance().r_fus.hist();;
+            };
 
-            // Sequin distribution
-            SequinHist h = Standard::instance().r_fus.hist();;
+            std::shared_ptr<ChrT> chrT;
         };
 
-        static Stats stats(const FileName &, const FileName &, const Options &o = Options());
+        // Analyze a single sample
+        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
+        
         static void report(const FileName &, const FileName &, const Options &o = Options());
     };
 }

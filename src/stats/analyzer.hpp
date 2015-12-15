@@ -89,12 +89,12 @@ namespace Anaquin
         // Total mapped to the experiment
         Counts n_expT = 0;
 
-        inline Percentage exp() const
+        inline Percentage expMap() const
         {
             return (n_chrT + n_expT) ? static_cast<double>(n_expT) / (n_chrT + n_expT) : NAN;
         }
         
-        inline Percentage chrT() const
+        inline Percentage chrTMap() const
         {
             return dilution();
         }
@@ -519,27 +519,27 @@ namespace Anaquin
                                  "   SSE:         %36%, DF: %37%\n"
                                  "   SST:         %38%, DF: %39%\n";
 
-            const auto n_lm = s.linear(false);
-            const auto l_lm = s.linear(true);
+            const auto n_lm = s.chrT->linear(false);
+            const auto l_lm = s.chrT->linear(true);
             
             writer->open(f);
             writer->write((boost::format(summary) % d1                          // 1
                                                   % d2
                                                   % (samples.empty() ? "Genome" : samples)
-                                                  % s1.n_expT
+                                                  % s1.chrT->n_expT
                                                   % units
-                                                  % s1.n_chrT
-                                                  % s2.n_expT
-                                                  % s2.n_chrT
-                                                  % s1.h.size()
+                                                  % s1.chrT->n_chrT
+                                                  % s2.chrT->n_expT
+                                                  % s2.chrT->n_chrT
+                                                  % s1.chrT->h.size()
                                                   % (ref.empty() ? units : ref) // 10
-                                                  % s2.h.size()
-                                                  % detect(s1.h)                // 12
-                                                  % detect(s2.h)                // 13
-                                                  % s1.ss.abund                 // 14
-                                                  % s1.ss.id                    // 15
-                                                  % s2.ss.abund                 // 16
-                                                  % s2.ss.id                    // 17
+                                                  % s2.chrT->h.size()
+                                                  % detect(s1.chrT->h)                // 12
+                                                  % detect(s2.chrT->h)                // 13
+                                                  % s1.chrT->ss.abund                 // 14
+                                                  % s1.chrT->ss.id                    // 15
+                                                  % s2.chrT->ss.abund                 // 16
+                                                  % s2.chrT->ss.id                    // 17
                                                   % n_lm.r                      // 18
                                                   % n_lm.m
                                                   % n_lm.r2
@@ -571,12 +571,12 @@ namespace Anaquin
          */
 
         template <typename Writer, typename Stats> static void linear
-                        (const FileName &file,
-                         const FileName &data,
-                         const Stats &stats,
-                         const Units &units,
-                         Writer writer,
-                         const Units &ref = "")
+                            (const FileName &file,
+                             const FileName &data,
+                             const Stats &stats,
+                             const Units &units,
+                             Writer writer,
+                             const Units &ref = "")
         {
             const auto summary = "Summary for dataset: %1%\n\n"
                                  "   Experiment:  %2% %4%\n"
@@ -613,18 +613,18 @@ namespace Anaquin
 
             writer->open(file);
             
-            if (stats.empty())
+            if (stats.chrT->empty())
             {
                 writer->write((boost::format(summary) % data                         // 1
-                                                      % stats.n_expT
-                                                      % stats.n_chrT
+                                                      % stats.chrT->n_expT
+                                                      % stats.chrT->n_chrT
                                                       % units
-                                                      % stats.h.size()               // 5
+                                                      % stats.chrT->h.size()         // 5
                                                       % (ref.empty() ? units : ref)
                                                       % "-"
                                                       % "-"
-                                                      % detect(stats.h)
-                                                      % "-"                        // 10
+                                                      % detect(stats.chrT->h)
+                                                      % "-"                          // 10
                                                       % "-"
                                                       % "-"
                                                       % "-"
@@ -636,7 +636,7 @@ namespace Anaquin
                                                       % "-"
                                                       % "-"
                                                       % "-"
-                                                      % "-"                        // 22
+                                                      % "-"                          // 22
                                                       % "-"
                                                       % "-"
                                                       % "-"
@@ -650,19 +650,19 @@ namespace Anaquin
             }
             else
             {
-                const auto n_lm = stats.linear(false);
-                const auto l_lm = stats.linear(true);
+                const auto n_lm = stats.chrT->linear(false);
+                const auto l_lm = stats.chrT->linear(true);
 
                 writer->write((boost::format(summary) % data                         // 1
-                                                      % stats.n_expT
-                                                      % stats.n_chrT
+                                                      % stats.chrT->n_expT
+                                                      % stats.chrT->n_chrT
                                                       % units
-                                                      % stats.h.size()               // 5
+                                                      % stats.chrT->h.size()         // 5
                                                       % (ref.empty() ? units : ref)
-                                                      % stats.ss.abund
-                                                      % stats.ss.id
-                                                      % detect(stats.h)
-                                                      % n_lm.r                        // 10
+                                                      % stats.chrT->ss.abund
+                                                      % stats.chrT->ss.id
+                                                      % detect(stats.chrT->h)
+                                                      % n_lm.r                       // 10
                                                       % n_lm.m
                                                       % n_lm.r2
                                                       % n_lm.f
@@ -674,7 +674,7 @@ namespace Anaquin
                                                       % n_lm.sst
                                                       % n_lm.sst_df
                                                       % l_lm.r
-                                                      % l_lm.m                        // 22
+                                                      % l_lm.m                       // 22
                                                       % l_lm.r2
                                                       % l_lm.f
                                                       % l_lm.p
@@ -762,7 +762,7 @@ namespace Anaquin
              * Ignore any invalid value...
              */
 
-            for (const auto &p : stats)
+            for (const auto &p : *(stats.chrT))
             {
                 if (!isnan(p.second.x) && !isnan(p.second.y))
                 {
@@ -777,7 +777,7 @@ namespace Anaquin
              */
 
             writer->open(prefix + "_plot.R");
-            writer->write(RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.s.abund));
+            writer->write(RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.chrT->s.abund));
             writer->close();
 
             /*

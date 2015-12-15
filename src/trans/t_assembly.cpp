@@ -131,6 +131,8 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     TAssembly::Stats stats;
     const auto &r = Standard::instance().r_trans;
     
+    stats.chrT = std::shared_ptr<TAssembly::Stats::ChrT>(new TAssembly::Stats::ChrT());
+    
     std::vector<Feature> q_exons;
     std::map<SequinID, std::vector<Feature>> q_exons_;
     
@@ -147,11 +149,11 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         
         if (f.id != Standard::chrT)
         {
-            stats.n_expT++;
+            stats.chrT->n_expT++;
             return;
         }
         
-        stats.n_chrT++;
+        stats.chrT->n_chrT++;
         
         switch (f.type)
         {
@@ -167,7 +169,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
                     return (match = r.findExon(f.l, Exact));
                 }))
                 {
-                    stats.he.at(match->iID)++;
+                    stats.chrT->he.at(match->iID)++;
                 }
                 
                 break;
@@ -182,7 +184,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
                     return (match = r.match(f.l, Overlap));
                 }))
                 {
-                    stats.ht.at(match->id)++;
+                    stats.chrT->ht.at(match->id)++;
                 }
                 
                 break;
@@ -218,7 +220,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
             return (match  = r.findIntron(i.l, Exact));
         }))
         {
-            stats.hi.at(match->iID)++;
+            stats.chrT->hi.at(match->iID)++;
         }
     });
     
@@ -226,7 +228,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
      * The counts for query bases is the total non-overlapping bases of all the exons in the experiment.
      */
     
-    countBase(r.mergedExons(), q_exons, t, stats.hb);
+    countBase(r.mergedExons(), q_exons, t, stats.chrT->hb);
     
     /*
      * Calculate for detection limit
@@ -234,19 +236,19 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     
     o.info("Calculating limit of detection");
     
-    stats.se = r.limit(stats.he);
-    stats.st = r.limit(stats.ht);
-    stats.sb = r.limitGene(stats.hb);
-    stats.si = r.limit(stats.hi);
+    stats.chrT->se = r.limit(stats.chrT->he);
+    stats.chrT->st = r.limit(stats.chrT->ht);
+    stats.chrT->sb = r.limitGene(stats.chrT->hb);
+    stats.chrT->si = r.limit(stats.chrT->hi);
     
-    stats.exonSN   = std::min(__cmp__.e_sn / 100.0, 1.0);
-    stats.exonSP   = std::min(__cmp__.e_sp / 100.0, 1.0);
-    stats.baseSN   = std::min(__cmp__.b_sn / 100.0, 1.0);
-    stats.baseSP   = std::min(__cmp__.b_sp / 100.0, 1.0);
-    stats.transSN  = std::min(__cmp__.t_sn / 100.0, 1.0);
-    stats.transSP  = std::min(__cmp__.t_sp / 100.0, 1.0);
-    stats.intronSN = std::min(__cmp__.i_sn / 100.0, 1.0);
-    stats.intronSP = std::min(__cmp__.i_sp / 100.0, 1.0);
+    stats.chrT->exonSN   = std::min(__cmp__.e_sn / 100.0, 1.0);
+    stats.chrT->exonSP   = std::min(__cmp__.e_sp / 100.0, 1.0);
+    stats.chrT->baseSN   = std::min(__cmp__.b_sn / 100.0, 1.0);
+    stats.chrT->baseSP   = std::min(__cmp__.b_sp / 100.0, 1.0);
+    stats.chrT->transSN  = std::min(__cmp__.t_sn / 100.0, 1.0);
+    stats.chrT->transSP  = std::min(__cmp__.t_sp / 100.0, 1.0);
+    stats.chrT->intronSN = std::min(__cmp__.i_sn / 100.0, 1.0);
+    stats.chrT->intronSP = std::min(__cmp__.i_sp / 100.0, 1.0);
     
     return stats;
 }
@@ -257,26 +259,26 @@ static void writeSummary(const FileName &file, const FileName &src, const TAssem
 
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % file
-                                              % stats.n_expT
-                                              % stats.n_chrT
+                                              % stats.chrT->n_expT
+                                              % stats.chrT->n_chrT
                                               % r.data().size()
                                               % r.countSortedIntrons()
                                               % (__cmp__.e_sn  / 100.0) // 6
                                               % (__cmp__.e_fsn / 100.0)
                                               % (__cmp__.e_sp  / 100.0)
                                               % (__cmp__.e_fsp / 100.0)
-                                              % (stats.se.id.empty() ? "-" : std::to_string(stats.se.abund))
-                                              %  stats.se.id
+                                              % (stats.chrT->se.id.empty() ? "-" : std::to_string(stats.chrT->se.abund))
+                                              %  stats.chrT->se.id
                                               % (__cmp__.i_sn  / 100.0) // 12
                                               % (__cmp__.i_fsn / 100.0)
                                               % (__cmp__.i_sp  / 100.0)
                                               % (__cmp__.i_fsp / 100.0)
-                                              % (stats.si.id.empty() ? "-" : std::to_string(stats.si.abund))
-                                              %  stats.si.id
+                                              % (stats.chrT->si.id.empty() ? "-" : std::to_string(stats.chrT->si.abund))
+                                              %  stats.chrT->si.id
                                               % (__cmp__.b_sn / 100.0) // 18
                                               % (__cmp__.b_sp / 100.0)
-                                              % (stats.sb.id.empty() ? "-" : std::to_string(stats.sb.abund)) // 20
-                                              %  stats.sb.id
+                                              % (stats.chrT->sb.id.empty() ? "-" : std::to_string(stats.chrT->sb.abund)) // 20
+                                              %  stats.chrT->sb.id
                                               % (__cmp__.t_sn  / 100.0)
                                               % (__cmp__.t_fsn / 100.0)
                                               % (__cmp__.t_sp  / 100.0)
@@ -308,12 +310,12 @@ static void writeSequins(const FileName &file, const FileName &src, const TAssem
     auto format = "%1%\t%2%\t%3%\t%4%";
     o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());
     
-    for (const auto &i : stats.he)
+    for (const auto &i : stats.chrT->he)
     {
         o.writer->write((boost::format(format) % i.first
-                                               % stats.he.at(i.first)
-                                               % stats.hi.at(i.first)
-                                               % stats.ht.at(i.first)).str());
+                                               % stats.chrT->he.at(i.first)
+                                               % stats.chrT->hi.at(i.first)
+                                               % stats.chrT->ht.at(i.first)).str());
     }
 
     /*

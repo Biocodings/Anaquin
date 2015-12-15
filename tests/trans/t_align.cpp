@@ -33,16 +33,16 @@ TEST_CASE("TAlign_R2_33_1")
     
     const auto r = TAlign::analyze(aligns);
     
-    REQUIRE(r.unknowns.size() == 0);
+    REQUIRE(r.chrT->unknowns.size() == 0);
     
-    REQUIRE(r.overB.h.size() == 76);
-    REQUIRE(r.histE.size()   == 76);
-    REQUIRE(r.histI.size()   == 76);
+    REQUIRE(r.chrT->overB.h.size() == 76);
+    REQUIRE(r.chrT->histE.size()   == 76);
+    REQUIRE(r.chrT->histI.size()   == 76);
     
     Base sums = 0;
     Base mapped = 0;
     
-    for (const auto &i : r.eInters.data())
+    for (const auto &i : r.chrT->eInters.data())
     {
         if (i.first != "R2_33_R2_33_1_3621204_3621284" && i.first != "R2_33_R2_33_1_3625759_3625960")
         {
@@ -59,8 +59,8 @@ TEST_CASE("TAlign_R2_33_1")
     
     const auto covered = static_cast<double>(mapped) / sums;
     
-    const auto se = r.eInters.stats();
-    const auto si = r.iInters.stats();
+    const auto se = r.chrT->eInters.stats();
+    const auto si = r.chrT->iInters.stats();
     
     REQUIRE(se.covered() == Approx(covered));
     REQUIRE(se.covered() == Approx(0.0012972368));
@@ -73,19 +73,19 @@ TEST_CASE("TAlign_R2_33_1")
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0012972368));
     REQUIRE(r.pc(TAlign::Stats::AlignMetrics::AlignBase) == Approx(1.0));
 
-    REQUIRE(r.overB.m.nr() == 218156);
-    REQUIRE(r.overB.m.tp() == mapped);
-    REQUIRE(r.overB.m.tp() == 283);
-    REQUIRE(r.overB.m.fp() == 0);
-    REQUIRE(r.overB.m.fn() == 217873);
-    REQUIRE(r.overB.m.nq() == 283);
+    REQUIRE(r.chrT->overB.m.nr() == 218156);
+    REQUIRE(r.chrT->overB.m.tp() == mapped);
+    REQUIRE(r.chrT->overB.m.tp() == 283);
+    REQUIRE(r.chrT->overB.m.fp() == 0);
+    REQUIRE(r.chrT->overB.m.fn() == 217873);
+    REQUIRE(r.chrT->overB.m.nq() == 283);
     
-    for (auto &i : r.histI)
+    for (auto &i : r.chrT->histI)
     {
         REQUIRE(i.second == 0);
     }
     
-    for (auto &i : r.geneE)
+    for (auto &i : r.chrT->geneE)
     {
         REQUIRE(i.second.lNR);
         
@@ -110,7 +110,7 @@ TEST_CASE("TAlign_R2_33_1")
         }
     }
     
-    for (auto &i : r.geneI)
+    for (auto &i : r.chrT->geneI)
     {
         if (i.second.lNR)
         {
@@ -132,7 +132,7 @@ TEST_CASE("TAlign_R2_33_1")
         }
     }
     
-    for (auto &i : r.geneB)
+    for (auto &i : r.chrT->geneB)
     {
         if (i.first == "R2_33")
         {
@@ -183,58 +183,58 @@ TEST_CASE("TAlign_All_FalsePositives")
     
     const auto r = TAlign::analyze(aligns);
     
-    REQUIRE(r.unknowns.size() == 100);
+    REQUIRE(r.chrT->unknowns.size() == 100);
     
     /*
      * There're 76 genes, remember TransAlign does everything at the gene level to avoid
      * the complications due to alternative splicing.
      */
     
-    REQUIRE(r.overB.h.size() == 76);
-    REQUIRE(r.histE.size() == 76);
-    REQUIRE(r.histI.size() == 76);
+    REQUIRE(r.chrT->overB.h.size() == 76);
+    REQUIRE(r.chrT->histE.size() == 76);
+    REQUIRE(r.chrT->histI.size() == 76);
     
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::AlignExon) == 0);
     REQUIRE(r.pc(TAlign::Stats::AlignMetrics::AlignExon) == 0);
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::AlignIntron) == 0);
     REQUIRE(isnan(r.pc(TAlign::Stats::AlignMetrics::AlignIntron)));
     
-    REQUIRE(r.overB.m.sn() == 0);
-    REQUIRE(isnan(r.overB.m.ac()));
-    REQUIRE(r.overB.m.nr() == 218156);
-    REQUIRE(r.overB.m.nq() == 0);
-    REQUIRE(r.overB.m.tp() == 0);
-    REQUIRE(r.overB.m.fp() == 0);
-    REQUIRE(r.overB.m.fn() == 218156);
+    REQUIRE(r.chrT->overB.m.sn() == 0);
+    REQUIRE(isnan(r.chrT->overB.m.ac()));
+    REQUIRE(r.chrT->overB.m.nr() == 218156);
+    REQUIRE(r.chrT->overB.m.nq() == 0);
+    REQUIRE(r.chrT->overB.m.tp() == 0);
+    REQUIRE(r.chrT->overB.m.fp() == 0);
+    REQUIRE(r.chrT->overB.m.fn() == 218156);
 
-    REQUIRE(r.overE.aTP   == 0);
-    REQUIRE(r.overE.aFP   == 100);
-    REQUIRE(r.overE.aNQ() == 100);
-    REQUIRE(r.overE.lTP   == 0);
-    REQUIRE(r.overE.lNR   == 1190);
-    REQUIRE(r.overE.lFN() == 1190);
+    REQUIRE(r.chrT->overE.aTP   == 0);
+    REQUIRE(r.chrT->overE.aFP   == 100);
+    REQUIRE(r.chrT->overE.aNQ() == 100);
+    REQUIRE(r.chrT->overE.lTP   == 0);
+    REQUIRE(r.chrT->overE.lNR   == 1190);
+    REQUIRE(r.chrT->overE.lFN() == 1190);
     
-    REQUIRE(r.overI.aTP   == 0);
-    REQUIRE(r.overI.aFP   == 0);
-    REQUIRE(r.overI.aNQ() == 0);
-    REQUIRE(r.overI.lTP   == 0);
-    REQUIRE(r.overI.lNR   == 1028);
-    REQUIRE(r.overI.lFN() == 1028);
+    REQUIRE(r.chrT->overI.aTP   == 0);
+    REQUIRE(r.chrT->overI.aFP   == 0);
+    REQUIRE(r.chrT->overI.aNQ() == 0);
+    REQUIRE(r.chrT->overI.lTP   == 0);
+    REQUIRE(r.chrT->overI.lNR   == 1028);
+    REQUIRE(r.chrT->overI.lFN() == 1028);
 
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::AlignBase) == 0);
     REQUIRE(r.pc(TAlign::Stats::AlignMetrics::AlignExon) == 0);
-    REQUIRE(r.overB.m.nr() == 218156);
-    REQUIRE(r.overB.m.nq() == 0);
-    REQUIRE(r.overB.m.tp() == 0);
-    REQUIRE(r.overB.m.fp() == 0);
-    REQUIRE(r.overB.m.fn() == 218156);
+    REQUIRE(r.chrT->overB.m.nr() == 218156);
+    REQUIRE(r.chrT->overB.m.nq() == 0);
+    REQUIRE(r.chrT->overB.m.tp() == 0);
+    REQUIRE(r.chrT->overB.m.fp() == 0);
+    REQUIRE(r.chrT->overB.m.fn() == 218156);
     
-    for (auto &i : r.histI)
+    for (auto &i : r.chrT->histI)
     {
         REQUIRE(i.second == 0);
     }
     
-    for (auto &i : r.geneE)
+    for (auto &i : r.chrT->geneE)
     {
         REQUIRE(i.second.lNR);
         REQUIRE(isnan(i.second.precise()));
@@ -245,7 +245,7 @@ TEST_CASE("TAlign_All_FalsePositives")
         REQUIRE(i.second.lTP   == 0);
     }
     
-    for (auto &i : r.geneI)
+    for (auto &i : r.chrT->geneI)
     {
         if (i.second.lNR)
         {
@@ -267,7 +267,7 @@ TEST_CASE("TAlign_All_FalsePositives")
         }
     }
     
-    for (auto &i : r.geneB)
+    for (auto &i : r.chrT->geneB)
     {
         REQUIRE(i.second.sn() == 0);
         REQUIRE(isnan(i.second.ac()));
@@ -304,14 +304,14 @@ TEST_CASE("TAlign_All_AllRepeats")
     }
     
     const auto r  = TAlign::analyze(aligns);
-    const auto se = r.eInters.stats();
-    const auto si = r.iInters.stats();
+    const auto se = r.chrT->eInters.stats();
+    const auto si = r.chrT->iInters.stats();
     
-    REQUIRE(r.unknowns.size() == 0);
+    REQUIRE(r.chrT->unknowns.size() == 0);
     
-    REQUIRE(r.overB.h.size()  == 76);
-    REQUIRE(r.histE.size() == 76);
-    REQUIRE(r.histI.size() == 76);
+    REQUIRE(r.chrT->overB.h.size()  == 76);
+    REQUIRE(r.chrT->histE.size() == 76);
+    REQUIRE(r.chrT->histI.size() == 76);
     
     REQUIRE(se.covered() == Approx(0.0000458388));
     REQUIRE(si.covered() == 0.0);
@@ -325,32 +325,32 @@ TEST_CASE("TAlign_All_AllRepeats")
     
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0000504226));
     REQUIRE(r.pc(TAlign::Stats::AlignMetrics::AlignBase) == 1.0);
-    REQUIRE(r.overB.m.nr() == 218156);
-    REQUIRE(r.overB.m.nq() == 10);
-    REQUIRE(r.overB.m.tp() == 10);
-    REQUIRE(r.overB.m.fp() == 0);
-    REQUIRE(r.overB.m.fn() == 218146);
+    REQUIRE(r.chrT->overB.m.nr() == 218156);
+    REQUIRE(r.chrT->overB.m.nq() == 10);
+    REQUIRE(r.chrT->overB.m.tp() == 10);
+    REQUIRE(r.chrT->overB.m.fp() == 0);
+    REQUIRE(r.chrT->overB.m.fn() == 218146);
     
     REQUIRE(r.pc(TAlign::Stats::AlignMetrics::AlignExon) == 1.0);
-    REQUIRE(r.overE.aTP   == 200);
-    REQUIRE(r.overE.aFP   == 0);
-    REQUIRE(r.overE.aNQ() == 200);
-    REQUIRE(r.overE.lTP   == 2);
-    REQUIRE(r.overE.lNR   == 1190);
-    REQUIRE(r.overE.lFN() == 1188);
+    REQUIRE(r.chrT->overE.aTP   == 200);
+    REQUIRE(r.chrT->overE.aFP   == 0);
+    REQUIRE(r.chrT->overE.aNQ() == 200);
+    REQUIRE(r.chrT->overE.lTP   == 2);
+    REQUIRE(r.chrT->overE.lNR   == 1190);
+    REQUIRE(r.chrT->overE.lFN() == 1188);
     
     REQUIRE(isnan(r.pc(TAlign::Stats::AlignMetrics::AlignIntron)));
-    REQUIRE(r.overI.aTP   == 0);
-    REQUIRE(r.overI.aFP   == 0);
-    REQUIRE(r.overI.aNQ() == 0);
-    REQUIRE(r.overI.lTP   == 0);
-    REQUIRE(r.overI.lNR   == 1028);
-    REQUIRE(r.overI.lFN() == 1028);
+    REQUIRE(r.chrT->overI.aTP   == 0);
+    REQUIRE(r.chrT->overI.aFP   == 0);
+    REQUIRE(r.chrT->overI.aNQ() == 0);
+    REQUIRE(r.chrT->overI.lTP   == 0);
+    REQUIRE(r.chrT->overI.lNR   == 1028);
+    REQUIRE(r.chrT->overI.lFN() == 1028);
     
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::AlignExon)   == Approx(0.0016806723));
     REQUIRE(r.sn(TAlign::Stats::AlignMetrics::AlignIntron) == 0);
     
-    for (auto &i : r.histE)
+    for (auto &i : r.chrT->histE)
     {
         if (i.first == "R2_24")
         {
@@ -362,12 +362,12 @@ TEST_CASE("TAlign_All_AllRepeats")
         }
     }
     
-    for (auto &i : r.histI)
+    for (auto &i : r.chrT->histI)
     {
         REQUIRE(i.second == 0);
     }
     
-    for (auto &i : r.geneE)
+    for (auto &i : r.chrT->geneE)
     {
         REQUIRE(i.second.lNR);
         
@@ -393,7 +393,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         }
     }
     
-    for (auto &i : r.geneI)
+    for (auto &i : r.chrT->geneI)
     {
         if (i.second.lNR)
         {
@@ -415,7 +415,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         }
     }
     
-    for (auto &i : r.geneB)
+    for (auto &i : r.chrT->geneB)
     {
         if (i.first == "R2_24")
         {

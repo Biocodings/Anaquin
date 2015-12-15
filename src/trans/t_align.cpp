@@ -25,38 +25,40 @@ static TAlign::Stats init()
     
     TAlign::Stats stats;
 
+    stats.chrT = std::shared_ptr<TAlign::Stats::ChrT>(new TAlign::Stats::ChrT());
+    
     // Initalize the distributions
-    stats.overB.h = stats.histE = stats.histI = r.geneHist();
+    stats.chrT->overB.h = stats.chrT->histE = stats.chrT->histI = r.geneHist();
 
-    stats.eInters = r.exonInters();
-    stats.iInters = r.intronInters();
+    stats.chrT->eInters = r.exonInters();
+    stats.chrT->iInters = r.intronInters();
 
     // For each gene...
-    for (const auto &i : stats.overB.h)
+    for (const auto &i : stats.chrT->overB.h)
     {
-        stats.geneB[i.first];
-        stats.geneE[i.first];
-        stats.geneI[i.first];
+        stats.chrT->geneB[i.first];
+        stats.chrT->geneE[i.first];
+        stats.chrT->geneI[i.first];
     }
     
     // For each exon bin...
-    for (const auto &i : stats.eInters.data())
+    for (const auto &i : stats.chrT->eInters.data())
     {
-        stats.eContains[i.first];
-        stats.eOverlaps[i.first];
-        stats.exonToGene[i.second.id()] = i.second.gID;
+        stats.chrT->eContains[i.first];
+        stats.chrT->eOverlaps[i.first];
+        stats.chrT->exonToGene[i.second.id()] = i.second.gID;
     }
     
     // For each intron bin...
-    for (const auto &i : stats.iInters.data())
+    for (const auto &i : stats.chrT->iInters.data())
     {
-        stats.iContains[i.first];
-        stats.iOverlaps[i.first];
-        stats.intronToGene[i.second.id()] = i.second.gID;
+        stats.chrT->iContains[i.first];
+        stats.chrT->iOverlaps[i.first];
+        stats.chrT->intronToGene[i.second.id()] = i.second.gID;
     }
     
-    assert(!stats.eContains.empty() && !stats.eOverlaps.empty());
-    assert(!stats.iContains.empty() && !stats.iOverlaps.empty());
+    assert(!stats.chrT->eContains.empty() && !stats.chrT->eOverlaps.empty());
+    assert(!stats.chrT->iContains.empty() && !stats.chrT->iOverlaps.empty());
     
     return stats;
 }
@@ -119,7 +121,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     
     FPStats lFPS, rFPS;
     
-    for (const auto &i : stats.overB.h)
+    for (const auto &i : stats.chrT->overB.h)
     {
         lFPS[i.first];
         rFPS[i.first];
@@ -138,7 +140,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     // It's the caller job to handle the parsing
     f(impl);
 
-    assert(stats.overB.m.tp() == 0 && stats.overB.m.fp() == 0);
+    assert(stats.chrT->overB.m.tp() == 0 && stats.chrT->overB.m.fp() == 0);
 
     /*
      * 1. Calculating alignment statistics.
@@ -178,21 +180,21 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         over.aFP += unknowns;
     };
 
-    aligns(stats.geneE,
-           stats.overE,
-           stats.histE,
-           stats.unknowns.size(),
-           stats.eContains,
-           stats.eOverlaps,
-           stats.exonToGene);
+    aligns(stats.chrT->geneE,
+           stats.chrT->overE,
+           stats.chrT->histE,
+           stats.chrT->unknowns.size(),
+           stats.chrT->eContains,
+           stats.chrT->eOverlaps,
+           stats.chrT->exonToGene);
 
-    aligns(stats.geneI,
-           stats.overI,
-           stats.histI,
+    aligns(stats.chrT->geneI,
+           stats.chrT->overI,
+           stats.chrT->histI,
            0,
-           stats.iContains,
-           stats.iOverlaps,
-           stats.intronToGene);
+           stats.chrT->iContains,
+           stats.chrT->iOverlaps,
+           stats.chrT->intronToGene);
 
     /*
      * 2. Calculating statistics for each sequin (at the gene level due to alternative splicing)
@@ -236,8 +238,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         }
     };
     
-    genes(stats.geneE, stats.overE, stats.eContains, stats.eOverlaps, stats.exonToGene);
-    genes(stats.geneI, stats.overI, stats.iContains, stats.iOverlaps, stats.intronToGene);
+    genes(stats.chrT->geneE, stats.chrT->overE, stats.chrT->eContains, stats.chrT->eOverlaps, stats.chrT->exonToGene);
+    genes(stats.chrT->geneI, stats.chrT->overI, stats.chrT->iContains, stats.chrT->iOverlaps, stats.chrT->intronToGene);
     
     /*
      * 3. Calculating metrics at the base level.
@@ -245,9 +247,9 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
 
     o.info("Calculating base statistics");
 
-    for (const auto &i : stats.eInters.data())
+    for (const auto &i : stats.chrT->eInters.data())
     {
-        auto &m  = stats.geneB.at(i.second.gID);
+        auto &m  = stats.chrT->geneB.at(i.second.gID);
         auto &in = i.second;
         
         const auto &gID = i.second.gID;
@@ -256,7 +258,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         m.fp() = lFPS.at(gID) + rFPS.at(gID);
         
         // Update the FP at the overall level
-        stats.overB.m.fp() += m.fp();
+        stats.chrT->overB.m.fp() += m.fp();
         
         Base covered = 0;
         
@@ -268,10 +270,10 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
                 covered += j - i;
                 
                 // Update the overall performance
-                stats.overB.m.tp() += j - i;
+                stats.chrT->overB.m.tp() += j - i;
                             
                 // Update the distribution
-                stats.overB.h.at(gID)++;
+                stats.chrT->overB.h.at(gID)++;
             }
         });
 
@@ -281,12 +283,12 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         
         assert(m.nr() >= m.tp());
         
-        stats.overB.m.nr() += in.l().length();
-        stats.overB.m.nq()  = stats.overB.m.tp() + stats.overB.m.fp();
+        stats.chrT->overB.m.nr() += in.l().length();
+        stats.chrT->overB.m.nq()  = stats.chrT->overB.m.tp() + stats.chrT->overB.m.fp();
     }
 
-    o.info("Base (TP): " + std::to_string(stats.overB.m.tp()));
-    o.info("Base (FP): " + std::to_string(stats.overB.m.fp()));
+    o.info("Base (TP): " + std::to_string(stats.chrT->overB.m.tp()));
+    o.info("Base (FP): " + std::to_string(stats.chrT->overB.m.fp()));
 
     /*
      * Calculating detection limit
@@ -296,9 +298,9 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     
     const auto &r = Standard::instance().r_trans;
 
-    stats.limitE = r.limitGene(stats.histE);
-    stats.limitI = r.limitGene(stats.histI);
-    stats.overB.limit = r.limitGene(stats.overB.h);
+    stats.chrT->limitE = r.limitGene(stats.chrT->histE);
+    stats.chrT->limitI = r.limitGene(stats.chrT->histI);
+    stats.chrT->overB.limit = r.limitGene(stats.chrT->overB.h);
     
     /*
      * Calculating for missing statistics
@@ -319,22 +321,22 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
         };
         
         // An exon is missing if no alignment aligns to it
-        missing(stats.missE, stats.eContains);
+        missing(stats.chrT->missE, stats.chrT->eContains);
 
         // An intron is missing if no alignment aligns to it
-        missing(stats.missI, stats.iContains);
+        missing(stats.chrT->missI, stats.chrT->iContains);
         
         /*
          * A gene is considered missing if not all exons have alignment aligned to it
          */
         
-        for (const auto &gene : stats.histE)
+        for (const auto &gene : stats.chrT->histE)
         {
             bool missing = false;
             
-            for (const auto &bin : stats.eContains)
+            for (const auto &bin : stats.chrT->eContains)
             {
-                if (gene.first == stats.exonToGene.at(bin.first))
+                if (gene.first == stats.chrT->exonToGene.at(bin.first))
                 {
                     if ((missing = (bin.second == 0)))
                     {
@@ -345,7 +347,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
             
             if (missing)
             {
-                stats.missG.insert(Missing(gene.first));
+                stats.chrT->missG.insert(Missing(gene.first));
             }
         }
     }
@@ -357,7 +359,7 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
 {
     REPORT_STATUS();
     
-    impl.stats->update(align);
+    impl.stats->chrT->update(align);
     
     if (!align.mapped || align.id != Standard::chrT)
     {
@@ -369,9 +371,9 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
     if (!align.spliced)
     {
         if ((match = matchT(align,
-                            impl.stats->eInters,
-                            impl.stats->eContains,
-                            impl.stats->eOverlaps,
+                            impl.stats->chrT->eInters,
+                            impl.stats->chrT->eContains,
+                            impl.stats->chrT->eOverlaps,
                             impl.lFPS,
                             impl.rFPS)))
         {
@@ -381,9 +383,9 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
     else
     {
         if ((match = matchT(align,
-                            impl.stats->iInters,
-                            impl.stats->iContains,
-                            impl.stats->iOverlaps)))
+                            impl.stats->chrT->iInters,
+                            impl.stats->chrT->iContains,
+                            impl.stats->chrT->iOverlaps)))
         {
             o.logInfo((boost::format("Intron (match): %1% %2%") % align.id % match->id()).str());
         }
@@ -391,7 +393,7 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
 
     if (!match)
     {
-        impl.stats->unknowns.push_back(UnknownAlignment(align.qName, align.l));
+        impl.stats->chrT->unknowns.push_back(UnknownAlignment(align.qName, align.l));
         
         // We can't simply add it to statistics because we'll need to account for overlapping
         impl.base->map(align.l);
@@ -530,9 +532,9 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
     
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
-                                            % stats.unmapped
-                                            % stats.n_expT
-                                            % stats.n_chrT
+                                            % stats.chrT->unmapped
+                                            % stats.chrT->n_expT
+                                            % stats.chrT->n_chrT
                                             % r.countSortedExons()
                                             % r.countSortedIntrons()
                                             % r.exonBase()
@@ -541,19 +543,19 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
                                             % stats.qBases()
                                             % stats.sn(TAlign::Stats::AlignMetrics::AlignExon)
                                             % stats.pc(TAlign::Stats::AlignMetrics::AlignExon)
-                                            % stats.limitE.abund
-                                            % stats.limitE.id
+                                            % stats.chrT->limitE.abund
+                                            % stats.chrT->limitE.id
                                             % stats.sn(TAlign::Stats::AlignMetrics::AlignIntron)
                                             % stats.pc(TAlign::Stats::AlignMetrics::AlignIntron)
-                                            % stats.limitI.abund
-                                            % stats.limitI.id
+                                            % stats.chrT->limitI.abund
+                                            % stats.chrT->limitI.id
                                             % stats.sn(TAlign::Stats::AlignMetrics::AlignBase)
                                             % stats.pc(TAlign::Stats::AlignMetrics::AlignBase)
-                                            % stats.overB.limit.abund
-                                            % stats.overB.limit.id
-                                            % stats.dilution()
-                                            % (100.0 * stats.exp())
-                                            % (100.0 * stats.chrT())
+                                            % stats.chrT->overB.limit.abund
+                                            % stats.chrT->overB.limit.id
+                                            % stats.chrT->dilution()
+                                            % (100.0 * stats.chrT->expMap())
+                                            % (100.0 * stats.chrT->chrTMap())
                      ).str());
     o.writer->close();
 }
@@ -575,12 +577,12 @@ static void writeSequins(const TAlign::Stats &stats, const FileName &file, const
                                            % "Sensitivity (Base)"
                                            % "Specificity (Base)").str());
     
-    for (const auto &i : stats.overB.h)
+    for (const auto &i : stats.chrT->overB.h)
     {
         Base length   = 0;
         Base nonZeros = 0;
         
-        for (const auto &j : stats.eInters.data())
+        for (const auto &j : stats.chrT->eInters.data())
         {
             if (j.second.gID == i.first)
             {
@@ -595,9 +597,9 @@ static void writeSequins(const TAlign::Stats &stats, const FileName &file, const
         
         const auto covered = static_cast<double>(nonZeros) / length;
         
-        const auto &mb = stats.geneB.at(i.first);
-        const auto &me = stats.geneE.at(i.first);
-        const auto &mi = stats.geneI.at(i.first);
+        const auto &mb = stats.chrT->geneB.at(i.first);
+        const auto &me = stats.chrT->geneE.at(i.first);
+        const auto &mi = stats.chrT->geneI.at(i.first);
         
         // Not all sequins have an intron...
         if (mi.lNR)
@@ -661,24 +663,24 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     
     for (const auto &stat : stats)
     {
-        acc.add("Unmapped",       stat.unmapped);
-        acc.add("Experiment",     stat.n_expT);
-        acc.add("Synthetic",      stat.n_chrT);
+        acc.add("Unmapped",       stat.chrT->unmapped);
+        acc.add("Experiment",     stat.chrT->n_expT);
+        acc.add("Synthetic",      stat.chrT->n_chrT);
         acc.add("QExon",          stat.qExons());
         acc.add("QIntron",        stat.qIntrons());
         acc.add("QBase",          stat.qBases());
-        acc.add("Dilution",       stat.n_chrT);
+        acc.add("Dilution",       stat.chrT->n_chrT);
         acc.add("ExonSN",         stat.sn(TAlign::Stats::AlignMetrics::AlignExon));
         acc.add("ExonPC",         stat.pc(TAlign::Stats::AlignMetrics::AlignExon));
         acc.add("IntronSN",       stat.sn(TAlign::Stats::AlignMetrics::AlignIntron));
         acc.add("IntronPC",       stat.pc(TAlign::Stats::AlignMetrics::AlignIntron));
         acc.add("BaseSN",         stat.sn(TAlign::Stats::AlignMetrics::AlignBase));
         acc.add("BasePC",         stat.pc(TAlign::Stats::AlignMetrics::AlignBase));
-        acc.add("ExpPercent",     100.0 * stat.exp());
-        acc.add("ChrTPercent",    100.0 * stat.chrT());
-        acc.add("LimitE",         stat.limitE);
-        acc.add("LimitI",         stat.limitI);
-        acc.add("LimitB",         stat.overB.limit);
+        acc.add("ExpPercent",     100.0 * stat.chrT->expMap());
+        acc.add("ChrTPercent",    100.0 * stat.chrT->chrTMap());
+        acc.add("LimitE",         stat.chrT->limitE);
+        acc.add("LimitI",         stat.chrT->limitI);
+        acc.add("LimitB",         stat.chrT->overB.limit);
         acc.add("MissingExonI",   stat.missing(TAlign::Stats::MissingMetrics::MissingExon).i);
         acc.add("MissingExonP",   stat.missing(TAlign::Stats::MissingMetrics::MissingExon).percent());
         acc.add("MissingIntronI", stat.missing(TAlign::Stats::MissingMetrics::MissingIntron).i);

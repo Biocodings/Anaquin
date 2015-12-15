@@ -12,10 +12,10 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     assert(!o.pA.empty() && !o.pB.empty());
     
     o.info((boost::format("Analyzing: %1%") % o.pA).str());
-    stats.align_1 = MBlat::analyze(o.pA);
+    stats.chrT->align_1 = MBlat::analyze(o.pA);
 
     o.info((boost::format("Analyzing: %1%") % o.pB).str());
-    stats.align_2 = MBlat::analyze(o.pB);
+    stats.chrT->align_2 = MBlat::analyze(o.pB);
 
     /*
      * The implementation is very similar to a single sample. The only difference is that
@@ -23,10 +23,10 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
      */
     
     o.info((boost::format("Analyzing: %1%") % file_1).str());
-    const auto dStats_1 = Velvet::analyze<MAssembly::Stats, Contig>(file_1, &stats.align_1);
+    const auto dStats_1 = Velvet::analyze<MAssembly::Stats, Contig>(file_1, &stats.chrT->align_1);
 
     o.info((boost::format("Analyzing: %1%") % file_2).str());
-    const auto dStats_2 = Velvet::analyze<MAssembly::Stats, Contig>(file_2, &stats.align_2);
+    const auto dStats_2 = Velvet::analyze<MAssembly::Stats, Contig>(file_2, &stats.chrT->align_2);
 
     /*
      * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
@@ -44,11 +44,11 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     
     o.info("Analyzing for the first sample");
 
-    for (const auto &meta : stats.align_1.metas)
+    for (const auto &meta : stats.chrT->align_1.metas)
     {
         const auto &align = meta.second;
 
-        const auto p = MAbundance::calculate(stats, stats.align_1, dStats_1, align->id(), *meta.second, o, o.coverage);
+        const auto p = MAbundance::calculate(stats, stats.chrT->align_1, dStats_1, align->id(), *meta.second, o, o.coverage);
         y1[align->id()] = p.y;
     }
 
@@ -60,11 +60,11 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
 
     o.info("Analyzing for the second sample");
     
-    for (const auto &meta : stats.align_2.metas)
+    for (const auto &meta : stats.chrT->align_2.metas)
     {
         const auto &align = meta.second;
 
-        const auto p = MAbundance::calculate(stats, stats.align_2, dStats_2, align->id(), *meta.second, o, o.coverage);
+        const auto p = MAbundance::calculate(stats, stats.chrT->align_2, dStats_2, align->id(), *meta.second, o, o.coverage);
         y2[align->id()] = p.y;
     }
 
@@ -75,7 +75,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
      * detected in both samples.
      */
     
-    for (const auto &meta : stats.align_1.metas)
+    for (const auto &meta : stats.chrT->align_1.metas)
     {
         const auto &align = meta.second;
         
@@ -90,7 +90,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
                 // Ratio of the marginal concentration
                 const auto measured = y2.at(align->id()) / y1.at(align->id());
 
-                stats.add(align->id(), known, measured);
+                stats.chrT->add(align->id(), known, measured);
                 
                 SequinDiff d;
                 
@@ -102,17 +102,17 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
                 d.eFold = known;
                 d.mFold = measured;
 
-                stats.diffs.insert(d);
+                stats.chrT->diffs.insert(d);
             }
         }
     }
  
-    stats.n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
-    stats.n_expT = (dStats_1.n + dStats_2.n) - stats.n_chrT;
+    stats.chrT->n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
+    stats.chrT->n_expT = (dStats_1.n + dStats_2.n) - stats.chrT->n_chrT;
 
-    stats.ss = Standard::instance().r_meta.limit(stats.h);
+    stats.chrT->ss = Standard::instance().r_meta.limit(stats.chrT->h);
 
-    o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.size()).str());
+    o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.chrT->size()).str());
 
     /*
      * Generating differential comparisons for both samples
@@ -154,7 +154,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
                                                % "Expected Log-Fold"
                                                % "Measured Log-Fold").str());
 
-        for (const auto &diff : stats.diffs)
+        for (const auto &diff : stats.chrT->diffs)
         {
             o.writer->write((boost::format(format) % diff.id
                                                    % diff.e1

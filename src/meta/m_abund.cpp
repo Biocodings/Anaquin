@@ -27,29 +27,29 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
 
     switch (o.tool)
     {
-        case Velvet:  { stats.assembly = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
-        case RayMeta: { stats.assembly = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
+        case Velvet:  { stats.chrT->assembly = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
+        case RayMeta: { stats.chrT->assembly = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
     }
 
-    stats.blat = t;
+    stats.chrT->blat = t;
 
-    if (!stats.assembly.n)
+    if (!stats.chrT->assembly.n)
     {
         throw std::runtime_error("No contig detected in the input file. Please check and try again.");
     }
-    else if (stats.assembly.contigs.empty())
+    else if (stats.chrT->assembly.contigs.empty())
     {
         throw std::runtime_error("No contig aligned in the input file. Please check and try again.");
     }
 
-    stats.n_chrT = stats.assembly.contigs.size();
-    stats.n_expT = stats.assembly.n - stats.n_chrT;
+    stats.chrT->n_chrT = stats.chrT->assembly.contigs.size();
+    stats.chrT->n_expT = stats.chrT->assembly.n - stats.chrT->n_chrT;
 
     o.info("Analyzing the alignments");
 
     const auto &r = Standard::instance().r_meta;
 
-    for (auto &meta : stats.blat.metas)
+    for (auto &meta : stats.chrT->blat.metas)
     {
         auto &align = meta.second;
         
@@ -64,22 +64,22 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
          * concentration while still detectable in the experiment.
          */
 
-        if (stats.s.id.empty() || align->seq->abund(Mix_1, false) < stats.s.abund)
+        if (stats.chrT->s.id.empty() || align->seq->abund(Mix_1, false) < stats.chrT->s.abund)
         {
-            stats.s.id     = align->seq->id;
-            stats.s.abund  = align->seq->abund(Mix_1, false);
-            stats.s.counts = align->contigs.size();
+            stats.chrT->s.id     = align->seq->id;
+            stats.chrT->s.abund  = align->seq->abund(Mix_1, false);
+            stats.chrT->s.counts = align->contigs.size();
         }
         
-        const auto p = MAbundance::calculate(stats, stats.blat, stats.assembly, align->seq->id, *meta.second, o, o.coverage);
+        const auto p = MAbundance::calculate(stats, stats.chrT->blat, stats.chrT->assembly, align->seq->id, *meta.second, o, o.coverage);
         
         if (p.x && p.y)
         {
-            stats.add(align->seq->id, p.x, p.y);
+            stats.chrT->add(align->seq->id, p.x, p.y);
         }
     }
     
-    stats.ss = Standard::instance().r_meta.limit(stats.h);
+    stats.chrT->ss = Standard::instance().r_meta.limit(stats.chrT->h);
 
     return stats;
 }
@@ -116,11 +116,11 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
                                                % "Coverage"
                                                % "Normalized").str());
         
-        for (const auto &i : stats.blat.aligns)
+        for (const auto &i : stats.chrT->blat.aligns)
         {
-            if (stats.assembly.contigs.count(i.first))
+            if (stats.chrT->assembly.contigs.count(i.first))
             {
-                const auto &contig = stats.assembly.contigs.at(i.first);
+                const auto &contig = stats.chrT->assembly.contigs.at(i.first);
                 
                 o.writer->write((boost::format(format) % i.first
                                                        % i.second->id()

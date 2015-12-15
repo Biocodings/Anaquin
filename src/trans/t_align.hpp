@@ -41,7 +41,7 @@ namespace Anaquin
                 }
             };
 
-            struct Stats : public AlignmentStats
+            struct Stats
             {
                 enum AlignMetrics
                 {
@@ -57,68 +57,82 @@ namespace Anaquin
                     MissingGene
                 };
                 
-                std::map<ExonID,   GeneID> exonToGene;
-                std::map<IntronID, GeneID> intronToGene;
+                struct ChrT : public AlignmentStats
+                {
+                    std::map<ExonID,   GeneID> exonToGene;
+                    std::map<IntronID, GeneID> intronToGene;
+                    
+                    BinCounts eContains, eOverlaps;
+                    BinCounts iContains, iOverlaps;
+                    
+                    // Intervals for exons in TransQuin
+                    Intervals<TransRef::ExonInterval> eInters;
+                    
+                    // Intervals for introns in TransQuin
+                    Intervals<TransRef::IntronInterval> iInters;
+                    
+                    /*
+                     * Overall statistics
+                     */
+                    
+                    MergedConfusion overE, overI;
+                    
+                    // Overall performance at the base level
+                    Performance overB;
+                    
+                    Hist  histE,  histI;
+                    Limit limitE, limitI;
+                    
+                    /*
+                     * Individual statistics for each gene (due to alternative splicing)
+                     */
+                    
+                    std::map<GeneID, MergedConfusion> geneE, geneI;
+                    
+                    // Individual performance at the base level
+                    std::map<GeneID, Confusion> geneB;
+                    
+                    // Alignments that have no mapping
+                    std::vector<UnknownAlignment> unknowns;
+                    
+                    /*
+                     * Missing statistics
+                     */
+                    
+                    std::set<Missing> missE, missI, missG;
+                };
                 
-                BinCounts eContains, eOverlaps;
-                BinCounts iContains, iOverlaps;
+                struct Gencode : public AlignmentStats
+                {
+                    
+                };
+                
+                // Statistics for the synthetic chromosome
+                std::shared_ptr<ChrT> chrT;
 
-                // Intervals for exons in TransQuin
-                Intervals<TransRef::ExonInterval> eInters;
-                
-                // Intervals for introns in TransQuin
-                Intervals<TransRef::IntronInterval> iInters;
-
-                /*
-                 * Overall statistics
-                 */
-                
-                MergedConfusion overE, overI;
-
-                // Overall performance at the base level
-                Performance overB;
-                
-                Hist  histE,  histI;
-                Limit limitE, limitI;
-                
-                /*
-                 * Individual statistics for each gene (due to alternative splicing)
-                 */
-                
-                std::map<GeneID, MergedConfusion> geneE, geneI;
-                
-                // Individual performance at the base level
-                std::map<GeneID, Confusion> geneB;
-
-                // Alignments that have no mapping
-                std::vector<UnknownAlignment> unknowns;
-
-                /*
-                 * Missing statistics
-                 */
-
-                std::set<Missing> missE, missI, missG;
+                // Statistics for the gencode
+                std::shared_ptr<Gencode> gcode;
                 
                 /*
                  * Accessor functions
                  */
 
                 // Number of exons in the query
-                inline Counts qExons() const { return overE.aNQ(); }
+                inline Counts qExons() const { return chrT->overE.aNQ(); }
                 
                 // Number of introns in the query
-                inline Counts qIntrons() const { return overI.aNQ(); }
+                inline Counts qIntrons() const { return chrT->overI.aNQ(); }
 
                 // Number of bases in the query
-                inline Counts qBases() const { return overB.m.nq(); }
+                inline Counts qBases() const { return chrT->overB.m.nq(); }
 
                 inline CountPercent missing(enum MissingMetrics m) const
                 {
                     switch (m)
                     {
-                        case MissingGene:   { return CountPercent(missG.size(), histE.size());     }
-                        case MissingExon:   { return CountPercent(missE.size(), eContains.size()); }
-                        case MissingIntron: { return CountPercent(missI.size(), iContains.size()); }
+                        case MissingGene:   { return CountPercent(chrT->missG.size(), chrT->histE.size());     }
+                        case MissingExon:   { return CountPercent(chrT->missE.size(), chrT->eContains.size()); }
+                        case MissingIntron: { return CountPercent(chrT->missI.size(), chrT->iContains.size()); }
                     }
                 }
 
@@ -127,16 +141,16 @@ namespace Anaquin
                 {
                     switch (m)
                     {
-                        case AlignExon:   { return overE.sn();   }
-                        case AlignBase:   { return overB.m.sn(); }
-                        case AlignIntron: { return overI.sn();   }
+                        case AlignExon:   { return chrT->overE.sn();   }
+                        case AlignBase:   { return chrT->overB.m.sn(); }
+                        case AlignIntron: { return chrT->overI.sn();   }
                     }
                 }
                 
                 // Sensitivity at the gene level
                 inline double sn(const GeneID &id) const
                 {
-                    return geneE.at(id).sn();
+                    return chrT->geneE.at(id).sn();
                 }
                 
                 // Overall precision
@@ -144,9 +158,9 @@ namespace Anaquin
                 {
                     switch (m)
                     {
-                        case AlignExon:   { return overE.precise(); }
-                        case AlignBase:   { return overB.m.ac();    }
-                        case AlignIntron: { return overI.precise(); }
+                        case AlignExon:   { return chrT->overE.precise(); }
+                        case AlignBase:   { return chrT->overB.m.ac();    }
+                        case AlignIntron: { return chrT->overI.precise(); }
                     }
                 }
             };

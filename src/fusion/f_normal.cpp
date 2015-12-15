@@ -3,15 +3,15 @@
 
 using namespace Anaquin;
 
-FNormal::Stats FNormal::stats(const FileName &splice, const Options &o)
+FNormal::Stats FNormal::analyze(const FileName &splice, const Options &o)
 {
     FNormal::Stats stats;
     const auto &r = Standard::instance().r_fus;
 
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        if (c.id == Standard::chrT) { stats.n_chrT++; }
-        else                        { stats.n_expT++; }
+        if (c.id == Standard::chrT) { stats.chrT->n_chrT++; }
+        else                        { stats.chrT->n_expT++; }
         
         const SequinData *match;
  
@@ -20,19 +20,19 @@ FNormal::Stats FNormal::stats(const FileName &splice, const Options &o)
             const auto expected = match->mixes.at(Mix_1);
             const auto measured = c.unique;
 
-            stats.add(match->id, expected, measured);
-            stats.h.at(match->id)++;
+            stats.chrT->add(match->id, expected, measured);
+            stats.chrT->h.at(match->id)++;
         }
     });
 
-    stats.ss = Standard::instance().r_fus.limit(stats.h);
+    stats.chrT->ss = Standard::instance().r_fus.limit(stats.chrT->h);
     
     return stats;
 }
 
 void FNormal::report(const FileName &file, const Options &o)
 {
-    const auto stats = FNormal::stats(file, o);
+    const auto stats = FNormal::analyze(file, o);
 
     /*
      * Generating summary statistics

@@ -29,7 +29,7 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
                                                            % match->l.start
                                                            % match->alt).str();
 
-        stats.h.at(match->id)++;
+        stats.chrT->h.at(match->id)++;
 
         // TODO: How to handle a case where variant is reported but with zero counts?
         if (v.dp_a == 0)
@@ -37,11 +37,11 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
             return;
         }
 
-        stats.add(id, known, measured);
+        stats.chrT->add(id, known, measured);
     });
  
-    stats.ss = r.limit(stats.h);
-    stats.sn = static_cast<double>(stats.detected) / r.countVars();
+    stats.chrT->ss = r.limit(stats.chrT->h);
+    stats.chrT->sn = static_cast<double>(stats.chrT->detected) / r.countVars();
     
     /*
      * Generate summary statistics

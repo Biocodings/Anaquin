@@ -10,11 +10,11 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
 {
     if (t.cID != Standard::chrT)
     {
-        stats.n_expT++;
+        stats.chrT->n_expT++;
         return;
     }
     
-    stats.n_chrT++;
+    stats.chrT->n_chrT++;
     
     /*
      * There're two possibilities here, comparing at the isoform or gene level. While the workflow is similar, the underlying
@@ -42,11 +42,11 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
         }
         else
         {
-            stats.h.at(m->id)++;
+            stats.chrT->h.at(m->id)++;
             
             if (t.fpkm)
             {
-                stats.add(id, m->abund(Mix_1), t.fpkm);
+                stats.chrT->add(id, m->abund(Mix_1), t.fpkm);
             }
         }
     }
@@ -69,11 +69,11 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
         }
         else
         {
-            stats.h.at(m->id)++;
+            stats.chrT->h.at(m->id)++;
             
             if (t.fpkm)
             {
-                stats.add(id, m->abund(Mix_1), t.fpkm);
+                stats.chrT->add(id, m->abund(Mix_1), t.fpkm);
             }
         }
     }
@@ -82,6 +82,8 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
 template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o, Functor f)
 {
     TExpress::Stats stats;
+    
+    stats.chrT = std::shared_ptr<TExpress::Stats::ChrT>(new TExpress::Stats::ChrT());
     
     const bool isoform = o.level == TExpress::Isoform;
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
@@ -98,14 +100,14 @@ TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Opt
         const auto &r = Standard::instance().r_trans;
         
         // Construct for a histogram at the appropriate level
-        stats.h = o.level == TExpress::Isoform ? r.hist() : r.geneHist();
+        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist();
         
         for (const auto &i : exps)
         {
             update(stats, i, i.id, o.level == TExpress::Isoform, o);
         }
         
-        stats.ss = (o.level == TExpress::Isoform) ? r.limit(stats.h) : r.limitGene(stats.h);
+        stats.chrT->ss = (o.level == TExpress::Isoform) ? r.limit(stats.chrT->h) : r.limitGene(stats.chrT->h);
     });
 }
 
@@ -130,7 +132,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
         const auto &r = Standard::instance().r_trans;
         
         // Construct for a histogram at the appropriate level
-        stats.h = o.level == TExpress::Isoform ? r.hist() : r.geneHist();
+        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist();
 
         const auto isIsoform = o.level == TExpress::Isoform;
         
@@ -167,7 +169,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
             }
         }
         
-        stats.ss = isIsoform ? r.limit(stats.h) : r.limitGene(stats.h);
+        stats.chrT->ss = isIsoform ? r.limit(stats.chrT->h) : r.limitGene(stats.chrT->h);
     });
 }
 

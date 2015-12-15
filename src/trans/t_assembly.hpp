@@ -13,19 +13,30 @@ namespace Anaquin
             FileName ref, query;
         };
 
-        struct Stats : public MappingStats
+        struct Stats
         {
-            SequinHist hb = Standard::instance().r_trans.geneHist();
-            SequinHist he = Standard::instance().r_trans.hist();
-            SequinHist hi = Standard::instance().r_trans.hist();
-            SequinHist ht = Standard::instance().r_trans.hist();
-
-            double exonSP,   exonSN;
-            double baseSP,   baseSN;
-            double transSP,  transSN;
-            double intronSP, intronSN;
+            struct ChrT : public MappingStats
+            {
+                SequinHist hb = Standard::instance().r_trans.geneHist();
+                SequinHist he = Standard::instance().r_trans.hist();
+                SequinHist hi = Standard::instance().r_trans.hist();
+                SequinHist ht = Standard::instance().r_trans.hist();
+                
+                double exonSP,   exonSN;
+                double baseSP,   baseSN;
+                double transSP,  transSN;
+                double intronSP, intronSN;
+                
+                Limit sb, si, se, st;
+            };
             
-            Limit sb, si, se, st;
+            struct Gencode : public MappingStats
+            {
+                
+            };
+            
+            std::shared_ptr<ChrT> chrT;
+            std::shared_ptr<Gencode> gcode;
         };
 
         // Analyze a single sample

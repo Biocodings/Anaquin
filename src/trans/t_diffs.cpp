@@ -1,6 +1,6 @@
 #include "trans/t_diffs.hpp"
 #include "parsers/parser_cdiffs.hpp"
-#include <iostream>
+
 using namespace SS;
 using namespace Anaquin;
 
@@ -10,11 +10,11 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
     
     if (t.cID != Standard::chrT)
     {
-        stats.n_expT++;
+        stats.chrT->n_expT++;
         return;
     }
     
-    stats.n_chrT++;
+    stats.chrT->n_chrT++;
     
     // The known and observed fold-change
     Fold known = NAN;
@@ -44,20 +44,20 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
         
         if (g && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
         {
-            stats.h.at(id)++;
+            stats.chrT->h.at(id)++;
             
             // Measured fold-change between the two mixtures
             measured = fpkm_2 / fpkm_1;
         }
         
-        stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+        stats.chrT->add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
     };
 
     switch (o.level)
     {
         case TDiffs::Gene:
         {
-            if ((t.status != NoTest) && stats.h.count(t.id))
+            if ((t.status != NoTest) && stats.chrT->h.count(t.id))
             {
                 g(t.id, t.fpkm_1, t.fpkm_2);
             }
@@ -67,7 +67,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
             
         case TDiffs::Isoform:
         {
-            if ((t.status == NoTest) || !stats.h.count(id))
+            if ((t.status == NoTest) || !stats.chrT->h.count(id))
             {
                 return;
             }
@@ -82,14 +82,14 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
             
             if ((t.status != NoTest) && t.fpkm_1 && t.fpkm_2)
             {
-                stats.h.at(id)++;
+                stats.chrT->h.at(id)++;
                 
                 // Measured fold-change between the two mixtures
                 measured = t.fpkm_2 / t.fpkm_1;
             }
             
-            //stats.add(t.testID, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
-            stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+            //stats.chrT->add(t.testID, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+            stats.chrT->add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             
             break;
         }
@@ -101,11 +101,13 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     TDiffs::Stats stats;
     const auto &r = Standard::instance().r_trans;
     
+    stats.chrT = std::shared_ptr<TDiffs::Stats::ChrT>(new TDiffs::Stats::ChrT());
+    
     const auto isoform = o.level == TDiffs::Isoform;
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
     
     // Construct for a histogram at the appropriate level
-    stats.h = isoform ? r.hist() : r.geneHist();
+    stats.chrT->h = isoform ? r.hist() : r.geneHist();
     
     o.info("Parsing tracking file");
 
@@ -113,7 +115,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     
     o.info("Calculating limit of sensitivity");
     
-    stats.ss = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
+    stats.chrT->ss = isoform ? r.limit(stats.chrT->h) : r.limitGene(stats.chrT->h);
     
     return stats;
 }

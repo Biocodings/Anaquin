@@ -28,16 +28,21 @@ namespace Anaquin
             FDiscover::Aligner soft;
         };
 
-        struct Stats : public LinearStats, public FusionStats
+        struct Stats
         {
-            // Overall performance
-            Confusion m;
+            struct ChrT : public LinearStats, public FusionStats
+            {
+                // Overall performance
+                Confusion m;
+                
+                // Fraction of reference fusion detected
+                double covered;
+                
+                // Distribution of the sequins
+                SequinHist h = Standard::instance().r_fus.hist();            
+            };
 
-            // Fraction of reference fusion detected
-            double covered;
-
-            // Distribution of the sequins
-            SequinHist h = Standard::instance().r_fus.hist();
+            std::shared_ptr<ChrT> chrT;
         };
 
         static Stats report(const FileName &, const Options &o = Options());

@@ -19,12 +19,23 @@ namespace Anaquin
             Isoform
         };
 
-        struct Stats : public LinearStats, public MappingStats
+        struct Stats
         {
-            Limit ss;
-
-            // The keys depend on whether it's a gene or isoform analysis
-            std::map<std::string, Counts> h;
+            struct ChrT : public LinearStats, public MappingStats
+            {
+                Limit ss;
+                
+                // The keys depend on whether it's a gene or isoform analysis
+                std::map<std::string, Counts> h;
+            };
+            
+            struct Gencode : public LinearStats, public MappingStats
+            {
+                
+            };
+            
+            std::shared_ptr<ChrT> chrT;
+            std::shared_ptr<Gencode> gcode;
         };
 
         struct Options : public AnalyzerOptions

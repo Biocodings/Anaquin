@@ -37,18 +37,23 @@ namespace Anaquin
             Coverage mFold;
         };
 
-        struct Stats : public LinearStats, public MappingStats
+        struct Stats
         {
-            // Alignment for the two alignment files
-            MBlat::Stats align_1, align_2;
-
-            Limit ss;
+            struct ChrT : public LinearStats, public MappingStats
+            {
+                // Alignment for the two alignment files
+                MBlat::Stats align_1, align_2;
+                
+                Limit ss;
+                
+                // Distribution of the sequins
+                SequinHist h = Standard::instance().r_meta.hist();
+                
+                // Differential differences
+                std::set<SequinDiff> diffs;
+            };
             
-            // Distribution of the sequins
-            SequinHist h = Standard::instance().r_meta.hist();
-            
-            // Differential differences
-            std::set<SequinDiff> diffs;
+            std::shared_ptr<ChrT> chrT;
         };
 
         struct Options : public DoubleMixtureOptions

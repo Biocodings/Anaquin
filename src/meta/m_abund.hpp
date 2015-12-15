@@ -39,7 +39,7 @@ namespace Anaquin
             
             if (!align.contigs.empty())
             {
-                stats.h.at(id)++;
+                stats.chrT->h.at(id)++;
                 
                 // Known concentration
                 const auto known = align.seq->abund(Mix_1, false);
@@ -106,17 +106,22 @@ namespace Anaquin
             return Point(0 ,0);
         }
         
-        struct Stats : public LinearStats, public MappingStats
+        struct Stats
         {
-            MBlat::Stats blat;
+            struct ChrT : public LinearStats, public MappingStats
+            {
+                MBlat::Stats blat;
+                
+                // Statistics for the assembly
+                DAsssembly::Stats<Contig> assembly;
+                
+                Limit ss;
+                
+                // Distribution of the sequins
+                SequinHist h = Standard::instance().r_meta.hist();
+            };
             
-            // Statistics for the assembly
-            DAsssembly::Stats<Contig> assembly;
-            
-            Limit ss;
-
-            // Distribution of the sequins
-            SequinHist h = Standard::instance().r_meta.hist();
+            std::shared_ptr<ChrT> chrT;
         };
 
         struct Options : public MAssembly::Options
