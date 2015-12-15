@@ -355,13 +355,18 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor f)
     return stats;
 }
 
-static void update(const ParseImpl &impl, const Alignment &align, const ParserSAM::AlignmentInfo &info, const TAlign::Options &o)
+template <typename T> void classify(T &t,
+                                    const ParseImpl &impl,
+                                    const Alignment &align,
+                                    const ParserSAM::AlignmentInfo &info,
+                                    const TAlign::Options &o)
 {
     REPORT_STATUS();
     
-    impl.stats->chrT->update(align);
+    t->update(align);
     
-    if (!align.mapped || align.id != Standard::chrT)
+    if (!align.mapped)
+//    if (!align.mapped || align.id != Standard::chrT)
     {
         return;
     }
@@ -371,9 +376,9 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
     if (!align.spliced)
     {
         if ((match = matchT(align,
-                            impl.stats->chrT->eInters,
-                            impl.stats->chrT->eContains,
-                            impl.stats->chrT->eOverlaps,
+                            t->eInters,
+                            t->eContains,
+                            t->eOverlaps,
                             impl.lFPS,
                             impl.rFPS)))
         {
@@ -383,9 +388,9 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
     else
     {
         if ((match = matchT(align,
-                            impl.stats->chrT->iInters,
-                            impl.stats->chrT->iContains,
-                            impl.stats->chrT->iOverlaps)))
+                            t->iInters,
+                            t->iContains,
+                            t->iOverlaps)))
         {
             o.logInfo((boost::format("Intron (match): %1% %2%") % align.id % match->id()).str());
         }
@@ -393,7 +398,7 @@ static void update(const ParseImpl &impl, const Alignment &align, const ParserSA
 
     if (!match)
     {
-        impl.stats->chrT->unknowns.push_back(UnknownAlignment(align.qName, align.l));
+        t->unknowns.push_back(UnknownAlignment(align.qName, align.l));
         
         // We can't simply add it to statistics because we'll need to account for overlapping
         impl.base->map(align.l);
@@ -408,7 +413,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         
         for (const auto &align : aligns)
         {
-            update(impl, align, info, o);
+            classify(impl.stats->chrT, impl, align, info, o);
         }
     });
 }
@@ -421,7 +426,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
-            update(impl, align, info, o);
+            classify(impl.stats->chrT, impl, align, info, o);
         });
     });
 }
