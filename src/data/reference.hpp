@@ -60,6 +60,12 @@ namespace Anaquin
         StartOnly,
         Contains,
     };
+    
+    enum Source
+    {
+        SyntheticSrc,
+        ExperimentSrc,
+    };
 
     template <typename Data = SequinData, typename Stats = SequinStats> class Reference
     {
@@ -670,17 +676,8 @@ namespace Anaquin
             // Intervals for reference introns
             Intervals<IntronInterval> intronInters() const;
         
-            /*
-             *
-             */
-        
             // Add a new annoation reference
-            void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l);
-
-        
-        
-        
-            void merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs);
+            void addRef(Source, const IsoformID &iID, const GeneID &gID, const Locus &l);
 
             // Calculate the detection limit at the gene level
             Limit limitGene(const GeneHist &) const;
@@ -703,6 +700,8 @@ namespace Anaquin
         
             void validate() override;
 
+            void merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs);
+        
         private:
 
             struct TransRefImpl;

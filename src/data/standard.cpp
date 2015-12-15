@@ -224,24 +224,13 @@ void Standard::addFRef(const Reader &r)
     }, "\t");
 }
 
-void Standard::addTSRef(const Reader &r)
+void Standard::addTRef(Source src, const Reader &r)
 {
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
         if (f.id == Standard::chrT && f.type == Exon)
         {
-            r_trans.addRef(f.tID, f.geneID, f.l);
-        }
-    });
-}
-
-void Standard::addTGRef(const Reader &r)
-{
-    ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
-    {
-        if (f.id != Standard::chrT && f.type == Exon)
-        {
-            r_trans.addRef(f.tID, f.geneID, f.l);
+            r_trans.addRef(src, f.tID, f.geneID, f.l);
         }
     });
 }

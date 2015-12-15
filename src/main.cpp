@@ -505,6 +505,11 @@ static void printError(const std::string &msg)
     std::cerr << "*********************************************************************" << std::endl;
 }
 
+static void readFilters(const FileName &file)
+{
+    // Empty Implementation
+}
+
 template <typename Mixture> void applyMix(Mixture mix)
 {
     if (mixture().empty())
@@ -516,14 +521,34 @@ template <typename Mixture> void applyMix(Mixture mix)
     mix(Reader(mixture()));
 }
 
+#define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
+
+template <typename Reference> void addRef(Source src, Reference ref, const FileName &file)
+{
+    std::cout << "[INFO]: Reference: " << file << std::endl;
+    ref(src, Reader(file));
+}
+
+template <typename Reference> void addRef(Source src, Reference ref)
+{
+    for (const auto &i : _p.opts)
+    {
+        const auto opt = i.first;
+        
+        if (CHECK_REF(opt))
+        {
+            addRef(src, ref, _p.opts[opt]);
+            break;
+        }
+    }
+}
+
 // Apply a reference source given where it comes from
 template <typename Reference> void applyRef(Reference ref, Option opt)
 {
     std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
     ref(Reader(_p.opts[opt]));
 }
-
-#define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
 
 /*
  * Apply reference resource assuming there is only a single reference source
@@ -541,85 +566,6 @@ template <typename Reference> void applyRef(Reference ref)
             break;
         }
     }
-}
-
-/*
- * Apply two reference resources for two options
- */
-
-template <typename Reference> void applyRef(Reference ref, Option o1, Option o2)
-{
-    assert(o1 != o2 && CHECK_REF(o1) && CHECK_REF(o2));
-    
-    std::cout << "[INFO]: Reference: " << _p.opts[o1] << std::endl;
-    std::cout << "[INFO]: Reference: " << _p.opts[o2] << std::endl;
-
-    ref(Reader(_p.opts[o1]), Reader(_p.opts[o2]));
-}
-
-// Read sequins from a file, one per line. The identifiers must match.
-static void readFilters(const FileName &file)
-{
-//    Reader r(file);
-//    std::string line;
-//    
-//    // We'll use it to compare the sequins
-//    const auto &s = Standard::instance();
-//
-//    while (r.nextLine(line))
-//    {
-//        switch (_p.cmd)
-//        {
-//            case CMD_FUSION: { break; }
-//            case CMD_LADDER: { break; }
-//
-//            case CMD_RNA:
-//            {
-//                assert(s.r_seqs_A.size() == s.r_seqs_B.size());
-//
-//                if (!s.r_seqs_A.count(line))
-//                {
-//                    throw InvalidFilterError("Unknown sequin for RNA: " + line);
-//                }
-//                
-//                _p.filters.insert(line);
-//                break;
-//            }
-//
-//            case CMD_VAR:
-//            {
-//                assert(s.v_seqs_A.size() == s.v_seqs_B.size());
-//                
-//                if (!s.v_seqs_A.count(line))
-//                {
-//                    throw InvalidFilterError("Unknown sequin for DNA: " + line);
-//                }
-//                
-//                _p.filters.insert(line);
-//                break;
-//            }
-//
-//            case CMD_META:
-//            {
-//                assert(s.m_seqs_A.size() == s.m_seqs_B.size());
-//
-//                if (!s.m_seqs_A.count(line))
-//                {
-//                    throw InvalidFilterError("Unknown sequin for metagenomics: " + line);
-//                }
-//
-//                _p.filters.insert(line);
-//                break;
-//            }
-//
-//            default: { assert(false); }
-//        }
-//    }
-//
-//    if (_p.filters.empty())
-//    {
-//        throw InvalidFilterError("No sequin found in: " + file);
-//    }
 }
 
 template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::Options o)
@@ -1059,14 +1005,15 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_T_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::addTSRef, &s, std::placeholders::_1));
+                        addRef(SyntheticSrc, std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
                         break;
                     }
+                        
 
                     default:
                     {
-                        applyMix(std::bind(&Standard::addTMix,  &s, std::placeholders::_1));
-                        applyRef(std::bind(&Standard::addTSRef, &s, std::placeholders::_1));
+                        applyMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                        addRef(SyntheticSrc, std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
                         break;
                     }
                 }

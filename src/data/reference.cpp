@@ -489,18 +489,35 @@ struct TransRef::TransRefImpl
         std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
     };
     
+    void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
+    {
+        TransRef::ExonData e;
+        
+        e.l   = l;
+        e.iID = iID;
+        e.gID = gID;
+        
+        raw.exonsByGenes[gID].push_back(e);
+        raw.exonsByTrans[iID].push_back(e);
+        
+        raw.rawIIDs.insert(iID);
+        raw.rawGIDs.insert(gID);
+        raw.rawMapper[iID] = gID;
+    }
+    
     /*
      * Synthetic chromosome
      */
-    
+
     RawData cRaw;
     ValidatedData cValid;
-    
+
     /*
-     * Gencode
+     * Human Gencode
      */
-    
-    
+
+    RawData gRaw;
+    ValidatedData gValid;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
@@ -518,20 +535,13 @@ Limit TransRef::limitGene(const GeneHist &h) const
     });
 }
 
-void TransRef::addRef(const IsoformID &iID, const GeneID &gID, const Locus &l)
+void TransRef::addRef(Source src, const IsoformID &iID, const GeneID &gID, const Locus &l)
 {
-    TransRef::ExonData e;
-    
-    e.l   = l;
-    e.iID = iID;
-    e.gID = gID;
-    
-    _impl->cRaw.exonsByGenes[gID].push_back(e);
-    _impl->cRaw.exonsByTrans[iID].push_back(e);
-    
-    _impl->cRaw.rawIIDs.insert(iID);
-    _impl->cRaw.rawGIDs.insert(gID);
-    _impl->cRaw.rawMapper[iID] = gID;
+    switch (src)
+    {
+        case SyntheticSrc:  { _impl->addRef(iID, gID, l, _impl->cRaw); break; }
+        case ExperimentSrc: { _impl->addRef(iID, gID, l, _impl->gRaw); break; }
+    }
 }
 
 long TransRef::countSortedExons() const

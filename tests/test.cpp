@@ -62,7 +62,7 @@ void Test::ladderA()
 void Test::transA()
 {
     Test::clear();
-    Standard::instance().addTSRef(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().addTRef(SyntheticSrc, Reader(TransStandGTF(), DataMode::String));
     Standard::instance().addTMix(Reader(TransDataMixA(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
@@ -70,7 +70,7 @@ void Test::transA()
 void Test::transB()
 {
     Test::clear();
-    Standard::instance().addTSRef(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().addTRef(SyntheticSrc, Reader(TransStandGTF(), DataMode::String));
     Standard::instance().addTMix(Reader(TransDataMixB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
@@ -78,7 +78,7 @@ void Test::transB()
 void Test::transF()
 {
     Test::clear();
-    Standard::instance().addTSRef(Reader(TransStandGTF(), DataMode::String));
+    Standard::instance().addTRef(SyntheticSrc, Reader(TransStandGTF(), DataMode::String));
     Standard::instance().addTMix(Reader(TransDataMixF(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
@@ -86,7 +86,7 @@ void Test::transF()
 void Test::transAB()
 {
     Test::clear();
-    Standard::instance().addTSRef(Reader(TransStandGTF(),  DataMode::String));
+    Standard::instance().addTRef(SyntheticSrc, Reader(TransStandGTF(),  DataMode::String));
     Standard::instance().addVMix(Reader(TransDataMixAB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }

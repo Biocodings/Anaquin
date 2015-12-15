@@ -33,12 +33,9 @@ namespace Anaquin
              * ---------------- Transcriptome analysis ----------------
              */
 
-            // Add a reference annotation for the synthetic chromosome
-            void addTSRef(const Reader &);
+            // Add a reference annotation
+            void addTRef(Source, const Reader &);
 
-            // Add a reference annotation for the genocode
-            void addTGRef(const Reader &);
-        
             // Add a mixture file for transcriptome
             void addTMix(const Reader &);
 
@@ -62,17 +59,17 @@ namespace Anaquin
             VarRef r_var;
         
             /*
-             * Ladder analysis
+             * ---------------- Ladder analysis ----------------
              */
 
             void addLMix(const Reader &);
 
             LadderRef r_lad;
-        
-            /*
-             * Fusion analysis
-             */
 
+            /*
+             * ---------------- Fusion analysis ----------------
+             */
+        
             // Fusions for FuseQuin
             void addFRef(const Reader &);
 
