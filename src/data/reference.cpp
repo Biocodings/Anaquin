@@ -469,32 +469,46 @@ struct TransRef::TransRefImpl
                                                  % l.end).str();
     }
     
+    struct ValidatedData
+    {
+        // Number of bases for all the reference exons
+        Base exonBase;
+        
+        std::map<GeneID, GeneData> genes;
+        std::vector<ExonData>      mergedExons;
+        std::vector<ExonData>      sortedExons;
+        std::vector<IntronData>    sortedIntrons;
+    };
+    
+    struct RawData
+    {
+        std::set<GeneID>                           rawGIDs;
+        std::set<IsoformID>                        rawIIDs;
+        std::map<SequinID, GeneID>                 rawMapper;
+        std::map<GeneID, std::vector<ExonData>>    exonsByGenes;
+        std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
+    };
+    
     /*
-     * Validated variables
+     * Synthetic chromosome
      */
     
-    // Number of bases for all the reference exons
-    Base exonBase;
-
-    std::map<GeneID, GeneData> genes;
-    std::vector<ExonData>      mergedExons;
-    std::vector<ExonData>      sortedExons;
-    std::vector<IntronData>    sortedIntrons;
-
+    RawData cRaw;
+    ValidatedData cValid;
+    
     /*
-     * Raw variables
+     * Gencode
      */
     
-    std::set<GeneID>                           rawGIDs;
-    std::set<IsoformID>                        rawIIDs;
-    std::map<SequinID, GeneID>                 rawMapper;
-    std::map<GeneID, std::vector<ExonData>>    exonsByGenes;
-    std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
+    
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
-Base TransRef::exonBase() const { return _impl->exonBase; }
+Base TransRef::exonBase() const
+{
+    return _impl->cValid.exonBase;
+}
 
 Limit TransRef::limitGene(const GeneHist &h) const
 {
@@ -512,23 +526,37 @@ void TransRef::addRef(const IsoformID &iID, const GeneID &gID, const Locus &l)
     e.iID = iID;
     e.gID = gID;
     
-    _impl->exonsByGenes[gID].push_back(e);
-    _impl->exonsByTrans[iID].push_back(e);
+    _impl->cRaw.exonsByGenes[gID].push_back(e);
+    _impl->cRaw.exonsByTrans[iID].push_back(e);
     
-    _impl->rawIIDs.insert(iID);
-    _impl->rawGIDs.insert(gID);
-    _impl->rawMapper[iID] = gID;
+    _impl->cRaw.rawIIDs.insert(iID);
+    _impl->cRaw.rawGIDs.insert(gID);
+    _impl->cRaw.rawMapper[iID] = gID;
 }
 
-long TransRef::countSortedExons()   const { return _impl->sortedExons.size();   }
-long TransRef::countMergedExons()   const { return _impl->mergedExons.size();   }
-long TransRef::countSortedIntrons() const { return _impl->sortedIntrons.size(); }
+long TransRef::countSortedExons() const
+{
+    return _impl->cValid.sortedExons.size();
+}
 
-const std::vector<TransRef::ExonData> & TransRef::mergedExons()   const { return _impl->mergedExons; }
+long TransRef::countMergedExons() const
+{
+    return _impl->cValid.mergedExons.size();
+}
+
+long TransRef::countSortedIntrons() const
+{
+    return _impl->cValid.sortedIntrons.size();
+}
+
+const std::vector<TransRef::ExonData> & TransRef::mergedExons() const
+{
+    return _impl->cValid.mergedExons;
+}
 
 const TransRef::GeneData * TransRef::findGene(const GeneID &id) const
 {
-    return _impl->genes.count(id) ? &(_impl->genes.at(id)) : nullptr;
+    return _impl->cValid.genes.count(id) ? &(_impl->cValid.genes.at(id)) : nullptr;
 }
 
 template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)
@@ -559,24 +587,24 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
 
 const TransRef::GeneData * TransRef::findGene(const Locus &l, MatchRule m) const
 {
-    return findMap(_impl->genes, l, m);
+    return findMap(_impl->cValid.genes, l, m);
 }
 
 const TransRef::ExonData * TransRef::findExon(const Locus &l, MatchRule m) const
 {
-    return findList(_impl->sortedExons, l, m);
+    return findList(_impl->cValid.sortedExons, l, m);
 }
 
 const TransRef::IntronData * TransRef::findIntron(const Locus &l, MatchRule m) const
 {
-    return findList(_impl->sortedIntrons, l, m);
+    return findList(_impl->cValid.sortedIntrons, l, m);
 }
 
 Intervals<TransRef::ExonInterval> TransRef::exonInters() const
 {
     Intervals<ExonInterval> inters;
     
-    for (const auto &i : _impl->sortedExons)
+    for (const auto &i : _impl->cValid.sortedExons)
     {
         inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
     }
@@ -588,7 +616,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters() const
 {
     Intervals<IntronInterval> inters;
     
-    for (const auto &i : _impl->sortedIntrons)
+    for (const auto &i : _impl->cValid.sortedIntrons)
     {
         inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
     }
@@ -600,7 +628,7 @@ TransRef::GeneHist TransRef::geneHist() const
 {
     GeneHist h;
     
-    for (const auto &i : _impl->genes)
+    for (const auto &i : _impl->cValid.genes)
     {
         h[i.first] = 0;
     }
@@ -644,7 +672,7 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
         auto d = TransData();
         
         d.id  = id;
-        d.gID = _impl->rawMapper.at(d.id);
+        d.gID = _impl->cRaw.rawMapper.at(d.id);
         
         // Add a new entry for the validated sequin
         _data[id] = d;
@@ -680,7 +708,7 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
      * Compute the locus for each sequin
      */
     
-    for (const auto &i : _impl->exonsByTrans)
+    for (const auto &i : _impl->cRaw.exonsByTrans)
     {
         if (_data.count(i.first))
         {
@@ -689,15 +717,15 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
                 return true;
             });
 
-            _impl->genes[_data[i.first].gID].id = _data[i.first].gID;
-            _impl->genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
+            _impl->cValid.genes[_data[i.first].gID].id = _data[i.first].gID;
+            _impl->cValid.genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
         }
     }
 }
 
 void TransRef::validate()
 {
-    if (_impl->exonsByGenes.empty())
+    if (_impl->cRaw.exonsByGenes.empty())
     {
         throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check your file and try again.");
     }
@@ -712,37 +740,37 @@ void TransRef::validate()
     // Rule 1
     if (_rawMIDs.empty())
     {
-        merge(_impl->rawIIDs, _impl->rawIIDs);
+        merge(_impl->cRaw.rawIIDs, _impl->cRaw.rawIIDs);
     }
     
     // Rule 2
     else
     {
-        merge(_rawMIDs, _impl->rawIIDs);
+        merge(_rawMIDs, _impl->cRaw.rawIIDs);
     }
 
     /*
      * Filter out only those validated exons
      */
     
-    for (const auto &i : _impl->exonsByTrans)
+    for (const auto &i : _impl->cRaw.exonsByTrans)
     {
         if (_data.count(i.first))
         {
             for (const auto &j : i.second)
             {
-                _impl->sortedExons.push_back(j);
+                _impl->cValid.sortedExons.push_back(j);
             }
         }
     }
 
-    assert(!_impl->sortedExons.empty());
+    assert(!_impl->cValid.sortedExons.empty());
 
     /*
      * Generate a list of sorted exons
      */
     
-    std::sort(_impl->sortedExons.begin(), _impl->sortedExons.end(), [](const ExonData &x, const ExonData &y)
+    std::sort(_impl->cValid.sortedExons.begin(), _impl->cValid.sortedExons.end(), [](const ExonData &x, const ExonData &y)
     {
         return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
     });
@@ -753,7 +781,7 @@ void TransRef::validate()
     
     std::map<SequinID, std::vector<const ExonData *>> sorted;
 
-    for (const auto &i : _impl->sortedExons)
+    for (const auto &i : _impl->cValid.sortedExons)
     {
         sorted[i.iID].push_back(&i);
     }
@@ -771,7 +799,7 @@ void TransRef::validate()
             d.iID = x->iID;
             d.l   = Locus(x->l.end + 1, y->l.start - 1);
 
-            _impl->sortedIntrons.push_back(d);
+            _impl->cValid.sortedIntrons.push_back(d);
         }
     }
     
@@ -779,15 +807,15 @@ void TransRef::validate()
      * Generate a list of sorted introns
      */
 
-    std::sort(_impl->sortedIntrons.begin(), _impl->sortedIntrons.end(), [](const IntronData &x, const IntronData &y)
+    std::sort(_impl->cValid.sortedIntrons.begin(), _impl->cValid.sortedIntrons.end(), [](const IntronData &x, const IntronData &y)
     {
         return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
     });
     
-    assert(!_impl->sortedIntrons.empty());
+    assert(!_impl->cValid.sortedIntrons.empty());
 
     // Count number of non-overlapping bases for all exons
-    _impl->exonBase = countLocus(_impl->mergedExons = Locus::merge<ExonData, ExonData>(_impl->sortedExons));
+    _impl->cValid.exonBase = countLocus(_impl->cValid.mergedExons = Locus::merge<ExonData, ExonData>(_impl->cValid.sortedExons));
 }
 
 /*
