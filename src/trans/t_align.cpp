@@ -361,6 +361,12 @@ template <typename T> void classify(T &t,
                                     const ParserSAM::AlignmentInfo &info,
                                     const TAlign::Options &o)
 {
+    // This could happen, for instance, the gencode annoation is not supplied
+    if (!t)
+    {
+        return;
+    }
+    
     REPORT_STATUS();
     
     t->update(align);
@@ -405,6 +411,16 @@ template <typename T> void classify(T &t,
     }
 }
 
+static void classify(TAlign::Stats &stats,
+                     const ParseImpl &impl,
+                     const Alignment &align,
+                     const ParserSAM::AlignmentInfo &info,
+                     const TAlign::Options &o)
+{
+    classify(stats.chrT, impl, align, info, o);
+    //classify(stats.gcode, impl, align, info, o);
+}
+
 TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Options &o)
 {
     return calculate(o, [&](const ParseImpl &impl)
@@ -413,7 +429,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         
         for (const auto &align : aligns)
         {
-            classify(impl.stats->chrT, impl, align, info, o);
+            classify(*(impl.stats), impl, align, info, o);
         }
     });
 }
@@ -426,7 +442,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
-            classify(impl.stats->chrT, impl, align, info, o);
+            classify(*(impl.stats), impl, align, info, o);
         });
     });
 }
