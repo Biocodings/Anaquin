@@ -509,7 +509,7 @@ struct TransRef::TransRefImpl
     ValidatedData cValid;
 
     /*
-     * Human Gencode (merging is unnecessary)
+     * Human Gencode (validation is unnecessary)
      */
 
     ValidatedData gValid;
@@ -548,19 +548,31 @@ void TransRef::addRef(Source src, const IsoformID &iID, const GeneID &gID, const
     }
 }
 
-long TransRef::countSortedExons() const
+Counts TransRef::countExons(Source src) const
 {
-    return _impl->cValid.sortedExons.size();
+    switch (src)
+    {
+        case SyntheticSrc:  { return _impl->cValid.sortedExons.size(); }
+        case ExperimentSrc: { return _impl->gValid.sortedExons.size(); }
+    }
 }
 
-long TransRef::countMergedExons() const
+Counts TransRef::countMerged(Source src) const
 {
-    return _impl->cValid.mergedExons.size();
+    switch (src)
+    {
+        case SyntheticSrc:  { return _impl->cValid.mergedExons.size(); }
+        case ExperimentSrc: { return _impl->gValid.mergedExons.size(); }
+    }
 }
 
-long TransRef::countSortedIntrons() const
+Counts TransRef::countIntrons(Source src) const
 {
-    return _impl->cValid.sortedIntrons.size();
+    switch (src)
+    {
+        case SyntheticSrc:  { return _impl->cValid.sortedIntrons.size(); }
+        case ExperimentSrc: { return _impl->gValid.sortedIntrons.size(); }
+    }
 }
 
 const std::vector<TransRef::ExonData> & TransRef::mergedExons() const
@@ -848,7 +860,13 @@ void TransRef::validate()
       _impl->cValid.exonBase);
 
     // Do it for the experiment
-    //f(...)
+    if (!_impl->gValid.sortedExons.empty())
+    {
+        f(_impl->gValid.sortedExons,
+          _impl->gValid.sortedIntrons,
+          _impl->gValid.mergedExons,
+          _impl->gValid.exonBase);
+    }
 }
 
 /*

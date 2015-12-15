@@ -688,9 +688,14 @@ namespace Anaquin
             // Number of non-overlapping bases in all exons
             Base exonBase() const;
 
-            long countMergedExons()   const;
-            long countSortedExons()   const;
-            long countSortedIntrons() const;
+            // Return the number of merged exons
+            Counts countMerged(Source) const;
+        
+            // Return the number of unmerged exons
+            Counts countExons(Source) const;
+        
+            // Return the number of introns
+            Counts countIntrons(Source) const;
         
             const std::vector<ExonData> & mergedExons() const;
 

@@ -60,7 +60,7 @@ namespace Anaquin
         }
 
         /*
-         * Merge a list of objects according to the locus. The type of the object must be
+         * Merge a list of objects according to their locs. The type of the object must be
          * castable to Locus.
          */
         

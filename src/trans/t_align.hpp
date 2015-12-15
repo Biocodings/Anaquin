@@ -185,7 +185,8 @@ namespace Anaquin
             static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o = Options());
 
             // Analyze multiple replicates
-            static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &, const Options &o = Options());
+            static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &,
+                                              const Options &o = Options());
 
             static void report(const FileName &, const Options &o = Options());
             static void report(const std::vector<FileName> &, const Options &o = Options());

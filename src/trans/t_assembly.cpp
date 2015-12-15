@@ -253,7 +253,10 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const TAssembly::Stats &stats, const TAssembly::Options &o)
+static void writeSummary(const FileName &file,
+                         const FileName &src,
+                         const TAssembly::Stats &stats,
+                         const TAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -262,7 +265,7 @@ static void writeSummary(const FileName &file, const FileName &src, const TAssem
                                               % stats.chrT->n_expT
                                               % stats.chrT->n_chrT
                                               % r.data().size()
-                                              % r.countSortedIntrons()
+                                              % r.countIntrons(SyntheticSrc)
                                               % (__cmp__.e_sn  / 100.0) // 6
                                               % (__cmp__.e_fsn / 100.0)
                                               % (__cmp__.e_sp  / 100.0)
