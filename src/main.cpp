@@ -527,6 +527,12 @@ template <typename Mixture> void addMix(Mixture mix)
 
 template <typename Reference> void addRef(Source src, Reference ref, const FileName &file)
 {
+    switch (src)
+    {
+        case SyntheticSrc:  { std::cout << "[INFO]: Found synthetic reference" << std::endl;  break; }
+        case ExperimentSrc: { std::cout << "[INFO]: Found experiment reference" << std::endl; break; }
+    }
+
     std::cout << "[INFO]: Reference: " << file << std::endl;
     ref(src, Reader(file));
 }
@@ -935,6 +941,7 @@ void parse(int argc, char ** argv)
             case OPT_ITRACK:
             case OPT_R_BED_1:
             case OPT_R_BED_2:
+            case OPT_R_GCODE:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
             case OPT_PATH:    { _p.path = val;              break; }
