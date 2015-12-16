@@ -451,7 +451,6 @@ static void classifyExpT(std::shared_ptr<TAlign::Stats::Experiment> t,
  */
 
 static void classifyChrT(std::shared_ptr<TAlign::Stats::Synthetic> t,
-                         const TAlign::Stats &stats,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
@@ -480,7 +479,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         for (const auto &align : aligns)
         {
             // Analyze for the synthetic chromosome
-            classifyChrT(stats.chrT, stats, align, info, o);
+            classifyChrT(stats.chrT, align, info, o);
 
             // Analyze for the experiment
             classifyExpT(stats.expT, align, info, o);
@@ -497,7 +496,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
             // Analyze for the synthetic chromosome
-            classifyChrT(stats.chrT, stats, align, info, o);
+            classifyChrT(stats.chrT, align, info, o);
 
             // Analyze for the experiment
             classifyExpT(stats.expT, align, info, o);
