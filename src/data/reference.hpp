@@ -9,6 +9,21 @@
 
 namespace Anaquin
 {
+    typedef std::map<SequinID, Counts> Hist;
+    typedef std::map<SequinID, Counts> SequinHist;
+
+    template <typename T> Hist createHist(const T& t)
+    {
+        Hist hist;
+        
+        for (const auto &i : t)
+        {
+            hist[i.first] = 0;
+        }
+        
+        return hist;
+    }
+
     enum Mixture
     {
         Mix_1,
@@ -45,9 +60,6 @@ namespace Anaquin
 
         Locus l;
     };
-
-    typedef std::map<SequinID, Counts> Hist;
-    typedef std::map<SequinID, Counts> SequinHist;
 
     /*
      * Different rules how two positions can be compared
@@ -666,12 +678,10 @@ namespace Anaquin
                 IsoformID iID;
             };
 
-            typedef std::map<GeneID, Counts> GeneHist;
-
             TransRef();
 
             // Return a histogram for all the validated genes
-            GeneHist geneHist(Context) const;
+            Hist geneHist(Context) const;
 
             // Intervals for reference exons
             Intervals<ExonInterval> exonInters(Context) const;
@@ -683,7 +693,7 @@ namespace Anaquin
             void addExon(const ChromoID &, const IsoformID &, const GeneID &, const Locus &);
 
             // Calculate the detection limit at the gene level
-            Limit limitGene(const GeneHist &) const;
+            Limit limitGene(const Hist &) const;
 
             // Number of non-overlapping bases in all exons
             Base exonBase() const;
@@ -699,16 +709,16 @@ namespace Anaquin
         
             const std::vector<ExonData> & mergedExons() const;
 
-            const GeneData   *findGene  (const GeneID &id)          const;
-            const GeneData   *findGene  (const Locus &l, MatchRule) const;
-            const ExonData   *findExon  (const Locus &l, MatchRule) const;
-            const IntronData *findIntron(const Locus &l, MatchRule) const;
+            const GeneData   *findGene  (const GeneID &)           const;
+            const GeneData   *findGene  (const Locus &, MatchRule) const;
+            const ExonData   *findExon  (const Locus &, MatchRule) const;
+            const IntronData *findIntron(const Locus &, MatchRule) const;
 
         protected:
         
             void validate() override;
 
-            void merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs);
+            void merge(const std::set<SequinID> &, const std::set<SequinID> &);
         
         private:
 

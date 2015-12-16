@@ -492,7 +492,8 @@ struct TransRef::TransRefImpl
         // Number of bases for all the reference exons
         Base exonBase;
         
-        std::map<GeneID, GeneData> genes;
+        std::map<GeneID, Locus> genes;
+
         std::vector<ExonData>      mergedExons;
         std::vector<ExonData>      sortedExons;
         std::vector<IntronData>    sortedIntrons;
@@ -513,7 +514,7 @@ struct TransRef::TransRefImpl
      */
 
     RawData cRaw;
-    SData cValid;
+    SData sValid;
 
     /*
      * Experiments (validation is unnecessary)
@@ -526,10 +527,10 @@ TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
 Base TransRef::exonBase() const
 {
-    return _impl->cValid.exonBase;
+    return _impl->sValid.exonBase;
 }
 
-Limit TransRef::limitGene(const GeneHist &h) const
+Limit TransRef::limitGene(const Hist &h) const
 {
     return Reference<TransData, SequinStats>::limit(h, [&](const GeneID &id)
     {
@@ -539,9 +540,14 @@ Limit TransRef::limitGene(const GeneHist &h) const
 
 void TransRef::addGene(const ChromoID &cID, const Locus &l)
 {
-    assert(cID != "chrT");
-    
-    
+    if (cID != "chrT")
+    {
+        //_impl->eValid.sortedExons.push_back(ExonData(iID, gID, l));
+    }
+    else
+    {
+        
+    }
 }
 
 void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l)
@@ -560,7 +566,7 @@ Counts TransRef::countExons(Context src) const
 {
     switch (src)
     {
-        case SContext: { return _impl->cValid.sortedExons.size(); }
+        case SContext: { return _impl->sValid.sortedExons.size(); }
         case EContext: { return _impl->eValid.sortedExons.size(); }
     }
 }
@@ -569,7 +575,7 @@ Counts TransRef::countMerged(Context src) const
 {
     switch (src)
     {
-        case SContext: { return _impl->cValid.mergedExons.size(); }
+        case SContext: { return _impl->sValid.mergedExons.size(); }
         case EContext: { return _impl->eValid.mergedExons.size(); }
     }
 }
@@ -578,19 +584,19 @@ Counts TransRef::countIntrons(Context src) const
 {
     switch (src)
     {
-        case SContext: { return _impl->cValid.sortedIntrons.size(); }
+        case SContext: { return _impl->sValid.sortedIntrons.size(); }
         case EContext: { return _impl->eValid.sortedIntrons.size(); }
     }
 }
 
 const std::vector<TransRef::ExonData> & TransRef::mergedExons() const
 {
-    return _impl->cValid.mergedExons;
+    return _impl->sValid.mergedExons;
 }
 
 const TransRef::GeneData * TransRef::findGene(const GeneID &id) const
 {
-    return _impl->cValid.genes.count(id) ? &(_impl->cValid.genes.at(id)) : nullptr;
+    return _impl->sValid.genes.count(id) ? &(_impl->sValid.genes.at(id)) : nullptr;
 }
 
 template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)
@@ -621,24 +627,24 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
 
 const TransRef::GeneData * TransRef::findGene(const Locus &l, MatchRule m) const
 {
-    return findMap(_impl->cValid.genes, l, m);
+    return findMap(_impl->sValid.genes, l, m);
 }
 
 const TransRef::ExonData * TransRef::findExon(const Locus &l, MatchRule m) const
 {
-    return findList(_impl->cValid.sortedExons, l, m);
+    return findList(_impl->sValid.sortedExons, l, m);
 }
 
 const TransRef::IntronData * TransRef::findIntron(const Locus &l, MatchRule m) const
 {
-    return findList(_impl->cValid.sortedIntrons, l, m);
+    return findList(_impl->sValid.sortedIntrons, l, m);
 }
 
 Intervals<TransRef::ExonInterval> TransRef::exonInters(Context src) const
 {
     Intervals<ExonInterval> inters;
     
-    const auto exons = (src == SContext ? &_impl->cValid.sortedExons : &_impl->eValid.sortedExons);
+    const auto exons = (src == SContext ? &_impl->sValid.sortedExons : &_impl->eValid.sortedExons);
 
     for (const auto &i : *exons)
     {
@@ -652,7 +658,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(Context src) const
 {
     Intervals<IntronInterval> inters;
     
-    const auto introns = (src == SContext ? &_impl->cValid.sortedIntrons : &_impl->eValid.sortedIntrons);
+    const auto introns = (src == SContext ? &_impl->sValid.sortedIntrons : &_impl->eValid.sortedIntrons);
 
     for (const auto &i : *introns)
     {
@@ -662,18 +668,13 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(Context src) const
     return inters;
 }
 
-TransRef::GeneHist TransRef::geneHist(Context src) const
+Hist TransRef::geneHist(Context src) const
 {
-    GeneHist h;
-
-    const auto genes = (src == SContext ? &_impl->cValid.genes : &_impl->eValid.genes);
-    
-    for (const auto &i : *genes)
+    switch (src)
     {
-        h[i.first] = 0;
+        case SContext: { return createHist(_impl->sValid.genes); }
+        case EContext: { return createHist(_impl->eValid.genes); }
     }
-    
-    return h;
 }
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
@@ -757,23 +758,31 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
                 return true;
             });
             
-            _impl->cValid.genes[_data[i.first].gID].id = _data[i.first].gID;
-            _impl->cValid.genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
+            _impl->sValid.genes[_data[i.first].gID].id = _data[i.first].gID;
+            _impl->sValid.genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
         }
     }
 }
 
-template <typename T> void validateTrans(Context ctx, T &t)
+template <typename T> void validateTrans(T &t)
 {
-    // Sort the exons
-    std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const Anaquin::TransRef::ExonData &x,
-                                                             const Anaquin::TransRef::ExonData &y)
+    /*
+     * Generate the appropriate structure for analysis
+     *
+     *   1. Sort the list of exons
+     *   2. Use the sorted exons to generate sorted introns
+     *   3. Count the number of non-overlapping bases for the exons
+     */
+
+    // 1. Sort the exons
+    std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const TransRef::ExonData &x,
+                                                             const TransRef::ExonData &y)
     {
         return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
     });
     
     /*
-     * Generate a list of sorted introns, only possible once the exons are sorted.
+     * 2. Generate a list of sorted introns, only possible once the exons are sorted.
      */
     
     std::map<SequinID, std::vector<const TransRef::ExonData *>> sorted;
@@ -801,7 +810,7 @@ template <typename T> void validateTrans(Context ctx, T &t)
         }
     }
     
-    // Sort the introns
+    // 2. Sort the introns
     std::sort(t.sortedIntrons.begin(), t.sortedIntrons.end(), [](const TransRef::IntronData &x,
                                                                  const TransRef::IntronData &y)
     {
@@ -810,7 +819,7 @@ template <typename T> void validateTrans(Context ctx, T &t)
     
     assert(!t.sortedIntrons.empty());
     
-    // Count number of non-overlapping bases for all exons
+    // 3. Count number of non-overlapping bases for all exons
     t.exonBase = countLocus(t.mergedExons = Locus::merge<TransRef::ExonData, TransRef::ExonData>(t.sortedExons));
 }
 
@@ -847,30 +856,22 @@ void TransRef::validate()
         {
             for (const auto &j : i.second)
             {
-                _impl->cValid.sortedExons.push_back(j);
+                _impl->sValid.sortedExons.push_back(j);
             }
         }
     }
 
-    /*
-     * Generate the appropriate data-structure for analysis.
-     *
-     *   1. Sort the list of exons
-     *   2. Use the sorted exons to generate sorted introns
-     *   3. Count the number of non-overlapping bases for the exons
-     */
-
     // Do it for the synthetic
-    validateTrans(SContext, _impl->cValid);
+    validateTrans(_impl->sValid);
 
     // Do it for the experiment
     if (!_impl->eValid.sortedExons.empty())
     {
-        validateTrans(EContext, _impl->eValid);
+        validateTrans(_impl->eValid);
     }
     
-    assert(!_impl->cValid.genes.empty());
-    assert(!_impl->cValid.sortedExons.empty());
+    assert(!_impl->sValid.genes.empty());
+    assert(!_impl->sValid.sortedExons.empty());
 
     if (!_impl->eValid.sortedExons.empty())
     {
