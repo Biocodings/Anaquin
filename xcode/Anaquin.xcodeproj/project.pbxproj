@@ -187,6 +187,7 @@
 		EF3F04A71B6F309E00179B55 /* t_parser_star_fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_star_fusion.cpp; path = ../tests/parsers/t_parser_star_fusion.cpp; sourceTree = "<group>"; };
 		EF3F743A1B980603008239DB /* v_allele.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_allele.cpp; path = ../src/variant/v_allele.cpp; sourceTree = "<group>"; };
 		EF3F743B1B980603008239DB /* v_allele.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_allele.hpp; path = ../src/variant/v_allele.hpp; sourceTree = "<group>"; };
+		EF40C2AD1C21C0E30057415D /* itree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = itree.hpp; path = ../src/data/itree.hpp; sourceTree = "<group>"; };
 		EF4270A11B213BF200C9ED4E /* test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = test.cpp; path = ../tests/test.cpp; sourceTree = "<group>"; };
 		EF4270B41B21C21B00C9ED4E /* m_blat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_blat.cpp; sourceTree = "<group>"; };
 		EF4270B51B21C21B00C9ED4E /* m_blat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_blat.hpp; sourceTree = "<group>"; };
@@ -452,6 +453,7 @@
 				EF02A5231B7E0F8D00295799 /* compare.hpp */,
 				EF1DE0A91B21EC6D00DEC381 /* feature.hpp */,
 				EF2002531BCEFD6900F8CE08 /* intervals.hpp */,
+				EF40C2AD1C21C0E30057415D /* itree.hpp */,
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,
 				EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */,
 				EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */,
