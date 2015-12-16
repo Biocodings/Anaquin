@@ -16,7 +16,7 @@ TEST_CASE("TAssembly_Reference")
     const auto r = TAssembly::analyze("data/trans/ATR001.v032.gtf", o);
 
     REQUIRE(r.chrT->n_expT == 0);
-    REQUIRE(r.chrT->n_chrT == 2730);
+    REQUIRE(r.chrT->n_chrT == 1200);
 
     /*
      * It's very likely cuffcompare is just wrong. Everything here should be 1.0.

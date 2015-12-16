@@ -482,9 +482,10 @@ struct TransRef::TransRefImpl
         Base exonBase;
         
         std::map<GeneID, GeneData> genes;
-        std::vector<ExonData>      mergedExons;
-        std::vector<ExonData>      sortedExons;
-        std::vector<IntronData>    sortedIntrons;
+        
+        std::vector<ExonData>   mergedExons;
+        std::vector<ExonData>   sortedExons;
+        std::vector<IntronData> sortedIntrons;
     };
     
     struct EData
@@ -494,15 +495,15 @@ struct TransRef::TransRefImpl
         
         std::map<GeneID, Locus> genes;
 
-        std::vector<ExonData>      mergedExons;
-        std::vector<ExonData>      sortedExons;
-        std::vector<IntronData>    sortedIntrons;
+        std::vector<ExonData>   mergedExons;
+        std::vector<ExonData>   sortedExons;
+        std::vector<IntronData> sortedIntrons;
     };
     
-    void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
+    void addRef(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
     {
-        const auto exon = ExonData(iID, gID, l);
-        
+        const auto exon = ExonData(cID, iID, gID, l);
+
         raw.exonsByTrans[iID].push_back(exon);
         
         raw.rawIIDs.insert(iID);
@@ -554,11 +555,11 @@ void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &
 {
     if (cID == "chrT")
     {
-        _impl->addRef(iID, gID, l, _impl->cRaw);
+        _impl->addRef(cID, iID, gID, l, _impl->cRaw);
     }
     else
     {
-        _impl->eValid.sortedExons.push_back(ExonData(iID, gID, l));
+        _impl->eValid.sortedExons.push_back(ExonData(cID, iID, gID, l));
     }
 }
 
@@ -804,6 +805,7 @@ template <typename T> void validateTrans(T &t)
             
             d.gID = x->gID;
             d.iID = x->iID;
+            d.cID = x->cID;
             d.l   = Locus(x->l.end + 1, y->l.start - 1);
             
             t.sortedIntrons.push_back(d);

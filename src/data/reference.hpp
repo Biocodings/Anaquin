@@ -642,9 +642,12 @@ namespace Anaquin
 
             struct ExonData
             {
-                ExonData(const IsoformID &iID, const GeneID &gID, const Locus &l)
-                            : iID(iID), gID(gID), l(l) {}
-                
+                ExonData(const ChromoID &cID,
+                         const IsoformID &iID,
+                         const GeneID &gID,
+                         const Locus &l)
+                                : cID(cID), iID(iID), gID(gID), l(l) {}
+
                 operator const Locus &() const { return l; }
 
                 inline bool operator<(const  ExonData &x) const { return l < x.l;  }
@@ -663,6 +666,7 @@ namespace Anaquin
             
                 Locus     l;
                 GeneID    gID;
+                ChromoID  cID;
                 IsoformID iID;
             };
 
@@ -675,6 +679,7 @@ namespace Anaquin
             
                 Locus     l;
                 GeneID    gID;
+                ChromoID  cID;
                 IsoformID iID;
             };
 
