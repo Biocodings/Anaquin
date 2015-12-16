@@ -430,10 +430,10 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
  * Classify for the experiment. Note that the base statistics are not needed.
  */
 
-static void classifyGen(std::shared_ptr<TAlign::Stats::Experiment> t,
-                        const Alignment &align,
-                        const ParserSAM::AlignmentInfo &info,
-                        const TAlign::Options &o)
+static void classifyExpT(std::shared_ptr<TAlign::Stats::Experiment> t,
+                         const Alignment &align,
+                         const ParserSAM::AlignmentInfo &info,
+                         const TAlign::Options &o)
 {
     if (!align.mapped || align.id == Standard::chrT)
     {
@@ -483,7 +483,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
             classifyChrT(stats.chrT, stats, align, info, o);
 
             // Analyze for the experiment
-            classifyGen(stats.expT, align, info, o);
+            classifyExpT(stats.expT, align, info, o);
         }
     });
 }
@@ -500,7 +500,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
             classifyChrT(stats.chrT, stats, align, info, o);
 
             // Analyze for the experiment
-            classifyGen(stats.expT, align, info, o);
+            classifyExpT(stats.expT, align, info, o);
         });
     });
 }
