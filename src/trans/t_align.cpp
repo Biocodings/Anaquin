@@ -1,7 +1,7 @@
 #include <ss/stats.hpp>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
-
+#include <iostream>
 using namespace Anaquin;
 
 // Internal implementation
@@ -23,12 +23,19 @@ template <typename T> void initT(Context src, T t)
     // Initalize the distributions
     t->overB.h = t->histE = t->histI = r.geneHist(src);
     
+    assert(!t->histE.empty());
+    assert(!t->histI.empty());
+    assert(!t->overB.h.empty());
+    
     /*
      * Initialize intervals for exons and introns
      */
     
     t->eInters = r.exonInters(src);
     t->iInters = r.intronInters(src);
+    
+    assert(t->eInters.size());
+    assert(t->iInters.size());
     
     /*
      * Initialize overall statistics
@@ -73,6 +80,7 @@ template <typename T> void initT(Context src, T t)
         t->rFPS[i.first];
     }
 
+    assert(!t->lFPS.empty()      && !t->rFPS.empty());
     assert(!t->eContains.empty() && !t->eOverlaps.empty());
     assert(!t->iContains.empty() && !t->iOverlaps.empty());
 }
@@ -174,6 +182,9 @@ template <typename T> void collect(T &t,
         
         for (const auto &i : contains)
         {
+            std::cout << i.first << std::endl;
+            std::cout << m.at(i.first) << std::endl;
+            
             h.at(m.at(i.first)) += i.second;
             gene.at(m.at(i.first)).aTP += i.second;
             over.aTP += i.second;

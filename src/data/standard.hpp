@@ -34,7 +34,7 @@ namespace Anaquin
              */
 
             // Add a reference annotation
-            void addTRef(Context, const Reader &);
+            void addTRef(const Reader &);
 
             // Add a mixture file for transcriptome
             void addTMix(const Reader &);

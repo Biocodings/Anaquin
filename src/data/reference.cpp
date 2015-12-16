@@ -538,11 +538,11 @@ Limit TransRef::limitGene(const Hist &h) const
     });
 }
 
-void TransRef::addGene(const ChromoID &cID, const Locus &l)
+void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
 {
     if (cID != "chrT")
     {
-        //_impl->eValid.sortedExons.push_back(ExonData(iID, gID, l));
+        _impl->eValid.genes[gID] = l;
     }
     else
     {

@@ -689,7 +689,7 @@ namespace Anaquin
             // Intervals for reference introns
             Intervals<IntronInterval> intronInters(Context) const;
         
-            void addGene(const ChromoID &, const Locus &);
+            void addGene(const ChromoID &, const GeneID    &, const Locus &);
             void addExon(const ChromoID &, const IsoformID &, const GeneID &, const Locus &);
 
             // Calculate the detection limit at the gene level

@@ -20,11 +20,11 @@ namespace Anaquin
 
         void operator=(const Feature &f)
         {
-            l  = f.l;
-            id = f.id;
+            l    = f.l;
+            id   = f.id;
             type = f.type;
             tID  = f.tID;
-            geneID = f.geneID;
+            gID  = f.gID;
         }
         
         FeatureID id;
@@ -38,7 +38,7 @@ namespace Anaquin
         RNAFeature type;
         
         // Empty if the information is unavailable
-        GeneID geneID;
+        GeneID gID;
 
         // Empty if the information is unavailable
         TranscriptID tID;

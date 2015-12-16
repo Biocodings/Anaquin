@@ -525,16 +525,16 @@ template <typename Mixture> void addMix(Mixture mix)
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
 
-template <typename Reference> void addRef(Context src, Reference ref, const FileName &file)
+template <typename Reference> void addRef(Context ctx, Reference ref, const FileName &file)
 {
-    switch (src)
+    switch (ctx)
     {
         case SContext: { std::cout << "[INFO]: Found synthetic reference"  << std::endl;  break; }
         case EContext: { std::cout << "[INFO]: Found experiment reference" << std::endl; break; }
     }
 
     std::cout << "[INFO]: Reference: " << file << std::endl;
-    ref(src, Reader(file));
+    ref(Reader(file));
 }
 
 template <typename Reference> void addRef(Context src, Reference ref)
@@ -1044,14 +1044,14 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_T_COVERAGE:
                     {
-                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
+                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
                         break;
                     }
 
                     default:
                     {
                         addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
-                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1, std::placeholders::_2));
+                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
                         break;
                     }
                 }

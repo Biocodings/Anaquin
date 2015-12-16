@@ -224,14 +224,14 @@ void Standard::addFRef(const Reader &r)
     }, "\t");
 }
 
-void Standard::addTRef(Context src, const Reader &r)
+void Standard::addTRef(const Reader &r)
 {
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
         switch (f.type)
         {
-            case Gene: { r_trans.addGene(f.id, f.l);                  break; }
-            case Exon: { r_trans.addExon(f.id, f.tID, f.geneID, f.l); break; }
+            case Gene: { r_trans.addGene(f.id, f.gID, f.l);        break; }
+            case Exon: { r_trans.addExon(f.id, f.tID, f.gID, f.l); break; }
             default:   { break; }
         }
     });

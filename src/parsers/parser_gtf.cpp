@@ -10,11 +10,9 @@ void ParserGTF::parse(const Reader &r, Callback x)
 {
     std::map<std::string, RNAFeature> mapper =
     {
-        { "exon", Exon },
-        { "CDS",  CDS  },
-        { "start_codon", StartCodon },
-        { "stop_codon",  StopCodon  },
-        { "transcript",  Transcript }
+        { "exon",       Exon },
+        { "gene",       Gene },
+        { "transcript", Transcript }
     };
     
     std::string line;
@@ -76,7 +74,7 @@ void ParserGTF::parse(const Reader &r, Callback x)
                     
                     if (nameValue[0] == "gene_id")
                     {
-                        f.geneID = nameValue[1];
+                        f.gID = nameValue[1];
                     }
                     else if (nameValue[0] == "nearest_ref" || nameValue[0] == "transcript_id")
                     {
