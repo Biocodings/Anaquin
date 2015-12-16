@@ -58,7 +58,7 @@ namespace Anaquin
                     MissingIntron,
                     MissingGene
                 };
-                
+
                 struct Synthetic : public AlignmentStats
                 {
                     std::map<ExonID,   GeneID> exonToGene;
@@ -107,29 +107,7 @@ namespace Anaquin
                     FPStats lFPS, rFPS;
                 };
 
-                struct Experiment
-                {
-                    // Intervals for exons in TransQuin
-                    Intervals<TransRef::ExonInterval> eInters;
-                    
-                    // Intervals for introns in TransQuin
-                    Intervals<TransRef::IntronInterval> iInters;
-                    
-                    // Alignments that have no mapping
-                    std::vector<UnknownAlignment> unknowns;
-                    
-                    BinCounts eContains, eOverlaps;
-                    BinCounts iContains, iOverlaps;
-
-                    /*
-                     * Missing statistics
-                     */
-                    
-                    std::set<Missing> missE, missI, missG;
-
-                    // False positives (left and right)
-                    FPStats lFPS, rFPS;
-                };
+                typedef Synthetic Experiment;
 
                 // Statistics for the synthetic chromosome
                 std::shared_ptr<Synthetic> chrT;
