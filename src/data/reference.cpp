@@ -745,9 +745,9 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
         if (_data.count(i.first))
         {
             _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
-                                             {
-                                                 return true;
-                                             });
+            {
+                return true;
+            });
             
             _impl->cValid.genes[_data[i.first].gID].id = _data[i.first].gID;
             _impl->cValid.genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
@@ -863,6 +863,15 @@ void TransRef::validate()
     if (!_impl->eValid.sortedExons.empty())
     {
         f(EContext, _impl->eValid);
+    }
+    
+    assert(!_impl->cValid.genes.empty());
+    assert(!_impl->cValid.sortedExons.empty());
+    
+    if (!_impl->eValid.sortedExons.empty())
+    {
+        assert(!_impl->eValid.genes.empty());
+        assert(!_impl->eValid.sortedExons.empty());        
     }
 }
 
