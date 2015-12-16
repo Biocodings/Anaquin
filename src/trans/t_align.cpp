@@ -381,17 +381,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
     TAlign::Stats stats = init();
     
     /*
-     * 2: Prepare for parsing
-     */
-    
-    // This is needed to track the FP at the base level
-//    Interval base("Base", Locus(0, 44566700));
-    
-//    impl.base  = &base;
-//    impl.stats = &stats;
-
-    /*
-     * 3: Parsing the inputs. For instance, parsing an input file.
+     * 2: Parsing the inputs. For instance, parsing an input file.
      */
     
     calculator(stats);
@@ -404,8 +394,11 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
     collect(stats.chrT, stats.chrT->lFPS, stats.chrT->rFPS, o);
 
     // Collect for experiments
-    //collect(stats.expT, stats.expT->lFPS, stats.expT->rFPS, o);
-    
+    if (stats.expT)
+    {
+        collect(stats.expT, stats.expT->lFPS, stats.expT->rFPS, o);
+    }
+
     return stats;
 }
 
