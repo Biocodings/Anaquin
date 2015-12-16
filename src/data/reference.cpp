@@ -469,6 +469,13 @@ struct TransRef::TransRefImpl
                                                  % l.end).str();
     }
 
+    struct RawData
+    {
+        std::set<IsoformID>                        rawIIDs;
+        std::map<SequinID, GeneID>                 rawMapper;
+        std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
+    };
+
     struct ValidatedData
     {
         // Number of bases for all the reference exons
@@ -480,24 +487,18 @@ struct TransRef::TransRefImpl
         std::vector<IntronData>    sortedIntrons;
     };
     
-    struct RawData
+    struct EData
     {
-        std::set<GeneID>                           rawGIDs;
-        std::set<IsoformID>                        rawIIDs;
-        std::map<SequinID, GeneID>                 rawMapper;
-        std::map<GeneID, std::vector<ExonData>>    exonsByGenes;
-        std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
+        
     };
     
     void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
     {
         const auto exon = ExonData(iID, gID, l);
         
-        raw.exonsByGenes[gID].push_back(exon);
         raw.exonsByTrans[iID].push_back(exon);
         
         raw.rawIIDs.insert(iID);
-        raw.rawGIDs.insert(gID);
         raw.rawMapper[iID] = gID;
     }
     
@@ -530,21 +531,22 @@ Limit TransRef::limitGene(const GeneHist &h) const
     });
 }
 
-void TransRef::addRef(Context src, const IsoformID &iID, const GeneID &gID, const Locus &l)
+void TransRef::addGene(const ChromoID &cID, const Locus &l)
 {
-    switch (src)
-    {
-        case SContext:
-        {
-            _impl->addRef(iID, gID, l, _impl->cRaw);
-            break;
-        }
+    assert(cID != "chrT");
+    
+    
+}
 
-        case EContext:
-        {
-            _impl->eValid.sortedExons.push_back(ExonData(iID, gID, l));
-            break;
-        }
+void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l)
+{
+    if (cID == "chrT")
+    {
+        _impl->addRef(iID, gID, l, _impl->cRaw);
+    }
+    else
+    {
+        _impl->eValid.sortedExons.push_back(ExonData(iID, gID, l));
     }
 }
 
@@ -757,9 +759,9 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
 
 void TransRef::validate()
 {
-    if (_impl->cRaw.exonsByGenes.empty())
+    if (_impl->cRaw.rawIIDs.empty())
     {
-        throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check your file and try again.");
+        throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check and try again.");
     }
     
     /*
@@ -769,16 +771,13 @@ void TransRef::validate()
      *   2: Evertyhing (eg: TransAlign)
      */
 
-    // Rule 1
     if (_rawMIDs.empty())
     {
-        merge(_impl->cRaw.rawIIDs, _impl->cRaw.rawIIDs);
+        merge(_impl->cRaw.rawIIDs, _impl->cRaw.rawIIDs); // Rule 1
     }
-    
-    // Rule 2
     else
     {
-        merge(_rawMIDs, _impl->cRaw.rawIIDs);
+        merge(_rawMIDs, _impl->cRaw.rawIIDs);            // Rule 2
     }
 
     /*
@@ -796,16 +795,12 @@ void TransRef::validate()
         }
     }
 
-    assert(!_impl->cValid.sortedExons.empty());
-
     /*
      * Generate the appropriate data-structure for analysis.
      *
      *   1. Sort the list of exons
      *   2. Use the sorted exons to generate sorted introns
      *   3. Count the number of non-overlapping bases for the exons
-     *
-     * These steps are shared for synthetic and experiments.
      */
     
     auto f = [&](Context ctx, TransRef::TransRefImpl::ValidatedData &t)
@@ -867,7 +862,7 @@ void TransRef::validate()
     
     assert(!_impl->cValid.genes.empty());
     assert(!_impl->cValid.sortedExons.empty());
-    
+
     if (!_impl->eValid.sortedExons.empty())
     {
         assert(!_impl->eValid.genes.empty());

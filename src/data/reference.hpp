@@ -679,8 +679,8 @@ namespace Anaquin
             // Intervals for reference introns
             Intervals<IntronInterval> intronInters(Context) const;
         
-            // Add a new annoation reference
-            void addRef(Context, const IsoformID &iID, const GeneID &gID, const Locus &l);
+            void addGene(const ChromoID &, const Locus &);
+            void addExon(const ChromoID &, const IsoformID &, const GeneID &, const Locus &);
 
             // Calculate the detection limit at the gene level
             Limit limitGene(const GeneHist &) const;

@@ -15,6 +15,7 @@ namespace Anaquin
     {
         CDS,
         Exon,
+        Gene,
         Intron,
         StopCodon,
         StartCodon,
