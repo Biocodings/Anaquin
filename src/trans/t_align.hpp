@@ -134,7 +134,7 @@ namespace Anaquin
                 // Statistics for the synthetic chromosome
                 std::shared_ptr<Synthetic> chrT;
 
-                // Statistics for the gencode
+                // Statistics for the experiment
                 std::shared_ptr<Experiment> expT;
                 
                 /*

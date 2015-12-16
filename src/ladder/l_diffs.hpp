@@ -26,7 +26,7 @@ namespace Anaquin
                 SequinHist h = Standard::instance().r_lad.hist();
             };
             
-            struct Gencode : public LinearStats, public AlignmentStats
+            struct Experiment : public LinearStats, public AlignmentStats
             {
                 
             };

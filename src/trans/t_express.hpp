@@ -21,7 +21,7 @@ namespace Anaquin
 
         struct Stats
         {
-            struct ChrT : public LinearStats, public MappingStats
+            struct Synthetic : public LinearStats, public MappingStats
             {
                 Limit ss;
                 
@@ -29,13 +29,13 @@ namespace Anaquin
                 std::map<std::string, Counts> h;
             };
             
-            struct Gencode : public LinearStats, public MappingStats
+            struct Experiment : public LinearStats, public MappingStats
             {
                 
             };
             
-            std::shared_ptr<ChrT> chrT;
-            std::shared_ptr<Gencode> gcode;
+            std::shared_ptr<Synthetic>  chrT;
+            std::shared_ptr<Experiment> expT;
         };
 
         struct Options : public AnalyzerOptions

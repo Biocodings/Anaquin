@@ -83,7 +83,7 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
 {
     TExpress::Stats stats;
     
-    stats.chrT = std::shared_ptr<TExpress::Stats::ChrT>(new TExpress::Stats::ChrT());
+    stats.chrT = std::shared_ptr<TExpress::Stats::Synthetic>(new TExpress::Stats::Synthetic());
     
     const bool isoform = o.level == TExpress::Isoform;
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");

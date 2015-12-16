@@ -427,7 +427,7 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
 }
 
 /*
- * Classify for the gencode. Note that the base statistics are not needed.
+ * Classify for the experiment. Note that the base statistics are not needed.
  */
 
 static void classifyGen(std::shared_ptr<TAlign::Stats::Experiment> t,
@@ -485,7 +485,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
             // Analyze for the synthetic chromosome
             classifyChrT(impl.stats->chrT, impl, align, info, o);
 
-            // Analyze for the gencode
+            // Analyze for the experiment
             classifyGen(impl.stats->expT, align, info, o);
         }
     });
@@ -502,7 +502,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
             // Analyze for the synthetic chromosome
             classifyChrT(impl.stats->chrT,  impl, align, info, o);
 
-            // Analyze for the gencode
+            // Analyze for the experiment
             classifyGen(impl.stats->expT, align, info, o);
         });
     });

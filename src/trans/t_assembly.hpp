@@ -30,13 +30,13 @@ namespace Anaquin
                 Limit sb, si, se, st;
             };
             
-            struct Gencode : public MappingStats
+            struct Experiment : public MappingStats
             {
                 
             };
             
             std::shared_ptr<ChrT> chrT;
-            std::shared_ptr<Gencode> gcode;
+            std::shared_ptr<Experiment> expT;
         };
 
         // Analyze a single sample
