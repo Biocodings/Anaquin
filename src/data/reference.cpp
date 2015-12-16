@@ -476,7 +476,7 @@ struct TransRef::TransRefImpl
         std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
     };
 
-    struct ValidatedData
+    struct SData
     {
         // Number of bases for all the reference exons
         Base exonBase;
@@ -487,7 +487,7 @@ struct TransRef::TransRefImpl
         std::vector<IntronData>    sortedIntrons;
     };
     
-    struct EData
+    struct EData : public SData
     {
         
     };
@@ -507,13 +507,13 @@ struct TransRef::TransRefImpl
      */
 
     RawData cRaw;
-    ValidatedData cValid;
+    SData cValid;
 
     /*
      * Experiments (validation is unnecessary)
      */
 
-    ValidatedData eValid;
+    EData eValid;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
@@ -803,7 +803,7 @@ void TransRef::validate()
      *   3. Count the number of non-overlapping bases for the exons
      */
     
-    auto f = [&](Context ctx, TransRef::TransRefImpl::ValidatedData &t)
+    auto f = [&](Context ctx, TransRef::TransRefImpl::SData &t)
     {
         // Sort the exons
         std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const ExonData &x, const ExonData &y)
