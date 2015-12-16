@@ -5,11 +5,10 @@
 #
 
 #
-# Determine the soft detection limit for a given data set. The limit is defined as the level
-# of concentration where accurate interpreation starts becoming questionable.
+# The point of inflection is defined as the level of concentration where accurate interpreation starts becoming questionable.
 #
 
-softLimit <- function(x, y)
+inflection <- function(x, y)
 {
     require(ggplot2)
     
@@ -20,8 +19,12 @@ softLimit <- function(x, y)
     
     d <- data.frame(x=x, y=y)
     d <- d[order(x),]
-    r <- data.frame(k=rep(NA,length(x)), sums=rep(NA,length(x)))
-    
+
+    r <- data.frame(k=rep(NA,length(x)),
+                    sums=rep(NA,length(x)),
+                    lR2=rep(NA,length(x)),
+                    rR2=rep(NA,length(x)))
+
     plm <- function(i)
     {
         #
@@ -48,10 +51,19 @@ softLimit <- function(x, y)
     lapply(2:(nrow(d)-3), function(i)
     {
         # Fit two piecewise linear models
-        m <- plm(i)
+        models <- plm(i)
         
-        r$k[i]    <<- m[[1]]
-        r$sums[i] <<- sum((m[[2]]$residuals)^2) + sum((m[[3]]$residuals)^2)
+        # Where this breakpoint occurs
+        r$k[i] <<- models[[1]]
+        
+        m1 <- models[[2]]  # The left regression model
+        m2 <- models[[3]]  # The right regression model
+
+        r$lR2[i] <<- summary(m1)$r.squared
+        r$rR2[i] <<- summary(m2)$r.squared
+
+        # Calculate sum of residuals        
+        r$sums[i] <<- sum((m1$residuals)^2) + sum((m2$residuals)^2)
     })
     
     r <- r[!is.na(r$k),]
