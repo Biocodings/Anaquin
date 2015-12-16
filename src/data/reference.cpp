@@ -808,13 +808,10 @@ void TransRef::validate()
      * These steps are shared for synthetic and experiments.
      */
     
-    auto f = [&](std::vector<ExonData>   &exons,
-                 std::vector<IntronData> &introns,
-                 std::vector<ExonData>   &mergedExons,
-                 Base &bases)
+    auto f = [&](Context ctx, TransRef::TransRefImpl::ValidatedData &t)
     {
         // Sort the exons
-        std::sort(exons.begin(), exons.end(), [](const ExonData &x, const ExonData &y)
+        std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const ExonData &x, const ExonData &y)
         {
             return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
         });
@@ -825,7 +822,7 @@ void TransRef::validate()
         
         std::map<SequinID, std::vector<const ExonData *>> sorted;
         
-        for (const auto &i : exons)
+        for (const auto &i : t.sortedExons)
         {
             sorted[i.iID].push_back(&i);
         }
@@ -843,35 +840,29 @@ void TransRef::validate()
                 d.iID = x->iID;
                 d.l   = Locus(x->l.end + 1, y->l.start - 1);
 
-                introns.push_back(d);
+                t.sortedIntrons.push_back(d);
             }
         }
         
         // Sort the introns
-        std::sort(introns.begin(), introns.end(), [](const IntronData &x, const IntronData &y)
+        std::sort(t.sortedIntrons.begin(), t.sortedIntrons.end(), [](const IntronData &x, const IntronData &y)
         {
             return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
         });
         
-        assert(!introns.empty());
+        assert(!t.sortedIntrons.empty());
         
         // Count number of non-overlapping bases for all exons
-        bases = countLocus(mergedExons = Locus::merge<ExonData, ExonData>(exons));
+        t.exonBase = countLocus(t.mergedExons = Locus::merge<ExonData, ExonData>(t.sortedExons));
     };
-    
+
     // Do it for the synthetic chromosome
-    f(_impl->cValid.sortedExons,
-      _impl->cValid.sortedIntrons,
-      _impl->cValid.mergedExons,
-      _impl->cValid.exonBase);
+    f(SContext, _impl->cValid);
 
     // Do it for the experiment
     if (!_impl->eValid.sortedExons.empty())
     {
-        f(_impl->eValid.sortedExons,
-          _impl->eValid.sortedIntrons,
-          _impl->eValid.mergedExons,
-          _impl->eValid.exonBase);
+        f(EContext, _impl->eValid);
     }
 }
 
