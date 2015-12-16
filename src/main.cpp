@@ -111,7 +111,7 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
-#define OPT_R_GCODE 808
+#define OPT_R_EXPT  808
 
 #define OPT_U_BASE  900
 #define OPT_U_VCF   901
@@ -401,7 +401,7 @@ static const struct option long_options[] =
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
     { "rbed2",   required_argument, 0, OPT_R_BED_2 },
     { "rgtf",    required_argument, 0, OPT_R_GTF   },
-    { "rgcode",  required_argument, 0, OPT_R_GCODE },
+    { "rexp",    required_argument, 0, OPT_R_EXPT  },
 
     { "uvcf",    required_argument, 0, OPT_U_VCF  },
     { "ufa",     required_argument, 0, OPT_FA_1   },
@@ -565,7 +565,7 @@ template <typename Reference> void addRef(Reference ref)
         {
             switch (opt)
             {
-                case OPT_R_GCODE:
+                case OPT_R_EXPT:
                 {
                     addRef(EContext, ref, _p.opts[opt]);
                     break;
@@ -939,9 +939,9 @@ void parse(int argc, char ** argv)
             case OPT_U_TAB:
             case OPT_GTRACK:
             case OPT_ITRACK:
+            case OPT_R_EXPT:
             case OPT_R_BED_1:
             case OPT_R_BED_2:
-            case OPT_R_GCODE:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
             case OPT_PATH:    { _p.path = val;              break; }

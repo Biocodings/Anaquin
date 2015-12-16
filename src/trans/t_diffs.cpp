@@ -101,7 +101,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     TDiffs::Stats stats;
     const auto &r = Standard::instance().r_trans;
     
-    stats.chrT = std::shared_ptr<TDiffs::Stats::ChrT>(new TDiffs::Stats::ChrT());
+    stats.chrT = std::shared_ptr<TDiffs::Stats::Synthetic>(new TDiffs::Stats::Synthetic());
     
     const auto isoform = o.level == TDiffs::Isoform;
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
@@ -113,7 +113,11 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
 
     f(stats);
     
-    o.info("Calculating limit of sensitivity");
+    /*
+     * Calculating detection limit
+     */
+    
+    o.info("Calculating detection limit");
     
     stats.chrT->ss = isoform ? r.limit(stats.chrT->h) : r.limitGene(stats.chrT->h);
     

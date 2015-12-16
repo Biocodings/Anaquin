@@ -89,6 +89,8 @@ static TAlign::Stats init()
     // Initalize for the experiments
     if (Standard::instance().r_trans.countExons(EContext))
     {
+        stats.expT = std::shared_ptr<TAlign::Stats::Experiment>(new TAlign::Stats::Experiment());
+
         initT(EContext, stats.expT);
     }
 
@@ -435,6 +437,11 @@ static void classifyExpT(std::shared_ptr<TAlign::Stats::Experiment> t,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
 {
+    if (!t)
+    {
+        return;
+    }
+    
     if (!align.mapped || align.id == Standard::chrT)
     {
         return;
@@ -478,10 +485,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         
         for (const auto &align : aligns)
         {
-            // Analyze for the synthetic chromosome
             classifyChrT(stats.chrT, align, info, o);
-
-            // Analyze for the experiment
             classifyExpT(stats.expT, align, info, o);
         }
     });
@@ -495,10 +499,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
-            // Analyze for the synthetic chromosome
             classifyChrT(stats.chrT, align, info, o);
-
-            // Analyze for the experiment
             classifyExpT(stats.expT, align, info, o);
         });
     });
