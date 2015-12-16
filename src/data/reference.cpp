@@ -856,7 +856,7 @@ void TransRef::validate()
         t.exonBase = countLocus(t.mergedExons = Locus::merge<ExonData, ExonData>(t.sortedExons));
     };
 
-    // Do it for the synthetic chromosome
+    // Do it for the synthetic
     f(SContext, _impl->cValid);
 
     // Do it for the experiment
@@ -871,7 +871,7 @@ void TransRef::validate()
     if (!_impl->eValid.sortedExons.empty())
     {
         assert(!_impl->eValid.genes.empty());
-        assert(!_impl->eValid.sortedExons.empty());        
+        assert(!_impl->eValid.sortedExons.empty());
     }
 }
 
