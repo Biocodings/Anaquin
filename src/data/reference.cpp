@@ -509,10 +509,10 @@ struct TransRef::TransRefImpl
     ValidatedData cValid;
 
     /*
-     * Human Gencode (validation is unnecessary)
+     * Experiments (validation is unnecessary)
      */
 
-    ValidatedData gValid;
+    ValidatedData eValid;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
@@ -530,48 +530,48 @@ Limit TransRef::limitGene(const GeneHist &h) const
     });
 }
 
-void TransRef::addRef(Source src, const IsoformID &iID, const GeneID &gID, const Locus &l)
+void TransRef::addRef(Context src, const IsoformID &iID, const GeneID &gID, const Locus &l)
 {
     switch (src)
     {
-        case SyntheticSrc:
+        case SContext:
         {
             _impl->addRef(iID, gID, l, _impl->cRaw);
             break;
         }
 
-        case ExperimentSrc:
+        case EContext:
         {
-            _impl->gValid.sortedExons.push_back(ExonData(iID, gID, l));
+            _impl->eValid.sortedExons.push_back(ExonData(iID, gID, l));
             break;
         }
     }
 }
 
-Counts TransRef::countExons(Source src) const
+Counts TransRef::countExons(Context src) const
 {
     switch (src)
     {
-        case SyntheticSrc:  { return _impl->cValid.sortedExons.size(); }
-        case ExperimentSrc: { return _impl->gValid.sortedExons.size(); }
+        case SContext: { return _impl->cValid.sortedExons.size(); }
+        case EContext: { return _impl->eValid.sortedExons.size(); }
     }
 }
 
-Counts TransRef::countMerged(Source src) const
+Counts TransRef::countMerged(Context src) const
 {
     switch (src)
     {
-        case SyntheticSrc:  { return _impl->cValid.mergedExons.size(); }
-        case ExperimentSrc: { return _impl->gValid.mergedExons.size(); }
+        case SContext: { return _impl->cValid.mergedExons.size(); }
+        case EContext: { return _impl->eValid.mergedExons.size(); }
     }
 }
 
-Counts TransRef::countIntrons(Source src) const
+Counts TransRef::countIntrons(Context src) const
 {
     switch (src)
     {
-        case SyntheticSrc:  { return _impl->cValid.sortedIntrons.size(); }
-        case ExperimentSrc: { return _impl->gValid.sortedIntrons.size(); }
+        case SContext: { return _impl->cValid.sortedIntrons.size(); }
+        case EContext: { return _impl->eValid.sortedIntrons.size(); }
     }
 }
 
@@ -626,11 +626,11 @@ const TransRef::IntronData * TransRef::findIntron(const Locus &l, MatchRule m) c
     return findList(_impl->cValid.sortedIntrons, l, m);
 }
 
-Intervals<TransRef::ExonInterval> TransRef::exonInters(Source src) const
+Intervals<TransRef::ExonInterval> TransRef::exonInters(Context src) const
 {
     Intervals<ExonInterval> inters;
     
-    const auto exons = (src == SyntheticSrc ? &_impl->cValid.sortedExons : &_impl->gValid.sortedExons);
+    const auto exons = (src == SContext ? &_impl->cValid.sortedExons : &_impl->eValid.sortedExons);
 
     for (const auto &i : *exons)
     {
@@ -640,11 +640,11 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(Source src) const
     return inters;
 }
 
-Intervals<TransRef::IntronInterval> TransRef::intronInters(Source src) const
+Intervals<TransRef::IntronInterval> TransRef::intronInters(Context src) const
 {
     Intervals<IntronInterval> inters;
     
-    const auto introns = (src == SyntheticSrc ? &_impl->cValid.sortedExons : &_impl->gValid.sortedExons);
+    const auto introns = (src == SContext ? &_impl->cValid.sortedIntrons : &_impl->eValid.sortedIntrons);
 
     for (const auto &i : *introns)
     {
@@ -654,11 +654,13 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(Source src) const
     return inters;
 }
 
-TransRef::GeneHist TransRef::geneHist() const
+TransRef::GeneHist TransRef::geneHist(Context src) const
 {
     GeneHist h;
+
+    const auto genes = (src == SContext ? &_impl->cValid.genes : &_impl->eValid.genes);
     
-    for (const auto &i : _impl->cValid.genes)
+    for (const auto &i : *genes)
     {
         h[i.first] = 0;
     }
@@ -864,12 +866,12 @@ void TransRef::validate()
       _impl->cValid.exonBase);
 
     // Do it for the experiment
-    if (!_impl->gValid.sortedExons.empty())
+    if (!_impl->eValid.sortedExons.empty())
     {
-        f(_impl->gValid.sortedExons,
-          _impl->gValid.sortedIntrons,
-          _impl->gValid.mergedExons,
-          _impl->gValid.exonBase);
+        f(_impl->eValid.sortedExons,
+          _impl->eValid.sortedIntrons,
+          _impl->eValid.mergedExons,
+          _impl->eValid.exonBase);
     }
 }
 

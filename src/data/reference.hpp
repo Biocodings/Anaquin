@@ -61,10 +61,10 @@ namespace Anaquin
         Contains,
     };
     
-    enum Source
+    enum Context
     {
-        SyntheticSrc,
-        ExperimentSrc,
+        SContext,
+        EContext,
     };
 
     template <typename Data = SequinData, typename Stats = SequinStats> class Reference
@@ -671,16 +671,16 @@ namespace Anaquin
             TransRef();
 
             // Return a histogram for all the validated genes
-            GeneHist geneHist() const;
+            GeneHist geneHist(Context) const;
 
             // Intervals for reference exons
-            Intervals<ExonInterval> exonInters(Source) const;
+            Intervals<ExonInterval> exonInters(Context) const;
         
             // Intervals for reference introns
-            Intervals<IntronInterval> intronInters(Source) const;
+            Intervals<IntronInterval> intronInters(Context) const;
         
             // Add a new annoation reference
-            void addRef(Source, const IsoformID &iID, const GeneID &gID, const Locus &l);
+            void addRef(Context, const IsoformID &iID, const GeneID &gID, const Locus &l);
 
             // Calculate the detection limit at the gene level
             Limit limitGene(const GeneHist &) const;
@@ -689,13 +689,13 @@ namespace Anaquin
             Base exonBase() const;
 
             // Return the number of merged exons
-            Counts countMerged(Source) const;
+            Counts countMerged(Context) const;
         
             // Return the number of unmerged exons
-            Counts countExons(Source) const;
+            Counts countExons(Context) const;
         
             // Return the number of introns
-            Counts countIntrons(Source) const;
+            Counts countIntrons(Context) const;
         
             const std::vector<ExonData> & mergedExons() const;
 

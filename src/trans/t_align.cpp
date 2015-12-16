@@ -13,57 +13,68 @@ struct ParseImpl
 // Internal implementation
 typedef std::function<void (const ParseImpl &)> Functor;
 
-static TAlign::Stats init()
+/*
+ * -------------------- Initalization --------------------
+ */
+
+// Template function used by init()
+template <typename T> void initT(Context src, T t)
 {
     const auto &r = Standard::instance().r_trans;
-    
-    TAlign::Stats stats;
 
     /*
-     * Create structure for both chrT and gencode
+     * 1. Create the structure and initalize the genes, it's different depends on the context
      */
     
-    stats.chrT = std::shared_ptr<TAlign::Stats::ChrT>(new TAlign::Stats::ChrT());
-    
     // Initalize the distributions
-    stats.chrT->overB.h = stats.chrT->histE = stats.chrT->histI = r.geneHist();
-
+    t->overB.h = t->histE = t->histI = r.geneHist(src);
+    
     /*
      * Initialize intervals for exons and introns
      */
     
-    stats.chrT->eInters  = r.exonInters(SyntheticSrc);
-    stats.chrT->iInters  = r.intronInters(SyntheticSrc);
-    //???stats.gcode->eInters = r.exonInters(ExperimentSrc);
-    //???stats.gcode->iInters = r.intronInters(ExperimentSrc);
-
+    t->eInters = r.exonInters(src);
+    t->iInters = r.intronInters(src);
+    
     // For each gene...
-    for (const auto &i : stats.chrT->overB.h)
+    for (const auto &i : t->overB.h)
     {
-        stats.chrT->geneB[i.first];
-        stats.chrT->geneE[i.first];
-        stats.chrT->geneI[i.first];
+        t->geneB[i.first];
+        t->geneE[i.first];
+        t->geneI[i.first];
     }
     
-    // For each exon bin...
-    for (const auto &i : stats.chrT->eInters.data())
+    // For each exon...
+    for (const auto &i : t->eInters.data())
     {
-        stats.chrT->eContains[i.first];
-        stats.chrT->eOverlaps[i.first];
-        stats.chrT->exonToGene[i.second.id()] = i.second.gID;
+        t->eContains[i.first];
+        t->eOverlaps[i.first];
+        t->exonToGene[i.second.id()] = i.second.gID;
     }
     
-    // For each intron bin...
-    for (const auto &i : stats.chrT->iInters.data())
+    // For each intron...
+    for (const auto &i : t->iInters.data())
     {
-        stats.chrT->iContains[i.first];
-        stats.chrT->iOverlaps[i.first];
-        stats.chrT->intronToGene[i.second.id()] = i.second.gID;
+        t->iContains[i.first];
+        t->iOverlaps[i.first];
+        t->intronToGene[i.second.id()] = i.second.gID;
     }
     
-    assert(!stats.chrT->eContains.empty() && !stats.chrT->eOverlaps.empty());
-    assert(!stats.chrT->iContains.empty() && !stats.chrT->iOverlaps.empty());
+    assert(!t->eContains.empty() && !t->eOverlaps.empty());
+    assert(!t->iContains.empty() && !t->iOverlaps.empty());
+}
+
+static TAlign::Stats init()
+{
+    TAlign::Stats stats;
+
+    stats.chrT = std::shared_ptr<TAlign::Stats::Synthetic>(new TAlign::Stats::Synthetic());
     
+    // Initalize for the synthetic chromosome
+    initT(SContext, stats.chrT);
+
+    // Initalize for the experiments
+
     return stats;
 }
 
@@ -383,10 +394,10 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
      * 3: Collecting statistics
      */
 
-    // Collect for synthetic chromosome
+    // Collect for synthetic
     collect(stats.chrT, stats.chrT->lFPS, stats.chrT->rFPS, *impl.base, o);
 
-    // Collect for human genocode
+    // Collect for experiments
     
     return stats;
 }
@@ -419,7 +430,7 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
  * Classify for the gencode. Note that the base statistics are not needed.
  */
 
-static void classifyGen(std::shared_ptr<TAlign::Stats::Gencode> t,
+static void classifyGen(std::shared_ptr<TAlign::Stats::Experiment> t,
                         const Alignment &align,
                         const ParserSAM::AlignmentInfo &info,
                         const TAlign::Options &o)
@@ -439,7 +450,7 @@ static void classifyGen(std::shared_ptr<TAlign::Stats::Gencode> t,
  * Classify for the synthetic chromosome.
  */
 
-static void classifyChrT(std::shared_ptr<TAlign::Stats::ChrT> t,
+static void classifyChrT(std::shared_ptr<TAlign::Stats::Synthetic> t,
                          const ParseImpl &impl,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
@@ -475,7 +486,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
             classifyChrT(impl.stats->chrT, impl, align, info, o);
 
             // Analyze for the gencode
-            classifyGen(impl.stats->gcode, align, info, o);
+            classifyGen(impl.stats->expT, align, info, o);
         }
     });
 }
@@ -492,7 +503,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
             classifyChrT(impl.stats->chrT,  impl, align, info, o);
 
             // Analyze for the gencode
-            classifyGen(impl.stats->gcode, align, info, o);
+            classifyGen(impl.stats->expT, align, info, o);
         });
     });
 }
@@ -606,8 +617,8 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
                                             % stats.chrT->unmapped
                                             % stats.chrT->n_expT
                                             % stats.chrT->n_chrT
-                                            % r.countExons(SyntheticSrc)
-                                            % r.countIntrons(SyntheticSrc)
+                                            % r.countExons(SContext)
+                                            % r.countIntrons(SContext)
                                             % r.exonBase()
                                             % stats.qExons()
                                             % stats.qIntrons()
@@ -767,8 +778,8 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
                                               % acc.value("ExpPercent")()  // 4
                                               % acc.value("Synthetic")()
                                               % acc.value("ChrTPercent")() // 6
-                                              % r.countExons(SyntheticSrc)
-                                              % r.countIntrons(SyntheticSrc)
+                                              % r.countExons(SContext)
+                                              % r.countIntrons(SContext)
                                               % r.exonBase()
                                               % acc.value("QExon")()
                                               % acc.value("QIntron")()

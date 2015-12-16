@@ -265,7 +265,7 @@ static void writeSummary(const FileName &file,
                                               % stats.chrT->n_expT
                                               % stats.chrT->n_chrT
                                               % r.data().size()
-                                              % r.countIntrons(SyntheticSrc)
+                                              % r.countIntrons(SContext)
                                               % (__cmp__.e_sn  / 100.0) // 6
                                               % (__cmp__.e_fsn / 100.0)
                                               % (__cmp__.e_sp  / 100.0)

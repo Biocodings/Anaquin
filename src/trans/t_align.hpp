@@ -59,7 +59,7 @@ namespace Anaquin
                     MissingGene
                 };
                 
-                struct ChrT : public AlignmentStats
+                struct Synthetic : public AlignmentStats
                 {
                     std::map<ExonID,   GeneID> exonToGene;
                     std::map<IntronID, GeneID> intronToGene;
@@ -107,7 +107,7 @@ namespace Anaquin
                     FPStats lFPS, rFPS;
                 };
 
-                struct Gencode
+                struct Experiment
                 {
                     // Intervals for exons in TransQuin
                     Intervals<TransRef::ExonInterval> eInters;
@@ -132,10 +132,10 @@ namespace Anaquin
                 };
 
                 // Statistics for the synthetic chromosome
-                std::shared_ptr<ChrT> chrT;
+                std::shared_ptr<Synthetic> chrT;
 
                 // Statistics for the gencode
-                std::shared_ptr<Gencode> gcode;
+                std::shared_ptr<Experiment> expT;
                 
                 /*
                  * Accessor functions

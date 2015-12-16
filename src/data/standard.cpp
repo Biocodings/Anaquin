@@ -224,7 +224,7 @@ void Standard::addFRef(const Reader &r)
     }, "\t");
 }
 
-void Standard::addTRef(Source src, const Reader &r)
+void Standard::addTRef(Context src, const Reader &r)
 {
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {

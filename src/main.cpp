@@ -525,19 +525,19 @@ template <typename Mixture> void addMix(Mixture mix)
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
 
-template <typename Reference> void addRef(Source src, Reference ref, const FileName &file)
+template <typename Reference> void addRef(Context src, Reference ref, const FileName &file)
 {
     switch (src)
     {
-        case SyntheticSrc:  { std::cout << "[INFO]: Found synthetic reference" << std::endl;  break; }
-        case ExperimentSrc: { std::cout << "[INFO]: Found experiment reference" << std::endl; break; }
+        case SContext: { std::cout << "[INFO]: Found synthetic reference"  << std::endl;  break; }
+        case EContext: { std::cout << "[INFO]: Found experiment reference" << std::endl; break; }
     }
 
     std::cout << "[INFO]: Reference: " << file << std::endl;
     ref(src, Reader(file));
 }
 
-template <typename Reference> void addRef(Source src, Reference ref)
+template <typename Reference> void addRef(Context src, Reference ref)
 {
     for (const auto &i : _p.opts)
     {
@@ -567,13 +567,13 @@ template <typename Reference> void addRef(Reference ref)
             {
                 case OPT_R_GCODE:
                 {
-                    addRef(ExperimentSrc, ref, _p.opts[opt]);
+                    addRef(EContext, ref, _p.opts[opt]);
                     break;
                 }
 
                 default:
                 {
-                    addRef(SyntheticSrc, ref, _p.opts[opt]);
+                    addRef(SContext, ref, _p.opts[opt]);
                     break;
                 }
             }
