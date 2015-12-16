@@ -487,9 +487,15 @@ struct TransRef::TransRefImpl
         std::vector<IntronData>    sortedIntrons;
     };
     
-    struct EData : public SData
+    struct EData
     {
+        // Number of bases for all the reference exons
+        Base exonBase;
         
+        std::map<GeneID, GeneData> genes;
+        std::vector<ExonData>      mergedExons;
+        std::vector<ExonData>      sortedExons;
+        std::vector<IntronData>    sortedIntrons;
     };
     
     void addRef(const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
@@ -757,6 +763,57 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     }
 }
 
+template <typename T> void validateTrans(Context ctx, T &t)
+{
+    // Sort the exons
+    std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const Anaquin::TransRef::ExonData &x,
+                                                             const Anaquin::TransRef::ExonData &y)
+    {
+        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
+    });
+    
+    /*
+     * Generate a list of sorted introns, only possible once the exons are sorted.
+     */
+    
+    std::map<SequinID, std::vector<const TransRef::ExonData *>> sorted;
+    
+    for (const auto &i : t.sortedExons)
+    {
+        sorted[i.iID].push_back(&i);
+    }
+    
+    for (const auto &i : sorted)
+    {
+        for (auto j = 1; j < i.second.size(); j++)
+
+        {
+            const auto &x = i.second[j-1];
+            const auto &y = i.second[j];
+            
+            TransRef::IntronData d;
+            
+            d.gID = x->gID;
+            d.iID = x->iID;
+            d.l   = Locus(x->l.end + 1, y->l.start - 1);
+            
+            t.sortedIntrons.push_back(d);
+        }
+    }
+    
+    // Sort the introns
+    std::sort(t.sortedIntrons.begin(), t.sortedIntrons.end(), [](const TransRef::IntronData &x,
+                                                                 const TransRef::IntronData &y)
+    {
+        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
+    });
+    
+    assert(!t.sortedIntrons.empty());
+    
+    // Count number of non-overlapping bases for all exons
+    t.exonBase = countLocus(t.mergedExons = Locus::merge<TransRef::ExonData, TransRef::ExonData>(t.sortedExons));
+}
+
 void TransRef::validate()
 {
     if (_impl->cRaw.rawIIDs.empty())
@@ -802,62 +859,14 @@ void TransRef::validate()
      *   2. Use the sorted exons to generate sorted introns
      *   3. Count the number of non-overlapping bases for the exons
      */
-    
-    auto f = [&](Context ctx, TransRef::TransRefImpl::SData &t)
-    {
-        // Sort the exons
-        std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const ExonData &x, const ExonData &y)
-        {
-            return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-        });
-        
-        /*
-         * Generate a list of sorted introns, only possible once the exons are sorted.
-         */
-        
-        std::map<SequinID, std::vector<const ExonData *>> sorted;
-        
-        for (const auto &i : t.sortedExons)
-        {
-            sorted[i.iID].push_back(&i);
-        }
-        
-        for (const auto &i : sorted)
-        {
-            for (auto j = 1; j < i.second.size(); j++)
-            {
-                const auto &x = i.second[j-1];
-                const auto &y = i.second[j];
-                
-                IntronData d;
-                
-                d.gID = x->gID;
-                d.iID = x->iID;
-                d.l   = Locus(x->l.end + 1, y->l.start - 1);
-
-                t.sortedIntrons.push_back(d);
-            }
-        }
-        
-        // Sort the introns
-        std::sort(t.sortedIntrons.begin(), t.sortedIntrons.end(), [](const IntronData &x, const IntronData &y)
-        {
-            return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-        });
-        
-        assert(!t.sortedIntrons.empty());
-        
-        // Count number of non-overlapping bases for all exons
-        t.exonBase = countLocus(t.mergedExons = Locus::merge<ExonData, ExonData>(t.sortedExons));
-    };
 
     // Do it for the synthetic
-    f(SContext, _impl->cValid);
+    validateTrans(SContext, _impl->cValid);
 
     // Do it for the experiment
     if (!_impl->eValid.sortedExons.empty())
     {
-        f(EContext, _impl->eValid);
+        validateTrans(EContext, _impl->eValid);
     }
     
     assert(!_impl->cValid.genes.empty());
