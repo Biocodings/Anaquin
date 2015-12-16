@@ -95,7 +95,7 @@ static TAlign::Stats init()
     initT(SContext, stats.chrT);
 
     // Initalize for the experiments
-    if (Standard::instance().r_trans.countExons(EContext))
+    if (Standard::instance().r_trans.countExons("chr1"))
     {
         stats.expT = std::shared_ptr<TAlign::Stats::Experiment>(new TAlign::Stats::Experiment());
 
@@ -622,9 +622,9 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
                                             % stats.chrT->unmapped
                                             % stats.chrT->n_expT
                                             % stats.chrT->n_chrT
-                                            % r.countExons(SContext)
-                                            % r.countIntrons(SContext)
-                                            % r.exonBase()
+                                            % r.countExons("chrT")
+                                            % r.countIntrons("chrT")
+                                            % r.exonBase(SContext)
                                             % stats.qExons()
                                             % stats.qIntrons()
                                             % stats.qBases()
@@ -783,9 +783,9 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
                                               % acc.value("ExpPercent")()  // 4
                                               % acc.value("Synthetic")()
                                               % acc.value("ChrTPercent")() // 6
-                                              % r.countExons(SContext)
-                                              % r.countIntrons(SContext)
-                                              % r.exonBase()
+                                              % r.countExons("chrT")
+                                              % r.countIntrons("chrT")
+                                              % r.exonBase(SContext)
                                               % acc.value("QExon")()
                                               % acc.value("QIntron")()
                                               % acc.value("QBase")()

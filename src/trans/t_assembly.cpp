@@ -166,7 +166,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
                 
                 if (classify(t, f, [&](const Feature &)
                 {
-                    return (match = r.findExon(f.l, Exact));
+                    return (match = r.findExon("chrT", f.l, Exact));
                 }))
                 {
                     stats.chrT->he.at(match->iID)++;
@@ -217,7 +217,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     {
         if (classify(t, i, [&](const Feature &)
         {
-            return (match  = r.findIntron(i.l, Exact));
+            return (match  = r.findIntron("chrT", i.l, Exact));
         }))
         {
             stats.chrT->hi.at(match->iID)++;
@@ -228,7 +228,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
      * The counts for query bases is the total non-overlapping bases of all the exons in the experiment.
      */
     
-    countBase(r.mergedExons(), q_exons, t, stats.chrT->hb);
+    //countBase(r.mergedExons(), q_exons, t, stats.chrT->hb);
     
     /*
      * Calculate for detection limit
@@ -265,7 +265,7 @@ static void writeSummary(const FileName &file,
                                               % stats.chrT->n_expT
                                               % stats.chrT->n_chrT
                                               % r.data().size()
-                                              % r.countIntrons(SContext)
+                                              % r.countIntrons("chrT")
                                               % (__cmp__.e_sn  / 100.0) // 6
                                               % (__cmp__.e_fsn / 100.0)
                                               % (__cmp__.e_sp  / 100.0)

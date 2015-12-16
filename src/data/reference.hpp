@@ -701,23 +701,21 @@ namespace Anaquin
             Limit limitGene(const Hist &) const;
 
             // Number of non-overlapping bases in all exons
-            Base exonBase() const;
+            Base exonBase(Context) const;
 
             // Return the number of merged exons
-            Counts countMerged(Context) const;
+            Counts countMerged(const ChromoID &) const;
         
             // Return the number of unmerged exons
-            Counts countExons(Context) const;
+            Counts countExons(const ChromoID &) const;
         
             // Return the number of introns
-            Counts countIntrons(Context) const;
+            Counts countIntrons(const ChromoID &) const;
         
-            const std::vector<ExonData> & mergedExons() const;
-
-            const GeneData   *findGene  (const GeneID &)           const;
-            const GeneData   *findGene  (const Locus &, MatchRule) const;
-            const ExonData   *findExon  (const Locus &, MatchRule) const;
-            const IntronData *findIntron(const Locus &, MatchRule) const;
+            const GeneData   *findGene  (const ChromoID &, const GeneID &)           const;
+            const GeneData   *findGene  (const ChromoID &, const Locus &, MatchRule) const;
+            const ExonData   *findExon  (const ChromoID &, const Locus &, MatchRule) const;
+            const IntronData *findIntron(const ChromoID &, const Locus &, MatchRule) const;
 
         protected:
         

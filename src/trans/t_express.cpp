@@ -55,12 +55,12 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
         const TransRef::GeneData *m = nullptr;
         
         // Try to match by name if possible
-        m = r.findGene(id);
+        m = r.findGene("chrT", id);
         
         if (!m)
         {
             // Try to match by locus (de-novo assembly)
-            m = r.findGene(t.l, Contains);
+            m = r.findGene("chrT", t.l, Contains);
         }
         
         if (!m)

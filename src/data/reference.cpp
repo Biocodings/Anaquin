@@ -476,28 +476,21 @@ struct TransRef::TransRefImpl
         std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
     };
 
-    struct SData
+    struct EData
     {
         // Number of bases for all the reference exons
         Base exonBase;
         
-        std::map<GeneID, GeneData> genes;
+        std::map<GeneID, Locus> _genes;
         
         std::vector<ExonData>   mergedExons;
         std::vector<ExonData>   sortedExons;
         std::vector<IntronData> sortedIntrons;
     };
     
-    struct EData
+    struct SData : public EData
     {
-        // Number of bases for all the reference exons
-        Base exonBase;
-        
-        std::map<GeneID, Locus> genes;
-
-        std::vector<ExonData>   mergedExons;
-        std::vector<ExonData>   sortedExons;
-        std::vector<IntronData> sortedIntrons;
+        std::map<GeneID, GeneData> genes;
     };
     
     void addRef(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
@@ -510,32 +503,23 @@ struct TransRef::TransRefImpl
         raw.rawMapper[iID] = gID;
     }
     
-    /*
-     * Synthetic chromosome
-     */
-
     RawData cRaw;
-    SData sValid;
 
-    /*
-     * Experiments (validation is unnecessary)
-     */
-
-    EData eValid;
+    std::map<ChromoID, SData> valid;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
-Base TransRef::exonBase() const
+Base TransRef::exonBase(Context ctx) const
 {
-    return _impl->sValid.exonBase;
+    return _impl->valid["chrT"].exonBase;
 }
 
 Limit TransRef::limitGene(const Hist &h) const
 {
     return Reference<TransData, SequinStats>::limit(h, [&](const GeneID &id)
     {
-        return findGene(id);
+        return findGene("chrT", id);
     });
 }
 
@@ -543,11 +527,7 @@ void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
 {
     if (cID != "chrT")
     {
-        _impl->eValid.genes[gID] = l;
-    }
-    else
-    {
-        
+        _impl->valid[cID]._genes[gID] = l;
     }
 }
 
@@ -559,45 +539,28 @@ void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &
     }
     else
     {
-        _impl->eValid.sortedExons.push_back(ExonData(cID, iID, gID, l));
+        _impl->valid[cID].sortedExons.push_back(ExonData(cID, iID, gID, l));
     }
 }
 
-Counts TransRef::countExons(Context src) const
+Counts TransRef::countExons(const ChromoID &cID) const
 {
-    switch (src)
-    {
-        case SContext: { return _impl->sValid.sortedExons.size(); }
-        case EContext: { return _impl->eValid.sortedExons.size(); }
-    }
+    return _impl->valid[cID].sortedExons.size();
 }
 
-Counts TransRef::countMerged(Context src) const
+Counts TransRef::countMerged(const ChromoID &cID) const
 {
-    switch (src)
-    {
-        case SContext: { return _impl->sValid.mergedExons.size(); }
-        case EContext: { return _impl->eValid.mergedExons.size(); }
-    }
+    return _impl->valid[cID].mergedExons.size();
 }
 
-Counts TransRef::countIntrons(Context src) const
+Counts TransRef::countIntrons(const ChromoID &cID) const
 {
-    switch (src)
-    {
-        case SContext: { return _impl->sValid.sortedIntrons.size(); }
-        case EContext: { return _impl->eValid.sortedIntrons.size(); }
-    }
+    return _impl->valid[cID].sortedIntrons.size();
 }
 
-const std::vector<TransRef::ExonData> & TransRef::mergedExons() const
+const TransRef::GeneData * TransRef::findGene(const ChromoID &cID, const GeneID &id) const
 {
-    return _impl->sValid.mergedExons;
-}
-
-const TransRef::GeneData * TransRef::findGene(const GeneID &id) const
-{
-    return _impl->sValid.genes.count(id) ? &(_impl->sValid.genes.at(id)) : nullptr;
+    return _impl->valid.at(cID).genes.count(id) ? &(_impl->valid.at(cID).genes.at(id)) : nullptr;
 }
 
 template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)
@@ -626,26 +589,26 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
     return nullptr;
 }
 
-const TransRef::GeneData * TransRef::findGene(const Locus &l, MatchRule m) const
+const TransRef::GeneData * TransRef::findGene(const ChromoID &cID, const Locus &l, MatchRule m) const
 {
-    return findMap(_impl->sValid.genes, l, m);
+    return findMap(_impl->valid.at(cID).genes, l, m);
 }
 
-const TransRef::ExonData * TransRef::findExon(const Locus &l, MatchRule m) const
+const TransRef::ExonData * TransRef::findExon(const ChromoID &cID, const Locus &l, MatchRule m) const
 {
-    return findList(_impl->sValid.sortedExons, l, m);
+    return findList(_impl->valid.at(cID).sortedExons, l, m);
 }
 
-const TransRef::IntronData * TransRef::findIntron(const Locus &l, MatchRule m) const
+const TransRef::IntronData * TransRef::findIntron(const ChromoID &cID, const Locus &l, MatchRule m) const
 {
-    return findList(_impl->sValid.sortedIntrons, l, m);
+    return findList(_impl->valid.at(cID).sortedIntrons, l, m);
 }
 
 Intervals<TransRef::ExonInterval> TransRef::exonInters(Context src) const
 {
     Intervals<ExonInterval> inters;
     
-    const auto exons = (src == SContext ? &_impl->sValid.sortedExons : &_impl->eValid.sortedExons);
+    const auto exons = (src == SContext ? &_impl->valid.at("chrT").sortedExons : &_impl->valid.at("chr1").sortedExons);
 
     for (const auto &i : *exons)
     {
@@ -659,7 +622,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(Context src) const
 {
     Intervals<IntronInterval> inters;
     
-    const auto introns = (src == SContext ? &_impl->sValid.sortedIntrons : &_impl->eValid.sortedIntrons);
+    const auto introns = (src == SContext ? &_impl->valid["chrT"].sortedIntrons : &_impl->valid["chrT"].sortedIntrons);
 
     for (const auto &i : *introns)
     {
@@ -673,8 +636,8 @@ Hist TransRef::geneHist(Context src) const
 {
     switch (src)
     {
-        case SContext: { return createHist(_impl->sValid.genes); }
-        case EContext: { return createHist(_impl->eValid.genes); }
+        case SContext: { return createHist(_impl->valid["chrT"].genes);  }
+        case EContext: { return createHist(_impl->valid["chr1"]._genes); }
     }
 }
 
@@ -759,8 +722,8 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
                 return true;
             });
             
-            _impl->sValid.genes[_data[i.first].gID].id = _data[i.first].gID;
-            _impl->sValid.genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
+            _impl->valid["chrT"].genes[_data[i.first].gID].id = _data[i.first].gID;
+            _impl->valid["chrT"].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
         }
     }
 }
@@ -858,27 +821,27 @@ void TransRef::validate()
         {
             for (const auto &j : i.second)
             {
-                _impl->sValid.sortedExons.push_back(j);
+                _impl->valid["chrT"].sortedExons.push_back(j);
             }
         }
     }
 
     // Do it for the synthetic
-    validateTrans(_impl->sValid);
+    validateTrans(_impl->valid["chrT"]);
 
     // Do it for the experiment
-    if (!_impl->eValid.sortedExons.empty())
+    if (!_impl->valid["chrT"].sortedExons.empty())
     {
-        validateTrans(_impl->eValid);
+        validateTrans(_impl->valid["chr1"]);
     }
     
-    assert(!_impl->sValid.genes.empty());
-    assert(!_impl->sValid.sortedExons.empty());
+    assert(!_impl->valid["chrT"].genes.empty());
+    assert(!_impl->valid["chrT"].sortedExons.empty());
 
-    if (!_impl->eValid.sortedExons.empty())
+    if (!_impl->valid["chr1"].sortedExons.empty())
     {
-        assert(!_impl->eValid.genes.empty());
-        assert(!_impl->eValid.sortedExons.empty());
+        assert(!_impl->valid["chr1"]._genes.empty());
+        assert(!_impl->valid["chr1"].sortedExons.empty());
     }
 }
 

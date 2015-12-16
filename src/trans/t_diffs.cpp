@@ -34,7 +34,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
         // It's NAN if the sequin defined in reference but not in mixture
         Fold measured = NAN;
         
-        const auto *g = r.findGene(id);
+        const auto *g = r.findGene("chrT", id);
         
         if (g)
         {
