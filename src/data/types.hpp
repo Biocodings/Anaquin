@@ -5,6 +5,8 @@
 
 namespace Anaquin
 {
+    const std::string ChrT = "chrT";
+
     typedef std::string Sequence;
     
     typedef long long KMers;

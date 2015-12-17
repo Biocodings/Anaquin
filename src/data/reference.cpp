@@ -732,7 +732,7 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     }
 }
 
-template <typename T> void validateTrans(T &t)
+template <typename T> void createTrans(T &t)
 {
     /*
      * Generate the appropriate structure for analysis
@@ -827,28 +827,24 @@ void TransRef::validate()
         {
             for (const auto &j : i.second)
             {
-                _impl->valid["chrT"].sortedExons.push_back(j);
+                _impl->valid[ChrT].sortedExons.push_back(j);
             }
         }
     }
 
-    // Do it for the synthetic
-    validateTrans(_impl->valid["chrT"]);
-
-    // Do it for the experiment
-    //if (!_impl->valid["chrT"].sortedExons.empty())
-    //{
-    //    validateTrans(_impl->valid["chr1"]);
-    //}
+    /*
+     * Create structure for each given chromosome
+     */
     
-    assert(!_impl->valid["chrT"].genes.empty());
-    assert(!_impl->valid["chrT"].sortedExons.empty());
-
-    if (!_impl->valid["chr1"].sortedExons.empty())
+    for (const auto &i : _impl->valid)
     {
-        assert(!_impl->valid["chr1"]._genes.empty());
-        assert(!_impl->valid["chr1"].sortedExons.empty());
+        createTrans(_impl->valid[i.first]);
+
+        assert(!_impl->valid[i.first].genes.empty());
+        assert(!_impl->valid[i.first].sortedExons.empty());
     }
+    
+    assert(_impl->valid.count(ChrT));
 }
 
 /*
