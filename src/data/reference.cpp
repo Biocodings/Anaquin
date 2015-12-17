@@ -629,6 +629,8 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChromoID &cID) cons
         inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
     
+    inters.build();
+    
     return inters;
 }
 
@@ -640,6 +642,8 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChromoID &cID) 
     {
         inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
+
+    inters.build();
 
     return inters;
 }

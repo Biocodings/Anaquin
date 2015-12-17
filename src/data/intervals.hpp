@@ -208,6 +208,11 @@ namespace Anaquin
                 _inters.insert(typename std::map<typename T::IntervalID, T>::value_type(i.id(), i));
             }
 
+            inline void build()
+            {
+                // Empty Implementation
+            }
+        
             inline T * find(const typename T::IntervalID &id)
             {
                 return _inters.count(id) ? &(_inters.at(id)) : nullptr;
@@ -264,13 +269,13 @@ namespace Anaquin
                 return nullptr;
             }
 
-            inline T * overlaps(const Locus &l, std::vector<T *> &r)
+            inline T * overlap(const Locus &l, std::vector<T *> &r)
             {
                 T * match = nullptr;
             
                 for (auto &i : _inters)
                 {
-                    if (i.second.l().overlaps(l))
+                    if (i.second.l().overlap(l))
                     {
                         if (!match)
                         {
@@ -319,12 +324,12 @@ namespace Anaquin
             {
                 return std::accumulate(_inters.begin(), _inters.end(), 0,
                           [&](int sums, const std::pair<Interval::IntervalID, Interval> & p)
-                          {
-                              return sums + p.second.l().length();
-                          });
+                {
+                    return sums + p.second.l().length();
+                });
             }
 
-        //private:
+        private:
             IntervalData _inters;
     };
 }
