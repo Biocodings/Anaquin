@@ -28,8 +28,6 @@ Dependencies
 <ul>
 <li> <a href='http://eigen.tuxfamily.org'>Eigen</a>
 <li> <a href='https://github.com/philsquared/Catch'>Catch</a>
-<li> <a href='http://cole-trapnell-lab.github.io/cufflinks/cuffcompare/'>Cuffcompare</a>
-<li> <a href='http://www.htslib.org'>HTSLib</a>
 <li> <a href='https://github.com/attractivechaos/klib'>Klib</a>
 </ul>
 
