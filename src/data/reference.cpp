@@ -646,7 +646,14 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChromoID &cID) 
 
 Hist TransRef::geneHist(const ChromoID &cID) const
 {
-    return createHist(_impl->valid[cID].genes);
+    if (cID == ChrT)
+    {
+        return createHist(_impl->valid[cID].genes);
+    }
+    else
+    {
+        return createHist(_impl->valid[cID]._genes);
+    }
 }
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
