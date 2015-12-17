@@ -472,7 +472,6 @@ struct TransRef::TransRefImpl
 
     struct RawData
     {
-        std::set<IsoformID>                        rawIIDs;
         std::map<SequinID, GeneID>                 rawMapper;
         std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
     };
@@ -495,7 +494,6 @@ struct TransRef::TransRefImpl
         const auto exon = ExonData(cID, iID, gID, l);
 
         raw.exonsByTrans[iID].push_back(exon);
-        raw.rawIIDs.insert(iID);
         raw.rawMapper[iID] = gID;
     }
     
@@ -793,7 +791,9 @@ template <typename T> void createTrans(T &t)
 
 void TransRef::validate()
 {
-    if (_impl->cRaw.rawIIDs.empty())
+    const auto iIDs = getKeys(_impl->cRaw.exonsByTrans);
+    
+    if (iIDs.empty())
     {
         throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check and try again.");
     }
@@ -807,11 +807,11 @@ void TransRef::validate()
 
     if (_rawMIDs.empty())
     {
-        merge(_impl->cRaw.rawIIDs, _impl->cRaw.rawIIDs); // Rule 1
+        merge(iIDs, iIDs);     // Rule 1
     }
     else
     {
-        merge(_rawMIDs, _impl->cRaw.rawIIDs);            // Rule 2
+        merge(_rawMIDs, iIDs); // Rule 2
     }
 
     /*
