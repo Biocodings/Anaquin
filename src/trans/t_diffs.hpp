@@ -22,6 +22,8 @@ namespace Anaquin
 
         struct Options : public DoubleMixtureOptions
         {
+	    Options() {}
+
             Assembler soft = Assembler::Cuffdiffs;
 
             // Only valid for Cuffdiffs
