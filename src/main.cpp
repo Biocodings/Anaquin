@@ -530,7 +530,7 @@ template <typename Reference> void addRef(Context ctx, Reference ref, const File
     switch (ctx)
     {
         case SContext: { std::cout << "[INFO]: Found synthetic reference"  << std::endl;  break; }
-        case EContext: { std::cout << "[INFO]: Found experiment reference" << std::endl; break; }
+        case EContext: { std::cout << "[INFO]: Found experimental reference" << std::endl; break; }
     }
 
     std::cout << "[INFO]: Reference: " << file << std::endl;

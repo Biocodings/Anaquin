@@ -613,11 +613,11 @@ const TransRef::IntronData * TransRef::findIntron(const ChromoID &cID, const Loc
     return findList(_impl->valid.at(cID).sortedIntrons, l, m);
 }
 
-Intervals<TransRef::ExonInterval> TransRef::exonInters(Context src) const
+Intervals<TransRef::ExonInterval> TransRef::exonInters(Context ctx) const
 {
     Intervals<ExonInterval> inters;
     
-    const auto exons = (src == SContext ? &_impl->valid.at("chrT").sortedExons : &_impl->valid.at("chr1").sortedExons);
+    const auto exons = (ctx == SContext ? &_impl->valid.at(ChrT).sortedExons : &_impl->valid.at("chr1").sortedExons);
 
     for (const auto &i : *exons)
     {
@@ -627,11 +627,11 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(Context src) const
     return inters;
 }
 
-Intervals<TransRef::IntronInterval> TransRef::intronInters(Context src) const
+Intervals<TransRef::IntronInterval> TransRef::intronInters(Context ctx) const
 {
     Intervals<IntronInterval> inters;
     
-    const auto introns = (src == SContext ? &_impl->valid["chrT"].sortedIntrons : &_impl->valid["chrT"].sortedIntrons);
+    const auto introns = (ctx == SContext ? &_impl->valid[ChrT].sortedIntrons : &_impl->valid["chr1"].sortedIntrons);
 
     for (const auto &i : *introns)
     {
@@ -645,7 +645,7 @@ Hist TransRef::geneHist(Context src) const
 {
     switch (src)
     {
-        case SContext: { return createHist(_impl->valid["chrT"].genes);  }
+        case SContext: { return createHist(_impl->valid[ChrT].genes);  }
         case EContext: { return createHist(_impl->valid["chr1"]._genes); }
     }
 }

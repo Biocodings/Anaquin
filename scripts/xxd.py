@@ -14,20 +14,21 @@ def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
 
 data  = [ 'data/manual.txt',    
-          'data/linear.R',
           'scripts/viewer.py',
+
+	  'src/r/scatter.R'
 
            # ------- Fusion -------
 
-           'data/fusion/AFU004.v032.ref',
-           'data/fusion/AFU005.v032.bed',
-           'data/fusion/MFU007.v013.csv',
+          'data/fusion/AFU004.v032.ref',
+          'data/fusion/AFU005.v032.bed',
+          'data/fusion/MFU007.v013.csv',
 
            # ------- Ladder -------
 
-           'data/ladder/MLA014.v013.csv',
-           'data/ladder/MLA016.v013.csv',
-           'data/ladder/MLA020.v013.csv',
+          'data/ladder/MLA014.v013.csv',
+          'data/ladder/MLA016.v013.csv',
+          'data/ladder/MLA020.v013.csv',
            
            # ---------- Transcriptome ----------
 

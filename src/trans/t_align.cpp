@@ -450,6 +450,10 @@ static void classifyExpT(std::shared_ptr<TAlign::Stats::Experiment> t,
         return;
     }
     
+    REPORT_STATUS();
+    
+    t->update(align);
+    
     if (!align.mapped || align.id == Standard::chrT)
     {
         return;
