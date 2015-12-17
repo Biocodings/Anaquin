@@ -12,7 +12,7 @@ typedef std::function<void (const TAlign::Stats &)> Functor;
  */
 
 // Template function used by init()
-template <typename T> void initT(Context src, T t)
+template <typename T> void initT(Context ctx, T t)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -21,7 +21,7 @@ template <typename T> void initT(Context src, T t)
      */
     
     // Initalize the distributions
-    t->overB.h = t->histE = t->histI = r.geneHist(src);
+    t->overB.h = t->histE = t->histI = r.geneHist(ctx);
     
     assert(!t->histE.empty());
     assert(!t->histI.empty());
@@ -31,8 +31,8 @@ template <typename T> void initT(Context src, T t)
      * Initialize intervals for exons and introns
      */
     
-    t->eInters = r.exonInters(src);
-    t->iInters = r.intronInters(src);
+    t->eInters = r.exonInters(ctx);
+    t->iInters = r.intronInters(ctx);
     
     assert(t->eInters.size());
     assert(t->iInters.size());
@@ -95,7 +95,7 @@ static TAlign::Stats init()
     initT(SContext, stats.chrT);
 
     // Initalize for the experiments
-    if (Standard::instance().r_trans.countExons("chr1"))
+    if (Standard::instance().r_trans.countChromos() > 1)
     {
         stats.expT = std::shared_ptr<TAlign::Stats::Experiment>(new TAlign::Stats::Experiment());
 
@@ -622,9 +622,9 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
                                             % stats.chrT->unmapped
                                             % stats.chrT->n_expT
                                             % stats.chrT->n_chrT
-                                            % r.countExons("chrT")
-                                            % r.countIntrons("chrT")
-                                            % r.exonBase(SContext)
+                                            % r.countExons(ChrT)
+                                            % r.countIntrons(ChrT)
+                                            % r.exonBase(ChrT)
                                             % stats.qExons()
                                             % stats.qIntrons()
                                             % stats.qBases()
@@ -783,9 +783,9 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
                                               % acc.value("ExpPercent")()  // 4
                                               % acc.value("Synthetic")()
                                               % acc.value("ChrTPercent")() // 6
-                                              % r.countExons("chrT")
-                                              % r.countIntrons("chrT")
-                                              % r.exonBase(SContext)
+                                              % r.countExons(ChrT)
+                                              % r.countIntrons(ChrT)
+                                              % r.exonBase(ChrT)
                                               % acc.value("QExon")()
                                               % acc.value("QIntron")()
                                               % acc.value("QBase")()

@@ -511,9 +511,9 @@ struct TransRef::TransRefImpl
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
-Base TransRef::exonBase(Context ctx) const
+Base TransRef::exonBase(const ChromoID &cID) const
 {
-    return _impl->valid["chrT"].exonBase;
+    return _impl->valid[cID].exonBase;
 }
 
 Limit TransRef::limitGene(const Hist &h) const
@@ -526,6 +526,9 @@ Limit TransRef::limitGene(const Hist &h) const
 
 void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
 {
+    // Synthetic is not supported for now...
+    assert(cID != "chrT");
+    
     if (cID != "chrT")
     {
         _impl->valid[cID]._genes[gID] = l;
@@ -542,6 +545,11 @@ void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &
     {
         _impl->valid[cID].sortedExons.push_back(ExonData(cID, iID, gID, l));
     }
+}
+
+Counts TransRef::countChromos() const
+{
+    return _impl->valid.size();
 }
 
 Counts TransRef::countExons(const ChromoID &cID) const
@@ -715,7 +723,7 @@ template <typename T> void createTrans(T &t)
     /*
      * Generate the appropriate structure for analysis
      *
-     *   1. Sort the list of exons
+     *   1. Sort the exons
      *   2. Use the sorted exons to generate sorted introns
      *   3. Count the number of non-overlapping bases for the exons
      */
@@ -759,7 +767,7 @@ template <typename T> void createTrans(T &t)
         }
     }
     
-    // 2. Sort the introns
+    // Sort the introns
     std::sort(t.sortedIntrons.begin(), t.sortedIntrons.end(), [](const TransRef::IntronData &x,
                                                                  const TransRef::IntronData &y)
     {
@@ -800,7 +808,8 @@ void TransRef::validate()
     }
 
     /*
-     * Filter out only those validated exons
+     * This is only for the synthetic chromosome. Add the validated exons and construct the structures
+     * for the genes.
      */
     
     for (const auto &i : _impl->cRaw.exonsByTrans)
@@ -816,14 +825,16 @@ void TransRef::validate()
             {
                 return true;
             });
-            
-            _impl->valid[ChrT].genes[_data[i.first].gID].id = _data[i.first].gID;
-            _impl->valid[ChrT].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
+    
+            _impl->valid[ChrT].gene2Seqs[_data[i.first].gID] = &_data[i.first];
+
+            _impl->valid[ChrT].genes[_data[i.first].gID].id = _data[i.first].gID;         // TODO: ...
+            _impl->valid[ChrT].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]); // TODO: ...
         }
     }
 
     /*
-     * Create structure for each given chromosome
+     * Create structure for each chromosome
      */
     
     for (const auto &i : _impl->valid)

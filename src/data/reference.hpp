@@ -599,7 +599,7 @@ namespace Anaquin
                              const IntervalID &id,
                              const Locus &l) : Interval(id, l), gID(gID), iID(iID) {}
 
-                const GeneID gID;
+                const GeneID    gID;
                 const IsoformID iID;
             };
         
@@ -642,9 +642,9 @@ namespace Anaquin
 
             struct ExonData
             {
-                ExonData(const ChromoID &cID,
+                ExonData(const ChromoID  &cID,
                          const IsoformID &iID,
-                         const GeneID &gID,
+                         const GeneID    &gID,
                          const Locus &l)
                                 : cID(cID), iID(iID), gID(gID), l(l) {}
 
@@ -697,20 +697,27 @@ namespace Anaquin
             void addGene(const ChromoID &, const GeneID    &, const Locus &);
             void addExon(const ChromoID &, const IsoformID &, const GeneID &, const Locus &);
 
+            /*
+             * Accessor functions
+             */
+
             // Calculate the detection limit at the gene level
             Limit limitGene(const Hist &) const;
 
             // Number of non-overlapping bases in all exons
-            Base exonBase(Context) const;
+            Base exonBase(const ChromoID &) const;
 
-            // Return the number of merged exons
+            // Return number of merged exons
             Counts countMerged(const ChromoID &) const;
         
-            // Return the number of unmerged exons
+            // Return number of unmerged exons
             Counts countExons(const ChromoID &) const;
         
-            // Return the number of introns
+            // Return number of introns
             Counts countIntrons(const ChromoID &) const;
+
+            // Return number of chromosomes
+            Counts countChromos() const;
         
             const GeneData   *findGene  (const ChromoID &, const GeneID &)           const;
             const GeneData   *findGene  (const ChromoID &, const Locus &, MatchRule) const;

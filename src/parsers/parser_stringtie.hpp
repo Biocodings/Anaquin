@@ -67,14 +67,14 @@ namespace Anaquin
                 {
                     t.id = toks[GeneField::GeneID];
                     
-                    if (Standard::instance().r_trans.findGene("chrT", t.id))
-                    {
+//                    if (Standard::instance().r_trans.findGene("chrT", t.id))
+//                    {
                         t.cID = "chrT";
-                    }
-                    else
-                    {
-                        t.cID = "chr1";
-                    }
+//                    }
+//                    else
+//                    {
+//                        t.cID = "chr1";
+//                    }
                     
                     t.l    = Locus(stod(toks[GeneField::GeneStart]), stod(toks[GeneField::GeneEnd]));
                     t.fpkm = stod(toks[GeneField::GeneFPKM]);
