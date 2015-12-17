@@ -121,7 +121,7 @@ template <typename T> const T * matchT(const Alignment &align,
     }
     else
     {
-        if (inters.contains(align.l, oMatches))
+        if (inters.overlaps(align.l, oMatches))
         {
             for (auto &i : cMatches)
             {
