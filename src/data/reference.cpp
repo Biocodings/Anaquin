@@ -472,8 +472,8 @@ struct TransRef::TransRefImpl
 
     struct RawData
     {
-        std::map<SequinID, GeneID>                 rawMapper;
-        std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
+        std::map<SequinID, GeneID>                rawMapper;
+        std::map<SequinID, std::vector<ExonData>> exonsByTrans;
     };
 
     struct Data
@@ -487,6 +487,9 @@ struct TransRef::TransRefImpl
         std::vector<ExonData>   mergedExons;
         std::vector<ExonData>   sortedExons;
         std::vector<IntronData> sortedIntrons;
+
+        // Only valid for synthetic
+        std::map<GeneID, SequinData *> gene2Seqs;
     };
     
     void addRef(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
@@ -705,24 +708,6 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     }
     
     assert(!_data.empty());
-    
-    /*
-     * Compute the locus for each sequin
-     */
-    
-    for (const auto &i : _impl->cRaw.exonsByTrans)
-    {
-        if (_data.count(i.first))
-        {
-            _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
-            {
-                return true;
-            });
-            
-            _impl->valid["chrT"].genes[_data[i.first].gID].id = _data[i.first].gID;
-            _impl->valid["chrT"].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
-        }
-    }
 }
 
 template <typename T> void createTrans(T &t)
@@ -826,6 +811,14 @@ void TransRef::validate()
             {
                 _impl->valid[ChrT].sortedExons.push_back(j);
             }
+            
+            _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
+            {
+                return true;
+            });
+            
+            _impl->valid[ChrT].genes[_data[i.first].gID].id = _data[i.first].gID;
+            _impl->valid[ChrT].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]);
         }
     }
 
