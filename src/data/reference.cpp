@@ -461,12 +461,13 @@ template <typename Iter> Base countLocus(const Iter &iter)
 
 struct TransRef::TransRefImpl
 {
-    static BinID createBinID(const GeneID &gID, const IsoformID &iID, const Locus &l)
+    static BinID createBinID(const GeneID &cID, const GeneID &gID, const IsoformID &iID, const Locus &l)
     {
-        return (boost::format("%1%_%2%_%3%_%4%") % gID
-                                                 % iID
-                                                 % l.start
-                                                 % l.end).str();
+        return (boost::format("%1%_%2%_%3%_%4%_%5%") % cID
+                                                     % gID
+                                                     % iID
+                                                     % l.start
+                                                     % l.end).str();
     }
 
     struct RawData
@@ -476,21 +477,17 @@ struct TransRef::TransRefImpl
         std::map<IsoformID, std::vector<ExonData>> exonsByTrans;
     };
 
-    struct EData
+    struct Data
     {
         // Number of bases for all the reference exons
         Base exonBase;
         
         std::map<GeneID, Locus> _genes;
+        std::map<GeneID, GeneData> genes;
         
         std::vector<ExonData>   mergedExons;
         std::vector<ExonData>   sortedExons;
         std::vector<IntronData> sortedIntrons;
-    };
-    
-    struct SData : public EData
-    {
-        std::map<GeneID, GeneData> genes;
     };
     
     void addRef(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
@@ -498,7 +495,6 @@ struct TransRef::TransRefImpl
         const auto exon = ExonData(cID, iID, gID, l);
 
         raw.exonsByTrans[iID].push_back(exon);
-        
         raw.rawIIDs.insert(iID);
         raw.rawMapper[iID] = gID;
     }
@@ -509,7 +505,7 @@ struct TransRef::TransRefImpl
      * Validated data and resources
      */
     
-    std::map<ChromoID, SData> valid;
+    std::map<ChromoID, Data> valid;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
@@ -616,7 +612,7 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(Context src) const
 
     for (const auto &i : *exons)
     {
-        inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
+        inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
     
     return inters;
@@ -630,7 +626,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(Context src) const
 
     for (const auto &i : *introns)
     {
-        inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.gID, i.iID, i.l), i.l));
+        inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
 
     return inters;
@@ -705,7 +701,6 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
             // Only if it's a validated sequin
             if (_data.count(j.id))
             {
-                //_data.at(j.id).length = j.length;
                 _data.at(j.id).mixes[mix] = j.abund;
             }
         }
