@@ -44,7 +44,7 @@ TEST_CASE("TAlign_R2_33_1")
     
     for (const auto &i : r.chrT->eInters.data())
     {
-        if (i.first != "R2_33_R2_33_1_3621204_3621284" && i.first != "R2_33_R2_33_1_3625759_3625960")
+        if (i.first != "chrT_R2_33_R2_33_1_3621204_3621284" && i.first != "chrT_R2_33_R2_33_1_3625759_3625960")
         {
             REQUIRE(i.second.stats().covered() == 0.00);
         }
