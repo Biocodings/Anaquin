@@ -505,6 +505,10 @@ struct TransRef::TransRefImpl
     
     RawData cRaw;
 
+    /*
+     * Validated data and resources
+     */
+    
     std::map<ChromoID, SData> valid;
 };
 
@@ -738,6 +742,8 @@ template <typename T> void validateTrans(T &t)
      *   3. Count the number of non-overlapping bases for the exons
      */
 
+    assert(!t.sortedExons.empty());
+
     // 1. Sort the exons
     std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const TransRef::ExonData &x,
                                                              const TransRef::ExonData &y)
@@ -830,10 +836,10 @@ void TransRef::validate()
     validateTrans(_impl->valid["chrT"]);
 
     // Do it for the experiment
-    if (!_impl->valid["chrT"].sortedExons.empty())
-    {
-        validateTrans(_impl->valid["chr1"]);
-    }
+    //if (!_impl->valid["chrT"].sortedExons.empty())
+    //{
+    //    validateTrans(_impl->valid["chr1"]);
+    //}
     
     assert(!_impl->valid["chrT"].genes.empty());
     assert(!_impl->valid["chrT"].sortedExons.empty());
