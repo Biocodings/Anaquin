@@ -792,6 +792,8 @@ template <typename T> void createTrans(T &t)
     
     // 3. Count number of non-overlapping bases for all exons
     t.exonBase = countLocus(t.mergedExons = Locus::merge<TransRef::ExonData, TransRef::ExonData>(t.sortedExons));
+
+    assert(t.exonBase);
 }
 
 void TransRef::validate()
@@ -839,9 +841,6 @@ void TransRef::validate()
     for (const auto &i : _impl->valid)
     {
         createTrans(_impl->valid[i.first]);
-
-        assert(!_impl->valid[i.first].genes.empty());
-        assert(!_impl->valid[i.first].sortedExons.empty());
     }
     
     assert(_impl->valid.count(ChrT));
