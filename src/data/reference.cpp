@@ -547,9 +547,16 @@ void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &
     }
 }
 
-Counts TransRef::countChromos() const
+std::set<ChromoID> TransRef::chromoIDs() const
 {
-    return _impl->valid.size();
+    std::set<ChromoID> cIDs;
+    
+    for (const auto &i : _impl->valid)
+    {
+        cIDs.insert(i.first);
+    }
+    
+    return cIDs;
 }
 
 Counts TransRef::countExons(const ChromoID &cID) const
@@ -613,13 +620,11 @@ const TransRef::IntronData * TransRef::findIntron(const ChromoID &cID, const Loc
     return findList(_impl->valid.at(cID).sortedIntrons, l, m);
 }
 
-Intervals<TransRef::ExonInterval> TransRef::exonInters(Context ctx) const
+Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChromoID &cID) const
 {
     Intervals<ExonInterval> inters;
     
-    const auto exons = (ctx == SContext ? &_impl->valid.at(ChrT).sortedExons : &_impl->valid.at("chr1").sortedExons);
-
-    for (const auto &i : *exons)
+    for (const auto &i : _impl->valid.at(cID).sortedExons)
     {
         inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
@@ -627,13 +632,11 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(Context ctx) const
     return inters;
 }
 
-Intervals<TransRef::IntronInterval> TransRef::intronInters(Context ctx) const
+Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChromoID &cID) const
 {
     Intervals<IntronInterval> inters;
     
-    const auto introns = (ctx == SContext ? &_impl->valid[ChrT].sortedIntrons : &_impl->valid["chr1"].sortedIntrons);
-
-    for (const auto &i : *introns)
+    for (const auto &i : _impl->valid.at(cID).sortedIntrons)
     {
         inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
@@ -641,13 +644,9 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(Context ctx) const
     return inters;
 }
 
-Hist TransRef::geneHist(Context src) const
+Hist TransRef::geneHist(const ChromoID &cID) const
 {
-    switch (src)
-    {
-        case SContext: { return createHist(_impl->valid[ChrT].genes);  }
-        case EContext: { return createHist(_impl->valid["chr1"]._genes); }
-    }
+    return createHist(_impl->valid[cID].genes);
 }
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)

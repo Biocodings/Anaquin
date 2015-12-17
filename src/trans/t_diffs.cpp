@@ -107,7 +107,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
     
     // Construct for a histogram at the appropriate level
-    stats.chrT->h = isoform ? r.hist() : r.geneHist(SContext);
+    stats.chrT->h = isoform ? r.hist() : r.geneHist(ChrT);
     
     o.info("Parsing tracking file");
 

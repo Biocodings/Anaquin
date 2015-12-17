@@ -1,18 +1,18 @@
 #include <ss/stats.hpp>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
-#include <iostream>
+
 using namespace Anaquin;
 
 // Internal implementation
-typedef std::function<void (const TAlign::Stats &)> Functor;
+typedef std::function<void (TAlign::Stats &)> Functor;
 
 /*
  * -------------------- Initalization --------------------
  */
 
 // Template function used by init()
-template <typename T> void initT(Context ctx, T t)
+template <typename T> void initT(const ChromoID &cID, T &t)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -21,85 +21,77 @@ template <typename T> void initT(Context ctx, T t)
      */
     
     // Initalize the distributions
-    t->overB.h = t->histE = t->histI = r.geneHist(ctx);
+    t.overB.h = t.histE = t.histI = r.geneHist(cID);
     
-    assert(!t->histE.empty());
-    assert(!t->histI.empty());
-    assert(!t->overB.h.empty());
+    assert(!t.histE.empty());
+    assert(!t.histI.empty());
+    assert(!t.overB.h.empty());
     
     /*
      * Initialize intervals for exons and introns
      */
     
-    t->eInters = r.exonInters(ctx);
-    t->iInters = r.intronInters(ctx);
+    t.eInters = r.exonInters(cID);
+    t.iInters = r.intronInters(cID);
     
-    assert(t->eInters.size());
-    assert(t->iInters.size());
+    assert(t.eInters.size());
+    assert(t.iInters.size());
     
     /*
      * Initialize overall statistics
      */
     
-    for (const auto &i : t->histE)
+    for (const auto &i : t.histE)
     {
-        t->geneB[i.first];
-        t->geneE[i.first];
-        t->geneI[i.first];
+        t.geneB[i.first];
+        t.geneE[i.first];
+        t.geneI[i.first];
     }
 
     /*
      * Initialize exon statistics
      */
     
-    for (const auto &i : t->eInters.data())
+    for (const auto &i : t.eInters.data())
     {
-        t->eContains[i.first];
-        t->eOverlaps[i.first];
-        t->exonToGene[i.second.id()] = i.second.gID;
+        t.eContains[i.first];
+        t.eOverlaps[i.first];
+        t.exonToGene[i.second.id()] = i.second.gID;
     }
 
     /*
      * Initialize intron statistics
      */
     
-    for (const auto &i : t->iInters.data())
+    for (const auto &i : t.iInters.data())
     {
-        t->iContains[i.first];
-        t->iOverlaps[i.first];
-        t->intronToGene[i.second.id()] = i.second.gID;
+        t.iContains[i.first];
+        t.iOverlaps[i.first];
+        t.intronToGene[i.second.id()] = i.second.gID;
     }
     
     /*
      * Initialize base statistics
      */
 
-    for (const auto &i : t->overB.h)
+    for (const auto &i : t.overB.h)
     {
-        t->lFPS[i.first];
-        t->rFPS[i.first];
+        t.lFPS[i.first];
+        t.rFPS[i.first];
     }
 
-    assert(!t->lFPS.empty()      && !t->rFPS.empty());
-    assert(!t->eContains.empty() && !t->eOverlaps.empty());
-    assert(!t->iContains.empty() && !t->iOverlaps.empty());
+    assert(!t.lFPS.empty()      && !t.rFPS.empty());
+    assert(!t.eContains.empty() && !t.eOverlaps.empty());
+    assert(!t.iContains.empty() && !t.iOverlaps.empty());
 }
 
 static TAlign::Stats init()
 {
     TAlign::Stats stats;
 
-    stats.chrT = std::shared_ptr<TAlign::Stats::Synthetic>(new TAlign::Stats::Synthetic());
-    
-    // Initalize for the synthetic chromosome
-    initT(SContext, stats.chrT);
-
-    // Initalize for the experiments
-    if (Standard::instance().r_trans.countChromos() > 1)
+    for (const auto &cID : Standard::instance().r_trans.chromoIDs())
     {
-        stats.expT = std::shared_ptr<TAlign::Stats::Experiment>(new TAlign::Stats::Experiment());
-
-        initT(EContext, stats.expT);
+        initT(cID, stats.data[cID]);
     }
 
     return stats;
@@ -200,21 +192,21 @@ template <typename T> void collect(T &t,
         over.aFP += unknowns;
     };
     
-    aligns(t->geneE,
-           t->overE,
-           t->histE,
-           t->unknowns.size(),
-           t->eContains,
-           t->eOverlaps,
-           t->exonToGene);
+    aligns(t.geneE,
+           t.overE,
+           t.histE,
+           t.unknowns.size(),
+           t.eContains,
+           t.eOverlaps,
+           t.exonToGene);
     
-    aligns(t->geneI,
-           t->overI,
-           t->histI,
+    aligns(t.geneI,
+           t.overI,
+           t.histI,
            0,
-           t->iContains,
-           t->iOverlaps,
-           t->intronToGene);
+           t.iContains,
+           t.iOverlaps,
+           t.intronToGene);
     
     /*
      * 2. Calculating statistics for each sequin (at the gene level due to alternative splicing)
@@ -259,18 +251,18 @@ template <typename T> void collect(T &t,
     };
     
     // Do it at the exon level
-    genes(t->geneE,
-          t->overE,
-          t->eContains,
-          t->eOverlaps,
-          t->exonToGene);
+    genes(t.geneE,
+          t.overE,
+          t.eContains,
+          t.eOverlaps,
+          t.exonToGene);
 
     // Repat at the intron level
-    genes(t->geneI,
-          t->overI,
-          t->iContains,
-          t->iOverlaps,
-          t->intronToGene);
+    genes(t.geneI,
+          t.overI,
+          t.iContains,
+          t.iOverlaps,
+          t.intronToGene);
 
     /*
      * 3. Calculating metrics at the base level.
@@ -278,9 +270,9 @@ template <typename T> void collect(T &t,
     
     o.info("Calculating base statistics");
     
-    for (const auto &i : t->eInters.data())
+    for (const auto &i : t.eInters.data())
     {
-        auto &m  = t->geneB.at(i.second.gID);
+        auto &m  = t.geneB.at(i.second.gID);
         auto &in = i.second;
         
         const auto &gID = i.second.gID;
@@ -289,7 +281,7 @@ template <typename T> void collect(T &t,
         m.fp() = lFPS.at(gID) + rFPS.at(gID);
         
         // Update the FP at the overall level
-        t->overB.m.fp() += m.fp();
+        t.overB.m.fp() += m.fp();
         
         Base covered = 0;
         
@@ -301,10 +293,10 @@ template <typename T> void collect(T &t,
                 covered += j - i;
                 
                 // Update the overall performance
-                t->overB.m.tp() += j - i;
+                t.overB.m.tp() += j - i;
                 
                 // Update the distribution
-                t->overB.h.at(gID)++;
+                t.overB.h.at(gID)++;
             }
         });
         
@@ -314,12 +306,12 @@ template <typename T> void collect(T &t,
         
         assert(m.nr() >= m.tp());
         
-        t->overB.m.nr() += in.l().length();
-        t->overB.m.nq()  = t->overB.m.tp() + t->overB.m.fp();
+        t.overB.m.nr() += in.l().length();
+        t.overB.m.nq()  = t.overB.m.tp() + t.overB.m.fp();
     }
     
-    o.info("Base (TP): " + std::to_string(t->overB.m.tp()));
-    o.info("Base (FP): " + std::to_string(t->overB.m.fp()));
+    o.info("Base (TP): " + std::to_string(t.overB.m.tp()));
+    o.info("Base (FP): " + std::to_string(t.overB.m.fp()));
     
     /*
      * Calculating detection limit
@@ -329,9 +321,9 @@ template <typename T> void collect(T &t,
     
     const auto &r = Standard::instance().r_trans;
     
-    t->limitE = r.limitGene(t->histE);
-    t->limitI = r.limitGene(t->histI);
-    t->overB.limit = r.limitGene(t->overB.h);
+    t.limitE = r.limitGene(t.histE);
+    t.limitI = r.limitGene(t.histI);
+    t.overB.limit = r.limitGene(t.overB.h);
 
     /*
      * Calculating for missing statistics
@@ -351,22 +343,22 @@ template <typename T> void collect(T &t,
     };
     
     // An exon is missing if no alignment aligns to it
-    missing(t->missE, t->eContains);
+    missing(t.missE, t.eContains);
     
     // An intron is missing if no alignment aligns to it
-    missing(t->missI, t->iContains);
+    missing(t.missI, t.iContains);
     
     /*
      * A gene is considered missing if not all exons have alignment aligned to it
      */
     
-    for (const auto &gene : t->histE)
+    for (const auto &gene : t.histE)
     {
         bool missing = false;
         
-        for (const auto &bin : t->eContains)
+        for (const auto &bin : t.eContains)
         {
-            if (gene.first == t->exonToGene.at(bin.first))
+            if (gene.first == t.exonToGene.at(bin.first))
             {
                 if ((missing = (bin.second == 0)))
                 {
@@ -377,7 +369,7 @@ template <typename T> void collect(T &t,
         
         if (missing)
         {
-            t->missG.insert(Missing(gene.first));
+            t.missG.insert(Missing(gene.first));
         }
     }
 }
@@ -400,13 +392,9 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
      * 3: Collecting statistics
      */
 
-    // Collect for synthetic
-    collect(stats.chrT, stats.chrT->lFPS, stats.chrT->rFPS, o);
-
-    // Collect for experiments
-    if (stats.expT)
+    for (auto &i : stats.data)
     {
-        collect(stats.expT, stats.expT->lFPS, stats.expT->rFPS, o);
+        collect(i.second, i.second.lFPS, i.second.rFPS, o);
     }
 
     return stats;
@@ -419,18 +407,18 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
     if (!align.spliced)
     {
         match = matchT(align,
-                       t->eInters,
-                       t->eContains,
-                       t->eOverlaps,
-                       &(t->lFPS),
-                       &(t->rFPS));
+                       t.eInters,
+                       t.eContains,
+                       t.eOverlaps,
+                       &(t.lFPS),
+                       &(t.rFPS));
     }
     else
     {
         match = matchT(align,
-                       t->iInters,
-                       t->iContains,
-                       t->iOverlaps);
+                       t.iInters,
+                       t.iContains,
+                       t.iOverlaps);
     }
 
     return match;
@@ -440,20 +428,15 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
  * Classify for the experiment. Note that the base statistics are not needed.
  */
 
-static void classifyExpT(std::shared_ptr<TAlign::Stats::Experiment> t,
+static void classifyExpT(TAlign::Stats::Data &t,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
 {
-    if (!t)
-    {
-        return;
-    }
-    
     REPORT_STATUS();
     
-    t->update(align);
-    
+    t.update(align);
+
     if (!align.mapped || align.id == Standard::chrT)
     {
         return;
@@ -461,7 +444,7 @@ static void classifyExpT(std::shared_ptr<TAlign::Stats::Experiment> t,
 
     if (!matchAlign(t, align))
     {
-        t->unknowns.push_back(UnknownAlignment(align.qName, align.l));
+        t.unknowns.push_back(UnknownAlignment(align.qName, align.l));
     }
 }
 
@@ -469,14 +452,14 @@ static void classifyExpT(std::shared_ptr<TAlign::Stats::Experiment> t,
  * Classify for the synthetic chromosome.
  */
 
-static void classifyChrT(std::shared_ptr<TAlign::Stats::Synthetic> t,
+static void classifyChrT(TAlign::Stats::Data &t,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
 {
     REPORT_STATUS();
     
-    t->update(align);
+    t.update(align);
     
     if (!align.mapped || align.id != Standard::chrT)
     {
@@ -485,20 +468,26 @@ static void classifyChrT(std::shared_ptr<TAlign::Stats::Synthetic> t,
 
     if (!matchAlign(t, align))
     {
-        t->unknowns.push_back(UnknownAlignment(align.qName, align.l));
+        t.unknowns.push_back(UnknownAlignment(align.qName, align.l));
     }
 }
 
 TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Options &o)
 {
-    return calculate(o, [&](const TAlign::Stats &stats)
+    return calculate(o, [&](TAlign::Stats &stats)
     {
         ParserSAM::AlignmentInfo info;
         
         for (const auto &align : aligns)
         {
-            classifyChrT(stats.chrT, align, info, o);
-            classifyExpT(stats.expT, align, info, o);
+            if (align.id == ChrT)
+            {
+                classifyChrT(stats.data.at(ChrT), align, info, o);
+            }
+            else
+            {
+                classifyExpT(stats.data.at(align.id), align, info, o);
+            }
         }
     });
 }
@@ -507,12 +496,18 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    return calculate(o, [&](const TAlign::Stats &stats)
+    return calculate(o, [&](TAlign::Stats &stats)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
-            classifyChrT(stats.chrT, align, info, o);
-            classifyExpT(stats.expT, align, info, o);
+            if (align.id == ChrT)
+            {
+                classifyChrT(stats.data.at(ChrT), align, info, o);
+            }
+            else
+            {
+                classifyExpT(stats.data.at(align.id), align, info, o);
+            }
         });
     });
 }
@@ -623,30 +618,30 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
     
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
-                                            % stats.chrT->unmapped
-                                            % stats.chrT->n_expT
-                                            % stats.chrT->n_chrT
+                                            % stats.data.at(ChrT).unmapped
+                                            % stats.data.at(ChrT).n_expT
+                                            % stats.data.at(ChrT).n_chrT
                                             % r.countExons(ChrT)
                                             % r.countIntrons(ChrT)
                                             % r.exonBase(ChrT)
-                                            % stats.qExons()
-                                            % stats.qIntrons()
-                                            % stats.qBases()
-                                            % stats.sn(TAlign::Stats::AlignMetrics::AlignExon)
-                                            % stats.pc(TAlign::Stats::AlignMetrics::AlignExon)
-                                            % stats.chrT->limitE.abund
-                                            % stats.chrT->limitE.id
-                                            % stats.sn(TAlign::Stats::AlignMetrics::AlignIntron)
-                                            % stats.pc(TAlign::Stats::AlignMetrics::AlignIntron)
-                                            % stats.chrT->limitI.abund
-                                            % stats.chrT->limitI.id
-                                            % stats.sn(TAlign::Stats::AlignMetrics::AlignBase)
-                                            % stats.pc(TAlign::Stats::AlignMetrics::AlignBase)
-                                            % stats.chrT->overB.limit.abund
-                                            % stats.chrT->overB.limit.id
-                                            % stats.chrT->dilution()
-                                            % (100.0 * stats.chrT->expMap())
-                                            % (100.0 * stats.chrT->chrTMap())
+                                            % stats.qExons(ChrT)
+                                            % stats.qIntrons(ChrT)
+                                            % stats.qBases(ChrT)
+                                            % stats.sn(ChrT, TAlign::Stats::AlignMetrics::AlignExon)
+                                            % stats.pc(ChrT, TAlign::Stats::AlignMetrics::AlignExon)
+                                            % stats.data.at(ChrT).limitE.abund
+                                            % stats.data.at(ChrT).limitE.id
+                                            % stats.sn(ChrT, TAlign::Stats::AlignMetrics::AlignIntron)
+                                            % stats.pc(ChrT, TAlign::Stats::AlignMetrics::AlignIntron)
+                                            % stats.data.at(ChrT).limitI.abund
+                                            % stats.data.at(ChrT).limitI.id
+                                            % stats.sn(ChrT, TAlign::Stats::AlignMetrics::AlignBase)
+                                            % stats.pc(ChrT, TAlign::Stats::AlignMetrics::AlignBase)
+                                            % stats.data.at(ChrT).overB.limit.abund
+                                            % stats.data.at(ChrT).overB.limit.id
+                                            % stats.data.at(ChrT).dilution()
+                                            % (100.0 * stats.data.at(ChrT).expMap())
+                                            % (100.0 * stats.data.at(ChrT).chrTMap())
                      ).str());
     o.writer->close();
 }
@@ -668,12 +663,12 @@ static void writeSequins(const TAlign::Stats &stats, const FileName &file, const
                                            % "Sensitivity (Base)"
                                            % "Specificity (Base)").str());
     
-    for (const auto &i : stats.chrT->overB.h)
+    for (const auto &i : stats.data.at(ChrT).overB.h)
     {
         Base length   = 0;
         Base nonZeros = 0;
         
-        for (const auto &j : stats.chrT->eInters.data())
+        for (const auto &j : stats.data.at(ChrT).eInters.data())
         {
             if (j.second.gID == i.first)
             {
@@ -688,9 +683,9 @@ static void writeSequins(const TAlign::Stats &stats, const FileName &file, const
         
         const auto covered = static_cast<double>(nonZeros) / length;
         
-        const auto &mb = stats.chrT->geneB.at(i.first);
-        const auto &me = stats.chrT->geneE.at(i.first);
-        const auto &mi = stats.chrT->geneI.at(i.first);
+        const auto &mb = stats.data.at(ChrT).geneB.at(i.first);
+        const auto &me = stats.data.at(ChrT).geneE.at(i.first);
+        const auto &mi = stats.data.at(ChrT).geneI.at(i.first);
         
         // Not all sequins have an intron...
         if (mi.lNR)
@@ -754,30 +749,30 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     
     for (const auto &stat : stats)
     {
-        acc.add("Unmapped",       stat.chrT->unmapped);
-        acc.add("Experiment",     stat.chrT->n_expT);
-        acc.add("Synthetic",      stat.chrT->n_chrT);
-        acc.add("QExon",          stat.qExons());
-        acc.add("QIntron",        stat.qIntrons());
-        acc.add("QBase",          stat.qBases());
-        acc.add("Dilution",       stat.chrT->n_chrT);
-        acc.add("ExonSN",         stat.sn(TAlign::Stats::AlignMetrics::AlignExon));
-        acc.add("ExonPC",         stat.pc(TAlign::Stats::AlignMetrics::AlignExon));
-        acc.add("IntronSN",       stat.sn(TAlign::Stats::AlignMetrics::AlignIntron));
-        acc.add("IntronPC",       stat.pc(TAlign::Stats::AlignMetrics::AlignIntron));
-        acc.add("BaseSN",         stat.sn(TAlign::Stats::AlignMetrics::AlignBase));
-        acc.add("BasePC",         stat.pc(TAlign::Stats::AlignMetrics::AlignBase));
-        acc.add("ExpPercent",     100.0 * stat.chrT->expMap());
-        acc.add("ChrTPercent",    100.0 * stat.chrT->chrTMap());
-        acc.add("LimitE",         stat.chrT->limitE);
-        acc.add("LimitI",         stat.chrT->limitI);
-        acc.add("LimitB",         stat.chrT->overB.limit);
-        acc.add("MissingExonI",   stat.missing(TAlign::Stats::MissingMetrics::MissingExon).i);
-        acc.add("MissingExonP",   stat.missing(TAlign::Stats::MissingMetrics::MissingExon).percent());
-        acc.add("MissingIntronI", stat.missing(TAlign::Stats::MissingMetrics::MissingIntron).i);
-        acc.add("MissingIntronP", stat.missing(TAlign::Stats::MissingMetrics::MissingIntron).percent());
-        acc.add("MissingGeneI",   stat.missing(TAlign::Stats::MissingMetrics::MissingGene).i);
-        acc.add("MissingGeneP",   stat.missing(TAlign::Stats::MissingMetrics::MissingGene).percent());
+        acc.add("Unmapped",       stat.data.at(ChrT).unmapped);
+        acc.add("Experiment",     stat.data.at(ChrT).n_expT);
+        acc.add("Synthetic",      stat.data.at(ChrT).n_chrT);
+        acc.add("QExon",          stat.qExons(ChrT));
+        acc.add("QIntron",        stat.qIntrons(ChrT));
+        acc.add("QBase",          stat.qBases(ChrT));
+        acc.add("Dilution",       stat.data.at(ChrT).n_chrT);
+        acc.add("ExonSN",         stat.sn(ChrT, TAlign::Stats::AlignMetrics::AlignExon));
+        acc.add("ExonPC",         stat.pc(ChrT, TAlign::Stats::AlignMetrics::AlignExon));
+        acc.add("IntronSN",       stat.sn(ChrT, TAlign::Stats::AlignMetrics::AlignIntron));
+        acc.add("IntronPC",       stat.pc(ChrT, TAlign::Stats::AlignMetrics::AlignIntron));
+        acc.add("BaseSN",         stat.sn(ChrT, TAlign::Stats::AlignMetrics::AlignBase));
+        acc.add("BasePC",         stat.pc(ChrT, TAlign::Stats::AlignMetrics::AlignBase));
+        acc.add("ExpPercent",     100.0 * stat.data.at(ChrT).expMap());
+        acc.add("ChrTPercent",    100.0 * stat.data.at(ChrT).chrTMap());
+        acc.add("LimitE",         stat.data.at(ChrT).limitE);
+        acc.add("LimitI",         stat.data.at(ChrT).limitI);
+        acc.add("LimitB",         stat.data.at(ChrT).overB.limit);
+        acc.add("MissingExonI",   stat.missing(ChrT, TAlign::Stats::MissingMetrics::MissingExon).i);
+        acc.add("MissingExonP",   stat.missing(ChrT, TAlign::Stats::MissingMetrics::MissingExon).percent());
+        acc.add("MissingIntronI", stat.missing(ChrT, TAlign::Stats::MissingMetrics::MissingIntron).i);
+        acc.add("MissingIntronP", stat.missing(ChrT, TAlign::Stats::MissingMetrics::MissingIntron).percent());
+        acc.add("MissingGeneI",   stat.missing(ChrT, TAlign::Stats::MissingMetrics::MissingGene).i);
+        acc.add("MissingGeneP",   stat.missing(ChrT, TAlign::Stats::MissingMetrics::MissingGene).percent());
     }
     
     o.writer->open("TransAlign_summary.stats");

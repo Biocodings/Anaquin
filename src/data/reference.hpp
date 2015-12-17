@@ -686,13 +686,13 @@ namespace Anaquin
             TransRef();
 
             // Return a histogram for all the validated genes
-            Hist geneHist(Context) const;
+            Hist geneHist(const ChromoID &) const;
 
             // Intervals for reference exons
-            Intervals<ExonInterval> exonInters(Context) const;
+            Intervals<ExonInterval> exonInters(const ChromoID &) const;
         
             // Intervals for reference introns
-            Intervals<IntronInterval> intronInters(Context) const;
+            Intervals<IntronInterval> intronInters(const ChromoID &) const;
         
             void addGene(const ChromoID &, const GeneID    &, const Locus &);
             void addExon(const ChromoID &, const IsoformID &, const GeneID &, const Locus &);
@@ -716,8 +716,8 @@ namespace Anaquin
             // Return number of introns
             Counts countIntrons(const ChromoID &) const;
 
-            // Return number of chromosomes
-            Counts countChromos() const;
+            // List of chromosomes in the reference
+            std::set<ChromoID> chromoIDs() const;
         
             const GeneData   *findGene  (const ChromoID &, const GeneID &)           const;
             const GeneData   *findGene  (const ChromoID &, const Locus &, MatchRule) const;

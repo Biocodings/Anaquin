@@ -59,7 +59,7 @@ namespace Anaquin
                     MissingGene
                 };
 
-                struct Synthetic : public AlignmentStats
+                struct Data : public AlignmentStats
                 {
                     std::map<ExonID,   GeneID> exonToGene;
                     std::map<IntronID, GeneID> intronToGene;
@@ -107,62 +107,56 @@ namespace Anaquin
                     FPStats lFPS, rFPS;
                 };
 
-                typedef Synthetic Experiment;
-
-                // Statistics for the synthetic chromosome
-                std::shared_ptr<Synthetic> chrT;
-
-                // Statistics for the experiment
-                std::shared_ptr<Experiment> expT;
+                std::map<ChromoID, Data> data;
                 
                 /*
                  * Accessor functions
                  */
 
                 // Number of exons in the query
-                inline Counts qExons() const { return chrT->overE.aNQ(); }
+                inline Counts qExons(const ChromoID &cID) const { return data.at(cID).overE.aNQ(); }
                 
                 // Number of introns in the query
-                inline Counts qIntrons() const { return chrT->overI.aNQ(); }
+                inline Counts qIntrons(const ChromoID &cID) const { return data.at(cID).overI.aNQ(); }
 
                 // Number of bases in the query
-                inline Counts qBases() const { return chrT->overB.m.nq(); }
+                inline Counts qBases(const ChromoID &cID) const { return data.at(cID).overB.m.nq(); }
 
-                inline CountPercent missing(enum MissingMetrics m) const
+                inline CountPercent missing(const ChromoID &cID, enum MissingMetrics m) const
                 {
                     switch (m)
                     {
-                        case MissingGene:   { return CountPercent(chrT->missG.size(), chrT->histE.size());     }
-                        case MissingExon:   { return CountPercent(chrT->missE.size(), chrT->eContains.size()); }
-                        case MissingIntron: { return CountPercent(chrT->missI.size(), chrT->iContains.size()); }
+                        case MissingGene:   { return CountPercent(data.at(cID).missG.size(), data.at(cID).histE.size());     }
+                        case MissingExon:   { return CountPercent(data.at(cID).missE.size(), data.at(cID).eContains.size()); }
+                        case MissingIntron: { return CountPercent(data.at(cID).missI.size(), data.at(cID).iContains.size()); }
                     }
                 }
 
                 // Overall sensitivity
-                inline double sn(enum AlignMetrics m) const
+                inline double sn(const ChromoID &cID, enum AlignMetrics m) const
                 {
                     switch (m)
                     {
-                        case AlignExon:   { return chrT->overE.sn();   }
-                        case AlignBase:   { return chrT->overB.m.sn(); }
-                        case AlignIntron: { return chrT->overI.sn();   }
+                        case AlignExon:   { return data.at(cID).overE.sn();   }
+                        case AlignBase:   { return data.at(cID).overB.m.sn(); }
+                        case AlignIntron: { return data.at(cID).overI.sn();   }
                     }
                 }
                 
                 // Sensitivity at the gene level
-                inline double sn(const GeneID &id) const
+                inline double sn(const ChromoID &cID, const GeneID &id) const
                 {
-                    return chrT->geneE.at(id).sn();
+                    return data.at(cID).geneE.at(id).sn();
                 }
-                
+
                 // Overall precision
-                inline double pc(enum AlignMetrics m) const
+                inline double pc(const ChromoID &cID, enum AlignMetrics m) const
                 {
                     switch (m)
                     {
-                        case AlignExon:   { return chrT->overE.precise(); }
-                        case AlignBase:   { return chrT->overB.m.ac();    }
-                        case AlignIntron: { return chrT->overI.precise(); }
+                        case AlignExon:   { return data.at(cID).overE.precise(); }
+                        case AlignBase:   { return data.at(cID).overB.m.ac();    }
+                        case AlignIntron: { return data.at(cID).overI.precise(); }
                     }
                 }
             };

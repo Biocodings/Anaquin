@@ -100,7 +100,7 @@ TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Opt
         const auto &r = Standard::instance().r_trans;
         
         // Construct for a histogram at the appropriate level
-        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist(SContext);
+        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist(ChrT);
         
         for (const auto &i : exps)
         {
@@ -132,7 +132,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
         const auto &r = Standard::instance().r_trans;
         
         // Construct for a histogram at the appropriate level
-        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist(SContext);
+        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist(ChrT);
 
         const auto isIsoform = o.level == TExpress::Isoform;
         

@@ -17,7 +17,7 @@ namespace Anaquin
         {
             struct ChrT : public MappingStats
             {
-                SequinHist hb = Standard::instance().r_trans.geneHist(SContext);
+                SequinHist hb = Standard::instance().r_trans.geneHist("chrT");
                 SequinHist he = Standard::instance().r_trans.hist();
                 SequinHist hi = Standard::instance().r_trans.hist();
                 SequinHist ht = Standard::instance().r_trans.hist();
