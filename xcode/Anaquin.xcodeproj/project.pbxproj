@@ -65,6 +65,7 @@
 		EFA9DE731BCB7D6100780182 /* coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE711BCB7D6100780182 /* coverage.cpp */; };
 		EFA9DE7A1BCB8C6A00780182 /* v_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE781BCB8C6A00780182 /* v_coverage.cpp */; };
 		EFACC75B1B1F0C80004A9770 /* m_histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFACC7591B1F0C80004A9770 /* m_histogram.cpp */; };
+		EFB108451C22D29E004DCBCF /* t_itree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB108441C22D29E004DCBCF /* t_itree.cpp */; };
 		EFB3FF621B4A30DC0065CEA0 /* parser_top_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB3FF601B4A30DC0065CEA0 /* parser_top_fusion.cpp */; };
 		EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF381B4F848D0045DC6A /* t_locus.cpp */; };
 		EFB7FF461B4F8D8A0045DC6A /* l_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF291B4F79C20045DC6A /* l_diffs.cpp */; };
@@ -243,6 +244,7 @@
 		EFA9DE791BCB8C6A00780182 /* v_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_coverage.hpp; path = ../src/variant/v_coverage.hpp; sourceTree = "<group>"; };
 		EFACC7591B1F0C80004A9770 /* m_histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_histogram.cpp; sourceTree = "<group>"; };
 		EFACC75A1B1F0C80004A9770 /* m_histogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = m_histogram.h; sourceTree = "<group>"; };
+		EFB108441C22D29E004DCBCF /* t_itree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_itree.cpp; path = ../tests/data/t_itree.cpp; sourceTree = "<group>"; };
 		EFB1E0421B0098F300F093A2 /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser.hpp; path = ../src/parsers/parser.hpp; sourceTree = "<group>"; };
 		EFB2F8891BDEFB9800A9F0AB /* parser_stab.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_stab.hpp; path = ../src/parsers/parser_stab.hpp; sourceTree = "<group>"; };
 		EFB3FF601B4A30DC0065CEA0 /* parser_top_fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_top_fusion.cpp; path = ../src/parsers/parser_top_fusion.cpp; sourceTree = "<group>"; };
@@ -578,8 +580,9 @@
 		EFB7FF371B4F84430045DC6A /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				EFB7FF381B4F848D0045DC6A /* t_locus.cpp */,
 				EF17D29C1BCF246700F503F7 /* t_intervals.cpp */,
+				EFB108441C22D29E004DCBCF /* t_itree.cpp */,
+				EFB7FF381B4F848D0045DC6A /* t_locus.cpp */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -748,6 +751,7 @@
 				EFB7FF481B4F8DD80045DC6A /* l_abund.cpp in Sources */,
 				EF6D05F31BD3E6040048044F /* sampling.cpp in Sources */,
 				EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */,
+				EFB108451C22D29E004DCBCF /* t_itree.cpp in Sources */,
 				EFB7FF471B4F8DD20045DC6A /* f_discover.cpp in Sources */,
 				EFB7FF461B4F8D8A0045DC6A /* l_diffs.cpp in Sources */,
 				EF31E82D1B6123A70095F3E8 /* l_norm.cpp in Sources */,
