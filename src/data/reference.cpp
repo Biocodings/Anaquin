@@ -1,3 +1,4 @@
+#include <iostream>
 #include <boost/format.hpp>
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
@@ -728,8 +729,10 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     assert(!_data.empty());
 }
 
-template <typename T> void createTrans(T &t)
+template <typename T> void createTrans(const ChromoID &cID, T &t)
 {
+    std::cout << "[INFO]: Parsing: " << cID << std::endl;
+    
     /*
      * Generate the appropriate structure for analysis
      *
@@ -761,7 +764,6 @@ template <typename T> void createTrans(T &t)
     for (const auto &i : sorted)
     {
         for (auto j = 1; j < i.second.size(); j++)
-
         {
             const auto &x = i.second[j-1];
             const auto &y = i.second[j];
@@ -849,7 +851,7 @@ void TransRef::validate()
     
     for (const auto &i : _impl->valid)
     {
-        createTrans(_impl->valid[i.first]);
+        createTrans(i.first, _impl->valid[i.first]);
     }
     
     assert(_impl->valid.count(ChrT));
