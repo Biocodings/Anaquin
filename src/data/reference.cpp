@@ -854,6 +854,8 @@ void TransRef::validate()
         createTrans(i.first, _impl->valid[i.first]);
     }
     
+    std::cout << "[INFO]: Parsing finished" << std::endl;
+    
     assert(_impl->valid.count(ChrT));
 }
 
