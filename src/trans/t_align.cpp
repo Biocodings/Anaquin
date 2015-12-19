@@ -149,7 +149,8 @@ template <typename T> const T * matchT(const Alignment &align,
     return !cMatches.empty() ? cMatches[0] : nullptr;
 }
 
-template <typename T> void collect(T &t,
+template <typename T> void collect(const ChromoID &cID,
+                                   T &t,
                                    const TAlign::FPStats &lFPS,
                                    const TAlign::FPStats &rFPS,
                                    const TAlign::Options &o)
@@ -317,14 +318,17 @@ template <typename T> void collect(T &t,
      * Calculating detection limit
      */
     
-    o.info("Calculating detection limit");
+    if (cID != ChrT)
+    {
+        o.info("Calculating detection limit");
+        
+        const auto &r = Standard::instance().r_trans;
+        
+        t.limitE = r.limitGene(t.histE);
+        t.limitI = r.limitGene(t.histI);
+        t.overB.limit = r.limitGene(t.overB.h);
+    }
     
-    const auto &r = Standard::instance().r_trans;
-    
-    t.limitE = r.limitGene(t.histE);
-    t.limitI = r.limitGene(t.histI);
-    t.overB.limit = r.limitGene(t.overB.h);
-
     /*
      * Calculating for missing statistics
      */
@@ -396,7 +400,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
 
     for (auto &i : stats.data)
     {
-        collect(i.second, i.second.lFPS, i.second.rFPS, o);
+        collect(i.first, i.second, i.second.lFPS, i.second.rFPS, o);
     }
 
     return stats;
