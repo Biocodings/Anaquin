@@ -318,7 +318,7 @@ template <typename T> void collect(const ChromoID &cID,
      * Calculating detection limit
      */
     
-    if (cID != ChrT)
+    if (cID == ChrT)
     {
         o.info("Calculating detection limit");
         
