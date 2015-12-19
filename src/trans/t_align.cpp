@@ -1,7 +1,7 @@
 #include <ss/stats.hpp>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
-
+#include <iostream>
 using namespace Anaquin;
 
 // Internal implementation
@@ -506,7 +506,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
             {
                 classifyChrT(stats.data.at(ChrT), align, info, o);
             }
-            else
+            else if (stats.data.count(align.id))
             {
                 classifyExpT(stats.data.at(align.id), align, info, o);
             }
