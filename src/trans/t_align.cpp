@@ -388,6 +388,8 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
     
     calculator(stats);
 
+    o.info("Collecting statistics");
+    
     /*
      * 3: Collecting statistics
      */
