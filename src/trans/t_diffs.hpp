@@ -14,7 +14,7 @@ namespace Anaquin
             EdgeR,
         };
         
-        enum RNALevel
+        enum DiffLevel
         {
             Gene,
             Isoform
@@ -22,24 +22,19 @@ namespace Anaquin
 
         struct Options : public DoubleMixtureOptions
         {
-	    Options() {}
+            Options() {}
 
             Assembler soft = Assembler::Cuffdiffs;
 
             // Only valid for Cuffdiffs
-            RNALevel level;
+            DiffLevel level;
         };
 
         struct Stats : public MappingStats
         {
-            struct Data : public LinearStats
-            {
-                // Empty Implementation
-            };
-            
-            std::map<ChromoID, Data> data;
+            std::map<ChromoID, LinearStats> data;
 
-            Limit ss;
+            Limit s;
             std::map<std::string, Counts> h;
         };
 

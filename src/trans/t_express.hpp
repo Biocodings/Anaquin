@@ -13,7 +13,7 @@ namespace Anaquin
             StringTie,
         };
         
-        enum RNALevel
+        enum ExpressLevel
         {
             Gene,
             Isoform
@@ -21,19 +21,14 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
-            struct Data : public LinearStats
-            {
-                // Empty Interface
-            };
-            
-            std::map<ChromoID, Data> data;
+            std::map<ChromoID, LinearStats> data;
             
             /*
              * Statistics for detection limit (chrT only)
              */
-            
-            Limit ss;
-            
+
+            Limit s;
+
             // The keys depend on whether it's a gene or isoform analysis
             std::map<std::string, Counts> h;
         };
@@ -44,8 +39,8 @@ namespace Anaquin
             Options() {}
 
             Assembler tool;
-            
-            RNALevel level = Isoform;
+
+            ExpressLevel level = Isoform;
         };
 
         // Analyze for a single sample

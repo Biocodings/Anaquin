@@ -43,7 +43,10 @@ TEST_CASE("TDiff_AllExpressed")
         tests.push_back(test);
     }
     
-    const auto r = TDiffs::analyze(tests, TDiffs::Options());
+    TDiffs::Options o;
+    o.level = TDiffs::Gene;
+    
+    const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
     
     REQUIRE(stats.r  == 1.0);
@@ -90,7 +93,10 @@ TEST_CASE("TDiff_NoneExpressed")
         tests.push_back(test);
     }
     
-    const auto r = TDiffs::analyze(tests, TDiffs::Options());
+    TDiffs::Options o;
+    o.level = TDiffs::Gene;
+    
+    const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
     
     REQUIRE(stats.r  == 1.0);
@@ -119,7 +125,10 @@ TEST_CASE("TDiff_NoSynthetic")
         tests.push_back(test);
     }
     
-    const auto r = TDiffs::analyze(tests, TDiffs::Options());
+    TDiffs::Options o;
+    o.level = TDiffs::Gene;
+    
+    const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
     
     REQUIRE(isnan(stats.r));

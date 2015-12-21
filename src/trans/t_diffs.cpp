@@ -23,8 +23,6 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
     // It's NAN if the sequin defined in reference but not in mixture
     Fold measured = NAN;
     
-    const auto cID = t.cID == ChrT ? ChrT : ChrE;
-    
     /*
      * Differential expression at the gene level
      */
@@ -53,7 +51,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
             measured = fpkm_2 / fpkm_1;
         }
         
-        stats.data[cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+        stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
     };
 
     switch (o.level)
@@ -91,7 +89,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
                 measured = t.fpkm_2 / t.fpkm_1;
             }
             
-            stats.data[cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+            stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             
             break;
         }
@@ -107,7 +105,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     
     std::for_each(cIDs.begin(), cIDs.end(), [&](const ChromoID &cID)
     {
-        stats.data[cID == ChrT ? ChrT : ChrE];
+        stats.data[cID];
     });
 
     const auto isoform = o.level == TDiffs::Isoform;
@@ -126,7 +124,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     
     o.info("Calculating detection limit");
     
-    stats.ss = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
+    stats.s = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
     
     return stats;
 }
@@ -174,27 +172,26 @@ void TDiffs::report(const FileName &file, const Options &o)
     const auto stats = TDiffs::analyze(file, o);
     const auto units = (o.level == Isoform) ? "isoforms" : "genes";
     
-    /*
-     * Generating summary statistics
-     */
+    o.info("Generating statistics");
     
-    o.info("Generating summary statistics");
-    
-    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChromoID, TDiffs::Stats::Data> &p)
+    for (const auto &i : stats.data)
     {
-        //AnalyzeReporter::linear("TransDiff_summary.stats", file, stats, p.first, units, o.writer);
-    });
-
-    /*
-     * Generating scatter plot
-     */
-    
-    o.info("Generating scatter plot");
-    
-    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChromoID, TDiffs::Stats::Data> &p)
-    {
-        ////AnalyzeReporter::scatter(stats, "", "TransDiff", "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
-    });
+        /*
+         * Generating summary statistics
+         */
+        
+        o.writer->open("TransDiffs_summary.stats");
+        o.writer->write(RWriter::linear(file, stats, i.first, units));
+        o.writer->close();
+        
+        /*
+         * Generating scatter plot
+         */
+        
+        o.writer->open("TransDiffs_scatter.R");
+        o.writer->write(RWriter::scatter(stats, i.first, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
+        o.writer->close();
+    }
 }
 
 void TDiffs::report(const std::vector<FileName> &files, const Options &o)
