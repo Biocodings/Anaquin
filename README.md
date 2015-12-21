@@ -33,9 +33,14 @@ Dependencies
 
 The source code requires a C++11 compiler to build.
 
+Features
+============
 
-
-
+<ul>
+<li> Statistical analysis
+<li> Tool modules
+<li> Data visualization
+</ul>
 
 
 
