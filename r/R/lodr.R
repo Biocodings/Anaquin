@@ -4,7 +4,11 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-counts <- read.csv('pval.res', row.names=1)
+
+m <- read.csv('/Users/tedwong/Desktop/LODR_data_TED.csv', row.names=1)
+m$expected.log2FoldChange = as.factor(abs(m$expected.log2FoldChange))
+m <- m[!is.na(m$padj),]
+plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
 
 plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts', yname='DE Test P-values')
 {
@@ -18,7 +22,7 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
            ylab(yname) + 
            
            scale_x_log10(limits = xrange) + 
-           scale_y_log10(breaks = c(1e-12,1e-10,1e-8,1e-5,1e-4,1e-3,1e-2,1e-1,1e0)) +
+           scale_y_log10(breaks = c(1e-300,1e-200,1e-100,1e-10, 1.00)) +
         
            #geom_ribbon(data = lineDat, aes(x = x.new, 
            #                                y = fitLine, 
