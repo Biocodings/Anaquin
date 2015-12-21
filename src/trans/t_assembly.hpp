@@ -13,37 +13,60 @@ namespace Anaquin
             FileName ref, query;
         };
 
-        struct Stats
+        struct Stats : public MappingStats
         {
-            struct ChrT : public MappingStats
+            struct Data
             {
-                SequinHist hb = Standard::instance().r_trans.geneHist("chrT");
-                SequinHist he = Standard::instance().r_trans.hist();
-                SequinHist hi = Standard::instance().r_trans.hist();
-                SequinHist ht = Standard::instance().r_trans.hist();
+                /*
+                 * Base statistics
+                 */
                 
-                double exonSP,   exonSN;
-                double baseSP,   baseSN;
-                double transSP,  transSN;
-                double intronSP, intronSN;
+                double bSP, bSN;
                 
-                Limit sb, si, se, st;
+                /*
+                 * Exon statistics
+                 */
+                
+                double eSP, eSN, eFSP, eFSN;
+
+                /*
+                 * Intron statistics
+                 */
+                
+                double iSP, iSN, iFSP, iFSN;
+
+                /*
+                 * Transcript statistics
+                 */
+                
+                double tSP, tSN, tFSP, tFSN;
             };
             
-            struct Experiment : public MappingStats
-            {
-                
-            };
+            std::map<ChromoID, Data> data;
             
-            std::shared_ptr<ChrT> chrT;
-            std::shared_ptr<Experiment> expT;
+            /*
+             * Statistics for detection limit (chrT only)
+             */
+            
+            Limit bLimit, eLimit, iLimit, tLimit;
+            SequinHist bHist, eHist, iHist, tHist;
         };
 
         // Analyze a single sample
         static Stats analyze(const FileName &, const Options &o = Options());
         
         // Analyze multiple replicates
-        static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o = Options());
+        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o = Options())
+        {
+            std::vector<TAssembly::Stats> stats;
+            
+            for (auto &file : files)
+            {
+                stats.push_back(analyze(file, o));
+            }
+            
+            return stats;
+        }
 
         static void report(const FileName &, const Options &o = Options());
         static void report(const std::vector<FileName> &, const Options &o = Options());

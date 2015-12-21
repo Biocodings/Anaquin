@@ -34,7 +34,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-static std::string createFilteredGTF(const FileName &file)
+static std::string createFilteredGTF(const FileName &file, const ChromoID &cID)
 {
     std::string line;
     const auto tmp = tmpnam(NULL);
@@ -43,7 +43,7 @@ static std::string createFilteredGTF(const FileName &file)
 
     ParserGTF::parse(file, [&](const Feature &f, const std::string &l, const ParserProgress &)
     {
-        if (f.id == Standard::chrT)
+        if (f.id == cID)
         {
             out << l << std::endl;
         }
@@ -90,110 +90,156 @@ static std::string summary()
            "   Novel introns: %35%/%36% (%37%)\n\n";
 }
 
-std::vector<TAssembly::Stats> TAssembly::analyze(const std::vector<FileName> &files, const Options &o)
-{
-    std::vector<TAssembly::Stats> stats;
-    
-    for (auto &file : files)
-    {
-        stats.push_back(analyze(file, o));
-    }
-    
-    return stats;
-}
-
 TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+
     assert(!o.ref.empty() && !o.query.empty());
     
     /*
-     * Comparing transcripts require constructing intron-chains, it is quite complicated.
-     * We will reuse the code in Cuffcompare. The idea is dirty but it works better than
-     * than reinventing the wheel. However, we'll need to filter out only the features
-     * belong to the synthetic chromosome.
+     * 1. Initalize the statistics
      */
     
-    o.info("Generating a filtered transcript");
+    TAssembly::Stats stats;
     
-    const auto query = createFilteredGTF(file);
-    o.logInfo("Filtered transcript: " + query + " has been created");
+    stats.data[ChrT];
     
-    o.logInfo("Invoking Cuffcompare: " + o.ref);
-    o.logInfo("Invoking Cuffcompare: " + query);
-    
-    const auto status = cuffcompare_main(o.ref.c_str(), query.c_str());
-    
-    if (status)
+    if (r.chromoIDs().size() > 1)
     {
-        throw std::runtime_error("Failed to analyze the given transcript. Please check the file and try again.");
+        stats.data[ChrE];
     }
     
-    TAssembly::Stats stats;
-    const auto &r = Standard::instance().r_trans;
+    stats.eHist = r.hist();
+    stats.iHist = r.hist();
+    stats.tHist = r.hist();
+    stats.bHist = r.geneHist(ChrT);
+
+    /*
+     * 2. Filtering transcripts
+     */
     
-    stats.chrT = std::shared_ptr<TAssembly::Stats::ChrT>(new TAssembly::Stats::ChrT());
+    auto copyStats = [&](const ChromoID &cID)
+    {
+        stats.data[cID].eSN  = std::min(__cmp__.e_sn  / 100.0, 1.0);
+        stats.data[cID].eSP  = std::min(__cmp__.e_sp  / 100.0, 1.0);
+        stats.data[cID].eFSN = std::min(__cmp__.e_fsn / 100.0, 1.0);
+        stats.data[cID].eFSP = std::min(__cmp__.e_fsp / 100.0, 1.0);
+
+        stats.data[cID].iSN  = std::min(__cmp__.i_sn  / 100.0, 1.0);
+        stats.data[cID].iSP  = std::min(__cmp__.i_sp  / 100.0, 1.0);
+        stats.data[cID].iFSN = std::min(__cmp__.i_fsn / 100.0, 1.0);
+        stats.data[cID].iFSP = std::min(__cmp__.i_fsp / 100.0, 1.0);
+        
+        stats.data[cID].tSN  = std::min(__cmp__.t_sn  / 100.0, 1.0);
+        stats.data[cID].tSP  = std::min(__cmp__.t_sp  / 100.0, 1.0);
+        stats.data[cID].tFSN = std::min(__cmp__.t_fsn / 100.0, 1.0);
+        stats.data[cID].tFSP = std::min(__cmp__.t_fsp / 100.0, 1.0);
+        
+        stats.data[cID].bSN  = std::min(__cmp__.b_sn  / 100.0, 1.0);
+        stats.data[cID].bSP  = std::min(__cmp__.b_sp  / 100.0, 1.0);
+    };
+    
+    auto compareGTF = [&](const ChromoID &cID)
+    {
+        const auto query = createFilteredGTF(file, cID);
+        o.logInfo("Filtered transcript: " + query + " has been created");
+        
+        o.logInfo("Invoking Cuffcompare: " + o.ref);
+        o.logInfo("Invoking Cuffcompare: " + query);
+        
+        if (cuffcompare_main(o.ref.c_str(), query.c_str()))
+        {
+            throw std::runtime_error("Failed to analyze the given transcript. Please check the file and try again.");
+        }
+    };
+
+    o.info("Generating a filtered transcript");
+
+    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChromoID, TAssembly::Stats::Data> &p)
+    {
+        compareGTF(p.first);
+        copyStats(p.first);
+    });
+    
+    /*
+     * 3. Classifying the transcript (only for chrT because detection limit is needed)
+     */
+
+    o.info("Parsing transcript");
     
     std::vector<Feature> q_exons;
     std::map<SequinID, std::vector<Feature>> q_exons_;
-    
-    o.info("Parsing transcript");
-    
+
     Confusion t;
     
     ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
     {
-        if (!(p.i % 1000000))
-        {
-            o.wait(std::to_string(p.i));
-        }
+        if (!(p.i % 1000000)) { o.wait(std::to_string(p.i)); }
         
         if (f.id != Standard::chrT)
         {
-            stats.chrT->n_expT++;
-            return;
+            stats.n_expT++;
         }
-        
-        stats.chrT->n_chrT++;
-        
-        switch (f.type)
+        else
         {
-            case Exon:
-            {
-                const TransRef::ExonData *match;
-                
-                q_exons.push_back(f);
-                q_exons_[f.tID].push_back(f);
-                
-                if (classify(t, f, [&](const Feature &)
-                {
-                    return (match = r.findExon("chrT", f.l, Exact));
-                }))
-                {
-                    stats.chrT->he.at(match->iID)++;
-                }
-                
-                break;
-            }
-                
-            case Transcript:
-            {
-                const TransData *match;
-                
-                if (classify(t, f, [&](const Feature &)
-                {
-                    return (match = r.match(f.l, Overlap));
-                }))
-                {
-                    stats.chrT->ht.at(match->id)++;
-                }
-                
-                break;
-            }
-                
-            // There're many other possibilties in a GTF file, but we don't need them
-            default: { break; }
+            stats.n_chrT++;
         }
+
+        auto classifyT = [&]()
+        {
+            const auto &r = Standard::instance().r_trans;
+            
+            if (f.cID != ChrT)
+            {
+                return;
+            }
+            
+            switch (f.type)
+            {
+                case Exon:
+                {
+                    const TransRef::ExonData *match;
+                    
+                    q_exons.push_back(f);
+                    q_exons_[f.tID].push_back(f);
+                    
+                    if (classify(t, f, [&](const Feature &)
+                    {
+                        return (match = r.findExon(ChrT, f.l, Exact));
+                    }))
+                    {
+                        stats.eHist.at(match->iID)++;
+                    }
+                    
+                    break;
+                }
+                    
+                case Transcript:
+                {
+                    const TransData *match;
+                    
+                    if (classify(t, f, [&](const Feature &)
+                    {
+                        return (match = r.match(f.l, Overlap));
+                    }))
+                    {
+                        stats.tHist.at(match->id)++;
+                    }
+                    
+                    break;
+                }
+                    
+                // There're many other possibilties in a GTF file, but we don't need them
+                default: { break; }
+            }
+        };
+
+        classifyT();
     });
+    
+    /*
+     * 3. Generating introns
+     */
     
     o.info("Generating introns");
     
@@ -220,7 +266,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
             return (match  = r.findIntron("chrT", i.l, Exact));
         }))
         {
-            stats.chrT->hi.at(match->iID)++;
+            stats.iHist.at(match->iID)++;
         }
     });
     
@@ -231,24 +277,15 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     //countBase(r.mergedExons(), q_exons, t, stats.chrT->hb);
     
     /*
-     * Calculate for detection limit
+     * 4. Collecting statistics
      */
     
-    o.info("Calculating limit of detection");
+    o.info("Collecting statistics");
     
-    stats.chrT->se = r.limit(stats.chrT->he);
-    stats.chrT->st = r.limit(stats.chrT->ht);
-    stats.chrT->sb = r.limitGene(stats.chrT->hb);
-    stats.chrT->si = r.limit(stats.chrT->hi);
-    
-    stats.chrT->exonSN   = std::min(__cmp__.e_sn / 100.0, 1.0);
-    stats.chrT->exonSP   = std::min(__cmp__.e_sp / 100.0, 1.0);
-    stats.chrT->baseSN   = std::min(__cmp__.b_sn / 100.0, 1.0);
-    stats.chrT->baseSP   = std::min(__cmp__.b_sp / 100.0, 1.0);
-    stats.chrT->transSN  = std::min(__cmp__.t_sn / 100.0, 1.0);
-    stats.chrT->transSP  = std::min(__cmp__.t_sp / 100.0, 1.0);
-    stats.chrT->intronSN = std::min(__cmp__.i_sn / 100.0, 1.0);
-    stats.chrT->intronSP = std::min(__cmp__.i_sp / 100.0, 1.0);
+    stats.eLimit = r.limit(stats.eHist);
+    stats.tLimit = r.limit(stats.tHist);
+    stats.iLimit = r.limit(stats.iHist);
+    stats.bLimit = r.limitGene(stats.bHist);
     
     return stats;
 }
@@ -262,26 +299,26 @@ static void writeSummary(const FileName &file,
 
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % file
-                                              % stats.chrT->n_expT
-                                              % stats.chrT->n_chrT
+                                              % stats.n_expT
+                                              % stats.n_chrT
                                               % r.data().size()
-                                              % r.countIntrons("chrT")
+                                              % r.countIntrons(ChrT)
                                               % (__cmp__.e_sn  / 100.0) // 6
                                               % (__cmp__.e_fsn / 100.0)
                                               % (__cmp__.e_sp  / 100.0)
                                               % (__cmp__.e_fsp / 100.0)
-                                              % (stats.chrT->se.id.empty() ? "-" : std::to_string(stats.chrT->se.abund))
-                                              %  stats.chrT->se.id
+                                              % (stats.eLimit.id.empty() ? "-" : std::to_string(stats.eLimit.abund))
+                                              %  stats.eLimit.id
                                               % (__cmp__.i_sn  / 100.0) // 12
                                               % (__cmp__.i_fsn / 100.0)
                                               % (__cmp__.i_sp  / 100.0)
                                               % (__cmp__.i_fsp / 100.0)
-                                              % (stats.chrT->si.id.empty() ? "-" : std::to_string(stats.chrT->si.abund))
-                                              %  stats.chrT->si.id
+                                              % (stats.iLimit.id.empty() ? "-" : std::to_string(stats.iLimit.abund))
+                                              %  stats.iLimit.id
                                               % (__cmp__.b_sn / 100.0) // 18
                                               % (__cmp__.b_sp / 100.0)
-                                              % (stats.chrT->sb.id.empty() ? "-" : std::to_string(stats.chrT->sb.abund)) // 20
-                                              %  stats.chrT->sb.id
+                                              % (stats.bLimit.id.empty() ? "-" : std::to_string(stats.bLimit.abund)) // 20
+                                              %  stats.bLimit.id
                                               % (__cmp__.t_sn  / 100.0)
                                               % (__cmp__.t_fsn / 100.0)
                                               % (__cmp__.t_sp  / 100.0)
@@ -313,12 +350,12 @@ static void writeSequins(const FileName &file, const FileName &src, const TAssem
     auto format = "%1%\t%2%\t%3%\t%4%";
     o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());
     
-    for (const auto &i : stats.chrT->he)
+    for (const auto &i : stats.eHist)
     {
         o.writer->write((boost::format(format) % i.first
-                                               % stats.chrT->he.at(i.first)
-                                               % stats.chrT->hi.at(i.first)
-                                               % stats.chrT->ht.at(i.first)).str());
+                                               % stats.eHist.at(i.first)
+                                               % stats.iHist.at(i.first)
+                                               % stats.tHist.at(i.first)).str());
     }
 
     /*

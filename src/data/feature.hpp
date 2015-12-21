@@ -37,6 +37,8 @@ namespace Anaquin
 
         RNAFeature type;
         
+        ChromoID cID;
+        
         // Empty if the information is unavailable
         GeneID gID;
 

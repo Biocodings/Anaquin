@@ -731,8 +731,6 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
 
 template <typename T> void createTrans(const ChromoID &cID, T &t)
 {
-    std::cout << "[INFO]: Parsing: " << cID << std::endl;
-    
     /*
      * Generate the appropriate structure for analysis
      *
@@ -853,8 +851,6 @@ void TransRef::validate()
     {
         createTrans(i.first, _impl->valid[i.first]);
     }
-    
-    std::cout << "[INFO]: Parsing finished" << std::endl;
     
     assert(_impl->valid.count(ChrT));
 }

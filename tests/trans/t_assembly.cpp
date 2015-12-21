@@ -15,19 +15,15 @@ TEST_CASE("TAssembly_Reference")
 
     const auto r = TAssembly::analyze("data/trans/ATR001.v032.gtf", o);
 
-    REQUIRE(r.chrT->n_expT == 0);
-    REQUIRE(r.chrT->n_chrT == 1200);
+    REQUIRE(r.n_expT == 0);
+    REQUIRE(r.n_chrT == 1200);
 
-    /*
-     * It's very likely cuffcompare is just wrong. Everything here should be 1.0.
-     */
-    
-    REQUIRE(r.chrT->exonSN   == 1.0);
-    REQUIRE(r.chrT->exonSP   == 1.0);
-    REQUIRE(r.chrT->intronSN == Approx(0.996031746));
-    REQUIRE(r.chrT->intronSP == Approx(0.996031746));
-    REQUIRE(r.chrT->baseSN   == 1.0);
-    REQUIRE(r.chrT->baseSP   == 1.0);
-    REQUIRE(r.chrT->transSN  == 1.0);
-    REQUIRE(r.chrT->transSP  == 1.0);
+    REQUIRE(r.data.at(ChrT).eSN == 1.0);
+    REQUIRE(r.data.at(ChrT).eSP == 1.0);
+    REQUIRE(r.data.at(ChrT).bSN == 1.0);
+    REQUIRE(r.data.at(ChrT).bSP == 1.0);
+    REQUIRE(r.data.at(ChrT).tSN == 1.0);
+    REQUIRE(r.data.at(ChrT).tSP == 1.0);
+    REQUIRE(r.data.at(ChrT).iSN == Approx(0.996031746));
+    REQUIRE(r.data.at(ChrT).iSP == Approx(0.996031746));
 }
