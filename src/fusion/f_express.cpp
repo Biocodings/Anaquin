@@ -15,14 +15,14 @@ FExpress::Stats FExpress::report(const FileName &file, const FDiscover::Options 
 //     */
 //
 //    o.info("Generating summary statistics");
-//    AnalyzeReporter::linear("FusionExpress_summary.stats", file, stats, "fusions", o.writer);
+//    //AnalyzeReporter::linear("FusionExpress_summary.stats", file, stats, "fusions", o.writer);
 //
 //    /*
 //     * Generating Bioconductor
 //     */
 //
 //    o.info("Generating Bioconductor");
-//    AnalyzeReporter::scatter(stats, "", "FusionExpress", "Expected concentration (attomol/ul)", "Measured coverage (reads)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
+//    //AnalyzeReporter::scatter(stats, "", "FusionExpress", "Expected concentration (attomol/ul)", "Measured coverage (reads)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
 //    
     return stats;
 }

@@ -96,12 +96,12 @@ void FDiff::report(const FileName &splice, const FileName &chim, const Options &
      */
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("FusionDiff_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
+    //AnalyzeReporter::linear("FusionDiff_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
 
     /*
      * Generating Bioconductor
      */
     
     o.info("Generating Bioconductor");
-    AnalyzeReporter::scatter(stats, "", "FusionDiff", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    //AnalyzeReporter::scatter(stats, "", "FusionDiff", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }

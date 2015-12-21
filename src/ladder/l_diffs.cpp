@@ -26,18 +26,18 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
 
     o.info("Checking for sequins in mix B but not in mix A");
 
-    for (const auto &i : b.chrT->normalized)
+    for (const auto &i : b.data.at(ChrT).normalized)
     {
         const auto &id = i.first;
         
-        if (!a.chrT->normalized.at(id))
+        if (!a.data.at(ChrT).normalized.at(id))
         {
             o.warn((boost::format("Warning: %1% defined in mixture B but not in mixture A") % id).str());
         }
     }
     
-    o.info((boost::format("%1% sequins in mix A") % a.chrT->normalized.size()).str());
-    o.info((boost::format("%1% sequins in mix B") % b.chrT->normalized.size()).str());
+    o.info((boost::format("%1% sequins in mix A") % a.data.at(ChrT).normalized.size()).str());
+    o.info((boost::format("%1% sequins in mix B") % b.data.at(ChrT).normalized.size()).str());
 
     /*
      * Try for each detected sequin. But only if it's detected in both mixtures.
@@ -60,13 +60,13 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
                                            % "Adjusted B"
                                            % "Adjusted B/A").str());
 
-    for (const auto &i : a.chrT->normalized)
+    for (const auto &i : a.data.at(ChrT).normalized)
     {
         // Eg: C_02_C
         const auto &seqID = i.first;
 
         // Don't bother unless the sequin is detected in both mixtures
-        if (!b.chrT->normalized.at(seqID))
+        if (!b.data.at(ChrT).normalized.at(seqID))
         {
             o.writer->write((boost::format(format) % seqID
                                                    % "NA"
@@ -85,34 +85,34 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         }
 
         // Known fold change between mixture A and B
-        const auto known = (b.chrT->expect.at(seqID) / a.chrT->expect.at(seqID));
+        const auto known = (b.data.at(ChrT).expect.at(seqID) / a.data.at(ChrT).expect.at(seqID));
 
         // Measured fold change between mixture A and B
-        const auto measured = (b.chrT->measured.at(seqID) / a.chrT->measured.at(seqID));
+        const auto measured = (b.data.at(ChrT).measured.at(seqID) / a.data.at(ChrT).measured.at(seqID));
 
         // Normalized fold change between mixture A and B
-        const auto normalized = (b.chrT->normalized.at(seqID) / a.chrT->normalized.at(seqID));
+        const auto normalized = (b.data.at(ChrT).normalized.at(seqID) / a.data.at(ChrT).normalized.at(seqID));
 
         // Measured adjusted fold change between mixture A and B
-        const auto adjusted = (b.chrT->adjusted.at(seqID) / a.chrT->adjusted.at(seqID));
+        const auto adjusted = (b.data.at(ChrT).adjusted.at(seqID) / a.data.at(ChrT).adjusted.at(seqID));
 
-        assert(a.chrT->measured.count(seqID) && b.chrT->measured.count(seqID));
+        assert(a.data.at(ChrT).measured.count(seqID) && b.data.at(ChrT).measured.count(seqID));
 
-        stats.chrT->add(seqID, known, normalized);
+        stats.data[ChrT].add(seqID, known, normalized);
         //stats.add(seqID, known, adjusted);
 
         o.writer->write((boost::format(format) % seqID
-                                               % a.chrT->expect.at(seqID)
-                                               % b.chrT->expect.at(seqID)
+                                               % a.data.at(ChrT).expect.at(seqID)
+                                               % b.data.at(ChrT).expect.at(seqID)
                                                % known
-                                               % a.chrT->measured.at(seqID)
-                                               % b.chrT->measured.at(seqID)
+                                               % a.data.at(ChrT).measured.at(seqID)
+                                               % b.data.at(ChrT).measured.at(seqID)
                                                % measured
-                                               % a.chrT->normalized.at(seqID)
-                                               % b.chrT->normalized.at(seqID)
+                                               % a.data.at(ChrT).normalized.at(seqID)
+                                               % b.data.at(ChrT).normalized.at(seqID)
                                                % normalized
-                                               % a.chrT->adjusted.at(seqID)
-                                               % b.chrT->adjusted.at(seqID)
+                                               % a.data.at(ChrT).adjusted.at(seqID)
+                                               % b.data.at(ChrT).adjusted.at(seqID)
                                                % adjusted).str());
     }
     
@@ -123,14 +123,14 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
      */
     
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("LadderDifferent_summary.stats", fileA, fileB, a, b, stats, "sequins", o.writer);
+    //AnalyzeReporter::linear("LadderDifferent_summary.stats", fileA, fileB, a, b, stats, "sequins", o.writer);
 
     /*
      * Generating Bioconductor
      */
     
     o.info("Generating Bioconductor");
-    AnalyzeReporter::scatter(stats, "", "LadderDifferent", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
+    ////AnalyzeReporter::scatter(stats, "", "LadderDifferent", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
 
 	return stats;
 }

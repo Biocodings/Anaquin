@@ -30,23 +30,17 @@ namespace Anaquin
             RNALevel level;
         };
 
-        struct Stats
+        struct Stats : public MappingStats
         {
-            struct Synthetic : public LinearStats, public MappingStats
-            {
-                Limit ss;
-                
-                // The keys depend on whether it's a gene or isoform analysis
-                std::map<std::string, Counts> h;
-            };
-            
-            struct Experiment : public LinearStats, public MappingStats
+            struct Data : public LinearStats
             {
                 // Empty Implementation
             };
+            
+            std::map<ChromoID, Data> data;
 
-            std::shared_ptr<Synthetic>  chrT;
-            std::shared_ptr<Experiment> expT;
+            Limit ss;
+            std::map<std::string, Counts> h;
         };
 
         // Analyze a single sample
@@ -56,7 +50,17 @@ namespace Anaquin
         static Stats analyze(const std::vector<DiffTest> &, const Options &o);
 
         // Analyze multiple replicates
-        static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o);
+        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
+        {
+            std::vector<TDiffs::Stats> stats;
+            
+            for (const auto &file : files)
+            {
+                stats.push_back(analyze(file, o));
+            }
+            
+            return stats;            
+        }
 
         static void report(const FileName &, const Options &o = Options());
         static void report(const std::vector<FileName> &, const Options &o = Options());

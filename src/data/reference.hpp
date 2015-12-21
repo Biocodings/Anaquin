@@ -719,6 +719,8 @@ namespace Anaquin
             // List of chromosomes in the reference
             std::set<ChromoID> chromoIDs() const;
         
+            inline bool isOnlyChrT() const { return chromoIDs().size() == 1; }
+        
             const GeneData   *findGene  (const ChromoID &, const GeneID &)           const;
             const GeneData   *findGene  (const ChromoID &, const Locus &, MatchRule) const;
             const ExonData   *findExon  (const ChromoID &, const Locus &, MatchRule) const;

@@ -1,5 +1,5 @@
-#ifndef T_ABUND_HPP
-#define T_ABUND_HPP
+#ifndef T_EXPRESS_HPP
+#define T_EXPRESS_HPP
 
 #include "stats/analyzer.hpp"
 
@@ -19,23 +19,23 @@ namespace Anaquin
             Isoform
         };
 
-        struct Stats
+        struct Stats : public MappingStats
         {
-            struct Synthetic : public LinearStats, public MappingStats
+            struct Data : public LinearStats
             {
-                Limit ss;
-                
-                // The keys depend on whether it's a gene or isoform analysis
-                std::map<std::string, Counts> h;
+                // Empty Interface
             };
             
-            struct Experiment : public LinearStats, public MappingStats
-            {
-                
-            };
+            std::map<ChromoID, Data> data;
             
-            std::shared_ptr<Synthetic>  chrT;
-            std::shared_ptr<Experiment> expT;
+            /*
+             * Statistics for detection limit (chrT only)
+             */
+            
+            Limit ss;
+            
+            // The keys depend on whether it's a gene or isoform analysis
+            std::map<std::string, Counts> h;
         };
 
         struct Options : public AnalyzerOptions
@@ -55,7 +55,17 @@ namespace Anaquin
         static Stats analyze(const std::vector<Expression> &, const Options &);
 
         // Analyze for multiple replicates
-        static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o);
+        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
+        {
+            std::vector<TExpress::Stats> stats;
+            
+            for (const auto &file : files)
+            {
+                stats.push_back(analyze(file, o));
+            }
+            
+            return stats;
+        }
 
         static void report(const FileName &, const Options &o = Options());
         static void report(const std::vector<FileName> &, const Options &o = Options());

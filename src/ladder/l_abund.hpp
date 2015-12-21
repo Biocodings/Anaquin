@@ -9,9 +9,9 @@ namespace Anaquin
     {
         typedef SingleMixtureOption Options;
 
-        struct Stats
+        struct Stats : public AlignmentStats
         {
-            struct ChrT : public LinearStats, public AlignmentStats
+            struct Data : public LinearStats
             {
                 // Histogram expected
                 std::map<SequinID, Coverage> expect;
@@ -33,21 +33,21 @@ namespace Anaquin
                 
                 // Measured size of the library
                 Counts obsTotal = 0;
-                
-                // Sensitivity at the joined level
-                Limit s_joined;
-                
-                // Histogram at the joined level
-                LadderRef::JoinHist h_joined  = Standard::instance().r_lad.joinHist();
-                
-                // Sensitivity at the unjoined level
-                Limit ss;
-                
+
                 // Histogram at the unjoined level
                 SequinHist h = Standard::instance().r_lad.hist();
             };
             
-            std::shared_ptr<ChrT> chrT;
+            std::map<ChromoID, Data> data;
+
+            // Sensitivity at the joined level
+            Limit s_joined;
+            
+            // Histogram at the joined level
+            LadderRef::JoinHist h_joined  = Standard::instance().r_lad.joinHist();
+            
+            // Sensitivity at the unjoined level
+            Limit ss;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

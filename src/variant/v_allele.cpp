@@ -48,9 +48,9 @@ VAllele::Stats VAllele::report(const FileName &file, const Options &o)
      */
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("VarAllele_summary.stats", file, stats, "variants", o.writer);
+    //AnalyzeReporter::linear("VarAllele_summary.stats", file, stats, "variants", o.writer);
 
-    AnalyzeReporter::scatter(stats, "", "VarAllele", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", o.writer, false);
+    //AnalyzeReporter::scatter(stats, "", "VarAllele", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", "Expected allele frequency (proportion)", "Measured allele frequency (proportion)", o.writer, false);
 
     return stats;
 }

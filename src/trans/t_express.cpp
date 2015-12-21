@@ -8,14 +8,17 @@ using namespace Anaquin;
 
 template <typename T> void update(TExpress::Stats &stats, const T &t, const GenericID &id, bool isoform, const TExpress::Options &o)
 {
-    if (t.cID != Standard::chrT)
+    const auto cID = t.cID == ChrT ? ChrT : ChrE;
+
+    if (cID != Standard::chrT)
     {
-        stats.chrT->n_expT++;
-        return;
+        stats.n_expT++;
     }
-    
-    stats.chrT->n_chrT++;
-    
+    else
+    {
+        stats.n_chrT++;
+    }
+
     /*
      * There're two possibilities here, comparing at the isoform or gene level. While the workflow is similar, the underlying
      * data-structure is different.
@@ -42,11 +45,11 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
         }
         else
         {
-            stats.chrT->h.at(m->id)++;
+            stats.h.at(m->id)++;
             
             if (t.fpkm)
             {
-                stats.chrT->add(id, m->abund(Mix_1), t.fpkm);
+                stats.data[cID].add(id, m->abund(Mix_1), t.fpkm);
             }
         }
     }
@@ -55,7 +58,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
         const TransRef::GeneData *m = nullptr;
         
         // Try to match by name if possible
-        m = r.findGene("chrT", id);
+        m = r.findGene(t.cID, id);
         
         if (!m)
         {
@@ -69,11 +72,11 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
         }
         else
         {
-            stats.chrT->h.at(m->id)++;
+            stats.h.at(m->id)++;
             
             if (t.fpkm)
             {
-                stats.chrT->add(id, m->abund(Mix_1), t.fpkm);
+                stats.data[cID].add(id, m->abund(Mix_1), t.fpkm);
             }
         }
     }
@@ -83,10 +86,16 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
 {
     TExpress::Stats stats;
     
-    stats.chrT = std::shared_ptr<TExpress::Stats::Synthetic>(new TExpress::Stats::Synthetic());
+    const auto &r = Standard::instance().r_trans;
+    const auto cIDs = r.chromoIDs();
     
-    const bool isoform = o.level == TExpress::Isoform;
-    o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
+    std::for_each(cIDs.begin(), cIDs.end(), [&](const ChromoID &cID)
+    {
+        stats.data[cID == ChrT ? ChrT : ChrE];
+    });
+    
+    stats.h  = o.level == TExpress::Isoform ? r.hist() : r.geneHist(ChrT);
+    stats.ss = (o.level == TExpress::Isoform) ? r.limit(stats.h) : r.limitGene(stats.h);
     
     f(stats);
     
@@ -97,30 +106,11 @@ TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Opt
 {
     return calculate(o, [&](TExpress::Stats &stats)
     {
-        const auto &r = Standard::instance().r_trans;
-        
-        // Construct for a histogram at the appropriate level
-        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist(ChrT);
-        
         for (const auto &i : exps)
         {
             update(stats, i, i.id, o.level == TExpress::Isoform, o);
         }
-        
-        stats.chrT->ss = (o.level == TExpress::Isoform) ? r.limit(stats.chrT->h) : r.limitGene(stats.chrT->h);
     });
-}
-
-std::vector<TExpress::Stats> TExpress::analyze(const std::vector<FileName> &files, const Options &o)
-{
-    std::vector<TExpress::Stats> stats;
-    
-    for (const auto &file : files)
-    {
-        stats.push_back(analyze(file, o));
-    }
-
-    return stats;
 }
 
 TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
@@ -129,11 +119,6 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 
     return calculate(o, [&](TExpress::Stats &stats)
     {
-        const auto &r = Standard::instance().r_trans;
-        
-        // Construct for a histogram at the appropriate level
-        stats.chrT->h = o.level == TExpress::Isoform ? r.hist() : r.geneHist(ChrT);
-
         const auto isIsoform = o.level == TExpress::Isoform;
         
         switch (o.tool)
@@ -168,8 +153,6 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
                 break;
             }
         }
-        
-        stats.chrT->ss = isIsoform ? r.limit(stats.chrT->h) : r.limitGene(stats.chrT->h);
     });
 }
 
@@ -183,14 +166,14 @@ void TExpress::report(const FileName &file, const Options &o)
      */
     
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("TransExpress_summary.stats", file, stats, units, o.writer);
+    //AnalyzeReporter::linear("TransExpress_summary.stats", file, stats, units, o.writer);
     
     /*
      * Generating scatter plot
      */
     
     o.info("Generating scatter plot");
-    AnalyzeReporter::scatter(stats, "", "TransExpress", "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
+    //AnalyzeReporter::scatter(stats, "", "TransExpress", "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
 }
 
 void TExpress::report(const std::vector<FileName> &files, const Options &o)
@@ -206,11 +189,11 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     
     for (auto i = 0; i < files.size(); i++)
     {
-        AnalyzeReporter::linear((boost::format("TransExpress_%1%_summary.stats") % files[i]).str(),
-                                files[i],
-                                stats[i],
-                                units,
-                                o.writer);
+        //AnalyzeReporter::linear((boost::format("TransExpress_%1%_summary.stats") % files[i]).str(),
+          //                      files[i],
+            //                    stats[i],
+              //                  units,
+                //                o.writer);
     }
 
     /*
@@ -222,7 +205,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     for (auto i = 0; i < files.size(); i++)
     {
         const auto file = (boost::format("TransExpress_%1%") % files[i]).str();
-        AnalyzeReporter::scatter(stats[i], "", file, "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
+        //AnalyzeReporter::scatter(stats[i], "", file, "Expected concentration (attomol/ul)", "Measured coverage (FPKM)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 FPKM)", o.writer);
     }
     
     /*

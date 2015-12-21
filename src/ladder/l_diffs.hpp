@@ -9,29 +9,26 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
 
-        struct Stats
+        struct Stats : public AlignmentStats
         {
-            struct ChrT : public LinearStats, public AlignmentStats
+            struct Data : public LinearStats
             {
-                // Sensitivity at the joined level
-                Limit s_joined;
-                
-                // Histogram at the joined level
-                LadderRef::JoinHist h_joined  = Standard::instance().r_lad.joinHist();
-                
-                // Sensitivity at the unjoined level
-                Limit ss;
-                
-                // Histogram at the unjoined level
-                SequinHist h = Standard::instance().r_lad.hist();
+                // Empty Implementation
             };
             
-            struct Experiment : public LinearStats, public AlignmentStats
-            {
-                
-            };
+            std::map<ChromoID, Data> data;
+            
+            // Sensitivity at the joined level
+            Limit s_joined;
 
-            std::shared_ptr<ChrT> chrT;
+            // Sensitivity at the unjoined level
+            Limit ss;
+
+            // Histogram at the unjoined level
+            SequinHist h = Standard::instance().r_lad.hist();
+            
+            // Histogram at the joined level
+            LadderRef::JoinHist h_joined  = Standard::instance().r_lad.joinHist();
         };
 
         static Stats report(const FileName &, const FileName &, const Options &o = Options());

@@ -18,8 +18,6 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
     LAbund::Stats stats;
     const auto &r = Standard::instance().r_lad;
 
-    stats.chrT = std::shared_ptr<LAbund::Stats::ChrT>(new LAbund::Stats::ChrT());
-    
     // Sequins detected in the experiment
     std::set<SequinID> seqIDs;
 
@@ -36,7 +34,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
             o.wait(std::to_string(info.p.i));
         }
 
-        stats.chrT->update(align);
+        stats.update(align);
 
         if (!align.mapped || !r.match(align.id))
         {
@@ -44,8 +42,8 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
         }
         else if (!align.i)
         {
-            stats.chrT->obsTotal++;
-            stats.chrT->measured[align.id]++;
+            stats.data.at(ChrT).obsTotal++;
+            stats.data.at(ChrT).measured[align.id]++;
             seqIDs.insert(align.id);
         }
     });
@@ -56,7 +54,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
         return stats;
     }
 
-    assert(stats.chrT->obsTotal);
+    assert(stats.data.at(ChrT).obsTotal);
 
     o.info((boost::format("Detected %1% sequins in reference") % r.data().size()).str());
     o.info((boost::format("Detected %1% sequins in query")     % seqIDs.size()).str());
@@ -71,10 +69,10 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
 
     for (const auto &seqID : seqIDs)
     {
-        stats.chrT->expTotal += r.match(seqID)->abund(o.mix);
+        stats.data.at(ChrT).expTotal += r.match(seqID)->abund(o.mix);
     }
 
-    if (!stats.chrT->expTotal)
+    if (!stats.data.at(ChrT).expTotal)
     {
         o.error("Expected library size == 0");
         throw std::runtime_error("Error in mixture input. Please check and try again.");
@@ -99,23 +97,23 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
             continue;
         }
 
-        stats.chrT->h_joined[jID]++;
+        stats.h_joined[jID]++;
         
-        if (seqIDs.count(A)) { stats.chrT->h[A]++; }
-        if (seqIDs.count(B)) { stats.chrT->h[B]++; }
-        if (seqIDs.count(C)) { stats.chrT->h[C]++; }
-        if (seqIDs.count(D)) { stats.chrT->h[D]++; }
+        if (seqIDs.count(A)) { stats.data.at(ChrT).h[A]++; }
+        if (seqIDs.count(B)) { stats.data.at(ChrT).h[B]++; }
+        if (seqIDs.count(C)) { stats.data.at(ChrT).h[C]++; }
+        if (seqIDs.count(D)) { stats.data.at(ChrT).h[D]++; }
 
-        #define COUNT(x) stats.chrT->measured.count(x) ? stats.chrT->measured.at(x) : 0
+        #define COUNT(x) stats.data[ChrT].measured.count(x) ? stats.data[ChrT].measured.at(x) : 0
         
         // Create a vector for normalized measured coverage
-        const auto normalize = create(COUNT(A), COUNT(B), COUNT(C), COUNT(D), 1.0, stats.chrT->obsTotal);
+        const auto normalize = create(COUNT(A), COUNT(B), COUNT(C), COUNT(D), 1.0, stats.data[ChrT].obsTotal);
 
         // Create a vector for normalized expected coverage
         const auto expect = create(r.match(A)->abund(o.mix),
                                    r.match(B)->abund(o.mix),
                                    r.match(C)->abund(o.mix),
-                                   r.match(D)->abund(o.mix), 1.0, stats.chrT->expTotal);
+                                   r.match(D)->abund(o.mix), 1.0, stats.data[ChrT].expTotal);
 
         assert(SS::sum(expect));
         
@@ -142,33 +140,33 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
 
         assert(expect[0] && expect[1] && expect[2] && expect[3]);
 
-        stats.chrT->expect[A]  = expect[0];
-        stats.chrT->expect[B]  = expect[1];
-        stats.chrT->expect[C]  = expect[2];
-        stats.chrT->expect[D]  = expect[3];
+        stats.data[ChrT].expect[A]  = expect[0];
+        stats.data[ChrT].expect[B]  = expect[1];
+        stats.data[ChrT].expect[C]  = expect[2];
+        stats.data[ChrT].expect[D]  = expect[3];
 
-        stats.chrT->normalized[A] = normalize[0];
-        stats.chrT->normalized[B] = normalize[1];
-        stats.chrT->normalized[C] = normalize[2];
-        stats.chrT->normalized[D] = normalize[3];
+        stats.data[ChrT].normalized[A] = normalize[0];
+        stats.data[ChrT].normalized[B] = normalize[1];
+        stats.data[ChrT].normalized[C] = normalize[2];
+        stats.data[ChrT].normalized[D] = normalize[3];
         
-        stats.chrT->adjusted[A] = adjusted[0];
-        stats.chrT->adjusted[B] = adjusted[1];
-        stats.chrT->adjusted[C] = adjusted[2];
-        stats.chrT->adjusted[D] = adjusted[3];
+        stats.data[ChrT].adjusted[A] = adjusted[0];
+        stats.data[ChrT].adjusted[B] = adjusted[1];
+        stats.data[ChrT].adjusted[C] = adjusted[2];
+        stats.data[ChrT].adjusted[D] = adjusted[3];
 
-        stats.chrT->joinAdjusted[jID] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
+        stats.data[ChrT].joinAdjusted[jID] = adjusted[0] + adjusted[1] + adjusted[2] + adjusted[3];
     }
 
     o.info("Comparing expected with measured");
 
     // Try for each detected sequin to form an abundance plot
-    for (const auto &i : stats.chrT->normalized)
+    for (const auto &i : stats.data[ChrT].normalized)
     {
         const auto &seqID = i.first;
 
-        const auto known  = stats.chrT->expect.at(seqID);
-        const auto actual = stats.chrT->normalized.at(seqID);
+        const auto known  = stats.data[ChrT].expect.at(seqID);
+        const auto actual = stats.data[ChrT].normalized.at(seqID);
 
         if (!known || !actual)
         {
@@ -178,14 +176,14 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
         assert(!isnan(known)  && !isinf(known));
         assert(!isnan(actual) && !isinf(actual));
 
-        stats.chrT->add(seqID, known, actual);
+        stats.data[ChrT].add(seqID, known, actual);
     }
 
     o.info("Calculating detection limit (joined level)");
-    stats.chrT->s_joined = r.limitJoin(stats.chrT->h_joined);
+    stats.s_joined = r.limitJoin(stats.h_joined);
 
     o.info("Calculating detection limit (unjoined level)");
-    stats.chrT->ss = r.limit(stats.chrT->h);
+    stats.ss = r.limit(stats.data[ChrT].h);
 
   	return stats;
 }
@@ -199,14 +197,14 @@ void LAbund::report(const FileName &file, const Options &o)
      */
     
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("LadderAbundance_summary.stats", file, stats, "sequins", o.writer);
+    ////AnalyzeReporter::linear("LadderAbundance_summary.stats", file, stats, "sequins", o.writer);
     
     /*
      * Generating Bioconductor
      */
     
     o.info("Generating Bioconductor");
-    AnalyzeReporter::scatter(stats, "", "LadderAbundance", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
+    //AnalyzeReporter::scatter(stats, "", "LadderAbundance", "Expected concentration (attomol/ul)", "Measured coverage (q)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer, true, false);
     
     auto writeHist = [&](const FileName &file,
                          const std::map<SequinID, Counts>   &abund,
@@ -263,5 +261,9 @@ void LAbund::report(const FileName &file, const Options &o)
      * Generating unjoined adjustments
      */
 
-    writeHist("LadderAbundance_quin.csv", stats.chrT->measured, stats.chrT->expect, stats.chrT->normalized, stats.chrT->adjusted);
+    writeHist("LadderAbundance_quin.csv",
+              stats.data.at(ChrT).measured,
+              stats.data.at(ChrT).expect,
+              stats.data.at(ChrT).normalized,
+              stats.data.at(ChrT).adjusted);
 }

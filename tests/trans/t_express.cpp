@@ -21,7 +21,7 @@ TEST_CASE("TExpress_Perfect")
     }
     
     const auto r = TExpress::analyze(exps, TExpress::Options());
-    const auto stats = r.chrT->linear();
+    const auto stats = r.data.at(ChrT).linear();
 
     REQUIRE(stats.r  == Approx(1.0));
     REQUIRE(stats.m  == Approx(1.0));
@@ -43,7 +43,7 @@ TEST_CASE("TExpress_NoSynthetic")
     }
     
     const auto r = TExpress::analyze(exps, TExpress::Options());
-    const auto stats = r.chrT->linear();
+    const auto stats = r.data.at(ChrT).linear();
     
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));
@@ -67,7 +67,7 @@ TEST_CASE("TExpress_AllZeros")
     }
     
     const auto r = TExpress::analyze(exps, TExpress::Options());
-    const auto stats = r.chrT->linear();
+    const auto stats = r.data.at(ChrT).linear();
     
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));
@@ -91,8 +91,8 @@ TEST_CASE("TExpress_FlatMix")
     }
     
     const auto r = TExpress::analyze(exps, TExpress::Options());
-    const auto stats = r.chrT->linear();
-    
+    const auto stats = r.data.at(ChrT).linear();
+
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));
     REQUIRE(isnan(stats.r2));

@@ -89,17 +89,17 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     const auto stats = MAbundance::analyze(file, o);
 
     o.info("Generating summary statistics");
-    AnalyzeReporter::linear("MetaAbund_summary.stats", file, stats, "contigs", o.writer, "sequins");
+    //AnalyzeReporter::linear("MetaAbund_summary.stats", file, stats, "contigs", o.writer, "sequins");
  
     o.info("Generating Bioconductor");
-    AnalyzeReporter::scatter(stats,
-                             "Expected abundance vs Measured coverage",
-                             "MetaAbundance",
-                             "Expected abudnance (attomol/ul)",
-                             "Measured coverage (k-mer)",
-                             "Expected abdunance (log2 attomol/ul)",
-                             "Measured coverage (log2 k-mer)",
-                             o.writer);
+    //AnalyzeReporter::scatter(stats,
+                    //         "Expected abundance vs Measured coverage",
+                      //       "MetaAbundance",
+                        //     "Expected abudnance (attomol/ul)",
+                          //   "Measured coverage (k-mer)",
+                            // "Expected abdunance (log2 attomol/ul)",
+                            // "Measured coverage (log2 k-mer)",
+                            // o.writer);
     
     /*
      * Generating detailed statistics for each contig

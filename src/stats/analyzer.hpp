@@ -519,27 +519,27 @@ namespace Anaquin
                                  "   SSE:         %36%, DF: %37%\n"
                                  "   SST:         %38%, DF: %39%\n";
 
-            const auto n_lm = s.chrT->linear(false);
-            const auto l_lm = s.chrT->linear(true);
+            const auto n_lm = s.data.at(ChrT).linear(false);
+            const auto l_lm = s.data.at(ChrT).linear(true);
             
             writer->open(f);
             writer->write((boost::format(summary) % d1                          // 1
                                                   % d2
                                                   % (samples.empty() ? "Genome" : samples)
-                                                  % s1.chrT->n_expT
+                                                  % s1.n_expT
                                                   % units
-                                                  % s1.chrT->n_chrT
-                                                  % s2.chrT->n_expT
-                                                  % s2.chrT->n_chrT
-                                                  % s1.chrT->h.size()
+                                                  % s1.n_chrT
+                                                  % s2.n_expT
+                                                  % s2.n_chrT
+                                                  % s1.data.at(ChrT).h.size()
                                                   % (ref.empty() ? units : ref) // 10
-                                                  % s2.chrT->h.size()
-                                                  % detect(s1.chrT->h)                // 12
-                                                  % detect(s2.chrT->h)                // 13
-                                                  % s1.chrT->ss.abund                 // 14
-                                                  % s1.chrT->ss.id                    // 15
-                                                  % s2.chrT->ss.abund                 // 16
-                                                  % s2.chrT->ss.id                    // 17
+                                                  % s2.data.at(ChrT).h.size()
+                                                  % detect(s1.data.at(ChrT).h)  // 12
+                                                  % detect(s2.data.at(ChrT).h)  // 13
+                                                  % s1.ss.abund                 // 14
+                                                  % s1.ss.id                    // 15
+                                                  % s2.ss.abund                 // 16
+                                                  % s2.ss.id                    // 17
                                                   % n_lm.r                      // 18
                                                   % n_lm.m
                                                   % n_lm.r2
@@ -574,6 +574,7 @@ namespace Anaquin
                             (const FileName &file,
                              const FileName &data,
                              const Stats &stats,
+                             const ChromoID &cID,
                              const Units &units,
                              Writer writer,
                              const Units &ref = "")
@@ -613,80 +614,42 @@ namespace Anaquin
 
             writer->open(file);
             
-            if (stats.chrT->empty())
-            {
-                writer->write((boost::format(summary) % data                         // 1
-                                                      % stats.chrT->n_expT
-                                                      % stats.chrT->n_chrT
-                                                      % units
-                                                      % stats.chrT->h.size()         // 5
-                                                      % (ref.empty() ? units : ref)
-                                                      % "-"
-                                                      % "-"
-                                                      % detect(stats.chrT->h)
-                                                      % "-"                          // 10
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"                          // 22
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"
-                                                      % "-"                   // 31
-                               ).str());
-            }
-            else
-            {
-                const auto n_lm = stats.chrT->linear(false);
-                const auto l_lm = stats.chrT->linear(true);
-
-                writer->write((boost::format(summary) % data                         // 1
-                                                      % stats.chrT->n_expT
-                                                      % stats.chrT->n_chrT
-                                                      % units
-                                                      % stats.chrT->h.size()         // 5
-                                                      % (ref.empty() ? units : ref)
-                                                      % stats.chrT->ss.abund
-                                                      % stats.chrT->ss.id
-                                                      % detect(stats.chrT->h)
-                                                      % n_lm.r                       // 10
-                                                      % n_lm.m
-                                                      % n_lm.r2
-                                                      % n_lm.f
-                                                      % n_lm.p
-                                                      % n_lm.ssm
-                                                      % n_lm.ssm_df
-                                                      % n_lm.sse
-                                                      % n_lm.sse_df
-                                                      % n_lm.sst
-                                                      % n_lm.sst_df
-                                                      % l_lm.r
-                                                      % l_lm.m                       // 22
-                                                      % l_lm.r2
-                                                      % l_lm.f
-                                                      % l_lm.p
-                                                      % l_lm.ssm
-                                                      % l_lm.ssm_df
-                                                      % l_lm.sse
-                                                      % l_lm.sse_df
-                                                      % l_lm.sst
-                                                      % l_lm.sst_df                   // 31
-                               ).str());
-            }
+            const auto n_lm = stats.data.at(cID).linear(false);
+            const auto l_lm = stats.data.at(cID).linear(true);
             
+            writer->write((boost::format(summary) % data                         // 1
+                                                  % stats.n_expT
+                                                  % stats.n_chrT
+                                                  % units
+                                                  % stats.h.size()               // 5
+                                                  % (ref.empty() ? units : ref)
+                                                  % stats.ss.abund
+                                                  % stats.ss.id
+                                                  % detect(stats.h)
+                                                  % n_lm.r                       // 10
+                                                  % n_lm.m
+                                                  % n_lm.r2
+                                                  % n_lm.f
+                                                  % n_lm.p
+                                                  % n_lm.ssm
+                                                  % n_lm.ssm_df
+                                                  % n_lm.sse
+                                                  % n_lm.sse_df
+                                                  % n_lm.sst
+                                                  % n_lm.sst_df
+                                                  % l_lm.r
+                                                  % l_lm.m                       // 22
+                                                  % l_lm.r2
+                                                  % l_lm.f
+                                                  % l_lm.p
+                                                  % l_lm.ssm
+                                                  % l_lm.ssm_df
+                                                  % l_lm.sse
+                                                  % l_lm.sse_df
+                                                  % l_lm.sst
+                                                  % l_lm.sst_df                   // 31
+                           ).str());
+
             writer->close();
         }
         
@@ -762,7 +725,7 @@ namespace Anaquin
              * Ignore any invalid value...
              */
 
-            for (const auto &p : *(stats.chrT))
+            for (const auto &p : stats.data)
             {
                 if (!isnan(p.second.x) && !isnan(p.second.y))
                 {
@@ -777,7 +740,7 @@ namespace Anaquin
              */
 
             writer->open(prefix + "_plot.R");
-            writer->write(RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.chrT->s.abund));
+            writer->write(RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.s.abund));
             writer->close();
 
             /*
