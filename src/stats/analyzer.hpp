@@ -114,7 +114,7 @@ namespace Anaquin
         {
             return update(t, [&](const T &t)
             {
-                return t.id != Standard::chrT;
+                return t.id != ChrT;
             });
         }
     };

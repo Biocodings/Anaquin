@@ -43,7 +43,7 @@ namespace Anaquin
                 }
             };
 
-            struct Stats
+        struct Stats : public AlignmentStats
             {
                 enum AlignMetrics
                 {
@@ -59,7 +59,7 @@ namespace Anaquin
                     MissingGene
                 };
 
-                struct Data : public AlignmentStats
+                struct Data
                 {
                     std::map<ExonID,   GeneID> exonToGene;
                     std::map<IntronID, GeneID> intronToGene;

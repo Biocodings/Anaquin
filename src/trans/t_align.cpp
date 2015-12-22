@@ -1,7 +1,7 @@
 #include <ss/stats.hpp>
 #include "trans/t_align.hpp"
 #include "parsers/parser_sam.hpp"
-#include <iostream>
+
 using namespace Anaquin;
 
 // Internal implementation
@@ -441,8 +441,6 @@ static void classifyExpT(TAlign::Stats::Data &t,
 {
     REPORT_STATUS();
     
-    t.update(align);
-
     if (!align.mapped || align.id == Standard::chrT)
     {
         return;
@@ -458,14 +456,15 @@ static void classifyExpT(TAlign::Stats::Data &t,
  * Classify for the synthetic chromosome.
  */
 
-static void classifyChrT(TAlign::Stats::Data &t,
+static void classifyChrT(TAlign::Stats &stats,
+                         TAlign::Stats::Data &t,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
 {
     REPORT_STATUS();
     
-    t.update(align);
+    stats.update(align);
     
     if (!align.mapped || align.id != Standard::chrT)
     {
@@ -488,7 +487,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         {
             if (align.id == ChrT)
             {
-                classifyChrT(stats.data.at(ChrT), align, info, o);
+                classifyChrT(stats, stats.data.at(ChrT), align, info, o);
             }
             else
             {
@@ -508,7 +507,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
         {
             if (align.id == ChrT)
             {
-                classifyChrT(stats.data.at(ChrT), align, info, o);
+                classifyChrT(stats, stats.data.at(ChrT), align, info, o);
             }
             else if (stats.data.count(align.id))
             {
@@ -624,9 +623,9 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
     
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
-                                            % stats.data.at(ChrT).unmapped
-                                            % stats.data.at(ChrT).n_expT
-                                            % stats.data.at(ChrT).n_chrT
+                                            % stats.unmapped
+                                            % stats.n_expT
+                                            % stats.n_chrT
                                             % r.countExons(ChrT)
                                             % r.countIntrons(ChrT)
                                             % r.exonBase(ChrT)
@@ -645,9 +644,9 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
                                             % stats.pc(ChrT, TAlign::Stats::AlignMetrics::AlignBase)
                                             % stats.data.at(ChrT).overB.limit.abund
                                             % stats.data.at(ChrT).overB.limit.id
-                                            % stats.data.at(ChrT).dilution()
-                                            % (100.0 * stats.data.at(ChrT).expMap())
-                                            % (100.0 * stats.data.at(ChrT).chrTMap())
+                                            % stats.dilution()
+                                            % (100.0 * stats.expMap())
+                                            % (100.0 * stats.chrTMap())
                      ).str());
     o.writer->close();
 }
@@ -755,21 +754,21 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     
     for (const auto &stat : stats)
     {
-        acc.add("Unmapped",       stat.data.at(ChrT).unmapped);
-        acc.add("Experiment",     stat.data.at(ChrT).n_expT);
-        acc.add("Synthetic",      stat.data.at(ChrT).n_chrT);
+        acc.add("Unmapped",       stat.unmapped);
+        acc.add("Experiment",     stat.n_expT);
+        acc.add("Synthetic",      stat.n_chrT);
         acc.add("QExon",          stat.qExons(ChrT));
         acc.add("QIntron",        stat.qIntrons(ChrT));
         acc.add("QBase",          stat.qBases(ChrT));
-        acc.add("Dilution",       stat.data.at(ChrT).n_chrT);
+        acc.add("Dilution",       stat.n_chrT);
         acc.add("ExonSN",         stat.sn(ChrT, TAlign::Stats::AlignMetrics::AlignExon));
         acc.add("ExonPC",         stat.pc(ChrT, TAlign::Stats::AlignMetrics::AlignExon));
         acc.add("IntronSN",       stat.sn(ChrT, TAlign::Stats::AlignMetrics::AlignIntron));
         acc.add("IntronPC",       stat.pc(ChrT, TAlign::Stats::AlignMetrics::AlignIntron));
         acc.add("BaseSN",         stat.sn(ChrT, TAlign::Stats::AlignMetrics::AlignBase));
         acc.add("BasePC",         stat.pc(ChrT, TAlign::Stats::AlignMetrics::AlignBase));
-        acc.add("ExpPercent",     100.0 * stat.data.at(ChrT).expMap());
-        acc.add("ChrTPercent",    100.0 * stat.data.at(ChrT).chrTMap());
+        acc.add("ExpPercent",     100.0 * stat.expMap());
+        acc.add("ChrTPercent",    100.0 * stat.chrTMap());
         acc.add("LimitE",         stat.data.at(ChrT).limitE);
         acc.add("LimitI",         stat.data.at(ChrT).limitI);
         acc.add("LimitB",         stat.data.at(ChrT).overB.limit);
@@ -785,26 +784,26 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     o.writer->write((boost::format(summary()) % concated
                                               % acc.value("Unmapped")()
                                               % acc.value("Experiment")()
-                                              % acc.value("ExpPercent")()  // 4
+                                              % acc.value("ExpPercent")()    // 4
                                               % acc.value("Synthetic")()
-                                              % acc.value("ChrTPercent")() // 6
+                                              % acc.value("ChrTPercent")()   // 6
                                               % r.countExons(ChrT)
                                               % r.countIntrons(ChrT)
                                               % r.exonBase(ChrT)
                                               % acc.value("QExon")()
                                               % acc.value("QIntron")()
                                               % acc.value("QBase")()
-                                              % acc.value("Dilution")() // 13
-                                              % acc.value("ExonSN")()   // 14
-                                              % acc.value("ExonPC")()   // 15
+                                              % acc.value("Dilution")()      // 13
+                                              % acc.value("ExonSN")()        // 14
+                                              % acc.value("ExonPC")()        // 15
                                               % acc.limits("LimitE").abund
                                               % acc.limits("LimitE").id
-                                              % acc.value("IntronSN")() // 18
-                                              % acc.value("IntronPC")() // 19
+                                              % acc.value("IntronSN")()      // 18
+                                              % acc.value("IntronPC")()      // 19
                                               % acc.limits("LimitI").abund
                                               % acc.limits("LimitI").id
-                                              % acc.value("BaseSN")()   // 22
-                                              % acc.value("BasePC")()   // 23
+                                              % acc.value("BaseSN")()        // 22
+                                              % acc.value("BasePC")()        // 23
                                               % acc.limits("LimitB").abund
                                               % acc.limits("LimitB").id
                                               % acc.value("MissingExonI")()
