@@ -69,8 +69,12 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
         }
         return(c(lodr$objective,lodr$minimum,quantile(lodr.boot,c(.05,.95))))
     }
-
+    
     lineDat <- NULL;
+    
+    #### Apply to loaded data ####
+    lodr.resPlot<-NULL; set.seed(1)
+    lodr.resLess<-NULL; set.seed(1)
     
     #
     # For each group, fit a local regression. We'll also estimate the confidence interval for each
@@ -83,7 +87,7 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
     {
         t   <- d[d$ratios == i,]
         fit <-locfit(log10(t$y)~lp(log10(t$x)), maxk=300)
-
+        
         x.new <- seq(min(log10(t$x)), max(log10(t$x)), length.out=100)
         X <- preplot(fit,band="pred",newdata=x.new)
         
@@ -97,56 +101,77 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
         if (i != 0)
         {
             pval.cutoff <- 0.001
+            
+            print(paste('Estmating LODR for LFC', i))
             t.res <- LODR(t$y, t$x, cutoff=pval.cutoff, prob=prob)
-
             
-            #t.res[-1]<-signif(10^t.res[-1],2)
-            #if(t.res[1]>.01){
-            #    t.res[2]<-Inf
-            #    t.res[3:4]<-NA
-            #}
-            #t.resLess <- t.res
-            #t.resLess[-1][t.resLess[-1] == 
-            #                  signif(min(x),2)]<-paste("<",
-            #                                           signif(min(x),2),sep="")
-            #t.res[-1][t.res[-1]==signif(min(x),2)] <- Inf
+            t.res[-1]<-signif(10^t.res[-1],2)
+            if(t.res[1]>.01){
+                t.res[2]<-Inf
+                t.res[3:4]<-NA
+            }
             
-            #if(FCcode$FC[i]==1){
-            #    t.res<-rep(NA,4)
-            #    t.resLess<-rep(NA,4)
-            #} 
+            t.resLess <- t.res
+            t.resLess[-1][t.resLess[-1] == signif(min(t$x),2)]<-paste("<", signif(min(t$x),2), sep="")
+            t.res[-1][t.res[-1]==signif(min(t$x),2)] <- Inf
             
-            #lodr.resPlot<-rbind(lodr.resPlot,c(round(abs(log2(FCcode$FC[i])),3),
-            #                                   t.res))
-            #lodr.resLess <- rbind(lodr.resLess,c(round(abs(log2(FCcode$FC[i])),3),
-            #                                     t.resLess))
+            lodr.resPlot <- rbind(lodr.resPlot, c(round(abs(as.numeric(i)), 3), t.res))
+            lodr.resLess <- rbind(lodr.resLess, c(round(abs(as.numeric(i)), 3), t.resLess))
         }
     }
     
+    legendLabels <- c('1', '2', '3', '4')
+    
+    colnames(lodr.resLess)[1:3]<-c("|log2(Fold)|","MinError","Estimate")
+    
+    colnames(lodr.resPlot)[1:3]<-c("Ratio","MinError","Estimate")
+    colnames(lodr.resLess)[1:3]<-c("Ratio","MinError","Estimate")
+    
+    lodr.resPlot <- as.data.frame(lodr.resPlot)
+    lodr.resLess <- as.data.frame(lodr.resLess)
+    
+    lodr.resPlot$Ratio <- as.character(legendLabels)
+    lodr.resLess$Ratio <- as.character(legendLabels) 
+    annoTable <- lodr.resLess[-c(2)]
+    
+    colnames(annoTable) <- c("Ratio",expression("LODR Estimate"), 
+                             expression("90% CI Lower Bound"), 
+                             expression("90% CI Upper Bound"))
+    #### fix this need to get rid of the "1:1" hard coding...
+    #annoTable <- annoTable[-which(annoTable$Ratio == "1:1"),]
+    ####
+    cat("\n")
+    print(annoTable, quote = FALSE, row.names = FALSE)    
+    
+    my_table <- tableGrob(d=annoTable,rows=NULL)
+    
+    
     cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")
-
-    ggplot(d, aes(x=x, y=y, colour=ratios)) + 
-           geom_point(size = 6) +
-           xlab(xname) +
-           ylab(yname) +
-           
-           scale_x_log10(limits = xrange) + 
-           scale_y_log10(breaks = c(1e-300,1e-200,1e-100,1e-10, 1.00)) +
+    
+    LODRplot <- ggplot(d, aes(x=x, y=y, colour=ratios)) + 
+        geom_point(size = 6) +
+        xlab(xname) +
+        ylab(yname) +
         
-           geom_ribbon(data  = lineDat, aes(x = x.new, y = fitLine, ymin=fitLower, ymax=fitUpper, fill = Ratio),
-                       alpha = 0.3, colour=NA, show_guide = FALSE) + 
-
-           geom_line(data   = lineDat, aes(x = x.new, y=fitLine, 
-                     colour = Ratio), show_guide = FALSE) +
-
-           scale_color_manual(values = cols) +
-           scale_fill_manual (values = rev(cols)) +
-
-           geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) +
-           theme_bw()
+        scale_x_log10(limits = xrange) + 
+        scale_y_log10(breaks = c(1e-300,1e-200,1e-100,1e-10, 1.00)) +
+        
+        geom_ribbon(data  = lineDat, aes(x = x.new, y = fitLine, ymin=fitLower, ymax=fitUpper, fill = Ratio),
+                    alpha = 0.3, colour=NA, show_guide = FALSE) + 
+        
+        geom_line(data   = lineDat, aes(x = x.new, y=fitLine, 
+                                        colour = Ratio), show_guide = FALSE) +
+        
+        scale_color_manual(values = cols) +
+        scale_fill_manual (values = rev(cols)) +
+        
+        geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) +
+        theme_bw()
+    
+    
+    annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(LODRplot, my_table), ncol = 1, heights = c(2,0.5)))
+    LODRplot
 }
 
 
 plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
-
-

@@ -464,8 +464,6 @@ static void classifyChrT(TAlign::Stats &stats,
 {
     REPORT_STATUS();
     
-    stats.update(align);
-    
     if (!align.mapped || align.id != Standard::chrT)
     {
         return;
@@ -485,6 +483,8 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         
         for (const auto &align : aligns)
         {
+            stats.update(align);
+
             if (align.id == ChrT)
             {
                 classifyChrT(stats, stats.data.at(ChrT), align, info, o);
@@ -505,6 +505,8 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
         {
+            stats.update(align);
+
             if (align.id == ChrT)
             {
                 classifyChrT(stats, stats.data.at(ChrT), align, info, o);
