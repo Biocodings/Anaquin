@@ -204,6 +204,32 @@ public:
 
     }
 
+    intervalVector findContains(K start, K stop) const {
+        intervalVector contained;
+        this->findContains(start, stop, contained);
+        return contained;
+    }
+    
+    void findContains(K start, K stop, intervalVector& contained) const {
+        if (!intervals.empty() && ! (stop < intervals.front().start)) {
+            for (typename intervalVector::const_iterator i = intervals.begin(); i != intervals.end(); ++i) {
+                const interval& interval = *i;
+                if (interval.start <= start && stop <= interval.stop) {
+                    contained.push_back(interval);
+                }
+            }
+        }
+        
+        if (left && start <= center) {
+            left->findContains(start, stop, contained);
+        }
+        
+        if (right && stop >= center) {
+            right->findContains(start, stop, contained);
+        }
+        
+    }
+    
     ~IntervalTree(void) = default;
 
 };

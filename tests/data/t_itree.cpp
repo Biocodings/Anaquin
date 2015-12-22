@@ -15,7 +15,26 @@ TEST_CASE("ITree_Empty")
     REQUIRE(t.findOverlapping(-1,1).size() == 0);
 }
 
-TEST_CASE("ITree_Test")
+TEST_CASE("ITree_2")
+{
+    auto loci = std::vector<Interval_<Locus>>
+    {
+        locusToInterval(Locus(0,  24)),
+        locusToInterval(Locus(25, 49)),
+        locusToInterval(Locus(50, 74)),
+        locusToInterval(Locus(75, 99)),
+    };
+    
+    IntervalTree<Locus> t { loci };
+    
+    SECTION ("findContains")
+    {
+        auto v = t.findContains(10, 20);
+        REQUIRE(v.size() == 1);
+    }
+}
+
+TEST_CASE("ITree_1")
 {
     auto loci = std::vector<Interval_<Locus>>
     {

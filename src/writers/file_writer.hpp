@@ -2,6 +2,7 @@
 #define FILE_WRITER_HPP
 
 #include <fstream>
+#include <iostream>
 #include "writers/writer.hpp"
 
 namespace Anaquin
@@ -11,13 +12,13 @@ namespace Anaquin
         public:
             FileWriter(const std::string &path) : path(path) {}
 
-            void close() override
+            inline void close() override
             {
                 _o->close();
                 _o.reset();
             }
 
-            void open(const FileName &file) override
+            inline void open(const FileName &file) override
             {
                 if (!path.empty())
                 {
@@ -32,9 +33,9 @@ namespace Anaquin
                 }
             }
 
-            void write(const std::string &line) override
+            inline void write(const std::string &line) override
             {
-                *(_o) << line << std::endl;
+                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << line << std::endl;
             }
 
         private:
