@@ -652,8 +652,7 @@ static void writeSummary(const TAlign::Stats &stats, const FileName &file, const
     o.writer->close();
 }
 
-// Write sequin statistics for a single replicate
-static void writeSequins(const TAlign::Stats &stats, const FileName &file, const TAlign::Options &o)
+static void writeSequins(const FileName &file, const TAlign::Stats &stats, const TAlign::Options &o)
 {
     o.writer->open(file);
     o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
@@ -869,6 +868,8 @@ static void writeChrSummary(const FileName &file, const TAlign::Stats &stats, co
 static void writeReplicate(const FileName &file, const TAlign::Stats &stats, const TAlign::Options &o)
 {
     o.info("Generating statistics for: " + file);
+
+    o.writer->create(file);
     
     /*
      * Generating summary statistics for each chromosome
@@ -876,8 +877,23 @@ static void writeReplicate(const FileName &file, const TAlign::Stats &stats, con
     
     for (const auto &i : stats.data)
     {
-        writeChrSummary("TransAlign_summary (" + i.first + ").stats", stats, i.first, o.writer);
+        const auto path = file + "/" + i.first;
+        
+        o.writer->create(path);
+        
+        // Summary statistics for the chromosome
+        writeChrSummary(path + "/TransAlign_summary.stats", stats, i.first, o.writer);
+        
+        if (i.first == ChrT)
+        {
+            // Sequin statistics
+            writeSequins(path + "/TransAlign_quins.stats", stats, o);
+        }
     }
+    
+    /*
+     * Generating summary statistics for the replicate
+     */
 }
 
 void TAlign::report(const FileName &file, const Options &o)
@@ -894,6 +910,5 @@ void TAlign::report(const FileName &file, const Options &o)
      * Generating overall statistics
      */
     
-    writeSummary(stats, "TransAlign_summary.stats", o);
-    writeSequins(stats, "TransAlign_quins.stats", o);
+    //writeSummary(stats, "TransAlign_summary.stats", o);
 }
