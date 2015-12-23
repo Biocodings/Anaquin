@@ -230,8 +230,8 @@ void Standard::addTRef(const Reader &r)
     {
         switch (f.type)
         {
-            case Gene: { r_trans.addGene(f.id, f.gID, f.l);        break; }
-            case Exon: { r_trans.addExon(f.id, f.tID, f.gID, f.l); break; }
+            case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
+            case Exon: { r_trans.addExon(f.cID, f.tID, f.gID, f.l); break; }
             default:   { break; }
         }
     });

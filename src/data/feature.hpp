@@ -6,8 +6,6 @@
 
 namespace Anaquin
 {
-    typedef std::string FeatureID;
-    
     struct Feature
     {
         inline bool overlap(const Locus &l) const
@@ -15,20 +13,18 @@ namespace Anaquin
             return this->l.overlap(l);
         }
 
-        operator Locus() const     { return l;  }
-        operator FeatureID() const { return id; }
+        operator Locus() const { return l;  }
 
         void operator=(const Feature &f)
         {
             l    = f.l;
-            id   = f.id;
             type = f.type;
             tID  = f.tID;
             gID  = f.gID;
         }
         
-        FeatureID id;
-        
+        ChromoID cID;
+
         // Forward or reverse strand?
         Strand strand;
         
@@ -36,8 +32,6 @@ namespace Anaquin
         Locus l;
 
         RNAFeature type;
-        
-        ChromoID cID;
         
         // Empty if the information is unavailable
         GeneID gID;

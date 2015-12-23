@@ -50,7 +50,7 @@ void ParserGTF::parse(const Reader &r, Callback x)
             continue;
         }
         
-        f.id   = tokens[0];
+        f.cID  = tokens[0];
         f.l    = Locus(stoi(tokens[3]), stoi(tokens[4]));
         f.type = mapper[tokens[2]];
 

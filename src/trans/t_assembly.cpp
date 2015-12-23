@@ -43,7 +43,7 @@ static std::string createFilteredGTF(const FileName &file, const ChromoID &cID)
 
     ParserGTF::parse(file, [&](const Feature &f, const std::string &l, const ParserProgress &)
     {
-        if (f.id == cID)
+        if (f.cID == cID)
         {
             out << l << std::endl;
         }
@@ -135,6 +135,11 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         stats.data[cID].iSP  = std::min(__cmp__.i_sp  / 100.0, 1.0);
         stats.data[cID].iFSN = std::min(__cmp__.i_fsn / 100.0, 1.0);
         stats.data[cID].iFSP = std::min(__cmp__.i_fsp / 100.0, 1.0);
+
+        stats.data[cID].cSN  = std::min(__cmp__.c_sn  / 100.0, 1.0);
+        stats.data[cID].cSP  = std::min(__cmp__.c_sp  / 100.0, 1.0);
+        stats.data[cID].cFSN = std::min(__cmp__.c_fsn / 100.0, 1.0);
+        stats.data[cID].cFSP = std::min(__cmp__.c_fsp / 100.0, 1.0);
         
         stats.data[cID].tSN  = std::min(__cmp__.t_sn  / 100.0, 1.0);
         stats.data[cID].tSP  = std::min(__cmp__.t_sp  / 100.0, 1.0);
@@ -196,7 +201,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     {
         if (!(p.i % 1000000)) { o.wait(std::to_string(p.i)); }
         
-        if (f.id != Standard::chrT)
+        if (f.cID != Standard::chrT)
         {
             stats.n_expT++;
         }
