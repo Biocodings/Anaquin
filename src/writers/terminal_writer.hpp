@@ -18,6 +18,8 @@ namespace Anaquin
             {
                 std::cout << str << std::endl;
             }
+
+            inline void create(const std::string &) override {}
     };
 }
 

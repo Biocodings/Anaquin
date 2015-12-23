@@ -36,10 +36,30 @@ namespace Anaquin
                 double iSP, iSN, iFSP, iFSN;
 
                 /*
+                 * Intron-chain statistics
+                 */
+                
+                double cSP, cSN, cFSP, cFSN;
+                
+                /*
                  * Transcript statistics
                  */
                 
                 double tSP, tSN, tFSP, tFSN;
+                
+                /*
+                 * Missing statistics
+                 */
+                
+                double mExonN,   mExonR,   mExonP;
+                double mIntronN, mIntronR, mIntronP;
+                
+                /*
+                 * Novel statistics
+                 */
+                
+                double nExonN,   nExonR,   nExonP;
+                double nIntronN, nIntronR, nIntronP;
             };
             
             std::map<ChromoID, Data> data;

@@ -90,6 +90,24 @@ static std::string summary()
            "   Novel introns: %35%/%36% (%37%)\n\n";
 }
 
+static TAssembly::Stats init()
+{
+    const auto &r = Standard::instance().r_trans;
+    TAssembly::Stats stats;
+    
+    for (const auto &i : r.chromoIDs())
+    {
+        stats.data[i];
+    }
+    
+    stats.eHist = r.hist();
+    stats.iHist = r.hist();
+    stats.tHist = r.hist();
+    stats.bHist = r.geneHist(ChrT);
+
+    return stats;
+}
+
 TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
@@ -100,20 +118,8 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
      * 1. Initalize the statistics
      */
     
-    TAssembly::Stats stats;
+    TAssembly::Stats stats = init();
     
-    stats.data[ChrT];
-    
-    if (r.chromoIDs().size() > 1)
-    {
-        stats.data[ExpT];
-    }
-    
-    stats.eHist = r.hist();
-    stats.iHist = r.hist();
-    stats.tHist = r.hist();
-    stats.bHist = r.geneHist(ChrT);
-
     /*
      * 2. Filtering transcripts
      */
@@ -137,6 +143,20 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         
         stats.data[cID].bSN  = std::min(__cmp__.b_sn  / 100.0, 1.0);
         stats.data[cID].bSP  = std::min(__cmp__.b_sp  / 100.0, 1.0);
+
+        stats.data[cID].mExonN    = __cmp__.missedExonsN;
+        stats.data[cID].mExonR    = __cmp__.missedExonsR;
+        stats.data[cID].mExonP    = __cmp__.missedExonsP / 100.0;
+        stats.data[cID].mIntronN  = __cmp__.missedIntronsN;
+        stats.data[cID].mIntronR  = __cmp__.missedIntronsR;
+        stats.data[cID].mIntronP  = __cmp__.missedIntronsP / 100.0;
+
+        stats.data[cID].nExonN    = __cmp__.novelExonsN;
+        stats.data[cID].nExonR    = __cmp__.novelExonsR;
+        stats.data[cID].nExonP    = __cmp__.novelExonsP / 100.0;
+        stats.data[cID].nIntronN  = __cmp__.novelIntronsN;
+        stats.data[cID].nIntronR  = __cmp__.novelIntronsR;
+        stats.data[cID].nIntronP  = __cmp__.novelIntronsP / 100.0;
     };
     
     auto compareGTF = [&](const ChromoID &cID)
@@ -290,56 +310,55 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file,
-                         const FileName &src,
-                         const TAssembly::Stats &stats,
-                         const TAssembly::Options &o)
+static void writeChrSummary(const FileName &file, const TAssembly::Stats &stats, const ChromoID &cID, std::shared_ptr<Writer> writer)
 {
     const auto &r = Standard::instance().r_trans;
+    const auto data = stats.data.at(cID);
 
-    o.writer->open(file);
-    o.writer->write((boost::format(summary()) % file
-                                              % stats.n_expT
-                                              % stats.n_chrT
-                                              % r.data().size()
-                                              % r.countIntrons(ChrT)
-                                              % (__cmp__.e_sn  / 100.0) // 6
-                                              % (__cmp__.e_fsn / 100.0)
-                                              % (__cmp__.e_sp  / 100.0)
-                                              % (__cmp__.e_fsp / 100.0)
-                                              % (stats.eLimit.id.empty() ? "-" : std::to_string(stats.eLimit.abund))
-                                              %  stats.eLimit.id
-                                              % (__cmp__.i_sn  / 100.0) // 12
-                                              % (__cmp__.i_fsn / 100.0)
-                                              % (__cmp__.i_sp  / 100.0)
-                                              % (__cmp__.i_fsp / 100.0)
-                                              % (stats.iLimit.id.empty() ? "-" : std::to_string(stats.iLimit.abund))
-                                              %  stats.iLimit.id
-                                              % (__cmp__.b_sn / 100.0) // 18
-                                              % (__cmp__.b_sp / 100.0)
-                                              % (stats.bLimit.id.empty() ? "-" : std::to_string(stats.bLimit.abund)) // 20
-                                              %  stats.bLimit.id
-                                              % (__cmp__.t_sn  / 100.0)
-                                              % (__cmp__.t_fsn / 100.0)
-                                              % (__cmp__.t_sp  / 100.0)
-                                              % (__cmp__.t_fsp / 100.0) // 25
-                                              % (__cmp__.missedExonsN)
-                                              % (__cmp__.missedExonsR)
-                                              % (__cmp__.missedExonsP / 100.0)
-                                              % (__cmp__.missedIntronsN)
-                                              % (__cmp__.missedIntronsR)         // 30
-                                              % (__cmp__.missedIntronsP / 100.0)
-                                              % (__cmp__.novelExonsN)
-                                              % (__cmp__.novelExonsR)
-                                              % (__cmp__.novelExonsP / 100.0)
-                                              % (__cmp__.novelIntronsN)
-                                              % (__cmp__.novelIntronsR)          // 36
-                                              % (__cmp__.novelIntronsP / 100.0)
-                                              % (__cmp__.c_sn  / 100.0)
-                                              % (__cmp__.c_fsn / 100.0)
-                                              % (__cmp__.c_sp  / 100.0)
-                                              % (__cmp__.c_fsp / 100.0)).str());
-    o.writer->close();
+    writer->open(file);
+    writer->write((boost::format(summary()) % file
+                                            % stats.n_expT
+                                            % stats.n_chrT
+                                            % r.data().size()
+                                            % r.countIntrons(cID)
+                                            % data.eSN              // 6
+                                            % data.eFSN
+                                            % data.eSP
+                                            % data.eFSP
+                                            % (stats.eLimit.id.empty() ? "-" : std::to_string(stats.eLimit.abund))
+                                            % stats.eLimit.id
+                                            % data.iSN              // 12
+                                            % data.iFSN
+                                            % data.iSP
+                                            % data.iFSP
+                                            % (stats.iLimit.id.empty() ? "-" : std::to_string(stats.iLimit.abund))
+                                            % stats.iLimit.id
+                                            % data.bSN               // 18
+                                            % data.bSP
+                                            % (stats.bLimit.id.empty() ? "-" : std::to_string(stats.bLimit.abund)) // 20
+                                            % stats.bLimit.id
+                                            % data.tSN
+                                            % data.tFSN
+                                            % data.tSP
+                                            % data.tFSP              // 25
+                                            % data.cSN
+                                            % data.cFSN
+                                            % data.cSP
+                                            % data.cFSP
+                                            % data.mExonN            // 30
+                                            % data.mExonR
+                                            % data.mExonP
+                                            % data.mIntronN
+                                            % data.mIntronR          // 34
+                                            % data.mIntronP
+                                            % data.nExonN
+                                            % data.nExonR
+                                            % data.nExonP
+                                            % data.nIntronN
+                                            % data.nIntronR          // 40
+                                            % data.nIntronP
+                   ).str());
+    writer->close();
 }
 
 static void writeSequins(const FileName &file, const FileName &src, const TAssembly::Stats &stats, const TAssembly::Options &o)
@@ -373,12 +392,36 @@ static void writeSequins(const FileName &file, const FileName &src, const TAssem
     o.writer->close();
 }
 
+static void writeReplicate(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
+{
+    o.info("Generating statistics for: " + file);
+
+    /*
+     * Generating summary statistics for each chromosome
+     */
+    
+    for (const auto &i : stats.data)
+    {
+        writeChrSummary("TransAssembly_summary (" + i.first + ").stats", stats, i.first, o.writer);
+    }
+}
+
 void TAssembly::report(const FileName &file, const Options &o)
 {
     const auto stats = TAssembly::analyze(file, o);
 
+    /*
+     * Generating statistics for the replicate
+     */
+    
+    writeReplicate(file, stats, o);
+    
+    /*
+     * Generating overall statistics
+     */
+    
     o.info("Generating summary statistics");
-    writeSummary("TransAssembly_summary.stats", file, stats, o);
+    //writeSummary("TransAssembly_summary.stats", file, stats, o);
 
     o.info("Generating sequin statistics");
     writeSequins("TransAssembly_quins.stats", file, stats, o);
@@ -396,7 +439,7 @@ void TAssembly::report(const std::vector<FileName> &files, const Options &o)
 
     for (auto i = 0; i < files.size(); i++)
     {
-        writeSummary((boost::format("TransAssembly_%1%_summary.stats") % files[i]).str(), files[i], stats[i], o);
+        //writeSummary((boost::format("TransAssembly_%1%_summary.stats") % files[i]).str(), files[i], stats[i], o);
     }
     
     /*

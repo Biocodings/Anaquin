@@ -7,6 +7,9 @@
 #m <- read.csv('/Users/tedwong/Desktop/LODR_data_TED.csv', row.names=1)
 #m <- m[!is.na(m$padj),]
 
+m <- read.csv('/Users/tedwong/Desktop/LODR_isoforms.csv', row.names=1)
+m <- m[!is.na(m$qval),]
+
 plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts', yname='DE Test P-values')
 {
     require(locfit)
@@ -174,4 +177,9 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
 }
 
 
-plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
+#plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
+
+plotLODR(m$overallMean.FPKM., m$qval, m$expectedLFC)
+
+
+
