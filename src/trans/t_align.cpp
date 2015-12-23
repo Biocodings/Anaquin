@@ -728,8 +728,8 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     
     for (auto i = 0; i < files.size(); i++)
     {
-        writeSequins(stats[i], (boost::format("TransAlign_%1%_quins.stats")   % files[i]).str(), o);
-        writeSummary(stats[i], (boost::format("TransAlign_%1%_summary.stats") % files[i]).str(), o);
+        //writeSequins(stats[i], (boost::format("TransAlign_%1%_quins.stats")   % files[i]).str(), o);
+        //writeSummary(stats[i], (boost::format("TransAlign_%1%_summary.stats") % files[i]).str(), o);
     }
 
     /*
