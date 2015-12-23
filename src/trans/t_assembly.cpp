@@ -79,15 +79,15 @@ static std::string summary()
            "   Specificity: %19%\n"
            "   Detection:   %20% (%21%)\n\n"
            "   -------------------- Intron Chain level --------------------\n\n"
-           "   Sensitivity: %38% (%39%)\n"
-           "   Specificity: %40% (%41%)\n\n"
-           "   -------------------- Transcript level --------------------\n\n"
            "   Sensitivity: %22% (%23%)\n"
            "   Specificity: %24% (%25%)\n\n"
-           "   Missing exons: %26%/%27% (%28%)\n"
-           "   Missing introns: %29%/%30% (%31%)\n\n"
-           "   Novel exons: %32%/%33% (%34%)\n"
-           "   Novel introns: %35%/%36% (%37%)\n\n";
+           "   -------------------- Transcript level --------------------\n\n"
+           "   Sensitivity: %26% (%27%)\n"
+           "   Specificity: %28% (%29%)\n\n"
+           "   Missing exons: %30%/%31% (%32%)\n"
+           "   Missing introns: %33%/%34% (%35%)\n\n"
+           "   Novel exons: %36%/%37% (%38%)\n"
+           "   Novel introns: %39%/%40% (%41%)\n\n";
 }
 
 static TAssembly::Stats init()
@@ -336,15 +336,15 @@ static void writeChrSummary(const FileName &file, const TAssembly::Stats &stats,
                                             % data.bSN               // 18
                                             % data.bSP
                                             % (stats.bLimit.id.empty() ? "-" : std::to_string(stats.bLimit.abund)) // 20
-                                            % stats.bLimit.id
-                                            % data.tSN
-                                            % data.tFSN
-                                            % data.tSP
-                                            % data.tFSP              // 25
+                                            % stats.bLimit.id        // 21
                                             % data.cSN
                                             % data.cFSN
                                             % data.cSP
                                             % data.cFSP
+                                            % data.tSN
+                                            % data.tFSN
+                                            % data.tSP
+                                            % data.tFSP              // 29
                                             % data.mExonN            // 30
                                             % data.mExonR
                                             % data.mExonP
