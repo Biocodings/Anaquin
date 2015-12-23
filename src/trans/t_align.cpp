@@ -107,12 +107,12 @@ template <typename T> const T * matchT(const Alignment &align,
     std::vector<T *> oMatches, cMatches;
 
     /*
-     * It's quite likely there'll be more than a match. Note that it's not possible to distinguish the
+     * It's quite likely there'll be more than a match. Note that it's impossible to distinguish the
      * individuals due to alternative splicing. Thus, we simply increment for all the possible matches.
      * Consequently, it's not possible to detect anything at the isoform level.
      */
 
-    if (inters.contains(align.l, cMatches))
+    if (inters.contains(align.l, &cMatches))
     {
         for (auto &i : cMatches)
         {
@@ -121,7 +121,7 @@ template <typename T> const T * matchT(const Alignment &align,
     }
     else
     {
-        if (inters.overlap(align.l, oMatches))
+        if (inters.overlap(align.l, &oMatches))
         {
             for (auto &i : cMatches)
             {
