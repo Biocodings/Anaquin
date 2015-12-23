@@ -449,12 +449,16 @@ TEST_CASE("Interval_Test_4")
     REQUIRE(!i.contains(Locus(51, 99)));
     REQUIRE(!i.contains(Locus(10, 60)));
 
+    REQUIRE(i.overlap(Locus(00, 00)));
     REQUIRE(i.overlap(Locus(00, 99)));
     REQUIRE(i.overlap(Locus(25, 50)));
     REQUIRE(i.overlap(Locus(51, 99)));
     REQUIRE(i.overlap(Locus(10, 60)));
+    REQUIRE(i.overlap(Locus(99, 99)));
+    REQUIRE(i.overlap(Locus(0, 1000)));
+
+    REQUIRE(!i.overlap(Locus(100,  100)));
+    REQUIRE(!i.overlap(Locus(500,  600)));
+    REQUIRE(!i.overlap(Locus(400,  450)));
+    REQUIRE(!i.overlap(Locus(1000, 1000)));
 }
-
-
-
-
