@@ -298,8 +298,8 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     /*
      * The counts for query bases is the total non-overlapping bases of all the exons in the experiment.
      */
-    
-    //countBase(r.mergedExons(), q_exons, t, stats.chrT->hb);
+
+    //countBase(r.mergedExons(), q_exons, t, stats.bHist);
     
     /*
      * 4. Collecting statistics
