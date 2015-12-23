@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 #include "writers/writer.hpp"
 
 namespace Anaquin
@@ -38,6 +39,16 @@ namespace Anaquin
                 *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << line << std::endl;
             }
 
+            inline void create(const std::string &dir) override
+            {
+                const auto r = mkdir(dir.c_str(), 0777);
+                
+                if (r != 0 && r != EEXIST)
+                {
+                    throw std::runtime_error("Failed to create a directory, error: " + std::to_string(r));
+                }
+            }
+                
         private:
             std::string path;
             std::shared_ptr<std::ofstream> _o;

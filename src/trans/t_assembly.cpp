@@ -106,7 +106,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     
     if (r.chromoIDs().size() > 1)
     {
-        stats.data[ChrE];
+        stats.data[ExpT];
     }
     
     stats.eHist = r.hist();

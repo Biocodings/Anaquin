@@ -37,6 +37,11 @@ namespace Anaquin
                 }
             }
 
+            inline void create(const std::string &) override
+            {
+                throw std::runtime_error("Not implemented");
+            }
+
         private:
 
             // Whether the header has been written

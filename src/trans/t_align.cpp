@@ -584,7 +584,6 @@ static std::string summary()
            "   Gene:   %30% (%31%%%)\n";
 }
 
-// Write summary statistics for a single replicate
 static void writeSummary(const TAlign::Stats &stats, const FileName &file, const TAlign::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
@@ -818,9 +817,82 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     o.writer->close();
 }
 
+static void writeChrSummary(const FileName &file, const TAlign::Stats &stats, const ChromoID &cID, std::shared_ptr<Writer> writer)
+{
+    const auto &r = Standard::instance().r_trans;
+    
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Reference:  %2% exons\n"
+                         "   Reference:  %3% introns\n"
+                         "   Reference:  %4% bases\n\n"
+                         "   Query:      %5% exons\n"
+                         "   Query:      %6% introns\n"
+                         "   Query:      %7% bases\n\n"
+                         "   ***\n"
+                         "   *** The following statistics are computed at the exon, intron and base level.\n"
+                         "   ***\n"
+                         "   *** Exon level is defined by performance per exon. An alignment that\n"
+                         "   *** is not mapped entirely within an exon is considered as a FP. The\n"
+                         "   *** intron level is similar.\n"
+                         "   ***\n"
+                         "   *** Base level is defined by performance per nucleotide. A partial\n"
+                         "   *** mapped read will have FP and TP.\n"
+                         "   ***\n\n"
+                         "   -------------------- Exon level --------------------\n\n"
+                         "   Sensitivity: %8%\n"
+                         "   Specificity: %9%\n"
+                         "   -------------------- Intron level --------------------\n\n"
+                         "   Sensitivity: %10%\n"
+                         "   Specificity: %11%\n"
+                         "   -------------------- Base level --------------------\n\n"
+                         "   Sensitivity: %12%\n"
+                         "   Specificity: %13%\n";
+    
+    writer->open(file);
+    writer->write((boost::format(summary) % file
+                                          % r.countExons(cID)
+                                          % r.countIntrons(cID)
+                                          % r.exonBase(cID)
+                                          % stats.qExons(cID)
+                                          % stats.qIntrons(cID)
+                                          % stats.qBases(cID)
+                                          % stats.sn(cID, TAlign::Stats::AlignMetrics::AlignExon)
+                                          % stats.pc(cID, TAlign::Stats::AlignMetrics::AlignExon)
+                                          % stats.sn(cID, TAlign::Stats::AlignMetrics::AlignIntron)
+                                          % stats.pc(cID, TAlign::Stats::AlignMetrics::AlignIntron)
+                                          % stats.sn(cID, TAlign::Stats::AlignMetrics::AlignBase)
+                                          % stats.pc(cID, TAlign::Stats::AlignMetrics::AlignBase)
+                     ).str());
+    writer->close();
+}
+
+static void writeReplicate(const FileName &file, const TAlign::Stats &stats, const TAlign::Options &o)
+{
+    o.info("Generating statistics for: " + file);
+    
+    /*
+     * Generating summary statistics for each chromosome
+     */
+    
+    for (const auto &i : stats.data)
+    {
+        writeChrSummary("TransAlign_summary (" + i.first + ").stats", stats, i.first, o.writer);
+    }
+}
+
 void TAlign::report(const FileName &file, const Options &o)
 {
     const auto stats = TAlign::analyze(file, o);
+ 
+    /*
+     * Generating statistics for the replicate
+     */
+    
+    writeReplicate(file, stats, o);
+    
+    /*
+     * Generating overall statistics
+     */
     
     writeSummary(stats, "TransAlign_summary.stats", o);
     writeSequins(stats, "TransAlign_quins.stats", o);
