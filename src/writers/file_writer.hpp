@@ -41,11 +41,11 @@ namespace Anaquin
 
             inline void create(const std::string &dir) override
             {
-                const auto r = mkdir(dir.c_str(), 0777);
-                
-                if (r != 0 && r != EEXIST)
+                const auto r = mkdir((path + "/" + dir).c_str(), 0777);
+
+                if (r == -1 && errno != EEXIST)
                 {
-                    throw std::runtime_error("Failed to create a directory, error: " + std::to_string(r));
+                    throw std::runtime_error("Failed to create directory: " + dir + " error: " + std::to_string(r));
                 }
             }
                 

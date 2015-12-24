@@ -880,7 +880,7 @@ static void writeReplicate(const FileName &file, const TAlign::Stats &stats, con
         const auto path = file + "/" + i.first;
         
         o.writer->create(path);
-        
+
         // Summary statistics for the chromosome
         writeChrSummary(path + "/TransAlign_summary.stats", stats, i.first, o.writer);
         
