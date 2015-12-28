@@ -43,16 +43,16 @@ namespace Anaquin
                 }
             };
 
-        struct Stats : public AlignmentStats
+            struct Stats : public AlignmentStats
             {
-                enum AlignMetrics
+                enum class AlignMetrics
                 {
                     AlignExon,
                     AlignIntron,
                     AlignBase
                 };
-                
-                enum MissingMetrics
+
+                enum class MissingMetrics
                 {
                     MissingExon,
                     MissingIntron,
@@ -82,8 +82,7 @@ namespace Anaquin
                     // Overall performance at the base level
                     Performance overB;
                     
-                    Hist  histE,  histI;
-                    Limit limitE, limitI;
+                    Hist histE, histI;
                     
                     /*
                      * Individual statistics for each gene (due to alternative splicing)
@@ -113,6 +112,14 @@ namespace Anaquin
                  * Accessor functions
                  */
 
+                inline Limit limit(AlignMetrics m) const
+                {
+                    const auto h = (m == AlignMetrics::AlignExon)   ? &data.at(ChrT).histE :
+                                   (m == AlignMetrics::AlignIntron) ? &data.at(ChrT).histI :
+                                                                      &data.at(ChrT).overB.h;
+                    return Standard::instance().r_trans.limitGene(*h);
+                }
+                
                 // Number of exons in the query
                 inline Counts qExons(const ChromoID &cID) const { return data.at(cID).overE.aNQ(); }
                 
@@ -122,24 +129,24 @@ namespace Anaquin
                 // Number of bases in the query
                 inline Counts qBases(const ChromoID &cID) const { return data.at(cID).overB.m.nq(); }
 
-                inline CountPercent missing(const ChromoID &cID, enum MissingMetrics m) const
+                inline CountPercent missing(const ChromoID &cID, MissingMetrics m) const
                 {
                     switch (m)
                     {
-                        case MissingGene:   { return CountPercent(data.at(cID).missG.size(), data.at(cID).histE.size());     }
-                        case MissingExon:   { return CountPercent(data.at(cID).missE.size(), data.at(cID).eContains.size()); }
-                        case MissingIntron: { return CountPercent(data.at(cID).missI.size(), data.at(cID).iContains.size()); }
+                        case MissingMetrics::MissingGene:   { return CountPercent(data.at(cID).missG.size(), data.at(cID).histE.size());     }
+                        case MissingMetrics::MissingExon:   { return CountPercent(data.at(cID).missE.size(), data.at(cID).eContains.size()); }
+                        case MissingMetrics::MissingIntron: { return CountPercent(data.at(cID).missI.size(), data.at(cID).iContains.size()); }
                     }
                 }
 
                 // Overall sensitivity
-                inline double sn(const ChromoID &cID, enum AlignMetrics m) const
+                inline double sn(const ChromoID &cID, AlignMetrics m) const
                 {
                     switch (m)
                     {
-                        case AlignExon:   { return data.at(cID).overE.sn();   }
-                        case AlignBase:   { return data.at(cID).overB.m.sn(); }
-                        case AlignIntron: { return data.at(cID).overI.sn();   }
+                        case AlignMetrics::AlignExon:   { return data.at(cID).overE.sn();   }
+                        case AlignMetrics::AlignBase:   { return data.at(cID).overB.m.sn(); }
+                        case AlignMetrics::AlignIntron: { return data.at(cID).overI.sn();   }
                     }
                 }
                 
@@ -150,13 +157,13 @@ namespace Anaquin
                 }
 
                 // Overall precision
-                inline double pc(const ChromoID &cID, enum AlignMetrics m) const
+                inline double pc(const ChromoID &cID, AlignMetrics m) const
                 {
                     switch (m)
                     {
-                        case AlignExon:   { return data.at(cID).overE.precise(); }
-                        case AlignBase:   { return data.at(cID).overB.m.ac();    }
-                        case AlignIntron: { return data.at(cID).overI.precise(); }
+                        case AlignMetrics::AlignExon:   { return data.at(cID).overE.precise(); }
+                        case AlignMetrics::AlignBase:   { return data.at(cID).overB.m.ac();    }
+                        case AlignMetrics::AlignIntron: { return data.at(cID).overI.precise(); }
                     }
                 }
             };
@@ -168,11 +175,31 @@ namespace Anaquin
             static Stats analyze(const std::vector<Alignment> &, const Options &o = Options());
 
             // Analyze multiple replicates
-            static std::vector<Stats> analyze(const std::vector<FileName> &, const Options &o = Options());
+            static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o = Options())
+            {
+                std::vector<TAlign::Stats> stats;
+            
+                for (const auto &file : files)
+                {
+                    stats.push_back(analyze(file, o));
+                }
+            
+                return stats;
+            }
 
             // Analyze multiple replicates
-            static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &,
-                                              const Options &o = Options());
+            static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &aligns,
+                                              const Options &o = Options())
+            {
+                std::vector<TAlign::Stats> stats;
+                
+                for (const auto &align : aligns)
+                {
+                    stats.push_back(analyze(align, o));
+                }
+                
+                return stats;            
+            }
 
             static void report(const FileName &, const Options &o = Options());
             static void report(const std::vector<FileName> &, const Options &o = Options());
