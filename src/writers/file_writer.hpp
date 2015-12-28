@@ -41,7 +41,7 @@ namespace Anaquin
 
             inline void create(const std::string &dir) override
             {
-                const auto r = mkdir((path + "/" + dir).c_str(), 0777);
+                const auto r = mkdir((path + "/" + dir).c_str(), 0666);
 
                 if (r == -1 && errno != EEXIST)
                 {
