@@ -15,6 +15,19 @@ namespace Anaquin
 {
     typedef std::map<BinID, Counts> BinCounts;
 
+    inline std::string extractFile(const std::string &path)
+    {
+        auto r   = path;
+        auto sep = r.find_last_of("\\/");
+        
+        if (sep != std::string::npos)
+        {
+            r = path.substr(sep + 1, path.size() - sep - 1);
+        }
+
+        return r;
+    }
+    
     template <typename T> Counts sum(const std::map<T, Counts> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)

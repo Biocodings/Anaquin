@@ -796,11 +796,13 @@ void TAlign::report(const FileName &file, const Options &o)
     const auto stats = TAlign::analyze(file, o);
  
     o.info("Generating statistics for: " + file);
-    o.writer->create(file);
+
+    const auto sample = extractFile(file);
+    o.writer->create(sample);
 
     // Generating summary statistics for the replicate
-    writeSummary(file + "/TransAlign_summary.stats", stats, o.writer);
+    writeSummary(sample + "/TransAlign_summary.stats", stats, o.writer);
     
     // Generating sequin statistics for the replicate
-    writeSequins(file + "/TransAlign_quins.stats", stats, o);
+    writeSequins(sample + "/TransAlign_quins.stats", stats, o);
 }
