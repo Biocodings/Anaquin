@@ -45,7 +45,7 @@ namespace Anaquin
 
                 if (r == -1 && errno != EEXIST)
                 {
-                    throw std::runtime_error("Failed to create directory: " + dir + " error: " + std::to_string(r));
+                    throw std::runtime_error("Failed to create directory: " + (path + "/" + dir) + " error: " + std::to_string(r));
                 }
             }
                 
