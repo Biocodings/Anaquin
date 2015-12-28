@@ -150,17 +150,22 @@ namespace Anaquin
     {
         CountPercent(Counts i, Counts n) : i(i), n(n) {}
         
-        // Relevant number of counts
-        Counts i;
-        
-        // Total number of counts
-        Counts n;
+        inline operator std::string() const
+        {
+            return (boost::format("%1% (%2%)") % i % n).str();
+        }
 
         inline double percent() const
         {
             assert(i <= n);
             return static_cast<double>(i) / n;
         }
+        
+        // Relevant number of counts
+        Counts i;
+        
+        // Total number of counts
+        Counts n;        
     };
 
     struct UnknownAlignment
@@ -419,7 +424,7 @@ namespace Anaquin
             
                 // Standard deviation
                 T sd;
-            
+
                 inline std::string operator()() const
                 {
                     return (boost::format("%1% \u00B1 %2%") % mean % sd).str();

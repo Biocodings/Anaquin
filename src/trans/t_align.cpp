@@ -590,8 +590,12 @@ static void writeSummary(const FileName         &file,
                          "   -------------------- Base level --------------------\n\n"
                          "   Sensitivity: %22%\n"
                          "   Specificity: %23%\n"
-                         "   Detection:   %24% (%25%)\n";
-    
+                         "   Detection:   %24% (%25%)\n\n"
+                         "   -------------------- Undetected --------------------\n\n"
+                         "   Exon:   %26%\n"
+                         "   Intron: %27%\n"
+                         "   Gene:   %28%\n\n";
+
     typedef TAlign::Stats Stats;
     typedef TAlign::Stats::AlignMetrics AlignMetrics;
     typedef TAlign::Stats::MissingMetrics MissingMetrics;
@@ -599,33 +603,37 @@ static void writeSummary(const FileName         &file,
     #define BIND_R(x)    combine(stats.data, std::bind(&x, &r, _1))
     #define BIND_Q(x)    combine(stats.data, std::bind(&x, &stats, _1))
     #define BIND_E(x, y) combine(stats.data, std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y))
+    #define BIND_O(x, y) combine(stats.data, std::bind(static_cast<CountPercent (Stats::*)(const ChromoID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y))
 
     writer->open(file);
     writer->write((boost::format(summary) % file
                                           % stats.unmapped
                                           % stats.n_expT
+                                          % (100.0 * stats.expMap())
                                           % stats.n_chrT
-                                          % (100.0 * stats.expMap())                     // 5
-                                          % (100.0 * stats.chrTMap())                    // 6
-                                          % BIND_R(TransRef::countExons)                 // 7
-                                          % BIND_R(TransRef::countIntrons)               // 8
-                                          % BIND_R(TransRef::exonBase)                   // 9
-                                          % BIND_Q(Stats::qExons)                        // 10
-                                          % BIND_Q(Stats::qIntrons)                      // 11
-                                          % BIND_Q(Stats::qBases)                        // 12
-                                          % stats.dilution()                             // 13
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon)   // 14
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon)   // 15
-                                          % stats.limit(AlignMetrics::AlignExon).abund   // 16
-                                          % stats.limit(AlignMetrics::AlignExon).id      // 17
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignIntron) // 18
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignIntron) // 19
-                                          % stats.limit(AlignMetrics::AlignIntron).abund // 20
-                                          % stats.limit(AlignMetrics::AlignIntron).id    // 21
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignBase)   // 22
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignBase)   // 23
-                                          % stats.limit(AlignMetrics::AlignBase).abund   // 24
-                                          % stats.limit(AlignMetrics::AlignBase).id      // 25
+                                          % (100.0 * stats.chrTMap())                             // 6
+                                          % BIND_R(TransRef::countExons)                          // 7
+                                          % BIND_R(TransRef::countIntrons)                        // 8
+                                          % BIND_R(TransRef::exonBase)                            // 9
+                                          % BIND_Q(Stats::qExons)                                 // 10
+                                          % BIND_Q(Stats::qIntrons)                               // 11
+                                          % BIND_Q(Stats::qBases)                                 // 12
+                                          % stats.dilution()                                      // 13
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon)            // 14
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon)            // 15
+                                          % stats.limit(AlignMetrics::AlignExon).abund            // 16
+                                          % stats.limit(AlignMetrics::AlignExon).id               // 17
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignIntron)          // 18
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignIntron)          // 19
+                                          % stats.limit(AlignMetrics::AlignIntron).abund          // 20
+                                          % stats.limit(AlignMetrics::AlignIntron).id             // 21
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignBase)            // 22
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignBase)            // 23
+                                          % stats.limit(AlignMetrics::AlignBase).abund            // 24
+                                          % stats.limit(AlignMetrics::AlignBase).id               // 25
+                                          % BIND_O(Stats::missing, MissingMetrics::MissingExon)   // 26
+                                          % BIND_O(Stats::missing, MissingMetrics::MissingIntron) // 27
+                                          % BIND_O(Stats::missing, MissingMetrics::MissingGene)   // 28
                      ).str());
     writer->close();
 }

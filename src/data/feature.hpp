@@ -13,7 +13,7 @@ namespace Anaquin
             return this->l.overlap(l);
         }
 
-        operator Locus() const { return l;  }
+        operator Locus() const { return l; }
 
         void operator=(const Feature &f)
         {
