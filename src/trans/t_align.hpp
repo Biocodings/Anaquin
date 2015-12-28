@@ -133,12 +133,31 @@ namespace Anaquin
                 {
                     switch (m)
                     {
-                        case MissingMetrics::MissingGene:   { return CountPercent(data.at(cID).missG.size(), data.at(cID).histE.size());     }
-                        case MissingMetrics::MissingExon:   { return CountPercent(data.at(cID).missE.size(), data.at(cID).eContains.size()); }
-                        case MissingMetrics::MissingIntron: { return CountPercent(data.at(cID).missI.size(), data.at(cID).iContains.size()); }
+                        case MissingMetrics::MissingGene:
+                        {
+                            return CountPercent(data.at(cID).missG.size(),
+                                                data.at(cID).histE.size());
+                        }
+                            
+                        case MissingMetrics::MissingExon:
+                        {
+                            return CountPercent(data.at(cID).missE.size(),
+                                                data.at(cID).eContains.size());
+                        }
+
+                        case MissingMetrics::MissingIntron:
+                        {
+                            return CountPercent(data.at(cID).missI.size(),
+                                                data.at(cID).iContains.size());
+                        }
                     }
                 }
 
+                inline double missPercent(const ChromoID &cID, MissingMetrics m) const
+                {
+                    return missing(cID, m).percent();
+                }
+                
                 // Overall sensitivity
                 inline double sn(const ChromoID &cID, AlignMetrics m) const
                 {

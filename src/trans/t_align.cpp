@@ -603,7 +603,7 @@ static void writeSummary(const FileName         &file,
     #define BIND_R(x)    combine(stats.data, std::bind(&x, &r, _1))
     #define BIND_Q(x)    combine(stats.data, std::bind(&x, &stats, _1))
     #define BIND_E(x, y) combine(stats.data, std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y))
-    #define BIND_O(x, y) combine(stats.data, std::bind(static_cast<CountPercent (Stats::*)(const ChromoID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y))
+    #define BIND_M(x, y) combine(stats.data, std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y))
 
     writer->open(file);
     writer->write((boost::format(summary) % file
@@ -631,9 +631,9 @@ static void writeSummary(const FileName         &file,
                                           % BIND_E(Stats::pc, AlignMetrics::AlignBase)            // 23
                                           % stats.limit(AlignMetrics::AlignBase).abund            // 24
                                           % stats.limit(AlignMetrics::AlignBase).id               // 25
-                                          % BIND_O(Stats::missing, MissingMetrics::MissingExon)   // 26
-                                          % BIND_O(Stats::missing, MissingMetrics::MissingIntron) // 27
-                                          % BIND_O(Stats::missing, MissingMetrics::MissingGene)   // 28
+                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingExon)
+                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingIntron)
+                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingGene)
                      ).str());
     writer->close();
 }
