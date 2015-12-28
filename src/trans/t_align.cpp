@@ -8,6 +8,9 @@ using namespace std::placeholders;
 // Internal implementation
 typedef std::function<void (TAlign::Stats &)> Functor;
 
+typedef TAlign::Stats::AlignMetrics   AlignMetrics;
+typedef TAlign::Stats::MissingMetrics MissingMetrics;
+
 /*
  * -------------------- Initalization --------------------
  */
@@ -597,8 +600,6 @@ static void writeSummary(const FileName         &file,
                          "   Gene:   %28%\n\n";
 
     typedef TAlign::Stats Stats;
-    typedef TAlign::Stats::AlignMetrics AlignMetrics;
-    typedef TAlign::Stats::MissingMetrics MissingMetrics;
 
     #define BIND_R(x)    combine(stats.data, std::bind(&x, &r, _1))
     #define BIND_Q(x)    combine(stats.data, std::bind(&x, &stats, _1))
@@ -638,21 +639,21 @@ static void writeSummary(const FileName         &file,
     writer->close();
 }
 
-static void writeSequins(const FileName &file, const TAlign::Stats &stats, const TAlign::Options &o)
+static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::shared_ptr<Writer> writer)
 {
-    o.writer->open(file);
-    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+    writer->open(file);
+    writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
     
-    o.writer->write((boost::format(format) % "ID"
-                                           % "Covered"
-                                           % "Sensitivity (Exon)"
-                                           % "Specificity (Exon)"
-                                           % "Sensitivity (Intron)"
-                                           % "Specificity (Intron)"
-                                           % "Sensitivity (Base)"
-                                           % "Specificity (Base)").str());
+    writer->write((boost::format(format) % "ID"
+                                         % "Covered"
+                                         % "Sensitivity (Exon)"
+                                         % "Specificity (Exon)"
+                                         % "Sensitivity (Intron)"
+                                         % "Specificity (Intron)"
+                                         % "Sensitivity (Base)"
+                                         % "Specificity (Base)").str());
     
     for (const auto &i : stats.data.at(ChrT).overB.h)
     {
@@ -681,43 +682,95 @@ static void writeSequins(const FileName &file, const TAlign::Stats &stats, const
         // Not all sequins have an intron...
         if (mi.lNR)
         {
-            o.writer->write((boost::format(format) % i.first
-                                                   % covered
-                                                   % me.sn()
-                                                   % me.precise()
-                                                   % mi.sn()
-                                                   % mi.precise()
-                                                   % mb.sn()
-                                                   % mb.ac()).str());
+            writer->write((boost::format(format) % i.first
+                                                 % covered
+                                                 % me.sn()
+                                                 % me.precise()
+                                                 % mi.sn()
+                                                 % mi.precise()
+                                                 % mb.sn()
+                                                 % mb.ac()).str());
         }
         else
         {
-            o.writer->write((boost::format(format) % i.first
-                                                   % me.sn()
-                                                   % me.precise()
-                                                   % "--"
-                                                   % "--"
-                                                   % mb.sn()
-                                                   % mb.ac()
-                                                   % covered).str());
+            writer->write((boost::format(format) % i.first
+                                                 % me.sn()
+                                                 % me.precise()
+                                                 % "--"
+                                                 % "--"
+                                                 % mb.sn()
+                                                 % mb.ac()
+                                                 % covered).str());
         }
     }
     
-    o.writer->close();
+    writer->close();
+}
+
+static void writeReplicate(const FileName &file, const TAlign::Stats &stats, const TAlign::Options &o)
+{
+    o.info("Generating statistics for: " + file);
+    
+    const auto sample = extractFile(file);
+    o.writer->create(sample);
+    
+    // Generating summary statistics for the replicate
+    writeSummary(sample + "/TransAlign_summary.stats", stats, o.writer);
+    
+    // Generating sequin statistics for the replicate
+    writeSequins(sample + "/TransAlign_quins.stats", stats, o.writer);
+}
+
+void TAlign::report(const FileName &file, const Options &o)
+{
+    writeReplicate(file, TAlign::analyze(file, o), o);
 }
 
 void TAlign::report(const std::vector<FileName> &files, const Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
-
+    std::map<ChromoID, Accumulator<double>> accs;
+    
     const auto stats = TAlign::analyze(files, o);
     
     for (auto i = 0; i < files.size(); i++)
     {
-        //writeSequins(stats[i], (boost::format("TransAlign_%1%_quins.stats")   % files[i]).str(), o);
-        //writeSummary(stats[i], (boost::format("TransAlign_%1%_summary.stats") % files[i]).str(), o);
-    }
+        const auto &stat = stats[i];
+        
+        accs[AllT].add("Dilution",    stat.n_chrT);
+        accs[AllT].add("Unmapped",    stat.unmapped);
+        accs[AllT].add("Experiment",  stat.n_expT);
+        accs[AllT].add("Synthetic",   stat.n_chrT);
+        accs[AllT].add("ExpPercent",  100.0 * stat.expMap());
+        accs[AllT].add("ChrTPercent", 100.0 * stat.chrTMap());
+        accs[AllT].add("LimitE",      stat.limit(AlignMetrics::AlignExon));
+        accs[AllT].add("LimitI",      stat.limit(AlignMetrics::AlignIntron));
+        
+        auto f = [&](const ChromoID &id)
+        {
+            accs[id].add("QExon",          stat.qExons(id));
+            accs[id].add("QIntron",        stat.qIntrons(id));
+            accs[id].add("QBase",          stat.qBases(id));
+            accs[id].add("ExonSN",         stat.sn(id, AlignMetrics::AlignExon));
+            accs[id].add("ExonPC",         stat.pc(id, AlignMetrics::AlignExon));
+            accs[id].add("IntronSN",       stat.sn(id, AlignMetrics::AlignIntron));
+            accs[id].add("IntronPC",       stat.pc(id, AlignMetrics::AlignIntron));
+            accs[id].add("BaseSN",         stat.sn(id, AlignMetrics::AlignBase));
+            accs[id].add("BasePC",         stat.pc(id, AlignMetrics::AlignBase));
+            accs[id].add("LimitB",         stat.data.at(id).overB.limit);
+            accs[id].add("MissingExonI",   stat.missing(id, MissingMetrics::MissingExon).i);
+            accs[id].add("MissingExonP",   stat.missing(id, MissingMetrics::MissingExon).percent());
+            accs[id].add("MissingIntronI", stat.missing(id, MissingMetrics::MissingIntron).i);
+            accs[id].add("MissingIntronP", stat.missing(id, MissingMetrics::MissingIntron).percent());
+            accs[id].add("MissingGeneI",   stat.missing(id, MissingMetrics::MissingGene).i);
+            accs[id].add("MissingGeneP",   stat.missing(id, MissingMetrics::MissingGene).percent());
+        };
+        
+        f(ChrT);
+        f("chr1");
 
+        writeReplicate(files[i], stats[i], o);
+    }
+    
     /*
      * Write pooled summary statistics
      */
@@ -735,34 +788,8 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
             concated = concated + "\n                     " + file;
         }
     }
-    
-    Accumulator<double> acc;
-    
-//    acc.add("Unmapped",       stats.unmapped);
-//    acc.add("Experiment",     stats.n_expT);
-//    acc.add("Synthetic",      stats.n_chrT);
-//    acc.add("QExon",          stats.qExons(ChrT));
-//    acc.add("QIntron",        stats.qIntrons(ChrT));
-//    acc.add("QBase",          stats.qBases(ChrT));
-//    acc.add("Dilution",       stats.n_chrT);
-//    acc.add("ExonSN",         stats.sn(ChrT, AlignMetrics::AlignExon));
-//    acc.add("ExonPC",         stats.pc(ChrT, AlignMetrics::AlignExon));
-//    acc.add("IntronSN",       stats.sn(ChrT, AlignMetrics::AlignIntron));
-//    acc.add("IntronPC",       stats.pc(ChrT, AlignMetrics::AlignIntron));
-//    acc.add("BaseSN",         stats.sn(ChrT, AlignMetrics::AlignBase));
-//    acc.add("BasePC",         stats.pc(ChrT, AlignMetrics::AlignBase));
-//    acc.add("ExpPercent",     100.0 * stats.expMap());
-//    acc.add("ChrTPercent",    100.0 * stats.chrTMap());
-//    acc.add("LimitE",         stats.limitE);
-//    acc.add("LimitI",         stats.limitI);
-//    acc.add("LimitB",         stats.data.at(ChrT).overB.limit);
-//    acc.add("MissingExonI",   stats.missing(ChrT, MissingMetrics::MissingExon).i);
-//    acc.add("MissingExonP",   stats.missing(ChrT, MissingMetrics::MissingExon).percent());
-//    acc.add("MissingIntronI", stats.missing(ChrT, MissingMetrics::MissingIntron).i);
-//    acc.add("MissingIntronP", stats.missing(ChrT, MissingMetrics::MissingIntron).percent());
-//    acc.add("MissingGeneI",   stats.missing(ChrT, MissingMetrics::MissingGene).i);
-//    acc.add("MissingGeneP",   stats.missing(ChrT, MissingMetrics::MissingGene).percent());
-//    
+
+//
 //    o.writer->open("TransAlign_summary.stats");
 //    o.writer->write((boost::format(summary()) % concated
 //                                              % acc.value("Unmapped")()
@@ -797,20 +824,4 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
 //                                              % acc.value("MissingGeneP")()
 //                     ).str());
 //    o.writer->close();
-}
-
-void TAlign::report(const FileName &file, const Options &o)
-{
-    const auto stats = TAlign::analyze(file, o);
- 
-    o.info("Generating statistics for: " + file);
-
-    const auto sample = extractFile(file);
-    o.writer->create(sample);
-
-    // Generating summary statistics for the replicate
-    writeSummary(sample + "/TransAlign_summary.stats", stats, o.writer);
-    
-    // Generating sequin statistics for the replicate
-    writeSequins(sample + "/TransAlign_quins.stats", stats, o);
 }

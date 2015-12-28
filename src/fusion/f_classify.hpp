@@ -29,7 +29,7 @@ namespace Anaquin
 
         template <typename Options, typename T> static Results classifyFusion(const T &f, Options &o)
         {
-            if (f.chr_1 != Standard::chrT || f.chr_2 != Standard::chrT)
+            if (f.chr_1 != ChrT || f.chr_2 != ChrT)
             {
                 if (f.chr_1 != Standard::chrT && f.chr_2 != Standard::chrT)
                 {
