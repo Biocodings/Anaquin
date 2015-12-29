@@ -93,12 +93,12 @@ namespace Anaquin
         // Total mapped to the experiment
         Counts n_expT = 0;
 
-        inline Percentage expMap() const
+        inline Percentage expTProp() const
         {
             return (n_chrT + n_expT) ? static_cast<double>(n_expT) / (n_chrT + n_expT) : NAN;
         }
         
-        inline Percentage chrTMap() const
+        inline Percentage chrTProp() const
         {
             return dilution();
         }
