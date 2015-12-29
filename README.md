@@ -40,6 +40,7 @@ Features
 <li> Statistical analysis
 <li> Tool modules
 <li> Data visualization
+<li> R-integration
 </ul>
 
 
