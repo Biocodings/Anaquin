@@ -26,11 +26,12 @@ namespace Anaquin
                     system((boost::format("mkdir -p %1%") % path).str().c_str());
                 }
                 
-                _o = std::shared_ptr<std::ofstream>(new std::ofstream(!path.empty() ? path + "/" + file : file));
+                const auto target = !path.empty() ? path + "/" + file : file;                
+                _o = std::shared_ptr<std::ofstream>(new std::ofstream(target));
                 
                 if (!_o->good())
                 {
-                    throw std::runtime_error("Failed to open: " + file);
+                    throw std::runtime_error("Failed to open: " + target);
                 }
             }
 
