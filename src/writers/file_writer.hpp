@@ -26,7 +26,7 @@ namespace Anaquin
                     system((boost::format("mkdir -p %1%") % path).str().c_str());
                 }
                 
-                const auto target = !path.empty() ? path + "/" + file : file;                
+                const auto target = !path.empty() ? path + "/" + file : file;
                 _o = std::shared_ptr<std::ofstream>(new std::ofstream(target));
                 
                 if (!_o->good())
@@ -42,7 +42,7 @@ namespace Anaquin
 
             inline void create(const std::string &dir) override
             {
-                const auto r = mkdir((path + "/" + dir).c_str(), 0666);
+                const auto r = mkdir((path + "/" + dir).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
                 if (r == -1 && errno != EEXIST)
                 {
