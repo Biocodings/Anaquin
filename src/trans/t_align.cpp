@@ -743,7 +743,7 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
         accs[AllT].add("expTProp",  stat.expTProp());
         accs[AllT].add("chrTProp",  stat.chrTProp());
         accs[AllT].add("limitE",    stat.limit(AlignMetrics::AlignExon));
-        accs[AllT].add("limotI",    stat.limit(AlignMetrics::AlignIntron));
+        accs[AllT].add("limitI",    stat.limit(AlignMetrics::AlignIntron));
 
         auto f = [&](const ChromoID &id)
         {
