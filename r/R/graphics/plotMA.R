@@ -44,7 +44,7 @@ ABCD <- function(data, mix=loadMixture())
     # Index for sequins
     si <- data$Feature %in% row.names(mix$genes)
 
-    by(seqs, 1:nrow(seqs), function(x)
+    by(data[si,], 1:nrow(data[si,]), function(x)
     {
         logFold <- loadGene(x$Feature, mix)$logFold
         data[si,][data[si,]$Feature==x$Feature,]$ratio <<- abs(logFold)
@@ -55,49 +55,36 @@ ABCD <- function(data, mix=loadMixture())
     # Now subset and continue with just sequins
     seqs <- data[si,]
 
-        
-    
-    
-    
-
-    
-    
-    
     maPlot <- ggplot(seqs, aes(x = A, y = M.Ave)) +
-                  geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint)
+               geom_point(data = subset(data, is.na(data$ratio)),
+                          aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5) +
+               geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint) +
+                          ylab(ymalabel) + xlabel +  coord_cartesian(xlim = c(-5,20), ylim = c(-10, 10)) +
+               geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
+                          colour = ratio),size = 1,alpha = alphaPoint) +
+               theme(legend.justification = c(1,0),legend.position=c(1,0)) +
+               theme(panel.grid.major=element_blank(),
+                    panel.grid.minor=element_blank()) +
+               theme_bw() +
+               scale_y_continuous(breaks = seq(-10, 10, 1))
     
-    
-            
-
-    tt <- ttheme_default(colhead=list(fg_params = list(parse=TRUE)),
-                         rowhead=list(fg_params = list(parse=TRUE)))
+#    tt <- ttheme_default(colhead=list(fg_params = list(parse=TRUE)),
+ #                        rowhead=list(fg_params = list(parse=TRUE)))
 
 #    maPlot <- ggplot(maData, aes(x = A, y = M.Ave) ) + 
- #       geom_point(data = subset(maDatAll, maDatAll$Ratio == "Endo"),
-  #                 aes(x = A, y = M.Ave),
-   #                colour = "grey80", alpha = 0.5) +
-    #    geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
-     #                     colour = Ratio),size = 1,alpha = alphaPoint) + 
-      #  geom_point(aes(colour = Ratio),size = 5, alpha = alphaPoint) +
       #  geom_point(data = subset(maData, (LODR == "below")),
        #            colour = "white",size = 2.5) + 
     #    geom_hline(aes(yintercept = log2(Nominal), colour = Ratio), 
      #              alpha = 0.7) +
       #  geom_hline(aes(yintercept = log2(Empirical), colour = Ratio), 
        #            size = 1, linetype = "longdash") + 
-    #    ylab(ymalabel) + xlabel + 
-    #    coord_cartesian(xlim = myXLimMA, ylim = myYLim) + 
+
         #colScale + 
      #   annotation_custom(tableGrob(rm_dat,theme=tt), 
       #                    ymin = (myYLim[2]) - 0.25*myYLim[2], 
        #                   ymax = myYLim[2]) + 
-    #    scale_y_continuous(breaks = seq(myYLim[1],myYLim[2],1))+ theme_bw()+
-     #   theme( legend.justification = c(1,0),legend.position=c(1,0)) +
-      #  theme(panel.grid.major=element_blank(),
-       #       panel.grid.minor=element_blank())
     
     print(maPlot)
-    
 }
 
 ABCD(data)
