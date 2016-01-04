@@ -11,15 +11,9 @@
     genes
 }
 
-sequin <- function(id, mix=loadMixture())
+loadGene <- function(id, mix=loadMixture())
 {
-    r <- mix$genes[mix$genes==id,]
-    r
-}
-
-fold <- function(d)
-{
-    r <- d$Fold
+    r <- mix$genes[row.names(mix$genes)==id,]
     r
 }
 
@@ -157,5 +151,7 @@ loadMixture <- function(mix=NULL, exons=NULL)
 
     r <- list('isoforms'=i, 'genes'=g[with(g, order(row.names(g))),], 'exons'=exons)
     class(r) <- c("Mixture")
+    
+    r$genes$logFold <- round(r$genes$logFold)
     r
 }
