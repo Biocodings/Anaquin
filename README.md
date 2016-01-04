@@ -33,6 +33,15 @@ Dependencies
 
 The source code requires a C++11 compiler to build.
 
+Bioinformatics
+============
+
+<ul>
+<li>RNA analysis
+<li>Genomics analysis
+<li>Metagenomic analysis
+</ul>
+
 Features
 ============
 
