@@ -4,13 +4,19 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-#m <- read.csv('/Users/tedwong/Desktop/LODR_data_TED.csv', row.names=1)
-#m <- m[!is.na(m$padj),]
+m <- read.csv('/Users/tedwong/Desktop/LODR_data_TED.csv', row.names=1)
+m <- m[!is.na(m$padj),]
 
 #m <- read.csv('/Users/tedwong/Desktop/LODR_isoforms.csv', row.names=1)
 #m <- m[!is.na(m$qval),]
 
-plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts', yname='DE Test P-values', plotLegend=FALSE)
+plotLODR <- function(counts,
+                     pvals,
+                     ratios,
+                     cutoff=0.01,
+                     xname='Average Counts',
+                     yname='DE Test P-values',
+                     plotTable=TRUE)
 {
     require(locfit)
     require(ggplot2)
@@ -142,7 +148,7 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
         }
     }
     
-    if (plotLegend)
+    if (plotTable)
     {
         legendLabels <- c('1', '2', '3', '4')
         
@@ -166,8 +172,8 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
         my_table <- tableGrob(d=annoTable,rows=NULL)
     }
 
-    cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")
-    cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
+    cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00") # Colors for the genes
+    #cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
 
     LODRplot <- ggplot(d, aes(x=x, y=y, colour=ratios)) + 
                             geom_point(size = 6) +
@@ -188,7 +194,7 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
                             geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) +
                             theme_bw()
 
-    if (plotLegend)
+    if (plotTable)
     {
         annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(LODRplot, my_table), ncol = 1, heights = c(2,0.5)))
     }
@@ -196,5 +202,5 @@ plotLODR <- function(counts, pvals, ratios, cutoff=0.01, xname='Average Counts',
     LODRplot
 }
 
-#plotLODR(n$baseMean, n$padj, n$expected.log2FoldChange)
+plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
 #plotLODR(m$overallMean.FPKM., m$qval, m$expectedLFC, cutoff=0.10)
