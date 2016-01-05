@@ -43,55 +43,71 @@ plotLODR <- function(counts,
     # Combine the groups solely based on their magnitudes
     d$ratios = as.factor(abs(d$ratios))
     
-    LODR <- function(pval,mn,cutoff,prob)
+    LODR <- function(pval, mn, cutoff, prob)
     {
-        cutoff<-log10(cutoff)
-        fit<-locfit(log10(pval)~lp(log10(mn)),maxk=300)
-        X<-preplot(fit,band="pred",newdata=log10(mn))
+        # Eg: 0.02590173 to -1.586671
+        cutoff <- log10(cutoff)
         
-        ### See plot of fit
+        # Fit a local regression on the log10 scale
+        fit <- locfit(log10(pval)~lp(log10(mn)), maxk=300)
+        
+        X <- preplot(fit,band="pred",newdata=log10(mn))
+        
+        # See plot of fit
         #plot(fit,band="pred",get.data=TRUE,xlim=range(log10(mn)))
         
-        find.mn<-function(mn,fit,cutoff,prob){
-            X<-preplot(fit,newdata=mn,band="pred")
+        find.mn <- function(mn, fit, cutoff, prob)
+        {
+            X <- preplot(fit, newdata=mn, band="pred")
             (X$fit+qnorm(prob)*X$se.fit-cutoff)^2
         }
         
-        rng.mn<-range(log10(mn))
+        rng.mn <- range(log10(mn))
         
-        ### Search in sections to get first crossing 
-        segmented.search<-function(fit){
-            X<-preplot(fit,newdata=min(log10(mn)),band="pred")
-            if((X$fit+qnorm(prob)*X$se.fit)<cutoff){
-                t.lodr<-list(minimum=min(log10(mn)),objective=0)
-            } else{
+        # Search in sections to get first crossing
+        segmented.search <- function(fit)
+        {
+            X <- preplot(fit, newdata=min(log10(mn)), band="pred")
+            
+            if ((X$fit + qnorm(prob) * X$se.fit) < cutoff)
+            {
+                t.lodr <- list(minimum=min(log10(mn)), objective=0)
+            }
+            else
+            {
                 ppp<-.2
-                t.lodr<-optimize(find.mn,c(rng.mn[1],sum(rng.mn*c(1-ppp,ppp))),
-                                 fit=fit,cutoff=cutoff,prob=prob)
-                while(t.lodr$objective>.0001&ppp<=1){
+                t.lodr <- optimize(find.mn, c(rng.mn[1], sum(rng.mn*c(1-ppp,ppp))), fit=fit, cutoff=cutoff, prob=prob)
+                
+                while (t.lodr$objective > .0001 & ppp<=1)
+                {
                     t.lodr<-optimize(find.mn,c(sum(rng.mn*c(1-ppp+.2,ppp-.2)),
                                                sum(rng.mn*c(1-ppp,ppp))),
                                      fit=fit,cutoff=cutoff,prob=prob)
                     ppp<-ppp+.2
                 }
             }
+
             t.lodr
         }    
         
-        lodr<-segmented.search(fit)
+        lodr <- segmented.search(fit)
         
-        ### Bootstrap to estimate uncertainty
+        # Bootstrap to estimate uncertainty
         lodr.boot<-NULL
-        for(ii in 1:500){
-            y.boot<-X$fit+sample(residuals(fit),length(mn))
-            #if(ii %in%c(20*(1:5))){points(log10(mn),y.boot,col=j); j<-j+1}
-            fit.boot<-locfit(y.boot~lp(log10(mn)),maxk=300)
-            lodr.boot<-c(lodr.boot,segmented.search(fit.boot)$minimum)
-            if (ii %% 100 == 0){
+
+        for (ii in 1:500)
+        {
+            y.boot    <- X$fit + sample(residuals(fit), length(mn))
+            fit.boot  <- locfit(y.boot~lp(log10(mn)), maxk=300)
+            lodr.boot <- c(lodr.boot, segmented.search(fit.boot)$minimum)
+            
+            if (ii %% 100 == 0)
+            {
                 cat ("...")
             }
         }
-        return(c(lodr$objective,lodr$minimum,quantile(lodr.boot,c(.05,.95))))
+
+        return (c(lodr$objective, lodr$minimum, quantile(lodr.boot,c(.05,.95))))
     }
     
     lineDat <- NULL;
@@ -109,7 +125,7 @@ plotLODR <- function(counts,
     
     for (i in unique(d$ratios))
     {
-        t   <- d[d$ratios == i,]
+        t <- d[d$ratios == i,]
 
         #
         # Not everything can be fitted by local regression. For instance, too few data points would not
@@ -229,7 +245,3 @@ plotLODR <- function(counts,
 
 plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
 #plotLODR(m$overallMean.FPKM., m$qval, m$expectedLFC, cutoff=0.10)
-
-
-#arrowData <- data.frame()
-
