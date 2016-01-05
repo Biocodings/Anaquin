@@ -10,20 +10,35 @@ m <- m[!is.na(m$padj),]
 #m <- read.csv('/Users/tedwong/Desktop/LODR_isoforms.csv', row.names=1)
 #m <- m[!is.na(m$qval),]
 
+#
+# Plot the "Limit of Detection Ratio" plot. Refer to the ERCC paper for more details.
+#
+
 plotLODR <- function(counts,
-                     pvals,
+                     pVals,
                      ratios,
-                     cutoff=0.01,
+                     choseFDR = 0.1,
                      xname='Average Counts',
                      yname='DE Test P-values',
                      plotTable=TRUE)
 {
+    require(qvalue)
     require(locfit)
     require(ggplot2)
+
+    #
+    # Estimate the Q-value for false discovery rate control.
+    #
+    #    https://github.com/Bioconductor-mirror/erccdashboard/blob/631b691a51db54cb165ff2de1f9a5e06608347bd/R/geneExprTest.R
+    #
     
+    qVals  <- qvalue(pVals)$qvalues
+    cutoff <- max(pVals[qVals < choseFDR])
+    print(paste('Probability threshold:', cutoff))
+
     xrange <- c(1, 28199)
     
-    d <- data.frame(x=counts, y=pvals, ratios=ratios)
+    d <- data.frame(x=counts, y=pVals, ratios=ratios)
     
     # Combine the groups solely based on their magnitudes
     d$ratios = as.factor(abs(d$ratios))
@@ -81,7 +96,7 @@ plotLODR <- function(counts,
     
     lineDat <- NULL;
     
-    #### Apply to loaded data ####
+    # Apply to loaded data
     lodr.resPlot<-NULL; set.seed(1)
     lodr.resLess<-NULL; set.seed(1)
     
@@ -121,12 +136,11 @@ plotLODR <- function(counts,
         
         if (i != 0)
         {
-            pval.cutoff <- 0.001
             print(paste('Estmating LODR for LFC', i))
 
             tryCatch (
             {
-                t.res <- LODR(t$y, t$x, cutoff=pval.cutoff, prob=prob)
+                t.res <- LODR(t$y, t$x, cutoff=cutoff, prob=prob)
                 t.res[-1]<-signif(10^t.res[-1],2)
                     
                 if (t.res[1]>.01)
@@ -148,17 +162,23 @@ plotLODR <- function(counts,
         }
     }
     
+    colnames(lodr.resLess)[1:3] <- c("|log2(Fold)|","MinError","Estimate")
+    colnames(lodr.resPlot)[1:3] <- c("Ratio","MinError","Estimate")
+    colnames(lodr.resLess)[1:3] <- c("Ratio","MinError","Estimate")
+    lodr.resPlot <- as.data.frame(lodr.resPlot)
+    lodr.resLess <- as.data.frame(lodr.resLess)
+
+    arrowDat <- data.frame(Ratio = lodr.resPlot$Ratio, x = lodr.resPlot[,3], y = cutoff, xend = lodr.resPlot[, 3], yend = 0)
+    arrowDat$x[grep("<", lodr.resLess[, 3])] <- Inf
+    arrowDat <- arrowDat[which(is.finite(arrowDat$x)), ]
+    arrowDat$Ratio <- as.factor(arrowDat$Ratio)
+    
+    print('Estimation completed')
+    
     if (plotTable)
     {
         legendLabels <- c('1', '2', '3', '4')
-        
-        colnames(lodr.resLess)[1:3] <- c("|log2(Fold)|","MinError","Estimate")
-        colnames(lodr.resPlot)[1:3] <- c("Ratio","MinError","Estimate")
-        colnames(lodr.resLess)[1:3] <- c("Ratio","MinError","Estimate")
-        
-        lodr.resPlot <- as.data.frame(lodr.resPlot)
-        lodr.resLess <- as.data.frame(lodr.resLess)
-        
+
         lodr.resPlot$Ratio <- as.character(legendLabels)
         lodr.resLess$Ratio <- as.character(legendLabels) 
         annoTable <- lodr.resLess[-c(2)]
@@ -190,17 +210,26 @@ plotLODR <- function(counts,
         
                             scale_color_manual(values = cols) +
                             scale_fill_manual (values = rev(cols)) +
-        
-                            geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) +
+
+                            geom_segment(data = arrowDat, 
+                                 aes(x = x, y = y, xend = xend, yend = yend, colour = Ratio), 
+                                     lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
+                                        "cm")), size = 2, alpha = 0.6) +
+
+                            geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) + # Draw the line for probability threshold
                             theme_bw()
 
     if (plotTable)
     {
         annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(LODRplot, my_table), ncol = 1, heights = c(2,0.5)))
     }
-
+    
     LODRplot
 }
 
 plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
 #plotLODR(m$overallMean.FPKM., m$qval, m$expectedLFC, cutoff=0.10)
+
+
+#arrowData <- data.frame()
+
