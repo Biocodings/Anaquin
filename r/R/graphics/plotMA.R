@@ -1,3 +1,9 @@
+#
+#  Copyright (C) 2015 - Garvan Institute of Medical Research
+#
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#
+
 library(ggplot2)
 library(gridExtra)
 library(grid)
