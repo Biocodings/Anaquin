@@ -14,7 +14,8 @@ m <- m[!is.na(m$padj),]
 # Plot the "Limit of Detection Ratio" plot. Refer to the ERCC paper for more details.
 #
 
-plotLODR <- function(counts,
+plotLODR <- function(names,
+                     counts,
                      pVals,
                      ratios,
                      choseFDR = 0.1,
@@ -22,6 +23,7 @@ plotLODR <- function(counts,
                      yname='DE Test P-values',
                      plotTable=TRUE)
 {
+    require(grid)
     require(qvalue)
     require(locfit)
     require(ggplot2)
@@ -38,10 +40,11 @@ plotLODR <- function(counts,
 
     xrange <- c(1, 28199)
     
-    d <- data.frame(x=counts, y=pVals, ratios=ratios)
+    d <- data.frame(x=counts, y=pVals, Ratio=ratios)
+    row.names(d) <- names
     
     # Combine the groups solely based on their magnitudes
-    d$ratios = as.factor(abs(d$ratios))
+    d$Ratio = as.factor(abs(d$Ratio))
     
     LODR <- function(pval, mn, cutoff, prob)
     {
@@ -123,9 +126,9 @@ plotLODR <- function(counts,
     
     prob <- 0.90
     
-    for (i in unique(d$ratios))
+    for (i in unique(d$Ratio))
     {
-        t <- d[d$ratios == i,]
+        t <- d[d$Ratio == i,]
 
         #
         # Not everything can be fitted by local regression. For instance, too few data points would not
@@ -193,25 +196,23 @@ plotLODR <- function(counts,
     
     if (plotTable)
     {
-        legendLabels <- c('1', '2', '3', '4')
+        legendLabels <- c('4', '3', '2', '1')
 
         lodr.resPlot$Ratio <- as.character(legendLabels)
         lodr.resLess$Ratio <- as.character(legendLabels) 
-        annoTable <- lodr.resLess[-c(2)]
+        annoTable <- lodr.resLess[-c(2,4,5)]
         
-        colnames(annoTable) <- c("Ratio",expression("LODR Estimate"), 
-                                 expression("90% CI Lower Bound"), 
-                                 expression("90% CI Upper Bound"))
+        colnames(annoTable) <- c("Ratio", expression("LODR Estimate"))
         cat("\n")
         print(annoTable, quote = FALSE, row.names = FALSE)    
         
-        my_table <- tableGrob(d=annoTable,rows=NULL)
+        my_table <- tableGrob(d=annoTable, rows=NULL)
     }
 
     cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00") # Colors for the genes
     #cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
 
-    LODRplot <- ggplot(d, aes(x=x, y=y, colour=ratios)) + 
+    LODRplot <- ggplot(d, aes(x=x, y=y, colour=Ratio)) + 
                             geom_point(size = 6) +
                             xlab(xname) +
                             ylab(yname) +
@@ -221,9 +222,9 @@ plotLODR <- function(counts,
         
                             geom_ribbon(data  = lineDat, aes(x = x.new, y = fitLine, ymin=fitLower, ymax=fitUpper, fill = Ratio),
                                                                 alpha = 0.3, colour=NA, show_guide = FALSE) + 
-                            geom_line(data   = lineDat, aes(x = x.new, y=fitLine, 
+                            geom_line(data = lineDat, aes(x = x.new, y=fitLine, 
                                                                 colour = Ratio), show_guide = FALSE) +
-        
+
                             scale_color_manual(values = cols) +
                             scale_fill_manual (values = rev(cols)) +
 
@@ -239,9 +240,35 @@ plotLODR <- function(counts,
     {
         annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(LODRplot, my_table), ncol = 1, heights = c(2,0.5)))
     }
+    else
+    {
+        print(LODRplot)
+    }
     
-    LODRplot
+    lodr <- lodr.resLess[-c(2,4,5)]
+    
+    #
+    # Classify the sequins whether they're above or below the LODR limit.
+    #
+    
+    d$LODR <- NA
+    
+    for (i in 1:nrow(d))
+    {
+        if (d$Ratio[i] != 0)
+        {
+            # What's the limit for this sequin?
+            limit <- as.numeric(as.character(lodr[lodr$Ratio==d$Ratio[i],]$Estimate))
+
+            # Classify the sequin based on its average counts (x-axis on the plot)
+            d[i,]$LODR <- ifelse(d[i,]$x < limit, 'below', 'above')
+        }
+    }
+
+    r <- list(lodr.resLess[-c(2,4,5)], d)
+    r
 }
 
-plotLODR(m$baseMean, m$padj, m$expected.log2FoldChange)
+plotLODR(row.names(m), m$baseMean, m$padj, m$expected.log2FoldChange)
 #plotLODR(m$overallMean.FPKM., m$qval, m$expectedLFC, cutoff=0.10)
+

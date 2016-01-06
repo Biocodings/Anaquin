@@ -21,11 +21,38 @@ data <- read.csv('/Users/tedwong/Desktop/counts.txt', row.names=1)
 
 
 
+#m <- read.csv('/Users/tedwong/Desktop/LODR_data_TED.csv', row.names=1)
+#m <- m[!is.na(m$padj),]
+#cutoffs <- plotLODR(row.names(m), m$baseMean, m$padj, m$expected.log2FoldChange)
 
 
 
 ABCD <- function(data, mix=loadMixture())
 {
+    #
+    # Bind the information for LODR with the data. We assume the status has already been classified.
+    #
+
+    data$status <- NA
+    
+    #
+    # Eg:
+    #      R1_43  2705.086868 above
+    #      R1_52     7.499938 below
+    #
+    status <- cutoffs[[2]][c(1,4)]
+    status <- status[!is.na(status$LODR),]
+    
+    for (i in 1:nrow(status))
+    {
+        t <- status[i,]
+        
+        if (nrow(data[data$Feature == row.names(t),]) > 0)
+        {
+            data[data$Feature == row.names(t),]$status <- t$LODR
+        }
+    }
+    
     maStats <- function(x, c1, c2)
     {
         c(mean(log2(x[c1])-log2(x[c2])),  # M.Ave (used Y)
@@ -37,7 +64,7 @@ ABCD <- function(data, mix=loadMixture())
     
     #if(odd(totCol)) stop("Uneven number of replicates for the two sample types")
 
-    maStatDat <- data.frame(t(apply(data[-c(1:1)],
+    maStatDat <- data.frame(t(apply(data[c(2:7)],
                                     1,
                                     maStats,
                                     c1 = c(1:(totCol/2)),
@@ -64,8 +91,11 @@ ABCD <- function(data, mix=loadMixture())
     maPlot <- ggplot(seqs, aes(x = A, y = M.Ave)) +
                geom_point(data = subset(data, is.na(data$ratio)),
                           aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5) +
+               
                geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint) +
-                          ylab(ymalabel) + xlabel +  coord_cartesian(xlim = c(-5,20), ylim = c(-10, 10)) +
+               geom_point(data = subset(data, status == 'below'), colour = "white", size = 2.5) +
+
+               ylab(ymalabel) + xlabel +  coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10)) +
                geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
                           colour = ratio),size = 1,alpha = alphaPoint) +
                theme(legend.justification = c(1,0),legend.position=c(1,0)) +
