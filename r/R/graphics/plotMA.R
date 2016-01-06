@@ -55,9 +55,9 @@ ABCD <- function(data, mix=loadMixture())
     
     maStats <- function(x, c1, c2)
     {
-        c(mean(log2(x[c1])-log2(x[c2])),  # M.Ave (used Y)
+        c(mean(log2(x[c1])-log2(x[c2])),  # M.Ave (the y-axis)
           sd(log2(x[c1])-log2(x[c2])),    # M.SD
-          log2(mean(x)))                  # A     (used X)
+          log2(mean(x)))                  # A     (the x-axis)
     } 
 
     totCol <- 6 #ncol(data[-c(1:2)])
