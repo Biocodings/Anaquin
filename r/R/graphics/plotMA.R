@@ -24,30 +24,29 @@ plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
     require(ggplot2)
     require(gridExtra)
     
-    #
-    # Bind the information for LODR with the data. We assume the status has already been classified.
-    #
-
-    data$status <- NA
-    
-    #
-    # Eg:
-    #      R1_43  2705.086868 above
-    #      R1_52     7.499938 below
-    #
-    status <- cutoffs[[2]][c(1,4)]
-    status <- status[!is.na(status$LODR),]
-    
-    for (i in 1:nrow(status))
+    if (shouldLODR)
     {
-        t <- status[i,]
+        data$status <- NA
         
-        if (nrow(data[data$Feature == row.names(t),]) > 0)
+        #
+        # Eg:
+        #      R1_43  2705.086868 above
+        #      R1_52     7.499938 below
+        #
+        status <- cutoffs[[2]][c(1,4)]
+        status <- status[!is.na(status$LODR),]
+        
+        for (i in 1:nrow(status))
         {
-            data[data$Feature == row.names(t),]$status <- t$LODR
+            t <- status[i,]
+            
+            if (nrow(data[data$Feature == row.names(t),]) > 0)
+            {
+                data[data$Feature == row.names(t),]$status <- t$LODR
+            }
         }
     }
-    
+
     maStats <- function(x, c1, c2)
     {
         c(mean(log2(x[c1])-log2(x[c2])),  # M.Ave (the y-axis)
@@ -55,11 +54,9 @@ plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
           log2(mean(x)))                  # A     (the x-axis)
     } 
 
-    totCol <- 6 #ncol(data[-c(1:2)])
-    
-    #if(odd(totCol)) stop("Uneven number of replicates for the two sample types")
+    totCol <- ncol(data)
 
-    maStatDat <- data.frame(t(apply(data[c(2:7)],
+    maStatDat <- data.frame(t(apply(data[c(1:6)],
                                     1,
                                     maStats,
                                     c1 = c(1:(totCol/2)),
@@ -70,12 +67,12 @@ plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
     data <- data[which(is.finite(data$M.Ave)),]    
 
     # Index for sequins
-    si <- data$Feature %in% row.names(mix$genes)
+    si <- row.names(data) %in% row.names(mix$genes)
 
     by(data[si,], 1:nrow(data[si,]), function(x)
     {
-        logFold <- loadGene(x$Feature, mix)$logFold
-        data[si,][data[si,]$Feature==x$Feature,]$ratio <<- abs(logFold)
+        logFold <- loadGene(row.names(x), mix)$logFold
+        data[si,][row.names(data[si,]) == row.names(x),]$ratio <<- abs(logFold)
     })
     
     data$ratio <- as.factor(as.character(data$ratio))
@@ -83,46 +80,28 @@ plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
     # Now subset and continue with just sequins
     seqs <- data[si,]
 
-    maPlot <- ggplot(seqs, aes(x = A, y = M.Ave)) +
-               geom_point(data = subset(data, is.na(data$ratio)),
-                          aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5) +
-               
-               geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint) +
-               geom_point(data = subset(data, status == 'below'), colour = "white", size = 2.5) +
-
-               ylab(ymalabel) + xlabel +  coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10)) +
-               geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
-                          colour = ratio),size = 1,alpha = alphaPoint) +
-               theme(legend.justification = c(1,0),legend.position=c(1,0)) +
-               theme(panel.grid.major=element_blank(),
-                    panel.grid.minor=element_blank()) +
-               theme_bw() +
-               scale_y_continuous(breaks = seq(-10, 10, 1))
-    
-#    tt <- ttheme_default(colhead=list(fg_params = list(parse=TRUE)),
- #                        rowhead=list(fg_params = list(parse=TRUE)))
-
-#    maPlot <- ggplot(maData, aes(x = A, y = M.Ave) ) + 
-      #  geom_point(data = subset(maData, (LODR == "below")),
-       #            colour = "white",size = 2.5) + 
-    #    geom_hline(aes(yintercept = log2(Nominal), colour = Ratio), 
-     #              alpha = 0.7) +
-      #  geom_hline(aes(yintercept = log2(Empirical), colour = Ratio), 
-       #            size = 1, linetype = "longdash") + 
-
-        #colScale + 
-     #   annotation_custom(tableGrob(rm_dat,theme=tt), 
-      #                    ymin = (myYLim[2]) - 0.25*myYLim[2], 
-       #                   ymax = myYLim[2]) + 
+    maPlot <- ggplot(seqs, aes(x = A, y = M.Ave))                                                   +
+                     geom_point(data = subset(data, is.na(data$ratio)),
+                                aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5)              +
+                     geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint)                  +
+                     ylab(ymalabel) + xlabel +  coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10)) +
+                     geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
+                                   colour = ratio), size = 1, alpha = alphaPoint)                   +
+                     theme(legend.justification = c(1,0), legend.position=c(1,0))                   +
+                     theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank())      +
+                     scale_y_continuous(breaks = seq(-10, 10, 1)) +
+                     theme_bw() +
+        
+    if (shouldLODR)
+    {
+       maPlot <- maPlot + geom_point(data = subset(data, status == 'below'), colour = "white", size = 2.5)
+    }
     
     print(maPlot)
 }
 
-plotMA(read.csv('/Users/tedwong/Desktop/counts.txt', row.names=1))
-
-
-
-
-
-
+d <- read.csv('/Users/tedwong/Desktop/counts.txt', row.names=1)
+row.names(d) <- d$Feature
+d <- d[,-1]
+plotMA(d)
 
