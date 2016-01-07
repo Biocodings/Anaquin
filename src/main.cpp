@@ -1027,10 +1027,10 @@ void parse(int argc, char ** argv)
         {
             auto parseAssembler = [&](const std::string &str)
             {
-                const static std::map<std::string, TExpress::Assembler> m =
+                const static std::map<std::string, TExpress::Software> m =
                 {
-                    { "cufflinks", TExpress::Assembler::Cufflinks },
-                    { "stringtie", TExpress::Assembler::StringTie },
+                    { "cufflinks", TExpress::Software::Cufflinks },
+                    { "stringtie", TExpress::Software::StringTie },
                 };
                 
                 return parseSoft(str, m);
@@ -1093,16 +1093,16 @@ void parse(int argc, char ** argv)
                 {
                     TExpress::Options o;
                     
-                    o.tool = parseAssembler(_p.opts.at(OPT_SOFTWARE));
+                    o.soft = parseAssembler(_p.opts.at(OPT_SOFTWARE));
 
                     if (_p.opts.count(OPT_GTRACK))
                     {
-                        o.level = TExpress::Gene;
+                        o.metrs = TExpress::Metrics::Gene;
                         analyze_1<TExpress>(OPT_GTRACK, o);
                     }
                     else
                     {
-                        o.level = TExpress::Isoform;
+                        o.metrs = TExpress::Metrics::Isoform;
                         analyze_1<TExpress>(OPT_ITRACK, o);
                     }
 

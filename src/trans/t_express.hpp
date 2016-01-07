@@ -7,13 +7,13 @@ namespace Anaquin
 {
     struct TExpress : public Analyzer
     {
-        enum Assembler
+        enum class Software
         {
             Cufflinks,
             StringTie,
         };
         
-        enum ExpressLevel
+        enum class Metrics
         {
             Gene,
             Isoform
@@ -21,16 +21,11 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
-            std::map<ChromoID, LinearStats> data;
+            typedef LinearStats Data;
+
+            std::map<ChromoID, Data> data;
             
-            /*
-             * Statistics for detection limit (chrT only)
-             */
-
-            Limit s;
-
-            // The keys depend on whether it's a gene or isoform analysis
-            std::map<std::string, Counts> h;
+            Limit limit;
         };
 
         struct Options : public AnalyzerOptions
@@ -38,15 +33,11 @@ namespace Anaquin
             // This's required by gcc...
             Options() {}
 
-            Assembler tool;
-
-            ExpressLevel level = Isoform;
+            Software soft;
+            Metrics metrs;
         };
 
-        // Analyze for a single sample
         static Stats analyze(const FileName &, const Options &o);
-        
-        // Analyze for a single sample
         static Stats analyze(const std::vector<Expression> &, const Options &);
 
         // Analyze for multiple replicates

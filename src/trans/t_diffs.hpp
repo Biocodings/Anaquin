@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
 #ifndef T_DIFFS_HPP
 #define T_DIFFS_HPP
 
@@ -28,15 +34,11 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
-            struct Data : public LinearStats
-            {
-                // Empty Implementation
-            };
-
+            typedef LinearStats Data;
+            
             std::map<ChromoID, Data> data;
 
-            Limit s;
-            std::map<std::string, Counts> h;
+            Limit limit;
         };
 
         static Stats analyze(const FileName &, const Options &o);

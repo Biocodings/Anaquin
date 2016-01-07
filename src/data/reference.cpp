@@ -517,20 +517,20 @@ Base TransRef::exonBase(const ChromoID &cID) const
     return _impl->valid[cID].exonBase;
 }
 
-Limit TransRef::limitGene(const Hist &h) const
+Limit TransRef::limitGene(const Hist &hist) const
 {
-    return Reference<TransData, SequinStats>::limit(h, [&](const GeneID &id)
+    return Reference<TransData, SequinStats>::limit(hist, [&](const GeneID &id)
     {
-        return findGene("chrT", id);
+        return findGene(ChrT, id);
     });
 }
 
 void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
 {
     // Synthetic is not supported for now...
-    assert(cID != "chrT");
+    assert(cID != ChrT);
     
-    if (cID != "chrT")
+    if (cID != ChrT)
     {
         _impl->valid[cID]._genes[gID] = l;
     }
@@ -538,7 +538,7 @@ void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
 
 void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l)
 {
-    if (cID == "chrT")
+    if (cID == ChrT)
     {
         _impl->addRef(cID, iID, gID, l, _impl->cRaw);
     }

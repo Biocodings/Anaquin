@@ -1,10 +1,15 @@
 #include <string>
 
 /*
+ * Anaquin R-bioconductor
+ */
+
+#include "resources/scatter.R"
+
+/*
  * Scripts
  */
 
-#include "resources/linear.R"
 #include "resources/viewer.py"
 #include "resources/manual.txt"
 
@@ -63,12 +68,12 @@ std::string Manual()
 }
 
 /*
- * R script for plotting
+ * Scripts for Anaquin R-Bioconductor
  */
 
-std::string RScriptCoverage()
+std::string AQCoverage()
 {
-    return ToString(data_linear_R);
+    return ToString(src_r_scatter_R);
 }
 
 /*

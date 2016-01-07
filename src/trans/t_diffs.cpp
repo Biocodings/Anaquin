@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 - Garvan Institute of Medical Research
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
  *
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
@@ -13,20 +13,11 @@ using namespace Anaquin;
 typedef TDiffs::Metrics  Metrics;
 typedef TDiffs::Software Software;
 
-template <typename T> void update(TDiffs::Stats &stats, const T &t, const GenericID &id, bool isoform, const TDiffs::Options &o)
+template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const GenericID &id, Metrics metrs)
 {
     const auto &r = Standard::instance().r_trans;
     
-    if (t.cID != ChrT)
-    {
-        stats.n_expT++;
-    }
-    else
-    {
-        stats.n_chrT++;
-    }
-    
-    // The known and observed fold-change
+    // Known fold change
     Fold known = NAN;
     
     // It's NAN if the sequin defined in reference but not in mixture
@@ -54,7 +45,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
         
         if (g && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
         {
-            stats.h.at(id)++;
+            stats.hist.at(id)++;
             
             // Measured fold-change between the two mixtures
             measured = fpkm_2 / fpkm_1;
@@ -62,12 +53,12 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
         
         stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
     };
-
-    switch (o.metrs)
+    
+    switch (metrs)
     {
         case Metrics::Gene:
         {
-            if ((t.status != NoTest) && stats.h.count(t.id))
+            if ((t.status != NoTest) && stats.hist.count(t.id))
             {
                 g(t.id, t.fpkm_1, t.fpkm_2);
             }
@@ -77,7 +68,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
             
         case Metrics::Isoform:
         {
-            if ((t.status == NoTest) || !stats.h.count(id))
+            if ((t.status == NoTest) || !stats.hist.count(id))
             {
                 return;
             }
@@ -92,7 +83,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
             
             if ((t.status != NoTest) && t.fpkm_1 && t.fpkm_2)
             {
-                stats.h.at(id)++;
+                stats.hist.at(id)++;
                 
                 // Measured fold-change between the two mixtures
                 measured = t.fpkm_2 / t.fpkm_1;
@@ -105,25 +96,50 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
     }
 }
 
+template <typename T> void classifyEndT(TDiffs::Stats &, const T &, const GenericID &, Metrics)
+{
+    /*
+     * Obviously, we can't compare fold-changes for endogenous data. There's nothing else to do here...
+     */
+}
+
+template <typename T> void update(TDiffs::Stats &stats, const T &t, const GenericID &id, Metrics metrs)
+{
+    if (t.cID == ChrT)
+    {
+        stats.n_chrT++;
+        classifyChrT(stats, t, id, metrs);
+    }
+    else
+    {
+        stats.n_expT++;
+        classifyEndT(stats, t, id, metrs);
+    }
+}
+
 template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
 {
     TDiffs::Stats stats;
 
     const auto &r = Standard::instance().r_trans;
     const auto cIDs = r.chromoIDs();
-    
+
+    /*
+     * Initalize data for each chromosome
+     */
+
     std::for_each(cIDs.begin(), cIDs.end(), [&](const ChromoID &cID)
     {
         stats.data[cID];
     });
 
     const auto isoform = (o.metrs == Metrics::Isoform);
-    o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
+    o.logInfo(isoform ? "Isoform metrics" : "Gene metrics");
     
-    // Construct for a histogram at the appropriate level
-    stats.h = isoform ? r.hist() : r.geneHist(ChrT);
+    // Construct for a histogram for the appropriate metrics
+    stats.hist = isoform ? r.hist() : r.geneHist(ChrT);
     
-    o.info("Parsing tracking file");
+    o.info("Parsing input file");
 
     f(stats);
     
@@ -133,7 +149,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     
     o.info("Calculating detection limit");
     
-    stats.s = isoform ? r.limit(stats.h) : r.limitGene(stats.h);
+    stats.limit = isoform ? r.limit(stats.hist) : r.limitGene(stats.hist);
     
     return stats;
 }
@@ -144,7 +160,7 @@ TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options 
     {
         for (auto &test : tests)
         {
-            update(stats, test, test.id, o.metrs == Metrics::Isoform, o);
+            update(stats, test, test.id, o.metrs);
         }
     });
 }
@@ -157,11 +173,9 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
         {
             case Software::Cuffdiffs:
             {
-                const auto isIsoform = (o.metrs == Metrics::Isoform);
-                
                 ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
                 {
-                    update(stats, t, isIsoform ? t.testID : t.id, isIsoform, o);
+                    update(stats, t, o.metrs == Metrics::Isoform ? t.testID : t.id, o.metrs);
                 });
 
                 break;
@@ -177,24 +191,54 @@ void TDiffs::report(const FileName &file, const Options &o)
     
     o.info("Generating statistics");
     
-    for (const auto &i : stats.data)
-    {
-        /*
-         * Generating summary statistics
-         */
-        
-        o.writer->open("TransDiffs_summary.stats");
-        o.writer->write(RWriter::linear(file, stats, i.first, units));
-        o.writer->close();
-        
-        /*
-         * Generating scatter plot
-         */
-        
-        o.writer->open("TransDiffs_scatter.R");
-        o.writer->write(RWriter::scatter(stats, i.first, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
-        o.writer->close();
-    }
+    /*
+     * Synthetic
+     * ---------
+     *
+     *    - Summary statistics
+     *    - Sequin statistics
+     *    - Scatter plot
+     *    - ROC plot
+     *    - MA plot
+     *    - LODR Plot
+     */
+    
+    /*
+     * Endogenous
+     * ----------
+     *
+     *    - MA Plot (merged with synthetic)
+     */
+    
+    /*
+     * Generating summary statistics
+     */
+    
+    o.writer->open("TransDiffs_summary.stats");
+    o.writer->write(StatsWriter::linear(file, stats, ChrT, units));
+    o.writer->close();
+    
+    /*
+     * Generating scatter plot
+     */
+    
+    o.writer->open("TransDiffs_scatter.R");
+    o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
+    o.writer->close();
+    
+    /*
+     * Generating LODR plot
+     */
+
+    
+    
+    /*
+     * Generating MA plot
+     */
+    
+    /*
+     * Generating ROC plot
+     */
 }
 
 void TDiffs::report(const std::vector<FileName> &files, const Options &o)

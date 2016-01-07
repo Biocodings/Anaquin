@@ -16,7 +16,7 @@ def xxd(src, dst):
 data  = [ 'data/manual.txt',    
           'scripts/viewer.py',
 
-	  'src/r/scatter.R'
+          'src/r/scatter.R',
 
            # ------- Fusion -------
 

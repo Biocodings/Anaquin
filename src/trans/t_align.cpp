@@ -367,7 +367,7 @@ template <typename T> void collect(const ChromoID &cID,
     }
 }
 
-TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
+TAlign::Stats calculate(const TAlign::Options &o, Functor cal)
 {
     /*
      * 1: Initalize the statistics
@@ -379,7 +379,7 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor calculator)
      * 2: Parsing the inputs. For instance, parsing an input file.
      */
     
-    calculator(stats);
+    cal(stats);
 
     o.info("Collecting statistics");
     

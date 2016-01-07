@@ -6,6 +6,9 @@
 using namespace SS;
 using namespace Anaquin;
 
+typedef TExpress::Metrics  Metrics;
+typedef TExpress::Software Software;
+
 template <typename T> void update(TExpress::Stats &stats, const T &t, const GenericID &id, const TExpress::Options &o)
 {
     if (t.cID != Standard::chrT)
@@ -19,9 +22,9 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
 
     const auto &r = Standard::instance().r_trans;
 
-    switch (o.level)
+    switch (o.metrs)
     {
-        case TExpress::ExpressLevel::Isoform:
+        case Metrics::Isoform:
         {
             const TransData *m = nullptr;
             
@@ -40,7 +43,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
             }
             else
             {
-                stats.h.at(m->id)++;
+                stats.hist.at(m->id)++;
                 
                 if (t.fpkm)
                 {
@@ -51,7 +54,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
             break;
         }
 
-        case TExpress::ExpressLevel::Gene:
+        case Metrics::Gene:
         {
             const TransRef::GeneData *m = nullptr;
             
@@ -70,7 +73,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
             }
             else
             {
-                stats.h.at(m->id)++;
+                stats.hist.at(m->id)++;
                 
                 if (t.fpkm)
                 {
@@ -94,9 +97,9 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
     {
         stats.data[cID];
     });
-    
-    stats.h =  o.level == TExpress::Isoform  ? r.hist() : r.geneHist(ChrT);
-    stats.s = (o.level == TExpress::Isoform) ? r.limit(stats.h) : r.limitGene(stats.h);
+
+    stats.hist  =  o.metrs == Metrics::Isoform  ? r.hist() : r.geneHist(ChrT);
+    stats.limit = (o.metrs == Metrics::Isoform) ? r.limit(stats.hist) : r.limitGene(stats.hist);
     
     f(stats);
     
@@ -120,11 +123,11 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 
     return calculate(o, [&](TExpress::Stats &stats)
     {
-        const auto isIsoform = o.level == TExpress::Isoform;
+        const auto isIsoform = o.metrs == Metrics::Isoform;
         
-        switch (o.tool)
+        switch (o.soft)
         {
-            case Cufflinks:
+            case Software::Cufflinks:
             {
                 ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
                 {
@@ -134,11 +137,11 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
                 break;
             }
                 
-            case StringTie:
+            case Software::StringTie:
             {
-                switch (o.level)
+                switch (o.metrs)
                 {
-                    case TExpress::Isoform:
+                    case Metrics::Isoform:
                     {
                         ParserStringTie::parseIsoforms(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
                         {
@@ -148,7 +151,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
                         break;
                     }
                         
-                    case TExpress::Gene:
+                    case Metrics::Gene:
                     {
                         ParserStringTie::parseGenes(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
                         {
@@ -168,7 +171,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 void TExpress::report(const FileName &file, const Options &o)
 {
     const auto stats = TExpress::analyze(file, o);
-    const auto units = (o.level == Isoform) ? "isoforms" : "genes";
+    const auto units = (o.metrs == Metrics::Isoform) ? "isoforms" : "genes";
     
     o.info("Generating statistics");
     
@@ -179,7 +182,7 @@ void TExpress::report(const FileName &file, const Options &o)
          */
 
         o.writer->open("TransExpress_summary.stats");
-        o.writer->write(RWriter::linear(file, stats, i.first, units));
+        o.writer->write(StatsWriter::linear(file, stats, i.first, units));
         o.writer->close();
         
         /*
@@ -195,7 +198,7 @@ void TExpress::report(const FileName &file, const Options &o)
 void TExpress::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto stats = TExpress::analyze(files, o);
-    const auto units = (o.level == Isoform) ? "isoforms" : "genes";
+    const auto units = (o.metrs == Metrics::Isoform) ? "isoforms" : "genes";
     
     /*
      * Generating summary statistics for each replicate

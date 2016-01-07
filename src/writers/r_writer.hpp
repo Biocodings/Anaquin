@@ -16,7 +16,7 @@ extern std::string date();
 extern std::string __full_command__;
 
 // Defined in resources.cpp
-extern std::string RScriptCoverage();
+extern std::string AQCoverage();
 
 namespace Anaquin
 {
@@ -29,10 +29,8 @@ namespace Anaquin
         });
     }
     
-    
-    struct RWriter
+    struct StatsWriter
     {
-        
         /*
          * -------------------- Linear Statistics --------------------
          */
@@ -51,8 +49,10 @@ namespace Anaquin
                                  "   ***\n"
                                  "   *** Detection Limits\n"
                                  "   ***\n\n"
-                                 "   Absolute:    %7% (attomol/ul) (%8%)\n"
-                                 "   Refraction:  --- (attomol/ul) (---)\n\n"
+                                 "   Absolute:    %7% (attomol/ul) (%8%)\n\n"
+                                 "   ***\n"
+                                 "   *** Statistics for linear regression\n"
+                                 "   ***\n\n"
                                  "   Correlation: %10%\n"
                                  "   Slope:       %11%\n"
                                  "   R2:          %12%\n"
@@ -62,10 +62,7 @@ namespace Anaquin
                                  "   SSE:         %17%, DF: %18%\n"
                                  "   SST:         %19%, DF: %20%\n\n"
                                  "   ***\n"
-                                 "   *** The following statistics are computed on the log2 scale.\n"
-                                 "   ***\n"
-                                 "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
-                                 "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
+                                 "   *** Statistics for linear regression (log2 scale)\n"
                                  "   ***\n\n"
                                  "   Correlation: %21%\n"
                                  "   Slope:       %22%\n"
@@ -78,16 +75,16 @@ namespace Anaquin
             
             const auto n_lm = stats.data.at(cID).linear(false);
             const auto l_lm = stats.data.at(cID).linear(true);
-
-            return (boost::format(summary) % src                         // 1
+            
+            return (boost::format(summary) % src                          // 1
                                            % stats.n_expT
                                            % stats.n_chrT
                                            % units
-                                           % stats.h.size()               // 5
+                                           % stats.hist.size()            // 5
                                            % (ref.empty() ? units : ref)
-                                           % stats.s.abund
-                                           % stats.s.id
-                                           % detect(stats.h)
+                                           % stats.limit.abund
+                                           % stats.limit.id
+                                           % detect(stats.hist)
                                            % n_lm.r                       // 10
                                            % n_lm.m
                                            % n_lm.r2
@@ -110,7 +107,7 @@ namespace Anaquin
                                            % l_lm.sse_df
                                            % l_lm.sst
                                            % l_lm.sst_df                  // 31
-                           ).str();
+                    ).str();
         }
         
         /*
@@ -204,9 +201,12 @@ namespace Anaquin
                                            % l_lm.sse_df
                                            % l_lm.sst
                                            % l_lm.sst_df                 // 38
-                           ).str();
+                    ).str();
         }
-
+    };
+    
+    struct RWriter
+    {
         /*
          * -------------------- Scatter Plot --------------------
          */
@@ -219,8 +219,7 @@ namespace Anaquin
                                                              const AxisLabel &yLabel,
                                                              const AxisLabel &xLogLabel,
                                                              const AxisLabel &yLogLabel,
-                                                             bool shoudLog2 = true,
-                                                             bool shouldCSV = true)
+                                                             bool shoudLog2 = true)
         {
             std::vector<double> x, y;
             std::vector<std::string> z;
@@ -242,8 +241,8 @@ namespace Anaquin
             /*
              * Generate an R script for data visualization
              */
-            
-            return RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.s.abund);
+
+            return RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
 
             /*
              * Generate CSV for each sequin
@@ -271,7 +270,7 @@ namespace Anaquin
             using boost::adaptors::transformed;
 
             std::stringstream ss;
-            ss << RScriptCoverage();
+            ss << AQCoverage();
 
             const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
             const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
@@ -279,12 +278,11 @@ namespace Anaquin
 
             return (boost::format(ss.str()) % date()
                                             % __full_command__
+                                            % zs
                                             % xs
                                             % ys
-                                            % zs
                                             % xLabel
-                                            % yLabel
-                                            % "").str();
+                                            % yLabel).str();
         }
     };
 }

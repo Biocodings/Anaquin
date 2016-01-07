@@ -61,6 +61,29 @@ expExonBins <- function(m = loadMixture())
 }
 
 #
+# Create a data set suitable for analyze in Anaquin. Possibilities:
+#
+#   1. ExpectMeasured
+#
+
+aqdata <- function(seqs = NULL, expected = NULL, measured = NULL)
+{
+    if (!is.null(seqs) && !is.null(expected) && !is.null(measured))
+    {
+        data <- data.frame(seqs=seqs, expected=expected, measured=measured)
+    }
+    else
+    {
+        stop('Unknown arguments. Please check and try again.')
+    }
+
+    r <- list('data' = data)
+    class(r) <- 'ExpectMeasured'
+
+    return (r)
+}
+
+#
 # Load the mixture into an R object that can be used in other Anaquin functions
 #
 
