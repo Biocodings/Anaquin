@@ -33,7 +33,7 @@ plotLODR <- function(data,
 
     print(paste('FDR threshold:', cutoff))
 
-    xrange <- c(1, 28199)
+    xrange <- c(1, 30245)
     
     # Combine the groups solely based on their magnitudes
     data$ratio = abs(data$ratio)
@@ -94,7 +94,7 @@ plotLODR <- function(data,
         # Bootstrap to estimate uncertainty
         lodr.boot<-NULL
 
-        for (ii in 1:500)
+        for (ii in 1:2)
         {
             y.boot    <- X$fit + sample(residuals(fit), length(mn))
             fit.boot  <- locfit(y.boot~lp(log10(mn)), maxk=300)
@@ -213,28 +213,28 @@ plotLODR <- function(data,
     arrowDat$ratio <- as.factor(arrowDat$ratio)
     
     LODRplot <- ggplot(data, aes(x=x, y=y, colour=ratio)) + 
-                            geom_point(size = 6) +
-                            xlab(xname) +
-                            ylab(yname) +
+                             geom_point(size = 6) +
+                             xlab(xname) +
+                             ylab(yname) +
         
-                            scale_x_log10(limits = xrange) + 
-                            scale_y_log10(breaks = c(1e-300,1e-200,1e-100,1e-10, 1.00)) +
+                             scale_x_log10(limits = xrange) + 
+                             scale_y_log10(breaks = c(1e-300,1e-200,1e-100,1e-10, 1.00)) +
         
-                            geom_ribbon(data  = lineDat, aes(x = x.new, y = fitLine, ymin=fitLower, ymax=fitUpper, fill = ratio),
+                             geom_ribbon(data  = lineDat, aes(x = x.new, y = fitLine, ymin=fitLower, ymax=fitUpper, fill = ratio),
                                                                 alpha = 0.3, colour=NA, show_guide = FALSE) + 
-                          #  geom_line(data = lineDat, aes(x = x.new, y=fitLine, 
-                           #                                     colour = ratio), show_guide = FALSE) +
+                             geom_line(data = lineDat, aes(x = x.new, y=fitLine, 
+                                                                colour = ratio), show_guide = FALSE) +
 
-                            scale_color_manual(values = cols) +
-                            scale_fill_manual (values = rev(cols)) +
+                             scale_color_manual(values = cols) +
+                             scale_fill_manual (values = rev(cols)) +
 
-                            geom_segment(data = arrowDat, 
+                             geom_segment(data = arrowDat, 
                                  aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
                                      lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
                                         "cm")), size = 2, alpha = 0.6) +
 
-                            geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) + # Draw the line for probability threshold
-                            theme_bw()
+                             geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) + # Draw the line for probability threshold
+                             theme_bw()
 
     if (plotTable)
     {

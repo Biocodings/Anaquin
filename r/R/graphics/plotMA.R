@@ -4,10 +4,6 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
 #
 
-library(ggplot2)
-library(gridExtra)
-library(grid)
-
 maData <- read.csv('/Users/tedwong/Sources/QA/r/maData.csv', row.names=1)
 maDatAll <- read.csv('/Users/tedwong/Sources/QA/r/maDatAll.csv', row.names=1)
 rm_dat <- read.csv('/Users/tedwong/Sources/QA/r/rm_dat.csv', row.names=1)
@@ -17,18 +13,17 @@ xlabel = xlab("Log2 Average of Normalized Counts")
 myXLimMA <- c(-14, 14)
 myYLim <- c(-4, 4)
 
-data <- read.csv('/Users/tedwong/Desktop/counts.txt', row.names=1)
-
-
 
 #m <- read.csv('/Users/tedwong/Desktop/LODR_data_TED.csv', row.names=1)
 #m <- m[!is.na(m$padj),]
 #cutoffs <- plotLODR(row.names(m), m$baseMean, m$padj, m$expected.log2FoldChange)
 
-
-
-ABCD <- function(data, mix=loadMixture())
+plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
 {
+    require(grid)
+    require(ggplot2)
+    require(gridExtra)
+    
     #
     # Bind the information for LODR with the data. We assume the status has already been classified.
     #
@@ -123,7 +118,7 @@ ABCD <- function(data, mix=loadMixture())
     print(maPlot)
 }
 
-ABCD(data)
+plotMA(read.csv('/Users/tedwong/Desktop/counts.txt', row.names=1))
 
 
 

@@ -1,10 +1,13 @@
 #ifndef R_WRITER_HPP
 #define R_WRITER_HPP
 
+#include <map>
 #include <string>
 #include <vector>
 #include <sstream>
 #include <numeric>
+#include <iomanip>
+#include "data/types.hpp"
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -16,14 +19,23 @@ extern std::string date();
 extern std::string __full_command__;
 
 // Defined in resources.cpp
-extern std::string AQCoverage();
+extern std::string PlotScatter();
+
+// Defined in resources.cpp
+extern std::string PlotMA();
+
+// Defined in resources.cpp
+extern std::string PlotROC();
+
+// Defined in resources.cpp
+extern std::string PlotLODR();
 
 namespace Anaquin
 {
     // Number of elements in the histogram with at least an entry
     template <typename T> Counts detect(const std::map<T, Counts> &m)
     {
-        return std::count_if(m.begin(), m.end(), [&](const std::pair<T, Counts> &i)
+        return std::count_if(m.begin(), m.end(), [&](const std::pair<T, long> &i)
         {
             return i.second ? 1 : 0;
         });
@@ -207,19 +219,56 @@ namespace Anaquin
     
     struct RWriter
     {
+        static std::string prec_to_string(double x)
+        {
+            std::ostringstream out;
+            out << std::setprecision(6) << x;
+            return out.str();
+        }
+        
+        template <typename T> static std::string concat(const std::vector<T> &x)
+        {
+            return boost::algorithm::join(x | boost::adaptors::transformed(static_cast<std::string(*)(T)>(prec_to_string)), ", ");
+        }
+
+        /*
+         * -------------------- LODR Plot --------------------
+         */
+        
+        static Scripts lodr(const std::vector<std::string> &seqs,
+                            const std::vector<double> &avgs,
+                            const std::vector<double> &pvals,
+                            const std::vector<double> &logFCs)
+        {
+            std::stringstream ss;
+            ss << PlotLODR();
+            
+            std::accumulate(seqs.begin(), seqs.end(), std::string(","));
+            
+            return (boost::format(ss.str()) % date()
+                                            % __full_command__
+                                            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
+                                            % concat(avgs)
+                                            % concat(pvals)
+                                            % concat(logFCs)
+                    ).str();
+
+            return ss.str();
+        }
+        
         /*
          * -------------------- Scatter Plot --------------------
          */
         
-        template <typename Stats> static std::string scatter(const Stats &stats,
-                                                             const ChromoID &cID,
-                                                             const std::string &title,
-                                                             const std::string &prefix,
-                                                             const AxisLabel &xLabel,
-                                                             const AxisLabel &yLabel,
-                                                             const AxisLabel &xLogLabel,
-                                                             const AxisLabel &yLogLabel,
-                                                             bool shoudLog2 = true)
+        template <typename Stats> static Scripts scatter(const Stats &stats,
+                                                         const ChromoID &cID,
+                                                         const std::string &title,
+                                                         const std::string &prefix,
+                                                         const AxisLabel &xLabel,
+                                                         const AxisLabel &yLabel,
+                                                         const AxisLabel &xLogLabel,
+                                                         const AxisLabel &yLogLabel,
+                                                         bool shoudLog2 = true)
         {
             std::vector<double> x, y;
             std::vector<std::string> z;
@@ -238,31 +287,16 @@ namespace Anaquin
                 }
             }
             
-            /*
-             * Generate an R script for data visualization
-             */
-
-            return RWriter::coverage(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
-
-            /*
-             * Generate CSV for each sequin
-             */
-            
-            //if (shouldCSV)
-            //{
-            //    writeCSV(x, y, z, prefix + "_quin.csv", xLabel, yLabel, writer);
-            //}
+            return RWriter::scatter(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
         }
         
-        // Generate a R script for plotting expected and measured coverage
-        template <typename T> static std::string coverage
-                        (const std::vector<T> &x,
-                         const std::vector<T> &y,
-                         const std::vector<SequinID> &z,
-                         const std::string &xLabel,
-                         const std::string &yLabel,
-                         const std::string &title,
-                         T s)
+        template <typename T> static Scripts scatter(const std::vector<T> &x,
+                                                     const std::vector<T> &y,
+                                                     const std::vector<SequinID> &z,
+                                                     const std::string &xLabel,
+                                                     const std::string &yLabel,
+                                                     const std::string &title,
+                                                     T s)
         {
             assert(!xLabel.empty() && !yLabel.empty());
 
@@ -270,7 +304,7 @@ namespace Anaquin
             using boost::adaptors::transformed;
 
             std::stringstream ss;
-            ss << AQCoverage();
+            ss << PlotScatter();
 
             const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
             const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");

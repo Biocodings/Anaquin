@@ -9,9 +9,10 @@
 library(Anaquin)
 
 # Create a data set for Anaquin
-data <- aqdata(seqs  = c(%3%),
-               count = c(%4%),
-               pval  = c(%5%))
+data <- aqdata(seqs   = c(%3%),
+               counts = c(%4%),
+               pval   = c(%5%),
+               ratio  = c(%6%))
 
 # Change to your chooden FDR rate
 chosenFDR <- 0.1

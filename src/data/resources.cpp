@@ -4,7 +4,10 @@
  * Anaquin R-bioconductor
  */
 
-#include "resources/scatter.R"
+#include "resources/plotMA.R"
+#include "resources/plotROC.R"
+#include "resources/plotLODR.R"
+#include "resources/plotScatter.R"
 
 /*
  * Scripts
@@ -57,6 +60,8 @@
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
+typedef std::string Scripts;
+
 std::string ViewerScript()
 {
     return ToString(scripts_viewer_py);
@@ -71,9 +76,24 @@ std::string Manual()
  * Scripts for Anaquin R-Bioconductor
  */
 
-std::string AQCoverage()
+Scripts PlotScatter()
 {
-    return ToString(src_r_scatter_R);
+    return ToString(src_r_plotScatter_R);
+}
+
+Scripts PlotMA()
+{
+    return ToString(src_r_plotMA_R);
+}
+
+Scripts PlotROC()
+{
+    return ToString(src_r_plotROC_R);
+}
+
+Scripts PlotLODR()
+{
+    return ToString(src_r_plotLODR_R);
 }
 
 /*
