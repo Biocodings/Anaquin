@@ -16,7 +16,8 @@ def xxd(src, dst):
 data  = [ 'data/manual.txt',    
           'scripts/viewer.py',
 
-          'src/r/scatter.R',
+          'src/r/plotLODR.R',
+          'src/r/plotScatter.R',
 
            # ------- Fusion -------
 
