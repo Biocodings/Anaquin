@@ -1117,14 +1117,14 @@ void parse(int argc, char ** argv)
                     {
                         std::cout << "[INFO]: Gene Analysis" << std::endl;
                         
-                        o.level = TDiffs::Gene;
+                        o.metrs = TDiffs::Metrics::Gene;
                         analyze_1<TDiffs>(OPT_GDIFF, o);
                     }
                     else
                     {
                         std::cout << "[INFO]: Isoform Analysis" << std::endl;
 
-                        o.level = TDiffs::Isoform;
+                        o.metrs = TDiffs::Metrics::Isoform;
                         analyze_1<TDiffs>(OPT_IDIFF, o);
                     }
 

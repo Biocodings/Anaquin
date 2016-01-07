@@ -44,7 +44,7 @@ TEST_CASE("TDiff_AllExpressed")
     }
     
     TDiffs::Options o;
-    o.level = TDiffs::Gene;
+    o.metrs = TDiffs::Metrics::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
@@ -94,7 +94,7 @@ TEST_CASE("TDiff_NoneExpressed")
     }
     
     TDiffs::Options o;
-    o.level = TDiffs::Gene;
+    o.metrs = TDiffs::Metrics::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
@@ -121,12 +121,11 @@ TEST_CASE("TDiff_NoSynthetic")
     {
         DiffTest test;
         test.cID = "Anaquin";
-        
         tests.push_back(test);
     }
     
     TDiffs::Options o;
-    o.level = TDiffs::Gene;
+    o.metrs = TDiffs::Metrics::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();

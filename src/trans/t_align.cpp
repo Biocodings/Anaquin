@@ -736,14 +736,14 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     {
         const auto &stat = stats[i];
         
-        accs[AllT].add("n_expT",    stat.n_expT);
-        accs[AllT].add("n_chrT",    stat.n_chrT);
-        accs[AllT].add("dilution",  stat.dilution());
-        accs[AllT].add("unmapped",  stat.unmapped);
-        accs[AllT].add("expTProp",  stat.expTProp());
-        accs[AllT].add("chrTProp",  stat.chrTProp());
-        accs[AllT].add("limitE",    stat.limit(AlignMetrics::AlignExon));
-        accs[AllT].add("limitI",    stat.limit(AlignMetrics::AlignIntron));
+        accs[ExpT].add("n_expT",    stat.n_expT);
+        accs[ExpT].add("n_chrT",    stat.n_chrT);
+        accs[ExpT].add("dilution",  stat.dilution());
+        accs[ExpT].add("unmapped",  stat.unmapped);
+        accs[ExpT].add("expTProp",  stat.expTProp());
+        accs[ExpT].add("chrTProp",  stat.chrTProp());
+        accs[ExpT].add("limitE",    stat.limit(AlignMetrics::AlignExon));
+        accs[ExpT].add("limitI",    stat.limit(AlignMetrics::AlignIntron));
 
         auto f = [&](const ChromoID &id)
         {

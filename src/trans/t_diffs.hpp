@@ -7,14 +7,12 @@ namespace Anaquin
 {
     struct TDiffs : public Analyzer
     {
-        enum Assembler
+        enum class Software
         {
             Cuffdiffs,
-            DESeq2,
-            EdgeR,
         };
         
-        enum DiffLevel
+        enum class Metrics
         {
             Gene,
             Isoform
@@ -24,24 +22,24 @@ namespace Anaquin
         {
             Options() {}
 
-            Assembler soft = Assembler::Cuffdiffs;
-
-            // Only valid for Cuffdiffs
-            DiffLevel level;
+            Software soft = Software::Cuffdiffs;
+            Metrics metrs = Metrics::Gene;
         };
 
         struct Stats : public MappingStats
         {
-            std::map<ChromoID, LinearStats> data;
+            struct Data : public LinearStats
+            {
+                // Empty Implementation
+            };
+
+            std::map<ChromoID, Data> data;
 
             Limit s;
             std::map<std::string, Counts> h;
         };
 
-        // Analyze a single sample
         static Stats analyze(const FileName &, const Options &o);
-        
-        // Analyze a single sample
         static Stats analyze(const std::vector<DiffTest> &, const Options &o);
 
         // Analyze multiple replicates

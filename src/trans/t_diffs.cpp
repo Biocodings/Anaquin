@@ -1,8 +1,17 @@
+/*
+ * Copyright (C) 2015 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
 #include "trans/t_diffs.hpp"
 #include "parsers/parser_cdiffs.hpp"
 
 using namespace SS;
 using namespace Anaquin;
+
+typedef TDiffs::Metrics  Metrics;
+typedef TDiffs::Software Software;
 
 template <typename T> void update(TDiffs::Stats &stats, const T &t, const GenericID &id, bool isoform, const TDiffs::Options &o)
 {
@@ -54,9 +63,9 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
         stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
     };
 
-    switch (o.level)
+    switch (o.metrs)
     {
-        case TDiffs::Gene:
+        case Metrics::Gene:
         {
             if ((t.status != NoTest) && stats.h.count(t.id))
             {
@@ -66,7 +75,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
             break;
         }
             
-        case TDiffs::Isoform:
+        case Metrics::Isoform:
         {
             if ((t.status == NoTest) || !stats.h.count(id))
             {
@@ -108,7 +117,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
         stats.data[cID];
     });
 
-    const auto isoform = o.level == TDiffs::Isoform;
+    const auto isoform = (o.metrs == Metrics::Isoform);
     o.logInfo(isoform ? "Isoform tracking" : "Gene tracking");
     
     // Construct for a histogram at the appropriate level
@@ -135,7 +144,7 @@ TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options 
     {
         for (auto &test : tests)
         {
-            update(stats, test, test.id, o.level == TDiffs::Isoform, o);
+            update(stats, test, test.id, o.metrs == Metrics::Isoform, o);
         }
     });
 }
@@ -146,9 +155,9 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     {
         switch (o.soft)
         {
-            case Cuffdiffs:
+            case Software::Cuffdiffs:
             {
-                const auto isIsoform = o.level == TDiffs::Isoform;
+                const auto isIsoform = (o.metrs == Metrics::Isoform);
                 
                 ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
                 {
@@ -157,12 +166,6 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 
                 break;
             }
-
-            case EdgeR:
-            case DESeq2:
-            {
-                throw "Not implemented";
-            }
         }
     });
 }
@@ -170,7 +173,7 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 void TDiffs::report(const FileName &file, const Options &o)
 {
     const auto stats = TDiffs::analyze(file, o);
-    const auto units = (o.level == Isoform) ? "isoforms" : "genes";
+    const auto units = (o.metrs == Metrics::Isoform) ? "isoforms" : "genes";
     
     o.info("Generating statistics");
     
