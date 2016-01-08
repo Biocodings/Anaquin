@@ -348,25 +348,25 @@ TransNorm <- function(d, mix=loadMixture(), level='genes', method='neg', spikes=
 # Compare the empirical differential results with expectation
 #
 
-TransDiff <- function(r, m=loadMixture())
+TransDiff <- function(r, mix=loadMixture())
 {
     if (class(r) == 'DESeqResults')
     {
         print('Analyzing DESeq2 object' )
-        .analyzeDESeq2(r, m)
+        .analyzeDESeq2(r, mix)
     }
     else if (class(lrt)[1] == 'DGELRT')
     {
-        print('Analyzing edgeR (likelihood)')
-        .analyzeGLMEdgeR(r, m)        
+        print('Analyzing edgeR')
+        .analyzeGLMEdgeR(r, mix)
     }
     else if (class(r)[1] == 'DGEExact')
     {
-        print('Analyzing edgeR (classical)' )
-        .analyzeEdgeR(r, m)
+        print('Analyzing edgeR' )
+        .analyzeEdgeR(r, mix)
     }
     else
     {
-        stop('Unknown input. The input must be a result object from DESeq2 or EdgeR')
+        stop('Unknown input. The input must be a result object from DESeq2 or EdgeR.')
     }    
 }

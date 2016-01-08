@@ -63,20 +63,20 @@ expExonBins <- function(m = loadMixture())
 #
 # Create a data set suitable for analyze in Anaquin. Possibilities:
 #
-#   1. aqdata(seqs = c(...), expected = c(...), measured = c(...))
-#   2. CountPVal
+#   1. aqData(seqs = c(...), expected = c(...), measured = c(...))
+#   2. aqData(seqs = c(...), pvals = c(...), labels = c(...))
 #
 
-#aqdata <- function(seqs = NULL, expected = NULL, measured = NULL, )
-aqdata <- function(...)
+aqData <- function(...)
 {
     x <- list(...)
 
-    # Sequin names must be present. We can use it to construct a frame with the appropriate size.
+    # Sequin names must be present. We can use it to construct a data frame with the appropriate size.
     stopifnot(!is.null(x$seqs))
 
     data <- data.frame(row.names=x$seqs)
 
+    if (!is.null(x$class))    { data$class    <- x$class    }
     if (!is.null(x$pval))     { data$pval     <- x$pval     }
     if (!is.null(x$logFC))    { data$logFC    <- x$logFC    }    
     if (!is.null(x$ratio))    { data$ratio    <- x$ratio    }    
@@ -85,7 +85,7 @@ aqdata <- function(...)
     if (!is.null(x$measured)) { data$measured <- x$measured }
 
     r <- list('seqs' = data)
-    class(r) <- 'ExpectMeasured'
+    class(r) <- 'AnaquinData'
 
     return (r)
 }
