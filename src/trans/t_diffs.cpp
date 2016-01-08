@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2016 - Garvan Institute of Medical Research
  *
- *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
 #include "trans/t_diffs.hpp"
@@ -12,6 +12,30 @@ using namespace Anaquin;
 
 typedef TDiffs::Metrics  Metrics;
 typedef TDiffs::Software Software;
+
+std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
+{
+    assert(qs.size() == folds.size());
+    
+    std::vector<std::string> r;
+    
+    for (auto i = 0; i < qs.size(); i++)
+    {
+        // Differential expressed
+        if (qs[i] <= qCut)
+        {
+            r.push_back(fabs(folds[i]) <= foldCut ? "FP" : "TP");
+        }
+        
+        // Non-differential expressed
+        else
+        {
+            r.push_back(fabs(folds[i]) <= foldCut ? "TN" : "FN");
+        }
+    }
+    
+    return r;
+}
 
 template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const GenericID &id, Metrics metrs)
 {
@@ -192,6 +216,10 @@ void TDiffs::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
+     * There's no need to write summary for each replicate because differential analysis has already incorporated them.
+     */
+    
+    /*
      * Synthetic
      * ---------
      *
@@ -202,7 +230,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      *    - MA plot
      *    - LODR Plot
      */
-    
+
     /*
      * Endogenous
      * ----------
@@ -230,8 +258,6 @@ void TDiffs::report(const FileName &file, const Options &o)
      * Generating LODR plot
      */
 
-    
-    
     /*
      * Generating MA plot
      */

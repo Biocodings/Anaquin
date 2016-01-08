@@ -232,6 +232,31 @@ namespace Anaquin
         }
 
         /*
+         * -------------------- ROC Plot --------------------
+         */
+        
+        static Scripts roc(const std::vector<std::string> &seqs,
+                           const std::vector<double>      &pvals,
+                           const std::vector<std::string> &labels)
+        {
+            assert(!seqs.empty() && seqs.size() == pvals.size() && pvals.size() == labels.size());
+            
+            std::stringstream ss;
+            ss << PlotROC();
+            
+            std::accumulate(seqs.begin(), seqs.end(), std::string(","));
+            
+            return (boost::format(ss.str()) % date()
+                                            % __full_command__
+                                            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
+                                            % RWriter::concat(pvals)
+                                            % ("\'" + boost::algorithm::join(labels, "\',\'") + "\'")
+                    ).str();
+            
+            return ss.str();
+        }
+
+        /*
          * -------------------- LODR Plot --------------------
          */
         
@@ -248,9 +273,9 @@ namespace Anaquin
             return (boost::format(ss.str()) % date()
                                             % __full_command__
                                             % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                            % concat(avgs)
-                                            % concat(pvals)
-                                            % concat(logFCs)
+                                            % RWriter::concat(avgs)
+                                            % RWriter::concat(pvals)
+                                            % RWriter::concat(logFCs)
                     ).str();
 
             return ss.str();
@@ -287,34 +312,27 @@ namespace Anaquin
                 }
             }
             
-            return RWriter::scatter(x, y, z, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
+            return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
         }
         
-        template <typename T> static Scripts scatter(const std::vector<T> &x,
-                                                     const std::vector<T> &y,
-                                                     const std::vector<SequinID> &z,
-                                                     const std::string &xLabel,
-                                                     const std::string &yLabel,
-                                                     const std::string &title,
+        template <typename T> static Scripts scatter(const std::vector<SequinID> &seqs,
+                                                     const std::vector<T>        &x,
+                                                     const std::vector<T>        &y,
+                                                     const std::string           &xLabel,
+                                                     const std::string           &yLabel,
+                                                     const std::string           &title,
                                                      T s)
         {
             assert(!xLabel.empty() && !yLabel.empty());
 
-            using boost::algorithm::join;
-            using boost::adaptors::transformed;
-
             std::stringstream ss;
             ss << PlotScatter();
 
-            const auto xs = join(x | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
-            const auto ys = join(y | transformed(static_cast<std::string(*)(double)>(std::to_string)), ", ");
-            const auto zs = (boost::format("'%1%'") % boost::algorithm::join(z, "','")).str();
-
             return (boost::format(ss.str()) % date()
                                             % __full_command__
-                                            % zs
-                                            % xs
-                                            % ys
+                                            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
+                                            % RWriter::concat(x)
+                                            % RWriter::concat(y)
                                             % xLabel
                                             % yLabel).str();
         }

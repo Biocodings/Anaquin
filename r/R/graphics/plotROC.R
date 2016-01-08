@@ -22,7 +22,6 @@ plotROC <- function(data, mix = loadMixture())
     data$label  <- ifelse(data$class == 'TP', 2, 1)
     
     pred <- prediction(data$scores, data$label, label.ordering=c(1,2))
-    pred <- prediction(data$scores, data$label)
     perf <- performance(pred, "tpr","fpr")
     
     plot(perf)

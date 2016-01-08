@@ -4,6 +4,21 @@
 
 using namespace Anaquin;
 
+TEST_CASE("TDiff_Classify")
+{
+    const auto qvals = std::vector<double> { 0.01, 0.02, 0.98, 0.99 };
+    const auto folds = std::vector<double> { 1.00, 4.00, 1.00, 4.00 };
+
+    const auto r = TDiffs::classify(qvals, folds, 0.05, 1.00);
+    
+    REQUIRE(r.size() == 4);
+
+    REQUIRE(r[0] == "FP");
+    REQUIRE(r[1] == "TP");
+    REQUIRE(r[2] == "TN");
+    REQUIRE(r[3] == "FN");
+}
+
 TEST_CASE("TDiff_AllExpressed")
 {
     Test::transAB();

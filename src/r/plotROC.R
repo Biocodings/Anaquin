@@ -9,12 +9,8 @@
 library(Anaquin)
 
 # Create a data set for Anaquin
-data <- aqdata(seqs  = c(%3%),
-               count = c(%4%),
-               pval  = c(%5%),
-               ratio = c(%6%))
+data <- aqData(seqs  = c(%3%),
+               pval  = c(%4%),
+               class = c(%5%))
 
-# Change to your chooden FDR rate
-chosenFDR <- 0.1
-
-plotLODR(data, chosenFDR)
+plotROC(data)
