@@ -1,24 +1,15 @@
 #
 #  Copyright (C) 2015 - Garvan Institute of Medical Research
 #
-#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-maData <- read.csv('/Users/tedwong/Sources/QA/r/maData.csv', row.names=1)
-maDatAll <- read.csv('/Users/tedwong/Sources/QA/r/maDatAll.csv', row.names=1)
-rm_dat <- read.csv('/Users/tedwong/Sources/QA/r/rm_dat.csv', row.names=1)
-alphaPoint <- 0.8
-ymalabel <- "Log2 Ratio of Normalized Counts"
-xlabel = xlab("Log2 Average of Normalized Counts")
-myXLimMA <- c(-14, 14)
-myYLim <- c(-4, 4)
-
-
-#m <- read.csv('/Users/tedwong/Desktop/LODR_data_TED.csv', row.names=1)
-#m <- m[!is.na(m$padj),]
-#cutoffs <- plotLODR(row.names(m), m$baseMean, m$padj, m$expected.log2FoldChange)
-
-plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
+plotMA <- function(data,
+                   mix=loadMixture(),
+                   alphaPoint = 0.8,
+                   xname = 'Log2 Average of Normalized Counts',
+                   yname = 'Log2 Ratio of Normalized Counts',
+                   shouldLODR=FALSE)
 {
     require(grid)
     require(ggplot2)
@@ -49,9 +40,9 @@ plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
 
     maStats <- function(x, c1, c2)
     {
-        c(mean(log2(x[c1])-log2(x[c2])),  # M.Ave (the y-axis)
-          sd(log2(x[c1])-log2(x[c2])),    # M.SD
-          log2(mean(x)))                  # A     (the x-axis)
+        c(mean(log2(x[c1])-log2(x[c2])),  # Ratio of normalized counts (y-axis)
+          sd(log2(x[c1])-log2(x[c2])),    # Standard deviation
+          log2(mean(x)))                  # Average normalized counts (x-axis)
     } 
 
     totCol <- ncol(data)
@@ -80,28 +71,26 @@ plotMA <- function(data, mix=loadMixture(), shouldLODR=FALSE)
     # Now subset and continue with just sequins
     seqs <- data[si,]
 
-    maPlot <- ggplot(seqs, aes(x = A, y = M.Ave))                                                   +
+    maPlot <- ggplot(seqs, aes(x = A, y = M.Ave))                                              +
                      geom_point(data = subset(data, is.na(data$ratio)),
-                                aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5)              +
-                     geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint)                  +
-                     ylab(ymalabel) + xlabel +  coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10)) +
+                                aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5)         +
+                     geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint)             +
+                     xlab(xname)                                                               +
+                     ylab(yname)                                                               +
+                     coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10))                       +
                      geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
-                                   colour = ratio), size = 1, alpha = alphaPoint)                   +
-                     theme(legend.justification = c(1,0), legend.position=c(1,0))                   +
-                     theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank())      +
+                                   colour = ratio), size = 1, alpha = alphaPoint)              +
+                     theme(legend.justification = c(1,0), legend.position=c(1,0))              +
+                     theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
                      scale_y_continuous(breaks = seq(-10, 10, 1)) +
-                     theme_bw() +
+                     theme_bw()
         
     if (shouldLODR)
     {
-       maPlot <- maPlot + geom_point(data = subset(data, status == 'below'), colour = "white", size = 2.5)
+        maPlot <- maPlot + geom_point(data = subset(data, status == 'below'), colour = "white", size = 2.5)
     }
     
     print(maPlot)
+    
+    return(list(xname = xname, yname = yname))
 }
-
-d <- read.csv('/Users/tedwong/Desktop/counts.txt', row.names=1)
-row.names(d) <- d$Feature
-d <- d[,-1]
-plotMA(d)
-
