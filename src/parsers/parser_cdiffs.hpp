@@ -11,8 +11,6 @@ namespace Anaquin
         TrackID testID;
 
         SS::TestStats stats;
-
-        //TrackingStatus status;
     };
 
     struct ParserCDiffs

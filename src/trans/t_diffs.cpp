@@ -39,6 +39,8 @@ std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const s
 
 template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const GenericID &id, Metrics metrs)
 {
+    assert(t.cID == ChrT);
+    
     const auto &r = Standard::instance().r_trans;
     
     // Known fold change
@@ -53,12 +55,6 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
     
     auto g = [&](const GeneID &id, double fpkm_1, double fpkm_2)
     {
-        // The known and observed fold-change
-        Fold known = NAN;
-        
-        // It's NAN if the sequin defined in reference but not in mixture
-        Fold measured = NAN;
-        
         const auto *g = r.findGene(t.cID, id);
         
         if (g)
@@ -113,11 +109,16 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
                 measured = t.fpkm_2 / t.fpkm_1;
             }
             
-            stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+            stats.data[ChrT].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             
             break;
         }
     }
+
+    stats.data[ChrT].seqs.push_back(id);
+    stats.data[ChrT].ps.push_back(t.p);
+    stats.data[ChrT].qs.push_back(t.q);
+    stats.data[ChrT].logFCs.push_back(log2(known));
 }
 
 template <typename T> void classifyEndT(TDiffs::Stats &, const T &, const GenericID &, Metrics)
@@ -149,13 +150,10 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     const auto cIDs = r.chromoIDs();
 
     /*
-     * Initalize data for each chromosome
+     * Initalize data for the synthetic chromosome (not needed for anything else).
      */
 
-    std::for_each(cIDs.begin(), cIDs.end(), [&](const ChromoID &cID)
-    {
-        stats.data[cID];
-    });
+    stats.data[ChrT];
 
     const auto isoform = (o.metrs == Metrics::Isoform);
     o.logInfo(isoform ? "Isoform metrics" : "Gene metrics");
@@ -253,7 +251,15 @@ void TDiffs::report(const FileName &file, const Options &o)
     o.writer->open("TransDiffs_scatter.R");
     o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
     o.writer->close();
+
+    /*
+     * Generating ROC plot
+     */
     
+    o.writer->open("TransDiffs_ROC.R");
+    o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
+    o.writer->close();
+
     /*
      * Generating LODR plot
      */
@@ -261,39 +267,5 @@ void TDiffs::report(const FileName &file, const Options &o)
     /*
      * Generating MA plot
      */
-    
-    /*
-     * Generating ROC plot
-     */
-}
 
-void TDiffs::report(const std::vector<FileName> &files, const Options &o)
-{
-    const auto stats = analyze(files, o);
-    //const auto units = (o.level == Isoform) ? "isoforms" : "genes";
-
-    /*
-     * Generating summary statistics for each replicate
-     */
-    
-    for (auto i = 0; i < files.size(); i++)
-    {
-        //const auto file = (boost::format("TransDiff_%1%_summary.stats") % files[i]).str();
-        ////AnalyzeReporter::linear(file, files[i], stats[i], units, o.writer);
-    }
-    
-    /*
-     * Generating scatter plots for each replicate
-     */
-
-    for (auto i = 0; i < files.size(); i++)
-    {
-        //const auto file = (boost::format("TransDiff_%1%_summary.stats") % files[i]).str();
-        ////AnalyzeReporter::scatter(stats[i], "", file, "Expected fold change of mixture A and B", "Measured fold change of mixture A and B", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
-    }
-    
-    /*
-     * Generating summary statistics for all replicates
-     */
-    
 }

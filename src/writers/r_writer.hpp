@@ -235,25 +235,18 @@ namespace Anaquin
          * -------------------- ROC Plot --------------------
          */
         
-        static Scripts roc(const std::vector<std::string> &seqs,
-                           const std::vector<double>      &pvals,
-                           const std::vector<std::string> &labels)
+        static Scripts roc(const std::vector<std::string> &seqs, const std::vector<double> &qs)
         {
-            assert(!seqs.empty() && seqs.size() == pvals.size() && pvals.size() == labels.size());
+            assert(!seqs.empty() && seqs.size() == qs.size());
             
             std::stringstream ss;
             ss << PlotROC();
             
-            std::accumulate(seqs.begin(), seqs.end(), std::string(","));
-            
             return (boost::format(ss.str()) % date()
                                             % __full_command__
                                             % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                            % RWriter::concat(pvals)
-                                            % ("\'" + boost::algorithm::join(labels, "\',\'") + "\'")
+                                            % RWriter::concat(qs)
                     ).str();
-            
-            return ss.str();
         }
 
         /*
@@ -267,8 +260,6 @@ namespace Anaquin
         {
             std::stringstream ss;
             ss << PlotLODR();
-            
-            std::accumulate(seqs.begin(), seqs.end(), std::string(","));
             
             return (boost::format(ss.str()) % date()
                                             % __full_command__

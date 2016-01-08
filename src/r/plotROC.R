@@ -9,8 +9,7 @@
 library(Anaquin)
 
 # Create a data set for Anaquin
-data <- aqData(seqs  = c(%3%),
-               pval  = c(%4%),
-               class = c(%5%))
+data <- aqData(seqs = c(%3%),
+               pval = c(%4%))
 
 plotROC(data)

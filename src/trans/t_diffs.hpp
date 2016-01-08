@@ -34,7 +34,20 @@ namespace Anaquin
 
         struct Stats : public MappingStats
         {
-            typedef LinearStats Data;
+            struct Data : public LinearStats
+            {
+                // Detected sequins
+                std::vector<GenericID> seqs;
+                
+                // Raw probabilities
+                std::vector<double> ps;
+                
+                // Q-probability (controlling multiple testing)
+                std::vector<double> qs;
+                
+                // Raw probabilities
+                std::vector<double> logFCs;
+            };
             
             std::map<ChromoID, Data> data;
 
@@ -51,21 +64,7 @@ namespace Anaquin
         static Stats analyze(const FileName &, const Options &o);
         static Stats analyze(const std::vector<DiffTest> &, const Options &o);
 
-        // Analyze multiple replicates
-        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
-        {
-            std::vector<TDiffs::Stats> stats;
-            
-            for (const auto &file : files)
-            {
-                stats.push_back(analyze(file, o));
-            }
-            
-            return stats;            
-        }
-
         static void report(const FileName &, const Options &o = Options());
-        static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
 

@@ -11,10 +11,25 @@
     genes
 }
 
-loadGene <- function(id, mix=loadMixture())
+loadGene <- function(id, mix = loadMixture())
 {
     r <- mix$genes[row.names(mix$genes)==id,]
     r
+}
+
+#
+# Returns the expected fold-change for a sequin, gene or exon.
+#
+#   Eg: aqLogFold('R2_76',   mix=loadMixture(), metrics='gene')
+#       aqLogFold('R2_76_1', mix=loadMixture(), metrics='isoform')
+#
+
+aqLogFold <- function(id, mix = loadMixture, metrics = 'gene')
+{
+    if (metrics == 'gene')         { return (mix$genes[id,]$logFold)    }
+    else if (metrics == 'isoform') { return (mix$isoforms[id,]$logFold) }
+    else if (metrics == 'exon')    { return (mix$exons[id,]$logFold)    }
+    stop(paste('Unknown argument: ', id))
 }
 
 #
@@ -78,6 +93,7 @@ aqData <- function(...)
 
     if (!is.null(x$class))    { data$class    <- x$class    }
     if (!is.null(x$pval))     { data$pval     <- x$pval     }
+    if (!is.null(x$qval))     { data$qval     <- x$qval     }
     if (!is.null(x$logFC))    { data$logFC    <- x$logFC    }    
     if (!is.null(x$ratio))    { data$ratio    <- x$ratio    }    
     if (!is.null(x$counts))   { data$counts   <- x$counts   }

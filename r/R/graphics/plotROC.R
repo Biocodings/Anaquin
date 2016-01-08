@@ -18,7 +18,7 @@ plotROC <- function(data, mix = loadMixture())
     #     to the positive class ...
     #
 
-    data$scores <- 1 - data$pval
+    data$scores <- 1 - data$qval
     data$label  <- ifelse(data$class == 'TP', 2, 1)
     
     pred <- prediction(data$scores, data$label, label.ordering=c(1,2))
