@@ -23,7 +23,7 @@ plotLODR <- function(data,
     data <- data$seqs
 
     #
-    # Estimate the Q-value for false discovery rate control.
+    # Estimate the Q-value for false discovery rate.
     #
     #    https://github.com/Bioconductor-mirror/erccdashboard/blob/631b691a51db54cb165ff2de1f9a5e06608347bd/R/geneExprTest.R
     #
@@ -33,11 +33,8 @@ plotLODR <- function(data,
 
     print(paste('FDR threshold:', cutoff))
 
-    xrange <- c(1, 30245)
-    
     # Combine the groups solely based on their magnitudes
     data$ratio = abs(data$ratio)
-    #data$ratio = as.factor(abs(data$ratio))
 
     data$x <- data$counts
     data$y <- data$pval
@@ -133,7 +130,7 @@ plotLODR <- function(data,
         
         tryCatch (
         {
-            fit <- locfit(log10(t$y)~lp(log10(t$x)), maxk=300)
+            fit <- locfit(log10(t$y) ~ lp(log10(t$x)), maxk=300)
             
             x.new <- seq(min(log10(t$x)), max(log10(t$x)), length.out=100)
             X <- preplot(fit,band="pred",newdata=x.new)
@@ -180,6 +177,7 @@ plotLODR <- function(data,
     colnames(lodr.resLess)[1:3] <- c("|log2(Fold)|","MinError","Estimate")
     colnames(lodr.resPlot)[1:3] <- c("ratio","MinError","Estimate")
     colnames(lodr.resLess)[1:3] <- c("ratio","MinError","Estimate")
+
     lodr.resPlot <- as.data.frame(lodr.resPlot)
     lodr.resLess <- as.data.frame(lodr.resLess)
 
@@ -192,13 +190,13 @@ plotLODR <- function(data,
     
     if (plotTable)
     {
-        legendLabels <- c('4', '3', '2', '1')
+        legendLabels <- c('4', '1', '2', '3')
 
         lodr.resPlot$ratio <- as.character(legendLabels)
         lodr.resLess$ratio <- as.character(legendLabels) 
         annoTable <- lodr.resLess[-c(2,4,5)]
         
-        colnames(annoTable) <- c("ratio", expression("LODR Estimate"))
+        colnames(annoTable) <- c("Ratio", expression("LODR Estimate"))
         cat("\n")
         print(annoTable, quote = FALSE, row.names = FALSE)    
         
@@ -212,20 +210,25 @@ plotLODR <- function(data,
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
     
-    LODRplot <- ggplot(data, aes(x=x, y=y, colour=ratio)) + 
-                             geom_point(size = 6) +
-                             xlab(xname) +
-                             ylab(yname) +
-        
-                             scale_x_log10(limits = xrange) + 
-                             scale_y_log10(breaks = c(1e-300,1e-200,1e-100,1e-10, 1.00)) +
+    arrowDat$ratio <- as.factor(c(4, 1, 2, 3)) # TODO: Fix this
+
+    # So that the legend starts with an upper case...
+    data$Ratio <- data$ratio
+    
+    LODRplot <- ggplot(data, aes(x=x, y=y, colour=Ratio)) + 
+                             geom_point(size = 6)         +
+                             xlab(xname)                  +
+                             ylab(yname)                  +
+
+                             scale_y_log10(breaks = c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)) +
+                             scale_x_log10(limits = c(1, max(data$counts)), breaks = c(arrowDat$x, round(max(data$counts)))) +
         
                              geom_ribbon(data  = lineDat, aes(x = x.new, y = fitLine, ymin=fitLower, ymax=fitUpper, fill = ratio),
                                                                 alpha = 0.3, colour=NA, show_guide = FALSE) + 
                              geom_line(data = lineDat, aes(x = x.new, y=fitLine, 
-                                                                colour = ratio), show_guide = FALSE) +
+                                                                colour = ratio), show_guide = FALSE)        +
 
-                             scale_color_manual(values = cols) +
+                             scale_color_manual(values = cols)      +
                              scale_fill_manual (values = rev(cols)) +
 
                              geom_segment(data = arrowDat, 
