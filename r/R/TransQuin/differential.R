@@ -5,7 +5,7 @@
 #
 
 #
-# Classify TransQuin differential data, whether they are:
+# Classify TransQuin differential results:
 #
 #    TP: fold-change with more than logFC and expressed
 #    FP: fold-change with at most logFC and expressed

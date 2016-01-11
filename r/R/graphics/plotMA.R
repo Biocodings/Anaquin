@@ -7,6 +7,7 @@
 plotMA <- function(data,
                    mix=loadMixture(),
                    alphaPoint = 0.8,
+                   qCutoff = 0.1,
                    xname = 'Log2 Average of Normalized Counts',
                    yname = 'Log2 Ratio of Normalized Counts',
                    shouldLODR=FALSE)
@@ -47,15 +48,15 @@ plotMA <- function(data,
 
     totCol <- ncol(data)
 
-    maStatDat <- data.frame(t(apply(data[c(1:6)],
-                                    1,
-                                    maStats,
+    maStatDat <- data.frame(t(apply(data[c(1:6)], 1, maStats,
                                     c1 = c(1:(totCol/2)),
                                     c2 = c(((totCol/2)+1):totCol))))
-    colnames(maStatDat) <- c("M.Ave","M.SD","A")
+    colnames(maStatDat) <- c("M.Ave", 'M.SD', 'A')
     
     data <- cbind(data, maStatDat, ratio=NA)
-    data <- data[which(is.finite(data$M.Ave)),]    
+    data <- data[which(is.finite(data$M.Ave)),]
+    
+    data$qval <- rnorm(nrow(data), qCutoff, 0.1) # TODO: Fix this...
 
     # Index for sequins
     si <- row.names(data) %in% row.names(mix$genes)
@@ -65,15 +66,20 @@ plotMA <- function(data,
         logFold <- loadGene(row.names(x), mix)$logFold
         data[si,][row.names(data[si,]) == row.names(x),]$ratio <<- abs(logFold)
     })
-    
+
     data$ratio <- as.factor(as.character(data$ratio))
 
-    # Now subset and continue with just sequins
     seqs <- data[si,]
+    endo <- data[!si,]
+
+    stopifnot(sum(is.na(seqs$ratio)) == 0)
+    stopifnot(sum(!is.na(endo$ratio)) == 0)
 
     maPlot <- ggplot(seqs, aes(x = A, y = M.Ave))                                              +
-                     geom_point(data = subset(data, is.na(data$ratio)),
+                     geom_point(data = endo,
                                 aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5)         +
+                     geom_point(data = endo[endo$A <= 5,],
+                                aes(x = A, y = M.Ave), colour = "pink", alpha = 0.5)           +
                      geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint)             +
                      xlab(xname)                                                               +
                      ylab(yname)                                                               +
@@ -82,15 +88,15 @@ plotMA <- function(data,
                                    colour = ratio), size = 1, alpha = alphaPoint)              +
                      theme(legend.justification = c(1,0), legend.position=c(1,0))              +
                      theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
-                     scale_y_continuous(breaks = seq(-10, 10, 1)) +
+                     scale_y_continuous(breaks = seq(-10, 10, 1))                              +
                      theme_bw()
         
     if (shouldLODR)
     {
-        maPlot <- maPlot + geom_point(data = subset(data, status == 'below'), colour = "white", size = 2.5)
+        maPlot <- maPlot + geom_point(data = subset(data, status == 'below'), colour = 'white', size = 2.5)
     }
     
     print(maPlot)
-    
-    return(list(xname = xname, yname = yname))
+
+    return (list(xname = xname, yname = yname))
 }
