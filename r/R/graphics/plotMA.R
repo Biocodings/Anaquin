@@ -75,12 +75,18 @@ plotMA <- function(data,
     stopifnot(sum(is.na(seqs$ratio)) == 0)
     stopifnot(sum(!is.na(endo$ratio)) == 0)
 
+    lineDat <- data.frame(logFC=c(0), ratio=c(0))
+    lineDat$ratio = as.factor(lineDat$ratio)
+    
+    # So that the legend starts with an upper case...
+    seqs$Ratio <- seqs$ratio
+
     maPlot <- ggplot(seqs, aes(x = A, y = M.Ave))                                              +
                      geom_point(data = endo,
                                 aes(x = A, y = M.Ave), colour = "grey80", alpha = 0.5)         +
                      geom_point(data = endo[endo$A <= 5,],
                                 aes(x = A, y = M.Ave), colour = "pink", alpha = 0.5)           +
-                     geom_point(aes(colour = ratio), size = 5, alpha = alphaPoint)             +
+                     geom_point(aes(colour = Ratio), size = 5, alpha = alphaPoint)             +
                      xlab(xname)                                                               +
                      ylab(yname)                                                               +
                      coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10))                       +
@@ -89,6 +95,10 @@ plotMA <- function(data,
                      theme(legend.justification = c(1,0), legend.position=c(1,0))              +
                      theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
                      scale_y_continuous(breaks = seq(-10, 10, 1))                              +
+        
+        geom_hline(data=lineDat, aes(yintercept = logFC, colour = ratio), 
+                   size = 1, linetype = "longdash") +        
+        
                      theme_bw()
         
     if (shouldLODR)

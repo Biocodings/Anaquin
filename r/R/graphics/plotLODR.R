@@ -237,9 +237,6 @@ plotLODR <- function(data,
                              geom_line(data=lineDat, aes(x=x.new, y=fitLine, 
                                                 colour=ratio), show_guide=FALSE)          +
 
-                             #scale_color_manual(values = cols)      +
-                             #scale_fill_manual (values = cols) +
-
                              geom_segment(data = arrowDat, 
                                  aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
                                      lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
