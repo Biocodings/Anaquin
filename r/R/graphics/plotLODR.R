@@ -130,17 +130,21 @@ plotLODR <- function(data,
         
         tryCatch (
         {
-            fit <- locfit(log10(t$y) ~ lp(log10(t$x)), maxk=300)
+            print(paste('Estmating LODR for LFC', i))
+
+            fit <- locfit(log10(t$y)~lp(log10(t$x)), maxk=300)
+            plot(fit, band="pred", get.data=TRUE, main=paste('Local regression for LFC:', i))
             
             x.new <- seq(min(log10(t$x)), max(log10(t$x)), length.out=100)
-            X <- preplot(fit,band="pred",newdata=x.new)
+            X <- preplot(fit, band="pred", newdata=x.new)
             
-            x.new <- 10^x.new
-            fitLine = 10^(X$fit)
-            fitUpper = 10^(X$fit+qnorm(prob)*X$se.fit)
-            fitLower = 10^(X$fit-qnorm(prob)*X$se.fit)
-            fitData = data.frame(x.new, fitLine, fitUpper, fitLower, ratio = i)
-            lineDat = rbind(lineDat, fitData)
+            x.new    <- 10^x.new
+            fitLine  <- 10^(X$fit)
+            fitUpper <- 10^(X$fit + qnorm(prob) * X$se.fit)  # Upper confidence interval
+            fitLower <- 10^(X$fit - qnorm(prob) * X$se.fit)  # Lower confidence interval
+
+            fitData <- data.frame(x.new, fitLine, fitUpper, fitLower, ratio = i)
+            lineDat <- rbind(lineDat, fitData)
         }, error = function(e)
         {
             warning(paste('Failed to fit a local regression for: ', i))
@@ -148,8 +152,6 @@ plotLODR <- function(data,
         
         if (i != 0)
         {
-            print(paste('Estmating LODR for LFC', i))
-
             tryCatch (
             {
                 t.res <- LODR(t$y, t$x, cutoff=cutoff, prob=prob)
@@ -190,7 +192,7 @@ plotLODR <- function(data,
     
     if (plotTable)
     {
-        legendLabels <- c('4', '1', '2', '3')
+        legendLabels <- c('4', '1', '2', '3') # TODO: Fix this
 
         lodr.resPlot$ratio <- as.character(legendLabels)
         lodr.resLess$ratio <- as.character(legendLabels) 
