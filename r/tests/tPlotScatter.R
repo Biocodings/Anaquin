@@ -7,7 +7,141 @@
 library(RUnit)
 library(Anaquin)
 
+test_3 <- function()
+{
+    #
+    # Experiment with three replicates at the exon level
+    #
+    
+    data <- read.csv('/Users/tedwong/Desktop/sequins_exons_full_TED.csv', row.names=1)
+    colnames(data) <- c('X', 'A1', 'A2', 'A3')
+    
+    data$X  <- as.numeric(as.character(data$X))
+    data$A1 <- as.numeric(as.character(data$A1))
+    data$A2 <- as.numeric(as.character(data$A2))
+    data$A3 <- as.numeric(as.character(data$A3))
+    
+    data$Mean <- rowMeans(data[,c(-1)])
+    head(data)
+    
+    A1 <- data.frame(X=data$X, Y=data$A1)
+    A2 <- data.frame(X=data$X, Y=data$A2)
+    A3 <- data.frame(X=data$X, Y=data$A3)
+    r  <- data.frame(X=c(A1$X, A2$X, A3$X), Y=c(A1$Y, A2$Y, A3$Y))
+    head(r)
+    
+    # Option 1: X vs Mean?
+    plot(log2(data$X), log2(data$Mean))
+    
+    # Option 2: X vs All?
+    plot(log2(r$X), log2(r$Y))
+    
+    r <- r[r$X!=0,]    
+    r <- r[r$Y!=0,]
+    
+    # Let's use option 2... More data points...
+    r <- plotInflection(log2(r$X), log2(r$Y), showDetails=TRUE)
+    
+    # Breakpoints and R2s
+    r$breaks
+    
+    # Regression for the left
+    summary(r$model$lModel)
+    
+    # Regression for the right
+    summary(r$model$rModel)
+}
+
+test_2 <- function()
+{
+    #
+    # Experiment with three replicates at the isoform level
+    #
+    
+    data <- read.csv('/Users/tedwong/Desktop/sequins_isoforms_full_TED.csv', row.names=1)
+    data <- data[-c(1),]
+    colnames(data) <- c('X', 'A1', 'A2', 'A3')
+    
+    data$X  <- as.numeric(as.character(data$X))
+    data$A1 <- as.numeric(as.character(data$A1))
+    data$A2 <- as.numeric(as.character(data$A2))
+    data$A3 <- as.numeric(as.character(data$A3))
+    
+    data$Mean <- rowMeans(data[,c(-1)])
+    head(data)
+    
+    A1 <- data.frame(X=data$X, Y=data$A1)
+    A2 <- data.frame(X=data$X, Y=data$A2)
+    A3 <- data.frame(X=data$X, Y=data$A3)
+    r  <- data.frame(X=c(A1$X, A2$X, A3$X), Y=c(A1$Y, A2$Y, A3$Y))
+    head(r)
+    
+    # Option 1: X vs Mean?
+    plot(log2(data$X), log2(data$Mean))
+    
+    # Option 2: X vs All?
+    plot(log2(r$X), log2(r$Y))
+    
+    r <- r[r$X!=0,]    
+    r <- r[r$Y!=0,]
+    
+    # Let's use option 2... More data points...
+    r <- plotInflection(log2(r$X), log2(r$Y), showDetails=TRUE)
+    
+    # Breakpoints and R2s
+    r$breaks
+    
+    # Regression for the left
+    summary(r$model$lModel)
+    
+    # Regression for the right
+    summary(r$model$rModel)
+}
+
 test_1 <- function()
+{
+    #
+    # Experiment with three replicates at the gene level
+    #
+    
+    data <- read.csv('/Users/tedwong/Desktop/sequins_genes_full_TED.csv', row.names=1)
+    data <- data[-c(1),]
+    colnames(data) <- c('X', 'A1', 'A2', 'A3')
+    
+    data$X  <- as.numeric(as.character(data$X))
+    data$A1 <- as.numeric(as.character(data$A1))
+    data$A2 <- as.numeric(as.character(data$A2))
+    data$A3 <- as.numeric(as.character(data$A3))
+
+    data$Mean <- rowMeans(data[,c(-1)])
+    head(data)
+    
+    A1 <- data.frame(X=data$X, Y=data$A1)
+    A2 <- data.frame(X=data$X, Y=data$A2)
+    A3 <- data.frame(X=data$X, Y=data$A3)
+    r  <- data.frame(X=c(A1$X, A2$X, A3$X), Y=c(A1$Y, A2$Y, A3$Y))
+    head(r)
+
+    # Option 1: X vs Mean?
+    plot(log2(data$X), log2(data$Mean))
+
+    # Option 2: X vs All?
+    plot(log2(r$X), log2(r$Y))
+    
+    # Let's use option 2... More data points...
+    r <- plotInflection(log2(r$X), log2(r$Y), showDetails=TRUE)
+    
+    # Breakpoints and R2s
+    r$breaks
+
+    # Regression for the left
+    summary(r$model$lModel)
+
+    # Regression for the right
+    summary(r$model$rModel)
+}
+
+test_4 <- function()
 {
     #
     # Differential analysis: expected abundance vs measured abundance
@@ -23,3 +157,4 @@ test_1 <- function()
 }
 
 test_1()
+test_4()
