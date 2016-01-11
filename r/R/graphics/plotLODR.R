@@ -7,12 +7,16 @@
 #
 # Plot the "Limit of Detection ratio" plot. Refer to the ERCC paper for more details.
 #
+#   plotTable: Whether a table of LODR estimate is drawn below the plot
+#   drawBand:  Whether confidence interval for each local regression is drawn
+#
 
 plotLODR <- function(data,
                      choseFDR = 0.1,
                      xname='Average Counts',
                      yname='DE Test P-values',
-                     plotTable=TRUE)
+                     plotTable=TRUE,
+                     drawInterval=FALSE)
 {
     require(grid)
     require(qvalue)
@@ -135,6 +139,10 @@ plotLODR <- function(data,
             fit <- locfit(log10(t$y)~lp(log10(t$x)), maxk=300)
             plot(fit, band="pred", get.data=TRUE, main=paste('Local regression for LFC:', i))
             
+            #
+            # Generate new data points and use those data points for the prediction band
+            #
+            
             x.new <- seq(min(log10(t$x)), max(log10(t$x)), length.out=100)
             X <- preplot(fit, band="pred", newdata=x.new)
             
@@ -143,7 +151,7 @@ plotLODR <- function(data,
             fitUpper <- 10^(X$fit + qnorm(prob) * X$se.fit)  # Upper confidence interval
             fitLower <- 10^(X$fit - qnorm(prob) * X$se.fit)  # Lower confidence interval
 
-            fitData <- data.frame(x.new, fitLine, fitUpper, fitLower, ratio = i)
+            fitData <- data.frame(x.new, fitLine, fitUpper, fitLower, ratio=i)
             lineDat <- rbind(lineDat, fitData)
         }, error = function(e)
         {
@@ -156,7 +164,7 @@ plotLODR <- function(data,
             {
                 t.res <- LODR(t$y, t$x, cutoff=cutoff, prob=prob)
                 t.res[-1]<-signif(10^t.res[-1],2)
-                    
+                print (t.res)
                 if (t.res[1]>.01)
                 {
                     t.res[2]<-Inf
@@ -164,7 +172,7 @@ plotLODR <- function(data,
                 }
                     
                 t.resLess <- t.res
-                t.resLess[-1][t.resLess[-1] == signif(min(t$x),2)]<-paste("<", signif(min(t$x),2), sep="")
+                t.resLess[-1][t.resLess[-1] == signif(min(t$x),2)] <- paste("<", signif(min(t$x),2), sep="")
                 t.res[-1][t.res[-1]==signif(min(t$x),2)] <- Inf
                     
                 lodr.resPlot <- rbind(lodr.resPlot, c(round(abs(as.numeric(i)), 3), t.res))
@@ -183,16 +191,15 @@ plotLODR <- function(data,
     lodr.resPlot <- as.data.frame(lodr.resPlot)
     lodr.resLess <- as.data.frame(lodr.resLess)
 
-    arrowDat <- data.frame(ratio = lodr.resPlot$ratio, x = lodr.resPlot[,3], y = cutoff, xend = lodr.resPlot[, 3], yend = 0)
-    arrowDat$x[grep("<", lodr.resLess[, 3])] <- Inf
+    arrowDat <- data.frame(ratio = lodr.resPlot$ratio, x = lodr.resPlot[,3], y = cutoff, xend = lodr.resPlot[,3], yend = 0)
+    arrowDat$x[grep("<", lodr.resLess[,3])] <- Inf
     arrowDat <- arrowDat[which(is.finite(arrowDat$x)), ]
-    arrowDat$ratio <- as.factor(arrowDat$ratio)
-    
+
     print('Estimation completed')
     
     if (plotTable)
     {
-        legendLabels <- c('4', '1', '2', '3') # TODO: Fix this
+        legendLabels <- c('4', '3', '2', '1') # TODO: Fix this
 
         lodr.resPlot$ratio <- as.character(legendLabels)
         lodr.resLess$ratio <- as.character(legendLabels) 
@@ -211,27 +218,27 @@ plotLODR <- function(data,
     data$ratio     <- as.factor(data$ratio)
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
-    
-    arrowDat$ratio <- as.factor(c(4, 1, 2, 3)) # TODO: Fix this
 
     # So that the legend starts with an upper case...
     data$Ratio <- data$ratio
+    
+    stopifnot(data$Ratio == data$ratio)
     
     LODRplot <- ggplot(data, aes(x=x, y=y, colour=Ratio)) + 
                              geom_point(size = 6)         +
                              xlab(xname)                  +
                              ylab(yname)                  +
 
-                             scale_y_log10(breaks = c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)) +
+                             scale_y_log10(breaks = c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)) + # TODO: Fix me
                              scale_x_log10(limits = c(1, max(data$counts)), breaks = c(arrowDat$x, round(max(data$counts)))) +
-        
-                             geom_ribbon(data  = lineDat, aes(x = x.new, y = fitLine, ymin=fitLower, ymax=fitUpper, fill = ratio),
-                                                                alpha = 0.3, colour=NA, show_guide = FALSE) + 
-                             geom_line(data = lineDat, aes(x = x.new, y=fitLine, 
-                                                                colour = ratio), show_guide = FALSE)        +
 
-                             scale_color_manual(values = cols)      +
-                             scale_fill_manual (values = rev(cols)) +
+                             geom_ribbon(data=lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
+                                                alpha = 0.3, colour=NA, show_guide=FALSE) +
+                             geom_line(data=lineDat, aes(x=x.new, y=fitLine, 
+                                                colour=ratio), show_guide=FALSE)          +
+
+                             #scale_color_manual(values = cols)      +
+                             #scale_fill_manual (values = cols) +
 
                              geom_segment(data = arrowDat, 
                                  aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
