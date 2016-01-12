@@ -10,7 +10,7 @@ library('Anaquin')
 testMinorMajor <- function()
 {
     #
-    # K_562 experiment for splicing minor/major
+    # K_562 experiment for splicing minor/major at the gene level
     #
 
     data <- read.csv('/Users/tedwong/Desktop/K_RMXA_minIsoform_full_3reps_TED.csv', row.names=1)
@@ -21,9 +21,16 @@ testMinorMajor <- function()
     data$A1 <- as.numeric(as.character(data$A1))
     data$A2 <- as.numeric(as.character(data$A2))
     data$A3 <- as.numeric(as.character(data$A3))
+  
+    
+      
+    
+#    geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD,
+ #                     colour = Ratio), size = 1, alpha = alphaPoint)              +
+        
     
     
-    
+    plotPool(data)
 }
 
 testMinorMajor()

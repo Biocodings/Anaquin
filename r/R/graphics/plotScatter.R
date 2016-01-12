@@ -4,8 +4,6 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-library(RUnit)
-
 #
 # Scatter plot is the most common data visualization tool in Anaquin. It plots the expected concentration
 # defined by a mixture with the measurements. A simple linear regression is fitted on the data.
@@ -53,9 +51,9 @@ plotScatter <- function(data,
                     ylim(min(data$y) - 0.10, max(data$y) + 0.10) +
                     geom_smooth(method = 'lm', formula = y ~ x)  +
                     annotate("text", label = lm_eqn(data), x = 0, y = max(data$y), size = 6, colour = 'black', parse=TRUE) +
-                    scale_colour_gradientn(colours = pal(20), limits=c(min(data$logFC), max(data$logFC))) +
+                    scale_colour_gradientn(colours = pal(20), limits=c(min(data$logFC), max(data$logFC)))                  +
                     theme_bw()
     print(p)
-    
+
     return (list('xname' = xname, 'yname' = yname))
 }

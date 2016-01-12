@@ -90,7 +90,7 @@ plotMA <- function(data,
                      xlab(xname)                                                               +
                      ylab(yname)                                                               +
                      coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10))                       +
-                     geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
+                     geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD,
                                    colour = Ratio), size = 1, alpha = alphaPoint)              +
                      theme(legend.justification = c(1,0), legend.position=c(1,0))              +
                      theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
