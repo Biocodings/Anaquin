@@ -45,7 +45,8 @@ Bioinformatics
 ============
 
 <ul>
-<li>RNA analysis
+<li>Differential analysis
+<li>Alternative Splicing
 <li>Genomics analysis
 <li>Metagenomic analysis
 </ul>
