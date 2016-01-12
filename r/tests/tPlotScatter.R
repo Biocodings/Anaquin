@@ -1,11 +1,11 @@
 #
-#  Copyright (C) 2015 - Garvan Institute of Medical Research
+#  Copyright (C) 2016 - Garvan Institute of Medical Research
 #
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-library(RUnit)
-library(Anaquin)
+library('RUnit')
+library('Anaquin')
 
 test_3 <- function()
 {
@@ -31,16 +31,16 @@ test_3 <- function()
     head(r)
     
     # Option 1: X vs Mean?
-    plot(log2(data$X), log2(data$Mean))
+    plot(log10(data$X), log10(data$Mean))
     
     # Option 2: X vs All?
-    plot(log2(r$X), log2(r$Y))
+    plot(log10(r$X), log10(r$Y))
     
     r <- r[r$X!=0,]    
     r <- r[r$Y!=0,]
     
     # Let's use option 2... More data points...
-    r <- plotInflection(log2(r$X), log2(r$Y), showDetails=TRUE)
+    r <- plotInflection(log10(r$X), log10(r$Y), showDetails=TRUE)
     
     # Breakpoints and R2s
     r$breaks
@@ -77,16 +77,18 @@ test_2 <- function()
     head(r)
     
     # Option 1: X vs Mean?
-    plot(log2(data$X), log2(data$Mean))
+    plot(log10(data$X), log10(data$Mean))
     
     # Option 2: X vs All?
-    plot(log2(r$X), log2(r$Y))
+    plot(log10(r$X), log10(r$Y))
     
     r <- r[r$X!=0,]    
     r <- r[r$Y!=0,]
     
+    summary(lm(log10(r$Y) ~ log10(r$X)))
+    
     # Let's use option 2... More data points...
-    r <- plotInflection(log2(r$X), log2(r$Y), showDetails=TRUE)
+    r <- plotInflection(log10(r$X), log10(r$Y), showDetails=TRUE)
     
     # Breakpoints and R2s
     r$breaks
@@ -123,13 +125,15 @@ test_1 <- function()
     head(r)
 
     # Option 1: X vs Mean?
-    plot(log2(data$X), log2(data$Mean))
+    plot(log10(data$X), log10(data$Mean))
 
     # Option 2: X vs All?
-    plot(log2(r$X), log2(r$Y))
-    
+    plot(log10(r$X), log10(r$Y))
+
+    summary(lm(log10(r$Y) ~ log10(r$X)))
+
     # Let's use option 2... More data points...
-    r <- plotInflection(log2(r$X), log2(r$Y), showDetails=TRUE)
+    r <- plotInflection(log10(r$X), log10(r$Y), showDetails=TRUE)
     
     # Breakpoints and R2s
     r$breaks

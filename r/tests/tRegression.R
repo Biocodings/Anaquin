@@ -1,5 +1,11 @@
-library(RUnit)
-library(Anaquin)
+#
+#  Copyright (C) 2016 - Garvan Institute of Medical Research
+#
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
+#
+
+library('RUnit')
+library('Anaquin')
 
 testPiecewiseLinear <- function()
 {

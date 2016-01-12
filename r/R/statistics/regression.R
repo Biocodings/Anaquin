@@ -28,7 +28,11 @@ plotInflection <- function(x, y, method='piecewise', showDetails=FALSE)
     r <- data.frame(k=rep(NA,length(x)),
                     sums=rep(NA,length(x)),
                     lR2=rep(NA,length(x)),
-                    rR2=rep(NA,length(x)))
+                    lSlope=rep(NA,length(x)),                    
+                    lInter=rep(NA,length(x)),
+                    rR2=rep(NA,length(x)),
+                    rSlope=rep(NA,length(x)),                    
+                    rInter=rep(NA,length(x)))
 
     plm <- function(i)
     {
@@ -63,8 +67,23 @@ plotInflection <- function(x, y, method='piecewise', showDetails=FALSE)
         m1 <- fit$lModel  # The left regression model
         m2 <- fit$rModel  # The right regression model
 
-        r$lR2[i] <<- summary(m1)$r.squared
-        r$rR2[i] <<- summary(m2)$r.squared
+        sm1 <- summary(m1)
+        sm2 <- summary(m2)
+        
+        r$lR2[i] <<- sm1$r.squared
+        r$rR2[i] <<- sm2$r.squared
+        
+        if (r$lR2[i] != 0)
+        {
+            r$lInter[i] <<- sm1$coefficients[1,1]
+            r$lSlope[i] <<- sm1$coefficients[2,1]
+        }
+        
+        if (r$rR2[i] != 0)
+        {
+            r$rInter[i] <<- sm2$coefficients[1,1]
+            r$rSlope[i] <<- sm2$coefficients[2,1]
+        }
 
         # Calculate sum of residuals        
         r$sums[i] <<- sum((m1$residuals)^2) + sum((m2$residuals)^2)
@@ -91,5 +110,12 @@ plotInflection <- function(x, y, method='piecewise', showDetails=FALSE)
     # Fit the model again
     fit <- plm(which.min(r$sums)+1)
 
+    stopifnot(summary(fit$lModel)$r.squared == b$lR2)    
+    stopifnot(summary(fit$rModel)$r.squared == b$rR2)
+    stopifnot(summary(fit$lModel)$coefficients[1,1] == b$lInter)
+    stopifnot(summary(fit$rModel)$coefficients[1,1] == b$rInter)    
+    stopifnot(summary(fit$lModel)$coefficients[2,1] == b$lSlope)
+    stopifnot(summary(fit$rModel)$coefficients[2,1] == b$rSlope)    
+    
     return (list('model'=fit, 'breaks'=b, 'details'=r))
 }

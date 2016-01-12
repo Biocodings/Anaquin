@@ -1,11 +1,11 @@
 #
-#  Copyright (C) 2015 - Garvan Institute of Medical Research
+#  Copyright (C) 2016 - Garvan Institute of Medical Research
 #
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-library(RUnit)
-library(Anaquin)
+library('RUnit')
+library('Anaquin')
 
 test_1 <- function()
 {

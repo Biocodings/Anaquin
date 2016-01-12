@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2015 - Garvan Institute of Medical Research
+#  Copyright (C) 2016 - Garvan Institute of Medical Research
 #
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
@@ -91,13 +91,12 @@ plotMA <- function(data,
                      ylab(yname)                                                               +
                      coord_cartesian(xlim = c(-3,17), ylim = c(-10, 10))                       +
                      geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD, 
-                                   colour = ratio), size = 1, alpha = alphaPoint)              +
+                                   colour = Ratio), size = 1, alpha = alphaPoint)              +
                      theme(legend.justification = c(1,0), legend.position=c(1,0))              +
                      theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
                      scale_y_continuous(breaks = seq(-10, 10, 1))                              +
-        
-        geom_hline(data=lineDat, aes(yintercept = logFC, colour = ratio), 
-                   size = 1, linetype = "longdash") +        
+                     geom_hline(data=lineDat, aes(yintercept = logFC, colour = ratio), 
+                                   size = 1, linetype = "longdash") +        
         
                      theme_bw()
         
