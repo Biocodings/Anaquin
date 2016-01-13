@@ -6,63 +6,83 @@
 
 #
 # Pool plot is a scatter plot where the variable in the x-axis is categorical. It is a common visualization
-# tool for exporing the relationship sequin groups. To improve the visibility, the coordinatives are not
-# drawn by scale.
+# tool for exporing the relationship between sequin groups.
 #
 
-plotPool <- function(data,
-                     cname = 'LogFC', 
-                     xname = 'Expected log2 fold change of minor/major',
-                     yname = 'Measured log2 fold change of minor/major')
+plotPool <- function(data, metr,
+                     xname = '',
+                     yname = '',
+                     shouldError = FALSE,
+                     cname='Ratio',
+                     mix=loadMixture())
 {
     require(ggplot2)
     require(RColorBrewer)
     
-    data <- data[!is.na(data$A1),]
-    data <- data[!is.na(data$A2),]
-    data <- data[!is.na(data$A3),]
-
+    stopifnot(!is.null(data))
+    stopifnot(!is.null(metr))
+    stopifnot(class(data) == 'TransQuin')
+    
+    seqs <- data$seqs
+    
     # Data for the replicates
-    reps <- data[,c(-1)]
+    reps <- seqs[,c(-1)]
     
-    data$ave <- rowMeans(reps)
-    data$max <- apply(reps, 1, max)
-    data$min <- apply(reps, 1, min)
+    #
+    # 1. Calculation the expectation, minimum and maximum
+    #
     
-    # Convert a linear model to string
-    lm_eqn <- function(d)
+    seqs$ave <- rowMeans(reps)
+    seqs$max <- apply(reps, 1, max)
+    seqs$min <- apply(reps, 1, min)
+    
+    seqs <- seqs[seqs$ave!=0,]
+    
+    #
+    # 2. Construct the overall abundance
+    #
+    
+    seqs$abund <- NA
+    
+    for (i in 1:length(1:nrow(seqs)))
     {
-        m <- lm(y ~ x, d);
-        eq <- substitute(italic(y) == a + b * italic(x)*','~~italic(r)^2~'='~r2, 
-                         list(a  = format(coef(m)[1], digits = 2), 
-                              b  = format(coef(m)[2], digits = 2), 
-                              r2 = format(summary(m)$r.squared, digits = 3)))
-        as.character(as.expression(eq));
+        seqs[i,]$abund <- expect(data, id=row.names(seqs[i,]), metr=metr)
     }
     
-    pal <- colorRampPalette(rev(brewer.pal(length(unique(data$X)), "Spectral")))
-
-    data$x <- data$X
-    data$y <- data$ave
-    data$ratio <- as.factor(log2(data$x))
+    # Since the expected abundance varies quite a lot, it's be easier to work on the logarithm scale
+    seqs$abund <- log2(seqs$abund)
     
-    p <- ggplot(data = data, aes(x = log2(x), y = y, colour=ratio))    +
-                    xlab(xname)                                  +
-        labs(colour=cname) +
-                    ylab(yname)                                  +
-                    geom_point(size = 3)                         +
+    pal  <- colorRampPalette(brewer.pal(11, "Spectral"))
+    cols <- pal(length(unique(seqs$abund)))
+    
+    y_min <- round(min(log2(seqs$ave)-0.5))
+    y_max <- round(max(log2(seqs$ave)+0.5))
+    
+    #    p <- ggplot(data = seqs, aes(x=log2(X), y=ave, colour=as.factor(abund))) +
+    p <- ggplot(data=seqs, aes(x=log2(X), y=log2(ave), colour=abund)) +
+        geom_point(size=3)                   +
+        xlab(xname)                          +
+        ylab(yname)                          +
+        labs(colour=cname)                   +
         
         
-  #      geom_errorbar(aes(ymax = max, ymin = min,
-   #                       colour = ratio), size = 0.3, alpha = 0.4)              +
+        #    scale_color_manual(values=cols)      +
+        #   scale_fill_manual (values=rev(cols)) +
+        scale_colour_gradientn(colours=cols, limits=c(min(seqs$abund), max(seqs$abund)))                  +
         
-#        scale_x_discrete(breaks=c(-2.0,-1.5,-1.0,0.5,0), limits=c(-1.5:0)) +
-                    #xlim(min(data$x) - 0.10, max(data$x) + 0.10) +
-                    #ylim(min(data$y) - 0.10, max(data$y) + 0.10) +
-                    #geom_smooth(method = 'lm', formula = y ~ x)  +
-                    #annotate("text", label = lm_eqn(data), x = 0, y = max(data$y), size = 6, colour = 'black', parse=TRUE) +
-                    #scale_colour_gradientn(colours = pal(20), limits=c(min(data$logFC), max(data$logFC)))                  +
-                    theme_bw()
+        scale_x_continuous(breaks=-5:0, labels=c('1/32','1/16','1/8','1/4','1/2','1'), limits=c(-5,0)) +
+        scale_y_continuous(breaks=-5:0, labels=c('1/32','1/16','1/8','1/4','1/2','1'), limits=c(-5,0)) +
+        
+        #        scale_x_discrete(breaks=c(-2.0,-1.5,-1.0,0), limits=c(-5,0)) +
+        #ylim(min(seqs$y) - 0.10, max(seqs$y) + 0.10) +
+        #geom_smooth(method = 'lm', formula = y ~ x)  +
+        theme_bw()
+    
+    if (shouldError)
+    {
+        p <- p + geom_errorbar(aes(ymax=log2(max), ymin=log2(min)), size=0.3, alpha=0.7)
+    }
+    
     print(p)
     
     return (list('xname' = xname, 'yname' = yname))
@@ -84,5 +104,12 @@ data$A1 <- as.numeric(as.character(data$A1))
 data$A2 <- as.numeric(as.character(data$A2))
 data$A3 <- as.numeric(as.character(data$A3))
 
+data <- data[row.names(data)!='R2_63',]
+data <- transQuin(seqs=row.names(data), X=data$X, A1=data$A1, A2=data$A2, A3=data$A3, mix=mix)
 
-plotPool(data)
+plotPool(data, metr='gene', shouldError=TRUE, cname='Ratio', xname='Log2 of expected minor/major', yname='Log2 measured minor/major', mix=mix)
+
+
+
+
+

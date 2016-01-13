@@ -1,35 +1,92 @@
 #
-#  Copyright (C) 2015 - Garvan Institute of Medical Research
+#  Copyright (C) 2016 - Garvan Institute of Medical Research
 #
-#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
+
+#
+# Create a TransQuin data set for analyzing in Anaquin.
+#
+
+transQuin <- function(...)
+{
+    x <- list(...)
+    
+    # Sequin names must be present. We can use it to construct a data frame with the appropriate size.
+    stopifnot(!is.null(x$seqs))
+    
+    data <- data.frame(row.names=x$seqs)
+    
+    if (!is.null(x$class))    { data$class    <- x$class    }
+    if (!is.null(x$pval))     { data$pval     <- x$pval     }
+    if (!is.null(x$qval))     { data$qval     <- x$qval     }
+    if (!is.null(x$logFC))    { data$logFC    <- x$logFC    }    
+    if (!is.null(x$ratio))    { data$ratio    <- x$ratio    }    
+    if (!is.null(x$counts))   { data$counts   <- x$counts   }
+    if (!is.null(x$expected)) { data$expected <- x$expected }
+    if (!is.null(x$measured)) { data$measured <- x$measured }
+
+    if (!is.null(x$X))  { data$X  <- x$X  }  # TODO: Fix me
+    if (!is.null(x$A1)) { data$A1 <- x$A1 }  # TODO: Fix me
+    if (!is.null(x$A2)) { data$A2 <- x$A2 }  # TODO: Fix me
+    if (!is.null(x$A3)) { data$A3 <- x$A3 }  # TODO: Fix me
+
+    r <- list('seqs'=data, mix=mix)
+    class(r) <- 'TransQuin'
+
+    return (r)
+}
+
+########################################################
+#                                                      #
+#                Accesor functions                     #
+#                                                      #
+########################################################
+
+#
+# Returns the expected concentration for a sequin. The following metrics are supported:
+#
+#   TransQuin: 'exon', 'isoform' and 'gene'
+#
+
+expect <- function(data, id, metr, mix='A')
+{
+    stopifnot(class(data) == 'TransQuin' ||
+              class(data) == 'VarQuin'   ||
+              class(data) == 'MetaQuin'  ||
+              class(data) == 'Mixture')
+
+    data <- data$mix
+    
+    #
+    # Eg:
+    #
+    #      A        B       fold   logFold
+    #   R2_59 0.4720688 0.4720688     1
+    #
+    data <- data$genes[row.names(data$genes)==id,]
+
+    stopifnot(nrow(data) <= 1)
+        
+    if (is.null(data[mix]))
+    {
+        error(paste('Unknown mixture:', mix))
+    }
+
+    return (signif(data[mix][[1]], digits=2))
+}
+
+
+
+
+
+
 
 .isoformsToGenes <- function(trans)
 {
     trans <- as.character(trans)
     genes <- substr(as.character(trans), 1, nchar(trans)-2)
     genes
-}
-
-loadGene <- function(id, mix = loadMixture())
-{
-    r <- mix$genes[row.names(mix$genes)==id,]
-    r
-}
-
-#
-# Returns the expected fold-change for a sequin, gene or exon.
-#
-#   Eg: aqLogFold('R2_76',   mix=loadMixture(), metrics='gene')
-#       aqLogFold('R2_76_1', mix=loadMixture(), metrics='isoform')
-#
-
-aqLogFold <- function(id, mix = loadMixture, metrics = 'gene')
-{
-    if (metrics == 'gene')         { return (mix$genes[id,]$logFold)    }
-    else if (metrics == 'isoform') { return (mix$isoforms[id,]$logFold) }
-    else if (metrics == 'exon')    { return (mix$exons[id,]$logFold)    }
-    stop(paste('Unknown argument: ', id))
 }
 
 #
@@ -73,37 +130,6 @@ expExonBins <- function(m = loadMixture())
     r <- negativeExonBins()
     r <- r[c('R2_71:E001', 'R2_71:E002', 'R2_71:E003', 'R2_71:E004', 'R2_71:E005', 'R2_71:E006', 'R2_71:E007', 'R2_71:E008'),]
     r
-}
-
-#
-# Create a data set suitable for analyze in Anaquin. Possibilities:
-#
-#   1. aqData(seqs = c(...), expected = c(...), measured = c(...))
-#   2. aqData(seqs = c(...), pvals = c(...), labels = c(...))
-#
-
-aqData <- function(...)
-{
-    x <- list(...)
-
-    # Sequin names must be present. We can use it to construct a data frame with the appropriate size.
-    stopifnot(!is.null(x$seqs))
-
-    data <- data.frame(row.names=x$seqs)
-
-    if (!is.null(x$class))    { data$class    <- x$class    }
-    if (!is.null(x$pval))     { data$pval     <- x$pval     }
-    if (!is.null(x$qval))     { data$qval     <- x$qval     }
-    if (!is.null(x$logFC))    { data$logFC    <- x$logFC    }    
-    if (!is.null(x$ratio))    { data$ratio    <- x$ratio    }    
-    if (!is.null(x$counts))   { data$counts   <- x$counts   }
-    if (!is.null(x$expected)) { data$expected <- x$expected }
-    if (!is.null(x$measured)) { data$measured <- x$measured }
-
-    r <- list('seqs' = data)
-    class(r) <- 'AnaquinData'
-
-    return (r)
 }
 
 #

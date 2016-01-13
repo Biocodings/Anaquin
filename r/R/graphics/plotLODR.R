@@ -7,9 +7,6 @@
 #
 # Plot the "Limit of Detection ratio" plot. Refer to the ERCC paper for more details.
 #
-#   plotTable: Whether a table of LODR estimate is drawn below the plot
-#   drawBand:  Whether confidence interval for each local regression is drawn
-#
 
 plotLODR <- function(data,
                      choseFDR = 0.1,
@@ -25,13 +22,14 @@ plotLODR <- function(data,
     require(gridExtra)
     
     data <- data$seqs
-
+    data <- data[!is.na(data$pval),]
+    
     #
     # Estimate the Q-value for false discovery rate.
     #
     #    https://github.com/Bioconductor-mirror/erccdashboard/blob/631b691a51db54cb165ff2de1f9a5e06608347bd/R/geneExprTest.R
     #
-    
+
     data$qval <- qvalue(data$pval)$qvalues
     cutoff    <- max(data$pval[data$qval < choseFDR])
 
@@ -53,7 +51,6 @@ plotLODR <- function(data,
         
         X <- preplot(fit,band="pred",newdata=log10(mn))
         
-        # See plot of fit
         #plot(fit,band="pred",get.data=TRUE,xlim=range(log10(mn)))
         
         find.mn <- function(mn, fit, cutoff, prob)
@@ -113,8 +110,8 @@ plotLODR <- function(data,
     lineDat <- NULL;
     
     # Apply to loaded data
-    lodr.resPlot<-NULL; set.seed(1)
-    lodr.resLess<-NULL; set.seed(1)
+    lodr.resPlot <- NULL; set.seed(1)
+    lodr.resLess <- NULL; set.seed(1)
     
     #
     # For each group, fit a local regression. We'll also estimate the confidence interval for each
@@ -145,7 +142,7 @@ plotLODR <- function(data,
             
             x.new <- seq(min(log10(t$x)), max(log10(t$x)), length.out=100)
             X <- preplot(fit, band="pred", newdata=x.new)
-            
+
             x.new    <- 10^x.new
             fitLine  <- 10^(X$fit)
             fitUpper <- 10^(X$fit + qnorm(prob) * X$se.fit)  # Upper confidence interval
@@ -155,7 +152,7 @@ plotLODR <- function(data,
             lineDat <- rbind(lineDat, fitData)
         }, error = function(e)
         {
-            warning(paste('Failed to fit a local regression for: ', i))
+            print(paste('Failed to fit a local regression for: ', i))
         })
         
         if (i != 0)
@@ -164,12 +161,12 @@ plotLODR <- function(data,
             {
                 t.res <- LODR(t$y, t$x, cutoff=cutoff, prob=prob)
                 t.res[-1]<-signif(10^t.res[-1],2)
-                print (t.res)
-                if (t.res[1]>.01)
-                {
-                    t.res[2]<-Inf
-                    t.res[3:4]<-NA
-                }
+
+                #if (t.res[1]>.01)
+                #{
+                 #   t.res[2]<-Inf
+                  #  t.res[3:4]<-NA
+                #}
                     
                 t.resLess <- t.res
                 t.resLess[-1][t.resLess[-1] == signif(min(t$x),2)] <- paste("<", signif(min(t$x),2), sep="")
@@ -179,7 +176,7 @@ plotLODR <- function(data,
                 lodr.resLess <- rbind(lodr.resLess, c(round(abs(as.numeric(i)), 3), t.resLess))
             }, error = function(e)
             {
-                warning(paste('Failed to estimate LODR for: ', i))                
+                print(paste('Failed to estimate LODR for: ', i))                
             })
         }
     }
@@ -212,8 +209,8 @@ plotLODR <- function(data,
         my_table <- tableGrob(d=annoTable, rows=NULL)
     }
 
-    cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00") # Colors for the genes
-    #cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
+    #cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00") # Colors for the genes
+    cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
 
     data$ratio     <- as.factor(data$ratio)
     lineDat$ratio  <- as.factor(lineDat$ratio)
@@ -224,27 +221,26 @@ plotLODR <- function(data,
     
     stopifnot(data$Ratio == data$ratio)
     
-    LODRplot <- ggplot(data, aes(x=x, y=y, colour=Ratio)) + 
-                             geom_point(size = 6)         +
-                             xlab(xname)                  +
-                             ylab(yname)                  +
+    p <- ggplot(data, aes(x=x, y=y, colour=Ratio)) + 
+                      geom_point(size = 6)         +
+                      xlab(xname)                  +
+                      ylab(yname)                  +
 
-                             scale_y_log10(breaks = c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)) + # TODO: Fix me
-                             scale_x_log10(limits = c(1, max(data$counts)), breaks = c(arrowDat$x, round(max(data$counts)))) +
+                      scale_y_log10(breaks = c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)) + # TODO: Fix me
+                      scale_x_log10(limits = c(1, max(data$counts)+3000), breaks = c(arrowDat$x, round(max(data$counts)))) +
 
-                             geom_ribbon(data=lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
-                                                alpha = 0.3, colour=NA, show_guide=FALSE) +
-                             geom_line(data=lineDat, aes(x=x.new, y=fitLine, 
-                                                colour=ratio), show_guide=FALSE)          +
+                      geom_ribbon(data=lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
+                                       alpha = 0.3, colour=NA, show_guide=FALSE) +
+                      geom_line(data=lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE)          +
 
-                             geom_segment(data = arrowDat, 
-                                 aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
+                      geom_segment(data = arrowDat, aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
                                      lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
-                                        "cm")), size = 2, alpha = 0.6) +
+                                       'cm')), size = 2, alpha = 0.6) +
 
-                             geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) + # Draw the line for probability threshold
-                             theme_bw()
+                      geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) + # Draw the line for probability threshold
+                      theme_bw()
 
+    # Draw a table in the bottom?
     if (plotTable)
     {
         annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(LODRplot, my_table), ncol = 1, heights = c(2,0.5)))
@@ -264,7 +260,7 @@ plotLODR <- function(data,
     
     for (i in 1:nrow(data))
     {
-        if (data$ratio[i] != 0)
+        if (plotTable & data$ratio[i] != 0)
         {
             # What's the limit for this sequin?
             limit <- as.numeric(as.character(lodr[lodr$ratio==data$ratio[i],]$Estimate))

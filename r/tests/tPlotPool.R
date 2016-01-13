@@ -21,16 +21,8 @@ testMinorMajor <- function()
     data$A1 <- as.numeric(as.character(data$A1))
     data$A2 <- as.numeric(as.character(data$A2))
     data$A3 <- as.numeric(as.character(data$A3))
-  
-    
-      
-    
-#    geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD,
- #                     colour = Ratio), size = 1, alpha = alphaPoint)              +
-        
-    
-    
-    plotPool(data)
+
+    plotPool(data, cname='Ratio', xname='Expected log2 fold change of minor/major', yname='Measured log2 fold change of minor/major')
 }
 
 testMinorMajor()
