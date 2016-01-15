@@ -217,12 +217,12 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,      { OPT_BAM_1                         } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1 } },
+    { TOOL_T_IGV,      { OPT_U_FILES                         } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_FILES } },
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT  } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_BAM_1              } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES              } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_FILES } },
     { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS                         } },
 
     /*
@@ -1061,15 +1061,11 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_ALIGN:
                 {
-                    if (_p.inputs.size() > 1)
-                    {
-                        analyze<TAlign>(_p.inputs);
-                    }
-                    else
-                    {
-                        analyze_1<TAlign>(OPT_BAM_1);
-                    }
+                    TAlign::Options o;
                     
+                    o.exp = _p.exp;
+
+                    analyze<TAlign>(_p.inputs);
                     break;
                 }
 

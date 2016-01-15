@@ -361,8 +361,15 @@ namespace Anaquin
         inline void out(const std::string &s) const { output->write(s); }
     };
 
+    // Forward delcaration. Any analyzer doesn't need it need not link against it.
+    class Experiment;
+    
     struct AnalyzerOptions : public WriterOptions
     {
+        // Experiment meta-data
+        std::shared_ptr<Experiment> exp;
+
+        // Only process this number of filters
         std::set<SequinID> filters;
     };
 

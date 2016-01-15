@@ -13,8 +13,6 @@ import math
 ANAQUIN_PATH = '/Users/tedwong/Sources/QA/anaquin'
 
 
-
-
 ########################################################
 #                                                      #
 #        DON'T modify anything below this point!       #
@@ -37,8 +35,17 @@ EXPECT_LIST = 'List'
 TEMP_PATH = 'temp'
 
 # Execute an Anaquin request
-def anaquin(tool, args):
-    req = ANAQUIN_PATH + ' -t ' + tool + ' -o ' + TEMP_PATH + ' ' + args
+def anaquin(tool, args, config, needMixture=True):
+    
+    #
+    # Generate a full Anaquin command. A full command would need the mixture and reference annotation.
+    # However, not all tool would require, say, a mixture.
+    #
+    
+    req = ANAQUIN_PATH + ' -t ' + tool + ' -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf '
+    
+    # Now add up the arguments
+    req = req + '-o ' + TEMP_PATH + ' ' + args
 
     print(req)
     #os.system('/Users/tedwong/Sources/QA/anaquin -o  ' + TEMP_PATH + ' ' + args)
@@ -50,13 +57,12 @@ def anaquin(tool, args):
 ###################################
 
 def checkFiles(root, files, max=None):
-    if (not(type(files) is list)):
-        files = [files]
 
+    # Turn the object into a list
+    files = files.split(',')
+    
     for i in range(0, len(files)):
-        print root
-        print files[i]
-        files[i] = root + files[i]  
+        files[i] = root + files[i]
         if not(os.path.isfile(files[i])):
             raise Exception(files[i] + ': No such file')
             
@@ -73,7 +79,7 @@ def get(config, key, formats=None, optional=False):
             raise Exception('Key ' + key + ' must be ' + str(formats))
         elif (formats == EXPECT_FILE):
             return (checkFiles(root(config), val, 1))            
-        elif (format == EXPECT_FILES):
+        elif (formats == EXPECT_FILES):
             return (checkFiles(root(config), val))
         return config[key]
     elif (optional == True):
@@ -120,42 +126,60 @@ def transQuin(config):
     
     metrics = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
 
+    #############################################
+    #                                           #
+    #  1. Generating statistics for alignments  #
+    #                                           #
+    #############################################
+
+    # Factors for the alignments
+    factors = get(config, 'ALIGN_FACTORS')    
+
+    # Alignment files
+    alignFiles = get(config, 'ALIGN_FILE', EXPECT_FILES)
+
     #
-    # 1. Extract the factors
+    # Generate a request for TransQuin for differential analysis. For example:
+    #
+    #    anaquin TransAlign -factors 1,1,1,2,2,2 -ufiles C1.BAM,C2.BAM,C3.BAM
     #
 
-    factors = get(config, 'DIFF_FACTORS')
+    req = 'TransAlign -factors ' + factors + ' -ufiles ' + alignFiles
     
-    #
-    # 1. Extract the count files
-    #
+    # Execute the command
+    anaquin('TransAlign', req, config)
+
+    return
+
+    ########################################################
+    #                                                      #
+    #  2. Generating statistics for differential analysis  #
+    #                                                      #
+    ########################################################
+
+    # Factors for differential analysis
+    factors = get(config, 'DIFF_FACTORS')
     
     countSoft  = get(config, 'COUNT_SOFT', { 'HTSeqCount' })    
     countFiles = get(config, 'DIFF_COUNT', EXPECT_FILES)
 
     print('Counting software: ' + countSoft)
 
-    #
-    # 2. Extract differential analysis
-    #
-
-    diffSoft = get(config, 'DIFF_SOFT', ['Cuffdiff', 'edgeR', 'DEXSeq2', 'DESeq'])
+    diffSoft = get(config, 'DIFF_SOFT', ['Cuffdiff', 'edgeR', 'DEXSeq2', 'DESeq2'])
     diffFile = get(config, 'DIFF_FILE', EXPECT_FILE)
     
     print('Differential software: ' + diffSoft)
 
     #
-    # 3. Generate a request for TransQuin for differential analysis. For example:
+    # 5. Generate a request for TransQuin for differential analysis. For example:
     #
-    #      anaquin TransDiff -o temp -countSoft HTSeqCount -diffSoft edgeR -countFiles C1.txt,C2.txt,C3.txt -diffFile D1.txt
+    #      anaquin TransDiff -soft DESEq2 -ufiles C1.txt,C2.txt,C3.txt
     #
     
     req = '-factors ' + factors + ' -countSoft ' + countSoft + ' -diffSoft ' + diffSoft + ' -countFiles ' + countFiles + ' -diffFile ' + diffFile
 
-    anaquin('TransDiff', req)
-
-
-    pass
+    # Execute the command
+    anaquin('TransDiff', req, config)
     
 def parse(file):
 
@@ -201,10 +225,10 @@ if __name__ == '__main__':
         transQuin(parse(file))
         
         
-        -t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -t TransDiff -factors 1,1,1,2,2,2 -soft DESEq2 -level gene -ufiles /Users/tedwong/Desktop/K_562/edgeR_Gene.csv 
+#        -t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -t TransDiff -factors 1,1,1,2,2,2 -soft DESEq2 -level gene -ufiles /Users/tedwong/Desktop/K_562/edgeR_Gene.csv 
         
         
 #        /Users/tedwong/Sources/QA/anaquin   temp -factors -countSoft HTSeqCount -diffSoft edgeR -countFiles combined_counts_full/K_RMXA1v2.htseq.counts.combined,combined_counts_full/K_RMXA2v2.htseq.counts.combined,combined_counts_full/K_RMXA3v2.htseq.counts.combined,combined_counts_full/G_RMXB1v2.htseq.counts.combined,combined_counts_full/G_RMXB2v2.htseq.counts.combined,combined_counts_full/G_RMXB3v2.htseq.counts.combined -diffFile /Users/tedwong/Desktop/K_562/diffs.csv
 
 
-
+#-t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -o temp TransAlign -factors 1,1,1,2,2,2 -ufiles /Users/tedwong/Desktop/K_562/Aligns/A1/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/A2/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/A3/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B1/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B2/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B3/accepted_hits.bam

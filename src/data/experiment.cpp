@@ -18,9 +18,26 @@ Experiment::Experiment(const std::string &str)
         {
             m[tok] = static_cast<unsigned>(m.size());
         }
-        
-        _factors.push_back(m[tok]);
+
+        _reps.push_back(m[tok]);
+        _factors.insert(m[tok]);
     }
     
-    assert(_factors.size() == toks.size());
+    assert(_reps.size() == toks.size());
+}
+
+std::vector<std::size_t> Experiment::factor(Factor f) const
+{
+    std::vector<std::size_t> r;
+    
+    for (auto i = 0; i < _reps.size(); i++)
+    {
+        if (_reps[i] == f)
+        {
+            // It's the index we're looking for
+            r.push_back(i);
+        }
+    }
+
+    return r;
 }

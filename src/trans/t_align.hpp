@@ -3,6 +3,7 @@
 
 #include "stats/analyzer.hpp"
 #include "data/alignment.hpp"
+#include "data/experiment.hpp"
 
 namespace Anaquin
 {
@@ -11,6 +12,7 @@ namespace Anaquin
         public:
 
             typedef AnalyzerOptions Options;
+
             typedef std::map<GeneID, Base> FPStats;
 
             struct MergedConfusion
@@ -135,20 +137,17 @@ namespace Anaquin
                     {
                         case MissingMetrics::MissingGene:
                         {
-                            return CountPercent(data.at(cID).missG.size(),
-                                                data.at(cID).histE.size());
+                            return CountPercent(data.at(cID).missG.size(), data.at(cID).histE.size());
                         }
                             
                         case MissingMetrics::MissingExon:
                         {
-                            return CountPercent(data.at(cID).missE.size(),
-                                                data.at(cID).eContains.size());
+                            return CountPercent(data.at(cID).missE.size(), data.at(cID).eContains.size());
                         }
 
                         case MissingMetrics::MissingIntron:
                         {
-                            return CountPercent(data.at(cID).missI.size(),
-                                                data.at(cID).iContains.size());
+                            return CountPercent(data.at(cID).missI.size(), data.at(cID).iContains.size());
                         }
                     }
                 }
@@ -207,8 +206,7 @@ namespace Anaquin
             }
 
             // Analyze multiple replicates
-            static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &aligns,
-                                              const Options &o = Options())
+            static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &aligns, const Options &o = Options())
             {
                 std::vector<TAlign::Stats> stats;
                 

@@ -419,7 +419,7 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
     return match;
 }
 
-static void classifyExpT(TAlign::Stats::Data &t,
+static void classifyEndo(TAlign::Stats::Data &t,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
@@ -437,20 +437,20 @@ static void classifyExpT(TAlign::Stats::Data &t,
     }
 }
 
-static void classifyChrT(TAlign::Stats &stats,
-                         TAlign::Stats::Data &t,
+static void classifyChrT(TAlign::Stats::Data &t,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
 {
+    assert(align.id == Standard::chrT);
+    
     REPORT_STATUS();
     
-    if (!align.mapped || align.id != Standard::chrT)
+    if (!align.mapped)
     {
         return;
     }
-
-    if (!matchAlign(t, align))
+    else if (!matchAlign(t, align))
     {
         t.unknowns.push_back(UnknownAlignment(align.qName, align.l));
     }
@@ -468,11 +468,11 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
 
             if (align.id == ChrT)
             {
-                classifyChrT(stats, stats.data.at(ChrT), align, info, o);
+                classifyChrT(stats.data.at(ChrT), align, info, o);
             }
             else
             {
-                classifyExpT(stats.data.at(align.id), align, info, o);
+                classifyEndo(stats.data.at(align.id), align, info, o);
             }
         }
     });
@@ -490,12 +490,20 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
 
             if (align.id == ChrT)
             {
-                classifyChrT(stats, stats.data.at(ChrT), align, info, o);
+                classifyChrT(stats.data.at(ChrT), align, info, o);
             }
-            else if (stats.data.count(align.id))
-            {
-                classifyExpT(stats.data.at(align.id), align, info, o);
-            }
+            
+            // TODO: It's coming...
+            //else if (stats.data.count(align.id))
+            //{
+            //    classifyExpT(stats.data.at(align.id), align, info, o);
+            //}
+            
+            /*
+             * Any read that is not aligned into the reference annoation is worthless. We don't know if the locus is an exon
+             * or an intron...
+             */
+            
         });
     });
 }
@@ -513,6 +521,10 @@ template <typename Data, typename F> std::string combine(const Data &data, F f)
         return chrT;
     }
 }
+
+/*
+ * Summary statistics for a single replicate. No standard deviation or variation.
+ */
 
 static std::string replicateSummary()
 {
@@ -674,7 +686,10 @@ static void writeReplicate(const FileName &file, const TAlign::Stats &stats, con
 {
     o.info("Generating statistics for: " + file);
     
+    // Eg: A1/TransAlign_summary.stats
     const auto sample = extractFile(file);
+    
+    // Create the directory if haven't
     o.writer->create(sample);
     
     // Generating summary statistics for the replicate
@@ -763,11 +778,12 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
         };
 
         f(ChrT);
-        f("chr1");
+        //f("chr1");
 
+        // Generate summary statistic for the replicate
         writeReplicate(files[i], stats[i], o);
     }
-    
+
     /*
      * Generating pooled summary statistics
      */
