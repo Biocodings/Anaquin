@@ -4,16 +4,16 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
-#include "trans/t_diffs.hpp"
+#include "trans/t_count.hpp"
 #include "parsers/parser_cdiffs.hpp"
 
 using namespace SS;
 using namespace Anaquin;
 
-typedef TDiffs::Metrics  Metrics;
-typedef TDiffs::Software Software;
+typedef TCount::Metrics  Metrics;
+typedef TCount::Software Software;
 
-std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
+std::vector<std::string> TCount::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
     assert(qs.size() == folds.size());
     
@@ -37,7 +37,7 @@ std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const s
     return r;
 }
 
-template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const GenericID &id, TDiffs::Metrics metrs)
+template <typename T> void classifyChrT(TCount::Stats &stats, const T &t, const GenericID &id, Metrics metrs)
 {
     assert(t.cID == ChrT);
     
@@ -113,11 +113,6 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
             
             break;
         }
-            
-        case Metrics::Exon:
-        {
-            break;
-        }
     }
 
     stats.data[ChrT].seqs.push_back(id);
@@ -126,14 +121,14 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
     stats.data[ChrT].logFCs.push_back(log2(known));
 }
 
-template <typename T> void classifyEndT(TDiffs::Stats &, const T &, const GenericID &, TDiffs::Metrics)
+template <typename T> void classifyEndT(TCount::Stats &, const T &, const GenericID &, Metrics)
 {
     /*
      * Obviously, we can't compare fold-changes for endogenous data. There's nothing else to do here...
      */
 }
 
-template <typename T> void update(TDiffs::Stats &stats, const T &t, const GenericID &id, TDiffs::Metrics metrs)
+template <typename T> void update(TCount::Stats &stats, const T &t, const GenericID &id, Metrics metrs)
 {
     if (t.cID == ChrT)
     {
@@ -147,9 +142,9 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const Generi
     }
 }
 
-template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
+template <typename Functor> TCount::Stats calculate(const TCount::Options &o, Functor f)
 {
-    TDiffs::Stats stats;
+    TCount::Stats stats;
 
     const auto &r = Standard::instance().r_trans;
     const auto cIDs = r.chromoIDs();
@@ -160,7 +155,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
 
     stats.data[ChrT];
 
-    const auto isoform = (o.metrs == TDiffs::Metrics::Isoform);
+    const auto isoform = (o.metrs == Metrics::Isoform);
     o.logInfo(isoform ? "Isoform metrics" : "Gene metrics");
     
     // Construct for a histogram for the appropriate metrics
@@ -181,9 +176,9 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     return stats;
 }
 
-TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options &o)
+TCount::Stats TCount::analyze(const std::vector<DiffTest> &tests, const Options &o)
 {
-    return calculate(o, [&](TDiffs::Stats &stats)
+    return calculate(o, [&](TCount::Stats &stats)
     {
         for (auto &test : tests)
         {
@@ -192,23 +187,13 @@ TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options 
     });
 }
 
-TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
+TCount::Stats TCount::analyze(const FileName &file, const Options &o)
 {
-    return calculate(o, [&](TDiffs::Stats &stats)
+    return calculate(o, [&](TCount::Stats &stats)
     {
         switch (o.soft)
         {
-            case Software::DESeq2:
-            {
-                break;                
-            }
-                
-            case Software::edgeR:
-            {
-                break;
-            }
-
-            case Software::Cuffdiff:
+            case Software::Cuffdiffs:
             {
                 ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
                 {
@@ -221,9 +206,9 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     });
 }
 
-void TDiffs::report(const FileName &file, const Options &o)
+void TCount::report(const FileName &file, const Options &o)
 {
-    const auto stats = TDiffs::analyze(file, o);
+    const auto stats = TCount::analyze(file, o);
     const auto units = (o.metrs == Metrics::Isoform) ? "isoforms" : "genes";
     
     o.info("Generating statistics");

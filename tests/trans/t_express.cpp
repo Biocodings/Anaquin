@@ -20,7 +20,10 @@ TEST_CASE("TExpress_Perfect")
         exps.push_back(exp);
     }
     
-    const auto r = TExpress::analyze(exps, TExpress::Options());
+    TExpress::Options o;
+    o.metrs = TExpress::Metrics::Isoform;
+    
+    const auto r = TExpress::analyze(exps, o);
     const auto stats = r.data.at(ChrT).linear();
 
     REQUIRE(stats.r  == Approx(1.0));

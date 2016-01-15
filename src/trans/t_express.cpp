@@ -24,6 +24,11 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const Gene
 
     switch (o.metrs)
     {
+        case Metrics::Exon:
+        {
+            break;
+        }
+            
         case Metrics::Isoform:
         {
             const TransData *m = nullptr;

@@ -16,6 +16,7 @@ namespace Anaquin
         enum class Metrics
         {
             Gene,
+            Exon,
             Isoform
         };
 
@@ -33,8 +34,9 @@ namespace Anaquin
             // This's required by gcc...
             Options() {}
 
+            Metrics metrs = Metrics::Gene;
+            
             Software soft;
-            Metrics metrs;
         };
 
         static Stats analyze(const FileName &, const Options &o);

@@ -4,35 +4,32 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef T_DIFFS_HPP
-#define T_DIFFS_HPP
+#ifndef T_COUNT_HPP
+#define T_COUNT_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct TDiffs : public Analyzer
+    struct TCount : public Analyzer
     {
         enum class Software
         {
-            Cuffdiff,
-            edgeR,
-            DESeq2,
+            Cuffdiffs,
         };
         
         enum class Metrics
         {
             Gene,
-            Isoform,
-            Exon
+            Isoform
         };
 
         struct Options : public DoubleMixtureOptions
         {
             Options() {}
 
-            Metrics  metrs = Metrics::Gene;
-            Software soft  = Software::Cuffdiff;
+            Software soft = Software::Cuffdiffs;
+            Metrics metrs = Metrics::Gene;
         };
 
         struct Stats : public MappingStats

@@ -6,6 +6,9 @@
 #include <getopt.h>
 #include <execinfo.h>
 
+#include "data/experiment.hpp"
+
+#include "trans/t_count.hpp"
 #include "trans/t_diffs.hpp"
 #include "trans/t_align.hpp"
 #include "trans/t_viewer.hpp"
@@ -60,33 +63,34 @@ typedef std::set<Value> Range;
 #define TOOL_T_ALIGN     266
 #define TOOL_T_ASSEMBLY  267
 #define TOOL_T_EXPRESS   268
-#define TOOL_T_DIFF      269
-#define TOOL_T_NORM      270
-#define TOOL_T_IGV       271
-#define TOOL_T_COVERAGE  272
-#define TOOL_V_ALIGN     273
-#define TOOL_V_DISCOVER  274
-#define TOOL_V_DIFF      275
-#define TOOL_V_IGV       276
-#define TOOL_V_ALLELE    277
-#define TOOL_V_COVERAGE  278
-#define TOOL_V_SUBSAMPLE 279
-#define TOOL_M_ALIGN     280
-#define TOOL_M_ABUND     281
-#define TOOL_M_ASSEMBLY  282
-#define TOOL_M_DIFF      283
-#define TOOL_M_IGV       284
-#define TOOL_M_COVERAGE  285
-#define TOOL_L_ABUND     286
-#define TOOL_L_DIFF      287
-#define TOOL_L_COVERAGE  288
-#define TOOL_F_DISCOVER  289
-#define TOOL_F_EXPRESS   290
-#define TOOL_F_IGV       291
-#define TOOL_F_COVERAGE  292
-#define TOOL_F_ALIGN     293
-#define TOOL_F_DIFF      294
-#define TOOL_F_NORMAL    295
+#define TOOL_T_COUNT     269
+#define TOOL_T_DIFF      270
+#define TOOL_T_NORM      271
+#define TOOL_T_IGV       272
+#define TOOL_T_COVERAGE  273
+#define TOOL_V_ALIGN     274
+#define TOOL_V_DISCOVER  275
+#define TOOL_V_DIFF      276
+#define TOOL_V_IGV       277
+#define TOOL_V_ALLELE    278
+#define TOOL_V_COVERAGE  279
+#define TOOL_V_SUBSAMPLE 280
+#define TOOL_M_ALIGN     281
+#define TOOL_M_ABUND     282
+#define TOOL_M_ASSEMBLY  283
+#define TOOL_M_DIFF      284
+#define TOOL_M_IGV       285
+#define TOOL_M_COVERAGE  286
+#define TOOL_L_ABUND     287
+#define TOOL_L_DIFF      288
+#define TOOL_L_COVERAGE  289
+#define TOOL_F_DISCOVER  290
+#define TOOL_F_EXPRESS   291
+#define TOOL_F_IGV       292
+#define TOOL_F_COVERAGE  293
+#define TOOL_F_ALIGN     294
+#define TOOL_F_DIFF      295
+#define TOOL_F_NORMAL    296
 
 /*
  * Options specified in the command line
@@ -116,10 +120,10 @@ typedef std::set<Value> Range;
 #define OPT_U_BASE  900
 #define OPT_U_VCF   901
 #define OPT_U_GTF   902
-#define OPT_GTRACK  903
-#define OPT_ITRACK  904
-#define OPT_GDIFF   905
-#define OPT_IDIFF   906
+//#define OPT_GTRACK  903
+//#define OPT_ITRACK  904
+//#define OPT_GDIFF   905
+//#define OPT_IDIFF   906
 #define OPT_BAM_1   907
 #define OPT_BAM_2   908
 #define OPT_PSL_1   909
@@ -129,6 +133,9 @@ typedef std::set<Value> Range;
 #define OPT_U_OUT   913
 #define OPT_U_TAB   914
 #define OPT_U_COV   915
+#define OPT_U_FACTS 916
+#define OPT_U_LEVEL 917
+#define OPT_U_FILES 918
 
 using namespace Anaquin;
 
@@ -166,6 +173,7 @@ static std::map<Value, Tool> _tools =
     { "TransExpression",  TOOL_T_EXPRESS   },
     { "TransDiff",        TOOL_T_DIFF      },
     { "TransDifferent",   TOOL_T_DIFF      },
+    { "TransCount",       TOOL_T_COUNT     },
     { "TransNorm",        TOOL_T_NORM      },
     { "TransIGV",         TOOL_T_IGV       },
     { "TransCoverage",    TOOL_T_COVERAGE  },
@@ -217,8 +225,9 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1    } },
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF    } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFTWARE } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFTWARE } },
     { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_BAM_1                 } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFTWARE, OPT_U_FACTS } },
+    { TOOL_T_COUNT,    { OPT_SOFTWARE, OPT_U_FACTS                         } },
 
     /*
      * Metagenomics Analysis
@@ -261,8 +270,8 @@ static std::map<Tool, std::set<Option>> _required =
 
 static std::map<Tool, std::set<Option>> _pick =
 {
-    { TOOL_T_EXPRESS, { OPT_GTRACK, OPT_ITRACK } },
-    { TOOL_T_DIFF,    { OPT_GDIFF,  OPT_IDIFF  } },
+//    { TOOL_T_EXPRESS, { OPT_GTRACK, OPT_ITRACK } },
+   // { TOOL_T_DIFF,    { OPT_GDIFF,  OPT_IDIFF  } },
 };
 
 /*
@@ -301,6 +310,9 @@ struct Parsing
     unsigned fuzzy = 0;
     
     Tool tool = 0;
+
+    // Experiment meta-data (required for only some of the tools)
+    std::shared_ptr<Experiment> exp;
 };
 
 // Wrap the variables so that it'll be easier to reset them
@@ -385,6 +397,8 @@ static const struct option long_options[] =
     { "t",    required_argument, 0, OPT_TOOL },
     { "tool", required_argument, 0, OPT_TOOL },
 
+    { "ufiles",  required_argument, 0, OPT_U_FILES },
+
     { "usams",   required_argument, 0, OPT_BAM_1 },
     { "usam1",   required_argument, 0, OPT_BAM_1 },
     { "usam2",   required_argument, 0, OPT_BAM_2 },
@@ -392,10 +406,12 @@ static const struct option long_options[] =
     { "ubam1",   required_argument, 0, OPT_BAM_1 },
     { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
-    { "rfus",    required_argument, 0, OPT_R_FUS },
-    { "uout",    required_argument, 0, OPT_U_OUT },
-    { "utab",    required_argument, 0, OPT_U_TAB },
-    { "ucov",    required_argument, 0, OPT_U_COV },
+    { "rfus",    required_argument, 0, OPT_R_FUS   },
+    { "uout",    required_argument, 0, OPT_U_OUT   },
+    { "utab",    required_argument, 0, OPT_U_TAB   },
+    { "ucov",    required_argument, 0, OPT_U_COV   },
+    { "factors", required_argument, 0, OPT_U_FACTS },
+    { "levels",  required_argument, 0, OPT_U_LEVEL },
 
     { "rbed",    required_argument, 0, OPT_R_BED_1 },
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
@@ -408,10 +424,10 @@ static const struct option long_options[] =
     { "ufa1",    required_argument, 0, OPT_FA_1   },
     { "ufa2",    required_argument, 0, OPT_FA_2   },
     { "ugtf",    required_argument, 0, OPT_U_GTF  },
-    { "ugtrack", required_argument, 0, OPT_GTRACK },
-    { "uitrack", required_argument, 0, OPT_ITRACK },
-    { "ugdiff",  required_argument, 0, OPT_GDIFF  },
-    { "uidiff",  required_argument, 0, OPT_IDIFF  },
+//    { "ugtrack", required_argument, 0, OPT_GTRACK },
+  //  { "uitrack", required_argument, 0, OPT_ITRACK },
+    //{ "ugdiff",  required_argument, 0, OPT_GDIFF  },
+    //{ "uidiff",  required_argument, 0, OPT_IDIFF  },
     { "upsl",    required_argument, 0, OPT_PSL_1  },
     { "upsl1",   required_argument, 0, OPT_PSL_1  },
     { "upsl2",   required_argument, 0, OPT_PSL_2  },
@@ -701,14 +717,14 @@ template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyz
     }, o);
 }
 
-template <typename T> T parseSoft(const std::string &str, const std::map<std::string, T> &m)
+template <typename T> T parseEnum(const std::string &key, const std::string &str, const std::map<std::string, T> &m)
 {
     auto copy = str;
     std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
     
     if (!m.count(copy))
     {
-        throw InvalidValueException(str, "soft");
+        throw InvalidValueException(str, key);
     }
     
     return m.at(copy);
@@ -757,32 +773,6 @@ void parse(int argc, char ** argv)
         }
     };
 
-    auto parseFusionAligner = [&](const std::string &str)
-    {
-        const static std::map<std::string, FDiscover::Aligner> m =
-        {
-            { "star"  ,        FDiscover::Star   },
-            { "tophat",        FDiscover::TopHat },
-            { "tophatFusion",  FDiscover::TopHat },
-            { "tophat-fusion", FDiscover::TopHat },
-        };
-
-        return parseSoft(str, m);
-    };
-
-    auto parseMetaAssembler = [&](const std::string &str)
-    {
-        const static std::map<std::string, MetaAssembler> m =
-        {
-            { "velvet"  , MetaAssembler::Velvet  },
-            { "ray",      MetaAssembler::RayMeta },
-            { "raymeta",  MetaAssembler::RayMeta },
-            { "ray-meta", MetaAssembler::RayMeta },
-        };
-
-        return parseSoft(str, m);
-    };
-    
     // Attempt to parse and store an integer from string
     auto parseInt = [&](const std::string &str, unsigned &r)
     {
@@ -911,6 +901,18 @@ void parse(int argc, char ** argv)
             case OPT_FUZZY:    { parseInt(val, _p.fuzzy); break; }
             case OPT_SOFTWARE: { _p.opts[opt] = val;      break; }
 
+            case OPT_U_FILES:
+            {
+                Tokens::split(val, ",", _p.inputs);
+                
+                for (auto i = _p.inputs.size(); i-- > 0;)
+                {
+                    checkFile(_p.opts[opt] = _p.inputs[i]);
+                }
+
+                break;
+            }
+                
             case OPT_BAM_1:
             {
                 Tokens::split(val, ",", _p.inputs);
@@ -923,6 +925,12 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            case OPT_U_FACTS:
+            {
+                _p.exp = std::shared_ptr<Experiment>(new Experiment(val));
+                break;
+            }
+                
             case OPT_FA_1:
             case OPT_FA_2:
             case OPT_U_COV:
@@ -930,15 +938,15 @@ void parse(int argc, char ** argv)
             case OPT_U_VCF:
             case OPT_U_OUT:
             case OPT_U_GTF:
-            case OPT_IDIFF:
-            case OPT_GDIFF:
+            //case OPT_IDIFF:
+            //case OPT_GDIFF:
             case OPT_PSL_2:
             case OPT_BAM_2:
             case OPT_R_GTF:
             case OPT_PSL_1:
             case OPT_U_TAB:
-            case OPT_GTRACK:
-            case OPT_ITRACK:
+            //case OPT_GTRACK:
+            //case OPT_ITRACK:
             case OPT_R_EXPT:
             case OPT_R_BED_1:
             case OPT_R_BED_2:
@@ -1025,17 +1033,6 @@ void parse(int argc, char ** argv)
         case TOOL_T_ASSEMBLY:
         case TOOL_T_COVERAGE:
         {
-            auto parseAssembler = [&](const std::string &str)
-            {
-                const static std::map<std::string, TExpress::Software> m =
-                {
-                    { "cufflinks", TExpress::Software::Cufflinks },
-                    { "stringtie", TExpress::Software::StringTie },
-                };
-                
-                return parseSoft(str, m);
-            };
-
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
             if (_p.tool != TOOL_T_IGV)
@@ -1091,43 +1088,89 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_EXPRESS:
                 {
+                    auto parseMetris = [&](const std::string &key, const std::string &str)
+                    {
+                        const static std::map<std::string, TExpress::Metrics> m =
+                        {
+                            { "gene",    TExpress::Metrics::Gene    },
+                            { "isoform", TExpress::Metrics::Isoform },
+                            { "exon",    TExpress::Metrics::Exon    },
+                        };
+                        
+                        return parseEnum(key, str, m);
+                    };
+
+                    auto parseSoft = [&](const std::string &key, const std::string &str)
+                    {
+                        const static std::map<std::string, TExpress::Software> m =
+                        {
+                            { "cufflinks", TExpress::Software::Cufflinks },
+                            { "stringtie", TExpress::Software::StringTie },
+                        };
+                        
+                        return parseEnum(key, str, m);
+                    };
+
                     TExpress::Options o;
                     
-                    o.soft = parseAssembler(_p.opts.at(OPT_SOFTWARE));
+                    o.soft = parseSoft("soft", _p.opts.at(OPT_SOFTWARE));
 
-                    if (_p.opts.count(OPT_GTRACK))
-                    {
-                        o.metrs = TExpress::Metrics::Gene;
-                        analyze_1<TExpress>(OPT_GTRACK, o);
-                    }
-                    else
-                    {
-                        o.metrs = TExpress::Metrics::Isoform;
-                        analyze_1<TExpress>(OPT_ITRACK, o);
-                    }
+                    //if (_p.opts.count(OPT_GTRACK))
+                    //{
+                      //  o.metrs = TExpress::Level::Gene;
+                       // analyze_1<TExpress>(OPT_GTRACK, o);
+                    //}
+                    //else
+                    //{
+                      //  o.metrs = TExpress::Level::Isoform;
+                        //analyze_1<TExpress>(OPT_ITRACK, o);
+                    //}
 
                     break;
                 }
 
+                case TOOL_T_COUNT:
+                {                    
+                    break;
+                }
+                    
                 case TOOL_T_DIFF:
                 {
+                    auto parseMetris = [&](const std::string &str)
+                    {
+                        const static std::map<std::string, TDiffs::Metrics> m =
+                        {
+                            { "gene",    TDiffs::Metrics::Gene    },
+                            { "isoform", TDiffs::Metrics::Isoform },
+                            { "exon",    TDiffs::Metrics::Exon    },
+                        };
+                        
+                        return parseEnum("levels", str, m);
+                    };
+
+                    auto parseSoft = [&](const std::string &str)
+                    {
+                        const static std::map<std::string, TDiffs::Software> m =
+                        {
+                            { "edgeR",    TDiffs::Software::edgeR    },
+                            { "DESeq2",   TDiffs::Software::DESeq2   },
+                            { "cuffdiff", TDiffs::Software::Cuffdiff },
+                        };
+
+                        return parseEnum("soft", str, m);
+                    };
+
                     TDiffs::Options o;
 
-                    if (_p.opts.count(OPT_GDIFF))
+                    // Optional. Default to gene level.
+                    assert(o.metrs == TDiffs::Metrics::Gene);
+                    
+                    if (_p.opts.count(OPT_U_LEVEL))
                     {
-                        std::cout << "[INFO]: Gene Analysis" << std::endl;
-                        
-                        o.metrs = TDiffs::Metrics::Gene;
-                        analyze_1<TDiffs>(OPT_GDIFF, o);
+                        o.metrs = parseMetris(_p.opts[OPT_U_LEVEL]);
                     }
-                    else
-                    {
-                        std::cout << "[INFO]: Isoform Analysis" << std::endl;
-
-                        o.metrs = TDiffs::Metrics::Isoform;
-                        analyze_1<TDiffs>(OPT_IDIFF, o);
-                    }
-
+                    
+                    analyze_1<TDiffs>(OPT_U_FILES, o);
                     break;
                 }
 
@@ -1145,6 +1188,19 @@ void parse(int argc, char ** argv)
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
         {
+            auto parseAligner = [&](const std::string &str)
+            {
+                const static std::map<std::string, FDiscover::Aligner> m =
+                {
+                    { "star"  ,        FDiscover::Star   },
+                    { "tophat",        FDiscover::TopHat },
+                    { "tophatFusion",  FDiscover::TopHat },
+                    { "tophat-fusion", FDiscover::TopHat },
+                };
+                
+                return parseEnum("soft", str, m);
+            };
+            
             std::cout << "[INFO]: Fusion Analysis" << std::endl;
 
             switch (_p.tool)
@@ -1208,13 +1264,13 @@ void parse(int argc, char ** argv)
 
                 case TOOL_F_EXPRESS:
                 {
-                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseFusionAligner(_p.opts.at(OPT_SOFTWARE))));
+                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseAligner(_p.opts.at(OPT_SOFTWARE))));
                     break;
                 }
 
                 case TOOL_F_DISCOVER:
                 {
-                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseFusionAligner(_p.opts.at(OPT_SOFTWARE))));
+                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseAligner(_p.opts.at(OPT_SOFTWARE))));
                     break;
                 }
             }
@@ -1312,6 +1368,19 @@ void parse(int argc, char ** argv)
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
         {
+            auto parseAssembler = [&](const std::string &str)
+            {
+                const static std::map<std::string, MetaAssembler> m =
+                {
+                    { "velvet"  , MetaAssembler::Velvet  },
+                    { "ray",      MetaAssembler::RayMeta },
+                    { "raymeta",  MetaAssembler::RayMeta },
+                    { "ray-meta", MetaAssembler::RayMeta },
+                };
+                
+                return parseEnum("soft", str, m);
+            };
+
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
 
             if (_p.tool != TOOL_M_IGV)
@@ -1350,7 +1419,7 @@ void parse(int argc, char ** argv)
                     // Only defined for certain assemblers
                     FileName conts;
                     
-                    const auto tool = parseMetaAssembler(_p.opts.at(OPT_SOFTWARE));
+                    const auto tool = parseAssembler(_p.opts.at(OPT_SOFTWARE));
                     
                     if (tool == MetaAssembler::RayMeta)
                     {
