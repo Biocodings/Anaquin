@@ -211,6 +211,9 @@
 		EF5B07B91C48B08700751B46 /* t_experiment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_experiment.cpp; path = ../tests/data/t_experiment.cpp; sourceTree = "<group>"; };
 		EF5B07BB1C48B3FA00751B46 /* t_count.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_count.cpp; sourceTree = "<group>"; };
 		EF5B07BC1C48B3FA00751B46 /* t_count.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = t_count.hpp; sourceTree = "<group>"; };
+		EF5B07BF1C48E24100751B46 /* dtest.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = dtest.hpp; path = ../src/data/dtest.hpp; sourceTree = "<group>"; };
+		EF5B07C01C48E8A900751B46 /* parser_DESeq2.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_DESeq2.hpp; path = ../src/parsers/parser_DESeq2.hpp; sourceTree = "<group>"; };
+		EF5B07C11C48E8A900751B46 /* parser_edgeR.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_edgeR.hpp; path = ../src/parsers/parser_edgeR.hpp; sourceTree = "<group>"; };
 		EF5E857B1B6B5B0E00FF61D8 /* f_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = f_align.cpp; sourceTree = "<group>"; };
 		EF5E857C1B6B5B0E00FF61D8 /* f_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = f_align.hpp; sourceTree = "<group>"; };
 		EF6930C31B66F48900CADFD1 /* t_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = t_viewer.hpp; sourceTree = "<group>"; };
@@ -430,6 +433,8 @@
 				EF3860D91AD3783A0062D246 /* parser_csv.cpp */,
 				EF3860DA1AD3783A0062D246 /* parser_csv.hpp */,
 				EF4BD9AC1ADDFBC5007BE6AB /* parser_cuffs.hpp */,
+				EF5B07C01C48E8A900751B46 /* parser_DESeq2.hpp */,
+				EF5B07C11C48E8A900751B46 /* parser_edgeR.hpp */,
 				EFA1A6B01AFC4FAB0066DD9F /* parser_fa.cpp */,
 				EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */,
 				EF7908AC1B81759100B7C8AF /* parser_feature.hpp */,
@@ -460,6 +465,7 @@
 		EF4270A31B214F8400C9ED4E /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				EF5B07BF1C48E24100751B46 /* dtest.hpp */,
 				EF5B07B61C48AE6B00751B46 /* experiment.cpp */,
 				EF5B07B71C48AE6B00751B46 /* experiment.hpp */,
 				EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */,
