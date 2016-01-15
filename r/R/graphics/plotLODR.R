@@ -12,8 +12,8 @@ plotLODR <- function(data,
                      choseFDR = 0.1,
                      xname='Average Counts',
                      yname='DE Test P-values',
-                     plotTable=TRUE,
-                     drawInterval=FALSE)
+                     shouldTable=TRUE,
+                     shouldBand=FALSE)
 {
     require(grid)
     require(qvalue)
@@ -122,13 +122,14 @@ plotLODR <- function(data,
     
     for (i in unique(data$ratio))
     {
+        #i <- 9
         t <- data[data$ratio == i,]
 
         #
-        # Not everything can be fitted by local regression. For instance, too few data points would not
-        # be appropriate for the model.
+        # 1. Fit a local regression, where each point is approximated by a quadratic function bounded
+        #    by a fixed width.
         #
-        
+
         tryCatch (
         {
             print(paste('Estmating LODR for LFC', i))
@@ -194,7 +195,7 @@ plotLODR <- function(data,
 
     print('Estimation completed')
     
-    if (plotTable)
+    if (shouldTable)
     {
         legendLabels <- c('4', '3', '2', '1') # TODO: Fix this
 
@@ -216,46 +217,42 @@ plotLODR <- function(data,
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
 
-    # So that the legend starts with an upper case...
-    data$Ratio <- data$ratio
-    
-    stopifnot(data$Ratio == data$ratio)
-    
-    p <- ggplot(data, aes(x=x, y=y, colour=Ratio)) + 
-                      geom_point(size = 6)         +
+    p <- ggplot(data, aes(x=x, y=y, colour=ratio)) + 
+                      geom_point(size=3)           +
                       xlab(xname)                  +
                       ylab(yname)                  +
 
                       scale_y_log10(breaks = c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)) + # TODO: Fix me
                       scale_x_log10(limits = c(1, max(data$counts)+3000), breaks = c(arrowDat$x, round(max(data$counts)))) +
 
-                      geom_ribbon(data=lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
-                                       alpha = 0.3, colour=NA, show_guide=FALSE) +
-                      geom_line(data=lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE)          +
+                      geom_line(data=lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE) +
 
                       geom_segment(data = arrowDat, aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
                                      lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
                                        'cm')), size = 2, alpha = 0.6) +
 
-                      geom_hline(yintercept = cutoff, linetype = 2, size = 2 ) + # Draw the line for probability threshold
+                      labs(colour='Ratio') +
+                      geom_hline(yintercept=cutoff, linetype=2, size=2) + # Line for probability threshold
                       theme_bw()
 
-    # Draw a table in the bottom?
+    if (shouldBand)
+    {
+        p <- p + geom_ribbon(data=lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
+                             alpha=0.3, colour=NA, show_guide=FALSE)
+    }
+
     if (plotTable)
     {
-        annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(LODRplot, my_table), ncol = 1, heights = c(2,0.5)))
-    }
-    else
-    {
-        print(LODRplot)
+        annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(p, my_table), ncol = 1, heights = c(2,0.5)))
     }
     
-    lodr <- lodr.resLess[-c(2,4,5)]
-    
+    print(p)
+
     #
     # Classify the sequins whether they're above or below the LODR limit.
     #
-    
+    lodr <- lodr.resLess[-c(2,4,5)]
+
     data$LODR <- NA
     
     for (i in 1:nrow(data))
@@ -270,7 +267,5 @@ plotLODR <- function(data,
         }
     }
 
-    r <- list(lodr.resLess[-c(2,4,5)], data)
-    r
+    return (list(lodr.resLess[-c(2,4,5)], data))
 }
-

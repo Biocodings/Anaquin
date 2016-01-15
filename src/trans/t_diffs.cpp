@@ -52,7 +52,16 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
     
     // It's NAN if the sequin defined in reference but not in mixture
     Fold measured = NAN;
+
+    /*
+     * Everything after this point is about FPKM. So far, only Cuffdiff would give it.
+     */
     
+    if (o.soft != TDiffs::Software::Cuffdiff)
+    {
+        return;
+    }
+
     /*
      * Differential expression at the gene level
      */
@@ -142,9 +151,9 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
         classifyEndo(stats, t, o);
     }
 
-    stats.data[cID].ids.push_back(t.id);
     stats.data[cID].ps.push_back(t.p);
     stats.data[cID].qs.push_back(t.q);
+    stats.data[cID].ids.push_back(t.id);
     stats.data[cID].logFs.push_back(t.logF);
 }
 

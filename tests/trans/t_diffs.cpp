@@ -42,8 +42,8 @@ TEST_CASE("TDiff_AllExpressed")
         test.p = 0.005;
         test.q = 0.005;
 
-        test.logF = 1.0;
-        test.status = DiffTest::StatusTested;
+        test.logF   = 1.0;
+        test.status = DiffTest::Status::NotTested;
         test.fpkm_1 = test.fpkm_2 = 0;
         
         for (const auto &j : Standard::instance().r_trans.data())
@@ -93,7 +93,7 @@ TEST_CASE("TDiff_NoneExpressed")
         test.q = 0.99;
         
         test.logF = 1.0;
-        test.status = DiffTest::StatusTested;
+        test.status = DiffTest::Status::NotTested;
         test.fpkm_1 = test.fpkm_2 = 0;
         
         for (const auto &j : Standard::instance().r_trans.data())

@@ -201,7 +201,7 @@ if __name__ == '__main__':
         transQuin(parse(file))
         
         
-        -t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -t TransDiff -factors 1,1,1,2,2,2 -soft DESEq2 -level gene -ufiles /Users/tedwong/Desktop/K_562/diffs.csv 
+        -t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -t TransDiff -factors 1,1,1,2,2,2 -soft DESEq2 -level gene -ufiles /Users/tedwong/Desktop/K_562/edgeR_Gene.csv 
         
         
 #        /Users/tedwong/Sources/QA/anaquin   temp -factors -countSoft HTSeqCount -diffSoft edgeR -countFiles combined_counts_full/K_RMXA1v2.htseq.counts.combined,combined_counts_full/K_RMXA2v2.htseq.counts.combined,combined_counts_full/K_RMXA3v2.htseq.counts.combined,combined_counts_full/G_RMXB1v2.htseq.counts.combined,combined_counts_full/G_RMXB2v2.htseq.counts.combined,combined_counts_full/G_RMXB3v2.htseq.counts.combined -diffFile /Users/tedwong/Desktop/K_562/diffs.csv

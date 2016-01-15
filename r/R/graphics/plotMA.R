@@ -12,6 +12,7 @@
 plotMA <- function(data,
                    metrs,
                    shouldEndo=FALSE,
+                   shouldError=FALSE,
                    mix=loadMixture(),
                    alphaPoint = 0.8,
                    qCutoff = 0.1,
@@ -64,7 +65,7 @@ plotMA <- function(data,
                                     c2 = c(((totCol/2)+1):totCol))))
     colnames(maStatDat) <- c("M.Ave", 'M.SD', 'A')
     
-    data <- cbind(data, maStatDat, ratio=NA)
+    data <- cbind(data, maStatDat)
     data <- data[which(is.finite(data$M.Ave)),]
     
     #
@@ -74,7 +75,11 @@ plotMA <- function(data,
          if (metrs=='custom')    { si <- row.names(data) %in% row.names(data)         }
     else if (metrs == 'gene')    { si <- row.names(data) %in% row.names(mix$genes)    }
     else if (metrs == 'isoform') { si <- row.names(data) %in% row.names(mix$isoforms) }
-    else if (metrs == 'exon')    { si <- row.names(data) %in% row.names(mix$exons)    }
+    else if (metrs == 'exon')
+    { 
+        si <- !is.na(data$ratio)
+        #si <- row.names(data) %in% row.names(mix$exons)
+    }
     
     if (is.null(data$ratio))
     {
@@ -93,31 +98,46 @@ plotMA <- function(data,
     # What lines to draw horizontally?
     lineDat <- data.frame(logFC=c(0), ratio=as.factor(c(0)))
 
-    p <- ggplot(seqs, aes(x = A, y = M.Ave))                                                    +
-                      geom_point(aes(colour=ratio), size = 3, alpha = alphaPoint)               +
-                      xlab(xname)                                                               +
-                      ylab(yname)                                                               +
-                      coord_cartesian(xlim = c(-2,18), ylim = c(-10, 10))                       +
-                      geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD,
-                                    colour=ratio), size = 1, alpha = alphaPoint)                +
-                      theme(legend.justification=c(1,0), legend.position=c(1,0))                +
-                      theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
-                      scale_y_continuous(breaks=seq(-10, 10, 1))                                +
-                      geom_hline(data=lineDat, aes(yintercept=logFC, colour=ratio), 
-                                 size=0.5, linetype='longdash')                                 +
-                      labs(colour='Ratio')                                                      +
-                      theme_bw()
+    #
+    # Calculating the aspect ratio, and always try to maintain it as a square.
+    #
+    
+    minX <- round(min(seqs$A)-0.5)
+    maxX <- round(max(seqs$A)+0.5)
+    xLen <- length(c(minX:maxX))
 
-    # Draw endogenous features in the background?
+    xrange <- c(minX, maxX)
+    yrange <- c(-xLen/2, xLen/2)
+
+    p <- ggplot(seqs, aes(x=A, y=M.Ave))                                                
+    
+    # Make sure our data points will drawn on top of the endo bins
     if (shouldEndo)
     {
         endo <- data[!si,]
         stopifnot(sum(!is.na(endo$ratio)) == 0)
         
-        p <- p + geom_point(data = endo, aes(x = A, y = M.Ave), colour = "grey80", alpha=0.5) +
-                 geom_point(data = endo[endo$A <= 5,], aes(x = A, y = M.Ave), colour='pink', alpha=0.5)
+        p <- p + geom_point(data = endo, aes(x = A, y = M.Ave), colour = "grey80", alpha=0.5)# +
+        #                 geom_point(data = endo[endo$A <= 5,], aes(x = A, y = M.Ave), colour='pink', alpha=0.5)
     }
+    
+    p <- p + geom_point(aes(colour=ratio), size=2, alpha = alphaPoint) +
+             xlab(xname)                                               +
+             ylab(yname)                                               +
+             coord_cartesian(xlim=xrange, ylim = c(-10, 10))           +
+                      theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
+                      scale_y_continuous(breaks=seq(-10, 10, 1))                                +
+             geom_hline(data=lineDat, aes(yintercept=logFC, colour=ratio), size=0.5, linetype='longdash') +
+             labs(colour='Ratio')                                       +
+             theme(legend.justification=c(1,0), legend.position=c(1,0)) +
+             theme_bw()
 
+    if (shouldError)
+    {
+        p <- p + geom_errorbar(aes(ymax = M.Ave + M.SD, ymin = M.Ave - M.SD,
+                               colour=ratio), size = 1, alpha = alphaPoint)
+    }
+    
     # Do we have data from the LODR plot?
     if (shouldLODR)
     {
