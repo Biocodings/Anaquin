@@ -189,13 +189,13 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     {
         case Metrics::Gene:
         {
-            stats.limit = r.limit(stats.hist);
+            stats.limit = r.limitGene(stats.hist);
             break;
         }
 
         case Metrics::Isoform:
         {
-            stats.hist = r.hist();
+            stats.limit = r.limit(r.hist());
             break;
         }
 
