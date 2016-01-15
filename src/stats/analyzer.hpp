@@ -36,30 +36,6 @@ namespace Anaquin
         });
     }
 
-    struct DiffTest
-    {
-        typedef enum
-        {
-            StatusTested,
-            StatusNotTested,
-        } DiffStatus;
-
-        ChromoID cID;
-
-        // Subject, eg: gene ID (testing for genes) or sequin ID (testing for isoforms)
-        GenericID id;
-        
-        // Log-fold ratio
-        LogFold logF;
-        
-        // The p-value and q-value under null-hypothesis
-        SS::P p, q;
-
-        FPKM fpkm_1, fpkm_2;
-
-        DiffStatus status;
-    };
-    
     struct Expression
     {
         ChromoID cID;

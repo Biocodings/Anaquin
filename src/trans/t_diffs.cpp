@@ -5,13 +5,15 @@
  */
 
 #include "trans/t_diffs.hpp"
+#include "parsers/parser_edgeR.hpp"
+#include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_cdiffs.hpp"
 
-using namespace SS;
 using namespace Anaquin;
 
 typedef TDiffs::Metrics  Metrics;
 typedef TDiffs::Software Software;
+typedef DiffTest::Status Status;
 
 std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
@@ -37,9 +39,11 @@ std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const s
     return r;
 }
 
-template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const GenericID &id, TDiffs::Metrics metrs)
+template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const TDiffs::Options &o)
 {
     assert(t.cID == ChrT);
+    
+    const auto &id = t.id;
     
     const auto &r = Standard::instance().r_trans;
     
@@ -53,42 +57,37 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
      * Differential expression at the gene level
      */
     
-    auto g = [&](const GeneID &id, double fpkm_1, double fpkm_2)
-    {
-        const auto *g = r.findGene(t.cID, id);
-        
-        if (g)
-        {
-            // Calculate the known fold-change between B and A
-            known = (g->abund(Mix_2) / g->abund(Mix_1));
-        }
-        
-        if (g && !isnan(fpkm_1) && !isnan(fpkm_2) && fpkm_1 && fpkm_2)
-        {
-            stats.hist.at(id)++;
-            
-            // Measured fold-change between the two mixtures
-            measured = fpkm_2 / fpkm_1;
-        }
-        
-        stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
-    };
-    
-    switch (metrs)
+    switch (o.metrs)
     {
         case Metrics::Gene:
         {
-            if ((t.status != NoTest) && stats.hist.count(t.id))
+            if ((t.status != Status::NotTested) && stats.hist.count(t.id))
             {
-                g(t.id, t.fpkm_1, t.fpkm_2);
+                const auto *g = r.findGene(t.cID, id);
+                
+                if (g)
+                {
+                    // Calculate the known fold-change between B and A
+                    known = (g->abund(Mix_2) / g->abund(Mix_1));
+                }
+                
+                if (g && !isnan(t.fpkm_1) && !isnan(t.fpkm_2) && t.fpkm_1 && t.fpkm_2)
+                {
+                    stats.hist.at(id)++;
+                    
+                    // Measured fold-change between the two mixtures
+                    measured = t.fpkm_2 / t.fpkm_1;
+                }
+                
+                stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
-            
+
             break;
         }
             
         case Metrics::Isoform:
         {
-            if ((t.status == NoTest) || !stats.hist.count(id))
+            if ((t.status == Status::NotTested) || !stats.hist.count(id))
             {
                 return;
             }
@@ -101,7 +100,7 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
                 known = seq->abund(Mix_2) / seq->abund(Mix_1);
             }
             
-            if ((t.status != NoTest) && t.fpkm_1 && t.fpkm_2)
+            if ((t.status != Status::NotTested) && t.fpkm_1 && t.fpkm_2)
             {
                 stats.hist.at(id)++;
                 
@@ -119,32 +118,34 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
             break;
         }
     }
-
-    stats.data[ChrT].seqs.push_back(id);
-    stats.data[ChrT].ps.push_back(t.p);
-    stats.data[ChrT].qs.push_back(t.q);
-    stats.data[ChrT].logFCs.push_back(log2(known));
 }
 
-template <typename T> void classifyEndT(TDiffs::Stats &, const T &, const GenericID &, TDiffs::Metrics)
+template <typename T> void classifyEndo(TDiffs::Stats &, const T &, const TDiffs::Options &)
 {
     /*
-     * Obviously, we can't compare fold-changes for endogenous data. There's nothing else to do here...
+     * Obviously, we can't compare with the expected here...
      */
 }
 
-template <typename T> void update(TDiffs::Stats &stats, const T &t, const GenericID &id, TDiffs::Metrics metrs)
+template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs::Options &o)
 {
-    if (t.cID == ChrT)
+    const auto cID = (t.cID == ChrT ? ChrT : Endo);
+
+    if (cID == ChrT)
     {
         stats.n_chrT++;
-        classifyChrT(stats, t, id, metrs);
+        classifyChrT(stats, t, o);
     }
     else
     {
         stats.n_expT++;
-        classifyEndT(stats, t, id, metrs);
+        classifyEndo(stats, t, o);
     }
+
+    stats.data[cID].ids.push_back(t.id);
+    stats.data[cID].ps.push_back(t.p);
+    stats.data[cID].qs.push_back(t.q);
+    stats.data[cID].logFs.push_back(t.logF);
 }
 
 template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
@@ -154,20 +155,19 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     const auto &r = Standard::instance().r_trans;
     const auto cIDs = r.chromoIDs();
 
-    /*
-     * Initalize data for the synthetic chromosome (not needed for anything else).
-     */
-
+    stats.data[Endo];
     stats.data[ChrT];
 
-    const auto isoform = (o.metrs == TDiffs::Metrics::Isoform);
-    o.logInfo(isoform ? "Isoform metrics" : "Gene metrics");
-    
-    // Construct for a histogram for the appropriate metrics
-    stats.hist = isoform ? r.hist() : r.geneHist(ChrT);
-    
-    o.info("Parsing input file");
+    switch (o.metrs)
+    {
+        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
+        case Metrics::Isoform: { stats.hist = r.hist();         break; }
+        case Metrics::Exon:    { throw "Not Implemented"; }
+    }
 
+    assert(!stats.hist.empty());
+    
+    o.info("Parsing input files");
     f(stats);
     
     /*
@@ -176,7 +176,25 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     
     o.info("Calculating detection limit");
     
-    stats.limit = isoform ? r.limit(stats.hist) : r.limitGene(stats.hist);
+    switch (o.metrs)
+    {
+        case Metrics::Gene:
+        {
+            stats.limit = r.limit(stats.hist);
+            break;
+        }
+
+        case Metrics::Isoform:
+        {
+            stats.hist = r.hist();
+            break;
+        }
+
+        case Metrics::Exon:
+        {
+            throw "Not Implemented";
+        }
+    }
     
     return stats;
 }
@@ -187,7 +205,7 @@ TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options 
     {
         for (auto &test : tests)
         {
-            update(stats, test, test.id, o.metrs);
+            update(stats, test, o);
         }
     });
 }
@@ -200,6 +218,11 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
         {
             case Software::DESeq2:
             {
+                ParserDESeq2::parse(file, [&](const DiffTest &t, const ParserProgress &)
+                {
+                    update(stats, t, o);
+                });
+
                 break;                
             }
                 
@@ -212,7 +235,7 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
             {
                 ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
                 {
-                    update(stats, t, o.metrs == Metrics::Isoform ? t.testID : t.id, o.metrs);
+                    update(stats, t, o);
                 });
 
                 break;
@@ -272,7 +295,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
+    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
     o.writer->close();
 
     /*
@@ -280,7 +303,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
 
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
+    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
     o.writer->close();
 
     /*
@@ -288,7 +311,6 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
 
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
+    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
     o.writer->close();
-    
 }

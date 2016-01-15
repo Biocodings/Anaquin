@@ -7,6 +7,7 @@ namespace Anaquin
 {
     const std::string ChrT = "chrT";
     const std::string ExpT = "expT";
+    const std::string Endo = "endo";
 
     typedef std::string Sequence;
     

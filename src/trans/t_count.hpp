@@ -7,6 +7,7 @@
 #ifndef T_COUNT_HPP
 #define T_COUNT_HPP
 
+#include "data/dtest.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin

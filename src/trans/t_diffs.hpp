@@ -7,6 +7,7 @@
 #ifndef T_DIFFS_HPP
 #define T_DIFFS_HPP
 
+#include "data/dtest.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
@@ -39,17 +40,17 @@ namespace Anaquin
         {
             struct Data : public LinearStats
             {
-                // Detected sequins
-                std::vector<GenericID> seqs;
-                
-                // Raw probabilities
+                // Detected features
+                std::vector<GenericID> ids;
+
+                // Probability under the null hypothesis
                 std::vector<double> ps;
                 
-                // Q-probability (controlling multiple testing)
+                // Q-probability (controlled for multiple testing)
                 std::vector<double> qs;
                 
-                // Raw probabilities
-                std::vector<double> logFCs;
+                // Log-fold changes
+                std::vector<double> logFs;
             };
             
             std::map<ChromoID, Data> data;

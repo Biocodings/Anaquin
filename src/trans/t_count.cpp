@@ -7,9 +7,9 @@
 #include "trans/t_count.hpp"
 #include "parsers/parser_cdiffs.hpp"
 
-using namespace SS;
 using namespace Anaquin;
 
+typedef DiffTest::Status Status;
 typedef TCount::Metrics  Metrics;
 typedef TCount::Software Software;
 
@@ -78,7 +78,7 @@ template <typename T> void classifyChrT(TCount::Stats &stats, const T &t, const 
     {
         case Metrics::Gene:
         {
-            if ((t.status != NoTest) && stats.hist.count(t.id))
+            if ((t.status != Status::NotTested) && stats.hist.count(t.id))
             {
                 g(t.id, t.fpkm_1, t.fpkm_2);
             }
@@ -88,7 +88,7 @@ template <typename T> void classifyChrT(TCount::Stats &stats, const T &t, const 
             
         case Metrics::Isoform:
         {
-            if ((t.status == NoTest) || !stats.hist.count(id))
+            if ((t.status == Status::NotTested) || !stats.hist.count(id))
             {
                 return;
             }
@@ -101,7 +101,7 @@ template <typename T> void classifyChrT(TCount::Stats &stats, const T &t, const 
                 known = seq->abund(Mix_2) / seq->abund(Mix_1);
             }
             
-            if ((t.status != NoTest) && t.fpkm_1 && t.fpkm_2)
+            if ((t.status != Status::NotTested) && t.fpkm_1 && t.fpkm_2)
             {
                 stats.hist.at(id)++;
                 

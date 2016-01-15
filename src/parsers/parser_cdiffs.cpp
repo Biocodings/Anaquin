@@ -3,7 +3,6 @@
 #include "parsers/parser_cdiffs.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
-using namespace SS;
 using namespace Anaquin;
 
 enum TrackingField
@@ -20,11 +19,11 @@ enum TrackingField
     FQValue    = 12,
 };
 
-static const std::map<TrackID, DiffTest::DiffStatus> tok2Status =
+static const std::map<TrackID, DiffTest::Status> tok2Status =
 {
-    { "OK",     Anaquin::DiffTest::DiffStatus::StatusTested    },
-    { "HIDATA", Anaquin::DiffTest::DiffStatus::StatusNotTested },
-    { "NOTEST", Anaquin::DiffTest::DiffStatus::StatusNotTested },
+    { "OK",     DiffTest::Status::Tested    },
+    { "HIDATA", DiffTest::Status::NotTested },
+    { "NOTEST", DiffTest::Status::NotTested },
 };
 
 void ParserCDiffs::parse(const FileName &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)
@@ -61,10 +60,10 @@ void ParserCDiffs::parse(const FileName &file, std::function<void (const Trackin
         // Eg: chrT
         t.cID = temp[0];
         
-        t.p = SS::P(stof(toks[FPValue]));
-        t.q = SS::P(stof(toks[FQValue]));
+        t.p = stof(toks[FPValue]);
+        t.q = stof(toks[FQValue]);
 
-        if (t.status != TrackingStatus::HIData)
+        if (t.status != DiffTest::Status::NotTested)
         {
             f(t, p);
         }

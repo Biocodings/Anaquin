@@ -105,7 +105,7 @@ typedef std::set<Value> Range;
 #define OPT_FILTER   326
 #define OPT_THREAD   327
 #define OPT_VERSION  338
-#define OPT_SOFTWARE 339
+#define OPT_SOFT     339
 
 #define OPT_R_BASE  800
 #define OPT_R_BED_1 801
@@ -120,22 +120,18 @@ typedef std::set<Value> Range;
 #define OPT_U_BASE  900
 #define OPT_U_VCF   901
 #define OPT_U_GTF   902
-//#define OPT_GTRACK  903
-//#define OPT_ITRACK  904
-//#define OPT_GDIFF   905
-//#define OPT_IDIFF   906
-#define OPT_BAM_1   907
-#define OPT_BAM_2   908
-#define OPT_PSL_1   909
-#define OPT_PSL_2   910
-#define OPT_FA_1    911
-#define OPT_FA_2    912
-#define OPT_U_OUT   913
-#define OPT_U_TAB   914
-#define OPT_U_COV   915
-#define OPT_U_FACTS 916
-#define OPT_U_LEVEL 917
-#define OPT_U_FILES 918
+#define OPT_BAM_1   903
+#define OPT_BAM_2   904
+#define OPT_PSL_1   905
+#define OPT_PSL_2   906
+#define OPT_FA_1    907
+#define OPT_FA_2    908
+#define OPT_U_OUT   909
+#define OPT_U_TAB   910
+#define OPT_U_COV   911
+#define OPT_U_FACTS 912
+#define OPT_U_LEVEL 913
+#define OPT_U_FILES 914
 
 using namespace Anaquin;
 
@@ -221,32 +217,32 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,      { OPT_BAM_1                            } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1    } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF    } },
-    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFTWARE } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_BAM_1                 } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFTWARE, OPT_U_FACTS } },
-    { TOOL_T_COUNT,    { OPT_SOFTWARE, OPT_U_FACTS                         } },
+    { TOOL_T_IGV,      { OPT_BAM_1                         } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_BAM_1 } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
+    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT  } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_BAM_1              } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS } },
+    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS                         } },
 
     /*
      * Metagenomics Analysis
      */
     
-    { TOOL_M_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1                                 } },
-    { TOOL_M_IGV,      { OPT_FA_1                                                            } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1, OPT_SOFTWARE                      } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1, OPT_SOFTWARE                      } },
-    { TOOL_M_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                              } },
-    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2, OPT_SOFTWARE } },
+    { TOOL_M_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1                             } },
+    { TOOL_M_IGV,      { OPT_FA_1                                                        } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1, OPT_SOFT                      } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1, OPT_SOFT                      } },
+    { TOOL_M_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                          } },
+    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2, OPT_SOFT } },
 
     /*
      * Fusion Analysis
      */
 
     { TOOL_F_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE,                                 } },
-    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFTWARE, OPT_U_OUT                      } },
-    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFTWARE, OPT_U_OUT        } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFT, OPT_U_OUT                          } },
+    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFT, OPT_U_OUT            } },
     { TOOL_F_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                    } },
     { TOOL_F_DIFF,     { OPT_R_BED_1, OPT_R_FUS, OPT_U_OUT, OPT_U_TAB, OPT_MIXTURE } },
     { TOOL_F_NORMAL,   { OPT_R_BED_1, OPT_U_TAB, OPT_MIXTURE                       } },
@@ -443,8 +439,8 @@ static const struct option long_options[] =
     { "o",      required_argument, 0, OPT_PATH },
     { "output", required_argument, 0, OPT_PATH },
 
-    { "soft",     required_argument, 0, OPT_SOFTWARE },
-    { "software", required_argument, 0, OPT_SOFTWARE },
+    { "soft",     required_argument, 0, OPT_SOFT },
+    { "software", required_argument, 0, OPT_SOFT },
 
     { "f",      required_argument, 0, OPT_FILTER },
     { "filter", required_argument, 0, OPT_FILTER },
@@ -898,8 +894,14 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_FUZZY:    { parseInt(val, _p.fuzzy); break; }
-            case OPT_SOFTWARE: { _p.opts[opt] = val;      break; }
+            case OPT_FUZZY: { parseInt(val, _p.fuzzy); break; }
+
+            /*
+             * The following options can only be validated by the tool
+             */
+
+            case OPT_SOFT:
+            case OPT_U_LEVEL: { _p.opts[opt] = val; break; }
 
             case OPT_U_FILES:
             {
@@ -927,10 +929,10 @@ void parse(int argc, char ** argv)
 
             case OPT_U_FACTS:
             {
-                _p.exp = std::shared_ptr<Experiment>(new Experiment(val));
+                _p.exp = std::shared_ptr<Experiment>(new Experiment(_p.opts[opt] = val));
                 break;
             }
-                
+
             case OPT_FA_1:
             case OPT_FA_2:
             case OPT_U_COV:
@@ -938,15 +940,11 @@ void parse(int argc, char ** argv)
             case OPT_U_VCF:
             case OPT_U_OUT:
             case OPT_U_GTF:
-            //case OPT_IDIFF:
-            //case OPT_GDIFF:
             case OPT_PSL_2:
             case OPT_BAM_2:
             case OPT_R_GTF:
             case OPT_PSL_1:
             case OPT_U_TAB:
-            //case OPT_GTRACK:
-            //case OPT_ITRACK:
             case OPT_R_EXPT:
             case OPT_R_BED_1:
             case OPT_R_BED_2:
@@ -1113,7 +1111,7 @@ void parse(int argc, char ** argv)
 
                     TExpress::Options o;
                     
-                    o.soft = parseSoft("soft", _p.opts.at(OPT_SOFTWARE));
+                    o.soft = parseSoft("soft", _p.opts.at(OPT_SOFT));
 
                     //if (_p.opts.count(OPT_GTRACK))
                     //{
@@ -1153,10 +1151,10 @@ void parse(int argc, char ** argv)
                         const static std::map<std::string, TDiffs::Software> m =
                         {
                             { "edgeR",    TDiffs::Software::edgeR    },
-                            { "DESeq2",   TDiffs::Software::DESeq2   },
+                            { "deseq2",   TDiffs::Software::DESeq2   },
                             { "cuffdiff", TDiffs::Software::Cuffdiff },
                         };
-
+                        
                         return parseEnum("soft", str, m);
                     };
 
@@ -1169,7 +1167,9 @@ void parse(int argc, char ** argv)
                     {
                         o.metrs = parseMetris(_p.opts[OPT_U_LEVEL]);
                     }
-                    
+
+                    o.soft = parseSoft(_p.opts[OPT_SOFT]);
+
                     analyze_1<TDiffs>(OPT_U_FILES, o);
                     break;
                 }
@@ -1264,13 +1264,13 @@ void parse(int argc, char ** argv)
 
                 case TOOL_F_EXPRESS:
                 {
-                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseAligner(_p.opts.at(OPT_SOFTWARE))));
+                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseAligner(_p.opts.at(OPT_SOFT))));
                     break;
                 }
 
                 case TOOL_F_DISCOVER:
                 {
-                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseAligner(_p.opts.at(OPT_SOFTWARE))));
+                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseAligner(_p.opts.at(OPT_SOFT))));
                     break;
                 }
             }
@@ -1419,7 +1419,7 @@ void parse(int argc, char ** argv)
                     // Only defined for certain assemblers
                     FileName conts;
                     
-                    const auto tool = parseAssembler(_p.opts.at(OPT_SOFTWARE));
+                    const auto tool = parseAssembler(_p.opts.at(OPT_SOFT));
                     
                     if (tool == MetaAssembler::RayMeta)
                     {

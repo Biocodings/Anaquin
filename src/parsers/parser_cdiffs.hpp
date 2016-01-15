@@ -1,6 +1,7 @@
 #ifndef PARSER_CDIFFS_HPP
 #define PARSER_CDIFFS_HPP
 
+#include "data/dtest.hpp"
 #include "stats/analyzer.hpp"
 #include "parsers/parser_cuffs.hpp"
 
