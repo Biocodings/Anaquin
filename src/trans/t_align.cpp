@@ -586,9 +586,9 @@ static void writeSummary(const FileName         &file,
                                           % file
                                           % stats.unmapped
                                           % stats.n_expT
-                                          % stats.expTProp()
+                                          % (100.0 * stats.expTProp())
                                           % stats.n_chrT
-                                          % stats.chrTProp()                                      // 6
+                                          % (100.0 * stats.chrTProp())                            // 6
                                           % BIND_R(TransRef::countExons)                          // 7
                                           % BIND_R(TransRef::countIntrons)                        // 8
                                           % BIND_R(TransRef::exonBase)                            // 9

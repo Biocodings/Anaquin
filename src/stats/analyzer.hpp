@@ -69,11 +69,13 @@ namespace Anaquin
         // Total mapped to the experiment
         Counts n_expT = 0;
 
-        inline Percentage expTProp() const
+        // Proportion of reads aligned to endogenous
+        inline Percentage endoProp() const
         {
             return (n_chrT + n_expT) ? static_cast<double>(n_expT) / (n_chrT + n_expT) : NAN;
         }
         
+        // Proportion of reads aligned to synthetic
         inline Percentage chrTProp() const
         {
             return dilution();
