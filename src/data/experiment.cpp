@@ -4,7 +4,14 @@
 
 using namespace Anaquin;
 
-Experiment::Experiment(const std::string &str)
+// Eg: A1,A2,A3,B1,B2,B3
+void Experiment::addNames(const std::string &str)
+{
+    Tokens::split(str, ",", _names);
+    assert(_reps.empty() || _names.size() == _reps.size());
+}
+
+void Experiment::addFactors(const std::string &str)
 {
     std::vector<std::string> toks;
     Tokens::split(str, ",", toks);
@@ -24,6 +31,7 @@ Experiment::Experiment(const std::string &str)
     }
     
     assert(_reps.size() == toks.size());
+    assert(_names.empty() || _reps.size() == _names.size());
 }
 
 std::vector<std::size_t> Experiment::factor(Factor f) const

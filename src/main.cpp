@@ -132,6 +132,7 @@ typedef std::set<Value> Range;
 #define OPT_U_FACTS 912
 #define OPT_U_LEVEL 913
 #define OPT_U_FILES 914
+#define OPT_U_NAMES 915
 
 using namespace Anaquin;
 
@@ -217,13 +218,13 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,      { OPT_U_FILES                         } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_FILES } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF } },
-    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT  } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES              } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_FILES } },
-    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS                         } },
+    { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF                                       } },
+    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT                                        } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
+    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES                                      } },
 
     /*
      * Metagenomics Analysis
@@ -408,6 +409,7 @@ static const struct option long_options[] =
     { "ucov",    required_argument, 0, OPT_U_COV   },
     { "factors", required_argument, 0, OPT_U_FACTS },
     { "levels",  required_argument, 0, OPT_U_LEVEL },
+    { "names",   required_argument, 0, OPT_U_NAMES },
 
     { "rbed",    required_argument, 0, OPT_R_BED_1 },
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
@@ -676,6 +678,9 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
 // Analyze a single sample file
 template <typename Analyzer> void analyze(const FileName &file, typename Analyzer::Options o = typename Analyzer::Options())
 {
+    // Copying over for the experiment
+    o.exp = _p.exp;
+    
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::report(file, o);
@@ -685,6 +690,9 @@ template <typename Analyzer> void analyze(const FileName &file, typename Analyze
 // Analyze multiple replicate files
 template <typename Analyzer> void analyze(const std::vector<FileName> &files, typename Analyzer::Options o = typename Analyzer::Options())
 {
+    // Copying over for the experiment
+    o.exp = _p.exp;
+    
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::report(files, o);
@@ -929,7 +937,23 @@ void parse(int argc, char ** argv)
 
             case OPT_U_FACTS:
             {
-                _p.exp = std::shared_ptr<Experiment>(new Experiment(_p.opts[opt] = val));
+                if (!_p.exp)
+                {
+                    _p.exp = std::shared_ptr<Experiment>(new Experiment());
+                }
+                
+                _p.exp->addFactors(_p.opts[opt] = val);
+                break;
+            }
+
+            case OPT_U_NAMES:
+            {
+                if (!_p.exp)
+                {
+                    _p.exp = std::shared_ptr<Experiment>(new Experiment());
+                }
+
+                _p.exp->addNames(_p.opts[opt] = val);
                 break;
             }
 
@@ -1063,8 +1087,6 @@ void parse(int argc, char ** argv)
                 {
                     TAlign::Options o;
                     
-                    o.exp = _p.exp;
-
                     analyze<TAlign>(_p.inputs);
                     break;
                 }

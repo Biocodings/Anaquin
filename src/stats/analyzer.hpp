@@ -366,7 +366,7 @@ namespace Anaquin
     
     struct AnalyzerOptions : public WriterOptions
     {
-        // Experiment meta-data
+        // Experimental meta-data
         std::shared_ptr<Experiment> exp;
 
         // Only process this number of filters

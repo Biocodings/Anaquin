@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 TEST_CASE("Experiment_1")
 {
-    Experiment exp("1,1,1,2,2,2");
+    Experiment exp("1,1,1,2,2,2", "A1,A2,A3,B1,B2,B3");
 
     // The replicates must correspond to the factors in orders
     const auto &reps = exp.reps();

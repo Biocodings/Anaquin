@@ -118,7 +118,7 @@ template <typename T> const T * matchT(const Alignment &align,
 
     if (inters.contains(align.l, &cMatches))
     {
-        for (auto &i : cMatches)
+        for (const auto &i : cMatches)
         {
             contains.at(i->id())++;
         }
@@ -127,7 +127,7 @@ template <typename T> const T * matchT(const Alignment &align,
     {
         if (inters.overlap(align.l, &oMatches))
         {
-            for (auto &i : cMatches)
+            for (const auto &i : oMatches)
             {
                 overlaps.at(i->id())++;
             }
@@ -480,6 +480,9 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
 
 TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
 {
+    // We'll need the factors for generation.
+    assert(o.exp);
+    
     o.analyze(file);
     
     return calculate(o, [&](TAlign::Stats &stats)
@@ -493,7 +496,6 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
                 classifyChrT(stats.data.at(ChrT), align, info, o);
             }
             
-            // TODO: It's coming...
             //else if (stats.data.count(align.id))
             //{
             //    classifyExpT(stats.data.at(align.id), align, info, o);
@@ -501,9 +503,8 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
             
             /*
              * Any read that is not aligned into the reference annoation is worthless. We don't know if the locus is an exon
-             * or an intron...
+             * or an intron... We can't really do much...
              */
-            
         });
     });
 }
@@ -682,26 +683,31 @@ static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::
     writer->close();
 }
 
-static void writeReplicate(const FileName &file, const TAlign::Stats &stats, const TAlign::Options &o)
+/*
+ * Write summary statistics for a replicate. file is the file name of the replicate. name is the name of the replicate.
+ *
+ *     Eg: writeReplicate(..., "A1/accepted_hits.bam", "A1", ...)
+ */
+
+static void writeReplicate(const TAlign::Stats &stats, const FileName &file, const std::string &name, const TAlign::Options &o)
 {
-    o.info("Generating statistics for: " + file);
+    // Eg: /Users/tedwong/Sources/A1/accepted_hits.bam to accepted_hits.bam
+    const auto fileName = extractFile(file);
     
     // Eg: A1/TransAlign_summary.stats
+    //const auto sample = name + "/" + fileName;
     const auto sample = extractFile(file);
-    
+
+    o.info("Generating statistics for: " + sample);
+
     // Create the directory if haven't
-    o.writer->create(sample);
+    o.writer->create(name);
     
     // Generating summary statistics for the replicate
-    writeSummary(sample + "/TransAlign_summary.stats", stats, o.writer);
+    writeSummary(name + "/TransAlign_summary.stats", stats, o.writer);
     
     // Generating sequin statistics for the replicate
-    writeSequins(sample + "/TransAlign_quins.stats", stats, o.writer);
-}
-
-void TAlign::report(const FileName &file, const Options &o)
-{
-    writeReplicate(file, TAlign::analyze(file, o), o);
+    writeSequins(name + "/TransAlign_quins.stats", stats, o.writer);
 }
 
 static std::string pooledSummary()
@@ -747,6 +753,10 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     
     const auto stats = TAlign::analyze(files, o);
     
+    /*
+     * Process each replicate one by one. Later, we'll pool the information to generate a summary for all replicates.
+     */
+    
     for (auto i = 0; i < files.size(); i++)
     {
         const auto &stat = stats[i];
@@ -781,7 +791,7 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
         //f("chr1");
 
         // Generate summary statistic for the replicate
-        writeReplicate(files[i], stats[i], o);
+        writeReplicate(stats[i], files[i], o.exp->names().at(i), o);
     }
 
     /*
@@ -836,8 +846,9 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
 
     o.writer->open("TransAlign_pooled.stats");
     
-    f(ChrT);
-    f("chr1");
+    //f(ChrT); TODO
+    //f("chr1"); TODO
+    
 
     o.writer->close();
 }

@@ -218,7 +218,6 @@ namespace Anaquin
                 return stats;            
             }
 
-            static void report(const FileName &, const Options &o = Options());
             static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
