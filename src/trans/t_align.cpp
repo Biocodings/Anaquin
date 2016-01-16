@@ -93,6 +93,10 @@ static TAlign::Stats init()
 {
     TAlign::Stats stats;
 
+    /*
+     * Initalize for each chromosome. The results will be pooled together.
+     */
+    
     for (const auto &cID : Standard::instance().r_trans.chromoIDs())
     {
         initT(cID, stats.data[cID]);
@@ -262,7 +266,7 @@ template <typename T> void collect(const ChromoID &cID,
           t.eOverlaps,
           t.exonToGene);
 
-    // Repat at the intron level
+    // Repeat at the intron level
     genes(t.geneI,
           t.overI,
           t.iContains,
@@ -342,27 +346,32 @@ template <typename T> void collect(const ChromoID &cID,
     missing(t.missI, t.iContains);
     
     /*
-     * A gene is considered missing if not all exons have alignment aligned to it
+     * A gene is considered missing if not all exons have alignment aligned to it... 
+     *
+     *   TODO: Need to improve the performance...
      */
     
-    for (const auto &gene : t.histE)
+    if (cID == ChrT)
     {
-        bool missing = false;
-        
-        for (const auto &bin : t.eContains)
+        for (const auto &gene : t.histE)
         {
-            if (gene.first == t.exonToGene.at(bin.first))
+            bool missing = false;
+            
+            for (const auto &bin : t.eContains)
             {
-                if ((missing = (bin.second == 0)))
+                if (gene.first == t.exonToGene.at(bin.first))
                 {
-                    break;
+                    if ((missing = (bin.second == 0)))
+                    {
+                        break;
+                    }
                 }
             }
-        }
-        
-        if (missing)
-        {
-            t.missG.insert(Missing(gene.first));
+            
+            if (missing)
+            {
+                t.missG.insert(Missing(gene.first));
+            }
         }
     }
 }
@@ -495,11 +504,10 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
             {
                 classifyChrT(stats.data.at(ChrT), align, info, o);
             }
-            
-            //else if (stats.data.count(align.id))
-            //{
-            //    classifyExpT(stats.data.at(align.id), align, info, o);
-            //}
+            else if (stats.data.count(align.id))
+            {
+                classifyEndo(stats.data.at(align.id), align, info, o);
+            }
             
             /*
              * Any read that is not aligned into the reference annoation is worthless. We don't know if the locus is an exon
@@ -509,18 +517,16 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     });
 }
 
+/*
+ * This function provides flexibiltiy in combining values across conditions. It can also be used for synthetic chromosome.
+ */
+
 template <typename Data, typename F> std::string combine(const Data &data, F f)
 {
+    // What's the value for the synthetic chromosome?
     const auto chrT = std::to_string(f(ChrT));
     
-    if (data.count("chr1"))
-    {
-        return chrT + " - " + std::to_string(f("chr1"));
-    }
-    else
-    {
-        return chrT;
-    }
+    return chrT;
 }
 
 /*
@@ -568,9 +574,7 @@ static std::string replicateSummary()
            "   Gene:   %28%\n\n";
 }
 
-static void writeSummary(const FileName         &file,
-                         const TAlign::Stats    &stats,
-                         std::shared_ptr<Writer> writer)
+static void writeSummary(const FileName &file, const TAlign::Stats &stats, std::shared_ptr<Writer> writer)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -586,7 +590,7 @@ static void writeSummary(const FileName         &file,
                                           % file
                                           % stats.unmapped
                                           % stats.n_expT
-                                          % (100.0 * stats.expTProp())
+                                          % (100.0 * stats.endoProp())
                                           % stats.n_chrT
                                           % (100.0 * stats.chrTProp())                            // 6
                                           % BIND_R(TransRef::countExons)                          // 7
@@ -630,6 +634,10 @@ static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::
                                          % "Specificity (Intron)"
                                          % "Sensitivity (Base)"
                                          % "Specificity (Base)").str());
+    
+    /*
+     * Obviously, we'll only check the synthetic chromosome...
+     */
     
     for (const auto &i : stats.data.at(ChrT).overB.h)
     {
@@ -695,7 +703,6 @@ static void writeReplicate(const TAlign::Stats &stats, const FileName &file, con
     const auto fileName = extractFile(file);
     
     // Eg: A1/TransAlign_summary.stats
-    //const auto sample = name + "/" + fileName;
     const auto sample = extractFile(file);
 
     o.info("Generating statistics for: " + sample);
@@ -754,7 +761,8 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     const auto stats = TAlign::analyze(files, o);
     
     /*
-     * Process each replicate one by one. Later, we'll pool the information to generate a summary for all replicates.
+     * Process each replicate one after the other. Later, we'll pool the information to generate a summary for all replicates.
+     * In order to calculate the variation between replicates, we'll add them to an accumulator.
      */
     
     for (auto i = 0; i < files.size(); i++)
@@ -765,7 +773,7 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
         accs[ExpT].add("n_chrT",    stat.n_chrT);
         accs[ExpT].add("dilution",  stat.dilution());
         accs[ExpT].add("unmapped",  stat.unmapped);
-        accs[ExpT].add("expTProp",  stat.expTProp());
+        accs[ExpT].add("expTProp",  stat.endoProp());
         accs[ExpT].add("chrTProp",  stat.chrTProp());
         accs[ExpT].add("limitE",    stat.limit(AlignMetrics::AlignExon));
         accs[ExpT].add("limitI",    stat.limit(AlignMetrics::AlignIntron));
@@ -787,9 +795,11 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
             accs[id].add("missG",    stat.missPercent(id, MissingMetrics::MissingGene));
         };
 
-        f(ChrT);
-        //f("chr1");
-
+        for (const auto &cID : Standard::instance().r_trans.chromoIDs())
+        {
+            f(cID);
+        }
+        
         // Generate summary statistic for the replicate
         writeReplicate(stats[i], files[i], o.exp->names().at(i), o);
     }
