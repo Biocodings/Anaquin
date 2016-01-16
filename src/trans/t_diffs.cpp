@@ -138,9 +138,7 @@ template <typename T> void classifyEndo(TDiffs::Stats &, const T &, const TDiffs
 
 template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs::Options &o)
 {
-    const auto cID = (t.cID == ChrT ? ChrT : Endo);
-
-    if (cID == ChrT)
+    if (t.cID == ChrT)
     {
         stats.n_chrT++;
         classifyChrT(stats, t, o);
@@ -151,10 +149,10 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
         classifyEndo(stats, t, o);
     }
 
-    stats.data[cID].ps.push_back(t.p);
-    stats.data[cID].qs.push_back(t.q);
-    stats.data[cID].ids.push_back(t.id);
-    stats.data[cID].logFs.push_back(t.logF);
+    stats.data[t.cID].ps.push_back(t.p);
+    stats.data[t.cID].qs.push_back(t.q);
+    stats.data[t.cID].ids.push_back(t.id);
+    stats.data[t.cID].logFs.push_back(t.logF);
 }
 
 template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
@@ -292,34 +290,38 @@ void TDiffs::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * Generating scatter plot
+     * Generating scatter plot (only if the data is provided...)
      */
     
-    o.writer->open("TransDiffs_scatter.R");
-    o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
-    o.writer->close();
+    if (o.soft == TDiffs::Software::Cuffdiff)
+    {
+        o.writer->open("TransDiffs_scatter.R");
+        o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
+        o.writer->close();
+    }
 
     /*
      * Generating ROC plot
      */
     
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
+    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
     o.writer->close();
 
     /*
      * Generating LODR plot
      */
+    
+ //   o.writer->open("TransDiffs_LODR.R");
+   // o.writer->write(RWriter::lodr(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
+   // o.writer->close();
 
-    o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
-    o.writer->close();
-
+    
     /*
      * Generating MA plot
      */
 
-    o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
-    o.writer->close();
+//    o.writer->open("TransDiffs_MA.R");
+  //  o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
+    //o.writer->close();
 }

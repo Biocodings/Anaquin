@@ -435,7 +435,7 @@ static void classifyEndo(TAlign::Stats::Data &t,
 {
     REPORT_STATUS();
     
-    if (!align.mapped || align.id == Standard::chrT)
+    if (!align.mapped)
     {
         return;
     }

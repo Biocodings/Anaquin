@@ -44,6 +44,40 @@ transQuin <- function(...)
 ########################################################
 
 #
+# Returns the expected logFold for a sequin. The following metrics are supported:
+#
+#   TransQuin: 'exon', 'isoform' and 'gene'
+#
+
+expectLF <- function(data, id, metr)
+{
+    stopifnot(class(data) == 'TransQuin' ||
+              class(data) == 'VarQuin'   ||
+              class(data) == 'MetaQuin'  ||
+              class(data) == 'Mixture')
+    
+    data <- data$mix
+    stopifnot(!is.null(data))
+
+    #
+    # Eg:
+    #
+    #      A        B       fold   logFold
+    #   R2_59 0.4720688 0.4720688     1
+    #
+    data <- data$genes[row.names(data$genes)==id,]
+    
+    stopifnot(nrow(data) <= 1)
+    
+    if (is.null(data$A) | is.null(data$B))
+    {
+        error(paste('Failed to find mixture A and B'))
+    }
+
+    return (log2(data$B / data$A))
+}
+
+#
 # Returns the expected concentration for a sequin. The following metrics are supported:
 #
 #   TransQuin: 'exon', 'isoform' and 'gene'

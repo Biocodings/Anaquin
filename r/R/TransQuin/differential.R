@@ -12,31 +12,46 @@
 #    FN: fold-change with more than logFC and not expressed
 #    TN: fold-change with at most logFC and not expressed
 #
-transClassify <- function(data, mix=loadMixture(), qCutoff=0.1, logFC=0)
+transClassify <- function(data, metr='gene', mix=loadMixture(), pCutoff=0.1, logFC=0)
 {
-    stopifnot(class(data) == 'AnaquinData')
+    stopifnot(class(data) == 'TransQuin')
     
-    seqs <- cbind(data$seqs, class=NA)
+    seqs <- data$seqs
+
+    if (is.null(seqs$class))
+    {
+        seqs <- cbind(seqs, class=NA)
+    }
+    
+    seqs$class <- NA
 
     for (id in row.names(seqs))
     {
-        q = seqs[id,]$qval
-        
-        if  (is.na(q) || is.nan(q))
+        # Probability under null hypothesis
+        p = seqs[id,]$pval
+    
+        if  (!is.na(p))
         {
-            seqs[id,]$class <- NA
-        }
-        else
-        {
-            known <- aqLogFold(id, mix, metrics = 'gene')
+            known <- expectLF(data, id, metr)
             
-            if (q <= qCutoff)   # Differential expressed
+            if (length(known) > 0)
             {
-                seqs[id,]$class <- ifelse(abs(known) <= logFC, 'FP', 'TP')
-            }
-            else                       # Non-differential expressed
-            {
-                seqs[id,]$class <- ifelse(abs(known) <= logFC, 'TN', 'FN')
+                #
+                # Say if the known log-fold change is -3, is this differentially expressed? That depends on the context.
+                # Usuaully, we'd think anything more than log-fold change of 1 should be expressed.
+                #
+                
+                # Differential expressed?
+                if (p <= pCutoff)
+                {
+                    seqs[id,]$class <- ifelse(abs(known) <= abs(logFC), 'FP', 'TP')
+                }
+                
+                # Non-dfifferential expressed?
+                else
+                {
+                    seqs[id,]$class <- ifelse(abs(known) <= abs(logFC), 'TN', 'FN')
+                }
             }
         }
     }
