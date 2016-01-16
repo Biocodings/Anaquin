@@ -1,0 +1,172 @@
+###################################################
+#                                                 #
+#   Configuration file for TransQuin reporting    #
+#                                                 #
+###################################################
+
+
+###################################################
+#                                                 #
+# 			1. General configruation              #
+#                                                 #
+###################################################
+
+# Name of the report
+REPORT_NAME = /Users/tedwong/Desktop/Report.pdf
+
+# Where the files are generated relatively to the root
+ROOT_PATH = /Users/tedwong/Desktop/K_562
+
+
+#
+# Where's your mixture file? Anaquin needs the file for expected concentration.
+# Note that if you're running a differential analysis, you'll need a mixture file
+# for mixture A and B.
+#
+# You can download a copy at www.sequins.xyz. For example:
+#
+#    wget https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv
+#
+
+MIX_FILE = /Users/tedwong/Desktop/K_562/MTR004.v013.csv
+
+#
+# The default format for a mixture file has 3-4 columns. For example:
+#
+#     head MTR004.v013.csv
+#
+#    ID  	 Length	   MXA (attomol/ul)	 MXB (attomol/ul)
+#  R1_11_1	  703	   161.1328125	     5.035400391
+#  R1_11_2	  785	   80.56640625	     10.07080078
+#  R1_13_1	 1940	   5156.25	         2578.125
+#
+#
+
+MIX_1_COL = 2
+MIX_2_COL = 3
+
+
+###################################################
+#                                                 #
+# 			1. Alignment analysis                 #
+#                                                 #
+###################################################
+
+#
+# -------------------- MetaData --------------------
+#
+# How have you conducted your experiment? The information is needed to generate replicates.
+#
+# For example, a common experimental design would have two conditions and three replicates
+# for each condition.
+# 
+#         A1 A2 A3 B1 B2 B3
+#
+# You will need to provide a factor for each replicate.
+#
+
+ALIGN_FACTORS = 1,1,1,2,2,2
+
+#
+# -------------------- Alignment --------------------
+#
+# Where are your alignment files (SAM/BAM)?
+#
+# Anaquin supports:
+#
+#     - SAM/BAM
+#
+# The orders must be consistent to the orders of the factors.
+#
+
+ALIGN_FILE = Aligns/A1/sampled.sam
+ALIGN_FILE = Aligns/A2/sampled.sam
+ALIGN_FILE = Aligns/A3/sampled.sam
+ALIGN_FILE = Aligns/B1/sampled.sam
+ALIGN_FILE = Aligns/B2/sampled.sam
+ALIGN_FILE = Aligns/B3/sampled.sam
+
+
+###################################################
+#                                                 #
+# 			2. Differential analysis              #
+#                                                 #
+###################################################
+
+#
+# -------------------- Metrics --------------------
+#
+# Anaquin supports:
+#
+#     - Gene
+#     - Isoform
+#     - Exon
+#
+
+DIFF_LEVEL = Gene
+
+
+#
+# -------------------- MetaData --------------------
+#
+# How have you conducted your experiment? The information is needed to generate replicates.
+#
+# For example, a common experimental design would have two conditions and three replicates
+# for each condition.
+# 
+#         A1 A2 A3 B1 B2 B3
+#
+# You will need to provide a factor for each replicate.
+#
+
+DIFF_FACTORS = 1,1,1,2,2,2
+
+
+#
+# -------------------- Counting --------------------
+#
+# Where are your count files? Some software such as CuffDiff implicity does the counting,
+# thus you would need another software such as HTSeqCount to do the counting.
+#
+# Anaquin supports:
+#
+#     - HTSeqCount
+#
+# The orders must be consistent to the orders of the factors.
+#
+
+COUNT_SOFT = HTSeqCount
+
+DIFF_COUNT = combined_counts_full/K_RMXA1v2.htseq.counts.combined
+DIFF_COUNT = combined_counts_full/K_RMXA2v2.htseq.counts.combined
+DIFF_COUNT = combined_counts_full/K_RMXA3v2.htseq.counts.combined
+DIFF_COUNT = combined_counts_full/G_RMXB1v2.htseq.counts.combined
+DIFF_COUNT = combined_counts_full/G_RMXB2v2.htseq.counts.combined
+DIFF_COUNT = combined_counts_full/G_RMXB3v2.htseq.counts.combined
+
+
+#
+# -------------------- Differential Results --------------------
+#
+# Where are the files for the p-values, q-values etc?
+#
+# Anaquin supports:
+#
+#     - edgeR
+#     - DESeq2
+#     - DEXSeq
+#     - Cuffdiff
+#
+# The following outputs will be generated:
+#
+#     - Summary statistics
+#     - ROC Plot
+#     - MA Plot
+#     - LODR Plot
+#
+
+DIFF_SOFT = DESeq2
+DIFF_FILE = Genes/DESeq2.csv
+
+
+

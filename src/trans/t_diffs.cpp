@@ -53,41 +53,30 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
     // It's NAN if the sequin defined in reference but not in mixture
     Fold measured = NAN;
 
-    /*
-     * Everything after this point is about FPKM. So far, only Cuffdiff would give it.
-     */
-    
-    if (o.soft != TDiffs::Software::Cuffdiff)
-    {
-        return;
-    }
-
-    /*
-     * Differential expression at the gene level
-     */
-    
     switch (o.metrs)
     {
         case Metrics::Gene:
         {
-            if ((t.status != Status::NotTested) && stats.hist.count(t.id))
+            if (t.status == Status::Tested && stats.hist.count(t.id))
             {
                 const auto *g = r.findGene(t.cID, id);
                 
                 if (g)
                 {
+                    stats.hist.at(id)++;
+
                     // Calculate the known fold-change between B and A
                     known = (g->abund(Mix_2) / g->abund(Mix_1));
-                }
-                
-                if (g && !isnan(t.fpkm_1) && !isnan(t.fpkm_2) && t.fpkm_1 && t.fpkm_2)
-                {
-                    stats.hist.at(id)++;
                     
+                    // This is not on the log scale, so it can't be zero...
+                    assert(known);
+
                     // Measured fold-change between the two mixtures
-                    measured = t.fpkm_2 / t.fpkm_1;
+                    measured = t.logF;  //t.fpkm_2 / t.fpkm_1;
+                    
+                    measured = std::pow(2, measured);
                 }
-                
+
                 stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
 
@@ -96,35 +85,35 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
             
         case Metrics::Isoform:
         {
-            if ((t.status == Status::NotTested) || !stats.hist.count(id))
+            if (t.status == Status::Tested && !stats.hist.count(id))
             {
-                return;
-            }
-            
-            const auto *seq = r.match(id);
-            
-            if (seq)
-            {
-                // Known fold-change between the two mixtures
-                known = seq->abund(Mix_2) / seq->abund(Mix_1);
-            }
-            
-            if ((t.status != Status::NotTested) && t.fpkm_1 && t.fpkm_2)
-            {
-                stats.hist.at(id)++;
+                const auto *seq = r.match(id);
                 
-                // Measured fold-change between the two mixtures
-                measured = t.fpkm_2 / t.fpkm_1;
+                if (seq)
+                {
+                    // Known fold-change between the two mixtures
+                    known = seq->abund(Mix_2) / seq->abund(Mix_1);
+                }
+                
+                if ((t.status != Status::NotTested) && t.fpkm_1 && t.fpkm_2)
+                {
+                    stats.hist.at(id)++;
+                    
+                    // Measured fold-change between the two mixtures
+                    measured = t.logF; //t.fpkm_2 / t.fpkm_1;
+                    
+                    measured = std::pow(2, measured);
+                }
+                
+                stats.data[ChrT].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
-            
-            stats.data[ChrT].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
-            
+
             break;
         }
             
         case Metrics::Exon:
         {
-            break;
+            throw "Not Implemented";
         }
     }
 }
@@ -290,15 +279,12 @@ void TDiffs::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * Generating scatter plot (only if the data is provided...)
+     * Generating scatter plot for the log-fold changes
      */
     
-    if (o.soft == TDiffs::Software::Cuffdiff)
-    {
-        o.writer->open("TransDiffs_scatter.R");
-        o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
-        o.writer->close();
-    }
+    o.writer->open("TransDiffs_scatter.R");
+    o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
+    o.writer->close();
 
     /*
      * Generating ROC plot

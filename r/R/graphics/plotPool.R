@@ -64,8 +64,7 @@ plotPool <- function(data, metr,
         xlab(xname)                          +
         ylab(yname)                          +
         labs(colour=cname)                   +
-        
-        
+
         #    scale_color_manual(values=cols)      +
         #   scale_fill_manual (values=rev(cols)) +
         scale_colour_gradientn(colours=cols, limits=c(min(seqs$abund), max(seqs$abund)))                  +
