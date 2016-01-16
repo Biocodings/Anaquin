@@ -10,6 +10,7 @@ import math
 #                                                      #
 ########################################################
 
+# Where Anaquin is located
 ANAQUIN_PATH = '/Users/tedwong/Sources/QA/anaquin'
 
 
@@ -42,13 +43,16 @@ def anaquin(tool, args, config, needMixture=True):
     # However, not all tool would require, say, a mixture.
     #
     
+    # Construct mixture and reference annoation
     req = ANAQUIN_PATH + ' -t ' + tool + ' -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf '
     
     # Now add up the arguments
     req = req + '-o ' + TEMP_PATH + ' ' + args
 
     print(req)
-    #os.system('/Users/tedwong/Sources/QA/anaquin -o  ' + TEMP_PATH + ' ' + args)
+    
+    # Execute the Anaquin request
+    #os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
 
 ###################################
 #                                 #
@@ -141,7 +145,7 @@ def transQuin(config):
     #
     # Generate a request for TransQuin for differential analysis. For example:
     #
-    #    anaquin TransAlign -factors 1,1,1,2,2,2 -ufiles C1.BAM,C2.BAM,C3.BAM
+    #    anaquin TransAlign -m ... -rgtf ... -factors 1,1,1,2,2,2 -ufiles C1.BAM,C2.BAM,C3.BAM
     #
 
     req = 'TransAlign -factors ' + factors + ' -ufiles ' + alignFiles
@@ -173,13 +177,21 @@ def transQuin(config):
     #
     # 5. Generate a request for TransQuin for differential analysis. For example:
     #
-    #      anaquin TransDiff -soft DESEq2 -ufiles C1.txt,C2.txt,C3.txt
+    #      anaquin TransDiff -m ... -rgtf ... -soft DESEq2 -ufiles C1.txt,C2.txt,C3.txt
     #
     
     req = '-factors ' + factors + ' -countSoft ' + countSoft + ' -diffSoft ' + diffSoft + ' -countFiles ' + countFiles + ' -diffFile ' + diffFile
 
     # Execute the command
     anaquin('TransDiff', req, config)
+
+
+#################################
+#                               #
+#         Misc functions        #
+#                               #
+#################################
+    
     
 def parse(file):
 
@@ -224,11 +236,8 @@ if __name__ == '__main__':
     if (mode == 'TransQuin'):
         transQuin(parse(file))
         
-        
+
 #        -t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -t TransDiff -factors 1,1,1,2,2,2 -soft DESEq2 -level gene -ufiles /Users/tedwong/Desktop/K_562/edgeR_Gene.csv 
         
-        
-#        /Users/tedwong/Sources/QA/anaquin   temp -factors -countSoft HTSeqCount -diffSoft edgeR -countFiles combined_counts_full/K_RMXA1v2.htseq.counts.combined,combined_counts_full/K_RMXA2v2.htseq.counts.combined,combined_counts_full/K_RMXA3v2.htseq.counts.combined,combined_counts_full/G_RMXB1v2.htseq.counts.combined,combined_counts_full/G_RMXB2v2.htseq.counts.combined,combined_counts_full/G_RMXB3v2.htseq.counts.combined -diffFile /Users/tedwong/Desktop/K_562/diffs.csv
-
 
 #-t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -o temp TransAlign -factors 1,1,1,2,2,2 -ufiles /Users/tedwong/Desktop/K_562/Aligns/A1/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/A2/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/A3/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B1/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B2/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B3/accepted_hits.bam
