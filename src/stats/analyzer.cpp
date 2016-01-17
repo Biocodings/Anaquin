@@ -3,10 +3,15 @@
 
 using namespace Anaquin;
 
-void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shouldLog) const
+void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<std::string> *ids) const
 {
     x.clear();
     y.clear();
+    
+    if (ids)
+    {
+        ids->clear();
+    }
     
     auto f = [&](double v)
     {
@@ -22,19 +27,27 @@ void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shou
         {
             x.push_back(f(p.second.x));
             y.push_back(f(p.second.y));
+            
+            if (ids)
+            {
+                ids->push_back(p.first);
+            }
         }
     }
 }
 
 InflectionLimit LinearStats::inflect(bool shouldLog) const
 {
+    std::vector<std::string> ids;
     std::vector<double> x, y;
-    data(x, y, shouldLog);
     
+    data(x, y, shouldLog, &ids);
+
     const auto r = SS::segmentPieceWise(x, y);
     
     InflectionLimit l;
     
+    // The break we're looking for
     l.b = r.b;
     
     l.lR2  = r.bkLR2();
@@ -44,6 +57,17 @@ InflectionLimit LinearStats::inflect(bool shouldLog) const
     l.lInt = r.bkLInt();
     l.rInt = r.bkRInt();
 
+    for (auto i = 0; i < ids.size(); i++)
+    {
+        if (x[i] == l.b)
+        {
+            l.id = ids[i];
+            break;
+        }
+    }
+    
+    assert(!l.id.empty());
+    
     return l;
 }
 

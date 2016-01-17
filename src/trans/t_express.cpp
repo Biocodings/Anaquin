@@ -278,8 +278,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     std::map<ChromoID, Accumulator<double>> accs;    
     
     /*
-     * Process each replicate in orders. Later, we'll pool the information to generate a summary for all replicates.
-     * In order to calculate the variation between replicates, we'll add them to an accumulator.
+     * We'll pool the information with accumulators to generate a summary for all replicates.
      */
     
     for (auto i = 0; i < files.size(); i++)

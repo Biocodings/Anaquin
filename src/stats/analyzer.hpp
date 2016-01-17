@@ -193,6 +193,9 @@ namespace Anaquin
     
     struct InflectionLimit
     {
+        // Name of the sequin
+        std::string id;
+        
         // Coefficient of determination before and after the break-point
         double lR2, rR2;
         
@@ -252,7 +255,7 @@ namespace Anaquin
         }
 
         // Return the x-values and y-values after filtering
-        void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog) const;
+        void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<std::string> *ids = nullptr) const;
 
         // Compute the inflection limit. By default, this function assumes log-transformation.
         InflectionLimit inflect(bool shouldLog = true) const;

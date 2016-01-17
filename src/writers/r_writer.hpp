@@ -105,7 +105,7 @@ namespace Anaquin
                                            % stats.hist.size()            // 5
                                            % (ref.empty() ? units : ref)  // 6
                                            % b
-                                           % "-"
+                                           % inflect.id
                                            % inflect.lInt                 // 9
                                            % inflect.lSl                  // 10
                                            % inflect.lR2                  // 11
