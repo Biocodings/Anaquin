@@ -384,7 +384,56 @@ Summary for dataset: /Users/tedwong/Desktop/K_562/Cuffdiffs/gene_exp.diff
    SST:         196.592, DF: 64
 ```
 
-![alt text](ROCSample.jpeg)
-![alt text](ROCSampleColour.jpeg)
-![alt text](ScatterLFCSample.jpeg)
+![alt text](samples/ROCSample.jpeg)
+![alt text](samples/ROCSampleColour.jpeg)
+![alt text](samples/ScatterLFCSample.jpeg)
+![alt text](samples/TransExpress_Sample.jpeg)
+
+\pagebreak
+
+```
+Summary for dataset: /Users/tedwong/Desktop/K_562/Cufflinks/A1/genes.fpkm_tracking
+
+   Experiment:  60570 gene
+   Synthetic:   75 gene
+
+   Reference:   76 gene
+   Detected:    3.41719 gene
+
+   ***
+   *** Detection Limits
+   ***
+
+   Break: 7.5531 (-)
+
+   Left:  3.41719 + 0.862027x (R2 = 0.920302)
+   Right: 5.17772 + 0.558818x (R2 = 0.795326)
+
+   ***
+   *** Statistics for linear regression
+   ***
+
+   Correlation: 0.962825
+   Slope:       6.46625
+   R2:          0.927032
+   F-statistic: 902.032
+   P-value:     0
+   SSM:         3.50824e+10, DF: 1
+   SSE:         2.76138e+09, DF: 71
+   SST:         3.78438e+10, DF: 72
+
+   ***
+   *** Statistics for linear regression (log2 scale)
+   ***
+
+   Correlation: 0.936306
+   Slope:       0.724913
+   R2:          0.876669
+   F-statistic: 504.686
+   P-value:     0
+   SSM:         1040.46, DF: 1
+   SSE:         146.373, DF: 71
+   SST:         1186.83, DF: 72
+```
+
 

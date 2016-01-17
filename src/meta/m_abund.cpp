@@ -43,7 +43,7 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
     }
 
     stats.chrT->n_chrT = stats.chrT->assembly.contigs.size();
-    stats.chrT->n_expT = stats.chrT->assembly.n - stats.chrT->n_chrT;
+    stats.chrT->n_endo = stats.chrT->assembly.n - stats.chrT->n_chrT;
 
     o.info("Analyzing the alignments");
 

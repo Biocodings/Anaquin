@@ -137,7 +137,7 @@ template <typename T> void update(TCount::Stats &stats, const T &t, const Generi
     }
     else
     {
-        stats.n_expT++;
+        stats.n_endo++;
         classifyEndT(stats, t, id, metrs);
     }
 }

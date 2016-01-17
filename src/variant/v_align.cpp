@@ -124,7 +124,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     o.writer->open("VarAlign_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % stats.unmapped
-                                            % stats.n_expT
+                                            % stats.n_endo
                                             % stats.n_chrT
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()

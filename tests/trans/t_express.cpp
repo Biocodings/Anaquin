@@ -19,9 +19,9 @@ TEST_CASE("TExpress_Perfect")
         exp.fpkm = i.second.mixes.at(Mix_1);
         exps.push_back(exp);
     }
-    
+
     TExpress::Options o;
-    o.metrs = TExpress::Metrics::Isoform;
+    o.lvl = TExpress::Level::Isoform;
     
     const auto r = TExpress::analyze(exps, o);
     const auto stats = r.data.at(ChrT).linear();

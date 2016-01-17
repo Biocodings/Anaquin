@@ -21,19 +21,21 @@ namespace Anaquin
             DESeq2,
         };
         
-        enum class Metrics
+        enum class Level
         {
             Gene,
-            Isoform,
-            Exon
+            Exon,
+            Isoform
         };
 
         struct Options : public DoubleMixtureOptions
         {
             Options() {}
 
-            Metrics  metrs = Metrics::Gene;
-            Software soft  = Software::Cuffdiff;
+            // Default to gene level
+            Level lvl = Level::Gene;
+
+            Software soft;
         };
 
         struct Stats : public MappingStats
@@ -55,6 +57,7 @@ namespace Anaquin
             
             std::map<ChromoID, Data> data;
 
+            // Detection limit            
             Limit limit;
         };
 

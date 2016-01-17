@@ -24,7 +24,7 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
         if (c.id == Standard::chrT) { stats.chrT->n_chrT++; }
-        else                        { stats.chrT->n_expT++; }
+        else                        { stats.chrT->n_endo++; }
 
         const SequinData *match;
 
@@ -46,7 +46,7 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
         switch (r.code)
         {
             case FClassify::Code::Genome:
-            case FClassify::Code::GenomeChrT: { stats.chrT->n_expT++; }
+            case FClassify::Code::GenomeChrT: { stats.chrT->n_endo++; }
             case FClassify::Code::Positive:
             case FClassify::Code::Negative:   { stats.chrT->n_chrT++; }
         }

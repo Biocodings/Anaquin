@@ -11,7 +11,7 @@
 
 using namespace Anaquin;
 
-typedef TDiffs::Metrics  Metrics;
+typedef TDiffs::Level    Level;
 typedef TDiffs::Software Software;
 typedef DiffTest::Status Status;
 
@@ -53,9 +53,9 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
     // It's NAN if the sequin defined in reference but not in mixture
     Fold measured = NAN;
 
-    switch (o.metrs)
+    switch (o.lvl)
     {
-        case Metrics::Gene:
+        case Level::Gene:
         {
             if (t.status == Status::Tested && stats.hist.count(t.id))
             {
@@ -72,8 +72,9 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
                     assert(known);
 
                     // Measured fold-change between the two mixtures
-                    measured = t.logF;  //t.fpkm_2 / t.fpkm_1;
+                    measured = t.logF;
                     
+                    // Turn it back to the original scale
                     measured = std::pow(2, measured);
                 }
 
@@ -83,7 +84,7 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
             break;
         }
             
-        case Metrics::Isoform:
+        case Level::Isoform:
         {
             if (t.status == Status::Tested && !stats.hist.count(id))
             {
@@ -100,8 +101,9 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
                     stats.hist.at(id)++;
                     
                     // Measured fold-change between the two mixtures
-                    measured = t.logF; //t.fpkm_2 / t.fpkm_1;
-                    
+                    measured = t.logF;
+
+                    // Turn it back to the original scale
                     measured = std::pow(2, measured);
                 }
                 
@@ -111,7 +113,7 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
             break;
         }
             
-        case Metrics::Exon:
+        case Level::Exon:
         {
             throw "Not Implemented";
         }
@@ -134,7 +136,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
     }
     else
     {
-        stats.n_expT++;
+        stats.n_endo++;
         classifyEndo(stats, t, o);
     }
 
@@ -154,11 +156,11 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     stats.data[Endo];
     stats.data[ChrT];
 
-    switch (o.metrs)
+    switch (o.lvl)
     {
-        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
-        case Metrics::Isoform: { stats.hist = r.hist();         break; }
-        case Metrics::Exon:    { throw "Not Implemented"; }
+        case Level::Gene:    { stats.hist = r.geneHist(ChrT); break; }
+        case Level::Isoform: { stats.hist = r.hist();         break; }
+        case Level::Exon:    { throw "Not Implemented"; }
     }
 
     assert(!stats.hist.empty());
@@ -172,21 +174,11 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     
     o.info("Calculating detection limit");
     
-    switch (o.metrs)
+    switch (o.lvl)
     {
-        case Metrics::Gene:
-        {
-            stats.limit = r.limitGene(stats.hist);
-            break;
-        }
-
-        case Metrics::Isoform:
-        {
-            stats.limit = r.limit(r.hist());
-            break;
-        }
-
-        case Metrics::Exon:
+        case Level::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
+        case Level::Isoform: { stats.limit = r.limit(r.hist());       break; }
+        case Level::Exon:
         {
             throw "Not Implemented";
         }
@@ -243,7 +235,15 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 void TDiffs::report(const FileName &file, const Options &o)
 {
     const auto stats = TDiffs::analyze(file, o);
-    const auto units = (o.metrs == Metrics::Isoform) ? "isoforms" : "genes";
+    
+    const auto m = std::map<TDiffs::Level, std::string>
+    {
+        { TDiffs::Level::Gene, "gene"    },
+        { TDiffs::Level::Gene, "exon"    },
+        { TDiffs::Level::Gene, "isoform" },
+    };
+    
+    const auto units = m.at(o.lvl);
     
     o.info("Generating statistics");
     

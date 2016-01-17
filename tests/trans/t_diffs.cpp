@@ -60,8 +60,8 @@ TEST_CASE("TDiff_AllExpressed")
     
     TDiffs::Options o;
     
-    o.soft  = TDiffs::Software::Cuffdiff;
-    o.metrs = TDiffs::Metrics::Gene;
+    o.soft = TDiffs::Software::Cuffdiff;
+    o.lvl  = TDiffs::Level::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
@@ -111,7 +111,7 @@ TEST_CASE("TDiff_NoneExpressed")
     }
     
     TDiffs::Options o;
-    o.metrs = TDiffs::Metrics::Gene;
+    o.lvl = TDiffs::Level::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
@@ -142,7 +142,7 @@ TEST_CASE("TDiff_NoSynthetic")
     }
     
     TDiffs::Options o;
-    o.metrs = TDiffs::Metrics::Gene;
+    o.lvl = TDiffs::Level::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();

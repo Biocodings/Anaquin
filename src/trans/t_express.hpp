@@ -13,11 +13,22 @@ namespace Anaquin
             StringTie,
         };
         
-        enum class Metrics
+        enum class Level
         {
             Gene,
             Exon,
             Isoform
+        };
+
+        struct Options : public AnalyzerOptions
+        {
+            // This's required by gcc...
+            Options() {}
+
+            // Default to gene level
+            Level lvl = Level::Gene;
+            
+            Software soft;
         };
 
         struct Stats : public MappingStats
@@ -26,17 +37,8 @@ namespace Anaquin
 
             std::map<ChromoID, Data> data;
             
+            // Detection limit
             Limit limit;
-        };
-
-        struct Options : public AnalyzerOptions
-        {
-            // This's required by gcc...
-            Options() {}
-
-            Metrics metrs = Metrics::Gene;
-            
-            Software soft;
         };
 
         static Stats analyze(const FileName &, const Options &o);
@@ -55,7 +57,6 @@ namespace Anaquin
             return stats;
         }
 
-        static void report(const FileName &, const Options &o = Options());
         static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }

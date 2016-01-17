@@ -108,7 +108,7 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     }
  
     stats.chrT->n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
-    stats.chrT->n_expT = (dStats_1.n + dStats_2.n) - stats.chrT->n_chrT;
+    stats.chrT->n_endo = (dStats_1.n + dStats_2.n) - stats.chrT->n_chrT;
 
     stats.chrT->ss = Standard::instance().r_meta.limit(stats.chrT->h);
 

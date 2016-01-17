@@ -280,7 +280,7 @@ void VSample::report(const FileName &file, const Options &o)
     o.writer->open("VarSubsample_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % before.cov.unmapped
-                                            % before.cov.n_expT
+                                            % before.cov.n_endo
                                             % before.cov.n_chrT
                                             % Standard::instance().r_var.countRefGenes()
                                             % meth2Str()

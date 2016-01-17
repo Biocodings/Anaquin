@@ -589,7 +589,7 @@ static void writeSummary(const FileName &file, const TAlign::Stats &stats, std::
     writer->write((boost::format(replicateSummary())
                                           % file
                                           % stats.unmapped
-                                          % stats.n_expT
+                                          % stats.n_endo
                                           % (100.0 * stats.endoProp())
                                           % stats.n_chrT
                                           % (100.0 * stats.chrTProp())                            // 6
@@ -761,7 +761,7 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     const auto stats = TAlign::analyze(files, o);
     
     /*
-     * Process each replicate one after the other. Later, we'll pool the information to generate a summary for all replicates.
+     * Process each replicate in orders. Later, we'll pool the information to generate a summary for all replicates.
      * In order to calculate the variation between replicates, we'll add them to an accumulator.
      */
     
@@ -769,7 +769,7 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
     {
         const auto &stat = stats[i];
         
-        accs[ExpT].add("n_expT",    stat.n_expT);
+        accs[ExpT].add("n_endo",    stat.n_endo);
         accs[ExpT].add("n_chrT",    stat.n_chrT);
         accs[ExpT].add("dilution",  stat.dilution());
         accs[ExpT].add("unmapped",  stat.unmapped);
@@ -828,7 +828,7 @@ void TAlign::report(const std::vector<FileName> &files, const Options &o)
         
         o.writer->write((boost::format(pooledSummary()) % concated
                                                         % acc.value("unmapped")()
-                                                        % acc.value("n_expT")()
+                                                        % acc.value("n_endo")()
                                                         % acc.value("expTProp")()    // 4
                                                         % acc.value("n_chrT")()      // 5
                                                         % acc.value("chrTProp")()    // 6

@@ -60,7 +60,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
         }
         else
         {
-            stats.n_expT++;
+            stats.n_endo++;
             o.warn((boost::format("%1% is not a sequin") % id).str());
         }
     });
@@ -199,7 +199,7 @@ void MBlat::report(const FileName &file, const Options &o)
         ;
 
         o.writer->write((boost::format(summary) % file
-                                                % stats.n_expT
+                                                % stats.n_endo
                                                 % stats.n_chrT
                                                 % stats.aligns.size()
                                                 % stats.countAssembled()

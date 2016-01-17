@@ -203,7 +203,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         
         if (f.cID != Standard::chrT)
         {
-            stats.n_expT++;
+            stats.n_endo++;
         }
         else
         {
@@ -322,7 +322,7 @@ static void writeChrSummary(const FileName &file, const TAssembly::Stats &stats,
 
     writer->open(file);
     writer->write((boost::format(summary()) % file
-                                            % stats.n_expT
+                                            % stats.n_endo
                                             % stats.n_chrT
                                             % r.data().size()
                                             % r.countIntrons(cID)

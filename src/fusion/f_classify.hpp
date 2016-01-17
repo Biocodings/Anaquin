@@ -129,10 +129,10 @@ namespace Anaquin
                     
                     switch (r)
                     {
-                        case Code::Negative:   { break;                        }
-                        case Code::Genome:     { stats.chrT->n_expT++;        break; }
-                        case Code::GenomeChrT: { stats.chrT->hg38_chrT++;     break; }
-                        case Code::Positive:   { positive(id, f.reads); break; }
+                        case Code::Negative:   { break;                          }
+                        case Code::Genome:     { stats.chrT->n_endo++;    break; }
+                        case Code::GenomeChrT: { stats.chrT->hg38_chrT++; break; }
+                        case Code::Positive:   { positive(id, f.reads);   break; }
                     }
                 });
             }
@@ -145,7 +145,7 @@ namespace Anaquin
                     switch (r)
                     {
                         case Code::Negative:   { break;                        }
-                        case Code::Genome:     { stats.chrT->n_expT++;        break; }
+                        case Code::Genome:     { stats.chrT->n_endo++;        break; }
                         case Code::GenomeChrT: { stats.chrT->hg38_chrT++;     break; }
                         case Code::Positive:   { positive(id, f.reads); break; }
                     }

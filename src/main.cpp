@@ -130,7 +130,7 @@ typedef std::set<Value> Range;
 #define OPT_U_TAB   910
 #define OPT_U_COV   911
 #define OPT_U_FACTS 912
-#define OPT_U_LEVEL 913
+#define OPT_LEVEL   913
 #define OPT_U_FILES 914
 #define OPT_U_NAMES 915
 
@@ -219,12 +219,12 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_GTF                                       } },
-    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT                                        } },
     { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES                                     } },
+    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
-    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES                                      } },
+    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
 
     /*
      * Metagenomics Analysis
@@ -408,7 +408,7 @@ static const struct option long_options[] =
     { "utab",    required_argument, 0, OPT_U_TAB   },
     { "ucov",    required_argument, 0, OPT_U_COV   },
     { "factors", required_argument, 0, OPT_U_FACTS },
-    { "levels",  required_argument, 0, OPT_U_LEVEL },
+    { "level",   required_argument, 0, OPT_LEVEL   },
     { "names",   required_argument, 0, OPT_U_NAMES },
 
     { "rbed",    required_argument, 0, OPT_R_BED_1 },
@@ -905,7 +905,7 @@ void parse(int argc, char ** argv)
              */
 
             case OPT_SOFT:
-            case OPT_U_LEVEL: { _p.opts[opt] = val; break; }
+            case OPT_LEVEL: { _p.opts[opt] = val; break; }
 
             case OPT_U_FILES:
             {
@@ -1081,8 +1081,6 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_ALIGN:
                 {
-                    TAlign::Options o;
-                    
                     analyze<TAlign>(_p.inputs);
                     break;
                 }
@@ -1100,13 +1098,13 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_EXPRESS:
                 {
-                    auto parseMetris = [&](const std::string &key, const std::string &str)
+                    auto parseLevel = [&](const std::string &key, const std::string &str)
                     {
-                        const static std::map<std::string, TExpress::Metrics> m =
+                        const static std::map<std::string, TExpress::Level> m =
                         {
-                            { "gene",    TExpress::Metrics::Gene    },
-                            { "isoform", TExpress::Metrics::Isoform },
-                            { "exon",    TExpress::Metrics::Exon    },
+                            { "gene",    TExpress::Level::Gene    },
+                            { "isoform", TExpress::Level::Isoform },
+                            { "exon",    TExpress::Level::Exon    },
                         };
                         
                         return parseEnum(key, str, m);
@@ -1126,18 +1124,16 @@ void parse(int argc, char ** argv)
                     TExpress::Options o;
                     
                     o.soft = parseSoft("soft", _p.opts.at(OPT_SOFT));
+                    
+                    // Optional. Default to gene level.
+                    assert(o.lvl == TExpress::Level::Gene);
+                    
+                    if (_p.opts.count(OPT_LEVEL))
+                    {
+                        o.lvl = parseLevel("level", _p.opts[OPT_LEVEL]);
+                    }
 
-                    //if (_p.opts.count(OPT_GTRACK))
-                    //{
-                      //  o.metrs = TExpress::Level::Gene;
-                       // analyze_1<TExpress>(OPT_GTRACK, o);
-                    //}
-                    //else
-                    //{
-                      //  o.metrs = TExpress::Level::Isoform;
-                        //analyze_1<TExpress>(OPT_ITRACK, o);
-                    //}
-
+                    analyze<TExpress>(_p.inputs, o);
                     break;
                 }
 
@@ -1148,13 +1144,13 @@ void parse(int argc, char ** argv)
                     
                 case TOOL_T_DIFF:
                 {
-                    auto parseMetris = [&](const std::string &str)
+                    auto parseLevel = [&](const std::string &str)
                     {
-                        const static std::map<std::string, TDiffs::Metrics> m =
+                        const static std::map<std::string, TDiffs::Level> m =
                         {
-                            { "gene",    TDiffs::Metrics::Gene    },
-                            { "isoform", TDiffs::Metrics::Isoform },
-                            { "exon",    TDiffs::Metrics::Exon    },
+                            { "gene",    TDiffs::Level::Gene    },
+                            { "isoform", TDiffs::Level::Isoform },
+                            { "exon",    TDiffs::Level::Exon    },
                         };
                         
                         return parseEnum("levels", str, m);
@@ -1175,11 +1171,11 @@ void parse(int argc, char ** argv)
                     TDiffs::Options o;
 
                     // Optional. Default to gene level.
-                    assert(o.metrs == TDiffs::Metrics::Gene);
+                    assert(o.lvl == TDiffs::Level::Gene);
                     
-                    if (_p.opts.count(OPT_U_LEVEL))
+                    if (_p.opts.count(OPT_LEVEL))
                     {
-                        o.metrs = parseMetris(_p.opts[OPT_U_LEVEL]);
+                        o.lvl = parseLevel(_p.opts[OPT_LEVEL]);
                     }
 
                     o.soft = parseSoft(_p.opts[OPT_SOFT]);
@@ -1515,7 +1511,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidValueException &ex)
     {
-        printError((boost::format("%1% not expected for option -%2%") % ex.opt % ex.value).str());
+        printError((boost::format("%1% not expected for option -%2%. Please check and try again.") % ex.opt % ex.value).str());
     }
     catch (const MissingOptionError &ex)
     {

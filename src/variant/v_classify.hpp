@@ -55,7 +55,7 @@ namespace Anaquin
         {
             if (v.id != Standard::chrT)
             {
-                stats.chrT->n_expT++;
+                stats.chrT->n_endo++;
                 return;
             }
             

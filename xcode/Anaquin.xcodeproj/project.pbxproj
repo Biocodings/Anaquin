@@ -113,6 +113,7 @@
 		EFE88F961C15A7DD00B46829 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE88F951C15A7DD00B46829 /* t_assembly.cpp */; };
 		EFED772D1B94AC2D001842F4 /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFED77271B94AC2D001842F4 /* v_align.cpp */; };
 		EFED772E1B94AC2D001842F4 /* v_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFED77291B94AC2D001842F4 /* v_discover.cpp */; };
+		EFF5DE171C4B8AF8001C3496 /* analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF5DE161C4B8AF8001C3496 /* analyzer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -316,6 +317,7 @@
 		EFED77291B94AC2D001842F4 /* v_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_discover.cpp; path = ../src/variant/v_discover.cpp; sourceTree = "<group>"; };
 		EFED772A1B94AC2D001842F4 /* v_discover.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_discover.hpp; path = ../src/variant/v_discover.hpp; sourceTree = "<group>"; };
 		EFED772C1B94AC2D001842F4 /* v_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_viewer.hpp; path = ../src/variant/v_viewer.hpp; sourceTree = "<group>"; };
+		EFF5DE161C4B8AF8001C3496 /* analyzer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = analyzer.cpp; path = ../src/stats/analyzer.cpp; sourceTree = "<group>"; };
 		EFF820CA1BAFA497009CC6C6 /* m_assembler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembler.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -396,6 +398,7 @@
 			isa = PBXGroup;
 			children = (
 				EF1DE0B91B21EC8300DEC381 /* analyzer.hpp */,
+				EFF5DE161C4B8AF8001C3496 /* analyzer.cpp */,
 				EF1DE0BA1B21EC8300DEC381 /* classify.hpp */,
 				EF1DE0BC1B21EC8300DEC381 /* limit.hpp */,
 			);
@@ -656,10 +659,10 @@
 		EFE9A01D1AD3B10900557829 /* Writers */ = {
 			isa = PBXGroup;
 			children = (
-				EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */,
-				EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */,
 				EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */,
+				EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */,
 				EF5180E41AE09A56007010F3 /* r_writer.hpp */,
+				EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */,
 				EFE9A01E1AD3B11F00557829 /* writer.hpp */,
 			);
 			name = Writers;
@@ -767,6 +770,7 @@
 				EF9ACCF31B5FB9790085D1B2 /* t_align.cpp in Sources */,
 				EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */,
 				EF9ACCEE1B5FB7520085D1B2 /* t_express.cpp in Sources */,
+				EFF5DE171C4B8AF8001C3496 /* analyzer.cpp in Sources */,
 				EF5B07BD1C48B3FA00751B46 /* t_count.cpp in Sources */,
 				EF9ACCEF1B5FB7520085D1B2 /* t_align.cpp in Sources */,
 				EF9ACCF01B5FB7520085D1B2 /* t_assembly.cpp in Sources */,

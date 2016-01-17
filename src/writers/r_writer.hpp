@@ -2,6 +2,7 @@
 #define R_WRITER_HPP
 
 #include <map>
+#include <math.h>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -43,6 +44,101 @@ namespace Anaquin
     
     struct StatsWriter
     {
+        /*
+         * -------------------- Linear Statistics (with inflection) --------------------
+         */
+
+        template <typename Stats> static std::string linearInflect(const FileName &src,
+                                                                   const Stats &stats,
+                                                                   const ChromoID &cID,
+                                                                   const Units &units,
+                                                                   const Units &ref = "")
+        {
+            const auto summary = "Summary for dataset: %1%\n\n"
+                                 "   Experiment:  %2% %4%\n"
+                                 "   Synthetic:   %3% %4%\n\n"
+                                 "   Reference:   %5% %6%\n"
+                                 "   Detected:    %9% %6%\n\n"
+                                 "   ***\n"
+                                 "   *** Detection Limits\n"
+                                 "   ***\n\n"
+                                 ""
+                                 "   Break: %7% (%8%)\n\n"
+                                 "   Left:  %9% + %10%x (R2 = %11%)\n"
+                                 "   Right: %12% + %13%x (R2 = %14%)\n\n"
+                                 "   ***\n"
+                                 "   *** Statistics for linear regression\n"
+                                 "   ***\n\n"
+                                 "   Correlation: %15%\n"
+                                 "   Slope:       %16%\n"
+                                 "   R2:          %17%\n"
+                                 "   F-statistic: %18%\n"
+                                 "   P-value:     %19%\n"
+                                 "   SSM:         %20%, DF: %21%\n"
+                                 "   SSE:         %22%, DF: %23%\n"
+                                 "   SST:         %24%, DF: %25%\n\n"
+                                 "   ***\n"
+                                 "   *** Statistics for linear regression (log2 scale)\n"
+                                 "   ***\n\n"
+                                 "   Correlation: %26%\n"
+                                 "   Slope:       %27%\n"
+                                 "   R2:          %28%\n"
+                                 "   F-statistic: %29%\n"
+                                 "   P-value:     %30%\n"
+                                 "   SSM:         %31%, DF: %32%\n"
+                                 "   SSE:         %33%, DF: %34%\n"
+                                 "   SST:         %35%, DF: %36%\n";
+            
+            const auto n_lm = stats.data.at(cID).linear(false);
+            const auto l_lm = stats.data.at(cID).linear(true);
+            
+            // Calcluate the inflect point after log-transformation
+            const auto inflect = stats.data.at(cID).inflect(true);
+            
+            // Remember the break-point is on the log-scale, we'll need to convert it back
+            const auto b = pow(2, inflect.b);
+            
+            return (boost::format(summary) % src                          // 1
+                                           % stats.n_endo
+                                           % stats.n_chrT
+                                           % units
+                                           % stats.hist.size()            // 5
+                                           % (ref.empty() ? units : ref)  // 6
+                                           % b
+                                           % "-"
+                                           % inflect.lInt                 // 9
+                                           % inflect.lSl                  // 10
+                                           % inflect.lR2                  // 11
+                                           % inflect.rInt                 // 12
+                                           % inflect.rSl                  // 13
+                                           % inflect.rR2                  // 14
+                                           % n_lm.r                       // 15
+                                           % n_lm.m                       // 16
+                                           % n_lm.r2                      // 17
+                                           % n_lm.f                       // 18
+                                           % n_lm.p                       // 19
+                                           % n_lm.ssm                     // 20
+                                           % n_lm.ssm_df                  // 21
+                                           % n_lm.sse                     // 22
+                                           % n_lm.sse_df                  // 23
+                                           % n_lm.sst                     // 24
+                                           % n_lm.sst_df                  // 25
+                                           % l_lm.r                       // 26
+                                           % l_lm.m                       // 27
+                                           % l_lm.r2                      // 28
+                                           % l_lm.f                       // 29
+                                           % l_lm.p                       // 30
+                                           % l_lm.ssm                     // 31
+                                           % l_lm.ssm_df                  // 32
+                                           % l_lm.sse                     // 33
+                                           % l_lm.sse_df                  // 34
+                                           % l_lm.sst                     // 35
+                                           % l_lm.sst_df                  // 36
+                    ).str();
+        }
+        
+        
+        
         /*
          * -------------------- Linear Statistics --------------------
          */
@@ -89,7 +185,7 @@ namespace Anaquin
             const auto l_lm = stats.data.at(cID).linear(true);
             
             return (boost::format(summary) % src                          // 1
-                                           % stats.n_expT
+                                           % stats.n_endo
                                            % stats.n_chrT
                                            % units
                                            % stats.hist.size()            // 5
@@ -177,10 +273,10 @@ namespace Anaquin
             return (boost::format(summary) % d1                          // 1
                                            % d2
                                            % (samples.empty() ? "Genome" : samples)
-                                           % s1.n_expT
+                                           % s1.n_endo
                                            % units
                                            % s1.n_chrT
-                                           % s2.n_expT
+                                           % s2.n_endo
                                            % s2.n_chrT
                                            % s1.data.at(ChrT).h.size()
                                            % (ref.empty() ? units : ref) // 10

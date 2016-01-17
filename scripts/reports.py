@@ -38,6 +38,9 @@ TEMP_PATH = 'temp'
 # Execute an Anaquin request
 def anaquin(tool, args, config, needMixture=True):
     
+    names   = get(config, 'NAMES')
+    factors = get(config, 'FACTORS')
+    
     #
     # Generate a full Anaquin command. A full command would need the mixture and reference annotation.
     # However, not all tool would require, say, a mixture.
@@ -126,18 +129,13 @@ def mixture_2(config):
 
 
 # Create a report for TransQuin
-def transQuin(config):
+def transQuin(config, factors, names):
     
-    metrics = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
-
     #############################################
     #                                           #
     #  1. Generating statistics for alignments  #
     #                                           #
     #############################################
-
-    # Factors for the alignments
-    factors = get(config, 'ALIGN_FACTORS')    
 
     # Alignment files
     alignFiles = get(config, 'ALIGN_FILE', EXPECT_FILES)
@@ -153,17 +151,36 @@ def transQuin(config):
     # Execute the command
     anaquin('TransAlign', req, config)
 
-    return
 
-    ########################################################
-    #                                                      #
-    #  2. Generating statistics for differential analysis  #
-    #                                                      #
-    ########################################################
+    ######################################################
+    #                                                    #
+    #  2. Generating statistics for expression analysis  #
+    #                                                    #
+    ######################################################
 
-    # Factors for differential analysis
-    factors = get(config, 'DIFF_FACTORS')
+    # Expression files
+    expSoft = get(config, 'EXP_SOFT', { 'Cuffdiff', 'StringTie' })
+
+    #
+    # Generate a request for TransExp for expression analysis. For example:
+    #
+    #    anaquin TransExp -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
+    #
+
+    req = '-ufiles ' + expSoft
     
+    # Execute the command
+    anaquin('TransExp', req, config)
+    
+    
+    ########################################################
+    #                                                      #
+    #  3. Generating statistics for differential analysis  #
+    #                                                      #
+    ########################################################
+
+    metrics = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
+
     countSoft  = get(config, 'COUNT_SOFT', { 'HTSeqCount' })    
     countFiles = get(config, 'DIFF_COUNT', EXPECT_FILES)
 
@@ -236,8 +253,3 @@ if __name__ == '__main__':
     if (mode == 'TransQuin'):
         transQuin(parse(file))
         
-
-#        -t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -t TransDiff -factors 1,1,1,2,2,2 -soft DESEq2 -level gene -ufiles /Users/tedwong/Desktop/K_562/edgeR_Gene.csv 
-        
-
-#-t TransDiff -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf -o temp TransAlign -factors 1,1,1,2,2,2 -ufiles /Users/tedwong/Desktop/K_562/Aligns/A1/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/A2/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/A3/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B1/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B2/accepted_hits.bam,/Users/tedwong/Desktop/K_562/Aligns/B3/accepted_hits.bam

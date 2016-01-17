@@ -25,7 +25,7 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
 //                             "   Specificity: %8%\n";
 //
 //        o.writer->write((boost::format(summary) % file
-//                                                % stats.chrT->n_expT
+//                                                % stats.chrT->n_endo
 //                                                % stats.chrT->n_chrT
 //                                                % stats.chrT->hg38_chrT
 //                                                % stats.chrT->m.nr()

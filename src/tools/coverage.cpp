@@ -101,7 +101,7 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
 
     o.writer->open(o.summary);
     o.writer->write((boost::format(summary) % stats.src
-                                            % stats.n_expT
+                                            % stats.n_endo
                                             % stats.n_chrT
                                             % o.refs
                                             % o.length

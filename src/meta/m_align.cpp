@@ -141,7 +141,7 @@ void MAlign::report(const FileName &file, const Options &o)
     o.writer->open("MetaAlign_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % stats.unmapped
-                                            % stats.n_expT
+                                            % stats.n_endo
                                             % stats.n_chrT
                                             % stats.inters.size()                       // 5
                                             % stats.sp.m.sn()

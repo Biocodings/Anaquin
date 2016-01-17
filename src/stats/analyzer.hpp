@@ -63,16 +63,16 @@ namespace Anaquin
         // The distribution of counts across chromosomes
         std::map<ChromoID, Counts> hist;
 
-        // Total mapped to the in-silico chromosome
+        // Total mapped to the synthetic chromosome
         Counts n_chrT = 0;
 
-        // Total mapped to the experiment
-        Counts n_expT = 0;
+        // Total mapped to the endogenous
+        Counts n_endo = 0;
 
         // Proportion of reads aligned to endogenous
         inline Percentage endoProp() const
         {
-            return (n_chrT + n_expT) ? static_cast<double>(n_expT) / (n_chrT + n_expT) : NAN;
+            return (n_chrT + n_endo) ? static_cast<double>(n_endo) / (n_chrT + n_endo) : NAN;
         }
         
         // Proportion of reads aligned to synthetic
@@ -83,7 +83,7 @@ namespace Anaquin
         
         inline Percentage dilution() const
         {
-            return (n_chrT + n_expT) ? static_cast<double>(n_chrT) / (n_chrT + n_expT) : NAN;
+            return (n_chrT + n_endo) ? static_cast<double>(n_chrT) / (n_chrT + n_endo) : NAN;
         }
     };
 
@@ -97,7 +97,7 @@ namespace Anaquin
             {
                 if      (!t.mapped) { unmapped++; }
                 else if (!f(t))     { n_chrT++;   }
-                else                { n_expT++;   }
+                else                { n_endo++;   }
             }
         }
 
@@ -186,6 +186,25 @@ namespace Anaquin
         // Degree of freedoms
         unsigned sst_df, ssm_df, sse_df;
     };
+    
+    /*
+     * Represents an inflection limit, typically estimated by segmented piecewise linear regression.
+     */
+    
+    struct InflectionLimit
+    {
+        // Coefficient of determination before and after the break-point
+        double lR2, rR2;
+        
+        // Slope before and after the break-point
+        double lSl, rSl;
+        
+        // Intercept before and after the break-point
+        double lInt, rInt;
+        
+        // The optimal breakpoint
+        double b;
+    };
 
     // Classify at the base-level by counting for non-overlapping regions
     template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m, SequinHist &c)
@@ -232,76 +251,14 @@ namespace Anaquin
             (*this)[id] = Point(x, y);
         }
 
-        /*
-         * Compute a simple linear regression model. By default, this function assumes
-         * the values are raw and will attempt to log-transform.
-         */
+        // Return the x-values and y-values after filtering
+        void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog) const;
 
-        inline LinearModel linear(bool shouldLog = true) const
-        {
-            std::vector<double> x, y;
-
-            auto f = [&](double v)
-            {
-                // Don't log zero...
-                assert(!shouldLog || v);
-
-                return shouldLog ? (v ? log2(v) : 0) : v;
-            };
-
-            for (const auto &p : *this)
-            {
-                if (!isnan(p.second.x) && !isnan(p.second.y))
-                {
-                    x.push_back(f(p.second.x));
-                    y.push_back(f(p.second.y));
-                }
-            }
-
-            LinearModel lm;
-
-            try
-            {
-                if (std::adjacent_find(x.begin(), x.end(), std::not_equal_to<double>()) == x.end())
-                {
-                    throw std::runtime_error("Failed to perform linear regression. Flat mixture.");
-                }
-
-                const auto m = SS::lm(SS::R::data.frame(SS::R::c(y), SS::R::c(x)));
-
-                lm.f      = m.f;
-                lm.p      = m.p;
-                lm.r      = SS::cor(x, y);
-                lm.c      = m.coeffs[0].value;
-                lm.m      = m.coeffs[1].value;
-                lm.r2     = m.r2;
-                lm.ar2    = m.ar2;
-                lm.sst    = m.total.ss;
-                lm.ssm    = m.model.ss;
-                lm.sse    = m.error.ss;
-                lm.sst_df = m.total.df;
-                lm.ssm_df = m.model.df;
-                lm.sse_df = m.error.df;
-            }
-            catch(...)
-            {
-                lm.f      = NAN;
-                lm.p      = NAN;
-                lm.r      = NAN;
-                lm.c      = NAN;
-                lm.m      = NAN;
-                lm.r2     = NAN;
-                lm.ar2    = NAN;
-                lm.sst    = NAN;
-                lm.ssm    = NAN;
-                lm.sse    = NAN;
-                lm.sst_df = NAN;
-                lm.ssm_df = NAN;
-                lm.sse_df = NAN;
-            }
-
-            return lm;
-        }
+        // Compute the inflection limit. By default, this function assumes log-transformation.
+        InflectionLimit inflect(bool shouldLog = true) const;
+        
+        // Compute a simple linear regression model. By default, this function assumes log-transformation.
+        LinearModel linear(bool shouldLog = true) const;
     };
 
     struct WriterOptions
