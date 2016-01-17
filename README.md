@@ -5,7 +5,7 @@ Anaquin is a C++/R bioinformatics framework for sequins, providing qualitative a
 
 <ul>
 <li>Transcriptome
-<li>Variant
+<li>Structucal Variant
 <li>Metagenomics
 </ul>
 
