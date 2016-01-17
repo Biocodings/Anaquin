@@ -47,8 +47,9 @@ Bioinformatics
 <ul>
 <li>Differential analysis
 <li>Alternative Splicing
-<li>Genomics analysis
-<li>Metagenomic analysis
+<li>Gene expression
+<li>Allele frequency
+<li>De-novo assembly
 </ul>
 
 Features
