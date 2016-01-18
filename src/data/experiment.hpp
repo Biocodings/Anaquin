@@ -16,7 +16,7 @@ namespace Anaquin
         
             typedef unsigned Factor;
         
-            typedef std::vector<Factor> Replicates;
+            typedef std::vector<Factor> Samples;
             typedef std::vector<std::string> Names;
 
             Experiment() {}
@@ -33,8 +33,8 @@ namespace Anaquin
             // Eg: 1,1,1,2,2,2
             void addFactors(const std::string &);
         
-            // Return the meta-data for the replicates
-            inline const Replicates & reps() const { return _reps; }
+            // Return the meta-data for the samples
+            inline const Samples & samples() const { return _samples; }
 
             // Return the meta-names for the replicates
             inline const Names & names() const { return _names; }
@@ -42,12 +42,11 @@ namespace Anaquin
             // Number of factors, typically control vs treated (ie: 2)
             inline std::size_t countFactors() const { return _factors.size(); }
 
-            // Return indexes for a particular factor
-            std::vector<std::size_t> factor(Factor) const;
+            // Return the positions for a condition
+            std::vector<std::size_t> cond(Factor) const;
 
         private:
-            // For all replicates
-            Replicates _reps;
+            Samples _samples;
         
             // Eg: A1,A2,A3,B1,B2,B3
             Names _names;

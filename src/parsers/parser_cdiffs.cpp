@@ -48,8 +48,6 @@ void ParserCDiffs::parse(const FileName &file, std::function<void (const Trackin
 
         t.id     = toks[FGeneID];
         t.testID = toks[FTestID];
-        t.fpkm_1 = stof(toks[FFPKM_1]);
-        t.fpkm_2 = stof(toks[FFPKM_2]);
         t.status = tok2Status.at(toks[FStatus]);
         t.logF   = stof(toks[FLogFold]);
         t.stats  = stof(toks[FTestStats]);

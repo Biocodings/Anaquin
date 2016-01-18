@@ -80,7 +80,7 @@ template <typename T> void classifyChrT(TCount::Stats &stats, const T &t, const 
         {
             if ((t.status != Status::NotTested) && stats.hist.count(t.id))
             {
-                g(t.id, t.fpkm_1, t.fpkm_2);
+                //g(t.id, t.fpkm_1, t.fpkm_2);
             }
             
             break;
@@ -101,12 +101,12 @@ template <typename T> void classifyChrT(TCount::Stats &stats, const T &t, const 
                 known = seq->abund(Mix_2) / seq->abund(Mix_1);
             }
             
-            if ((t.status != Status::NotTested) && t.fpkm_1 && t.fpkm_2)
+            //if ((t.status != Status::NotTested) && t.fpkm_1 && t.fpkm_2)
             {
                 stats.hist.at(id)++;
                 
                 // Measured fold-change between the two mixtures
-                measured = t.fpkm_2 / t.fpkm_1;
+                //measured = t.fpkm_2 / t.fpkm_1;
             }
             
             stats.data[ChrT].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);

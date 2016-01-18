@@ -36,24 +36,14 @@ TEST_CASE("TDiff_AllExpressed")
     {
         DiffTest test;
         
-        test.cID = "chrT";
         test.id  = gID;
+        test.cID = ChrT;
         
         test.p = 0.005;
         test.q = 0.005;
 
         test.logF   = 1.0;
         test.status = DiffTest::Status::Tested;
-        test.fpkm_1 = test.fpkm_2 = 0;
-        
-        for (const auto &j : Standard::instance().r_trans.data())
-        {
-            if (gID == j.second.gID)
-            {
-                test.fpkm_1 += j.second.mixes.at(Mix_1);
-                test.fpkm_2 += j.second.mixes.at(Mix_2);
-            }
-        }
         
         tests.push_back(test);
     }
@@ -88,24 +78,14 @@ TEST_CASE("TDiff_NoneExpressed")
     {
         DiffTest test;
         
-        test.cID = "chrT";
         test.id  = gID;
+        test.cID = ChrT;
         
         test.p = 0.99;
         test.q = 0.99;
         
         test.logF = 1.0;
         test.status = DiffTest::Status::Tested;
-        test.fpkm_1 = test.fpkm_2 = 0;
-        
-        for (const auto &j : Standard::instance().r_trans.data())
-        {
-            if (gID == j.second.gID)
-            {
-                test.fpkm_1 += j.second.mixes.at(Mix_1);
-                test.fpkm_2 += j.second.mixes.at(Mix_2);
-            }
-        }
         
         tests.push_back(test);
     }

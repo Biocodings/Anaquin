@@ -32,6 +32,9 @@ namespace Anaquin
         {
             Options() {}
 
+            // Files for the count table
+            std::vector<FileName> counts;
+            
             // Default to gene level
             Level lvl = Level::Gene;
 
@@ -57,6 +60,9 @@ namespace Anaquin
             
             std::map<ChromoID, Data> data;
 
+            // Average counts for each condition if provided
+            std::vector<Counts> avgs;
+            
             // Detection limit            
             Limit limit;
         };

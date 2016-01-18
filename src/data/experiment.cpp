@@ -8,7 +8,7 @@ using namespace Anaquin;
 void Experiment::addNames(const std::string &str)
 {
     Tokens::split(str, ",", _names);
-    assert(_reps.empty() || _names.size() == _reps.size());
+    assert(_samples.empty() || _names.size() == _samples.size());
 }
 
 void Experiment::addFactors(const std::string &str)
@@ -26,21 +26,21 @@ void Experiment::addFactors(const std::string &str)
             m[tok] = static_cast<unsigned>(m.size());
         }
 
-        _reps.push_back(m[tok]);
+        _samples.push_back(m[tok]);
         _factors.insert(m[tok]);
     }
     
-    assert(_reps.size() == toks.size());
-    assert(_names.empty() || _reps.size() == _names.size());
+    assert(_samples.size() == toks.size());
+    assert(_names.empty() || _samples.size() == _names.size());
 }
 
-std::vector<std::size_t> Experiment::factor(Factor f) const
+std::vector<std::size_t> Experiment::cond(Factor f) const
 {
     std::vector<std::size_t> r;
     
-    for (auto i = 0; i < _reps.size(); i++)
+    for (auto i = 0; i < _samples.size(); i++)
     {
-        if (_reps[i] == f)
+        if (_samples[i] == f)
         {
             // It's the index we're looking for
             r.push_back(i);

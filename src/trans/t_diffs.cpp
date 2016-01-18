@@ -5,6 +5,7 @@
  */
 
 #include "trans/t_diffs.hpp"
+#include "data/experiment.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_cdiffs.hpp"
@@ -94,15 +95,12 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
                 {
                     // Known fold-change between the two mixtures
                     known = seq->abund(Mix_2) / seq->abund(Mix_1);
-                }
-                
-                if ((t.status != Status::NotTested) && t.fpkm_1 && t.fpkm_2)
-                {
+                    
                     stats.hist.at(id)++;
                     
                     // Measured fold-change between the two mixtures
                     measured = t.logF;
-
+                    
                     // Turn it back to the original scale
                     measured = std::pow(2, measured);
                 }
@@ -164,6 +162,34 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     }
 
     assert(!stats.hist.empty());
+
+    if (!o.counts.empty())
+    {
+        /*
+        ParserHTSeqCount::parse(Reader(str, DataMode::String), [&](const ParserHTSeqCount::CountRow &r, const ParserProgress &)
+                                {
+                                    x.push_back(r);
+                                });
+*/
+        
+        for (auto i = 0; i < o.exp->countFactors(); i++)
+        {
+            const auto j = o.exp->cond(i);
+            
+            /*
+             * Loop over the replicates and calculate its average counts
+             */
+            
+            double sum = 0.0;
+            
+            for (auto k = 0; k < j.size(); k++)
+            {
+                //sum += o.counts.at(j[k]);
+            }
+            
+            //
+        }
+    }
     
     o.info("Parsing input files");
     f(stats);
