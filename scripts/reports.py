@@ -131,6 +131,21 @@ def mixture_2(config):
 # Create a report for TransQuin
 def transQuin(config, factors, names):
     
+    ###########################################
+    #                                         #
+    #    1. Table of contents                 #
+    #    2. Alignments                        #
+    #    3. Assembly                          #
+    #    4. Gene expression                   #
+    #    5. Isoform expression                #
+    #    6. Alternative splicing expression   #
+    #    7. Differential expression           #
+    #                                         #
+    ###########################################
+        
+    
+    
+    
     #############################################
     #                                           #
     #  1. Generating statistics for alignments  #

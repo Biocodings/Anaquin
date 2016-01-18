@@ -24,13 +24,7 @@ namespace Anaquin
         // The p-value and q-value under null-hypothesis
         double p, q;
 
-        // Not always available
-        //FPKM fpkm_1 = 0;
-
-        // Not always available
-        //FPKM fpkm_2 = 0;
-
-        Status status;
+        Status status = Status::Tested;
     };
 }
 

@@ -4,7 +4,17 @@ header-includes: \usepackage{graphicx}
 output: 
     pdf_document:
         keep_tex: true
+        toc: yes
 ---
+
+Header 1
+---------------
+
+ssdasd
+
+Header 2
+---------------
+
 
 # Read Alignment for accepted_hits.bam (A1)
 

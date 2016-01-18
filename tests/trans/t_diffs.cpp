@@ -21,11 +21,13 @@ TEST_CASE("TDiff_Classify")
 
 TEST_CASE("TDiff_AllExpressed")
 {
+    const auto &s = Standard::instance().r_trans;
+    
     Test::transAB();
     
     std::set<GeneID> gIDs;
     
-    for (const auto &i : Standard::instance().r_trans.data())
+    for (const auto &i : s.data())
     {
         gIDs.insert(i.second.gID);
     }
@@ -42,8 +44,8 @@ TEST_CASE("TDiff_AllExpressed")
         test.p = 0.005;
         test.q = 0.005;
 
-        test.logF   = 1.0;
-        test.status = DiffTest::Status::Tested;
+        // Expected log-fold
+        test.logF = log2(s.findGene(ChrT, gID)->abund(Mix_2) / s.findGene(ChrT, gID)->abund(Mix_1));
         
         tests.push_back(test);
     }
@@ -63,11 +65,13 @@ TEST_CASE("TDiff_AllExpressed")
 
 TEST_CASE("TDiff_NoneExpressed")
 {
+    const auto &s = Standard::instance().r_trans;
+
     Test::transAB();
     
     std::set<GeneID> gIDs;
     
-    for (const auto &i : Standard::instance().r_trans.data())
+    for (const auto &i : s.data())
     {
         gIDs.insert(i.second.gID);
     }
@@ -84,8 +88,8 @@ TEST_CASE("TDiff_NoneExpressed")
         test.p = 0.99;
         test.q = 0.99;
         
-        test.logF = 1.0;
-        test.status = DiffTest::Status::Tested;
+        // Expected log-fold
+        test.logF = log2(s.findGene(ChrT, gID)->abund(Mix_2) / s.findGene(ChrT, gID)->abund(Mix_1));
         
         tests.push_back(test);
     }
