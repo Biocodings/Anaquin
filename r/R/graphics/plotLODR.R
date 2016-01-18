@@ -241,7 +241,7 @@ plotLODR <- function(data,
                              alpha=0.3, colour=NA, show_guide=FALSE)
     }
 
-    if (plotTable)
+    if (shouldTable)
     {
         annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(p, my_table), ncol = 1, heights = c(2,0.5)))
     }
@@ -253,19 +253,19 @@ plotLODR <- function(data,
     #
     lodr <- lodr.resLess[-c(2,4,5)]
 
-    data$LODR <- NA
+#    data$LODR <- NA
     
-    for (i in 1:nrow(data))
-    {
-        if (plotTable & data$ratio[i] != 0)
-        {
+#    for (i in 1:nrow(data))
+#    {
+#        if (shouldTable & data$ratio[i] != 0)
+#        {
             # What's the limit for this sequin?
-            limit <- as.numeric(as.character(lodr[lodr$ratio==data$ratio[i],]$Estimate))
+#            limit <- as.numeric(as.character(lodr[lodr$ratio==data$ratio[i],]$Estimate))
 
             # Classify the sequin based on its average counts (x-axis on the plot)
-            data[i,]$LODR <- ifelse(data[i,]$x < limit, 'below', 'above')
-        }
-    }
+#            data[i,]$LODR <- ifelse(data[i,]$x < limit, 'below', 'above')
+#        }
+#    }
 
     return (list(lodr.resLess[-c(2,4,5)], data))
 }

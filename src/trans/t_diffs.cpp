@@ -142,7 +142,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
     stats.data[t.cID].ps.push_back(t.p);
     stats.data[t.cID].qs.push_back(t.q);
     stats.data[t.cID].ids.push_back(t.id);
-    stats.data[t.cID].logFs.push_back(t.logF);
+    stats.data[t.cID].lfcs.push_back(t.logF);
 }
 
 static void counts(TDiffs::Stats &stats, const TDiffs::Options &o)
@@ -176,76 +176,6 @@ static void counts(TDiffs::Stats &stats, const TDiffs::Options &o)
             }
         }
     }
-    
-    
-    
-    
-//    
-//    
-//    /*
-//     * Create a reader for each replicate, we'll read them simultaneously
-//     */
-//    
-//    std::vector<Reader> rs;
-//    
-//    for (auto i = 0; i < o.counts.size(); i++)
-  //  {
-    //    rs.push_back(Reader(o.counts.at(i)));
-    //}
-//    
-//    // One for each condition, sorted by the factor level
-//    stats.avgs.resize(o.exp->countConds());
-//    
-//    /*
-//     * Before we begin, we should cache the factors for each condition
-//     */
-//    
-//    auto conds = std::map<Experiment::Factor, std::vector<std::size_t>>
-//    {
-//        { 0, o.exp->cond(0) }, { 1, o.exp->cond(1) }
-//    };
-//    
-//    // This is differential analysis, thus we must always have two conditions...
-//    assert(conds.size() == 2);
-//    
-//    /*
-//     * Read the count files and calculate their arithemetic averages
-//     */
-//    
-//    switch (o.cSoft)
-//    {
-//        case TDiffs::CountSoft::HTSeqCount:
-//        {
-//            
-//            
-//            
-//            
-////            ParserHTSeqCount::parse(rs, [&](const ParserHTSeqCount::Samples &s, const ParserProgress &)
-////            {
-////                /*
-////                 * We shouldn't assume the orders of the conditions. For example, we could be given:
-////                 *
-////                 *      A1,A2,A3,B1,B2,B2 or B1,B3,B2,A3,A2,A1
-////                 *
-////                 * for the same experiment.
-////                 */
-////                
-////                for (auto i = 0; i < conds.size(); i++)
-////                {
-////                    std::vector<unsigned> counts;
-////                    
-////                    for (auto j = 0; j < conds[i].size(); j++)
-////                    {
-////                        counts.push_back(s.counts[conds[i][j]]);
-////                    }
-////                    
-////                    stats.avgs[i][s.id] = SS::mean(counts);
-////                }
-////            });
-//            
-//            break;
-//        }
- //   }
 }
 
 template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
@@ -342,6 +272,29 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     });
 }
 
+static void writeDifferent(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
+{
+    o.writer->open(file);
+    
+    for (const auto &i : stats.data)
+    {
+        const auto &ids  = i.second.ids;
+        const auto &ps   = i.second.ps;
+        const auto &qs   = i.second.qs;
+        const auto &lfcs = i.second.lfcs;
+        
+        for (auto j = 0; j < ids.size(); j++)
+        {
+            o.writer->write((boost::format("%1%,%2%,%3%,%4%") % ids[j]
+                                                              % ps[j]
+                                                              % qs[j]
+                                                              % lfcs[j]).str());
+        }
+    }
+    
+    o.writer->close();
+}
+
 static void writeCounts(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
 {
     o.writer->open(file);
@@ -425,7 +378,7 @@ void TDiffs::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating count table
+     * Generating count table (CSV)
      */
 
     writeCounts("TransDiffs_counts.csv", stats, o);
@@ -439,12 +392,16 @@ void TDiffs::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
+     * Generating differential results (CSV)
+     */
+    
+    writeDifferent("TransDiffs_diffs.csv", stats, o);
+    
+    /*
      * Generating LODR plot
      */
     
-    //   o.writer->open("TransDiffs_LODR.R");
-    // o.writer->write(RWriter::lodr(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
-    // o.writer->close();
-    
-    
+    o.writer->open("TransDiffs_LODR.R");
+    o.writer->write(RWriter::createLODR("TransDiffs_diffs.csv", "TransDiffs_counts.csv"));
+    o.writer->close();
 }

@@ -56,4 +56,4 @@ plotForGenes <- function()
 }
 
 plotForGenes()
-#plotForExons()
+plotForExons()

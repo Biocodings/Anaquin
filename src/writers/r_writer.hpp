@@ -355,6 +355,8 @@ namespace Anaquin
         /*
          * -------------------- LODR Plot --------------------
          */
+
+        static Scripts createLODR(const std::string &, const std::string &);
         
         static Scripts createLODR(const std::vector<std::string> &,
                                   const std::vector<double> &,

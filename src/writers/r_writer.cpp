@@ -4,6 +4,17 @@
 
 using namespace Anaquin;
 
+Scripts RWriter::createLODR(const std::string &dFile, const std::string &cFile)
+{
+    std::stringstream ss;
+    ss << PlotLODR();
+    
+    return (boost::format(ss.str()) % date()
+                                    % __full_command__
+                                    % dFile
+                                    % cFile).str();
+}
+
 Scripts RWriter::createLODR(const std::vector<std::string> &seqs,
                             const std::vector<double> &avgs,
                             const std::vector<double> &pvals,
@@ -17,10 +28,7 @@ Scripts RWriter::createLODR(const std::vector<std::string> &seqs,
                                     % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
                                     % RWriter::concat(avgs)
                                     % RWriter::concat(pvals)
-                                    % RWriter::concat(logFCs)
-            ).str();
-    
-    return ss.str();
+                                    % RWriter::concat(logFCs)).str();
 }
 
 Scripts RWriter::createMA(const FileName &file, const std::string &lvl)

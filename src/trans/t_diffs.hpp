@@ -63,7 +63,7 @@ namespace Anaquin
                 std::vector<double> qs;
                 
                 // Log-fold changes
-                std::vector<double> logFs;
+                std::vector<double> lfcs;
             };
             
             std::map<ChromoID, Data> data;
