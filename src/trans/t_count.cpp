@@ -214,58 +214,19 @@ void TCount::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * There's no need to write summary for each replicate because differential analysis has already incorporated them.
-     */
-    
-    /*
-     * Synthetic
-     * ---------
-     *
-     *    - Summary statistics
-     *    - Sequin statistics
-     *    - Scatter plot
-     *    - ROC plot
-     *    - MA plot
-     *    - LODR Plot
-     */
-
-    /*
-     * Endogenous
-     * ----------
-     *
-     *    - MA Plot (merged with synthetic)
-     */
-    
-    /*
      * Generating summary statistics
      */
     
-    o.writer->open("TransDiffs_summary.stats");
+    o.writer->open("TransCount_summary.stats");
     o.writer->write(StatsWriter::linear(file, stats, ChrT, units));
     o.writer->close();
     
-    /*
-     * Generating scatter plot
-     */
-    
-    o.writer->open("TransDiffs_scatter.R");
-    o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
-    o.writer->close();
-
-    /*
-     * Generating ROC plot
-     */
-    
-    o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
-    o.writer->close();
-
     /*
      * Generating LODR plot
      */
 
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
+//    o.writer->write(RWriter::createMA(stats.limit;
     o.writer->close();
 
     /*
@@ -273,7 +234,6 @@ void TCount::report(const FileName &file, const Options &o)
      */
 
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
+  //  o.writer->write(RWriter::roc(stats.data.at(ChrT).seqs, stats.data.at(ChrT).qs));
     o.writer->close();
-    
 }

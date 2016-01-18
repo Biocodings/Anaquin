@@ -11,7 +11,7 @@ TEST_CASE("R_ROC_Plot")
     
     const auto labels = std::vector<std::string> { "FP","FP","FP","FP","FP","TP","TP","FP","TP","FP","FP","TP","TP","FP","FP","TP","TP","TP","TP","FP","TP","FP","TP","TP","TP","TP","FP","TP","FP","TP","FP" };
 
-    REQUIRE_NOTHROW(RWriter::roc(seqs, pvals));
+    REQUIRE_NOTHROW(RWriter::createROC(seqs, pvals));
 }
 
 TEST_CASE("R_LODR_Plot")
@@ -24,5 +24,5 @@ TEST_CASE("R_LODR_Plot")
     
     const auto logFCs = std::vector<double> { 4,4,4,4,4,4,4,-4,-4,-4,-4,-4,-4,-4,-4,-4,3,3,3,3,3,3,3,-3,-3,-3,-3,-3,-3,-3,-3,2,2,2,2,2,-2,-2,-2,-2,-2,-2,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
-    REQUIRE_NOTHROW(RWriter::lodr(seqs, avgs, pvals, logFCs));
+    REQUIRE_NOTHROW(RWriter::createLODR(seqs, avgs, pvals, logFCs));
 }

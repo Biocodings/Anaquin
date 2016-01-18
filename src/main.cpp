@@ -4,6 +4,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <getopt.h>
+#include <strings.h>
 #include <execinfo.h>
 
 #include "data/experiment.hpp"
@@ -106,6 +107,7 @@ typedef std::set<Value> Range;
 #define OPT_THREAD   327
 #define OPT_VERSION  338
 #define OPT_SOFT     339
+#define OPT_C_SOFT   340
 
 #define OPT_R_BASE  800
 #define OPT_R_BED_1 801
@@ -133,6 +135,7 @@ typedef std::set<Value> Range;
 #define OPT_LEVEL   913
 #define OPT_U_FILES 914
 #define OPT_U_NAMES 915
+#define OPT_C_FILES 916
 
 using namespace Anaquin;
 
@@ -208,10 +211,6 @@ static std::map<Value, Tool> _tools =
     { "FusionDiff",       TOOL_F_DIFF      },
 };
 
-/*
- * Defines options that are expected
- */
-
 static std::map<Tool, std::set<Option>> _required =
 {
     /*
@@ -262,16 +261,6 @@ static std::map<Tool, std::set<Option>> _required =
 };
 
 /*
- * Defines options that one of the possibilites must be defined
- */
-
-static std::map<Tool, std::set<Option>> _pick =
-{
-//    { TOOL_T_EXPRESS, { OPT_GTRACK, OPT_ITRACK } },
-   // { TOOL_T_DIFF,    { OPT_GDIFF,  OPT_IDIFF  } },
-};
-
-/*
  * Variables used in argument parsing
  */
 
@@ -282,6 +271,9 @@ struct Parsing
 
     // Input files
     std::vector<FileName> inputs;
+    
+    // Optional input files
+    std::vector<FileName> oInputs;
     
     // Context specific options
     std::map<Option, std::string> opts;
@@ -395,6 +387,7 @@ static const struct option long_options[] =
     { "tool", required_argument, 0, OPT_TOOL },
 
     { "ufiles",  required_argument, 0, OPT_U_FILES },
+    { "cfiles",  required_argument, 0, OPT_C_FILES },
 
     { "usams",   required_argument, 0, OPT_BAM_1 },
     { "usam1",   required_argument, 0, OPT_BAM_1 },
@@ -437,8 +430,8 @@ static const struct option long_options[] =
     { "o",      required_argument, 0, OPT_PATH },
     { "output", required_argument, 0, OPT_PATH },
 
-    { "soft",     required_argument, 0, OPT_SOFT },
-    { "software", required_argument, 0, OPT_SOFT },
+    { "soft",   required_argument, 0, OPT_SOFT   },
+    { "csoft",  required_argument, 0, OPT_C_SOFT },
 
     { "f",      required_argument, 0, OPT_FILTER },
     { "filter", required_argument, 0, OPT_FILTER },
@@ -717,18 +710,32 @@ template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyz
     }, o);
 }
 
+/*
+ * Functions for parsing string to enums
+ */
+
 template <typename T> T parseEnum(const std::string &key, const std::string &str, const std::map<std::string, T> &m)
 {
-    auto copy = str;
-    std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
-    
-    if (!m.count(copy))
+    for (const auto &i : m)
     {
-        throw InvalidValueException(str, key);
+        if (strcasecmp(i.first.c_str(), str.c_str()) == 0)
+        {
+            return i.second;
+        }
     }
-    
-    return m.at(copy);
+
+    throw InvalidValueException(str, key);
 };
+
+template <typename T> T parseCSoft(const std::string &str, const std::string &key)
+{
+    const static std::map<std::string, T> m =
+    {
+        { "HTSeqCount", T::HTSeqCount },
+    };
+
+    return parseEnum(key, str, m);
+}
 
 void parse(int argc, char ** argv)
 {
@@ -905,7 +912,8 @@ void parse(int argc, char ** argv)
              */
 
             case OPT_SOFT:
-            case OPT_LEVEL: { _p.opts[opt] = val; break; }
+            case OPT_LEVEL:
+            case OPT_C_SOFT: { _p.opts[opt] = val; break; }
 
             case OPT_U_FILES:
             {
@@ -914,6 +922,22 @@ void parse(int argc, char ** argv)
                 for (auto i = _p.inputs.size(); i-- > 0;)
                 {
                     checkFile(_p.opts[opt] = _p.inputs[i]);
+                }
+
+                break;
+            }
+             
+            /*
+             * Parse for the optional input files
+             */
+                
+            case OPT_C_FILES:
+            {
+                Tokens::split(val, ",", _p.oInputs);
+                
+                for (auto i = _p.inputs.size(); i-- > 0;)
+                {
+                    checkFile(_p.opts[opt] = _p.oInputs[i]);
                 }
 
                 break;
@@ -1010,25 +1034,6 @@ void parse(int argc, char ** argv)
             throw MissingOptionError(optToStr(*required.begin()));
         }
     }
-
-    /*
-     * Have all the pick options given?
-     */
-    
-    if (_pick.count(_p.tool))
-    {
-        for (const auto i : _p.opts)
-        {
-            if (_pick[_p.tool].count(i.first))
-            {
-                goto mainSwitch;
-            }
-        }
-        
-        throw MissingInputError();
-    }
-
-    mainSwitch:
 
     if (_p.tool != TOOL_VERSION)
     {
@@ -1158,27 +1163,34 @@ void parse(int argc, char ** argv)
 
                     auto parseSoft = [&](const std::string &str)
                     {
-                        const static std::map<std::string, TDiffs::Software> m =
+                        const static std::map<std::string, TDiffs::DiffSoft> m =
                         {
-                            { "edgeR",    TDiffs::Software::edgeR    },
-                            { "deseq2",   TDiffs::Software::DESeq2   },
-                            { "cuffdiff", TDiffs::Software::Cuffdiff },
+                            { "edgeR",    TDiffs::DiffSoft::edgeR    },
+                            { "deseq2",   TDiffs::DiffSoft::DESeq2   },
+                            { "cuffdiff", TDiffs::DiffSoft::Cuffdiff },
                         };
                         
                         return parseEnum("soft", str, m);
                     };
-
+                    
                     TDiffs::Options o;
 
-                    // Optional. Default to gene level.
-                    assert(o.lvl == TDiffs::Level::Gene);
-                    
+                    o.dSoft = parseSoft(_p.opts[OPT_SOFT]);
+
                     if (_p.opts.count(OPT_LEVEL))
                     {
                         o.lvl = parseLevel(_p.opts[OPT_LEVEL]);
                     }
 
-                    o.soft = parseSoft(_p.opts[OPT_SOFT]);
+                    /*
+                     * Optional count tables (eg: HTSeqCount)
+                     */
+                    
+                    if (_p.opts.count(OPT_C_FILES))
+                    {
+                        o.cSoft  = parseCSoft<TDiffs::CountSoft>(_p.opts[OPT_C_SOFT], "csoft");
+                        o.counts = _p.oInputs;
+                    }
 
                     analyze_1<TDiffs>(OPT_U_FILES, o);
                     break;

@@ -9,8 +9,8 @@ namespace Anaquin
     {
         virtual void close() = 0;
         virtual void open(const FileName &) = 0;
-        virtual void write(const std::string &) = 0;
         virtual void create(const std::string &) = 0;
+        virtual void write(const std::string &, bool newLine = true) = 0;
     };
 }
 

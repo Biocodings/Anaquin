@@ -120,6 +120,30 @@ def mixture_1(config):
 def mixture_2(config):
     return get(config, 'MIX_2_COL', EXPECT_NUM, optional=True)
 
+#################################
+#                               #
+#        Report functions       #
+#                               #
+#################################
+
+class Report:
+    def __init__(self, output):
+        self.output = output
+        
+    def addSummary(self):
+        pass
+        
+    def addImage(self):
+        pass
+        
+    def startSection():
+        pass
+        
+    def endSection():
+        pass
+
+def createReport(file, report):
+    pass
 
 #################################
 #                               #
@@ -129,7 +153,7 @@ def mixture_2(config):
 
 
 # Create a report for TransQuin
-def transQuin(config, factors, names):
+def transQuin(config, factors, names, output):
     
     ###########################################
     #                                         #
@@ -142,9 +166,8 @@ def transQuin(config, factors, names):
     #    7. Differential expression           #
     #                                         #
     ###########################################
-        
-    
-    
+
+    r = Report(output)
     
     #############################################
     #                                           #
@@ -188,11 +211,11 @@ def transQuin(config, factors, names):
     anaquin('TransExp', req, config)
     
     
-    ########################################################
-    #                                                      #
-    #  3. Generating statistics for differential analysis  #
-    #                                                      #
-    ########################################################
+    #####################################################
+    #                                                   #
+    #  Generating statistics for differential analysis  #
+    #                                                   #
+    #####################################################
 
     metrics = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
 
@@ -207,9 +230,9 @@ def transQuin(config, factors, names):
     print('Differential software: ' + diffSoft)
 
     #
-    # 5. Generate a request for TransQuin for differential analysis. For example:
+    # Generate a request for TransQuin for differential analysis. For example:
     #
-    #      anaquin TransDiff -m ... -rgtf ... -soft DESEq2 -ufiles C1.txt,C2.txt,C3.txt
+    #   anaquin TransDiff -m ... -rgtf ... -soft DESEq2 -ufiles P1.txt,P2.txt,P3.txt... -cfiles C1.txt,C2.txt,C3.txt...
     #
     
     req = '-factors ' + factors + ' -countSoft ' + countSoft + ' -diffSoft ' + diffSoft + ' -countFiles ' + countFiles + ' -diffFile ' + diffFile
@@ -264,7 +287,9 @@ if __name__ == '__main__':
 
     # The raw SAM file  
     file = sys.argv[2]
+    
+    output = 'RMarkdown'
 
     if (mode == 'TransQuin'):
-        transQuin(parse(file))
+        transQuin(parse(file), output)
         

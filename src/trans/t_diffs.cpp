@@ -9,12 +9,13 @@
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_cdiffs.hpp"
+#include "parsers/parser_HTSeqCount.hpp"
 
 using namespace Anaquin;
 
 typedef TDiffs::Level    Level;
-typedef TDiffs::Software Software;
 typedef DiffTest::Status Status;
+typedef TDiffs::DiffSoft Software;
 
 std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
@@ -144,12 +145,114 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
     stats.data[t.cID].logFs.push_back(t.logF);
 }
 
+static void counts(TDiffs::Stats &stats, const TDiffs::Options &o)
+{
+    // Create an empty count table
+    stats.counts = std::shared_ptr<CountTable>(new CountTable(o.exp->countTable()));
+
+    const auto &names = stats.counts->names();
+
+    assert(o.counts.size() == names.size());
+    
+    for (auto i = 0; i < o.counts.size(); i++)
+    {
+        switch (o.cSoft)
+        {
+            case TDiffs::CountSoft::HTSeqCount:
+            {
+                const auto &name = names.at(i);
+                
+                ParserHTSeqCount::parse(Reader(o.counts[i]), [&](const ParserHTSeqCount::Sample &s, const ParserProgress &)
+                {
+                    if (!i)
+                    {
+                        stats.counts->addFeature(s.id);
+                    }
+                    
+                    stats.counts->addCount(name, s.count);
+                });
+
+                break;
+            }
+        }
+    }
+    
+    
+    
+    
+//    
+//    
+//    /*
+//     * Create a reader for each replicate, we'll read them simultaneously
+//     */
+//    
+//    std::vector<Reader> rs;
+//    
+//    for (auto i = 0; i < o.counts.size(); i++)
+  //  {
+    //    rs.push_back(Reader(o.counts.at(i)));
+    //}
+//    
+//    // One for each condition, sorted by the factor level
+//    stats.avgs.resize(o.exp->countConds());
+//    
+//    /*
+//     * Before we begin, we should cache the factors for each condition
+//     */
+//    
+//    auto conds = std::map<Experiment::Factor, std::vector<std::size_t>>
+//    {
+//        { 0, o.exp->cond(0) }, { 1, o.exp->cond(1) }
+//    };
+//    
+//    // This is differential analysis, thus we must always have two conditions...
+//    assert(conds.size() == 2);
+//    
+//    /*
+//     * Read the count files and calculate their arithemetic averages
+//     */
+//    
+//    switch (o.cSoft)
+//    {
+//        case TDiffs::CountSoft::HTSeqCount:
+//        {
+//            
+//            
+//            
+//            
+////            ParserHTSeqCount::parse(rs, [&](const ParserHTSeqCount::Samples &s, const ParserProgress &)
+////            {
+////                /*
+////                 * We shouldn't assume the orders of the conditions. For example, we could be given:
+////                 *
+////                 *      A1,A2,A3,B1,B2,B2 or B1,B3,B2,A3,A2,A1
+////                 *
+////                 * for the same experiment.
+////                 */
+////                
+////                for (auto i = 0; i < conds.size(); i++)
+////                {
+////                    std::vector<unsigned> counts;
+////                    
+////                    for (auto j = 0; j < conds[i].size(); j++)
+////                    {
+////                        counts.push_back(s.counts[conds[i][j]]);
+////                    }
+////                    
+////                    stats.avgs[i][s.id] = SS::mean(counts);
+////                }
+////            });
+//            
+//            break;
+//        }
+ //   }
+}
+
 template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
 {
     TDiffs::Stats stats;
 
     const auto &r = Standard::instance().r_trans;
-    const auto cIDs = r.chromoIDs();
 
     stats.data[Endo];
     stats.data[ChrT];
@@ -163,32 +266,13 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
 
     assert(!stats.hist.empty());
 
+    /*
+     * Calculate average counts for each condition. This is optional but needed for MA plot and LODR plot.
+     */
+    
     if (!o.counts.empty())
     {
-        /*
-        ParserHTSeqCount::parse(Reader(str, DataMode::String), [&](const ParserHTSeqCount::CountRow &r, const ParserProgress &)
-                                {
-                                    x.push_back(r);
-                                });
-*/
-        
-        for (auto i = 0; i < o.exp->countFactors(); i++)
-        {
-            const auto j = o.exp->cond(i);
-            
-            /*
-             * Loop over the replicates and calculate its average counts
-             */
-            
-            double sum = 0.0;
-            
-            for (auto k = 0; k < j.size(); k++)
-            {
-                //sum += o.counts.at(j[k]);
-            }
-            
-            //
-        }
+        counts(stats, o);
     }
     
     o.info("Parsing input files");
@@ -228,9 +312,9 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 {
     return calculate(o, [&](TDiffs::Stats &stats)
     {
-        switch (o.soft)
+        switch (o.dSoft)
         {
-            case Software::DESeq2:
+            case DiffSoft::DESeq2:
             {
                 ParserDESeq2::parse(file, [&](const DiffTest &t, const ParserProgress &)
                 {
@@ -240,12 +324,12 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
                 break;                
             }
                 
-            case Software::edgeR:
+            case DiffSoft::edgeR:
             {
                 break;
             }
 
-            case Software::Cuffdiff:
+            case DiffSoft::Cuffdiff:
             {
                 ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
                 {
@@ -256,6 +340,36 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
             }
         }
     });
+}
+
+static void writeCounts(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
+{
+    o.writer->open(file);
+
+    const auto &names = stats.counts->names();
+    
+    for (const auto &name : names)
+    {
+        o.writer->write("," + name, false);
+    }
+
+    o.writer->write("\n", false);
+    
+    const auto &ids = stats.counts->ids();
+
+    for (auto i = 0; i < ids.size(); i++)
+    {
+        o.writer->write(ids[i], false);
+
+        for (const auto &name : names)
+        {
+            o.writer->write("," + std::to_string(stats.counts->counts(name).at(i)), false);
+        }
+
+        o.writer->write("\n", false);
+    }
+    
+    o.writer->close();
 }
 
 void TDiffs::report(const FileName &file, const Options &o)
@@ -278,24 +392,14 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     /*
-     * Synthetic
-     * ---------
-     *
-     *    - Summary statistics
-     *    - Sequin statistics
-     *    - Scatter plot
-     *    - ROC plot
-     *    - MA plot
-     *    - LODR Plot
+     *  - Summary statistics
+     *  - Sequin statistics
+     *  - Scatter plot
+     *  - ROC plot
+     *  - MA plot
+     *  - LODR Plot
      */
 
-    /*
-     * Endogenous
-     * ----------
-     *
-     *    - MA Plot (merged with synthetic)
-     */
-    
     /*
      * Generating summary statistics
      */
@@ -317,23 +421,30 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
+    o.writer->write(RWriter::createROC(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
     o.writer->close();
 
     /*
-     * Generating LODR plot
+     * Generating count table
      */
-    
- //   o.writer->open("TransDiffs_LODR.R");
-   // o.writer->write(RWriter::lodr(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
-   // o.writer->close();
 
-    
+    writeCounts("TransDiffs_counts.csv", stats, o);
+
     /*
      * Generating MA plot
      */
 
-//    o.writer->open("TransDiffs_MA.R");
-  //  o.writer->write(RWriter::roc(stats.data.at(ChrT).ids, stats.data.at(ChrT).qs));
-    //o.writer->close();
+    o.writer->open("TransDiffs_MA.R");
+    o.writer->write(RWriter::createMA("TransDiffs_counts.csv", units));
+    o.writer->close();
+    
+    /*
+     * Generating LODR plot
+     */
+    
+    //   o.writer->open("TransDiffs_LODR.R");
+    // o.writer->write(RWriter::lodr(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
+    // o.writer->close();
+    
+    
 }

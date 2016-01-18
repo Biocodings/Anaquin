@@ -8,9 +8,9 @@ namespace Anaquin
     struct MockWriter : public Writer
     {
         inline void close() override {}
-        inline void open(const FileName &)      override {}
-        inline void write(const std::string &)  override {}
+        inline void open(const FileName &) override {}
         inline void create(const std::string &) override {}
+        inline void write(const std::string &, bool newLine) override {}
     };
 }
 

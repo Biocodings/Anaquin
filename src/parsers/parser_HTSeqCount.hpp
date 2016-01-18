@@ -7,18 +7,67 @@ namespace Anaquin
 {
     struct ParserHTSeqCount
     {
-        struct CountRow
+        typedef unsigned Count;
+        
+        struct Sample
         {
             // Eg: ENSG00000000419.12
             std::string id;
 
             // Eg: 71
-            unsigned count;
+            Count count;
         };
         
-        typedef std::function<void (const CountRow &, const ParserProgress &)> Functor;
+        struct Samples
+        {
+            // Eg: "ENSG00000000419.12"
+            std::string id;
 
-        static void parse(const Reader &r, Functor f)
+            // Eg: 34, 56
+            std::vector<Count> counts;
+        };
+        
+        /*
+         * Parse multiple files simultaneously. The files are assumed be sorted.
+         */
+        
+        static void parse(const std::vector<Reader> &rs, std::function<void (const Samples &, const ParserProgress &)> f)
+        {
+            ParserProgress p;            
+            std::vector<std::string> toks;
+
+            Samples s;
+            s.counts.resize(rs.size());
+
+            while (true)
+            {
+                s.id.clear();
+                
+                for (auto i = 0; i < rs.size(); i++)
+                {
+                    if (!rs[i].nextTokens(toks, "\t"))
+                    {
+                        return;
+                    }
+                    
+                    if (i && toks[0] != s.id)
+                    {
+                        throw std::runtime_error("Files are not sorted.");
+                    }
+                    
+                    // Eg: ENSG00000000457.13
+                    s.id = toks[0];
+
+                    // Eg: 49
+                    s.counts[i] = stoi(toks[1]);
+                }
+                
+                f(s, p);
+                p.i++;
+            }
+        }
+        
+        static void parse(const Reader &r, std::function<void (const Sample &, const ParserProgress &)>  f)
         {
             /*
              * Count table is simply a CSV file with two columns:
@@ -27,7 +76,7 @@ namespace Anaquin
              *      ENSG00000000457.13	49
              */
             
-            CountRow c;
+            Sample s;
             
             ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
             {
@@ -37,12 +86,12 @@ namespace Anaquin
                 }
                 
                 // Eg: ENSG00000000457.13
-                c.id = fields[0];
+                s.id = fields[0];
                 
                 // Eg: 49
-                c.count = stoi(fields[1]);
+                s.count = stoi(fields[1]);
 
-                f(c, p);
+                f(s, p);
             }, "\t");
         }
     };

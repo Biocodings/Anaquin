@@ -5,17 +5,16 @@
 #
 
 #
-# Draw a MA plot for differential analysis. The x-axis would be the average counts for all replicates in all conditions.
+# Draw an MA plot for differential analysis. The x-axis would be the average counts for all replicates.
 # The y-axis would be the measured log-fold change.
 #
 
-plotMA <- function(data,
-                   metrs,
+plotMA <- function(anaquin,
+                   lvl='gene',
+                   alpha   = 0.8,
+                   qCutoff = 0.1,
                    shouldEndo=FALSE,
                    shouldError=FALSE,
-                   mix=loadMixture(),
-                   alphaPoint = 0.8,
-                   qCutoff = 0.1,
                    xname = 'Log2 Average of Normalized Counts',
                    yname = 'Log2 Ratio of Normalized Counts',
                    shouldLODR=FALSE)
@@ -23,7 +22,9 @@ plotMA <- function(data,
     require(grid)
     require(ggplot2)
     require(gridExtra)
-    
+
+    stopifnot(class(anaquin) == 'TransQuin')
+
     if (shouldLODR)
     {
         data$status <- NA
@@ -47,45 +48,61 @@ plotMA <- function(data,
         }
     }
 
-    maStats <- function(x, c1, c2)
+    stats <- function(x, c1, c2)
     {
-        c(mean(log2(x[c1])-log2(x[c2])),  # Ratio of normalized counts (y-axis)
-          sd(log2(x[c1])-log2(x[c2])),    # Standard deviation
+        c(mean(log2(x[c2])-log2(x[c1])),  # Ratio of normalized counts (y-axis)
+          sd(log2(x[c2])-log2(x[c1])),    # Standard deviation
           log2(mean(x)))                  # Average normalized counts  (x-axis)
     } 
 
+    #
+    #                     A1  A2  A3  B1  B2  B3
+    # ENSG00000000003.14   0   0   0   0   0   0
+    # ENSG00000000005.5    0   0   1   0   0   0
+    # ENSG00000000419.12 150 115 221  71  77  98
+    #
+    data = anaquin$seqs
+    
     totCol <- ncol(data)
 
     #
-    # 1. Calculating the average counts for all replicates
+    # 1. Calculating the average counts for each condition
     #
 
-    maStatDat <- data.frame(t(apply(data[c(1:6)], 1, maStats,
+    statsDat <- data.frame(t(apply(data[c(1:6)], 1, stats,
                                     c1 = c(1:(totCol/2)),
                                     c2 = c(((totCol/2)+1):totCol))))
-    colnames(maStatDat) <- c("M.Ave", 'M.SD', 'A')
+    colnames(statsDat) <- c("M.Ave", 'M.SD', 'A')
     
-    data <- cbind(data, maStatDat)
+    data <- cbind(data, statsDat)
     data <- data[which(is.finite(data$M.Ave)),]
     
     #
     # 2. Working out the expected change for each feature.
     #
     
-         if (metrs=='custom')    { si <- row.names(data) %in% row.names(data)         }
-    else if (metrs == 'gene')    { si <- row.names(data) %in% row.names(mix$genes)    }
-    else if (metrs == 'isoform') { si <- row.names(data) %in% row.names(mix$isoforms) }
-    else if (metrs == 'exon')
+         if (lvl == 'gene')    { si <- row.names(data) %in% row.names(anaquin$mix$genes)    }
+    else if (lvl == 'isoform') { si <- row.names(data) %in% row.names(anaquin$mix$isoforms) }
+    else if (lvl == 'exon')
     { 
         si <- !is.na(data$ratio)
         #si <- row.names(data) %in% row.names(mix$exons)
     }
     
+    #
+    # If the expected ratios are not provided, we'll need to calculate from the mixture.
+    #
+    
     if (is.null(data$ratio))
     {
+        data$ratio <- NA
+        
         by(data[si,], 1:nrow(data[si,]), function(x)
         {
-            logFold <- loadGene(row.names(x), mix)$logFold
+            # What's the expected log-fold?
+            logFold <- expectLF(anaquin, row.names(x), lvl=lvl)
+            
+            # For this plot, it's okay to plot only the magnitude
             data[si,][row.names(data[si,]) == row.names(x),]$ratio <<- abs(logFold)
         })
     }
@@ -121,7 +138,7 @@ plotMA <- function(data,
         #                 geom_point(data = endo[endo$A <= 5,], aes(x = A, y = M.Ave), colour='pink', alpha=0.5)
     }
     
-    p <- p + geom_point(aes(colour=ratio), size=2, alpha = alphaPoint) +
+    p <- p + geom_point(aes(colour=ratio), size=2, alpha = alpha)      +
              xlab(xname)                                               +
              ylab(yname)                                               +
              coord_cartesian(xlim=xrange, ylim = c(-10, 10))           +
@@ -138,7 +155,6 @@ plotMA <- function(data,
                                colour=ratio), size = 1, alpha = alphaPoint)
     }
     
-    # Do we have data from the LODR plot?
     if (shouldLODR)
     {
         p <- p + geom_point(data = subset(data, status == 'below'), colour='white', size=2.5)

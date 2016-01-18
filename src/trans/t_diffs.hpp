@@ -12,9 +12,16 @@
 
 namespace Anaquin
 {
+    class CountTable;
+    
     struct TDiffs : public Analyzer
     {
-        enum class Software
+        enum class CountSoft
+        {
+            HTSeqCount,
+        };
+        
+        enum class DiffSoft
         {
             Cuffdiff,
             edgeR,
@@ -38,7 +45,8 @@ namespace Anaquin
             // Default to gene level
             Level lvl = Level::Gene;
 
-            Software soft;
+            DiffSoft  dSoft;
+            CountSoft cSoft;
         };
 
         struct Stats : public MappingStats
@@ -61,10 +69,14 @@ namespace Anaquin
             std::map<ChromoID, Data> data;
 
             // Average counts for each condition if provided
-            std::vector<Counts> avgs;
+            std::vector<std::map<std::string, Counts>> avgs;
+            
+            std::shared_ptr<CountTable> counts;
             
             // Detection limit            
             Limit limit;
+
+            inline bool haveCounts() const { return !avgs.empty(); }
         };
 
         /*

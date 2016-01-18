@@ -17,7 +17,7 @@ namespace Anaquin
                 _fp = sam_open(file.c_str(), "w");
             }
 
-            inline void write(const std::string &) override
+            inline void write(const std::string &, bool) override
             {
                 throw std::runtime_error("Not implemented");
             }

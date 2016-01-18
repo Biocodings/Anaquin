@@ -8,7 +8,7 @@
 # Create a TransQuin data set for analyzing in Anaquin.
 #
 
-transQuin <- function(...)
+transQuin <- function(mix=loadMixture(), ...)
 {
     x <- list(...)
     
@@ -30,7 +30,10 @@ transQuin <- function(...)
     if (!is.null(x$A1)) { data$A1 <- x$A1 }  # TODO: Fix me
     if (!is.null(x$A2)) { data$A2 <- x$A2 }  # TODO: Fix me
     if (!is.null(x$A3)) { data$A3 <- x$A3 }  # TODO: Fix me
-
+    if (!is.null(x$B1)) { data$B1 <- x$B1 }  # TODO: Fix me
+    if (!is.null(x$B2)) { data$B2 <- x$B2 }  # TODO: Fix me
+    if (!is.null(x$B3)) { data$B3 <- x$B3 }  # TODO: Fix me
+    
     r <- list('seqs'=data, mix=mix)
     class(r) <- 'TransQuin'
 
@@ -39,21 +42,22 @@ transQuin <- function(...)
 
 ########################################################
 #                                                      #
-#                Accesor functions                     #
+#                Accessor functions                 #
 #                                                      #
 ########################################################
 
 #
-# Returns the expected logFold for a sequin. The following metrics are supported:
+# Returns the expected logFold. The following levels are supported:
 #
 #   TransQuin: 'exon', 'isoform' and 'gene'
 #
 
-expectLF <- function(data, id, metr)
+expectLF <- function(data, id, lvl)
 {
-    stopifnot(class(data) == 'TransQuin' ||
-              class(data) == 'VarQuin'   ||
-              class(data) == 'MetaQuin'  ||
+    stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin'  |
               class(data) == 'Mixture')
     
     data <- data$mix
@@ -65,7 +69,17 @@ expectLF <- function(data, id, metr)
     #      A        B       fold   logFold
     #   R2_59 0.4720688 0.4720688     1
     #
-    data <- data$genes[row.names(data$genes)==id,]
+
+    switch(lvl, 'gene' =
+    {
+        data <- data$genes[row.names(data$genes)==id,]
+    }, 'isoform' =
+    {
+               
+    }, 'exon' =
+    {
+               
+    })
     
     stopifnot(nrow(data) <= 1)
     
@@ -74,17 +88,18 @@ expectLF <- function(data, id, metr)
         error(paste('Failed to find mixture A and B'))
     }
 
-    return (log2(data$B / data$A))
+    return (round(log2(data$B / data$A)))
 }
 
 #
-# Returns the expected concentration for a sequin. The following metrics are supported:
+# Returns the expected concentration for a sequin. The following levels are supported:
 #
 #   TransQuin: 'exon', 'isoform' and 'gene'
 #
 
-expect <- function(data, id, metr, mix='A')
+expectAbund <- function(data, id, lvl, mix='A')
 {
+    stopifnot(lvl == 'gene' || lvl == 'isoform' || lvl == 'exon')
     stopifnot(class(data) == 'TransQuin' ||
               class(data) == 'VarQuin'   ||
               class(data) == 'MetaQuin'  ||
@@ -159,12 +174,6 @@ negativeIsoforms <- function(m = loadMixture())
     i
 }
 
-expExonBins <- function(m = loadMixture())
-{
-    r <- negativeExonBins()
-    r <- r[c('R2_71:E001', 'R2_71:E002', 'R2_71:E003', 'R2_71:E004', 'R2_71:E005', 'R2_71:E006', 'R2_71:E007', 'R2_71:E008'),]
-    r
-}
 
 #
 # Load the mixture into an R object that can be used in other Anaquin functions

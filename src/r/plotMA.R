@@ -8,13 +8,10 @@
 
 library(Anaquin)
 
-# Create a data set for Anaquin
-data <- aqdata(seqs  = c(%3%),
-               count = c(%4%),
-               pval  = c(%5%),
-               ratio = c(%6%))
+# Read the count table
+file <- read.csv('%3%', row.name=1)
 
-# Change to your chooden FDR rate
-chosenFDR <- 0.1
+# Create a TransQuin data set for Anaquin
+data <- transQuin(seqs = row.names(data), A1=data$A1, A2=data$A2, A3=data$A3, B1=data$B1, B2=data$B2, B3=data$B3)
 
-plotLODR(data, chosenFDR)
+plotMA(data, lvl='%4%', shouldEndo=TRUE)

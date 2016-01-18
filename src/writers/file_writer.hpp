@@ -35,9 +35,14 @@ namespace Anaquin
                 }
             }
 
-            inline void write(const std::string &line) override
+            inline void write(const std::string &l, bool newLine = true) override
             {
-                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << line << std::endl;
+                *(_o) << std::setiosflags(std::ios::fixed) << std::setprecision(2) << l;
+
+                if (newLine)
+                {
+                    *(_o) << std::endl;
+                }
             }
 
             inline void create(const std::string &dir) override

@@ -52,8 +52,8 @@ TEST_CASE("TDiff_AllExpressed")
     
     TDiffs::Options o;
     
-    o.soft = TDiffs::Software::Cuffdiff;
-    o.lvl  = TDiffs::Level::Gene;
+    o.lvl   = TDiffs::Level::Gene;
+    o.dSoft = TDiffs::DiffSoft::Cuffdiff;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();

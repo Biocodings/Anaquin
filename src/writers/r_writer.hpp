@@ -313,60 +313,53 @@ namespace Anaquin
         }
     };
     
+    class CountTable;
+    
     struct RWriter
     {
-        static std::string prec_to_string(double x)
+        static std::string d2str(double x)
         {
             std::ostringstream out;
             out << std::setprecision(6) << x;
             return out.str();
         }
         
-        template <typename T> static std::string concat(const std::vector<T> &x)
+        static std::string x2str(unsigned x)
         {
-            return boost::algorithm::join(x | boost::adaptors::transformed(static_cast<std::string(*)(T)>(prec_to_string)), ", ");
+            return std::to_string(x);
         }
+        
+        template <typename T> static std::string concat(const std::vector<T> &x, std::string (*f)(T) = d2str)
+        {
+            return boost::algorithm::join(x | boost::adaptors::transformed(static_cast<std::string(*)(T)>(f)), ", ");
+        }
+
+        static std::string concat(const std::vector<std::string> &x)
+        {
+            return ("\'" + boost::algorithm::join(x, "\',\'") + "\'");
+        }
+        
+        /*
+         * -------------------- MA Plot --------------------
+         */
+        
+        // Create an MA plot and link to the count table
+        static Scripts createMA(const FileName &, const std::string &);
 
         /*
          * -------------------- ROC Plot --------------------
          */
         
-        static Scripts roc(const std::vector<std::string> &seqs, const std::vector<double> &qs)
-        {
-            assert(!seqs.empty() && seqs.size() == qs.size());
-            
-            std::stringstream ss;
-            ss << PlotROC();
-            
-            return (boost::format(ss.str()) % date()
-                                            % __full_command__
-                                            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                            % RWriter::concat(qs)
-                    ).str();
-        }
+        static Scripts createROC(const std::vector<std::string> &, const std::vector<double> &);
 
         /*
          * -------------------- LODR Plot --------------------
          */
         
-        static Scripts lodr(const std::vector<std::string> &seqs,
-                            const std::vector<double> &avgs,
-                            const std::vector<double> &pvals,
-                            const std::vector<double> &logFCs)
-        {
-            std::stringstream ss;
-            ss << PlotLODR();
-            
-            return (boost::format(ss.str()) % date()
-                                            % __full_command__
-                                            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                            % RWriter::concat(avgs)
-                                            % RWriter::concat(pvals)
-                                            % RWriter::concat(logFCs)
-                    ).str();
-
-            return ss.str();
-        }
+        static Scripts createLODR(const std::vector<std::string> &,
+                                  const std::vector<double> &,
+                                  const std::vector<double> &,
+                                  const std::vector<double> &);
         
         /*
          * -------------------- Scatter Plot --------------------

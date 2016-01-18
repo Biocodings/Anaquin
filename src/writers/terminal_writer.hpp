@@ -14,7 +14,7 @@ namespace Anaquin
 
             inline void open(const FileName &) override {}
 
-            inline void write(const std::string &str) override
+            inline void write(const std::string &str, bool) override
             {
                 std::cout << str << std::endl;
             }
