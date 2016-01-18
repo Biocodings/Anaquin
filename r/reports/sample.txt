@@ -42,8 +42,14 @@ MIX_FILE = /Users/tedwong/Desktop/K_562/MTR004.v013.csv
 #
 #	
 
-MIX_1_COL = 
+MIX_1_COL = 2
 MIX_2_COL = 3
+
+#
+# Where's the reference annotation?
+#
+
+REF_ANNOT =/Users/tedwong/Desktop/K_562/ATR001.v032.gtf
 
 
 ###################################################
@@ -90,12 +96,12 @@ NAMES = A1,A2,A3,B1,B2,B3
 # The orders must be consistent to the the factors.
 #
 
-ALIGN_FILE = Aligns/A1/sampled.sam
-ALIGN_FILE = Aligns/A2/sampled.sam
-ALIGN_FILE = Aligns/A3/sampled.sam
-ALIGN_FILE = Aligns/B1/sampled.sam
-ALIGN_FILE = Aligns/B2/sampled.sam
-ALIGN_FILE = Aligns/B3/sampled.sam
+ALIGN_FILE = TopHat2/A1/sampled.sam
+ALIGN_FILE = TopHat2/A2/sampled.sam
+ALIGN_FILE = TopHat2/A3/sampled.sam
+ALIGN_FILE = TopHat2/B1/sampled.sam
+ALIGN_FILE = TopHat2/B2/sampled.sam
+ALIGN_FILE = TopHat2/B3/sampled.sam
 
 
 ###################################################
@@ -121,10 +127,10 @@ EXP_LEVEL = Gene
 #
 # Anaquin supports:
 #
-#     - Cuffdiff
+#     - Cufflinks
 #     - StringTie
 
-EXP_SOFT = Cuffdiff
+EXP_SOFT = Cufflinks
 
 #
 # Where are your files?

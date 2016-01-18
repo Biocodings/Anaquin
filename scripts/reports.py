@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+#
+# This script implements TransReport, VarReport, FusionReport and MetaReport.
+#
+
 import os
 import sys
 import math
@@ -35,10 +39,23 @@ EXPECT_LIST = 'List'
 # Where the temporary files are saved
 TEMP_PATH = 'temp'
 
+
+# Do we want to do unit testing?
+__unitTesting__ = True
+
 # Execute an Anaquin request
 def anaquin(tool, args, config, needMixture=True):
     
+    # Eg: /Users/tedwong/Desktop/K_562
+    root = get(config, 'ROOT_PATH')
+    
     names   = get(config, 'NAMES')
+    factors = get(config, 'FACTORS')
+    
+    mix = get(config, 'MIX_FILE')
+    ref = get(config, 'REF_ANNOT')
+    
+    names   = get(config, 'NAMES')    
     factors = get(config, 'FACTORS')
     
     #
@@ -47,15 +64,16 @@ def anaquin(tool, args, config, needMixture=True):
     #
     
     # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + ' -t ' + tool + ' -m data/trans/MTR004.v013.csv -rgtf data/trans/ATR001.v032.gtf '
+    req = ANAQUIN_PATH + ' -t ' + tool + ' -m ' + mix + ' -rgtf ' + ref
     
     # Now add up the arguments
-    req = req + '-o ' + TEMP_PATH + ' ' + args
+    req = req + ' -o ' + TEMP_PATH + ' -factors ' + factors + ' -names ' + names + ' ' + args
 
     print(req)
-    
+
     # Execute the Anaquin request
-    #os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
+    if not __unitTesting__:
+        os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
 
 ###################################
 #                                 #
@@ -127,11 +145,11 @@ def mixture_2(config):
 #################################
 
 class Report:
-    def __init__(self, output):
-        self.output = output
-        
-    def addSummary(self):
-        pass
+    def __init__(self):
+        self.summaries = []
+    
+    def addSummary(self, file):
+        self.summaries.append(file)
         
     def addImage(self):
         pass
@@ -141,6 +159,45 @@ class Report:
         
     def endSection():
         pass
+        
+    def writeNewPage(self, file, output):
+        if (output == 'RMarkdown'):
+            file.write('\n\pagebreak\n\n')
+
+    def writeCode(self, file, code, output):
+        if (output == 'RMarkdown'):
+            file.write('```{r eval=FALSE}\n')
+            file.write(code)
+            file.write('```')
+
+    def generate(self, file, output, config):
+        print('\n-------------------------------------')
+        print('Generating ' + file + ' for ' + output)
+        
+        if (output is 'RMarkdown'):
+            file = open(file, 'w')
+
+            header = """---
+title: "Anaquin TransQuin Report"
+header-includes: \usepackage{graphicx}
+output: 
+    pdf_document:
+        keep_tex: true
+        toc: yes
+---"""
+
+            file.write(header + '\n\n')
+            self.writeNewPage(file, output)
+
+            # Eg: /Users/tedwong/Desktop/K_562
+            root = get(config, 'ROOT_PATH')
+
+            for i in range(0, len(self.summaries)):
+                with open(TEMP_PATH + '/' + self.summaries[i], 'r') as f:
+                    
+                    file.write('Summary statistics for ' + self.summaries[i] + '\n')
+                    file.write('---------------\n\n')                    
+                    self.writeCode(file, f.read(), output)
 
 def createReport(file, report):
     pass
@@ -153,7 +210,7 @@ def createReport(file, report):
 
 
 # Create a report for TransQuin
-def transQuin(config, factors, names, output):
+def transQuin(config, output):
     
     ###########################################
     #                                         #
@@ -167,7 +224,7 @@ def transQuin(config, factors, names, output):
     #                                         #
     ###########################################
 
-    r = Report(output)
+    r = Report()
     
     #############################################
     #                                           #
@@ -184,10 +241,10 @@ def transQuin(config, factors, names, output):
     #    anaquin TransAlign -m ... -rgtf ... -factors 1,1,1,2,2,2 -ufiles C1.BAM,C2.BAM,C3.BAM
     #
 
-    req = 'TransAlign -factors ' + factors + ' -ufiles ' + alignFiles
+    req = '-ufiles ' + alignFiles
     
     # Execute the command
-    anaquin('TransAlign', req, config)
+    #anaquin('TransAlign', req, config)
 
 
     ######################################################
@@ -196,20 +253,38 @@ def transQuin(config, factors, names, output):
     #                                                    #
     ######################################################
 
-    # Expression files
-    expSoft = get(config, 'EXP_SOFT', { 'Cuffdiff', 'StringTie' })
+    # Expression software
+    soft = get(config, 'EXP_SOFT', { 'Cufflinks', 'StringTie' })
 
+    # Expression files
+    files = get(config, 'EXP_FILE', EXPECT_FILES)
+    
     #
     # Generate a request for TransExp for expression analysis. For example:
     #
     #    anaquin TransExp -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
     #
 
-    req = '-ufiles ' + expSoft
+    req = '-soft ' + soft + ' -ufiles ' + files
     
     # Execute the command
-    anaquin('TransExp', req, config)
+    anaquin('TransExpress', req, config)
     
+    #
+    # The following are generated and relevant:
+    #
+    #    - Summary statistics for each replicate
+    #    - Summary statistics for pooled replicates
+    #    - Scatter plot for the expression analysis
+    #
+    
+    r.addSummary('A1/TransExpress_summary.stats', )
+    
+    
+    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output, config)
+    
+    
+    return
     
     #####################################################
     #                                                   #
@@ -235,7 +310,7 @@ def transQuin(config, factors, names, output):
     #   anaquin TransDiff -m ... -rgtf ... -soft DESEq2 -ufiles P1.txt,P2.txt,P3.txt... -cfiles C1.txt,C2.txt,C3.txt...
     #
     
-    req = '-factors ' + factors + ' -countSoft ' + countSoft + ' -diffSoft ' + diffSoft + ' -countFiles ' + countFiles + ' -diffFile ' + diffFile
+    req = ' -countSoft ' + countSoft + ' -diffSoft ' + diffSoft + ' -countFiles ' + countFiles + ' -diffFile ' + diffFile
 
     # Execute the command
     anaquin('TransDiff', req, config)
