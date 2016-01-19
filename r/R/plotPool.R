@@ -89,23 +89,23 @@ plotPool <- function(data, metr,
 
 
 
-data <- read.csv('/Users/tedwong/Desktop/K_RMXA_minIsoform_full_3reps_TED.csv', row.names=1)
-data <- data[-c(1),]
-colnames(data) <- c('X', 'A1', 'A2', 'A3')
+#data <- read.csv('/Users/tedwong/Desktop/K_RMXA_minIsoform_full_3reps_TED.csv', row.names=1)
+#data <- data[-c(1),]
+#colnames(data) <- c('X', 'A1', 'A2', 'A3')
 
-data <- data[data$A1!='#DIV/0!',]
-data <- data[data$A2!='#DIV/0!',]
-data <- data[data$A3!='#DIV/0!',]
+#data <- data[data$A1!='#DIV/0!',]
+#data <- data[data$A2!='#DIV/0!',]
+#data <- data[data$A3!='#DIV/0!',]
 
-data$X  <- as.numeric(as.character(data$X))
-data$A1 <- as.numeric(as.character(data$A1))
-data$A2 <- as.numeric(as.character(data$A2))
-data$A3 <- as.numeric(as.character(data$A3))
+#data$X  <- as.numeric(as.character(data$X))
+#data$A1 <- as.numeric(as.character(data$A1))
+#data$A2 <- as.numeric(as.character(data$A2))
+#data$A3 <- as.numeric(as.character(data$A3))
 
-data <- data[row.names(data)!='R2_63',]
-data <- transQuin(seqs=row.names(data), X=data$X, A1=data$A1, A2=data$A2, A3=data$A3, mix=mix)
+#data <- data[row.names(data)!='R2_63',]
+#data <- transQuin(seqs=row.names(data), X=data$X, A1=data$A1, A2=data$A2, A3=data$A3, mix=mix)
 
-plotPool(data, metr='gene', cname='Ratio', xname='Log2 of expected minor/major', yname='Log2 measured minor/major', mix=mix)
+#plotPool(data, metr='gene', cname='Ratio', xname='Log2 of expected minor/major', yname='Log2 measured minor/major', mix=mix)
 
 
 

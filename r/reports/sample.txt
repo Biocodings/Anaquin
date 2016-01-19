@@ -90,7 +90,33 @@ ALIGN_FILE = TopHat2/G_RMXB3v2.accepted_hits.bam
 
 ###################################################
 #                                                 #
-# 			4. Expression analysis                #
+# 			4. Assembly analysis                  #
+#                                                 #
+###################################################
+
+#
+# Which software did you used to generate the results?
+#
+# Anaquin supports:
+#
+#     - Cufflinks
+#     - StringTie
+
+ASSEMBLY_SOFT = Cufflinks
+
+
+#
+# Where are your files?
+#
+# The orders must be consistent to the factors.
+#
+
+ASSEMBLY_FILE = Cufflinks/transcripts.gtf
+
+
+###################################################
+#                                                 #
+# 			5. Expression analysis                #
 #                                                 #
 ###################################################
 
@@ -125,11 +151,14 @@ EXP_SOFT = Cufflinks
 EXP_FILE = Cufflinks/A1/genes.fpkm_tracking
 EXP_FILE = Cufflinks/A2/genes.fpkm_tracking
 EXP_FILE = Cufflinks/A3/genes.fpkm_tracking
+EXP_FILE = Cufflinks/A1/genes.fpkm_tracking
+EXP_FILE = Cufflinks/A2/genes.fpkm_tracking
+EXP_FILE = Cufflinks/A3/genes.fpkm_tracking
 
 
 ###################################################
 #                                                 #
-# 			5. Differential analysis              #
+# 			6. Differential analysis              #
 #                                                 #
 ###################################################
 
@@ -164,12 +193,12 @@ COUNT_SOFT = HTSeqCount
 # The orders must be consistent to the factors.
 #
 
-DIFF_COUNT = combined_counts_full/K_RMXA1v2.htseq.counts.combined
-DIFF_COUNT = combined_counts_full/K_RMXA2v2.htseq.counts.combined
-DIFF_COUNT = combined_counts_full/K_RMXA3v2.htseq.counts.combined
-DIFF_COUNT = combined_counts_full/G_RMXB1v2.htseq.counts.combined
-DIFF_COUNT = combined_counts_full/G_RMXB2v2.htseq.counts.combined
-DIFF_COUNT = combined_counts_full/G_RMXB3v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/K_RMXA1v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/K_RMXA2v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/K_RMXA3v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/G_RMXB1v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/G_RMXB2v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/G_RMXB3v2.htseq.counts.combined
 
 
 #
@@ -191,7 +220,7 @@ DIFF_COUNT = combined_counts_full/G_RMXB3v2.htseq.counts.combined
 #
 
 DIFF_SOFT = DESeq2
-DIFF_FILE = Genes/DESeq2.csv
+DIFF_FILE = DESeq2/DESeq2.csv
 
 
 

@@ -110,7 +110,7 @@ plotMA <- function(anaquin,
     data$ratio <- as.factor(as.character(data$ratio))
 
     seqs <- data[si,]
-    stopifnot(sum(is.na(seqs$ratio))  == 0)
+    stopifnot(sum(is.na(seqs$ratio)) == 0)
 
     # What lines to draw horizontally?
     lineDat <- data.frame(logFC=c(0), ratio=as.factor(c(0)))
@@ -132,7 +132,7 @@ plotMA <- function(anaquin,
     if (shouldEndo)
     {
         endo <- data[!si,]
-        stopifnot(sum(!is.na(endo$ratio)) == 0)
+        # TODO: stopifnot(sum(!is.na(endo$ratio)) == 0)
         
         p <- p + geom_point(data = endo, aes(x = A, y = M.Ave), colour = "grey80", alpha=0.5)# +
         #                 geom_point(data = endo[endo$A <= 5,], aes(x = A, y = M.Ave), colour='pink', alpha=0.5)

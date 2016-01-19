@@ -14,7 +14,7 @@ plotForGenes <- function()
     
     data <- transQuin(seqs = row.names(d), counts = d$baseMean, pval = d$pvalue, ratio = d$expected.LFC)
 
-    plotLODR(data, shouldTable=FALSE)
+    plotLODR(data, shouldTable=FALSE, lvl='gene', shouldBand=TRUE)
 }
 
 plotForExons <- function()
