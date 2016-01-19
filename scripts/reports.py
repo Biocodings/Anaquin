@@ -67,7 +67,7 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False):
     #
     
     # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + ' anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + ref
+    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + ref
     
     # Now add up the arguments
     req = req + ' -o ' + TEMP_PATH + ' -factors ' + factors + ' -names ' + names + ' ' + args
@@ -173,7 +173,18 @@ class Language:
         
         if (output == 'RMarkdown'):
             file.write('\n## ' + title + '\n\n')
-            file.write('```{r eval=FALSE}\n')
+            file.write('```{ eval=FALSE}\n')
+            file.write(text)
+            file.write('\n```\n\n')
+
+    @staticmethod
+    def writeRCode(file, output, src, title):
+        with open(src, 'r') as src:
+            text = src.read()        
+        
+        if (output == 'RMarkdown'):
+            file.write('\n## ' + title + '\n\n')
+            file.write('```{r results=''\'hide\''', message=FALSE, warning=FALSE, echo=FALSE}\n')
             file.write(text)
             file.write('\n```\n\n')
 
@@ -190,6 +201,9 @@ class Chapter:
         
     def addImage(self, title, file):
         self.items.append({ 'type': 'image', 'title': title, 'value': file })
+
+    def addRCode(self, title, file):
+        self.items.append({ 'type': 'rCode', 'title': title, 'value': file })
         
     def generate(self, file, output):
         Language.writePage(file, output)
@@ -204,6 +218,9 @@ class Chapter:
             elif item['type'] == 'textFile':
                 Language.writeTextFile(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
                 Language.writePage(file, output)
+            elif item['type'] == 'rCode':
+                Language.writeRCode(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
+                Language.writePage(file, output)                
             elif item['type'] == 'image':
                 Language.writeImage(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
                 Language.writePage(file, output)                
@@ -229,6 +246,9 @@ class Report:
         
     def addImage(self, title, file):
         self.current.addImage(title, file)
+        
+    def addRCode(self, title, file):
+        self.current.addRCode(title, file)
         
     def generate(self, file, output):
         print('\n-------------------------------------')
@@ -307,29 +327,35 @@ def transQuin(config, output):
 
     r.startChapter('TransQuin Alignment')
 
-    # Add the summary statistics for each replicate
+    # Add summary statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Alignment summary statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
         
-    # Add the sequin statistics for each replicate
+    # Add sequin statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Alignment sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
 
     r.endChapter()
 
 
+    ############################################
+    #                                          #
+    #  2. Generating statistics for assembly   #
+    #                                          #
+    ############################################
+
+    print ('----------------------- Assembly -----------------------\n')
+
+    # Expression software
+    soft = get(config, 'ASSEMBLY_SOFT', { 'Cufflinks', 'StringTie' })
+
+    # Expression files
+    #files = get(config, 'ASSEMBLY_FILE', EXPECT_FILES)
     
-    # Generate a markup report (which can then be converted into various formats)
-    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
-
-
-
-    return
-
-
+    
     ######################################################
     #                                                    #
-    #  2. Generating statistics for expression analysis  #
+    #  3. Generating statistics for expression analysis  #
     #                                                    #
     ######################################################
 
@@ -350,20 +376,20 @@ def transQuin(config, output):
     req = '-soft ' + soft + ' -ufiles ' + files
     
     # Execute the command
-    anaquin('TransExpress', req, config)
+    anaquin('TransExpress', req, config, onlyPrint=True)
     
-    #
-    # The following are generated and relevant:
-    #
-    #    - Summary statistics for each replicate
-    #    - Summary statistics for pooled replicates
-    #    - Scatter plot for the expression analysis
-    #
-    
-    r.addSummary('A1/TransExpress_summary.stats', )
-    
-    
-    
+    r.startChapter('TransQuin Expression')
+
+    # Add summary statistics for each replicate
+    for i in range(0, len(names)):
+        r.addTextFile('Expression summary statistics for: ' + names[i], names[i] + os.sep + 'TransExpress_summary.stats', )
+        
+    # Add scatter plot
+    for i in range(0, len(names)):
+        r.addRCode('Expression scatter plot for: ' + names[i], names[i] + os.sep + 'TransExpress_scatter.R', )
+
+    r.endChapter()
+
     
     #####################################################
     #                                                   #
@@ -371,17 +397,17 @@ def transQuin(config, output):
     #                                                   #
     #####################################################
 
-    metrics = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
+    lvl = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
 
-    countSoft  = get(config, 'COUNT_SOFT', { 'HTSeqCount' })    
-    countFiles = get(config, 'DIFF_COUNT', EXPECT_FILES)
+    cSoft  = get(config, 'COUNT_SOFT', { 'HTSeqCount' })    
+    cFiles = get(config, 'DIFF_COUNT', EXPECT_FILES)
 
-    print('Counting software: ' + countSoft)
+    print('Counting software: ' + cSoft)
 
-    diffSoft = get(config, 'DIFF_SOFT', ['Cuffdiff', 'edgeR', 'DEXSeq2', 'DESeq2'])
-    diffFile = get(config, 'DIFF_FILE', EXPECT_FILE)
+    dSoft = get(config, 'DIFF_SOFT', ['Cuffdiff', 'edgeR', 'DEXSeq2', 'DESeq2'])
+    dFile = get(config, 'DIFF_FILE', EXPECT_FILE)
     
-    print('Differential software: ' + diffSoft)
+    print('Differential software: ' + dSoft)
 
     #
     # Generate a request for TransQuin for differential analysis. For example:
@@ -389,15 +415,31 @@ def transQuin(config, output):
     #   anaquin TransDiff -m ... -rgtf ... -soft DESEq2 -ufiles P1.txt,P2.txt,P3.txt... -cfiles C1.txt,C2.txt,C3.txt...
     #
     
-    req = ' -countSoft ' + countSoft + ' -diffSoft ' + diffSoft + ' -countFiles ' + countFiles + ' -diffFile ' + diffFile
+    req = ' -soft ' + dSoft + ' -csoft ' + cSoft + ' -level ' + lvl + ' -cfiles ' + cFiles + ' -ufiles ' + dFile
 
     # Execute the command
-    anaquin('TransDiff', req, config)
+    anaquin('TransDiff', req, config, onlyPrint=True)
 
+    r.startChapter('TransQuin Differential')
+
+    # Add summary statistics for each replicate
+    r.addTextFile('Differential summary statistics', 'TransDiffs_summary.stats', )
+
+    # Add ROC plots
+    r.addRCode('ROC plot', 'TransDiffs_ROC.R', )
+
+    # Add ROC plots
+    r.addRCode('MA plot', 'TransDiffs_MA.R', )
+
+    r.endChapter()
+
+    # Generate a markup report (which can then be converted into various formats)
+    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
+    
 
 #################################
 #                               #
-#         Misc functions        #
+#       Parsing functions       #
 #                               #
 #################################
     

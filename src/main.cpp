@@ -627,7 +627,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 
     if (getcwd(cwd, sizeof(cwd)))
     {
-        o.working = std::string(cwd) + "/" + path;
+        o.working = path; //std::string(cwd) + "/" + path;
     }
     else
     {
@@ -944,7 +944,7 @@ void parse(int argc, char ** argv)
             {
                 Tokens::split(val, ",", _p.oInputs);
                 
-                for (auto i = _p.inputs.size(); i-- > 0;)
+                for (auto i = _p.oInputs.size(); i-- > 0;)
                 {
                     checkFile(_p.opts[opt] = _p.oInputs[i]);
                 }

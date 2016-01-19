@@ -9,8 +9,8 @@
 library(Anaquin)
 
 # Create a TransQuin data set for Anaquin
-data <- anaquin(seqs     = c(%3%),
-                expected = c(%4%),
-                measured = c(%5%))
+data <- transQuin(seqs     = c(%3%),
+                  expected = c(%4%),
+                  measured = c(%5%))
 
 plotScatter(data, xname = '%6%', yname = '%7%')

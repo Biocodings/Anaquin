@@ -24,6 +24,7 @@ Scripts RWriter::createMA(const std::string &working, const FileName &file, cons
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
+                                    % working
                                     % file
                                     % lvl).str();
 }
