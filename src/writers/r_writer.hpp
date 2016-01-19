@@ -338,13 +338,6 @@ namespace Anaquin
         {
             return ("\'" + boost::algorithm::join(x, "\',\'") + "\'");
         }
-        
-        /*
-         * -------------------- MA Plot --------------------
-         */
-        
-        // Create an MA plot and link to the count table
-        static Scripts createMA(const FileName &, const std::string &);
 
         /*
          * -------------------- ROC Plot --------------------
@@ -353,16 +346,18 @@ namespace Anaquin
         static Scripts createROC(const std::vector<std::string> &, const std::vector<double> &);
 
         /*
+         * -------------------- MA Plot --------------------
+         */
+        
+        // Create an MA plot and link to the count table
+        static Scripts createMA(const std::string &working, const FileName &, const std::string &);
+
+        /*
          * -------------------- LODR Plot --------------------
          */
+        
+        static Scripts createLODR(const std::string &, const FileName &, const FileName &, const std::string &);
 
-        static Scripts createLODR(const std::string &, const std::string &);
-        
-        static Scripts createLODR(const std::vector<std::string> &,
-                                  const std::vector<double> &,
-                                  const std::vector<double> &,
-                                  const std::vector<double> &);
-        
         /*
          * -------------------- Scatter Plot --------------------
          */

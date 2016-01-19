@@ -54,7 +54,7 @@ namespace Anaquin
             struct Data : public LinearStats
             {
                 // Detected features
-                std::vector<GenericID> ids;
+                std::vector<FeatureID> ids;
 
                 // Probability under the null hypothesis
                 std::vector<double> ps;
@@ -75,8 +75,6 @@ namespace Anaquin
             
             // Detection limit            
             Limit limit;
-
-            inline bool haveCounts() const { return !avgs.empty(); }
         };
 
         /*

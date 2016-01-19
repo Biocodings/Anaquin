@@ -13,7 +13,7 @@ namespace Anaquin
         typedef enum
         {
             Name,
-            BaseName,
+            BaseMean,
             Log2Fold,
             Log2FoldSE,
             Stat,
@@ -75,9 +75,23 @@ namespace Anaquin
                     {
                         t.cID = Endo;
                     }
-
-                    try
+                    
+                    /*
+                     * Handle the NA case:
+                     *
+                     *     ENSG00000000003.14,0,NA,NA,NA,NA,NA
+                     */
+                    
+                    if (toks[DESeq2Field::PValue]   == "NA" ||
+                        toks[DESeq2Field::QValue]   == "NA" ||
+                        toks[DESeq2Field::Log2Fold] == "NA")
                     {
+                        t.status = DiffTest::Status::NotTested;
+                    }
+                    else
+                    {
+                        t.status = DiffTest::Status::Tested;
+
                         // Measured log-fold change
                         t.logF = stof(toks[DESeq2Field::Log2Fold]);
                         
@@ -87,12 +101,6 @@ namespace Anaquin
                         // Probability controlled for multi-testing
                         t.q = stod(toks[DESeq2Field::QValue]);
                     }
-                    catch (const std::invalid_argument &)
-                    {
-                        continue;
-                    }
-                    
-                    t.status = DiffTest::Status::Tested;
 
                     f(t, p);
                 }

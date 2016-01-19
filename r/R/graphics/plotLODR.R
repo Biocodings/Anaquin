@@ -9,10 +9,11 @@
 #
 
 plotLODR <- function(data,
+                     lvl,
                      choseFDR = 0.1,
                      xname='Average Counts',
                      yname='DE Test P-values',
-                     shouldTable=TRUE,
+                     shouldTable=FALSE,
                      shouldBand=FALSE)
 {
     require(grid)
@@ -21,11 +22,15 @@ plotLODR <- function(data,
     require(ggplot2)
     require(gridExtra)
     
+    stopifnot(class(data) == 'TransQuin')
+    stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
+
+    mix  <- data$mix    
     data <- data$seqs
     data <- data[!is.na(data$pval),]
     
     #
-    # Estimate the Q-value for false discovery rate.
+    # Estimate the q-value for false discovery rate.
     #
     #    https://github.com/Bioconductor-mirror/erccdashboard/blob/631b691a51db54cb165ff2de1f9a5e06608347bd/R/geneExprTest.R
     #
@@ -35,6 +40,18 @@ plotLODR <- function(data,
 
     print(paste('FDR threshold:', cutoff))
 
+    # If the expected ratios aren't provided, we'll need to read from the mixture    
+    if (is.null(data$ratio))
+    {
+        # Expected log-folds
+        expected <- expectLF(mix, row.names(data), lvl=lvl)
+        
+        data$ratio <- NA
+        data[row.names(data) %in% row.names(expected),]$ratio <- expected$logFC
+    }
+
+    data <- data[!is.na(data$ratio),]
+    
     # Combine the groups solely based on their magnitudes
     data$ratio = abs(data$ratio)
 
@@ -134,7 +151,9 @@ plotLODR <- function(data,
         {
             print(paste('Estmating LODR for LFC', i))
 
+            # Performs a local regression
             fit <- locfit(log10(t$y)~lp(log10(t$x)), maxk=300)
+            
             plot(fit, band="pred", get.data=TRUE, main=paste('Local regression for LFC:', i))
             
             #
@@ -210,8 +229,8 @@ plotLODR <- function(data,
         my_table <- tableGrob(d=annoTable, rows=NULL)
     }
 
-    #cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00") # Colors for the genes
-    cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
+    cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00") # Colors for the genes
+    #cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
 
     data$ratio     <- as.factor(data$ratio)
     lineDat$ratio  <- as.factor(lineDat$ratio)

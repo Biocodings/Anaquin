@@ -90,6 +90,7 @@ bool Reader::nextLine(std::string &line) const
             goto retry;
         }
 
+        boost::trim(line);
         return true;
     }
     else

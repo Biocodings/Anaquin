@@ -42,53 +42,57 @@ transQuin <- function(mix=loadMixture(), ...)
 
 ########################################################
 #                                                      #
-#                Accessor functions                 #
+#                Accessor functions                    #
 #                                                      #
 ########################################################
 
 #
 # Returns the expected logFold. The following levels are supported:
 #
-#   TransQuin: 'exon', 'isoform' and 'gene'
+#   TransQuin: 'exon'
+#              'gene'
+#              'isoform'
 #
 
-expectLF <- function(data, id, lvl)
+expectLF <- function(data, ids, lvl)
 {
-    stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
+    stopifnot(lvl == 'gene'    |
+              lvl == 'isoform' |
+              lvl == 'exon')
+
     stopifnot(class(data) == 'TransQuin' |
               class(data) == 'VarQuin'   |
               class(data) == 'MetaQuin'  |
               class(data) == 'Mixture')
+
+    if (class(data) != 'Mixture')
+    {
+        data <- data$mix
+    }
     
-    data <- data$mix
     stopifnot(!is.null(data))
 
     #
     # Eg:
     #
-    #      A        B       fold   logFold
+    #      A        B      fold   logFold
     #   R2_59 0.4720688 0.4720688     1
     #
 
-    switch(lvl, 'gene' =
-    {
-        data <- data$genes[row.names(data$genes)==id,]
-    }, 'isoform' =
-    {
-               
-    }, 'exon' =
-    {
-               
-    })
-    
-    stopifnot(nrow(data) <= 1)
+    switch(lvl, 'gene'    = { data <- data$genes    },
+                'exon'    = { data <- data$exons    },
+                'isoform' = { data <- data$isoforms })
+
+    data <- data[row.names(data) %in% ids,]
     
     if (is.null(data$A) | is.null(data$B))
     {
         error(paste('Failed to find mixture A and B'))
     }
 
-    return (round(log2(data$B / data$A)))
+    r <- data.frame(logFC=round(log2(data$B / data$A)))
+    row.names(r) <- row.names(data)
+    return (r)
 }
 
 #
@@ -131,49 +135,18 @@ expectAbund <- function(data, id, lvl, mix='A')
 
 
 
+
+
+
+
+
+
 .isoformsToGenes <- function(trans)
 {
     trans <- as.character(trans)
     genes <- substr(as.character(trans), 1, nchar(trans)-2)
     genes
 }
-
-#
-# Returns a list of exon bins that can be used as negative control for normalization (ie: FC==1)
-#
-
-negativeExonBins <- function(m = loadMixture())
-{
-    exons <- m$exons[m$exons$fold==1,]
-
-    # Make sure the corresponding logFolds are correct
-    stopifnot(nrow(exons[exons$logFold != 0,]) == 0)
-
-    #
-    # For example, the names of bins can be accessed by row.names(exons)
-    #
-    
-    exons
-}
-
-#
-# Returns a list of isoforms that can be used as negative control for normalization (ie: FC==1)
-#
-
-negativeIsoforms <- function(m = loadMixture())
-{
-    i <- m$isoforms[m$isoforms$fold==1,]
-    
-    # Make sure the corresponding logFolds are correct
-    stopifnot(nrow(i[i$logFold != 0,]) == 0)
-    
-    #
-    # For example, the names of bins can be accessed by row.names(exons)
-    #
-    
-    i
-}
-
 
 #
 # Load the mixture into an R object that can be used in other Anaquin functions

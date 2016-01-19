@@ -685,8 +685,9 @@ namespace Anaquin
 
             TransRef();
 
-            // Return a histogram for all the validated genes
+            Hist exonHist(const ChromoID &) const;
             Hist geneHist(const ChromoID &) const;
+            Hist isofHist(const ChromoID &) const;
 
             // Intervals for reference exons
             Intervals<ExonInterval> exonInters(const ChromoID &) const;
@@ -701,8 +702,9 @@ namespace Anaquin
              * Accessor functions
              */
 
-            // Calculate the detection limit at the gene level
+            Limit limitExon(const Hist &) const;
             Limit limitGene(const Hist &) const;
+            Limit limitIsof(const Hist &) const;
 
             // Number of non-overlapping bases in all exons
             Base exonBase(const ChromoID &) const;

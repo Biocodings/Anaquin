@@ -37,6 +37,9 @@ namespace Anaquin
             // Counts for a sample
             inline const Counts & counts(const SampleName &name) const { return _samples.at(name); }
 
+            // Sort the table given a permutation
+            void sort(const std::vector<std::size_t> &);
+
             /*
              * The following functions should be used cautiously as the table can be out-of-synched if isn't
              */

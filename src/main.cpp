@@ -623,7 +623,16 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.logger->open("anaquin.log");
 #endif
 
-    o.working = path;
+    char cwd[1024];
+
+    if (getcwd(cwd, sizeof(cwd)))
+    {
+        o.working = std::string(cwd) + "/" + path;
+    }
+    else
+    {
+        o.working = path;
+    }
     
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);

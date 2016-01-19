@@ -4,6 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
+#include <ss/misc.hpp>
 #include "trans/t_diffs.hpp"
 #include "data/experiment.hpp"
 #include "parsers/parser_edgeR.hpp"
@@ -44,6 +45,11 @@ std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const s
 template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const TDiffs::Options &o)
 {
     assert(t.cID == ChrT);
+    
+    if (t.status != Status::Tested)
+    {
+        return;
+    }
     
     const auto &id = t.id;
     
@@ -139,20 +145,28 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
         classifyEndo(stats, t, o);
     }
 
-    stats.data[t.cID].ps.push_back(t.p);
-    stats.data[t.cID].qs.push_back(t.q);
     stats.data[t.cID].ids.push_back(t.id);
-    stats.data[t.cID].lfcs.push_back(t.logF);
+    
+    if (t.status == Status::Tested)
+    {
+        stats.data[t.cID].ps.push_back(t.p);
+        stats.data[t.cID].qs.push_back(t.q);
+        stats.data[t.cID].lfcs.push_back(t.logF);
+    }
+    else
+    {
+        stats.data[t.cID].ps.push_back(NAN);
+        stats.data[t.cID].qs.push_back(NAN);
+        stats.data[t.cID].lfcs.push_back(NAN);
+    }
 }
 
-static void counts(TDiffs::Stats &stats, const TDiffs::Options &o)
+static void readCounts(const std::set<FeatureID> &isChrT, const std::set<FeatureID> &isEndo, TDiffs::Stats &stats, const TDiffs::Options &o)
 {
     // Create an empty count table
     stats.counts = std::shared_ptr<CountTable>(new CountTable(o.exp->countTable()));
 
     const auto &names = stats.counts->names();
-
-    assert(o.counts.size() == names.size());
     
     for (auto i = 0; i < o.counts.size(); i++)
     {
@@ -164,6 +178,13 @@ static void counts(TDiffs::Stats &stats, const TDiffs::Options &o)
                 
                 ParserHTSeqCount::parse(Reader(o.counts[i]), [&](const ParserHTSeqCount::Sample &s, const ParserProgress &)
                 {
+                    if (!isChrT.count(s.id) && !isEndo.count(s.id))
+                    {
+                        o.warn((boost::format("Unknown %1% in %2%. Not found in the differential analysis. Ignored.)") % s.id
+                                                                                                                       % o.counts[i]).str());
+                        return;
+                    }
+
                     if (!i)
                     {
                         stats.counts->addFeature(s.id);
@@ -176,52 +197,102 @@ static void counts(TDiffs::Stats &stats, const TDiffs::Options &o)
             }
         }
     }
+    
+    /*
+     * Sort the table by placing sequins before endogenous features.
+     */
+    
+    const auto &ids = stats.counts->ids();
+    
+    const auto p = SS::sortPerm(ids, [&](const FeatureID &x, const FeatureID &y)
+    {
+        if (isChrT.count(x) && isEndo.count(y))
+        {
+            return true;
+        }
+        else if (isEndo.count(x) && isChrT.count(y))
+        {
+            return false;
+        }
+
+        return x < y;
+    });
+    
+    stats.counts->sort(p);
 }
 
 template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
 {
-    TDiffs::Stats stats;
-
     const auto &r = Standard::instance().r_trans;
+
+    TDiffs::Stats stats;
 
     stats.data[Endo];
     stats.data[ChrT];
 
     switch (o.lvl)
     {
+        case Level::Exon:    { stats.hist = r.exonHist(ChrT); break; }
         case Level::Gene:    { stats.hist = r.geneHist(ChrT); break; }
-        case Level::Isoform: { stats.hist = r.hist();         break; }
-        case Level::Exon:    { throw "Not Implemented"; }
+        case Level::Isoform: { stats.hist = r.isofHist(ChrT); break; }
     }
 
     assert(!stats.hist.empty());
 
-    /*
-     * Calculate average counts for each condition. This is optional but needed for MA plot and LODR plot.
-     */
-    
-    if (!o.counts.empty())
-    {
-        counts(stats, o);
-    }
-    
     o.info("Parsing input files");
     f(stats);
-    
-    /*
-     * Calculating detection limit
-     */
     
     o.info("Calculating detection limit");
     
     switch (o.lvl)
     {
+        case Level::Exon:    { stats.limit = r.limitExon(stats.hist); break; }
         case Level::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
-        case Level::Isoform: { stats.limit = r.limit(r.hist());       break; }
-        case Level::Exon:
+        case Level::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
+    }
+    
+    /*
+     * We shouldn't assume any ordering in the inputs, we'll sort the data and assume
+     * uniqueness in the genome.
+     */
+
+    // Used for quickly sort the count tables
+    std::set<FeatureID> isChrT, isEndo;
+    
+    for (auto &i : stats.data)
+    {
+        const auto p = SS::sortPerm(i.second.ids, [&](const FeatureID &x, const FeatureID &y)
         {
-            throw "Not Implemented";
+            return x < y;
+        });
+
+        i.second.ids  = SS::applePerm(i.second.ids,  p);
+        i.second.ps   = SS::applePerm(i.second.ps,   p);
+        i.second.qs   = SS::applePerm(i.second.qs,   p);
+        i.second.lfcs = SS::applePerm(i.second.lfcs, p);
+        
+        for (const auto &id : i.second.ids)
+        {
+            assert(!isChrT.count(id) && !isEndo.count(id));
+
+            if (i.first == ChrT)
+            {
+                isChrT.insert(id);
+            }
+            else
+            {
+                isEndo.insert(id);
+            }
         }
+    }
+    
+    /*
+     * Parse optional count tables. This will be needed for MA plot and LODR plot.
+     */
+    
+    if (!o.counts.empty())
+    {
+        readCounts(isChrT, isEndo, stats, o);
     }
     
     return stats;
@@ -272,54 +343,62 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     });
 }
 
-static void writeDifferent(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
-{
-    o.writer->open(file);
-    
-    for (const auto &i : stats.data)
-    {
-        const auto &ids  = i.second.ids;
-        const auto &ps   = i.second.ps;
-        const auto &qs   = i.second.qs;
-        const auto &lfcs = i.second.lfcs;
-        
-        for (auto j = 0; j < ids.size(); j++)
-        {
-            o.writer->write((boost::format("%1%,%2%,%3%,%4%") % ids[j]
-                                                              % ps[j]
-                                                              % qs[j]
-                                                              % lfcs[j]).str());
-        }
-    }
-    
-    o.writer->close();
-}
-
 static void writeCounts(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
 {
     o.writer->open(file);
-
+    
     const auto &names = stats.counts->names();
     
     for (const auto &name : names)
     {
         o.writer->write("," + name, false);
     }
-
+    
     o.writer->write("\n", false);
     
     const auto &ids = stats.counts->ids();
-
+    
     for (auto i = 0; i < ids.size(); i++)
     {
         o.writer->write(ids[i], false);
-
+        
         for (const auto &name : names)
         {
             o.writer->write("," + std::to_string(stats.counts->counts(name).at(i)), false);
         }
-
+        
         o.writer->write("\n", false);
+    }
+    
+    o.writer->close();
+}
+
+static void writeDifferent(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
+{
+    o.writer->open(file);
+    o.writer->write(",pval,qval,logFC");
+
+    for (const auto &i : stats.data)
+    {
+        const auto &ps   = i.second.ps;
+        const auto &qs   = i.second.qs;
+        const auto &ids  = i.second.ids;
+        const auto &lfcs = i.second.lfcs;
+
+        for (auto j = 0; j < ids.size(); j++)
+        {
+            if (isnan(ps[j]))
+            {
+                o.writer->write((boost::format("%1%,NA,NA,NA") % ids[j]).str());
+            }
+            else
+            {
+                o.writer->write((boost::format("%1%,%2%,%3%,%4%") % ids[j]
+                                                                  % ps[j]
+                                                                  % qs[j]
+                                                                  % lfcs[j]).str());
+            }
+        }
     }
     
     o.writer->close();
@@ -377,31 +456,34 @@ void TDiffs::report(const FileName &file, const Options &o)
     o.writer->write(RWriter::createROC(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
     o.writer->close();
 
-    /*
-     * Generating count table (CSV)
-     */
-
-    writeCounts("TransDiffs_counts.csv", stats, o);
-
-    /*
-     * Generating MA plot
-     */
-
-    o.writer->open("TransDiffs_MA.R");
-    o.writer->write(RWriter::createMA("TransDiffs_counts.csv", units));
-    o.writer->close();
-    
-    /*
-     * Generating differential results (CSV)
-     */
-    
-    writeDifferent("TransDiffs_diffs.csv", stats, o);
-    
-    /*
-     * Generating LODR plot
-     */
-    
-    o.writer->open("TransDiffs_LODR.R");
-    o.writer->write(RWriter::createLODR("TransDiffs_diffs.csv", "TransDiffs_counts.csv"));
-    o.writer->close();
+    if (stats.counts)
+    {
+        /*
+         * Generating count table (CSV)
+         */
+        
+        writeCounts("TransDiffs_counts.csv", stats, o);
+        
+        /*
+         * Generating MA plot
+         */
+        
+        o.writer->open("TransDiffs_MA.R");
+        o.writer->write(RWriter::createMA(o.working, "TransDiffs_counts.csv", units));
+        o.writer->close();
+        
+        /*
+         * Generating differential results (CSV)
+         */
+        
+        writeDifferent("TransDiffs_diffs.csv", stats, o);
+        
+        /*
+         * Generating LODR plot
+         */
+        
+        o.writer->open("TransDiffs_LODR.R");
+        o.writer->write(RWriter::createLODR(o.working, "TransDiffs_diffs.csv", "TransDiffs_counts.csv", units));
+        o.writer->close();
+    }
 }

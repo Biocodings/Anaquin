@@ -4,34 +4,20 @@
 
 using namespace Anaquin;
 
-Scripts RWriter::createLODR(const std::string &dFile, const std::string &cFile)
+Scripts RWriter::createLODR(const std::string &working, const FileName &dFile, const std::string &cFile, const std::string &lvl)
 {
     std::stringstream ss;
     ss << PlotLODR();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
+                                    % working
+                                    % cFile
                                     % dFile
-                                    % cFile).str();
+                                    % lvl).str();
 }
 
-Scripts RWriter::createLODR(const std::vector<std::string> &seqs,
-                            const std::vector<double> &avgs,
-                            const std::vector<double> &pvals,
-                            const std::vector<double> &logFCs)
-{
-    std::stringstream ss;
-    ss << PlotLODR();
-    
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                    % RWriter::concat(avgs)
-                                    % RWriter::concat(pvals)
-                                    % RWriter::concat(logFCs)).str();
-}
-
-Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
+Scripts RWriter::createMA(const std::string &working, const FileName &file, const std::string &lvl)
 {
     std::stringstream ss;
     ss << PlotMA();
@@ -41,39 +27,6 @@ Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
                                     % file
                                     % lvl).str();
 }
-
-//Scripts RWriter::createMA(const CountTable &c)
-//{
-//    std::stringstream s1;
-//    
-//    const auto &names = c.names();
-//    
-//    /*
-//     * Construct for the replicates
-//     */
-//    
-//    for (auto i = 0; i < names.size(); i++)
-//    {
-//        const auto &counts = c.counts(names[i]);
-//
-//        // Eg: A1 = c(...)
-//        s1 << names[i] << "= c(" << RWriter::concat(counts, x2str) << ")";
-//
-//        if (i != names.size() - 1)
-//        {
-//            s1 << ",\n";
-//        }
-//    }
-//
-//    std::stringstream s2;
-//    s2 << PlotMA();
-//    
-//    return (boost::format(s2.str()) % date()
-//                                    % __full_command__
-//                                    % s1.str()
-//                                    % RWriter::concat(c.ids())
-//            ).str();
-//}
 
 Scripts RWriter::createROC(const std::vector<std::string> &seqs, const std::vector<double> &qs)
 {

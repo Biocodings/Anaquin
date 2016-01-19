@@ -1,8 +1,19 @@
 #include <map>
+#include <ss/misc.hpp>
 #include "data/tokens.hpp"
 #include "data/experiment.hpp"
 
 using namespace Anaquin;
+
+void CountTable::sort(const SS::Permutation &p)
+{
+    _ids = SS::applePerm(_ids, p);
+
+    for (auto &i : _samples)
+    {
+        SS::applePerm(i.second, p);
+    }
+}
 
 // Eg: A1,A2,A3,B1,B2,B3
 void Experiment::addNames(const std::string &str)

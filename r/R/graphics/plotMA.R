@@ -66,7 +66,7 @@ plotMA <- function(anaquin,
     totCol <- ncol(data)
 
     #
-    # 1. Calculating the average counts for each condition
+    # Calculating the average counts for each condition
     #
 
     statsDat <- data.frame(t(apply(data[c(1:6)], 1, stats,
@@ -78,7 +78,7 @@ plotMA <- function(anaquin,
     data <- data[which(is.finite(data$M.Ave)),]
     
     #
-    # 2. Working out the expected change for each feature.
+    # Working out the expected change for each feature.
     #
     
          if (lvl == 'gene')    { si <- row.names(data) %in% row.names(anaquin$mix$genes)    }

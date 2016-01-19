@@ -525,6 +525,16 @@ Limit TransRef::limitGene(const Hist &hist) const
     });
 }
 
+Limit TransRef::limitExon(const Hist &hist) const
+{
+    throw "Not Implemented";
+}
+
+Limit TransRef::limitIsof(const Hist &hist) const
+{
+    throw "Not Implemented";
+}
+
 void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
 {
     // Synthetic is not supported for now...
@@ -661,6 +671,16 @@ Hist TransRef::geneHist(const ChromoID &cID) const
     {
         return createHist(_impl->valid[cID]._genes);
     }
+}
+
+Hist TransRef::exonHist(const ChromoID &cID) const
+{
+    throw "Not Implemented";
+}
+
+Hist TransRef::isofHist(const ChromoID &cID) const
+{
+    throw "Not Implemented";
 }
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
