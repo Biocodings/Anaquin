@@ -12,44 +12,28 @@
 ###################################################
 
 # Name of the report
-REPORT_NAME = /Users/tedwong/Desktop/Report.pdf
+REPORT_NAME = Sample Report
 
-# Where the files are generated relatively to the root
+# Where the files located relatively to the root
 ROOT_PATH = /Users/tedwong/Desktop/K_562
 
 
 #
 # Where's your mixture file? Anaquin needs the file for expected concentration.
-# Note that if you're running a differential analysis, you'll need a mixture file
-# for mixture A and B.
 #
 # You can download a copy at www.sequins.xyz. For example:
 #
 #    wget https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv
 #
 
-MIX_FILE = /Users/tedwong/Desktop/K_562/MTR004.v013.csv
+MIX_FILE = MTR004.v013.csv
 
-#
-# The default format for a mixture file has 3-4 columns. For example:
-#
-#     head MTR004.v013.csv
-#
-#  ID  	 	Length	    MIX_1	 		MIX_2
-#  R1_11_1	703	   		161.1328125	    5.035400391
-#  R1_11_2	785	   		80.56640625	    10.07080078
-#  R1_13_1	1940	   	5156.25	        2578.125
-#
-#	
-
-MIX_1_COL = 2
-MIX_2_COL = 3
 
 #
 # Where's the reference annotation?
 #
 
-REF_ANNOT =/Users/tedwong/Desktop/K_562/ATR001.v032.gtf
+REF_ANNOT = ATR001.v032.gtf
 
 
 ###################################################
@@ -93,15 +77,15 @@ NAMES = A1,A2,A3,B1,B2,B3
 #
 #     - SAM/BAM
 #
-# The orders must be consistent to the the factors.
+# The orders must be consistent to the factors.
 #
 
-ALIGN_FILE = TopHat2/A1/sampled.sam
-ALIGN_FILE = TopHat2/A2/sampled.sam
-ALIGN_FILE = TopHat2/A3/sampled.sam
-ALIGN_FILE = TopHat2/B1/sampled.sam
-ALIGN_FILE = TopHat2/B2/sampled.sam
-ALIGN_FILE = TopHat2/B3/sampled.sam
+ALIGN_FILE = TopHat2/K_RMXA1v2.accepted_hits.bam
+ALIGN_FILE = TopHat2/K_RMXA2v2.accepted_hits.bam
+ALIGN_FILE = TopHat2/K_RMXA3v2.accepted_hits.bam
+ALIGN_FILE = TopHat2/G_RMXB1v2.accepted_hits.bam
+ALIGN_FILE = TopHat2/G_RMXB2v2.accepted_hits.bam
+ALIGN_FILE = TopHat2/G_RMXB3v2.accepted_hits.bam
 
 
 ###################################################

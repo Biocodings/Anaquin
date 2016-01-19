@@ -622,7 +622,6 @@ static void writeSummary(const FileName &file, const TAlign::Stats &stats, std::
 static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::shared_ptr<Writer> writer)
 {
     writer->open(file);
-    writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
     
@@ -634,10 +633,6 @@ static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::
                                          % "Specificity (Intron)"
                                          % "Sensitivity (Base)"
                                          % "Specificity (Base)").str());
-    
-    /*
-     * Obviously, we'll only check the synthetic chromosome...
-     */
     
     for (const auto &i : stats.data.at(ChrT).overB.h)
     {

@@ -7,6 +7,8 @@
 import os
 import sys
 import math
+import uuid
+
 
 ########################################################
 #                                                      #
@@ -15,7 +17,7 @@ import math
 ########################################################
 
 # Where Anaquin is located
-ANAQUIN_PATH = '/Users/tedwong/Sources/QA/anaquin'
+ANAQUIN_PATH = '/Users/tedwong/Sources/QA'
 
 
 ########################################################
@@ -37,23 +39,24 @@ EXPECT_FILES = 'Files'
 EXPECT_LIST = 'List'
 
 # Where the temporary files are saved
-TEMP_PATH = 'temp'
+TEMP_PATH = ANAQUIN_PATH + os.sep + '__temp__' #str(uuid.uuid4())
 
 
 # Do we want to do unit testing?
 __unitTesting__ = True
 
+
 # Execute an Anaquin request
-def anaquin(tool, args, config, needMixture=True):
+def anaquin(tool, args, config, needMixture=True, onlyPrint=False):
     
     # Eg: /Users/tedwong/Desktop/K_562
     root = get(config, 'ROOT_PATH')
-    
+
     names   = get(config, 'NAMES')
     factors = get(config, 'FACTORS')
     
-    mix = get(config, 'MIX_FILE')
-    ref = get(config, 'REF_ANNOT')
+    mix = appendRoot(root, get(config, 'MIX_FILE'))
+    ref = appendRoot(root, get(config, 'REF_ANNOT'))
     
     names   = get(config, 'NAMES')    
     factors = get(config, 'FACTORS')
@@ -64,16 +67,16 @@ def anaquin(tool, args, config, needMixture=True):
     #
     
     # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + ' -t ' + tool + ' -m ' + mix + ' -rgtf ' + ref
+    req = ANAQUIN_PATH + ' anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + ref
     
     # Now add up the arguments
     req = req + ' -o ' + TEMP_PATH + ' -factors ' + factors + ' -names ' + names + ' ' + args
 
-    print(req)
+    print(req + '\n')
 
     # Execute the Anaquin request
-    if not __unitTesting__:
-        os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
+    #if not __unitTesting__ or onlyPrint:
+    #    os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
 
 ###################################
 #                                 #
@@ -124,19 +127,22 @@ def root(config):
     else:
         return path + '/'
 
-def name(config):
+def appendRoot(root, path):
+    if root is None:
+        return path
+    else:
+        return root + os.sep + path
+
+def reportName(config):
     return get(config, 'REPORT_NAME', optional=True)
     
 def mixture(config):
     return get(config, 'MIX_FILE', EXPECT_FILE)
 
-# Return the column for mixture 1
-def mixture_1(config):
-    return get(config, 'MIX_1_COL', EXPECT_NUM)
+# Eg: A1,A2,A3,B1,B2,B3
+def getNames(config):
+    return get(config, 'NAMES').split(',')
 
-# Return the column for mixture 2
-def mixture_2(config):
-    return get(config, 'MIX_2_COL', EXPECT_NUM, optional=True)
 
 #################################
 #                               #
@@ -144,33 +150,87 @@ def mixture_2(config):
 #                               #
 #################################
 
-class Report:
-    def __init__(self):
-        self.summaries = []
-    
-    def addSummary(self, file):
-        self.summaries.append(file)
-        
-    def addImage(self):
-        pass
-        
-    def startSection():
-        pass
-        
-    def endSection():
-        pass
-        
-    def writeNewPage(self, file, output):
+#
+# Supported markup languages:
+#
+#    - RMarkdown
+#
+class Language:
+    @staticmethod    
+    def writePage(file, output):
         if (output == 'RMarkdown'):
             file.write('\n\pagebreak\n\n')
 
-    def writeCode(self, file, code, output):
+    @staticmethod
+    def writeText(file, output, text):
         if (output == 'RMarkdown'):
-            file.write('```{r eval=FALSE}\n')
-            file.write(code)
-            file.write('```')
+            file.write(text)
 
-    def generate(self, file, output, config):
+    @staticmethod
+    def writeTextFile(file, output, src, title):
+        with open(src, 'r') as src:
+            text = src.read()        
+        
+        if (output == 'RMarkdown'):
+            file.write('\n## ' + title + '\n\n')
+            file.write('```{r eval=FALSE}\n')
+            file.write(text)
+            file.write('\n```\n\n')
+
+class Chapter:
+    def __init__(self, title):
+        self.items = []
+        self.title = title
+
+    def addPage(self):
+        self.items.append({ 'type': 'page', 'value': None })
+    
+    def addTextFile(self, title, file):
+        self.items.append({ 'type': 'textFile', 'title': title, 'value': file })
+        
+    def addImage(self, title, file):
+        self.items.append({ 'type': 'image', 'title': title, 'value': file })
+        
+    def generate(self, file, output):
+        Language.writePage(file, output)
+        Language.writeText(file, output, '\n# ' + self.title + '\n')
+        #Language.writeText(file, output, '---\n\n')
+
+        for i in range(0, len(self.items)):
+            item = self.items[i]
+            
+            if item['type'] == 'page':
+                Language.writePage(file, output)                
+            elif item['type'] == 'textFile':
+                Language.writeTextFile(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
+                Language.writePage(file, output)
+            elif item['type'] == 'image':
+                Language.writeImage(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
+                Language.writePage(file, output)                
+            else:
+                raise Exception('Unknown item: ' + str(item))
+        
+class Report:
+    def __init__(self):
+        self.chapters = []
+    
+    def startChapter(self, title):
+        self.current = Chapter(title)
+        
+    def endChapter(self):
+        self.chapters.append(self.current)
+        self.current = None
+        
+    def addPage(self):
+        self.current.addPage()
+
+    def addTextFile(self, title, file):
+        self.current.addTextFile(title, file)
+        
+    def addImage(self, title, file):
+        self.current.addImage(title, file)
+        
+    def generate(self, file, output):
         print('\n-------------------------------------')
         print('Generating ' + file + ' for ' + output)
         
@@ -178,29 +238,23 @@ class Report:
             file = open(file, 'w')
 
             header = """---
-title: "Anaquin TransQuin Report"
+title: "Anaquin: TransQuin Report"
 header-includes: \usepackage{graphicx}
 output: 
     pdf_document:
         keep_tex: true
         toc: yes
+        toc_depth: 2
 ---"""
 
             file.write(header + '\n\n')
-            self.writeNewPage(file, output)
 
-            # Eg: /Users/tedwong/Desktop/K_562
-            root = get(config, 'ROOT_PATH')
-
-            for i in range(0, len(self.summaries)):
-                with open(TEMP_PATH + '/' + self.summaries[i], 'r') as f:
-                    
-                    file.write('Summary statistics for ' + self.summaries[i] + '\n')
-                    file.write('---------------\n\n')                    
-                    self.writeCode(file, f.read(), output)
+            for i in range(0, len(self.chapters)):
+                self.chapters[i].generate(file, output)
 
 def createReport(file, report):
     pass
+
 
 #################################
 #                               #
@@ -226,25 +280,51 @@ def transQuin(config, output):
 
     r = Report()
     
+    # Eg: A1,A2,A3,B1,B2,B3
+    names = getNames(config)
+    
     #############################################
     #                                           #
     #  1. Generating statistics for alignments  #
     #                                           #
     #############################################
 
+    print ('----------------------- Alignments -----------------------\n')
+
     # Alignment files
-    alignFiles = get(config, 'ALIGN_FILE', EXPECT_FILES)
+    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
 
     #
     # Generate a request for TransQuin for differential analysis. For example:
     #
-    #    anaquin TransAlign -m ... -rgtf ... -factors 1,1,1,2,2,2 -ufiles C1.BAM,C2.BAM,C3.BAM
+    #    anaquin TransAlign -m ... -rgtf ... -factors 1,1,1... -names A1,A2,A3... -ufiles C1.BAM,C2.BAM,C3.BAM
     #
 
-    req = '-ufiles ' + alignFiles
+    req = '-ufiles ' + files
     
     # Execute the command
-    #anaquin('TransAlign', req, config)
+    anaquin('TransAlign', req, config, onlyPrint=True)
+
+    r.startChapter('TransQuin Alignment')
+
+    # Add the summary statistics for each replicate
+    for i in range(0, len(names)):
+        r.addTextFile('Alignment summary statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
+        
+    # Add the sequin statistics for each replicate
+    for i in range(0, len(names)):
+        r.addTextFile('Alignment sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
+
+    r.endChapter()
+
+
+    
+    # Generate a markup report (which can then be converted into various formats)
+    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
+
+
+
+    return
 
 
     ######################################################
@@ -252,6 +332,8 @@ def transQuin(config, output):
     #  2. Generating statistics for expression analysis  #
     #                                                    #
     ######################################################
+
+    print ('----------------------- Expression -----------------------\n')
 
     # Expression software
     soft = get(config, 'EXP_SOFT', { 'Cufflinks', 'StringTie' })
@@ -281,10 +363,7 @@ def transQuin(config, output):
     r.addSummary('A1/TransExpress_summary.stats', )
     
     
-    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output, config)
     
-    
-    return
     
     #####################################################
     #                                                   #
