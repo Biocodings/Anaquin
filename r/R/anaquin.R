@@ -39,7 +39,8 @@ TransQuin <- function(mix=loadMixture(), ...)
     if (!is.null(x$B1)) { data$B1 <- x$B1 }  # TODO: Fix me
     if (!is.null(x$B2)) { data$B2 <- x$B2 }  # TODO: Fix me
     if (!is.null(x$B3)) { data$B3 <- x$B3 }  # TODO: Fix me
-    
+    if (!is.null(x$prop)) { data$prop <- x$prop }  # TODO: Fix me
+
     r <- list('seqs'=data, mix=mix)
     class(r) <- 'TransQuin'
 
@@ -87,7 +88,7 @@ baseMean <- function(data)
     
     if (is.null(data$seqs$baseMean))
     {
-        # TODO: Implement me        
+        # TODO: Implement me
     }
     
     return (data$seqs$baseMean)
@@ -229,26 +230,23 @@ expectedLF <- function(data, lvl, ids=NULL)
 #   TransQuin: 'exon', 'isoform' and 'gene'
 #
 
-expectAbund <- function(data, id, lvl, mix='A')
+expectAbund <- function(data, ids, lvl, mix='A')
 {
-    stopifnot(lvl == 'gene' || lvl == 'isoform' || lvl == 'exon')
-    stopifnot(class(data) == 'TransQuin' ||
-              class(data) == 'VarQuin'   ||
-              class(data) == 'MetaQuin'  ||
+    stopifnot(lvl == 'exon'    |
+              lvl == 'gene'    |
+              lvl == 'isoform')
+
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin'  |
               class(data) == 'Mixture')
 
     data <- data$mix
     
-    #
-    # Eg:
-    #
-    #      A        B       fold   logFold
-    #   R2_59 0.4720688 0.4720688     1
-    #
-    data <- data$genes[row.names(data$genes)==id,]
+    switch(lvl, 'gene'    = { data <- data$genes[row.names(data$genes) %in% ids,]       },
+                'isoform' = { data <- data$isoforms[row.names(data$isoforms) %in% ids,] },
+                'exon'    = { data <- data$exons[row.names(data$exons) %in% ids,]       })
 
-    stopifnot(nrow(data) <= 1)
-        
     if (is.null(data[mix]))
     {
         error(paste('Unknown mixture:', mix))
