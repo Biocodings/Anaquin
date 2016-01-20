@@ -220,7 +220,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
     { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES                                     } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
@@ -1103,10 +1103,9 @@ void parse(int argc, char ** argv)
                 {
                     TAssembly::Options o;
 
-                    o.ref   = _p.opts[OPT_R_GTF];
-                    o.query = _p.opts[OPT_U_GTF];
-                    
-                    analyze_1<TAssembly>(OPT_U_GTF, o);
+                    o.ref = _p.opts[OPT_R_GTF];
+
+                    analyze<TAssembly>(_p.inputs, o);
                     break;
                 }
 

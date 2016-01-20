@@ -9,8 +9,8 @@ namespace Anaquin
     {
         struct Options : FuzzyOptions
         {
-            // Path for the reference and query GTF
-            FileName ref, query;
+            // Path for the reference GTF
+            FileName ref;
         };
 
         struct Stats : public MappingStats
@@ -88,7 +88,6 @@ namespace Anaquin
             return stats;
         }
 
-        static void report(const FileName &, const Options &o = Options());
         static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }

@@ -694,9 +694,6 @@ static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::
 
 static void writeReplicate(const TAlign::Stats &stats, const FileName &file, const std::string &name, const TAlign::Options &o)
 {
-    // Eg: /Users/tedwong/Sources/A1/accepted_hits.bam to accepted_hits.bam
-    const auto fileName = extractFile(file);
-    
     // Eg: A1/TransAlign_summary.stats
     const auto sample = extractFile(file);
 
