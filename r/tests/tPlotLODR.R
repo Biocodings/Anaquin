@@ -7,16 +7,6 @@
 library('RUnit')
 library('Anaquin')
 
-plotForGenes <- function()
-{
-    d <- read.csv('/Users/tedwong/Desktop/LODR_genes_pval_TED.csv', row.names=1)
-    d <- d[!is.na(d$pvalue),]
-    
-    data <- transQuin(seqs = row.names(d), counts = d$baseMean, pval = d$pvalue, ratio = d$expected.LFC)
-
-    plotLODR(data, shouldTable=FALSE, lvl='gene', shouldBand=TRUE)
-}
-
 plotForExons <- function()
 {
     #
@@ -26,7 +16,7 @@ plotForExons <- function()
     d$LFC <- round(d$LFC)
     
     d <- d[!is.na(d$pvalue),]
-
+    
     #
     # The following LFC can't be fitted by local regression
     #
@@ -38,23 +28,46 @@ plotForExons <- function()
     d <- d[d$LFC!=6 & d$LFC!=-6,]
     d <- d[d$LFC!=7 & d$LFC!=-7,]
     d <- d[d$LFC!=9 & d$LFC!=-9,]    
-
+    
     #
     # It's hard to construct a LODR plot with zero probabilities...
     #
-
+    
     #m <- mean(d[(d$LFC==-5 | d$LFC==5) & (d$pvalue!=0),]$pvalue)
     #d[(d$LFC==-5 | d$LFC==5) & (d$pvalue==0),]$pvalue <- 0.001
     
     d[d$pvalue==0,]$pvalue <- 1e-100
     
-
-#    d <- d[d$pvalue>0,]
+    
+    #    d <- d[d$pvalue>0,]
     d <- d[d$pvalue>1e-200,]
-
+    
     data <- anaquin(seqs=row.names(d), counts=d$exonBaseMean, pval=d$pvalue, ratio=d$LFC)
     plotLODR(data, shouldTable=FALSE)
 }
 
-plotForExons()
-plotForGenes()
+plotForGenes <- function()
+{
+    # Read data file for gencode
+    gens <- read.csv('tests/data/K_562/DESeq2_gencode_results.csv', row.names=1)
+    
+    # Read data file for sequins
+    seqs <- read.csv('tests/data/K_562/LODR_genes_TED_20.01.16.csv', row.names=1)
+    
+    # There is no expected LFC for gencode but we'll need it to do a column bind
+    gens$expected.LFC <- NA
+    
+    data <- rbind(seqs[,c(1,2,3,5,6),], gens[,c(1,2,3,5,7)])
+    stopifnot((nrow(seqs) + nrow(gens)) == nrow(data))
+    
+    # Create a TransQuin data set for Anaquin
+    data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$log2FoldChange, lfcSE=data$lfcSE, pvalue=data$pvalue, expected.LFC=data$expected.LFC)
+
+    plotLODR(data, shouldTable=FALSE, lvl='gene', shouldBand=TRUE)
+}
+
+
+plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='gene', shouldBand=FALSE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00))
+
+#plotForExons()
+#plotForGenes()

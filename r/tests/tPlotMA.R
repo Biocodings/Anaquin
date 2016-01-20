@@ -69,7 +69,4 @@ plotForGenes <- function()
     checkEquals(r$yname, 'Log2 Ratio of Normalized Counts')
 }
 
-
-
-r <- plotMA(data, lvl='gene', shouldEndo=TRUE, shouldSymm=TRUE, shouldError=TRUE)
-
+plotForGenes()

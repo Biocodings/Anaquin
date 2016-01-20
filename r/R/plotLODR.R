@@ -11,6 +11,8 @@
 plotLODR <- function(data,
                      lvl,
                      choseFDR = 0.1,
+                     xBreaks = NULL,
+                     yBreaks = NULL,
                      xname='Average Counts',
                      yname='DE Test P-values',
                      shouldTable=FALSE,
@@ -25,10 +27,31 @@ plotLODR <- function(data,
     stopifnot(class(data) == 'TransQuin')
     stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
 
-    mix  <- data$mix    
-    data <- data$seqs
-    data <- data[!is.na(data$pval),]
+    # Names of all the features
+    names <- names(data)
     
+    # Average of normalized count values (x-axis)
+    baseMean <- baseMean(data)
+
+    # Probability under the null hypothesis (y-axis)
+    pval <- pval(data)
+        
+    # Expected logFold ratio
+    eLogLF <- expectedLF(data, lvl=lvl, ids=sequins(data))
+
+    data <- data.frame(baseMean=baseMean, pval=pval, eLogLF=eLogLF)
+    row.names(data) <- names
+    
+    data <- data[!is.na(data$pval),]
+    data <- data[!is.na(data$baseMean),]
+    data <- data[!is.infinite(data$baseMean),]
+    
+    # We can only draw sequins on LODR
+    data <- data[!is.na(data$eLogLF),]    
+    
+    # Combine the groups solely based on their magnitudes
+    data$eLogLF = abs(data$eLogLF)
+
     #
     # Estimate the q-value for false discovery rate.
     #
@@ -40,24 +63,6 @@ plotLODR <- function(data,
 
     print(paste('FDR threshold:', cutoff))
 
-    # If the expected ratios aren't provided, we'll need to read from the mixture    
-    if (is.null(data$ratio))
-    {
-        # Expected log-folds
-        expected <- expectLF(mix, row.names(data), lvl=lvl)
-        
-        data$ratio <- NA
-        data[row.names(data) %in% row.names(expected),]$ratio <- expected$logFC
-    }
-
-    data <- data[!is.na(data$ratio),]
-    
-    # Combine the groups solely based on their magnitudes
-    data$ratio = abs(data$ratio)
-
-    data$x <- data$counts
-    data$y <- data$pval
-        
     LODR <- function(pval, mn, cutoff, prob)
     {
         # Eg: 0.02590173 to -1.586671
@@ -66,7 +71,7 @@ plotLODR <- function(data,
         # Fit a local regression on the log10 scale
         fit <- locfit(log10(pval)~lp(log10(mn)), maxk=300)
         
-        X <- preplot(fit,band="pred",newdata=log10(mn))
+        X <- preplot(fit, band="pred", newdata=log10(mn))
         
         #plot(fit,band="pred",get.data=TRUE,xlim=range(log10(mn)))
         
@@ -131,16 +136,17 @@ plotLODR <- function(data,
     lodr.resLess <- NULL; set.seed(1)
     
     #
+    # ---------------------------- Fitting Local Regression ----------------------------
+    #
     # For each group, fit a local regression. We'll also estimate the confidence interval for each
     # model. Refer to the ERCC paper for more details.
     #
     
     prob <- 0.90
     
-    for (i in unique(data$ratio))
+    for (i in unique(data$eLogLF))
     {
-        #i <- 9
-        t <- data[data$ratio == i,]
+        t <- data[data$eLogLF == i,]
 
         #
         # 1. Fit a local regression, where each point is approximated by a quadratic function bounded
@@ -151,16 +157,19 @@ plotLODR <- function(data,
         {
             print(paste('Estmating LODR for LFC', i))
 
-            # Performs a local regression
-            fit <- locfit(log10(t$y)~lp(log10(t$x)), maxk=300)
+            #plot(log10(t$baseMean), log10(t$pval))
             
+            # Performs a local regression
+            fit <- locfit(log10(t$pval)~lp(log10(t$baseMean)), maxk=300)
+            
+            # Plot how the points are fitted
             plot(fit, band="pred", get.data=TRUE, main=paste('Local regression for LFC:', i))
             
             #
             # Generate new data points and use those data points for the prediction band
             #
             
-            x.new <- seq(min(log10(t$x)), max(log10(t$x)), length.out=100)
+            x.new <- seq(min(log10(t$baseMean)), max(log10(t$pval)), length.out=100)
             X <- preplot(fit, band="pred", newdata=x.new)
 
             x.new    <- 10^x.new
@@ -179,7 +188,7 @@ plotLODR <- function(data,
         {
             tryCatch (
             {
-                t.res <- LODR(t$y, t$x, cutoff=cutoff, prob=prob)
+                t.res <- LODR(t$pval, t$baseMean, cutoff=cutoff, prob=prob)
                 t.res[-1]<-signif(10^t.res[-1],2)
 
                 #if (t.res[1]>.01)
@@ -189,14 +198,14 @@ plotLODR <- function(data,
                 #}
                     
                 t.resLess <- t.res
-                t.resLess[-1][t.resLess[-1] == signif(min(t$x),2)] <- paste("<", signif(min(t$x),2), sep="")
-                t.res[-1][t.res[-1]==signif(min(t$x),2)] <- Inf
+                t.resLess[-1][t.resLess[-1] == signif(min(t$baseMean),2)] <- paste("<", signif(min(t$baseMean),2), sep="")
+                t.res[-1][t.res[-1]==signif(min(t$baseMean),2)] <- Inf
                     
                 lodr.resPlot <- rbind(lodr.resPlot, c(round(abs(as.numeric(i)), 3), t.res))
                 lodr.resLess <- rbind(lodr.resLess, c(round(abs(as.numeric(i)), 3), t.resLess))
             }, error = function(e)
             {
-                print(paste('Failed to estimate LODR for: ', i))                
+                print(paste('Failed to estimate LODR for:', i))                
             })
         }
     }
@@ -208,6 +217,10 @@ plotLODR <- function(data,
     lodr.resPlot <- as.data.frame(lodr.resPlot)
     lodr.resLess <- as.data.frame(lodr.resLess)
 
+    #
+    # Construct data for vertical lines for the LODR estimates
+    #
+    
     arrowDat <- data.frame(ratio = lodr.resPlot$ratio, x = lodr.resPlot[,3], y = cutoff, xend = lodr.resPlot[,3], yend = 0)
     arrowDat$x[grep("<", lodr.resLess[,3])] <- Inf
     arrowDat <- arrowDat[which(is.finite(arrowDat$x)), ]
@@ -229,31 +242,36 @@ plotLODR <- function(data,
         my_table <- tableGrob(d=annoTable, rows=NULL)
     }
 
-    cols <- c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00") # Colors for the genes
-    #cols <- c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd')
-
-    data$ratio     <- as.factor(data$ratio)
+    # What color scheme should we use?
+    cols <- colors(length(data$eLogLF))
+    
+    data$eLogLF    <- as.factor(data$eLogLF)
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
 
-    p <- ggplot(data, aes(x=x, y=y, colour=ratio)) + 
-                      geom_point(size=3)           +
-                      xlab(xname)                  +
-                      ylab(yname)                  +
+    p <- ggplot(data, aes(x=baseMean, y=pval, colour=eLogLF)) + 
+                      geom_point(size=3)            +
+                      xlab(xname)                   +
+                      ylab(yname)                   +
 
-                      scale_y_log10(breaks = c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)) + # TODO: Fix me
-                      scale_x_log10(limits = c(1, max(data$counts)+3000), breaks = c(arrowDat$x, round(max(data$counts)))) +
+                      scale_x_log10(limits=c(1, max(data$baseMean)+3000), breaks = c(arrowDat$x, round(max(data$baseMean)))) +
 
+                      # Draw the fitted lines
                       geom_line(data=lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE) +
 
-                      geom_segment(data = arrowDat, aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
-                                     lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
-                                       'cm')), size = 2, alpha = 0.6) +
+                      #geom_segment(data=arrowDat, aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
+                       #              lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
+                        #               'cm')), size = 2, alpha = 0.6) +
 
                       labs(colour='Ratio') +
                       geom_hline(yintercept=cutoff, linetype=2, size=2) + # Line for probability threshold
                       theme_bw()
 
+    if (!is.null(yBreaks))
+    {
+        p <- p + scale_y_log10(breaks=yBreaks)
+    }
+    
     if (shouldBand)
     {
         p <- p + geom_ribbon(data=lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
