@@ -66,10 +66,5 @@ plotForGenes <- function()
     plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='gene', shouldBand=FALSE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00), locBand='local')
 }
 
-
-plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='gene', shouldBand=TRUE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00), locBand='local')
-
 #plotForExons()
-#plotForGenes()
-
-
+plotForGenes()
