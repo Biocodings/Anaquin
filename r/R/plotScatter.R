@@ -10,12 +10,13 @@
 #
 
 plotScatter <- function(data,
+                        alpha = 1.0,
                         shouldLog2 = TRUE,
+                        title = '',
                         xname = 'Expected log2 fold change of mixture A and B',
                         yname = 'Measured log2 fold change of mixture A and B')
 {
     require(ggplot2)
-    require(RColorBrewer)
 
     data       <- data$seqs
     data$x     <- data$expected
@@ -39,19 +40,17 @@ plotScatter <- function(data,
         as.character(as.expression(eq));
     }
 
-    pal <- colorRampPalette(rev(brewer.pal(length(unique(data$logFC)), "Spectral")))
-
-    p <- ggplot(data = data, aes(x = x, y = y, colour=logFC))    +
-                    xlab(xname)                                  +
-                    ylab(yname)                                  +
-                    geom_point()                                 +
-                    ggtitle('')                                  +
-                    geom_point(size = 3)                         + 
-                    xlim(min(data$x) - 0.10, max(data$x) + 0.10) +
-                    ylim(min(data$y) - 0.10, max(data$y) + 0.10) +
-                    geom_smooth(method = 'lm', formula = y ~ x)  +
+    data$logFC <- as.factor(data$logFC)
+    
+    p <- ggplot(data = data, aes(x = x, y = y)) +
+                                    xlab(xname) +
+                                    ylab(yname) +
+                                 ggtitle(title) +
+                    geom_point(aes(colour=logFC), size=2, alpha=alpha) + 
+                    xlim(min(data$x) - 0.10, max(data$x) + 0.10)       +
+                    ylim(min(data$y) - 0.10, max(data$y) + 0.10)       +
+                    geom_smooth(method = 'lm', formula = y ~ x)        +
                     annotate("text", label = lm_eqn(data), x = 0, y = max(data$y), size = 6, colour = 'black', parse=TRUE) +
-                    scale_colour_gradientn(colours = pal(20), limits=c(min(data$logFC), max(data$logFC)))                  +
                     theme_bw()
     print(p)
 

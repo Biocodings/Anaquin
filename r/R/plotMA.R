@@ -161,9 +161,9 @@ plotMA <- function(data,
         #                 geom_point(data = endo[endo$A <= 5,], aes(x = A, y = M.Ave), colour='pink', alpha=0.5)
     }
     
-    p <- p + geom_point(aes(colour=eLogLF), size=size, alpha = alpha)     +
-             xlab(xname)                                               +
-             ylab(yname)                                               +
+    p <- p + geom_point(aes(colour=eLogLF), size=size, alpha = alpha)  +
+                                                          xlab(xname)  +
+                                                          ylab(yname)  +
              coord_cartesian(xlim=xrange, ylim=yrange)                 +
              theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
              scale_y_continuous(breaks=seq(-10, 10, 1))                                +

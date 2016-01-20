@@ -17,7 +17,7 @@ plotLODR <- function(data,
                      xname = 'Average Counts',
                      yname = 'DE Test P-values',
                      shouldTable = FALSE,
-                     shouldBand = FALSE)
+                     shouldBand  = FALSE)
 {
     require(grid)
     require(qvalue)
