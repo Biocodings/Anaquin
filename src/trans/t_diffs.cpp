@@ -264,10 +264,10 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
         for (auto &i : stats.data)
         {
             const auto p = SS::sortPerm(i.second.ids, [&](const FeatureID &x, const FeatureID &y)
-                                        {
-                                            return x < y;
-                                        });
-            
+            {
+                return x < y;
+            });
+
             i.second.ids  = SS::applePerm(i.second.ids,  p);
             i.second.ps   = SS::applePerm(i.second.ps,   p);
             i.second.qs   = SS::applePerm(i.second.qs,   p);

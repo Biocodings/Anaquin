@@ -8,7 +8,7 @@
 # Create a TransQuin data set for analyzing in Anaquin.
 #
 
-transQuin <- function(mix=loadMixture(), ...)
+TransQuin <- function(mix=loadMixture(), ...)
 {
     x <- list(...)
     
@@ -26,6 +26,12 @@ transQuin <- function(mix=loadMixture(), ...)
     if (!is.null(x$expected)) { data$expected <- x$expected }
     if (!is.null(x$measured)) { data$measured <- x$measured }
 
+    if (!is.null(x$baseMean))  { data$baseMean  <- x$baseMean  }  # TODO: Fix me
+    if (!is.null(x$log2FoldChange)) { data$lfc <- x$log2FoldChange }  # TODO: Fix me
+    if (!is.null(x$pvalue)) { data$pval <- x$pvalue }  # TODO: Fix me
+    if (!is.null(x$expected.LFC)) { data$elfc <- x$expected.LFC }  # TODO: Fix me
+    if (!is.null(x$lfcSE)) { data$lfcSE <- x$lfcSE }  # TODO: Fix me
+    
     if (!is.null(x$X))  { data$X  <- x$X  }  # TODO: Fix me
     if (!is.null(x$A1)) { data$A1 <- x$A1 }  # TODO: Fix me
     if (!is.null(x$A2)) { data$A2 <- x$A2 }  # TODO: Fix me
@@ -47,6 +53,99 @@ transQuin <- function(mix=loadMixture(), ...)
 ########################################################
 
 #
+# Normalize the counts and calculate the base mean. Base mean is the average of the normalized count values, taken
+# over all samples.
+#
+
+baseMean <- function(data)
+{
+    stopifnot(class(data) == 'TransQuin')
+    
+    # Internal representation
+    data <- data$seqs
+    
+    if (is.null(data$baseMean))
+    {
+        
+    }
+    
+    return (data$baseMean)
+}
+
+#
+# Generic filtering function. The following are supported:
+#
+#   'seqs'
+#   'sequins'
+#   'endos'
+#
+filter <- function(data, name)
+{
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin')
+
+    stopifnot(name == 'seqs'    |
+              name == 'sequins' |
+              name == 'endos')
+        
+    if (name == 'seqs' | name == 'sequins')
+    {
+        return (data$seqs[!is.na(data$seqs$elf),])
+    }
+    else
+    {
+        return (data$seqs[is.na(data$seqs$elf),])        
+    }
+}
+
+names <- function(data)
+{
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin')
+
+    return (row.names(data$seqs))
+}
+
+mLogFSE <- function(data, ids)
+{
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin')
+
+    # Internal representation
+    data <- data$seqs
+    
+    if (is.null(data$lfcSE))
+    {
+        # TODO: Implement me
+    }
+    
+    return (data$lfcSE)
+}
+
+#
+# Returns the measured logFold
+#
+mLogF <- function(data, ids)
+{
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin')
+    
+    # Internal representation
+    data <- data$seqs
+    
+    if (is.null(data$lfc))
+    {
+        # TODO: Implement me
+    }
+    
+    return (data$lfc)
+}
+
+#
 # Returns the expected logFold. The following levels are supported:
 #
 #   TransQuin: 'exon'
@@ -54,8 +153,10 @@ transQuin <- function(mix=loadMixture(), ...)
 #              'isoform'
 #
 
-expectLF <- function(data, ids, lvl)
+expectedLF <- function(data, lvl, ids=NULL)
 {
+    stopifnot(!is.null(ids))
+
     stopifnot(lvl == 'gene'    |
               lvl == 'isoform' |
               lvl == 'exon')
@@ -65,34 +166,43 @@ expectLF <- function(data, ids, lvl)
               class(data) == 'MetaQuin'  |
               class(data) == 'Mixture')
 
-    if (class(data) != 'Mixture')
+    if (!is.null(data$seqs) & !is.null(data$seqs$elfc))
     {
-        data <- data$mix
+        return (data$seqs$elf)
     }
-    
-    stopifnot(!is.null(data))
-
-    #
-    # Eg:
-    #
-    #      A        B      fold   logFold
-    #   R2_59 0.4720688 0.4720688     1
-    #
-
-    switch(lvl, 'gene'    = { data <- data$genes    },
-                'exon'    = { data <- data$exons    },
-                'isoform' = { data <- data$isoforms })
-
-    data <- data[row.names(data) %in% ids,]
-    
-    if (is.null(data$A) | is.null(data$B))
+    else
     {
-        error(paste('Failed to find mixture A and B'))
+        if (class(data) != 'Mixture')
+        {
+            data <- data$mix
+        }
+        
+        if (is.null(data$elfc))
+        {
+            #
+            # Eg:
+            #
+            #      A        B      fold   logFold
+            #   R2_59 0.4720688 0.4720688     1
+            #
+            
+            switch(lvl, 'gene'    = { data <- data$genes    },
+                   'exon'    = { data <- data$exons    },
+                   'isoform' = { data <- data$isoforms })
+            
+            data <- data[row.names(data) %in% ids,]
+            
+            if (is.null(data$A) | is.null(data$B))
+            {
+                error(paste('Failed to find mixture A and B'))
+            }
+            
+            r <- data.frame(logFC=round(log2(data$B / data$A)))
+            row.names(r) <- row.names(data)
+        }
+        
+        return (r)
     }
-
-    r <- data.frame(logFC=round(log2(data$B / data$A)))
-    row.names(r) <- row.names(data)
-    return (r)
 }
 
 #

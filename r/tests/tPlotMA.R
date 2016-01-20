@@ -44,16 +44,32 @@ plotForExons <- function()
 
 plotForGenes <- function()
 {
-    d <- read.csv('tests/data/counts.txt', row.names=1)
-    row.names(d) <- d$Feature
-    d <- d[,-1]
-
-    data <- transQuin(seqs = row.names(d), A1=d$A1, A2=d$A2, A3=d$A3, B1=d$B1, B2=d$B2, B3=d$B3)
-    r <- plotMA(data, lvl='gene', shouldError=TRUE, shouldEndo=TRUE)
+    #
+    # We'll create an MA plot with the baseMean reported in DESeq2. It can also be calculated by Anaquin.
+    #
     
+    # Read data file for gencode
+    gens <- read.csv('tests/data/K_562/DESeq2_gencode_results.csv', row.names=1)
+    
+    # Read data file for sequins
+    seqs <- read.csv('tests/data/K_562/LODR_genes_TED_20.01.16.csv', row.names=1)
+    
+    # There is no expected LFC for gencode but we'll need it to do a column bind
+    gens$expected.LFC <- NA
+    
+    data <- rbind(seqs[,c(1,2,3,5,6),], gens[,c(1,2,3,5,7)])
+    stopifnot((nrow(seqs) + nrow(gens)) == nrow(data))
+    
+    # Create a TransQuin data set for Anaquin
+    data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$log2FoldChange, lfcSE=data$lfcSE, pvalue=data$pvalue, expected.LFC=data$expected.LFC)
+    
+    r <- plotMA(data, lvl='gene', shouldEndo=TRUE, shouldSymm=TRUE)
+
     checkEquals(r$xname, 'Log2 Average of Normalized Counts')
     checkEquals(r$yname, 'Log2 Ratio of Normalized Counts')
 }
 
-plotForGenes()
-plotForExons()
+
+
+r <- plotMA(data, lvl='gene', shouldEndo=TRUE, shouldSymm=TRUE, shouldError=TRUE)
+
