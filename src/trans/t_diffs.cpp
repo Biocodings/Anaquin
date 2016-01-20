@@ -251,47 +251,43 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
         case Level::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
     }
     
-    /*
-     * We shouldn't assume any ordering in the inputs, we'll sort the data and assume
-     * uniqueness in the genome.
-     */
-
-    // Used for quickly sort the count tables
-    std::set<FeatureID> isChrT, isEndo;
-    
-    for (auto &i : stats.data)
+    if (stats.counts)
     {
-        const auto p = SS::sortPerm(i.second.ids, [&](const FeatureID &x, const FeatureID &y)
-        {
-            return x < y;
-        });
-
-        i.second.ids  = SS::applePerm(i.second.ids,  p);
-        i.second.ps   = SS::applePerm(i.second.ps,   p);
-        i.second.qs   = SS::applePerm(i.second.qs,   p);
-        i.second.lfcs = SS::applePerm(i.second.lfcs, p);
+        /*
+         * We shouldn't assume any ordering in the inputs, we'll sort the data and assume
+         * uniqueness in the genome.
+         */
         
-        for (const auto &id : i.second.ids)
+        // Used for quickly sort the count tables
+        std::set<FeatureID> isChrT, isEndo;
+        
+        for (auto &i : stats.data)
         {
-            assert(!isChrT.count(id) && !isEndo.count(id));
-
-            if (i.first == ChrT)
+            const auto p = SS::sortPerm(i.second.ids, [&](const FeatureID &x, const FeatureID &y)
+                                        {
+                                            return x < y;
+                                        });
+            
+            i.second.ids  = SS::applePerm(i.second.ids,  p);
+            i.second.ps   = SS::applePerm(i.second.ps,   p);
+            i.second.qs   = SS::applePerm(i.second.qs,   p);
+            i.second.lfcs = SS::applePerm(i.second.lfcs, p);
+            
+            for (const auto &id : i.second.ids)
             {
-                isChrT.insert(id);
-            }
-            else
-            {
-                isEndo.insert(id);
+                assert(!isChrT.count(id) && !isEndo.count(id));
+                
+                if (i.first == ChrT)
+                {
+                    isChrT.insert(id);
+                }
+                else
+                {
+                    isEndo.insert(id);
+                }
             }
         }
-    }
-    
-    /*
-     * Parse optional count tables. This will be needed for MA plot and LODR plot.
-     */
-    
-    if (!o.counts.empty())
-    {
+        
         readCounts(isChrT, isEndo, stats, o);
     }
     
