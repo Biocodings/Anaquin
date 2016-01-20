@@ -61,13 +61,15 @@ plotForGenes <- function()
     stopifnot((nrow(seqs) + nrow(gens)) == nrow(data))
     
     # Create a TransQuin data set for Anaquin
-    data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$log2FoldChange, lfcSE=data$lfcSE, pvalue=data$pvalue, expected.LFC=data$expected.LFC)
+    data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$log2FoldChange, pvalue=data$pvalue, expected.LFC=data$expected.LFC)
 
-    plotLODR(data, shouldTable=FALSE, lvl='gene', shouldBand=TRUE)
+    plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='gene', shouldBand=FALSE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00), locBand='local')
 }
 
 
-plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='gene', shouldBand=FALSE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00))
+plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='gene', shouldBand=TRUE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00), locBand='local')
 
 #plotForExons()
 #plotForGenes()
+
+

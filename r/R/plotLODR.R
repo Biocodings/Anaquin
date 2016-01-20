@@ -13,10 +13,11 @@ plotLODR <- function(data,
                      choseFDR = 0.1,
                      xBreaks = NULL,
                      yBreaks = NULL,
-                     xname='Average Counts',
-                     yname='DE Test P-values',
-                     shouldTable=FALSE,
-                     shouldBand=FALSE)
+                     locBand = 'pred',
+                     xname = 'Average Counts',
+                     yname = 'DE Test P-values',
+                     shouldTable = FALSE,
+                     shouldBand = FALSE)
 {
     require(grid)
     require(qvalue)
@@ -71,7 +72,7 @@ plotLODR <- function(data,
         # Fit a local regression on the log10 scale
         fit <- locfit(log10(pval)~lp(log10(mn)), maxk=300)
         
-        X <- preplot(fit, band="pred", newdata=log10(mn))
+        X <- preplot(fit, band='pred', newdata=log10(mn))
         
         #plot(fit,band="pred",get.data=TRUE,xlim=range(log10(mn)))
         
@@ -169,8 +170,8 @@ plotLODR <- function(data,
             # Generate new data points and use those data points for the prediction band
             #
             
-            x.new <- seq(min(log10(t$baseMean)), max(log10(t$pval)), length.out=100)
-            X <- preplot(fit, band="pred", newdata=x.new)
+            x.new <- seq(min(log10(t$baseMean)), max(log10(t$baseMean)), length.out=100)
+            X <- preplot(fit, band=locBand, newdata=x.new)
 
             x.new    <- 10^x.new
             fitLine  <- 10^(X$fit)
@@ -249,19 +250,22 @@ plotLODR <- function(data,
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
 
+    
+ #   data$baseMean <- log2(data$base)
+    
+    
     p <- ggplot(data, aes(x=baseMean, y=pval, colour=eLogLF)) + 
-                      geom_point(size=3)            +
-                      xlab(xname)                   +
-                      ylab(yname)                   +
+                      geom_point(size=3)                      +
+                      xlab(xname)                             +
+                      ylab(yname)                             +
 
-                      scale_x_log10(limits=c(1, max(data$baseMean)+3000), breaks = c(arrowDat$x, round(max(data$baseMean)))) +
+                      scale_x_log10(limits=c(min(data$baseMean), max(data$baseMean)), breaks = c(arrowDat$x, round(max(data$baseMean)))) +
 
                       # Draw the fitted lines
                       geom_line(data=lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE) +
 
-                      #geom_segment(data=arrowDat, aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
-                       #              lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 
-                        #               'cm')), size = 2, alpha = 0.6) +
+                      geom_segment(data=arrowDat, aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
+                                     lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 'cm')), size = 2, alpha = 0.6) +
 
                       labs(colour='Ratio') +
                       geom_hline(yintercept=cutoff, linetype=2, size=2) + # Line for probability threshold
