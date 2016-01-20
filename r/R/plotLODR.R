@@ -250,10 +250,6 @@ plotLODR <- function(data,
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
 
-    
- #   data$baseMean <- log2(data$base)
-    
-    
     p <- ggplot(data, aes(x=baseMean, y=pval, colour=eLogLF)) + 
                       geom_point(size=3)                      +
                       xlab(xname)                             +
