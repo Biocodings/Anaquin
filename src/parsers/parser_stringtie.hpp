@@ -61,7 +61,7 @@ namespace Anaquin
         {
             STExpression t;
             
-            ParserStringTie::parse(file, [&](const std::vector<std::string> &toks, const ParserProgress &p)
+            ParserStringTie::parse(file, [&](const std::vector<Tokens::Token> &toks, const ParserProgress &p)
             {
                 if (p.i)
                 {
@@ -84,11 +84,11 @@ namespace Anaquin
             });
         }
             
-        static void parseIsoforms(const FileName &file, std::function<void (const STExpression &, const ParserProgress &)> f)
+        static void parseCTab(const FileName &file, std::function<void (const STExpression &, const ParserProgress &)> f)
         {
             STExpression t;
                       
-            parse(file, [&](const std::vector<std::string> &toks, const ParserProgress &p)
+            ParserStringTie::parse(file, [&](const std::vector<Tokens::Token> &toks, const ParserProgress &p)
             {
                 if (p.i)
                 {

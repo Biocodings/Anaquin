@@ -28,4 +28,29 @@ testGenes <- function()
     r <- plotSplice(data, lvl='gene', cname='Ratio', xname='Expected log2 fold change of minor/major', yname='Measured log2 fold change of minor/major')
 }
 
-testGenes()
+testStringTie <- function()
+{
+    #
+    # Demostrate how an FPKM table can be used to construct a splicing plot
+    #
+    
+    B1 <- read.csv('tests/data/K_562/B1/t_data.ctab', row.names=1, sep='\t')
+    B2 <- read.csv('tests/data/K_562/B2/t_data.ctab', row.names=1, sep='\t')
+    B2 <- read.csv('tests/data/K_562/B3/t_data.ctab', row.names=1, sep='\t')    
+
+    B1 <- B1[B1$chr=='chrT',]
+    B2 <- B2[B2$chr=='chrT',]
+    B3 <- B3[B3$chr=='chrT',]
+    B1 <- B1[with(B1, order(t_name)),]
+    B2 <- B2[with(B2, order(t_name)),]
+    B3 <- B3[with(B3, order(t_name)),]    
+
+    data <- data.frame(B1=B1$FPKM, B2=B2$FPKM, B3=B3$FPKM)
+    row.names(data) <- B1$t_name
+
+    data <- TransQuin(seqs=row.names(data), B1=data$B1, B2=data$B2, B3=data$B3)
+    r <- plotSplice(data)
+}
+
+#testGenes()
+testStringTie()

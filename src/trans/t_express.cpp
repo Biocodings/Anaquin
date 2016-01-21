@@ -19,7 +19,6 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
     else
     {
         stats.n_chrT++;
-        
     }
 
     if (t.cID == Standard::chrT)
@@ -186,19 +185,10 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
             {
                 switch (o.lvl)
                 {
+                    case Level::Gene:
                     case Level::Isoform:
                     {
-                        ParserStringTie::parseIsoforms(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
-                        {
-                            update(stats, t, o);
-                        });
-
-                        break;
-                    }
-                        
-                    case Level::Gene:
-                    {
-                        ParserStringTie::parseGenes(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
+                        ParserStringTie::parseCTab(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
                         {
                             update(stats, t, o);
                         });
@@ -252,6 +242,45 @@ static void writeCSV(const TExpress::Stats   &stats,
     o.writer->close();
 }
 
+static void writeFPKMTable(const std::vector<TExpress::Stats> &stats, const FileName &file, const TExpress::Options &o)
+{
+    o.writer->open(file);
+    
+    const auto &names = o.exp->names();
+    
+    for (const auto &name : names)
+    {
+        o.writer->write("," + name);
+    }
+    
+    o.writer->write("\n");
+    
+    std::vector<std::string> z;
+    
+    /*
+     * Ignore any invalid value...
+     */
+    
+    for (const auto &p : stats[0].data.at(ChrT))
+    {
+        if (!isnan(p.second.x) && !isnan(p.second.y))
+        {
+            z.push_back(p.first);
+        }
+    }
+
+    /*
+     * Now, we have the features and we'll use those to generate a row for each
+     */
+    
+    for (auto i = 0; i < z.size(); i++)
+    {
+//        for (auto j = 0; j < )
+    }
+    
+    o.writer->close();
+}
+
 static void writeScatter(const TExpress::Stats   &stats,
                          const FileName          &file,
                          const std::string       &name,
@@ -283,9 +312,9 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     
     const auto m = std::map<TExpress::Level, std::string>
     {
-        { TExpress::Level::Gene, "gene"    },
-        { TExpress::Level::Gene, "exon"    },
-        { TExpress::Level::Gene, "isoform" },
+        { TExpress::Level::Exon,    "exon"    },
+        { TExpress::Level::Gene,    "gene"    },
+        { TExpress::Level::Isoform, "isoform" },
     };
     
     const auto units = m.at(o.lvl);
@@ -318,4 +347,17 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
 
         writeScatter(stats[i], files[i], o.exp->names().at(i), ChrT, units, o);
     }
+    
+    /*
+     * Generating a table of expression for all replicates
+     */
+    
+    
+    
+    
+    /*
+     * Generating spliced plot for all samples
+     */
+    
+    
 }

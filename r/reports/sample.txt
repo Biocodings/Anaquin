@@ -135,7 +135,7 @@ ASSEMBLY_FILE = Cufflinks/B2/NotGuided/transcripts.gtf
 #     - Exon
 #
 
-EXP_LEVEL = Gene
+EXP_LEVEL = Isoform
 
 #
 # Which software did you used to generate the results?
@@ -145,7 +145,7 @@ EXP_LEVEL = Gene
 #     - Cufflinks
 #     - StringTie
 
-EXP_SOFT = Cufflinks
+EXP_SOFT = StringTie
 
 #
 # Where are your files?
@@ -153,12 +153,12 @@ EXP_SOFT = Cufflinks
 # The orders must be consistent to the factors.
 #
 
-EXP_FILE = Cufflinks/A1/genes.fpkm_tracking
-EXP_FILE = Cufflinks/A2/genes.fpkm_tracking
-EXP_FILE = Cufflinks/A3/genes.fpkm_tracking
-EXP_FILE = Cufflinks/A1/genes.fpkm_tracking
-EXP_FILE = Cufflinks/A2/genes.fpkm_tracking
-EXP_FILE = Cufflinks/A3/genes.fpkm_tracking
+EXP_FILE = StringTie/A1/t_data.ctab
+EXP_FILE = StringTie/A1/t_data.ctab
+EXP_FILE = StringTie/A1/t_data.ctab
+EXP_FILE = StringTie/A1/t_data.ctab
+EXP_FILE = StringTie/A1/t_data.ctab
+EXP_FILE = StringTie/A1/t_data.ctab
 
 
 ###################################################

@@ -49,7 +49,7 @@ namespace Anaquin
         
         Locus l;
 
-        // The expression for signal
+        // The expression for the abundance
         FPKM fpkm;
     };
 

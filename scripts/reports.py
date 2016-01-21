@@ -372,40 +372,6 @@ def transQuin(config, output):
     r.endChapter()
 
     
-    ############################################
-    #                                          #
-    #  2. Generating statistics for splicing   #
-    #                                          #
-    ############################################
-
-    print ('----------------------- Splicing -----------------------\n')
-
-    # Assembly software
-    #soft = get(config, 'ASSEMBLY_SOFT', { 'Cufflinks', 'StringTie' })
-
-    # Assembly files
-    #files = get(config, 'ASSEMBLY_FILE', EXPECT_FILES)
-    
-    #
-    # Generate a request for TransAssembly for assembly analysis. For example:
-    #
-    #    anaquin TransAssembly -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles A1.gtf,A2.gtf,A3.gtf...
-    #
-
-    #req = '-soft ' + soft + ' -ufiles ' + files
-    
-    # Execute the command
-    #anaquin('TransAssembly', req, config, onlyPrint=True)
-
-    r.startChapter('Alternative Splicing')
-
-    # Add summary statistics for each replicate
-    #for i in range(0, len(names)):
-    #    r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
-        
-    r.endChapter()
-    
-    
     ######################################################
     #                                                    #
     #  3. Generating statistics for expression analysis  #
@@ -417,6 +383,9 @@ def transQuin(config, output):
     # Expression software
     soft = get(config, 'EXP_SOFT', { 'Cufflinks', 'StringTie' })
 
+    # Expression level
+    lvl = get(config, 'EXP_LEVEL', ['Gene', 'Isoform', 'Exon'])
+
     # Expression files
     files = get(config, 'EXP_FILE', EXPECT_FILES)
     
@@ -426,7 +395,7 @@ def transQuin(config, output):
     #    anaquin TransExp -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
     #
 
-    req = '-soft ' + soft + ' -ufiles ' + files
+    req = '-soft ' + soft + ' -level ' + lvl + ' -ufiles ' + files
     
     # Execute the command for genes
     anaquin('TransExpress', req, config, onlyPrint=True)
@@ -449,6 +418,9 @@ def transQuin(config, output):
     r.startChapter('TransQuin Expression (Isoform)')    
     
     r.endChapter()
+    
+    
+    return
     
     ########################################################
     #                                                      #
