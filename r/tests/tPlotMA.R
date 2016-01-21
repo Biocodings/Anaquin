@@ -63,7 +63,7 @@ plotForGenes <- function()
     # Create a TransQuin data set for Anaquin
     data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$log2FoldChange, lfcSE=data$lfcSE, pvalue=data$pvalue, expected.LFC=data$expected.LFC)
     
-    r <- plotMA(data, lvl='gene', shouldEndo=TRUE, shouldSymm=TRUE)
+    r <- plotMA(data, lvl='gene', shouldEndo=TRUE, shouldSymm=TRUE, pCutoff=0.1, title='Probability cutoff: 0.1')
 
     checkEquals(r$xname, 'Log2 Average of Normalized Counts')
     checkEquals(r$yname, 'Log2 Ratio of Normalized Counts')
