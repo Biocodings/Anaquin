@@ -346,12 +346,31 @@ def transQuin(config, output):
 
     print ('----------------------- Assembly -----------------------\n')
 
-    # Expression software
+    # Assembly software
     soft = get(config, 'ASSEMBLY_SOFT', { 'Cufflinks', 'StringTie' })
 
-    # Expression files
-    #files = get(config, 'ASSEMBLY_FILE', EXPECT_FILES)
+    # Assembly files
+    files = get(config, 'ASSEMBLY_FILE', EXPECT_FILES)
     
+    #
+    # Generate a request for TransAssembly for assembly analysis. For example:
+    #
+    #    anaquin TransAssembly -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles A1.gtf,A2.gtf,A3.gtf...
+    #
+
+    req = '-soft ' + soft + ' -ufiles ' + files
+    
+    # Execute the command
+    anaquin('TransAssembly', req, config, onlyPrint=True)
+
+    r.startChapter('Transcriptome Analysis')
+
+    # Add summary statistics for each replicate
+    for i in range(0, len(names)):
+        r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
+        
+    r.endChapter()
+
     
     ######################################################
     #                                                    #
