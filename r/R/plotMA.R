@@ -73,14 +73,14 @@ plotMA <- function(data,
     logLF <- mLogF(data)
 
     # Expected logFold ratio
-    eLogLF <- expectedLF(data, lvl=lvl, ids=sequins(data))
+    eLogLF <- expectLF(data, lvl=lvl, ids=sequins(data))
 
     # Probability under null hypothesis (optional)
     pvals <- pval(data)
 
     if (shouldError)
     {
-        logFSE <- log2(mLogFSE(data))
+        logFSE <- mLogFSE(data)
     }
     
     data <- data.frame(baseMean=baseMean, logLF=logLF, eLogLF=eLogLF)

@@ -9,7 +9,7 @@
 library(Anaquin)
 
 # Create a TransQuin data set for Anaquin
-data <- transQuin(seqs     = c(%3%),
+data <- TransQuin(seqs     = c(%3%),
                   expected = c(%4%),
                   measured = c(%5%))
 

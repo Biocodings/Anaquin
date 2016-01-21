@@ -92,10 +92,10 @@ namespace Anaquin
                         t.status = DiffTest::Status::Tested;
 
                         // Normalized average counts
-                        t.baseMean = stof(toks[DESeq2Field::BaseMean]);
+                        t.baseMean = stod(toks[DESeq2Field::BaseMean]);
                         
                         // Measured log-fold change
-                        t.logF = stof(toks[DESeq2Field::Log2Fold]);
+                        t.logF = stod(toks[DESeq2Field::Log2Fold]);
 
                         // Standard error for the log-fold change
                         t.logFSE = stod(toks[DESeq2Field::Log2FoldSE]);

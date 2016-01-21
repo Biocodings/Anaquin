@@ -19,7 +19,7 @@ plotROC <- function(data, mix = loadMixture())
     # The input is expected to be classifed (eg: TransClassify)
     stopifnot(is.null(data$seqs))
 
-    data <- data[data$class == 'TP' | data$class == 'FP',]
+    data <- data[data$cls == 'TP' | data$cls == 'FP',]
     
     # 
     # From the package's reference manual:
@@ -29,7 +29,7 @@ plotROC <- function(data, mix = loadMixture())
     #
 
     data$scores <- 1 - data$pval
-    data$label  <- ifelse(data$class == 'TP', 2, 1)
+    data$label  <- ifelse(data$cls == 'TP', 2, 1)
 
     pred <- prediction(data$scores, data$label, label.ordering=c(1,2))
     perf <- performance(pred, "tpr","fpr")

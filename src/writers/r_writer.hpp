@@ -343,7 +343,7 @@ namespace Anaquin
          * -------------------- ROC Plot --------------------
          */
         
-        static Scripts createROC(const std::vector<std::string> &, const std::vector<double> &);
+        static Scripts createROC(const std::vector<std::string> &, const std::vector<double> &, const std::string &);
 
         /*
          * -------------------- MA Plot --------------------

@@ -39,7 +39,7 @@ plotLODR <- function(data,
     pval <- pval(data)
         
     # Expected logFold ratio
-    eLogLF <- expectedLF(data, lvl=lvl, ids=sequins(data))
+    eLogLF <- expectLF(data, lvl=lvl, ids=sequins(data))
 
     data <- data.frame(baseMean=baseMean, pval=pval, eLogLF=eLogLF)
     row.names(data) <- names

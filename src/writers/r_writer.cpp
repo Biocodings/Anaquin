@@ -12,7 +12,6 @@ Scripts RWriter::createLODR(const std::string &working, const FileName &dFile, c
     return (boost::format(ss.str()) % date()
                                     % __full_command__
                                     % working
-                                    % cFile
                                     % dFile
                                     % lvl).str();
 }
@@ -29,16 +28,16 @@ Scripts RWriter::createMA(const std::string &working, const FileName &file, cons
                                     % lvl).str();
 }
 
-Scripts RWriter::createROC(const std::vector<std::string> &seqs, const std::vector<double> &qs)
+Scripts RWriter::createROC(const std::vector<std::string> &seqs, const std::vector<double> &ps, const std::string &lvl)
 {
-    assert(!seqs.empty() && seqs.size() == qs.size());
-    
+    assert(!seqs.empty() && seqs.size() == ps.size());
+
     std::stringstream ss;
     ss << PlotROC();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
                                     % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                    % RWriter::concat(qs)
-            ).str();
+                                    % RWriter::concat(ps)
+                                    % lvl).str();
 }

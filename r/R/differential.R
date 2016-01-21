@@ -13,19 +13,17 @@
 #    FN: fold-change with more than logFC and not expressed
 #    TN: fold-change with at most logFC and not expressed
 #
-transClassify <- function(data, metr='gene', mix=loadMixture(), pCutoff=0.1, logFC=0)
+transClassify <- function(data, lvl, pCutoff=0.1, logFC=0)
 {
     stopifnot(class(data) == 'TransQuin')
-    
-    seqs <- data$seqs
+    stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
 
-    if (is.null(seqs$class))
-    {
-        seqs <- cbind(seqs, class=NA)
-    }
-    
-    seqs$class <- NA
+    seqs <- filter(data, name='seqs')
+    seqs$cls <- NA
 
+    # Expected log-fold
+    seqs$elfc <- expectLF(data, lvl=lvl, ids=row.names(seqs))
+    
     for (id in row.names(seqs))
     {
         # Probability under null hypothesis
@@ -33,9 +31,9 @@ transClassify <- function(data, metr='gene', mix=loadMixture(), pCutoff=0.1, log
     
         if  (!is.na(p))
         {
-            known <- expectLF(data, id, metr)
+            elfc <- seqs[id,]$elfc
             
-            if (length(known) > 0)
+            if (length(elfc) > 0)
             {
                 #
                 # Say if the known log-fold change is -3, is this differentially expressed? That depends on the context.
@@ -45,22 +43,22 @@ transClassify <- function(data, metr='gene', mix=loadMixture(), pCutoff=0.1, log
                 # Differential expressed?
                 if (p <= pCutoff)
                 {
-                    seqs[id,]$class <- ifelse(abs(known) <= abs(logFC), 'FP', 'TP')
+                    seqs[id,]$cls <- ifelse(abs(elfc) <= abs(logFC), 'FP', 'TP')
                 }
                 
                 # Non-dfifferential expressed?
                 else
                 {
-                    seqs[id,]$class <- ifelse(abs(known) <= abs(logFC), 'TN', 'FN')
+                    seqs[id,]$cls <- ifelse(abs(elfc) <= abs(logFC), 'TN', 'FN')
                 }
             }
         }
     }
     
-    print(sprintf("Detected %d false positives", nrow(seqs[seqs$class=='FP',])))
-    print(sprintf("Detected %d true positives",  nrow(seqs[seqs$class=='TP',])))
-    print(sprintf("Detected %d true negatives",  nrow(seqs[seqs$class=='TN',])))
-    print(sprintf("Detected %d false negatives", nrow(seqs[seqs$class=='FN',])))
+    print(sprintf("Detected %d false positives", nrow(seqs[seqs$cls=='FP',])))
+    print(sprintf("Detected %d true positives",  nrow(seqs[seqs$cls=='TP',])))
+    print(sprintf("Detected %d true negatives",  nrow(seqs[seqs$cls=='TN',])))
+    print(sprintf("Detected %d false negatives", nrow(seqs[seqs$cls=='FN',])))
 
     # A new column has been added
     data$seqs <- seqs

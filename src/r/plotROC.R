@@ -9,10 +9,10 @@
 library(Anaquin)
 
 # Create a TransQuin data set for Anaquin
-data <- transQuin(seqs = c(%3%),
+data <- TransQuin(seqs = c(%3%),
                   pval = c(%4%))
 
 # Classify whether they're TP or FP
-data <- transClassify(data)
+data <- transClassify(data, lvl='%5%')
 
 plotROC(data)

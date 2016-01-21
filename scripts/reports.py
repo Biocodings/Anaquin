@@ -363,14 +363,48 @@ def transQuin(config, output):
     # Execute the command
     anaquin('TransAssembly', req, config, onlyPrint=True)
 
-    #r.startChapter('Transcriptome Analysis')
+    r.startChapter('Transcriptome Analysis')
 
     # Add summary statistics for each replicate
     #for i in range(0, len(names)):
     #    r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
         
-    #r.endChapter()
+    r.endChapter()
 
+    
+    ############################################
+    #                                          #
+    #  2. Generating statistics for splicing   #
+    #                                          #
+    ############################################
+
+    print ('----------------------- Splicing -----------------------\n')
+
+    # Assembly software
+    #soft = get(config, 'ASSEMBLY_SOFT', { 'Cufflinks', 'StringTie' })
+
+    # Assembly files
+    #files = get(config, 'ASSEMBLY_FILE', EXPECT_FILES)
+    
+    #
+    # Generate a request for TransAssembly for assembly analysis. For example:
+    #
+    #    anaquin TransAssembly -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles A1.gtf,A2.gtf,A3.gtf...
+    #
+
+    #req = '-soft ' + soft + ' -ufiles ' + files
+    
+    # Execute the command
+    #anaquin('TransAssembly', req, config, onlyPrint=True)
+
+    r.startChapter('Alternative Splicing')
+
+    # Add summary statistics for each replicate
+    #for i in range(0, len(names)):
+    #    r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
+        
+    r.endChapter()
+    
     
     ######################################################
     #                                                    #
@@ -394,10 +428,13 @@ def transQuin(config, output):
 
     req = '-soft ' + soft + ' -ufiles ' + files
     
-    # Execute the command
+    # Execute the command for genes
     anaquin('TransExpress', req, config, onlyPrint=True)
-    
-    r.startChapter('TransQuin Expression')
+
+    # Execute the command for isoforms
+    #anaquin('TransExpress', req, config, onlyPrint=True)
+
+    r.startChapter('TransQuin Expression (Gene)')
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
@@ -409,12 +446,17 @@ def transQuin(config, output):
 
     r.endChapter()
 
+    r.startChapter('TransQuin Expression (Isoform)')    
     
-    #####################################################
-    #                                                   #
-    #  Generating statistics for differential analysis  #
-    #                                                   #
-    #####################################################
+    r.endChapter()
+    
+    ########################################################
+    #                                                      #
+    #  4. Generating statistics for differential analysis  #
+    #                                                      #
+    ########################################################
+
+    print ('----------------------- Differential -----------------------\n')
 
     lvl = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
 
@@ -444,11 +486,14 @@ def transQuin(config, output):
     # Add summary statistics for each replicate
     r.addTextFile('Differential summary statistics', 'TransDiffs_summary.stats', )
 
-    # Add ROC plots
+    # Add ROC plot
     r.addRCode('ROC plot', 'TransDiffs_ROC.R', )
 
-    # Add ROC plots
+    # Add MA plot
     r.addRCode('MA plot', 'TransDiffs_MA.R', )
+
+    # Add LODR plot
+    r.addRCode('LODR plot', 'TransDiffs_LODR.R', )
 
     r.endChapter()
 

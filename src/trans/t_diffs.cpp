@@ -473,7 +473,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::createROC(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps));
+    o.writer->write(RWriter::createROC(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
     o.writer->close();
 
     /*

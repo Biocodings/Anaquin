@@ -96,7 +96,14 @@ filter <- function(data, name)
     
     if (name == 'seqs' | name == 'sequins')
     {
-        return (data$seqs[!is.na(data$seqs$elf),])
+        if (!is.null(data$seqs$elf))
+        {
+            return (data$seqs[!is.na(data$seqs$elf),])
+        }
+        else
+        {
+            return (data$seqs) # TODO: Fix this
+        }
     }
     else if (name == 'endos')
     {
@@ -181,17 +188,17 @@ mLogF <- function(data, ids)
 #              'isoform'
 #
 
-expectedLF <- function(data, lvl, ids=NULL)
+expectLF <- function(data, lvl, ids=NULL)
 {
     stopifnot(!is.null(ids))
 
-    stopifnot(lvl == 'gene'    |
-              lvl == 'isoform' |
+    stopifnot(lvl == 'gene'    ||
+              lvl == 'isoform' ||
               lvl == 'exon')
 
-    stopifnot(class(data) == 'TransQuin' |
-              class(data) == 'VarQuin'   |
-              class(data) == 'MetaQuin'  |
+    stopifnot(class(data) == 'TransQuin' ||
+              class(data) == 'VarQuin'   ||
+              class(data) == 'MetaQuin'  ||
               class(data) == 'Mixture')
 
     if (!is.null(data$seqs) & !is.null(data$seqs$elfc))

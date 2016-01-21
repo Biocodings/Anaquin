@@ -8,18 +8,13 @@
 
 library(Anaquin)
 
-setwd('%3%')
-
-# Read the count table
-counts <- read.csv('%4%', row.name=1)
-
 # Read the differential results
-diffs <- read.csv('%5%', row.name=1)
+data <- read.csv('%3%/%4%', row.name=1)
 
 # Create a TransQuin data set for Anaquin
-data <- transQuin(seqs=row.names(diffs), counts=rowMeans(counts), pval=diffs$pval)
+data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$lfc, lfcSE=data$lfcSE, pvalue=data$pval, expected.LFC=data$elfc)
 
 # Change to your chooden FDR rate
 chosenFDR <- 0.1
 
-plotLODR(data, chosenFDR, lvl='%6%')
+plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='%5%', shouldBand=FALSE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00), locBand='local')
