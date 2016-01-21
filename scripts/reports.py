@@ -330,7 +330,7 @@ def transQuin(config, output):
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Alignment summary statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
-        
+
     # Add sequin statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Alignment sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
@@ -366,12 +366,16 @@ def transQuin(config, output):
     r.startChapter('Transcriptome Analysis')
 
     # Add summary statistics for each replicate
-    #for i in range(0, len(names)):
-    #    r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
-        
+    for i in range(0, len(names)):
+        r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
+
+    # Add sequin statistics for each replicate
+    for i in range(0, len(names)):
+        r.addTextFile('Assembly sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_sequin.stats', )
+
     r.endChapter()
 
-    
+
     ######################################################
     #                                                    #
     #  3. Generating statistics for expression analysis  #
@@ -419,8 +423,6 @@ def transQuin(config, output):
     
     r.endChapter()
     
-    
-    return
     
     ########################################################
     #                                                      #

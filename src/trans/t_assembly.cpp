@@ -1,5 +1,6 @@
 #include <fstream>
 #include "data/compare.hpp"
+#include "data/experiment.hpp"
 #include "trans/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
 
@@ -34,17 +35,15 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-static std::pair<std::string, std::string> createFilters(const FileName &ref, const FileName &query, const ChromoID &cID)
+static FileName createFilters(const FileName &ref, const FileName &query, const ChromoID &cID)
 {
     assert(cID == ChrT || cID == Endo);
     
     std::string line;
 
-    const auto r_tmp = tmpnam(NULL);
-    const auto q_tmp = tmpnam(NULL);
+    const auto tmp = tmpnam(NULL);
     
-    std::ofstream r_out(r_tmp);
-    std::ofstream q_out(q_tmp);
+    std::ofstream out(tmp);
 
     auto f = [&](const FileName &file, std::ofstream &out)
     {
@@ -60,16 +59,12 @@ static std::pair<std::string, std::string> createFilters(const FileName &ref, co
         });
     };
     
-    // Generate a filtered reference
-    f(ref, r_out);
-    
     // Generate a filtered query
-    f(query, q_out);
+    f(query, out);
     
-    r_out.close();
-    q_out.close();
+    out.close();
     
-    return std::pair<std::string, std::string>(r_tmp, q_tmp);
+    return tmp;
 }
 
 static std::string summary()
@@ -192,19 +187,16 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
         const auto created = createFilters(file, o.ref, cID);
 
-        o.logInfo("Filtered reference: " + created.first + " created");
-        o.logInfo("Filtered query: "     + created.second + " created");
+        o.logInfo("Filtered query: "     + created + " created");
+        o.logInfo("Invoking Cuffcompare: " + created);
 
-        o.logInfo("Invoking Cuffcompare: " + created.first);
-        o.logInfo("Invoking Cuffcompare: " + created.second);
-
-        if (cuffcompare_main(created.first.c_str(), created.second.c_str()))
+        if (cuffcompare_main(o.ref.c_str(), created.c_str()))
         {
             throw std::runtime_error("Failed to analyze the given transcript. Please check the file and try again.");
         }
     };
 
-    o.info("Generating a filtered transcript");
+    o.info("Generating filtered transcript");
 
     std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChromoID, TAssembly::Stats::Data> &p)
     {
@@ -335,25 +327,22 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const TAssembly::Stats &stats, const ChromoID &cID, const TAssembly::Options &o)
+static void writeSummary(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-    const auto data = stats.data.at(cID);
-    
-    // Eg: A1/TransAlign_summary.stats
-    const auto sample = extractFile(file);
-    
-    o.info("Generating statistics for: " + sample);
+    const auto data = stats.data.at(ChrT);
+
+    o.info("Generating statistics for: " + name);
     
     // Create the directory if haven't
-    o.writer->create(sample);
+    o.writer->create(name);
 
-    o.writer->open(sample + "/" + file);
+    o.writer->open(name + "/TransAssembly_summary.stats");
     o.writer->write((boost::format(summary()) % file
                                               % stats.n_endo
                                               % stats.n_chrT
                                               % r.data().size()
-                                              % r.countIntrons(cID)
+                                              % r.countIntrons(ChrT)
                                               % data.eSN              // 6
                                               % data.eFSN
                                               % data.eSP
@@ -393,9 +382,9 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
     o.writer->close();
 }
 
-static void writeSequins(const FileName &file, const FileName &src, const TAssembly::Stats &stats, const TAssembly::Options &o)
+static void writeSequins(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
 {
-    o.writer->open(file);
+    o.writer->open(name + "/TransAssembly_sequin.stats");
     o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
     
     auto format = "%1%\t%2%\t%3%\t%4%";
@@ -424,16 +413,6 @@ static void writeSequins(const FileName &file, const FileName &src, const TAssem
     o.writer->close();
 }
 
-static void writeReplicate(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
-{
-    o.info("Generating statistics for: " + file);
-
-    for (const auto &i : stats.data)
-    {
-        writeSummary("TransAssembly_summary.stats", stats, i.first, o);
-    }
-}
-
 void TAssembly::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto stats = TAssembly::analyze(files, o);
@@ -446,7 +425,7 @@ void TAssembly::report(const std::vector<FileName> &files, const Options &o)
 
     for (auto i = 0; i < files.size(); i++)
     {
-        writeReplicate(files[i], stats[i], o);
+        writeSummary(files[i], o.exp->names().at(i), stats[i], o);
     }
     
     /*
@@ -455,6 +434,6 @@ void TAssembly::report(const std::vector<FileName> &files, const Options &o)
     
     for (auto i = 0; i < files.size(); i++)
     {
-        writeSequins((boost::format("TransAssembly_%1%_sequin.stats") % files[i]).str(), files[i], stats[i], o);
+        writeSequins(files[i], o.exp->names().at(i), stats[i], o);
     }
 }

@@ -117,6 +117,7 @@ ASSEMBLY_FILE = Cufflinks/A2/NotGuided/transcripts.gtf
 ASSEMBLY_FILE = Cufflinks/A3/NotGuided/transcripts.gtf
 ASSEMBLY_FILE = Cufflinks/B1/NotGuided/transcripts.gtf
 ASSEMBLY_FILE = Cufflinks/B2/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = Cufflinks/B2/NotGuided/transcripts.gtf
 
 
 ###################################################
