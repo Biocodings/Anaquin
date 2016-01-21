@@ -4,6 +4,41 @@
 
 using namespace Anaquin;
 
+TEST_CASE("TDiff_DESeq2")
+{
+    Test::transAB();
+
+    TDiffs::Options o;
+    
+    o.lvl   = TDiffs::Level::Gene;
+    o.dSoft = TDiffs::DiffSoft::DESeq2;
+
+    const auto r = TDiffs::analyze("tests/data/K_562/DESeq2.csv", o);
+
+    REQUIRE(r.data.size() == 2);
+
+    REQUIRE(r.data.at(ChrT).ids[0]       == "R1_101");
+    REQUIRE(r.data.at(ChrT).ps[0]        == Approx(5.207225e-02));
+    REQUIRE(r.data.at(ChrT).logFs[0]     == Approx(-1.79218027));
+    REQUIRE(r.data.at(ChrT).eLogFs[0]    == Approx(-3.0));
+    REQUIRE(r.data.at(ChrT).logFSEs[0]   == Approx(0.92259825));
+    REQUIRE(r.data.at(ChrT).baseMeans[0] == Approx(3.924675));
+
+    REQUIRE(r.data.at(ChrT).ids[2]       == "R1_103");
+    REQUIRE(r.data.at(ChrT).ps[2]        == Approx(6.250000e-27));
+    REQUIRE(r.data.at(ChrT).logFs[2]     == Approx(-0.99634137));
+    REQUIRE(r.data.at(ChrT).eLogFs[2]    == Approx(-1.0));
+    REQUIRE(r.data.at(ChrT).logFSEs[2]   == Approx(0.09272531));
+    REQUIRE(r.data.at(ChrT).baseMeans[2] == Approx(691.727098));
+
+    REQUIRE(r.data.at(ChrT).ids[5]       == "R1_13");
+    REQUIRE(r.data.at(ChrT).ps[5]        == Approx(5.981102e-01));
+    REQUIRE(r.data.at(ChrT).logFs[5]     == Approx(0.03421518));
+    REQUIRE(r.data.at(ChrT).eLogFs[5]    == Approx(0.0));
+    REQUIRE(r.data.at(ChrT).logFSEs[5]   == Approx(0.06490966));
+    REQUIRE(r.data.at(ChrT).baseMeans[5] == Approx(5658.731489));
+}
+
 TEST_CASE("TDiff_Classify")
 {
     const auto qvals = std::vector<double> { 0.01, 0.02, 0.98, 0.99 };
@@ -105,7 +140,7 @@ TEST_CASE("TDiff_NoneExpressed")
     REQUIRE(stats.r2 == 1.0);
 }
 
-TEST_CASE("TDiff_NoSynthetic")
+TEST_CASE("TDiff_NotSynthetic")
 {
     Test::transAB();
     
@@ -121,7 +156,13 @@ TEST_CASE("TDiff_NoSynthetic")
     for (const auto &gID : gIDs)
     {
         DiffTest test;
+
+        // Randomly generate a unique ID
+        test.id  = gID;
+        
+        // Important, this is telling Anaquin it's not from synthetic chromosome
         test.cID = "Anaquin";
+        
         tests.push_back(test);
     }
     

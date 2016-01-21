@@ -15,6 +15,11 @@ namespace Anaquin
 {
     typedef std::map<BinID, Counts> BinCounts;
 
+    template <typename T> std::string toNA(const T &t)
+    {
+        return isnan(t) ? "NA" : std::to_string(t);
+    }
+    
     inline std::string extractFile(const std::string &path)
     {
         auto r   = path;

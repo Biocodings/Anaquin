@@ -20,7 +20,7 @@ namespace Anaquin
             PValue,
             QValue
         } DESeq2Field;
-
+        
         static void parse(const FileName &file, std::function<void (const DiffTest &, const ParserProgress &)> f)
         {
             Reader r(file);
@@ -35,12 +35,12 @@ namespace Anaquin
             while (r.nextLine(line))
             {
                 Tokens::split(line, ",", toks);
-                
+
                 DiffTest t;
-                
+
                 /*
-                 * DESeq2 is an R-package, it has no output directly relevant to Anaquin. However, we'd expect
-                 * the users write the resulting differential table to a text file. It's format would like this:
+                 * DESeq2 is an R-package, it has no output directly relevant to Anaquin. We'd expect the user
+                 * write the resulting differential table to a text file.
                  *
                  *     Column 1: Name
                  *     Column 2: Base mean
@@ -57,8 +57,7 @@ namespace Anaquin
                     
                     /*
                      * DESeq2 wouldn't give the name of the chromosome, only the name of the gene would be given.
-                     * We'll simply have to consult the reference annotation whether the gene belongs to the synthetic
-                     * chromosome.
+                     * We'll have to consult the reference annotation whether the gene belongs to the synthetic.
                      */
                     
                     if (s.findGene(ChrT, t.id))
@@ -92,14 +91,20 @@ namespace Anaquin
                     {
                         t.status = DiffTest::Status::Tested;
 
+                        // Normalized average counts
+                        t.baseMean = stof(toks[DESeq2Field::BaseMean]);
+                        
                         // Measured log-fold change
                         t.logF = stof(toks[DESeq2Field::Log2Fold]);
+
+                        // Standard error for the log-fold change
+                        t.logFSE = stod(toks[DESeq2Field::Log2FoldSE]);
                         
                         // Probability under the null hypothesis
                         t.p = stod(toks[DESeq2Field::PValue]);
                         
                         // Probability controlled for multi-testing
-                        t.q = stod(toks[DESeq2Field::QValue]);
+                        t.q = stod(toks[DESeq2Field::QValue]);                        
                     }
 
                     f(t, p);

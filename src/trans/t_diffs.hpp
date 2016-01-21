@@ -59,21 +59,32 @@ namespace Anaquin
                 // Probability under the null hypothesis
                 std::vector<double> ps;
                 
-                // Q-probability (controlled for multiple testing)
-                std::vector<double> qs;
+                // Log-fold ratios
+                std::vector<double> logFs;
                 
-                // Log-fold changes
-                std::vector<double> lfcs;
+                // Expected log-fold ratios (only for the synthetic)
+                std::vector<double> eLogFs;
+                
+                /*
+                 * Optional inputs. For example, Cuffdiffs wouldn't give them.
+                 */
+
+                // Normalized average counts for the replicates
+                std::vector<double> baseMeans;
+
+                // Log-fold ratios standard deviation
+                std::vector<double> logFSEs;
             };
             
             std::map<ChromoID, Data> data;
 
+            // Count table
+            std::shared_ptr<CountTable> counts;
+
             // Average counts for each condition if provided
             std::vector<std::map<std::string, Counts>> avgs;
-            
-            std::shared_ptr<CountTable> counts;
-            
-            // Detection limit            
+
+            // Detection limit
             Limit limit;
         };
 

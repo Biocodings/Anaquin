@@ -8,12 +8,10 @@
 
 library(Anaquin)
 
-setwd('%3%')
-
-# Read the count table
-data <- read.csv('%4%', row.name=1)
+# Read the differential results
+data <- read.csv('%3%/%4%', row.name=1)
 
 # Create a TransQuin data set for Anaquin
-data <- transQuin(seqs = row.names(data), A1=data$A1, A2=data$A2, A3=data$A3, B1=data$B1, B2=data$B2, B3=data$B3)
+data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$lfc, lfcSE=data$lfcSE, pvalue=data$pval, expected.LFC=data$elfc)
 
 plotMA(data, lvl='%5%', shouldEndo=TRUE)

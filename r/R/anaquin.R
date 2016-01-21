@@ -78,6 +78,42 @@ pval <- function(data)
 }
 
 #
+# Filtering functionality The following are supported:
+#
+#   'seqs'
+#   'sequins'
+#   'endos'
+#
+filter <- function(data, name)
+{
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin')
+    
+    stopifnot(name == 'seqs'    |
+              name == 'sequins' |
+              name == 'endos')
+    
+    if (name == 'seqs' | name == 'sequins')
+    {
+        return (data$seqs[!is.na(data$seqs$elf),])
+    }
+    else if (name == 'endos')
+    {
+        return (data$seqs[is.na(data$seqs$elf),])        
+    }
+}
+
+sequins <- function(data)
+{
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin')
+
+    return (row.names(filter(data, 'seqs')))
+}
+
+#
 # Normalize the counts and calculate the base mean. Base mean is the average of the normalized count values, taken
 # over all samples.
 #
@@ -92,33 +128,6 @@ baseMean <- function(data)
     }
     
     return (data$seqs$baseMean)
-}
-
-#
-# Generic filtering function. The following are supported:
-#
-#   'seqs'
-#   'sequins'
-#   'endos'
-#
-filter <- function(data, name)
-{
-    stopifnot(class(data) == 'TransQuin' |
-              class(data) == 'VarQuin'   |
-              class(data) == 'MetaQuin')
-
-    stopifnot(name == 'seqs'    |
-              name == 'sequins' |
-              name == 'endos')
-        
-    if (name == 'seqs' | name == 'sequins')
-    {
-        return (data$seqs[!is.na(data$seqs$elf),])
-    }
-    else
-    {
-        return (data$seqs[is.na(data$seqs$elf),])        
-    }
 }
 
 names <- function(data)

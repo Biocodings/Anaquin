@@ -7,11 +7,11 @@ using namespace Anaquin;
 
 void CountTable::sort(const SS::Permutation &p)
 {
-    _ids = SS::applePerm(_ids, p);
+    _ids = SS::applyPerm(_ids, p);
 
     for (auto &i : _samples)
     {
-        SS::applePerm(i.second, p);
+        SS::applyPerm(i.second, p);
     }
 }
 

@@ -363,13 +363,13 @@ def transQuin(config, output):
     # Execute the command
     anaquin('TransAssembly', req, config, onlyPrint=True)
 
-    r.startChapter('Transcriptome Analysis')
+    #r.startChapter('Transcriptome Analysis')
 
     # Add summary statistics for each replicate
-    for i in range(0, len(names)):
-        r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
+    #for i in range(0, len(names)):
+    #    r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
         
-    r.endChapter()
+    #r.endChapter()
 
     
     ######################################################
