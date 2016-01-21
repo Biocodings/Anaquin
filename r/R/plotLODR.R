@@ -10,6 +10,7 @@
 
 plotLODR <- function(data,
                      lvl,
+                     title = NULL,
                      choseFDR = 0.1,
                      xBreaks = NULL,
                      yBreaks = NULL,
@@ -255,7 +256,7 @@ plotLODR <- function(data,
                       xlab(xname)                             +
                       ylab(yname)                             +
 
-                      scale_x_log10(limits=c(min(data$baseMean), max(data$baseMean)), breaks = c(arrowDat$x, round(max(data$baseMean)))) +
+                      scale_x_log10(limits=c(min(data$baseMean), max(data$baseMean)), breaks=c(arrowDat$x, round(max(data$baseMean)))) +
 
                       # Draw the fitted lines
                       geom_line(data=lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE) +
@@ -267,6 +268,11 @@ plotLODR <- function(data,
                       geom_hline(yintercept=cutoff, linetype=2, size=2) + # Line for probability threshold
                       theme_bw()
 
+    if (!is.null(title))
+    {
+        p <- p + ggtitle(title)
+    }
+    
     if (!is.null(yBreaks))
     {
         p <- p + scale_y_log10(breaks=yBreaks)

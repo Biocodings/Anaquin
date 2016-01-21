@@ -16,10 +16,12 @@ plotMA <- function(data,
                    size        = 4,
                    alpha       = 0.8,
                    qCutoff     = 0.1,
+                   title       = NULL,
                    drawHLine   = 'zero',
                    shouldEndo  = TRUE,
                    shouldError = FALSE,
                    shouldSymm  = FALSE,
+                   pCutoff     = 0.1,
                    xname       = 'Log2 Average of Normalized Counts',
                    yname       = 'Log2 Ratio of Normalized Counts',
                    shouldLODR=FALSE)
@@ -73,6 +75,9 @@ plotMA <- function(data,
     # Expected logFold ratio
     eLogLF <- expectedLF(data, lvl=lvl, ids=sequins(data))
 
+    # Probability under null hypothesis (optional)
+    pvals <- pval(data)
+
     if (shouldError)
     {
         logFSE <- log2(mLogFSE(data))
@@ -81,6 +86,11 @@ plotMA <- function(data,
     data <- data.frame(baseMean=baseMean, logLF=logLF, eLogLF=eLogLF)
     row.names(data) <- names
 
+    if (!is.null(pvals))
+    {
+        data$pvals <- pvals
+    }
+    
     if (shouldError)
     {
         data$logFSE <- logFSE
@@ -157,8 +167,12 @@ plotMA <- function(data,
     {
         endos <- data[is.na(data$eLogLF),]
         
-        p <- p + geom_point(data=endos, aes(x=baseMean, y=logLF), colour="grey80", alpha=0.5)# +
-        #                 geom_point(data = endo[endo$A <= 5,], aes(x = A, y = M.Ave), colour='pink', alpha=0.5)
+        p <- p + geom_point(data=endos, aes(x=baseMean, y=logLF), colour="grey80", alpha=0.5)
+        
+        if (!is.null(endos$pval))
+        {
+            p <- p + geom_point(data = endos[endos$pval <= pCutoff,], aes(x=baseMean, y=logLF), colour='pink', alpha=0.30)
+        }
     }
     
     p <- p + geom_point(aes(colour=eLogLF), size=size, alpha = alpha)  +
@@ -171,6 +185,11 @@ plotMA <- function(data,
              theme(legend.justification=c(1,0), legend.position=c(1,0)) +
              theme_bw()
 
+    if (!is.null(title))
+    {
+        p <- p + ggtitle(title)
+    }
+    
     if (!is.null(lineDat))
     {
         p <- p + geom_hline(data=lineDat, aes(yintercept=logLF, colour=ratio), size=0.5, linetype='longdash')
