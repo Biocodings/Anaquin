@@ -535,7 +535,7 @@ template <typename Data, typename F> std::string combine(const Data &data, F f)
 
 static std::string replicateSummary()
 {
-    return "Summary for dataset: %1%\n\n"
+    return "Summary for file: %1%\n\n"
            "   Unmapped:   %2% reads\n"
            "   Experiment: %3% (%4%%%) reads\n"
            "   Synthetic:  %5% (%6%%%) reads\n\n"
@@ -574,7 +574,7 @@ static std::string replicateSummary()
            "   Gene:   %28%\n\n";
 }
 
-static void writeSummary(const FileName &file, const TAlign::Stats &stats, std::shared_ptr<Writer> writer)
+static void writeSummary(const FileName &file, const FileName &src, const TAlign::Stats &stats, std::shared_ptr<Writer> writer)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -587,7 +587,7 @@ static void writeSummary(const FileName &file, const TAlign::Stats &stats, std::
 
     writer->open(file);
     writer->write((boost::format(replicateSummary())
-                                          % file
+                                          % src
                                           % stats.unmapped
                                           % stats.n_endo
                                           % (100.0 * stats.endoProp())
@@ -619,7 +619,7 @@ static void writeSummary(const FileName &file, const TAlign::Stats &stats, std::
     writer->close();
 }
 
-static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::shared_ptr<Writer> writer)
+static void writeSequins(const FileName &file, const FileName &src, const TAlign::Stats &stats, std::shared_ptr<Writer> writer)
 {
     writer->open(file);
     
@@ -694,24 +694,19 @@ static void writeSequins(const FileName &file, const TAlign::Stats &stats, std::
 
 static void writeReplicate(const TAlign::Stats &stats, const FileName &file, const std::string &name, const TAlign::Options &o)
 {
-    // Eg: A1/TransAlign_summary.stats
-    const auto sample = extractFile(file);
-
-    o.info("Generating statistics for: " + sample);
-
     // Create the directory if haven't
     o.writer->create(name);
     
     // Generating summary statistics for the replicate
-    writeSummary(name + "/TransAlign_summary.stats", stats, o.writer);
+    writeSummary(name + "/TransAlign_summary.stats", extractFile(file), stats, o.writer);
     
     // Generating sequin statistics for the replicate
-    writeSequins(name + "/TransAlign_quins.stats", stats, o.writer);
+    writeSequins(name + "/TransAlign_quins.stats", extractFile(file), stats, o.writer);
 }
 
 static std::string pooledSummary()
 {
-    return "Summary for dataset: %1%\n\n"
+    return "Summary for file: %1%\n\n"
            "   Unmapped:   %2% reads\n"
            "   Experiment: %3% (%4%%%) reads\n"
            "   Synthetic:  %5% (%6%%%) reads\n\n"

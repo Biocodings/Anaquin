@@ -329,14 +329,16 @@ def transQuin(config, output):
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Alignment summary statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
-
-    # Add sequin statistics for each replicate
-    for i in range(0, len(names)):
-        r.addTextFile('Alignment sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
+        r.addTextFile('Summary statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
+        r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
 
     r.endChapter()
 
+
+    # Generate a markup report (which can then be converted into various formats)
+    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
+
+    return
 
     ############################################
     #                                          #
