@@ -95,12 +95,13 @@ ALIGN_FILE = TopHat2/G_RMXB3v2.accepted_hits.bam
 ###################################################
 
 #
-# Which software did you used to generate the results?
+# Which software did you used to generate the assembly?
 #
 # Anaquin supports:
 #
 #     - Cufflinks
 #     - StringTie
+#
 
 ASSEMBLY_SOFT = Cufflinks
 
@@ -111,7 +112,11 @@ ASSEMBLY_SOFT = Cufflinks
 # The orders must be consistent to the factors.
 #
 
-ASSEMBLY_FILE = Cufflinks/transcripts.gtf
+ASSEMBLY_FILE = Cufflinks/A1/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = Cufflinks/A2/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = Cufflinks/A3/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = Cufflinks/B1/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = Cufflinks/B2/NotGuided/transcripts.gtf
 
 
 ###################################################
