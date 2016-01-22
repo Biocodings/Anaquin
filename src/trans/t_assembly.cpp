@@ -221,9 +221,6 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         o.logInfo("Reference: " + ref);
         o.logInfo("Query: " + qry);
         
-        std::cout << ref << std::endl;
-        std::cout << qry << std::endl;
-
         if (cuffcompare_main(ref.c_str(), qry.c_str()))
         {
             throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again.");
