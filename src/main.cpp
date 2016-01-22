@@ -117,7 +117,7 @@ typedef std::set<Value> Range;
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
-#define OPT_R_EXPT  808
+#define OPT_R_ENDO  808
 
 #define OPT_U_BASE  900
 #define OPT_U_VCF   901
@@ -408,7 +408,7 @@ static const struct option long_options[] =
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
     { "rbed2",   required_argument, 0, OPT_R_BED_2 },
     { "rgtf",    required_argument, 0, OPT_R_GTF   },
-    { "rexp",    required_argument, 0, OPT_R_EXPT  },
+    { "rexp",    required_argument, 0, OPT_R_ENDO  },
 
     { "uvcf",    required_argument, 0, OPT_U_VCF  },
     { "ufa",     required_argument, 0, OPT_FA_1   },
@@ -568,7 +568,7 @@ template <typename Reference> void addRef(Reference ref)
         {
             switch (opt)
             {
-                case OPT_R_EXPT:
+                case OPT_R_ENDO:
                 {
                     addRef(EContext, ref, _p.opts[opt]);
                     break;
@@ -998,7 +998,7 @@ void parse(int argc, char ** argv)
             case OPT_R_GTF:
             case OPT_PSL_1:
             case OPT_U_TAB:
-            case OPT_R_EXPT:
+            case OPT_R_ENDO:
             case OPT_R_BED_1:
             case OPT_R_BED_2:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
@@ -1103,7 +1103,12 @@ void parse(int argc, char ** argv)
                 {
                     TAssembly::Options o;
 
-                    o.ref = _p.opts[OPT_R_GTF];
+                    o.chrT = _p.opts[OPT_R_GTF];
+
+                    if (_p.opts.count(OPT_R_ENDO))
+                    {
+                        o.endo = _p.opts[OPT_R_ENDO];
+                    }
 
                     analyze<TAssembly>(_p.inputs, o);
                     break;
@@ -1137,9 +1142,6 @@ void parse(int argc, char ** argv)
                     TExpress::Options o;
                     
                     o.soft = parseSoft("soft", _p.opts.at(OPT_SOFT));
-                    
-                    // Optional. Default to gene level.
-                    assert(o.lvl == TExpress::Level::Gene);
                     
                     if (_p.opts.count(OPT_LEVEL))
                     {

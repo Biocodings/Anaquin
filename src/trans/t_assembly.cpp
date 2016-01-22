@@ -67,7 +67,7 @@ static FileName createFilters(const FileName &ref, const FileName &query, const 
     return tmp;
 }
 
-static std::string summary()
+static std::string sSummary()
 {
     return "Summary for dataset: %1%\n\n"
            "   Experiment: %2% features\n"
@@ -100,12 +100,48 @@ static std::string summary()
            "   Novel introns: %33%/%34% (%35%)\n\n";
 }
 
-static TAssembly::Stats init()
+static std::string eSummary()
+{
+    return "Summary for the endogenous\n\n"
+           "   ***\n"
+           "   *** The following statistics are computed for exact and fuzzy.\n"
+           "   ***\n"
+           "   *** The fuzzy level is 10 nucleotides.\n"
+           "   ***\n\n"
+           "   -------------------- Exon level --------------------\n\n"
+           "   Sensitivity: %1% (%2%)\n"
+           "   Specificity: %3% (%4%)\n"
+           "   -------------------- Intron level --------------------\n\n"
+           "   Sensitivity: %5% (%6%)\n"
+           "   Specificity: %7% (%8%)\n"
+           "   -------------------- Base level --------------------\n\n"
+           "   Sensitivity: %9%\n"
+           "   Specificity: %10%\n"
+           "   -------------------- Intron Chain level --------------------\n\n"
+           "   Sensitivity: %11% (%12%)\n"
+           "   Specificity: %13% (%14%)\n\n"
+           "   -------------------- Transcript level --------------------\n\n"
+           "   Sensitivity: %15% (%16%)\n"
+           "   Specificity: %17% (%18%)\n\n"
+           "   Missing exons: %19%/%20% (%21%)\n"
+           "   Missing introns: %22%/%23% (%24%)\n\n"
+           "   Novel exons: %25%/%26% (%27%)\n"
+           "   Novel introns: %28%/%29% (%30%)\n\n";
+}
+
+static TAssembly::Stats init(const TAssembly::Options &o)
 {
     TAssembly::Stats stats;
     
     stats.data[ChrT];
-    stats.data[Endo];
+    stats.refs[ChrT] = o.chrT;
+    
+    // Remember, endogenous is optional
+    if (!o.endo.empty())
+    {
+        stats.data[Endo];
+        stats.refs[Endo] = o.endo;
+    }
 
     const auto &r = Standard::instance().r_trans;
     
@@ -121,14 +157,14 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
-    // We'll need the reference annotation for comparison
-    assert(!o.ref.empty());
+    // We'll need the reference annotation for comparison (endogenous is optional)
+    assert(!o.chrT.empty());
     
     /*
      * 1. Initalize the statistics
      */
     
-    TAssembly::Stats stats = init();
+    TAssembly::Stats stats = init(o);
     
     /*
      * 2. Filtering transcripts
@@ -176,20 +212,21 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     
     auto compareGTF = [&](const ChromoID &cID)
     {
-        /*
-         * Unfortunately there's no way to separate statistics between synthetic
-         * and endogenous chromosomes. We'll have to create a copy of the reference
-         * and query for both.
-         */
+        // Reference annoation
+        const auto &ref = stats.refs.at(cID);
 
-        const auto created = createFilters(file, o.ref, cID);
+        // Filtered query
+        const auto qry = createFilters(file, ref, cID);
 
-        o.logInfo("Filtered query: "     + created + " created");
-        o.logInfo("Invoking Cuffcompare: " + created);
+        o.logInfo("Reference: " + ref);
+        o.logInfo("Query: " + qry);
+        
+        std::cout << ref << std::endl;
+        std::cout << qry << std::endl;
 
-        if (cuffcompare_main(o.ref.c_str(), created.c_str()))
+        if (cuffcompare_main(ref.c_str(), qry.c_str()))
         {
-            throw std::runtime_error("Failed to analyze the given transcript. Please check the file and try again.");
+            throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again.");
         }
     };
 
@@ -310,17 +347,6 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         }
     });
     
-    /*
-     * 4. Collecting statistics
-     */
-    
-    o.info("Collecting statistics");
-    
-    stats.eLimit = r.limit(stats.eHist);
-    stats.tLimit = r.limit(stats.tHist);
-    stats.iLimit = r.limit(stats.iHist);
-    stats.bLimit = r.limitGene(stats.bHist);
-    
     return stats;
 }
 
@@ -331,45 +357,79 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
 
     o.info("Generating statistics for: " + name);
     
-    // Create the directory if haven't
     o.writer->create(name);
-
     o.writer->open(name + "/TransAssembly_summary.stats");
-    o.writer->write((boost::format(summary()) % file
-                                              % stats.n_endo
-                                              % stats.n_chrT
-                                              % r.data().size()
-                                              % r.countIntrons(ChrT)
-                                              % data.eSN              // 6
-                                              % data.eFSN
-                                              % data.eSP
-                                              % data.eFSP
-                                              % data.iSN              // 10
-                                              % data.iFSN
-                                              % data.iSP
-                                              % data.iFSP
-                                              % data.bSN               // 14
-                                              % data.bSP
-                                              % data.cSN               // 16
-                                              % data.cFSN
-                                              % data.cSP
-                                              % data.cFSP
-                                              % data.tSN
-                                              % data.tFSN
-                                              % data.tSP
-                                              % data.tFSP              // 23
-                                              % data.mExonN            // 24
-                                              % data.mExonR
-                                              % data.mExonP
-                                              % data.mIntronN
-                                              % data.mIntronR          // 28
-                                              % data.mIntronP
-                                              % data.nExonN
-                                              % data.nExonR
-                                              % data.nExonP
-                                              % data.nIntronN
-                                              % data.nIntronR          // 34
-                                              % data.nIntronP).str());
+    o.writer->write((boost::format(sSummary()) % file
+                                               % stats.n_endo
+                                               % stats.n_chrT
+                                               % r.data().size()
+                                               % r.countIntrons(ChrT)
+                                               % data.eSN              // 6
+                                               % data.eFSN
+                                               % data.eSP
+                                               % data.eFSP
+                                               % data.iSN              // 10
+                                               % data.iFSN
+                                               % data.iSP
+                                               % data.iFSP
+                                               % data.bSN               // 14
+                                               % data.bSP
+                                               % data.cSN               // 16
+                                               % data.cFSN
+                                               % data.cSP
+                                               % data.cFSP
+                                               % data.tSN
+                                               % data.tFSN
+                                               % data.tSP
+                                               % data.tFSP              // 23
+                                               % data.mExonN            // 24
+                                               % data.mExonR
+                                               % data.mExonP
+                                               % data.mIntronN
+                                               % data.mIntronR          // 28
+                                               % data.mIntronP
+                                               % data.nExonN
+                                               % data.nExonR
+                                               % data.nExonP
+                                               % data.nIntronN
+                                               % data.nIntronR          // 34
+                                               % data.nIntronP).str());
+    if (stats.data.count(Endo))
+    {
+        const auto &data = stats.data.at(Endo);
+
+        o.writer->write((boost::format(eSummary()) % data.eSN           // 1
+                                                   % data.eFSN
+                                                   % data.eSP
+                                                   % data.eFSP
+                                                   % data.iSN           // 5
+                                                   % data.iFSN
+                                                   % data.iSP
+                                                   % data.iFSP
+                                                   % data.bSN           // 9
+                                                   % data.bSP
+                                                   % data.cSN           // 11
+                                                   % data.cFSN
+                                                   % data.cSP
+                                                   % data.cFSP
+                                                   % data.tSN
+                                                   % data.tFSN
+                                                   % data.tSP
+                                                   % data.tFSP          // 18
+                                                   % data.mExonN        // 19
+                                                   % data.mExonR
+                                                   % data.mExonP
+                                                   % data.mIntronN
+                                                   % data.mIntronR      // 23
+                                                   % data.mIntronP
+                                                   % data.nExonN
+                                                   % data.nExonR
+                                                   % data.nExonP
+                                                   % data.nIntronN
+                                                   % data.nIntronR      // 29
+                                                   % data.nIntronP).str());
+    }
+
     o.writer->close();
 }
 

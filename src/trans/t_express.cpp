@@ -340,10 +340,10 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
 
     o.info("Generating statistics");
     
-    std::map<ChromoID, Accumulator<double>> accs;    
+    std::map<ChromoID, Accumulator<double>> accs;
     
     /*
-     * We'll pool the information with accumulators to generate a summary for all replicates.
+     * Pool the information with accumulators to generate a summary for all replicates.
      */
     
     for (auto i = 0; i < files.size(); i++)

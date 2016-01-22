@@ -9,8 +9,11 @@ namespace Anaquin
     {
         struct Options : FuzzyOptions
         {
-            // Path for the reference GTF
-            FileName ref;
+            // Reference for the sequins
+            FileName chrT;
+
+            // Reference for the endogenous
+            FileName endo;
         };
 
         struct Stats : public MappingStats
@@ -64,11 +67,9 @@ namespace Anaquin
             
             std::map<ChromoID, Data> data;
             
-            /*
-             * Statistics for detection limit (chrT only)
-             */
+            // Reference file for each chromosome
+            std::map<ChromoID, FileName> refs;
             
-            Limit bLimit, eLimit, iLimit, tLimit;
             SequinHist bHist, eHist, iHist, tHist;
         };
 
