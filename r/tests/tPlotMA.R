@@ -59,11 +59,15 @@ plotForGenes <- function()
     
     data <- rbind(seqs[,c(1,2,3,5,6),], gens[,c(1,2,3,5,7)])
     stopifnot((nrow(seqs) + nrow(gens)) == nrow(data))
-    
+
     # Create a TransQuin data set for Anaquin
     data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$log2FoldChange, lfcSE=data$lfcSE, pvalue=data$pvalue, expected.LFC=data$expected.LFC)
     
-    r <- plotMA(data, lvl='gene', shouldEndo=TRUE, shouldSymm=TRUE, shouldError=TRUE, pCutoff=0.1, title='Probability cutoff: 0.1')
+    # Let's estimate the LODR for the MA plot
+    r <- plotLODR(data, shouldBand=TRUE, locBand='pred', choseFDR=0.1, shouldTable=FALSE, lvl='gene', yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00), xBreaks=c(1, 10, 100, 1000, 10000), xLabels=c('1e+00', '1e+01', '1e+02', '1e+03', '1e+04'))
+
+    # Create an MA plot with the LODR estimate
+    r <- plotMA(data, lvl='gene', lodr=r['data']$data, shouldEndo=TRUE, shouldSymm=TRUE, shouldError=TRUE, qCutoff=0.1, title='Probability cutoff: 0.1')
 
     checkEquals(r$xname, 'Log2 Average of Normalized Counts')
     checkEquals(r$yname, 'Log2 Ratio of Normalized Counts')
