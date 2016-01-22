@@ -34,9 +34,11 @@ testStringTie <- function()
     # Demostrate how an FPKM table can be used to construct a splicing plot
     #
     
+    setwd('/Users/tedwong/Sources/QA/r')
+    
     B1 <- read.csv('tests/data/K_562/B1/t_data.ctab', row.names=1, sep='\t')
     B2 <- read.csv('tests/data/K_562/B2/t_data.ctab', row.names=1, sep='\t')
-    B2 <- read.csv('tests/data/K_562/B3/t_data.ctab', row.names=1, sep='\t')    
+    B3 <- read.csv('tests/data/K_562/B3/t_data.ctab', row.names=1, sep='\t')    
 
     B1 <- B1[B1$chr=='chrT',]
     B2 <- B2[B2$chr=='chrT',]

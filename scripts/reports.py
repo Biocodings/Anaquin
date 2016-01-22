@@ -47,7 +47,7 @@ __unitTesting__ = True
 
 
 # Execute an Anaquin request
-def anaquin(tool, args, config, needMixture=True, onlyPrint=False):
+def anaquin(tool, args, config, needMixture=True, onlyPrint=False, subdir=''):
     
     # Eg: /Users/tedwong/Desktop/K_562
     root = get(config, 'ROOT_PATH')
@@ -61,6 +61,9 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False):
     names   = get(config, 'NAMES')    
     factors = get(config, 'FACTORS')
     
+    if (len(subdir)):
+        subdir = '/' + subdir
+    
     #
     # Generate a full Anaquin command. A full command would need the mixture and reference annotation.
     # However, not all tool would require, say, a mixture.
@@ -70,7 +73,7 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False):
     req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + ref
     
     # Now add up the arguments
-    req = req + ' -o ' + TEMP_PATH + ' -factors ' + factors + ' -names ' + names + ' ' + args
+    req = req + ' -o ' + TEMP_PATH + subdir + ' -factors ' + factors + ' -names ' + names + ' ' + args
 
     print(req + '\n')
 
@@ -335,11 +338,6 @@ def transQuin(config, output):
     r.endChapter()
 
 
-    # Generate a markup report (which can then be converted into various formats)
-    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
-
-    return
-
     ############################################
     #                                          #
     #  2. Generating statistics for assembly   #
@@ -365,70 +363,86 @@ def transQuin(config, output):
     # Execute the command
     anaquin('TransAssembly', req, config, onlyPrint=True)
 
-    r.startChapter('Transcriptome Analysis')
+    r.startChapter('TransQuin Assembly')
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Assembly summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
-
-    # Add sequin statistics for each replicate
-    for i in range(0, len(names)):
-        r.addTextFile('Assembly sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_sequin.stats', )
+        r.addTextFile('Summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
+        #r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_sequin.stats', )
 
     r.endChapter()
 
+    #############################################################
+    #                                                           #
+    #  3. Generating statistics for expression analysis (Gene)  #
+    #                                                           #
+    #############################################################
 
-    ######################################################
-    #                                                    #
-    #  3. Generating statistics for expression analysis  #
-    #                                                    #
-    ######################################################
-
-    print ('----------------------- Expression -----------------------\n')
+    print ('----------------------- Expression (Gene) -----------------------\n')
 
     # Expression software
-    soft = get(config, 'EXP_SOFT', { 'Cufflinks', 'StringTie' })
-
-    # Expression level
-    lvl = get(config, 'EXP_LEVEL', ['Gene', 'Isoform', 'Exon'])
+    soft = get(config, 'EXP_G_SOFT', { 'Cufflinks', 'StringTie' })
 
     # Expression files
-    files = get(config, 'EXP_FILE', EXPECT_FILES)
-    
+    files = get(config, 'EXP_G_FILE', EXPECT_FILES)
+
     #
     # Generate a request for TransExp for expression analysis. For example:
     #
-    #    anaquin TransExp -m ... -rgtf ... -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
+    #    anaquin TransExp -m ... -rgtf ... -lvl gene -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
     #
 
-    req = '-soft ' + soft + ' -level ' + lvl + ' -ufiles ' + files
+    req = '-soft ' + soft + ' -level gene  -ufiles ' + files
     
     # Execute the command for genes
-    anaquin('TransExpress', req, config, onlyPrint=True)
-
-    # Execute the command for isoforms
-    #anaquin('TransExpress', req, config, onlyPrint=True)
+    anaquin('TransExpress', req, config, onlyPrint=True, subdir='TG')
 
     r.startChapter('TransQuin Expression (Gene)')
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Expression summary statistics for: ' + names[i], names[i] + os.sep + 'TransExpress_summary.stats', )
-        
-    # Add scatter plot
+        r.addTextFile('Expression summary statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
+        r.addRCode('Expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
+
+    r.endChapter()
+
+    ################################################################
+    #                                                              #
+    #  4. Generating statistics for expression analysis (Isoform)  #
+    #                                                              #
+    ################################################################
+    
+    print ('----------------------- Expression (Isoform) -----------------------\n')
+
+    # Expression software
+    soft = get(config, 'EXP_I_SOFT', { 'Cufflinks', 'StringTie' })
+
+    # Expression files
+    files = get(config, 'EXP_I_FILE', EXPECT_FILES)
+
+    #
+    # Generate a request for TransExp for expression analysis. For example:
+    #
+    #    anaquin TransExp -m ... -rgtf ... -lvl isoform -factors 1,1,1,2,2,2 -names A1,A2,A3... -ufiles C1.exp,C2.exp,C3.exp...
+    #
+
+    req = '-soft ' + soft + ' -level isoform  -ufiles ' + files
+    
+    # Execute the command for genes
+    anaquin('TransExpress', req, config, onlyPrint=True, subdir='TI')
+
+    r.startChapter('TransQuin Expression (Isoform)')
+
+    # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addRCode('Expression scatter plot for: ' + names[i], names[i] + os.sep + 'TransExpress_scatter.R', )
+        r.addTextFile('Expression summary statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
+        r.addRCode('Expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
     r.endChapter()
-
-    r.startChapter('TransQuin Expression (Isoform)')    
-    
-    r.endChapter()
-    
     
     ########################################################
     #                                                      #
-    #  4. Generating statistics for differential analysis  #
+    #  5. Generating statistics for differential analysis  #
     #                                                      #
     ########################################################
 
