@@ -17,4 +17,8 @@ data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=d
 # Change to your chooden FDR rate
 chosenFDR <- 0.1
 
-plotLODR(data, choseFDR=0.1, shouldTable=FALSE, lvl='%5%', shouldBand=FALSE, yBreaks=c(1e-300, 1e-200, 1e-100, 1e-10, 1.00), locBand='local')
+xBreaks <- c(1, 10, 100, 1000, 10000)
+xLabels <- c('1e+00', '1e+01', '1e+02', '1e+03', '1e+04')
+yBreaks <- c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)
+
+r <- plotLODR(data, shouldBand=TRUE, locBand='global', choseFDR=0.1, shouldTable=FALSE, lvl='gene', yBreaks=yBreaks, xBreaks=xBreaks, xLabels=xLabels)

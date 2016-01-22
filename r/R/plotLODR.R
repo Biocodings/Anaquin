@@ -314,8 +314,11 @@ plotLODR <- function(data,
         # The LODR estimate
         limit <- as.numeric(as.character(lodr[lodr$ratio==eLogLF,]$Estimate))
         
-        # Classify whether it's below or above the LODR
-        data[data$eLogLF==eLogLF,]$LODR <- ifelse(data[data$eLogLF==eLogLF,]$baseMean < limit, 'below', 'above')
+        if (length(limit))
+        {
+            # Classify whether it's below or above the LODR
+            data[data$eLogLF==eLogLF,]$LODR <- ifelse(data[data$eLogLF==eLogLF,]$baseMean < limit, 'below', 'above')
+        }
     }
     
     lodr$Estimate <- as.numeric(as.character(lodr$Estimate))
