@@ -22,9 +22,9 @@ plotMA <- function(data,
                    shouldError = FALSE,
                    shouldSymm  = FALSE,
                    pCutoff     = 0.1,
+                   lodr        = NULL,
                    xname       = 'Log2 Average of Normalized Counts',
-                   yname       = 'Log2 Ratio of Normalized Counts',
-                   shouldLODR=FALSE)
+                   yname       = 'Log2 Ratio of Normalized Counts')
 {
     require(grid)
     require(ggplot2)
@@ -33,39 +33,9 @@ plotMA <- function(data,
     stopifnot(class(data) == 'TransQuin')
     stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
     
-    if (shouldLODR)
-    {
-        data$status <- NA
-        
-        #
-        # Eg:
-        #      R1_43  2705.086868  above
-        #      R1_52     7.499938  below
-        #
-        status <- cutoffs[[2]][c(1,4)]
-        status <- status[!is.na(status$LODR),]
-        
-        for (i in 1:nrow(status))
-        {
-            t <- status[i,]
-            
-            if (nrow(data[data$Feature == row.names(t),]) > 0)
-            {
-                data[data$Feature == row.names(t),]$status <- t$LODR
-            }
-        }
-    }
-
- #   stats <- function(x, c1, c2)
-  #  {
-   #     c(mean(log2(x[c2])-log2(x[c1])),  # Ratio of normalized counts (y-axis)
-    #      sd(log2(x[c2])-log2(x[c1])),    # Standard deviation
-     #     log2(mean(x)))                  # Average normalized counts  (x-axis)
-    #} 
-
     # Names of all the features
     names <- names(data)
-    
+
     # Average of normalized count values (x-axis)
     baseMean <- log2(baseMean(data))
 
@@ -86,6 +56,16 @@ plotMA <- function(data,
     data <- data.frame(baseMean=baseMean, logLF=logLF, eLogLF=eLogLF)
     row.names(data) <- names
 
+    if (!is.null(lodr))
+    {
+        data$LODR <- NA
+
+        for (i in row.names(lodr))
+        {
+            data[row.names(data)==i,]$LODR <- lodr[row.names(lodr)==i,]
+        }
+    }
+    
     if (!is.null(pvals))
     {
         data$pvals <- pvals
@@ -131,17 +111,6 @@ plotMA <- function(data,
         lineDat <- data.frame(logLF=c(0), ratio=as.factor(c(0)))
     }
 
-    # Number of samples    
-#    totCol <- ncol(data)
-    
- #   statsDat <- data.frame(t(apply(data[c(1:6)], 1, stats,
-  #                                  c1 = c(1:(totCol/2)),
-   #                                 c2 = c(((totCol/2)+1):totCol))))
-#    colnames(statsDat) <- c("M.Ave", 'M.SD', 'A')
-
-#    data <- cbind(data, statsDat)
-#    data <- data[which(is.finite(data$M.Ave)),]
-
     #
     # Calculating the aspect ratio, and try to maintain the same aspect ratio in both dimension.
     #
@@ -181,7 +150,7 @@ plotMA <- function(data,
              coord_cartesian(xlim=xrange, ylim=yrange)                 +
              theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
              scale_y_continuous(breaks=seq(-10, 10, 1))                                +
-             labs(colour='Log-Ratio')                                       +
+             labs(colour='Log-Ratio')                                                  +
              theme(legend.justification=c(1,0), legend.position=c(1,0)) +
              theme_bw()
 
@@ -200,9 +169,9 @@ plotMA <- function(data,
         p <- p + geom_errorbar(aes(ymax=logLF+logFSE, ymin=logLF-logFSE, colour=eLogLF), size=0.5, alpha=alpha)
     }
     
-    if (shouldLODR)
+    if (!is.null(lodr))
     {
-        p <- p + geom_point(data = subset(data, status == 'below'), colour='white', size=2.5)
+        p <- p + geom_point(data=subset(data, LODR=='below'), colour='white', size=2.5)
     }
     
     print(p)

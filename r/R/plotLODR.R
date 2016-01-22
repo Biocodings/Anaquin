@@ -296,19 +296,20 @@ plotLODR <- function(data,
     #
     lodr <- lodr.resLess[-c(2,4,5)]
 
-#    data$LODR <- NA
+    # We don't need the sequins without LODR estimate anymore
+    data <- data[data$eLogLF != 0,]
     
-#    for (i in 1:nrow(data))
-#    {
-#        if (shouldTable & data$ratio[i] != 0)
-#        {
-            # What's the limit for this sequin?
-#            limit <- as.numeric(as.character(lodr[lodr$ratio==data$ratio[i],]$Estimate))
+    # LODR classification for each sequin
+    data$LODR <- NA
+    
+    for (eLogLF in unique(data$eLogLF))
+    {
+        # The LODR estimate
+        limit <- as.numeric(as.character(lodr[lodr$ratio==eLogLF,]$Estimate))
+        
+        # Classify whether it's below or above the LODR
+        data[data$eLogLF==eLogLF,]$LODR <- ifelse(data[data$eLogLF==eLogLF,]$baseMean < limit, 'below', 'above')
+    }
 
-            # Classify the sequin based on its average counts (x-axis on the plot)
-#            data[i,]$LODR <- ifelse(data[i,]$x < limit, 'below', 'above')
-#        }
-#    }
-
-    return (list(lodr.resLess[-c(2,4,5)], data))
+    return (list(lodr=lodr, data=data[c(5)]))
 }
