@@ -15,13 +15,12 @@ plotMA <- function(data,
                    lvl         = 'gene',
                    size        = 4,
                    alpha       = 0.8,
-                   qCutoff     = 0.1,
                    title       = NULL,
                    drawHLine   = 'zero',
                    shouldEndo  = TRUE,
                    shouldError = FALSE,
                    shouldSymm  = FALSE,
-                   pCutoff     = 0.1,
+                   qCutoff     = 0.1,
                    lodr        = NULL,
                    xname       = 'Log2 Average of Normalized Counts',
                    yname       = 'Log2 Ratio of Normalized Counts')
@@ -136,11 +135,14 @@ plotMA <- function(data,
     {
         endos <- data[is.na(data$eLogLF),]
         
-        p <- p + geom_point(data=endos, aes(x=baseMean, y=logLF), colour="grey80", alpha=0.5)
+        p <- p + geom_point(data=endos, aes(x=baseMean, y=logLF), colour="grey80", alpha=0.4)
         
         if (!is.null(endos$pval))
         {
-            p <- p + geom_point(data = endos[endos$pval <= pCutoff,], aes(x=baseMean, y=logLF), colour='pink', alpha=0.30)
+            # Convert the p-values into q-values
+            endos$qval <- qvalue(endos$pval)$qvalues
+            
+            p <- p + geom_point(data = endos[endos$qval <= qCutoff,], aes(x=baseMean, y=logLF), colour='pink', alpha=0.30)
         }
     }
     

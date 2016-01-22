@@ -14,6 +14,7 @@ plotLODR <- function(data,
                      choseFDR = 0.1,
                      xBreaks = NULL,
                      yBreaks = NULL,
+                     xLabels = NULL,
                      locBand = 'pred',
                      xname = 'Average Counts',
                      yname = 'DE Test P-values',
@@ -73,13 +74,13 @@ plotLODR <- function(data,
         # Fit a local regression on the log10 scale
         fit <- locfit(log10(pval)~lp(log10(mn)), maxk=300)
         
-        X <- preplot(fit, band='pred', newdata=log10(mn))
+        X <- preplot(fit, band=locBand, newdata=log10(mn))
         
-        #plot(fit,band="pred",get.data=TRUE,xlim=range(log10(mn)))
+        #plot(fit,band=locBand,get.data=TRUE,xlim=range(log10(mn)))
         
         find.mn <- function(mn, fit, cutoff, prob)
         {
-            X <- preplot(fit, newdata=mn, band="pred")
+            X <- preplot(fit, newdata=mn, band=locBand)
             (X$fit+qnorm(prob)*X$se.fit-cutoff)^2
         }
         
@@ -88,7 +89,7 @@ plotLODR <- function(data,
         # Search in sections to get first crossing
         segmented.search <- function(fit)
         {
-            X <- preplot(fit, newdata=min(log10(mn)), band="pred")
+            X <- preplot(fit, newdata=min(log10(mn)), band=locBand)
             
             if ((X$fit + qnorm(prob) * X$se.fit) < cutoff)
             {
@@ -101,9 +102,8 @@ plotLODR <- function(data,
                 
                 while (t.lodr$objective > .0001 & ppp<=1)
                 {
-                    t.lodr<-optimize(find.mn,c(sum(rng.mn*c(1-ppp+.2,ppp-.2)),
-                                               sum(rng.mn*c(1-ppp,ppp))),
-                                     fit=fit,cutoff=cutoff,prob=prob)
+                    t.lodr<-optimize(find.mn, c(sum(rng.mn*c(1-ppp+.2,ppp-.2)), sum(rng.mn*c(1-ppp,ppp))),
+                                     fit=fit, cutoff=cutoff, prob=prob)
                     ppp<-ppp+.2
                 }
             }
@@ -165,7 +165,7 @@ plotLODR <- function(data,
             fit <- locfit(log10(t$pval)~lp(log10(t$baseMean)), maxk=300)
             
             # Plot how the points are fitted
-            plot(fit, band="pred", get.data=TRUE, main=paste('Local regression for LFC:', i))
+            #plot(fit, band=locBand, get.data=TRUE, main=paste('Local regression for LFC:', i))
             
             #
             # Generate new data points and use those data points for the prediction band
@@ -256,8 +256,6 @@ plotLODR <- function(data,
                       xlab(xname)                             +
                       ylab(yname)                             +
 
-                      scale_x_log10(limits=c(min(data$baseMean), max(data$baseMean)), breaks=c(arrowDat$x, round(max(data$baseMean)))) +
-
                       # Draw the fitted lines
                       geom_line(data=lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE) +
 
@@ -278,6 +276,15 @@ plotLODR <- function(data,
         p <- p + scale_y_log10(breaks=yBreaks)
     }
     
+    if (!is.null(xBreaks))
+    {
+        p <- p + scale_x_log10(breaks=xBreaks, labels=xLabels)
+    }
+    else
+    {
+        p <- p + scale_x_log10(limits=c(min(data$baseMean), max(data$baseMean)), breaks=c(arrowDat$x, round(max(data$baseMean))))
+    }
+
     if (shouldBand)
     {
         p <- p + geom_ribbon(data=lineDat, aes(x=x.new, y=fitLine, ymin=fitLower, ymax=fitUpper, fill=ratio),
@@ -310,6 +317,10 @@ plotLODR <- function(data,
         # Classify whether it's below or above the LODR
         data[data$eLogLF==eLogLF,]$LODR <- ifelse(data[data$eLogLF==eLogLF,]$baseMean < limit, 'below', 'above')
     }
+    
+    lodr$Estimate <- as.numeric(as.character(lodr$Estimate))
+    lodr <- lodr[order(lodr$Estimate),]
+    print(lodr)
 
     return (list(lodr=lodr, data=data[c(5)]))
 }
