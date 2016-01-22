@@ -17,7 +17,6 @@ REPORT_NAME = Sample Report
 # Where the files located relatively to the root
 ROOT_PATH = /Users/tedwong/Desktop/K_562
 
-
 #
 # Where's your mixture file? Anaquin needs the file for expected concentration.
 #
@@ -28,13 +27,11 @@ ROOT_PATH = /Users/tedwong/Desktop/K_562
 
 MIX_FILE = MTR004.v013.csv
 
-
 #
 # Where's the reference annotation?
 #
 
 REF_ANNOT = ATR001.v032.gtf
-
 
 ###################################################
 #                                                 #
@@ -61,7 +58,6 @@ FACTORS = 1,1,1,2,2,2
 
 NAMES = A1,A2,A3,B1,B2,B3
 
-
 ###################################################
 #                                                 #
 # 			3. Alignment analysis                 #
@@ -87,7 +83,6 @@ ALIGN_FILE = TopHat2/G_RMXB1v2.accepted_hits.bam
 ALIGN_FILE = TopHat2/G_RMXB2v2.accepted_hits.bam
 ALIGN_FILE = TopHat2/G_RMXB3v2.accepted_hits.bam
 
-
 ###################################################
 #                                                 #
 # 			4. Assembly analysis                  #
@@ -105,38 +100,24 @@ ALIGN_FILE = TopHat2/G_RMXB3v2.accepted_hits.bam
 
 ASSEMBLY_SOFT = Cufflinks
 
-
 #
 # Where are your files?
 #
 # The orders must be consistent to the factors.
 #
 
-ASSEMBLY_FILE = Cufflinks/A1/NotGuided/transcripts.gtf
-ASSEMBLY_FILE = Cufflinks/A2/NotGuided/transcripts.gtf
-ASSEMBLY_FILE = Cufflinks/A3/NotGuided/transcripts.gtf
-ASSEMBLY_FILE = Cufflinks/B1/NotGuided/transcripts.gtf
-ASSEMBLY_FILE = Cufflinks/B2/NotGuided/transcripts.gtf
-ASSEMBLY_FILE = Cufflinks/B2/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/A1/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/A2/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/A3/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/B1/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/B2/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/B2/NotGuided/transcripts.gtf
 
-
+##################################################
+#                                                #
+# 		   5. Expression analysis (Gene)         #
+#                                                #
 ###################################################
-#                                                 #
-# 			5. Expression analysis                #
-#                                                 #
-###################################################
-
-#
-# -------------------- Level --------------------
-#
-# Anaquin supports:
-#
-#     - Gene
-#     - Isoform
-#     - Exon
-#
-
-EXP_LEVEL = Isoform
 
 #
 # Which software did you used to generate the results?
@@ -146,7 +127,7 @@ EXP_LEVEL = Isoform
 #     - Cufflinks
 #     - StringTie
 
-EXP_SOFT = StringTie
+EXP_G_SOFT = Cufflinks
 
 #
 # Where are your files?
@@ -154,17 +135,46 @@ EXP_SOFT = StringTie
 # The orders must be consistent to the factors.
 #
 
-EXP_FILE = StringTie/A1/t_data.ctab
-EXP_FILE = StringTie/A1/t_data.ctab
-EXP_FILE = StringTie/A1/t_data.ctab
-EXP_FILE = StringTie/A1/t_data.ctab
-EXP_FILE = StringTie/A1/t_data.ctab
-EXP_FILE = StringTie/A1/t_data.ctab
+EXP_G_FILE = Cufflinks/A1/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/A2/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/A3/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/B1/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/B2/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/B3/genes.fpkm_tracking
+
+#################################################
+#                                               #
+# 		  6. Expression analysis (Isoform)      #
+#                                               #
+#################################################
+
+#
+# Which software did you used to generate the results?
+#
+# Anaquin supports:
+#
+#     - Cufflinks
+#     - StringTie
+
+EXP_I_SOFT = StringTie
+
+#
+# Where are your files?
+#
+# The orders must be consistent to the factors.
+#
+
+EXP_I_FILE = StringTie/A1/t_data.ctab
+EXP_I_FILE = StringTie/A1/t_data.ctab
+EXP_I_FILE = StringTie/A1/t_data.ctab
+EXP_I_FILE = StringTie/A1/t_data.ctab
+EXP_I_FILE = StringTie/A1/t_data.ctab
+EXP_I_FILE = StringTie/A1/t_data.ctab
 
 
 ###################################################
 #                                                 #
-# 			6. Differential analysis              #
+# 			7. Differential analysis              #
 #                                                 #
 ###################################################
 
@@ -179,7 +189,6 @@ EXP_FILE = StringTie/A1/t_data.ctab
 #
 
 DIFF_LEVEL = Gene
-
 
 #
 # Which software did you used to generate the results?
