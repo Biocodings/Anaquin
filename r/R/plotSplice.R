@@ -48,7 +48,7 @@ plotSplice <- function(data,
     # Count table for the replicates
     #samples <- data.frame(A1=data$seqs$A1, A2=data$seqs$A2, A2=data$seqs$A3)
     
-    samples <- data.frame(B1=data$seqs$B1, B2=data$seqs$B2, B3=data$seqs$B3)
+    samples <- data.frame(B1=data$seqs$B1, B2=data$seqs$B2, B3=data$seqs$B3) # TODO: FIX THIS!!!!
     row.names(samples) <- row.names(data$seqs)
 
     # Maximum for the samples

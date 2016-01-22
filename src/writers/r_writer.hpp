@@ -22,15 +22,6 @@ extern std::string __full_command__;
 // Defined in resources.cpp
 extern std::string PlotScatter();
 
-// Defined in resources.cpp
-extern std::string PlotMA();
-
-// Defined in resources.cpp
-extern std::string PlotROC();
-
-// Defined in resources.cpp
-extern std::string PlotLODR();
-
 namespace Anaquin
 {
     // Number of elements in the histogram with at least an entry
@@ -350,13 +341,19 @@ namespace Anaquin
          */
         
         // Create an MA plot and link to the count table
-        static Scripts createMA(const std::string &working, const FileName &, const std::string &);
+        static Scripts createMA(const std::string &, const FileName &, const std::string &);
 
         /*
          * -------------------- LODR Plot --------------------
          */
         
         static Scripts createLODR(const std::string &, const FileName &, const FileName &, const std::string &);
+
+        /*
+         * --------------------- Splice Plot ---------------------
+         */
+
+        static Scripts createSplice(const std::string &, const FileName &);
 
         /*
          * -------------------- Scatter Plot --------------------

@@ -438,6 +438,8 @@ def transQuin(config, output):
         r.addTextFile('Expression summary statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
         r.addRCode('Expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
+    r.addRCode('Minor/Major plot', 'TI' + os.sep + 'TransExpress_Splice.R', )
+        
     r.endChapter()
     
     ########################################################

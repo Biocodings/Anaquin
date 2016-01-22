@@ -13,7 +13,7 @@ typedef TExpress::Software Software;
 
 template <typename T> void update(TExpress::Stats &stats, const T &t, const TExpress::Options &o)
 {
-    if (t.cID != Standard::chrT)
+    if (t.cID != ChrT)
     {
         stats.n_endo++;
     }
@@ -22,7 +22,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
         stats.n_chrT++;
     }
 
-    if (t.cID == Standard::chrT)
+    if (t.cID == ChrT)
     {
         const auto &r = Standard::instance().r_trans;
         
@@ -103,11 +103,9 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
     const auto &r   = Standard::instance().r_trans;
     const auto cIDs = r.chromoIDs();
     
-    std::for_each(cIDs.begin(), cIDs.end(), [&](const ChromoID &cID)
-    {
-        stats.data[cID];
-    });
-
+    stats.data[ChrT];
+    stats.data[Endo];
+    
     switch (o.lvl)
     {
         case Level::Exon:
@@ -248,41 +246,56 @@ static void writeCSV(const TExpress::Stats   &stats,
     o.writer->close();
 }
 
-static void writeFPKMTable(const std::vector<TExpress::Stats> &stats, const FileName &file, const TExpress::Options &o)
+static void writeFPKM(const std::vector<TExpress::Stats> &stats, const TExpress::Options &o)
 {
-    o.writer->open(file);
+    o.writer->open("TExpress_FPKM.csv");
+    
+    /*
+     * Writing the headers
+     */
     
     const auto &names = o.exp->names();
     
+    assert(names.size() == stats.size());
+    
     for (const auto &name : names)
     {
-        o.writer->write("," + name);
+        o.writer->write("," + name, false);
     }
     
-    o.writer->write("\n");
-    
-    std::vector<std::string> z;
-    
-    /*
-     * Ignore any invalid value...
-     */
-    
-    for (const auto &p : stats[0].data.at(ChrT))
-    {
-        if (!isnan(p.second.x) && !isnan(p.second.y))
-        {
-            z.push_back(p.first);
-        }
-    }
+    o.writer->write("\n", false);
 
     /*
-     * Now, we have the features and we'll use those to generate a row for each
+     * Writing the FPKM values
      */
     
-    for (auto i = 0; i < z.size(); i++)
+    // Number of samples
+    const auto n = names.size();
+    
+    auto f = [&](const ChromoID &id)
     {
-//        for (auto j = 0; j < )
-    }
+        for (const auto &i : stats[0].data.at(id))
+        {
+            o.writer->write(i.first, false);
+            
+            // For all the samples...
+            for (auto j = 0; j < n; j++)
+            {
+                // The FPKM for the sample
+                const auto &k = stats[j].data.at(id).at(i.first);
+                
+                o.writer->write("," + std::to_string(k.y), false);
+            }
+            
+            o.writer->write("\n", false);
+        }
+    };
+    
+    // Writing features for synthetic chromosome
+    f(ChrT);
+
+    // Writing features for endogenous
+    f(Endo);
     
     o.writer->close();
 }
@@ -358,12 +371,16 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating a table of expression for all replicates
      */
     
+    writeFPKM(stats, o);
     
-    
-    
-    /*
-     * Generating spliced plot for all samples
-     */
-    
-    
+    if (o.lvl == TExpress::Level::Isoform)
+    {
+        /*
+         * Generating spliced plot for all samples
+         */
+
+        o.writer->open("TransExpress_Splice.R");
+        o.writer->write(RWriter::createSplice(o.working, "TExpress_FPKM.csv"));
+        o.writer->close();
+    }
 }
