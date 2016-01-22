@@ -530,7 +530,7 @@ template <typename Data, typename F> std::string combine(const Data &data, F f)
 }
 
 /*
- * Summary statistics for a single replicate. No standard deviation or variation.
+ * Summary statistics for a single replicate.
  */
 
 static std::string replicateSummary()

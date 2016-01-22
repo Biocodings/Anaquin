@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "data/experiment.hpp"
 #include "trans/t_express.hpp"
 #include "writers/r_writer.hpp"
@@ -129,6 +130,11 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
     
     f(stats);
     
+    if (stats.data.at(ChrT).empty())
+    {
+        throw std::runtime_error("Failed to find anything from the synthetic chromosome");
+    }
+    
     switch (o.lvl)
     {
         case Level::Exon:
@@ -148,7 +154,7 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
             break;
         }
     }
-
+    
     return stats;
 }
 

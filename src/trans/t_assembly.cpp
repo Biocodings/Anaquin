@@ -82,25 +82,22 @@ static std::string summary()
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %6% (%7%)\n"
            "   Specificity: %8% (%9%)\n"
-           "   Detection:   %10% (%11%)\n\n"
            "   -------------------- Intron level --------------------\n\n"
-           "   Sensitivity: %12% (%13%)\n"
-           "   Specificity: %14% (%15%)\n"
-           "   Detection:   %16% (%17%)\n\n"
+           "   Sensitivity: %10% (%11%)\n"
+           "   Specificity: %12% (%13%)\n"
            "   -------------------- Base level --------------------\n\n"
-           "   Sensitivity: %18%\n"
-           "   Specificity: %19%\n"
-           "   Detection:   %20% (%21%)\n\n"
+           "   Sensitivity: %14%\n"
+           "   Specificity: %15%\n"
            "   -------------------- Intron Chain level --------------------\n\n"
-           "   Sensitivity: %22% (%23%)\n"
-           "   Specificity: %24% (%25%)\n\n"
+           "   Sensitivity: %16% (%17%)\n"
+           "   Specificity: %18% (%19%)\n\n"
            "   -------------------- Transcript level --------------------\n\n"
-           "   Sensitivity: %26% (%27%)\n"
-           "   Specificity: %28% (%29%)\n\n"
-           "   Missing exons: %30%/%31% (%32%)\n"
-           "   Missing introns: %33%/%34% (%35%)\n\n"
-           "   Novel exons: %36%/%37% (%38%)\n"
-           "   Novel introns: %39%/%40% (%41%)\n\n";
+           "   Sensitivity: %20% (%21%)\n"
+           "   Specificity: %22% (%23%)\n\n"
+           "   Missing exons: %24%/%25% (%26%)\n"
+           "   Missing introns: %27%/%28% (%29%)\n\n"
+           "   Novel exons: %30%/%31% (%32%)\n"
+           "   Novel introns: %33%/%34% (%35%)\n\n";
 }
 
 static TAssembly::Stats init()
@@ -347,37 +344,31 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
                                               % data.eFSN
                                               % data.eSP
                                               % data.eFSP
-                                              % (stats.eLimit.id.empty() ? "-" : std::to_string(stats.eLimit.abund))
-                                              % stats.eLimit.id
-                                              % data.iSN              // 12
+                                              % data.iSN              // 10
                                               % data.iFSN
                                               % data.iSP
                                               % data.iFSP
-                                              % (stats.iLimit.id.empty() ? "-" : std::to_string(stats.iLimit.abund))
-                                              % stats.iLimit.id
-                                              % data.bSN               // 18
+                                              % data.bSN               // 14
                                               % data.bSP
-                                              % (stats.bLimit.id.empty() ? "-" : std::to_string(stats.bLimit.abund)) // 20
-                                              % stats.bLimit.id        // 21
-                                              % data.cSN
+                                              % data.cSN               // 16
                                               % data.cFSN
                                               % data.cSP
                                               % data.cFSP
                                               % data.tSN
                                               % data.tFSN
                                               % data.tSP
-                                              % data.tFSP              // 29
-                                              % data.mExonN            // 30
+                                              % data.tFSP              // 23
+                                              % data.mExonN            // 24
                                               % data.mExonR
                                               % data.mExonP
                                               % data.mIntronN
-                                              % data.mIntronR          // 34
+                                              % data.mIntronR          // 28
                                               % data.mIntronP
                                               % data.nExonN
                                               % data.nExonR
                                               % data.nExonP
                                               % data.nIntronN
-                                              % data.nIntronR          // 40
+                                              % data.nIntronR          // 34
                                               % data.nIntronP).str());
     o.writer->close();
 }
