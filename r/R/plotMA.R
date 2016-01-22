@@ -26,6 +26,7 @@ plotMA <- function(data,
                    yname       = 'Log2 Ratio of Normalized Counts')
 {
     require(grid)
+    require(qvalue)    
     require(ggplot2)
     require(gridExtra)
 
