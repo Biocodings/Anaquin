@@ -247,9 +247,9 @@ static void writeCSV(const TExpress::Stats   &stats,
     o.writer->close();
 }
 
-static void writeFPKM(const std::vector<TExpress::Stats> &stats, const TExpress::Options &o)
+static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &stats, const TExpress::Options &o)
 {
-    o.writer->open("TExpress_FPKM.csv");
+    o.writer->open(file);
     
     /*
      * Writing the headers
@@ -342,42 +342,45 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Pool the information with accumulators to generate a summary for all replicates.
+     * Write summary statistics for each sample
      */
+    
+    std::vector<TExpress::Stats::Data> data;
     
     for (auto i = 0; i < files.size(); i++)
     {
-        /*
-         * Generating summary statistics for the replicate
-         */
-        
+        // Generating summary statistics for the sample
         writeSummary(stats[i], files[i], o.exp->names().at(i), ChrT, units, o);
         
-        /*
-         * Generating CSV file for the data
-         */
-        
+        // Generating CSV file for the data
         writeCSV(stats[i], files[i], o.exp->names().at(i), ChrT, units, o);
         
-        /*
-         * Generating scatter plot for the replicate
-         */
-
+        // Generating scatter plot for the sample
         writeScatter(stats[i], files[i], o.exp->names().at(i), ChrT, units, o);
+
+        data.push_back(stats[i].data.at(ChrT));
     }
     
     /*
-     * Generating a table of expression for all replicates
+     * Write summary statistics for all samples
      */
     
-    writeFPKM(stats, o);
-    
+    o.writer->open("TransExpress_pooled.stats");
+    o.writer->write(StatsWriter::inflectSummary(files, data, units));
+    o.writer->close();
+
+    /*
+     * Generating a table of expression for all samples
+     */
+
+    writeFPKM("TExpress_FPKM.csv", stats, o);
+
+    /*
+     * Generating spliced plot for all samples (but only if we have the isoforms...)
+     */
+
     if (o.lvl == TExpress::Level::Isoform)
     {
-        /*
-         * Generating spliced plot for all samples
-         */
-
         o.writer->open("TransExpress_Splice.R");
         o.writer->write(RWriter::createSplice(o.working, "TExpress_FPKM.csv"));
         o.writer->close();

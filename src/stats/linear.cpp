@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<std::string> *ids) const
+void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<FeatureID> *ids) const
 {
     x.clear();
     y.clear();

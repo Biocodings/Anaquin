@@ -54,9 +54,12 @@ namespace Anaquin
             // Remember the break-point is on the log-scale, we'll need to convert it back
             const auto b = pow(2, inflect.b);
             
+            return "";
+            
+            /*
             return (boost::format(inflectSummary()) % src                          // 1
-                                           % stats.n_endo
                                            % stats.n_chrT
+                                           % stats.n_endo
                                            % units
                                            % stats.hist.size()            // 5
                                            % (ref.empty() ? units : ref)  // 6
@@ -91,10 +94,9 @@ namespace Anaquin
                                            % l_lm.SST                     // 35
                                            % l_lm.SST_D                   // 36
                     ).str();
+             */
         }
-        
-        
-        
+
         /*
          * -------------------- Linear Statistics --------------------
          */

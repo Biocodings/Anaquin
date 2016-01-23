@@ -107,6 +107,8 @@ Scripts StatsWriter::inflectSummary(const std::vector<FileName> &files,
     
     for (auto i = 0; i < stats.size(); i++)
     {
+        r.files.add(files[i]);
+
         // Linear regression without logarithm
         const auto n_lm = stats[i].linear(false);
         
@@ -119,15 +121,12 @@ Scripts StatsWriter::inflectSummary(const std::vector<FileName> &files,
         // Remember the break-point is on the log-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 
-        r.files.add(files[i]);
-
         r.b.add(b);
         r.bID.add(inf.id);
         r.lInt.add(inf.lInt);
         r.rInt.add(inf.rInt);
         r.lSl.add(inf.lSl);
         r.rSl.add(inf.rSl);
-        
         r.lR2.add(inf.lR2);
         r.rR2.add(inf.rR2);
 

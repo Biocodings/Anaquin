@@ -140,7 +140,7 @@ namespace Anaquin
         }
         
         // Return the x-values and y-values after filtering
-        void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<std::string> *ids = nullptr) const;
+        void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<FeatureID> *ids = nullptr) const;
         
         // Compute the inflection limit. By default, this function assumes log-transformation.
         InflectionLimit inflect(bool shouldLog = true) const;
