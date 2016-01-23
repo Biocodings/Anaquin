@@ -1,9 +1,7 @@
 #ifndef R_WRITER_HPP
 #define R_WRITER_HPP
 
-#include <map>
 #include <math.h>
-#include <string>
 #include <sstream>
 #include <numeric>
 #include "stats/linear.hpp"
@@ -29,8 +27,6 @@ namespace Anaquin
         });
     }
     
-    class Accumulator;
-    
     struct StatsWriter
     {
         /*
@@ -39,7 +35,9 @@ namespace Anaquin
 
         static Scripts inflectSummary();
         static Scripts inflectSummary(const SInflectStats &stats);
-        static Scripts inflectSummary(const std::vector<LinearStats> &stats, const Units &units);
+        static Scripts inflectSummary(const std::vector<FileName> &,
+                                      const std::vector<LinearStats> &,
+                                      const Units &units);
 
         template <typename Stats> static std::string linearInflect(const FileName &src,
                                                                    const Stats &stats,
@@ -72,26 +70,26 @@ namespace Anaquin
                                            % inflect.rR2                  // 14
                                            % n_lm.r                       // 15
                                            % n_lm.m                       // 16
-                                           % n_lm.r2                      // 17
-                                           % n_lm.f                       // 18
+                                           % n_lm.R2                      // 17
+                                           % n_lm.F                       // 18
                                            % n_lm.p                       // 19
-                                           % n_lm.ssm                     // 20
-                                           % n_lm.ssm_df                  // 21
-                                           % n_lm.sse                     // 22
-                                           % n_lm.sse_df                  // 23
-                                           % n_lm.sst                     // 24
-                                           % n_lm.sst_df                  // 25
+                                           % n_lm.SSM                     // 20
+                                           % n_lm.SSM_D                   // 21
+                                           % n_lm.SSE                     // 22
+                                           % n_lm.SSE_D                   // 23
+                                           % n_lm.SST                     // 24
+                                           % n_lm.SST_D                   // 25
                                            % l_lm.r                       // 26
                                            % l_lm.m                       // 27
-                                           % l_lm.r2                      // 28
-                                           % l_lm.f                       // 29
+                                           % l_lm.R2                      // 28
+                                           % l_lm.F                       // 29
                                            % l_lm.p                       // 30
-                                           % l_lm.ssm                     // 31
-                                           % l_lm.ssm_df                  // 32
-                                           % l_lm.sse                     // 33
-                                           % l_lm.sse_df                  // 34
-                                           % l_lm.sst                     // 35
-                                           % l_lm.sst_df                  // 36
+                                           % l_lm.SSM                     // 31
+                                           % l_lm.SSM_D                   // 32
+                                           % l_lm.SSE                     // 33
+                                           % l_lm.SSE_D                   // 34
+                                           % l_lm.SST                     // 35
+                                           % l_lm.SST_D                   // 36
                     ).str();
         }
         
@@ -153,26 +151,26 @@ namespace Anaquin
                                            % detect(stats.hist)
                                            % n_lm.r                       // 10
                                            % n_lm.m
-                                           % n_lm.r2
-                                           % n_lm.f
+                                           % n_lm.R2
+                                           % n_lm.F
                                            % n_lm.p
-                                           % n_lm.ssm
-                                           % n_lm.ssm_df
-                                           % n_lm.sse
-                                           % n_lm.sse_df
-                                           % n_lm.sst
-                                           % n_lm.sst_df
+                                           % n_lm.SSM
+                                           % n_lm.SSM_D
+                                           % n_lm.SSE
+                                           % n_lm.SSE_D
+                                           % n_lm.SST
+                                           % n_lm.SST_D
                                            % l_lm.r
                                            % l_lm.m                       // 22
-                                           % l_lm.r2
-                                           % l_lm.f
+                                           % l_lm.R2
+                                           % l_lm.F
                                            % l_lm.p
-                                           % l_lm.ssm
-                                           % l_lm.ssm_df
-                                           % l_lm.sse
-                                           % l_lm.sse_df
-                                           % l_lm.sst
-                                           % l_lm.sst_df                  // 31
+                                           % l_lm.SSM
+                                           % l_lm.SSM_D
+                                           % l_lm.SSE
+                                           % l_lm.SSE_D
+                                           % l_lm.SST
+                                           % l_lm.SST_D                  // 31
                     ).str();
         }
         
@@ -270,8 +268,6 @@ namespace Anaquin
                     ).str();
         }
     };
-    
-    class CountTable;
     
     struct RWriter
     {

@@ -13,10 +13,10 @@ namespace Anaquin
         SStrings files;
         
         // Pearson's correlation
-        SReals cor;
+        SReals r;
         
         // Regression slope
-        SReals slope;
+        SReals sl;
         
         // Coefficient of determination
         SReals R2;
@@ -58,10 +58,10 @@ namespace Anaquin
         SStrings bID;
         
         // Regression intercepts
-        SReals lInter, rInter;
-        
+        SReals lInt, rInt;
+
         // Regression slopes
-        SReals lSlope, rSlope;
+        SReals lSl, rSl;
         
         // Regression R2
         SReals lR2, rR2;
@@ -72,10 +72,6 @@ namespace Anaquin
         // Linear regression with logarithm
         SLinearStats wLog;
     };
-    
-
-    
-    
     
     struct InflectionLimit
     {
@@ -110,7 +106,7 @@ namespace Anaquin
         double m;
         
         // Adjusted R2
-        double r2;
+        double R2;
         
         // Pearson correlation
         double r;
@@ -118,11 +114,13 @@ namespace Anaquin
         // Adjusted R2
         double ar2;
         
-        double f, p;
-        double sst, ssm, sse;
+        double F, p;
+        
+        // ANOVA estimates
+        double SST, SSM, SSE;
         
         // Degree of freedoms
-        unsigned sst_df, ssm_df, sse_df;
+        unsigned SST_D, SSM_D, SSE_D;
     };
 
     struct Point

@@ -1,4 +1,5 @@
 #include <iostream>
+#include "stats/analyzer.hpp"
 #include "data/experiment.hpp"
 #include "writers/r_writer.hpp"
 
@@ -66,14 +67,14 @@ Scripts StatsWriter::inflectSummary(const SInflectStats &stats)
                                                          % STRING(stats.det_n)      // 8
                                                          % STRING(stats.b)          // 9
                                                          % STRING(stats.bID)        // 10
-                                                         % STRING(stats.lInter)     // 11
-                                                         % STRING(stats.lSlope)     // 12
+                                                         % STRING(stats.lInt)       // 11
+                                                         % STRING(stats.lSl)        // 12
                                                          % STRING(stats.lR2)        // 13
-                                                         % STRING(stats.rInter)     // 14
-                                                         % STRING(stats.rSlope)     // 15
+                                                         % STRING(stats.rInt)       // 14
+                                                         % STRING(stats.rSl)        // 15
                                                          % STRING(stats.rR2)        // 16
-                                                         % STRING(stats.nLog.cor)   // 17
-                                                         % STRING(stats.nLog.slope) // 18
+                                                         % STRING(stats.nLog.r)     // 17
+                                                         % STRING(stats.nLog.sl)    // 18
                                                          % STRING(stats.nLog.R2)    // 19
                                                          % STRING(stats.nLog.F)     // 20
                                                          % STRING(stats.nLog.p)     // 21
@@ -83,8 +84,8 @@ Scripts StatsWriter::inflectSummary(const SInflectStats &stats)
                                                          % STRING(stats.nLog.SSE_D) // 25
                                                          % STRING(stats.nLog.SST)   // 26
                                                          % STRING(stats.nLog.SST_D) // 27
-                                                         % STRING(stats.wLog.cor)
-                                                         % STRING(stats.wLog.slope)
+                                                         % STRING(stats.wLog.r)
+                                                         % STRING(stats.wLog.sl)
                                                          % STRING(stats.wLog.R2)
                                                          % STRING(stats.wLog.F)
                                                          % STRING(stats.wLog.p)
@@ -97,61 +98,65 @@ Scripts StatsWriter::inflectSummary(const SInflectStats &stats)
             ).str();
 };
 
-Scripts StatsWriter::inflectSummary(const std::vector<LinearStats> &stats, const Units &units)
+Scripts StatsWriter::inflectSummary(const std::vector<FileName> &files,
+                                    const std::vector<LinearStats> &stats,
+                                    const Units &units)
 {
-//    for (const auto &i : stats)
-//    {
-//        const auto n_lm = i.linear(false);
-//        const auto l_lm = i.linear(true);
-//        
-//        // Calcluate the inflect point after log-transformation
-//        const auto inflect = i.inflect(true);
-//        
-//        // Remember the break-point is on the log-scale, we'll need to convert it back
-//        const auto b = pow(2, inflect.b);
-//
-//        /*
-//        return (boost::format(inflectSummary()) % src                          // 1
-//                % stats.n_endo
-//                % stats.n_chrT
-//                % units
-//                % stats.hist.size()            // 5
-//                % (ref.empty() ? units : ref)  // 6
-//                % b
-//                % inflect.id
-//                % inflect.lInt                 // 9
-//                % inflect.lSl                  // 10
-//                % inflect.lR2                  // 11
-//                % inflect.rInt                 // 12
-//                % inflect.rSl                  // 13
-//                % inflect.rR2                  // 14
-//                % n_lm.r                       // 15
-//                % n_lm.m                       // 16
-//                % n_lm.r2                      // 17
-//                % n_lm.f                       // 18
-//                % n_lm.p                       // 19
-//                % n_lm.ssm                     // 20
-//                % n_lm.ssm_df                  // 21
-//                % n_lm.sse                     // 22
-//                % n_lm.sse_df                  // 23
-//                % n_lm.sst                     // 24
-//                % n_lm.sst_df                  // 25
-//                % l_lm.r                       // 26
-//                % l_lm.m                       // 27
-//                % l_lm.r2                      // 28
-//                % l_lm.f                       // 29
-//                % l_lm.p                       // 30
-//                % l_lm.ssm                     // 31
-//                % l_lm.ssm_df                  // 32
-//                % l_lm.sse                     // 33
-//                % l_lm.sse_df                  // 34
-//                % l_lm.sst                     // 35
-//                % l_lm.sst_df                  // 36
-//                ).str();
-//        */
-//    }
+    SInflectStats r;
+    r.units = units;
     
-    return "";
+    for (auto i = 0; i < stats.size(); i++)
+    {
+        // Linear regression without logarithm
+        const auto n_lm = stats[i].linear(false);
+        
+        // Linear regression with logarithm
+        const auto l_lm = stats[i].linear(true);
+
+        // Calcluate the inflect point after log-transformation
+        const auto inf = stats[i].inflect(true);
+        
+        // Remember the break-point is on the log-scale, we'll need to convert it back
+        const auto b = pow(2, inf.b);
+
+        r.files.add(files[i]);
+
+        r.b.add(b);
+        r.bID.add(inf.id);
+        r.lInt.add(inf.lInt);
+        r.rInt.add(inf.rInt);
+        r.lSl.add(inf.lSl);
+        r.rSl.add(inf.rSl);
+        
+        r.lR2.add(inf.lR2);
+        r.rR2.add(inf.rR2);
+
+        r.nLog.p.add(n_lm.p);
+        r.nLog.r.add(n_lm.r);
+        r.nLog.F.add(n_lm.F);
+        r.nLog.sl.add(n_lm.m);
+        r.nLog.R2.add(n_lm.R2);
+        r.nLog.SSM.add(n_lm.SSM);
+        r.nLog.SSE.add(n_lm.SSE);
+        r.nLog.SST.add(n_lm.SST);
+        r.nLog.SSM_D.add(n_lm.SSM_D);
+        r.nLog.SSE_D.add(n_lm.SSE_D);
+        r.nLog.SST_D.add(n_lm.SST_D);
+
+        r.wLog.p.add(l_lm.p);
+        r.wLog.r.add(l_lm.r);
+        r.wLog.F.add(l_lm.F);
+        r.wLog.sl.add(l_lm.m);
+        r.wLog.R2.add(l_lm.R2);
+        r.wLog.SSM.add(l_lm.SSM);
+        r.wLog.SSE.add(l_lm.SSE);
+        r.wLog.SST.add(l_lm.SST);
+        r.wLog.SSM_D.add(l_lm.SSM_D);
+        r.wLog.SSE_D.add(l_lm.SSE_D);
+        r.wLog.SST_D.add(l_lm.SST_D);
+    }
+    
+    return inflectSummary(r);
 }
 
 Scripts RWriter::createSplice(const std::string &working, const FileName &fpkms)

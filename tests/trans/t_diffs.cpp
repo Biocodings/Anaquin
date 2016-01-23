@@ -95,7 +95,7 @@ TEST_CASE("TDiff_AllExpressed")
     
     REQUIRE(stats.r  == 1.0);
     REQUIRE(stats.m  == 1.0);
-    REQUIRE(stats.r2 == 1.0);
+    REQUIRE(stats.R2 == 1.0);
 }
 
 TEST_CASE("TDiff_NoneExpressed")
@@ -137,7 +137,7 @@ TEST_CASE("TDiff_NoneExpressed")
     
     REQUIRE(stats.r  == 1.0);
     REQUIRE(stats.m  == 1.0);
-    REQUIRE(stats.r2 == 1.0);
+    REQUIRE(stats.R2 == 1.0);
 }
 
 TEST_CASE("TDiff_NotSynthetic")
@@ -174,5 +174,5 @@ TEST_CASE("TDiff_NotSynthetic")
     
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));
-    REQUIRE(isnan(stats.r2));
+    REQUIRE(isnan(stats.R2));
 }

@@ -50,7 +50,7 @@ TEST_CASE("TExpress_Perfect")
 
     REQUIRE(stats.r  == Approx(1.0));
     REQUIRE(stats.m  == Approx(1.0));
-    REQUIRE(stats.r2 == Approx(1.0));
+    REQUIRE(stats.R2 == Approx(1.0));
 }
 
 TEST_CASE("TExpress_NoSynthetic")
@@ -92,5 +92,5 @@ TEST_CASE("TExpress_FlatMix")
 
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));
-    REQUIRE(isnan(stats.r2));
+    REQUIRE(isnan(stats.R2));
 }
