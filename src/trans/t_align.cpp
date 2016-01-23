@@ -1,5 +1,5 @@
-#include <ss/stats.hpp>
 #include "trans/t_align.hpp"
+#include "data/accumulator.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -743,7 +743,7 @@ static std::string pooledSummary()
 
 void TAlign::report(const std::vector<FileName> &files, const Options &o)
 {
-    std::map<ChromoID, Accumulator<double>> accs;
+    std::map<ChromoID, Accumulator> accs;
     
     const auto stats = TAlign::analyze(files, o);
     

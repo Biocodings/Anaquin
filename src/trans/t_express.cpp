@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include "data/experiment.hpp"
 #include "trans/t_express.hpp"
+#include "data/accumulator.hpp"
 #include "writers/r_writer.hpp"
 #include "parsers/parser_tracking.hpp"
 #include "parsers/parser_stringtie.hpp"
@@ -339,8 +340,6 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     const auto units = m.at(o.lvl);
 
     o.info("Generating statistics");
-    
-    std::map<ChromoID, Accumulator<double>> accs;
     
     /*
      * Pool the information with accumulators to generate a summary for all replicates.

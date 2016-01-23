@@ -4,14 +4,10 @@
 #include <map>
 #include <math.h>
 #include <string>
-#include <vector>
 #include <sstream>
 #include <numeric>
-#include <iomanip>
-#include "data/types.hpp"
+#include "stats/linear.hpp"
 #include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/range/adaptor/transformed.hpp>
 
 // Defined in main.cpp
 extern std::string date();
@@ -33,11 +29,17 @@ namespace Anaquin
         });
     }
     
+    class Accumulator;
+    
     struct StatsWriter
     {
         /*
          * -------------------- Linear Statistics (with inflection) --------------------
          */
+
+        static Scripts inflectSummary();
+        static Scripts inflectSummary(const SInflectStats &stats);
+        static Scripts inflectSummary(const std::vector<LinearStats> &stats, const Units &units);
 
         template <typename Stats> static std::string linearInflect(const FileName &src,
                                                                    const Stats &stats,
@@ -45,41 +47,6 @@ namespace Anaquin
                                                                    const Units &units,
                                                                    const Units &ref = "")
         {
-            const auto summary = "Summary for dataset: %1%\n\n"
-                                 "   Experiment:  %2% %4%\n"
-                                 "   Synthetic:   %3% %4%\n\n"
-                                 "   Reference:   %5% %6%\n"
-                                 "   Detected:    %9% %6%\n\n"
-                                 "   ***\n"
-                                 "   *** Detection Limits\n"
-                                 "   ***\n\n"
-                                 ""
-                                 "   Break: %7% (%8%)\n\n"
-                                 "   Left:  %9% + %10%x (R2 = %11%)\n"
-                                 "   Right: %12% + %13%x (R2 = %14%)\n\n"
-                                 "   ***\n"
-                                 "   *** Statistics for linear regression\n"
-                                 "   ***\n\n"
-                                 "   Correlation: %15%\n"
-                                 "   Slope:       %16%\n"
-                                 "   R2:          %17%\n"
-                                 "   F-statistic: %18%\n"
-                                 "   P-value:     %19%\n"
-                                 "   SSM:         %20%, DF: %21%\n"
-                                 "   SSE:         %22%, DF: %23%\n"
-                                 "   SST:         %24%, DF: %25%\n\n"
-                                 "   ***\n"
-                                 "   *** Statistics for linear regression (log2 scale)\n"
-                                 "   ***\n\n"
-                                 "   Correlation: %26%\n"
-                                 "   Slope:       %27%\n"
-                                 "   R2:          %28%\n"
-                                 "   F-statistic: %29%\n"
-                                 "   P-value:     %30%\n"
-                                 "   SSM:         %31%, DF: %32%\n"
-                                 "   SSE:         %33%, DF: %34%\n"
-                                 "   SST:         %35%, DF: %36%\n";
-            
             const auto n_lm = stats.data.at(cID).linear(false);
             const auto l_lm = stats.data.at(cID).linear(true);
             
@@ -89,7 +56,7 @@ namespace Anaquin
             // Remember the break-point is on the log-scale, we'll need to convert it back
             const auto b = pow(2, inflect.b);
             
-            return (boost::format(summary) % src                          // 1
+            return (boost::format(inflectSummary()) % src                          // 1
                                            % stats.n_endo
                                            % stats.n_chrT
                                            % units
@@ -308,33 +275,11 @@ namespace Anaquin
     
     struct RWriter
     {
-        static std::string d2str(double x)
-        {
-            std::ostringstream out;
-            out << std::setprecision(6) << x;
-            return out.str();
-        }
-        
-        static std::string x2str(unsigned x)
-        {
-            return std::to_string(x);
-        }
-        
-        template <typename T> static std::string concat(const std::vector<T> &x, std::string (*f)(T) = d2str)
-        {
-            return boost::algorithm::join(x | boost::adaptors::transformed(static_cast<std::string(*)(T)>(f)), ", ");
-        }
-
-        static std::string concat(const std::vector<std::string> &x)
-        {
-            return ("\'" + boost::algorithm::join(x, "\',\'") + "\'");
-        }
-
         /*
          * -------------------- ROC Plot --------------------
          */
         
-        static Scripts createROC(const std::vector<std::string> &, const std::vector<double> &, const std::string &);
+        static Scripts createROC(const std::vector<FeatureID> &, const std::vector<double> &, const std::string &);
 
         /*
          * -------------------- MA Plot --------------------
@@ -405,8 +350,8 @@ namespace Anaquin
             return (boost::format(ss.str()) % date()
                                             % __full_command__
                                             % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                            % RWriter::concat(x)
-                                            % RWriter::concat(y)
+                                            % concat(x)
+                                            % concat(y)
                                             % xLabel
                                             % yLabel).str();
         }

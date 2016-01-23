@@ -1,7 +1,18 @@
 #include <catch.hpp>
+#include "data/experiment.hpp"
+#include "data/accumulator.hpp"
 #include "writers/r_writer.hpp"
 
 using namespace Anaquin;
+
+TEST_CASE("LinearInflection_Summary")
+{
+    const auto r1 = StatsWriter::inflectSummary();
+    const auto r2 = StatsWriter::inflectSummary(SInflectStats());
+
+    REQUIRE(!r1.empty());
+    REQUIRE(!r2.empty());
+}
 
 TEST_CASE("R_ROC_Plot")
 {

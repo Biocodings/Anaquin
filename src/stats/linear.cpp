@@ -1,4 +1,4 @@
-#include "stats/analyzer.hpp"
+#include "stats/linear.hpp"
 #include <ss/regression/segmented.hpp>
 
 using namespace Anaquin;

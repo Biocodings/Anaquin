@@ -9,7 +9,6 @@
 #include "stats/classify.hpp"
 #include "writers/r_writer.hpp"
 #include "writers/mock_writer.hpp"
-#include <ss/regression/linear.hpp>
 
 namespace Anaquin
 {
@@ -162,58 +161,6 @@ namespace Anaquin
         Locus l;
     };
     
-    /*
-     * Represents a simple linear regression fitted by maximum-likehihood estimation.
-     *
-     *   Model: y ~ c + m*x
-     */
-
-    struct LinearModel
-    {
-        // Constant coefficient
-        double c;
-
-        // Least-squared slope coefficient
-        double m;
-
-        // Adjusted R2
-        double r2;
-
-        // Pearson correlation
-        double r;
-        
-        // Adjusted R2
-        double ar2;
-
-        double f, p;
-        double sst, ssm, sse;
-
-        // Degree of freedoms
-        unsigned sst_df, ssm_df, sse_df;
-    };
-    
-    /*
-     * Represents an inflection limit, typically estimated by segmented piecewise linear regression.
-     */
-    
-    struct InflectionLimit
-    {
-        // Name of the sequin
-        std::string id;
-        
-        // Coefficient of determination before and after the break-point
-        double lR2, rR2;
-        
-        // Slope before and after the break-point
-        double lSl, rSl;
-        
-        // Intercept before and after the break-point
-        double lInt, rInt;
-        
-        // The optimal breakpoint
-        double b;
-    };
-
     // Classify at the base-level by counting for non-overlapping regions
     template <typename I1, typename I2> void countBase(const I1 &r, const I2 &q, Confusion &m, SequinHist &c)
     {
@@ -236,37 +183,10 @@ namespace Anaquin
         assert(!Locus::overlap(merged));
     }
 
-    struct Point
-    {
-        Point(double x = 0.0, double y = 0.0) : x(x), y(y) {}
-        
-        // Data point for the coordinate
-        double x, y;
-    };
-
     struct FusionStats : public MappingStats
     {
         // Number of fusions spanning across the genome and the synthetic chromosome
         Counts hg38_chrT = 0;
-    };
-
-    struct LinearStats : public std::map<SequinID, Point>
-    {
-        Limit s;
-
-        inline void add(const SequinID &id, double x, double y)
-        {
-            (*this)[id] = Point(x, y);
-        }
-
-        // Return the x-values and y-values after filtering
-        void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<std::string> *ids = nullptr) const;
-
-        // Compute the inflection limit. By default, this function assumes log-transformation.
-        InflectionLimit inflect(bool shouldLog = true) const;
-        
-        // Compute a simple linear regression model. By default, this function assumes log-transformation.
-        LinearModel linear(bool shouldLog = true) const;
     };
 
     struct WriterOptions
@@ -359,70 +279,6 @@ namespace Anaquin
     {
         Mixture mix_1 = Mix_1;
         Mixture mix_2 = Mix_2;
-    };
-
-    template <typename T> class Accumulator
-    {
-        public:
-        
-            typedef std::string Key;
-        
-            struct Deviation
-            {
-                // First moment
-                T mean;
-            
-                // Standard deviation
-                T sd;
-
-                inline std::string operator()() const
-                {
-                    return (boost::format("%1% \u00B1 %2%") % mean % sd).str();
-                }
-            };
-        
-            void add(const Key &key, double value)
-            {
-                _data[key].push_back(value);
-            }
-        
-            void add(const Key &key, const Limit &l)
-            {
-                _limits[key].push_back(l);
-            }
-        
-            Deviation value(const Key &key) const
-            {
-                Deviation d;
-            
-                d.sd   = SS::sd(_data.at(key));
-                d.mean = SS::mean(_data.at(key));
-            
-                return d;
-            }
-        
-            const Limit & limits(const Key &key) const
-            {
-                const Limit *min = nullptr;
-            
-                for (const auto &limit : _limits.at(key))
-                {
-                    if (!min || limit.abund < min->abund)
-                    {
-                        min = &limit;
-                    }
-                }
-            
-                return *min;
-            }
-        
-        private:
-        
-            // Used for comparing limit of detection
-            std::map<Key, std::vector<Limit>> _limits;
-        
-            // Used for regular mappings
-            std::map<Key, std::vector<double>> _data;
     };
 
     struct AnalyzeReporter

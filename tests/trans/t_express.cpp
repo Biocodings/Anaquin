@@ -4,6 +4,28 @@
 
 using namespace Anaquin;
 
+TEST_CASE("TExpress_AllZeros")
+{
+    Test::transA();
+    
+    std::vector<Expression> exps;
+    
+    for (const auto &i : Standard::instance().r_trans.data())
+    {
+        Expression exp;
+        
+        exp.cID  = "chrT";
+        exp.id   = i.first;
+        exp.fpkm = 0.0;
+        exps.push_back(exp);
+    }
+    
+    TExpress::Options o;
+    o.lvl = TExpress::Level::Isoform;
+    
+    REQUIRE_THROWS(TExpress::analyze(exps, o));
+}
+
 TEST_CASE("TExpress_Perfect")
 {
     Test::transA();
@@ -39,42 +61,11 @@ TEST_CASE("TExpress_NoSynthetic")
     
     for (const auto &i : Standard::instance().r_trans.data())
     {
-        Expression exp;
-        
-        // The tool shouldn't process it unless it's chrT
+        Expression exp;        
         exp.cID = "Anaquin";
     }
     
-    const auto r = TExpress::analyze(exps, TExpress::Options());
-    const auto stats = r.data.at(ChrT).linear();
-    
-    REQUIRE(isnan(stats.r));
-    REQUIRE(isnan(stats.m));
-    REQUIRE(isnan(stats.r2));
-}
-
-TEST_CASE("TExpress_AllZeros")
-{
-    Test::transA();
-    
-    std::vector<Expression> exps;
-    
-    for (const auto &i : Standard::instance().r_trans.data())
-    {
-        Expression exp;
-        
-        exp.cID  = "chrT";
-        exp.id   = i.first;
-        exp.fpkm = 0.0;
-        exps.push_back(exp);
-    }
-    
-    const auto r = TExpress::analyze(exps, TExpress::Options());
-    const auto stats = r.data.at(ChrT).linear();
-    
-    REQUIRE(isnan(stats.r));
-    REQUIRE(isnan(stats.m));
-    REQUIRE(isnan(stats.r2));
+    REQUIRE_THROWS(TExpress::analyze(exps, TExpress::Options()));
 }
 
 TEST_CASE("TExpress_FlatMix")
@@ -93,7 +84,10 @@ TEST_CASE("TExpress_FlatMix")
         exps.push_back(exp);
     }
     
-    const auto r = TExpress::analyze(exps, TExpress::Options());
+    TExpress::Options o;
+    o.lvl = TExpress::Level::Isoform;
+    
+    const auto r = TExpress::analyze(exps, o);
     const auto stats = r.data.at(ChrT).linear();
 
     REQUIRE(isnan(stats.r));

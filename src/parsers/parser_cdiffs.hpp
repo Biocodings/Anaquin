@@ -11,7 +11,8 @@ namespace Anaquin
     {
         TrackID testID;
 
-        SS::TestStats stats;
+        // Test statistics
+        double stats;
     };
 
     struct ParserCDiffs
