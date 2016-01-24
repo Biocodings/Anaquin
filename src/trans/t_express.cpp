@@ -282,10 +282,14 @@ static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &
             // For all the samples...
             for (auto j = 0; j < n; j++)
             {
-                // The FPKM for the sample
-                const auto &k = stats[j].data.at(id).at(i.first);
-                
-                o.writer->write("," + std::to_string(k.y), false);
+                if (stats[j].data.at(id).count(i.first))
+                {
+                    o.writer->write("," + std::to_string(stats[j].data.at(id).at(i.first).y), false);
+                }
+                else
+                {
+                    o.writer->write(",0");
+                }
             }
             
             o.writer->write("\n", false);

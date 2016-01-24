@@ -404,6 +404,7 @@ def transQuin(config, output):
         r.addTextFile('Expression summary statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
         r.addRCode('Expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
+    r.addTextFile('Pooled summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
     r.endChapter()
 
     ################################################################
@@ -438,6 +439,7 @@ def transQuin(config, output):
         r.addTextFile('Expression summary statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
         r.addRCode('Expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
+    r.addTextFile('Pooled summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
     r.addRCode('Minor/Major plot', 'TI' + os.sep + 'TransExpress_Splice.R', )
         
     r.endChapter()
