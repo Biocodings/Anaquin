@@ -1,6 +1,5 @@
 #include <catch.hpp>
 #include "data/experiment.hpp"
-#include "data/accumulator.hpp"
 #include "writers/r_writer.hpp"
 
 using namespace Anaquin;

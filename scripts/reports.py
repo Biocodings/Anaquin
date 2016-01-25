@@ -324,8 +324,6 @@ def transQuin(config, output):
 
     r.endChapter()
 
-    return
-
     ############################################
     #                                          #
     #  2. Generating statistics for assembly   #
@@ -485,21 +483,16 @@ def transQuin(config, output):
     #                                                     #
     #######################################################
 
-    r.startChapter('Apprendix: TransQuin Sequins')
+    r.startChapter('Apprendix: TransQuin Alignment')
 
     for i in range(0, len(names)):
         r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
 
     r.endChapter()
 
-    
-
-    
-    
     # Generate a markup report (which can then be converted into various formats)
     r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
     
-
 
 #################################
 #                               #

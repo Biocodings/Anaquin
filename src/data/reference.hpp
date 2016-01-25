@@ -709,10 +709,10 @@ namespace Anaquin
             // Number of non-overlapping bases in all exons
             Base exonBase(const ChromoID &) const;
 
-            // Return number of merged exons
+            // Number of merged exons
             Counts countMerged(const ChromoID &) const;
         
-            // Return number of unmerged exons
+            // Number of unmerged exons
             Counts countExons(const ChromoID &) const;
         
             // Return number of introns

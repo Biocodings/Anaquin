@@ -506,15 +506,15 @@ struct TransRef::TransRefImpl
     /*
      * Validated data and resources
      */
-    
-    std::map<ChromoID, Data> valid;
+
+    std::map<ChromoID, Data> data;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
 Base TransRef::exonBase(const ChromoID &cID) const
 {
-    return _impl->valid[cID].exonBase;
+    return _impl->data[cID].exonBase;
 }
 
 Limit TransRef::limitGene(const Hist &hist) const
@@ -542,7 +542,7 @@ void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
     
     if (cID != ChrT)
     {
-        _impl->valid[cID]._genes[gID] = l;
+        _impl->data[cID]._genes[gID] = l;
     }
 }
 
@@ -554,7 +554,7 @@ void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &
     }
     else
     {
-        _impl->valid[cID].sortedExons.push_back(ExonData(cID, iID, gID, l));
+        _impl->data[cID].sortedExons.push_back(ExonData(cID, iID, gID, l));
     }
 }
 
@@ -562,7 +562,7 @@ std::set<ChromoID> TransRef::chromoIDs() const
 {
     std::set<ChromoID> cIDs;
     
-    for (const auto &i : _impl->valid)
+    for (const auto &i : _impl->data)
     {
         cIDs.insert(i.first);
     }
@@ -570,24 +570,28 @@ std::set<ChromoID> TransRef::chromoIDs() const
     return cIDs;
 }
 
+/*
+ * ------------------------- Accessors for TransQuin -------------------------
+ */
+
 Counts TransRef::countExons(const ChromoID &cID) const
 {
-    return _impl->valid[cID].sortedExons.size();
+    return _impl->data.at(cID).sortedExons.size();
 }
 
 Counts TransRef::countMerged(const ChromoID &cID) const
 {
-    return _impl->valid[cID].mergedExons.size();
+    return _impl->data.at(cID).mergedExons.size();
 }
 
 Counts TransRef::countIntrons(const ChromoID &cID) const
 {
-    return _impl->valid[cID].sortedIntrons.size();
+    return _impl->data.at(cID).sortedIntrons.size();
 }
 
 const TransRef::GeneData * TransRef::findGene(const ChromoID &cID, const GeneID &id) const
 {
-    return _impl->valid.at(cID).genes.count(id) ? &(_impl->valid.at(cID).genes.at(id)) : nullptr;
+    return _impl->data.at(cID).genes.count(id) ? &(_impl->data.at(cID).genes.at(id)) : nullptr;
 }
 
 template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)
@@ -618,24 +622,24 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
 
 const TransRef::GeneData * TransRef::findGene(const ChromoID &cID, const Locus &l, MatchRule m) const
 {
-    return findMap(_impl->valid.at(cID).genes, l, m);
+    return findMap(_impl->data.at(cID).genes, l, m);
 }
 
 const TransRef::ExonData * TransRef::findExon(const ChromoID &cID, const Locus &l, MatchRule m) const
 {
-    return findList(_impl->valid.at(cID).sortedExons, l, m);
+    return findList(_impl->data.at(cID).sortedExons, l, m);
 }
 
 const TransRef::IntronData * TransRef::findIntron(const ChromoID &cID, const Locus &l, MatchRule m) const
 {
-    return findList(_impl->valid.at(cID).sortedIntrons, l, m);
+    return findList(_impl->data.at(cID).sortedIntrons, l, m);
 }
 
 Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChromoID &cID) const
 {
     Intervals<ExonInterval> inters;
     
-    for (const auto &i : _impl->valid.at(cID).sortedExons)
+    for (const auto &i : _impl->data.at(cID).sortedExons)
     {
         inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
@@ -650,7 +654,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChromoID &cID) 
 {
     Intervals<IntronInterval> inters;
     
-    for (const auto &i : _impl->valid.at(cID).sortedIntrons)
+    for (const auto &i : _impl->data.at(cID).sortedIntrons)
     {
         inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
@@ -665,11 +669,11 @@ Hist TransRef::geneHist(const ChromoID &cID) const
 {
     if (cID == ChrT)
     {
-        return createHist(_impl->valid[cID].genes);
+        return createHist(_impl->data.at(cID).genes);
     }
     else
     {
-        return createHist(_impl->valid[cID]._genes);
+        return createHist(_impl->data.at(cID)._genes);
     }
 }
 
@@ -764,8 +768,7 @@ template <typename T> void createTrans(const ChromoID &cID, T &t)
     assert(!t.sortedExons.empty());
 
     // 1. Sort the exons
-    std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const TransRef::ExonData &x,
-                                                             const TransRef::ExonData &y)
+    std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const TransRef::ExonData &x, const TransRef::ExonData &y)
     {
         return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
     });
@@ -850,7 +853,7 @@ void TransRef::validate()
         {
             for (const auto &j : i.second)
             {
-                _impl->valid[ChrT].sortedExons.push_back(j);
+                _impl->data[ChrT].sortedExons.push_back(j);
             }
             
             _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
@@ -858,10 +861,10 @@ void TransRef::validate()
                 return true;
             });
     
-            _impl->valid[ChrT].gene2Seqs[_data[i.first].gID] = &_data[i.first];
+            _impl->data[ChrT].gene2Seqs[_data[i.first].gID] = &_data[i.first];
 
-            _impl->valid[ChrT].genes[_data[i.first].gID].id = _data[i.first].gID;         // TODO: ...
-            _impl->valid[ChrT].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]); // TODO: ...
+            _impl->data[ChrT].genes[_data[i.first].gID].id = _data[i.first].gID;         // TODO: ...
+            _impl->data[ChrT].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]); // TODO: ...
         }
     }
 
@@ -869,12 +872,12 @@ void TransRef::validate()
      * Create structure for each chromosome
      */
     
-    for (const auto &i : _impl->valid)
+    for (const auto &i : _impl->data)
     {
-        createTrans(i.first, _impl->valid[i.first]);
+        createTrans(i.first, _impl->data[i.first]);
     }
     
-    assert(_impl->valid.count(ChrT));
+    assert(_impl->data.count(ChrT));
 }
 
 /*

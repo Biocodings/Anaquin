@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include "data/experiment.hpp"
 #include "trans/t_express.hpp"
-#include "data/accumulator.hpp"
 #include "writers/r_writer.hpp"
 #include "parsers/parser_tracking.hpp"
 #include "parsers/parser_stringtie.hpp"

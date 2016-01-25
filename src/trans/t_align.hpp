@@ -152,7 +152,7 @@ namespace Anaquin
                     }
                 }
 
-                inline double missPercent(const ChromoID &cID, MissingMetrics m) const
+                inline double missProp(const ChromoID &cID, MissingMetrics m) const
                 {
                     return missing(cID, m).percent();
                 }

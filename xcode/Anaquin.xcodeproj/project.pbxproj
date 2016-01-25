@@ -274,7 +274,6 @@
 		EFB7FF2C1B4F79D00045DC6A /* f_discover.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = f_discover.cpp; sourceTree = "<group>"; };
 		EFB7FF2D1B4F79D00045DC6A /* f_discover.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = f_discover.hpp; sourceTree = "<group>"; };
 		EFB7FF381B4F848D0045DC6A /* t_locus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_locus.cpp; path = ../tests/data/t_locus.cpp; sourceTree = "<group>"; };
-		EFB897121C52428800B875EE /* accumulator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = accumulator.hpp; path = ../src/data/accumulator.hpp; sourceTree = "<group>"; };
 		EFB897141C524A3500B875EE /* linear.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = linear.hpp; path = ../src/stats/linear.hpp; sourceTree = "<group>"; };
 		EFBB830C1ADF953B0002611E /* parser_sequins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_sequins.cpp; path = ../src/parsers/parser_sequins.cpp; sourceTree = "<group>"; };
 		EFBB830D1ADF953B0002611E /* parser_sequins.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_sequins.hpp; path = ../src/parsers/parser_sequins.hpp; sourceTree = "<group>"; };
@@ -482,7 +481,6 @@
 		EF4270A31B214F8400C9ED4E /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				EFB897121C52428800B875EE /* accumulator.hpp */,
 				EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */,
 				EF1DE0A81B21EC6D00DEC381 /* biology.hpp */,
 				EF02A5231B7E0F8D00295799 /* compare.hpp */,

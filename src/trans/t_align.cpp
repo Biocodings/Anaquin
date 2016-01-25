@@ -1,5 +1,4 @@
 #include "trans/t_align.hpp"
-#include "data/accumulator.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -15,7 +14,6 @@ typedef TAlign::Stats::MissingMetrics MissingMetrics;
  * -------------------- Initalization --------------------
  */
 
-// Template function used by init()
 template <typename T> void initT(const ChromoID &cID, T &t)
 {
     const auto &r = Standard::instance().r_trans;
@@ -53,7 +51,7 @@ template <typename T> void initT(const ChromoID &cID, T &t)
     }
 
     /*
-     * Initialize exon statistics
+     * Initialize statistics for exons
      */
     
     for (const auto &i : t.eInters.data())
@@ -64,7 +62,7 @@ template <typename T> void initT(const ChromoID &cID, T &t)
     }
 
     /*
-     * Initialize intron statistics
+     * Initialize statistics for introns
      */
     
     for (const auto &i : t.iInters.data())
@@ -93,15 +91,13 @@ static TAlign::Stats init()
 {
     TAlign::Stats stats;
 
-    /*
-     * Initalize for each chromosome. The results will be pooled together.
-     */
-    
     for (const auto &cID : Standard::instance().r_trans.chromoIDs())
     {
         initT(cID, stats.data[cID]);
     }
 
+    assert(stats.data.size() >= 1);
+    
     return stats;
 }
 
@@ -116,7 +112,7 @@ template <typename T> const T * matchT(const Alignment &align,
 
     /*
      * It's quite likely there'll be more than a match. Note that it's impossible to distinguish the
-     * individuals due to alternative splicing. Thus, we simply increment for all the possible matches.
+     * individuals due to alternative splicing. Thus, we simply increment all the possible matches.
      * Consequently, it's not possible to detect anything at the isoform level.
      */
 
@@ -346,12 +342,12 @@ template <typename T> void collect(const ChromoID &cID,
     missing(t.missI, t.iContains);
     
     /*
-     * A gene is considered missing if not all exons have alignment aligned to it... 
+     * A gene is considered missing if not all it's exons have alignment
      *
      *   TODO: Need to improve the performance...
      */
     
-    if (cID == ChrT)
+//    if (cID == ChrT)
     {
         for (const auto &gene : t.histE)
         {
@@ -517,12 +513,17 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     });
 }
 
-template <typename F> std::string check(F f, const ChromoID &cID)
+template <typename F> std::string check(const TAlign::Stats &stats, F f, const ChromoID &cID)
 {
+    const auto id = cID == ChrT ? ChrT : "chr1"; // TODO: Fix this...
     
-    
-    
-    return std::to_string(f(cID));
+    // Don't try unless we're sure it'll work
+    if (!stats.data.count(id))
+    {
+        return "????";
+    }
+
+    return std::to_string(f(id));
 }
 
 /*
@@ -533,7 +534,7 @@ static Scripts replicateSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Proportion of reads mapped to the synthetic and experimental chromosome\n"
+           "   *** Proportion of reads mapped to the synthetic and experiment\n"
            "   ***\n\n"
            "   Unmapped:   %2% reads\n"
            "   Synthetic:  %3% (%4%%%) reads\n"
@@ -617,10 +618,10 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
 
     typedef TAlign::Stats Stats;
 
-    #define BIND_R(x,y) check(std::bind(&x, &r, _1), y)
-    #define BIND_Q(x,y) check(std::bind(&x, &stats, _1), y)
-    #define BIND_E(x,y,z) check(std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
-    #define BIND_M(x,y,z) check(std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
+    #define BIND_R(x,y)   check(stats, std::bind(&x, &r, _1), y)
+    #define BIND_Q(x,y)   check(stats, std::bind(&x, &stats, _1), y)
+    #define BIND_E(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
+    #define BIND_M(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
 
     o.writer->open(file);
     o.writer->write((boost::format(replicateSummary())
@@ -642,9 +643,9 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % BIND_Q(Stats::qExons, ChrT)                                     // 16
                                           % BIND_Q(Stats::qIntrons, ChrT)                                   // 17
                                           % BIND_Q(Stats::qBases, ChrT)                                     // 18
-                                          % BIND_Q(Stats::qExons, ChrT)                                     // 19
-                                          % BIND_Q(Stats::qIntrons, ChrT)                                   // 20
-                                          % BIND_Q(Stats::qBases, ChrT)                                     // 21
+                                          % BIND_Q(Stats::qExons, Endo)                                     // 19
+                                          % BIND_Q(Stats::qIntrons, Endo)                                   // 20
+                                          % BIND_Q(Stats::qBases, Endo)                                     // 21
                                           % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 22
                                           % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 23
                                           % stats.limit(AlignMetrics::AlignExon).abund                      // 24
@@ -657,18 +658,18 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % BIND_E(Stats::pc, AlignMetrics::AlignBase, ChrT)                // 31
                                           % stats.limit(AlignMetrics::AlignBase).abund                      // 32
                                           % stats.limit(AlignMetrics::AlignBase).id                         // 33
-                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingExon, ChrT)   // 34
-                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingIntron, ChrT) // 35
-                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingGene, ChrT)   // 36
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 37
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 38
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 39
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 40
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 41
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 42
-                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingExon, ChrT)   // 43
-                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingIntron, ChrT) // 44
-                                          % BIND_M(Stats::missPercent, MissingMetrics::MissingGene, ChrT)   // 45
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingExon, ChrT)      // 34
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, ChrT)    // 35
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingGene, ChrT)      // 36
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, Endo)                // 37
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, Endo)                // 38
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignIntron, Endo)              // 39
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignIntron, Endo)              // 40
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignBase, Endo)                // 41
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignBase, Endo)                // 42
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingExon, Endo)      // 43
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, Endo)    // 44
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingGene, Endo)      // 45
                      ).str());
     o.writer->close();
 }
@@ -740,164 +741,21 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
     o.writer->close();
 }
 
-/*
- * Write summary statistics for a replicate. file is the file name of the replicate. name is the name of the replicate.
- *
- *     Eg: writeReplicate(..., "A1/accepted_hits.bam", "A1", ...)
- */
-
-static void writeReplicate(const TAlign::Stats &stats, const FileName &file, const std::string &name, const TAlign::Options &o)
-{
-    // Create the directory if haven't
-    o.writer->create(name);
-    
-    // Generating summary statistics for the replicate
-    writeSummary(name + "/TransAlign_summary.stats", extractFile(file), stats, o);
-    
-    // Generating sequin statistics for the replicate
-    writeSequins(name + "/TransAlign_quins.stats", extractFile(file), stats, o);
-}
-
-static std::string pooledSummary()
-{
-    return "Summary for input: %1%\n\n"
-           "   Unmapped:   %2% reads\n"
-           "   Synthetic Chromosome: %3% (%4%%%) reads\n"
-           "   Experiment Chromosome:  %5% (%6%%%) reads\n\n\n"
-           "   Synthetic reference annotations: %7%\n\n"
-           "   Query:      %7% exons\n"
-           "   Query:      %8% introns\n"
-           "   Query:      %9% bases\n\n"
-           "   ***\n"
-           "   *** The following statistics are computed at the exon, intron and base level.\n"
-           "   ***\n"
-           "   *** Exon level is defined by performance per exon. An alignment that\n"
-           "   *** is not mapped entirely within an exon is considered as a FP. The\n"
-           "   *** intron level is similar.\n"
-           "   ***\n"
-           "   *** Base level is defined by performance per nucleotide. A partial\n"
-           "   *** mapped read will have FP and TP.\n"
-           "   ***\n\n"
-           "   -------------------- Exon level --------------------\n\n"
-           "   Sensitivity: %10%\n"
-           "   Specificity: %11%\n"
-           "   Detection:   %12% (%13%)\n\n"
-           "   -------------------- Intron level --------------------\n\n"
-           "   Sensitivity: %14%\n"
-           "   Specificity: %15%\n"
-           "   Detection:   %16% (%17%)\n\n"
-           "   -------------------- Base level --------------------\n\n"
-           "   Sensitivity: %18%\n"
-           "   Specificity: %19%\n\n"
-           "   Detection:   %20% (%21%)\n\n"
-           "   -------------------- Undetected --------------------\n\n"
-           "   Exon:   %22%\n"
-           "   Intron: %23%\n"
-           "   Gene:   %24%\n\n";
-}
-
 void TAlign::report(const std::vector<FileName> &files, const Options &o)
 {
-    std::map<ChromoID, Accumulator> accs;
-    
     const auto stats = TAlign::analyze(files, o);
-    
-    /*
-     * Process each replicate in orders. Later, we'll pool the information to generate a summary for all replicates.
-     * In order to calculate the variation between replicates, we'll add them to an accumulator.
-     */
     
     for (auto i = 0; i < files.size(); i++)
     {
-        const auto &stat = stats[i];
+        const auto &name = o.exp->names().at(i);
         
-        accs[ExpT].add("n_endo",    stat.n_endo);
-        accs[ExpT].add("n_chrT",    stat.n_chrT);
-        accs[ExpT].add("dilution",  stat.dilution());
-        accs[ExpT].add("unmapped",  stat.unmapped);
-        accs[ExpT].add("expTProp",  stat.endoProp());
-        accs[ExpT].add("chrTProp",  stat.chrTProp());
-        accs[ExpT].add("limitE",    stat.limit(AlignMetrics::AlignExon));
-        accs[ExpT].add("limitI",    stat.limit(AlignMetrics::AlignIntron));
-
-        auto f = [&](const ChromoID &id)
-        {
-            accs[id].add("qExons",   stat.qExons(id));
-            accs[id].add("qIntrons", stat.qIntrons(id));
-            accs[id].add("qBases",   stat.qBases(id));
-            accs[id].add("snE",      stat.sn(id, AlignMetrics::AlignExon));
-            accs[id].add("pcE",      stat.pc(id, AlignMetrics::AlignExon));
-            accs[id].add("snI",      stat.sn(id, AlignMetrics::AlignIntron));
-            accs[id].add("pcI",      stat.pc(id, AlignMetrics::AlignIntron));
-            accs[id].add("snB",      stat.sn(id, AlignMetrics::AlignBase));
-            accs[id].add("pcB",      stat.pc(id, AlignMetrics::AlignBase));
-            accs[id].add("limitB",   stat.data.at(id).overB.limit);
-            accs[id].add("missE",    stat.missPercent(id, MissingMetrics::MissingExon));
-            accs[id].add("missI",    stat.missPercent(id, MissingMetrics::MissingIntron));
-            accs[id].add("missG",    stat.missPercent(id, MissingMetrics::MissingGene));
-        };
-
-        for (const auto &cID : Standard::instance().r_trans.chromoIDs())
-        {
-            f(cID);
-        }
+        // Create the directory if haven't
+        o.writer->create(name);
         
-        // Generate summary statistic for the replicate
-        writeReplicate(stats[i], files[i], o.exp->names().at(i), o);
+        // Generating summary statistics for the replicate
+        writeSummary(name + "/TransAlign_summary.stats", extractFile(files[i]), stats[i], o);
+        
+        // Generating sequin statistics for the replicate
+        writeSequins(name + "/TransAlign_quins.stats", extractFile(files[i]), stats[i], o);
     }
-
-    /*
-     * Generating pooled summary statistics
-     */
-
-    std::string concated;
-    
-    for (const auto &file : files)
-    {
-        if (concated.empty())
-        {
-            concated = file;
-        }
-        else
-        {
-            concated = concated + "\n                     " + file;
-        }
-    }
-    
-//    auto f = [&](const ChromoID &id)
-//    {
-//        const auto acc = accs.at(id);
-//        
-//        o.writer->write((boost::format(pooledSummary()) % concated
-//                                                        % acc.value("unmapped")()
-//                                                        % acc.value("n_endo")()
-//                                                        % acc.value("expTProp")()    // 4
-//                                                        % acc.value("n_chrT")()      // 5
-//                                                        % acc.value("chrTProp")()    // 6
-//                                                        % acc.value("qExons")()      // 7
-//                                                        % acc.value("qIntrons")()    // 8
-//                                                        % acc.value("qBases")()      // 9
-//                                                        % acc.value("snE")()         // 10
-//                                                        % acc.value("pcE")()         // 11
-//                                                        % acc.limits("limitE").abund // 12
-//                                                        % acc.limits("limitE").id    // 13
-//                                                        % acc.value("snI")()         // 14
-//                                                        % acc.value("pcI")()         // 15
-//                                                        % acc.limits("limitI").abund // 16
-//                                                        % acc.limits("limitI").id    // 17
-//                                                        % acc.value("snB")()         // 18
-//                                                        % acc.value("pcB")()         // 19
-//                                                        % acc.limits("limitB").abund // 20
-//                                                        % acc.limits("limitB").id    // 21
-//                                                        % acc.value("missE")()       // 22
-//                                                        % acc.value("missI")()       // 23
-//                                                        % acc.value("missB")()       // 24
-//                         ).str());
-//        o.writer->write("\n\n");
-//    };
-
-    //o.writer->open("TransAlign_pooled.stats");
-    //f(ChrT); TODO
-    //f("chr1"); TODO
-    //o.writer->close();
 }
