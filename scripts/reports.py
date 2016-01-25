@@ -421,7 +421,7 @@ def transQuin(config, output):
     r.startChapter('TransQuin Expression (Isoform)')
 
     r.addTextFile('Pooled summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
-    r.addRCode('Minor/Major plot', 'TI' + os.sep + 'TransExpress_Splice.R', )
+    r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', )
         
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
