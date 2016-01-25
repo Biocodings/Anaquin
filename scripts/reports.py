@@ -486,7 +486,7 @@ def transQuin(config, output):
     r.startChapter('Apprendix: TransQuin Alignment')
 
     for i in range(0, len(names)):
-        r.addTextFile('Sequin alignment for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
+        r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
 
     r.endChapter()
 

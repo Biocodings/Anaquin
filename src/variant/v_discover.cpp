@@ -40,7 +40,7 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
                                             % stats.chrT->m.tp()
                                             % (stats.chrT->n_chrT - stats.chrT->m.tp())
                                             % stats.chrT->m.sn()
-                                            % stats.chrT->m.ac()).str());
+                                            % stats.chrT->m.pc()).str());
     o.writer->close();
 
     /*

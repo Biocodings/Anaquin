@@ -93,7 +93,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                     % stats.p.m.fp()
                                     % stats.p.m.fn()
                                     % stats.p.m.sn()
-                                    % stats.p.m.ac()).str());
+                                    % stats.p.m.pc()).str());
     o.info("Generating summary statistics");
 
     double covered = 0;
@@ -128,7 +128,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
                                             % stats.n_chrT
                                             % (r.countRefGenes() + r.countVarGens())
                                             % stats.p.m.sn()
-                                            % stats.p.m.ac()
+                                            % stats.p.m.pc()
                                             % covered
                                             % stats.p.limit.abund
                                             % stats.p.limit.id

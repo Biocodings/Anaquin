@@ -575,9 +575,11 @@ static Scripts replicateSummary()
            "   ***\n"
            "   *** Please refer to the paper \"Evaluation of gene structure prediction programs\" for more details\n"
            "   ***\n\n"
-           "   ***\n"
-           "   *** Statistics for synthetic chromosome\n"
-           "   ***\n\n"
+           "   *************************************************\n"
+           "   ***                                           ***\n"
+           "   ***    Statistics for synthetic chromosome    ***\n"
+           "   ***                                           ***\n"
+           "   *************************************************\n\n"
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %22%\n"
            "   Specificity: %23%\n"
@@ -594,9 +596,11 @@ static Scripts replicateSummary()
            "   Exon:   %34%\n"
            "   Intron: %35%\n"
            "   Gene:   %36%\n\n"
-           "   ***\n"
-           "   *** Statistics for experiment\n"
-           "   ***\n\n"
+           "   ***************************************\n"
+           "   ***                                 ***\n"
+           "   ***    Statistics for experiment    ***\n"
+           "   ***                                 ***\n"
+           "   ***************************************\n\n"
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %37%\n"
            "   Specificity: %38%\n\n"
@@ -632,11 +636,11 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % stats.n_endo
                                           % (100.0 * stats.endoProp())
                                           % stats.dilution()                                                // 7
-                                          % o.rChrT                                                         // 8
+                                          % extractFile(o.rChrT)                                            // 8
                                           % BIND_R(TransRef::countExons, ChrT)                              // 9
                                           % BIND_R(TransRef::countIntrons, ChrT)                            // 10
                                           % BIND_R(TransRef::exonBase, ChrT)                                // 11
-                                          % (o.rEndo.empty() ? "-" : o.rEndo)                               // 12
+                                          % (o.rEndo.empty() ? "-" : extractFile(o.rEndo))                  // 12
                                           % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::countExons, Endo))   // 13
                                           % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::countIntrons, Endo)) // 14
                                           % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::exonBase, Endo))     // 15
@@ -676,11 +680,14 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
 
 static void writeSequins(const FileName &file, const FileName &src, const TAlign::Stats &stats, const TAlign::Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+
     o.writer->open(file);
     
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.writer->write((boost::format(format) % "ID"
+                                           % "Abundance (attomol/ul)"
                                            % "Covered"
                                            % "Sensitivity (Exon)"
                                            % "Specificity (Exon)"
@@ -717,24 +724,26 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
         if (mi.lNR)
         {
             o.writer->write((boost::format(format) % i.first
+                                                   % r.findGene(ChrT, i.first)->abund(Mix_1)
                                                    % covered
                                                    % me.sn()
-                                                   % me.precise()
+                                                   % me.pc()
                                                    % mi.sn()
-                                                   % mi.precise()
+                                                   % mi.pc()
                                                    % mb.sn()
-                                                   % mb.ac()).str());
+                                                   % mb.pc()).str());
         }
         else
         {
             o.writer->write((boost::format(format) % i.first
+                                                   % r.findGene(ChrT, i.first)->abund(Mix_1)
+                                                   % covered
                                                    % me.sn()
-                                                   % me.precise()
+                                                   % me.pc()
                                                    % "--"
                                                    % "--"
                                                    % mb.sn()
-                                                   % mb.ac()
-                                                   % covered).str());
+                                                   % mb.pc()).str());
         }
     }
     

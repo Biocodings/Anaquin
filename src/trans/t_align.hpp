@@ -38,8 +38,8 @@ namespace Anaquin
                 {
                     return (lTP + lFN()) ? static_cast<double>(lTP) / (lTP + lFN()) : NAN;
                 }
-                
-                inline double precise() const
+
+                inline double pc() const
                 {
                     return (aTP + aFP) ? static_cast<double>(aTP) / (aTP + aFP) : NAN;
                 }
@@ -179,9 +179,9 @@ namespace Anaquin
                 {
                     switch (m)
                     {
-                        case AlignMetrics::AlignExon:   { return data.at(cID).overE.precise(); }
-                        case AlignMetrics::AlignBase:   { return data.at(cID).overB.m.ac();    }
-                        case AlignMetrics::AlignIntron: { return data.at(cID).overI.precise(); }
+                        case AlignMetrics::AlignExon:   { return data.at(cID).overE.pc();   }
+                        case AlignMetrics::AlignBase:   { return data.at(cID).overB.m.pc(); }
+                        case AlignMetrics::AlignIntron: { return data.at(cID).overI.pc();   }
                     }
                 }
             };

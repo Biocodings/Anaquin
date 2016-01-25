@@ -32,7 +32,7 @@ namespace Anaquin
                 return (_tp + _fn) ? static_cast<Percentage>(_tp) / (_tp + _fn) : NAN;
             }
         
-            inline Percentage ac() const
+            inline Percentage pc() const
             {
                 return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
             }

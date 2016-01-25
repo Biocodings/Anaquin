@@ -145,11 +145,11 @@ void MAlign::report(const FileName &file, const Options &o)
                                             % stats.n_chrT
                                             % stats.inters.size()                       // 5
                                             % stats.sp.m.sn()
-                                            % stats.sp.m.ac()
+                                            % stats.sp.m.pc()
                                             % stats.sp.limit.id
                                             % stats.sp.limit.abund
                                             % stats.bp.m.sn()    // 10
-                                            % stats.bp.m.ac()
+                                            % stats.bp.m.pc()
                                             % stats.bp.limit.id
                                             % stats.bp.limit.abund
                                             % stats.dilution()).str());
@@ -179,7 +179,7 @@ void MAlign::report(const FileName &file, const Options &o)
                                                % stats.sp.h.at(i.first)
                                                % stats.bp.h.at(i.first)
                                                % ss.covered()
-                                               % (isnan(b.ac()) ? "-" : std::to_string(b.ac()))
+                                               % (isnan(b.pc()) ? "-" : std::to_string(b.pc()))
                         ).str());
     }
 

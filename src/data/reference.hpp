@@ -28,8 +28,6 @@ namespace Anaquin
     {
         Mix_1,
         Mix_2,
-        Mix_3,
-        Mix_4,
     };
 
     struct SequinStats

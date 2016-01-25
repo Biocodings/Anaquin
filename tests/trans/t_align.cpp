@@ -99,7 +99,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         if (i.first == "R2_24")
         {
             REQUIRE(r.sn(ChrT, "R2_24")  == Approx(0.0408163265));
-            REQUIRE(i.second.precise()  == Approx(1.0));
+            REQUIRE(i.second.pc()  == Approx(1.0));
             REQUIRE(i.second.sn()  == Approx(0.0408163265));
             REQUIRE(i.second.aTP   == 200);
             REQUIRE(i.second.aFP   == 0);
@@ -109,7 +109,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         }
         else
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(i.second.sn()  == 0);
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -122,7 +122,7 @@ TEST_CASE("TAlign_All_AllRepeats")
     {
         if (i.second.lNR)
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(i.second.sn()  == 0);
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -131,7 +131,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         }
         else
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(isnan(i.second.sn()));
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -145,7 +145,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         if (i.first == "R2_24")
         {
             REQUIRE(i.second.sn() == Approx(0.0014764506));
-            REQUIRE(i.second.ac() == 1.0);
+            REQUIRE(i.second.pc() == 1.0);
             REQUIRE(i.second.nr() == 6773);
             REQUIRE(i.second.tp() == 10);
             REQUIRE(i.second.fp() == 0);
@@ -155,7 +155,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         else
         {
             REQUIRE(i.second.sn() == 0);
-            REQUIRE(isnan(i.second.ac()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(i.second.nr() != 0);
             REQUIRE(i.second.nq() == 0);
             REQUIRE(i.second.tp() == 0);
@@ -252,7 +252,7 @@ TEST_CASE("TAlign_R2_33_1")
         
         if (i.first == "R2_33")
         {
-            REQUIRE(i.second.precise() == Approx(1.0));
+            REQUIRE(i.second.pc() == Approx(1.0));
             REQUIRE(i.second.sn()  == Approx(1.0));
             REQUIRE(i.second.aTP   == 100);
             REQUIRE(i.second.aFP   == 0);
@@ -262,7 +262,7 @@ TEST_CASE("TAlign_R2_33_1")
         }
         else
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(i.second.sn()  == 0);
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -275,7 +275,7 @@ TEST_CASE("TAlign_R2_33_1")
     {
         if (i.second.lNR)
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(i.second.sn()  == 0);
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -284,7 +284,7 @@ TEST_CASE("TAlign_R2_33_1")
         }
         else
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(isnan(i.second.sn()));
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -298,7 +298,7 @@ TEST_CASE("TAlign_R2_33_1")
         if (i.first == "R2_33")
         {
             REQUIRE(i.second.sn() == Approx(1.0));
-            REQUIRE(i.second.ac() == 1.0);
+            REQUIRE(i.second.pc() == 1.0);
             REQUIRE(i.second.nr() == 283);
             REQUIRE(i.second.tp() == 283);
             REQUIRE(i.second.fp() == 0);
@@ -308,7 +308,7 @@ TEST_CASE("TAlign_R2_33_1")
         else
         {
             REQUIRE(i.second.sn() == 0);
-            REQUIRE(isnan(i.second.ac()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(i.second.nr() != 0);
             REQUIRE(i.second.nq() == 0);
             REQUIRE(i.second.tp() == 0);
@@ -361,7 +361,7 @@ TEST_CASE("TAlign_All_FalsePositives")
     REQUIRE(isnan(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignIntron)));
     
     REQUIRE(r.data.at(ChrT).overB.m.sn() == 0);
-    REQUIRE(isnan(r.data.at(ChrT).overB.m.ac()));
+    REQUIRE(isnan(r.data.at(ChrT).overB.m.pc()));
     REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
     REQUIRE(r.data.at(ChrT).overB.m.nq() == 0);
     REQUIRE(r.data.at(ChrT).overB.m.tp() == 0);
@@ -398,7 +398,7 @@ TEST_CASE("TAlign_All_FalsePositives")
     for (auto &i : r.data.at(ChrT).geneE)
     {
         REQUIRE(i.second.lNR);
-        REQUIRE(isnan(i.second.precise()));
+        REQUIRE(isnan(i.second.pc()));
         REQUIRE(i.second.sn()  == 0);
         REQUIRE(i.second.aTP   == 0);
         REQUIRE(i.second.aFP   == 0);
@@ -410,7 +410,7 @@ TEST_CASE("TAlign_All_FalsePositives")
     {
         if (i.second.lNR)
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(i.second.sn()  == 0);
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -419,7 +419,7 @@ TEST_CASE("TAlign_All_FalsePositives")
         }
         else
         {
-            REQUIRE(isnan(i.second.precise()));
+            REQUIRE(isnan(i.second.pc()));
             REQUIRE(isnan(i.second.sn()));
             REQUIRE(i.second.aTP   == 0);
             REQUIRE(i.second.aFP   == 0);
@@ -431,7 +431,7 @@ TEST_CASE("TAlign_All_FalsePositives")
     for (auto &i : r.data.at(ChrT).geneB)
     {
         REQUIRE(i.second.sn() == 0);
-        REQUIRE(isnan(i.second.ac()));
+        REQUIRE(isnan(i.second.pc()));
         REQUIRE(i.second.nr() != 0);
         REQUIRE(i.second.nq() == 0);
         REQUIRE(i.second.tp() == 0);
