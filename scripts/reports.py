@@ -55,8 +55,9 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False, subdir=''):
     names   = get(config, 'NAMES')
     factors = get(config, 'FACTORS')
     
-    mix = appendRoot(root, get(config, 'MIX_FILE'))
-    ref = appendRoot(root, get(config, 'REF_ANNOT'))
+    mix   = appendRoot(root, get(config, 'MIX_FILE'))
+    c_ref = appendRoot(root, get(config, 'CHRT_ANNOT'))
+    e_ref = appendRoot(root, get(config, 'EXP_ANNOT'))    
     
     names   = get(config, 'NAMES')    
     factors = get(config, 'FACTORS')
@@ -70,7 +71,7 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False, subdir=''):
     #
     
     # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + ref
+    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + c_ref
     
     # Now add up the arguments
     req = req + ' -o ' + TEMP_PATH + subdir + ' -factors ' + factors + ' -names ' + names + ' ' + args
@@ -289,18 +290,6 @@ def createReport(file, report):
 # Create a report for TransQuin
 def transQuin(config, output):
     
-    ###########################################
-    #                                         #
-    #    1. Table of contents                 #
-    #    2. Alignments                        #
-    #    3. Assembly                          #
-    #    4. Gene expression                   #
-    #    5. Isoform expression                #
-    #    6. Alternative splicing expression   #
-    #    7. Differential expression           #
-    #                                         #
-    ###########################################
-
     r = Report()
     
     # Eg: A1,A2,A3,B1,B2,B3
@@ -330,13 +319,12 @@ def transQuin(config, output):
 
     r.startChapter('TransQuin Alignment')
 
-    # Add summary statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Summary statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
-        r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
 
     r.endChapter()
 
+    return
 
     ############################################
     #                                          #
@@ -398,13 +386,13 @@ def transQuin(config, output):
     anaquin('TransExpress', req, config, onlyPrint=True, subdir='TG')
 
     r.startChapter('TransQuin Expression (Gene)')
+    r.addTextFile('Pooled summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Expression summary statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
         r.addRCode('Expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
-    r.addTextFile('Pooled summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
     r.endChapter()
 
     ################################################################
@@ -434,14 +422,14 @@ def transQuin(config, output):
 
     r.startChapter('TransQuin Expression (Isoform)')
 
+    r.addTextFile('Pooled summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
+    r.addRCode('Minor/Major plot', 'TI' + os.sep + 'TransExpress_Splice.R', )
+        
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Expression summary statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
         r.addRCode('Expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
-    r.addTextFile('Pooled summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
-    r.addRCode('Minor/Major plot', 'TI' + os.sep + 'TransExpress_Splice.R', )
-        
     r.endChapter()
     
     ########################################################
@@ -491,9 +479,27 @@ def transQuin(config, output):
 
     r.endChapter()
 
+    #######################################################
+    #                                                     #
+    #  6. Generating apprendix for the sequin statistics  #
+    #                                                     #
+    #######################################################
+
+    r.startChapter('Apprendix: TransQuin Sequins')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )
+
+    r.endChapter()
+
+    
+
+    
+    
     # Generate a markup report (which can then be converted into various formats)
     r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
     
+
 
 #################################
 #                               #

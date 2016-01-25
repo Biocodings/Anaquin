@@ -12,13 +12,13 @@
 ###################################################
 
 # Name of the report
-REPORT_NAME = Sample Report
+REPORT_NAME = Anaquin: TransQuin Report 
 
 # Where the files located relatively to the root
 ROOT_PATH = /Users/tedwong/Desktop/K_562
 
 #
-# Where's your mixture file? Anaquin needs the file for expected concentration.
+# Where's your mixture file? Anaquin needs it for expected concentration.
 #
 # You can download a copy at www.sequins.xyz. For example:
 #
@@ -28,10 +28,20 @@ ROOT_PATH = /Users/tedwong/Desktop/K_562
 MIX_FILE = MTR004.v013.csv
 
 #
-# Where's the reference annotation?
+# Where's the reference annotation for synthetic?
+#
+# You can download a copy at www.sequin.xyz. For example:
+#
+#    wget https://s3.amazonaws.com/anaquin/mixtures/ATR001.v032.gtf
 #
 
-REF_ANNOT = ATR001.v032.gtf
+CHRT_ANNOT = ATR001.v032.gtf
+
+#
+# Where's the annotation for experiment?
+#
+
+EXP_ANNOT = GeneCodeChr1.gtf
 
 ###################################################
 #                                                 #
@@ -40,7 +50,7 @@ REF_ANNOT = ATR001.v032.gtf
 ###################################################
 
 #
-# How did you conduct your experiment? The information is needed for the replicates.
+# How did you conduct your experiment? The information is needed for the samples.
 #
 # For example, a common experimental design would have two conditions and three replicates
 # for each condition.
@@ -76,12 +86,12 @@ NAMES = A1,A2,A3,B1,B2,B3
 # The orders must be consistent to the factors.
 #
 
-ALIGN_FILE = TopHat2/K_RMXA1v2.accepted_hits.bam
-ALIGN_FILE = TopHat2/K_RMXA2v2.accepted_hits.bam
-ALIGN_FILE = TopHat2/K_RMXA3v2.accepted_hits.bam
-ALIGN_FILE = TopHat2/G_RMXB1v2.accepted_hits.bam
-ALIGN_FILE = TopHat2/G_RMXB2v2.accepted_hits.bam
-ALIGN_FILE = TopHat2/G_RMXB3v2.accepted_hits.bam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
 
 ###################################################
 #                                                 #

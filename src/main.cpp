@@ -112,7 +112,7 @@ typedef std::set<Value> Range;
 #define OPT_R_BASE  800
 #define OPT_R_BED_1 801
 #define OPT_R_BED_2 802
-#define OPT_R_GTF   803
+#define OPT_R_CHR_T 803
 #define OPT_R_FUS   804
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
@@ -218,11 +218,11 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
-    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
+    { TOOL_T_COVERAGE, { OPT_R_CHR_T, OPT_U_FILES                                                  } },
+    { TOOL_T_ALIGN,    { OPT_R_CHR_T, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_ASSEMBLY, { OPT_R_CHR_T, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_EXPRESS,  { OPT_R_CHR_T, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
+    { TOOL_T_DIFF,     { OPT_R_CHR_T, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
 
     /*
@@ -266,6 +266,12 @@ static std::map<Tool, std::set<Option>> _required =
 
 struct Parsing
 {
+    // Reference annotation file for synthetic
+    FileName rChrT;
+
+    // Reference annotation file for endogenous
+    FileName rEndo;
+    
     // The path that outputs are written
     std::string path = "output";
 
@@ -407,7 +413,7 @@ static const struct option long_options[] =
     { "rbed",    required_argument, 0, OPT_R_BED_1 },
     { "rbed1",   required_argument, 0, OPT_R_BED_1 },
     { "rbed2",   required_argument, 0, OPT_R_BED_2 },
-    { "rgtf",    required_argument, 0, OPT_R_GTF   },
+    { "rgtf",    required_argument, 0, OPT_R_CHR_T },
     { "rexp",    required_argument, 0, OPT_R_ENDO  },
 
     { "uvcf",    required_argument, 0, OPT_U_VCF  },
@@ -640,8 +646,10 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.info(_p.command);
     o.info(date());
     o.info("Path: " + path);
-    //o.info("Threads: " + std::to_string(_p.threads));
 
+    o.rChrT = _p.rChrT;
+    o.rEndo = _p.rEndo;
+    
     for (const auto &filter : (o.filters = _p.filters))
     {
         std::cout << "Filter: " << filter << std::endl;
@@ -985,7 +993,19 @@ void parse(int argc, char ** argv)
                 _p.exp->addNames(_p.opts[opt] = val);
                 break;
             }
+                
+            case OPT_R_CHR_T:
+            {
+                checkFile(_p.opts[opt] = _p.rChrT = val);
+                break;
+            }
 
+            case OPT_R_ENDO:
+            {
+                checkFile(_p.opts[opt] = _p.rEndo = val);
+                break;
+            }
+                
             case OPT_FA_1:
             case OPT_FA_2:
             case OPT_U_COV:
@@ -995,10 +1015,8 @@ void parse(int argc, char ** argv)
             case OPT_U_GTF:
             case OPT_PSL_2:
             case OPT_BAM_2:
-            case OPT_R_GTF:
             case OPT_PSL_1:
             case OPT_U_TAB:
-            case OPT_R_ENDO:
             case OPT_R_BED_1:
             case OPT_R_BED_2:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
@@ -1103,7 +1121,7 @@ void parse(int argc, char ** argv)
                 {
                     TAssembly::Options o;
 
-                    o.chrT = _p.opts[OPT_R_GTF];
+                    o.chrT = _p.opts[OPT_R_CHR_T];
 
                     if (_p.opts.count(OPT_R_ENDO))
                     {

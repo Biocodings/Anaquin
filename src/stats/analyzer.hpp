@@ -253,6 +253,8 @@ namespace Anaquin
     
     struct AnalyzerOptions : public WriterOptions
     {
+        FileName rChrT, rEndo;
+        
         // Experimental meta-data
         std::shared_ptr<Experiment> exp;
 
