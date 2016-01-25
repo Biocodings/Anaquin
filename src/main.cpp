@@ -649,7 +649,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 
     o.rChrT = _p.rChrT;
     o.rEndo = _p.rEndo;
-    
+
     for (const auto &filter : (o.filters = _p.filters))
     {
         std::cout << "Filter: " << filter << std::endl;

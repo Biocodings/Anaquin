@@ -27,6 +27,8 @@ namespace Anaquin
         });
     }
     
+    class MappingStats;
+    
     struct StatsWriter
     {
         /*
@@ -36,76 +38,19 @@ namespace Anaquin
         static Scripts inflectSummary();
         static Scripts inflectSummary(const SInflectStats &stats);
         static Scripts inflectSummary(const std::vector<FileName> &,
+                                      const std::vector<MappingStats> &,
                                       const std::vector<LinearStats> &,
                                       const Units &units);
-
-        template <typename Stats> static std::string linearInflect(const FileName &src,
-                                                                   const Stats &stats,
-                                                                   const ChromoID &cID,
-                                                                   const Units &units,
-                                                                   const Units &ref = "")
-        {
-            const auto n_lm = stats.data.at(cID).linear(false);
-            const auto l_lm = stats.data.at(cID).linear(true);
-            
-            // Calcluate the inflect point after log-transformation
-            const auto inflect = stats.data.at(cID).inflect(true);
-            
-            // Remember the break-point is on the log-scale, we'll need to convert it back
-            const auto b = pow(2, inflect.b);
-            
-            return "";
-            
-            /*
-            return (boost::format(inflectSummary()) % src                          // 1
-                                           % stats.n_chrT
-                                           % stats.n_endo
-                                           % units
-                                           % stats.hist.size()            // 5
-                                           % (ref.empty() ? units : ref)  // 6
-                                           % b
-                                           % inflect.id
-                                           % inflect.lInt                 // 9
-                                           % inflect.lSl                  // 10
-                                           % inflect.lR2                  // 11
-                                           % inflect.rInt                 // 12
-                                           % inflect.rSl                  // 13
-                                           % inflect.rR2                  // 14
-                                           % n_lm.r                       // 15
-                                           % n_lm.m                       // 16
-                                           % n_lm.R2                      // 17
-                                           % n_lm.F                       // 18
-                                           % n_lm.p                       // 19
-                                           % n_lm.SSM                     // 20
-                                           % n_lm.SSM_D                   // 21
-                                           % n_lm.SSE                     // 22
-                                           % n_lm.SSE_D                   // 23
-                                           % n_lm.SST                     // 24
-                                           % n_lm.SST_D                   // 25
-                                           % l_lm.r                       // 26
-                                           % l_lm.m                       // 27
-                                           % l_lm.R2                      // 28
-                                           % l_lm.F                       // 29
-                                           % l_lm.p                       // 30
-                                           % l_lm.SSM                     // 31
-                                           % l_lm.SSM_D                   // 32
-                                           % l_lm.SSE                     // 33
-                                           % l_lm.SSE_D                   // 34
-                                           % l_lm.SST                     // 35
-                                           % l_lm.SST_D                   // 36
-                    ).str();
-             */
-        }
 
         /*
          * -------------------- Linear Statistics --------------------
          */
         
-        template <typename Stats> static std::string linear(const FileName &src,
-                                                            const Stats &stats,
-                                                            const ChromoID &cID,
-                                                            const Units &units,
-                                                            const Units &ref = "")
+        template <typename Stats> static Scripts linear(const FileName &src,
+                                                        const Stats &stats,
+                                                        const ChromoID &cID,
+                                                        const Units &units,
+                                                        const Units &ref = "")
         {
             const auto summary = "Summary for dataset: %1%\n\n"
                                  "   Experiment:  %2% %4%\n"
@@ -180,16 +125,16 @@ namespace Anaquin
          * -------------------- Linear Statistics --------------------
          */
         
-        template <typename Stats_1, typename Stats_2, typename Stats> static std::string linear(const FileName &f,
-                                                                                                const FileName &d1,
-                                                                                                const FileName &d2,
-                                                                                                const Stats_1  &s1,
-                                                                                                const Stats_2  &s2,
-                                                                                                const Stats    &s,
-                                                                                                const ChromoID &cID,
-                                                                                                const Units    &units,
-                                                                                                const Units &ref = "",
-                                                                                                const Label &samples = "")
+        template <typename Stats_1, typename Stats_2, typename Stats> static Scripts linear(const FileName &f,
+                                                                                            const FileName &d1,
+                                                                                            const FileName &d2,
+                                                                                            const Stats_1  &s1,
+                                                                                            const Stats_2  &s2,
+                                                                                            const Stats    &s,
+                                                                                            const ChromoID &cID,
+                                                                                            const Units    &units,
+                                                                                            const Units &ref = "",
+                                                                                            const Label &samples = "")
         {
             const auto summary = "Summary for dataset: %1% and %2%\n\n"
                                  "   %3% (A):       %4% %5%\n"

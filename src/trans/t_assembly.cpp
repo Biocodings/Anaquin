@@ -67,42 +67,64 @@ static FileName createFilters(const FileName &ref, const FileName &query, const 
     return tmp;
 }
 
-static std::string sSummary()
+static Scripts sSummary()
 {
-    return "Summary for dataset: %1%\n\n"
-           "   Experiment: %2% features\n"
-           "   Synthetic:  %3% features\n\n"
-           "   Reference:  %4% exons\n"
-           "   Reference:  %5% introns\n\n"
+    return "Summary for input: %1%\n\n"
+           "   ***\n"
+           "   *** Proportion of features mapped to the synthetic and experiment\n"
+           "   ***\n\n"
+           "   Synthetic:  %3% features\n"
+           "   Experiment: %2% features\n\n"
+           "   ***\n"
+           "   *** Reference annotation (Synthetic)\n"
+           "   ***\n\n"
+           "   File: %4%\n\n"
+           "   Synthetic:  %5% exons\n"
+           "   Synthetic:  %6% introns\n\n"
+           "   ***\n"
+           "   *** Reference annotation (Experiment)\n"
+           "   ***\n\n"
+           "   File: %7%\n\n"
+           "   Experiment:  %8% exons\n"
+           "   Experiment:  %9% introns\n\n"
+           "   *************************************************\n"
+           "   ***                                           ***\n"
+           "   ***    Statistics for synthetic chromosome    ***\n"
+           "   ***                                           ***\n"
+           "   *************************************************\n\n"
            "   ***\n"
            "   *** The following statistics are computed for exact and fuzzy.\n"
            "   ***\n"
            "   *** The fuzzy level is 10 nucleotides.\n"
            "   ***\n\n"
            "   -------------------- Exon level --------------------\n\n"
-           "   Sensitivity: %6% (%7%)\n"
-           "   Specificity: %8% (%9%)\n"
-           "   -------------------- Intron level --------------------\n\n"
            "   Sensitivity: %10% (%11%)\n"
-           "   Specificity: %12% (%13%)\n"
+           "   Specificity: %12% (%13%)\n\n"
+           "   -------------------- Intron level --------------------\n\n"
+           "   Sensitivity: %14% (%15%)\n"
+           "   Specificity: %16% (%17%)\n\n"
            "   -------------------- Base level --------------------\n\n"
-           "   Sensitivity: %14%\n"
-           "   Specificity: %15%\n"
+           "   Sensitivity: %18%\n"
+           "   Specificity: %19%\n\n"
            "   -------------------- Intron Chain level --------------------\n\n"
-           "   Sensitivity: %16% (%17%)\n"
-           "   Specificity: %18% (%19%)\n\n"
-           "   -------------------- Transcript level --------------------\n\n"
            "   Sensitivity: %20% (%21%)\n"
            "   Specificity: %22% (%23%)\n\n"
-           "   Missing exons: %24%/%25% (%26%)\n"
-           "   Missing introns: %27%/%28% (%29%)\n\n"
-           "   Novel exons: %30%/%31% (%32%)\n"
-           "   Novel introns: %33%/%34% (%35%)\n\n";
+           "   -------------------- Transcript level --------------------\n\n"
+           "   Sensitivity: %24% (%25%)\n"
+           "   Specificity: %26% (%27%)\n\n"
+           "   Missing exons:   %28%/%29% (%30%)\n"
+           "   Missing introns: %31%/%32% (%33%)\n\n"
+           "   Novel exons:     %34%/%35% (%36%)\n"
+           "   Novel introns:   %37%/%38% (%39%)\n\n";
 }
 
-static std::string eSummary()
+static Scripts eSummary()
 {
-    return "Summary for the endogenous\n\n"
+    return "   ***************************************\n"
+           "   ***                                 ***\n"
+           "   ***    Statistics for experiment    ***\n"
+           "   ***                                 ***\n"
+           "   ***************************************\n\n"
            "   ***\n"
            "   *** The following statistics are computed for exact and fuzzy.\n"
            "   ***\n"
@@ -110,13 +132,13 @@ static std::string eSummary()
            "   ***\n\n"
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %1% (%2%)\n"
-           "   Specificity: %3% (%4%)\n"
+           "   Specificity: %3% (%4%)\n\n"
            "   -------------------- Intron level --------------------\n\n"
            "   Sensitivity: %5% (%6%)\n"
-           "   Specificity: %7% (%8%)\n"
+           "   Specificity: %7% (%8%)\n\n"
            "   -------------------- Base level --------------------\n\n"
            "   Sensitivity: %9%\n"
-           "   Specificity: %10%\n"
+           "   Specificity: %10%\n\n"
            "   -------------------- Intron Chain level --------------------\n\n"
            "   Sensitivity: %11% (%12%)\n"
            "   Specificity: %13% (%14%)\n\n"
@@ -142,13 +164,6 @@ static TAssembly::Stats init(const TAssembly::Options &o)
         stats.data[Endo];
         stats.refs[Endo] = o.endo;
     }
-
-    const auto &r = Standard::instance().r_trans;
-    
-    stats.eHist = r.hist();
-    stats.iHist = r.hist();
-    stats.tHist = r.hist();
-    stats.bHist = r.geneHist(ChrT);
 
     return stats;
 }
@@ -235,112 +250,15 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         copyStats(p.first);
     });
     
-    /*
-     * 3. Classifying the transcript (only for chrT because detection limit is needed)
-     */
-
-    o.info("Parsing transcript");
-    
-    std::vector<Feature> q_exons;
-    std::map<SequinID, std::vector<Feature>> q_exons_;
-
-    Confusion t;
-    
     ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
     {
-        if (!(p.i % 1000000)) { o.wait(std::to_string(p.i)); }
-        
-        if (f.cID != Standard::chrT)
-        {
-            stats.n_endo++;
-        }
-        else
+        if (f.cID == ChrT)
         {
             stats.n_chrT++;
         }
-
-        auto classifyT = [&]()
+        else
         {
-            const auto &r = Standard::instance().r_trans;
-            
-            if (f.cID != ChrT)
-            {
-                return;
-            }
-            
-            switch (f.type)
-            {
-                case Exon:
-                {
-                    const TransRef::ExonData *match;
-                    
-                    q_exons.push_back(f);
-                    q_exons_[f.tID].push_back(f);
-                    
-                    if (classify(t, f, [&](const Feature &)
-                    {
-                        return (match = r.findExon(ChrT, f.l, Exact));
-                    }))
-                    {
-                        stats.eHist.at(match->iID)++;
-                    }
-                    
-                    break;
-                }
-                    
-                case Transcript:
-                {
-                    const TransData *match;
-                    
-                    if (classify(t, f, [&](const Feature &)
-                    {
-                        return (match = r.match(f.l, Overlap));
-                    }))
-                    {
-                        stats.tHist.at(match->id)++;
-                    }
-                    
-                    break;
-                }
-                    
-                // There're many other possibilties in a GTF file, but we don't need them
-                default: { break; }
-            }
-        };
-
-        classifyT();
-    });
-    
-    /*
-     * 3. Generating introns
-     */
-    
-    o.info("Generating introns");
-    
-    /*
-     * Sort the query exons as there is no guarantee that those are sorted
-     */
-    
-    for (auto &i : q_exons_)
-    {
-        CHECK_AND_SORT(i.second);
-    }
-    
-    /*
-     * Now that the query exons are sorted. We can extract and classify the introns for each pair
-     * of successive exon.
-     */
-    
-    const TransRef::IntronData *match;
-    
-    extractIntrons(q_exons_, [&](const Feature &, const Feature &, Feature &i)
-    {
-        if (classify(t, i, [&](const Feature &)
-        {
-            return (match  = r.findIntron("chrT", i.l, Exact));
-        }))
-        {
-            stats.iHist.at(match->iID)++;
+            stats.n_endo++;
         }
     });
     
@@ -354,119 +272,113 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
 
     o.info("Generating statistics for: " + name);
     
+    #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
+    
     o.writer->create(name);
     o.writer->open(name + "/TransAssembly_summary.stats");
     o.writer->write((boost::format(sSummary()) % file
-                                               % stats.n_endo
                                                % stats.n_chrT
-                                               % r.data().size()
+                                               % stats.n_endo
+                                               % o.rChrT
+                                               % r.countExons(ChrT)
                                                % r.countIntrons(ChrT)
-                                               % data.eSN              // 6
-                                               % data.eFSN
-                                               % data.eSP
-                                               % data.eFSP
-                                               % data.iSN              // 10
-                                               % data.iFSN
-                                               % data.iSP
-                                               % data.iFSP
-                                               % data.bSN               // 14
-                                               % data.bSP
-                                               % data.cSN               // 16
-                                               % data.cFSN
-                                               % data.cSP
-                                               % data.cFSP
-                                               % data.tSN
-                                               % data.tFSN
-                                               % data.tSP
-                                               % data.tFSP              // 23
-                                               % data.mExonN            // 24
+                                               % (o.rEndo.empty() ? "-"  : o.rEndo)
+                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons("chr1")))
+                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
+                                               % S(data.eSN)            // 10
+                                               % S(data.eFSN)
+                                               % S(data.eSP)
+                                               % S(data.eFSP)
+                                               % S(data.iSN)            // 14
+                                               % S(data.iFSN)
+                                               % S(data.iSP)
+                                               % S(data.iFSP)
+                                               % S(data.bSN)            // 18
+                                               % S(data.bSP)
+                                               % S(data.cSN)            // 20
+                                               % S(data.cFSN)
+                                               % S(data.cSP)
+                                               % S(data.cFSP)
+                                               % S(data.tSN)
+                                               % S(data.tFSN)
+                                               % S(data.tSP)
+                                               % S(data.tFSP)           // 27
+                                               % data.mExonN            // 28
                                                % data.mExonR
-                                               % data.mExonP
+                                               % S(data.mExonP)
                                                % data.mIntronN
-                                               % data.mIntronR          // 28
-                                               % data.mIntronP
+                                               % data.mIntronR          // 32
+                                               % S(data.mIntronP)
                                                % data.nExonN
                                                % data.nExonR
-                                               % data.nExonP
+                                               % S(data.nExonP)
                                                % data.nIntronN
-                                               % data.nIntronR          // 34
-                                               % data.nIntronP).str());
+                                               % data.nIntronR          // 38
+                                               % S(data.nIntronP)).str());
     if (stats.data.count(Endo))
     {
         const auto &data = stats.data.at(Endo);
 
-        o.writer->write((boost::format(eSummary()) % data.eSN           // 1
-                                                   % data.eFSN
-                                                   % data.eSP
-                                                   % data.eFSP
-                                                   % data.iSN           // 5
-                                                   % data.iFSN
-                                                   % data.iSP
-                                                   % data.iFSP
-                                                   % data.bSN           // 9
-                                                   % data.bSP
-                                                   % data.cSN           // 11
-                                                   % data.cFSN
-                                                   % data.cSP
-                                                   % data.cFSP
-                                                   % data.tSN
-                                                   % data.tFSN
-                                                   % data.tSP
-                                                   % data.tFSP          // 18
+        o.writer->write((boost::format(eSummary()) % S(data.eSN)        // 1
+                                                   % S(data.eFSN)
+                                                   % S(data.eSP)
+                                                   % S(data.eFSP)
+                                                   % S(data.iSN)        // 5
+                                                   % S(data.iFSN)
+                                                   % S(data.iSP)
+                                                   % S(data.iFSP)
+                                                   % S(data.bSN)        // 9
+                                                   % S(data.bSP)
+                                                   % S(data.cSN)        // 11
+                                                   % S(data.cFSN)
+                                                   % S(data.cSP)
+                                                   % S(data.cFSP)
+                                                   % S(data.tSN)
+                                                   % S(data.tFSN)
+                                                   % S(data.tSP)
+                                                   % S(data.tFSP)       // 18
                                                    % data.mExonN        // 19
                                                    % data.mExonR
-                                                   % data.mExonP
+                                                   % S(data.mExonP)
                                                    % data.mIntronN
                                                    % data.mIntronR      // 23
-                                                   % data.mIntronP
+                                                   % S(data.mIntronP)
                                                    % data.nExonN
                                                    % data.nExonR
-                                                   % data.nExonP
+                                                   % S(data.nExonP)
                                                    % data.nIntronN
                                                    % data.nIntronR      // 29
-                                                   % data.nIntronP).str());
+                                                   % S(data.nIntronP)).str());
     }
 
     o.writer->close();
 }
 
-static void writeSequins(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
-{
-    o.writer->open(name + "/TransAssembly_sequin.stats");
-    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
-    
-    auto format = "%1%\t%2%\t%3%\t%4%";
-    o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());
-    
-    for (const auto &i : stats.eHist)
-    {
-        o.writer->write((boost::format(format) % i.first
-                                               % stats.eHist.at(i.first)
-                                               % stats.iHist.at(i.first)
-                                               % stats.tHist.at(i.first)).str());
-    }
-
-    /*
-     o.writer->write("\n");
-     
-     format = "%1%\t%2%";
-     o.writer->write((boost::format(format) % "ID" % "Base").str());
-     
-     for (const auto &i : stats.hb)
-     {
-     o.writer->write((boost::format(format) % i.first % stats.hb.at(i.first)).str());
-     }
-     */
-
-    o.writer->close();
-}
+//static void writeSequins(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
+//{
+//    o.writer->open(name + "/TransAssembly_sequin.stats");
+//    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+//    
+//    auto format = "%1%\t%2%\t%3%\t%4%";
+//    o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());
+//    
+//    for (const auto &i : stats.eHist)
+//    {
+//        o.writer->write((boost::format(format) % i.first
+//                                               % stats.eHist.at(i.first)
+//                                               % stats.iHist.at(i.first)
+//                                               % stats.tHist.at(i.first)).str());
+//    }
+//
+//    o.writer->close();
+//}
 
 void TAssembly::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto stats = TAssembly::analyze(files, o);
 
     /*
-     * Generating summary statistics for each replicate
+     * Generating summary statistics for each sample
      */
     
     o.info("Generating summary statistics");
@@ -477,11 +389,11 @@ void TAssembly::report(const std::vector<FileName> &files, const Options &o)
     }
     
     /*
-     * Generating sequin statistics for each replicate
+     * Generating sequin statistics for each sample
      */
     
-    for (auto i = 0; i < files.size(); i++)
-    {
-        writeSequins(files[i], o.exp->names().at(i), stats[i], o);
-    }
+    //for (auto i = 0; i < files.size(); i++)
+    //{
+    //    writeSequins(files[i], o.exp->names().at(i), stats[i], o);
+    //}
 }

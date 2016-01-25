@@ -212,38 +212,28 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     });
 }
 
-static void writeSummary(const TExpress::Stats   &stats,
-                         const FileName          &file,
-                         const std::string       &name,
-                         const ChromoID          &cID,
-                         const std::string       &units,
+static void writeSummary(const TExpress::Stats &stats,
+                         const FileName        &file,
+                         const std::string     &name,
+                         const Units           &units,
                          const TExpress::Options &o)
 {
-    const auto sample = extractFile(file);
-    
-    // Create the directory if haven't
     o.writer->create(name);
-    
     o.writer->open(name + "/TransExpress_summary.stats");
-    o.writer->write(StatsWriter::linearInflect(file, stats, cID, units));
+    o.writer->write(StatsWriter::inflectSummary(std::vector<FileName>     { file  },
+                                                std::vector<MappingStats> { stats },
+                                                std::vector<LinearStats>  { stats.data.at(ChrT) },
+                                                units));
     o.writer->close();
 }
 
-static void writeCSV(const TExpress::Stats   &stats,
-                     const FileName          &file,
-                     const std::string       &name,
-                     const ChromoID          &cID,
-                     const std::string       &units,
-                     const TExpress::Options &o)
+static void writeCSV(const TExpress::Stats  &stats, const FileName &file, const std::string &name, const TExpress::Options &o)
 {
-    const auto sample = extractFile(file);
+    std::vector<std::string> ids;
+    std::vector<double> x, y;
     
-    // Create the directory if haven't
-    o.writer->create(name);
-    
-    o.writer->open(name + "/TransExpress_quins.csv");
-    
-    o.writer->close();
+    stats.data.at(ChrT).data(x, y, false, &ids);
+    AnalyzeReporter::writeCSV(x, y, ids, name + "/TransExpress_quins.csv", "Expected concentration (attomol/ul)", "Measured coverage (attomol/ul)", o.writer);
 }
 
 static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &stats, const TExpress::Options &o)
@@ -307,20 +297,12 @@ static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &
 static void writeScatter(const TExpress::Stats   &stats,
                          const FileName          &file,
                          const std::string       &name,
-                         const ChromoID          &cID,
                          const std::string       &units,
                          const TExpress::Options &o)
 {
-    const auto sample = extractFile(file);
-    
-    // Create the directory if haven't
     o.writer->create(name);
-
     o.writer->open(name + "/TransExpress_scatter.R");
-    
-    o.writer->write(RWriter::scatter(stats,
-                                     ChrT,
-                                     "",
+    o.writer->write(RWriter::scatter(stats, ChrT, "",
                                      "TransExpress",
                                      "Expected concentration (attomol/ul)",
                                      "Measured coverage (FPKM)",
@@ -349,19 +331,21 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     std::vector<TExpress::Stats::Data> data;
+    std::vector<MappingStats> data_;
     
     for (auto i = 0; i < files.size(); i++)
     {
         // Generating summary statistics for the sample
-        writeSummary(stats[i], files[i], o.exp->names().at(i), ChrT, units, o);
+        writeSummary(stats[i], files[i], o.exp->names().at(i), units, o);
         
         // Generating CSV file for the data
-        writeCSV(stats[i], files[i], o.exp->names().at(i), ChrT, units, o);
+        writeCSV(stats[i], files[i], o.exp->names().at(i), o);
         
         // Generating scatter plot for the sample
-        writeScatter(stats[i], files[i], o.exp->names().at(i), ChrT, units, o);
+        writeScatter(stats[i], files[i], o.exp->names().at(i), units, o);
 
         data.push_back(stats[i].data.at(ChrT));
+        data_.push_back(stats[i]);
     }
     
     /*
@@ -369,7 +353,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     o.writer->open("TransExpress_pooled.stats");
-    o.writer->write(StatsWriter::inflectSummary(files, data, units));
+    o.writer->write(StatsWriter::inflectSummary(files, data_, data, units));
     o.writer->close();
 
     /*

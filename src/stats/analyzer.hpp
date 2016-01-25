@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <numeric>
+#include <sstream>
 #include "stats/limit.hpp"
 #include <boost/format.hpp>
 #include "stats/classify.hpp"
@@ -12,7 +13,12 @@
 
 namespace Anaquin
 {
-    typedef std::map<BinID, Counts> BinCounts;
+    template <typename T> std::string toString(const T &x, const unsigned n = 2)
+    {
+        std::ostringstream out;
+        out << std::fixed << std::setprecision(n) << x;
+        return out.str();
+    }
 
     template <typename T> std::string toNA(const T &x)
     {

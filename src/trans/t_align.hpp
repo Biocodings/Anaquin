@@ -7,6 +7,8 @@
 
 namespace Anaquin
 {
+    typedef std::map<BinID, Counts> BinCounts;
+
     class TAlign : public Analyzer
     {
         public:

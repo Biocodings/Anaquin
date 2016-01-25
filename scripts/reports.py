@@ -71,7 +71,7 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False, subdir=''):
     #
     
     # Construct mixture and reference annoation
-    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + c_ref
+    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + c_ref + ' -rexp ' + e_ref
     
     # Now add up the arguments
     req = req + ' -o ' + TEMP_PATH + subdir + ' -factors ' + factors + ' -names ' + names + ' ' + args
@@ -320,7 +320,7 @@ def transQuin(config, output):
     r.startChapter('TransQuin Alignment')
 
     for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
+        r.addTextFile('Alignment statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
 
     r.endChapter()
 
@@ -353,7 +353,7 @@ def transQuin(config, output):
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
+        r.addTextFile('Assembly statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
         #r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_sequin.stats', )
 
     r.endChapter()
@@ -388,7 +388,7 @@ def transQuin(config, output):
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Expression summary statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
+        r.addTextFile('Expression statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
         r.addRCode('Expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
     r.endChapter()
@@ -425,7 +425,7 @@ def transQuin(config, output):
         
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Expression summary statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
+        r.addTextFile('Expression statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
         r.addRCode('Expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
     r.endChapter()

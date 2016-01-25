@@ -61,16 +61,14 @@ namespace Anaquin
                  * Novel statistics
                  */
                 
-                double nExonN,   nExonR,   nExonP;
-                double nIntronN, nIntronR, nIntronP;
+                double   nExonP, nIntronP;
+                unsigned nExonN, nExonR, nIntronN, nIntronR;
             };
             
             std::map<ChromoID, Data> data;
             
             // Reference file for each chromosome
             std::map<ChromoID, FileName> refs;
-            
-            SequinHist bHist, eHist, iHist, tHist;
         };
 
         // Analyze a single sample

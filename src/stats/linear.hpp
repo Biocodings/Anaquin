@@ -37,19 +37,19 @@ namespace Anaquin
         SStrings files;
         
         // Eg: 2387648 (15.56%)
-        SReals chrT_n, endo_n;
+        SReals n_chrT, n_endo;
         
         // Eg: 25738262 (67.56%)
-        SProps chrT_p, endo_p;
+        SProps p_chrT, p_endo;
         
         // Eg: 56 sequins
-        SCounts ref_n;
+        SCounts n_ref;
         
         // Eg: sequins
         Units units;
         
         // Eg: Detected 46 sequins
-        SCounts det_n;
+        SCounts n_det;
         
         // Optimal break-point
         SReals b;

@@ -19,9 +19,9 @@ extern Scripts PlotSplice();
 
 Scripts StatsWriter::inflectSummary()
 {
-    return "Summary for dataset: %1%\n\n"
-           "   Synthetic:   %2% %3%\n\n"
-           "   Experiment:  %4% %5%\n"
+    return "Summary for input: %1%\n\n"
+           "   Synthetic:   %2% (%3%)\n\n"
+           "   Experiment:  %4% (%5%)\n"
            "   Reference:   %6% %7%\n"
            "   Detected:    %8% %7%\n\n"
            "   ***\n"
@@ -58,13 +58,13 @@ Scripts StatsWriter::inflectSummary()
 Scripts StatsWriter::inflectSummary(const SInflectStats &stats)
 {    
     return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
-                                                         % STRING(stats.chrT_n)     // 2
-                                                         % STRING(stats.chrT_p)     // 3
-                                                         % STRING(stats.endo_n)     // 4
-                                                         % STRING(stats.endo_p)     // 5
-                                                         % STRING(stats.ref_n)      // 6
+                                                         % STRING(stats.n_chrT)     // 2
+                                                         % STRING(stats.p_chrT)     // 3
+                                                         % STRING(stats.n_endo)     // 4
+                                                         % STRING(stats.p_endo)     // 5
+                                                         % STRING(stats.n_ref)      // 6
                                                          % STRING(stats.units)      // 7
-                                                         % STRING(stats.det_n)      // 8
+                                                         % STRING(stats.n_det)      // 8
                                                          % STRING(stats.b)          // 9
                                                          % STRING(stats.bID)        // 10
                                                          % STRING(stats.lInt)       // 11
@@ -98,8 +98,9 @@ Scripts StatsWriter::inflectSummary(const SInflectStats &stats)
             ).str();
 };
 
-Scripts StatsWriter::inflectSummary(const std::vector<FileName> &files,
-                                    const std::vector<LinearStats> &stats,
+Scripts StatsWriter::inflectSummary(const std::vector<FileName>     &files,
+                                    const std::vector<MappingStats> &mStats,
+                                    const std::vector<LinearStats>  &stats,
                                     const Units &units)
 {
     SInflectStats r;
@@ -121,6 +122,14 @@ Scripts StatsWriter::inflectSummary(const std::vector<FileName> &files,
         // Remember the break-point is on the log-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 
+        r.n_chrT.add(mStats[i].n_chrT);
+        r.n_endo.add(mStats[i].n_endo);
+        r.p_chrT.add(mStats[i].chrTProp());
+        r.p_endo.add(mStats[i].endoProp());
+
+        r.n_ref.add(mStats[i].hist.size());
+        r.n_det.add(detect(mStats[i].hist));
+        
         r.b.add(b);
         r.bID.add(inf.id);
         r.lInt.add(inf.lInt);
