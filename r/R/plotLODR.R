@@ -262,7 +262,7 @@ plotLODR <- function(data,
                       geom_segment(data=arrowDat, aes(x = x, y = y, xend = xend, yend = yend, colour = ratio), 
                                      lineend = "round", arrow = grid::arrow(length = grid::unit(0.5, 'cm')), size = 2, alpha = 0.6) +
 
-                      labs(colour='Ratio') +
+                      labs(colour='Log-Fold') +
                       geom_hline(yintercept=cutoff, linetype=2, size=2) + # Line for probability threshold
                       theme_bw()
 

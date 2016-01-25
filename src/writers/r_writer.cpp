@@ -1,4 +1,3 @@
-#include <iostream>
 #include "stats/analyzer.hpp"
 #include "data/experiment.hpp"
 #include "writers/r_writer.hpp"
@@ -20,19 +19,29 @@ extern Scripts PlotSplice();
 Scripts StatsWriter::inflectSummary()
 {
     return "Summary for input: %1%\n\n"
-           "   Synthetic:   %2% (%3%)\n\n"
-           "   Experiment:  %4% (%5%)\n"
+           "   Synthetic:   %2% (%3%)\n"
+           "   Experiment:  %4% (%5%)\n\n"
            "   Reference:   %6% %7%\n"
            "   Detected:    %8% %7%\n\n"
            "   ***\n"
-           "   *** Detection Limits\n"
+           "   *** Detection Limit. Estimated by piecewise segmented regression.\n"
            "   ***\n\n"
            ""
            "   Break: %9% (%10%)\n\n"
-           "   Left:  %11% + %12%x (R2 = %13%)\n"
-           "   Right: %14% + %15%x (R2 = %16%)\n\n"
            "   ***\n"
-           "   *** Statistics for linear regression\n"
+           "   *** Before the break (left regression)\n"
+           "   ***\n\n"
+           "   Intercept: %11%\n"
+           "   Slope:     %12%\n"
+           "   R2:        %13%\n\n"
+           "   ***\n"
+           "   *** After the break (right regression)\n"
+           "   ***\n\n"
+           "   Intercept: %14%\n"
+           "   Slope:     %15%\n"
+           "   R2:        %16%\n\n"
+           "   ***\n"
+           "   *** Overall linear regression\n"
            "   ***\n\n"
            "   Correlation: %17%\n"
            "   Slope:       %18%\n"
@@ -43,7 +52,7 @@ Scripts StatsWriter::inflectSummary()
            "   SSE:         %24%, DF: %25%\n"
            "   SST:         %26%, DF: %27%\n\n"
            "   ***\n"
-           "   *** Statistics for linear regression (log2 scale)\n"
+           "   *** Overall linear regression (log2 scale)\n"
            "   ***\n\n"
            "   Correlation: %28%\n"
            "   Slope:       %29%\n"
@@ -119,7 +128,7 @@ Scripts StatsWriter::inflectSummary(const std::vector<FileName>     &files,
         // Calcluate the inflect point after log-transformation
         const auto inf = stats[i].inflect(true);
         
-        // Remember the break-point is on the log-scale, we'll need to convert it back
+        // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 
         r.n_chrT.add(mStats[i].n_chrT);

@@ -52,7 +52,7 @@ namespace Anaquin
                                                         const Units &units,
                                                         const Units &ref = "")
         {
-            const auto summary = "Summary for dataset: %1%\n\n"
+            const auto summary = "Summary for file: %1%\n\n"
                                  "   Experiment:  %2% %4%\n"
                                  "   Synthetic:   %3% %4%\n\n"
                                  "   Reference:   %5% %6%\n"
@@ -136,7 +136,7 @@ namespace Anaquin
                                                                                             const Units &ref = "",
                                                                                             const Label &samples = "")
         {
-            const auto summary = "Summary for dataset: %1% and %2%\n\n"
+            const auto summary = "Summary for file: %1% and %2%\n\n"
                                  "   %3% (A):       %4% %5%\n"
                                  "   Query (A):     %6% %5%\n\n"
                                  "   %3% (B):       %7% %5%\n"

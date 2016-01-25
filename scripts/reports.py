@@ -383,13 +383,13 @@ def transQuin(config, output):
     # Execute the command for genes
     anaquin('TransExpress', req, config, onlyPrint=True, subdir='TG')
 
-    r.startChapter('TransQuin Expression (Gene)')
-    r.addTextFile('Pooled summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
+    r.startChapter('TransQuin Gene Expression')
+    r.addTextFile('Gene expression summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Expression statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
-        r.addRCode('Expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
+        r.addTextFile('Gene expression statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
+        r.addRCode('Gene expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
     r.endChapter()
 
@@ -418,15 +418,15 @@ def transQuin(config, output):
     # Execute the command for genes
     anaquin('TransExpress', req, config, onlyPrint=True, subdir='TI')
 
-    r.startChapter('TransQuin Expression (Isoform)')
+    r.startChapter('TransQuin Isoform Expression')
 
-    r.addTextFile('Pooled summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
+    r.addTextFile('Isoform expression summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
     r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', )
         
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Expression statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
-        r.addRCode('Expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
+        r.addTextFile('Isoform expression statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
+        r.addRCode('Isoform expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
     r.endChapter()
     

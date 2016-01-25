@@ -153,7 +153,7 @@ plotMA <- function(data,
              coord_cartesian(xlim=xrange, ylim=yrange)                 +
              theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
              scale_y_continuous(breaks=seq(-10, 10, 1))                                +
-             labs(colour='Log-Ratio')                                                  +
+             labs(colour='Log-Fold')                                                   +
              theme(legend.justification=c(1,0), legend.position=c(1,0)) +
              theme_bw()
 

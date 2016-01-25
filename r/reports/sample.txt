@@ -152,11 +152,11 @@ EXP_G_FILE = Cufflinks/B1/genes.fpkm_tracking
 EXP_G_FILE = Cufflinks/B2/genes.fpkm_tracking
 EXP_G_FILE = Cufflinks/B3/genes.fpkm_tracking
 
-#################################################
-#                                               #
-# 		  6. Expression analysis (Isoform)      #
-#                                               #
-#################################################
+#####################################################
+#                                                   #
+# 		  6. Expression analysis (Isoform)          #
+#                                                   #
+#####################################################
 
 #
 # Which software did you used to generate the results?

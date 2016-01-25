@@ -94,7 +94,6 @@ static Scripts sSummary()
            "   *************************************************\n\n"
            "   ***\n"
            "   *** The following statistics are computed for exact and fuzzy.\n"
-           "   ***\n"
            "   *** The fuzzy level is 10 nucleotides.\n"
            "   ***\n\n"
            "   -------------------- Exon level --------------------\n\n"
@@ -127,7 +126,6 @@ static Scripts eSummary()
            "   ***************************************\n\n"
            "   ***\n"
            "   *** The following statistics are computed for exact and fuzzy.\n"
-           "   ***\n"
            "   *** The fuzzy level is 10 nucleotides.\n"
            "   ***\n\n"
            "   -------------------- Exon level --------------------\n\n"
@@ -145,9 +143,9 @@ static Scripts eSummary()
            "   -------------------- Transcript level --------------------\n\n"
            "   Sensitivity: %15% (%16%)\n"
            "   Specificity: %17% (%18%)\n\n"
-           "   Missing exons: %19%/%20% (%21%)\n"
+           "   Missing exons:   %19%/%20% (%21%)\n"
            "   Missing introns: %22%/%23% (%24%)\n\n"
-           "   Novel exons: %25%/%26% (%27%)\n"
+           "   Novel exons:   %25%/%26% (%27%)\n"
            "   Novel introns: %28%/%29% (%30%)\n\n";
 }
 
@@ -357,7 +355,7 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
 //static void writeSequins(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
 //{
 //    o.writer->open(name + "/TransAssembly_sequin.stats");
-//    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+//    o.writer->write((boost::format("Summary for file: %1%\n") % file).str());
 //    
 //    auto format = "%1%\t%2%\t%3%\t%4%";
 //    o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());

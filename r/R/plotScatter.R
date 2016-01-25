@@ -53,7 +53,10 @@ plotScatter <- function(data,
                 geom_smooth(method='lm', formula=y ~ x)            +
                 annotate("text", label=lm_eqn(data), x=0, y=max(data$y), size=6, colour='black', parse=TRUE) +
                 theme_bw()
-    
+
+    p <- p +  theme(axis.title.x=element_text(face="bold", colour="#990000", size=15))
+    p <- p +  theme(axis.title.y=element_text(face="bold", colour="#990000", size=15))
+
     if (shouldHideLegend)
     {
         p <- p + guides(colour=FALSE)        
