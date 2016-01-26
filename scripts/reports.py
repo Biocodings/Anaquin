@@ -8,7 +8,7 @@ import os
 import sys
 import math
 import uuid
-
+import tempfile
 
 ########################################################
 #                                                      #
@@ -183,14 +183,14 @@ class Language:
 
     @staticmethod
     def writeRCode(file, output, src, title):
-        with open(src, 'r') as src:
-            text = src.read()        
-        
+        tmp = (tempfile.NamedTemporaryFile())
         if (output == 'RMarkdown'):
             file.write('\n## ' + title + '\n\n')
             file.write('```{r results=''\'hide\''', message=FALSE, warning=FALSE, echo=FALSE}\n')
-            file.write(text)
-            file.write('\n```\n\n')
+            file.write('png(filename="' + tmp.name + '")\n')
+            file.write('source("' + src + '")\n')
+            file.write('dev.off()')
+            file.write('\n```\n\n![](' + tmp.name + ')')
 
 class Chapter:
     def __init__(self, title):

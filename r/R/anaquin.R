@@ -315,7 +315,8 @@ loadMixture <- function(mix=NULL, exons=NULL)
 {
     if (is.null(mix))
     {
-        mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), row.names=1, sep='\t')
+        mix <- read.csv('/Users/tedwong/Sources/QA/data/trans/MTR004.v013.csv', row.names=1, sep='\t')
+        #mix <- read.csv(url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv'), row.names=1, sep='\t')
         colnames(mix) <- c('Length', 'Mix.A', 'Mix.B')
     }
 
