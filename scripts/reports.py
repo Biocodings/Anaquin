@@ -466,6 +466,9 @@ def transQuin(config, output):
     # Add summary statistics for each replicate
     r.addTextFile('Differential summary statistics', 'TransDiffs_summary.stats', )
 
+    # Add scatter plot
+    r.addRCode('Scatter plot', 'TransDiffs_scatter.R', )
+
     # Add ROC plot
     r.addRCode('ROC plot', 'TransDiffs_ROC.R', )
 
