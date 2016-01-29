@@ -19,7 +19,7 @@ TEST_CASE("TAlign_All_AllRepeats")
         Alignment align;
         
         align.id      = "chrT";
-        align.qName   = "chrT";
+        align.name    = "chrT";
         align.i       = 0;
         align.mapped  = true;
         align.spliced = false;
@@ -181,7 +181,7 @@ TEST_CASE("TAlign_R2_33_1")
         Alignment align;
         
         align.id      = "chrT";
-        align.qName   = "chrT";
+        align.name    = "chrT";
         align.i       = 0;
         align.mapped  = true;
         align.spliced = false;
@@ -333,7 +333,7 @@ TEST_CASE("TAlign_All_FalsePositives")
         Alignment align;
         
         align.id      = "chrT";
-        align.qName   = "chrT";
+        align.name    = "chrT";
         align.i       = 0;
         align.mapped  = true;
         align.spliced = false;

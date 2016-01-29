@@ -35,7 +35,7 @@ void ParserSAM::parse(const FileName &file, Functor x)
         }
 
         align.id     = std::string(h->target_name[t->core.tid]);
-        align.qName  = bam_get_qname(t);
+        align.name   = bam_get_qname(t);
         align.mapped = !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)

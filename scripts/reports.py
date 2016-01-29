@@ -317,7 +317,7 @@ def transQuin(config, output):
     # Execute the command
     anaquin('TransAlign', req, config, onlyPrint=True)
 
-    r.startChapter('TransQuin Alignment')
+    r.startChapter('Statistics (TransAlign)')
 
     for i in range(0, len(names)):
         r.addTextFile('Alignment statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
@@ -349,7 +349,7 @@ def transQuin(config, output):
     # Execute the command
     anaquin('TransAssembly', req, config, onlyPrint=True)
 
-    r.startChapter('TransQuin Assembly')
+    r.startChapter('Statistics (TransAssembly)')
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
@@ -383,7 +383,7 @@ def transQuin(config, output):
     # Execute the command for genes
     anaquin('TransExpress', req, config, onlyPrint=True, subdir='TG')
 
-    r.startChapter('TransQuin Gene Expression')
+    r.startChapter('Statistics (Gene Expression)')
     r.addTextFile('Gene expression summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
 
     # Add summary statistics for each replicate
@@ -418,7 +418,7 @@ def transQuin(config, output):
     # Execute the command for genes
     anaquin('TransExpress', req, config, onlyPrint=True, subdir='TI')
 
-    r.startChapter('TransQuin Isoform Expression')
+    r.startChapter('Statistics (Isoform Expression)')
 
     r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', )
     r.addTextFile('Isoform expression summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
@@ -461,7 +461,7 @@ def transQuin(config, output):
     # Execute the command
     anaquin('TransDiff', req, config, onlyPrint=True)
 
-    r.startChapter('TransQuin Differential')
+    r.startChapter('Statistics (Gene Expression Differential)')
 
     # Add summary statistics for each replicate
     r.addTextFile('Differential summary statistics', 'TransDiffs_summary.stats', )
@@ -486,7 +486,7 @@ def transQuin(config, output):
     #                                                     #
     #######################################################
 
-    r.startChapter('Apprendix: TransQuin Alignment')
+    r.startChapter('Apprendix: Sequin Alignment')
 
     for i in range(0, len(names)):
         r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_quins.stats', )

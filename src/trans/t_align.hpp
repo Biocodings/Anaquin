@@ -124,14 +124,14 @@ namespace Anaquin
                     return Standard::instance().r_trans.limitGene(*h);
                 }
                 
-                // Number of exons in the query
-                inline Counts qExons(const ChromoID &cID) const { return data.at(cID).overE.aNQ(); }
+                // Number of non-split reads
+                inline Counts countNonSplit(const ChromoID &cID) const { return data.at(cID).overE.aNQ(); }
                 
-                // Number of introns in the query
-                inline Counts qIntrons(const ChromoID &cID) const { return data.at(cID).overI.aNQ(); }
+                // Number of split reads
+                inline Counts countSplit(const ChromoID &cID) const { return data.at(cID).overI.aNQ(); }
 
-                // Number of bases in the query
-                inline Counts qBases(const ChromoID &cID) const { return data.at(cID).overB.m.nq(); }
+                // Number of query bases in the input file
+                inline Counts countQBases(const ChromoID &cID) const { return data.at(cID).overB.m.nq(); }
 
                 inline CountPercent missing(const ChromoID &cID, MissingMetrics m) const
                 {
@@ -188,13 +188,9 @@ namespace Anaquin
                 }
             };
 
-            // Analyze a single sample
             static Stats analyze(const FileName &, const Options &o = Options());
-        
-            // Analyze a single sample
             static Stats analyze(const std::vector<Alignment> &, const Options &o = Options());
 
-            // Analyze multiple replicates
             static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o = Options())
             {
                 std::vector<TAlign::Stats> stats;
@@ -207,7 +203,6 @@ namespace Anaquin
                 return stats;
             }
 
-            // Analyze multiple replicates
             static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &aligns, const Options &o = Options())
             {
                 std::vector<TAlign::Stats> stats;

@@ -285,7 +285,7 @@ template <typename T> void collect(const ChromoID &cID,
         // Update the FP at the gene level
         m.fp() = lFPS.at(gID) + rFPS.at(gID);
         
-        // Update the FP at the overall level
+        // Update the overall FP
         t.overB.m.fp() += m.fp();
         
         Base covered = 0;
@@ -438,7 +438,7 @@ static void classifyEndo(TAlign::Stats::Data &t,
 
     if (!matchAlign(t, align))
     {
-        t.unknowns.push_back(UnknownAlignment(align.qName, align.l));
+        t.unknowns.push_back(UnknownAlignment(align.name, align.l));
     }
 }
 
@@ -457,7 +457,7 @@ static void classifyChrT(TAlign::Stats::Data &t,
     }
     else if (!matchAlign(t, align))
     {
-        t.unknowns.push_back(UnknownAlignment(align.qName, align.l));
+        t.unknowns.push_back(UnknownAlignment(align.name, align.l));
     }
 }
 
@@ -526,15 +526,11 @@ template <typename F> std::string check(const TAlign::Stats &stats, F f, const C
     return std::to_string(f(id));
 }
 
-/*
- * Summary files for the replicates and samples
- */
-
 static Scripts replicateSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Proportion of reads mapped to the synthetic and experiment\n"
+           "   *** Fraction of reads mapped to the synthetic and experimental chromosomes\n"
            "   ***\n\n"
            "   Unmapped:   %2% reads\n"
            "   Synthetic:  %3% (%4%%%) reads\n"
@@ -543,42 +539,34 @@ static Scripts replicateSummary()
            "   ***\n"
            "   *** Reference annotation (Synthetic)\n"
            "   ***\n\n"
-           "   File: %8%\n\n"
+           "   Supplied: %8%\n\n"
            "   Synthetic: %9% exons\n"
            "   Synthetic: %10% introns\n"
            "   Synthetic: %11% bases\n\n"
            "   ***\n"
            "   *** Reference annotation (Experiment)\n"
            "   ***\n\n"
-           "   File: %12%\n\n"
+           "   Supplied: %12%\n\n"
            "   Experiment: %13% exons\n"
            "   Experiment: %14% introns\n"
            "   Experiment: %15% bases\n\n"
            "   ***\n"
-           "   *** Input file\n"
+           "   *** User Alignments\n"
            "   ***\n\n"
-           "   Synthetic:  %16% exons\n"
-           "   Synthetic:  %17% introns\n"
-           "   Synthetic:  %18% bases\n\n"
-           "   Experiment: %19% exons\n"
-           "   Experiment: %20% introns\n"
-           "   Experiment: %21% bases\n\n"
+           "   Split reads (Synthetic):      %16% reads\n"
+           "   Non-split reads (Synthetic):  %17% reads\n"
+           "   Covered bases (Synthetic):    %18% bases\n\n"
+           "   Split reads (Experiment):     %19% reads\n"
+           "   Non-split reads (Experiment): %20% reads\n"
+           "   Covered bases (Experiment):   %21% bases\n\n"
            "   ***\n"
            "   *** The following statistics are computed at the exon, intron and base level.\n"
            "   ***\n"
-           "   *** Exon level is defined by performance per exon. An alignment that\n"
-           "   *** is not mapped entirely within an exon is considered as a FP. The\n"
-           "   *** intron level is similar.\n"
-           "   ***\n"
-           "   *** Base level is defined by performance per nucleotide. A partial\n"
-           "   *** mapped read will have FP and TP.\n"
-           "   ***\n"
-           "   *** Please refer to the paper \"Evaluation of gene structure prediction programs\" for\n"
-           "   *** more details\n"
+           "   *** Please refer to the online documentation at www.sequin.xyz for more details.\n"
            "   ***\n\n"
            "   *************************************************\n"
            "   ***                                           ***\n"
-           "   ***    Statistics for synthetic chromosome    ***\n"
+           "   ***    Comparison with synthetic annotation   ***\n"
            "   ***                                           ***\n"
            "   *************************************************\n\n"
            "   -------------------- Exon level --------------------\n\n"
@@ -597,11 +585,11 @@ static Scripts replicateSummary()
            "   Exon:   %34%\n"
            "   Intron: %35%\n"
            "   Gene:   %36%\n\n"
-           "   ***************************************\n"
-           "   ***                                 ***\n"
-           "   ***    Statistics for experiment    ***\n"
-           "   ***                                 ***\n"
-           "   ***************************************\n\n"
+           "   *****************************************************\n"
+           "   ***                                               ***\n"
+           "   ***    Comparison with experimental annotation    ***\n"
+           "   ***                                               ***\n"
+           "   *****************************************************\n\n"
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %37%\n"
            "   Specificity: %38%\n\n"
@@ -645,12 +633,12 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::countExons, Endo))   // 13
                                           % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::countIntrons, Endo)) // 14
                                           % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::exonBase, Endo))     // 15
-                                          % BIND_Q(Stats::qExons, ChrT)                                     // 16
-                                          % BIND_Q(Stats::qIntrons, ChrT)                                   // 17
-                                          % BIND_Q(Stats::qBases, ChrT)                                     // 18
-                                          % BIND_Q(Stats::qExons, Endo)                                     // 19
-                                          % BIND_Q(Stats::qIntrons, Endo)                                   // 20
-                                          % BIND_Q(Stats::qBases, Endo)                                     // 21
+                                          % BIND_Q(Stats::countNonSplit, ChrT)                              // 16
+                                          % BIND_Q(Stats::countSplit, ChrT)                                 // 17
+                                          % BIND_Q(Stats::countQBases, ChrT)                                // 18
+                                          % BIND_Q(Stats::countNonSplit, Endo)                              // 19
+                                          % BIND_Q(Stats::countSplit, Endo)                                 // 20
+                                          % BIND_Q(Stats::countQBases, Endo)                                // 21
                                           % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 22
                                           % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 23
                                           % stats.limit(AlignMetrics::AlignExon).abund                      // 24

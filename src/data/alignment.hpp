@@ -14,7 +14,7 @@ namespace Anaquin
         AlignmentID id;
 
         // Eg: B7_591:6:155:12:674
-        std::string qName;
+        std::string name;
         
         unsigned i;
         

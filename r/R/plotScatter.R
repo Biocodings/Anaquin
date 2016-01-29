@@ -54,8 +54,8 @@ plotScatter <- function(data,
                 annotate("text", label=lm_eqn(data), x=0, y=max(data$y)-1, size=5, colour='black', parse=TRUE) +
                 theme_bw()
 
-    p <- p +  theme(axis.title.x=element_text(face="bold", colour="#990000", size=15))
-    p <- p +  theme(axis.title.y=element_text(face="bold", colour="#990000", size=15))
+    p <- p +  theme(axis.title.x=element_text(face='bold', size=15))
+    p <- p +  theme(axis.title.y=element_text(face='bold', size=15))
 
     if (shouldHideLegend)
     {
