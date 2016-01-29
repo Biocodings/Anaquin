@@ -100,6 +100,18 @@ namespace Anaquin
                 _rawMIDs.insert(id);
             }
 
+            inline std::vector<SequinID> seqIDs() const
+            {
+                std::vector<SequinID> x;
+                
+                for (const auto &i : _data)
+                {
+                    x.push_back(i.first);
+                }
+                
+                return x;
+            }
+        
             // Return all validated sequins
             inline const std::map<SequinID, Data> &data() const { return _data; }
 
@@ -720,7 +732,9 @@ namespace Anaquin
             std::set<ChromoID> chromoIDs() const;
         
             inline bool isOnlyChrT() const { return chromoIDs().size() == 1; }
-        
+
+            std::vector<GeneID> geneIDs(const ChromoID &) const;
+
             const GeneData   *findGene  (const ChromoID &, const GeneID &)           const;
             const GeneData   *findGene  (const ChromoID &, const Locus &, MatchRule) const;
             const ExonData   *findExon  (const ChromoID &, const Locus &, MatchRule) const;

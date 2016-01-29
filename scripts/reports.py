@@ -206,8 +206,8 @@ class Chapter:
     def addImage(self, title, file):
         self.items.append({ 'type': 'image', 'title': title, 'value': file })
 
-    def addRCode(self, title, file):
-        self.items.append({ 'type': 'rCode', 'title': title, 'value': file })
+    def addRCode(self, title, file, description):
+        self.items.append({ 'type': 'rCode', 'title': title, 'value': file, 'description': description })
         
     def generate(self, file, output):
         Language.writePage(file, output)
@@ -251,8 +251,8 @@ class Report:
     def addImage(self, title, file):
         self.current.addImage(title, file)
         
-    def addRCode(self, title, file):
-        self.current.addRCode(title, file)
+    def addRCode(self, title, file, description=''):
+        self.current.addRCode(title, file, description)
         
     def generate(self, file, output):
         print('\n-------------------------------------')
@@ -384,6 +384,8 @@ def transQuin(config, output):
     anaquin('TransExpress', req, config, onlyPrint=True, subdir='TG')
 
     r.startChapter('Statistics (Gene Expression)')
+
+    r.addRCode('Pooled scatter plot for gene expression', 'TG' + os.sep + 'TransExpress_pooled.R')
     r.addTextFile('Gene expression summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
 
     # Add summary statistics for each replicate
@@ -392,7 +394,7 @@ def transQuin(config, output):
         r.addRCode('Gene expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
 
     r.endChapter()
-
+    
     ################################################################
     #                                                              #
     #  4. Generating statistics for expression analysis (Isoform)  #
@@ -420,7 +422,8 @@ def transQuin(config, output):
 
     r.startChapter('Statistics (Isoform Expression)')
 
-    r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', )
+    r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', 'The Minor/Major plot shows the relative quantification of alternative spliced isoforms by measuring the minimum isoform as a fraction of the major isoform for each sequin gene. The accuracy of the quantification is typically dependent on sequence coverage and higher for high abundance genes. The concentration of the gene is shown by colors.')
+    r.addRCode('Pooled scatter plot for isoform expression', 'TI' + os.sep + 'TransExpress_pooled.R')
     r.addTextFile('Isoform expression summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
         
     # Add summary statistics for each replicate
@@ -467,16 +470,16 @@ def transQuin(config, output):
     r.addTextFile('Differential summary statistics', 'TransDiffs_summary.stats', )
 
     # Add scatter plot
-    r.addRCode('Scatter plot', 'TransDiffs_scatter.R', )
+    r.addRCode('Scatter plot', 'TransDiffs_scatter.R', 'The scatter plot shows the expected fold-change of genes against their measured fold-change. The more correlated they are the more accurate the experiment is. The R2 statistic measures how accurate the experiment is in detecting fold-changes. Accurate detection of fold-changes is crucial for differential analysis.\nThe accuracy of the quantification is typically dependent on abundance and higher for high abundance genes. The concentration of the gene is shown by colors.')
 
     # Add ROC plot
-    r.addRCode('ROC plot', 'TransDiffs_ROC.R', )
+    r.addRCode('ROC plot', 'TransDiffs_ROC.R', 'When true differences in expression exist between samples in an experiment, those differences should be detected in differential expression tests; where no differences exist, no difference should be detected. The true-positive and true-negative sequins controls can be used in a receiver operator characteristic (ROC) curve analysis of rank ordered differential expression test P-values.')
 
     # Add MA plot
-    r.addRCode('MA plot', 'TransDiffs_MA.R', )
+    r.addRCode('MA plot', 'TransDiffs_MA.R', 'The MA plot is used to study dependences between the log fold-ratio and the average normalized counts. The counts are normalized as they are adjusted for the library size. Typically, the variability is higher for less abundance genes.\n\nSequin data points are colored by log-ratio. They represent the mean log-fold changes for a given concentration level. Endogenous genes data points are shown as pink points.')
 
     # Add LODR plot
-    r.addRCode('LODR plot', 'TransDiffs_LODR.R', )
+    r.addRCode('LODR plot', 'TransDiffs_LODR.R', 'Identifying differentially expressed genes is the objective of differential expression experiments; however, how much information is needed to have confidence that a given fold change in expression of transcripts will be detected? The LODR estimates can inform researchers of diagnostic power at a given fold change.\n\nAn LODR estimate for a particular fold change is the minimum signal, above which differentially expressed transcripts can be detected with a specified degree of confidence. The estimate for each ratio group is found based on the intersection of the model upper confidence interval upper bound with the P-value threshold.')
 
     r.endChapter()
 

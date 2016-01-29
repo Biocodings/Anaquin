@@ -36,8 +36,9 @@ namespace Anaquin
          */
 
         static Scripts inflectSummary();
-        static Scripts inflectSummary(const SInflectStats &stats);
-        static Scripts inflectSummary(const std::vector<FileName> &,
+        static Scripts inflectSummary(const FileName &ref, const SInflectStats &stats);
+        static Scripts inflectSummary(const FileName &ref,
+                                      const std::vector<FileName> &,
                                       const std::vector<MappingStats> &,
                                       const std::vector<LinearStats> &,
                                       const Units &units);
@@ -229,24 +230,26 @@ namespace Anaquin
          */
         
         // Create an MA plot and link to the count table
-        static Scripts createMA(const std::string &, const FileName &, const std::string &);
+        static Scripts createMA(const Path &, const FileName &, const std::string &);
 
         /*
          * -------------------- LODR Plot --------------------
          */
         
-        static Scripts createLODR(const std::string &, const FileName &, const FileName &, const std::string &);
+        static Scripts createLODR(const Path &, const FileName &, const FileName &, const std::string &);
 
         /*
          * --------------------- Splice Plot ---------------------
          */
 
-        static Scripts createSplice(const std::string &, const FileName &);
+        static Scripts createSplice(const Path &, const FileName &);
 
         /*
          * -------------------- Scatter Plot --------------------
          */
-        
+
+        static Scripts scatterPool(const Path &, const FileName &);
+
         template <typename Stats> static Scripts scatter(const Stats &stats,
                                                          const ChromoID &cID,
                                                          const std::string &title,
@@ -255,7 +258,7 @@ namespace Anaquin
                                                          const AxisLabel &yLabel,
                                                          const AxisLabel &xLogLabel,
                                                          const AxisLabel &yLogLabel,
-                                                         bool shoudLog2 = true)
+                                                         bool  shoudLog2 = true)
         {
             std::vector<double> x, y;
             std::vector<std::string> z;

@@ -96,9 +96,12 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
     }
 }
 
-template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o, Functor f)
+template <typename Functor> TExpress::Stats calculate(const SampleName &name, const TExpress::Options &o, Functor f)
 {
     TExpress::Stats stats;
+    
+    // Eg: A1
+    stats.name = name;
     
     const auto &r   = Standard::instance().r_trans;
     const auto cIDs = r.chromoIDs();
@@ -158,7 +161,7 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
 
 TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Options &o)
 {
-    return calculate(o, [&](TExpress::Stats &stats)
+    return calculate("...", o, [&](TExpress::Stats &stats)
     {
         for (const auto &i : exps)
         {
@@ -171,7 +174,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 {
     o.info("Parsing: " + file);
 
-    return calculate(o, [&](TExpress::Stats &stats)
+    return calculate(o.exp->fileToSample(file), o, [&](TExpress::Stats &stats)
     {
         switch (o.soft)
         {
@@ -220,14 +223,103 @@ static void writeSummary(const TExpress::Stats &stats,
 {
     o.writer->create(name);
     o.writer->open(name + "/TransExpress_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(std::vector<FileName>     { file  },
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
+                                                std::vector<FileName>     { file  },
                                                 std::vector<MappingStats> { stats },
                                                 std::vector<LinearStats>  { stats.data.at(ChrT) },
                                                 units));
     o.writer->close();
 }
 
-static void writeCSV(const TExpress::Stats  &stats, const FileName &file, const std::string &name, const TExpress::Options &o)
+template <typename Stats, typename Options> Scripts writeSampleCSV(const std::vector<SequinID> &ids, const Stats &stats, const Options &o)
+{
+    assert(!ids.empty());
+    
+    std::stringstream ss;
+    
+    /*
+     * 1: Generating the sample names
+     */
+    
+    const auto &names = o.exp->names();
+    
+    for (const auto &name : names)
+    {
+        ss << ("," + name);
+    }
+    
+    ss << "\n";
+    
+    /*
+     * 2: Generating for the features
+     */
+
+    // Expected for each sequin across samples (should be identical)
+    std::map<SequinID, std::map<SampleName, double>> expected;
+
+    // Measured for each sequin across samples
+    std::map<SequinID, std::map<SampleName, double>> measured;
+
+    for (const auto &i : stats)
+    {
+        for (const auto &j : i.data.at(ChrT))
+        {
+            // Eg: R1_1_1
+            const auto &id = j.first;
+            
+            // Eg: A1
+            const auto name = i.name;
+
+            expected[id][i.name] = j.second.x;
+            measured[id][i.name] = j.second.y;
+        }
+    }
+    
+    for (const auto &id : ids)
+    {
+        ss << id;
+        
+        if (!expected.count(id))
+        {
+            ss << ",NA";
+            
+            for (auto i = 0; i < names.size(); i++)
+            {
+                ss << ",NA";
+            }
+        }
+        else
+        {
+            /*
+             * Generating expected concentration (any replicate will give the identical concentration)
+             */
+            
+            ss << "," << expected[id][names.front()];
+            
+            /*
+             * Generating measured concentration for all samples
+             */
+            
+            for (const auto &name : names)
+            {
+                if (!measured[id].count(name))
+                {
+                    ss << ",NA";
+                }
+                else
+                {
+                    ss << "," << measured[id].at(name);
+                }
+            }
+        }
+        
+        ss << "\n";
+    }
+    
+    return ss.str();
+}
+
+static void writeCSV(const TExpress::Stats &stats, const FileName &file, const std::string &name, const TExpress::Options &o)
 {
     std::vector<std::string> ids;
     std::vector<double> x, y;
@@ -239,9 +331,10 @@ static void writeCSV(const TExpress::Stats  &stats, const FileName &file, const 
 static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &stats, const TExpress::Options &o)
 {
     o.writer->open(file);
-    
+    o.writer->write("expected", false);
+
     /*
-     * Writing the headers
+     * Generating sample headers
      */
     
     const auto &names = o.exp->names();
@@ -255,10 +348,6 @@ static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &
     
     o.writer->write("\n", false);
 
-    /*
-     * Writing the FPKM values
-     */
-    
     // Number of samples
     const auto n = names.size();
     
@@ -268,6 +357,16 @@ static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &
         {
             o.writer->write(i.first, false);
             
+            /*
+             * Generating expected expression
+             */
+
+            o.writer->write("," + std::to_string(stats[0].data.at(id).at(i.first).x), false);
+
+            /*
+             * Generating measured expression
+             */
+
             // For all the samples...
             for (auto j = 0; j < n; j++)
             {
@@ -277,7 +376,7 @@ static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &
                 }
                 else
                 {
-                    o.writer->write(",0");
+                    o.writer->write(",0", false);
                 }
             }
             
@@ -327,7 +426,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Write summary statistics for each sample
+     * Generating summary statistics for each sample
      */
     
     std::vector<TExpress::Stats::Data> data;
@@ -349,18 +448,56 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     }
     
     /*
-     * Write summary statistics for all samples
+     * Generating CSV of expression for all samples
+     */
+  
+//    const auto &r = Standard::instance().r_trans;
+//
+//    o.writer->open("ABCD");
+//    
+//    switch (o.lvl)
+//    {
+//        case Level::Gene:
+//        {
+//            o.writer->write(writeSampleCSV(r.geneIDs(ChrT), stats, o));
+//            break;
+//        }
+//
+//        case Level::Isoform:
+//        {
+//            o.writer->write(writeSampleCSV(r.seqIDs(), stats, o));
+//            break;
+//        }
+//
+//        case Level::Exon:
+//        {
+//            break;
+//        }
+//    }
+//
+//    o.writer->close();
+
+    /*
+     * Generating a CSV of expression for all samples
+     */
+    
+    writeFPKM("TExpress_FPKM.csv", stats, o);
+
+    /*
+     * Generating summary statistics for all samples
      */
     
     o.writer->open("TransExpress_pooled.stats");
-    o.writer->write(StatsWriter::inflectSummary(files, data_, data, units));
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT, files, data_, data, units));
     o.writer->close();
 
     /*
-     * Generating a table of expression for all samples
+     * Generating scatter plot for all samples
      */
-
-    writeFPKM("TExpress_FPKM.csv", stats, o);
+    
+    o.writer->open("TransExpress_pooled.R");
+    o.writer->write(RWriter::scatterPool(o.working, "TExpress_FPKM.csv"));
+    o.writer->close();
 
     /*
      * Generating spliced plot for all samples (but only if we have the isoforms...)

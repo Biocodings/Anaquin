@@ -158,6 +158,7 @@ EXP_G_FILE = Cufflinks/B3/genes.fpkm_tracking
 #                                                   #
 #####################################################
 
+
 #
 # Which software did you used to generate the results?
 #
@@ -175,10 +176,10 @@ EXP_I_SOFT = StringTie
 #
 
 EXP_I_FILE = StringTie/A1/t_data.ctab
-EXP_I_FILE = StringTie/A1/t_data.ctab
-EXP_I_FILE = StringTie/A1/t_data.ctab
-EXP_I_FILE = StringTie/A1/t_data.ctab
-EXP_I_FILE = StringTie/A1/t_data.ctab
+EXP_I_FILE = StringTie/B1/t_data.ctab
+EXP_I_FILE = StringTie/B2/t_data.ctab
+EXP_I_FILE = StringTie/B1/t_data.ctab
+EXP_I_FILE = StringTie/B2/t_data.ctab
 EXP_I_FILE = StringTie/A1/t_data.ctab
 
 

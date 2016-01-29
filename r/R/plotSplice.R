@@ -121,7 +121,7 @@ plotSplice <- function(data,
     
     if (shouldError)
     {
-        p <- p + geom_errorbar(aes(ymax=log2(max), ymin=log2(min)), size=0.3, alpha=0.7)
+        p <- p + geom_errorbar(aes(ymax=log2(y_max), ymin=log2(y_min)), size=0.3, alpha=0.7)
     }
     
     print(p)

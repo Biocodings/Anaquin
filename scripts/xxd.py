@@ -19,8 +19,9 @@ data  = [ 'data/manual.txt',
           'src/r/plotMA.R',
           'src/r/plotROC.R',
           'src/r/plotLODR.R',
-	  'src/r/plotSplice.R',                    
+          'src/r/plotSplice.R',
           'src/r/plotScatter.R',
+          'src/r/plotScatterPool.R',
 
            # ------- Fusion -------
 

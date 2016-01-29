@@ -517,6 +517,18 @@ Base TransRef::exonBase(const ChromoID &cID) const
     return _impl->data[cID].exonBase;
 }
 
+std::vector<GeneID> TransRef::geneIDs(const ChromoID &cID) const
+{
+    std::vector<GeneID> gIDs;
+
+    for (const auto &i : _impl->data.at(cID).genes)
+    {
+        gIDs.push_back(i.first);
+    }
+
+    return gIDs;
+}
+
 Limit TransRef::limitGene(const Hist &hist) const
 {
     return Reference<TransData, SequinStats>::limit(hist, [&](const GeneID &id)

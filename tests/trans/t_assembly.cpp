@@ -14,8 +14,10 @@ TEST_CASE("TAssembly_Reference")
 
     const auto r = TAssembly::analyze("data/trans/ATR001.v032.gtf", o);
 
-    REQUIRE(r.n_endo == 0);
-    REQUIRE(r.n_chrT == 1200);
+    REQUIRE(r.chrT_exons == 0);
+    REQUIRE(r.endo_exons == 1200);
+    REQUIRE(r.chrT_trans == 0);
+    REQUIRE(r.endo_trans == 1200);
 
     REQUIRE(r.data.at(ChrT).eSN == 1.0);
     REQUIRE(r.data.at(ChrT).eSP == 1.0);

@@ -16,83 +16,122 @@ extern Scripts PlotROC();
 // Defined in resources.cpp
 extern Scripts PlotSplice();
 
+// Defined in resources.cpp
+extern Scripts PlotScatterPool();
+
+Scripts RWriter::scatterPool(const Path &path, const FileName &file)
+{
+    std::stringstream ss;
+    ss << PlotScatterPool();
+
+    return (boost::format(ss.str()) % date()
+                                    % __full_command__
+                                    % path
+                                    % file).str();
+}
+
 Scripts StatsWriter::inflectSummary()
 {
     return "Summary for input: %1%\n\n"
-           "   Synthetic:   %2% (%3%)\n"
-           "   Experiment:  %4% (%5%)\n\n"
-           "   Reference:   %6% %7%\n"
-           "   Detected:    %8% %7%\n\n"
            "   ***\n"
-           "   *** Detection Limit. Estimated by piecewise segmented regression.\n"
+           "   *** The statistics are shown in arithmetic average and standard deviation. For example,\n"
+           "   *** 5.12 ± 0.52 has an arithmetic average of 5.12 and standard deviation 0.52.\n"
+           "   ***\n\n"
+           "   ***\n"
+           "   *** Fraction of genes for synthetic and experiment relative to all genes detected in the input file\n"
+           "   ***\n\n"
+           "   Synthetic:  %2% (%3%)\n"
+           "   Experiment: %4% (%5%)\n\n"
+           "   ***\n"
+           "   *** Reference annotation (Synthetic)\n"
+           "   ***\n\n"
+           "   File:      %6%\n"
+           "   Reference: %7% %8%\n"
+           "   Detected:  %9% %8%\n\n"
+    
+           "   ***\n"
+           "   *** Please refer to the online documentation for more details on the regression statistics.\n"
+           "   ***\n"
+           "   *** Correlation: Pearson’s correlation\n"
+           "   *** Slope:       Regression slope for the regression\n"
+           "   *** R2:          Coefficient of determination for the regression\n"
+           "   *** F-stat:      The F test statistic under the null hypothesis\n"
+           "   *** P-value:     The p-value under the null hypothesis\n"
+           "   *** SSM:         Sum of squares of model in ANOVA\n"
+           "   *** SSE:         Sum of squares of errors in ANOVA\n"
+           "   *** SST:         Total sum of squares in ANOVA\n"
+           "   ***\n\n"
+           "   ***\n"
+           "   *** Limit of Quantificiation (LOQ). Estimated by piecewise segmented regression.\n"
            "   ***\n\n"
            ""
-           "   Break: %9% (%10%)\n\n"
+           "   Break: %10% (%11%)\n\n"
            "   ***\n"
-           "   *** Before the break (left regression)\n"
+           "   *** Below LOQ\n"
            "   ***\n\n"
-           "   Intercept: %11%\n"
-           "   Slope:     %12%\n"
-           "   R2:        %13%\n\n"
+           "   Intercept: %12%\n"
+           "   Slope:     %13%\n"
+           "   R2:        %14%\n\n"
            "   ***\n"
-           "   *** After the break (right regression)\n"
+           "   *** Above LOQ\n"
            "   ***\n\n"
-           "   Intercept: %14%\n"
-           "   Slope:     %15%\n"
-           "   R2:        %16%\n\n"
+           "   Intercept: %15%\n"
+           "   Slope:     %16%\n"
+           "   R2:        %17%\n\n"
            "   ***\n"
            "   *** Overall linear regression\n"
            "   ***\n\n"
-           "   Correlation: %17%\n"
-           "   Slope:       %18%\n"
-           "   R2:          %19%\n"
-           "   F-statistic: %20%\n"
-           "   P-value:     %21%\n"
-           "   SSM:         %22%, DF: %23%\n"
-           "   SSE:         %24%, DF: %25%\n"
-           "   SST:         %26%, DF: %27%\n\n"
+           "   Correlation: %18%\n"
+           "   Slope:       %19%\n"
+           "   R2:          %20%\n"
+           "   F-statistic: %21%\n"
+           "   P-value:     %22%\n"
+           "   SSM:         %23%, DF: %24%\n"
+           "   SSE:         %25%, DF: %26%\n"
+           "   SST:         %27%, DF: %28%\n\n"
            "   ***\n"
            "   *** Overall linear regression (log2 scale)\n"
            "   ***\n\n"
-           "   Correlation: %28%\n"
-           "   Slope:       %29%\n"
-           "   R2:          %30%\n"
-           "   F-statistic: %31%\n"
-           "   P-value:     %32%\n"
-           "   SSM:         %33%, DF: %34%\n"
-           "   SSE:         %35%, DF: %36%\n"
-           "   SST:         %37%, DF: %38%\n";
+           "   Correlation: %29%\n"
+           "   Slope:       %30%\n"
+           "   R2:          %31%\n"
+           "   F-statistic: %32%\n"
+           "   P-value:     %33%\n"
+           "   SSM:         %34%, DF: %35%\n"
+           "   SSE:         %36%, DF: %37%\n"
+           "   SST:         %38%, DF: %39%\n";
 }
 
-Scripts StatsWriter::inflectSummary(const SInflectStats &stats)
+Scripts StatsWriter::inflectSummary(const FileName &ref, const SInflectStats &stats)
 {    
     return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
                                                          % STRING(stats.n_chrT)     // 2
                                                          % STRING(stats.p_chrT)     // 3
                                                          % STRING(stats.n_endo)     // 4
                                                          % STRING(stats.p_endo)     // 5
-                                                         % STRING(stats.n_ref)      // 6
-                                                         % STRING(stats.units)      // 7
-                                                         % STRING(stats.n_det)      // 8
-                                                         % STRING(stats.b)          // 9
-                                                         % STRING(stats.bID)        // 10
-                                                         % STRING(stats.lInt)       // 11
-                                                         % STRING(stats.lSl)        // 12
-                                                         % STRING(stats.lR2)        // 13
-                                                         % STRING(stats.rInt)       // 14
-                                                         % STRING(stats.rSl)        // 15
-                                                         % STRING(stats.rR2)        // 16
-                                                         % STRING(stats.nLog.r)     // 17
-                                                         % STRING(stats.nLog.sl)    // 18
-                                                         % STRING(stats.nLog.R2)    // 19
-                                                         % STRING(stats.nLog.F)     // 20
-                                                         % STRING(stats.nLog.p)     // 21
-                                                         % STRING(stats.nLog.SSM)   // 22
-                                                         % STRING(stats.nLog.SSM_D) // 23
-                                                         % STRING(stats.nLog.SSE)   // 24
-                                                         % STRING(stats.nLog.SSE_D) // 25
-                                                         % STRING(stats.nLog.SST)   // 26
-                                                         % STRING(stats.nLog.SST_D) // 27
+                                                         % ref                      // 6
+                                                         % STRING(stats.n_ref)      // 7
+                                                         % STRING(stats.units)      // 8
+                                                         % STRING(stats.n_det)      // 9
+                                                         % STRING(stats.b)          // 10
+                                                         % STRING(stats.bID)        // 11
+                                                         % STRING(stats.lInt)       // 12
+                                                         % STRING(stats.lSl)        // 13
+                                                         % STRING(stats.lR2)        // 14
+                                                         % STRING(stats.rInt)       // 15
+                                                         % STRING(stats.rSl)        // 16
+                                                         % STRING(stats.rR2)        // 17
+                                                         % STRING(stats.nLog.r)     // 18
+                                                         % STRING(stats.nLog.sl)    // 19
+                                                         % STRING(stats.nLog.R2)    // 20
+                                                         % STRING(stats.nLog.F)     // 21
+                                                         % STRING(stats.nLog.p)     // 22
+                                                         % STRING(stats.nLog.SSM)   // 23
+                                                         % STRING(stats.nLog.SSM_D) // 24
+                                                         % STRING(stats.nLog.SSE)   // 25
+                                                         % STRING(stats.nLog.SSE_D) // 26
+                                                         % STRING(stats.nLog.SST)   // 27
+                                                         % STRING(stats.nLog.SST_D) // 28
                                                          % STRING(stats.wLog.r)
                                                          % STRING(stats.wLog.sl)
                                                          % STRING(stats.wLog.R2)
@@ -107,7 +146,8 @@ Scripts StatsWriter::inflectSummary(const SInflectStats &stats)
             ).str();
 };
 
-Scripts StatsWriter::inflectSummary(const std::vector<FileName>     &files,
+Scripts StatsWriter::inflectSummary(const FileName                  &ref,
+                                    const std::vector<FileName>     &files,
                                     const std::vector<MappingStats> &mStats,
                                     const std::vector<LinearStats>  &stats,
                                     const Units &units)
@@ -126,7 +166,7 @@ Scripts StatsWriter::inflectSummary(const std::vector<FileName>     &files,
         const auto l_lm = stats[i].linear(true);
 
         // Calcluate the inflect point after log-transformation
-        const auto inf = stats[i].inflect(true);
+        const auto inf = stats[i].limitQuant(true);
         
         // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
@@ -173,10 +213,10 @@ Scripts StatsWriter::inflectSummary(const std::vector<FileName>     &files,
         r.wLog.SST_D.add(l_lm.SST_D);
     }
     
-    return inflectSummary(r);
+    return inflectSummary(ref, r);
 }
 
-Scripts RWriter::createSplice(const std::string &working, const FileName &fpkms)
+Scripts RWriter::createSplice(const Path &working, const FileName &fpkms)
 {
     std::stringstream ss;
     ss << PlotSplice();
@@ -187,7 +227,7 @@ Scripts RWriter::createSplice(const std::string &working, const FileName &fpkms)
                                     % fpkms).str();
 }
 
-Scripts RWriter::createLODR(const std::string &working, const FileName &dFile, const std::string &cFile, const std::string &lvl)
+Scripts RWriter::createLODR(const Path &working, const FileName &dFile, const std::string &cFile, const std::string &lvl)
 {
     std::stringstream ss;
     ss << PlotLODR();
@@ -195,11 +235,10 @@ Scripts RWriter::createLODR(const std::string &working, const FileName &dFile, c
     return (boost::format(ss.str()) % date()
                                     % __full_command__
                                     % working
-                                    % dFile
-                                    % lvl).str();
+                                    % dFile).str();
 }
 
-Scripts RWriter::createMA(const std::string &working, const FileName &file, const std::string &lvl)
+Scripts RWriter::createMA(const Path &working, const FileName &file, const std::string &lvl)
 {
     std::stringstream ss;
     ss << PlotMA();

@@ -38,6 +38,7 @@ namespace Anaquin
     typedef std::string IsoformID;
     typedef std::string GenericID;
     typedef std::string FeatureID;
+    typedef std::string SampleName;
     typedef std::string TranscriptID;
 
     typedef std::string Path;

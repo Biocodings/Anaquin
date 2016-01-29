@@ -296,9 +296,6 @@ struct Parsing
     // Limit of detection
     double limit;
     
-    // The sequins that have been filtered
-    std::set<SequinID> filters;
-    
     // How Anaquin is invoked
     std::string command;
 
@@ -306,8 +303,8 @@ struct Parsing
     
     Tool tool = 0;
 
-    // Experiment meta-data (required for only some of the tools)
-    std::shared_ptr<Experiment> exp;
+    // Experimental meta-data
+    std::shared_ptr<Experiment> exp = std::shared_ptr<Experiment>(new Experiment());
 };
 
 // Wrap the variables so that it'll be easier to reset them
@@ -650,11 +647,6 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.rChrT = _p.rChrT;
     o.rEndo = _p.rEndo;
 
-    for (const auto &filter : (o.filters = _p.filters))
-    {
-        std::cout << "Filter: " << filter << std::endl;
-    }
-    
     std::clock_t begin = std::clock();
     
     f(o);
@@ -936,11 +928,12 @@ void parse(int argc, char ** argv)
             {
                 Tokens::split(val, ",", _p.inputs);
                 
-                for (auto i = _p.inputs.size(); i-- > 0;)
+                for (auto i = 0; i < _p.inputs.size(); i++)
                 {
                     checkFile(_p.opts[opt] = _p.inputs[i]);
+                    _p.exp->addFile(_p.opts[opt]);
                 }
-
+                
                 break;
             }
              
@@ -974,22 +967,12 @@ void parse(int argc, char ** argv)
 
             case OPT_U_FACTS:
             {
-                if (!_p.exp)
-                {
-                    _p.exp = std::shared_ptr<Experiment>(new Experiment());
-                }
-                
                 _p.exp->addFactors(_p.opts[opt] = val);
                 break;
             }
 
             case OPT_U_NAMES:
             {
-                if (!_p.exp)
-                {
-                    _p.exp = std::shared_ptr<Experiment>(new Experiment());
-                }
-
                 _p.exp->addNames(_p.opts[opt] = val);
                 break;
             }

@@ -36,7 +36,7 @@ void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shou
     }
 }
 
-InflectionLimit LinearStats::inflect(bool shouldLog) const
+LOQModel LinearStats::limitQuant(bool shouldLog) const
 {
     std::vector<std::string> ids;
     std::vector<double> x, y;
@@ -45,7 +45,7 @@ InflectionLimit LinearStats::inflect(bool shouldLog) const
 
     const auto r = SS::segmentPieceWise(x, y);
     
-    InflectionLimit l;
+    LOQModel l;
     
     // The break we're looking for
     l.b = r.b;

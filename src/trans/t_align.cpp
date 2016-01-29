@@ -51,7 +51,7 @@ template <typename T> void initT(const ChromoID &cID, T &t)
     }
 
     /*
-     * Initialize statistics for exons
+     * Initialize statistics for reference exons
      */
     
     for (const auto &i : t.eInters.data())

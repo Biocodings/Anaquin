@@ -71,59 +71,61 @@ static Scripts sSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Proportion of features mapped to the synthetic and experiment\n"
+           "   *** Fraction of user assembly mapped to the synthetic and experimental chromosomes\n"
            "   ***\n\n"
-           "   Synthetic:  %3% features\n"
-           "   Experiment: %2% features\n\n"
+           "   Exons (Synthetic):        %2% genes\n"
+           "   Exons (Experiment):       %3% genes\n\n"
+           "   Transcripts (Synthetic):  %4% transcripts\n"
+           "   Transcripts (Experiment): %5% transcripts\n\n"
            "   ***\n"
            "   *** Reference annotation (Synthetic)\n"
            "   ***\n\n"
-           "   File: %4%\n\n"
-           "   Synthetic:  %5% exons\n"
-           "   Synthetic:  %6% introns\n\n"
+           "   File: %6%\n\n"
+           "   Synthetic:  %7% exons\n"
+           "   Synthetic:  %8% introns\n\n"
            "   ***\n"
            "   *** Reference annotation (Experiment)\n"
            "   ***\n\n"
-           "   File: %7%\n\n"
-           "   Experiment:  %8% exons\n"
-           "   Experiment:  %9% introns\n\n"
-           "   *************************************************\n"
-           "   ***                                           ***\n"
-           "   ***    Statistics for synthetic chromosome    ***\n"
-           "   ***                                           ***\n"
-           "   *************************************************\n\n"
+           "   File: %9%\n\n"
+           "   Experiment:  %10% exons\n"
+           "   Experiment:  %11% introns\n\n"
+           "   ************************************************************\n"
+           "   ***                                                      ***\n"
+           "   ***    Comparison of assembly to synthetic annotation    ***\n"
+           "   ***                                                      ***\n"
+           "   ************************************************************\n\n"
            "   ***\n"
            "   *** The following statistics are computed for exact and fuzzy.\n"
            "   *** The fuzzy level is 10 nucleotides.\n"
            "   ***\n\n"
            "   -------------------- Exon level --------------------\n\n"
-           "   Sensitivity: %10% (%11%)\n"
-           "   Specificity: %12% (%13%)\n\n"
+           "   Sensitivity: %12% (%13%)\n"
+           "   Specificity: %14% (%15%)\n\n"
            "   -------------------- Intron level --------------------\n\n"
-           "   Sensitivity: %14% (%15%)\n"
-           "   Specificity: %16% (%17%)\n\n"
+           "   Sensitivity: %16% (%17%)\n"
+           "   Specificity: %18% (%19%)\n\n"
            "   -------------------- Base level --------------------\n\n"
-           "   Sensitivity: %18%\n"
-           "   Specificity: %19%\n\n"
+           "   Sensitivity: %20%\n"
+           "   Specificity: %21%\n\n"
            "   -------------------- Intron Chain level --------------------\n\n"
-           "   Sensitivity: %20% (%21%)\n"
-           "   Specificity: %22% (%23%)\n\n"
+           "   Sensitivity: %22% (%23%)\n"
+           "   Specificity: %24% (%25%)\n\n"
            "   -------------------- Transcript level --------------------\n\n"
-           "   Sensitivity: %24% (%25%)\n"
-           "   Specificity: %26% (%27%)\n\n"
-           "   Missing exons:   %28%/%29% (%30%)\n"
-           "   Missing introns: %31%/%32% (%33%)\n\n"
-           "   Novel exons:     %34%/%35% (%36%)\n"
-           "   Novel introns:   %37%/%38% (%39%)\n\n";
+           "   Sensitivity: %26% (%27%)\n"
+           "   Specificity: %28% (%29%)\n\n"
+           "   Missing exons:   %30%/%31% (%32%)\n"
+           "   Missing introns: %33%/%34% (%35%)\n\n"
+           "   Novel exons:     %36%/%37% (%38%)\n"
+           "   Novel introns:   %39%/%40% (%41%)\n\n";
 }
 
 static Scripts eSummary()
 {
-    return "   ***************************************\n"
-           "   ***                                 ***\n"
-           "   ***    Statistics for experiment    ***\n"
-           "   ***                                 ***\n"
-           "   ***************************************\n\n"
+    return "   ***************************************************************\n"
+           "   ***                                                         ***\n"
+           "   ***    Comparison of assembly to experimental annotation    ***\n"
+           "   ***                                                         ***\n"
+           "   ***************************************************************\n\n"
            "   ***\n"
            "   *** The following statistics are computed for exact and fuzzy.\n"
            "   *** The fuzzy level is 10 nucleotides.\n"
@@ -250,13 +252,21 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     
     ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
     {
-        if (f.cID == ChrT)
+        switch (f.type)
         {
-            stats.n_chrT++;
-        }
-        else
-        {
-            stats.n_endo++;
+            case Exon:
+            {
+                stats.chrT_exons++;
+                stats.endo_exons++;
+                break;
+            }
+
+            case Transcript:
+            {
+                stats.chrT_trans++;
+                stats.endo_trans++;
+                break;
+            }
         }
     });
     
@@ -275,43 +285,45 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
     o.writer->create(name);
     o.writer->open(name + "/TransAssembly_summary.stats");
     o.writer->write((boost::format(sSummary()) % file
-                                               % stats.n_chrT
-                                               % stats.n_endo
+                                               % stats.chrT_exons
+                                               % stats.endo_exons
+                                               % stats.chrT_trans
+                                               % stats.endo_trans
                                                % o.rChrT
                                                % r.countExons(ChrT)
                                                % r.countIntrons(ChrT)
                                                % (o.rEndo.empty() ? "-"  : o.rEndo)
                                                % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons("chr1")))
                                                % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
-                                               % S(data.eSN)            // 10
+                                               % S(data.eSN)            // 12
                                                % S(data.eFSN)
                                                % S(data.eSP)
                                                % S(data.eFSP)
-                                               % S(data.iSN)            // 14
+                                               % S(data.iSN)            // 16
                                                % S(data.iFSN)
                                                % S(data.iSP)
                                                % S(data.iFSP)
-                                               % S(data.bSN)            // 18
+                                               % S(data.bSN)            // 20
                                                % S(data.bSP)
-                                               % S(data.cSN)            // 20
+                                               % S(data.cSN)            // 22
                                                % S(data.cFSN)
                                                % S(data.cSP)
                                                % S(data.cFSP)
                                                % S(data.tSN)
                                                % S(data.tFSN)
                                                % S(data.tSP)
-                                               % S(data.tFSP)           // 27
-                                               % data.mExonN            // 28
+                                               % S(data.tFSP)           // 29
+                                               % data.mExonN            // 31
                                                % data.mExonR
                                                % S(data.mExonP)
                                                % data.mIntronN
-                                               % data.mIntronR          // 32
+                                               % data.mIntronR          // 34
                                                % S(data.mIntronP)
                                                % data.nExonN
                                                % data.nExonR
                                                % S(data.nExonP)
                                                % data.nIntronN
-                                               % data.nIntronR          // 38
+                                               % data.nIntronR          // 40
                                                % S(data.nIntronP)).str());
     if (stats.data.count(Endo))
     {

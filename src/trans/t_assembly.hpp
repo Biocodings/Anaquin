@@ -16,7 +16,7 @@ namespace Anaquin
             FileName endo;
         };
 
-        struct Stats : public MappingStats
+        struct Stats
         {
             struct Data
             {
@@ -66,6 +66,18 @@ namespace Anaquin
             };
             
             std::map<ChromoID, Data> data;
+            
+            // Number of exons assembled for chrT
+            Counts chrT_exons = 0;
+
+            // Number of transcripts assembled for chrT
+            Counts chrT_trans = 0;
+
+            // Number of exons assembled for endogenous
+            Counts endo_exons = 0;
+            
+            // Number of transcripts assembled for endogenous
+            Counts endo_trans = 0;
             
             // Reference file for each chromosome
             std::map<ChromoID, FileName> refs;

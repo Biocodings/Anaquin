@@ -4,10 +4,10 @@
 #include <set>
 #include <map>
 #include <vector>
+#include "data/types.hpp"
 
 namespace Anaquin
 {
-    typedef std::string SampleName;
     typedef std::vector<std::string> SampleNames;
     
     class CountTable
@@ -87,6 +87,22 @@ namespace Anaquin
                 return CountTable(_names);
             }
 
+            inline const SampleName &fileToSample(const FileName &file) const
+            {
+                for (auto i = 0; i < _files.size(); i++)
+                {
+                    if (_files.at(i) == file)
+                    {
+                        return _names.at(i);
+                    }
+                }
+
+                throw std::runtime_error("Unknown " + file);
+            }
+
+            // Eg: A1/accepted_hits.bam
+            inline void addFile(const FileName &file) { _files.push_back(file); }
+
             // Eg: A1,A2,A3,B1,B2,B3
             void addNames(const std::string &);
         
@@ -111,6 +127,8 @@ namespace Anaquin
             // Eg: A1,A2,A3,B1,B2,B3
             SampleNames _names;
 
+            std::vector<FileName> _files;
+        
             // Unique factors
             std::set<Factor> _factors;
     };

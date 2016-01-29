@@ -9,6 +9,7 @@
 #include "resources/plotLODR.R"
 #include "resources/plotSplice.R"
 #include "resources/plotScatter.R"
+#include "resources/plotScatterPool.R"
 
 /*
  * Scripts
@@ -76,6 +77,11 @@ std::string Manual()
 /*
  * Scripts for Anaquin R-Bioconductor
  */
+
+Scripts PlotScatterPool()
+{
+    return ToString(src_r_plotScatterPool_R);
+}
 
 Scripts PlotSplice()
 {

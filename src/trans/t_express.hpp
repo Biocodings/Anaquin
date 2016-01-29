@@ -36,7 +36,10 @@ namespace Anaquin
             typedef LinearStats Data;
 
             std::map<ChromoID, Data> data;
-            
+
+            // Eg: A1
+            SampleName name;
+
             // Detection limit
             Limit limit;
         };

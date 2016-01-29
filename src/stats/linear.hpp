@@ -72,8 +72,8 @@ namespace Anaquin
         // Linear regression with logarithm
         SLinearStats wLog;
     };
-    
-    struct InflectionLimit
+
+    struct LOQModel
     {
         // Name of the sequin
         std::string id;
@@ -142,8 +142,8 @@ namespace Anaquin
         // Return the x-values and y-values after filtering
         void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<FeatureID> *ids = nullptr) const;
         
-        // Compute the inflection limit. By default, this function assumes log-transformation.
-        InflectionLimit inflect(bool shouldLog = true) const;
+        // Compute the limit of quantification. By default, this function assumes log-transformation.
+        LOQModel limitQuant(bool shouldLog = true) const;
         
         // Compute a simple linear regression model. By default, this function assumes log-transformation.
         LinearModel linear(bool shouldLog = true) const;

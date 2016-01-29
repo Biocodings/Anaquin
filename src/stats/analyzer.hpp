@@ -259,13 +259,11 @@ namespace Anaquin
     
     struct AnalyzerOptions : public WriterOptions
     {
+        // Files for the reference annotation
         FileName rChrT, rEndo;
         
-        // Experimental meta-data
+        // Experimental data
         std::shared_ptr<Experiment> exp;
-
-        // Only process this number of filters
-        std::set<SequinID> filters;
     };
 
     struct SingleMixtureOption : public AnalyzerOptions
