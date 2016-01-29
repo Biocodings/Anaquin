@@ -182,10 +182,11 @@ class Language:
             file.write('\n```\n\n')
 
     @staticmethod
-    def writeRCode(file, output, src, title):
+    def writeRCode(file, output, src, title, description):
         tmp = (tempfile.NamedTemporaryFile())
         if (output == 'RMarkdown'):
             file.write('\n## ' + title + '\n\n')
+            file.write(description + '\n\n')
             file.write('```{r results=''\'hide\''', message=FALSE, warning=FALSE, echo=FALSE}\n')
             file.write('png(filename="' + tmp.name + '")\n')
             file.write('source("' + src + '")\n')
@@ -223,7 +224,7 @@ class Chapter:
                 Language.writeTextFile(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
                 Language.writePage(file, output)
             elif item['type'] == 'rCode':
-                Language.writeRCode(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
+                Language.writeRCode(file, output, TEMP_PATH + os.sep + item['value'], item['title'], item['description'])
                 Language.writePage(file, output)                
             elif item['type'] == 'image':
                 Language.writeImage(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
@@ -354,7 +355,6 @@ def transQuin(config, output):
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Assembly statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_summary.stats', )
-        #r.addTextFile('Sequin statistics for: ' + names[i], names[i] + os.sep + 'TransAssembly_sequin.stats', )
 
     r.endChapter()
 
@@ -385,13 +385,16 @@ def transQuin(config, output):
 
     r.startChapter('Statistics (Gene Expression)')
 
-    r.addRCode('Pooled scatter plot for gene expression', 'TG' + os.sep + 'TransExpress_pooled.R')
-    r.addTextFile('Gene expression summary', 'TG' + os.sep + 'TransExpress_pooled.stats', )
+    dPooled  = 'The pooled scatter plot shows the expected abundance against measured abundance on the logarithm scale for all the replicates. This is done by plotting the average and standard deviation. The line is the fitted linear regression with 95% confidence interval drawn in black.\nA high R2 is desirable; the higher it is, the more accurate the gene expression experiment is.'
+    dScatter = 'The scatter plot shows the relationship between expected abundance against measured abundance on the logarithm scale for a single replicate. The line is the fitted linear regression with 95% confidence interval drawn in black.\nA high R2 is desirable; the higher it is, the more accurate the gene expression experiment is.'
+
+    r.addRCode('Pooled scatter plot for gene expression', 'TG' + os.sep + 'TransExpress_pooled.R', dPooled)
+    r.addTextFile('Gene expression summary', 'TG' + os.sep + 'TransExpress_pooled.stats')
 
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
         r.addTextFile('Gene expression statistics for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
-        r.addRCode('Gene expression scatter plot for: ' + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
+        r.addRCode('Gene expression scatter plot for: '  + names[i], 'TG' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', dScatter)
 
     r.endChapter()
     
@@ -409,6 +412,10 @@ def transQuin(config, output):
     # Expression files
     files = get(config, 'EXP_I_FILE', EXPECT_FILES)
 
+    dPooled  = dPooled.replace('gene',  'isoform')
+    dScatter = dScatter.replace('gene', 'isoform')
+    dMinor   = 'The Minor/Major plot shows the relative quantification of alternative spliced isoforms by measuring the minimum isoform as a fraction of the major isoform for each sequin gene. The accuracy of the quantification is typically dependent on sequence coverage and higher for high abundance genes. The concentration of the gene is shown by colors.'
+
     #
     # Generate a request for TransExp for expression analysis. For example:
     #
@@ -422,16 +429,17 @@ def transQuin(config, output):
 
     r.startChapter('Statistics (Isoform Expression)')
 
-    r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', 'The Minor/Major plot shows the relative quantification of alternative spliced isoforms by measuring the minimum isoform as a fraction of the major isoform for each sequin gene. The accuracy of the quantification is typically dependent on sequence coverage and higher for high abundance genes. The concentration of the gene is shown by colors.')
-    r.addRCode('Pooled scatter plot for isoform expression', 'TI' + os.sep + 'TransExpress_pooled.R')
-    r.addTextFile('Isoform expression summary', 'TI' + os.sep + 'TransExpress_pooled.stats', )
-        
+    r.addRCode('Minor/Major plot',  'TI' + os.sep + 'TransExpress_Splice.R', dMinor)
+    r.addRCode('Pooled scatter plot for isoform expression', 'TI' + os.sep + 'TransExpress_pooled.R', dPooled)
+    r.addTextFile('Isoform expression summary', 'TI' + os.sep + 'TransExpress_pooled.stats')
+
     # Add summary statistics for each replicate
     for i in range(0, len(names)):
-        r.addTextFile('Isoform expression statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats', )
-        r.addRCode('Isoform expression scatter plot for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', )
+        r.addTextFile('Isoform expression statistics for: ' + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_summary.stats')
+        r.addRCode('Isoform expression scatter plot for: '  + names[i], 'TI' + os.sep + names[i] + os.sep + 'TransExpress_scatter.R', dScatter)
 
     r.endChapter()
+
     
     ########################################################
     #                                                      #
