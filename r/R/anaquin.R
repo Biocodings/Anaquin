@@ -133,11 +133,11 @@ baseMean <- function(data)
     {
         # TODO: Implement me
     }
-    
+
     return (data$seqs$baseMean)
 }
 
-names <- function(data)
+seqs <- function(data)
 {
     stopifnot(class(data) == 'TransQuin' |
               class(data) == 'VarQuin'   |

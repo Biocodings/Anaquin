@@ -4,7 +4,6 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-
 #
 # Classify TransQuin differential results:
 #
