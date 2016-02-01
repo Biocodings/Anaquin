@@ -447,7 +447,7 @@ static void classifyChrT(TAlign::Stats::Data &t,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
 {
-    assert(align.id == Standard::chrT);
+    assert(align.id == ChrT);
     
     REPORT_STATUS();
     

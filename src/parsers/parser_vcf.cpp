@@ -58,7 +58,7 @@ void ParserVCF::parse(const Reader &r, Callback c)
         v.l.start = v.l.end = stod(fields[Pos]);
 
         // Don't bother further parsing if we don't need the information anyway...
-        if (v.id != Standard::chrT)
+        if (v.id != ChrT)
         {
             c(v, p);
             continue;

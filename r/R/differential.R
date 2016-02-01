@@ -5,14 +5,14 @@
 #
 
 #
-# Classify TransQuin differential results:
+# TransQuin classification. Classify each differential test by:
 #
 #    TP: fold-change with more than logFC and expressed
 #    FP: fold-change with at most logFC and expressed
 #    FN: fold-change with more than logFC and not expressed
 #    TN: fold-change with at most logFC and not expressed
 #
-transClassify <- function(data, lvl, pCutoff=0.1, logFC=0)
+classify <- function(data, lvl, qCutoff=0.1, logFC=0)
 {
     stopifnot(class(data) == 'TransQuin')
     stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
@@ -20,31 +20,32 @@ transClassify <- function(data, lvl, pCutoff=0.1, logFC=0)
     seqs <- filter(data, name='seqs')
     seqs$cls <- NA
 
+    print(paste('Probability threshold:', qCutoff))
+    
     # Expected log-fold
-    seqs$elfc <- expectLF(data, lvl=lvl, ids=row.names(seqs))
+    seqs$elfc <- expectLF(data, lvl=lvl, ids=row.names(seqs))$logFC
     
     for (id in row.names(seqs))
     {
-        # Probability under null hypothesis
-        p = seqs[id,]$pval
-    
-        if  (!is.na(p))
+        qval = seqs[id,]$qval
+
+        if  (!is.na(qval))
         {
             elfc <- seqs[id,]$elfc
             
             if (length(elfc) > 0)
             {
                 #
-                # Say if the known log-fold change is -3, is this differentially expressed? That depends on the context.
-                # Usuaully, we'd think anything more than log-fold change of 1 should be expressed.
+                # Say if the known log-fold change is -3, should this be differentially expressed? That depends on the context.
+                # Usuaully, we'd think anything more than log-fold change of 0 should be expressed.
                 #
                 
                 # Differential expressed?
-                if (p <= pCutoff)
+                if (qval <= qCutoff)
                 {
                     seqs[id,]$cls <- ifelse(abs(elfc) <= abs(logFC), 'FP', 'TP')
                 }
-                
+
                 # Non-dfifferential expressed?
                 else
                 {

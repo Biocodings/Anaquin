@@ -26,20 +26,23 @@ TransQuin <- function(mix=loadMixture(), ...)
     if (!is.null(x$expected)) { data$expected <- x$expected }
     if (!is.null(x$measured)) { data$measured <- x$measured }
 
-    if (!is.null(x$baseMean))  { data$baseMean  <- x$baseMean  }  # TODO: Fix me
+    if (!is.null(x$baseMean))       { data$baseMean  <- x$baseMean  }  # TODO: Fix me
     if (!is.null(x$log2FoldChange)) { data$lfc <- x$log2FoldChange }  # TODO: Fix me
-    if (!is.null(x$pvalue)) { data$pval <- x$pvalue }  # TODO: Fix me
-    if (!is.null(x$expected.LFC)) { data$elfc <- x$expected.LFC }  # TODO: Fix me
-    if (!is.null(x$lfcSE)) { data$lfcSE <- x$lfcSE }  # TODO: Fix me
+    if (!is.null(x$pvalue))         { data$pval <- x$pvalue }  # TODO: Fix me
+    if (!is.null(x$expected.LFC))   { data$elfc <- x$expected.LFC }  # TODO: Fix me
+    if (!is.null(x$lfcSE))          { data$lfcSE <- x$lfcSE }  # TODO: Fix me
     
-    if (!is.null(x$X))  { data$X  <- x$X  }  # TODO: Fix me
-    if (!is.null(x$A1)) { data$A1 <- x$A1 }  # TODO: Fix me
-    if (!is.null(x$A2)) { data$A2 <- x$A2 }  # TODO: Fix me
-    if (!is.null(x$A3)) { data$A3 <- x$A3 }  # TODO: Fix me
-    if (!is.null(x$B1)) { data$B1 <- x$B1 }  # TODO: Fix me
-    if (!is.null(x$B2)) { data$B2 <- x$B2 }  # TODO: Fix me
-    if (!is.null(x$B3)) { data$B3 <- x$B3 }  # TODO: Fix me
+    if (!is.null(x$X))    { data$X  <- x$X  }  # TODO: Fix me
+    if (!is.null(x$A1))   { data$A1 <- x$A1 }  # TODO: Fix me
+    if (!is.null(x$A2))   { data$A2 <- x$A2 }  # TODO: Fix me
+    if (!is.null(x$A3))   { data$A3 <- x$A3 }  # TODO: Fix me
+    if (!is.null(x$B1))   { data$B1 <- x$B1 }  # TODO: Fix me
+    if (!is.null(x$B2))   { data$B2 <- x$B2 }  # TODO: Fix me
+    if (!is.null(x$B3))   { data$B3 <- x$B3 }  # TODO: Fix me
     if (!is.null(x$prop)) { data$prop <- x$prop }  # TODO: Fix me
+
+    # Sequins are always sorted in orders
+    data <- data[order(row.names(data)),]
 
     r <- list('seqs'=data, mix=mix)
     class(r) <- 'TransQuin'
@@ -222,8 +225,8 @@ expectLF <- function(data, lvl, ids=NULL)
             #
             
             switch(lvl, 'gene'    = { data <- data$genes    },
-                   'exon'    = { data <- data$exons    },
-                   'isoform' = { data <- data$isoforms })
+                        'exon'    = { data <- data$exons    },
+                        'isoform' = { data <- data$isoforms })
             
             data <- data[row.names(data) %in% ids,]
             

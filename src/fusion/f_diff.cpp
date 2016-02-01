@@ -23,12 +23,12 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
     
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        if (c.id == Standard::chrT) { stats.chrT->n_chrT++; }
+        if (c.id == ChrT) { stats.chrT->n_chrT++; }
         else                        { stats.chrT->n_endo++; }
 
         const SequinData *match;
 
-        if (c.id == Standard::chrT && (match = r.findSplice(c.l)))
+        if (c.id == ChrT && (match = r.findSplice(c.l)))
         {
             normals[match->id] = c.unique;
             stats.chrT->h.at(match->id)++;

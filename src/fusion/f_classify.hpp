@@ -31,7 +31,7 @@ namespace Anaquin
         {
             if (f.chr_1 != ChrT || f.chr_2 != ChrT)
             {
-                if (f.chr_1 != Standard::chrT && f.chr_2 != Standard::chrT)
+                if (f.chr_1 != ChrT && f.chr_2 != ChrT)
                 {
                     return Results(Genome);
                 }
@@ -53,9 +53,9 @@ namespace Anaquin
         {
             const auto &r = Standard::instance().r_fus;
 
-            if (f.chr_1 != Standard::chrT || f.chr_2 != Standard::chrT)
+            if (f.chr_1 != ChrT || f.chr_2 != ChrT)
             {
-                if (f.chr_1 != Standard::chrT && f.chr_2 != Standard::chrT)
+                if (f.chr_1 != ChrT && f.chr_2 != ChrT)
                 {
                     return Genome;
                 }

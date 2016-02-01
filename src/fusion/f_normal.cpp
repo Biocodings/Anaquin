@@ -10,7 +10,7 @@ FNormal::Stats FNormal::analyze(const FileName &splice, const Options &o)
 
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        if (c.id == Standard::chrT) { stats.chrT->n_chrT++; }
+        if (c.id == ChrT) { stats.chrT->n_chrT++; }
         else                        { stats.chrT->n_endo++; }
         
         const SequinData *match;

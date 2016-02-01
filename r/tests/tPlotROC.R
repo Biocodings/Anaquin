@@ -21,6 +21,8 @@ test_1 <- function()
     pval  <- c(pval1, pval2, pval3)
     logFC <- c(logFC1, logFC2, logFC3)
     
+    logFC[logFC==1] <- 0
+    
     r <- plotROC(TransQuin(seqs=c(1:length(pval)), pval=pval, logFC=logFC))
 
     #checkTrue(!is.null(r$pred))

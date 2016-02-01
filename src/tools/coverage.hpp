@@ -43,7 +43,7 @@ namespace Anaquin
             // Where the data should be written
             std::shared_ptr<Writer> writer;
 
-            Interval::IntervalID id = Standard::chrT;
+            Interval::IntervalID id = ChrT;
         };
         
         struct CoverageBedGraphOptions

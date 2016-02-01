@@ -11,24 +11,23 @@ namespace Anaquin
 
         struct Stats
         {
-            struct ChrT : public LinearStats, public MappingStats
+            struct Data : public LinearStats, public MappingStats
             {
-                Limit ss;
-                
                 Confusion m;
                 
                 long detected;
                 
                 // Sensitivity
                 double sn;
-                
-                SequinHist h = Standard::instance().r_var.hist();
+
+                //SequinHist h = Standard::instance().r_var.hist();
             };
 
-            std::shared_ptr<ChrT> chrT;
+            Data data;
         };
 
-        static Stats report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void report(const FileName &, const Options &o = Options());
     };
 }
 

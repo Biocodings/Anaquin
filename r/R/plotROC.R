@@ -4,84 +4,90 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotROC <- function(data, meth='group')
+plotROC <- function(data, meth='validate')
 {
     require(ROCR)
     require(ggplot2)
     
-    stopifnot(meth == 'normal' | meth == 'group')
+    stopifnot(meth == 'express' | meth == 'validate')
     stopifnot(class(data) == 'TransQuin' | class(data) == 'VarQuin')
-
-    seqs <- data$seqs
-
-    d <- data.frame(pvals=seqs$pval, scores=1-seqs$pval, logFC=seqs$logFC)
     
+    seqs  <- data$seqs
+    lpval <- log2(seqs$pval)
+    
+    d <- data.frame(pval=seqs$pval, lpval=lpval, score=1-lpval, logFC=seqs$logFC)
+    row.names(d) <- row.names(seqs)
+
+    if (!is.null(seqs$cls))
+    {
+        d$cls <- seqs$cls    
+    }
+
     ROCDat <- NULL
     AUCDat <- NULL
+
+    logFCs <- d$logFC
     
-    if (meth == 'normal')
+    for (logFC in unique(logFCs))
     {
-        data <- data[data$cls == 'TP' | data$cls == 'FP',]
-        
-        # 
-        # From the package's reference manual:
-        #
-        # ... labels should be supplied as ordered factor(s), the lower level corresponding to the negative class, the upper level
-        #     to the positive class ...
-        #
-        
-        data$scores <- 1 - pvals
-        data$label  <- ifelse(data$cls == 'TP', 2, 1)
-        
-        pred <- prediction(data$scores, data$label, label.ordering=c(1,2))
-        perf <- performance(pred, "tpr","fpr")
-        
-        plot(perf)
-    }
-    
-    #
-    # Rank the p-values and group them like how's done for the ERCC dashboard. Refer to erccROC() in the ERCC dashboard
-    # for reference implementation.
-    #
-    
-    else
-    {
-        for (logFC in unique(d$logFC))
+        if (logFC != 0)
         {
-            if (logFC != 1)
+            t <- d[d$logFC == 0 | d$logFC == logFC,]
+
+            if (meth == 'express')
             {
-                t <- d[d$logFC == 1 | d$logFC == logFC,]
+                stopifnot(!is.null(d$cls))
                 
-                preds <- prediction(t$scores, t$logFC, label.ordering=c(1, logFC))
-                perf  <- performance(preds, "tpr","fpr")
-                auc   <- performance(preds, "auc")
+                t <- t[d$cls == 'TP' | d$cls == 'FP',]
                 
-                # Now build the three vectors for plotting - TPR, FPR, and FoldChange
-                AUC <- unlist(auc@y.values)
+                # 
+                # From the reference manual:
+                #
+                # ... labels should be supplied as ordered factor(s), the lower level corresponding to the negative class, the upper level
+                #     to the positive class ...
+                #
                 
-                AUCDatNew <- data.frame(logFC=logFC, AUC=round(AUC, digits=3))
-                AUCDat <- rbind(AUCDat, AUCDatNew)
-                
-                FPR <- c(unlist(perf@x.values)) 
-                TPR <- c(unlist(perf@y.values))
-                
-                logFC <- c(rep(as.character(logFC), length(unlist(perf@y.values))))
-                
-                ROCDatNew <- data.frame(FPR=FPR, TPR=TPR, logFC=logFC)
-                ROCDat <- rbind(ROCDat, ROCDatNew)                
+                t$label <- ifelse(t$cls == 'TP', 2, 1)
+                preds <- prediction(t$score, t$label, label.ordering=c(1,2))
             }
+            
+            #
+            # Rank the p-values and group them like how's done for the ERCC dashboard. Refer to erccROC() in the ERCC dashboard
+            # for reference implementation.
+            #
+            
+            else
+            {
+                preds <- prediction(t$score, t$logFC, label.ordering=c(0, logFC))
+            }
+            
+            perf  <- performance(preds, "tpr","fpr")
+            auc   <- performance(preds, "auc")
+            
+            # Now build the three vectors for plotting - TPR, FPR, and FoldChange
+            AUC <- unlist(auc@y.values)
+            
+            print(paste(c('AUC for ', logFC, ': ', AUC), collapse = ''))
+
+            AUCDatNew <- data.frame(logFC=logFC, AUC=round(AUC, digits=3))
+            AUCDat <- rbind(AUCDat, AUCDatNew)
+            
+            FPR <- c(unlist(perf@x.values)) 
+            TPR <- c(unlist(perf@y.values))
+            
+            logFC <- c(rep(as.character(logFC), length(unlist(perf@y.values))))
+            
+            ROCDatNew <- data.frame(FPR=FPR, TPR=TPR, logFC=logFC)
+            ROCDat    <- rbind(ROCDat, ROCDatNew)
         }
     }
-
-    p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR)) + 
-         geom_path(size=2, aes(colour=logFC), alpha=0.7) + 
-         geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
-        # colScale + 
-        geom_abline(intercept=0, slope=1, linetype=2) +
-         theme_bw() + 
-       #  annotation_custom(grob=tableGrob(AUCAnnot, rows=NULL),
-    #                      xmin=0.375, xmax=1.0, ymin=0, ymax=0.25) +
-         theme(legend.position=c(0.75, 0.5))
+    
+    p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))              + 
+            geom_path(size=2, aes(colour=logFC), alpha=0.7)  + 
+            geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
+            labs(colour='Log-Fold')                          +
+            geom_abline(intercept=0, slope=1, linetype=2)    +
+            theme_bw()
     
     print(p)
     

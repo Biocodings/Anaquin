@@ -11,7 +11,7 @@ VCoverage::Stats VCoverage::stats(const FileName &file, const Options &o)
     
     stats = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
     {
-        return align.id == Standard::chrT ? static_cast<bool>(r.r_var.findGeno(align.l)) : false;
+        return align.id == ChrT ? static_cast<bool>(r.r_var.findGeno(align.l)) : false;
     });
 
     return stats;

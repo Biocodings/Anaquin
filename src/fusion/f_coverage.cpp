@@ -11,7 +11,7 @@ FCoverage::Stats FCoverage::stats(const FileName &file, const Options &o)
     
     stats = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
     {
-        return align.id == Standard::chrT ? static_cast<bool>(r.r_fus.match(align.l, MatchRule::Contains)) : false;
+        return align.id == ChrT ? static_cast<bool>(r.r_fus.match(align.l, MatchRule::Contains)) : false;
     });
 
     return stats;
