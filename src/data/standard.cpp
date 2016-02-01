@@ -131,35 +131,17 @@ void Standard::addVVar(const Reader &r)
         }
     };
 
-    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    ParserVCF::parse(r, [&](const ParserVCF::VCFVariant &x, const ParserProgress &)
     {
-        // Eg: D_1_10_R_G/A
-        Tokens::split(f.name, "_", toks);
-
-        // Eg: D_1_10_R and G/A
-        assert(toks.size() == 5);
-
-        // Eg: G/GACTCTCATTC
-        const auto var = toks[4];
-
-        Variation v;
+        Variant v;
         
-        // Eg: D_1_10
-        v.bID = toks[0] + "_" + toks[1] + "_" + toks[2];
+        // Eg: D_1_3_R
+        v.id  = x.id;
 
-        // Eg: D_1_10_R
-        v.id  = toks[0] + "_" + toks[1] + "_" + toks[2] + "_" + toks[3];
-        
-        // Eg: G/GACTCTCATTC
-        Tokens::split(var, "/", toks);
-
-        // Eg: G and GACTCTCATTC
-        assert(toks.size() == 2);
-        
-        v.l    = f.l;
-        v.alt  = toks[1];
-        v.ref  = toks[0];
-        v.type = parse(toks[0], toks[1]);
+        v.l    = x.l;
+        v.alt  = x.alt;
+        v.ref  = x.ref;
+        v.type = parse(v.ref, v.alt);
 
         r_var.addVar(v);
     });

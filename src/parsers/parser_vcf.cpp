@@ -1,3 +1,5 @@
+#include <map>
+#include <iostream>
 #include <assert.h>
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
@@ -11,24 +13,24 @@ using namespace Anaquin;
 
 enum VCFField
 {
-    Chromo,
-    Pos,
+    CHROM,
+    POS,
     ID,
-    Ref,
-    Alt,
-    Qual,
-    Filter,
-    Info,
-    Format,
-    Format_Data,
+    REF,
+    ALT,
+    QUAL,
+    FILTER,
+    INFO,
+    FORMAT,
+    FORMAT_DATA,
 };
 
 static const std::map<std::string, Genotype> allele =
 {
-    { "0/0", HomozygousRef },
-    { "1/1", HomozygousAlt },
-    { "0/1", Heterzygous   },
-    { "1/2", Heterzygous   },
+    { "0/0", HomozygousR },
+    { "1/1", HomozygousA },
+    { "0/1", Heterzygous },
+    { "1/2", Heterzygous },
 };
 
 void ParserVCF::parse(const Reader &r, Callback c)
@@ -51,25 +53,19 @@ void ParserVCF::parse(const Reader &r, Callback c)
 		{
 			continue;
 		}
-
+        
         Tokens::split(line, "\t", fields);
 
-        v.id = fields[Chromo];
-        v.l.start = v.l.end = stod(fields[Pos]);
+        // Eg: chrT
+        v.chrID = fields[VCFField::CHROM];
 
-        // Don't bother further parsing if we don't need the information anyway...
-        if (v.id != ChrT)
-        {
-            c(v, p);
-            continue;
-        }
+        // Eg: D_1_3_R
+        v.id = fields[VCFField::ID];
         
-        /*
-         * Each base must be one of A,C,G,T,N (case insensitive). The value in the POS field refers
-         * to the position of the first base in the string.
-         */
+        v.l.start = v.l.end = stod(fields[VCFField::POS]);
 
-        v.ref = fields[Ref];
+        // Reference allele
+        v.ref = fields[VCFField::REF];
 
         /*
          * Additional information
@@ -80,20 +76,23 @@ void ParserVCF::parse(const Reader &r, Callback c)
          *    DP: combined depth across samples
          */
 
-        Tokens::split(fields[Info], ";", infos);
-
-        for (const auto &info : infos)
+        if (fields[VCFField::INFO] != ".")
         {
-            Tokens::split(info, "=", t);
-            assert(t.size() == 2);
-
-            if (t[0] == "AC") { v.ac = stof(t[1]); }
-            if (t[0] == "AF") { v.af = stof(t[1]); }
-            if (t[0] == "AN") { v.an = stof(t[1]); }
-            if (t[0] == "DP") { v.dp = stod(t[1]); }
+            Tokens::split(fields[VCFField::INFO], ";", infos);
+            
+            for (const auto &info : infos)
+            {
+                Tokens::split(info, "=", t);
+                assert(t.size() == 2);
+                
+                if (t[0] == "AC") { v.ac = stof(t[1]); }
+                if (t[0] == "AF") { v.af = stof(t[1]); }
+                if (t[0] == "AN") { v.an = stof(t[1]); }
+                if (t[0] == "DP") { v.dp = stod(t[1]); }
+            }
         }
-
-        Tokens::split(fields[Format], ":", formats);
+        
+        Tokens::split(fields[VCFField::FORMAT], ":", formats);
         assert(std::find(formats.begin(), formats.end(), "GT") != formats.end());
 
         /*
@@ -101,7 +100,7 @@ void ParserVCF::parse(const Reader &r, Callback c)
          */
 
         std::vector<Sequence> alts;
-        Tokens::split(fields[Alt], ",", alts);
+        Tokens::split(fields[VCFField::ALT], ",", alts);
 
         for (auto i = 0; i < alts.size(); i++)
         {
@@ -120,7 +119,7 @@ void ParserVCF::parse(const Reader &r, Callback c)
                 v.type = Insertion;
             }
 
-            Tokens::split(fields[Format_Data + i], ":", t);
+            Tokens::split(fields[VCFField::FORMAT_DATA + i], ":", t);
             assert(t.size() == formats.size());
             
             for (auto j = 0; j < t.size(); j++)

@@ -143,7 +143,7 @@ plotMA <- function(data,
             # Convert the p-values into q-values
             endos$qval <- qvalue(endos$pval)$qvalues
             
-            p <- p + geom_point(data = endos[endos$qval <= qCutoff,], aes(x=baseMean, y=logLF), colour='pink', alpha=0.30)
+            p <- p + geom_point(data = endos[endos$qval <= qCutoff,], aes(x=baseMean, y=logLF), colour='pink', alpha=0.20)
         }
     }
     

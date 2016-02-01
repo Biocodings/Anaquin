@@ -32,8 +32,8 @@ namespace Anaquin
     enum Genotype
     {
         Heterzygous,
-        HomozygousRef,
-        HomozygousAlt,
+        HomozygousR,
+        HomozygousA,
     };
 }
 

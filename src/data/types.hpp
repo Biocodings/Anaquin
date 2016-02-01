@@ -27,9 +27,9 @@ namespace Anaquin
     typedef double Percentage;
 
     typedef std::string BinID;
-    typedef std::string BaseID;
     typedef std::string GeneID;
     typedef std::string ExonID;
+    typedef std::string GenoID;
     typedef std::string GenomeID;
     typedef std::string ChromoID;
     typedef std::string SequinID;

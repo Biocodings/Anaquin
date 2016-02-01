@@ -17,12 +17,12 @@
 #include "trans/t_assembly.hpp"
 #include "trans/t_coverage.hpp"
 
-#include "variant/v_align.hpp"
-#include "variant/v_allele.hpp"
-#include "variant/v_viewer.hpp"
-#include "variant/v_sample.hpp"
-#include "variant/v_discover.hpp"
-#include "variant/v_coverage.hpp"
+#include "VARQuin/v_align.hpp"
+#include "VARQuin/v_allele.hpp"
+#include "VARQuin/v_viewer.hpp"
+#include "VARQuin/v_sample.hpp"
+#include "VARQuin/v_discover.hpp"
+#include "VARQuin/v_coverage.hpp"
 
 #include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
@@ -399,6 +399,7 @@ static const struct option long_options[] =
     { "ubam1",   required_argument, 0, OPT_BAM_1 },
     { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
+    { "rvcf",    required_argument, 0, OPT_R_VCF   },
     { "rfus",    required_argument, 0, OPT_R_FUS   },
     { "uout",    required_argument, 0, OPT_U_OUT   },
     { "utab",    required_argument, 0, OPT_U_TAB   },
@@ -993,6 +994,7 @@ void parse(int argc, char ** argv)
             case OPT_FA_2:
             case OPT_U_COV:
             case OPT_R_FUS:
+            case OPT_R_VCF:
             case OPT_U_VCF:
             case OPT_U_OUT:
             case OPT_U_GTF:
@@ -1362,9 +1364,10 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALLELE:
                     case TOOL_V_DISCOVER:
                     {
-                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1)); break;
+                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1));
+                        break;
                     }
-                        
+
                     default: { break; }
                 }
                 
@@ -1538,7 +1541,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const MissingOptionError &ex)
     {
-        const auto format = "A mandatory option is missing. Please specify -%1%.";
+        const auto format = "Mandatory option is missing. Please specify -%1%.";
         printError((boost::format(format) % ex.opt).str());
     }
     catch (const MissingInputError &ex)

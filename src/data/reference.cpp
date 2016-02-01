@@ -908,14 +908,14 @@ struct VarRef::VarRefImpl
      */
 
     // Validated variants
-    std::set<Variation> vars;
+    std::set<Variant> vars;
 
     std::set<SequinID> varIDs;
     
     // Validated genotypes (references + variants)
     std::map<GenoID, GenotypeData> genos;
 
-    std::map<Mixture, std::map<GenoID, VariantPair>> pairs;
+    std::map<Mixture, std::map<SequinID, VariantPair>> data;
 
     // Reference intervals (eg: chr21)
     std::map<ChromoID, Intervals<>> inters;
@@ -924,7 +924,7 @@ struct VarRef::VarRefImpl
      * Raw variables
      */
     
-    std::set<Variation> rawVars;
+    std::set<Variant>   rawVars;
     std::set<SequinID>  rawVarIDs;
 
     // Reference intervals (eg: chr21)
@@ -936,19 +936,17 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-double VarRef::alleleFreq(Mixture m, const GenoID &bID) const
+double VarRef::alleleFreq(const SequinID &id, Mixture m) const
 {
-    const auto &p = _impl->pairs.at(m).at(bID);
+    const auto &p = _impl->data.at(m).at(id);
     const auto &r = p.r;
     const auto &v = p.v;
 
-    // Abundance ratio of reference to variant DNA standard
     return v->abund / (r->abund + v->abund);
 }
 
-void VarRef::addVar(const Variation &v)
+void VarRef::addVar(const Variant &v)
 {
-    assert(!v.bID.empty());
     _impl->rawVars.insert(v);
     _impl->rawVarIDs.insert(v.id);
 }
@@ -979,7 +977,7 @@ Counts VarRef::countVarGens() const
 
 Counts VarRef::countIndels() const
 {
-    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variation &v)
+    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variant &v)
     {
         return v.type == Insertion || v.type == Deletion;
     });
@@ -987,7 +985,7 @@ Counts VarRef::countIndels() const
 
 Counts VarRef::countSNPs() const
 {
-    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variation &v)
+    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variant &v)
     {
         return v.type == SNP;
     });
@@ -1119,31 +1117,41 @@ void VarRef::validate()
     }
     
     /*
-     * Construct data structure for homozygous/heterozygous
+     * Construct data structure for the variants
      */
 
-    std::vector<std::string> toks;
-    
     for (const auto &i : _mixes)
     {
-        for (const auto &j : _mixes.at(i.first))
+        const auto &data = _mixes.at(i.first);
+        
+        for (const auto &j : _impl->rawVars)
         {
-            Tokens::split(j.id, "_", toks);
-
-            // It has be the reference or variant...
-            assert(toks[3] == "R" || toks[3] == "V");
+            // Eg: D_1_3_R
+            const auto rID = j.id;
             
-            // Eg: D_1_10
-            const auto baseID = toks[0] + "_" + toks[1] + "_" + toks[2];
+            // Eg: D_1_3_V
+            const auto vID = rID.substr(0, rID.size() - 2) + "_V";
+            
+            auto rIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
+            {
+                return m.id == rID;
+            });
 
-            if (toks[3] == "R")
+            auto vIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
             {
-                _impl->pairs[i.first][baseID].r = &j;
-            }
-            else
-            {
-                _impl->pairs[i.first][baseID].v = &j;
-            }
+                return m.id == vID;
+            });
+            
+            assert(rIter != data.end() && vIter != data.end());
+            
+            /*
+             * Important: VARQuin is mapped by it's reference. For example, D_1_3_R. We may also map
+             *            by D_1_3, but it's not implemented. In contrast, mixtures are mapped by both
+             *            D_1_3_R and D_1_3_V.
+             */
+
+            _impl->data[i.first][rID].r = &(*rIter);
+            _impl->data[i.first][rID].v = &(*vIter);
         }
     }
 }
@@ -1158,7 +1166,7 @@ const Interval * VarRef::findQuery(const ChromoID &chr, const Locus &l) const
     return _impl->inters.at(chr).contains(l);
 }
 
-const Variation * VarRef::findVar(const Locus &l, double fuzzy, MatchRule match) const
+const Variant * VarRef::findVar(const Locus &l, double fuzzy, MatchRule match) const
 {
     for (const auto &i : _impl->vars)
     {

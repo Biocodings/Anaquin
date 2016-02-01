@@ -43,6 +43,8 @@ plotScatter <- function(data,
 
     data$logFC <- as.factor(data$logFC)
     
+    print(lm_eqn(data))
+    
     p <- ggplot(data=data, aes(x=x, y=y)) +
                               xlab(xname) +
                               ylab(yname) +

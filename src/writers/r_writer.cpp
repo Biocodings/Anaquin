@@ -19,6 +19,30 @@ extern Scripts PlotSplice();
 // Defined in resources.cpp
 extern Scripts PlotScatterPool();
 
+// Defined in resources.cpp
+extern std::string PlotScatter();
+
+Scripts RWriter::scatter(const std::vector<SequinID> &seqs,
+                         const std::vector<double>   &x,
+                         const std::vector<double>   &y,
+                         const AxisLabel &xLabel,
+                         const AxisLabel &yLabel,
+                         const AxisLabel &title)
+{
+    assert(!xLabel.empty() && !yLabel.empty());
+    
+    std::stringstream ss;
+    ss << PlotScatter();
+    
+    return (boost::format(ss.str()) % date()
+                                    % __full_command__
+                                    % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
+                                    % concat(x)
+                                    % concat(y)
+                                    % xLabel
+                                    % yLabel).str();
+}
+
 Scripts RWriter::scatterPool(const Path &path, const FileName &file)
 {
     std::stringstream ss;

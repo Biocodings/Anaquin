@@ -13,9 +13,6 @@ extern std::string date();
 // Defined in main.cpp
 extern std::string __full_command__;
 
-// Defined in resources.cpp
-extern std::string PlotScatter();
-
 namespace Anaquin
 {
     // Number of elements in the histogram with at least an entry
@@ -277,30 +274,40 @@ namespace Anaquin
                 }
             }
             
-            return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
+            //return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
+            return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title);
+        }
+
+        template <typename T> static Scripts scatter(const T &t,
+                                                     const std::string &title,
+                                                     const AxisLabel &xLabel,
+                                                     const AxisLabel &yLabel,
+                                                     const AxisLabel &xLogLabel,
+                                                     const AxisLabel &yLogLabel,
+                                                     bool  shoudLog2 = true)
+        {
+            std::vector<double> x, y;
+            std::vector<std::string> z;
+
+            for (const auto &p : t)
+            {
+                if (!isnan(p.second.x) && !isnan(p.second.y))
+                {
+                    z.push_back(p.first);
+                    x.push_back(p.second.x);
+                    y.push_back(p.second.y);
+                }
+            }
+            
+            return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title);
         }
         
-        template <typename T> static Scripts scatter(const std::vector<SequinID> &seqs,
-                                                     const std::vector<T>        &x,
-                                                     const std::vector<T>        &y,
-                                                     const std::string           &xLabel,
-                                                     const std::string           &yLabel,
-                                                     const std::string           &title,
-                                                     T s)
-        {
-            assert(!xLabel.empty() && !yLabel.empty());
-
-            std::stringstream ss;
-            ss << PlotScatter();
-
-            return (boost::format(ss.str()) % date()
-                                            % __full_command__
-                                            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                            % concat(x)
-                                            % concat(y)
-                                            % xLabel
-                                            % yLabel).str();
-        }
+        static Scripts scatter(const std::vector<SequinID> &seqs,
+                               const std::vector<double>   &x,
+                               const std::vector<double>   &y,
+                               const AxisLabel &xLabel,
+                               const AxisLabel &yLabel,
+                               const AxisLabel &title);
     };
 }
 

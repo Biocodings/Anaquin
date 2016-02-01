@@ -506,6 +506,46 @@ def transQuin(config, output):
 
     # Generate a markup report (which can then be converted into various formats)
     r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
+
+# Create a report for TransQuin
+def transQuin(config, output):
+    
+    r = Report()
+    
+    # Eg: A1,A2,A3,B1,B2,B3
+    names = getNames(config)
+    
+    ########################################
+    #                                      #
+    #    1. Generating allele frequency    #
+    #                                      #
+    ########################################
+
+    print ('----------------------- Allele Frequency -----------------------\n')
+
+    # Alignment files
+    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
+
+    #
+    # Generate a request for allele frequency. For example:
+    #
+    #    anaquin -t VarAllele -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA012.v013.csv -uvcf variant.ChrT51.with_standard_IDs.vcf 
+    #
+
+    req = '-ufiles ' + files
+    
+    # Execute the command
+    anaquin('VarQuin', req, config, onlyPrint=True)
+
+    r.startChapter('Statistics (TransAlign)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Alignment statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
+
+    r.endChapter()
+
+    # Generate a markup report (which can then be converted into various formats)
+    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
     
 
 #################################

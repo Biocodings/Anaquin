@@ -44,7 +44,7 @@ CC = g++
 CC_FLAGS = -std=c++11
 
 EXEC         = anaquin
-SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/trans/*.cpp src/variant/*.cpp src/meta/*.cpp src/ladder/*.cpp src/fusion/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
+SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/trans/*.cpp src/VARQuin/*.cpp src/meta/*.cpp src/ladder/*.cpp src/fusion/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
 OBJECTS      = $(SOURCES:.cpp=.o)
 SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/trans/*.cpp tests/meta/*.cpp tests/*.cpp)
 OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)

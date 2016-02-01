@@ -4,8 +4,8 @@
 #include <set>
 #include <map>
 #include "stats/limit.hpp"
+#include "data/variant.hpp"
 #include "data/intervals.hpp"
-#include "data/variation.hpp"
 
 namespace Anaquin
 {
@@ -244,15 +244,18 @@ namespace Anaquin
                 MixtureData(const SequinID &id, Base length, Concentration abund)
                         : id(id), length(length), abund(abund) {}
 
+                inline bool operator<(const SequinID &id)  const { return this->id < id;  }
+                inline bool operator==(const SequinID &id) const { return this->id == id; }
+                
                 inline bool operator<(const MixtureData &x)  const { return id < x.id;  }
                 inline bool operator==(const MixtureData &x) const { return id == x.id; }
-            
+
                 SequinID id;
-            
+
                 // Length of the sequin
                 Base length;
-            
-                // Amount of spiked-in concentration
+
+                // Amount of spiked-in abundance
                 Concentration abund;
             };
 
@@ -506,6 +509,8 @@ namespace Anaquin
      * -------------------- Variant Analysis --------------------
      */
     
+    struct Variant;
+    
     class VarRef : public Reference<SequinData, SequinStats>
     {
         public:
@@ -533,7 +538,7 @@ namespace Anaquin
             VarRef();
 
             // Add a known variant
-            void addVar(const Variation &);
+            void addVar(const Variant &);
 
             // Add a sequin in the standards
             void addStand(const SequinID &, const Locus &);
@@ -569,13 +574,13 @@ namespace Anaquin
             const GenotypeData *findGeno(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
 
             // Find a reference variant from a locus
-            const Variation *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;
+            const Variant *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;
 
             // Find a reference interval
             const Interval *findQuery(const ChromoID &, const Locus &) const;
 
             // Return the proportion of variants for a genotype
-            double alleleFreq(Mixture, const GenoID &) const;
+            double alleleFreq(const GenoID &, Mixture = Mix_1) const;
 
         protected:
 
