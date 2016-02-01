@@ -28,8 +28,6 @@ template <typename T> static Counts sums(const std::map<T, Counts> &m)
     return c;
 }
 
-constexpr const char * ChrT;
-
 static bool checkGenoQuery(const ChromoID &queryID, const ChromoID &id, const Locus &l)
 {
     const auto &r = Standard::instance();

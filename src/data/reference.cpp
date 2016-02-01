@@ -967,17 +967,17 @@ void VarRef::addStand(const SequinID &id, const Locus &l)
     _impl->rawSeqsByID[id] = l;
 }
 
-std::size_t VarRef::countRefGenes() const
+Counts VarRef::countRefGenes() const
 {
-    return static_cast<std::size_t>(0.5 * data().size());
+    return static_cast<Counts>(0.5 * data().size());
 }
 
-std::size_t VarRef::countVarGens() const
+Counts VarRef::countVarGens() const
 {
     return countRefGenes();
 }
 
-std::size_t VarRef::countIndels() const
+Counts VarRef::countIndels() const
 {
     return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variation &v)
     {
@@ -985,7 +985,7 @@ std::size_t VarRef::countIndels() const
     });
 }
 
-std::size_t VarRef::countSNPs() const
+Counts VarRef::countSNPs() const
 {
     return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variation &v)
     {
@@ -993,7 +993,7 @@ std::size_t VarRef::countSNPs() const
     });
 }
 
-std::size_t VarRef::countVars() const
+Counts VarRef::countVars() const
 {
     return _impl->vars.size();
 }

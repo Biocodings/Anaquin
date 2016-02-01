@@ -542,19 +542,19 @@ namespace Anaquin
             void addInterval(const ChromoID &, const Interval &);
 
             // Return number of validated variants
-            std::size_t countVars() const;
+            Counts countVars() const;
 
             // Return number of validated SNPs
-            std::size_t countSNPs() const;
+            Counts countSNPs() const;
         
             // Return number of validated indels
-            std::size_t countIndels() const;
+            Counts countIndels() const;
         
             // Return number of validated references, eg: D_1_11_R
-            std::size_t countRefGenes() const;
+            Counts countRefGenes() const;
 
             // Return number of validated variants, eg: D_1_11_V
-            std::size_t countVarGens() const;
+            Counts countVarGens() const;
         
             // Return the detection limit at the pair level
             Limit limitGeno(const GenoHist &) const;

@@ -31,7 +31,7 @@ plotLODR <- function(data,
     stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
 
     # Names of all the features
-    names <- names(data)
+    names <- seqs(data)
     
     # Average of normalized count values (x-axis)
     baseMean <- baseMean(data)

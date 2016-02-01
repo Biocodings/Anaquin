@@ -115,6 +115,22 @@ void Standard::addVVar(const Reader &r)
 {
     std::vector<std::string> toks;
 
+    auto parse = [&](const std::string &r, const std::string &v)
+    {
+        if (r.size() == v.size())
+        {
+            return SNP;
+        }
+        else if (r.size() > v.size())
+        {
+            return Deletion;
+        }
+        else
+        {
+            return Insertion;
+        }
+    };
+
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
         // Eg: D_1_10_R_G/A
@@ -143,7 +159,7 @@ void Standard::addVVar(const Reader &r)
         v.l    = f.l;
         v.alt  = toks[1];
         v.ref  = toks[0];
-        v.type = ParserVCF::strToSNP(toks[0], toks[1]);
+        v.type = parse(toks[0], toks[1]);
 
         r_var.addVar(v);
     });

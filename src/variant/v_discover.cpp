@@ -1,5 +1,5 @@
+#include "variant/variant.hpp"
 #include "variant/v_discover.hpp"
-#include "variant/v_classify.hpp"
 
 using namespace Anaquin;
 
@@ -9,12 +9,12 @@ VDiscover::Stats VDiscover::report(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_var;
 
     o.writer->open("VarDiscover_false.stats");
-    
+/*
     classify(stats, file, o, [&](const VCFVariant &v, const Variation *match)
     {
         // Empty Implementation
     });
-
+*/
     stats.chrT->m.nr() = r.countVars();
 
     o.info("Generating summary statistics");

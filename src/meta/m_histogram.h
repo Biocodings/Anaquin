@@ -309,8 +309,7 @@ class Histogram
 };
 
 namespace std {
-	template<>
-	inline void swap(Histogram&, Histogram&) { assert(false); }
+	template<> inline void swap(Histogram&, Histogram&) noexcept(is_nothrow_move_constructible<Histogram>::value && is_nothrow_move_assignable<Histogram>::value) { assert(false); }
 }
 
 #endif
