@@ -37,8 +37,55 @@ test_2 <- function()
     r <- plotROC(TransQuin(seqs=c(1:31), pval=pvals, class=labels))
     
     checkTrue(!is.null(r$pred))
-    checkTrue(!is.null(r$perf))    
+    checkTrue(!is.null(r$perf))
 }
 
-test_1()
+tVarScan <- function()
+{
+    #
+    # This example demostrates rendering an ROC plot for VarScan.
+    #
+
+    snp_tp <- read.csv('tests/data/VarQuin/true_pos_snps.25000x.tab', sep='\t')
+    ind_tp <- read.csv('tests/data/VarQuin/true_pos_indels.25000x.tab', sep='\t')
+    snp_fp <- read.csv('tests/data/VarQuin/false_pos_snps.25000x.tab', sep='\t')
+    ind_fp <- read.csv('tests/data/VarQuin/false_pos_indels.25000x.tab', sep='\t')
+    
+    p <- 0.01
+    
+    # Filter the FPs based on p-value
+    snp_fp <- snp_fp[snp_fp$Pvalue <= p,] # 68
+
+    print (nrow(snp_fp))
+    
+    # Filter the FPs based on p-value
+    ind_fp <- ind_fp[ind_fp$Pvalue <= p,] # 12
+
+    snp_tp$cls <- 'TP'
+    snp_fp$cls <- 'FP'
+    ind_tp$cls <- 'TP'
+    ind_fp$cls <- 'FP'
+    
+    snp <- rbind(snp_tp, snp_fp)
+    ind <- rbind(ind_tp, ind_fp)
+    
+    #snp[snp$Pvalue==0,]$Pvalue <- min(snp[snp$Pvalue!=0,]$Pvalue)
+    
+    snp <- snp[with(snp, order(Pvalue)),]
+    
+    a <- data.frame(pos=snp$Position, pval=snp$Pvalue, cls=snp$cls)
+    
+    
+    
+    data <- VarQuin(seqs=c(1:nrow(snp)), pval=snp$Pvalue, pos=snp$Position, cls=snp$cls)
+    plotROCForVar(data)
+
+    
+        
+}
+
+#test_1()
 #test_2()
+tVarScan()
+
+
