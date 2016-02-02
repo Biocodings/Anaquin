@@ -4,11 +4,15 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-#
-# Plot the "Limit of Detection ratio" plot. Refer to the ERCC paper for more details.
-#
 
-plotLODR <- function(data,
+
+
+plotLODR.VarQuin <- function(data, ...)
+{
+    print('ddddd')
+}
+
+plotLODR.TransQuin <- function(data,
                      lvl,
                      title = NULL,
                      choseFDR = 0.1,

@@ -7,46 +7,7 @@
 library('RUnit')
 library('Anaquin')
 
-plotForExons <- function()
-{
-    #
-    # Create an LODR plot for exons. The data set is the same data set used in the sequins paper.
-    #
-    d <- read.csv('/Users/tedwong/Desktop/LODR_exons_TED.csv', row.names=1)
-    d$LFC <- round(d$LFC)
-    
-    d <- d[!is.na(d$pvalue),]
-    
-    #
-    # The following LFC can't be fitted by local regression
-    #
-    #     - (-8,8): 3 counts
-    #     - (-6,6): 2 counts
-    #
-    
-    d <- d[d$LFC!=8 & d$LFC!=-8,]
-    d <- d[d$LFC!=6 & d$LFC!=-6,]
-    d <- d[d$LFC!=7 & d$LFC!=-7,]
-    d <- d[d$LFC!=9 & d$LFC!=-9,]    
-    
-    #
-    # It's hard to construct a LODR plot with zero probabilities...
-    #
-    
-    #m <- mean(d[(d$LFC==-5 | d$LFC==5) & (d$pvalue!=0),]$pvalue)
-    #d[(d$LFC==-5 | d$LFC==5) & (d$pvalue==0),]$pvalue <- 0.001
-    
-    d[d$pvalue==0,]$pvalue <- 1e-100
-    
-    
-    #    d <- d[d$pvalue>0,]
-    d <- d[d$pvalue>1e-200,]
-    
-    data <- anaquin(seqs=row.names(d), counts=d$exonBaseMean, pval=d$pvalue, ratio=d$LFC)
-    plotLODR(data, shouldTable=FALSE)
-}
-
-plotForGenes <- function()
+DESeq2 <- function()
 {
     # Read data file for gencode
     gens <- read.csv('tests/data/K_562/DESeq2_gencode_results.csv', row.names=1)
@@ -67,8 +28,7 @@ plotForGenes <- function()
     xLabels <- c('1e+00', '1e+01', '1e+02', '1e+03', '1e+04')
     yBreaks <- c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)
 
-    r <- plotLODR(data, shouldBand=TRUE, locBand='pred', choseFDR=0.1, shouldTable=FALSE, lvl='gene', yBreaks=yBreaks, xBreaks=xBreaks, xLabels=xLabels)
+    r <- plotLODR(data, shouldBand=FALSE, locBand='pred', choseFDR=0.1, shouldTable=FALSE, lvl='gene', yBreaks=yBreaks, xBreaks=xBreaks, xLabels=xLabels)
 }
 
-#plotForExons()
-plotForGenes()
+DESeq2()

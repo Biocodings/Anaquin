@@ -79,9 +79,6 @@ tVarScan <- function()
     
     data <- VarQuin(seqs=c(1:nrow(snp)), pval=snp$Pvalue, pos=snp$Position, cls=snp$cls)
     plotROCForVar(data)
-
-    
-        
 }
 
 #test_1()

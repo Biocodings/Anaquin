@@ -4,58 +4,55 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotROCForVar <- function(data)
+plotROCForVar <- function(snp, ind)
 {
     require(ROCR)
     require(ggplot2)
     
-    stopifnot(class(data) == 'VarQuin')
+    snp <- data.frame(pval=snp$Pvalue, cls=snp$cls, type='SNP')
+    ind <- data.frame(pval=ind$Pvalue, cls=ind$cls, type='IND')
+    dat <- rbind(snp, ind)
     
-    seqs  <- data$seqs
-    lpval <- log2(seqs$pval)
+    dat$lpval <- log2(dat$pval)
+    dat$score <- 1-dat$pval
     
-    d <- data.frame(pval=seqs$pval, lpval=lpval, score=1-seqs$pval, cls=seqs$cls)
-    d <- d[with(d, order(pval)),]
-
     ROCDat <- NULL
     AUCDat <- NULL
     
-    label <- ifelse(d$cls == 'TP', 2, 1)
-    preds <- prediction(d$score, label, label.ordering=c(1,2))
-    
-    perf  <- performance(preds, "tpr","fpr")
-    auc   <- performance(preds, "auc")
-    
-    # Now build the three vectors for plotting - TPR, FPR, and FoldChange
-    AUC <- unlist(auc@y.values)
-    
-    print(paste(c('AUC for ', 1, ': ', AUC), collapse = ''))
-    
-    AUCDatNew <- data.frame(logFC=1, AUC=round(AUC, digits=3))
-    AUCDat <- rbind(AUCDat, AUCDatNew)
-    
-    FPR <- c(unlist(perf@x.values)) 
-    TPR <- c(unlist(perf@y.values))
-    
-    ROCDatNew <- data.frame(FPR=FPR, TPR=TPR, logFC=1)
-    ROCDat    <- rbind(ROCDat, ROCDatNew)
-    
-            
-            
-            
-    p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))              + 
-        geom_path(size=2, aes(colour='red'), alpha=0.7)  + 
-        geom_point(size=5, aes(colour='red'), alpha=0.7) + 
-        labs(colour='Log-Fold')                          +
-        geom_abline(intercept=0, slope=1, linetype=2)    +
-        theme_bw()
+    for (type in unique(dat$type))
+    {
+        t <- dat[dat$type == type,]
+
+        label <- ifelse(t$cls == 'TP', 2, 1)
+        preds <- prediction(t$score, label, label.ordering=c(1,2))
+        
+        perf  <- performance(preds, "tpr","fpr")
+        auc   <- performance(preds, "auc")
+        
+        # Now build the three vectors for plotting - TPR, FPR, and FoldChange
+        AUC <- unlist(auc@y.values)
+        
+        print(paste(c('AUC for ', type, ': ', AUC), collapse = ''))
+        
+        AUCDatNew <- data.frame(type=type, AUC=round(AUC, digits=3))
+        AUCDat <- rbind(AUCDat, AUCDatNew)
+        
+        FPR <- c(unlist(perf@x.values)) 
+        TPR <- c(unlist(perf@y.values))
+        
+        ROCDatNew <- data.frame(FPR=FPR, TPR=TPR, type=type)
+        ROCDat    <- rbind(ROCDat, ROCDatNew)
+    }
+
+    p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))             + 
+            geom_path(size=2, aes(colour=type), alpha=0.7)  + 
+            geom_point(size=5, aes(colour=type), alpha=0.7) + 
+            labs(colour='Variant')                          +
+            geom_abline(intercept=0, slope=1, linetype=2)   +
+            theme_bw()
     
     print(p)
-    
-    #return (list('pred' = pred, 'perf' = perf))
 }
-
-
 
 plotROC <- function(data, meth='validate')
 {
