@@ -6,6 +6,8 @@
 
 namespace Anaquin
 {
+    typedef std::string Line;
+    
     struct ParserProgress
     {
         long long i = 0;

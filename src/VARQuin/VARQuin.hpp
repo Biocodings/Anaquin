@@ -2,106 +2,113 @@
 #define VARQUIN_HPP
 
 #include "data/variant.hpp"
-#include <boost/format.hpp>
 #include "data/standard.hpp"
+
 #include "parsers/parser_vcf.hpp"
+#include "parsers/parser_varscan.hpp"
 
 namespace Anaquin
 {
-    struct VClassify
-    {
-        struct Stats
-        {
-            struct FalsePositive
-            {
-                inline bool operator<(const Locus &l) const  { return this->l < l;    }
-                inline bool operator!=(const Locus &l) const { return !operator==(l); }
-                inline bool operator==(const Locus &l) const { return this->l == l;   }
-                
-                Locus l;
-                
-                // Matching for position?
-                bool pos;
-                
-                // Matching for variant type?
-                bool type;
-                
-                // Matchinf for allele?
-                bool alt;
-                
-                // Matching for reference?
-                bool ref;
-            };
-            
-            std::set<FalsePositive> fps;
-        };
-    };
-
+    /*
+     * This class represents variant matching to the synthetic chromosome.
+     */
+    
     struct VariantMatch
     {
+        const CalledVariant * query;
+
         // Matched by position?
-        const Variant *match;
+        const Variant *match = nullptr;
         
-        // Match by type (SNP, Indel etc)?
-        bool type;
+        // Matched by sequin region?
+        const Variant *seq = nullptr;
+
+        /*
+         * Expected allele frequency. Defined only if seq is defined.
+         */
         
+        double eAllFreq;
+        
+        /*
+         * Defined only if there's a match
+         */
+
         // Matched by variant allele?
         bool alt;
         
         // Matched by reference allele?
         bool ref;
     };
-    
+
+    enum class Caller
+    {
+        GATK,
+        VarScan,
+    };
+
     /*
-     * Common framework for parsing and matching a VCF variant file
+     * Common framework for parsing and matching a variant output
      */
 
-    template <typename F> void parseVCF(const FileName &file, F f)
+    template <typename F> void parseVariant(const FileName &file, Caller caller, F f)
     {
         const auto &r = Standard::instance().r_var;
 
-        ParserVCF::parse(file, [&](const ParserVCF::VCFVariant &v, const ParserProgress &)
+        VariantMatch m;
+
+        auto match = [&](const CalledVariant &query)
         {
-            VariantMatch m;
+            m.query = &query;
+            m.seq   = nullptr;
+            m.match = nullptr;
 
-            if (v.chrID != ChrT)
+            if (query.chrID == ChrT)
             {
-                f(v, nullptr);
-            }
-            else
-            {
-                m.match = r.findVar(v.l);
-                m.alt   = m.match && m.match->alt  == v.alt;
-                m.ref   = m.match && m.match->alt  == v.ref;
-                m.type  = m.match && m.match->type == v.type;
-                
-                f(v, m.match ? &m : nullptr);
-                
-                /*
-                 const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
-                 
-                 o.writer->write((boost::format(format) % "Start"
-                 % "Match"
-                 % "Type"
-                 % "Alt"
-                 % "Rqef").str());
-                 */
-                
+                // Can we match by position?
+                m.match = r.findVar(query.l, Exact);
 
-                //if (!found || !type || !alt || !ref)
-            //    {
-                    // o.writer->write((boost::format(format) % v.l.start
-                    //                                      % (found ? "t" : "f")
-                    //                                    % (type ? "t" : "f")
-                    //                                  % (alt ? "t" : "f")
-                    //                                % (ref ? "t" : "f")).str());
-                    //return Negative;
-             //   }
+                if (m.match)
+                {
+                    m.seq = m.match;
+                    m.ref = m.match->ref == query.ref;
+                    m.alt = m.match->alt == query.alt;
+                }
+                else
+                {
+                    m.seq = r.findVar(query.l, Contains);
+                }
                 
-//                if (classify(stats.data.m, v, [&](const VCFVariant &)
-                    //stats.chrT->h.at(match->id)++;
+                if (m.seq)
+                {
+                    m.eAllFreq = r.alleleFreq(m.seq->id);
+                }
             }
-        });
+
+            return m;
+        };
+
+        switch (caller)
+        {
+            case Caller::GATK:
+            {
+                ParserVCF::parse(file, [&](const ParserVCF::VCFVariant &v, const ParserProgress &)
+                {
+                    //f(match(v));
+                });
+
+                break;
+            }
+
+            case Caller::VarScan:
+            {
+                ParserVarScan::parse(file, [&](const ParserVarScan::Data &d, const ParserProgress &)
+                {
+                    f(match(d));
+                });
+
+                break;
+            }
+        }
     }
 }
 

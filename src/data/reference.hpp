@@ -67,7 +67,6 @@ namespace Anaquin
     {
         Exact,
         Overlap,
-        StartOnly,
         Contains,
     };
     
@@ -555,12 +554,9 @@ namespace Anaquin
             // Return number of validated indels
             Counts countIndels() const;
         
-            // Return number of validated references, eg: D_1_11_R
-            Counts countRefGenes() const;
+            // Return number of sequins
+            Counts countSeqs() const;
 
-            // Return number of validated variants, eg: D_1_11_V
-            Counts countVarGens() const;
-        
             // Return the detection limit at the pair level
             Limit limitGeno(const GenoHist &) const;
        
@@ -571,10 +567,10 @@ namespace Anaquin
             const GenotypeData *findGeno(const GenoID &) const;
 
             // Find a reference gene that contains the given locus
-            const GenotypeData *findGeno(const Locus &, double fuzzy = 0, MatchRule = Contains) const;
+            const GenotypeData *findGeno(const Locus &, double fuzzy = 0, MatchRule = Exact) const;
 
-            // Find a reference variant from a locus
-            const Variant *findVar(const Locus &, double fuzzy = 0, MatchRule = StartOnly) const;
+            const Variant *findVar(const SequinID &) const;
+            const Variant *findVar(const Locus &, MatchRule = Exact) const;
 
             // Find a reference interval
             const Interval *findQuery(const ChromoID &, const Locus &) const;

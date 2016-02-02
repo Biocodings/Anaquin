@@ -21,7 +21,7 @@ TEST_CASE("R_ROC_Plot")
     
     const auto labels = std::vector<std::string> { "FP","FP","FP","FP","FP","TP","TP","FP","TP","FP","FP","TP","TP","FP","FP","TP","TP","TP","TP","FP","TP","FP","TP","TP","TP","TP","FP","TP","FP","TP","FP" };
 
-    REQUIRE_NOTHROW(RWriter::createROC(seqs, pvals, "gene"));
+    REQUIRE_NOTHROW(RWriter::createROC_T(seqs, pvals, "gene"));
 }
 
 TEST_CASE("R_LODR_Plot")

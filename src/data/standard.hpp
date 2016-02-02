@@ -7,7 +7,6 @@
 #include "data/reader.hpp"
 #include "data/feature.hpp"
 #include "data/reference.hpp"
-#include "parsers/parser_bed.hpp"
 
 namespace Anaquin
 {
@@ -45,16 +44,16 @@ namespace Anaquin
              * ---------------- Variant analysis ----------------
              */
 
-            void addVMix(const Reader &);
+            void addMix(const Reader &);
         
             // Add known variants
-            void addVVar(const Reader &);
+            void addVar(const Reader &);
 
             // Add standards to the reference
-            void addVStd(const Reader &);
+            void addStd(const Reader &);
 
             // Add intervals to the reference
-            void addVInters(const Reader &);
+            void addInters(const Reader &);
         
             VarRef r_var;
         

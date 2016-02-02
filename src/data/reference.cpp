@@ -906,6 +906,9 @@ struct VarRef::VarRefImpl
     /*
      * Validated variables
      */
+    
+    // VarQuin standards (BED file)
+    std::map<SequinID, Locus> stands;
 
     // Validated variants
     std::set<Variant> vars;
@@ -924,14 +927,11 @@ struct VarRef::VarRefImpl
      * Raw variables
      */
     
-    std::set<Variant>   rawVars;
-    std::set<SequinID>  rawVarIDs;
+    std::set<Variant>  rawVars;
+    std::set<SequinID> rawVarIDs;
 
     // Reference intervals (eg: chr21)
     std::map<ChromoID, Intervals<>> rawInters;
-    
-    // Locus of the sequin
-    std::map<SequinID, Locus> rawSeqsByID;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
@@ -959,27 +959,22 @@ void VarRef::addInterval(const ChromoID &id, const Interval &i)
 void VarRef::addStand(const SequinID &id, const Locus &l)
 {
     assert(l.length());
-    assert(!_impl->rawSeqsByID.count(id));
+    assert(!_impl->stands.count(id));
 
     // We're only interested in the position of the sequin
-    _impl->rawSeqsByID[id] = l;
+    _impl->stands[id] = l;
 }
 
-Counts VarRef::countRefGenes() const
+Counts VarRef::countSeqs() const
 {
-    return static_cast<Counts>(0.5 * data().size());
-}
-
-Counts VarRef::countVarGens() const
-{
-    return countRefGenes();
+    return data().size();
 }
 
 Counts VarRef::countIndels() const
 {
     return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variant &v)
     {
-        return v.type == Insertion || v.type == Deletion;
+        return v.type() == Insertion || v.type() == Deletion;
     });
 }
 
@@ -987,7 +982,7 @@ Counts VarRef::countSNPs() const
 {
     return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variant &v)
     {
-        return v.type == SNP;
+        return v.type() == SNP;
     });
 }
 
@@ -1069,11 +1064,11 @@ void VarRef::validate()
     }
     
     // Rule: 1
-    else if (!_impl->rawSeqsByID.empty())
+    else if (!_impl->stands.empty())
     {
         std::set<SequinID> ids;
         
-        for (const auto &i : _impl->rawSeqsByID)
+        for (const auto &i : _impl->stands)
         {
             ids.insert(i.first);
         }
@@ -1097,8 +1092,8 @@ void VarRef::validate()
      *
      * There is no information directly for D_1_1_V. Therefore, we'll only do it for the standards.
      */
-    
-    for (const auto &i : _impl->rawSeqsByID)
+/*
+    for (const auto &i : _impl->stands)
     {
         if (_data.count(i.first))
         {
@@ -1115,7 +1110,7 @@ void VarRef::validate()
             _impl->genos[pairID].v  = &(_data.at(pairID + "_V"));
         }
     }
-    
+*/
     /*
      * Construct data structure for the variants
      */
@@ -1166,15 +1161,76 @@ const Interval * VarRef::findQuery(const ChromoID &chr, const Locus &l) const
     return _impl->inters.at(chr).contains(l);
 }
 
-const Variant * VarRef::findVar(const Locus &l, double fuzzy, MatchRule match) const
+const Variant * VarRef::findVar(const SequinID &id) const
 {
+    // Eg: D_1_1
+    auto x = id;
+    
+    if (boost::algorithm::ends_with(x, "_V"))
+    {
+        x = x.substr(0, x.length() - 2) + "_R";
+    }
+    else if (!boost::algorithm::ends_with(x, "_R"))
+    {
+        x = x + "_R";
+    }
+
     for (const auto &i : _impl->vars)
     {
-        if (match == StartOnly && i.l.start == l.start)
+        if (i.id == x)
         {
             return &i;
         }
     }
+    
+    return nullptr;
+}
 
+const Variant * VarRef::findVar(const Locus &l, MatchRule match) const
+{
+    if (l.start != l.end)
+    {
+        throw std::runtime_error("Multiple locus is not supported");
+    }
+    else if (match != Exact && match != Contains)
+    {
+        throw std::runtime_error("Only Exact and Contains are supported");
+    }
+
+    switch (match)
+    {
+        case Exact:
+        {
+            for (const auto &i : _impl->vars)
+            {
+                if (i.l.start == l.start)
+                {
+                    return &i;
+                }
+            }
+
+            break;
+        }
+            
+        case Contains:
+        {
+            typedef std::pair<SequinID, Locus> StandardPair;
+            
+            const auto iter = std::find_if(_impl->stands.begin(), _impl->stands.end(), [&](const StandardPair &p)
+            {
+                return p.second.contains(l);
+            });
+            
+            if (iter != _impl->stands.end())
+            {
+                return findVar(iter->first);
+            }
+
+            break;
+        }
+
+        default : { break; }
+    }
+    
     return nullptr;
 }

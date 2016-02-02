@@ -4,26 +4,30 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotROCForVar <- function(snp, ind)
+plotROC.VarQuin <- function(data)
 {
     require(ROCR)
     require(ggplot2)
     
-    snp <- data.frame(pval=snp$Pvalue, cls=snp$cls, type='SNP')
-    ind <- data.frame(pval=ind$Pvalue, cls=ind$cls, type='IND')
-    dat <- rbind(snp, ind)
+    seqs <- data$seqs
     
+    dat <- data.frame(pval=seqs$pval, label=seqs$label, type=seqs$type, eAFreq=seqs$eAFreq)
+
     dat$lpval <- log2(dat$pval)
-    dat$score <- 1-dat$pval
+    dat$score <- 1-dat$lpval
     
     ROCDat <- NULL
     AUCDat <- NULL
     
-    for (type in unique(dat$type))
+    #
+    # Render the ROC for each of the group based on the expected allele frequency.
+    #
+
+    for (ratio in unique(freq$ratio))
     {
         t <- dat[dat$type == type,]
 
-        label <- ifelse(t$cls == 'TP', 2, 1)
+        label <- ifelse(t$label == 'TP', 2, 1)
         preds <- prediction(t$score, label, label.ordering=c(1,2))
         
         perf  <- performance(preds, "tpr","fpr")
@@ -54,7 +58,7 @@ plotROCForVar <- function(snp, ind)
     print(p)
 }
 
-plotROC <- function(data, meth='validate')
+plotROC.TransQuin <- function(data, meth='validate')
 {
     require(ROCR)
     require(ggplot2)

@@ -17,8 +17,6 @@ data  = [ 'data/manual.txt',
           'scripts/viewer.py',
 
           'src/r/plotMA.R',
-          'src/r/plotROC.R',
-          'src/r/plotLODR.R',
           'src/r/plotSplice.R',
           'src/r/plotScatter.R',
           'src/r/plotScatterPool.R',
@@ -37,6 +35,9 @@ data  = [ 'data/manual.txt',
            
            # ---------- Transcriptome ----------
 
+	  'src/r/plotROC_T.R',
+	  'src/r/plotLODR_T.R',
+
           'data/trans/ATR001.v032.gtf',
           'data/trans/MTR002.v013.csv',
           'data/trans/MTR003.v013.csv',
@@ -51,10 +52,13 @@ data  = [ 'data/manual.txt',
 
            # ---------- Variant ----------
 
-          'data/var/AVA008.v032.bed',
-          'data/var/AVA009.v032.vcf',
-          'data/var/MVA011.v013.csv',
-          'data/var/MVA012.v013.csv',
+	  'src/r/plotROC_V.R',
+	  'src/r/plotLODR_V.R',
+
+          'data/VarQuin/AVA008.v032.bed',
+          'data/VarQuin/AVA009.v032.vcf',
+          'data/VarQuin/MVA011.v013.csv',
+          'data/VarQuin/MVA012.v013.csv',
         ]
 tests = [ ]
 

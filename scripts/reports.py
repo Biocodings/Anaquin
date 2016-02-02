@@ -514,6 +514,22 @@ def transQuin(config, output):
     
     # Eg: A1,A2,A3,B1,B2,B3
     names = getNames(config)
+
+    #########################################
+    #                                       #
+    #    1. Generating variant discovery    #
+    #                                       #
+    #########################################
+
+    print ('----------------------- Variant Discovery -----------------------\n')
+
+    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
+
+    #
+    # Generate a request for allele frequency. For example:
+    #
+    #    anaquin -t VarDiscover -rbed data/VARQuin/AVA017.v032.bed -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA012.v013.csv -soft VarScan -ufiles varscan.tab
+    #
     
     ########################################
     #                                      #
@@ -523,13 +539,12 @@ def transQuin(config, output):
 
     print ('----------------------- Allele Frequency -----------------------\n')
 
-    # Alignment files
     files = get(config, 'ALIGN_FILE', EXPECT_FILES)
 
     #
     # Generate a request for allele frequency. For example:
     #
-    #    anaquin -t VarAllele -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA012.v013.csv -uvcf variant.ChrT51.with_standard_IDs.vcf 
+    #    anaquin -t VarAllele -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA012.v013.csv -ufiles varscan.tab 
     #
 
     req = '-ufiles ' + files

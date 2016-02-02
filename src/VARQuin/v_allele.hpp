@@ -2,13 +2,17 @@
 #define V_ALLELE_HPP
 
 #include "stats/analyzer.hpp"
+#include "VARQuin/VARQuin.hpp"
 
 namespace Anaquin
 {
     struct VAllele
     {
-        typedef FuzzyOptions Options;
-
+        struct Options : public AnalyzerOptions
+        {
+            Caller caller;
+        };
+        
         struct Stats
         {
             struct Data : public LinearStats

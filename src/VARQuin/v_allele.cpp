@@ -1,4 +1,3 @@
-#include "VARQuin/VARQuin.hpp"
 #include "VARQuin/v_allele.hpp"
 
 using namespace Anaquin;
@@ -10,13 +9,15 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
     stats.data[ChrT];
 
     const auto &r = Standard::instance().r_var;
-    
-    parseVCF(file, [&](const ParserVCF::VCFVariant &v, const VariantMatch *m)
+
+    parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
-        if (v.chrID == ChrT && m)
+        const auto &v = *m.query;
+
+        if (v.chrID == ChrT && m.match)
         {
             // Expected allele frequence
-            const auto known = r.alleleFreq(m->match->id);
+            const auto known = r.alleleFreq(m.match->id);
 
             // Measured coverage is the number of base calls aligned and used in variant calling
             const auto measured = static_cast<double>(v.dp_a) / (v.dp_r + v.dp_a);
@@ -27,10 +28,10 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
              */
             
             // Eg: D_1_12_R_373892_G/A
-            const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m->match->id
-                                                               % m->match->ref
-                                                               % m->match->l.start
-                                                               % m->match->alt).str();
+            const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m.match->id
+                                                               % m.match->ref
+                                                               % m.match->l.start
+                                                               % m.match->alt).str();
             stats.data.at(ChrT).add(id, known, measured);
         }
     });

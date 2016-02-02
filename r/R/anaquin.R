@@ -21,7 +21,7 @@ VarQuin <- function(..., mix=NULL)
     # List of keys supported in VarQuin analysis
     #
     
-    keys <- c('pval', 'reads1', 'reads2', 'cls', 'type')
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'eAFreq')
     
     for (key in keys)
     {
@@ -338,6 +338,18 @@ alleleFreq <- function(data, ids)
     freq <- freq[row.names(freq) %in% ids,]
     
     return (freq)
+}
+
+########################################################
+#                                                      #
+#                 Reference Loading                    #
+#                                                      #
+########################################################
+
+loadReference.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf')
+{
+    ref <- 
+        a <- readVcf('/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf', 'chrT')  
 }
 
 ########################################################

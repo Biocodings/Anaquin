@@ -71,7 +71,6 @@ typedef std::set<Value> Range;
 #define TOOL_T_COVERAGE  273
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
-#define TOOL_V_DIFF      276
 #define TOOL_V_IGV       277
 #define TOOL_V_ALLELE    278
 #define TOOL_V_COVERAGE  279
@@ -110,17 +109,14 @@ typedef std::set<Value> Range;
 #define OPT_C_SOFT   340
 
 #define OPT_R_BASE  800
-#define OPT_R_BED_1 801
-#define OPT_R_BED_2 802
+#define OPT_R_BED   801
 #define OPT_R_CHR_T 803
 #define OPT_R_FUS   804
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
 #define OPT_R_ENDO  808
-
 #define OPT_U_BASE  900
-#define OPT_U_VCF   901
 #define OPT_U_GTF   902
 #define OPT_BAM_1   903
 #define OPT_BAM_2   904
@@ -182,7 +178,6 @@ static std::map<Value, Tool> _tools =
     { "VarDiscover",      TOOL_V_DISCOVER  },
     { "VarIGV",           TOOL_V_IGV       },
     { "VarAllele",        TOOL_V_ALLELE    },
-    { "VarDiff",          TOOL_V_DIFF      },
     { "VarCoverage",      TOOL_V_COVERAGE  },
     { "VarSubsample",     TOOL_V_SUBSAMPLE },
 
@@ -229,35 +224,34 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
-    { TOOL_M_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1                             } },
+    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_MIXTURE, OPT_BAM_1                             } },
     { TOOL_M_IGV,      { OPT_FA_1                                                        } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED_1, OPT_PSL_1, OPT_FA_1, OPT_SOFT                      } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1, OPT_SOFT                      } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1, OPT_SOFT                      } },
-    { TOOL_M_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                          } },
+    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_BAM_1                                          } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2, OPT_SOFT } },
 
     /*
      * Fusion Analysis
      */
 
-    { TOOL_F_ALIGN,    { OPT_R_BED_1, OPT_MIXTURE,                                 } },
-    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFT, OPT_U_OUT                          } },
-    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFT, OPT_U_OUT            } },
-    { TOOL_F_COVERAGE, { OPT_R_BED_1, OPT_BAM_1                                    } },
-    { TOOL_F_DIFF,     { OPT_R_BED_1, OPT_R_FUS, OPT_U_OUT, OPT_U_TAB, OPT_MIXTURE } },
-    { TOOL_F_NORMAL,   { OPT_R_BED_1, OPT_U_TAB, OPT_MIXTURE                       } },
+    { TOOL_F_ALIGN,    { OPT_R_BED, OPT_MIXTURE,                                 } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFT, OPT_U_OUT                        } },
+    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFT, OPT_U_OUT          } },
+    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_BAM_1                                    } },
+    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_U_OUT, OPT_U_TAB, OPT_MIXTURE } },
+    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_U_TAB, OPT_MIXTURE                       } },
 
     /*
      * Variant Analysis
      */
     
-    { TOOL_V_ALIGN,     { OPT_R_BED_1, OPT_MIXTURE, OPT_BAM_1 } },
-    { TOOL_V_DIFF,      { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
-    { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_U_VCF   } },
-    { TOOL_V_COVERAGE,  { OPT_R_BED_1, OPT_BAM_1              } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_U_VCF                } },
-    { TOOL_V_IGV,       { OPT_BAM_1                           } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED_1, OPT_R_BED_2, OPT_BAM_1 } },
+    { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_BAM_1             } },
+    { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_COVERAGE,  { OPT_R_BED, OPT_BAM_1                          } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
+    { TOOL_V_IGV,       { OPT_BAM_1                                     } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED, OPT_R_ENDO, OPT_BAM_1              } },
 };
 
 /*
@@ -408,13 +402,10 @@ static const struct option long_options[] =
     { "level",   required_argument, 0, OPT_LEVEL   },
     { "names",   required_argument, 0, OPT_U_NAMES },
 
-    { "rbed",    required_argument, 0, OPT_R_BED_1 },
-    { "rbed1",   required_argument, 0, OPT_R_BED_1 },
-    { "rbed2",   required_argument, 0, OPT_R_BED_2 },
+    { "rbed",    required_argument, 0, OPT_R_BED   },
     { "rgtf",    required_argument, 0, OPT_R_CHR_T },
     { "rexp",    required_argument, 0, OPT_R_ENDO  },
 
-    { "uvcf",    required_argument, 0, OPT_U_VCF  },
     { "ufa",     required_argument, 0, OPT_FA_1   },
     { "ufa1",    required_argument, 0, OPT_FA_1   },
     { "ufa2",    required_argument, 0, OPT_FA_2   },
@@ -464,7 +455,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    std::cout << "Anaquin v1.1.01" << std::endl;
+    std::cout << "Anaquin v1.1.1" << std::endl;
 }
 
 // Print a file of mixture A and B
@@ -995,15 +986,13 @@ void parse(int argc, char ** argv)
             case OPT_U_COV:
             case OPT_R_FUS:
             case OPT_R_VCF:
-            case OPT_U_VCF:
             case OPT_U_OUT:
             case OPT_U_GTF:
             case OPT_PSL_2:
             case OPT_BAM_2:
             case OPT_PSL_1:
             case OPT_U_TAB:
-            case OPT_R_BED_1:
-            case OPT_R_BED_2:
+            case OPT_R_BED:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
             case OPT_PATH:    { _p.path = val;              break; }
@@ -1243,7 +1232,7 @@ void parse(int argc, char ** argv)
                 case TOOL_F_NORMAL:
                 {
                     addMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED);
                     break;
                 }
 
@@ -1251,20 +1240,20 @@ void parse(int argc, char ** argv)
                 {
                     addMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addFRef,    &s, std::placeholders::_1), OPT_R_FUS);
-                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED);
                     break;
                 }
 
                 case TOOL_F_COVERAGE:
                 {
-                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED);
                     break;
                 }
 
                 case TOOL_F_ALIGN:
                 {
                     addMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED_1);
+                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED);
                     break;
                 }
 
@@ -1333,13 +1322,25 @@ void parse(int argc, char ** argv)
         }
 
         case TOOL_V_IGV:
-        case TOOL_V_DIFF:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
         case TOOL_V_SUBSAMPLE:
         {
+            auto parseCaller = [&](const std::string &str)
+            {
+                const static std::map<std::string, Caller> m =
+                {
+                    { "gatk"   ,  Caller::GATK    },
+                    { "GATK"   ,  Caller::GATK    },
+                    { "VarScan",  Caller::VarScan },
+                    { "VarScan2", Caller::VarScan },
+                };
+
+                return parseEnum("soft", str, m);
+            };
+            
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
             if (_p.tool != TOOL_V_IGV)
@@ -1348,30 +1349,35 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addVStd,    &s, std::placeholders::_1), OPT_R_BED_1);
-                        applyRef(std::bind(&Standard::addVInters, &s, std::placeholders::_1), OPT_R_BED_2);
+                        applyRef(std::bind(&Standard::addStd,    &s, std::placeholders::_1), OPT_R_BED);
+                        //applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_BED_2);
                         break;
                     }
 
                     case TOOL_V_ALIGN:
                     case TOOL_V_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED_1);
+                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
-                    case TOOL_V_DIFF:
                     case TOOL_V_ALLELE:
+                    {
+                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        break;
+                    }
+
                     case TOOL_V_DISCOVER:
                     {
-                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
 
                     default: { break; }
                 }
-                
-                addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
+
+                addMix(std::bind(&Standard::addMix, &s, std::placeholders::_1));
                 Standard::instance().r_var.finalize();
             }
 
@@ -1379,9 +1385,26 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_V_IGV:       { viewer<VViewer>();                break; }
                 case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_BAM_1);     break; }
-                case TOOL_V_ALLELE:    { analyze_1<VAllele>(OPT_U_VCF);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_BAM_1);  break; }
-                case TOOL_V_DISCOVER:  { analyze_1<VDiscover>(OPT_U_VCF);  break; }
+                
+                case TOOL_V_ALLELE:
+                {
+                    VAllele::Options o;
+                    o.caller = parseCaller(_p.opts.at(OPT_SOFT));
+
+                    analyze_1<VAllele>(OPT_U_FILES, o);
+                    break;
+                }
+
+                case TOOL_V_DISCOVER:
+                {
+                    VDiscover::Options o;
+                    o.caller = parseCaller(_p.opts.at(OPT_SOFT));
+
+                    analyze_1<VDiscover>(OPT_U_FILES, o);
+                    break;
+                }
+
                 case TOOL_V_SUBSAMPLE:
                 {
                     VSample::Options o;

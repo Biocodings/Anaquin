@@ -106,19 +106,6 @@ void ParserVCF::parse(const Reader &r, Callback c)
         {
             v.alt = alts[i];
 
-            if (v.ref.size() == v.alt.size() && v.ref.size() == 1)
-            {
-                v.type = SNP;
-            }
-            else if (v.ref.size() > v.alt.size())
-            {
-                v.type = Deletion;
-            }
-            else
-            {
-                v.type = Insertion;
-            }
-
             Tokens::split(fields[VCFField::FORMAT_DATA + i], ":", t);
             assert(t.size() == formats.size());
             

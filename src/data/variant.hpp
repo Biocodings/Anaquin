@@ -12,6 +12,30 @@ namespace Anaquin
         
         inline bool operator<(const Locus &x) const { return l < x; }
 
+        inline Mutation type() const
+        {
+            if (alt[0] == '-')
+            {
+                return Deletion;
+            }
+            else if (alt[0] == '+')
+            {
+                return Insertion;
+            }
+            else if (ref.size() == alt.size())
+            {
+                return SNP;
+            }
+            else if (ref.size() > alt.size())
+            {
+                return Deletion;
+            }
+            else
+            {
+                return Insertion;
+            }
+        }
+        
         // Eg: chrT
         ChromoID chrID;
 
@@ -20,9 +44,6 @@ namespace Anaquin
 
         // The reference position, with the 1st base having position 1
         Locus l;
-        
-        // Type of the mutation
-        Mutation type;
         
         Sequence ref, alt;
         
@@ -45,6 +66,14 @@ namespace Anaquin
         
         // Depth for alternative
         unsigned dp_a;
+    };
+    
+    struct CalledVariant : public Variant
+    {
+        double pval;
+        
+        // Number of reads for the reference and allele
+        Counts readR, readV;
     };
 }
 

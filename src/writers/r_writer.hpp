@@ -219,8 +219,12 @@ namespace Anaquin
         /*
          * -------------------- ROC Plot --------------------
          */
-        
-        static Scripts createROC(const std::vector<FeatureID> &, const std::vector<double> &, const std::string &);
+
+        // Create an ROC script for transcriptome analysis
+        static Scripts createROC_T(const std::vector<FeatureID> &, const std::vector<double> &, const std::string &);
+
+        // Create an ROC script for variant analysis
+        static Scripts createROC_V(const Path &, const FileName &, const FileName &);
 
         /*
          * -------------------- MA Plot --------------------
@@ -233,7 +237,11 @@ namespace Anaquin
          * -------------------- LODR Plot --------------------
          */
         
-        static Scripts createLODR(const Path &, const FileName &, const FileName &, const std::string &);
+        // Create a LODR script for transcriptome analysis
+        static Scripts createLODR_T(const Path &, const FileName &);
+
+        // Create a LODR script for variant analysis
+        static Scripts createLODR_V(const Path &, const FileName &);
 
         /*
          * --------------------- Splice Plot ---------------------

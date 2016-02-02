@@ -280,7 +280,7 @@ void VSample::report(const FileName &file, const Options &o)
                                             % before.cov.unmapped
                                             % before.cov.n_endo
                                             % before.cov.n_chrT
-                                            % Standard::instance().r_var.countRefGenes()
+                                            % Standard::instance().r_var.countSeqs()
                                             % meth2Str()
                                             % sums(before.cov.hist)
                                             % before.queryC

@@ -5,13 +5,19 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotLODR();
+extern Scripts PlotROC_T();
+
+// Defined in resources.cpp
+extern Scripts PlotROC_V();
+
+// Defined in resources.cpp
+extern Scripts PlotLODR_T();
+
+// Defined in resources.cpp
+extern Scripts PlotLODR_V();
 
 // Defined in resources.cpp
 extern Scripts PlotMA();
-
-// Defined in resources.cpp
-extern Scripts PlotROC();
 
 // Defined in resources.cpp
 extern Scripts PlotSplice();
@@ -251,15 +257,26 @@ Scripts RWriter::createSplice(const Path &working, const FileName &fpkms)
                                     % fpkms).str();
 }
 
-Scripts RWriter::createLODR(const Path &working, const FileName &dFile, const std::string &cFile, const std::string &lvl)
+Scripts RWriter::createLODR_T(const Path &working, const FileName &dFile)
 {
     std::stringstream ss;
-    ss << PlotLODR();
+    ss << PlotLODR_T();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
                                     % working
                                     % dFile).str();
+}
+
+Scripts RWriter::createLODR_V(const Path &working, const FileName &file)
+{
+    std::stringstream ss;
+    ss << PlotLODR_V();
+    
+    return (boost::format(ss.str()) % date()
+                                    % __full_command__
+                                    % working
+                                    % file).str();
 }
 
 Scripts RWriter::createMA(const Path &working, const FileName &file, const std::string &lvl)
@@ -274,16 +291,28 @@ Scripts RWriter::createMA(const Path &working, const FileName &file, const std::
                                     % lvl).str();
 }
 
-Scripts RWriter::createROC(const std::vector<FeatureID> &seqs, const std::vector<double> &ps, const std::string &lvl)
+Scripts RWriter::createROC_T(const std::vector<FeatureID> &seqs, const std::vector<double> &ps, const std::string &lvl)
 {
     assert(!seqs.empty() && seqs.size() == ps.size());
 
     std::stringstream ss;
-    ss << PlotROC();
+    ss << PlotROC_T();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
                                     % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
                                     % concat(ps)
                                     % lvl).str();
+}
+
+Scripts RWriter::createROC_V(const Path &path, const FileName &tp, const FileName &fp)
+{
+    std::stringstream ss;
+    ss << PlotROC_V();
+
+    return (boost::format(ss.str()) % date()
+                                    % __full_command__
+                                    % path
+                                    % tp
+                                    % fp).str();
 }

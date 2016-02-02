@@ -473,7 +473,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::createROC(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
+    o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
     o.writer->close();
 
     /*
@@ -495,15 +495,15 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_LODR.R");
-    o.writer->write(RWriter::createLODR(o.working, "TransDiffs_diffs.csv", "TransDiffs_counts.csv", units));
+    o.writer->write(RWriter::createLODR_T(o.working, "TransDiffs_diffs.csv"));
     o.writer->close();
-    
+
+    /*
+     * Generating count table (CSV)
+     */
+
     if (stats.counts)
     {
-        /*
-         * Generating count table (CSV)
-         */
-        
         writeCounts("TransDiffs_counts.csv", stats, o);
     }
 }

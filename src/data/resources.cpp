@@ -5,8 +5,6 @@
  */
 
 #include "resources/plotMA.R"
-#include "resources/plotROC.R"
-#include "resources/plotLODR.R"
 #include "resources/plotSplice.R"
 #include "resources/plotScatter.R"
 #include "resources/plotScatterPool.R"
@@ -38,6 +36,9 @@
  * Transcriptome Resources
  */
 
+#include "resources/plotROC_T.R"
+#include "resources/plotLODR_T.R"
+
 #include "resources/ATR001.v032.gtf"
 #include "resources/MTR002.v013.csv"
 #include "resources/MTR003.v013.csv"
@@ -54,6 +55,9 @@
 /*
  * Variant Resources
  */
+
+#include "resources/plotROC_V.R"
+#include "resources/plotLODR_V.R"
 
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
@@ -96,16 +100,6 @@ Scripts PlotScatter()
 Scripts PlotMA()
 {
     return ToString(src_r_plotMA_R);
-}
-
-Scripts PlotROC()
-{
-    return ToString(src_r_plotROC_R);
-}
-
-Scripts PlotLODR()
-{
-    return ToString(src_r_plotLODR_R);
 }
 
 /*
@@ -159,12 +153,22 @@ std::string MetaDataBed()
  * Transcriptome Resources
  */
 
-std::string TransStandGTF()
+Scripts PlotROC_T()
+{
+    return ToString(src_r_plotROC_T_R);
+}
+
+Scripts PlotLODR_T()
+{
+    return ToString(src_r_plotLODR_T_R);
+}
+
+Scripts TransStandGTF()
 {
     return ToString(data_trans_ATR001_v032_gtf);
 }
 
-std::string TransDataMixA()
+Scripts TransDataMixA()
 {
     return ToString(data_trans_MTR002_v013_csv);
 }
@@ -174,12 +178,12 @@ std::string TransDataMixB()
     return ToString(data_trans_MTR003_v013_csv);
 }
 
-std::string TransDataMixF()
+Scripts TransDataMixF()
 {
     return ToString(data_trans_MTR005_v013_csv);
 }
 
-std::string TransDataMixAB()
+Scripts TransDataMixAB()
 {
     return ToString(data_trans_MTR004_v013_csv);
 }
@@ -188,22 +192,32 @@ std::string TransDataMixAB()
  * Variant Resources
  */
 
+Scripts PlotROC_V()
+{
+    return ToString(src_r_plotROC_V_R);
+}
+
+Scripts PlotLODR_V()
+{
+    return ToString(src_r_plotLODR_V_R);
+}
+
 std::string VarDataMixA()
 {
-    return ToString(data_var_MVA011_v013_csv);
+    return ToString(data_VarQuin_MVA011_v013_csv);
 }
 
 std::string VarDataMixF()
 {
-    return ToString(data_var_MVA012_v013_csv);
+    return ToString(data_VarQuin_MVA012_v013_csv);
 }
 
 std::string VarDataVCF()
 {
-    return ToString(data_var_AVA009_v032_vcf);
+    return ToString(data_VarQuin_AVA009_v032_vcf);
 }
 
 std::string VarDataBed()
 {
-    return ToString(data_var_AVA008_v032_bed);
+    return ToString(data_VarQuin_AVA008_v032_bed);
 }

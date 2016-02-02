@@ -91,7 +91,7 @@ template <typename Reference> void readMixture
     }
 }
 
-void Standard::addVInters(const Reader &r)
+void Standard::addInters(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
@@ -103,7 +103,7 @@ void Standard::addVInters(const Reader &r)
     });
 }
 
-void Standard::addVStd(const Reader &r)
+void Standard::addStd(const Reader &r)
 {
     ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
     {
@@ -111,25 +111,9 @@ void Standard::addVStd(const Reader &r)
     });
 }
 
-void Standard::addVVar(const Reader &r)
+void Standard::addVar(const Reader &r)
 {
     std::vector<std::string> toks;
-
-    auto parse = [&](const std::string &r, const std::string &v)
-    {
-        if (r.size() == v.size())
-        {
-            return SNP;
-        }
-        else if (r.size() > v.size())
-        {
-            return Deletion;
-        }
-        else
-        {
-            return Insertion;
-        }
-    };
 
     ParserVCF::parse(r, [&](const ParserVCF::VCFVariant &x, const ParserProgress &)
     {
@@ -138,16 +122,15 @@ void Standard::addVVar(const Reader &r)
         // Eg: D_1_3_R
         v.id  = x.id;
 
-        v.l    = x.l;
-        v.alt  = x.alt;
-        v.ref  = x.ref;
-        v.type = parse(v.ref, v.alt);
+        v.l   = x.l;
+        v.alt = x.alt;
+        v.ref = x.ref;
 
         r_var.addVar(v);
     });
 }
 
-void Standard::addVMix(const Reader &r)
+void Standard::addMix(const Reader &r)
 {
     readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
 }

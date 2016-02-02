@@ -110,30 +110,30 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
      * Write out summary statistics
      */
     
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Unmapped:    %2% reads\n"
-                         "   Experiment:  %3% reads\n"
-                         "   Synthetic:   %4% reads\n\n"
-                         "   Reference:   %5% genes\n"
-                         "   Sensitivity: %6%\n"
-                         "   Accuracy:    %7%\n\n"
-                         "   Base Covered:    %8%\n\n"
-                         "   Detection limit: %9% (%10%)\n\n"
-                         "   Dilution:    %11%\n";
-
-    o.writer->open("VarAlign_summary.stats");
-    o.writer->write((boost::format(summary) % file
-                                            % stats.unmapped
-                                            % stats.n_endo
-                                            % stats.n_chrT
-                                            % (r.countRefGenes() + r.countVarGens())
-                                            % stats.p.m.sn()
-                                            % stats.p.m.pc()
-                                            % covered
-                                            % stats.p.limit.abund
-                                            % stats.p.limit.id
-                                            % stats.dilution()).str());
-    o.writer->close();
+//    const auto summary = "Summary for dataset: %1%\n\n"
+//                         "   Unmapped:    %2% reads\n"
+//                         "   Experiment:  %3% reads\n"
+//                         "   Synthetic:   %4% reads\n\n"
+//                         "   Reference:   %5% genes\n"
+//                         "   Sensitivity: %6%\n"
+//                         "   Accuracy:    %7%\n\n"
+//                         "   Base Covered:    %8%\n\n"
+//                         "   Detection limit: %9% (%10%)\n\n"
+//                         "   Dilution:    %11%\n";
+//
+//    o.writer->open("VarAlign_summary.stats");
+//    o.writer->write((boost::format(summary) % file
+//                                            % stats.unmapped
+//                                            % stats.n_endo
+//                                            % stats.n_chrT
+//                                            % (r.countRefGenes() + r.countVarGens())
+//                                            % stats.p.m.sn()
+//                                            % stats.p.m.pc()
+//                                            % covered
+//                                            % stats.p.limit.abund
+//                                            % stats.p.limit.id
+//                                            % stats.dilution()).str());
+//    o.writer->close();
     
     /*
      * Generating detailed statistics for each sequin

@@ -2,29 +2,48 @@
 #define V_DISCOVER_HPP
 
 #include "stats/analyzer.hpp"
+#include "VARQuin/VARQuin.hpp"
 
 namespace Anaquin
 {
     struct VDiscover
     {
-        typedef FuzzyOptions Options;
-
+        struct Options : public AnalyzerOptions
+        {
+            Caller caller;
+        };
+        
         struct Stats
         {
-            struct ChrT : public MappingStats
+            struct Classifed
             {
-                long detected = 0;
+                // Expected allele frequency
+                double eAllFreq;
+                
+                CalledVariant query;
+
+                // The sequin where it occurs
+                const Variant *seq;
+            };
+
+            struct Data : public MappingStats
+            {
+                std::vector<Classifed> fps;
+                std::vector<Classifed> tps;
+                
+                //long detected = 0;
                 
                 // Overall performance
-                Confusion m;
+                //Confusion m;
                 
-                SequinHist h = Standard::instance().r_var.hist();
+                //SequinHist h = Standard::instance().r_var.hist();
             };
             
-            std::shared_ptr<ChrT> chrT;
+            std::map<ChromoID, Data> data;
         };
 
-        static Stats report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void report(const FileName &, const Options &o = Options());
     };
 }
 
