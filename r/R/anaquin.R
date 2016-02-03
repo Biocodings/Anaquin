@@ -106,11 +106,11 @@ colors <- function(n)
 
 pval <- function(data)
 {
-    stopifnot(class(data) == 'TransQuin')
-    
-    if (is.null(data$seqs$pval))
+    stopifnot(class(data) == 'TransQuin' | class(data) == 'VarQuin')
+
+    if (is.null(data$seqs$pval)) 
     {
-        # TODO: Implement me        
+        stop('Probability not provided. Please check and try again.')
     }
     
     return (data$seqs$pval)
