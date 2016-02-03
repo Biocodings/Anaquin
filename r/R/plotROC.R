@@ -6,6 +6,10 @@
 
 .plotROC <- function(data)
 {
+    require(ROCR)
+    require(ggplot2)
+    require(RColorBrewer)
+
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
     
     # Compute logarithm transformation to avoid overflowing
@@ -18,21 +22,32 @@
     AUCDat <- NULL
     
     # We'll render for each ratio
-    ratios <- data$ratio
+    ratios <- sort(data$ratio)
     
     for (ratio in unique(ratios))
     {
-        ratio = 0.000976563
+        #ratio <- 0.000244141
         
         if (!is.na(ratio))
         {
             t <- data[!is.na(data$ratio) & data$ratio == ratio,]
-
-            # No false-positive?
+            
+            # No false-positive or true-positive?
             if (length(unique(t$label)) == 1)
             {
-                fp <- data.frame(pval=0, label='FP', ratio=ratio, lpval=0, score=0)
-                t  <- rbind(t, fp)
+                # No TP...
+                if (unique(t$label) == 'FP')
+                {
+                    x <- data.frame(pval=0, label='TP', ratio=ratio, lpval=0, score=0)
+                }
+                
+                # No FP...
+                else
+                {
+                    x <- data.frame(pval=0, label='FP', ratio=ratio, lpval=0, score=0)                    
+                }
+                
+                t  <- rbind(t, x)
             }
             
             t <- t[with(t, order(score)),]
@@ -64,21 +79,24 @@
     return (ROCDat)
 }
 
-plotROC.VarQuin <- function(data)
+.plotROC.Plot <- function(data, title=NULL)
 {
-    require(ROCR)
-    require(ggplot2)
-    
-    ROCData <- .plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$eAFreq))
-    
     p <- ggplot(data=ROCData, aes(x=FPR, y=TPR))             + 
-            geom_path(size=2, aes(colour=ratio), alpha=0.7)  + 
+             geom_path(size=2, aes(colour=ratio), alpha=0.7)  + 
             geom_point(size=5, aes(colour=ratio), alpha=0.7) + 
-            labs(colour='Fold')                              +
             geom_abline(intercept=0, slope=1, linetype=2)    +
+            labs(colour='Fold')                              +
             theme_bw()
+    
+    if (!is.null(title))
+    {
+        p <- p + ggtitle(p)
+    }
+}
 
-    print(p)
+plotROC.VarQuin <- function(data, title=NULL)
+{
+    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$eAFreq)))
 }
 
 plotROC.TransQuin <- function(data, meth='validate')
@@ -162,11 +180,9 @@ plotROC.TransQuin <- function(data, meth='validate')
     p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))              + 
             geom_path(size=2, aes(colour=logFC), alpha=0.7)  + 
             geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
-            labs(colour='Log-Fold')                          +
             geom_abline(intercept=0, slope=1, linetype=2)    +
+            labs(colour='Log-Fold')                          +
             theme_bw()
-    
+
     print(p)
-    
-    #return (list('pred' = pred, 'perf' = perf))
 }
