@@ -7,7 +7,6 @@
 .plotROC <- function(data)
 {
     require(ROCR)
-    require(ggplot2)
     require(RColorBrewer)
 
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
@@ -32,6 +31,8 @@
         {
             t <- data[!is.na(data$ratio) & data$ratio == ratio,]
             
+            print(paste(c('Detectd for ', ratio, ': ', nrow(t)), collapse = ''))
+            
             # No false-positive or true-positive?
             if (length(unique(t$label)) == 1)
             {
@@ -55,8 +56,8 @@
             label <- ifelse(t$label == 'TP', 2, 1)
             
             preds <- prediction(t$score, label, label.ordering=c(1,2))
-            perf  <- performance(preds, "tpr","fpr")
-            auc   <- performance(preds, "auc")
+            perf  <- performance(preds, 'tpr', 'fpr')
+            auc   <- performance(preds, 'auc')
             
             # Now build the three vectors for plotting - TPR, FPR, and FoldChange
             AUC <- unlist(auc@y.values)
@@ -81,22 +82,26 @@
 
 .plotROC.Plot <- function(data, title=NULL)
 {
-    p <- ggplot(data=ROCData, aes(x=FPR, y=TPR))             + 
-             geom_path(size=2, aes(colour=ratio), alpha=0.7)  + 
-            geom_point(size=5, aes(colour=ratio), alpha=0.7) + 
-            geom_abline(intercept=0, slope=1, linetype=2)    +
-            labs(colour='Fold')                              +
-            theme_bw()
+    require(ggplot2)
+    
+    p <- ggplot(data=data, aes(x=FPR, y=TPR))                 + 
+             geom_path(size=1, aes(colour=ratio), alpha=0.7)  + 
+             geom_point(size=2, aes(colour=ratio), alpha=0.7) + 
+             geom_abline(intercept=0, slope=1, linetype=2)    +
+             labs(colour='Fold')                              +
+             theme_bw()
     
     if (!is.null(title))
     {
-        p <- p + ggtitle(p)
+        p <- p + ggtitle(title)
     }
+    
+    print(p)
 }
 
 plotROC.VarQuin <- function(data, title=NULL)
 {
-    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$eAFreq)))
+    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$eAFreq)), title)
 }
 
 plotROC.TransQuin <- function(data, meth='validate')
