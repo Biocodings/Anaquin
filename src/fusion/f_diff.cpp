@@ -9,6 +9,9 @@ using namespace Anaquin;
 FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const Options &o)
 {
     FDiff::Stats stats;
+    
+    stats.data[ChrT];
+    
     const auto &r = Standard::instance().r_fus;
 
     // Measured abundance for the normal genes
@@ -18,7 +21,7 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
     std::map<SequinID, Counts> fusions;
     
     /*
-     * Parse the normal junctions
+     * Parse normal junctions
      */
     
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
@@ -91,17 +94,17 @@ void FDiff::report(const FileName &splice, const FileName &chim, const Options &
 {
     const auto stats = FDiff::analyze(splice, chim, o);
 
+    o.info("Generating statistics");
+    
     /*
      * Generating summary statistics
      */
 
-    o.info("Generating summary statistics");
     //AnalyzeReporter::linear("FusionDiff_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
 
     /*
-     * Generating Bioconductor
+     * Generating scatter plot
      */
     
-    o.info("Generating Bioconductor");
     //AnalyzeReporter::scatter(stats, "", "FusionDiff", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }

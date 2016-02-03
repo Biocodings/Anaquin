@@ -82,6 +82,49 @@ static void writeClass(const FileName &file,
     o.writer->close();
 }
 
+static void writeSeqins(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
+{
+    o.writer->open(file);
+    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+    
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    o.writer->write((boost::format(format) % "Sequin"
+                                           % "NumVars"
+                                           % "DetVars"
+                                           % "SN"
+                                           % "SP").str());
+
+    //for (const auto &i : stats.data.at(ChrT))
+    {
+        //o.writer->write((boost::format(format) % i.first % stats.chrT->h.at(i.first)).str());
+    }
+        
+    o.writer->close();
+}
+
+static void writeSummary(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
+{
+    const auto summary = "Summary for dataset: %1%\n\n"
+                         "   Experiment:  %2% variants\n"
+                         "   Synthetic:   %3% variants\n"
+                         "   Reference:   %4% variants\n"
+                         "   Detected:    %5% variants\n"
+                         "   False-Pos:   %6% variants\n\n"
+                         "   Sensitivity: %7%\n"
+                         "   Specificity: %8%";
+
+    o.writer->open("VarDiscover_summary.stats");
+    //o.writer->write((boost::format(summary) % file
+      //                                          % stats.chrT->n_endo
+        //                                        % stats.chrT->n_chrT
+          //                                      % r.countVars()
+            //                                    % stats.chrT->m.tp()
+              //                                  % (stats.chrT->n_chrT - stats.chrT->m.tp())
+                //                                % stats.chrT->m.sn()
+                  //                              % stats.chrT->m.pc()).str());
+    o.writer->close();
+}
+
 void VDiscover::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
@@ -93,6 +136,8 @@ void VDiscover::report(const FileName &file, const Options &o)
     /*
      * Generate summary statistics
      */
+    
+    writeSummary("VarDiscover_summary.stats", stats, o);
     
     /*
      * Generating true positives
@@ -115,47 +160,8 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating LODR
+     * Generating statistics for each sequin
      */
 
-    o.writer->open("VarDiscover_LODR.R");
-    o.writer->close();
-    
-
-//    const auto summary = "Summary for dataset: %1%\n\n"
-//                         "   Experiment:  %2% variants\n"
-//                         "   Synthetic:   %3% variants\n"
-//                         "   Reference:   %4% variants\n"
-//                         "   Detected:    %5% variants\n"
-//                         "   False-Pos:   %6% variants\n\n"
-//                         "   Sensitivity: %7%\n"
-//                         "   Specificity: %8%";
-//
-//    o.writer->open("VarDiscover_summary.stats");
-//    o.writer->write((boost::format(summary) % file
-//                                            % stats.chrT->n_endo
-//                                            % stats.chrT->n_chrT
-//                                            % r.countVars()
-//                                            % stats.chrT->m.tp()
-//                                            % (stats.chrT->n_chrT - stats.chrT->m.tp())
-//                                            % stats.chrT->m.sn()
-//                                            % stats.chrT->m.pc()).str());
-//    o.writer->close();
-//
-//    /*
-//     * Generate statistics for each sequin
-//     */
-//
-//    o.writer->open("VarDiscover_quins.stats");
-//    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
-//    
-//    const auto format = "%1%\t%2%";
-//    o.writer->write((boost::format(format) % "id" % "detected").str());
-//
-//    for (const auto &i : stats.chrT->h)
-//    {
-//        o.writer->write((boost::format(format) % i.first % stats.chrT->h.at(i.first)).str());
-//    }
-//    
-//    o.writer->close();
+    writeSeqins("VarDiscover_quins.csv", stats, o);
 }

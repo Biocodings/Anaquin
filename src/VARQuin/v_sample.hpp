@@ -19,7 +19,7 @@ namespace Anaquin
 
         struct Options : public AnalyzerOptions
         {
-	    Options() {}
+            Options() {}
 
             // The chromosome to be compared
             ChromoID queryID;

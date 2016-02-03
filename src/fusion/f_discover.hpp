@@ -24,10 +24,10 @@ namespace Anaquin
             {
                 // Overall performance
                 Confusion m;
-                
+
                 // Fraction of reference fusion detected
                 double covered;
-                
+
                 // Distribution of the sequins
                 SequinHist h = Standard::instance().r_fus.hist();            
             };

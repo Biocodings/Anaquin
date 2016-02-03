@@ -31,17 +31,12 @@ namespace Anaquin
 
             struct Data : public MappingStats
             {
-                std::vector<Classifed> fps;
-                std::vector<Classifed> tps;
-                
-                //long detected = 0;
-                
-                // Overall performance
-                //Confusion m;
-                
-                //SequinHist h = Standard::instance().r_var.hist();
+                std::vector<Classifed> fps, tps;
+
+                // Performance metrics
+                Confusion m, m_snp, m_ind;
             };
-            
+
             std::map<ChromoID, Data> data;
         };
 

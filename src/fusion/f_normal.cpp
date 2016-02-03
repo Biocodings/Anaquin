@@ -34,17 +34,17 @@ void FNormal::report(const FileName &file, const Options &o)
 {
     const auto stats = FNormal::analyze(file, o);
 
+    o.info("Generating statistics");
+    
     /*
      * Generating summary statistics
      */
 
-    o.info("Generating summary statistics");
     //AnalyzeReporter::linear("FusionNormal_summary.stats", file, stats, "introns", o.writer);
 
     /*
      * Generating Bioconductor
      */
     
-    o.info("Generating Bioconductor");
     //AnalyzeReporter::scatter(stats, "", "FusionNormal", "Expected concentration (attomol/ul)", "Measured coverage (reads)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
 }

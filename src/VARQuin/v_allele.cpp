@@ -43,41 +43,6 @@ void VAllele::report(const FileName &file, const Options &o)
 {
     const auto &stats = analyze(file, o);
     
-//    o.writer->open("VarAllele_false.stats");
-//
-//    classify(file, stats, [&](const VCFVariant &v, const Variation *match)
-//    {
-//        // The known coverage for allele frequnece
-//        const auto known = r.alleleFreq(Mix_1, match->bID);
-//
-//        // The measured coverage is the number of base calls aligned and used in variant calling
-//        const auto measured = static_cast<double>(v.dp_a) / (v.dp_r + v.dp_a);
-//
-//        /*
-//         * Plotting the relative allele frequency that is established by differences
-//         * in the concentration of reference and variant DNA standards.
-//         */
-//
-//        // Eg: D_1_12_R_373892_G/A
-//        const auto id = (boost::format("%1%_%2%_%3%_%4%:") % match->id
-//                                                           % match->ref
-//                                                           % match->l.start
-//                                                           % match->alt).str();
-//
-//        stats.chrT->h.at(match->id)++;
-//
-//        // TODO: How to handle a case where variant is reported but with zero counts?
-//        if (v.dp_a == 0)
-//        {
-//            return;
-//        }
-//
-//        stats.chrT->add(id, known, measured);
-//    });
-// 
-//    stats.chrT->ss = r.limit(stats.chrT->h);
-//    stats.chrT->sn = static_cast<double>(stats.chrT->detected) / r.countVars();
-//    
     /*
      * Generating summary statistics
      */
@@ -86,9 +51,13 @@ void VAllele::report(const FileName &file, const Options &o)
     //AnalyzeReporter::linear("VarAllele_summary.stats", file, stats, "variants", o.writer);
 
     /*
+     * Generating scatter plot for overall
+     */
+
+    /*
      * Generating scatter plot for SNPs
      */
-    
+
     /*
      * Generating scatter plot for indels
      */

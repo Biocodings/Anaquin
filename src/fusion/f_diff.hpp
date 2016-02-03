@@ -14,7 +14,7 @@ namespace Anaquin
             struct Data : public LinearStats, public FusionStats
             {
                 Limit ss;
-                
+
                 // Sequin distribution
                 SequinHist h = Standard::instance().r_fus.hist();;
             };

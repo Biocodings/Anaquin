@@ -15,10 +15,7 @@ namespace Anaquin
         
         struct Stats
         {
-            struct Data : public LinearStats
-            {
-                Confusion m;
-            };
+            typedef LinearStats Data;
 
             std::map<ChromoID, Data> data;
         };
