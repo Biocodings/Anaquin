@@ -46,7 +46,7 @@ static void writeClass(const FileName &file,
                        const std::vector<VDiscover::Stats::Classifed> &data,
                        const VDiscover::Options &o)
 {
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
 
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Sequin"
@@ -54,7 +54,7 @@ static void writeClass(const FileName &file,
                                            % "PValue"
                                            % "RefRead"
                                            % "VarRead"
-                                           % "Ratio"
+                                           % "ERatio"
                                            % "EAlleleF"
                                            % "Type").str());
 
@@ -74,7 +74,7 @@ static void writeClass(const FileName &file,
                                                % i.query.pval
                                                % i.query.readR
                                                % i.query.readV
-                                               % i.eAllFreq
+                                               % i.eFold
                                                % i.eAllFreq
                                                % type).str());
     }
@@ -111,7 +111,7 @@ void VDiscover::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createROC_V(o.working, "VarDiscover_TP.csv", "VarDiscover_FP.csv"));
+    o.writer->write(RWriter::createROC_V("VarDiscover_TP.csv", "VarDiscover_FP.csv"));
     o.writer->close();
 
     /*

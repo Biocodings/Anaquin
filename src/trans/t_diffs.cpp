@@ -487,7 +487,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_MA.R");
-    o.writer->write(RWriter::createMA(o.working, "TransDiffs_diffs.csv", units));
+    o.writer->write(RWriter::createMA("TransDiffs_diffs.csv", units));
     o.writer->close();
     
     /*
@@ -495,7 +495,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_LODR.R");
-    o.writer->write(RWriter::createLODR_T(o.working, "TransDiffs_diffs.csv"));
+    o.writer->write(RWriter::createLODR_T("TransDiffs_diffs.csv"));
     o.writer->close();
 
     /*

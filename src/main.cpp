@@ -135,8 +135,16 @@ typedef std::set<Value> Range;
 
 using namespace Anaquin;
 
+
 // Shared with other modules
 std::string __full_command__;
+
+// Shared with other modules
+Path __working__;
+
+// Shared with other modules
+Path __output__;
+
 
 // Shared with other modules
 std::string date()
@@ -783,6 +791,18 @@ void parse(int argc, char ** argv)
         }
     };
     
+    auto checkPath = [&](const Path &path)
+    {
+        if (path[0] == '/')
+        {
+            return path;
+        }
+        else
+        {
+            return __working__ + "/" + path;
+        }
+    };
+    
     auto checkFile = [&](const FileName &file)
     {
         if (!std::ifstream(file).good())
@@ -995,6 +1015,8 @@ void parse(int argc, char ** argv)
             }
         }
     }
+
+    __output__ = _p.path = checkPath(_p.path);
 
     // Exception should've already been thrown if tool is not specified
     assert(_p.tool);
@@ -1538,6 +1560,13 @@ void parse(int argc, char ** argv)
 
 int parse_options(int argc, char ** argv)
 {
+    char cwd[1024];
+    
+    if (getcwd(cwd, sizeof(cwd)))
+    {
+        __working__ = cwd;
+    }
+    
     try
     {
         parse(argc, argv);

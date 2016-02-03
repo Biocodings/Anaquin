@@ -4,6 +4,9 @@
 
 using namespace Anaquin;
 
+// Defined in main.cpp
+extern Path __output__;
+
 // Defined in resources.cpp
 extern Scripts PlotROC_T();
 
@@ -26,7 +29,7 @@ extern Scripts PlotSplice();
 extern Scripts PlotScatterPool();
 
 // Defined in resources.cpp
-extern std::string PlotScatter();
+extern Scripts PlotScatter();
 
 Scripts RWriter::scatter(const std::vector<SequinID> &seqs,
                          const std::vector<double>   &x,
@@ -49,14 +52,14 @@ Scripts RWriter::scatter(const std::vector<SequinID> &seqs,
                                     % yLabel).str();
 }
 
-Scripts RWriter::scatterPool(const Path &path, const FileName &file)
+Scripts RWriter::scatterPool(const FileName &file)
 {
     std::stringstream ss;
     ss << PlotScatterPool();
 
     return (boost::format(ss.str()) % date()
                                     % __full_command__
-                                    % path
+                                    % __output__
                                     % file).str();
 }
 
@@ -246,47 +249,47 @@ Scripts StatsWriter::inflectSummary(const FileName                  &ref,
     return inflectSummary(ref, r);
 }
 
-Scripts RWriter::createSplice(const Path &working, const FileName &fpkms)
+Scripts RWriter::createSplice(const FileName &fpkms)
 {
     std::stringstream ss;
     ss << PlotSplice();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
-                                    % working
+                                    % __output__
                                     % fpkms).str();
 }
 
-Scripts RWriter::createLODR_T(const Path &working, const FileName &dFile)
+Scripts RWriter::createLODR_T(const FileName &dFile)
 {
     std::stringstream ss;
     ss << PlotLODR_T();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
-                                    % working
+                                    % __output__
                                     % dFile).str();
 }
 
-Scripts RWriter::createLODR_V(const Path &working, const FileName &file)
+Scripts RWriter::createLODR_V(const FileName &file)
 {
     std::stringstream ss;
     ss << PlotLODR_V();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
-                                    % working
+                                    % __output__
                                     % file).str();
 }
 
-Scripts RWriter::createMA(const Path &working, const FileName &file, const std::string &lvl)
+Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
 {
     std::stringstream ss;
     ss << PlotMA();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
-                                    % working
+                                    % __output__
                                     % file
                                     % lvl).str();
 }
@@ -305,14 +308,14 @@ Scripts RWriter::createROC_T(const std::vector<FeatureID> &seqs, const std::vect
                                     % lvl).str();
 }
 
-Scripts RWriter::createROC_V(const Path &path, const FileName &tp, const FileName &fp)
+Scripts RWriter::createROC_V(const FileName &tp, const FileName &fp)
 {
     std::stringstream ss;
     ss << PlotROC_V();
 
     return (boost::format(ss.str()) % date()
                                     % __full_command__
-                                    % path
+                                    % __output__
                                     % tp
                                     % fp).str();
 }

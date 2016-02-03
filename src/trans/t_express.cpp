@@ -496,7 +496,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     o.writer->open("TransExpress_pooled.R");
-    o.writer->write(RWriter::scatterPool(o.working, "TExpress_FPKM.csv"));
+    o.writer->write(RWriter::scatterPool("TExpress_FPKM.csv"));
     o.writer->close();
 
     /*
@@ -506,7 +506,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     if (o.lvl == TExpress::Level::Isoform)
     {
         o.writer->open("TransExpress_Splice.R");
-        o.writer->write(RWriter::createSplice(o.working, "TExpress_FPKM.csv"));
+        o.writer->write(RWriter::createSplice("TExpress_FPKM.csv"));
         o.writer->close();
     }
 }

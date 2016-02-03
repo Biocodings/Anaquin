@@ -1,9 +1,9 @@
 #
 # Anaquin - Sequin statistical analysis. Version 1.0.
 #
-# This R script was generated at 03-02-2016 12:50:47.
+# This R script was generated at %1%.
 #
-#    ./anaquin -t VarDiscover -rbed data/VARQuin/AVA017.v032.bed -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA012.v013.csv -soft VarScan -ufiles varscan.tab 
+#    %2%
 #
 
 library(Anaquin)
@@ -12,10 +12,10 @@ library(Anaquin)
 signLevel <- 0.10
 
 # Read the data file for true positives
-tps <- read.csv('/Users/tedwong/Sources/QA/output/VarDiscover_TP.csv', sep='\t')
+tps <- read.csv('%3%/%4%.csv', sep='\t')
 
 # Read the data file for false positives
-fps <- read.csv('/Users/tedwong/Sources/QA/output/VarDiscover_FP.csv', sep='\t')
+fps <- read.csv('%3%/%5%.csv', sep='\t')
 
 # Filter only the significant FPs
 fps <- fps[fps$PValue < signLevel,]

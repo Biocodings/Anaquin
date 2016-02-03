@@ -224,36 +224,36 @@ namespace Anaquin
         static Scripts createROC_T(const std::vector<FeatureID> &, const std::vector<double> &, const std::string &);
 
         // Create an ROC script for variant analysis
-        static Scripts createROC_V(const Path &, const FileName &, const FileName &);
+        static Scripts createROC_V(const FileName &, const FileName &);
 
         /*
          * -------------------- MA Plot --------------------
          */
         
         // Create an MA plot and link to the count table
-        static Scripts createMA(const Path &, const FileName &, const std::string &);
+        static Scripts createMA(const FileName &, const std::string &);
 
         /*
          * -------------------- LODR Plot --------------------
          */
         
         // Create a LODR script for transcriptome analysis
-        static Scripts createLODR_T(const Path &, const FileName &);
+        static Scripts createLODR_T(const FileName &);
 
         // Create a LODR script for variant analysis
-        static Scripts createLODR_V(const Path &, const FileName &);
+        static Scripts createLODR_V(const FileName &);
 
         /*
          * --------------------- Splice Plot ---------------------
          */
 
-        static Scripts createSplice(const Path &, const FileName &);
+        static Scripts createSplice(const FileName &);
 
         /*
          * -------------------- Scatter Plot --------------------
          */
 
-        static Scripts scatterPool(const Path &, const FileName &);
+        static Scripts scatterPool(const FileName &);
 
         template <typename Stats> static Scripts scatter(const Stats &stats,
                                                          const ChromoID &cID,
