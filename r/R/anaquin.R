@@ -21,7 +21,7 @@ VarQuin <- function(..., mix=NULL)
     # List of keys supported in VarQuin analysis
     #
     
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'eAFreq')
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'eAFreq', 'aligned')
     
     for (key in keys)
     {

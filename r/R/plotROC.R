@@ -55,6 +55,8 @@
         }
     }
     
+    ROCDat$ratio = as.factor(ROCDat$ratio)
+    
     return (ROCDat)
 }
 
@@ -63,15 +65,15 @@ plotROC.VarQuin <- function(data)
     require(ROCR)
     require(ggplot2)
     
-    seqs   <- data$seqs
-    ROCDat <- .plotROC(data.frame(pval=seqs$pval, label=seqs$label, ratio=seqs$eAFreq))
+    ROCData <- .plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$eAFreq))
     
-    p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))             + 
-        geom_path(size=2, aes(colour=type), alpha=0.7)  + 
-        geom_point(size=5, aes(colour=type), alpha=0.7) + 
-        labs(colour='Variant')                          +
-        geom_abline(intercept=0, slope=1, linetype=2)   +
-        theme_bw()
+    p <- ggplot(data=ROCData, aes(x=FPR, y=TPR))             + 
+            geom_path(size=2, aes(colour=ratio), alpha=0.7)  + 
+            geom_point(size=5, aes(colour=ratio), alpha=0.7) + 
+            labs(colour='Fold')                              +
+            geom_abline(intercept=0, slope=1, linetype=2)    +
+            theme_bw()
+
     print(p)
 }
 
@@ -154,11 +156,11 @@ plotROC.TransQuin <- function(data, meth='validate')
     }
     
     p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))              + 
-        geom_path(size=2, aes(colour=logFC), alpha=0.7)  + 
-        geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
-        labs(colour='Log-Fold')                          +
-        geom_abline(intercept=0, slope=1, linetype=2)    +
-        theme_bw()
+            geom_path(size=2, aes(colour=logFC), alpha=0.7)  + 
+            geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
+            labs(colour='Log-Fold')                          +
+            geom_abline(intercept=0, slope=1, linetype=2)    +
+            theme_bw()
     
     print(p)
     
