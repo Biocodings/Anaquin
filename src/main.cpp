@@ -665,24 +665,11 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
  * Template functions for analyzing
  */
 
-// Analyze a single sample file
-template <typename Analyzer> void analyze(const FileName &file, typename Analyzer::Options o = typename Analyzer::Options())
+template <typename Analyzer, typename Files> void analyze(const Files &files, typename Analyzer::Options o = typename Analyzer::Options())
 {
     // Copying over for the experiment
     o.exp = _p.exp;
-    
-    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
-    {
-        Analyzer::report(file, o);
-    }, o);
-}
 
-// Analyze multiple replicate files
-template <typename Analyzer> void analyze(const std::vector<FileName> &files, typename Analyzer::Options o = typename Analyzer::Options())
-{
-    // Copying over for the experiment
-    o.exp = _p.exp;
-    
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::report(files, o);
@@ -696,10 +683,10 @@ template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options
 }
 
 // Analyze for a single sample with fuzzy matching
-template <typename Analyzer> void analyzeFuzzy_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
+template <typename Analyzer> void analyzeFuzzy(typename Analyzer::Options o = typename Analyzer::Options())
 {
     o.fuzzy = _p.fuzzy;
-    return analyze_1<Analyzer>(x, o);
+    return analyze<Analyzer>(_p.inputs[0], o);
 }
 
 // Analyze for two samples
@@ -1288,13 +1275,19 @@ void parse(int argc, char ** argv)
 
                 case TOOL_F_EXPRESS:
                 {
-                    analyzeFuzzy_1<FExpress>(OPT_U_OUT, FExpress::Options(parseAligner(_p.opts.at(OPT_SOFT))));
+                    FExpress::Options o;
+                    o.aligner = parseAligner(_p.opts.at(OPT_SOFT));
+                    
+                    analyzeFuzzy<FExpress>(o);
                     break;
                 }
 
                 case TOOL_F_DISCOVER:
                 {
-                    analyzeFuzzy_1<FDiscover>(OPT_U_OUT, FDiscover::Options(parseAligner(_p.opts.at(OPT_SOFT))));
+                    FDiscover::Options o;
+                    o.aligner = parseAligner(_p.opts.at(OPT_SOFT));
+
+                    analyzeFuzzy<FDiscover>(o);
                     break;
                 }
             }

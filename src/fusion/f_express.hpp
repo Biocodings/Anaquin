@@ -14,7 +14,8 @@ namespace Anaquin
             Limit ss;
         };
 
-        static Stats report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

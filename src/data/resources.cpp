@@ -62,7 +62,7 @@
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
 #include "resources/MVA012.v013.csv"
-#include "resources/AVA008.v032.bed"
+#include "resources/AVA017.v032.bed"
 
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
@@ -219,5 +219,5 @@ std::string VarDataVCF()
 
 std::string VarDataBed()
 {
-    return ToString(data_VarQuin_AVA008_v032_bed);
+    return ToString(data_VarQuin_AVA017_v032_bed);
 }

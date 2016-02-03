@@ -79,7 +79,7 @@ void VAllele::report(const FileName &file, const Options &o)
 //    stats.chrT->sn = static_cast<double>(stats.chrT->detected) / r.countVars();
 //    
     /*
-     * Generate summary statistics
+     * Generating summary statistics
      */
 
     o.info("Generating summary statistics");

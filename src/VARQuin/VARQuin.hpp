@@ -24,9 +24,10 @@ namespace Anaquin
         const Variant *seq = nullptr;
 
         /*
-         * Expected allele frequency. Defined only if seq is defined.
+         * Defined only if seq is defined.
          */
         
+        double eFold;
         double eAllFreq;
         
         /*
@@ -80,6 +81,7 @@ namespace Anaquin
                 
                 if (m.seq)
                 {
+                    m.eFold    = r.fold(m.seq->id);
                     m.eAllFreq = r.alleleFreq(m.seq->id);
                 }
             }

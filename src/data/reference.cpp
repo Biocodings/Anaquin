@@ -903,14 +903,10 @@ struct VarRef::VariantPair
 
 struct VarRef::VarRefImpl
 {
-    /*
-     * Validated variables
-     */
-    
     // VarQuin standards (BED file)
     std::map<SequinID, Locus> stands;
 
-    // Validated variants
+    // VarQuin variants (VCF file)
     std::set<Variant> vars;
 
     std::set<SequinID> varIDs;
@@ -927,28 +923,31 @@ struct VarRef::VarRefImpl
      * Raw variables
      */
     
-    std::set<Variant>  rawVars;
-    std::set<SequinID> rawVarIDs;
-
     // Reference intervals (eg: chr21)
     std::map<ChromoID, Intervals<>> rawInters;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-double VarRef::alleleFreq(const SequinID &id, Mixture m) const
+double VarRef::alleleFreq(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(m).at(id);
+    const auto &p = _impl->data.at(Mix_1).at(id);
     const auto &r = p.r;
     const auto &v = p.v;
 
     return v->abund / (r->abund + v->abund);
 }
 
+Fold VarRef::fold(const SequinID &id) const
+{
+    const auto &p = _impl->data.at(Mix_1).at(id);
+    return round(p.r->abund / p.v->abund);
+}
+
 void VarRef::addVar(const Variant &v)
 {
-    _impl->rawVars.insert(v);
-    _impl->rawVarIDs.insert(v.id);
+    _impl->vars.insert(v);
+    _impl->varIDs.insert(v.id);
 }
 
 void VarRef::addInterval(const ChromoID &id, const Interval &i)
@@ -1036,8 +1035,6 @@ Concentration VarRef::GenotypeData::abund(Mixture m) const
 
 void VarRef::validate()
 {
-    _impl->vars   = _impl->rawVars;
-    _impl->varIDs = _impl->rawVarIDs;
     _impl->inters = _impl->rawInters;
 
     /*
@@ -1082,36 +1079,6 @@ void VarRef::validate()
     }
     
     /*
-     * Construct data-structure for the standards. The purpose is to combine reference and variant
-     * sequins. Although it can also be done for the variants, but it's probably not a good idea.
-     *
-     * Consider:
-     *
-     *     chrT    641707  641708  D_1_10_R_G/A    0       +
-     *     chrT    641714  641715  D_1_10_R_G/A    0       +
-     *
-     * There is no information directly for D_1_1_V. Therefore, we'll only do it for the standards.
-     */
-/*
-    for (const auto &i : _impl->stands)
-    {
-        if (_data.count(i.first))
-        {
-            _data[i.first].l = i.second;
-
-            const auto pairID = i.first.substr(0, i.first.size() - 2);
-
-            // TODO: Do we need this?
-            //_data[i.first].length = i.second.length();
-            
-            _impl->genos[pairID].l  = i.second;
-            _impl->genos[pairID].id = pairID;
-            _impl->genos[pairID].r  = &(_data.at(pairID + "_R"));
-            _impl->genos[pairID].v  = &(_data.at(pairID + "_V"));
-        }
-    }
-*/
-    /*
      * Construct data structure for the variants
      */
 
@@ -1119,7 +1086,7 @@ void VarRef::validate()
     {
         const auto &data = _mixes.at(i.first);
         
-        for (const auto &j : _impl->rawVars)
+        for (const auto &j : _impl->vars)
         {
             // Eg: D_1_3_R
             const auto rID = j.id;

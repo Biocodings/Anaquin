@@ -93,7 +93,8 @@ void Test::transAB()
 void Test::variantA()
 {
     Test::clear();
-    Standard::instance().addVar(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().addVar(Reader(VarDataVCF(),  DataMode::String));
+    Standard::instance().addStd(Reader(VarDataBed(),  DataMode::String));
     Standard::instance().addMix(Reader(VarDataMixA(), DataMode::String));
     Standard::instance().r_var.finalize();
 }
@@ -101,8 +102,9 @@ void Test::variantA()
 void Test::variantF()
 {
     Test::clear();
+    Standard::instance().addVar(Reader(VarDataVCF(),  DataMode::String));
     Standard::instance().addVar(Reader(VarDataBed(),  DataMode::String));
-    Standard::instance().addMix(Reader(VarDataMixA(), DataMode::String));
+    Standard::instance().addMix(Reader(VarDataMixF(), DataMode::String));
     Standard::instance().r_var.finalize();
 }
 

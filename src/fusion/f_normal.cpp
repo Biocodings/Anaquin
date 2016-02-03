@@ -10,22 +10,22 @@ FNormal::Stats FNormal::analyze(const FileName &splice, const Options &o)
 
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        if (c.id == ChrT) { stats.chrT->n_chrT++; }
-        else                        { stats.chrT->n_endo++; }
-        
-        const SequinData *match;
- 
-        if ((match = r.findSplice(c.l)))
-        {
-            const auto expected = match->mixes.at(Mix_1);
-            const auto measured = c.unique;
-
-            stats.chrT->add(match->id, expected, measured);
-            stats.chrT->h.at(match->id)++;
-        }
+//        if (c.id == ChrT) { stats.chrT->n_chrT++; }
+//        else                        { stats.chrT->n_endo++; }
+//        
+//        const SequinData *match;
+// 
+//        if ((match = r.findSplice(c.l)))
+//        {
+//            const auto expected = match->mixes.at(Mix_1);
+//            const auto measured = c.unique;
+//
+//            stats.chrT->add(match->id, expected, measured);
+//            stats.chrT->h.at(match->id)++;
+//        }
     });
 
-    stats.chrT->ss = Standard::instance().r_fus.limit(stats.chrT->h);
+    //stats.chrT->ss = Standard::instance().r_fus.limit(stats.chrT->h);
     
     return stats;
 }

@@ -14,10 +14,11 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         {
             Stats::Classifed cls;
 
-            cls.seq   = m.seq;
-            cls.query = *(m.query);
+            cls.seq      = m.seq;
+            cls.query    = *(m.query);
+            cls.eFold    = m.eFold;
             cls.eAllFreq = m.eAllFreq;
-            
+
             if (m.match && m.ref && m.alt)
             {
                 stats.data.at(ChrT).tps.push_back(cls);
@@ -53,13 +54,14 @@ static void writeClass(const FileName &file,
                                            % "PValue"
                                            % "RefRead"
                                            % "VarRead"
+                                           % "Ratio"
                                            % "EAlleleF"
                                            % "Type").str());
 
     for (const auto &i : data)
     {
         std::string type;
-        
+
         switch (i.query.type())
         {
             case Mutation::SNP:       { type = "SNP";   break; }
@@ -72,6 +74,7 @@ static void writeClass(const FileName &file,
                                                % i.query.pval
                                                % i.query.readR
                                                % i.query.readV
+                                               % i.eAllFreq
                                                % i.eAllFreq
                                                % type).str());
     }

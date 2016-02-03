@@ -23,16 +23,16 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
     
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        if (c.id == ChrT) { stats.chrT->n_chrT++; }
-        else                        { stats.chrT->n_endo++; }
-
-        const SequinData *match;
-
-        if (c.id == ChrT && (match = r.findSplice(c.l)))
-        {
-            normals[match->id] = c.unique;
-            stats.chrT->h.at(match->id)++;
-        }
+//        if (c.id == ChrT) { stats.chrT->n_chrT++; }
+//        else                        { stats.chrT->n_endo++; }
+//
+//        const SequinData *match;
+//
+//        if (c.id == ChrT && (match = r.findSplice(c.l)))
+//        {
+//            normals[match->id] = c.unique;
+//            stats.chrT->h.at(match->id)++;
+//        }
     });
 
     /*
@@ -41,21 +41,21 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
     
     ParserStarFusion::parse(Reader(chim), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
     {
-        const auto r = FClassify::classifyFusion(f, o);
-
-        switch (r.code)
-        {
-            case FClassify::Code::Genome:
-            case FClassify::Code::GenomeChrT: { stats.chrT->n_endo++; }
-            case FClassify::Code::Positive:
-            case FClassify::Code::Negative:   { stats.chrT->n_chrT++; }
-        }
-        
-        if (r.code == FClassify::Code::Positive)
-        {
-            fusions[r.match->id] = f.reads;
-            stats.chrT->h.at(r.match->id)++;
-        }
+//        const auto r = FClassify::classifyFusion(f, o);
+//
+//        switch (r.code)
+//        {
+//            case FClassify::Code::Genome:
+//            case FClassify::Code::GenomeChrT: { stats.chrT->n_endo++; }
+//            case FClassify::Code::Positive:
+//            case FClassify::Code::Negative:   { stats.chrT->n_chrT++; }
+//        }
+//        
+//        if (r.code == FClassify::Code::Positive)
+//        {
+//            fusions[r.match->id] = f.reads;
+//            stats.chrT->h.at(r.match->id)++;
+//        }
     });
 
     o.info("Found " + std::to_string(normals.size()) + " introns");
@@ -71,18 +71,18 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
         {
             if (r.normalToFusion(i.first) == j.first)
             {
-                // Either the normal ID or fusion ID can be used
-                const auto expected = r.findSpliceChim(i.first);
-                
-                // Measured fold change between normal and fusion gene
-                const auto measured = static_cast<double>(i.second) / j.second;
-                
-                stats.chrT->add(i.first + " - " + j.first, expected->fold(), measured);
+//                // Either the normal ID or fusion ID can be used
+//                const auto expected = r.findSpliceChim(i.first);
+//                
+//                // Measured fold change between normal and fusion gene
+//                const auto measured = static_cast<double>(i.second) / j.second;
+//                
+//                stats.chrT->add(i.first + " - " + j.first, expected->fold(), measured);
             }
         }
     }
 
-    stats.chrT->ss = Standard::instance().r_fus.limit(stats.chrT->h);
+    //stats.chrT->ss = Standard::instance().r_fus.limit(stats.chrT->h);
 
     return stats;
 }

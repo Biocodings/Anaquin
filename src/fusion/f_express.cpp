@@ -3,9 +3,18 @@
 
 using namespace Anaquin;
 
-FExpress::Stats FExpress::report(const FileName &file, const FDiscover::Options &o)
+FExpress::Stats FExpress::analyze(const FileName &file, const FDiscover::Options &o)
 {
-    auto stats = FClassify::analyze<FExpress::Options, FExpress::Stats>(file, true, o);
+    FExpress::Stats stats;
+    
+    stats.data[ChrT];
+    
+    return stats;
+}
+
+void FExpress::report(const FileName &file, const FDiscover::Options &o)
+{
+    const auto stats = analyze(file, o);
 
 //    o.logInfo("Calculating limit of sensitivity");
 //    stats.ss = Standard::instance().r_fus.limit(stats.chrT->h);
@@ -24,5 +33,4 @@ FExpress::Stats FExpress::report(const FileName &file, const FDiscover::Options 
 //    o.info("Generating Bioconductor");
 //    //AnalyzeReporter::scatter(stats, "", "FusionExpress", "Expected concentration (attomol/ul)", "Measured coverage (reads)", "Expected concentration (log2 attomol/ul)", "Measured coverage (log2 reads)", o.writer);
 //    
-    return stats;
 }

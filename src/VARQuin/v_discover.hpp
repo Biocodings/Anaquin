@@ -20,6 +20,9 @@ namespace Anaquin
                 // Expected allele frequency
                 double eAllFreq;
                 
+                // Expected fold-change
+                double eFold;
+                
                 CalledVariant query;
 
                 // The sequin where it occurs

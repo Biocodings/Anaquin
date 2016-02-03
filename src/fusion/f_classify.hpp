@@ -98,9 +98,9 @@ namespace Anaquin
             auto positive = [&](const SequinID &id, Reads reads)
             {
                 assert(!id.empty() && r.match(id));
-                
-                stats.chrT->n_chrT++;
-                stats.chrT->h.at(id)++;
+
+                //stats.chrT->n_chrT++;
+                //stats.chrT->h.at(id)++;
 
                 if (shouldMix)
                 {
@@ -115,48 +115,58 @@ namespace Anaquin
                     p.x = known;
                     p.y = measured;
 
-                    (*(stats.chrT))[id] = p;
+                    //(*(stats.chrT))[id] = p;
                 }
             };
 
             SequinID id;
 
-            if (o.soft == FDiscover::Aligner::Star)
+            switch (o.aligner)
             {
-                ParserStarFusion::parse(Reader(file), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
+                case FDiscover::Aligner::Star:
                 {
-                    const auto r = classifyFusion(f, stats.chrT->m, id, o);
-                    
-                    switch (r)
+                    ParserStarFusion::parse(Reader(file), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
                     {
-                        case Code::Negative:   { break;                          }
-                        case Code::Genome:     { stats.chrT->n_endo++;    break; }
-                        case Code::GenomeChrT: { stats.chrT->hg38_chrT++; break; }
-                        case Code::Positive:   { positive(id, f.reads);   break; }
-                    }
-                });
-            }
-            else
-            {
-                ParserTopFusion::parse(Reader(file), [&](const ParserTopFusion::Fusion &f, const ParserProgress &)
-                {
-                    const auto r = classifyFusion(f, stats.chrT->m, id, o);
-                    
-                    switch (r)
-                    {
-                        case Code::Negative:   { break;                        }
-                        case Code::Genome:     { stats.chrT->n_endo++;        break; }
-                        case Code::GenomeChrT: { stats.chrT->hg38_chrT++;     break; }
-                        case Code::Positive:   { positive(id, f.reads); break; }
-                    }
-                });
-            }
+                        /*
+                        const auto r = classifyFusion(f, stats.chrT->m, id, o);
+                        
+                        switch (r)
+                        {
+                            case Code::Negative:   { break;                          }
+                            case Code::Genome:     { stats.chrT->n_endo++;    break; }
+                            case Code::GenomeChrT: { stats.chrT->hg38_chrT++; break; }
+                            case Code::Positive:   { positive(id, f.reads);   break; }
+                        }
+                         */
+                    });
 
+                    break;
+                }
+                    
+                case FDiscover::Aligner::TopHat:
+                {
+                    ParserTopFusion::parse(Reader(file), [&](const ParserTopFusion::Fusion &f, const ParserProgress &)
+                    {
+                        //const auto r = classifyFusion(f, stats.chrT->m, id, o);
+                        
+                        //switch (r)
+                        //{
+                          //  case Code::Negative:   { break;                        }
+                            //case Code::Genome:     { stats.chrT->n_endo++;        break; }
+                           // case Code::GenomeChrT: { stats.chrT->hg38_chrT++;     break; }
+                            //case Code::Positive:   { positive(id, f.reads); break; }
+                        //}
+                    });
+
+                    break;
+                }
+            }
+            
             /*
              * Find out all the sequins undetected in the experiment
              */
 
-            o.info("Detected " + std::to_string(stats.chrT->h.size()) + " sequins in the reference");
+            //o.info("Detected " + std::to_string(stats.chrT->h.size()) + " sequins in the reference");
             o.info("Checking for missing sequins");
             
 //            for (const auto &i : s.seqIDs)

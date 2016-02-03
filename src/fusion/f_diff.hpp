@@ -11,7 +11,7 @@ namespace Anaquin
 
         struct Stats
         {
-            struct ChrT : public LinearStats, public FusionStats
+            struct Data : public LinearStats, public FusionStats
             {
                 Limit ss;
                 
@@ -19,13 +19,11 @@ namespace Anaquin
                 SequinHist h = Standard::instance().r_fus.hist();;
             };
 
-            std::shared_ptr<ChrT> chrT;
+            std::map<ChromoID, Data> data;
         };
 
-        // Analyze a single sample
-        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
-        
-        static void report(const FileName &, const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());        
+        static void  report (const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

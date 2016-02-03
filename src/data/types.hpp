@@ -6,7 +6,6 @@
 namespace Anaquin
 {
     const std::string ChrT = "chrT";
-    const std::string ExpT = "expT";
     const std::string Endo = "endo";
 
     typedef std::string Sequence;
@@ -25,6 +24,7 @@ namespace Anaquin
     typedef double Fold;
     typedef double LogFold;
     typedef double Percentage;
+    typedef double Proportion;
 
     typedef std::string BinID;
     typedef std::string GeneID;

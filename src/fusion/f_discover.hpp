@@ -13,24 +13,14 @@ namespace Anaquin
             TopHat,
         };
 
-        struct Options : public AnalyzerOptions
+        struct Options : public FuzzyOptions
         {
-            Options(FDiscover::Aligner soft = Aligner::TopHat, double fuzzy = 0) : soft(soft), fuzzy(fuzzy)
-            {
-                if (soft != Aligner::TopHat && soft != Aligner::Star)
-                {
-                    throw std::runtime_error("Only Tophat-Fusion and Star are supported");
-                }
-            }
-            
-            unsigned fuzzy;
-
-            FDiscover::Aligner soft;
+            FDiscover::Aligner aligner;
         };
 
         struct Stats
         {
-            struct ChrT : public LinearStats, public FusionStats
+            struct Data : public LinearStats, public FusionStats
             {
                 // Overall performance
                 Confusion m;
@@ -42,10 +32,11 @@ namespace Anaquin
                 SequinHist h = Standard::instance().r_fus.hist();            
             };
 
-            std::shared_ptr<ChrT> chrT;
+            std::map<ChromoID, Data> data;
         };
 
-        static Stats report(const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

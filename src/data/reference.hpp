@@ -514,10 +514,6 @@ namespace Anaquin
     {
         public:
 
-            /*
-             * In VarQuin, we emulate the homozygous and heterozygous genotype
-             */
-
             typedef std::string GenoID;
             typedef std::map<GenoID, Counts> GenoHist;
 
@@ -575,8 +571,10 @@ namespace Anaquin
             // Find a reference interval
             const Interval *findQuery(const ChromoID &, const Locus &) const;
 
+            Fold fold(const SequinID &) const;
+        
             // Return the proportion of variants for a genotype
-            double alleleFreq(const GenoID &, Mixture = Mix_1) const;
+            Proportion alleleFreq(const SequinID &) const;
 
         protected:
 

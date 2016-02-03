@@ -3,9 +3,18 @@
 
 using namespace Anaquin;
 
-FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Options &o)
+FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Options &o)
 {
-    const auto stats = FClassify::analyze<FDiscover::Options, FDiscover::Stats>(file, false, o);
+    FDiscover::Stats stats;
+    
+    stats.data[ChrT];
+    //FClassify::analyze<FDiscover::Options, FDiscover::Stats>(file, false, o);
+    return stats;
+}
+
+void FDiscover::report(const FileName &file, const FDiscover::Options &o)
+{
+    const auto stats = analyze(file, o);
 
 //    /*
 //     * Generating summary statistics
@@ -55,6 +64,4 @@ FDiscover::Stats FDiscover::report(const FileName &file, const FDiscover::Option
 //
 //        o.writer->close();
 //    }
-
-    return stats;
 }
