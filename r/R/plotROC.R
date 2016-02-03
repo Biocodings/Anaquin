@@ -22,16 +22,20 @@
     
     for (ratio in unique(ratios))
     {
+        ratio = 0.000976563
+        
         if (!is.na(ratio))
         {
             t <- data[!is.na(data$ratio) & data$ratio == ratio,]
-            
+
             # No false-positive?
             if (length(unique(t$label)) == 1)
             {
                 fp <- data.frame(pval=0, label='FP', ratio=ratio, lpval=0, score=0)
                 t  <- rbind(t, fp)
             }
+            
+            t <- t[with(t, order(score)),]
             
             label <- ifelse(t$label == 'TP', 2, 1)
             
