@@ -198,7 +198,7 @@
         
         colnames(annoTable) <- c("Ratio", expression("LODR Estimate"))
         cat("\n")
-        print(annoTable, quote = FALSE, row.names = FALSE)    
+        print(annoTable, quote = FALSE, rofw.names = FALSE)    
         
         my_table <- tableGrob(d=annoTable, rows=NULL)
     }
@@ -216,24 +216,14 @@
     require(ggplot2)
     
     x <- list(...)
-    
-    p <- ggplot(data, aes(x=abund, y=pval, colour=ratio)) + 
-                      geom_point(size=3)                  +
-                      theme_bw()
+    p <- ggplot(data, aes(x=abund, y=pval, colour=ratio)) + geom_point(size=3) + theme_bw()
 
-    if (!is.null(x$xname))
-    {
-        p <- p + xlab(x$xname)
-    }
-        
-    if (!is.null(x$yname))
-    {
-        p <- p + ylab(x$yname)        
-    }
-    
+    if (!is.null(x$xname)) { p <- p + xlab(x$xname)    }
+    if (!is.null(x$yname)) { p <- p + ylab(x$yname)    }
+    if (!is.null(x$title)) { p <- p + ggtitle(x$title) }
+
     if (!is.null(x$lineDat))
     {
-        # Draw the fitted lines
         p <- p + geom_line(data=x$lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE)
         
         if (x$shouldBand)
@@ -251,26 +241,21 @@
         p <- p + geom_hline(yintercept=cutoff, linetype=2, size=2)
     }
 
-    if (!is.null(x$title))
-    {
-        p <- p + ggtitle(x$title)
-    }
-    
     if (!is.null(x$xBreaks))
     {
         p <- p + scale_x_log10(breaks=x$xBreaks, labels=x$xLabels)
     }
-    else
-    {
-        p <- p + scale_x_log10(limits=c(min(data$abund), max(data$abund)))
+    #else
+    #{
+        #p <- p + scale_x_log10(limits=c(min(data$abund), max(data$abund)))
         #p <- p + scale_x_log10(limits=c(min(data$abund), max(data$abund)), breaks=c(arrowDat$x, round(max(data$baseMean))))
-    }
+    #}
     
     if (!is.null(x$yBreaks))
     {
-        p <- p + scale_y_log10(breaks=x$yBreaks)
+        #p <- p + scale_y_log10(breaks=x$yBreaks)
     }
-
+    
     if (!is.null(x$drawTable))
     {
         annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(p, my_table), ncol = 1, heights = c(2,0.5)))
@@ -291,76 +276,6 @@ plotLODR.VarQuin <- function(data, title=NULL)
     vReads <- data$seqs$vRead
     
     .plotLODR(data.frame(abund=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
-
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    # Names of all the features
-    names <- seqs(data)
-    
-    
-    
-    
-    
-    
-    # We can only draw sequins on LODR
-    data <- data[!is.na(data$eLogLF),]    
-    
-    # Combine the groups solely based on their magnitudes
-    data$eLogLF = abs(data$eLogLF)
-    
-    
-    
-    
-    
-        
-    # Expected logFold ratio
-    eLogLF <- expectLF(data, lvl=lvl, ids=sequins(data))
-    
-    dat <- data.frame(baseMean=baseMean, pval=pval, eLogLF=eLogLF)
-    row.names(data) <- names
-    
-    
-    
-
-    
-
-    #
-    # Classify the sequins whether they're above or below the LODR limit.
-    #
-    lodr <- lodr.resLess[-c(2,4,5)]
-    
-    # We don't need the sequins without LODR estimate anymore
-    data <- data[data$eLogLF != 0,]
-    
-    # LODR classification for each sequin
-    data$LODR <- NA
-    
-    for (eLogLF in unique(data$eLogLF))
-    {
-        # The LODR estimate
-        limit <- as.numeric(as.character(lodr[lodr$ratio==eLogLF,]$Estimate))
-        
-        if (length(limit))
-        {
-            # Classify whether it's below or above the LODR
-            data[data$eLogLF==eLogLF,]$LODR <- ifelse(data[data$eLogLF==eLogLF,]$baseMean < limit, 'below', 'above')
-        }
-    }
-    
-    lodr$Estimate <- as.numeric(as.character(lodr$Estimate))
-    lodr <- lodr[order(lodr$Estimate),]
-    print(lodr)
-    
-    return (list(lodr=lodr, data=data[c(5)]))
 }
 
 plotLODR.TransQuin <- function(data,
