@@ -6,7 +6,7 @@ using namespace Anaquin;
 FNormal::Stats FNormal::analyze(const FileName &splice, const Options &o)
 {
     FNormal::Stats stats;
-    const auto &r = Standard::instance().r_fus;
+    //const auto &r = Standard::instance().r_fus;
 
     ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {

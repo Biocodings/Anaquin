@@ -7,6 +7,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
     VAllele::Stats stats;
     
     stats.data[ChrT];
+    stats.data[Endo];
 
     const auto &r = Standard::instance().r_var;
 
@@ -33,6 +34,10 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                                                                % m.match->l.start
                                                                % m.match->alt).str();
             stats.data.at(ChrT).add(id, known, measured);
+        }
+        else
+        {
+            
         }
     });
     

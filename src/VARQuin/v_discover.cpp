@@ -6,22 +6,20 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
     VDiscover::Stats stats;
     
-    stats.data[ChrT];
-    
     parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
         if (m.query->chrID == ChrT)
         {
-            Stats::Classifed cls;
+            Stats::ChrTData data;
 
-            cls.seq      = m.seq;
-            cls.query    = *(m.query);
-            cls.eFold    = m.eFold;
-            cls.eAllFreq = m.eAllFreq;
+            data.seq      = m.seq;
+            data.query    = *(m.query);
+            data.eFold    = m.eFold;
+            data.eAllFreq = m.eAllFreq;
 
             if (m.match && m.ref && m.alt)
             {
-                stats.data.at(ChrT).tps.push_back(cls);
+                stats.chrT.tps.push_back(data);
             }
             else
             {
@@ -34,8 +32,14 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                     assert(false);
                 }
                 
-                stats.data.at(ChrT).fps.push_back(cls);
+                stats.chrT.fps.push_back(data);
             }
+        }
+        else
+        {
+            Stats::EndoData data;
+            data.query = *(m.query);
+            stats.endo.push_back(data);
         }
     });
     
@@ -43,7 +47,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 }
 
 static void writeClass(const FileName &file,
-                       const std::vector<VDiscover::Stats::Classifed> &data,
+                       const std::vector<VDiscover::Stats::ChrTData> &data,
                        const VDiscover::Options &o)
 {
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
@@ -89,8 +93,16 @@ static void writeSeqins(const FileName &file, const VDiscover::Stats &stats, con
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     o.writer->write((boost::format(format) % "Sequin"
-                                           % "NumVars"
-                                           % "DetVars"
+                                           % "NumSNP"
+                                           % "NumIndel"
+                                           % "NumVar"
+                                           % "DetSNP"
+                                           % "DetIndel"
+                                           % "DetVar"
+                                           % "SN (SNP)"
+                                           % "SP (SNP"
+                                           % "SN (Indel)"
+                                           % "SP (Indel)"
                                            % "SN"
                                            % "SP").str());
 
@@ -104,14 +116,51 @@ static void writeSeqins(const FileName &file, const VDiscover::Stats &stats, con
 
 static void writeSummary(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Experiment:  %2% variants\n"
-                         "   Synthetic:   %3% variants\n"
-                         "   Reference:   %4% variants\n"
-                         "   Detected:    %5% variants\n"
-                         "   False-Pos:   %6% variants\n\n"
-                         "   Sensitivity: %7%\n"
-                         "   Specificity: %8%";
+    const auto summary = "Summary for file: %1%\n\n"
+                         "   ***\n"
+                         "   *** Number of variants called in the synthetic and experimental chromosomes\n"
+                         "   ***\n\n"
+                         "   Synthetic:  %2% variants\n\n"
+                         "   Experiment: %3% variants\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Synthetic)\n"
+                         "   ***\n\n"
+                         "   File: %4%\n\n"
+                         "   Synthetic:  %5% SNPs\n"
+                         "   Synthetic:  %6% indels\n"
+                         "   Synthetic:  %7% variants\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Synthetic)\n"
+                         "   ***\n\n"
+                         "   File: %8%\n\n"
+                         "   Experiment:  %9% SNPs\n"
+                         "   Experiment:  %10% indels\n"
+                         "   Experiment:  %11% variants\n\n"
+                         "   ************************************************************\n"
+                         "   ***                                                      ***\n"
+                         "   ***        Statistics for the synthetic chromosome       ***\n"
+                         "   ***                                                      ***\n"
+                         "   ************************************************************\n\n"
+                         "   ***\n"
+                         "   Detected:    %12% SNPs\n"
+                         "   Detected:    %13% indels\n"
+                         "   Detected:    %14% variants\n\n"
+                         "   Signficiance Level: %15%\n\n"
+                         "   Filtered:    %16% SNPs\n"
+                         "   Filtered:    %17% indels\n"
+                         "   Filtered:    %18% variants\n\n"
+                         "   False Positives:   %19% SNPS\n"
+                         "   False Positives:   %20% SNPS\n"
+                         "   False Positives:   %21% variants\n\n"
+                         "   Performance metrics for SNPs\n\n"
+                         "   Sensitivity: %22%\n"
+                         "   Specificity: %23%\n\n"
+                         "   Performance metrics for indels\n\n"
+                         "   Sensitivity: %24%\n"
+                         "   Specificity: %25%\n\n"
+                         "   Overall performance metrics\n\n"
+                         "   Sensitivity: %26%\n"
+                         "   Specificity: %27%\n\n";
 
     o.writer->open("VarDiscover_summary.stats");
     //o.writer->write((boost::format(summary) % file
@@ -128,9 +177,10 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
 void VDiscover::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
-    const auto &data = stats.data.at(ChrT);
-    
-    o.logInfo("Number of false positives: " + std::to_string(data.fps.size()));
+
+    o.logInfo("Number of true positives:  " + std::to_string(stats.chrT.fps.size()));
+    o.logInfo("Number of false positives: " + std::to_string(stats.chrT.fps.size()));
+
     o.info("Generating statistics");
 
     /*
@@ -143,13 +193,13 @@ void VDiscover::report(const FileName &file, const Options &o)
      * Generating true positives
      */
 
-    writeClass("VarDiscover_TP.csv", stats.data.at(ChrT).tps, o);
+    writeClass("VarDiscover_TP.csv", stats.chrT.tps, o);
 
     /*
      * Generating false positives
      */
     
-    writeClass("VarDiscover_FP.csv", stats.data.at(ChrT).fps, o);
+    writeClass("VarDiscover_FP.csv", stats.chrT.fps, o);
     
     /*
      * Generating ROC curve
@@ -160,7 +210,14 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating statistics for each sequin
+     * Generating LODR curve
+     */
+    
+    o.writer->open("VarDiscover_LODR.R");
+    o.writer->close();
+    
+    /*
+     * Generating sequin statistics
      */
 
     writeSeqins("VarDiscover_quins.csv", stats, o);

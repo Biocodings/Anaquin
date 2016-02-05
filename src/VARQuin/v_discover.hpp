@@ -1,6 +1,7 @@
 #ifndef V_DISCOVER_HPP
 #define V_DISCOVER_HPP
 
+#include <vector>
 #include "stats/analyzer.hpp"
 #include "VARQuin/VARQuin.hpp"
 
@@ -13,9 +14,9 @@ namespace Anaquin
             Caller caller;
         };
         
-        struct Stats
+        struct Stats : public MappingStats
         {
-            struct Classifed
+            struct ChrTData
             {
                 // Expected allele frequency
                 double eAllFreq;
@@ -28,16 +29,27 @@ namespace Anaquin
                 // The sequin where it occurs
                 const Variant *seq;
             };
-
-            struct Data : public MappingStats
+            
+            struct EndoData
             {
-                std::vector<Classifed> fps, tps;
+                CalledVariant query;
+            };
+
+            struct ChrTStats
+            {
+                std::vector<ChrTData> fps, tps;
 
                 // Performance metrics
                 Confusion m, m_snp, m_ind;
             };
 
-            std::map<ChromoID, Data> data;
+            typedef std::vector<EndoData> EndoStats;
+            
+            // Statistics for synthetic variants
+            ChrTStats chrT;
+
+            // Statistics for endogenous variants
+            EndoStats endo;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());
