@@ -8,38 +8,41 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     
     parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
-        if (m.query->chrID == ChrT)
+        if (m.query.chrID == ChrT)
         {
-            Stats::ChrTData data;
-
-            data.seq      = m.seq;
-            data.query    = *(m.query);
-            data.eFold    = m.eFold;
-            data.eAllFreq = m.eAllFreq;
-
             if (m.match && m.ref && m.alt)
             {
-                stats.chrT.tps.push_back(data);
+                if (m.query.pval <= o.sign)
+                {
+                    stats.chrT.tps.push_back(m);
+                }
+                else
+                {
+                    stats.chrT.tns.push_back(m);
+                }
             }
             else
             {
-                /*
-                 * By definition, this is a false-positive because there is no match by position.
-                 */
-
                 if (!m.seq)
                 {
-                    assert(false);
+                    o.warn("Variant [" + std::to_string(m.query.l.start) + "] not aligned with any of the sequins. Ignored.");
                 }
-                
-                stats.chrT.fps.push_back(data);
+                else
+                {
+                    if (m.query.pval <= o.sign)
+                    {
+                        stats.chrT.fps.push_back(m);
+                    }
+                    else
+                    {
+                        stats.chrT.fns.push_back(m);
+                    }
+                }
             }
         }
         else
         {
-            Stats::EndoData data;
-            data.query = *(m.query);
-            stats.endo.push_back(data);
+            stats.endo.push_back(m.query);
         }
     });
     
@@ -47,14 +50,15 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 }
 
 static void writeClass(const FileName &file,
-                       const std::vector<VDiscover::Stats::ChrTData> &data,
+                       const VDiscover::Stats::ChrTStats &stats,
                        const VDiscover::Options &o)
 {
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    
     o.writer->open(file);
     o.writer->write((boost::format(format) % "Sequin"
                                            % "Position"
+                                           % "Label"
                                            % "PValue"
                                            % "RefRead"
                                            % "VarRead"
@@ -62,26 +66,35 @@ static void writeClass(const FileName &file,
                                            % "EAlleleF"
                                            % "Type").str());
 
-    for (const auto &i : data)
+    auto f = [&](const std::vector<VDiscover::Stats::ChrTData> &x, const std::string &label)
     {
-        std::string type;
-
-        switch (i.query.type())
+        for (const auto &i : x)
         {
-            case Mutation::SNP:       { type = "SNP";   break; }
-            case Mutation::Deletion:
-            case Mutation::Insertion: { type = "Indel"; break; }
+            std::string type;
+            
+            switch (i.query.type())
+            {
+                case Mutation::SNP:       { type = "SNP";   break; }
+                case Mutation::Deletion:
+                case Mutation::Insertion: { type = "Indel"; break; }
+            }
+            
+            o.writer->write((boost::format(format) % i.seq->id
+                                                   % i.query.l.start
+                                                   % label
+                                                   % i.query.pval
+                                                   % i.query.readR
+                                                   % i.query.readV
+                                                   % i.eFold
+                                                   % i.eAllFreq
+                                                   % type).str());
         }
+    };
 
-        o.writer->write((boost::format(format) % i.seq->id
-                                               % i.query.l.start
-                                               % i.query.pval
-                                               % i.query.readR
-                                               % i.query.readV
-                                               % i.eFold
-                                               % i.eAllFreq
-                                               % type).str());
-    }
+    f(stats.tps, "TP");
+    f(stats.fps, "FP");
+    f(stats.tns, "TN");
+    f(stats.fns, "FN");
 
     o.writer->close();
 }
@@ -91,7 +104,7 @@ static void writeSeqins(const FileName &file, const VDiscover::Stats &stats, con
     o.writer->open(file);
     o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
     
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
     o.writer->write((boost::format(format) % "Sequin"
                                            % "NumSNP"
                                            % "NumIndel"
@@ -176,10 +189,14 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
 
 void VDiscover::report(const FileName &file, const Options &o)
 {
+    o.logInfo("Significance level: " + std::to_string(o.sign));
+
     const auto stats = analyze(file, o);
 
-    o.logInfo("Number of true positives:  " + std::to_string(stats.chrT.fps.size()));
+    o.logInfo("Number of true positives:  " + std::to_string(stats.chrT.tps.size()));
     o.logInfo("Number of false positives: " + std::to_string(stats.chrT.fps.size()));
+    o.logInfo("Number of true negatives: "  + std::to_string(stats.chrT.tns.size()));
+    o.logInfo("Number of false negaitves: " + std::to_string(stats.chrT.fns.size()));
 
     o.info("Generating statistics");
 
@@ -190,17 +207,11 @@ void VDiscover::report(const FileName &file, const Options &o)
     writeSummary("VarDiscover_summary.stats", stats, o);
     
     /*
-     * Generating true positives
-     */
-
-    writeClass("VarDiscover_TP.csv", stats.chrT.tps, o);
-
-    /*
-     * Generating false positives
+     * Generating labels for the variants
      */
     
-    writeClass("VarDiscover_FP.csv", stats.chrT.fps, o);
-    
+    writeClass("VarDiscover_labels.csv", stats.chrT, o);
+
     /*
      * Generating ROC curve
      */

@@ -13,7 +13,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
 
     parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
-        const auto &v = *m.query;
+        const auto &v = m.query;
 
         if (v.chrID == ChrT && m.match)
         {

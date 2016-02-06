@@ -12,37 +12,25 @@ namespace Anaquin
         struct Options : public AnalyzerOptions
         {
             Caller caller;
+            
+            // Significance level
+            Probability sign = 0.1;
         };
-        
+
         struct Stats : public MappingStats
         {
-            struct ChrTData
-            {
-                // Expected allele frequency
-                double eAllFreq;
-                
-                // Expected fold-change
-                double eFold;
-                
-                CalledVariant query;
-
-                // The sequin where it occurs
-                const Variant *seq;
-            };
+            typedef VariantMatch ChrTData;
             
-            struct EndoData
-            {
-                CalledVariant query;
-            };
-
             struct ChrTStats
             {
-                std::vector<ChrTData> fps, tps;
+                std::vector<ChrTData> fps, tps, tns, fns;
 
                 // Performance metrics
                 Confusion m, m_snp, m_ind;
             };
 
+            typedef CalledVariant EndoData;
+            
             typedef std::vector<EndoData> EndoStats;
             
             // Statistics for synthetic variants

@@ -538,31 +538,31 @@ namespace Anaquin
             // Add a sequin in the standards
             void addStand(const SequinID &, const Locus &);
 
-            // Add a reference interval (eg: chr21)
+            // Adds a reference interval (eg: chr21)
             void addInterval(const ChromoID &, const Interval &);
 
-            // Return number of validated variants
+            // Returns number of known variants
             Counts countVars() const;
 
-            // Return number of validated SNPs
+            // Returns number of known SNPs
             Counts countSNPs() const;
         
-            // Return number of validated indels
+            // Returns number of known indels
             Counts countIndels() const;
-        
-            // Return number of sequins
+
+            // Returns number of sequins
             Counts countSeqs() const;
 
-            // Return the detection limit at the pair level
+            // Returns the detection limit at the pair level
             Limit limitGeno(const GenoHist &) const;
        
-            // Return a histogram for all the validated pairs
+            // Returns a histogram for all the validated pairs
             GenoHist genoHist() const;
 
-            // Find a reference gene that contains the given locus
+            // Finds a reference gene that contains the given locus
             const GenotypeData *findGeno(const GenoID &) const;
 
-            // Find a reference gene that contains the given locus
+            // Finds a reference gene that contains the given locus
             const GenotypeData *findGeno(const Locus &, double fuzzy = 0, MatchRule = Exact) const;
 
             const Variant *findVar(const SequinID &) const;

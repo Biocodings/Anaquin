@@ -4,6 +4,17 @@
 
 using namespace Anaquin;
 
+TEST_CASE("VarQuin_Variants")
+{
+    Test::variantA();
+
+    const auto &r = Standard::instance().r_var;
+
+    REQUIRE(r.countVars()   == 245);
+    REQUIRE(r.countSNPs()   == 137);
+    REQUIRE(r.countIndels() == 108);
+}
+
 TEST_CASE("VarQuin_Fold")
 {
     Test::variantA();

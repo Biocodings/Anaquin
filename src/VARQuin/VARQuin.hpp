@@ -15,7 +15,7 @@ namespace Anaquin
     
     struct VariantMatch
     {
-        const CalledVariant * query;
+        CalledVariant query;
 
         // Matched by position?
         const Variant *match = nullptr;
@@ -59,7 +59,7 @@ namespace Anaquin
 
         auto match = [&](const CalledVariant &query)
         {
-            m.query = &query;
+            m.query = query;
             m.seq   = nullptr;
             m.match = nullptr;
 
