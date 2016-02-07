@@ -11,6 +11,8 @@ namespace Anaquin
     {
         struct Options : public AnalyzerOptions
         {
+            Options() {}
+            
             Caller caller;
             
             // Significance level
