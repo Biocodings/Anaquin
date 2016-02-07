@@ -72,7 +72,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     /*
      * Generating summary statistics
      */
-    
+/*
     const auto summary = "Summary for dataset: %1%\n\n"
                          "   Experiment: %2%\n"
                          "   Synthetic: %3%\n\n"
@@ -84,7 +84,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
                          "   Maximum: %7%\n"
                          "   Mean:    %8%\n"
                          "   Covered  %9%\n";
-
+*/
     const auto overallStats = inters.stats();
 
     

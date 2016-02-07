@@ -224,6 +224,7 @@ static void writeSummary(const TExpress::Stats &stats,
     o.writer->create(name);
     o.writer->open(name + "/TransExpress_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT(),
+                                                o.rEndo(),
                                                 std::vector<FileName>     { file  },
                                                 std::vector<MappingStats> { stats },
                                                 std::vector<LinearStats>  { stats.data.at(ChrT) },
@@ -317,15 +318,6 @@ template <typename Stats, typename Options> Scripts writeSampleCSV(const std::ve
     }
     
     return ss.str();
-}
-
-static void writeCSV(const TExpress::Stats &stats, const FileName &file, const std::string &name, const TExpress::Options &o)
-{
-    std::vector<std::string> ids;
-    std::vector<double> x, y;
-    
-    stats.data.at(ChrT).data(x, y, false, &ids);
-    AnalyzeReporter::writeCSV(x, y, ids, name + "/TransExpress_quins.csv", "Expected concentration (attomol/ul)", "Measured coverage (attomol/ul)", o.writer);
 }
 
 static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &stats, const TExpress::Options &o)
@@ -437,8 +429,9 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
         // Generating summary statistics for the sample
         writeSummary(stats[i], files[i], o.exp->names().at(i), units, o);
         
-        // Generating CSV file for the data
-        writeCSV(stats[i], files[i], o.exp->names().at(i), o);
+        o.writer->open(o.exp->names().at(i) + "/TransExpress_quins.csv");
+        o.writer->write(StatsWriter::writeCSV(stats[i].data.at(ChrT), "Expected concentration (attomol/ul)", "Measured abundance (attomol/ul)"));
+        o.writer->close();
         
         // Generating scatter plot for the sample
         writeScatter(stats[i], files[i], o.exp->names().at(i), units, o);
@@ -488,7 +481,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     o.writer->open("TransExpress_pooled.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT(), files, data_, data, units));
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT(), o.rEndo(), files, data_, data, units));
     o.writer->close();
 
     /*

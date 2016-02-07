@@ -28,97 +28,63 @@ namespace Anaquin
     
     struct StatsWriter
     {
+        static Scripts writeCSV(const LinearStats &stats,
+                                const Label &xLabel,
+                                const Label &yLabel)
+        {
+            std::vector<SequinID> ids;
+            std::vector<double> x, y;
+
+            stats.data(x, y, false, &ids);
+
+            return StatsWriter::writeCSV(x, y, ids, xLabel, yLabel);
+        }
+        
+        static Scripts writeCSV(const std::vector<double> &x,
+                                const std::vector<double> &y,
+                                const std::vector<SequinID> &ids,
+                                const Label &xLabel,
+                                const Label &yLabel)
+        {
+            std::stringstream ss;
+            
+            ss << ((boost::format("Sequin\t%1%\t%2%\n") % xLabel % yLabel).str());
+
+            std::set<SequinID> sorted(ids.begin(), ids.end());
+            
+            for (const auto &s : sorted)
+            {
+                const auto it = std::find(ids.begin(), ids.end(), s);
+                const auto i  = std::distance(ids.begin(), it);
+                
+                ss << ((boost::format("%1%\t%2%\t%3%\n") % ids.at(i) % x.at(i) % y.at(i)).str());
+            }
+
+            return ss.str();
+        }
+
         /*
          * -------------------- Linear Statistics (with inflection) --------------------
          */
 
         static Scripts inflectSummary();
-        static Scripts inflectSummary(const FileName &ref, const SInflectStats &stats);
-        static Scripts inflectSummary(const FileName &ref,
-                                      const std::vector<FileName> &,
+        
+        static Scripts inflectSummary(const FileName &,
+                                      const FileName &,
+                                      const SInflectStats &);
+        static Scripts inflectSummary(const FileName &,
+                                      const FileName &,
+                                      const std::vector<FileName>     &,
                                       const std::vector<MappingStats> &,
-                                      const std::vector<LinearStats> &,
+                                      const std::vector<LinearStats>  &,
+                                      const Units &units);
+        static Scripts inflectSummary(const FileName &,
+                                      const FileName &,
+                                      const FileName &,
+                                      const MappingStats &,
+                                      const LinearStats  &,
                                       const Units &units);
 
-        /*
-         * -------------------- Linear Statistics --------------------
-         */
-        
-        template <typename Stats> static Scripts linear(const FileName &src,
-                                                        const Stats &stats,
-                                                        const ChromoID &cID,
-                                                        const Units &units,
-                                                        const Units &ref = "")
-        {
-            const auto summary = "Summary for file: %1%\n\n"
-                                 "   Experiment:  %2% %4%\n"
-                                 "   Synthetic:   %3% %4%\n\n"
-                                 "   Reference:   %5% %6%\n"
-                                 "   Detected:    %9% %6%\n\n"
-                                 "   ***\n"
-                                 "   *** Detection Limits\n"
-                                 "   ***\n\n"
-                                 "   Absolute:    %7% (attomol/ul) (%8%)\n\n"
-                                 "   ***\n"
-                                 "   *** Statistics for linear regression\n"
-                                 "   ***\n\n"
-                                 "   Correlation: %10%\n"
-                                 "   Slope:       %11%\n"
-                                 "   R2:          %12%\n"
-                                 "   F-statistic: %13%\n"
-                                 "   P-value:     %14%\n"
-                                 "   SSM:         %15%, DF: %16%\n"
-                                 "   SSE:         %17%, DF: %18%\n"
-                                 "   SST:         %19%, DF: %20%\n\n"
-                                 "   ***\n"
-                                 "   *** Statistics for linear regression (log2 scale)\n"
-                                 "   ***\n\n"
-                                 "   Correlation: %21%\n"
-                                 "   Slope:       %22%\n"
-                                 "   R2:          %23%\n"
-                                 "   F-statistic: %24%\n"
-                                 "   P-value:     %25%\n"
-                                 "   SSM:         %26%, DF: %27%\n"
-                                 "   SSE:         %28%, DF: %29%\n"
-                                 "   SST:         %30%, DF: %31%\n";
-            
-            const auto n_lm = stats.data.at(cID).linear(false);
-            const auto l_lm = stats.data.at(cID).linear(true);
-            
-            return (boost::format(summary) % src                          // 1
-                                           % stats.n_endo
-                                           % stats.n_chrT
-                                           % units
-                                           % stats.hist.size()            // 5
-                                           % (ref.empty() ? units : ref)
-                                           % stats.limit.abund
-                                           % stats.limit.id
-                                           % detect(stats.hist)
-                                           % n_lm.r                       // 10
-                                           % n_lm.m
-                                           % n_lm.R2
-                                           % n_lm.F
-                                           % n_lm.p
-                                           % n_lm.SSM
-                                           % n_lm.SSM_D
-                                           % n_lm.SSE
-                                           % n_lm.SSE_D
-                                           % n_lm.SST
-                                           % n_lm.SST_D
-                                           % l_lm.r
-                                           % l_lm.m                       // 22
-                                           % l_lm.R2
-                                           % l_lm.F
-                                           % l_lm.p
-                                           % l_lm.SSM
-                                           % l_lm.SSM_D
-                                           % l_lm.SSE
-                                           % l_lm.SSE_D
-                                           % l_lm.SST
-                                           % l_lm.SST_D                  // 31
-                    ).str();
-        }
-        
         /*
          * -------------------- Linear Statistics --------------------
          */
@@ -224,7 +190,7 @@ namespace Anaquin
         static Scripts createROC_T(const std::vector<FeatureID> &, const std::vector<double> &, const std::string &);
 
         // Create an ROC script for variant analysis
-        static Scripts createROC_V(const FileName &, const FileName &);
+        static Scripts createROC_V(const FileName &);
 
         /*
          * -------------------- MA Plot --------------------

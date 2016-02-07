@@ -13,11 +13,23 @@ namespace Anaquin
             Caller caller;
         };
         
-        struct Stats
+        struct Stats : public MappingStats
         {
-            typedef LinearStats Data;
+            typedef LinearStats ChrTData;
 
-            std::map<ChromoID, Data> data;
+            struct ChrTStats
+            {
+                LinearStats tot, snp, ind;
+            };
+            
+            typedef CalledVariant EndoData;
+            typedef std::vector<EndoData> EndoStats;
+
+            ChrTStats chrT;
+            EndoStats endo;
+
+            // Absolute detection limits
+            Limit limit;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

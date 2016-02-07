@@ -51,7 +51,6 @@
 		EF58D8E11C1645EB00958A0C /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF58D8DF1C1645EB00958A0C /* t_express.cpp */; };
 		EF5B07B81C48AE6B00751B46 /* experiment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5B07B61C48AE6B00751B46 /* experiment.cpp */; };
 		EF5B07BA1C48B08700751B46 /* t_experiment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5B07B91C48B08700751B46 /* t_experiment.cpp */; };
-		EF5B07BD1C48B3FA00751B46 /* t_count.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5B07BB1C48B3FA00751B46 /* t_count.cpp */; };
 		EF5E857D1B6B5B0E00FF61D8 /* f_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF5E857B1B6B5B0E00FF61D8 /* f_align.cpp */; };
 		EF6B01D11C60975000D82709 /* t_parser_varscan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6B01D01C60975000D82709 /* t_parser_varscan.cpp */; };
 		EF6D05F31BD3E6040048044F /* sampling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6D05F21BD3E6040048044F /* sampling.cpp */; };
@@ -224,8 +223,6 @@
 		EF5B07B61C48AE6B00751B46 /* experiment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = experiment.cpp; path = ../src/data/experiment.cpp; sourceTree = "<group>"; };
 		EF5B07B71C48AE6B00751B46 /* experiment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = experiment.hpp; path = ../src/data/experiment.hpp; sourceTree = "<group>"; };
 		EF5B07B91C48B08700751B46 /* t_experiment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_experiment.cpp; path = ../tests/data/t_experiment.cpp; sourceTree = "<group>"; };
-		EF5B07BB1C48B3FA00751B46 /* t_count.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = t_count.cpp; sourceTree = "<group>"; };
-		EF5B07BC1C48B3FA00751B46 /* t_count.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = t_count.hpp; sourceTree = "<group>"; };
 		EF5B07BF1C48E24100751B46 /* dtest.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = dtest.hpp; path = ../src/data/dtest.hpp; sourceTree = "<group>"; };
 		EF5B07C01C48E8A900751B46 /* parser_DESeq2.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_DESeq2.hpp; path = ../src/parsers/parser_DESeq2.hpp; sourceTree = "<group>"; };
 		EF5B07C11C48E8A900751B46 /* parser_edgeR.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_edgeR.hpp; path = ../src/parsers/parser_edgeR.hpp; sourceTree = "<group>"; };
@@ -559,8 +556,6 @@
 				EF9ACCE11B5FB5480085D1B2 /* t_align.hpp */,
 				EF9ACCE31B5FB5480085D1B2 /* t_assembly.cpp */,
 				EF9ACCE41B5FB5480085D1B2 /* t_assembly.hpp */,
-				EF5B07BB1C48B3FA00751B46 /* t_count.cpp */,
-				EF5B07BC1C48B3FA00751B46 /* t_count.hpp */,
 				EFA347301BD5E444009ED5DC /* t_coverage.cpp */,
 				EFA347311BD5E444009ED5DC /* t_coverage.hpp */,
 				EF9ACCE61B5FB5480085D1B2 /* t_diffs.cpp */,
@@ -802,7 +797,6 @@
 				EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */,
 				EF9ACCEE1B5FB7520085D1B2 /* t_express.cpp in Sources */,
 				EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */,
-				EF5B07BD1C48B3FA00751B46 /* t_count.cpp in Sources */,
 				EF9ACCEF1B5FB7520085D1B2 /* t_align.cpp in Sources */,
 				EF9ACCF01B5FB7520085D1B2 /* t_assembly.cpp in Sources */,
 				EF0C67971C5F25070033168D /* v_sample.cpp in Sources */,

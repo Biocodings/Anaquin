@@ -21,7 +21,6 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             
             if (m.match && m.ref && m.alt)
             {
-                assert(!m.match->id.empty());
                 stats.hist.at(m.match->id)++;
                 
                 if (m.query.pval <= o.sign)
@@ -309,16 +308,19 @@ void VDiscover::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createROC_V("VarDiscover_TP.csv", "VarDiscover_FP.csv"));
+    o.writer->write(RWriter::createROC_V("VarDiscover_labels.csv"));
     o.writer->close();
 
     /*
      * Generating LODR curve (only if probability is given, for example, not possible with GATK)
      */
-    
-    o.writer->open("VarDiscover_LODR.R");
-    o.writer->close();
-    
+
+    if (o.caller == Caller::VarScan)
+    {
+        o.writer->open("VarDiscover_LODR.R");
+        o.writer->close();
+    }
+
     /*
      * Generating sequin statistics
      */

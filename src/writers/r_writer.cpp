@@ -135,14 +135,14 @@ Scripts StatsWriter::inflectSummary()
            "   SST:         %38%, DF: %39%\n";
 }
 
-Scripts StatsWriter::inflectSummary(const FileName &ref, const SInflectStats &stats)
+Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR, const SInflectStats &stats)
 {    
     return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
                                                          % STRING(stats.n_chrT)     // 2
                                                          % STRING(stats.p_chrT)     // 3
                                                          % STRING(stats.n_endo)     // 4
                                                          % STRING(stats.p_endo)     // 5
-                                                         % ref                      // 6
+                                                         % chrTR                    // 6
                                                          % STRING(stats.n_ref)      // 7
                                                          % STRING(stats.units)      // 8
                                                          % STRING(stats.n_det)      // 9
@@ -179,7 +179,23 @@ Scripts StatsWriter::inflectSummary(const FileName &ref, const SInflectStats &st
             ).str();
 };
 
-Scripts StatsWriter::inflectSummary(const FileName                  &ref,
+Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
+                                    const FileName     &endoR,
+                                    const FileName     &file,
+                                    const MappingStats &mStats,
+                                    const LinearStats  &stats,
+                                    const Units &units)
+{
+    return inflectSummary(chrTR,
+                          endoR,
+                          std::vector<FileName>     { file   },
+                          std::vector<MappingStats> { mStats },
+                          std::vector<LinearStats>  { stats  },
+                          units);
+}
+
+Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
+                                    const FileName                  &endoR,
                                     const std::vector<FileName>     &files,
                                     const std::vector<MappingStats> &mStats,
                                     const std::vector<LinearStats>  &stats,
@@ -245,8 +261,8 @@ Scripts StatsWriter::inflectSummary(const FileName                  &ref,
         r.wLog.SSE_D.add(l_lm.SSE_D);
         r.wLog.SST_D.add(l_lm.SST_D);
     }
-    
-    return inflectSummary(ref, r);
+
+    return inflectSummary(chrTR, endoR, r);
 }
 
 Scripts RWriter::createSplice(const FileName &fpkms)
@@ -308,7 +324,7 @@ Scripts RWriter::createROC_T(const std::vector<FeatureID> &seqs, const std::vect
                                     % lvl).str();
 }
 
-Scripts RWriter::createROC_V(const FileName &tp, const FileName &fp)
+Scripts RWriter::createROC_V(const FileName &file)
 {
     std::stringstream ss;
     ss << PlotROC_V();
@@ -316,6 +332,6 @@ Scripts RWriter::createROC_V(const FileName &tp, const FileName &fp)
     return (boost::format(ss.str()) % date()
                                     % __full_command__
                                     % __output__
-                                    % tp
-                                    % fp).str();
+                                    % file
+                                    % file).str();
 }

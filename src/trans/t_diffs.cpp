@@ -457,7 +457,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_summary.stats");
-    o.writer->write(StatsWriter::linear(file, stats, ChrT, units));
+    //o.writer->write(StatsWriter::linear(file, stats, ChrT, units));
     o.writer->close();
     
     /*

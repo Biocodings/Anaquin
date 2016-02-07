@@ -62,7 +62,6 @@ namespace Anaquin
             };
 
             typedef CalledVariant EndoData;
-            
             typedef std::vector<EndoData> EndoStats;
             
             // Statistics for synthetic variants

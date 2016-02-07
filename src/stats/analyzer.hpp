@@ -296,59 +296,6 @@ namespace Anaquin
         Mixture mix_1 = Mix_1;
         Mixture mix_2 = Mix_2;
     };
-
-    struct AnalyzeReporter
-    {
-        template <typename Stats, typename Writer> static void missing(const FileName &file,
-                                                                       const Stats &stats,
-                                                                       Writer writer)
-        {
-            const auto format = "%1%\t%2%";
-
-            writer->open(file);
-            writer->write((boost::format(format) % "id" % "abund").str());
-
-            for (const auto &i : stats.miss)
-            {
-                writer->write((boost::format(format) % i.id % i.abund).str());
-            }
-
-            writer->close();
-        }
-
-        /*
-         * Provides a common framework to generate a CSV for all sequins
-         */
-        
-        template <typename Writer> static void writeCSV(const std::vector<double> &x,
-                                                        const std::vector<double> &y,
-                                                        const std::vector<std::string> &z,
-                                                        const FileName &file,
-                                                        const std::string &xLabel,
-                                                        const std::string &yLabel,
-                                                        Writer writer)
-        {
-            writer->open(file);
-            writer->write((boost::format("ID\t%1%\t%2%") % xLabel % yLabel).str());
-
-            /*
-             * Prefer to write results in sorted order
-             */
-
-            std::set<std::string> sorted(z.begin(), z.end());
-
-            for (const auto &s : sorted)
-            {
-                const auto it = std::find(z.begin(), z.end(), s);
-                const auto i  = std::distance(z.begin(), it);
-
-                writer->write((boost::format("%1%\t%2%\t%3%") % z.at(i) % x.at(i) % y.at(i)).str());
-            }
-
-            writer->close();
-        }
-
-    };
 }
 
 #endif
