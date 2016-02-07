@@ -223,7 +223,7 @@ static void writeSummary(const TExpress::Stats &stats,
 {
     o.writer->create(name);
     o.writer->open(name + "/TransExpress_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT(),
                                                 std::vector<FileName>     { file  },
                                                 std::vector<MappingStats> { stats },
                                                 std::vector<LinearStats>  { stats.data.at(ChrT) },
@@ -488,7 +488,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     o.writer->open("TransExpress_pooled.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT, files, data_, data, units));
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT(), files, data_, data, units));
     o.writer->close();
 
     /*

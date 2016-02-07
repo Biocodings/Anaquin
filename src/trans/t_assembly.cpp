@@ -289,12 +289,12 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
                                                % stats.endo_exons
                                                % stats.chrT_trans
                                                % stats.endo_trans
-                                               % o.rChrT
+                                               % o.rChrT()
                                                % r.countExons(ChrT)
                                                % r.countIntrons(ChrT)
-                                               % (o.rEndo.empty() ? "-"  : o.rEndo)
-                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons("chr1")))
-                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
+                                               % (o.rEndo().empty() ? "-"  : o.rEndo())
+                                               % (o.rEndo().empty() ? "NA" : std::to_string(r.countExons("chr1")))
+                                               % (o.rEndo().empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
                                                % S(data.eSN)            // 12
                                                % S(data.eFSN)
                                                % S(data.eSP)

@@ -571,9 +571,10 @@ namespace Anaquin
             // Find a reference interval
             const Interval *findQuery(const ChromoID &, const Locus &) const;
 
+            // Returns the expected fold-change
             Fold fold(const SequinID &) const;
         
-            // Return the proportion of variants for a genotype
+            // Returns the expected allele frequency
             Proportion alleleFreq(const SequinID &) const;
 
         protected:

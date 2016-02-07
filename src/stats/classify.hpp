@@ -12,7 +12,9 @@ namespace Anaquin
         
             inline Counts &tp() const { return _tp; }
             inline Counts &fp() const { return _fp; }
+            inline Counts &tn() const { return _tn; }
             inline Counts &fn() const { return _fn; }
+
             inline Counts &nr() const { return _nr; }
             inline Counts &nq() const { return _nq; }
 
@@ -26,14 +28,23 @@ namespace Anaquin
             {
                 assert(_nr && _nr >= _tp);
 
-                // Adjust for fn... Refer to the wikipedia for more details
+                // Adjust for fn... Refer to wikipedia for details
                 _fn = _nr - _tp;
 
                 return (_tp + _fn) ? static_cast<Percentage>(_tp) / (_tp + _fn) : NAN;
             }
-        
+
+            // Specificity, metrics for negative classification
+            inline Percentage sp() const
+            {
+                assert(_nr && _nr >= _tp);
+                return (_tn + _fp) ? static_cast<Percentage>(_tn) / (_tn + _fp) : NAN;
+            }
+
+            // Precision, metrics for accuracy
             inline Percentage pc() const
             {
+                assert(_nr && _nr >= _tp);
                 return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
             }
 

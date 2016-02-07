@@ -625,14 +625,14 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % stats.n_endo
                                           % (100.0 * stats.endoProp())
                                           % stats.dilution()                                                // 7
-                                          % extractFile(o.rChrT)                                            // 8
+                                          % extractFile(o.rChrT())                                            // 8
                                           % BIND_R(TransRef::countExons, ChrT)                              // 9
                                           % BIND_R(TransRef::countIntrons, ChrT)                            // 10
                                           % BIND_R(TransRef::exonBase, ChrT)                                // 11
-                                          % (o.rEndo.empty() ? "-" : extractFile(o.rEndo))                  // 12
-                                          % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::countExons, Endo))   // 13
-                                          % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::countIntrons, Endo)) // 14
-                                          % (o.rEndo.empty() ? "NA" : BIND_R(TransRef::exonBase, Endo))     // 15
+                                          % ""//(o.rEndo.empty() ? "-" : extractFile(o.rEndo))                  // 12
+                                          % ""//(o.rEndo.empty() ? "NA" : BIND_R(TransRef::countExons, Endo))   // 13
+                                          % ""//(o.rEndo.empty() ? "NA" : BIND_R(TransRef::countIntrons, Endo)) // 14
+                                          % ""//(o.rEndo.empty() ? "NA" : BIND_R(TransRef::exonBase, Endo))     // 15
                                           % BIND_Q(Stats::countNonSplit, ChrT)                              // 16
                                           % BIND_Q(Stats::countSplit, ChrT)                                 // 17
                                           % BIND_Q(Stats::countQBases, ChrT)                                // 18
