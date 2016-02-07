@@ -48,6 +48,8 @@ Bioinformatics
 <li>Gene expression
 <li>Allele frequency
 <li>De-novo assembly
+<li>Variant analysis
+<li>Allele frequency
 </ul>
 
 Features
