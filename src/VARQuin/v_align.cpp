@@ -64,47 +64,47 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
          * Collect statistics for the alignment
          */
 
-        const VarRef::GenotypeData * match;
-
-        if (classify(stats.p.m, align, [&](const Alignment &)
-        {
-            return (match = r.findGeno(align.l, Contains)) ? Positive : Negative;
-        }))
-        {
-            const auto l = ii.find(match->id);
-            Locus t = Locus(align.l.start - l->l().start, align.l.end - l->l().end);
-            ii.find(match->id)->add(t);
- 
-            stats.h.at(match->id)++;
-        }
+//        const VarRef::GenotypeData * match;
+//
+//        if (classify(stats.p.m, align, [&](const Alignment &)
+//        {
+//            return true; //(match = r.findGeno(align.l, Contains)) ? Positive : Negative;
+//        }))
+//        {
+//            const auto l = ii.find(match->id);
+//            Locus t = Locus(align.l.start - l->l().start, align.l.end - l->l().end);
+//            ii.find(match->id)->add(t);
+// 
+//            stats.h.at(match->id)++;
+//        }
     });
 
-    sums(stats.h, stats.p.m.nr());
-
-    o.info("Calculating limit of sensitivity");
-
-    // Calculate for the sensitivity
-    stats.p.limit = r.limitGeno(stats.h);
-
-    o.logInfo((boost::format("Performance: %1% %2% %3% %4% %5% %6% %7%")
-                                    % stats.p.m.nr()
-                                    % stats.p.m.nq()
-                                    % stats.p.m.tp()
-                                    % stats.p.m.fp()
-                                    % stats.p.m.fn()
-                                    % stats.p.m.sn()
-                                    % stats.p.m.pc()).str());
-    o.info("Generating summary statistics");
-
-    double covered = 0;
-    
-    for (auto i : ii.data())
-    {
-        covered += i.second.stats().covered();
-        //std::cout << i.second.stats().covered() << std::endl;
-    }
-    
-    covered = covered / ii.data().size();
+//    sums(stats.h, stats.p.m.nr());
+//
+//    o.info("Calculating limit of sensitivity");
+//
+//    // Calculate for the sensitivity
+//    stats.p.limit = r.limitGeno(stats.h);
+//
+//    o.logInfo((boost::format("Performance: %1% %2% %3% %4% %5% %6% %7%")
+//                                    % stats.p.m.nr()
+//                                    % stats.p.m.nq()
+//                                    % stats.p.m.tp()
+//                                    % stats.p.m.fp()
+//                                    % stats.p.m.fn()
+//                                    % stats.p.m.sn()
+//                                    % stats.p.m.pc()).str());
+//    o.info("Generating summary statistics");
+//
+//    double covered = 0;
+//    
+//    for (auto i : ii.data())
+//    {
+//        covered += i.second.stats().covered();
+//        //std::cout << i.second.stats().covered() << std::endl;
+//    }
+//    
+//    covered = covered / ii.data().size();
     
     /*
      * Write out summary statistics
@@ -145,10 +145,10 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
     const auto format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "ID" % "Counts (reads)").str());
     
-    for (const auto &i : stats.h)
-    {
-        o.writer->write((boost::format(format) % i.first % stats.h.at(i.first)).str());
-    }
+//    for (const auto &i : stats.h)
+//    {
+//        o.writer->write((boost::format(format) % i.first % stats.h.at(i.first)).str());
+//    }
     
     o.writer->close();
 

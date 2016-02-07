@@ -70,12 +70,6 @@ namespace Anaquin
         Contains,
     };
     
-    enum Context
-    {
-        SContext,
-        EContext,
-    };
-
     template <typename Data = SequinData, typename Stats = SequinStats> class Reference
     {
         public:
@@ -514,32 +508,24 @@ namespace Anaquin
     {
         public:
 
-            typedef std::string GenoID;
-            typedef std::map<GenoID, Counts> GenoHist;
-
-            struct GenotypeData
-            {
-                GenoID id;
-
-                // By definition, it should be same as the reference and variant
-                Locus l;
-
-                const SequinData *r;
-                const SequinData *v;
-
-                Concentration abund(Mixture m) const;
-            };
-
             VarRef();
 
-            // Add a known variant
-            void addVar(const Variant &);
-
-            // Add a sequin in the standards
-            void addStand(const SequinID &, const Locus &);
-
+            /*
+             * Synthetic and endogenous methods
+             */
+        
             // Adds a reference interval (eg: chr21)
             void addInterval(const ChromoID &, const Interval &);
+        
+            /*
+             * Synthetic methods
+             */
+        
+            // Adds a known variant
+            void addVar(const Variant &);
+
+            // Adds a sequin in the standards
+            void addStand(const SequinID &, const Locus &);
 
             // Returns number of known variants
             Counts countVars() const;
@@ -552,18 +538,6 @@ namespace Anaquin
 
             // Returns number of sequins
             Counts countSeqs() const;
-
-            // Returns the detection limit at the pair level
-            Limit limitGeno(const GenoHist &) const;
-       
-            // Returns a histogram for all the validated pairs
-            GenoHist genoHist() const;
-
-            // Finds a reference gene that contains the given locus
-            const GenotypeData *findGeno(const GenoID &) const;
-
-            // Finds a reference gene that contains the given locus
-            const GenotypeData *findGeno(const Locus &, double fuzzy = 0, MatchRule = Exact) const;
 
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;

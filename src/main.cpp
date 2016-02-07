@@ -102,10 +102,13 @@ typedef std::set<Value> Range;
 #define OPT_LOS      324
 #define OPT_PATH     325
 #define OPT_FILTER   326
-#define OPT_THREAD   327
 #define OPT_VERSION  338
 #define OPT_SOFT     339
 #define OPT_C_SOFT   340
+
+/*
+ * References - OPT_R_BASE to OPT_U_BASE
+ */
 
 #define OPT_R_BASE  800
 #define OPT_R_BED   801
@@ -116,6 +119,7 @@ typedef std::set<Value> Range;
 #define OPT_FUZZY   807
 #define OPT_R_ENDO  808
 #define OPT_U_BASE  900
+
 #define OPT_U_GTF   902
 #define OPT_BAM_1   903
 #define OPT_BAM_2   904
@@ -131,6 +135,7 @@ typedef std::set<Value> Range;
 #define OPT_U_FILES 914
 #define OPT_U_NAMES 915
 #define OPT_C_FILES 916
+#define OPT_SIGN    917
 
 using namespace Anaquin;
 
@@ -231,11 +236,11 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
     
-    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_MIXTURE, OPT_BAM_1                             } },
-    { TOOL_M_IGV,      { OPT_FA_1                                                        } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_FA_1, OPT_SOFT                      } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_FA_1, OPT_SOFT                      } },
-    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_BAM_1                                          } },
+    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES                             } },
+    { TOOL_M_IGV,      { OPT_U_FILES                                                     } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_U_FILES, OPT_SOFT                     } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT                   } },
+    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                          } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2, OPT_SOFT } },
 
     /*
@@ -243,8 +248,8 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_F_ALIGN,    { OPT_R_BED, OPT_MIXTURE,                                 } },
-    { TOOL_F_DISCOVER, { OPT_R_FUS,   OPT_SOFT, OPT_U_OUT                        } },
-    { TOOL_F_EXPRESS,  { OPT_R_FUS,   OPT_MIXTURE,  OPT_SOFT, OPT_U_OUT          } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_OUT                          } },
+    { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFT, OPT_U_OUT            } },
     { TOOL_F_COVERAGE, { OPT_R_BED, OPT_BAM_1                                    } },
     { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_U_OUT, OPT_U_TAB, OPT_MIXTURE } },
     { TOOL_F_NORMAL,   { OPT_R_BED, OPT_U_TAB, OPT_MIXTURE                       } },
@@ -253,12 +258,12 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
     
-    { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_BAM_1             } },
+    { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_COVERAGE,  { OPT_R_BED, OPT_BAM_1                          } },
+    { TOOL_V_COVERAGE,  { OPT_R_BED, OPT_U_FILES                        } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
     { TOOL_V_IGV,       { OPT_BAM_1                                     } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED, OPT_R_ENDO, OPT_BAM_1              } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED, OPT_R_ENDO, OPT_U_FILES            } },
 };
 
 /*
@@ -285,8 +290,8 @@ struct Parsing
     // Context specific options
     std::map<Option, std::string> opts;
     
-    // Number of threads
-    unsigned threads = 1;
+    // Signifcance level
+    Probability sign;
     
     // Minmium concentration
     double min = 0;
@@ -390,6 +395,7 @@ static const struct option long_options[] =
     { "t",    required_argument, 0, OPT_TOOL },
     { "tool", required_argument, 0, OPT_TOOL },
 
+    { "sign",    required_argument, 0, OPT_SIGN    },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
     { "cfiles",  required_argument, 0, OPT_C_FILES },
 
@@ -530,27 +536,28 @@ template <typename Mixture> void addMix(Mixture mix)
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
 
-template <typename Reference> void addRef(Context ctx, Reference ref, const FileName &file)
+template <typename Reference> void addRef(const ChromoID &cID, Reference ref, const FileName &file)
 {
-    switch (ctx)
+    if (cID == ChrT)
     {
-        case SContext: { std::cout << "[INFO]: Found synthetic reference"  << std::endl;  break; }
-        case EContext: { std::cout << "[INFO]: Found experimental reference" << std::endl; break; }
+        std::cout << "[INFO]: Found synthetic reference"  << std::endl;
+    }
+    else
+    {
+        std::cout << "[INFO]: Found experimental reference" << std::endl;
     }
 
     std::cout << "[INFO]: Reference: " << file << std::endl;
     ref(Reader(file));
 }
 
-template <typename Reference> void addRef(Context src, Reference ref)
+template <typename Reference> void addRef(const ChromoID &cID, Reference ref)
 {
     for (const auto &i : _p.opts)
     {
-        const auto opt = i.first;
-        
-        if (CHECK_REF(opt))
+        if (CHECK_REF(i.first))
         {
-            addRef(src, ref, _p.opts[opt]);
+            addRef(cID, ref, _p.opts[i.first]);
             break;
         }
     }
@@ -572,13 +579,13 @@ template <typename Reference> void addRef(Reference ref)
             {
                 case OPT_R_ENDO:
                 {
-                    addRef(EContext, ref, _p.opts[opt]);
+                    addRef(Endo, ref, _p.opts[opt]);
                     break;
                 }
 
                 default:
                 {
-                    addRef(SContext, ref, _p.opts[opt]);
+                    addRef(ChrT, ref, _p.opts[opt]);
                     break;
                 }
             }
@@ -1006,7 +1013,7 @@ void parse(int argc, char ** argv)
             case OPT_MAX:     { parseDouble(val, _p.max);   break; }
             case OPT_MIN:     { parseDouble(val, _p.min);   break; }
             case OPT_LOS:     { parseDouble(val, _p.limit); break; }
-            case OPT_THREAD:  { parseInt(val, _p.threads);  break; }
+            case OPT_SIGN:    { parseDouble(val, _p.sign);  break; }
 
             default:
             {
@@ -1363,28 +1370,28 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addStd,    &s, std::placeholders::_1), OPT_R_BED);
-                        //applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_BED_2);
+                        addRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
+                        //addRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_BED_2);
                         break;
                     }
 
                     case TOOL_V_ALIGN:
                     case TOOL_V_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1), OPT_R_BED);
+                        addRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_V_ALLELE:
                     {
-                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        addRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_V_DISCOVER:
                     {
-                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1), OPT_R_BED);
-                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        addRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
+                        addRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
                         break;
                     }
 
@@ -1397,10 +1404,10 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_IGV:       { viewer<VViewer>();                break; }
-                case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_BAM_1);     break; }
-                case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_BAM_1);  break; }
-                
+                case TOOL_V_IGV:       { viewer<VViewer>();                 break; }
+                case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
+                case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }
+
                 case TOOL_V_ALLELE:
                 {
                     VAllele::Options o;
@@ -1423,10 +1430,10 @@ void parse(int argc, char ** argv)
                 {
                     VSample::Options o;
                     
-                    // TODO: Fix this (need to support multiple chromosomes)
+                    // TODO: Fix this
                     o.queryID = "chr21";
 
-                    analyze_1<VSample>(OPT_BAM_1, o);
+                    analyze_1<VSample>(OPT_U_FILES, o);
                     break;
                 }
             }

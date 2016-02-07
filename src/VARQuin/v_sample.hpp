@@ -8,7 +8,6 @@ namespace Anaquin
 {
     struct VSample
     {
-        // How coverage is determined
         enum CoverageMethod
         {
             ArithAverage,
@@ -33,24 +32,24 @@ namespace Anaquin
             // Coverage statistics for chrT
             Interval::Stats chrT;
             
-            // Coverage statistics for query (eg: chr21)
-            Interval::Stats query;
+            // Coverage statistics for endogenous (eg: chr21)
+            Interval::Stats endo;
 
             // Raw coverage
             CoverageTool::Stats cov;
-            
+
             // Calculated coverage for chrT
             Coverage chrTC;
 
             // Calculated coverage for the query (eg: chr21)
-            Coverage queryC;
+            Coverage endoC;
 
             /*
              * Fraction required to subsample in chrT. This works because chrT is a short
              * chromosome and almost certianly will have the highest coverage.
              */
-            
-            inline double sample() const { return queryC / chrTC; }
+
+            inline Proportion sample() const { return endoC / chrTC; }
         };
 
         // Generate statistics for subsampling

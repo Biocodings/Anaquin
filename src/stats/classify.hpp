@@ -24,28 +24,28 @@ namespace Anaquin
             }
         
             // Sensitivity, metrics for positive classification
-            inline Percentage sn() const
+            inline Proportion sn() const
             {
                 assert(_nr && _nr >= _tp);
 
                 // Adjust for fn... Refer to wikipedia for details
                 _fn = _nr - _tp;
 
-                return (_tp + _fn) ? static_cast<Percentage>(_tp) / (_tp + _fn) : NAN;
+                return (_tp + _fn) ? static_cast<Proportion>(_tp) / (_tp + _fn) : NAN;
             }
 
             // Specificity, metrics for negative classification
-            inline Percentage sp() const
+            inline Proportion sp() const
             {
                 assert(_nr && _nr >= _tp);
-                return (_tn + _fp) ? static_cast<Percentage>(_tn) / (_tn + _fp) : NAN;
+                return (_tn + _fp) ? static_cast<Proportion>(_tn) / (_tn + _fp) : NAN;
             }
 
             // Precision, metrics for accuracy
-            inline Percentage pc() const
+            inline Proportion pc() const
             {
                 assert(_nr && _nr >= _tp);
-                return ((tp() + fp()) && fp() != n()) ? static_cast<Percentage>(tp()) / (tp() + fp()) : NAN;
+                return ((tp() + fp()) && fp() != n()) ? static_cast<Proportion>(tp()) / (tp() + fp()) : NAN;
             }
 
         private:

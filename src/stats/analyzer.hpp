@@ -80,18 +80,18 @@ namespace Anaquin
         Counts n_endo = 0;
 
         // Proportion of reads aligned to endogenous
-        inline Percentage endoProp() const
+        inline Proportion endoProp() const
         {
             return (n_chrT + n_endo) ? static_cast<double>(n_endo) / (n_chrT + n_endo) : NAN;
         }
         
         // Proportion of reads aligned to synthetic
-        inline Percentage chrTProp() const
+        inline Proportion chrTProp() const
         {
             return dilution();
         }
         
-        inline Percentage dilution() const
+        inline Proportion dilution() const
         {
             return (n_chrT + n_endo) ? static_cast<double>(n_chrT) / (n_chrT + n_endo) : NAN;
         }

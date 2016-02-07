@@ -28,13 +28,13 @@ template <typename T> static Counts sums(const std::map<T, Counts> &m)
     return c;
 }
 
-static bool checkGenoQuery(const ChromoID &queryID, const ChromoID &id, const Locus &l)
+static bool checkAlign(const ChromoID &queryID, const ChromoID &id, const Locus &l)
 {
     const auto &r = Standard::instance();
 
     if (id == ChrT)
     {
-        return r.r_var.findGeno(l);
+        return r.r_var.match(l, MatchRule::Contains);
     }
     else if (id == queryID)
     {
@@ -48,15 +48,15 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
 {
     assert(!o.queryID.empty());
 
-    Stats stats;
-
     const auto &r = Standard::instance();
     
     o.info("Query: " + o.queryID);
     o.analyze(file);
 
+    Stats stats;
+
     /*
-     * Generating coverage on both chromosomes
+     * Generating coverage for both chromosomes
      */
      
     stats.cov = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &p)
@@ -65,13 +65,13 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
         {
             o.wait(std::to_string(p.i));
         }
-        
-        return checkGenoQuery(o.queryID, align.id, align.l);
+
+        return checkAlign(o.queryID, align.id, align.l);
     });
 
     if (!stats.cov.hist.count(ChrT))
     {
-        throw std::runtime_error("Failed to find any alignment for " + std::string(ChrT));
+        throw std::runtime_error("Failed to find any alignment for " + ChrT);
     }
     else if (!stats.cov.hist.count((o.queryID)))
     {
@@ -86,18 +86,18 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     o.info("Generating statistics for " + std::string(ChrT));
     stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.r_var.findGeno(Locus(i, j)));
+        return static_cast<bool>(r.r_var.match(Locus(i, j), MatchRule::Exact));
     });
 
     o.info("Generating statistics for " + o.queryID);
-    stats.query = stats.cov.inters.find(o.queryID)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+    stats.endo = stats.cov.inters.find(o.queryID)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
         return static_cast<bool>(r.r_var.findQuery(o.queryID, Locus(i, j)));
     });
 
-    assert(stats.chrT.mean && stats.query.mean);
+    assert(stats.chrT.mean && stats.endo.mean);
 
-    o.info("Calculating coverage for " + std::string(ChrT) + " and " + o.queryID);
+    o.info("Calculating coverage for " + ChrT + " and " + o.queryID);
 
     /*
      * Now we have the data, we'll need to compare the coverage and determine what fraction that
@@ -108,36 +108,36 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     {
         case ArithAverage:
         {
-            stats.chrTC  = stats.chrT.mean;
-            stats.queryC = stats.query.mean;
+            stats.chrTC = stats.chrT.mean;
+            stats.endoC = stats.endo.mean;
             break;
         }
 
         case Maximum:
         {
-            stats.chrTC  = stats.chrT.max;
-            stats.queryC = stats.query.max;
+            stats.chrTC = stats.chrT.max;
+            stats.endoC = stats.endo.max;
             break;
         }
 
         case Median:
         {
-            stats.chrTC  = stats.chrT.p50;
-            stats.queryC = stats.query.p50;
+            stats.chrTC = stats.chrT.p50;
+            stats.endoC = stats.endo.p50;
             break;
         }
 
         case Percentile75:
         {
-            stats.chrTC  = stats.chrT.p75;
-            stats.queryC = stats.query.p75;
+            stats.chrTC = stats.chrT.p75;
+            stats.endoC = stats.endo.p75;
             break;
         }
     }
 
-    assert(stats.chrTC && stats.queryC);
+    assert(stats.chrTC && stats.endoC);
 
-    if (stats.queryC >= stats.chrTC)
+    if (stats.endoC >= stats.chrTC)
     {
         // Not an error because it could happen in a simulation
         o.warn("The coverage for the genome is higher than the synthetic chromosome. This is unexpected because the genome is much wider.");
@@ -233,7 +233,7 @@ void VSample::report(const FileName &file, const Options &o)
 
     CoverageTool::bedGraph(before.cov, pre, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
-        return checkGenoQuery(o.queryID, id, Locus(i, j));
+        return checkAlign(o.queryID, id, Locus(i, j));
     });
 
     /*
@@ -247,7 +247,7 @@ void VSample::report(const FileName &file, const Options &o)
 
     CoverageTool::bedGraph(after.cov, post, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
-        return checkGenoQuery(o.queryID, id, Locus(i, j));
+        return checkAlign(o.queryID, id, Locus(i, j));
     });
     
     /*
@@ -283,10 +283,10 @@ void VSample::report(const FileName &file, const Options &o)
                                             % Standard::instance().r_var.countSeqs()
                                             % meth2Str()
                                             % sums(before.cov.hist)
-                                            % before.queryC
+                                            % before.endoC
                                             % before.chrTC
                                             % sums(after.cov.hist)
-                                            % after.queryC
+                                            % after.endoC
                                             % after.chrTC).str());
     o.writer->close();
 }

@@ -23,7 +23,6 @@ namespace Anaquin
     
     typedef double Fold;
     typedef double LogFold;
-    typedef double Percentage;
     typedef double Proportion;
     typedef double Probability;
 

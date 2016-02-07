@@ -911,9 +911,6 @@ struct VarRef::VarRefImpl
 
     std::set<SequinID> varIDs;
     
-    // Validated genotypes (references + variants)
-    std::map<GenoID, GenotypeData> genos;
-
     std::map<Mixture, std::map<SequinID, VariantPair>> data;
 
     // Reference intervals (eg: chr21)
@@ -990,49 +987,6 @@ Counts VarRef::countVars() const
     return _impl->vars.size();
 }
 
-VarRef::GenoHist VarRef::genoHist() const
-{
-    GenoHist h;
-    
-    for (const auto &i : _impl->genos)
-    {
-        h[i.first] = 0;
-    }
-    
-    return h;
-}
-
-const VarRef::GenotypeData * VarRef::findGeno(const GenoID &id) const
-{
-    return _impl->genos.count(id) ? &(_impl->genos.at(id)) : nullptr;
-}
-
-const VarRef::GenotypeData * VarRef::findGeno(const Locus &l, double fuzzy, MatchRule m) const
-{
-    for (const auto &i : _impl->genos)
-    {
-        if ((m == Overlap && i.second.l.overlap(l)) || (m == Contains && i.second.l.contains(l)))
-        {
-            return &i.second;
-        }
-    }
-    
-    return nullptr;
-}
-
-Limit VarRef::limitGeno(const GenoHist &h) const
-{
-    return Reference<SequinData, SequinStats>::limit(h, [&](const VarRef::GenoID &id)
-    {
-        return findGeno(id);
-    });
-}
-
-Concentration VarRef::GenotypeData::abund(Mixture m) const
-{
-    return r->abund(m) + v->abund(m);
-}
-
 void VarRef::validate()
 {
     _impl->inters = _impl->rawInters;
@@ -1079,7 +1033,7 @@ void VarRef::validate()
     }
     
     /*
-     * Construct data structure for the variants
+     * Constructing structure for the variants
      */
 
     for (const auto &i : _mixes)
@@ -1115,6 +1069,15 @@ void VarRef::validate()
             _impl->data[i.first][rID].r = &(*rIter);
             _impl->data[i.first][rID].v = &(*vIter);
         }
+    }
+    
+    /*
+     * Constructing structure for the standards
+     */
+    
+    for (const auto &i : _impl->stands)
+    {
+        _data.at(i.first).l = i.second;
     }
 }
 
@@ -1155,11 +1118,7 @@ const Variant * VarRef::findVar(const SequinID &id) const
 
 const Variant * VarRef::findVar(const Locus &l, MatchRule match) const
 {
-    if (l.start != l.end)
-    {
-        throw std::runtime_error("Multiple locus is not supported");
-    }
-    else if (match != Exact && match != Contains)
+    if (match != Exact && match != Contains)
     {
         throw std::runtime_error("Only Exact and Contains are supported");
     }

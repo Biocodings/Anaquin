@@ -12,9 +12,6 @@ namespace Anaquin
         struct Stats : public AlignmentStats
         {
             Performance p;
-
-            // Distribution for the sequin pairs (reference + variant)
-            VarRef::GenoHist h = Standard::instance().r_var.genoHist();
         };
 
         static Stats report(const FileName &, const Options &o = Options());
