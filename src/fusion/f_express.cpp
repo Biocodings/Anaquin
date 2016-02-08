@@ -1,5 +1,5 @@
+#include "fusion/FUSQuin.hpp"
 #include "fusion/f_express.hpp"
-#include "fusion/f_classify.hpp"
 
 using namespace Anaquin;
 

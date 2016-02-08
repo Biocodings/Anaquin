@@ -187,10 +187,10 @@ struct FusionRef::FusionRefImpl
      */
 
     // Normal splicing
-    std::map<SequinID, Locus> splice;
+    std::map<SequinID, Locus> splices;
 
     // Fusion breaks
-    std::set<FusionPoint> breaks;
+    std::set<KnownFusion> knowns;
 
     // Normal genes in the standards
     std::map<SequinID, Locus> normals;
@@ -213,18 +213,12 @@ struct FusionRef::FusionRefImpl
 
     // Standards (fusion genes will have two loci)
     std::map<SequinID, std::vector<Locus>> rawStands;
-    
-    // Fusion breaks
-    std::set<FusionPoint> rawBreaks;
-    
-    // Normal splicing
-    std::map<SequinID, Locus> rawSplices;
 };
 
 FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
 
-Counts FusionRef::countFusion() const { return _impl->breaks.size(); }
-Counts FusionRef::countSplice() const { return _impl->splice.size(); }
+Counts FusionRef::countFusion() const { return _impl->knowns.size();  }
+Counts FusionRef::countSplice() const { return _impl->splices.size(); }
 
 const FusionRef::SpliceChimeric * FusionRef::findSpliceChim(const SequinID &id) const
 {
@@ -236,14 +230,14 @@ SequinID FusionRef::normalToFusion(const SequinID &id) const
     return _impl->normToFus.at(id);
 }
 
-void FusionRef::addBreak(const FusionPoint &f)
+void FusionRef::addFusion(const KnownFusion &f)
 {
-    _impl->rawBreaks.insert(f);
+    _impl->knowns.insert(f);
 }
 
 void FusionRef::addSplice(const SequinID &id, const Locus &l)
 {
-    _impl->rawSplices[id] = l;
+    _impl->splices[id] = l;
 }
 
 void FusionRef::addStand(const SequinID &id, const Locus &l)
@@ -268,9 +262,9 @@ const SequinData *FusionRef::findFusion(const Locus &l) const
 
 const SequinData *FusionRef::findSplice(const Locus &l) const
 {
-    assert(!_impl->splice.empty());
-    
-    for (auto &i : _impl->splice)
+    assert(!_impl->splices.empty());
+
+    for (auto &i : _impl->splices)
     {
         if (i.second == l)
         {
@@ -294,16 +288,14 @@ void FusionRef::validate()
      */
 
     // Case 4
-    if (!_rawMIDs.empty() && !_impl->rawBreaks.empty() && !_impl->rawSplices.empty())
+    if (!_rawMIDs.empty() && !_impl->knowns.empty() && !_impl->splices.empty())
     {
-        if (_impl->rawBreaks.size() != _impl->rawSplices.size())
+        if (_impl->knowns.size() != _impl->splices.size())
         {
             throw std::runtime_error("Number of fusions not equal to splicing. Please check and try again.");
         }
 
         merge(_rawMIDs);
-        
-        _impl->splice = _impl->rawSplices;
         
         /*
          * Constructing a mapping between splicing and fusion. While we can't assume the orders, we can
@@ -315,9 +307,9 @@ void FusionRef::validate()
             return x.substr(2, x.size()-1) == y.substr(2, y.size()-1);
         };
         
-        for (auto &i: _impl->rawBreaks)
+        for (auto &i: _impl->knowns)
         {
-            for (auto &j : _impl->rawSplices)
+            for (auto &j : _impl->splices)
             {
                 if (f(i.id, j.first))
                 {
@@ -332,7 +324,7 @@ void FusionRef::validate()
             }
         }
         
-        if (_impl->fusToNorm.size() != _impl->rawBreaks.size())
+        if (_impl->fusToNorm.size() != _impl->knowns.size())
         {
             throw std::runtime_error("Failed to construct a mapping table. Please check and try again.");
         }
@@ -357,10 +349,9 @@ void FusionRef::validate()
     }
 
     // Case 5
-    else if (!_rawMIDs.empty() && !_impl->rawSplices.empty())
+    else if (!_rawMIDs.empty() && !_impl->splices.empty())
     {
-        merge(_rawMIDs, getKeys(_impl->rawSplices));
-        _impl->splice = _impl->rawSplices;
+        merge(_rawMIDs, getKeys(_impl->splices));
     }
 
     // Case 3
@@ -397,26 +388,14 @@ void FusionRef::validate()
     }
     
     // Case 2
-    else if (!_impl->rawBreaks.empty())
+    else if (!_impl->knowns.empty())
     {
-        merge(_impl->rawBreaks);
+        merge(_impl->knowns);
     }
 
     else
     {
         throw std::runtime_error("Unknown validation");
-    }
-
-    /*
-     * Copy fusion points (no harm if none provided)
-     */
-    
-    for (const auto &i : _impl->rawBreaks)
-    {
-        if (_data.count(i.id))
-        {
-            _impl->breaks.insert(i);
-        }
     }
 }
 
@@ -425,9 +404,9 @@ inline bool compare(Base x, Base y, Base fuzzy = 0.0)
     return std::abs(x - y) <= fuzzy;
 }
 
-const Anaquin::FusionRef::FusionPoint * FusionRef::find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const
+const FusionRef::KnownFusion * FusionRef::find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const
 {
-    for (const auto &f : _impl->breaks)
+    for (const auto &f : _impl->knowns)
     {
         // Match in bases?
         const auto b_match = compare(x, f.l1, fuzzy) && compare(y, f.l2, fuzzy);

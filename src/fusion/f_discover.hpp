@@ -1,35 +1,42 @@
 #ifndef F_DISCOVER_HPP
 #define F_DISCOVER_HPP
 
+#include "fusion/FUSQuin.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
     struct FDiscover
     {
-        enum Aligner
-        {
-            Star,
-            TopHat,
-        };
-
         struct Options : public FuzzyOptions
         {
-            FDiscover::Aligner aligner;
+            FusionCaller caller;
         };
 
-        struct Stats
+        struct Stats : public FusionStats
         {
-            struct Data : public LinearStats, public FusionStats
+            struct Data
             {
-                // Overall performance
-                Confusion m;
+                inline Counts countFP()    const { return fps.size(); }
+                inline Counts countKnown() const { return known;      }
+                
+                // Proportion of fusions detected
+                //Proportion covered;
 
-                // Fraction of reference fusion detected
-                double covered;
+                // Number of detected fusions
+                Counts detect;
 
-                // Distribution of the sequins
-                SequinHist h = Standard::instance().r_fus.hist();            
+                // Number of known fusions
+                Counts known;
+
+                // Distribution of the fusion
+                SequinHist hist;
+                
+                // List of true-positive fusions
+                std::vector<const FusionRef::KnownFusion *> tps;
+                
+                // List of false-positive fusions
+                std::vector<FUSQuin::FalsePositive> fps;
             };
 
             std::map<ChromoID, Data> data;

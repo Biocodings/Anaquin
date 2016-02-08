@@ -244,11 +244,11 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
-    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_OUT                          } },
-    { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFT, OPT_U_OUT            } },
-    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_BAM_1                                    } },
-    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_U_OUT, OPT_U_TAB, OPT_MIXTURE } },
-    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_U_TAB, OPT_MIXTURE                       } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_FILES                          } },
+    { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFT, OPT_U_FILES            } },
+    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_BAM_1                                      } },
+    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_U_FILES, OPT_U_TAB, OPT_MIXTURE } },
+    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_U_TAB, OPT_MIXTURE                         } },
 
     /*
      * Variant Analysis
@@ -402,9 +402,6 @@ static const struct option long_options[] =
     { "ubam1",   required_argument, 0, OPT_BAM_1 },
     { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
-    { "uout",    required_argument, 0, OPT_U_OUT   },
-    { "utab",    required_argument, 0, OPT_U_TAB   },
-    { "ucov",    required_argument, 0, OPT_U_COV   },
     { "factors", required_argument, 0, OPT_U_FACTS },
     { "level",   required_argument, 0, OPT_LEVEL   },
     { "names",   required_argument, 0, OPT_U_NAMES },
@@ -422,6 +419,9 @@ static const struct option long_options[] =
     { "upsl",    required_argument, 0, OPT_PSL_1  },
     { "upsl1",   required_argument, 0, OPT_PSL_1  },
     { "upsl2",   required_argument, 0, OPT_PSL_2  },
+    { "uout",    required_argument, 0, OPT_U_OUT   },
+    { "utab",    required_argument, 0, OPT_U_TAB   },
+    { "ucov",    required_argument, 0, OPT_U_COV   },
 
     { "min", required_argument, 0, OPT_MIN },
     { "max", required_argument, 0, OPT_MAX },
@@ -1215,14 +1215,14 @@ void parse(int argc, char ** argv)
         {
             auto parseAligner = [&](const std::string &str)
             {
-                const static std::map<std::string, FDiscover::Aligner> m =
+                const static std::map<std::string, FusionCaller> m =
                 {
-                    { "star"  ,        FDiscover::Star   },
-                    { "tophat",        FDiscover::TopHat },
-                    { "tophatFusion",  FDiscover::TopHat },
-                    { "tophat-fusion", FDiscover::TopHat },
+                    { "star"  ,        FusionCaller::Star   },
+                    { "tophat",        FusionCaller::TopHat },
+                    { "tophatFusion",  FusionCaller::TopHat },
+                    { "tophat-fusion", FusionCaller::TopHat },
                 };
-                
+
                 return parseEnum("soft", str, m);
             };
             
@@ -1282,8 +1282,8 @@ void parse(int argc, char ** argv)
                 case TOOL_F_EXPRESS:
                 {
                     FExpress::Options o;
-                    o.aligner = parseAligner(_p.opts.at(OPT_SOFT));
-                    
+                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
+
                     analyzeFuzzy<FExpress>(o);
                     break;
                 }
@@ -1291,7 +1291,7 @@ void parse(int argc, char ** argv)
                 case TOOL_F_DISCOVER:
                 {
                     FDiscover::Options o;
-                    o.aligner = parseAligner(_p.opts.at(OPT_SOFT));
+                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
 
                     analyzeFuzzy<FDiscover>(o);
                     break;

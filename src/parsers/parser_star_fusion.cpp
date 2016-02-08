@@ -43,7 +43,7 @@ void ParserStarFusion::parse(const Reader &r, Functor f)
     std::string line;
     std::vector<std::string> tokens;
 
-    Fusion d;
+    Data data;
     ParserProgress p;
     
     while (r.nextLine(line))
@@ -59,12 +59,12 @@ void ParserStarFusion::parse(const Reader &r, Functor f)
         const auto leftGene  = tokens[LeftGene];
         const auto rightGene = tokens[RightGene];
 
-        parseBreak(tokens[LeftBreakpoint],  d.chr_1, d.l1, d.s1);
-        parseBreak(tokens[RightBreakpoint], d.chr_2, d.l2, d.s2);
+        parseBreak(tokens[LeftBreakpoint],  data.cID_1, data.l1, data.s1);
+        parseBreak(tokens[RightBreakpoint], data.cID_2, data.l2, data.s2);
 
         // Measured abundance
-        d.reads = stoi(tokens[JunctionReads]);
+        data.reads = stoi(tokens[JunctionReads]);
 
-        f(d, p);
+        f(data, p);
     }
 }

@@ -31,6 +31,11 @@ Reader::Reader(const Reader &r)
 
 Reader::Reader(const std::string &file, DataMode mode)
 {
+    if (file.empty())
+    {
+        throw std::runtime_error("Empty file name");
+    }
+    
     _imp = new ReaderInternal();
 
     if (mode == DataMode::File)

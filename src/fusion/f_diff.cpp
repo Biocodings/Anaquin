@@ -1,6 +1,6 @@
 #include "fusion/f_diff.hpp"
+#include "fusion/FUSQUin.hpp"
 #include "fusion/f_discover.hpp"
-#include "fusion/f_classify.hpp"
 #include "parsers/parser_stab.hpp"
 #include "parsers/parser_star_fusion.hpp"
 
@@ -42,7 +42,7 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
      * Parse the chimeric junctions
      */
     
-    ParserStarFusion::parse(Reader(chim), [&](const ParserStarFusion::Fusion &f, const ParserProgress &)
+    ParserStarFusion::parse(Reader(chim), [&](const CalledFusion &f, const ParserProgress &)
     {
 //        const auto r = FClassify::classifyFusion(f, o);
 //

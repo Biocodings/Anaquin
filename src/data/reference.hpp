@@ -425,10 +425,10 @@ namespace Anaquin
     {
         public:
 
-            struct FusionPoint
+            struct KnownFusion
             {
-                inline bool operator<(const FusionPoint &x)  const { return id < x.id;  }
-                inline bool operator==(const FusionPoint &x) const { return id == x.id; }
+                inline bool operator<(const KnownFusion &x)  const { return id < x.id;  }
+                inline bool operator==(const KnownFusion &x) const { return id == x.id; }
 
                 operator const SequinID &() const { return id; }
                 
@@ -460,10 +460,10 @@ namespace Anaquin
             FusionRef();
 
             /*
-             * Manipulate operations
+             * Modifier operations
              */
         
-            void addBreak(const FusionPoint &);
+            void addFusion(const KnownFusion &);
         
             // Add splicing for an intron in the normal gene
             void addSplice(const SequinID &, const Locus &);
@@ -474,7 +474,10 @@ namespace Anaquin
             /*
              * Query operations
              */
-        
+
+            Counts countFusion() const;
+            Counts countSplice() const;
+
             const SequinData *findFusion(const Locus &) const;
             const SequinData *findSplice(const Locus &) const;
             const SpliceChimeric *findSpliceChim(const SequinID &) const;
@@ -482,10 +485,7 @@ namespace Anaquin
             // Convert the normal gene to it's equivalent fusion (eg: NG1_1_P1 to FG1_1_P1)
             SequinID normalToFusion(const SequinID &) const;
 
-            Counts countFusion() const;
-            Counts countSplice() const;
-
-            const FusionPoint * find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
+            const KnownFusion * find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
 
         protected:
         

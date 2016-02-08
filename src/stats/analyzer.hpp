@@ -5,7 +5,6 @@
 #include <memory>
 #include <numeric>
 #include <sstream>
-#include "stats/limit.hpp"
 #include <boost/format.hpp>
 #include "stats/classify.hpp"
 #include "writers/r_writer.hpp"
@@ -70,7 +69,7 @@ namespace Anaquin
 
     struct MappingStats
     {
-        // The distribution of counts across chromosomes
+        // Distribution of counts across chromosomes
         std::map<ChromoID, Counts> hist;
 
         // Total mapped to the synthetic chromosome
@@ -192,7 +191,7 @@ namespace Anaquin
     struct FusionStats : public MappingStats
     {
         // Number of fusions spanning across the genome and the synthetic chromosome
-        Counts hg38_chrT = 0;
+        Counts chrT_endo = 0;
     };
 
     struct WriterOptions
@@ -295,6 +294,26 @@ namespace Anaquin
     {
         Mixture mix_1 = Mix_1;
         Mixture mix_2 = Mix_2;
+    };
+    
+    struct CalledFusion
+    {
+        inline operator Locus() const
+        {
+            return Locus(l1, l2);
+        }
+        
+        // Chromosome for the left and right
+        ChromoID cID_1, cID_2;
+        
+        // Strand for the left and right
+        Strand s1, s2;
+        
+        // Where the fusion occurs
+        Base l1, l2;
+        
+        // Number of reads that span the fusion
+        Reads reads;
     };
 }
 
