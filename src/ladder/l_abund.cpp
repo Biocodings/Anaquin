@@ -37,15 +37,15 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
 
         stats.update(align);
 
-        if (!align.mapped || !r.match(align.id))
+        if (!align.mapped || !r.match(align.cID))
         {
             return;
         }
         else if (!align.i)
         {
             stats.data.at(ChrT).obsTotal++;
-            stats.data.at(ChrT).measured[align.id]++;
-            seqIDs.insert(align.id);
+            stats.data.at(ChrT).measured[align.cID]++;
+            seqIDs.insert(align.cID);
         }
     });
 

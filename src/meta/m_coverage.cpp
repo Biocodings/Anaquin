@@ -9,7 +9,7 @@ MCoverage::Stats MCoverage::stats(const FileName &file, const Options &o)
     
     return CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
     {
-        return r.match(align.id) && r.match(align.id)->l.contains(align.l);
+        return r.match(align.cID) && r.match(align.cID)->l.contains(align.l);
     });
 }
 

@@ -7,11 +7,9 @@ namespace Anaquin
 {
     struct Alignment
     {
-        typedef std::string AlignmentID;
-
         operator const Locus &() const { return l; }
 
-        AlignmentID id;
+        ChromoID cID;
 
         // Eg: B7_591:6:155:12:674
         std::string name;

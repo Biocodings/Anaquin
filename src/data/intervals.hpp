@@ -18,7 +18,7 @@ namespace Anaquin
             {
                 Coverage min = std::numeric_limits<Coverage>::max();
                 Coverage max = std::numeric_limits<Coverage>::min();
-            
+
                 // Percentile for the interval
                 Coverage p25, p50, p75;
             

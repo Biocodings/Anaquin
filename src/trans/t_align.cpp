@@ -447,7 +447,7 @@ static void classifyChrT(TAlign::Stats::Data &t,
                          const ParserSAM::AlignmentInfo &info,
                          const TAlign::Options &o)
 {
-    assert(align.id == ChrT);
+    assert(align.cID == ChrT);
     
     REPORT_STATUS();
     
@@ -471,13 +471,13 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         {
             stats.update(align);
 
-            if (align.id == ChrT)
+            if (align.cID == ChrT)
             {
                 classifyChrT(stats.data.at(ChrT), align, info, o);
             }
             else
             {
-                classifyEndo(stats.data.at(align.id), align, info, o);
+                classifyEndo(stats.data.at(align.cID), align, info, o);
             }
         }
     });
@@ -496,13 +496,13 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
         {
             stats.update(align);
 
-            if (align.id == ChrT)
+            if (align.cID == ChrT)
             {
                 classifyChrT(stats.data.at(ChrT), align, info, o);
             }
-            else if (stats.data.count(align.id))
+            else if (stats.data.count(align.cID))
             {
-                classifyEndo(stats.data.at(align.id), align, info, o);
+                classifyEndo(stats.data.at(align.cID), align, info, o);
             }
             
             /*

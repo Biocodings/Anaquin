@@ -30,15 +30,15 @@ template <typename T> static Counts sums(const std::map<T, Counts> &m)
 
 static bool checkAlign(const ChromoID &queryID, const ChromoID &id, const Locus &l)
 {
-    const auto &r = Standard::instance();
+    const auto &r = Standard::instance().r_var;
 
     if (id == ChrT)
     {
-        return r.r_var.match(l, MatchRule::Contains);
+        return r.match(l, MatchRule::Contains);
     }
     else if (id == queryID)
     {
-        return r.r_var.findQuery(queryID, l);
+        return r.findRInter(queryID, l);
     }
 
     return false;
@@ -48,7 +48,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
 {
     assert(!o.queryID.empty());
 
-    const auto &r = Standard::instance();
+    const auto &r = Standard::instance().r_var;
     
     o.info("Query: " + o.queryID);
     o.analyze(file);
@@ -66,7 +66,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
             o.wait(std::to_string(p.i));
         }
 
-        return checkAlign(o.queryID, align.id, align.l);
+        return checkAlign(o.queryID, align.cID, align.l);
     });
 
     if (!stats.cov.hist.count(ChrT))
@@ -86,13 +86,13 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     o.info("Generating statistics for " + std::string(ChrT));
     stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.r_var.match(Locus(i, j), MatchRule::Exact));
+        return static_cast<bool>(r.match(Locus(i, j), MatchRule::Exact));
     });
 
     o.info("Generating statistics for " + o.queryID);
     stats.endo = stats.cov.inters.find(o.queryID)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.r_var.findQuery(o.queryID, Locus(i, j)));
+        return static_cast<bool>(r.findRInter(o.queryID, Locus(i, j)));
     });
 
     assert(stats.chrT.mean && stats.endo.mean);
@@ -186,8 +186,8 @@ void VSample::sample(const FileName &src, const FileName &dst, const Stats &stat
             /*
              * This is the key, randomly write the read with certain probability
              */
-            
-            if (align.id != ChrT || sampler.select(bam_get_qname(b)))
+
+            if (align.cID != ChrT || sampler.select(bam_get_qname(b)))
             {
                 writer.write(h, b);
             }

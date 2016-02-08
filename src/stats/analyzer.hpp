@@ -115,7 +115,7 @@ namespace Anaquin
         {
             return update(t, [&](const T &t)
             {
-                return t.id != ChrT;
+                return t.cID != ChrT;
             });
         }
     };

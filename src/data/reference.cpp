@@ -909,19 +909,10 @@ struct VarRef::VarRefImpl
     // VarQuin variants (VCF file)
     std::set<Variant> vars;
 
-    std::set<SequinID> varIDs;
-    
-    std::map<Mixture, std::map<SequinID, VariantPair>> data;
-
     // Reference intervals (eg: chr21)
     std::map<ChromoID, Intervals<>> inters;
 
-    /*
-     * Raw variables
-     */
-    
-    // Reference intervals (eg: chr21)
-    std::map<ChromoID, Intervals<>> rawInters;
+    std::map<Mixture, std::map<SequinID, VariantPair>> data;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
@@ -944,12 +935,11 @@ Fold VarRef::fold(const SequinID &id) const
 void VarRef::addVar(const Variant &v)
 {
     _impl->vars.insert(v);
-    _impl->varIDs.insert(v.id);
 }
 
-void VarRef::addInterval(const ChromoID &id, const Interval &i)
+void VarRef::addRInterval(const ChromoID &id, const Interval &i)
 {
-    _impl->rawInters[id].add(i);
+    _impl->inters[id].add(i);
 }
 
 void VarRef::addStand(const SequinID &id, const Locus &l)
@@ -989,8 +979,6 @@ Counts VarRef::countVars() const
 
 void VarRef::validate()
 {
-    _impl->inters = _impl->rawInters;
-
     /*
      * Validation rules:
      *
@@ -1003,15 +991,20 @@ void VarRef::validate()
     // Rule: 2 and 4
     if (!_rawMIDs.empty())
     {
-        // Validate by mixture
         merge(_rawMIDs);
     }
     
     // Rule: 3
-    else if (!_impl->varIDs.empty())
+    else if (!_impl->vars.empty())
     {
-        // Validate by variants
-        merge(_impl->varIDs);
+        std::set<SequinID> varIDs;
+        
+        for (const auto var: _impl->vars)
+        {
+            varIDs.insert(var.id);
+        }
+        
+        merge(varIDs);
     }
     
     // Rule: 1
@@ -1081,7 +1074,7 @@ void VarRef::validate()
     }
 }
 
-const Interval * VarRef::findQuery(const ChromoID &chr, const Locus &l) const
+const Interval * VarRef::findRInter(const ChromoID &chr, const Locus &l) const
 {
     if (!_impl->inters.count(chr))
     {

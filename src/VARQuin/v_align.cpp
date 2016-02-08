@@ -54,8 +54,8 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
         }
         
         stats.update(align);
-        
-        if (!align.mapped || align.id != ChrT)
+
+        if (!align.mapped)
         {
             return;
         }

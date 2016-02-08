@@ -99,7 +99,7 @@ void Standard::addInters(const Reader &r)
          * Eg: chr21   27047922        27048922        Chr21_RanInt_14
          */
 
-        r_var.addInterval(f.id, Interval(f.name, f.l));
+        r_var.addRInterval(f.id, Interval(f.name, f.l));
     });
 }
 

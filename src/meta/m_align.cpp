@@ -30,7 +30,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
         REPORT_STATUS();
 
         // Does this alignment belongs to one of the synthetic species?
-        Interval * const match = stats.inters.find(align.id);
+        Interval * match = stats.inters.find(align.cID);
 
         stats.update(align, [&](const Alignment &)
         {
@@ -61,7 +61,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const Options &o)
              * consider overlapping.
              */
 
-            fps.at(align.id) += match->map(align.l);
+            fps.at(align.cID) += match->map(align.l);
         }
     });
 

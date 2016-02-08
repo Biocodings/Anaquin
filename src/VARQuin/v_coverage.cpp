@@ -12,7 +12,7 @@ VCoverage::Stats VCoverage::stats(const FileName &file, const Options &o)
     
     stats.chrT = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
     {
-        return align.id == ChrT ? static_cast<bool>(r.r_var.match(align.l, MatchRule::Contains)) : false;
+        return align.cID == ChrT ? static_cast<bool>(r.r_var.match(align.l, MatchRule::Contains)) : false;
     });
 
     /*
@@ -39,7 +39,7 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     CoverageTool::bedGraph(stats.chrT, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
-        return r.r_var.match(Locus(i, j), MatchRule::Exact);
+        return r.r_var.match(Locus(i, j), MatchRule::Contains);
     });
 
     /*
@@ -56,6 +56,6 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     CoverageTool::summary(stats.chrT, to, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
-        return r.r_var.match(Locus(i, j), MatchRule::Exact);
+        return r.r_var.match(Locus(i, j), MatchRule::Contains);
     });
 }

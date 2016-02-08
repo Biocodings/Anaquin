@@ -511,11 +511,11 @@ namespace Anaquin
             VarRef();
 
             /*
-             * Synthetic and endogenous methods
+             * Endogenous methods
              */
         
             // Adds a reference interval (eg: chr21)
-            void addInterval(const ChromoID &, const Interval &);
+            void addRInterval(const ChromoID &, const Interval &);
         
             /*
              * Synthetic methods
@@ -542,8 +542,8 @@ namespace Anaquin
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
 
-            // Find a reference interval
-            const Interval *findQuery(const ChromoID &, const Locus &) const;
+            // Finds a reference interval
+            const Interval *findRInter(const ChromoID &, const Locus &) const;
 
             // Returns the expected fold-change
             Fold fold(const SequinID &) const;

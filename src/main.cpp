@@ -1370,7 +1370,7 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_V_SUBSAMPLE:
                     {
-                        addRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
                         //addRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_BED_2);
                         break;
                     }
@@ -1378,20 +1378,20 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALIGN:
                     case TOOL_V_COVERAGE:
                     {
-                        addRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_V_ALLELE:
                     {
-                        addRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_V_DISCOVER:
                     {
-                        addRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
-                        addRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
                         break;
                     }
 

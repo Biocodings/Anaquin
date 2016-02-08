@@ -14,19 +14,20 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
     {
         if (!align.i)
         {
-            stats.hist[align.mapped ? align.id : "NA"]++;
+            stats.hist[align.mapped ? align.cID : "NA"]++;
         }
-        
+
         stats.update(align);
 
         if (align.mapped && f(align, info.p))
         {
-            if (!stats.inters.find(align.id))
+            if (!stats.inters.find(align.cID))
             {
-                stats.inters.add(Interval(align.id, Locus(0, info.length-1)));
+                // Add a new interva for the chromosome
+                stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
             }
 
-            stats.inters.find(align.id)->add(align.l);
+            stats.inters.find(align.cID)->add(align.l);
         }
     });
 
@@ -82,12 +83,8 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
         return;
     }
 
-    /*
-     * Generating summary statistics
-     */
-
-    const auto sstats  = inter->stats(f);
-    const auto summary = "Summary for dataset: %1%\n\n"
+    const auto iStats  = inter->stats(f);
+    const auto summary = "Summary for file: %1%\n\n"
                          "   Experiment: %2%\n"
                          "   Synthetic: %3%\n\n"
                          "   Reference: %4%\n"
@@ -105,11 +102,11 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
                                             % stats.n_chrT
                                             % o.refs
                                             % o.length
-                                            % sstats.min
-                                            % sstats.max
-                                            % sstats.mean
-                                            % sstats.p25
-                                            % sstats.p50
-                                            % sstats.p75).str());
+                                            % iStats.min
+                                            % iStats.max
+                                            % iStats.mean
+                                            % iStats.p25
+                                            % iStats.p50
+                                            % iStats.p75).str());
     o.writer->close();
 }
