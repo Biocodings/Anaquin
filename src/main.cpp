@@ -246,9 +246,9 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_FILES                          } },
     { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFT, OPT_U_FILES            } },
-    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_BAM_1                                      } },
-    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_U_FILES, OPT_U_TAB, OPT_MIXTURE } },
-    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_U_TAB, OPT_MIXTURE                         } },
+    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_U_FILES                                    } },
+    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_U_TAB, OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES                       } },
 
     /*
      * Variant Analysis
@@ -1232,7 +1232,7 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_F_NORMAL:
                 {
-                    addMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
+                    addMix(std::bind(&Standard::addFMix,      &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED);
                     break;
                 }
@@ -1255,7 +1255,7 @@ void parse(int argc, char ** argv)
                 case TOOL_F_DISCOVER:
                 {
                     applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
-                    addMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
+                    addMix(std::bind(&Standard::addFMix,   &s, std::placeholders::_1));
                     break;
                 }
                     
@@ -1271,7 +1271,15 @@ void parse(int argc, char ** argv)
             {
                 case TOOL_F_IGV:      { viewer<FViewer>();               break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_BAM_1); break; }
-                case TOOL_F_NORMAL:   { analyze_1<FNormal>(OPT_U_TAB);   break; }
+
+                case TOOL_F_NORMAL:
+                {
+                    FNormal::Options o;
+                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
+
+                    analyze_1<FNormal>(OPT_U_FILES, o);
+                    break;
+                }
 
                 case TOOL_F_DIFF:
                 {

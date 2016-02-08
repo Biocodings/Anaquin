@@ -11,7 +11,7 @@ namespace Anaquin
         typedef CalledFusion Data;
         typedef std::function<void (const Data &, const ParserProgress &)> Functor;
 
-        // Parse an output file from FusionStar
+        // Parse an output file from FusionStar (eg: star-fusion.fusion_candidates.txt)
         static void parse(const Reader &, Functor);
     };
 }

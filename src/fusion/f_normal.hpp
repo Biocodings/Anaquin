@@ -1,26 +1,26 @@
 #ifndef F_NORMAL_HPP
 #define F_NORMAL_HPP
 
+#include "fusion/FUSQUin.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
     struct FNormal
     {
-        typedef FuzzyOptions Options;
-
-        struct Stats
+        struct Options : public FuzzyOptions
         {
-            struct Data : public LinearStats, public FusionStats
-            {
-                // Detection limit
-                Limit ss;
-                
-                // Sequin distribution
-                SequinHist h = Standard::instance().r_fus.hist();
-            };
+            FusionCaller caller;
+        };
 
-            std::map<ChromoID, Data> data;
+        struct Stats : public FusionStats
+        {
+            typedef LinearStats Data;
+            
+            // Absolute detection limit
+            Limit limit;
+            
+            Data data;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());
