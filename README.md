@@ -58,6 +58,7 @@ Features
 <ul>
 <li> Statistical analysis
 <li> Tool modules
+<li> Genome comparisons
 <li> Data visualization
 <li> R-integration
 </ul>
