@@ -7,15 +7,8 @@ namespace Anaquin
 {
     struct TAssembly : Analyzer
     {
-        struct Options : FuzzyOptions
-        {
-            // Reference for the sequins
-            FileName chrT;
-
-            // Reference for the endogenous
-            FileName endo;
-        };
-
+        typedef FuzzyOptions Options;
+        
         struct Stats
         {
             struct Data

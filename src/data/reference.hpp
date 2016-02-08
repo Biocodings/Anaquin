@@ -539,6 +539,9 @@ namespace Anaquin
             // Returns number of sequins
             Counts countSeqs() const;
 
+            // Returns number of intervals
+            Counts countInters(const ChromoID &) const;
+        
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
 

@@ -100,7 +100,7 @@ namespace Anaquin
                                                                                             const Units &ref = "",
                                                                                             const Label &samples = "")
         {
-            const auto summary = "Summary for file: %1% and %2%\n\n"
+            const auto summary = "Summary for input: %1% and %2%\n\n"
                                  "   %3% (A):       %4% %5%\n"
                                  "   Query (A):     %6% %5%\n\n"
                                  "   %3% (B):       %7% %5%\n"

@@ -540,7 +540,7 @@ static Scripts replicateSummary()
            "   *** Reference annotation (Synthetic)\n"
            "   ***\n\n"
            "   File: %8%\n\n"
-           "   Synthetic: %9% exons\n"
+           "   Synthetic: %9%  exons\n"
            "   Synthetic: %10% introns\n"
            "   Synthetic: %11% bases\n\n"
            "   ***\n"

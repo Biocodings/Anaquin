@@ -9,8 +9,8 @@ TEST_CASE("TAssembly_Reference")
     Test::transA();
     
     TAssembly::Options o;
-    
-    o.chrT = "data/trans/ATR001.v032.gtf";
+
+    o.rChrTF = "data/trans/ATR001.v032.gtf";
 
     const auto r = TAssembly::analyze("data/trans/ATR001.v032.gtf", o);
 

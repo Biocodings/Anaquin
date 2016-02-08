@@ -84,24 +84,42 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
     }
 
     const auto iStats  = inter->stats(f);
-    const auto summary = "Summary for file: %1%\n\n"
-                         "   Experiment: %2%\n"
-                         "   Synthetic: %3%\n\n"
-                         "   Reference: %4%\n"
-                         "   Reference Bases: %5%\n\n"
-                         "   Minimum: %6%\n"
-                         "   Maximum: %7%\n"
-                         "   Mean:    %8%\n"
-                         "   25th: %9%\n"
-                         "   50th: %10%\n"
-                         "   75th: %11%\n";
+    const auto summary = "Summary for input: %1%\n\n"
+                         "   ***\n"
+                         "   *** Fraction of reads mapped to the synthetic and experimental chromosomes\n"
+                         "   ***\n\n"
+                         "   Unmapped:   %2%\n"
+                         "   Synthetic:  %3%\n"
+                         "   Experiment: %4%\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Synthetic)\n"
+                         "   ***\n\n"
+                         "   Synthetic: %5% sequins\n"
+                         "   Synthetic: %6% bases\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Experiment)\n"
+                         "   ***\n\n"
+                         "   Experiment: %7%\n\n"
+                         "   ****************************************************\n"
+                         "   ***                                              ***\n"
+                         "   ***    Statistics for the coverge (Synthetic)    ***\n"
+                         "   ***                                              ***\n"
+                         "   ****************************************************\n\n"
+                         "   Minimum: %8%\n"
+                         "   Maximum: %9%\n"
+                         "   Mean:    %10%\n"
+                         "   25th:    %11%\n"
+                         "   50th:    %12%\n"
+                         "   75th:    %13%\n";
 
     o.writer->open(o.summary);
     o.writer->write((boost::format(summary) % stats.src
-                                            % stats.n_endo
+                                            % stats.unmapped
                                             % stats.n_chrT
+                                            % stats.n_endo
                                             % o.refs
                                             % o.length
+                                            % "NA"
                                             % iStats.min
                                             % iStats.max
                                             % iStats.mean

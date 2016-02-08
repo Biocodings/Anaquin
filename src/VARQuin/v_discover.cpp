@@ -171,7 +171,7 @@ static void writeClass(const FileName &file,
 static void writeSeqins(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     o.writer->open(file);
-    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+    o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
     o.writer->write((boost::format(format) % "Sequin"
@@ -194,7 +194,7 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
 {
     const auto &r = Standard::instance().r_var;
     
-    const auto summary = "Summary for file: %1%\n\n"
+    const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
                          "   *** Number of variants called in the synthetic and experimental chromosomes\n"
                          "   ***\n\n"

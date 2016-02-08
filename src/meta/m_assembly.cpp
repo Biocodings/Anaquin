@@ -51,7 +51,7 @@ void MAssembly::report(const FileName &file, const Options &o)
         o.logInfo("Generating summary statistics");
         o.writer->open("MetaAssembly_summary.stats");
         
-        const auto summary = "Summary for dataset: %1%\n\n"
+        const auto summary = "Summary for input: %1%\n\n"
                              "   Community: %2%\n"
                              "   Synthetic: %3%\n\n"
                              "   Contigs:   %4%\n"

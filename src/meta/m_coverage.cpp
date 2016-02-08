@@ -73,7 +73,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
      * Generating summary statistics
      */
 /*
-    const auto summary = "Summary for dataset: %1%\n\n"
+    const auto summary = "Summary for input: %1%\n\n"
                          "   Experiment: %2%\n"
                          "   Synthetic: %3%\n\n"
                          "   ************ References ************\n\n"

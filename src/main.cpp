@@ -112,7 +112,7 @@ typedef std::set<Value> Range;
 
 #define OPT_R_BASE  800
 #define OPT_R_BED   801
-#define OPT_R_CHR_T 803
+#define OPT_R_GTF 803
 #define OPT_R_FUS   804
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
@@ -225,11 +225,11 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
-    { TOOL_T_COVERAGE, { OPT_R_CHR_T, OPT_U_FILES                                                  } },
-    { TOOL_T_ALIGN,    { OPT_R_CHR_T, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
-    { TOOL_T_ASSEMBLY, { OPT_R_CHR_T, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
-    { TOOL_T_EXPRESS,  { OPT_R_CHR_T, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
-    { TOOL_T_DIFF,     { OPT_R_CHR_T, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
 
     /*
@@ -406,8 +406,6 @@ static const struct option long_options[] =
     { "ubam1",   required_argument, 0, OPT_BAM_1 },
     { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
-    { "rvcf",    required_argument, 0, OPT_R_VCF   },
-    { "rfus",    required_argument, 0, OPT_R_FUS   },
     { "uout",    required_argument, 0, OPT_U_OUT   },
     { "utab",    required_argument, 0, OPT_U_TAB   },
     { "ucov",    required_argument, 0, OPT_U_COV   },
@@ -416,8 +414,10 @@ static const struct option long_options[] =
     { "names",   required_argument, 0, OPT_U_NAMES },
 
     { "rbed",    required_argument, 0, OPT_R_BED   },
-    { "rgtf",    required_argument, 0, OPT_R_CHR_T },
+    { "rgtf",    required_argument, 0, OPT_R_GTF },
     { "rexp",    required_argument, 0, OPT_R_ENDO  },
+    { "rvcf",    required_argument, 0, OPT_R_VCF   },
+    { "rfus",    required_argument, 0, OPT_R_FUS   },
 
     { "ufa",     required_argument, 0, OPT_FA_1   },
     { "ufa1",    required_argument, 0, OPT_FA_1   },
@@ -981,33 +981,33 @@ void parse(int argc, char ** argv)
                 _p.exp->addNames(_p.opts[opt] = val);
                 break;
             }
-                
-            case OPT_R_CHR_T:
-            {
-                checkFile(_p.opts[opt] = _p.rChrT = val);
-                break;
-            }
 
-            case OPT_R_ENDO:
-            {
-                checkFile(_p.opts[opt] = _p.rEndo = val);
-                break;
-            }
-                
             case OPT_FA_1:
             case OPT_FA_2:
             case OPT_U_COV:
-            case OPT_R_FUS:
-            case OPT_R_VCF:
             case OPT_U_OUT:
             case OPT_U_GTF:
             case OPT_PSL_2:
             case OPT_BAM_2:
             case OPT_PSL_1:
             case OPT_U_TAB:
-            case OPT_R_BED:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
+            case OPT_R_FUS:
+            case OPT_R_VCF:
+            case OPT_R_BED:
+            case OPT_R_GTF:
+            {
+                checkFile(_p.opts[opt] = _p.rChrT = val);
+                break;
+            }
+                
+            case OPT_R_ENDO:
+            {
+                checkFile(_p.opts[opt] = _p.rEndo = val);
+                break;
+            }
+                
             case OPT_PATH:    { _p.path = val;              break; }
             case OPT_FILTER:  { readFilters(val);           break; }
             case OPT_MAX:     { parseDouble(val, _p.max);   break; }
@@ -1108,16 +1108,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_ASSEMBLY:
                 {
-                    TAssembly::Options o;
-
-                    o.chrT = _p.opts[OPT_R_CHR_T];
-
-                    if (_p.opts.count(OPT_R_ENDO))
-                    {
-                        o.endo = _p.opts[OPT_R_ENDO];
-                    }
-
-                    analyze<TAssembly>(_p.inputs, o);
+                    analyze<TAssembly>(_p.inputs);
                     break;
                 }
 
@@ -1370,8 +1361,8 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
-                        //addRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_BED_2);
+                        applyRef(std::bind(&Standard::addStd,    &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_ENDO);
                         break;
                     }
 

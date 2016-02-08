@@ -86,7 +86,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     o.info("Generating statistics for " + std::string(ChrT));
     stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.match(Locus(i, j), MatchRule::Exact));
+        return static_cast<bool>(r.match(Locus(i, j), MatchRule::Contains));
     });
 
     o.info("Generating statistics for " + o.queryID);
@@ -217,10 +217,10 @@ void VSample::report(const FileName &file, const Options &o)
     const auto before = VSample::stats(file, o);
 
     // Subsample the alignment
-    VSample::sample(file, o.working + "/VarSample_sampled.bam", before);
+    VSample::sample(file, o.working + "/VarSample_sampled.sam", before);
 
     // Statistics after alignment
-    const auto after = VSample::stats(o.working + "/VarSample_sampled.bam", o);
+    const auto after = VSample::stats(o.working + "/VarSample_sampled.sam", o);
 
     /*
      * Generating bedgraph for the pre-statistics
@@ -229,7 +229,7 @@ void VSample::report(const FileName &file, const Options &o)
     auto pre = CoverageTool::CoverageBedGraphOptions();
     
     pre.writer = o.writer;
-    pre.file   = "VarSample_before.bedgraph";
+    pre.file   = "VarSubsample_before.bedgraph";
 
     CoverageTool::bedGraph(before.cov, pre, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
@@ -243,7 +243,7 @@ void VSample::report(const FileName &file, const Options &o)
     auto post = CoverageTool::CoverageBedGraphOptions();
 
     post.writer = o.writer;
-    post.file   = "VarSample_after.bedgraph";
+    post.file   = "VarSubsample_after.bedgraph";
 
     CoverageTool::bedGraph(after.cov, post, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
@@ -256,37 +256,56 @@ void VSample::report(const FileName &file, const Options &o)
     
     o.info("Generating summary statistics");
     
-    const auto summary = "Summary for dataset: %1%\n\n"
-                         "   Unmapped:    %2% alignments\n"
-                         "   Experiment:  %3% alignments\n"
-                         "   Synthetic:   %4% alignments\n\n"
-                         "   Reference:   %5% sequins\n\n"
-                         "   Method: %6%\n\n"
-                         "   ***********************\n"
-                         "   Before subsampling:\n"
-                         "   ***********************\n\n"
-                         "   Alignments: %7%\n"
-                         "   Query Coverage: %8%\n"
-                         "   Synthetic Coverage: %9%\n\n"
-                         "   ***********************\n"
-                         "   After subsampling:\n"
-                         "   ***********************\n\n"
-                         "   Alignments: %10%\n"
-                         "   Query Coverage: %11%\n"
-                         "   Synthetic Coverage: %12%\n";
-    
+    const auto summary = "Summary for input: %1%\n\n"
+                         "   ***\n"
+                         "   *** Fraction of reads mapped to the synthetic and experimental chromosomes\n"
+                         "   ***\n\n"
+                         "   Unmapped:   %2% reads\n"
+                         "   Synthetic:  %3% reads\n"
+                         "   Experiment: %4% reads\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Synthetic)\n"
+                         "   ***\n\n"
+                         "   File: %5%\n\n"
+                         "   Reference: %6% sequins\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Experiment)\n"
+                         "   ***\n\n"
+                         "   File: %7%\n\n"
+                         "   Reference:  %8% intervals\n\n"
+                         "   Method: %9%\n\n"
+                         "   *******************************************\n"
+                         "   ***                                     ***\n"
+                         "   ***    Statistics before subsampling    ***\n"
+                         "   ***                                     ***\n"
+                         "   *******************************************\n\n"
+                         "   Reads: %10%\n"
+                         "   Coverage (Synthetic):  %11%\n"
+                         "   Coverage (Experiment): %12%\n\n"
+                         "   *******************************************\n"
+                         "   ***                                     ***\n"
+                         "   ***    Statistics after subsampling     ***\n"
+                         "   ***                                     ***\n"
+                         "   *******************************************\n\n"
+                         "   Reads: %13%\n"
+                         "   Coverage (Synthetic):  %14%\n"
+                         "   Coverage (Experiment): %15%\n";
+
     o.writer->open("VarSubsample_summary.stats");
     o.writer->write((boost::format(summary) % file
                                             % before.cov.unmapped
-                                            % before.cov.n_endo
                                             % before.cov.n_chrT
+                                            % before.cov.n_endo
+                                            % o.rChrT()
                                             % Standard::instance().r_var.countSeqs()
+                                            % o.rEndo()
+                                            % Standard::instance().r_var.countInters("chr21")
                                             % meth2Str()
                                             % sums(before.cov.hist)
-                                            % before.endoC
                                             % before.chrTC
+                                            % before.endoC
                                             % sums(after.cov.hist)
-                                            % after.endoC
-                                            % after.chrTC).str());
+                                            % after.chrTC
+                                            % after.endoC).str());
     o.writer->close();
 }

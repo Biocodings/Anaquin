@@ -156,13 +156,13 @@ static TAssembly::Stats init(const TAssembly::Options &o)
     TAssembly::Stats stats;
     
     stats.data[ChrT];
-    stats.refs[ChrT] = o.chrT;
+    stats.refs[ChrT] = o.rChrT();
     
     // Remember, endogenous is optional
-    if (!o.endo.empty())
+    if (!o.rEndo().empty())
     {
         stats.data[Endo];
-        stats.refs[Endo] = o.endo;
+        stats.refs[Endo] = o.rEndo();
     }
 
     return stats;
@@ -173,8 +173,8 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_trans;
 
     // We'll need the reference annotation for comparison (endogenous is optional)
-    assert(!o.chrT.empty());
-    
+    assert(!o.rChrT().empty());
+
     /*
      * 1. Initalize the statistics
      */
@@ -367,7 +367,7 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
 //static void writeSequins(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
 //{
 //    o.writer->open(name + "/TransAssembly_sequin.stats");
-//    o.writer->write((boost::format("Summary for file: %1%\n") % file).str());
+//    o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
 //    
 //    auto format = "%1%\t%2%\t%3%\t%4%";
 //    o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());

@@ -110,7 +110,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
      * Write out summary statistics
      */
     
-//    const auto summary = "Summary for dataset: %1%\n\n"
+//    const auto summary = "Summary for input: %1%\n\n"
 //                         "   Unmapped:    %2% reads\n"
 //                         "   Experiment:  %3% reads\n"
 //                         "   Synthetic:   %4% reads\n\n"
@@ -140,7 +140,7 @@ VAlign::Stats VAlign::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("VarAlign_quins.stats");
-    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+    o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
     
     const auto format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "ID" % "Counts (reads)").str());

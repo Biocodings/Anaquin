@@ -183,7 +183,7 @@ void MBlat::report(const FileName &file, const Options &o)
     {
         o.writer->open("MetaPSL_summary.stats");
         
-        const auto summary = "Summary for dataset: %1%\n\n"
+        const auto summary = "Summary for input: %1%\n\n"
                              "   Samples: %2%\n"
                              "   Synthetic: %3%\n\n"
                              "   Contigs: %4%\n"

@@ -1455,7 +1455,7 @@ void reportStats(FILE* fout_, const char* setname, GSuperLocus& stotal,
   ps->calcF();
     
   //if (seqdata!=NULL) fprintf(fout, "#> Genomic sequence: %s \n", setname);
-  //              else fprintf(fout, "\n#= Summary for dataset: %s :\n", setname);
+  //              else fprintf(fout, "\n#= Summary for input: %s :\n", setname);
 
   //fprintf(fout,   "#     Query mRNAs : %7d in %7d loci  (%d multi-exon transcripts)\n",
   //        ps->total_qmrnas, ps->total_qloci, ps->total_qichains);

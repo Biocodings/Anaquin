@@ -123,7 +123,7 @@ void MAlign::report(const FileName &file, const Options &o)
 
     o.info("Generating summary statistics");
 
-    const auto summary = "Summary for dataset: %1%\n\n"
+    const auto summary = "Summary for input: %1%\n\n"
                          "   Unmapped:    %2% alignments\n"
                          "   Community:   %3% alignments\n"
                          "   Synthetic:   %4% alignments\n\n"
@@ -160,7 +160,7 @@ void MAlign::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("MetaAlign_quins.stats");
-    o.writer->write((boost::format("Summary for dataset: %1%\n") % file).str());
+    o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
 
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     o.writer->write((boost::format(format) % "ID"

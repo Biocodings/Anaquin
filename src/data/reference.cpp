@@ -912,6 +912,7 @@ struct VarRef::VarRefImpl
     // Reference intervals (eg: chr21)
     std::map<ChromoID, Intervals<>> inters;
 
+    // Mixture data
     std::map<Mixture, std::map<SequinID, VariantPair>> data;
 };
 
@@ -949,6 +950,11 @@ void VarRef::addStand(const SequinID &id, const Locus &l)
 
     // We're only interested in the position of the sequin
     _impl->stands[id] = l;
+}
+
+Counts VarRef::countInters(const ChromoID &cID) const
+{
+    return _impl->inters.find(cID)->second.size();
 }
 
 Counts VarRef::countSeqs() const
@@ -1071,6 +1077,15 @@ void VarRef::validate()
     for (const auto &i : _impl->stands)
     {
         _data.at(i.first).l = i.second;
+    }
+
+    /*
+     * Constructing the reference intervals (eg: chr21)
+     */
+    
+    for (auto &i : _impl->inters)
+    {
+        i.second.build();
     }
 }
 
