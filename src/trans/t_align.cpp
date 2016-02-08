@@ -496,6 +496,11 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
         {
             stats.update(align);
 
+            if (!align.mapped)
+            {
+                return;
+            }
+            
             if (align.cID == ChrT)
             {
                 classifyChrT(stats.data.at(ChrT), align, info, o);

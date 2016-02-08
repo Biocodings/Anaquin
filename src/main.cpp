@@ -35,7 +35,6 @@
 #include "ladder/l_coverage.hpp"
 
 #include "fusion/f_diff.hpp"
-#include "fusion/f_align.hpp"
 #include "fusion/f_normal.hpp"
 #include "fusion/f_viewer.hpp"
 #include "fusion/f_express.hpp"
@@ -87,7 +86,6 @@ typedef std::set<Value> Range;
 #define TOOL_F_EXPRESS   291
 #define TOOL_F_IGV       292
 #define TOOL_F_COVERAGE  293
-#define TOOL_F_ALIGN     294
 #define TOOL_F_DIFF      295
 #define TOOL_F_NORMAL    296
 
@@ -208,7 +206,6 @@ static std::map<Value, Tool> _tools =
     { "LadderDifferent",  TOOL_L_DIFF      },
     { "LadderCoverage",   TOOL_L_COVERAGE  },
 
-    { "FusionAlign",      TOOL_F_ALIGN     },
     { "FusionDiscover",   TOOL_F_DISCOVER  },
     { "FusionExpress",    TOOL_F_EXPRESS   },
     { "FusionExpression", TOOL_F_EXPRESS   },
@@ -247,7 +244,6 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
-    { TOOL_F_ALIGN,    { OPT_R_BED, OPT_MIXTURE,                                 } },
     { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_OUT                          } },
     { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFT, OPT_U_OUT            } },
     { TOOL_F_COVERAGE, { OPT_R_BED, OPT_BAM_1                                    } },
@@ -1212,7 +1208,6 @@ void parse(int argc, char ** argv)
 
         case TOOL_F_IGV:
         case TOOL_F_DIFF:
-        case TOOL_F_ALIGN:
         case TOOL_F_NORMAL:
         case TOOL_F_EXPRESS:
         case TOOL_F_DISCOVER:
@@ -1256,13 +1251,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_F_ALIGN:
-                {
-                    addMix(std::bind(&Standard::addFMix, &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFStd, &s, std::placeholders::_1), OPT_R_BED);
-                    break;
-                }
-
                 case TOOL_F_EXPRESS:
                 case TOOL_F_DISCOVER:
                 {
@@ -1282,7 +1270,6 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_F_IGV:      { viewer<FViewer>();               break; }
-                case TOOL_F_ALIGN:    { analyze_1<FAlign>(OPT_BAM_1);    break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_BAM_1); break; }
                 case TOOL_F_NORMAL:   { analyze_1<FNormal>(OPT_U_TAB);   break; }
 
