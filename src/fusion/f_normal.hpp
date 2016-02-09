@@ -13,14 +13,10 @@ namespace Anaquin
             FusionCaller caller;
         };
 
-        struct Stats : public FusionStats, public SequinStats
+        struct Stats : public FusionStats, public LinearStats, public SequinStats
         {
-            typedef LinearStats Data;
-            
             // Absolute detection limit
             Limit limit;
-            
-            Data data;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

@@ -20,11 +20,11 @@
  */
 
 #include "resources/plotROC_F.R"
+#include "resources/plotNormal.R"
 
 #include "resources/AFU004.v032.ref"
 #include "resources/AFU005.v032.bed"
 #include "resources/MFU007.v013.csv"
-#include "resources/plotScatter_F.R"
 
 /*
  * Ladder Resources
@@ -122,9 +122,9 @@ Scripts FusionDataRef()
     return ToString(data_fusion_AFU004_v032_ref);
 }
 
-Scripts PlotScatter_F()
+Scripts PlotNormal()
 {
-    return ToString(src_r_plotScatter_F_R);
+    return ToString(src_r_plotNormal_R);
 }
 
 /*
