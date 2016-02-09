@@ -3,12 +3,16 @@
 
 using namespace Anaquin;
 
+extern Scripts PlotROC_F();
+
 FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Options &o)
 {
+    const auto &r = Standard::instance().r_fus;
+    
     FDiscover::Stats stats;
     
     stats.data[ChrT];
-    stats.data[ChrT].hist = Standard::instance().r_fus.hist();
+    stats.data[ChrT].hist = r.hist();
     stats.data[Endo];
 
     FUSQuin::analyze<FDiscover::Options>(file, o, [&](const FUSQuin::Match &match)
@@ -20,89 +24,163 @@ FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Optio
         {
             if (match.query.cID_1 == ChrT)
             {
-                stats.data[ChrT].tps.push_back(match.known);
+                stats.data[ChrT].tps.push_back(match);
             }
             else
             {
-                stats.data[Endo].tps.push_back(match.known);
+                stats.data[Endo].tps.push_back(match);
             }
+            
+            stats.hist.at(match.known->id)++;
         }
         else
         {
             if (match.query.cID_1 == ChrT && match.query.cID_2 == ChrT)
             {
-                stats.data[ChrT].fps.push_back(match.query);
+                stats.data[ChrT].fps.push_back(match);
             }
             else
             {
-                stats.data[Endo].fps.push_back(match.query);
+                stats.data[Endo].fps.push_back(match);
             }
         }
     });
     
+    /*
+     * Find out all the missing references
+     */
+
+    for (auto &i : stats.data)
+    {
+        for (const auto &j : i.second.hist)
+        {
+            if (i.first == ChrT)
+            {
+                i.second.fns.push_back(*r.findFusion(j.first));
+            }
+            else
+            {
+                // TODO: Implement me
+            }
+        }
+    }
+
     return stats;
 }
 
 static void writeSummary(const FileName &file, const FDiscover::Stats &stats, const FDiscover::Options &o)
 {
-    o.writer->open("FusionDiscover_summary.stats");
-    
-    const auto summary = "Summary for input: %1%\n\n"
-                         "   Experiment: %2% fusions\n"
-                         "   Synthetic: %3% fusions\n"
-                         "   Synthetic-Experiment: %4% fusions\n"
-                         "   Reference: %5% sequins\n\n"
-                         "   Fuzzy: %6%\n\n"
-                         "   Sensitivity: %7%\n"
-                         "   Specificity: %8%\n";
-/*
-    o.writer->write((boost::format(summary) % file
-                     % stats.chrT->n_endo
-                     % stats.chrT->n_chrT
-                     % stats.chrT->hg38_chrT
-                     % stats.chrT->m.nr()
-                     % o.fuzzy
-                     % stats.chrT->m.sn()
-                     % stats.chrT->m.ac()).str());
-*/
+    const auto &r = Standard::instance().r_fus;
 
-    o.writer->close();    
+    const auto summary = "Summary for input: %1%\n\n"
+                         "   ***\n"
+                         "   *** Number of fusions detected in the synthetic chromosome\n"
+                         "   ***\n\n"
+                         "   Synthetic: %2% fusions\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Synthetic)\n"
+                         "   ***\n\n"
+                         "   File: %3%\n\n"
+                         "   Synthetic: %4% fusions\n\n"
+                         "   ************************************************************\n"
+                         "   ***                                                      ***\n"
+                         "   ***        Statistics for the synthetic chromosome       ***\n"
+                         "   ***                                                      ***\n"
+                         "   ************************************************************\n\n"
+                         "   True Positives:  %5% fusions\n"
+                         "   False Positives: %6% fusions\n"
+                         "   ***\n"
+                         "   *** Performance metrics\n"
+                         "   ***\n\n"
+                         "   Sensitivity: %7%\n"
+                         "   Specificity: %8%\n\n";
+    
+    o.writer->write((boost::format(summary) % file
+                                            % stats.countDetect(ChrT)
+                                            % o.rChrT
+                                            % r.countFusion()
+                                            % stats.countTP(ChrT)
+                                            % stats.countFP(ChrT)
+                                            % stats.sn(ChrT)
+                                            % stats.pc(ChrT)).str());
+    o.writer->close();
+}
+
+static void writeClass(const FileName &file, const ChromoID &cID, const FDiscover::Stats &stats, const FDiscover::Options &o)
+{
+    const auto &data  = stats.data.at(cID);
+    const auto format = "%1%\t%2%\t%3%\t%4%";
+
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "Sequin"
+                                           % "Label"
+                                           % "Position_1"
+                                           % "Position_2").str());
+
+    for (const auto &tp : data.tps)
+    {
+        o.writer->write((boost::format(format) % tp.known->id
+                                               % "TP"
+                                               % tp.query.l1
+                                               % tp.query.l2).str());
+    }
+
+    for (const auto &fp : data.fps)
+    {
+        o.writer->write((boost::format(format) % fp.known->id
+                                               % "FP"
+                                               % fp.query.l1
+                                               % fp.query.l2).str());
+    }
+}
+
+static void writeQuins(const FileName &file, const FDiscover::Stats &stats, const FDiscover::Options &o)
+{
+    o.writer->open(file);
+    
+    const auto format = "%1%\t%2%";
+    
+    o.writer->write((boost::format(format) % "ID"
+                                           % "Counts").str());
+
+    for (const auto &i : stats.data.at(ChrT).hist)
+    {
+        o.writer->write((boost::format(format) % i.first
+                                               % i.second).str());
+    }
+    
+    o.writer->close();
 }
 
 void FDiscover::report(const FileName &file, const FDiscover::Options &o)
 {
     const auto stats = analyze(file, o);
 
+    o.info("Generating statistics");
+    
     /*
      * Generating summary statistics
      */
     
-    o.info("Generating summary statistics");
-
-    /*
-     * Generating labels for the known fusions
-     */
+    writeSummary("FusionDiscover_summary.stats", stats, o);
     
     /*
-     * Generating detailed statistics for sequins
+     * Generating classified statistics for the fusions
+     */
+    
+    writeClass("FusionDiscover_labels.csv", ChrT, stats, o);
+    
+    /*
+     * Generating ROC curve
+     */
+    
+    o.writer->open("FusionDiscover_ROC.R");
+    o.writer->write(RWriter::createScript("FusionDiscover_labels.csv", PlotROC_F()));
+    o.writer->close();
+
+    /*
+     * Generating sequin statistics
      */
 
-//
-//
-//    {
-//        o.info("Generating sequins statistics");
-//        o.writer->open("FusionDiscover_quins.stats");
-//
-//        const auto format = "%1%\t%2%";
-//
-//        o.writer->write((boost::format(format) % "ID" % "Counts").str());
-//
-//        for (const auto &i : stats.chrT->h)
-//        {
-//                o.writer->write((boost::format(format) % i.first
-//                                                       % i.second).str());
-//        }
-//
-//        o.writer->close();
-//    }
+    writeQuins("FusionDiscover_quins.stats", stats, o);
 }

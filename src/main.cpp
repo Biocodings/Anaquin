@@ -646,8 +646,8 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.info(date());
     o.info("Path: " + path);
 
-    o.rChrTF = _p.rChrT;
-    o.rEndoF = _p.rEndo;
+    o.rChrT = _p.rChrT;
+    o.rEndo = _p.rEndo.empty() ? "NA" : _p.rEndo;
 
     std::clock_t begin = std::clock();
     

@@ -61,9 +61,13 @@ void FNormal::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("FusionNormal_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT(), o.rEndo(), file, stats.hist, stats, stats.data, ""));
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rEndo, file, stats.hist, stats, stats.data, ""));
     o.writer->close();
 
+    /*
+     * Generating CSV for all fusions
+     */
+    
     /*
      * Generating scatter plot
      */

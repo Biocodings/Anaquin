@@ -110,8 +110,8 @@ void VAllele::report(const FileName &file, const Options &o)
      */
 
     o.writer->open("VarAllele_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT(),
-                                                o.rEndo(),
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
+                                                o.rEndo,
                                                 file,
                                                 stats.hist,
                                                 stats,

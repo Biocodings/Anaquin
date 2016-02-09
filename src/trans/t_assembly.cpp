@@ -157,7 +157,7 @@ static TAssembly::Stats init(const TAssembly::Options &o)
     
     stats.data[ChrT];
     
-    if (!o.rEndoF.empty())
+    if (!o.rEndo.empty())
     {
         stats.data[Endo];
     }
@@ -170,7 +170,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_trans;
 
     // We'll need the reference annotation for comparison (endogenous is optional)
-    assert(!o.rChrT().empty());
+    assert(!o.rChrT.empty());
 
     /*
      * 1. Initalize the statistics
@@ -240,7 +240,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
     std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChromoID, TAssembly::Stats::Data> &p)
     {
-        compareGTF(p.first, p.first == ChrT ? o.rChrTF : o.rEndoF);
+        compareGTF(p.first, p.first == ChrT ? o.rChrT : o.rEndo);
         copyStats(p.first);
     });
     
@@ -283,12 +283,12 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
                                                % stats.endo_exons
                                                % stats.chrT_trans
                                                % stats.endo_trans
-                                               % o.rChrT()
+                                               % o.rChrT
                                                % r.countExons(ChrT)
                                                % r.countIntrons(ChrT)
-                                               % (o.rEndo().empty() ? "-"  : o.rEndo())
-                                               % (o.rEndo().empty() ? "NA" : std::to_string(r.countExons("chr1")))
-                                               % (o.rEndo().empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
+                                               % (o.rEndo.empty() ? "-"  : o.rEndo)
+                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons("chr1")))
+                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
                                                % S(data.eSN)            // 12
                                                % S(data.eFSN)
                                                % S(data.eSP)

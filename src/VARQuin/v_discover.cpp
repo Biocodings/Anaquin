@@ -254,16 +254,15 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
                          "   Sensitivity: %27%\n"
                          "   Specificity: %28%\n\n";
 
-    o.writer->open("VarDiscover_summary.stats");
-    
+    o.writer->open("VarDiscover_summary.stats");    
     o.writer->write((boost::format(summary) % file
                                             % stats.chrT.detectTot()
                                             % stats.endo.size()
-                                            % o.rChrT()
+                                            % o.rChrT
                                             % r.countSNPs()
                                             % r.countIndels()
                                             % r.countVars()          // 7
-                                            % o.rEndo()
+                                            % o.rEndo
                                             % "NA"
                                             % "NA"
                                             % "NA"
@@ -309,7 +308,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     writeSummary("VarDiscover_summary.stats", stats, o);
     
     /*
-     * Generating labels for the variants
+     * Generating classified statistics for the variants
      */
     
     writeClass("VarDiscover_labels.csv", stats.chrT, o);

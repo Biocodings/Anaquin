@@ -28,7 +28,7 @@ data <- rbind(tps, fps)
 data$name <- paste(data$Sequin, data$Position, sep='_')
 data$name <- paste(data$name, data$Type, sep='_')
 
-# Create a TransQuin data set for Anaquin
-data <- VarQuin(seqs=data$name, pval=data$PValue, rRead=data$RefRead, vRead=data$VarRead, eAFreq=data$EAlleleF, label=data$label, type=data$Type)
+# Create a FusQuin data set for Anaquin
+data <- FusQuin(seqs=data$name, pval=data$PValue, rRead=data$RefRead, vRead=data$VarRead, eAFreq=data$EAlleleF, label=data$label, type=data$Type)
 
 plotROC.VarQuin(data)

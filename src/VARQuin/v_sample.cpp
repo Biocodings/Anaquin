@@ -308,9 +308,9 @@ void VSample::report(const FileName &file, const Options &o)
                                             % before.cov.unmapped
                                             % before.cov.n_chrT
                                             % before.cov.n_endo
-                                            % o.rChrT()
+                                            % o.rChrT
                                             % Standard::instance().r_var.countSeqs()
-                                            % o.rEndo()
+                                            % o.rEndo
                                             % Standard::instance().r_var.countInters("chr21")
                                             % meth2Str()
                                             % sums(before.cov.hist)

@@ -254,18 +254,8 @@ namespace Anaquin
     
     struct AnalyzerOptions : public WriterOptions
     {
-        inline FileName rChrT() const
-        {
-            return rChrTF;
-        }
-
-        inline FileName rEndo() const
-        {
-            return rEndoF.empty() ? "NA" : rEndoF;
-        }
-
         // Files for the reference annotation
-        FileName rChrTF, rEndoF;
+        FileName rChrT, rEndo;
 
         // Experimental data
         std::shared_ptr<Experiment> exp;

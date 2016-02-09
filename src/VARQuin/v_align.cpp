@@ -209,9 +209,9 @@ static void writeSummary(const FileName &file, const VAlign::Stats &stats, const
                                             % stats.n_endo
                                             % stats.endoProp()
                                             % stats.dilution()
-                                            % o.rChrT()
+                                            % o.rChrT
                                             % r.countSeqs()
-                                            % o.rEndo()         // 10
+                                            % o.rEndo         // 10
                                             % "NA"              // 11
                                             % "NA"              // 12
                                             % "NA"              // 13

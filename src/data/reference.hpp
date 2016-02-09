@@ -478,14 +478,14 @@ namespace Anaquin
             Counts countFusion() const;
             Counts countSplice() const;
 
-            const SequinData *findFusion(const Locus &) const;
+            const KnownFusion *findFusion(const SequinID &) const;
+            const KnownFusion *findFusion(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
+
             const SequinData *findSplice(const Locus &) const;
             const SpliceChimeric *findSpliceChim(const SequinID &) const;
-        
+
             // Convert the normal gene to it's equivalent fusion (eg: NG1_1_P1 to FG1_1_P1)
             SequinID normalToFusion(const SequinID &) const;
-
-            const KnownFusion * find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
 
         protected:
         

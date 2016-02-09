@@ -19,6 +19,8 @@
  * Fusion Resources
  */
 
+#include "resources/plotROC_F.R"
+
 #include "resources/AFU004.v032.ref"
 #include "resources/AFU005.v032.bed"
 #include "resources/MFU007.v013.csv"
@@ -104,6 +106,11 @@ Scripts PlotMA()
 /*
  * Fusion Resources
  */
+
+Scripts PlotROC_F()
+{
+    return ToString(src_r_plotROC_F_R);
+}
 
 Scripts FusionDataMixA()
 {

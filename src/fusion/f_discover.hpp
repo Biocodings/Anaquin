@@ -15,28 +15,53 @@ namespace Anaquin
 
         struct Stats : public FusionStats, public SequinStats
         {
+            typedef FUSQuin::Match ChrTData;
+
+            #define TP(x) data.at(x).tps
+            #define FP(x) data.at(x).tps
+            #define FN(x) data.at(x).fns
+            
+            inline Counts countTP(const ChromoID &id) const
+            {
+                return TP(id).size();
+            }
+
+            inline Counts countFP(const ChromoID &id) const
+            {
+                return FP(id).size();
+            }
+            
+            inline Counts countKnown(const ChromoID &id) const
+            {
+                return TP(id).size() + FN(id).size();
+            }
+
+            inline Counts countDetect(const ChromoID &id) const
+            {
+                return TP(id).size() + FP(id).size();
+            }
+
+            // Returns the sensitivity
+            inline Proportion sn(const ChromoID &id) const
+            {
+                return static_cast<Proportion>(TP(id).size()) / (TP(id).size() + FN(id).size());
+            }
+
+            // Returns the precision
+            inline Proportion pc(const ChromoID &id) const
+            {
+                return static_cast<Proportion>(TP(id).size()) / countDetect(id);
+            }
+
             struct Data
             {
-                inline Counts countFP()    const { return fps.size(); }
-                inline Counts countKnown() const { return known;      }
-                
-                // Proportion of fusions detected
-                //Proportion covered;
-
-                // Number of detected fusions
-                Counts detect;
-
-                // Number of known fusions
-                Counts known;
-
-                // Distribution of the fusion
+                // Distribution of the sequins
                 SequinHist hist;
-                
-                // List of true-positive fusions
-                std::vector<const FusionRef::KnownFusion *> tps;
-                
-                // List of false-positive fusions
-                std::vector<FUSQuin::FalsePositive> fps;
+
+                // List of missing fusions
+                std::vector<FusionRef::KnownFusion> fns;
+
+                std::vector<ChrTData> fps, tps;
             };
 
             std::map<ChromoID, Data> data;

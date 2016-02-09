@@ -95,7 +95,7 @@ namespace Anaquin
                 const auto &r = Standard::instance().r_fus;
 
                 // Any match by position and fuzzy?
-                if ((match.known = r.find(min, max, f.s1, f.s2, fuzzy)))
+                if ((match.known = r.findFusion(min, max, f.s1, f.s2, fuzzy)))
                 {
                     match.state = Positive;
                 }

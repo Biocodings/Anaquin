@@ -182,16 +182,15 @@ void LadderRef::abund(const LadderRef::JoinID &id, Concentration &a, Concentrati
 
 struct FusionRef::FusionRefImpl
 {
-    /*
-     * Validated variables
-     */
-
     // Normal splicing
     std::map<SequinID, Locus> splices;
 
-    // Fusion breaks
+    // Known fusions
     std::set<KnownFusion> knowns;
 
+    // Standards (fusion genes will have two loci)
+    std::map<SequinID, std::vector<Locus>> stands;
+    
     // Normal genes in the standards
     std::map<SequinID, Locus> normals;
 
@@ -206,13 +205,6 @@ struct FusionRef::FusionRefImpl
     std::map<SequinID, SequinID> fusToNorm;
 
     std::map<SequinID, SpliceChimeric> spliceChim;
-    
-    /*
-     * Raw variables
-     */
-
-    // Standards (fusion genes will have two loci)
-    std::map<SequinID, std::vector<Locus>> rawStands;
 };
 
 FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
@@ -242,21 +234,21 @@ void FusionRef::addSplice(const SequinID &id, const Locus &l)
 
 void FusionRef::addStand(const SequinID &id, const Locus &l)
 {
-    _impl->rawStands[id].push_back(l);
+    _impl->stands[id].push_back(l);
 }
 
-const SequinData *FusionRef::findFusion(const Locus &l) const
+const FusionRef::KnownFusion * FusionRef::findFusion(const SequinID &id) const
 {
-    assert(!_impl->fusions.empty());
+    assert(!_impl->knowns.empty());
     
-    for (auto &i : _impl->fusions)
+    for (auto &i : _impl->knowns)
     {
-        if (i.second[0].contains(l) || i.second[1].contains(l))
+        if (i.id == id)
         {
-            return &(_data.at(i.first));
+            return &(i);
         }
     }
-    
+
     return nullptr;
 }
 
@@ -355,11 +347,11 @@ void FusionRef::validate()
     }
 
     // Case 3
-    else if (!_rawMIDs.empty() && !_impl->rawStands.empty())
+    else if (!_rawMIDs.empty() && !_impl->stands.empty())
     {
         merge(_rawMIDs);
 
-        for (const auto &i : _impl->rawStands)
+        for (const auto &i : _impl->stands)
         {
             if (_data.count(i.first))
             {
@@ -404,7 +396,7 @@ inline bool compare(Base x, Base y, Base fuzzy = 0.0)
     return std::abs(x - y) <= fuzzy;
 }
 
-const FusionRef::KnownFusion * FusionRef::find(Base x, Base y, Strand o1, Strand o2, double fuzzy) const
+const FusionRef::KnownFusion * FusionRef::findFusion(Base x, Base y, Strand o1, Strand o2, double fuzzy) const
 {
     for (const auto &f : _impl->knowns)
     {

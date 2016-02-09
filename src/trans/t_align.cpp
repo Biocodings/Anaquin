@@ -630,7 +630,7 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % stats.n_endo
                                           % (100.0 * stats.endoProp())
                                           % stats.dilution()                                                // 7
-                                          % extractFile(o.rChrT())                                            // 8
+                                          % extractFile(o.rChrT)                                            // 8
                                           % BIND_R(TransRef::countExons, ChrT)                              // 9
                                           % BIND_R(TransRef::countIntrons, ChrT)                            // 10
                                           % BIND_R(TransRef::exonBase, ChrT)                                // 11
