@@ -14,6 +14,9 @@ extern Scripts PlotROC_T();
 extern Scripts PlotROC_V();
 
 // Defined in resources.cpp
+extern Scripts PlotROC_F();
+
+// Defined in resources.cpp
 extern Scripts PlotLODR_T();
 
 // Defined in resources.cpp
@@ -29,19 +32,30 @@ extern Scripts PlotSplice();
 extern Scripts PlotScatterPool();
 
 // Defined in resources.cpp
-extern Scripts PlotScatter();
+extern Scripts PlotScatter_T();
+
+// Defined in resources.cpp
+extern Scripts PlotScatter_F();
+
+Scripts RWriter::createScript(const FileName &file, const Scripts &scripts)
+{
+    return (boost::format(scripts) % date()
+                                   % __full_command__
+                                   % __output__
+                                   % file).str();
+}
 
 Scripts RWriter::scatter(const std::vector<SequinID> &seqs,
                          const std::vector<double>   &x,
                          const std::vector<double>   &y,
+                         const AxisLabel &title,
                          const AxisLabel &xLabel,
-                         const AxisLabel &yLabel,
-                         const AxisLabel &title)
+                         const AxisLabel &yLabel)
 {
     assert(!xLabel.empty() && !yLabel.empty());
     
     std::stringstream ss;
-    ss << PlotScatter();
+    ss << PlotScatter_T();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__

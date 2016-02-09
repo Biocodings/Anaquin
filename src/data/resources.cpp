@@ -6,7 +6,6 @@
 
 #include "resources/plotMA.R"
 #include "resources/plotSplice.R"
-#include "resources/plotScatter.R"
 #include "resources/plotScatterPool.R"
 
 /*
@@ -23,6 +22,7 @@
 #include "resources/AFU004.v032.ref"
 #include "resources/AFU005.v032.bed"
 #include "resources/MFU007.v013.csv"
+#include "resources/plotScatter_F.R"
 
 /*
  * Ladder Resources
@@ -38,6 +38,7 @@
 
 #include "resources/plotROC_T.R"
 #include "resources/plotLODR_T.R"
+#include "resources/plotScatter_T.R"
 
 #include "resources/ATR001.v032.gtf"
 #include "resources/MTR002.v013.csv"
@@ -58,6 +59,7 @@
 
 #include "resources/plotROC_V.R"
 #include "resources/plotLODR_V.R"
+#include "resources/plotAlleleF.R"
 
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
@@ -68,18 +70,18 @@
 
 typedef std::string Scripts;
 
-std::string ViewerScript()
+Scripts ViewerScript()
 {
     return ToString(scripts_viewer_py);
 }
 
-std::string Manual()
+Scripts Manual()
 {
     return ToString(data_manual_txt);
 }
 
 /*
- * Scripts for Anaquin R-Bioconductor
+ * Scripts for Anaquin Bioconductor
  */
 
 Scripts PlotScatterPool()
@@ -92,11 +94,6 @@ Scripts PlotSplice()
     return ToString(src_r_plotSplice_R);
 }
 
-Scripts PlotScatter()
-{
-    return ToString(src_r_plotScatter_R);
-}
-
 Scripts PlotMA()
 {
     return ToString(src_r_plotMA_R);
@@ -106,31 +103,36 @@ Scripts PlotMA()
  * Fusion Resources
  */
 
-std::string FusionDataMixA()
+Scripts FusionDataMixA()
 {
     return ToString(data_fusion_MFU007_v013_csv);
 }
 
-std::string FusionDataRef()
+Scripts FusionDataRef()
 {
     return ToString(data_fusion_AFU004_v032_ref);
+}
+
+Scripts PlotScatter_F()
+{
+    return ToString(src_r_plotScatter_F_R);
 }
 
 /*
  * Ladder Resources
  */
 
-std::string LadderDataMixA()
+Scripts LadderDataMixA()
 {
     return ToString(data_ladder_MLA014_v013_csv);
 }
 
-std::string LadderDataMixB()
+Scripts LadderDataMixB()
 {
     return ToString(data_ladder_MLA016_v013_csv);
 }
 
-std::string LadderDataMixAB()
+Scripts LadderDataMixAB()
 {
     return ToString(data_ladder_MLA020_v013_csv);
 }
@@ -139,12 +141,12 @@ std::string LadderDataMixAB()
  * Metagenomics Resources
  */
 
-std::string MetaDataMix()
+Scripts MetaDataMix()
 {
     return ToString(data_meta_MME023_v013_csv);
 }
 
-std::string MetaDataBed()
+Scripts MetaDataBed()
 {
     return ToString(data_meta_AME015_v032_bed);
 }
@@ -152,6 +154,11 @@ std::string MetaDataBed()
 /*
  * Transcriptome Resources
  */
+
+Scripts PlotScatter_T()
+{
+    return ToString(src_r_plotScatter_T_R);
+}
 
 Scripts PlotROC_T()
 {
@@ -173,7 +180,7 @@ Scripts TransDataMixA()
     return ToString(data_trans_MTR002_v013_csv);
 }
 
-std::string TransDataMixB()
+Scripts TransDataMixB()
 {
     return ToString(data_trans_MTR003_v013_csv);
 }
@@ -192,6 +199,11 @@ Scripts TransDataMixAB()
  * Variant Resources
  */
 
+Scripts PlotAlleleF()
+{
+    return ToString(src_r_plotAlleleF_R);
+}
+
 Scripts PlotROC_V()
 {
     return ToString(src_r_plotROC_V_R);
@@ -202,22 +214,22 @@ Scripts PlotLODR_V()
     return ToString(src_r_plotLODR_V_R);
 }
 
-std::string VarDataMixA()
+Scripts VarDataMixA()
 {
     return ToString(data_VarQuin_MVA011_v013_csv);
 }
 
-std::string VarDataMixF()
+Scripts VarDataMixF()
 {
     return ToString(data_VarQuin_MVA012_v013_csv);
 }
 
-std::string VarDataVCF()
+Scripts VarDataVCF()
 {
     return ToString(data_VarQuin_AVA009_v032_vcf);
 }
 
-std::string VarDataBed()
+Scripts VarDataBed()
 {
     return ToString(data_VarQuin_AVA017_v032_bed);
 }

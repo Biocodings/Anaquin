@@ -8,6 +8,15 @@
 
 namespace Anaquin
 {
+    struct VariantStats
+    {
+        // Number of SNPs detected
+        Counts n_snp;
+
+        // Number of indels detected
+        Counts n_ind;
+    };
+    
     /*
      * This class represents variant matching to the synthetic chromosome.
      */

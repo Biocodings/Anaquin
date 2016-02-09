@@ -18,11 +18,16 @@ VarQuin <- function(..., mix=NULL)
     data <- data.frame(row.names=x$seqs)
 
     #
-    # List of keys supported in VarQuin analysis
+    #  - Expected allele frequency
+    #  - Measured allele frequency
+    #  - Number of reads for the reference
+    #  - Number of reads for the variant
+    #  - Probability
+    #  - Label
     #
     
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'eAFreq', 'aligned')
-    
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expected', 'measured', 'aligned')
+
     for (key in keys)
     {
         if (!is.null(x[[key]]))

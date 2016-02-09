@@ -2,6 +2,9 @@
 
 using namespace Anaquin;
 
+// Defined in resources.cpp
+extern Scripts PlotAlleleF();
+
 static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VAllele::Options &o)
 {
     o.writer->open(file);
@@ -46,6 +49,13 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
         {
             stats.n_chrT++;
             
+            switch (m.query.type())
+            {
+                case Mutation::SNP:       { stats.n_snp++; break; }
+                case Mutation::Deletion:
+                case Mutation::Insertion: { stats.n_ind++; break; }
+            }
+
             if (m.match && m.ref && m.alt)
             {
                 stats.hist.at(m.match->id)++;
@@ -90,6 +100,9 @@ void VAllele::report(const FileName &file, const Options &o)
 {
     const auto &stats = analyze(file, o);
     
+    o.info("Detected: " + std::to_string(stats.n_snp) + " SNPs");
+    o.info("Detected: " + std::to_string(stats.n_ind) + " indels");
+
     o.info("Generating statistics");
     
     /*
@@ -112,26 +125,10 @@ void VAllele::report(const FileName &file, const Options &o)
     writeCSV("VarAllele_quins.csv", stats, o);
     
     /*
-     * Generating scatter plot for all variants
+     * Generating scatter plot in R
      */
-
-    o.writer->open("VarAllele_scatter.R");
-    o.writer->write(RWriter::scatter(stats.chrT.tot, "Expected vs measured allele frequency", "Expected allele frequency", "Measured allele frequency", "Expected log2 allele frequency", "Measured log2 allele frequency"));
-    o.writer->close();
-
-    /*
-     * Generating scatter plot for SNPs
-     */
-
-    o.writer->open("VarAllele_SNP.R");
-    o.writer->write(RWriter::scatter(stats.chrT.snp, "Expected vs measured allele frequency (SNP)", "Expected allele frequency", "Measured allele frequency", "Expected log2 allele frequency", "Measured log2 allele frequency"));
-    o.writer->close();
     
-    /*
-     * Generating scatter plot for indels
-     */
-
-    o.writer->open("VarAllele_indel.R");
-    o.writer->write(RWriter::scatter(stats.chrT.ind, "Expected vs measured allele frequency (Indel)", "Expected allele frequency", "Measured allele frequency", "Expected log2 allele frequency", "Measured log2 allele frequency"));
+    o.writer->open("VarAllele_scatter.R");
+    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleF()));
     o.writer->close();
 }

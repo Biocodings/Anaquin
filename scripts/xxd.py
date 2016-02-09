@@ -18,10 +18,12 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotMA.R',
           'src/r/plotSplice.R',
-          'src/r/plotScatter.R',
           'src/r/plotScatterPool.R',
 
            # ------- Fusion -------
+
+           'src/r/plotROC_F.R',
+           'src/r/plotScatter_F.R',
 
           'data/fusion/AFU004.v032.ref',
           'data/fusion/AFU005.v032.bed',
@@ -35,8 +37,9 @@ data  = [ 'data/manual.txt',
            
            # ---------- Transcriptome ----------
 
-	  'src/r/plotROC_T.R',
-	  'src/r/plotLODR_T.R',
+           'src/r/plotROC_T.R',
+           'src/r/plotLODR_T.R',
+           'src/r/plotScatter_T.R',
 
           'data/trans/ATR001.v032.gtf',
           'data/trans/MTR002.v013.csv',
@@ -52,8 +55,9 @@ data  = [ 'data/manual.txt',
 
            # ---------- Variant ----------
 
-	  'src/r/plotROC_V.R',
-	  'src/r/plotLODR_V.R',
+           'src/r/plotROC_V.R',
+           'src/r/plotLODR_V.R',
+           'src/r/plotAlleleF.R',
 
           'data/VarQuin/AVA017.v032.bed',
           'data/VarQuin/AVA009.v032.vcf',

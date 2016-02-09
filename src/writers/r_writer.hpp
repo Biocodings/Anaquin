@@ -178,6 +178,8 @@ namespace Anaquin
     
     struct RWriter
     {
+        static Scripts createScript(const FileName &name, const Scripts &scripts);
+        
         /*
          * -------------------- ROC Plot --------------------
          */
@@ -219,7 +221,7 @@ namespace Anaquin
 
         template <typename Stats> static Scripts scatter(const Stats &stats,
                                                          const ChromoID &cID,
-                                                         const std::string &title,
+                                                         const AxisLabel &title,
                                                          const std::string &prefix,
                                                          const AxisLabel &xLabel,
                                                          const AxisLabel &yLabel,
@@ -249,7 +251,7 @@ namespace Anaquin
         }
 
         template <typename T> static Scripts scatter(const T &t,
-                                                     const std::string &title,
+                                                     const AxisLabel &title,
                                                      const AxisLabel &xLabel,
                                                      const AxisLabel &yLabel,
                                                      const AxisLabel &xLogLabel,
@@ -268,16 +270,16 @@ namespace Anaquin
                     y.push_back(p.second.y);
                 }
             }
-            
+
             return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title);
         }
-        
+
         static Scripts scatter(const std::vector<SequinID> &seqs,
                                const std::vector<double>   &x,
                                const std::vector<double>   &y,
+                               const AxisLabel &title,
                                const AxisLabel &xLabel,
-                               const AxisLabel &yLabel,
-                               const AxisLabel &title);
+                               const AxisLabel &yLabel);
     };
 }
 

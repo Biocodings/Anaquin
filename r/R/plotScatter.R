@@ -12,7 +12,7 @@
 plotScatter <- function(data,
                         alpha = 1.0,
                         shouldLog2 = TRUE,
-                        shouldHideLegend = TRUE,
+                        showLegend = FALSE,
                         title = '',
                         xname = 'Expected log2 fold change of mixture A and B',
                         yname = 'Measured log2 fold change of mixture A and B')
@@ -43,23 +43,22 @@ plotScatter <- function(data,
 
     data$logFC <- as.factor(data$logFC)
     
-    print(lm_eqn(data))
-    
     p <- ggplot(data=data, aes(x=x, y=y)) +
                               xlab(xname) +
                               ylab(yname) +
                            ggtitle(title) +
-                geom_point(aes(colour=logFC), size=2, alpha=alpha) + 
-                #xlim(min(data$x) - 0.10, max(data$x) + 0.10)       +
-                #ylim(min(data$y) - 0.10, max(data$y) + 0.10)       +
+                geom_point(aes(colour=logFC), size=2, alpha=alpha) +
+                #xlim(min(data$x) - 0.10, max(data$x) + 0.10)      +
+                #ylim(min(data$y) - 0.10, max(data$y) + 0.10)      +
                 geom_smooth(method='lm', formula=y ~ x)            +
-                annotate("text", label=lm_eqn(data), x=0, y=max(data$y)-1, size=5, colour='black', parse=TRUE) +
+                labs(colour='Ratio')                               +
+                annotate("text", label=lm_eqn(data), x=min(data$x)+2, y=max(data$y)-1, size=5, colour='black', parse=TRUE) +
                 theme_bw()
 
     p <- p +  theme(axis.title.x=element_text(face='bold', size=15))
     p <- p +  theme(axis.title.y=element_text(face='bold', size=15))
 
-    if (shouldHideLegend)
+    if (!showLegend)
     {
         p <- p + guides(colour=FALSE)        
     }

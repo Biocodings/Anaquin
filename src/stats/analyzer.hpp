@@ -75,28 +75,26 @@ namespace Anaquin
 
     struct MappingStats
     {
+        inline Proportion endoProp() const
+        {
+            return (n_chrT + n_endo) ? static_cast<Proportion>(n_endo) / (n_chrT + n_endo) : NAN;
+        }
+
+        inline Proportion chrTProp() const
+        {
+            return dilution();
+        }
+
+        inline Proportion dilution() const
+        {
+            return (n_chrT + n_endo) ? static_cast<Proportion>(n_chrT) / (n_chrT + n_endo) : NAN;
+        }
+
         // Total mapped to the synthetic chromosome
         Counts n_chrT = 0;
 
         // Total mapped to the endogenous
         Counts n_endo = 0;
-
-        // Proportion of reads aligned to endogenous
-        inline Proportion endoProp() const
-        {
-            return (n_chrT + n_endo) ? static_cast<double>(n_endo) / (n_chrT + n_endo) : NAN;
-        }
-        
-        // Proportion of reads aligned to synthetic
-        inline Proportion chrTProp() const
-        {
-            return dilution();
-        }
-        
-        inline Proportion dilution() const
-        {
-            return (n_chrT + n_endo) ? static_cast<double>(n_chrT) / (n_chrT + n_endo) : NAN;
-        }
     };
 
     struct AlignmentStats : public MappingStats

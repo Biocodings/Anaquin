@@ -13,7 +13,7 @@ namespace Anaquin
             Caller caller;
         };
         
-        struct Stats : public MappingStats, public SequinStats
+        struct Stats : public MappingStats, public SequinStats, public VariantStats
         {
             struct ChrTData
             {

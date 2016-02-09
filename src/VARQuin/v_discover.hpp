@@ -19,7 +19,7 @@ namespace Anaquin
             Probability sign = 0.1;
         };
 
-        struct Stats : public MappingStats, public SequinStats
+        struct Stats : public MappingStats, public SequinStats, public VariantStats
         {
             typedef VariantMatch ChrTData;
             
