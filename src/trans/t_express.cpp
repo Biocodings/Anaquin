@@ -226,6 +226,7 @@ static void writeSummary(const TExpress::Stats &stats,
     o.writer->write(StatsWriter::inflectSummary(o.rChrT(),
                                                 o.rEndo(),
                                                 std::vector<FileName>     { file  },
+                                                std::vector<SequinHist>   { stats.hist },
                                                 std::vector<MappingStats> { stats },
                                                 std::vector<LinearStats>  { stats.data.at(ChrT) },
                                                 units));
@@ -423,6 +424,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     
     std::vector<TExpress::Stats::Data> data;
     std::vector<MappingStats> data_;
+    std::vector<SequinHist> hists;
     
     for (auto i = 0; i < files.size(); i++)
     {
@@ -436,8 +438,9 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
         // Generating scatter plot for the sample
         writeScatter(stats[i], files[i], o.exp->names().at(i), units, o);
 
-        data.push_back(stats[i].data.at(ChrT));
         data_.push_back(stats[i]);
+        hists.push_back(stats[i].hist);
+        data.push_back(stats[i].data.at(ChrT));
     }
     
     /*
@@ -481,7 +484,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     o.writer->open("TransExpress_pooled.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT(), o.rEndo(), files, data_, data, units));
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT(), o.rEndo(), files, hists, data_, data, units));
     o.writer->close();
 
     /*

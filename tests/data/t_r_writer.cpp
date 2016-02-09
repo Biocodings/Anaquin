@@ -7,7 +7,7 @@ using namespace Anaquin;
 TEST_CASE("LinearInflection_Summary")
 {
     const auto r1 = StatsWriter::inflectSummary();
-    const auto r2 = StatsWriter::inflectSummary("chrT.gtf", "endo.gtf", SInflectStats());
+    const auto r2 = StatsWriter::inflectSummary("chrT.gtf", "endo.gtf", SInflectStats(), "genes");
 
     REQUIRE(!r1.empty());
     REQUIRE(!r2.empty());

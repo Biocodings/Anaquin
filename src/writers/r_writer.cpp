@@ -80,12 +80,9 @@ Scripts RWriter::scatterPool(const FileName &file)
 Scripts StatsWriter::inflectSummary()
 {
     return "Summary for input: %1%\n\n"
+           "%41%"
            "   ***\n"
-           "   *** The statistics are shown in arithmetic average and standard deviation. For example,\n"
-           "   *** 5.12 ± 0.52 has an arithmetic average of 5.12 and standard deviation 0.52.\n"
-           "   ***\n\n"
-           "   ***\n"
-           "   *** Fraction of genes for synthetic and experiment relative to all genes detected in the input file\n"
+           "   *** Fraction of %40% for synthetic and experiment relative to all %40% detected in the input file\n"
            "   ***\n\n"
            "   Synthetic:  %2% (%3%)\n"
            "   Experiment: %4% (%5%)\n\n"
@@ -95,7 +92,6 @@ Scripts StatsWriter::inflectSummary()
            "   File:      %6%\n"
            "   Reference: %7% %8%\n"
            "   Detected:  %9% %8%\n\n"
-    
            "   ***\n"
            "   *** Please refer to the online documentation for more details on the regression statistics.\n"
            "   ***\n"
@@ -149,8 +145,20 @@ Scripts StatsWriter::inflectSummary()
            "   SST:         %38%, DF: %39%\n";
 }
 
-Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR, const SInflectStats &stats)
-{    
+Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR, const SInflectStats &stats, const Units &units)
+{
+    const auto intro_1 = "   ***\n"
+                         "   *** The statistics are shown by arithmetic average and standard deviation. For example,\n"
+                         "   *** 5.12 ± 0.52 has an arithmetic average of 5.12 and standard deviation 0.52.\n"
+                         "   ***\n\n";
+
+    std::string intro;
+
+    if (stats.files.size() > 1)
+    {
+        intro = intro_1;
+    }
+
     return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
                                                          % STRING(stats.n_chrT)     // 2
                                                          % STRING(stats.p_chrT)     // 3
@@ -190,12 +198,15 @@ Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR
                                                          % STRING(stats.wLog.SSE_D)
                                                          % STRING(stats.wLog.SST)
                                                          % STRING(stats.wLog.SST_D)
+                                                         % units
+                                                         % intro
             ).str();
 };
 
 Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
                                     const FileName     &endoR,
                                     const FileName     &file,
+                                    const Hist         &hist,
                                     const MappingStats &mStats,
                                     const LinearStats  &stats,
                                     const Units &units)
@@ -203,6 +214,7 @@ Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
     return inflectSummary(chrTR,
                           endoR,
                           std::vector<FileName>     { file   },
+                          std::vector<Hist>         { hist   },
                           std::vector<MappingStats> { mStats },
                           std::vector<LinearStats>  { stats  },
                           units);
@@ -211,6 +223,7 @@ Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
 Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
                                     const FileName                  &endoR,
                                     const std::vector<FileName>     &files,
+                                    const std::vector<SequinHist>   &hist,
                                     const std::vector<MappingStats> &mStats,
                                     const std::vector<LinearStats>  &stats,
                                     const Units &units)
@@ -239,9 +252,9 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.p_chrT.add(mStats[i].chrTProp());
         r.p_endo.add(mStats[i].endoProp());
 
-        //r.n_ref.add(mStats[i].hist.size());
-        //r.n_det.add(detect(mStats[i].hist));
-        
+        r.n_ref.add(hist[i].size());
+        r.n_det.add(detect(hist[i]));
+
         r.b.add(b);
         r.bID.add(inf.id);
         r.lInt.add(inf.lInt);
@@ -276,7 +289,7 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.wLog.SST_D.add(l_lm.SST_D);
     }
 
-    return inflectSummary(chrTR, endoR, r);
+    return inflectSummary(chrTR, endoR, r, units);
 }
 
 Scripts RWriter::createSplice(const FileName &fpkms)

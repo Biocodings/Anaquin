@@ -63,20 +63,27 @@ namespace Anaquin
          * -------------------- Linear Statistics (with inflection) --------------------
          */
 
+        typedef std::map<std::string, Counts> Hist;
+        
         static Scripts inflectSummary();
         
         static Scripts inflectSummary(const FileName &,
                                       const FileName &,
-                                      const SInflectStats &);
+                                      const SInflectStats &,
+                                      const Units &);
+
         static Scripts inflectSummary(const FileName &,
                                       const FileName &,
                                       const std::vector<FileName>     &,
+                                      const std::vector<Hist>         &,
                                       const std::vector<MappingStats> &,
                                       const std::vector<LinearStats>  &,
-                                      const Units &units);
+                                      const Units &);
+
         static Scripts inflectSummary(const FileName &,
                                       const FileName &,
                                       const FileName &,
+                                      const Hist     &,
                                       const MappingStats &,
                                       const LinearStats  &,
                                       const Units &units);

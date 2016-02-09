@@ -113,9 +113,10 @@ void VAllele::report(const FileName &file, const Options &o)
     o.writer->write(StatsWriter::inflectSummary(o.rChrT(),
                                                 o.rEndo(),
                                                 file,
+                                                stats.hist,
                                                 stats,
                                                 stats.chrT.tot,
-                                                ""));
+                                                "variants"));
     o.writer->close();
 
     /*

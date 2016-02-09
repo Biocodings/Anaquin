@@ -504,11 +504,11 @@ def TransQuin(config, output):
 
     r.endChapter()
 
-    #######################################################
-    #                                                     #
-    #  6. Generating apprendix for the sequin statistics  #
-    #                                                     #
-    #######################################################
+    #############################
+    #                           #
+    #  6. Generating apprendix  #
+    #                           #
+    #############################
 
     r.startChapter('Apprendix: Sequin Alignment')
 
@@ -593,6 +593,19 @@ def VarQuin(config, output):
     #                                      #
     ########################################
 
+
+    #############################
+    #                           #
+    #  6. Generating apprendix  #
+    #                           #
+    #############################
+
+    r.startChapter('Apprendix: Allele frequency')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Allele frequency statistics for: ' + names[i], 'VarAllele_quins.csv', )
+
+    r.endChapter()
 
     # Generate a markup report (which can then be converted into various formats)
     r.generate('report.RMarkdown', output)

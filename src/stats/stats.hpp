@@ -39,13 +39,15 @@ namespace Anaquin
     {
         public:
         
-            void add(const T &x)
+            inline void add(const T &x)
             {
                 _data.push_back(x);
             }
         
-            virtual operator std::string() const = 0;
+            inline std::size_t size() const { return _data.size(); }
         
+            virtual operator std::string() const = 0;
+
         protected:
         
             std::vector<T> _data;
@@ -79,12 +81,17 @@ namespace Anaquin
         }
     };
 
-    struct SProps : public SReals
+    struct SPercent : public SReals
     {
         virtual operator std::string() const
         {
             return SReals::operator std::string() + "%";
         }
+    };
+    
+    struct SProps : public SReals
+    {
+        // Emtpy Implementation
     };
     
     typedef SReals SCounts;

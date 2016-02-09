@@ -62,11 +62,6 @@ namespace Anaquin
         // Empty Implementation
     };
     
-    struct SingleInputStats
-    {
-        FileName src;
-    };
-    
     struct SequinStats
     {
         // Distribution of counts across sequins
