@@ -2,6 +2,12 @@
 
 using namespace Anaquin;
 
+// Defined in resources.cpp
+extern Scripts PlotLODR_V();
+
+// Defined in resources.cpp
+extern Scripts PlotROC_V();
+
 VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -198,7 +204,7 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
                          "   ***\n"
                          "   *** Number of variants called in the synthetic and experimental chromosomes\n"
                          "   ***\n\n"
-                         "   Synthetic:  %2% variants\n\n"
+                         "   Synthetic:  %2% variants\n"
                          "   Experiment: %3% variants\n\n"
                          "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
@@ -219,7 +225,6 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
                          "   ***        Statistics for the synthetic chromosome       ***\n"
                          "   ***                                                      ***\n"
                          "   ************************************************************\n\n"
-                         "   ***\n"
                          "   Detected:    %12% SNPs\n"
                          "   Detected:    %13% indels\n"
                          "   Detected:    %14% variants\n\n"
@@ -233,15 +238,21 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
                          "   False Positives:  %22% SNPS\n"
                          "   False Positives:  %23% SNPS\n"
                          "   False Positives:  %24% variants\n\n"
-                         "   Performance metrics for SNPs\n\n"
+                         "   ***\n"
+                         "   *** Performance metrics (Overall)\n"
+                         "   ***\n\n"
+                         "   Sensitivity: %29%\n"
+                         "   Specificity: %30%\n\n"
+                         "   ***\n"
+                         "   *** Performance metrics (SNP)\n"
+                         "   ***\n\n"
                          "   Sensitivity: %25%\n"
                          "   Specificity: %26%\n\n"
-                         "   Performance metrics for indels\n\n"
+                         "   ***\n"
+                         "   *** Performance metrics (Indel)\n"
+                         "   ***\n\n"
                          "   Sensitivity: %27%\n"
-                         "   Specificity: %28%\n\n"
-                         "   Overall performance metrics\n\n"
-                         "   Sensitivity: %29%\n"
-                         "   Specificity: %30%\n\n";
+                         "   Specificity: %28%\n\n";
 
     o.writer->open("VarDiscover_summary.stats");
     
@@ -308,16 +319,17 @@ void VDiscover::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createROC_V("VarDiscover_labels.csv"));
+    o.writer->write(RWriter::createScript("VarDiscover_labels.csv", PlotROC_V()));
     o.writer->close();
 
     /*
-     * Generating LODR curve (only if probability is given, for example, not possible with GATK)
+     * Generating LODR curve (only if probability is given, for instance, not possible with GATK)
      */
 
     if (o.caller == Caller::VarScan)
     {
         o.writer->open("VarDiscover_LODR.R");
+        o.writer->write(RWriter::createScript("VarDiscover_labels.csv", PlotLODR_V()));
         o.writer->close();
     }
 

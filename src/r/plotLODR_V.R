@@ -8,17 +8,19 @@
 
 library(Anaquin)
 
-# Read the differential results
-data <- read.csv('%3%/%4%', row.name=1)
+# Change this for your significance level
+sign <- 0.10
 
-# Create a TransQuin data set for Anaquin
-data <- TransQuin(seqs=row.names(data), baseMean=data$baseMean, log2FoldChange=data$lfc, lfcSE=data$lfcSE, pvalue=data$pval, expected.LFC=data$elfc)
+data <- read.csv('%3%/%4%', sep='\t')
 
-# Change to your chooden FDR rate
-chosenFDR <- 0.1
+data[data$Label=='FP',]$ERatio   <- 1
+data[data$Label=='FP',]$EAlleleF <- 1
 
-xBreaks <- c(1, 10, 100, 1000, 10000)
-xLabels <- c('1e+00', '1e+01', '1e+02', '1e+03', '1e+04')
-yBreaks <- c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)
+snp <- data[data$Type=='SNP',]
+ind <- data[data$Type=='Indel',]
 
-r <- plotLODR(data, shouldBand=TRUE, locBand='global', choseFDR=0.1, shouldTable=FALSE, lvl='gene', yBreaks=yBreaks, xBreaks=xBreaks, xLabels=xLabels)
+# Plot for SNP
+plotLODR.Plot(data.frame(pval=log10(snp$PValue), abund=log10(snp$EAlleleF), ratio=as.factor(snp$EAlleleF)), title='Expected allele frequency vs P-value (SNP)', xname='Expected allele frequency (log10)', yname='P-value (log10)')
+
+# Plot for indels
+plotLODR.Plot(data.frame(pval=log10(ind$PValue), abund=log10(ind$EAlleleF), ratio=as.factor(ind$EAlleleF)), title='Expected allele frequency vs P-value (Indel)', xname='Expected allele frequency (log10)', yname='P-value (log10)')

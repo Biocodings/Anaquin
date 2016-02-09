@@ -194,9 +194,6 @@ namespace Anaquin
         // Create an ROC script for transcriptome analysis
         static Scripts createROC_T(const std::vector<FeatureID> &, const std::vector<double> &, const std::string &);
 
-        // Create an ROC script for variant analysis
-        static Scripts createROC_V(const FileName &);
-
         /*
          * -------------------- MA Plot --------------------
          */

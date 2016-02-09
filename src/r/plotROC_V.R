@@ -9,26 +9,15 @@
 library(Anaquin)
 
 # Change this for your significance level
-signLevel <- 0.10
+sign <- 0.10
 
-# Read the data file for true positives
-tps <- read.csv('%3%/%4%.csv', sep='\t')
-
-# Read the data file for false positives
-fps <- read.csv('%3%/%5%.csv', sep='\t')
-
-# Filter only the significant FPs
-fps <- fps[fps$PValue < signLevel,]
-
-tps$label <- 'TP'
-fps$label <- 'FP'
-
-data <- rbind(tps, fps)
+data <- read.csv('%3%/%4%', sep='\t')
+data <- data[data$PValue <= sign,]
 
 data$name <- paste(data$Sequin, data$Position, sep='_')
 data$name <- paste(data$name, data$Type, sep='_')
 
-# Create a TransQuin data set for Anaquin
-data <- VarQuin(seqs=data$name, pval=data$PValue, rRead=data$RefRead, vRead=data$VarRead, eAFreq=data$EAlleleF, label=data$label, type=data$Type)
+# Create a VarQuin data set for Anaquin
+data <- VarQuin(seqs=data$name, pval=data$PValue, expected=data$EAlleleF, label=data$Label, type=data$Type)
 
 plotROC.VarQuin(data)

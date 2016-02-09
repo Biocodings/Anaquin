@@ -45,6 +45,9 @@ TEMP_PATH = ANAQUIN_PATH + os.sep + '__temp__' #str(uuid.uuid4())
 # Do we want to do unit testing?
 __unitTesting__ = True
 
+# Global variable
+__mode__ = None
+
 # Execute a VarQuin command
 def rVarQuin(tool, args, config, onlyPrint=False):
 
@@ -283,14 +286,14 @@ class Report:
             file = open(file, 'w')
 
             header = """---
-title: "Anaquin: TransQuin Report"
+title: "Anaquin: %s Report"
 header-includes: \usepackage{graphicx}
 output: 
     pdf_document:
         keep_tex: true
         toc: yes
         toc_depth: 2
----"""
+---""" % __mode__
 
             file.write(header + '\n\n')
 
@@ -542,16 +545,35 @@ def VarQuin(config, output):
     #                                       #
     #########################################
 
-    #print ('----------------------- Variant Discovery -----------------------\n')
+    print ('----------------------- Variant Discovery -----------------------\n')
 
-    #files = get(config, 'ALIGN_FILE', EXPECT_FILES)
+    files = get(config, 'VAR_FILE', EXPECT_FILES)
+    soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', "FreeBayes" })
+
+    # File name of the standards
+    stand  = get(config, 'STAND_FILE', EXPECT_FILES)
 
     #
     # Generate a request for allele frequency. For example:
     #
-    #    anaquin -t VarDiscover -rbed data/VARQuin/AVA017.v032.bed -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA012.v013.csv -soft VarScan -ufiles varscan.tab
+    #    anaquin -t VarDiscover -rvcf data/VARQuin/AVA009.v032.vcf -rbed data/VARQuin/AVA017.v032.bed -m data/VARQuin/MVA011.v013.csv -soft VarScan -ufiles varscan.tab
     #
     
+    req = ' -rbed ' + stand + ' -soft ' + soft + ' -ufiles ' + files
+    
+    # Execute the command
+    rVarQuin('VarDiscover', req, config)
+
+    r.startChapter('Statistics (Variant Discovery)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'VarDiscover_summary.stats', )
+        r.addRCode('ROC', 'VarDiscover_ROC.R', '')
+        r.addRCode('LODR for SNP and Indel', 'VarDiscover_LODR.R', '')
+
+    r.endChapter()
+
+
     ########################################
     #                                      #
     #    3. Generating allele frequency    #
@@ -559,9 +581,6 @@ def VarQuin(config, output):
     ########################################
 
     print ('----------------------- Allele Frequency -----------------------\n')
-
-    files = get(config, 'VAR_FILE', EXPECT_FILES)
-    soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', "FreeBayes" })
 
     #
     # Generate a request for allele frequency. For example:
@@ -654,14 +673,14 @@ def parse(file):
 
 if __name__ == '__main__':
 
-    mode = sys.argv[1]
+    __mode__ = sys.argv[1]
 
     # The raw SAM file  
     file = sys.argv[2]
     
     output = 'RMarkdown'
 
-    if   (mode == 'TransQuin'):
+    if   (__mode__ == 'TransQuin'):
         TransQuin(parse(file), output)
-    elif (mode == 'VarQuin'):
+    elif (__mode__ == 'VarQuin'):
         VarQuin(parse(file), output)

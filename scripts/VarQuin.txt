@@ -37,10 +37,11 @@ MIX_FILE = MVA011.v013.csv
 
 CHRT_VAR = AVA009.v032.vcf
 
+STAND_FILE = AVA017.v032.bed
 
 ###################################################
 #                                                 #
-# 			 1. Experiment Metadata               #
+# 			 2. Experiment Metadata               #
 #                                                 #
 ###################################################
 
@@ -66,7 +67,7 @@ NAMES = A
 
 ###################################################
 #                                                 #
-# 			2. Alignment analysis                 #
+# 			3. Alignment analysis                 #
 #                                                 #
 ###################################################
 
@@ -83,7 +84,7 @@ ALIGN_FILE = TopHat2/TEMP.sam
 
 ######################################################
 #                                                    #
-# 			3. Allele Frequency & Discovery          #
+# 			4. Allele Frequency & Discovery          #
 #                                                    #
 ######################################################
 

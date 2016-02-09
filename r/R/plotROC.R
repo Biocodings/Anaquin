@@ -11,8 +11,8 @@
 
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
     
-    # Compute logarithm transformation to avoid overflowing
-    data$lpval <- log2(data$pval)
+    # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
+    data$lpval <- log2(data$pval + 0.00001)
     
     # Turn the probabilities into ranking classifer
     data$score <- 1-data$lpval
@@ -25,8 +25,6 @@
     
     for (ratio in unique(ratios))
     {
-        #ratio <- 0.000244141
-        
         if (!is.na(ratio))
         {
             t <- data[!is.na(data$ratio) & data$ratio == ratio,]
@@ -54,6 +52,8 @@
             t <- t[with(t, order(score)),]
             
             label <- ifelse(t$label == 'TP', 2, 1)
+            
+            print(label)
             
             preds <- prediction(t$score, label, label.ordering=c(1,2))
             perf  <- performance(preds, 'tpr', 'fpr')
@@ -101,7 +101,7 @@
 
 plotROC.VarQuin <- function(data, title=NULL)
 {
-    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$eAFreq)), title)
+    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected)), title)
 }
 
 plotROC.TransQuin <- function(data, meth='validate')

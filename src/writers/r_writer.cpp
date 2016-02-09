@@ -350,15 +350,3 @@ Scripts RWriter::createROC_T(const std::vector<FeatureID> &seqs, const std::vect
                                     % concat(ps)
                                     % lvl).str();
 }
-
-Scripts RWriter::createROC_V(const FileName &file)
-{
-    std::stringstream ss;
-    ss << PlotROC_V();
-
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % __output__
-                                    % file
-                                    % file).str();
-}

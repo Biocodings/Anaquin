@@ -211,7 +211,7 @@
     arrowDat$ratio <- as.factor(arrowDat$ratio)    
 }
 
-.plotLODR.Plot <- function(data, ...)
+plotLODR.Plot <- function(data, ...)
 {
     require(ggplot2)
     

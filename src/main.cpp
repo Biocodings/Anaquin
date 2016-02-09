@@ -1376,8 +1376,8 @@ void parse(int argc, char ** argv)
 
                     case TOOL_V_DISCOVER:
                     {
-                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
-                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
 
