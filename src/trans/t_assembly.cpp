@@ -35,7 +35,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-static FileName createFilters(const FileName &ref, const FileName &query, const ChromoID &cID)
+static FileName createFilters(const FileName &file, const ChromoID &cID)
 {
     assert(cID == ChrT || cID == Endo);
     
@@ -60,8 +60,8 @@ static FileName createFilters(const FileName &ref, const FileName &query, const 
     };
     
     // Generate a filtered query
-    f(query, out);
-    
+    f(file, out);
+
     out.close();
     
     return tmp;
@@ -156,13 +156,10 @@ static TAssembly::Stats init(const TAssembly::Options &o)
     TAssembly::Stats stats;
     
     stats.data[ChrT];
-    stats.refs[ChrT] = o.rChrT();
     
-    // Remember, endogenous is optional
-    if (!o.rEndo().empty())
+    if (!o.rEndoF.empty())
     {
         stats.data[Endo];
-        stats.refs[Endo] = o.rEndo();
     }
 
     return stats;
@@ -225,13 +222,10 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         stats.data[cID].nIntronP  = __cmp__.novelIntronsP / 100.0;
     };
     
-    auto compareGTF = [&](const ChromoID &cID)
+    auto compareGTF = [&](const ChromoID &cID, const FileName &ref)
     {
-        // Reference annoation
-        const auto &ref = stats.refs.at(cID);
-
         // Filtered query
-        const auto qry = createFilters(file, ref, cID);
+        const auto qry = createFilters(file, cID);
 
         o.logInfo("Reference: " + ref);
         o.logInfo("Query: " + qry);
@@ -246,7 +240,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
     std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChromoID, TAssembly::Stats::Data> &p)
     {
-        compareGTF(p.first);
+        compareGTF(p.first, p.first == ChrT ? o.rChrTF : o.rEndoF);
         copyStats(p.first);
     });
     

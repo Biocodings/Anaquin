@@ -71,9 +71,6 @@ namespace Anaquin
             
             // Number of transcripts assembled for endogenous
             Counts endo_trans = 0;
-            
-            // Reference file for each chromosome
-            std::map<ChromoID, FileName> refs;
         };
 
         // Analyze a single sample
