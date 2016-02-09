@@ -2,6 +2,8 @@
 
 using namespace Anaquin;
 
+extern Scripts PlotDensity();
+
 VCoverage::Stats VCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
@@ -58,4 +60,12 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
         // Filter to the regions in the standards
         return r.r_var.match(Locus(i, j), MatchRule::Contains);
     });
+    
+    /*
+     * Generating density plot
+     */
+    
+    o.writer->open("VarCoverage_density.R");
+    o.writer->write(RWriter::createScript("VarCoverage_chrT.bedgraph", PlotDensity()));
+    o.writer->close();
 }

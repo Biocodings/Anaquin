@@ -30,7 +30,7 @@ static VAlign::Stats init()
     stats.data["chr21"];
 
     // Distribution for the sequins
-    stats.h = Standard::instance().r_var.hist();
+    stats.hist = Standard::instance().r_var.hist();
     
     return stats;
 }
@@ -58,7 +58,7 @@ static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals
         assert(t.length() <= l->l().length());
 
         inters.find(match->id)->add(t);
-        stats.h.at(match->id)++;
+        stats.hist.at(match->id)++;
     }
 }
 
@@ -113,9 +113,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         if (!align.mapped)
         {
             return;
-        }
-        
-        if (align.cID == ChrT)
+        }        
+        else if (align.cID == ChrT)
         {
             classifyChrT(align, stats, inters);
         }
@@ -125,12 +124,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     });
 
-    /*
-     * Calculating limit of sensitivity
-     */
-    
     // Calculate for the sensitivity
-    stats.limit = r.limit(stats.h);
+    stats.limit = r.limit(stats.hist);
 
     /*
      * Calculating base statistics for both synthetic and endogenous

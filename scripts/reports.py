@@ -636,7 +636,7 @@ def VarQuin(config, output):
     #
     # Generate a request for genome coverage. For example:
     #
-    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
+    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles merged.bam
     #
 
     files = get(config, 'COV_FILE', EXPECT_FILES)

@@ -60,6 +60,8 @@
 #include "resources/plotROC_V.R"
 #include "resources/plotLODR_V.R"
 #include "resources/plotAlleleF.R"
+#include "resources/plotDensity.R"
+#include "resources/plotSubsample.R"
 
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
@@ -212,6 +214,16 @@ Scripts PlotROC_V()
 Scripts PlotLODR_V()
 {
     return ToString(src_r_plotLODR_V_R);
+}
+
+Scripts PlotDensity()
+{
+    return ToString(src_r_plotDensity_R);
+}
+
+Scripts PlotSubsample()
+{
+    return ToString(src_r_plotSubsample_R);
 }
 
 Scripts VarDataMixA()

@@ -20,26 +20,26 @@ data  = [ 'data/manual.txt',
           'src/r/plotSplice.R',
           'src/r/plotScatterPool.R',
 
-           # ------- Fusion -------
+          # ------- Fusion -------
 
-           'src/r/plotROC_F.R',
-           'src/r/plotScatter_F.R',
+          'src/r/plotROC_F.R',
+          'src/r/plotScatter_F.R',
 
           'data/fusion/AFU004.v032.ref',
           'data/fusion/AFU005.v032.bed',
           'data/fusion/MFU007.v013.csv',
 
-           # ------- Ladder -------
+          # ------- Ladder -------
 
           'data/ladder/MLA014.v013.csv',
           'data/ladder/MLA016.v013.csv',
           'data/ladder/MLA020.v013.csv',
            
-           # ---------- Transcriptome ----------
+          # ---------- Transcriptome ----------
 
-           'src/r/plotROC_T.R',
-           'src/r/plotLODR_T.R',
-           'src/r/plotScatter_T.R',
+          'src/r/plotROC_T.R',
+          'src/r/plotLODR_T.R',
+          'src/r/plotScatter_T.R',
 
           'data/trans/ATR001.v032.gtf',
           'data/trans/MTR002.v013.csv',
@@ -47,17 +47,19 @@ data  = [ 'data/manual.txt',
           'data/trans/MTR004.v013.csv',          
           'data/trans/MTR005.v013.csv',
 
-           # ---------- META ----------
+          # ---------- META ----------
 
           'data/meta/AME013.v032.fa',
           'data/meta/MME023.v013.csv',
           'data/meta/AME015.v032.bed',
 
-           # ---------- Variant ----------
+          # ---------- Variant ----------
 
-           'src/r/plotROC_V.R',
-           'src/r/plotLODR_V.R',
-           'src/r/plotAlleleF.R',
+          'src/r/plotROC_V.R',
+          'src/r/plotLODR_V.R',
+          'src/r/plotAlleleF.R',
+          'src/r/plotDensity.R',
+          'src/r/plotSubsample.R',
 
           'data/VarQuin/AVA017.v032.bed',
           'data/VarQuin/AVA009.v032.vcf',
