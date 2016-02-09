@@ -11,6 +11,19 @@ namespace Anaquin
         
         struct Stats : public AlignmentStats
         {
+            /*
+             * Accessor for sequin level
+             */
+            
+            /*
+             * Accessor for base level
+             */
+            
+            inline Proportion bSN(const ChromoID &cID) const
+            {
+                return static_cast<Proportion>(covered(cID)) / length(cID);
+            }
+
             // Returns the sensitivity at the base level. This is also the base coverage.
             inline Proportion bSN(const ChromoID &cID, const SequinID &sID) const
             {
@@ -37,11 +50,6 @@ namespace Anaquin
                 return sum(data.at(cID).length);
             }
             
-            inline Proportion bSN(const ChromoID &cID) const
-            {
-                return static_cast<Proportion>(covered(cID)) / length(cID);
-            }
-
             struct Data
             {
                 Confusion m;
@@ -56,7 +64,7 @@ namespace Anaquin
             std::map<ChromoID, Data> data;
 
             // Distribution for the sequins
-            SequinHist h;
+            SequinHist hist;
 
             // Absolute detection limit
             Limit limit;

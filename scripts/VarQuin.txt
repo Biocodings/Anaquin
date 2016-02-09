@@ -79,7 +79,7 @@ NAMES = A
 #     - SAM/BAM
 #
 
-ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = BWA/realigned.bam
 
 
 ######################################################
@@ -102,4 +102,22 @@ VAR_SOFT = VarScan
 
 # Where's your file?
 VAR_FILE = VarScan/varscan.tab
+
+
+######################################################
+#                                                    #
+# 		   5. Genome Coverage & Subsampling          #
+#                                                    #
+######################################################
+
+#
+# Where are your alignment files (SAM/BAM)?
+#
+# Anaquin supports:
+#
+#     - SAM/BAM
+#
+
+COV_FILE = BWA/realigned.bam
+
 

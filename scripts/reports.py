@@ -64,7 +64,7 @@ def rVarQuin(tool, args, config, onlyPrint=False):
     req = req + ' -o ' + TEMP_PATH + args
 
     print(req + '\n')
-
+    
     # Execute the Anaquin request
     if not onlyPrint:
         os.system(req)
@@ -539,6 +539,29 @@ def VarQuin(config, output):
     #                                       #
     #########################################
     
+    print ('----------------------- Variant Alignment -----------------------\n')
+    
+    #
+    # Generate a request for genome coverage. For example:
+    #
+    #    anaquin -t VarAlign -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
+    #
+
+    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
+
+    req = ' -ufiles ' + files
+    
+    # Execute the command
+    rVarQuin('VarAlign', req, config, onlyPrint=True)
+
+    r.startChapter('Statistics (Genome Alignment)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'VarAlign_summary.stats', )
+
+    r.endChapter()
+
+    
     #########################################
     #                                       #
     #    2. Generating variant discovery    #
@@ -604,16 +627,60 @@ def VarQuin(config, output):
 
     ########################################
     #                                      #
-    #    4. Generating coverage            #
+    #       4. Generating coverage         #
     #                                      #
     ########################################
 
+    print ('----------------------- Variant Coverage -----------------------\n')
+
+    #
+    # Generate a request for genome coverage. For example:
+    #
+    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
+    #
+
+    files = get(config, 'COV_FILE', EXPECT_FILES)
+
+    req = ' -soft ' + soft + ' -ufiles ' + files
+    
+    # Execute the command
+    rVarQuin('VarCoverage', req, config, onlyPrint=True)
+
+    r.startChapter('Statistics (Genome Coverage)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'VarCoverage_summary.stats', )
+
+    r.endChapter()
+    
 
     ########################################
     #                                      #
-    #    5. Generating subsample           #
+    #      5. Generating Subsampling       #
     #                                      #
     ########################################
+
+    print ('----------------------- Variant Subsampling -----------------------\n')
+
+    #
+    # Generate a request for genome coverage. For example:
+    #
+    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
+    #
+
+    files = get(config, 'COV_FILE', EXPECT_FILES)
+
+    req = ' -soft ' + soft + ' -ufiles ' + files
+    
+    # Execute the command
+    rVarQuin('VarSubsampling', req, config, onlyPrint=True)
+
+    r.startChapter('Statistics (Genome Subsampling)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'VarSubsample_summary.stats', )
+
+    r.endChapter()
 
 
     #############################

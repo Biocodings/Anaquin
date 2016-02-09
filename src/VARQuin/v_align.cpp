@@ -37,10 +37,6 @@ static VAlign::Stats init()
 
 static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
 {
-    /*
-     * Collect statistics for the alignment
-     */
-    
     const SequinData * match;
 
     if (classify(stats.data.at(ChrT).m, align, [&](const Alignment &)
@@ -49,7 +45,7 @@ static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals
     }))
     {
         /*
-         * It's important not to map the position relative to the beginning of the sequin, as interval
+         * It's important to map the position relative to the beginning of the sequin, as interval
          * has been designed for chromosome and thus starts from position 0.
          */
         
