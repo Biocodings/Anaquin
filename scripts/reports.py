@@ -324,7 +324,7 @@ def TransQuin(config, output):
     #                                           #
     #############################################
 
-    print ('----------------------- Alignments -----------------------\n')
+    print ('\n----------------------- Alignments -----------------------\n')
 
     # Alignment files
     files = get(config, 'ALIGN_FILE', EXPECT_FILES)
@@ -353,7 +353,7 @@ def TransQuin(config, output):
     #                                          #
     ############################################
 
-    print ('----------------------- Assembly -----------------------\n')
+    print ('\n----------------------- Assembly -----------------------\n')
 
     # Assembly software
     soft = get(config, 'ASSEMBLY_SOFT', { 'Cufflinks', 'StringTie' })
@@ -386,7 +386,7 @@ def TransQuin(config, output):
     #                                                           #
     #############################################################
 
-    print ('----------------------- Expression (Gene) -----------------------\n')
+    print ('\n----------------------- Expression (Gene) -----------------------\n')
 
     soft  = get(config, 'EXP_G_SOFT', { 'Cufflinks', 'StringTie' })
     files = get(config, 'EXP_G_FILE', EXPECT_FILES)
@@ -423,7 +423,7 @@ def TransQuin(config, output):
     #                                                              #
     ################################################################
     
-    print ('----------------------- Expression (Isoform) -----------------------\n')
+    print ('\n----------------------- Expression (Isoform) -----------------------\n')
 
     # Expression software
     soft = get(config, 'EXP_I_SOFT', { 'Cufflinks', 'StringTie' })
@@ -466,7 +466,7 @@ def TransQuin(config, output):
     #                                                      #
     ########################################################
 
-    print ('----------------------- Differential -----------------------\n')
+    print ('\n----------------------- Differential -----------------------\n')
 
     lvl = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
 
@@ -539,7 +539,7 @@ def VarQuin(config, output):
     #                                       #
     #########################################
     
-    print ('----------------------- Variant Alignment -----------------------\n')
+    print ('\n----------------------- Variant Alignment -----------------------\n')
     
     #
     # Generate a request for genome coverage. For example:
@@ -568,7 +568,7 @@ def VarQuin(config, output):
     #                                       #
     #########################################
 
-    print ('----------------------- Variant Discovery -----------------------\n')
+    print ('\n----------------------- Variant Discovery -----------------------\n')
 
     files = get(config, 'VAR_FILE', EXPECT_FILES)
     soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', "FreeBayes" })
@@ -603,7 +603,7 @@ def VarQuin(config, output):
     #                                      #
     ########################################
 
-    print ('----------------------- Allele Frequency -----------------------\n')
+    print ('\n----------------------- Allele Frequency -----------------------\n')
 
     #
     # Generate a request for allele frequency. For example:
@@ -631,7 +631,7 @@ def VarQuin(config, output):
     #                                      #
     ########################################
 
-    print ('----------------------- Variant Coverage -----------------------\n')
+    print ('\n----------------------- Variant Coverage -----------------------\n')
 
     #
     # Generate a request for genome coverage. For example:
@@ -641,7 +641,7 @@ def VarQuin(config, output):
 
     files = get(config, 'COV_FILE', EXPECT_FILES)
 
-    req = ' -soft ' + soft + ' -ufiles ' + files
+    req = ' -soft ' + soft + ' -ufiles ' + files + ' -rbed data/VARQuin/AVA017.v032.bed'
     
     # Execute the command
     rVarQuin('VarCoverage', req, config, onlyPrint=True)
@@ -650,6 +650,7 @@ def VarQuin(config, output):
 
     for i in range(0, len(names)):
         r.addTextFile('Summary statistics for: ' + names[i], 'VarCoverage_summary.stats', )
+        r.addRCode('Density plot', 'VarCoverage_density.R', '', nPlots=1)
 
     r.endChapter()
     
@@ -660,7 +661,7 @@ def VarQuin(config, output):
     #                                      #
     ########################################
 
-    print ('----------------------- Variant Subsampling -----------------------\n')
+    print ('\n----------------------- Variant Subsampling -----------------------\n')
 
     #
     # Generate a request for genome coverage. For example:
