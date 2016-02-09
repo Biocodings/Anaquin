@@ -23,8 +23,15 @@ plotScatter <- function(data,
     data$x     <- data$expected
     data$y     <- data$measured
     data$logFC <- abs(log2(data$expected))
+
+    stopifnot(length(data$x) == length((data$y)))
     
-    if (shouldLog2)
+    if (length(data$x) == 0)
+    {
+        warning('Failed to create scatter plot. No data found.')
+        return (NULL)
+    }
+    else if (shouldLog2)
     {
         data$x <- log2(data$x)
         data$y <- log2(data$y)

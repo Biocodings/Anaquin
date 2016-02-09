@@ -45,9 +45,29 @@ TEMP_PATH = ANAQUIN_PATH + os.sep + '__temp__' #str(uuid.uuid4())
 # Do we want to do unit testing?
 __unitTesting__ = True
 
+# Execute a VarQuin command
+def rVarQuin(tool, args, config, onlyPrint=False):
 
-# Execute an Anaquin request
-def anaquin(tool, args, config, needMixture=True, onlyPrint=False, subdir=''):
+    # Eg: /Users/tedwong/Desktop/K_562
+    root = get(config, 'ROOT_PATH')
+
+    mix   = appendRoot(root, get(config, 'MIX_FILE')) # CSV format
+    cVars = appendRoot(root, get(config, 'CHRT_VAR')) # VCF format
+
+    # Construct mixture and reference annoation
+    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rvcf ' + cVars
+
+    # Now add up the arguments
+    req = req + ' -o ' + TEMP_PATH + args
+
+    print(req + '\n')
+
+    # Execute the Anaquin request
+    if not onlyPrint:
+        os.system(req)
+
+# Execute an TransQuin command
+def rTransQuin(tool, args, config, onlyPrint=False, subdir=''):
     
     # Eg: /Users/tedwong/Desktop/K_562
     root = get(config, 'ROOT_PATH')
@@ -55,20 +75,15 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False, subdir=''):
     names   = get(config, 'NAMES')
     factors = get(config, 'FACTORS')
     
-    mix   = appendRoot(root, get(config, 'MIX_FILE'))
-    c_ref = appendRoot(root, get(config, 'CHRT_ANNOT'))
-    e_ref = appendRoot(root, get(config, 'EXP_ANNOT'))    
+    mix   = appendRoot(root, get(config, 'MIX_FILE'))   # CSV format
+    c_ref = appendRoot(root, get(config, 'CHRT_ANNOT')) # GTF format
+    e_ref = appendRoot(root, get(config, 'EXP_ANNOT'))  # GTF format
     
     names   = get(config, 'NAMES')    
     factors = get(config, 'FACTORS')
     
     if (len(subdir)):
         subdir = '/' + subdir
-    
-    #
-    # Generate a full Anaquin command. A full command would need the mixture and reference annotation.
-    # However, not all tool would require, say, a mixture.
-    #
     
     # Construct mixture and reference annoation
     req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rgtf ' + c_ref + ' -rexp ' + e_ref
@@ -79,8 +94,8 @@ def anaquin(tool, args, config, needMixture=True, onlyPrint=False, subdir=''):
     print(req + '\n')
 
     # Execute the Anaquin request
-    #if not __unitTesting__ or onlyPrint:
-    #    os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
+    if not onlyPrint:
+        os.system(ANAQUIN_PATH + ' -o  ' + TEMP_PATH + ' ' + args)
 
 ###################################
 #                                 #
@@ -182,16 +197,18 @@ class Language:
             file.write('\n```\n\n')
 
     @staticmethod
-    def writeRCode(file, output, src, title, description):
+    def writeRCode(file, output, src, title, nPlots, description):
         tmp = (tempfile.NamedTemporaryFile())
         if (output == 'RMarkdown'):
             file.write('\n## ' + title + '\n\n')
             file.write(description + '\n\n')
             file.write('```{r results=''\'hide\''', message=FALSE, warning=FALSE, echo=FALSE}\n')
-            file.write('png(filename="' + tmp.name + '")\n')
+            file.write('png(filename="' + tmp.name + '%01d")\n')
             file.write('source("' + src + '")\n')
             file.write('dev.off()')
-            file.write('\n```\n\n![](' + tmp.name + ')')
+            
+            for i in range(0, nPlots):            
+                file.write('\n```\n\n![](' + tmp.name + str(i+1) + ')')
 
 class Chapter:
     def __init__(self, title):
@@ -207,8 +224,8 @@ class Chapter:
     def addImage(self, title, file):
         self.items.append({ 'type': 'image', 'title': title, 'value': file })
 
-    def addRCode(self, title, file, description):
-        self.items.append({ 'type': 'rCode', 'title': title, 'value': file, 'description': description })
+    def addRCode(self, title, file, description, nPlots):
+        self.items.append({ 'type': 'rCode', 'title': title, 'value': file, 'nPlots': nPlots, 'description': description })
         
     def generate(self, file, output):
         Language.writePage(file, output)
@@ -224,7 +241,7 @@ class Chapter:
                 Language.writeTextFile(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
                 Language.writePage(file, output)
             elif item['type'] == 'rCode':
-                Language.writeRCode(file, output, TEMP_PATH + os.sep + item['value'], item['title'], item['description'])
+                Language.writeRCode(file, output, TEMP_PATH + os.sep + item['value'], item['title'], item['nPlots'], item['description'])
                 Language.writePage(file, output)                
             elif item['type'] == 'image':
                 Language.writeImage(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
@@ -252,8 +269,8 @@ class Report:
     def addImage(self, title, file):
         self.current.addImage(title, file)
         
-    def addRCode(self, title, file, description=''):
-        self.current.addRCode(title, file, description)
+    def addRCode(self, title, file, description='', nPlots=1):
+        self.current.addRCode(title, file, description, nPlots)
         
     def generate(self, file, output):
         print('\n-------------------------------------')
@@ -288,8 +305,7 @@ def createReport(file, report):
 #################################
 
 
-# Create a report for TransQuin
-def transQuin(config, output):
+def TransQuin(config, output):
     
     r = Report()
     
@@ -366,10 +382,7 @@ def transQuin(config, output):
 
     print ('----------------------- Expression (Gene) -----------------------\n')
 
-    # Expression software
-    soft = get(config, 'EXP_G_SOFT', { 'Cufflinks', 'StringTie' })
-
-    # Expression files
+    soft  = get(config, 'EXP_G_SOFT', { 'Cufflinks', 'StringTie' })
     files = get(config, 'EXP_G_FILE', EXPECT_FILES)
 
     #
@@ -507,8 +520,7 @@ def transQuin(config, output):
     # Generate a markup report (which can then be converted into various formats)
     r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
 
-# Create a report for TransQuin
-def transQuin(config, output):
+def VarQuin(config, output):
     
     r = Report()
     
@@ -517,13 +529,19 @@ def transQuin(config, output):
 
     #########################################
     #                                       #
-    #    1. Generating variant discovery    #
+    #    1. Generating alignments           #
+    #                                       #
+    #########################################
+    
+    #########################################
+    #                                       #
+    #    2. Generating variant discovery    #
     #                                       #
     #########################################
 
-    print ('----------------------- Variant Discovery -----------------------\n')
+    #print ('----------------------- Variant Discovery -----------------------\n')
 
-    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
+    #files = get(config, 'ALIGN_FILE', EXPECT_FILES)
 
     #
     # Generate a request for allele frequency. For example:
@@ -533,43 +551,58 @@ def transQuin(config, output):
     
     ########################################
     #                                      #
-    #    1. Generating allele frequency    #
+    #    3. Generating allele frequency    #
     #                                      #
     ########################################
 
     print ('----------------------- Allele Frequency -----------------------\n')
 
-    files = get(config, 'ALIGN_FILE', EXPECT_FILES)
+    files = get(config, 'VAR_FILE', EXPECT_FILES)
+    soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', "FreeBayes" })
 
     #
     # Generate a request for allele frequency. For example:
     #
-    #    anaquin -t VarAllele -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA012.v013.csv -ufiles varscan.tab 
+    #    anaquin -t VarAllele -rvcf data/VARQuin/AVA009.v032.vcf -m data/VARQuin/MVA011.v013.csv -soft VarScan -ufiles varscan.tab 
     #
 
-    req = '-ufiles ' + files
+    req = ' -soft ' + soft + ' -ufiles ' + files
     
     # Execute the command
-    anaquin('VarQuin', req, config, onlyPrint=True)
+    rVarQuin('VarAllele', req, config)
 
-    r.startChapter('Statistics (TransAlign)')
+    r.startChapter('Statistics (Allele Frequency)')
 
     for i in range(0, len(names)):
-        r.addTextFile('Alignment statistics for: ' + names[i], names[i] + os.sep + 'TransAlign_summary.stats', )
+        r.addTextFile('Sequin statistics for: ' + names[i], 'VarAllele_summary.stats', )
+        r.addRCode('Scatter plot', 'VarAllele_scatter.R', '', nPlots=3)
 
     r.endChapter()
 
-    # Generate a markup report (which can then be converted into various formats)
-    r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
-    
 
+    ########################################
+    #                                      #
+    #    4. Generating coverage            #
+    #                                      #
+    ########################################
+
+
+    ########################################
+    #                                      #
+    #    5. Generating subsample           #
+    #                                      #
+    ########################################
+
+
+    # Generate a markup report (which can then be converted into various formats)
+    r.generate('report.RMarkdown', output)
+    
 #################################
 #                               #
 #       Parsing functions       #
 #                               #
 #################################
-    
-    
+
 def parse(file):
 
     print ('Parsing: ' + file)
@@ -612,6 +645,7 @@ if __name__ == '__main__':
     
     output = 'RMarkdown'
 
-    if (mode == 'TransQuin'):
-        transQuin(parse(file), output)
-        
+    if   (mode == 'TransQuin'):
+        TransQuin(parse(file), output)
+    elif (mode == 'VarQuin'):
+        VarQuin(parse(file), output)

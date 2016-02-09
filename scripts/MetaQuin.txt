@@ -1,0 +1,252 @@
+###################################################
+#                                                 #
+#   Configuration file for TransQuin reporting    #
+#                                                 #
+###################################################
+
+
+###################################################
+#                                                 #
+# 			1. General configruation              #
+#                                                 #
+###################################################
+
+# Name of the report
+REPORT_NAME = Anaquin: TransQuin Report 
+
+# Where the files located relatively to the root
+ROOT_PATH = /Users/tedwong/Desktop/K_562
+
+#
+# Where's your mixture file? Anaquin needs it for expected concentration.
+#
+# You can download a copy at www.sequins.xyz. For example:
+#
+#    wget https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv
+#
+
+MIX_FILE = MTR004.v013.csv
+
+#
+# Where's the reference annotation for synthetic?
+#
+# You can download a copy at www.sequin.xyz. For example:
+#
+#    wget https://s3.amazonaws.com/anaquin/mixtures/ATR001.v032.gtf
+#
+
+CHRT_ANNOT = ATR001.v032.gtf
+
+#
+# Where's the annotation for experiment?
+#
+
+EXP_ANNOT = GeneCodeChr1.gtf
+
+###################################################
+#                                                 #
+# 			 2. Experiment Metadata               #
+#                                                 #
+###################################################
+
+#
+# How did you conduct your experiment? The information is needed for the samples.
+#
+# For example, a common experimental design would have two conditions and three replicates
+# for each condition.
+# 
+#         A1 A2 A3 B1 B2 B3
+#
+# You will need to provide a factor for each replicate.
+#
+
+FACTORS = 1,1,1,2,2,2
+
+#
+# How do you want to name your replicates?
+#
+
+NAMES = A1,A2,A3,B1,B2,B3
+
+###################################################
+#                                                 #
+# 			3. Alignment analysis                 #
+#                                                 #
+###################################################
+
+#
+# -------------------- Alignment --------------------
+#
+# Where are your alignment files (SAM/BAM)?
+#
+# Anaquin supports:
+#
+#     - SAM/BAM
+#
+# The orders must be consistent to the factors.
+#
+
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+ALIGN_FILE = TopHat2/TEMP.sam
+
+###################################################
+#                                                 #
+# 			4. Assembly analysis                  #
+#                                                 #
+###################################################
+
+#
+# Which software did you used to generate the assembly?
+#
+# Anaquin supports:
+#
+#     - Cufflinks
+#     - StringTie
+#
+
+ASSEMBLY_SOFT = Cufflinks
+
+#
+# Where are your files?
+#
+# The orders must be consistent to the factors.
+#
+
+ASSEMBLY_FILE = StringTie/A1/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/A2/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/A3/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/B1/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/B2/NotGuided/transcripts.gtf
+ASSEMBLY_FILE = StringTie/B2/NotGuided/transcripts.gtf
+
+##################################################
+#                                                #
+# 		   5. Expression analysis (Gene)         #
+#                                                #
+###################################################
+
+#
+# Which software did you used to generate the results?
+#
+# Anaquin supports:
+#
+#     - Cufflinks
+#     - StringTie
+
+EXP_G_SOFT = Cufflinks
+
+#
+# Where are your files?
+#
+# The orders must be consistent to the factors.
+#
+
+EXP_G_FILE = Cufflinks/A1/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/A2/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/A3/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/B1/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/B2/genes.fpkm_tracking
+EXP_G_FILE = Cufflinks/B3/genes.fpkm_tracking
+
+#####################################################
+#                                                   #
+# 		  6. Expression analysis (Isoform)          #
+#                                                   #
+#####################################################
+
+
+#
+# Which software did you used to generate the results?
+#
+# Anaquin supports:
+#
+#     - Cufflinks
+#     - StringTie
+
+EXP_I_SOFT = StringTie
+
+#
+# Where are your files?
+#
+# The orders must be consistent to the factors.
+#
+
+EXP_I_FILE = StringTie/A1/t_data.ctab
+EXP_I_FILE = StringTie/B1/t_data.ctab
+EXP_I_FILE = StringTie/B2/t_data.ctab
+EXP_I_FILE = StringTie/B1/t_data.ctab
+EXP_I_FILE = StringTie/B2/t_data.ctab
+EXP_I_FILE = StringTie/A1/t_data.ctab
+
+
+###################################################
+#                                                 #
+# 			7. Differential analysis              #
+#                                                 #
+###################################################
+
+#
+# -------------------- Level --------------------
+#
+# Anaquin supports:
+#
+#     - Gene
+#     - Isoform
+#     - Exon
+#
+
+DIFF_LEVEL = Gene
+
+#
+# Which software did you used to generate the results?
+#
+# Anaquin supports:
+#
+#     - HTSeqCount
+#
+# The orders must be consistent to the factors.
+#
+
+COUNT_SOFT = HTSeqCount
+
+#
+# Where are your files?
+#
+# The orders must be consistent to the factors.
+#
+
+DIFF_COUNT = HTSeqCount/K_RMXA1v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/K_RMXA2v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/K_RMXA3v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/G_RMXB1v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/G_RMXB2v2.htseq.counts.combined
+DIFF_COUNT = HTSeqCount/G_RMXB3v2.htseq.counts.combined
+
+
+#
+# Where are the files for the p-values, q-values etc?
+#
+# Anaquin supports:
+#
+#     - edgeR
+#     - DESeq2
+#     - DEXSeq
+#     - Cuffdiff
+#
+# The following outputs will be generated:
+#
+#     - Summary statistics
+#     - ROC Plot
+#     - MA Plot
+#     - LODR Plot
+#
+
+DIFF_SOFT = DESeq2
+DIFF_FILE = DESeq2/DESeq2.csv
+
+
+

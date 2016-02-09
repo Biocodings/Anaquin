@@ -10,7 +10,29 @@ library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
-# Create a TransQuin data set for Anaquin
-data <- VarQuin(seqs=row.names(data), expected=data$EAlleleF, measured=data$MAlleleF)
+# Filter only the SNP
+snp <- data[data$Type=='SNP',]
 
-plotScatter(data, xname='Expected log2 allele frequency', yname='Measured log2 allele frequency')
+# Filter only the indels
+ind <- data[data$Type=='Indel',]
+
+#
+# 1. Plot for all variants
+#
+
+data <- VarQuin(seqs=row.names(data), expected=data$EAlleleF, measured=data$MAlleleF)
+plotScatter(data, title='Expected vs measured allele frequency', xname='Expected log2 allele frequency', yname='Measured log2 allele frequency')
+
+#
+# 2. Plot for SNPs
+#
+
+data <- VarQuin(seqs=row.names(snp), expected=snp$EAlleleF, measured=snp$MAlleleF)
+plotScatter(data, title='Expected vs measured allele frequency (SNP)', xname='Expected log2 allele frequency', yname='Measured log2 allele frequency')
+
+#
+# 2. Plot for indels
+#
+
+data <- VarQuin(seqs=row.names(ind), expected=ind$EAlleleF, measured=ind$MAlleleF)
+plotScatter(data, title='Expected vs measured allele frequency (Indel)', xname='Expected log2 allele frequency', yname='Measured log2 allele frequency')
