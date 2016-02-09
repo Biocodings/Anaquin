@@ -13,22 +13,19 @@ namespace Anaquin
             Caller caller;
         };
         
-        struct Stats : public MappingStats
+        struct Stats : public MappingStats, public SequinStats
         {
-            typedef LinearStats ChrTData;
-
-            struct ChrTStats
+            struct ChrTData
             {
                 LinearStats tot, snp, ind;
             };
-            
-            typedef CalledVariant EndoData;
-            typedef std::vector<EndoData> EndoStats;
 
-            ChrTStats chrT;
-            EndoStats endo;
+            typedef std::vector<CalledVariant> EndoData;
 
-            // Absolute detection limits
+            ChrTData chrT;
+            EndoData endo;
+
+            // Absolute detection limit
             Limit limit;
         };
 

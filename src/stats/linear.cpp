@@ -3,15 +3,9 @@
 
 using namespace Anaquin;
 
-void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<FeatureID> *ids) const
+LinearStats::Data LinearStats::data(bool shouldLog) const
 {
-    x.clear();
-    y.clear();
-    
-    if (ids)
-    {
-        ids->clear();
-    }
+    Data d;
     
     auto f = [&](double v)
     {
@@ -25,26 +19,20 @@ void LinearStats::data(std::vector<double> &x, std::vector<double> &y, bool shou
     {
         if (!isnan(p.second.x) && !isnan(p.second.y))
         {
-            x.push_back(f(p.second.x));
-            y.push_back(f(p.second.y));
-            
-            if (ids)
-            {
-                ids->push_back(p.first);
-            }
+            d.x.push_back(f(p.second.x));
+            d.y.push_back(f(p.second.y));
+            d.ids.push_back(p.first);
         }
     }
+    
+    return d;
 }
 
 LOQModel LinearStats::limitQuant(bool shouldLog) const
 {
-    std::vector<std::string> ids;
-    std::vector<double> x, y;
-    
-    data(x, y, shouldLog, &ids);
+    const auto d = data(shouldLog);
+    const auto r = SS::segmentPieceWise(d.x, d.y);
 
-    const auto r = SS::segmentPieceWise(x, y);
-    
     LOQModel l;
     
     // The break we're looking for
@@ -57,15 +45,15 @@ LOQModel LinearStats::limitQuant(bool shouldLog) const
     l.lInt = r.bkLInt();
     l.rInt = r.bkRInt();
 
-    for (auto i = 0; i < ids.size(); i++)
+    for (auto i = 0; i < d.ids.size(); i++)
     {
-        if (x[i] == l.b)
+        if (d.x[i] == l.b)
         {
-            l.id = ids[i];
+            l.id = d.ids[i];
             break;
         }
     }
-    
+
     assert(!l.id.empty());
     
     return l;
@@ -73,23 +61,22 @@ LOQModel LinearStats::limitQuant(bool shouldLog) const
 
 LinearModel LinearStats::linear(bool shouldLog) const
 {
-    std::vector<double> x, y;
-    data(x, y, shouldLog);
+    const auto d = data(shouldLog);
     
     LinearModel lm;
     
     try
     {
-        if (std::adjacent_find(x.begin(), x.end(), std::not_equal_to<double>()) == x.end())
+        if (std::adjacent_find(d.x.begin(), d.x.end(), std::not_equal_to<double>()) == d.x.end())
         {
             throw std::runtime_error("Failed to perform linear regression. Flat mixture.");
         }
         
-        const auto m = SS::lm(SS::R::data.frame(SS::R::c(y), SS::R::c(x)));
+        const auto m = SS::lm(SS::R::data.frame(SS::R::c(d.y), SS::R::c(d.x)));
         
         lm.F     = m.f;
         lm.p     = m.p;
-        lm.r     = SS::cor(x, y);
+        lm.r     = SS::cor(d.x, d.y);
         lm.c     = m.coeffs[0].value;
         lm.m     = m.coeffs[1].value;
         lm.R2    = m.r2;

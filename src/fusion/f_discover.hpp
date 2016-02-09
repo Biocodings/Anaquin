@@ -13,7 +13,7 @@ namespace Anaquin
             FusionCaller caller;
         };
 
-        struct Stats : public FusionStats
+        struct Stats : public FusionStats, public SequinStats
         {
             struct Data
             {

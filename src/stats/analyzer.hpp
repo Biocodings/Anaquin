@@ -66,12 +66,15 @@ namespace Anaquin
     {
         FileName src;
     };
+    
+    struct SequinStats
+    {
+        // Distribution of counts across sequins
+        std::map<SequinID, Counts> hist;
+    };
 
     struct MappingStats
     {
-        // Distribution of counts across chromosomes
-        std::map<ChromoID, Counts> hist;
-
         // Total mapped to the synthetic chromosome
         Counts n_chrT = 0;
 

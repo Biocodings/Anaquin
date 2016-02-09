@@ -225,8 +225,8 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.p_chrT.add(mStats[i].chrTProp());
         r.p_endo.add(mStats[i].endoProp());
 
-        r.n_ref.add(mStats[i].hist.size());
-        r.n_det.add(detect(mStats[i].hist));
+        //r.n_ref.add(mStats[i].hist.size());
+        //r.n_det.add(detect(mStats[i].hist));
         
         r.b.add(b);
         r.bID.add(inf.id);

@@ -32,12 +32,8 @@ namespace Anaquin
                                 const Label &xLabel,
                                 const Label &yLabel)
         {
-            std::vector<SequinID> ids;
-            std::vector<double> x, y;
-
-            stats.data(x, y, false, &ids);
-
-            return StatsWriter::writeCSV(x, y, ids, xLabel, yLabel);
+            const auto d = stats.data(false);
+            return StatsWriter::writeCSV(d.x, d.y, d.ids, xLabel, yLabel);
         }
         
         static Scripts writeCSV(const std::vector<double> &x,

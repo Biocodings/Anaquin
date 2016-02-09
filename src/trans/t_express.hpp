@@ -31,7 +31,7 @@ namespace Anaquin
             Software soft;
         };
 
-        struct Stats : public MappingStats
+        struct Stats : public MappingStats, public SequinStats
         {
             typedef LinearStats Data;
 

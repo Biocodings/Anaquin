@@ -2,6 +2,35 @@
 
 using namespace Anaquin;
 
+static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VAllele::Options &o)
+{
+    o.writer->open(file);
+
+    const auto format = "%1%\t%2%\t%3%\t%4%";
+
+    auto f = [&](const LinearStats &l, const Label &label)
+    {
+        const auto data = l.data(false);
+
+        for (auto i = 0; i < data.ids.size(); i++)
+        {
+            o.writer->write((boost::format(format) % data.ids[i]
+                                                   % data.x[i]
+                                                   % data.y[i]
+                                                   % label).str());
+        }
+    };
+
+    o.writer->write((boost::format(format) % "Sequin"
+                                           % "EAlleleF"
+                                           % "MAlleleF"
+                                           % "Type").str());
+    f(stats.chrT.snp, "SNP");
+    f(stats.chrT.ind, "Indel");
+
+    o.writer->close();
+}
+
 VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -13,8 +42,6 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
 
     parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
-        const auto &v = m.query;
-
         if (m.query.chrID == ChrT)
         {
             stats.n_chrT++;
@@ -27,8 +54,8 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                 const auto known = r.alleleFreq(m.match->id);
                 
                 // Measured coverage is the number of base calls aligned and used in variant calling
-                const auto measured = static_cast<double>(v.dp_a) / (v.dp_r + v.dp_a);
-                
+                const auto measured = m.query.alleleFreq();
+
                 /*
                  * Plotting the relative allele frequency that is established by differences
                  * in the concentration of reference and variant DNA standards.
@@ -82,25 +109,7 @@ void VAllele::report(const FileName &file, const Options &o)
      * Generating CSV for all variants
      */
 
-    o.writer->open("VarAllele_CSV.R");
-    StatsWriter::writeCSV(stats.chrT.tot, "EAlleleF", "MAlleleF");
-    o.writer->close();
-    
-    /*
-     * Generating CSV for all SNPs
-     */
-
-    o.writer->open("VarAllele_CSV_SNP.R");
-    StatsWriter::writeCSV(stats.chrT.snp, "EAlleleF", "MAlleleF");
-    o.writer->close();
-    
-    /*
-     * Generating CSV for all indels
-     */
-
-    o.writer->open("VarAllele_CSV_Indels.R");
-    StatsWriter::writeCSV(stats.chrT.ind, "EAlleleF", "MAlleleF");
-    o.writer->close();
+    writeCSV("VarAllele_quins.csv", stats, o);
     
     /*
      * Generating scatter plot for all variants

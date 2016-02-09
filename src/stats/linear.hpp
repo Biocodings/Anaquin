@@ -132,15 +132,21 @@ namespace Anaquin
 
     struct LinearStats : public std::map<SequinID, Point>
     {
+        struct Data
+        {
+            std::vector<SequinID> ids;
+            std::vector<double> x, y;
+        };
+
         Limit s;
-        
+
         inline void add(const SequinID &id, double x, double y)
         {
             (*this)[id] = Point(x, y);
         }
         
         // Return the x-values and y-values after filtering
-        void data(std::vector<double> &x, std::vector<double> &y, bool shouldLog, std::vector<FeatureID> *ids = nullptr) const;
+        Data data(bool shouldLog) const;
         
         // Compute the limit of quantification. By default, this function assumes log-transformation.
         LOQModel limitQuant(bool shouldLog = true) const;

@@ -10,7 +10,7 @@ namespace Anaquin
 {
     struct CoverageTool
     {
-        struct Stats : public AlignmentStats, public SingleInputStats
+        struct Stats : public AlignmentStats, public SingleInputStats, public SequinStats
         {
             Intervals<> inters;
         };

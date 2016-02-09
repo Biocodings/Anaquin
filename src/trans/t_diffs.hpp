@@ -49,7 +49,7 @@ namespace Anaquin
             CountSoft cSoft;
         };
 
-        struct Stats : public MappingStats
+        struct Stats : public MappingStats, public SequinStats
         {
             struct Data : public LinearStats
             {

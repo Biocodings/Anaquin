@@ -30,7 +30,7 @@ namespace Anaquin
         Mix_2,
     };
 
-    struct SequinStats
+    struct DefaultStats
     {
         // Empty Implementation
     };
@@ -70,7 +70,7 @@ namespace Anaquin
         Contains,
     };
     
-    template <typename Data = SequinData, typename Stats = SequinStats> class Reference
+    template <typename Data = SequinData, typename Stats = DefaultStats> class Reference
     {
         public:
 
@@ -354,7 +354,7 @@ namespace Anaquin
      * -------------------- Ladder Analysis --------------------
      */
     
-    class LadderRef : public Reference<SequinData, SequinStats>
+    class LadderRef : public Reference<SequinData, DefaultStats>
     {
         public:
         
@@ -396,7 +396,7 @@ namespace Anaquin
      * -------------------- Metagenomics Analysis --------------------
      */
     
-    class MetaRef : public Reference<SequinData, SequinStats>
+    class MetaRef : public Reference<SequinData, DefaultStats>
     {
         public:
             MetaRef();
@@ -421,7 +421,7 @@ namespace Anaquin
      * -------------------- Fusion Analysis --------------------
      */
     
-    class FusionRef : public Reference<SequinData, SequinStats>
+    class FusionRef : public Reference<SequinData, DefaultStats>
     {
         public:
 
@@ -504,7 +504,7 @@ namespace Anaquin
     
     struct Variant;
     
-    class VarRef : public Reference<SequinData, SequinStats>
+    class VarRef : public Reference<SequinData, DefaultStats>
     {
         public:
 
@@ -575,7 +575,7 @@ namespace Anaquin
         GeneID gID;
     };
 
-    class TransRef : public Reference<TransData, SequinStats>
+    class TransRef : public Reference<TransData, DefaultStats>
     {
         public:
 

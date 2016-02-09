@@ -1,7 +1,6 @@
 #ifndef VARQUIN_HPP
 #define VARQUIN_HPP
 
-#include "data/variant.hpp"
 #include "data/standard.hpp"
 
 #include "parsers/parser_vcf.hpp"

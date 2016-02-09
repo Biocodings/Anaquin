@@ -70,7 +70,12 @@ namespace Anaquin
     
     struct CalledVariant : public Variant
     {
-        double pval;
+        inline Proportion alleleFreq() const
+        {
+            return static_cast<Proportion>(readV) / (readR + readV);
+        }
+    
+        Probability pval;
         
         // Number of reads for the reference and allele
         Counts readR, readV;

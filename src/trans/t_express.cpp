@@ -48,7 +48,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                 else
                 {
                     stats.hist.at(m->id)++;
-                    
+
                     if (t.fpkm)
                     {
                         stats.data[t.cID].add(t.id, m->abund(Mix_1), t.fpkm);
