@@ -205,10 +205,13 @@ class Language:
             file.write('```{r results=''\'hide\''', message=FALSE, warning=FALSE, echo=FALSE}\n')
             file.write('png(filename="' + tmp.name + '%01d")\n')
             file.write('source("' + src + '")\n')
-            file.write('dev.off()')
-            
-            for i in range(0, nPlots):            
-                file.write('\n```\n\n![](' + tmp.name + str(i+1) + ')')
+            file.write('dev.off()\n')
+            file.write('```\n')
+
+            for i in range(0, nPlots):
+                file.write('\n![](' + tmp.name + str(i+1) + ')')
+
+            file.write('\n')
 
 class Chapter:
     def __init__(self, title):
@@ -574,8 +577,8 @@ def VarQuin(config, output):
     r.startChapter('Statistics (Allele Frequency)')
 
     for i in range(0, len(names)):
-        r.addTextFile('Sequin statistics for: ' + names[i], 'VarAllele_summary.stats', )
-        r.addRCode('Scatter plot', 'VarAllele_scatter.R', '', nPlots=3)
+        r.addTextFile('Summary statistics for: ' + names[i], 'VarAllele_summary.stats', )
+        r.addRCode('Scatter plot (SNPs + Indels)', 'VarAllele_scatter.R', '', nPlots=3)
 
     r.endChapter()
 

@@ -21,7 +21,7 @@ ind <- data[data$Type=='Indel',]
 #
 
 data <- VarQuin(seqs=row.names(data), expected=data$EAlleleF, measured=data$MAlleleF)
-plotScatter(data, title='Expected vs measured allele frequency', xname='Expected log2 allele frequency', yname='Measured log2 allele frequency')
+plotScatter(data, title='Expected vs measured allele frequency (all variants)', xname='Expected log2 allele frequency', yname='Measured log2 allele frequency')
 
 #
 # 2. Plot for SNPs
