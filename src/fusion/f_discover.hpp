@@ -13,12 +13,12 @@ namespace Anaquin
             FusionCaller caller;
         };
 
-        struct Stats : public FusionStats, public SequinStats
+        struct Stats : public FusionStats
         {
             typedef FUSQuin::Match ChrTData;
 
             #define TP(x) data.at(x).tps
-            #define FP(x) data.at(x).tps
+            #define FP(x) data.at(x).fps
             #define FN(x) data.at(x).fns
             
             inline Counts countTP(const ChromoID &id) const
@@ -41,27 +41,22 @@ namespace Anaquin
                 return TP(id).size() + FP(id).size();
             }
 
-            // Returns the sensitivity
             inline Proportion sn(const ChromoID &id) const
             {
                 return static_cast<Proportion>(TP(id).size()) / (TP(id).size() + FN(id).size());
             }
 
-            // Returns the precision
             inline Proportion pc(const ChromoID &id) const
             {
                 return static_cast<Proportion>(TP(id).size()) / countDetect(id);
             }
 
-            struct Data
+            struct Data : public SequinStats
             {
-                // Distribution of the sequins
-                SequinHist hist;
-
                 // List of missing fusions
                 std::vector<FusionRef::KnownFusion> fns;
 
-                std::vector<ChrTData> fps, tps;
+                std::vector<FUSQuin::Match> fps, tps;
             };
 
             std::map<ChromoID, Data> data;

@@ -63,7 +63,7 @@ EXP_ANNOT = GeneCodeChr1.gtf
 FACTORS = 1,1,1,2,2,2
 
 #
-# How do you want to name your replicates?
+# How do you want to name your samples?
 #
 
 NAMES = A1,A2,A3,B1,B2,B3

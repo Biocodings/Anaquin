@@ -6,11 +6,9 @@
 
 using namespace Anaquin;
 
-FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const Options &o)
+FDiff::Stats FDiff::analyze(const FileName &normal, const FileName &fusion, const Options &o)
 {
     FDiff::Stats stats;
-    
-    stats.data[ChrT];
     
     const auto &r = Standard::instance().r_fus;
 
@@ -24,41 +22,43 @@ FDiff::Stats FDiff::analyze(const FileName &chim, const FileName &splice, const 
      * Parse normal junctions
      */
     
-    ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
+    ParserSTab::parse(Reader(normal), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-//        if (c.id == ChrT) { stats.chrT->n_chrT++; }
-//        else                        { stats.chrT->n_endo++; }
-//
-//        const SequinData *match;
-//
-//        if (c.id == ChrT && (match = r.findSplice(c.l)))
-//        {
-//            normals[match->id] = c.unique;
-//            stats.chrT->h.at(match->id)++;
-//        }
+        //if (c.id == ChrT) { stats.chrT->n_chrT++; }
+        //else              { stats.chrT->n_endo++; }
+
+        const SequinData *match;
+
+        if (c.id == ChrT && (match = r.findSplice(c.l)))
+        {
+            normals[match->id] = c.unique;
+            //stats.chrT->h.at(match->id)++;
+        }
     });
 
     /*
-     * Parse the chimeric junctions
+     * Parse chimeric junctions
      */
     
-    ParserStarFusion::parse(Reader(chim), [&](const CalledFusion &f, const ParserProgress &)
+    ParserStarFusion::parse(Reader(fusion), [&](const CalledFusion &f, const ParserProgress &)
     {
-//        const auto r = FClassify::classifyFusion(f, o);
-//
-//        switch (r.code)
-//        {
-//            case FClassify::Code::Genome:
-//            case FClassify::Code::GenomeChrT: { stats.chrT->n_endo++; }
-//            case FClassify::Code::Positive:
-//            case FClassify::Code::Negative:   { stats.chrT->n_chrT++; }
-//        }
-//        
-//        if (r.code == FClassify::Code::Positive)
-//        {
-//            fusions[r.match->id] = f.reads;
-//            stats.chrT->h.at(r.match->id)++;
-//        }
+/*
+        const auto r = FClassify::classifyFusion(f, o);
+
+        switch (r.code)
+        {
+            case FUSQuin::Label::Genome:
+            case FUSQuin::Label::GenomeChrT: { stats.chrT->n_endo++; }
+            case FUSQuin::Label::Positive:
+            case FUSQuin::Label::Negative:   { stats.chrT->n_chrT++; }
+        }
+        
+        if (r.code == FUSQuin::Label::Positive)
+        {
+            fusions[r.match->id] = f.reads;
+            //stats.chrT->h.at(r.match->id)++;
+        }
+*/
     });
 
     o.info("Found " + std::to_string(normals.size()) + " introns");

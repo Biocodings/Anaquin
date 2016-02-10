@@ -5,6 +5,32 @@
 
 using namespace Anaquin;
 
+template <typename T> SequinHist createHist(const T& t)
+{
+    SequinHist hist;
+    
+    for (const auto &i : t)
+    {
+        hist[i.first] = 0;
+    }
+    
+    return hist;
+}
+
+template <typename T> SequinHist createHist(const std::set<T> & t)
+{
+    SequinHist hist;
+    
+    for (const auto &i : t)
+    {
+        hist[i] = 0;
+    }
+    
+    assert(!hist.empty());
+
+    return hist;
+}
+
 template <typename Key, typename Value> std::set<Key> getKeys(const std::map<Key, Value> &m)
 {
     std::set<Key> keys;
@@ -182,7 +208,7 @@ void LadderRef::abund(const LadderRef::JoinID &id, Concentration &a, Concentrati
 
 struct FusionRef::FusionRefImpl
 {
-    // Normal splicing
+    // Known splices
     std::map<SequinID, Locus> splices;
 
     // Known fusions
@@ -200,7 +226,7 @@ struct FusionRef::FusionRefImpl
     /*
      * Mapping table, fusion to normal and vice versa
      */
-    
+
     std::map<SequinID, SequinID> normToFus;
     std::map<SequinID, SequinID> fusToNorm;
 
@@ -235,6 +261,11 @@ void FusionRef::addSplice(const SequinID &id, const Locus &l)
 void FusionRef::addStand(const SequinID &id, const Locus &l)
 {
     _impl->stands[id].push_back(l);
+}
+
+SequinHist FusionRef::fusionHist() const
+{
+    return createHist(_impl->knowns);
 }
 
 const FusionRef::KnownFusion * FusionRef::findFusion(const SequinID &id) const
@@ -276,7 +307,7 @@ void FusionRef::validate()
      *   2: Fusions (eg: FusionDiscover)
      *   3: Standards & Mixtures (eg: FusionAlign)
      *   4: Splicing & Fusions & Mixtures (eg: FusionDiff)
-     *   5: Splicing & Mixtures (eg: FusionNormal)
+     *   5: Splicing & Mixtures (eg: FusionExpress)
      */
 
     // Case 4
@@ -500,7 +531,7 @@ std::vector<GeneID> TransRef::geneIDs(const ChromoID &cID) const
     return gIDs;
 }
 
-Limit TransRef::limitGene(const Hist &hist) const
+Limit TransRef::limitGene(const SequinHist &hist) const
 {
     return Reference<TransData, DefaultStats>::limit(hist, [&](const GeneID &id)
     {
@@ -508,12 +539,12 @@ Limit TransRef::limitGene(const Hist &hist) const
     });
 }
 
-Limit TransRef::limitExon(const Hist &hist) const
+Limit TransRef::limitExon(const SequinHist &hist) const
 {
     throw "Not Implemented";
 }
 
-Limit TransRef::limitIsof(const Hist &hist) const
+Limit TransRef::limitIsof(const SequinHist &hist) const
 {
     throw "Not Implemented";
 }
@@ -648,7 +679,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChromoID &cID) 
     return inters;
 }
 
-Hist TransRef::geneHist(const ChromoID &cID) const
+SequinHist TransRef::geneHist(const ChromoID &cID) const
 {
     if (cID == ChrT)
     {
@@ -658,16 +689,6 @@ Hist TransRef::geneHist(const ChromoID &cID) const
     {
         return createHist(_impl->data.at(cID)._genes);
     }
-}
-
-Hist TransRef::exonHist(const ChromoID &cID) const
-{
-    throw "Not Implemented";
-}
-
-Hist TransRef::isofHist(const ChromoID &cID) const
-{
-    throw "Not Implemented";
 }
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)

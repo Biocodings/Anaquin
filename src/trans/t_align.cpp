@@ -23,11 +23,11 @@ template <typename T> void initT(const ChromoID &cID, T &t)
      */
     
     // Initalize the distributions
-    t.overB.h = t.histE = t.histI = r.geneHist(cID);
+    t.overB.hist = t.histE = t.histI = r.geneHist(cID);
     
     assert(!t.histE.empty());
     assert(!t.histI.empty());
-    assert(!t.overB.h.empty());
+    assert(!t.overB.hist.empty());
     
     /*
      * Initialize intervals for exons and introns
@@ -76,7 +76,7 @@ template <typename T> void initT(const ChromoID &cID, T &t)
      * Initialize base statistics
      */
 
-    for (const auto &i : t.overB.h)
+    for (const auto &i : t.overB.hist)
     {
         t.lFPS[i.first];
         t.rFPS[i.first];
@@ -167,7 +167,7 @@ template <typename T> void collect(const ChromoID &cID,
     
     auto aligns = [](std::map<GeneID, TAlign::MergedConfusion> &gene,
                      TAlign::MergedConfusion &over,
-                     Hist &h,
+                     SequinHist &h,
                      Counts unknowns,
                      const BinCounts &contains,
                      const BinCounts &overlaps,
@@ -301,10 +301,10 @@ template <typename T> void collect(const ChromoID &cID,
                 t.overB.m.tp() += j - i;
                 
                 // Update the distribution
-                t.overB.h.at(gID)++;
+                t.overB.hist.at(gID)++;
             }
         });
-        
+
         m.tp() += covered;
         m.nr() += in.l().length();
         m.nq()  = m.tp() + m.fp();
@@ -690,7 +690,7 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
                                            % "Sensitivity (Base)"
                                            % "Specificity (Base)").str());
 
-    for (const auto &i : stats.data.at(ChrT).overB.h)
+    for (const auto &i : stats.data.at(ChrT).overB.hist)
     {
         Base length   = 0;
         Base nonZeros = 0;

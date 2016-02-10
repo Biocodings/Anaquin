@@ -70,23 +70,7 @@ namespace Anaquin
         Limit limit;
 
         // Histogram of distribution
-        Hist h;
-
-        // Calculate the references from the distribution
-        inline void inferRefFromHist()
-        {
-            for (const auto &i : h)
-            {
-                if (i.second == 0)
-                {
-                    m.nr()++;
-                }
-                else
-                {
-                    m.nr() += i.second;
-                }
-            }
-        }
+        SequinHist hist;
     };
 
     /*

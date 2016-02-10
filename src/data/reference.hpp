@@ -9,20 +9,7 @@
 
 namespace Anaquin
 {
-    typedef std::map<SequinID, Counts> Hist;
     typedef std::map<SequinID, Counts> SequinHist;
-
-    template <typename T> Hist createHist(const T& t)
-    {
-        Hist hist;
-        
-        for (const auto &i : t)
-        {
-            hist[i.first] = 0;
-        }
-        
-        return hist;
-    }
 
     enum Mixture
     {
@@ -475,6 +462,9 @@ namespace Anaquin
              * Query operations
              */
 
+            // Histogram for each known fusion
+            SequinHist fusionHist() const;
+
             Counts countFusion() const;
             Counts countSplice() const;
 
@@ -672,9 +662,7 @@ namespace Anaquin
 
             TransRef();
 
-            Hist exonHist(const ChromoID &) const;
-            Hist geneHist(const ChromoID &) const;
-            Hist isofHist(const ChromoID &) const;
+            SequinHist geneHist(const ChromoID &) const;
 
             // Intervals for reference exons
             Intervals<ExonInterval> exonInters(const ChromoID &) const;
@@ -689,9 +677,9 @@ namespace Anaquin
              * Accessor functions
              */
 
-            Limit limitExon(const Hist &) const;
-            Limit limitGene(const Hist &) const;
-            Limit limitIsof(const Hist &) const;
+            Limit limitExon(const SequinHist &) const;
+            Limit limitGene(const SequinHist &) const;
+            Limit limitIsof(const SequinHist &) const;
 
             // Number of non-overlapping bases in all exons
             Base exonBase(const ChromoID &) const;

@@ -1,17 +1,22 @@
 #ifndef F_EXPRESS_HPP
 #define F_EXPRESS_HPP
 
-#include "fusion/f_discover.hpp"
+#include "fusion/FUSQUin.hpp"
+#include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
     struct FExpress
     {
-        typedef FDiscover::Options Options;
-
-        struct Stats : public FDiscover::Stats
+        struct Options : public FuzzyOptions
         {
-            Limit ss;
+            FusionCaller caller;
+        };
+
+        struct Stats : public FusionStats, public LinearStats, public SequinStats
+        {
+            // Absolute detection limit
+            Limit limit;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

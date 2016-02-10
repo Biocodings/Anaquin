@@ -23,7 +23,7 @@ data  = [ 'data/manual.txt',
           # ------- Fusion -------
 
           'src/r/plotROC_F.R',
-          'src/r/plotNormal.R',
+          'src/r/plotExpress_F.R',
 
           'data/fusion/AFU004.v032.ref',
           'data/fusion/AFU005.v032.bed',

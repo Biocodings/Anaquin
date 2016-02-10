@@ -48,6 +48,27 @@ __unitTesting__ = True
 # Global variable
 __mode__ = None
 
+# Execute a FusQuin command
+def rFusQuin(tool, args, config, onlyPrint=False):
+
+    # Eg: /Users/tedwong/Desktop/K_562
+    root = get(config, 'ROOT_PATH')
+
+    mix   = appendRoot(root, get(config, 'MIX_FILE')) # CSV format
+    cVars = appendRoot(root, get(config, 'CHRT_VAR')) # VCF format
+
+    # Construct mixture and reference annoation
+    req = ANAQUIN_PATH + os.sep + 'anaquin -t ' + tool + ' -m ' + mix + ' -rvcf ' + cVars
+
+    # Now add up the arguments
+    req = req + ' -o ' + TEMP_PATH + args
+
+    print(req + '\n')
+    
+    # Execute the Anaquin request
+    if not onlyPrint:
+        os.system(req)
+
 # Execute a VarQuin command
 def rVarQuin(tool, args, config, onlyPrint=False):
 
@@ -526,6 +547,7 @@ def TransQuin(config, output):
     # Generate a markup report (which can then be converted into various formats)
     r.generate('/Users/tedwong/Sources/QA/ABCD.RMarkdown', output)
 
+
 def VarQuin(config, output):
     
     r = Report()
@@ -535,7 +557,7 @@ def VarQuin(config, output):
 
     #########################################
     #                                       #
-    #    1. Generating alignments           #
+    #       1. Generating alignments        #
     #                                       #
     #########################################
     
@@ -561,7 +583,6 @@ def VarQuin(config, output):
 
     r.endChapter()
 
-    
     #########################################
     #                                       #
     #    2. Generating variant discovery    #
@@ -571,7 +592,7 @@ def VarQuin(config, output):
     print ('\n----------------------- Variant Discovery -----------------------\n')
 
     files = get(config, 'VAR_FILE', EXPECT_FILES)
-    soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', "FreeBayes" })
+    soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', 'FreeBayes' })
 
     # File name of the standards
     stand  = get(config, 'STAND_FILE', EXPECT_FILES)
@@ -595,7 +616,6 @@ def VarQuin(config, output):
         r.addRCode('LODR for SNP and Indel', 'VarDiscover_LODR.R', '')
 
     r.endChapter()
-
 
     ########################################
     #                                      #
@@ -623,7 +643,6 @@ def VarQuin(config, output):
         r.addRCode('Scatter plot (SNPs + Indels)', 'VarAllele_scatter.R', '', nPlots=3)
 
     r.endChapter()
-
 
     ########################################
     #                                      #
@@ -653,7 +672,6 @@ def VarQuin(config, output):
         r.addRCode('Density plot', 'VarCoverage_density.R', '', nPlots=1)
 
     r.endChapter()
-    
 
     ########################################
     #                                      #
@@ -683,12 +701,11 @@ def VarQuin(config, output):
 
     r.endChapter()
 
-
-    #############################
-    #                           #
-    #  6. Generating apprendix  #
-    #                           #
-    #############################
+    ##############################################
+    #                                            #
+    #           5. Generating Apprendix          #
+    #                                            #
+    ##############################################
 
     r.startChapter('Apprendix: Allele frequency')
 
@@ -699,7 +716,113 @@ def VarQuin(config, output):
 
     # Generate a markup report (which can then be converted into various formats)
     r.generate('report.RMarkdown', output)
+
+
+def FusQuin(config, output):
     
+    r = Report()
+    
+    # Eg: A1,A2,A3,B1,B2,B3
+    names = getNames(config)
+
+    ##############################################
+    #                                            #
+    #         1. Generating FusionDiscover       #
+    #                                            #
+    ##############################################
+
+    print ('\n----------------------- Fusion Discovery -----------------------\n')
+
+    #
+    # Generate a request for fusion discovery. For example:
+    #
+    #    anaquin -t FusionDiscover -soft star -rfus2.ref -ufiles star-fusion.fusion_candidates.txt 
+    #
+
+    files = get(config, 'FUS_FILE', EXPECT_FILES)
+    soft  = get(config, 'FUS_SOFT', { 'StarFusion', 'TopHatFusion', })
+    req   = ' -soft ' + soft + ' -ufiles ' + files + ' -rfus data/fusion/AFU004.v032.ref '
+
+    # Execute the command
+    rFusQuin('FusionDiscover', req, config)
+
+    r.startChapter('Statistics (Fusion Discovery)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'FusionDiscover_summary.stats', )
+
+    r.endChapter()
+
+    ##############################################
+    #                                            #
+    #         2. Generating FusionExpress        #
+    #                                            #
+    ##############################################
+
+    print ('\n----------------------- Fusion Expression -----------------------\n')
+
+    #
+    # Generate a request for fusion expression. For example:
+    #
+    #    anaquin -t FusionExpress -soft star -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -ufiles SJ.out.tab
+    #    anaquin -t FusionExpress -soft star -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -ufiles star-fusion.fusion_candidates.txt
+    #
+
+    req = ' -soft ' + soft + ' -ufiles ' + files + ' -rfus data/fusion/AFU004.v032.ref '
+
+    # Execute the command
+    rFusQuin('FusionExpress', req, config)
+
+    r.startChapter('Statistics (Fusion Expression)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'FusionExpress_summary.stats', )
+
+    r.endChapter()
+
+    ##############################################
+    #                                            #
+    #   3. Generating for differential analysis  #
+    #                                            #
+    ##############################################
+
+    print ('\n----------------------- Fusion Differential -----------------------\n')
+
+    #
+    # Generate a request for fusion differential. For example:
+    #
+    #    anaquin -t FusionDiff -soft star -rfus data/fusion/AFU004.v032.ref -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -utab SJ.out.tab -ufiles star-fusion.fusion_candidates.txt
+    #
+
+    req = ' -soft ' + soft + ' -rfus data/fusion/AFU004.v032.ref -rbed data/fusion/AFU006.v032.bed -m data/fusion/MFU007.v013.csv -utab SJ.out.tab -ufiles star-fusion.fusion_candidates.txt '
+
+    # Execute the command
+    rFusQuin('FusionDiff', req, config)
+
+    r.startChapter('Statistics (Fusion Differential)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'FusionDiff_summary.stats', )
+
+    r.endChapter()
+
+    ##############################################
+    #                                            #
+    #           4. Generating Apprendix          #
+    #                                            #
+    ##############################################
+
+    r.startChapter('Apprendix: Fusion Discover')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Fusion Discover statistics for: ' + names[i], 'FusionDiscover_labels.csv', )
+
+    r.endChapter()
+
+    # Generate a markup report (which can then be converted into various formats)
+    r.generate('report.RMarkdown', output)
+
+
 #################################
 #                               #
 #       Parsing functions       #
@@ -752,3 +875,5 @@ if __name__ == '__main__':
         TransQuin(parse(file), output)
     elif (__mode__ == 'VarQuin'):
         VarQuin(parse(file), output)
+    elif (__mode__ == 'FusQuin'):
+        FusQuin(parse(file), output)

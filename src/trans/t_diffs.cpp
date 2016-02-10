@@ -237,9 +237,8 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
 
     switch (o.lvl)
     {
-        case Level::Exon:    { stats.hist = r.exonHist(ChrT); break; }
-        case Level::Gene:    { stats.hist = r.geneHist(ChrT); break; }
-        case Level::Isoform: { stats.hist = r.isofHist(ChrT); break; }
+        case Level::Gene: { stats.hist = r.geneHist(ChrT); break; }
+        default: { throw "Not supported"; }
     }
 
     assert(!stats.hist.empty());

@@ -4,30 +4,13 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-#
-# Create a VarQuin data set for analyzing in Anaquin.
-#
-
-VarQuin <- function(..., mix=NULL)
+.createData <- function(x, keys)
 {
-    x <- list(...)
-
     # Sequin names must be present. We can use it to construct a data frame with the appropriate size.
     stopifnot(!is.null(x$seqs))
-    
+
     data <- data.frame(row.names=x$seqs)
-
-    #
-    #  - Expected allele frequency
-    #  - Measured allele frequency
-    #  - Number of reads for the reference
-    #  - Number of reads for the variant
-    #  - Probability
-    #  - Label
-    #
     
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expected', 'measured', 'aligned')
-
     for (key in keys)
     {
         if (!is.null(x[[key]]))
@@ -35,55 +18,72 @@ VarQuin <- function(..., mix=NULL)
             data[[key]] <- x[[key]]
         }
     }
-    
+
     # Sequins are always sorted in orders
     data <- data[order(row.names(data)),]
+
+    return (data)    
+}
+
+FusQuin <- function(..., mix=NULL)
+{
+    x <- list(...)
     
+    keys <- c('label', 'pos1', 'pos2')
+    data <- .createData(x, keys)
+
+    r <- list('seqs'=data, mix=mix)
+    class(r) <- 'FusQuin'
+    
+    return (r)
+}
+
+VarQuin <- function(..., mix=NULL)
+{
+    x <- list(...)
+
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expected', 'measured', 'aligned')
+    data <- .createData(x, keys)
+
     r <- list('seqs'=data, mix=mix)
     class(r) <- 'VarQuin'
     
     return (r)
 }
 
-#
-# Create a TransQuin data set for analyzing in Anaquin.
-#
-
 TransQuin <- function(mix=loadMixture(), ...)
 {
     x <- list(...)
     
-    # Sequin names must be present. We can use it to construct a data frame with the appropriate size.
-    stopifnot(!is.null(x$seqs))
+    keys <- c('label', 'pval', 'logFC')
+    data <- .createData(x, keys)
     
-    data <- data.frame(row.names=x$seqs)
+#    if (!is.null(x$class))    { data$class    <- x$class    }
+ #   if (!is.null(x$pval))     { data$pval     <- x$pval     }
+  #  if (!is.null(x$qval))     { data$qval     <- x$qval     }
+   # if (!is.null(x$logFC))    { data$logFC    <- x$logFC    }    
+    #if (!is.null(x$ratio))    { data$ratio    <- x$ratio    }    
+    #if (!is.null(x$counts))   { data$counts   <- x$counts   }
+    #if (!is.null(x$expected)) { data$expected <- x$expected }
+    #if (!is.null(x$measured)) { data$measured <- x$measured }
     
-    if (!is.null(x$class))    { data$class    <- x$class    }
-    if (!is.null(x$pval))     { data$pval     <- x$pval     }
-    if (!is.null(x$qval))     { data$qval     <- x$qval     }
-    if (!is.null(x$logFC))    { data$logFC    <- x$logFC    }    
-    if (!is.null(x$ratio))    { data$ratio    <- x$ratio    }    
-    if (!is.null(x$counts))   { data$counts   <- x$counts   }
-    if (!is.null(x$expected)) { data$expected <- x$expected }
-    if (!is.null(x$measured)) { data$measured <- x$measured }
+ #   if (!is.null(x$baseMean))       { data$baseMean  <- x$baseMean  }  # TODO: Fix me
+#    if (!is.null(x$log2FoldChange)) { data$lfc <- x$log2FoldChange }  # TODO: Fix me
+  #  if (!is.null(x$pvalue))         { data$pval <- x$pvalue }  # TODO: Fix me
+   # if (!is.null(x$expected.LFC))   { data$elfc <- x$expected.LFC }  # TODO: Fix me
+    #if (!is.null(x$lfcSE))          { data$lfcSE <- x$lfcSE }  # TODO: Fix me
     
-    if (!is.null(x$baseMean))       { data$baseMean  <- x$baseMean  }  # TODO: Fix me
-    if (!is.null(x$log2FoldChange)) { data$lfc <- x$log2FoldChange }  # TODO: Fix me
-    if (!is.null(x$pvalue))         { data$pval <- x$pvalue }  # TODO: Fix me
-    if (!is.null(x$expected.LFC))   { data$elfc <- x$expected.LFC }  # TODO: Fix me
-    if (!is.null(x$lfcSE))          { data$lfcSE <- x$lfcSE }  # TODO: Fix me
-    
-    if (!is.null(x$X))    { data$X  <- x$X  }  # TODO: Fix me
-    if (!is.null(x$A1))   { data$A1 <- x$A1 }  # TODO: Fix me
-    if (!is.null(x$A2))   { data$A2 <- x$A2 }  # TODO: Fix me
-    if (!is.null(x$A3))   { data$A3 <- x$A3 }  # TODO: Fix me
-    if (!is.null(x$B1))   { data$B1 <- x$B1 }  # TODO: Fix me
-    if (!is.null(x$B2))   { data$B2 <- x$B2 }  # TODO: Fix me
-    if (!is.null(x$B3))   { data$B3 <- x$B3 }  # TODO: Fix me
-    if (!is.null(x$prop)) { data$prop <- x$prop }  # TODO: Fix me
+#    if (!is.null(x$X))    { data$X  <- x$X  }  # TODO: Fix me
+ #   if (!is.null(x$A1))   { data$A1 <- x$A1 }  # TODO: Fix me
+  #  if (!is.null(x$A2))   { data$A2 <- x$A2 }  # TODO: Fix me
+   # if (!is.null(x$A3))   { data$A3 <- x$A3 }  # TODO: Fix me
+    #if (!is.null(x$B1))   { data$B1 <- x$B1 }  # TODO: Fix me
+    #if (!is.null(x$B2))   { data$B2 <- x$B2 }  # TODO: Fix me
+    #if (!is.null(x$B3))   { data$B3 <- x$B3 }  # TODO: Fix me
+    #if (!is.null(x$prop)) { data$prop <- x$prop }  # TODO: Fix me
     
     # Sequins are always sorted in orders
-    data <- data[order(row.names(data)),]
+#    data <- data[order(row.names(data)),]
     
     r <- list('seqs'=data, mix=mix)
     class(r) <- 'TransQuin'

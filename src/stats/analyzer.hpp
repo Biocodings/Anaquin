@@ -12,6 +12,11 @@
 
 namespace Anaquin
 {
+    template <typename T> ChromoID toChrTEndo(const T &t)
+    {
+        return t == ChrT ? ChrT : Endo;
+    }
+    
     template <typename T> std::string toString(const T &x, const unsigned n = 2)
     {
         std::ostringstream out;
@@ -24,7 +29,7 @@ namespace Anaquin
         return isnan(x) ? "NA" : (boost::format("%1%") % x).str();
     }
     
-    inline std::string extractFile(const std::string &path)
+    inline FileName extractFile(const Path &path)
     {
         auto r   = path;
         auto sep = r.find_last_of("\\/");

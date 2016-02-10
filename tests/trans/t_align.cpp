@@ -34,7 +34,7 @@ TEST_CASE("TAlign_All_AllRepeats")
     
     REQUIRE(r.data.at(ChrT).unknowns.size() == 0);
     
-    REQUIRE(r.data.at(ChrT).overB.h.size()  == 76);
+    REQUIRE(r.data.at(ChrT).overB.hist.size() == 76);
     REQUIRE(r.data.at(ChrT).histE.size() == 76);
     REQUIRE(r.data.at(ChrT).histI.size() == 76);
     
@@ -196,7 +196,7 @@ TEST_CASE("TAlign_R2_33_1")
     
     REQUIRE(r.data.at(ChrT).unknowns.size() == 0);
     
-    REQUIRE(r.data.at(ChrT).overB.h.size() == 76);
+    REQUIRE(r.data.at(ChrT).overB.hist.size() == 76);
     REQUIRE(r.data.at(ChrT).histE.size()   == 76);
     REQUIRE(r.data.at(ChrT).histI.size()   == 76);
     
@@ -351,7 +351,7 @@ TEST_CASE("TAlign_All_FalsePositives")
      * the complications due to alternative splicing.
      */
     
-    REQUIRE(r.data.at(ChrT).overB.h.size() == 76);
+    REQUIRE(r.data.at(ChrT).overB.hist.size() == 76);
     REQUIRE(r.data.at(ChrT).histE.size() == 76);
     REQUIRE(r.data.at(ChrT).histI.size() == 76);
     

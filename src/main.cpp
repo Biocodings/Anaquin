@@ -26,7 +26,6 @@
 #include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
 #include "meta/m_abund.hpp"
-#include "meta/m_align.hpp"
 #include "meta/m_assembly.hpp"
 #include "meta/m_coverage.hpp"
 
@@ -35,7 +34,6 @@
 #include "ladder/l_coverage.hpp"
 
 #include "fusion/f_diff.hpp"
-#include "fusion/f_normal.hpp"
 #include "fusion/f_viewer.hpp"
 #include "fusion/f_express.hpp"
 #include "fusion/f_discover.hpp"
@@ -73,7 +71,6 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALLELE    278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
-#define TOOL_M_ALIGN     281
 #define TOOL_M_ABUND     282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
@@ -87,7 +84,6 @@ typedef std::set<Value> Range;
 #define TOOL_F_IGV       292
 #define TOOL_F_COVERAGE  293
 #define TOOL_F_DIFF      295
-#define TOOL_F_NORMAL    296
 
 /*
  * Options specified in the command line
@@ -125,8 +121,6 @@ typedef std::set<Value> Range;
 #define OPT_PSL_2   906
 #define OPT_FA_1    907
 #define OPT_FA_2    908
-#define OPT_U_OUT   909
-#define OPT_U_TAB   910
 #define OPT_U_COV   911
 #define OPT_U_FACTS 912
 #define OPT_LEVEL   913
@@ -197,7 +191,6 @@ static std::map<Value, Tool> _tools =
     { "MetaDiff",         TOOL_M_DIFF      },
     { "MetaDifferent",    TOOL_M_DIFF      },
     { "MetaIGV",          TOOL_M_IGV       },
-    { "MetaAlign",        TOOL_M_ALIGN     },
     { "MetaCoverage",     TOOL_M_COVERAGE  },
 
     { "LadderAbund",      TOOL_L_ABUND     },
@@ -211,7 +204,6 @@ static std::map<Value, Tool> _tools =
     { "FusionExpression", TOOL_F_EXPRESS   },
     { "FusionIGV",        TOOL_F_IGV       },
     { "FusionCoverage",   TOOL_F_COVERAGE  },
-    { "FusionNormal",     TOOL_F_NORMAL    },
     { "FusionDiff",       TOOL_F_DIFF      },
 };
 
@@ -232,8 +224,7 @@ static std::map<Tool, std::set<Option>> _required =
     /*
      * Metagenomics Analysis
      */
-    
-    { TOOL_M_ALIGN,    { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES                             } },
+
     { TOOL_M_IGV,      { OPT_U_FILES                                                     } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_U_FILES, OPT_SOFT                     } },
     { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT                   } },
@@ -244,11 +235,10 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
-    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_FILES                          } },
-    { TOOL_F_EXPRESS,  { OPT_R_FUS, OPT_MIXTURE,  OPT_SOFT, OPT_U_FILES            } },
-    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_U_FILES                                    } },
-    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_U_TAB, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES                       } },
+    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_FILES               } },
+    { TOOL_F_EXPRESS,  { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
+    { TOOL_F_COVERAGE, { OPT_R_BED, OPT_U_FILES                         } },
+    { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_MIXTURE, OPT_U_FILES } },
 
     /*
      * Variant Analysis
@@ -419,9 +409,7 @@ static const struct option long_options[] =
     { "upsl",    required_argument, 0, OPT_PSL_1  },
     { "upsl1",   required_argument, 0, OPT_PSL_1  },
     { "upsl2",   required_argument, 0, OPT_PSL_2  },
-    { "uout",    required_argument, 0, OPT_U_OUT   },
-    { "utab",    required_argument, 0, OPT_U_TAB   },
-    { "ucov",    required_argument, 0, OPT_U_COV   },
+    { "ucov",    required_argument, 0, OPT_U_COV  },
 
     { "min", required_argument, 0, OPT_MIN },
     { "max", required_argument, 0, OPT_MAX },
@@ -700,11 +688,11 @@ template <typename Analyzer> void analyzeFuzzy(typename Analyzer::Options o = ty
 }
 
 // Analyze for two samples
-template < typename Analyzer> void analyze_2(Option x, Option y, typename Analyzer::Options o = typename Analyzer::Options())
+template < typename Analyzer> void analyze_2(typename Analyzer::Options o = typename Analyzer::Options())
 {
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
-        Analyzer::report(_p.opts.at(x), _p.opts.at(y), o);
+        Analyzer::report(_p.inputs[0], _p.inputs[1], o);
     }, o);
 }
 
@@ -927,12 +915,14 @@ void parse(int argc, char ** argv)
 
             case OPT_U_FILES:
             {
-                Tokens::split(val, ",", _p.inputs);
-                
-                for (auto i = 0; i < _p.inputs.size(); i++)
+                std::vector<FileName> temp;
+                Tokens::split(val, ",", temp);
+
+                for (auto i = 0; i < temp.size(); i++)
                 {
-                    checkFile(_p.opts[opt] = _p.inputs[i]);
+                    checkFile(_p.opts[opt] = temp[i]);
                     _p.exp->addFile(_p.opts[opt]);
+                    _p.inputs.push_back(temp[i]);
                 }
                 
                 break;
@@ -981,12 +971,10 @@ void parse(int argc, char ** argv)
             case OPT_FA_1:
             case OPT_FA_2:
             case OPT_U_COV:
-            case OPT_U_OUT:
             case OPT_U_GTF:
             case OPT_PSL_2:
             case OPT_BAM_2:
             case OPT_PSL_1:
-            case OPT_U_TAB:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
             case OPT_R_FUS:
@@ -1208,7 +1196,6 @@ void parse(int argc, char ** argv)
 
         case TOOL_F_IGV:
         case TOOL_F_DIFF:
-        case TOOL_F_NORMAL:
         case TOOL_F_EXPRESS:
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
@@ -1217,10 +1204,10 @@ void parse(int argc, char ** argv)
             {
                 const static std::map<std::string, FusionCaller> m =
                 {
-                    { "star"  ,        FusionCaller::Star   },
-                    { "tophat",        FusionCaller::TopHat },
-                    { "tophatFusion",  FusionCaller::TopHat },
-                    { "tophat-fusion", FusionCaller::TopHat },
+                    { "Star"  ,       FusionCaller::StarFusion   },
+                    { "StarFusion"  , FusionCaller::StarFusion   },
+                    { "TopHat"  ,     FusionCaller::TopHatFusion },
+                    { "TopHatFusion", FusionCaller::TopHatFusion },
                 };
 
                 return parseEnum("soft", str, m);
@@ -1230,7 +1217,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_NORMAL:
+                case TOOL_F_EXPRESS:
                 {
                     addMix(std::bind(&Standard::addFMix,      &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED);
@@ -1251,7 +1238,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_F_EXPRESS:
                 case TOOL_F_DISCOVER:
                 {
                     applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
@@ -1272,27 +1258,20 @@ void parse(int argc, char ** argv)
                 case TOOL_F_IGV:      { viewer<FViewer>();               break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_BAM_1); break; }
 
-                case TOOL_F_NORMAL:
-                {
-                    FNormal::Options o;
-                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
-
-                    analyze_1<FNormal>(OPT_U_FILES, o);
-                    break;
-                }
-
-                case TOOL_F_DIFF:
-                {
-                    analyze_2<FDiff>(OPT_U_OUT, OPT_U_TAB);
-                    break;
-                }
-
                 case TOOL_F_EXPRESS:
                 {
                     FExpress::Options o;
                     o.caller = parseAligner(_p.opts.at(OPT_SOFT));
 
-                    analyzeFuzzy<FExpress>(o);
+                    analyze_1<FExpress>(OPT_U_FILES, o);
+                    break;
+                }
+
+                case TOOL_F_DIFF:
+                {
+                    FDiff::Options o;
+
+                    analyze_2<FDiff>(o);
                     break;
                 }
 
@@ -1321,7 +1300,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_L_ABUND:    { analyze_1<LAbund>(OPT_BAM_1);            break; }
-                case TOOL_L_DIFF:     { analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break; }
+                case TOOL_L_DIFF:     { /*analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break;*/ }
                 case TOOL_L_COVERAGE: { analyze_1<LCoverage>(OPT_BAM_1);         break; }
             }
 
@@ -1430,7 +1409,6 @@ void parse(int argc, char ** argv)
         case TOOL_M_IGV:
         case TOOL_M_DIFF:
         case TOOL_M_ABUND:
-        case TOOL_M_ALIGN:
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
         {
@@ -1453,7 +1431,6 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_M_ALIGN:
                     case TOOL_M_ASSEMBLY:
                     case TOOL_M_COVERAGE:
                     {
@@ -1464,7 +1441,7 @@ void parse(int argc, char ** argv)
                     default: { break; }
                 }
 
-                if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF || _p.tool == TOOL_M_ALIGN)
+                if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF)
                 {
                     addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
                 }
@@ -1475,7 +1452,6 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_M_IGV:      { viewer<FViewer>();               break; }
-                case TOOL_M_ALIGN:    { analyze_1<MAlign>(OPT_BAM_1);    break; }
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_BAM_1); break; }
 
                 case TOOL_M_DIFF:
@@ -1506,7 +1482,7 @@ void parse(int argc, char ** argv)
                             o.pA = _p.opts.at(OPT_PSL_1);
                             o.pB = _p.opts.at(OPT_PSL_2);
                             
-                            analyze_2<MDiffs>(OPT_FA_1, OPT_FA_2, o);
+                            //analyze_2<MDiffs>(OPT_FA_1, OPT_FA_2, o);
                             break;
                         }
                             

@@ -20,7 +20,7 @@
  */
 
 #include "resources/plotROC_F.R"
-#include "resources/plotNormal.R"
+#include "resources/plotExpress_F.R"
 
 #include "resources/AFU004.v032.ref"
 #include "resources/AFU005.v032.bed"
@@ -122,9 +122,9 @@ Scripts FusionDataRef()
     return ToString(data_fusion_AFU004_v032_ref);
 }
 
-Scripts PlotNormal()
+Scripts PlotExpress_F()
 {
-    return ToString(src_r_plotNormal_R);
+    return ToString(src_r_plotExpress_F_R);
 }
 
 /*

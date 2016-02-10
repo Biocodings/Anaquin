@@ -8,27 +8,12 @@
 
 library(Anaquin)
 
-# Change this for your significance level
-signLevel <- 0.10
+data <- read.csv('/Users/tedwong/Sources/QA/output/FusionDiscover_labels.csv', sep='\t', stringsAsFactors=FALSE)
 
-# Read the data file for true positives
-tps <- read.csv('%3%/%4%.csv', sep='\t')
-
-# Read the data file for false positives
-fps <- read.csv('%3%/%5%.csv', sep='\t')
-
-# Filter only the significant FPs
-fps <- fps[fps$PValue < signLevel,]
-
-tps$label <- 'TP'
-fps$label <- 'FP'
-
-data <- rbind(tps, fps)
-
-data$name <- paste(data$Sequin, data$Position, sep='_')
-data$name <- paste(data$name, data$Type, sep='_')
+# Assign unique names to the false-positives
+data[data$Label=='FP',]$Sequin <- c(1:nrow(data[data$Label=='FP',]))
 
 # Create a FusQuin data set for Anaquin
-data <- FusQuin(seqs=data$name, pval=data$PValue, rRead=data$RefRead, vRead=data$VarRead, eAFreq=data$EAlleleF, label=data$label, type=data$Type)
+data <- FusQuin(seqs=data$Sequin, label=data$Label, pos1=data$Position_1, pos2=data$Position_2)
 
-plotROC.VarQuin(data)
+#plotROC.FusQuin(data)

@@ -2,6 +2,7 @@
 #define F_DIFF_HPP
 
 #include "stats/analyzer.hpp"
+#include "fusion/f_express.hpp"
 
 namespace Anaquin
 {
@@ -9,17 +10,13 @@ namespace Anaquin
     {
         typedef FuzzyOptions Options;
 
-        struct Stats
+        struct Stats : public LinearStats, public FusionStats, public SequinStats
         {
-            struct Data : public LinearStats, public FusionStats
-            {
-                Limit ss;
+            // Statistics for the normal genes
+            FExpress::Stats normal;
 
-                // Sequin distribution
-                SequinHist h = Standard::instance().r_fus.hist();;
-            };
-
-            std::map<ChromoID, Data> data;
+            // Statistics for the fusion genes
+            FExpress::Stats fusion;
         };
 
         static Stats analyze(const FileName &, const FileName &, const Options &o = Options());        

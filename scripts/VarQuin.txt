@@ -59,7 +59,7 @@ STAND_FILE = AVA017.v032.bed
 FACTORS = 1
 
 #
-# How do you want to name your replicates?
+# How do you want to name your samples?
 #
 
 NAMES = A

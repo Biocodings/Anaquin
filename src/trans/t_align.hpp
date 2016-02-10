@@ -86,7 +86,7 @@ namespace Anaquin
                     // Overall performance at the base level
                     Performance overB;
                     
-                    Hist histE, histI;
+                    SequinHist histE, histI;
                     
                     /*
                      * Individual statistics for each gene (due to alternative splicing)
@@ -120,7 +120,7 @@ namespace Anaquin
                 {
                     const auto h = (m == AlignMetrics::AlignExon)   ? &data.at(ChrT).histE :
                                    (m == AlignMetrics::AlignIntron) ? &data.at(ChrT).histI :
-                                                                      &data.at(ChrT).overB.h;
+                                                                      &data.at(ChrT).overB.hist;
                     return Standard::instance().r_trans.limitGene(*h);
                 }
                 
