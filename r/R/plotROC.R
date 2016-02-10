@@ -4,11 +4,11 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotROC <- function(data)
+.plotROC <- function(data, plotPerf=FALSE)
 {
     require(ROCR)
     require(RColorBrewer)
-
+    
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
     
     # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
@@ -39,7 +39,7 @@
                 {
                     x <- data.frame(pval=0, label='TP', ratio=ratio, lpval=0, score=0)
                 }
-                
+            
                 # No FP...
                 else
                 {
@@ -50,20 +50,31 @@
             }
             
             t <- t[with(t, order(score)),]
-            
+
+            print(paste(c('Number of TP for ratio ', ratio, ':', nrow(t[t$label=='TP',])), collapse=' '))
+            print(paste(c('Number of FP for ratio ', ratio, ':', nrow(t[t$label=='FP',])), collapse=' '))
+
             label <- ifelse(t$label == 'TP', 2, 1)
-            
-            print(label)
-            
+
             preds <- prediction(t$score, label, label.ordering=c(1,2))
             perf  <- performance(preds, 'tpr', 'fpr')
             auc   <- performance(preds, 'auc')
-            
-            # Now build the three vectors for plotting - TPR, FPR, and FoldChange
-            AUC <- unlist(auc@y.values)
-            
-            print(paste(c('AUC for ', ratio, ': ', AUC), collapse = ''))
-            
+
+            AUC   <- round(unlist(auc@y.values), 4)
+            print(paste(c('AUC for ', ratio, ': ', AUC), collapse=''))
+
+            if (plotPerf)
+            {
+                tps <- unlist(perf@y.values)
+                fps <- unlist(perf@x.values)
+
+                # What's the FP when TP reaches 100%?
+                cutoff <- fps[which(tps == 1.0)[1]]
+                
+                plot(perf)
+                mtext(paste(c('AUC:', AUC, 'for ratio:', ratio, '. TP==1.0, FP==', cutoff), collapse=' '))
+            }
+
             AUCDatNew <- data.frame(ratio=ratio, AUC=round(AUC, digits=3))
             AUCDat <- rbind(AUCDat, AUCDatNew)
             
@@ -99,9 +110,9 @@
     print(p)
 }
 
-plotROC.VarQuin <- function(data, title=NULL)
+plotROC.VarQuin <- function(data, title=NULL, plotPerf=FALSE)
 {
-    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected)), title)
+    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), plotPerf), title)
 }
 
 plotROC.TransQuin <- function(data, meth='validate')
@@ -183,11 +194,11 @@ plotROC.TransQuin <- function(data, meth='validate')
     }
     
     p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))              + 
-            geom_path(size=2, aes(colour=logFC), alpha=0.7)  + 
-            geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
-            geom_abline(intercept=0, slope=1, linetype=2)    +
-            labs(colour='Log-Fold')                          +
-            theme_bw()
-
+        geom_path(size=2, aes(colour=logFC), alpha=0.7)  + 
+        geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
+        geom_abline(intercept=0, slope=1, linetype=2)    +
+        labs(colour='Log-Fold')                          +
+        theme_bw()
+    
     print(p)
 }
