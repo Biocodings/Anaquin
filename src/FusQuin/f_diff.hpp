@@ -2,7 +2,7 @@
 #define F_DIFF_HPP
 
 #include "stats/analyzer.hpp"
-#include "fusion/f_express.hpp"
+#include "FusQuin/f_express.hpp"
 
 namespace Anaquin
 {

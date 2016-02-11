@@ -1,8 +1,8 @@
 #ifndef F_DISCOVER_HPP
 #define F_DISCOVER_HPP
 
-#include "fusion/FUSQuin.hpp"
 #include "stats/analyzer.hpp"
+#include "FusQuin/FUSQuin.hpp"
 
 namespace Anaquin
 {

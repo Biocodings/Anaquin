@@ -1,8 +1,8 @@
 #ifndef F_EXPRESS_HPP
 #define F_EXPRESS_HPP
 
-#include "fusion/FUSQUin.hpp"
 #include "stats/analyzer.hpp"
+#include "FusQuin/FUSQUin.hpp"
 
 namespace Anaquin
 {

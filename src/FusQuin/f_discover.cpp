@@ -1,5 +1,5 @@
-#include "fusion/FUSQuin.hpp"
-#include "fusion/f_discover.hpp"
+#include "FusQuin/FUSQuin.hpp"
+#include "FusQuin/f_discover.hpp"
 
 using namespace Anaquin;
 
