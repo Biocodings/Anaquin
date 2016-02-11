@@ -7,7 +7,8 @@
 .plotROC <- function(data, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
 {
     require(ROCR)
-    require(RColorBrewer)
+    require(grid)
+    require(gridExtra)
     
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
     
@@ -96,7 +97,7 @@
                 mtext(paste(c('AUC:', AUC, 'for ratio:', ratio, '. TP==1.0, FP==', cutoff_100), collapse=' '))
             }
 
-            AUCDatNew <- data.frame(ratio=ratio, AUC=round(AUC, digits=3))
+            AUCDatNew <- data.frame(Ratio=ratio, AUC=round(AUC, digits=3))
             AUCDat <- rbind(AUCDat, AUCDatNew)
             
             FPR <- c(unlist(perf@x.values)) 
@@ -109,24 +110,30 @@
     
     ROCDat$ratio = as.factor(ROCDat$ratio)
     
-    return (ROCDat)
+    return (list(roc=ROCDat, auc=AUCDat))
 }
 
 .plotROC.Plot <- function(data, title=NULL)
 {
     require(ggplot2)
     
-    p <- ggplot(data=data, aes(x=FPR, y=TPR))                 + 
+    aucData <- data$auc
+    rocData <- data$roc
+    
+    p <- ggplot(data=rocData, aes(x=FPR, y=TPR))              + 
              geom_path(size=1, aes(colour=ratio), alpha=0.7)  + 
              geom_point(size=2, aes(colour=ratio), alpha=0.7) + 
              geom_abline(intercept=0, slope=1, linetype=2)    +
              labs(colour='Fold')                              +
-             theme_bw()
+             theme_bw()# + coord_fixed(ratio = 0.7) 
     
     if (!is.null(title))
     {
         p <- p + ggtitle(title)
     }
+
+    g <- tableGrob(aucData)
+    p <- grid.arrange(arrangeGrob(grobs = list(p, g)), ncol=1)
     
     print(p)
 }

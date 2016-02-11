@@ -20,7 +20,7 @@ snp <- data[data$Type=='SNP',]
 ind <- data[data$Type=='Indel',]
 
 # Plot for SNP
-plotLODR.Plot(data.frame(pval=log10(snp$PValue), abund=log10(snp$EAlleleF), ratio=as.factor(snp$EAlleleF)), title='Expected allele frequency vs P-value (SNP)', xname='Expected allele frequency (log10)', yname='P-value (log10)')
+plotAllelePValue(data.frame(pval=log10(snp$PValue), abund=log10(snp$EAlleleF), ratio=as.factor(snp$EAlleleF)))
 
 # Plot for indels
-plotLODR.Plot(data.frame(pval=log10(ind$PValue), abund=log10(ind$EAlleleF), ratio=as.factor(ind$EAlleleF)), title='Expected allele frequency vs P-value (Indel)', xname='Expected allele frequency (log10)', yname='P-value (log10)')
+#plotAllelePValue(data.frame(pval=log10(ind$PValue), abund=log10(ind$EAlleleF), ratio=as.factor(ind$EAlleleF)))

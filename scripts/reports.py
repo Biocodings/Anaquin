@@ -580,9 +580,37 @@ def VarQuin(config, output):
 
     r.endChapter()
 
+    ########################################
+    #                                      #
+    #      2. Generating Subsampling       #
+    #                                      #
+    ########################################
+
+    print ('----------------------- Variant Subsampling -----------------------\n')
+
+    #
+    # Generate a request for genome coverage. For example:
+    #
+    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
+    #
+
+    files = get(config, 'COV_FILE', EXPECT_FILES)
+
+    req = ' -ufiles ' + files
+    
+    # Execute the command
+    rVarQuin('VarSubsampling', req, config, onlyPrint=True)
+
+    r.startChapter('Statistics (Genome Subsampling)')
+
+    for i in range(0, len(names)):
+        r.addTextFile('Summary statistics for: ' + names[i], 'VarSubsample_summary.stats', )
+
+    r.endChapter()
+
     #########################################
     #                                       #
-    #    2. Generating variant discovery    #
+    #    3. Generating variant discovery    #
     #                                       #
     #########################################
 
@@ -616,7 +644,7 @@ def VarQuin(config, output):
 
     ########################################
     #                                      #
-    #    3. Generating allele frequency    #
+    #    4. Generating allele frequency    #
     #                                      #
     ########################################
 
@@ -637,35 +665,8 @@ def VarQuin(config, output):
 
     for i in range(0, len(names)):
         r.addTextFile('Summary statistics for: ' + names[i], 'VarAllele_summary.stats', )
-        r.addRCode('Scatter plot (SNPs + Indels)', 'VarAllele_scatter.R', '', nPlots=3)
-
-    r.endChapter()
-
-    ########################################
-    #                                      #
-    #      5. Generating Subsampling       #
-    #                                      #
-    ########################################
-
-    print ('----------------------- Variant Subsampling -----------------------\n')
-
-    #
-    # Generate a request for genome coverage. For example:
-    #
-    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
-    #
-
-    files = get(config, 'COV_FILE', EXPECT_FILES)
-
-    req = ' -soft ' + soft + ' -ufiles ' + files
-    
-    # Execute the command
-    rVarQuin('VarSubsampling', req, config, onlyPrint=True)
-
-    r.startChapter('Statistics (Genome Subsampling)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'VarSubsample_summary.stats', )
+        r.addRCode('Scatter plot (SNPs + Indels)', 'VarAllele_scatter.R', '', nPlots=2) # TOOD: Fix this, should be 3 for indels
+        r.addRCode('Coverage for SNP and Indel', 'VarAllele_coverage.R', '')
 
     r.endChapter()
 

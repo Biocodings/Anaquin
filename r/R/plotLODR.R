@@ -211,6 +211,18 @@
     arrowDat$ratio <- as.factor(arrowDat$ratio)    
 }
 
+plotAllelePValue <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
+{
+    require(plyr)
+    
+    data$ratio <- revalue(data$ratio, c('1'='FP'))
+    
+    xLabels <- xBreaks
+    xLabels[xLabels==0] <- 'FP'
+    
+    plotLODR.Plot(data, title='Expected allele frequency vs p-value (SNP)', xname='Expected allele frequency (log10)', yname='P-value (log10)', xBreaks=xBreaks, xLabels=xLabels)
+}
+
 plotLODR.Plot <- function(data, ...)
 {
     require(ggplot2)
@@ -241,9 +253,9 @@ plotLODR.Plot <- function(data, ...)
         p <- p + geom_hline(yintercept=cutoff, linetype=2, size=2)
     }
 
-    if (!is.null(x$xBreaks))
+    if (!is.null(x$xBreaks) & !is.null(x$xLabels))
     {
-        p <- p + scale_x_log10(breaks=x$xBreaks, labels=x$xLabels)
+       p <- p + scale_x_continuous(breaks=x$xBreaks, labels=x$xLabels)
     }
     #else
     #{
