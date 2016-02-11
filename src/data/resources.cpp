@@ -60,6 +60,7 @@
  */
 
 #include "resources/plotROC_V.R"
+#include "resources/plotAllCov.R"
 #include "resources/plotLODR_V.R"
 #include "resources/plotAlleleF.R"
 #include "resources/plotDensity.R"
@@ -125,6 +126,11 @@ Scripts FusionDataRef()
 Scripts PlotExpress_F()
 {
     return ToString(src_r_plotExpress_F_R);
+}
+
+Scripts PlotAllCov()
+{
+    return ToString(src_r_plotAllCov_R);
 }
 
 /*

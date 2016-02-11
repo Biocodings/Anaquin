@@ -15,15 +15,20 @@ namespace Anaquin
         
         struct Stats : public MappingStats, public SequinStats, public VariantStats
         {
-            struct ChrTData
-            {
-                LinearStats tot, snp, ind;
-            };
+            // Statistics for all variants
+            LinearStats tot;
+            
+            // Statistics for SNPs
+            LinearStats snp;
+            
+            // Statistics for indels
+            LinearStats ind;
 
-            typedef std::vector<CalledVariant> EndoData;
+            // Mapping for reference read counts
+            std::map<SequinID, Counts> readR;
 
-            ChrTData chrT;
-            EndoData endo;
+            // Mapping for variant read counts
+            std::map<SequinID, Counts> readV;
 
             // Absolute detection limit
             Limit limit;

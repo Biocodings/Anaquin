@@ -5,11 +5,14 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern Scripts PlotAlleleF();
 
+// Defined in resources.cpp
+extern Scripts PlotAllCov();
+
 static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VAllele::Options &o)
 {
     o.writer->open(file);
 
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
     auto f = [&](const LinearStats &l, const Label &label)
     {
@@ -20,6 +23,8 @@ static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VA
             o.writer->write((boost::format(format) % data.ids[i]
                                                    % data.x[i]
                                                    % data.y[i]
+                                                   % stats.readR.at(data.ids[i])
+                                                   % stats.readV.at(data.ids[i])
                                                    % label).str());
         }
     };
@@ -27,9 +32,11 @@ static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VA
     o.writer->write((boost::format(format) % "Sequin"
                                            % "EAlleleF"
                                            % "MAlleleF"
+                                           % "RCount"
+                                           % "VCount"
                                            % "Type").str());
-    f(stats.chrT.snp, "SNP");
-    f(stats.chrT.ind, "Indel");
+    f(stats.snp, "SNP");
+    f(stats.ind, "Indel");
 
     o.writer->close();
 }
@@ -76,20 +83,18 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                                                                    % m.match->ref
                                                                    % m.match->l.start
                                                                    % m.match->alt).str();
-                stats.chrT.tot.add(id, known, measured);
+                stats.tot.add(id, known, measured);
 
                 switch (m.query.type())
                 {
-                    case Mutation::SNP:       { stats.chrT.snp.add(id, known, measured); break; }
+                    case Mutation::SNP:       { stats.snp.add(id, known, measured); break; }
                     case Mutation::Deletion:
-                    case Mutation::Insertion: { stats.chrT.ind.add(id, known, measured); break; }
+                    case Mutation::Insertion: { stats.ind.add(id, known, measured); break; }
                 }
+                
+                stats.readR[id] = m.query.readR;
+                stats.readV[id] = m.query.readV;
             }
-        }
-        else
-        {
-            stats.n_endo++;
-            stats.endo.push_back(m.query);
         }
     });
     
@@ -115,7 +120,7 @@ void VAllele::report(const FileName &file, const Options &o)
                                                 file,
                                                 stats.hist,
                                                 stats,
-                                                stats.chrT.tot,
+                                                stats.tot,
                                                 "variants"));
     o.writer->close();
 
@@ -126,7 +131,15 @@ void VAllele::report(const FileName &file, const Options &o)
     writeCSV("VarAllele_quins.csv", stats, o);
     
     /*
-     * Generating scatter plot in R
+     * Generating coverage plot
+     */
+
+    o.writer->open("VarAllele_coverage.R");
+    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAllCov()));
+    o.writer->close();
+
+    /*
+     * Generating for measured allele frequency
      */
     
     o.writer->open("VarAllele_scatter.R");
