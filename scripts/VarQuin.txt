@@ -37,6 +37,14 @@ MIX_FILE = MVA011.v013.csv
 
 CHRT_VAR = AVA009.v032.vcf
 
+#
+# Where's your standards?
+#
+# You can download a copy at www.sequin.xyz. For example:
+#
+#    wget https://s3.amazonaws.com/anaquin/annotations/AVA017.v032.bed
+#
+
 STAND_FILE = AVA017.v032.bed
 
 ###################################################
@@ -64,7 +72,6 @@ FACTORS = 1
 
 NAMES = A
 
-
 ###################################################
 #                                                 #
 # 			3. Alignment analysis                 #
@@ -79,8 +86,7 @@ NAMES = A
 #     - SAM/BAM
 #
 
-ALIGN_FILE = BWA/realigned.bam
-
+ALIGN_FILE = BWA/chr21.bam
 
 ######################################################
 #                                                    #
@@ -89,7 +95,7 @@ ALIGN_FILE = BWA/realigned.bam
 ######################################################
 
 #
-# Which software did you used to generate the assembly?
+# Which software did you use to generate the variants?
 #
 # Anaquin supports:
 #
@@ -101,17 +107,16 @@ ALIGN_FILE = BWA/realigned.bam
 VAR_SOFT = VarScan
 
 # Where's your file?
-VAR_FILE = VarScan/varscan.tab
-
+VAR_FILE = VarScan/25000xApprox.varscan_calls.tab
 
 ######################################################
 #                                                    #
-# 		   5. Genome Coverage & Subsampling          #
+# 		      5. Genome Subsampling          		 #
 #                                                    #
 ######################################################
 
 #
-# Where are your alignment files (SAM/BAM)?
+# Where is the file for subsampling?
 #
 # Anaquin supports:
 #
@@ -119,5 +124,3 @@ VAR_FILE = VarScan/varscan.tab
 #
 
 COV_FILE = BWA/realigned.bam
-
-

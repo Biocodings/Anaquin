@@ -324,13 +324,11 @@ output:
 def createReport(file, report):
     pass
 
-
 #################################
 #                               #
 #        Sequin functions       #
 #                               #
 #################################
-
 
 def TransQuin(config, output):
     
@@ -345,7 +343,7 @@ def TransQuin(config, output):
     #                                           #
     #############################################
 
-    print ('\n----------------------- Alignments -----------------------\n')
+    print ('----------------------- Alignments -----------------------\n')
 
     # Alignment files
     files = get(config, 'ALIGN_FILE', EXPECT_FILES)
@@ -374,7 +372,7 @@ def TransQuin(config, output):
     #                                          #
     ############################################
 
-    print ('\n----------------------- Assembly -----------------------\n')
+    print ('----------------------- Assembly -----------------------\n')
 
     # Assembly software
     soft = get(config, 'ASSEMBLY_SOFT', { 'Cufflinks', 'StringTie' })
@@ -407,7 +405,7 @@ def TransQuin(config, output):
     #                                                           #
     #############################################################
 
-    print ('\n----------------------- Expression (Gene) -----------------------\n')
+    print ('----------------------- Expression (Gene) -----------------------\n')
 
     soft  = get(config, 'EXP_G_SOFT', { 'Cufflinks', 'StringTie' })
     files = get(config, 'EXP_G_FILE', EXPECT_FILES)
@@ -444,7 +442,7 @@ def TransQuin(config, output):
     #                                                              #
     ################################################################
     
-    print ('\n----------------------- Expression (Isoform) -----------------------\n')
+    print ('----------------------- Expression (Isoform) -----------------------\n')
 
     # Expression software
     soft = get(config, 'EXP_I_SOFT', { 'Cufflinks', 'StringTie' })
@@ -480,14 +478,13 @@ def TransQuin(config, output):
 
     r.endChapter()
 
-    
     ########################################################
     #                                                      #
     #  5. Generating statistics for differential analysis  #
     #                                                      #
     ########################################################
 
-    print ('\n----------------------- Differential -----------------------\n')
+    print ('----------------------- Differential -----------------------\n')
 
     lvl = get(config, 'DIFF_LEVEL', ['Gene', 'Isoform', 'Exon'])
 
@@ -531,11 +528,11 @@ def TransQuin(config, output):
 
     r.endChapter()
 
-    #############################
-    #                           #
-    #  6. Generating apprendix  #
-    #                           #
-    #############################
+    #########################################
+    #                                       #
+    #       6. Generating apprendix         #
+    #                                       #
+    #########################################
 
     r.startChapter('Apprendix: Sequin Alignment')
 
@@ -561,7 +558,7 @@ def VarQuin(config, output):
     #                                       #
     #########################################
     
-    print ('\n----------------------- Variant Alignment -----------------------\n')
+    print ('----------------------- Variant Alignment -----------------------\n')
     
     #
     # Generate a request for genome coverage. For example:
@@ -589,7 +586,7 @@ def VarQuin(config, output):
     #                                       #
     #########################################
 
-    print ('\n----------------------- Variant Discovery -----------------------\n')
+    print ('----------------------- Variant Discovery -----------------------\n')
 
     files = get(config, 'VAR_FILE', EXPECT_FILES)
     soft  = get(config, 'VAR_SOFT', { 'VarScan', 'GATK', 'FreeBayes' })
@@ -623,7 +620,7 @@ def VarQuin(config, output):
     #                                      #
     ########################################
 
-    print ('\n----------------------- Allele Frequency -----------------------\n')
+    print ('----------------------- Allele Frequency -----------------------\n')
 
     #
     # Generate a request for allele frequency. For example:
@@ -646,40 +643,11 @@ def VarQuin(config, output):
 
     ########################################
     #                                      #
-    #       4. Generating coverage         #
-    #                                      #
-    ########################################
-
-    print ('\n----------------------- Variant Coverage -----------------------\n')
-
-    #
-    # Generate a request for genome coverage. For example:
-    #
-    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles merged.bam
-    #
-
-    files = get(config, 'COV_FILE', EXPECT_FILES)
-
-    req = ' -soft ' + soft + ' -ufiles ' + files + ' -rbed data/VARQuin/AVA017.v032.bed'
-    
-    # Execute the command
-    rVarQuin('VarCoverage', req, config, onlyPrint=True)
-
-    r.startChapter('Statistics (Genome Coverage)')
-
-    for i in range(0, len(names)):
-        r.addTextFile('Summary statistics for: ' + names[i], 'VarCoverage_summary.stats', )
-        r.addRCode('Density plot', 'VarCoverage_density.R', '', nPlots=1)
-
-    r.endChapter()
-
-    ########################################
-    #                                      #
     #      5. Generating Subsampling       #
     #                                      #
     ########################################
 
-    print ('\n----------------------- Variant Subsampling -----------------------\n')
+    print ('----------------------- Variant Subsampling -----------------------\n')
 
     #
     # Generate a request for genome coverage. For example:
@@ -731,7 +699,7 @@ def FusQuin(config, output):
     #                                            #
     ##############################################
 
-    print ('\n----------------------- Fusion Discovery -----------------------\n')
+    print ('----------------------- Fusion Discovery -----------------------\n')
 
     #
     # Generate a request for fusion discovery. For example:
@@ -759,7 +727,7 @@ def FusQuin(config, output):
     #                                            #
     ##############################################
 
-    print ('\n----------------------- Fusion Expression -----------------------\n')
+    print ('----------------------- Fusion Expression -----------------------\n')
 
     #
     # Generate a request for fusion expression. For example:
@@ -786,7 +754,7 @@ def FusQuin(config, output):
     #                                            #
     ##############################################
 
-    print ('\n----------------------- Fusion Differential -----------------------\n')
+    print ('----------------------- Fusion Differential -----------------------\n')
 
     #
     # Generate a request for fusion differential. For example:

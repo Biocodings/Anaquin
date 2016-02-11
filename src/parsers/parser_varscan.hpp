@@ -21,7 +21,7 @@ namespace Anaquin
             Strands1,
             Strands2,
             Qual1,
-            Qual2,
+            Qual2,       // 10
             Pvalue,
             MapQual1,
             MapQual2,
@@ -29,7 +29,7 @@ namespace Anaquin
             Reads1Minus,
             Reads2Plus,
             Reads2Minus,
-            VarAllele
+            VarAllele    // 18
         };
 
         typedef CalledVariant Data;
@@ -59,10 +59,16 @@ namespace Anaquin
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
                 d.ref = toks[Ref];
-                d.alt = toks[VarAllele];
-                
+
                 d.readR = stod(toks[Reads1]);
                 d.readV = stod(toks[Reads2]);
+
+                if (!d.readV)
+                {
+                    continue;
+                }
+
+                d.alt = toks[VarAllele];
                 
                 try
                 {

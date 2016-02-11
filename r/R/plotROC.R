@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotROC <- function(data, plotPerf=FALSE)
+.plotROC <- function(data, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
 {
     require(ROCR)
     require(RColorBrewer)
@@ -12,8 +12,15 @@
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
     
     # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
-    data$lpval <- log2(data$pval + 0.00001)
-    
+    if (shouldPseuoLog)
+    {
+        data$lpval <- log2(data$pval + 0.00001)
+    }
+    else
+    {
+        data$lpval <- log2(data$pval)
+    }
+
     # Turn the probabilities into ranking classifer
     data$score <- 1-data$lpval
     
@@ -25,9 +32,16 @@
     
     for (ratio in unique(ratios))
     {
-        if (!is.na(ratio))
+        if (!is.na(ratio) && (is.null(refRatio) || ratio != refRatio))
         {
-            t <- data[!is.na(data$ratio) & data$ratio == ratio,]
+            if (is.null(refRatio))
+            {
+                t <- data[!is.na(data$ratio) & data$ratio == ratio,]
+            }
+            else
+            {
+                t <- data[!is.na(data$ratio) & (data$ratio == ratio | data$ratio == refRatio),]                
+            }
             
             print(paste(c('Detectd for ', ratio, ': ', nrow(t)), collapse = ''))
             
@@ -51,8 +65,8 @@
             
             t <- t[with(t, order(score)),]
 
-            print(paste(c('Number of TP for ratio ', ratio, ':', nrow(t[t$label=='TP',])), collapse=' '))
-            print(paste(c('Number of FP for ratio ', ratio, ':', nrow(t[t$label=='FP',])), collapse=' '))
+            #print(paste(c('Number of TP for ratio ', ratio, ':', nrow(t[t$label=='TP',])), collapse=' '))
+            #print(paste(c('Number of FP for ratio ', ratio, ':', nrow(t[t$label=='FP',])), collapse=' '))
 
             label <- ifelse(t$label == 'TP', 2, 1)
 
@@ -69,10 +83,17 @@
                 fps <- unlist(perf@x.values)
 
                 # What's the FP when TP reaches 100%?
-                cutoff <- fps[which(tps == 1.0)[1]]
+                cutoff_100 <- fps[which(tps == 1.0)[1]]
+                
+                # What's the FP when TP reaches 75%?
+                cutoff_75  <- fps[which(tps >= 0.75)[1] - 1]                
+
+                prec_75 = 0.75 / (0.75 + cutoff_75)
+                
+                print(paste(c('Precision for 75% for ratio', ratio, 'is :', prec_75), collapse=' '))
                 
                 plot(perf)
-                mtext(paste(c('AUC:', AUC, 'for ratio:', ratio, '. TP==1.0, FP==', cutoff), collapse=' '))
+                mtext(paste(c('AUC:', AUC, 'for ratio:', ratio, '. TP==1.0, FP==', cutoff_100), collapse=' '))
             }
 
             AUCDatNew <- data.frame(ratio=ratio, AUC=round(AUC, digits=3))
@@ -115,90 +136,17 @@ plotROC.VarQuin <- function(data, title=NULL, plotPerf=FALSE)
     .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), plotPerf), title)
 }
 
-plotROC.TransQuin <- function(data, meth='validate')
+plotROC <- function(data, title=NULL, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
 {
-    require(ROCR)
-    require(ggplot2)
-    
-    stopifnot(meth == 'express' | meth == 'validate')
     stopifnot(class(data) == 'TransQuin' | class(data) == 'VarQuin')
     
-    seqs  <- data$seqs
-    lpval <- log2(seqs$pval)
-    
-    d <- data.frame(pval=seqs$pval, lpval=lpval, score=1-lpval, logFC=seqs$logFC)
-    row.names(d) <- row.names(seqs)
-    
-    if (!is.null(seqs$cls))
-    {
-        d$cls <- seqs$cls    
-    }
-    
-    ROCDat <- NULL
-    AUCDat <- NULL
-    
-    logFCs <- d$logFC
-    
-    for (logFC in unique(logFCs))
-    {
-        if (logFC != 0)
-        {
-            t <- d[d$logFC == 0 | d$logFC == logFC,]
-            
-            if (meth == 'express')
-            {
-                stopifnot(!is.null(d$cls))
-                
-                t <- t[d$cls == 'TP' | d$cls == 'FP',]
-                
-                # 
-                # From the reference manual:
-                #
-                # ... labels should be supplied as ordered factor(s), the lower level corresponding to the negative class, the upper level
-                #     to the positive class ...
-                #
-                
-                t$label <- ifelse(t$cls == 'TP', 2, 1)
-                preds <- prediction(t$score, t$label, label.ordering=c(1,2))
-            }
-            
-            #
-            # Rank the p-values and group them like how's done for the ERCC dashboard. Refer to erccROC() in the ERCC dashboard
-            # for reference implementation.
-            #
-            
-            else
-            {
-                preds <- prediction(t$score, t$logFC, label.ordering=c(0, logFC))
-            }
-            
-            perf  <- performance(preds, "tpr","fpr")
-            auc   <- performance(preds, "auc")
-            
-            # Now build the three vectors for plotting - TPR, FPR, and FoldChange
-            AUC <- unlist(auc@y.values)
-            
-            print(paste(c('AUC for ', logFC, ': ', AUC), collapse = ''))
-            
-            AUCDatNew <- data.frame(logFC=logFC, AUC=round(AUC, digits=3))
-            AUCDat <- rbind(AUCDat, AUCDatNew)
-            
-            FPR <- c(unlist(perf@x.values)) 
-            TPR <- c(unlist(perf@y.values))
-            
-            logFC <- c(rep(as.character(logFC), length(unlist(perf@y.values))))
-            
-            ROCDatNew <- data.frame(FPR=FPR, TPR=TPR, logFC=logFC)
-            ROCDat    <- rbind(ROCDat, ROCDatNew)
-        }
-    }
-    
-    p <- ggplot(data=ROCDat, aes(x=FPR, y=TPR))              + 
-        geom_path(size=2, aes(colour=logFC), alpha=0.7)  + 
-        geom_point(size=5, aes(colour=logFC), alpha=0.7) + 
-        geom_abline(intercept=0, slope=1, linetype=2)    +
-        labs(colour='Log-Fold')                          +
-        theme_bw()
-    
-    print(p)
+    stopifnot(!is.null(data$seqs$pval))
+    stopifnot(!is.null(data$seqs$label))
+    stopifnot(!is.null(data$seqs$ratio))    
+    stopifnot(!is.null(data$seqs$expected))
+
+    data <- .plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), plotPerf=plotPerf,
+                                                                                                       refRatio=refRatio,
+                                                                                                 shouldPseuoLog=shouldPseuoLog)
+    .plotROC.Plot(data, title)
 }

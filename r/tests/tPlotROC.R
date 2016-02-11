@@ -24,9 +24,6 @@ test_1 <- function()
     logFC[logFC==1] <- 0
     
     r <- plotROC(TransQuin(seqs=c(1:length(pval)), pval=pval, logFC=logFC))
-
-    #checkTrue(!is.null(r$pred))
-    #checkTrue(!is.null(r$perf))
 }
 
 test_2 <- function()
@@ -35,9 +32,21 @@ test_2 <- function()
     labels <- c('FP','FP','FP','FP','FP','TP','TP','FP','TP','FP','FP','TP','TP','FP','FP','TP','TP','TP','TP','FP','TP','FP','TP','TP','TP','TP','FP','TP','FP','TP','FP')
 
     r <- plotROC(TransQuin(seqs=c(1:31), pval=pvals, class=labels))
+}
+
+tTransQuin_Paper <- function()
+{
+    data <- read.csv('/Users/tedwong/Desktop/LODR_genes_TED_20.01.16_again.csv', row.names=1)
+    data <- data[!is.na(data$log2FoldChange),]
     
-    checkTrue(!is.null(r$pred))
-    checkTrue(!is.null(r$perf))
+    data$expected.LFC = abs(data$expected.LFC)
+    
+    data$label <- NA
+    data[data$expected.LFC==0,]$label <- 'FP'
+    data[data$expected.LFC!=0,]$label <- 'TP'
+    
+    data <- TransQuin(seqs=row.names(data), pval=data$pvalue, label=data$label, ratio=data$expected.LFC, expected=data$expected)
+    plotROC(data, refRatio=0, shouldPseuoLog=FALSE)
 }
 
 tVarScan <- function()
@@ -81,8 +90,8 @@ tVarScan <- function()
     plotROCForVar(data)
 }
 
-#test_1()
-#test_2()
+test_1()
+test_2()
 tVarScan()
 
 

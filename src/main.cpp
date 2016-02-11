@@ -33,11 +33,11 @@
 #include "ladder/l_abund.hpp"
 #include "ladder/l_coverage.hpp"
 
-#include "fusion/f_diff.hpp"
-#include "fusion/f_viewer.hpp"
-#include "fusion/f_express.hpp"
-#include "fusion/f_discover.hpp"
-#include "fusion/f_coverage.hpp"
+#include "FusQuin/f_diff.hpp"
+#include "FusQuin/f_viewer.hpp"
+#include "FusQuin/f_express.hpp"
+#include "FusQuin/f_discover.hpp"
+#include "FusQuin/f_coverage.hpp"
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
