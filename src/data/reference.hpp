@@ -9,6 +9,7 @@
 
 namespace Anaquin
 {
+    typedef std::map<SequinID, Counts> EndoHist;
     typedef std::map<SequinID, Counts> SequinHist;
 
     enum Mixture
@@ -61,7 +62,7 @@ namespace Anaquin
     {
         public:
 
-            inline Intervals<> intervals() const
+            inline Intervals<> inters() const
             {
                 Intervals<> inters;
 
@@ -72,7 +73,7 @@ namespace Anaquin
                 
                 return inters;
             }
-        
+
             // Add a sequin defined in a mixture file
             inline void add(const SequinID &id, Base length, Concentration c, Mixture m)
             {
@@ -501,14 +502,7 @@ namespace Anaquin
             VarRef();
 
             /*
-             * Endogenous methods
-             */
-        
-            // Adds a reference interval (eg: chr21)
-            void addRInterval(const ChromoID &, const Interval &);
-        
-            /*
-             * Synthetic methods
+             * Modifier functions
              */
         
             // Adds a known variant
@@ -517,6 +511,17 @@ namespace Anaquin
             // Adds a sequin in the standards
             void addStand(const SequinID &, const Locus &);
 
+            // Adds a reference interval (eg: chr21)
+            void addRInterval(const ChromoID &, const Interval &);
+
+            /*
+             * Query functions
+             */
+
+            bool isEndoID(const ChromoID &) const;
+
+            const Intervals<> endoInters() const;
+        
             // Returns number of known variants
             Counts countVars() const;
 
@@ -529,14 +534,19 @@ namespace Anaquin
             // Returns number of sequins
             Counts countSeqs() const;
 
-            // Returns number of intervals
-            Counts countInters(const ChromoID &) const;
-        
+            // Returns number of reference intervals
+            Counts countInters() const;
+
+            EndoHist endoHist() const;
+
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
 
-            // Finds a reference interval
-            const Interval *findRInter(const ChromoID &, const Locus &) const;
+            Interval *findEndo(const Locus &) const;
+            Interval *findEndo(const ChromoID &cID, const Locus &l) const
+            {
+                return isEndoID(cID) ? findEndo(l) : nullptr;
+            }
 
             // Returns the expected fold-change
             Fold fold(const SequinID &) const;

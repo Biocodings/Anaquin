@@ -396,9 +396,9 @@ static const struct option long_options[] =
     { "level",   required_argument, 0, OPT_LEVEL   },
     { "names",   required_argument, 0, OPT_U_NAMES },
 
-    { "rbed",    required_argument, 0, OPT_R_BED   },
-    { "rgtf",    required_argument, 0, OPT_R_GTF },
     { "rexp",    required_argument, 0, OPT_R_ENDO  },
+    { "rbed",    required_argument, 0, OPT_R_BED   },
+    { "rgtf",    required_argument, 0, OPT_R_GTF   },
     { "rvcf",    required_argument, 0, OPT_R_VCF   },
     { "rfus",    required_argument, 0, OPT_R_FUS   },
 
@@ -1343,7 +1343,8 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALIGN:
                     case TOOL_V_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1),    OPT_R_BED);
+                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_ENDO);
                         break;
                     }
 

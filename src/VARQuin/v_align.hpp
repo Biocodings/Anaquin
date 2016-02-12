@@ -11,21 +11,14 @@ namespace Anaquin
         
         struct Stats : public AlignmentStats
         {
-            /*
-             * Accessor for sequin level
-             */
-            
-            /*
-             * Accessor for base level
-             */
-            
-            inline Proportion bSN(const ChromoID &cID) const
+            // Returns the overall sensitivity
+            inline Proportion sn(const ChromoID &cID) const
             {
                 return static_cast<Proportion>(covered(cID)) / length(cID);
             }
 
-            // Returns the sensitivity at the base level. This is also the base coverage.
-            inline Proportion bSN(const ChromoID &cID, const SequinID &sID) const
+            // Returns the individual sensitivity
+            inline Proportion sn(const ChromoID &cID, const SequinID &sID) const
             {
                 // How many bases covered?
                 const auto covered = data.at(cID).covered.at(sID);
@@ -33,38 +26,36 @@ namespace Anaquin
                 // How long is the reference?
                 const auto length  = data.at(cID).length.at(sID);
 
-                assert(covered <= length);
-
                 return static_cast<Proportion>(covered) / length;
             }
 
-            // Returns the total number of bases covered for a chromosome
-            inline Base covered(const ChromoID &cID) const
+            // Returns the overall precision
+            inline Proportion pc(const ChromoID &cID) const
             {
-                return sum(data.at(cID).covered);
+                const auto &tp = data.at(cID).tp;
+                const auto &fp = data.at(cID).fp;
+
+                return static_cast<Proportion>(tp) / (tp + fp);
             }
 
-            // Returns the total reference length for a chromosome
-            inline Base length(const ChromoID &cID) const
-            {
-                return sum(data.at(cID).length);
-            }
+            inline Base length(const ChromoID &cID)  const { return sum(data.at(cID).length);  }
+            inline Base covered(const ChromoID &cID) const { return sum(data.at(cID).covered); }
             
             struct Data
             {
-                Confusion m;
+                Counts tp, fp;
                 
                 // Number of bases covered
                 std::map<SequinID, Base> covered;
                 
                 // Number of bases for each reference
                 std::map<SequinID, Base> length;
+                
+                // Distribution for the sequins
+                SequinHist hist;                
             };
             
             std::map<ChromoID, Data> data;
-
-            // Distribution for the sequins
-            SequinHist hist;
 
             // Absolute detection limit
             Limit limit;

@@ -50,7 +50,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
                                            % "P75"
                                            % "Covered").str());
 
-    const auto inters = r.intervals();
+    const auto inters = r.inters();
     
     for (const auto &i : inters.data())
     {

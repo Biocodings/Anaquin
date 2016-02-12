@@ -38,7 +38,7 @@ static bool checkAlign(const ChromoID &queryID, const ChromoID &id, const Locus 
     }
     else if (id == queryID)
     {
-        return r.findRInter(queryID, l);
+        return r.findEndo(queryID, l);
     }
 
     return false;
@@ -92,7 +92,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     o.info("Generating statistics for " + o.queryID);
     stats.endo = stats.cov.inters.find(o.queryID)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.findRInter(o.queryID, Locus(i, j)));
+        return static_cast<bool>(r.findEndo(o.queryID, Locus(i, j)));
     });
 
     assert(stats.chrT.mean && stats.endo.mean);
@@ -254,6 +254,8 @@ void VSample::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
     
+    const auto &r = Standard::instance().r_var;
+    
     o.info("Generating summary statistics");
     
     const auto summary = "Summary for input: %1%\n\n"
@@ -309,9 +311,9 @@ void VSample::report(const FileName &file, const Options &o)
                                             % before.cov.n_chrT
                                             % before.cov.n_endo
                                             % o.rChrT
-                                            % Standard::instance().r_var.countSeqs()
+                                            % r.countSeqs()
                                             % o.rEndo
-                                            % Standard::instance().r_var.countInters("chr21")
+                                            % r.countInters()
                                             % meth2Str()
                                             % sums(before.cov.hist)
                                             % before.chrTC

@@ -895,6 +895,9 @@ struct VarRef::VariantPair
 
 struct VarRef::VarRefImpl
 {
+    // The reference chromosome
+    ChromoID refChrID = NChr;
+
     // VarQuin standards (BED file)
     std::map<SequinID, Locus> stands;
 
@@ -902,7 +905,7 @@ struct VarRef::VarRefImpl
     std::set<Variant> vars;
 
     // Reference intervals (eg: chr21)
-    std::map<ChromoID, Intervals<>> inters;
+    Intervals<> inters;
 
     // Mixture data
     std::map<Mixture, std::map<SequinID, VariantPair>> data;
@@ -932,7 +935,13 @@ void VarRef::addVar(const Variant &v)
 
 void VarRef::addRInterval(const ChromoID &id, const Interval &i)
 {
-    _impl->inters[id].add(i);
+    if (_impl->refChrID != NChr && _impl->refChrID != id)
+    {
+        throw std::runtime_error("Multi chromosomes is not supported. Only a single chromosome can be used.");
+    }
+
+    _impl->refChrID = id;
+    _impl->inters.add(i);
 }
 
 void VarRef::addStand(const SequinID &id, const Locus &l)
@@ -944,9 +953,9 @@ void VarRef::addStand(const SequinID &id, const Locus &l)
     _impl->stands[id] = l;
 }
 
-Counts VarRef::countInters(const ChromoID &cID) const
+Counts VarRef::countInters() const
 {
-    return _impl->inters.find(cID)->second.size();
+    return _impl->inters.size();
 }
 
 Counts VarRef::countSeqs() const
@@ -1074,21 +1083,35 @@ void VarRef::validate()
     /*
      * Constructing the reference intervals (eg: chr21)
      */
-    
-    for (auto &i : _impl->inters)
-    {
-        i.second.build();
-    }
+
+    _impl->inters.build();
 }
 
-const Interval * VarRef::findRInter(const ChromoID &chr, const Locus &l) const
+const Intervals<> VarRef::endoInters() const
 {
-    if (!_impl->inters.count(chr))
+    return _impl->inters;    
+}
+
+bool VarRef::isEndoID(const ChromoID &cID) const
+{
+    return cID == _impl->refChrID;
+}
+
+EndoHist VarRef::endoHist() const
+{
+    EndoHist hist;
+    
+    for (const auto &i : _impl->inters.data())
     {
-        throw std::runtime_error("Failed to find " + chr + " in the reference intervals");
+        hist[i.second.id()];
     }
 
-    return _impl->inters.at(chr).contains(l);
+    return hist;
+}
+
+Interval * VarRef::findEndo(const Locus &l) const
+{
+    return _impl->inters.contains(l);
 }
 
 const Variant * VarRef::findVar(const SequinID &id) const

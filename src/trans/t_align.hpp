@@ -9,6 +9,53 @@ namespace Anaquin
 {
     typedef std::map<BinID, Counts> BinCounts;
 
+    struct UnknownAlignment
+    {
+        UnknownAlignment(const std::string &id, const Locus &l) : l(l) {}
+        
+        // Eg: HISEQ:132:C7F8BANXX:7:1116:11878:9591
+        std::string id;
+        
+        // The position of the alignment
+        Locus l;
+    };
+
+    struct CountPercent
+    {
+        CountPercent(Counts i, Counts n) : i(i), n(n) {}
+        
+        inline operator std::string() const
+        {
+            return (boost::format("%1% (%2%)") % i % n).str();
+        }
+        
+        inline double percent() const
+        {
+            assert(i <= n);
+            return static_cast<double>(i) / n;
+        }
+        
+        // Relevant number of counts
+        Counts i;
+        
+        // Total number of counts
+        Counts n;
+    };
+
+    /*
+     * Represents something that is missing or undetected. It could be an exon, intron, isoform, gene etc.
+     */
+    
+    struct Missing
+    {
+        Missing(const GenericID &id) : id(id) {}
+        
+        inline bool operator==(const Missing &m) const { return id == m.id; }
+        inline bool operator< (const Missing &m) const { return id <  m.id; }
+        
+        const GenericID id;
+    };
+
     class TAlign : public Analyzer
     {
         public:

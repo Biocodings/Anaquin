@@ -5,9 +5,6 @@
 
 namespace Anaquin
 {
-    const std::string ChrT = "chrT";
-    const std::string Endo = "endo";
-
     typedef std::string Sequence;
     
     typedef long long KMers;
@@ -52,6 +49,10 @@ namespace Anaquin
 
     typedef long long Base;
     typedef long long Counts;
+    
+    const ChromoID ChrT = "chrT";
+    const ChromoID Endo = "endo";
+    const ChromoID NChr = "NA";
 }
 
 #endif

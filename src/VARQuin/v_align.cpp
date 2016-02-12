@@ -5,45 +5,67 @@
 
 using namespace Anaquin;
 
-//template <typename T> static void sums(const std::map<T, Counts> &m, Counts &c)
-//{
-//    for (const auto &i : m)
-//    {
-//        if (i.second == 0)
-//        {
-//            c++;
-//        }
-//        else
-//        {
-//            c += i.second;
-//        }
-//    }
-//    
-//    assert(c);
-//}
+template <typename T> struct AlignmentMatch
+{
+    inline bool contains() const { return !cMatch; }
+    inline bool overlaps() const { return !oMatch; }
+
+    T * oMatch = nullptr;
+    T * cMatch = nullptr;
+
+    // Number of bases to the left of the reference (overlaps == true)
+    Base lGaps = 0;
+
+    // Number of bases to the right of the reference (overlaps == true)
+    Base rGaps = 0;
+};
+
+static AlignmentMatch<Interval> __match__;
+
+template <typename T, typename F> const AlignmentMatch<T> * matchT(const Alignment &align, AlignmentMatch<T> &match, F f)
+{
+    match = AlignmentMatch<T>();
+    
+    if ((match.cMatch = f(align.l, MatchRule::Contains)))
+    {
+        match.oMatch = match.cMatch;
+    }
+    else if ((match.oMatch = f(align.l, MatchRule::Overlap)))
+    {
+        // Empty Implementation
+    }
+
+    auto x = __match__.cMatch ? __match__.cMatch : __match__.oMatch;
+    
+    if (x)
+    {
+        x->map(align.l, &match.lGaps, &match.rGaps);
+    }
+
+    return match.cMatch ? &match : nullptr;
+}
 
 static VAlign::Stats init()
 {
     VAlign::Stats stats;
-    
-    stats.data[ChrT];
-    stats.data["chr21"];
 
-    // Distribution for the sequins
-    stats.hist = Standard::instance().r_var.hist();
+    const auto &r = Standard::instance().r_var;
+
+    stats.data[ChrT].hist = r.hist();
+    stats.data[Endo].hist = r.endoHist();
     
     return stats;
 }
 
 static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
 {
+    const auto &r = Standard::instance().r_var;
     const SequinData * match;
 
-    if (classify(stats.data.at(ChrT).m, align, [&](const Alignment &)
+    if ((match = r.match(align.l, MatchRule::Contains)))
     {
-        return (match = Standard::instance().r_var.match(align.l, MatchRule::Contains)) ? Positive : Negative;
-    }))
-    {
+        stats.data[ChrT].tp++;
+        
         /*
          * It's important to map the position relative to the beginning of the sequin, as interval
          * has been designed for chromosome and thus starts from position 0.
@@ -57,14 +79,31 @@ static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals
         const auto t = Locus(align.l.start - l->l().start, align.l.end - l->l().start);
         assert(t.length() <= l->l().length());
 
-        inters.find(match->id)->add(t);
-        stats.hist.at(match->id)++;
+        inters.find(match->id)->add(t);        
+        stats.data[ChrT].hist.at(match->id)++;
+    }
+    else
+    {
+        stats.data[ChrT].fp++;
     }
 }
 
 static void classifyEndo(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
 {
-    // Empty Implementation
+    const auto &r = Standard::instance().r_var;
+
+    if (matchT(align, __match__, [&](const Locus &l, MatchRule rule)
+    {
+        return r.findEndo(align.cID, align.l);
+    }))
+    {
+        stats.data[Endo].tp++;
+        stats.data[Endo].hist.at(__match__.cMatch->id())++;
+    }
+    else
+    {
+        stats.data[Endo].fp++;
+    }
 }
 
 VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
@@ -102,8 +141,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             o.warn("Splice read: " + align.name + " detected");
             return;
         }
-        
-        if (!align.i && !(info.p.i % 1000000))
+        else if (!align.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
@@ -118,53 +156,59 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         {
             classifyChrT(align, stats, inters);
         }
-        else if (align.cID == "chr21")
+        else
         {
             classifyEndo(align, stats, inters);
         }
     });
 
-    // Calculate for the sensitivity
-    stats.limit = r.limit(stats.hist);
+    stats.limit = r.limit(stats.data[ChrT].hist);
 
     /*
-     * Calculating base statistics for both synthetic and endogenous
+     * Calculating interval statistics
      */
 
-    o.info("Calculating base statistics");
+    o.info("Calculating interval statistics");
 
-    Base totCov = 0;
-    Base totLen = 0;
-    
-    for (const auto &i: inters.data())
+    auto f = [&](Stats::Data &data, const Intervals<> &inters)
     {
-        Base covered = 0;
-        
-        i.second.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+        Base totCov = 0;
+        Base totLen = 0;
+
+        for (const auto &i: inters.data())
         {
-            if (depth)
+            Base covered = 0;
+            
+            i.second.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
             {
-                covered += j - i;
-            }
-        });
+                if (depth)
+                {
+                    covered += j - i;
+                }
+            });
+            
+            data.covered[i.first] = covered;
+            data.length [i.first] = i.second.l().length();
 
-        stats.data[ChrT].covered[i.first] = covered;
-        stats.data[ChrT].length [i.first] = i.second.l().length();
-
-        totCov += covered;
-        totLen += i.second.l().length();
-
-        assert(totCov <= totLen);
-    }
+            totCov += covered;
+            totLen += i.second.l().length();
+            
+            assert(totCov <= totLen);
+        }
+        
+        assert(totLen == inters.length());
+    };
     
-    assert(totLen == inters.length());
+    f(stats.data[ChrT], inters);
+    f(stats.data[Endo], r.endoInters());
+
     return stats;
 }
 
 static void writeSummary(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-
+    
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
                          "   *** Fraction of reads mapped to the synthetic and experimental chromosomes\n"
@@ -190,16 +234,14 @@ static void writeSummary(const FileName &file, const VAlign::Stats &stats, const
                          "   *************************************************\n\n"
                          "   Sensitivity:  %12%\n"
                          "   Specificity:  %13%\n\n"
-                         "   Base Covered: %14%\n\n"
-                         "   Detection limit: %15% (%16%)\n\n"
+                         "   Detection limit: %14% (%15%)\n\n"
                          "   *************************************************\n"
                          "   ***                                           ***\n"
                          "   ***    Comparison with endogenous annotation   ***\n"
                          "   ***                                           ***\n"
                          "   *************************************************\n\n"
-                         "   Sensitivity:  %17%\n"
-                         "   Specificity:  %18%\n\n"
-                         "   Base Covered: %19%\n\n";
+                         "   Sensitivity:  %16%\n"
+                         "   Specificity:  %17%\n\n";
     
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
@@ -211,16 +253,15 @@ static void writeSummary(const FileName &file, const VAlign::Stats &stats, const
                                             % stats.dilution()
                                             % o.rChrT
                                             % r.countSeqs()
-                                            % o.rEndo         // 10
-                                            % "NA"              // 11
-                                            % "NA"              // 12
-                                            % "NA"              // 13
-                                            % stats.bSN(ChrT)   // 14
-                                            % stats.limit.abund // 15
-                                            % stats.limit.id    // 16
-                                            % "NA"              // 17
-                                            % "NA"
-                                            % stats.bSN("chr21")).str());
+                                            % o.rEndo            // 10
+                                            % r.countInters()    // 11
+                                            % stats.sn(ChrT)     // 12
+                                            % stats.pc(ChrT)     // 13
+                                            % stats.limit.abund  // 14
+                                            % stats.limit.id     // 15
+                                            % stats.sn(ChrT)     // 16
+                                            % stats.pc(ChrT)     // 17
+                     ).str());
     o.writer->close();
 }
 
