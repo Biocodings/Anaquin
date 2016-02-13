@@ -2,7 +2,7 @@
 #define F_EXPRESS_HPP
 
 #include "stats/analyzer.hpp"
-#include "FusQuin/FUSQUin.hpp"
+#include "FusQuin/FUSQuin.hpp"
 
 namespace Anaquin
 {

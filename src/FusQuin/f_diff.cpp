@@ -1,5 +1,5 @@
 #include "FusQuin/f_diff.hpp"
-#include "FusQuin/FUSQUin.hpp"
+#include "FusQuin/FUSQuin.hpp"
 #include "FusQuin/f_discover.hpp"
 #include "parsers/parser_stab.hpp"
 #include "parsers/parser_star_fusion.hpp"
