@@ -205,7 +205,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VAlign::Stats &stats, const VAlign::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     
@@ -244,7 +244,7 @@ static void writeSummary(const FileName &file, const VAlign::Stats &stats, const
                          "   Specificity:  %17%\n\n";
     
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % file
+    o.writer->write((boost::format(summary) % src
                                             % stats.unmapped
                                             % stats.n_chrT
                                             % stats.chrTProp()
@@ -275,14 +275,8 @@ void VAlign::report(const FileName &file, const Options &o)
      * Write out summary statistics
      */
     
-    writeSummary("VarAlign_summary.stats", stats, o);
-    
+    writeSummary("VarAlign_summary.stats", file, stats, o);
 
-    /*
-     * Generating alignment statistics
-     */
-    
-    
     /*
      * Generating sequin statistics
      */
