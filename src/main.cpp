@@ -1392,16 +1392,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_V_SUBSAMPLE:
-                {
-                    VSample::Options o;
-                    
-                    // TODO: Fix this
-                    o.queryID = "chr21";
-
-                    analyze_1<VSample>(OPT_U_FILES, o);
-                    break;
-                }
+                case TOOL_V_SUBSAMPLE: { analyze_1<VSample>(OPT_U_FILES); break; }
             }
 
             break;

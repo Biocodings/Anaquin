@@ -46,11 +46,11 @@ static bool checkAlign(const ChromoID &queryID, const ChromoID &id, const Locus 
 
 VSample::Stats VSample::stats(const FileName &file, const Options &o)
 {
-    assert(!o.queryID.empty());
-
     const auto &r = Standard::instance().r_var;
+
+    assert(!r.endoID().empty());
     
-    o.info("Query: " + o.queryID);
+    o.info("Query: " + r.endoID());
     o.analyze(file);
 
     Stats stats;
@@ -66,21 +66,21 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
             o.wait(std::to_string(p.i));
         }
 
-        return checkAlign(o.queryID, align.cID, align.l);
+        return checkAlign(r.endoID(), align.cID, align.l);
     });
 
     if (!stats.cov.hist.count(ChrT))
     {
         throw std::runtime_error("Failed to find any alignment for " + ChrT);
     }
-    else if (!stats.cov.hist.count((o.queryID)))
+    else if (!stats.cov.hist.count(r.endoID()))
     {
-        throw std::runtime_error("Failed to find any alignment for " + o.queryID);
+        throw std::runtime_error("Failed to find any alignment for " + r.endoID());
     }
     
     o.info(std::to_string(sums(stats.cov.hist)) + " alignments in total");
     o.info(std::to_string(stats.cov.hist.at(ChrT)) + " alignments to chrT");
-    o.info(std::to_string(stats.cov.hist.at(o.queryID)) + " alignments to " + o.queryID);
+    o.info(std::to_string(stats.cov.hist.at(r.endoID())) + " alignments to " + r.endoID());
     o.info(std::to_string(stats.cov.inters.size()) + " intervals generated");
 
     o.info("Generating statistics for " + std::string(ChrT));
@@ -89,15 +89,15 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
         return static_cast<bool>(r.match(Locus(i, j), MatchRule::Contains));
     });
 
-    o.info("Generating statistics for " + o.queryID);
-    stats.endo = stats.cov.inters.find(o.queryID)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+    o.info("Generating statistics for " + r.endoID());
+    stats.endo = stats.cov.inters.find(r.endoID())->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.findEndo(o.queryID, Locus(i, j)));
+        return static_cast<bool>(r.findEndo(r.endoID(), Locus(i, j)));
     });
 
     assert(stats.chrT.mean && stats.endo.mean);
 
-    o.info("Calculating coverage for " + ChrT + " and " + o.queryID);
+    o.info("Calculating coverage for " + ChrT + " and " + r.endoID());
 
     /*
      * Now we have the data, we'll need to compare the coverage and determine what fraction that
@@ -200,6 +200,8 @@ void VSample::sample(const FileName &src, const FileName &dst, const Stats &stat
 // Generate and report statistics for subsampling
 void VSample::report(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+
     auto meth2Str = [&]()
     {
         switch (o.method)
@@ -233,7 +235,7 @@ void VSample::report(const FileName &file, const Options &o)
 
     CoverageTool::bedGraph(before.cov, pre, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
-        return checkAlign(o.queryID, id, Locus(i, j));
+        return checkAlign(r.endoID(), id, Locus(i, j));
     });
 
     /*
@@ -247,14 +249,12 @@ void VSample::report(const FileName &file, const Options &o)
 
     CoverageTool::bedGraph(after.cov, post, [&](const ChromoID &id, Base i, Base j, Coverage)
     {
-        return checkAlign(o.queryID, id, Locus(i, j));
+        return checkAlign(r.endoID(), id, Locus(i, j));
     });
     
     /*
      * Generating summary statistics
      */
-    
-    const auto &r = Standard::instance().r_var;
     
     o.info("Generating summary statistics");
     

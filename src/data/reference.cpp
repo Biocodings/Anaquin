@@ -1095,9 +1095,9 @@ const Intervals<> VarRef::endoInters() const
     return _impl->inters;    
 }
 
-bool VarRef::isEndoID(const ChromoID &cID) const
+ChromoID VarRef::endoID() const
 {
-    return cID == _impl->refChrID;
+    return _impl->refChrID;
 }
 
 EndoHist VarRef::endoHist() const

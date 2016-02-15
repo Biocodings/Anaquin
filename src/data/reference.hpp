@@ -518,7 +518,9 @@ namespace Anaquin
              * Query functions
              */
 
-            bool isEndoID(const ChromoID &) const;
+            ChromoID endoID() const;
+
+            bool isEndoID(const ChromoID &cID) const { return cID == endoID(); }
 
             const Intervals<> endoInters() const;
         
