@@ -1084,7 +1084,10 @@ void VarRef::validate()
      * Constructing the reference intervals (eg: chr21)
      */
 
-    _impl->inters.build();
+    if (_impl->inters.size())
+    {
+        _impl->inters.build();
+    }
 }
 
 const Intervals<> VarRef::endoInters() const
