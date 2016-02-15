@@ -196,7 +196,7 @@ static void writeSeqins(const FileName &file, const VDiscover::Stats &stats, con
     o.writer->close();
 }
 
-static void writeSummary(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
+static void writeSummary(const FileName &file, const FileName &src, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
     
@@ -213,63 +213,52 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
                          "   Synthetic:  %5% SNPs\n"
                          "   Synthetic:  %6% indels\n"
                          "   Synthetic:  %7% variants\n\n"
-                         "   ***\n"
-                         "   *** Reference annotation (Experiment)\n"
-                         "   ***\n\n"
-                         "   File: %8%\n\n"
-                         "   Experiment:  %9% SNPs\n"
-                         "   Experiment:  %10% indels\n"
-                         "   Experiment:  %11% variants\n\n"
                          "   ************************************************************\n"
                          "   ***                                                      ***\n"
                          "   ***        Statistics for the synthetic chromosome       ***\n"
                          "   ***                                                      ***\n"
                          "   ************************************************************\n\n"
-                         "   Detected:    %12% SNPs\n"
-                         "   Detected:    %13% indels\n"
-                         "   Detected:    %14% variants\n\n"
-                         "   Signficiance Level: %15%\n\n"
-                         "   Filtered:    %16% SNPs\n"
-                         "   Filtered:    %17% indels\n"
-                         "   Filtered:    %18% variants\n\n"
-                         "   True Positives:   %19% SNPS\n"
-                         "   True Positives:   %20% indels\n"
-                         "   True Positives:   %21% variants\n\n"
-                         "   False Positives:  %22% SNPS\n"
-                         "   False Positives:  %23% SNPS\n"
-                         "   False Positives:  %24% variants\n\n"
+                         "   Detected:    %8% SNPs\n"
+                         "   Detected:    %9% indels\n"
+                         "   Detected:    %10% variants\n\n"
+                         "   Signficiance Level: %11%\n\n"
+                         "   Filtered:    %12% SNPs\n"
+                         "   Filtered:    %13% indels\n"
+                         "   Filtered:    %14% variants\n\n"
+                         "   True Positives:   %15% SNPS\n"
+                         "   True Positives:   %16% indels\n"
+                         "   True Positives:   %17% variants\n\n"
+                         "   False Positives:  %18% SNPS\n"
+                         "   False Positives:  %19% SNPS\n"
+                         "   False Positives:  %20% variants\n\n"
                          "   ***\n"
                          "   *** Performance metrics (Overall)\n"
                          "   ***\n\n"
-                         "   Sensitivity: %29%\n"
-                         "   Specificity: %30%\n\n"
+                         "   Sensitivity: %21%\n"
+                         "   Specificity: %22%\n\n"
                          "   ***\n"
                          "   *** Performance metrics (SNP)\n"
                          "   ***\n\n"
-                         "   Sensitivity: %25%\n"
-                         "   Specificity: %26%\n\n"
+                         "   Sensitivity: %23%\n"
+                         "   Specificity: %24%\n\n"
                          "   ***\n"
                          "   *** Performance metrics (Indel)\n"
                          "   ***\n\n"
-                         "   Sensitivity: %27%\n"
-                         "   Specificity: %28%\n\n";
+                         "   Sensitivity: %25%\n"
+                         "   Specificity: %26%\n\n";
 
     o.writer->open("VarDiscover_summary.stats");    
-    o.writer->write((boost::format(summary) % file
+    o.writer->write((boost::format(summary) % src
                                             % stats.chrT.detectTot()
                                             % stats.endo.size()
                                             % o.rChrT
                                             % r.countSNPs()
                                             % r.countIndels()
-                                            % r.countVars()          // 7
-                                            % o.rEndo
-                                            % "NA"
-                                            % "NA"
-                                            % "NA"
+                                            % r.countVars()           // 7
                                             % stats.chrT.detectSNP()
                                             % stats.chrT.detectInd()
                                             % stats.chrT.detectTot()
-                                            % o.sign                  // 15
+                                            % o.sign                  // 11
                                             % stats.chrT.filterSNP()
                                             % stats.chrT.filterInd()
                                             % stats.chrT.filterTot()
@@ -279,13 +268,13 @@ static void writeSummary(const FileName &file, const VDiscover::Stats &stats, co
                                             % stats.chrT.fpSNP()
                                             % stats.chrT.fpInd()
                                             % stats.chrT.fpTot()
-                                            % stats.chrT.m_snp.sn()   // 25 
-                                            % stats.chrT.m_snp.sp()
-                                            % stats.chrT.m_ind.sn()
-                                            % stats.chrT.m_ind.sp()
-                                            % stats.chrT.m.sn()
+                                            % stats.chrT.m_snp.sn()   // 21
+                                            % stats.chrT.m_snp.sp()   // 22
+                                            % stats.chrT.m_ind.sn()   // 23
+                                            % stats.chrT.m_ind.sp()   // 24
+                                            % stats.chrT.m.sn()       // 25
                                             % stats.chrT.m.sp()).str());
-                     o.writer->close();
+    o.writer->close();
 }
 
 void VDiscover::report(const FileName &file, const Options &o)
@@ -305,8 +294,8 @@ void VDiscover::report(const FileName &file, const Options &o)
      * Generate summary statistics
      */
     
-    writeSummary("VarDiscover_summary.stats", stats, o);
-    
+    writeSummary("VarDiscover_summary.stats", file, stats, o);
+
     /*
      * Generating classified statistics for the variants
      */

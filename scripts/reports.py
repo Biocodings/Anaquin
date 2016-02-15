@@ -221,13 +221,18 @@ class Language:
             file.write('\n```\n\n')
 
     @staticmethod
-    def writeRCode(file, output, src, title, nPlots, description):
+    def writeRCode(file, output, src, title, nPlots, description, height=None):
         tmp = (tempfile.NamedTemporaryFile())
         if (output == 'RMarkdown'):
             file.write('\n## ' + title + '\n\n')
             file.write(description + '\n\n')
             file.write('```{r results=''\'hide\''', message=FALSE, warning=FALSE, echo=FALSE}\n')
-            file.write('png(filename="' + tmp.name + '%01d")\n')
+
+            if (height == None):
+                file.write('png(filename="' + tmp.name + '%01d")\n')
+            else:
+                file.write('png(filename="' + tmp.name + '%01d", height=' + str(height) + ' )\n')
+
             file.write('source("' + src + '")\n')
             file.write('dev.off()\n')
             file.write('```\n')
@@ -251,8 +256,8 @@ class Chapter:
     def addImage(self, title, file):
         self.items.append({ 'type': 'image', 'title': title, 'value': file })
 
-    def addRCode(self, title, file, description, nPlots):
-        self.items.append({ 'type': 'rCode', 'title': title, 'value': file, 'nPlots': nPlots, 'description': description })
+    def addRCode(self, title, file, description, nPlots, height=None):
+        self.items.append({ 'type': 'rCode', 'title': title, 'value': file, 'nPlots': nPlots, 'description': description, 'height': height })
         
     def generate(self, file, output):
         Language.writePage(file, output)
@@ -268,7 +273,7 @@ class Chapter:
                 Language.writeTextFile(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
                 Language.writePage(file, output)
             elif item['type'] == 'rCode':
-                Language.writeRCode(file, output, TEMP_PATH + os.sep + item['value'], item['title'], item['nPlots'], item['description'])
+                Language.writeRCode(file, output, TEMP_PATH + os.sep + item['value'], item['title'], item['nPlots'], item['description'], item['height'])
                 Language.writePage(file, output)                
             elif item['type'] == 'image':
                 Language.writeImage(file, output, TEMP_PATH + os.sep + item['value'], item['title'])
@@ -296,8 +301,8 @@ class Report:
     def addImage(self, title, file):
         self.current.addImage(title, file)
         
-    def addRCode(self, title, file, description='', nPlots=1):
-        self.current.addRCode(title, file, description, nPlots)
+    def addRCode(self, title, file, description='', nPlots=1, height=None):
+        self.current.addRCode(title, file, description, nPlots, height)
         
     def generate(self, file, output):
         print('\n-------------------------------------')
@@ -582,7 +587,7 @@ def VarQuin(config, output):
 
     ########################################
     #                                      #
-    #      2. Generating Subsampling       #
+    #      2. Generating subsampling       #
     #                                      #
     ########################################
 
@@ -591,7 +596,7 @@ def VarQuin(config, output):
     #
     # Generate a request for genome coverage. For example:
     #
-    #    anaquin -t VarCoverage -rbed data/VARQuin/AVA017.v032.bed -ufiles realigned.bam
+    #    anaquin -t VarSubsample -rbed data/VARQuin/AVA017.v032.bed -rexp chr21.bed -ufiles realigned.bam
     #
 
     files = get(config, 'COV_FILE', EXPECT_FILES)
@@ -637,7 +642,7 @@ def VarQuin(config, output):
 
     for i in range(0, len(names)):
         r.addTextFile('Summary statistics for: ' + names[i], 'VarDiscover_summary.stats', )
-        r.addRCode('ROC', 'VarDiscover_ROC.R', '')
+        r.addRCode('ROC Curve', 'VarDiscover_ROC.R', '', height=770)
         r.addRCode('LODR for SNP and Indel', 'VarDiscover_LODR.R', '')
 
     r.endChapter()
@@ -666,7 +671,7 @@ def VarQuin(config, output):
     for i in range(0, len(names)):
         r.addTextFile('Summary statistics for: ' + names[i], 'VarAllele_summary.stats', )
         r.addRCode('Scatter plot (SNPs + Indels)', 'VarAllele_scatter.R', '', nPlots=2) # TOOD: Fix this, should be 3 for indels
-        r.addRCode('Coverage for SNP and Indel', 'VarAllele_coverage.R', '')
+        r.addRCode('Coverage plot for SNP and Indel', 'VarAllele_coverage.R', '')
 
     r.endChapter()
 

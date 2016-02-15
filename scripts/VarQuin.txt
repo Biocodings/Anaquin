@@ -70,7 +70,7 @@ FACTORS = 1
 # How do you want to name your samples?
 #
 
-NAMES = A
+NAMES = TestSample
 
 ###################################################
 #                                                 #

@@ -132,8 +132,11 @@
         p <- p + ggtitle(title)
     }
 
+    theme <- gridExtra::ttheme_default(core = list(fg_params=list(cex = 0.7)),
+                                    colhead = list(fg_params=list(cex = 1,0)),
+                                    rowhead = list(fg_params=list(cex = 1.0)))
     g <- tableGrob(aucData)
-    p <- grid.arrange(arrangeGrob(grobs = list(p, g)), ncol=1)
+    p <- grid.arrange(p, g,     ncol = 1, heights = c(1.0,0.5))
     
     print(p)
 }
