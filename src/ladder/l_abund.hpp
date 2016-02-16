@@ -33,13 +33,13 @@ namespace Anaquin
                 
                 // Measured size of the library
                 Counts obsTotal = 0;
-
-                // Histogram at the unjoined level
-                SequinHist h = Standard::instance().r_lad.hist();
             };
             
-            std::map<ChromoID, Data> data;
+            Data data;
 
+            // Histogram at the unjoined level
+            SequinHist hist = Standard::instance().r_lad.hist();
+            
             // Sensitivity at the joined level
             Limit s_joined;
             

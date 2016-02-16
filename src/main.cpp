@@ -1299,9 +1299,9 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_L_ABUND:    { analyze_1<LAbund>(OPT_BAM_1);            break; }
+                case TOOL_L_ABUND:    { analyze_1<LAbund>(OPT_U_FILES);            break; }
                 case TOOL_L_DIFF:     { /*analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break;*/ }
-                case TOOL_L_COVERAGE: { analyze_1<LCoverage>(OPT_BAM_1);         break; }
+                case TOOL_L_COVERAGE: { analyze_1<LCoverage>(OPT_U_FILES);         break; }
             }
 
             break;

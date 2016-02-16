@@ -120,17 +120,7 @@ struct LadderRef::LadderRefImpl
         }
     };
 
-    /*
-     * Validated data
-     */
-    
     std::map<JoinID, JoinData> joined;
-
-    /*
-     * Raw data
-     */
-    
-    std::map<JoinID, JoinData> rawJoined;
 };
 
 LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
@@ -184,10 +174,14 @@ void LadderRef::validate()
         // Eg: A
         const auto typeID = toks[2];
      
-        if (typeID == "A") { _impl->joined[joinID].A = &i.second; }
-        if (typeID == "B") { _impl->joined[joinID].B = &i.second; }
-        if (typeID == "C") { _impl->joined[joinID].C = &i.second; }
-        if (typeID == "D") { _impl->joined[joinID].D = &i.second; }
+        if      (typeID == "A") { _impl->joined[joinID].A = &i.second; }
+        else if (typeID == "B") { _impl->joined[joinID].B = &i.second; }
+        else if (typeID == "C") { _impl->joined[joinID].C = &i.second; }
+        else if (typeID == "D") { _impl->joined[joinID].D = &i.second; }
+        else
+        {
+            throw std::runtime_error("Unknown " + i.first + ". Mixture file of unjoined standards is required.");
+        }
     }
 
     assert(!_impl->joined.empty());

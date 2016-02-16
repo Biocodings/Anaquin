@@ -38,6 +38,19 @@ FusQuin <- function(..., mix=loadMixture.FusQuin())
     return (r)
 }
 
+LadQuin <- function(..., mix=loadMixture.VarQuin())
+{
+    x <- list(...)
+    
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expected', 'measured', 'aligned')
+    data <- .createData(x, keys)
+    
+    r <- list('seqs'=data, mix=mix)
+    class(r) <- 'LadQuin'
+    
+    return (r)
+}
+
 VarQuin <- function(..., mix=loadMixture.VarQuin())
 {
     x <- list(...)

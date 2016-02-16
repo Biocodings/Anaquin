@@ -26,18 +26,18 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
 
     o.info("Checking for sequins in mix B but not in mix A");
 
-    for (const auto &i : b.data.at(ChrT).normalized)
+    for (const auto &i : b.data.normalized)
     {
         const auto &id = i.first;
         
-        if (!a.data.at(ChrT).normalized.at(id))
+        if (!a.data.normalized.at(id))
         {
             o.warn((boost::format("Warning: %1% defined in mixture B but not in mixture A") % id).str());
         }
     }
     
-    o.info((boost::format("%1% sequins in mix A") % a.data.at(ChrT).normalized.size()).str());
-    o.info((boost::format("%1% sequins in mix B") % b.data.at(ChrT).normalized.size()).str());
+    o.info((boost::format("%1% sequins in mix A") % a.data.normalized.size()).str());
+    o.info((boost::format("%1% sequins in mix B") % b.data.normalized.size()).str());
 
     /*
      * Try for each detected sequin. But only if it's detected in both mixtures.
@@ -60,13 +60,13 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
                                            % "Adjusted B"
                                            % "Adjusted B/A").str());
 
-    for (const auto &i : a.data.at(ChrT).normalized)
+    for (const auto &i : a.data.normalized)
     {
         // Eg: C_02_C
         const auto &seqID = i.first;
 
         // Don't bother unless the sequin is detected in both mixtures
-        if (!b.data.at(ChrT).normalized.at(seqID))
+        if (!b.data.normalized.at(seqID))
         {
             o.writer->write((boost::format(format) % seqID
                                                    % "NA"
@@ -85,34 +85,34 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
         }
 
         // Known fold change between mixture A and B
-        const auto known = (b.data.at(ChrT).expect.at(seqID) / a.data.at(ChrT).expect.at(seqID));
+        const auto known = (b.data.expect.at(seqID) / a.data.expect.at(seqID));
 
         // Measured fold change between mixture A and B
-        const auto measured = (b.data.at(ChrT).measured.at(seqID) / a.data.at(ChrT).measured.at(seqID));
+        const auto measured = (b.data.measured.at(seqID) / a.data.measured.at(seqID));
 
         // Normalized fold change between mixture A and B
-        const auto normalized = (b.data.at(ChrT).normalized.at(seqID) / a.data.at(ChrT).normalized.at(seqID));
+        const auto normalized = (b.data.normalized.at(seqID) / a.data.normalized.at(seqID));
 
         // Measured adjusted fold change between mixture A and B
-        const auto adjusted = (b.data.at(ChrT).adjusted.at(seqID) / a.data.at(ChrT).adjusted.at(seqID));
+        const auto adjusted = (b.data.adjusted.at(seqID) / a.data.adjusted.at(seqID));
 
-        assert(a.data.at(ChrT).measured.count(seqID) && b.data.at(ChrT).measured.count(seqID));
+        assert(a.data.measured.count(seqID) && b.data.measured.count(seqID));
 
         stats.data[ChrT].add(seqID, known, normalized);
         //stats.add(seqID, known, adjusted);
 
         o.writer->write((boost::format(format) % seqID
-                                               % a.data.at(ChrT).expect.at(seqID)
-                                               % b.data.at(ChrT).expect.at(seqID)
+                                               % a.data.expect.at(seqID)
+                                               % b.data.expect.at(seqID)
                                                % known
-                                               % a.data.at(ChrT).measured.at(seqID)
-                                               % b.data.at(ChrT).measured.at(seqID)
+                                               % a.data.measured.at(seqID)
+                                               % b.data.measured.at(seqID)
                                                % measured
-                                               % a.data.at(ChrT).normalized.at(seqID)
-                                               % b.data.at(ChrT).normalized.at(seqID)
+                                               % a.data.normalized.at(seqID)
+                                               % b.data.normalized.at(seqID)
                                                % normalized
-                                               % a.data.at(ChrT).adjusted.at(seqID)
-                                               % b.data.at(ChrT).adjusted.at(seqID)
+                                               % a.data.adjusted.at(seqID)
+                                               % b.data.adjusted.at(seqID)
                                                % adjusted).str());
     }
     

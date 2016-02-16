@@ -30,6 +30,8 @@
  * Ladder Resources
  */
 
+#include "resources/plotLadderAbund.R"
+
 #include "resources/MLA014.v013.csv"
 #include "resources/MLA016.v013.csv"
 #include "resources/MLA020.v013.csv"
@@ -136,6 +138,11 @@ Scripts PlotAllCov()
 /*
  * Ladder Resources
  */
+
+Scripts PlotLadderAbund()
+{
+    return ToString(src_r_plotLadderAbund_R);
+}
 
 Scripts LadderDataMixA()
 {

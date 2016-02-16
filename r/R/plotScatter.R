@@ -59,7 +59,7 @@ plotScatter <- function(data,
                 #ylim(min(data$y) - 0.10, max(data$y) + 0.10)      +
                 geom_smooth(method='lm', formula=y ~ x)            +
                 labs(colour='Ratio')                               +
-                annotate("text", label=lm_eqn(data), x=min(data$x)+2, y=max(data$y)-1, size=5, colour='black', parse=TRUE) +
+                annotate("text", label=lm_eqn(data), x=min(data$x)+4, y=max(data$y)-1, size=5, colour='black', parse=TRUE) +
                 theme_bw()
 
     p <- p +  theme(axis.title.x=element_text(face='bold', size=15))

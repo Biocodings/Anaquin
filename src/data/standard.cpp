@@ -156,8 +156,13 @@ void Standard::addMMix(const Reader &r)
 
 void Standard::addLMix(const Reader &r)
 {
-    readMixture(r, r_lad, Mix_1, ID_Mix, 1);
-    readMixture(Reader(r), r_lad, Mix_2, ID_Mix, 2);
+    const auto n = countColumns(r);
+    readMixture(Reader(r), r_lad, Mix_1, ID_Length_Mix, 1);
+
+    if (n >= 4)
+    {
+        readMixture(Reader(r), r_lad, Mix_2, ID_Length_Mix, 2);
+    }
 }
 
 void Standard::addFMix(const Reader &r)

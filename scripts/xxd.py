@@ -31,6 +31,8 @@ data  = [ 'data/manual.txt',
 
           # ------- Ladder -------
 
+          'src/r/plotLadderAbund.R',
+
           'data/ladder/MLA014.v013.csv',
           'data/ladder/MLA016.v013.csv',
           'data/ladder/MLA020.v013.csv',
