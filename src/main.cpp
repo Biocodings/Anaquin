@@ -222,6 +222,12 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
 
     /*
+     * Ladder Analysis
+     */
+
+    { TOOL_L_ABUND,    { OPT_U_FILES, OPT_MIXTURE } },
+
+    /*
      * Metagenomics Analysis
      */
 
