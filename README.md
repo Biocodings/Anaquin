@@ -46,10 +46,9 @@ Bioinformatics
 <li>Differential analysis
 <li>Alternative Splicing
 <li>Gene expression
-<li>Allele frequency
 <li>De-novo assembly
 <li>Variant analysis
-<li>Allele frequency
+<li>Structual variant
 </ul>
 
 Features
