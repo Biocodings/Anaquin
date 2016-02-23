@@ -5,9 +5,9 @@
 
 using namespace Anaquin;
 
-void ParserBED::parse(const Reader &r, Callback x)
+void ParserBed::parse(const Reader &r, Callback x)
 {
-    ParserBED::Annotation f;
+    Data f;
     ParserProgress p;
 
     std::vector<std::string> sizes, starts, tokens;

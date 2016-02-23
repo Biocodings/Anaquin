@@ -93,19 +93,15 @@ template <typename Reference> void readMixture
 
 void Standard::addInters(const Reader &r)
 {
-    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        /*
-         * Eg: chr21   27047922        27048922        Chr21_RanInt_14
-         */
-
         r_var.addRInterval(f.id, Interval(f.name, f.l));
     });
 }
 
 void Standard::addStd(const Reader &r)
 {
-    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
         r_var.addStand(f.name, f.l);
     });
@@ -137,7 +133,7 @@ void Standard::addMix(const Reader &r)
 
 void Standard::addMRef(const Reader &r)
 {
-    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
         r_meta.addStand(f.id, f.l);
     });
@@ -172,7 +168,7 @@ void Standard::addFMix(const Reader &r)
 
 void Standard::addFStd(const Reader &r)
 {
-    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
         r_fus.addStand(f.name, f.l);
     });
@@ -180,7 +176,7 @@ void Standard::addFStd(const Reader &r)
 
 void Standard::addFSplice(const Reader &r)
 {
-    ParserBED::parse(r, [&](const ParserBED::Annotation &f, const ParserProgress &)
+    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
         r_fus.addSplice(f.name, f.l);
     });

@@ -10,9 +10,9 @@
 
 namespace Anaquin
 {
-    struct ParserBED
+    struct ParserBed
     {
-        struct Annotation
+        struct Data
         {
             operator const FeatureName &() const { return name; }
             
@@ -29,7 +29,7 @@ namespace Anaquin
             //std::vector<Locus> blocks;
         };
 
-        typedef std::function<void(const Annotation &, const ParserProgress &)> Callback;
+        typedef std::function<void(const Data &, const ParserProgress &)> Callback;
         static void parse(const Reader &, Callback);
     };
 }

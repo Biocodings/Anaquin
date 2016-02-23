@@ -29,6 +29,7 @@
 #include "meta/m_assembly.hpp"
 #include "meta/m_coverage.hpp"
 
+#include "ladder/l_copy.hpp"
 #include "ladder/l_diffs.hpp"
 #include "ladder/l_abund.hpp"
 #include "ladder/l_coverage.hpp"
@@ -84,6 +85,7 @@ typedef std::set<Value> Range;
 #define TOOL_F_IGV       292
 #define TOOL_F_COVERAGE  293
 #define TOOL_F_DIFF      295
+#define TOOL_L_COPY      296
 
 /*
  * Options specified in the command line
@@ -193,6 +195,7 @@ static std::map<Value, Tool> _tools =
     { "MetaIGV",          TOOL_M_IGV       },
     { "MetaCoverage",     TOOL_M_COVERAGE  },
 
+    { "LadderCopy",       TOOL_L_COPY     },
     { "LadderAbund",      TOOL_L_ABUND     },
     { "LadderAbundance",  TOOL_L_ABUND     },
     { "LadderDiff",       TOOL_L_DIFF      },
@@ -1294,6 +1297,7 @@ void parse(int argc, char ** argv)
             break;
         }
 
+        case TOOL_L_COPY:
         case TOOL_L_DIFF:
         case TOOL_L_ABUND:
         case TOOL_L_COVERAGE:
@@ -1305,6 +1309,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_L_COPY:     { analyze_1<LCopy>(OPT_U_FILES);             break; }
                 case TOOL_L_ABUND:    { analyze_1<LAbund>(OPT_U_FILES);            break; }
                 case TOOL_L_DIFF:     { /*analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break;*/ }
                 case TOOL_L_COVERAGE: { analyze_1<LCoverage>(OPT_U_FILES);         break; }
