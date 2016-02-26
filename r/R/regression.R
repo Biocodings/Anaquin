@@ -22,14 +22,10 @@ lm2str <- function(data)
 
 plotInflection <- function(x, y, method='piecewise', showDetails=FALSE)
 {
-    if (showDetails)
-    {
-        require(ggplot2)
-    }
+    require(ggplot2)
 
     #
-    # For x=1,2,3,...,n, we would only fit b=3,4,...,n-2. Therefore the length of the frame is
-    # n-4.
+    # For x=1,2,3,...,n, we would only fit b=3,4,...,n-2. Therefore the length of the frame is n-4.
     #
     
     d <- data.frame(x=x, y=y)
@@ -114,18 +110,26 @@ plotInflection <- function(x, y, method='piecewise', showDetails=FALSE)
         print(p)
     }
 
-    # The optimial breakpoint is where the minimum SSE is.
+    # The optimial breakpoint is where the minimum SSE is
     b <- r[which.min(r$sums),]    
     
     # Fit the model again
     fit <- plm(which.min(r$sums)+1)
-
+    
     stopifnot(summary(fit$lModel)$r.squared == b$lR2)    
     stopifnot(summary(fit$rModel)$r.squared == b$rR2)
     stopifnot(summary(fit$lModel)$coefficients[1,1] == b$lInter)
     stopifnot(summary(fit$rModel)$coefficients[1,1] == b$rInter)    
     stopifnot(summary(fit$lModel)$coefficients[2,1] == b$lSlope)
     stopifnot(summary(fit$rModel)$coefficients[2,1] == b$rSlope)    
-    
+
+    data <- data.frame(x=x, y=y)
+
+    p <- ggplot(data=data, aes(x=x, y=y)) +
+                geom_point() +
+                geom_vline(xintercept=c(b$k), linetype="dotted") +
+                theme_bw()
+    print(p)
+
     return (list('model'=fit, 'breaks'=b, 'details'=r))
 }
