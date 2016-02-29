@@ -43,12 +43,11 @@ Bioinformatics
 ============
 
 <ul>
-<li>Differential analysis
-<li>Alternative Splicing
 <li>Gene expression
+<li>Alternative Splicing
 <li>De-novo assembly
 <li>Variant analysis
-<li>Structual variant
+<li>Read alignment
 </ul>
 
 Features
