@@ -55,7 +55,7 @@ def chunks(l, n):
     for i in xrange(0, len(l), n):
         yield l[i:i+n]
 
-def countCoverage(bam, bed, binSize=9):
+def countCoverage(bam, bed, binSize=100):
     
     r = bam.count_coverage(bed.chromID, bed.start, bed.end)
     
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     for custom in customs:
         
         # Get the coverage in the custom region
-        r = countCoverage(bam, custom)
+        r = countCoverage(bam, custom, binSize)
         
         # Let's compare it to the genomic average. Is the region statistically different?
         tTest(r, aver, custom.name, logF, test)
