@@ -167,6 +167,8 @@ if __name__ == '__main__':
     
     binSize = 100
     
+    print ("\nBin size: " + binSize)
+    
     for genome in genomes:
 
         # Length of the region
@@ -186,7 +188,7 @@ if __name__ == '__main__':
     # Average genome average per bin...
     aver = sum(x) / xSize
     
-    print ('\nNumber of bins is: ' + str(xSize))
+    print ('Total number of bins: ' + str(xSize))
     print ('Genome region is: ' + str(aver) + ' per bin' + '\n')
 
     #
