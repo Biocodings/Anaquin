@@ -67,7 +67,7 @@ def tTest(x, aver, name, logF, test):
 
     t = scipy.stats.ttest_1samp(x, popmean=aver)
     
-    stats = abs(t[0]
+    stats = abs(t[0])
     pval  = t[1]
     
     if math.isinf(stats) or math.isinf(pval):
