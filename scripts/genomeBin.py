@@ -32,7 +32,7 @@ def chunks(l, n):
 #
 # Usage: <Alignment File.bam> <Region of Interest.bed> <Genome Background.bed>
 #
-#    Eg: genomeBin.py filtered.bam chrT.fa
+    #    Eg: genomeBin.py filtered.bam chrT.fa
 #
 
 if __name__ == '__main__':
