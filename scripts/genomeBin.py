@@ -15,7 +15,11 @@ from Bio import SeqIO
 
 def readBAM(bam, chromID, start, end):
     
-    r = bam.count_coverage(chromID, start, end)
+    try:
+        r = bam.count_coverage(chromID, start, end)
+    except:
+        print 'Invalid ' + chromoID
+        return None
 
     # Sum of coverage acroess the region
     return (sum(r[0]) + sum(r[1]) + sum(r[2]) + sum(r[3]))  / (end - start)
@@ -66,6 +70,9 @@ if __name__ == '__main__':
 
             # Read the coverage for bin
             r = readBAM(bam, chrID, i, i + binSize)
+
+            if r is None:
+                continue
 
             if r not in freq:
                 freq[r] = 0            
