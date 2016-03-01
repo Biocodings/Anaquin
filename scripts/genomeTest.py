@@ -114,6 +114,7 @@ def tTest(x, aver, name, logF, test):
 #
 #    Eg: python genomeTest.py NA12878_merged.Hg19.sorted.bam chrF.bed genome_wide_exon_regions.bed
 #        python genomeTest.py filtered.bam custom.bed genome.bed
+#        python genomeTest.py LLA072.unjoin_bwa.sort.bam unjoin_ACD_2.bed unjoin_B_2.bed
 #
 #          Generates:
 #
@@ -164,7 +165,7 @@ if __name__ == '__main__':
     # Total number of bins for the genome
     xSize = 0
     
-    binSize = 9
+    binSize = 100
     
     for genome in genomes:
 
