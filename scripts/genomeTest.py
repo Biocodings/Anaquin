@@ -167,6 +167,7 @@ if __name__ == '__main__':
     
     binSize = 100
     
+    print ('Number of genomes: ' + str(len(genomes)))
     print ("\nBin size: " + str(binSize))
     
     for genome in genomes:
