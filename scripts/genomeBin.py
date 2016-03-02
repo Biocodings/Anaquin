@@ -1,90 +1,190 @@
 #!/usr/bin/python
 
 #
-# This script provides implementation for comparing genomics regions.
+# This script provides implementation for genomical regions.
 #
 
 import os
 import sys
-import pysam
-import numpy
-import scipy
-import math
 
-from Bio import SeqIO
-
-def readBAM(bam, chromID, start, end):
+class BedLine:
     
-    try:
-        r = bam.count_coverage(chromID, start, end)
-    except:
-        print 'Invalid ' + chromoID
-        return None
+    # Name of the chromosome
+    chromID = None
+    
+    # Starting position
+    start = None
+    
+    # Ending position
+    end = None
+    
+    # Name of the region
+    name = None
 
-    # Sum of coverage acroess the region
-    return (sum(r[0]) + sum(r[1]) + sum(r[2]) + sum(r[3]))  / (end - start)
+class GenomeCoverage:
 
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for i in xrange(0, len(l), n):
-        yield l[i:i+n]
+    # Name of the chromosome
+    chromID = None
 
-#
-# Usage: <Alignment File.bam> <Region of Interest.bed> <Genome Background.bed>
-#
-    #    Eg: genomeBin.py filtered.bam chrT.fa
-#
+    # The position of the coverage
+    start = None
+    
+    # Number of reads aligning to the position
+    reads = None
+
+def readGenome(file):
+ 
+    gens = []
+
+    for line in open(file):
+        line = line.strip()
+        
+        # Eg: chr21  28  0
+        toks = line.split('\t')
+
+        gen = GenomeCoverage()
+        
+        gen.chromID = toks[0]
+        bed.start   = int(toks[1])
+        gen.reads   = int(toks[2])
+        
+        gens.append(bed)
+    
+    return gens
+
+def readBed(file):
+ 
+    beds = []
+
+    for line in open(file):
+        line = line.strip()
+        
+        # Eg: chrF  31539994    31540591    C_01_D
+        toks = line.split('\t')
+
+        bed = BedLine()
+        
+        bed.name    = toks[3]
+        bed.chromID = toks[0]
+        bed.start   = int(toks[1])
+        bed.end     = int(toks[2])
+        
+        beds.append(bed)
+    
+    return beds
 
 if __name__ == '__main__':
 
-    # The file for the genome (FASTA)
-    genome = sys.argv[1]
+    mode = sys.argv[1]
 
-    dict = {}
-
-    fasta_sequences = SeqIO.parse(open(sys.argv[2]), 'fasta')
-    for fasta in fasta_sequences:
-        name, sequence = fasta.id, str(fasta.seq)
-        dict[name] = sequence
-        print 'Found: ' + name
-
-    # Read in for the BAM file
-    bam = pysam.AlignmentFile(sys.argv[1], 'rb')
-    
-    binSize = 600
-
-    for chrID in dict:
-        print 'Analyzing: ' + chrID
+    if mode == 'filterByBed':        
+        bedFile = sys.argv[2]
+        genFile = sys.argv[3]
         
-        # Split the chromosome into bins with equal size
-        #bins = list(chunks(dict[chrID], binSize))        
-        #print 'Number of bins: ' + str(len(bins))
+        bed = readBed(bedFile)
+        gen = readGenome(genFile)
         
+        for i in gen:
+            for j in bedFile:
+                if i.start >= j.start and i.start <= j.end:
+                    print (i.name + '\t' + str(i.start) + '\t' + str(i.reads))
+                    break
+        
+    elif mode == 'countBedTools':
+        file = sys.argv[2]        
+
+        # Size of each bin
+        binSize = 1
+
         i = 0
-        j = len(dict[chrID])
+        n = 0
 
-        # Frequency table
-        freq = {}
+        min = sys.maxint
+        max = -1
+        dict = {}
 
-        while i < j:
+        for line in open(file):
+            line = line.strip()
 
-            # Read the coverage for bin
-            r = readBAM(bam, chrID, i, i + binSize)
+            # Eg:  C_01_A  21  0
+            toks = line.split('\t')
 
-            if r is None:
-                continue
+            # Coverage per base
+            cov = float(toks[2])
 
-            if r not in freq:
-                freq[r] = 0            
-
-            freq[r] = freq[r] + 1
-
-            # Prepare for the next bin...
-            i = i + binSize
+            n = n + cov            
+            i = i + 1
         
-        writer = open('results.csv', 'w')
+            if i == binSize:
 
-        for i in freq:
-            writer.write(chrID + '\t' + str(i) + '\t' + str(freq[i]) + '\n')
+                t = n
+                n = int(n)
+                
+                if n not in dict:
+                    dict[n] = 0
+                    
+                # We've just found this coverage, increment the counter by 1
+                dict[n] = dict[n] + 1
+                
+                if n < min:
+                    min = n
+                if n > max:
+                    max = n
+                    
+                i = 0
+                n = 0
 
-        writer.close()
+        #print 'Min: ' + str(min)
+        #print 'Max: ' + str(max)
+        #print 'Filling out the gaps...'
+                
+        for i in range(max):
+            if i not in dict:
+                dict[i] = 0
+
+        # Print out the freqency table
+        for key in sorted(dict):
+            print (str(key) + '\t' + str(dict[key]))
+
+    elif mode == 'binning':
+        
+        # Let's scan through the data set and 
+        
+
+
+    else:
+        # What's the proportion of reads for the standards?
+        ratio = 0.05
+    
+        # samtools idxstats NA12878_merged.Hg19.sorted.REF_chr21.bam
+        countGenome = 16357196
+    
+        # samtools idxstats LLA073.unjoin_bwa.sort.bam | awk '{s+=$3+$4} END {print s}'
+        countStands = 27427625
+    
+        x = countGenome / (100 * (1-ratio))
+    
+        # Number of reads required for the standards
+        newStands = x * (100 * ratio)
+    
+        print ('Total number of reads: '  + str(countGenome + newStands))
+        print ('Dilution for genome: '    + str(countGenome / (countGenome + newStands)))
+        print ('Dilution for standards: ' + str(newStands / (countGenome + newStands)))
+        print ('Number of reads required for standards: ' + str(newStands))
+    
+        genome = 'NA12878_merged.Hg19.sorted.REF_chr21.bam'
+        stands = 'LLA073.unjoin_bwa.sort.bam'
+
+        # This is the ratio we'll need to subsample
+        ratio = newStands / countStands 
+
+        print ('Subsample ratio: ' + str(ratio))
+
+        # Perform a subsampling (samtools view -s 0.5 -b file.bam > random_half_of_file.bam)
+        print ('samtools view -s ' + str(ratio) + ' -b ' + stands + ' > sampled.bam')
+
+        # Run bedtools to perform per-base coverage
+        print ('bedtools genomecov -d -ibam ' + genome + ' > genome.txt')
+        print ('bedtools genomecov -d -ibam ' + stands + ' > stands.txt')    
+        print ('\n')
+

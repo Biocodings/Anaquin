@@ -25,5 +25,5 @@ if __name__ == '__main__':
         
     # Run: fasta_formatter -i joined.fa -o Temp.fa -w 60; mv Temp.fa joined.fa
         
-    writer.write('\n')
+    writer.write('\n\n')
     writer.close()
