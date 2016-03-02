@@ -45,10 +45,10 @@ def readGenome(file):
         gen = GenomeCoverage()
         
         gen.chromID = toks[0]
-        bed.start   = int(toks[1])
+        gen.start   = int(toks[1])
         gen.reads   = int(toks[2])
-        
-        gens.append(bed)
+    
+        gens.append(gen)
     
     return gens
 
@@ -70,25 +70,34 @@ def readBed(file):
         bed.end     = int(toks[2])
         
         beds.append(bed)
-    
+        
     return beds
 
 if __name__ == '__main__':
 
     mode = sys.argv[1]
 
+    # This tool is used to filter per-base coverage results from bedtools by given region in a Bed file
     if mode == 'filterByBed':        
         bedFile = sys.argv[2]
         genFile = sys.argv[3]
         
+        #print ('Reading the Bed file...')
         bed = readBed(bedFile)
-        gen = readGenome(genFile)
         
+        #print ('Reading the genome...')
+        gen = readGenome(genFile)
+
+        #print ('Number of genomes: ' + str(len(gen)))
+        #print ('Number of beds: ' + str(len(bed)))
+
         for i in gen:
-            for j in bedFile:
-                if i.start >= j.start and i.start <= j.end:
-                    print (i.name + '\t' + str(i.start) + '\t' + str(i.reads))
-                    break
+            if i.reads >= 5:
+                for j in bed:
+                    if (i.start >= j.start and i.start <= j.end):
+                        #print str(i.start) + ' ' + str(j.start) + ' ' + str(j.end)
+                        print (i.chromID + '\t' + str(i.start) + '\t' + str(i.reads))
+                        break
         
     elif mode == 'countBedTools':
         file = sys.argv[2]        
@@ -145,12 +154,6 @@ if __name__ == '__main__':
         # Print out the freqency table
         for key in sorted(dict):
             print (str(key) + '\t' + str(dict[key]))
-
-    elif mode == 'binning':
-        
-        # Let's scan through the data set and 
-        
-
 
     else:
         # What's the proportion of reads for the standards?
