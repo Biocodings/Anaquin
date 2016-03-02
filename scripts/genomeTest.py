@@ -171,6 +171,8 @@ if __name__ == '__main__':
     
     for genome in genomes:
 
+        print 'Scanning ' + genome.name
+
         # Length of the region
         size = genome.end - genome.start
         
