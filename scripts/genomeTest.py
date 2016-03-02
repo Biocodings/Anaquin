@@ -65,6 +65,7 @@ def countCoverage(bam, bed, binSize=100):
         t = r[0][i] + r[1][i] + r[2][i] + r[3][i]
         x.append(t)
 
+    # Now bin the regions
     bins = list(chunks(x, binSize))
     
     if (bins == 0):
@@ -79,7 +80,7 @@ def countCoverage(bam, bed, binSize=100):
             t.append(bins[i])
         y.append(numpy.mean(t))
 
-    # Returns the coverage for each base
+    # Returns the coverage for each bin
     return y
 
 # Perform a one-sample t-test where x is the region of interest and n is the number of bases in the region
