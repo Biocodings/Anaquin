@@ -87,7 +87,8 @@ def tTest(x, aver, name, logF, test):
 
     print 'Testing: ' + name + ' ' + sign + ' ' + str(fold)
 
-    test.write(name + '\t' + str(numpy.mean(x)) + '\t' + str(numpy.std(x)) + '\t' + str(len(x)) + '\t' + str(stats) + '\t' + str(pval) + '\t' + str(fold) + '\t' + sign + '\n')
+    #test.write('Name\tSD\tMedian\tMean\tBases\tStats\tPValue\tFold\tSignificant\n')
+    test.write(name + '\t' + str(numpy.std(x)) + '\t' + str(numpy.median(x)) + '\t' + str(numpy.mean(x)) + '\t' + str(len(x)) + '\t' + str(stats) + '\t' + str(pval) + '\t' + str(fold) + '\t' + sign + '\n')
 
 #
 # Usage: <Alignment File.bam> <Region of Interest.bed> <Genome Background.bed>
@@ -137,9 +138,11 @@ if __name__ == '__main__':
     
     logF = open('results.log', 'w')
     test = open('results.stats', 'w')    
+    back = open('background.stats', 'w')
 
     logF.write('Name\tLength\tCoverage\n')
-    test.write('Name\tMean\tSD\tBases\tStats\tPValue\tFold\tSignificant\n')
+    back.write('Name\tSD\tMedian\tMean\tBases\n')
+    test.write('Name\tSD\tMedian\tMean\tBases\tStats\tPValue\tFold\tSignificant\n')
     
     for genome in genomes:
 
@@ -150,6 +153,7 @@ if __name__ == '__main__':
         r =  countCoverage(bam, genome)
 
         logF.write(genome.name + '\t' + str(size) + '\t' + str(sum(r)) + '\n')
+        back.write(genome.name + '\t' + str(numpy.std(r)) + '\t' + str(numpy.median(r)) + '\t' + str(numpy.mean(r)) + '\t' + str(len(r)) + '\n')
         
         n = n + size
         total = total + sum(r)
@@ -170,9 +174,11 @@ if __name__ == '__main__':
         # Let's compare it to the genomic average. Is the region statistically different?
         tTest(x, aver, custom.name, logF, test)
 
-    print('Generated results.log. Please check it for logging.')
+    print('\nGenerated results.log. Please check it for logging.')
     print('Generated results.stats. Please check it for statistics.')
+    print('Generated background.stats. Please check it for background.')
     
     bam.close()
+    back.close()    
     logF.close()
     test.close()    
