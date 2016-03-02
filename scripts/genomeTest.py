@@ -170,9 +170,12 @@ if __name__ == '__main__':
     print ('Number of genomes: ' + str(len(genomes)))
     print ("\nBin size: " + str(binSize))
     
+    i = 0
+    
     for genome in genomes:
 
-        print 'Scanning ' + genome.name
+        print 'Scanning ' + str(i) + ' out of ' + str(len(genomes))
+        i = i + 1
 
         # Length of the region
         size = genome.end - genome.start
