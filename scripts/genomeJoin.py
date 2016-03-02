@@ -8,7 +8,7 @@ if __name__ == '__main__':
     names = []
     seqs  = []
     
-    with open("unjoined.fa", "r") as f:
+    with open("CLA004.v013.fa", "r") as f:
         for line in f:
             if (line[0] == '>'):
                 line = line.replace('>', '')                
@@ -25,4 +25,5 @@ if __name__ == '__main__':
         
     # Run: fasta_formatter -i joined.fa -o Temp.fa -w 60; mv Temp.fa joined.fa
         
+    writer.write('\n')
     writer.close()
