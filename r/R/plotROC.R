@@ -28,7 +28,6 @@
     ROCDat <- NULL
     AUCDat <- NULL
     
-    # We'll render for each ratio
     ratios <- sort(data$ratio)
     
     for (ratio in unique(ratios))
@@ -136,7 +135,7 @@
                                     colhead = list(fg_params=list(cex = 1,0)),
                                     rowhead = list(fg_params=list(cex = 1.0)))
     g <- tableGrob(aucData)
-    p <- grid.arrange(p, g,     ncol = 1, heights = c(1.0,0.5))
+    p <- grid.arrange(p, g, ncol = 1, heights = c(1.0,0.5))
     
     print(p)
 }
@@ -144,6 +143,11 @@
 plotROC.VarQuin <- function(data, title=NULL, plotPerf=FALSE)
 {
     .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), plotPerf), title)
+}
+
+plotROC.LadQuin <- function(data, refRatio, title=NULL, plotPerf=FALSE)
+{
+    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), refRatio=refRatio, plotPerf), title)
 }
 
 plotROC <- function(data, title=NULL, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
