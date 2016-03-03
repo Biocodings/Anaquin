@@ -223,12 +223,17 @@ plotAllelePValue <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     plotLODR.Plot(data, title='Expected allele frequency vs p-value (SNP)', xname='Expected allele frequency (log10)', yname='P-value (log10)', xBreaks=xBreaks, xLabels=xLabels)
 }
 
+#
+# Construct the LODR plot. The x-axis would be the measured expression while the y-axis would be the p-value.
+# This function doesn't apply any transformation to the inputs.
+#
+
 plotLODR.Plot <- function(data, ...)
 {
     require(ggplot2)
     
     x <- list(...)
-    p <- ggplot(data, aes(x=abund, y=pval, colour=ratio)) + geom_point(size=3) + theme_bw()
+    p <- ggplot(data, aes(x=abund, y=pval, colour=ratio)) + geom_point(size=1) + theme_bw()
 
     if (!is.null(x$xname)) { p <- p + xlab(x$xname)    }
     if (!is.null(x$yname)) { p <- p + ylab(x$yname)    }
@@ -253,9 +258,19 @@ plotLODR.Plot <- function(data, ...)
         p <- p + geom_hline(yintercept=cutoff, linetype=2, size=2)
     }
 
+    if (!is.null(x$xMin) & !is.null(x$xMax))
+    {
+        p <- p + xlim(x$xMin, x$xMax)
+    }
+
+    if (!is.null(x$yMin) & !is.null(x$yMax))
+    {
+        p <- p + ylim(x$yMin, x$yMax)
+    }
+    
     if (!is.null(x$xBreaks) & !is.null(x$xLabels))
     {
-       p <- p + scale_x_continuous(breaks=x$xBreaks, labels=x$xLabels)
+        p <- p + scale_x_continuous(breaks=x$xBreaks, labels=x$xLabels)
     }
     #else
     #{
@@ -288,6 +303,25 @@ plotLODR.VarQuin <- function(data, title=NULL)
     vReads <- data$seqs$vRead
     
     .plotLODR(data.frame(abund=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
+}
+
+plotLODR.LadQuin <- function(data, title=NULL)
+{
+    # Probability under the null hypothesis (y-axis)
+    pval <- pval(data)
+    
+    # Number of reads for the reference
+    abund <- data$seqs$abund
+
+    plotLODR.Plot(data.frame(abund=abund, pval=pval, ratio=data$seqs$expected),
+                  title='Significance vs Expression',
+                  xname='Expression (log10 Average Reads)',
+                  yname='Significance (log10 T-test Stats)',
+                  multiTest=FALSE,
+                  yMin=-2,
+                  yMax=4,
+                  xMin=-3,
+                  xMax=3)
 }
 
 plotLODR.TransQuin <- function(data,

@@ -42,7 +42,7 @@ LadQuin <- function(..., mix=loadMixture.VarQuin())
 {
     x <- list(...)
     
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expected', 'measured', 'aligned')
+    keys <- c('label', 'pval', 'abund', 'type', 'expected', 'measured', 'aligned')
     data <- .createData(x, keys)
     
     r <- list('seqs'=data, mix=mix)
@@ -97,7 +97,9 @@ colors <- function(n)
 
 pval <- function(data)
 {
-    stopifnot(class(data) == 'TransQuin' | class(data) == 'VarQuin')
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'VarQuin'   |
+              class(data) == 'LadQuin')
 
     if (is.null(data$seqs$pval)) 
     {
