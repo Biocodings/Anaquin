@@ -7,10 +7,16 @@
 #
 # Draw an MA plot for differential analysis. The plot depicts the relationship between abundance and variability.
 #
-#   - x-axis is the average counts for all samples
+#   - x-axis is the measured abundance
 #   - y-axis is the measured log-fold change
 #
-
+# The following information is required:
+#
+#   - Sequins
+#   - Measured abundance
+#   - Measuted log-fold
+#   - Expected log-fold
+#
 plotMA <- function(data,
                    lvl         = 'gene',
                    size        = 4,
@@ -22,31 +28,36 @@ plotMA <- function(data,
                    shouldSymm  = FALSE,
                    qCutoff     = 0.1,
                    lodr        = NULL,
+                   minX        = NULL,
+                   maxX        = NULL,
+                   minY        = NULL,
+                   maxY        = NULL,
                    xname       = 'Log2 Average of Normalized Counts',
                    yname       = 'Log2 Ratio of Normalized Counts')
 {
     require(grid)
-    require(qvalue)    
+    require(qvalue)
     require(ggplot2)
     require(gridExtra)
 
-    stopifnot(class(data) == 'TransQuin')
+    stopifnot(class(data) == 'TransQuin' |
+              class(data) == 'LadQuin')
     stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
-    
+
     # Names of all the features
     names <- seqs(data)
 
-    # Average of normalized count values (x-axis)
-    baseMean <- log2(baseMean(data))
+    # Abundance (eg: avverage of normalized count values) for the x-axis
+    baseMean <- log2(data$seqs$abund)
 
     # Measured logFold ratio (y-axis)
-    logLF <- mLogF(data)
+    logLF <- data$seqs$lfc
 
     # Expected logFold ratio
-    eLogLF <- expectLF(data, lvl=lvl, ids=sequins(data))
+    eLogLF <- data$seqs$elfc  #expectLF(data, lvl=lvl, ids=sequins(data))
 
     # Probability under null hypothesis (optional)
-    pvals <- pval(data)
+    pvals <- data$seqs$pval
 
     if (shouldError)
     {
@@ -70,7 +81,7 @@ plotMA <- function(data,
     {
         data$pvals <- pvals
     }
-    
+
     if (shouldError)
     {
         data$logFSE <- logFSE
@@ -79,17 +90,6 @@ plotMA <- function(data,
     data <- data[!is.na(data$baseMean),]
     data <- data[!is.infinite(data$baseMean),]
 
-    #
-    # Eg: { 2.99999, 3.999999999, 1.999999999 }. This can happen if the user supplies like values calculated
-    #     in Excel.
-    #
-    
-    if (!all.equal(data$eLogLF, as.integer(data$eLogLF)))
-    {
-        warning('Non-integer expected log-fold detected. They are now rounded.')
-        data$eLogLF <- round(data$eLogLF)
-    }
-    
     if (shouldSymm)
     {
         data$eLogLF <- abs(data$eLogLF)
@@ -115,15 +115,26 @@ plotMA <- function(data,
     # Calculating the aspect ratio, and try to maintain the same aspect ratio in both dimension.
     #
     
-    minX <- round(min(data$baseMean)-1)
-    maxX <- round(max(data$baseMean)+1)
-    minY <- round(min(data$logLF)-1)
-    maxY <- round(max(data$logLF)+1)
+    if (is.null(minX) || is.null(maxX))
+    {
+        minX <- round(min(data$baseMean)-1)
+        maxX <- round(max(data$baseMean)+1)
+    }
+    
+    if (is.null(minY) || is.null(maxY))
+    {
+        minY <- round(min(data$logLF)-1)
+        maxY <- round(max(data$logLF)+1)
+    }
+    
+    print(minX)
+    print(maxX)
+    print(minY)
+    print(maxY)
     
     xLen <- length(c(minX:maxX))
 
     xrange <- c(minX, maxX)
-    #yrange <- c(-(xLen/2), (xLen/2))
     yrange <- c(minY, maxY)
 
     #

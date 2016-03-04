@@ -233,7 +233,7 @@ plotLODR.Plot <- function(data, ...)
     require(ggplot2)
     
     x <- list(...)
-    p <- ggplot(data, aes(x=abund, y=pval, colour=ratio)) + geom_point(size=1) + theme_bw()
+    p <- ggplot(data, aes(x=abund, y=pval, colour=ratio)) + geom_point(size=3) + theme_bw()
 
     if (!is.null(x$xname)) { p <- p + xlab(x$xname)    }
     if (!is.null(x$yname)) { p <- p + ylab(x$yname)    }
@@ -317,11 +317,12 @@ plotLODR.LadQuin <- function(data, title=NULL)
                   title='Significance vs Expression',
                   xname='Expression (log10 Average Reads)',
                   yname='Significance (log10 T-test Stats)',
-                  multiTest=FALSE,
-                  yMin=-2,
-                  yMax=4,
-                  xMin=-3,
-                  xMax=3)
+                  multiTest=FALSE#,
+                  #yMin=-2,
+                  #yMax=4,
+                  #xMin=-3,
+                  #xMax=3
+                  )
 }
 
 plotLODR.TransQuin <- function(data,
@@ -608,7 +609,7 @@ plotLODR.TransQuin <- function(data,
 
     if (shouldTable)
     {
-        annotLODRplot <- grid.arrange(arrangeGrob(grobs = list(p, my_table), ncol = 1, heights = c(2,0.5)))
+        annotLODRplot <- grid.arrange(arrangeGrob(grobs=list(p, my_table), ncol=1, heights=c(2,0.5)))
     }
     
     print(p)

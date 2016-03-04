@@ -124,8 +124,8 @@
              geom_point(size=2, aes(colour=ratio), alpha=0.7) + 
              geom_abline(intercept=0, slope=1, linetype=2)    +
              labs(colour='Fold')                              +
-             theme_bw()# + coord_fixed(ratio = 0.7) 
-    
+             theme_bw()
+
     if (!is.null(title))
     {
         p <- p + ggtitle(title)
@@ -134,8 +134,8 @@
     theme <- gridExtra::ttheme_default(core = list(fg_params=list(cex = 0.7)),
                                     colhead = list(fg_params=list(cex = 1,0)),
                                     rowhead = list(fg_params=list(cex = 1.0)))
-    g <- tableGrob(aucData)
-    p <- grid.arrange(p, g, ncol = 1, heights = c(1.0,0.5))
+    #g <- tableGrob(aucData)
+    #p <- grid.arrange(p, g, ncol = 1, heights = c(1.0,0.5))
     
     print(p)
 }

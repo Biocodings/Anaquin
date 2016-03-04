@@ -42,7 +42,7 @@ LadQuin <- function(..., mix=loadMixture.VarQuin())
 {
     x <- list(...)
     
-    keys <- c('label', 'pval', 'abund', 'type', 'expected', 'measured', 'aligned')
+    keys <- c('label', 'elfc', 'lfc', 'pval', 'abund', 'type', 'expected', 'measured', 'aligned')
     data <- .createData(x, keys)
     
     r <- list('seqs'=data, mix=mix)
@@ -172,9 +172,10 @@ baseMean <- function(data)
 seqs <- function(data)
 {
     stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'MetaQuin')
-    
+              class(data) == 'VarQuin'   |
+              class(data) == 'MetaQuin'  |
+              class(data) == 'LadQuin')
+
     return (row.names(data$seqs))
 }
 
