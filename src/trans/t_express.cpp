@@ -2,14 +2,23 @@
 #include "data/experiment.hpp"
 #include "trans/t_express.hpp"
 #include "writers/r_writer.hpp"
+#include "parsers/parser_kallisto.hpp"
 #include "parsers/parser_tracking.hpp"
 #include "parsers/parser_stringtie.hpp"
 #include <ss/regression/segmented.hpp>
 
 using namespace Anaquin;
 
-typedef TExpress::Level    Level;
+typedef TExpress::Metrics  Metrics;
 typedef TExpress::Software Software;
+
+struct InternalKallistoData : public ParseKallisto::Data
+{
+    ChromoID cID = ChrT;
+    
+    // Dummy value...
+    Locus l;
+};
 
 template <typename T> void update(TExpress::Stats &stats, const T &t, const TExpress::Options &o)
 {
@@ -26,9 +35,9 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
     {
         const auto &r = Standard::instance().r_trans;
         
-        switch (o.lvl)
+        switch (o.metrs)
         {
-            case Level::Isoform:
+            case Metrics::Isoform:
             {
                 const TransData *m = nullptr;
                 
@@ -49,16 +58,16 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                 {
                     stats.hist.at(m->id)++;
 
-                    if (t.fpkm)
+                    if (t.abund)
                     {
-                        stats.data[t.cID].add(t.id, m->abund(Mix_1), t.fpkm);
+                        stats.data[t.cID].add(t.id, m->abund(Mix_1), t.abund);
                     }
                 }
                 
                 break;
             }
                 
-            case Level::Gene:
+            case Metrics::Gene:
             {
                 const TransRef::GeneData *m = nullptr;
                 
@@ -75,9 +84,9 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                 {
                     stats.hist.at(m->id)++;
                     
-                    if (t.fpkm)
+                    if (t.abund)
                     {
-                        stats.data[t.cID].add(t.id, m->abund(Mix_1), t.fpkm);
+                        stats.data[t.cID].add(t.id, m->abund(Mix_1), t.abund);
                     }
                 }
                 else
@@ -87,8 +96,8 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                 
                 break;
             }
-                
-            case Level::Exon:
+
+            case Metrics::Exon:
             {
                 throw "Not Implemented";
             }
@@ -109,20 +118,20 @@ template <typename Functor> TExpress::Stats calculate(const SampleName &name, co
     stats.data[ChrT];
     stats.data[Endo];
     
-    switch (o.lvl)
+    switch (o.metrs)
     {
-        case Level::Exon:
+        case Metrics::Exon:
         {
             throw "Not Implemented";
         }
 
-        case Level::Isoform:
+        case Metrics::Isoform:
         {
             stats.hist = r.hist();
             break;
         }
 
-        case Level::Gene:
+        case Metrics::Gene:
         {
             stats.hist = r.geneHist(ChrT);
             break;
@@ -136,20 +145,20 @@ template <typename Functor> TExpress::Stats calculate(const SampleName &name, co
         throw std::runtime_error("Failed to find anything from the synthetic chromosome");
     }
     
-    switch (o.lvl)
+    switch (o.metrs)
     {
-        case Level::Exon:
+        case Metrics::Exon:
         {
             throw "Not Implemented";
         }
 
-        case Level::Isoform:
+        case Metrics::Isoform:
         {
             stats.limit = r.limit(stats.hist);
             break;
         }
 
-        case Level::Gene:
+        case Metrics::Gene:
         {
             stats.limit = r.limitGene(stats.hist);
             break;
@@ -178,35 +187,47 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     {
         switch (o.soft)
         {
-            case Software::Cufflinks:
+            case Software::Kallisto:
             {
-                ParserTracking::parse(file, [&](const Tracking &t, const ParserProgress &p)
+                ParseKallisto::parse(file, [&](const ParseKallisto::Data &data, const ParserProgress &p)
                 {
-                    update(stats, t, o);
+                    InternalKallistoData x;
+                    
+                    x.id    = data.id;
+                    x.abund = data.abund;
+
+                    update(stats, x, o);
                 });
-                
+
                 break;
             }
-                
+
+            case Software::Cufflinks:
+            {
+                ParserTracking::parse(file, [&](const ParserTracking::Data &data, const ParserProgress &p)
+                {
+                    update(stats, data, o);
+                });
+
+                break;
+            }
+
             case Software::StringTie:
             {
-                switch (o.lvl)
+                switch (o.metrs)
                 {
-                    case Level::Gene:
-                    case Level::Isoform:
+                    case Metrics::Gene:
+                    case Metrics::Isoform:
                     {
-                        ParserStringTie::parseCTab(file, [&](const ParserStringTie::STExpression &t, const ParserProgress &)
+                        ParserStringTie::parseCTab(file, [&](const ParserStringTie::Data &data, const ParserProgress &)
                         {
-                            update(stats, t, o);
+                            update(stats, data, o);
                         });
 
                         break;
                     }
-                        
-                    case Level::Exon:
-                    {
-                        throw "Not Implemented";
-                    }
+
+                    case Metrics::Exon: { throw "Not Implemented"; }
                 }
                 
                 break;
@@ -394,7 +415,7 @@ static void writeScatter(const TExpress::Stats   &stats,
 {
     o.writer->create(name);
     o.writer->open(name + "/TransExpress_scatter.R");
-    o.writer->write(RWriter::scatter(stats, ChrT, "",
+    o.writer->write(RWriter::scatter(stats, ChrT, "????",
                                      "TransExpress",
                                      "Expected concentration (attomol/ul)",
                                      "Measured coverage (FPKM)",
@@ -407,14 +428,14 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto stats = TExpress::analyze(files, o);
     
-    const auto m = std::map<TExpress::Level, std::string>
+    const auto m = std::map<TExpress::Metrics, std::string>
     {
-        { TExpress::Level::Exon,    "exon"    },
-        { TExpress::Level::Gene,    "gene"    },
-        { TExpress::Level::Isoform, "isoform" },
+        { TExpress::Metrics::Exon,    "exon"    },
+        { TExpress::Metrics::Gene,    "gene"    },
+        { TExpress::Metrics::Isoform, "isoform" },
     };
     
-    const auto units = m.at(o.lvl);
+    const auto units = m.at(o.metrs);
 
     o.info("Generating statistics");
     
@@ -499,7 +520,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating spliced plot for all samples (but only if we have the isoforms...)
      */
 
-    if (o.lvl == TExpress::Level::Isoform)
+    if (o.metrs == TExpress::Metrics::Isoform)
     {
         o.writer->open("TransExpress_Splice.R");
         o.writer->write(RWriter::createSplice("TExpress_FPKM.csv"));

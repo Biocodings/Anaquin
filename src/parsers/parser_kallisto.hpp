@@ -22,12 +22,12 @@ namespace Anaquin
         struct Data
         {
             // Eg: R1_101_1
-            IsoformID iID;
+            IsoformID id;
 
             // Estimated abundance
-            Coverage cov;
+            Coverage abund;
         };
-        
+
         static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
         {
             Data d;
@@ -45,8 +45,8 @@ namespace Anaquin
                 
                 Tokens::split(line, "\t", toks);
                 
-                d.iID = toks[TargetID];
-                d.cov = stod(toks[EstCounts]);
+                d.id    = toks[TargetID];
+                d.abund = stod(toks[EstCounts]);
 
                 f(d, p);
             }

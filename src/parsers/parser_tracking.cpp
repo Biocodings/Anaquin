@@ -16,7 +16,7 @@ enum TrackingField
     T_Status  = 12,
 };
 
-void ParserTracking::parse(const FileName &file, std::function<void (const Tracking &, const ParserProgress &)> f)
+void ParserTracking::parse(const FileName &file, std::function<void (const ParserTracking::Data &, const ParserProgress &)> f)
 {
     Reader i(file);
 
@@ -26,7 +26,7 @@ void ParserTracking::parse(const FileName &file, std::function<void (const Track
         { "HIDATA", HIData }
     };
 
-    Tracking t;
+    ParserTracking::Data t;
     ParserProgress p;
     
     std::string line;
@@ -36,7 +36,7 @@ void ParserTracking::parse(const FileName &file, std::function<void (const Track
     {
         p.i++;
         Tokens::split(line, "\t", tokens);
-       
+
         /*
          * tracking_id  code  nearest_ref  gene_id  gene_short  tss_id  locus  length  coverage  FPKM  FPKM_conf_lo  FPKM_conf_hi  FPKM_status
          */
@@ -62,7 +62,7 @@ void ParserTracking::parse(const FileName &file, std::function<void (const Track
         
         // Eg: 1082119-1190836
         Tokens::split(std::string(temp[1]), "-", temp);
-        
+
         // Eg: 1082119, 1190836
         t.l = Locus(stod(temp[0]), stod(temp[1]));
         
@@ -70,13 +70,13 @@ void ParserTracking::parse(const FileName &file, std::function<void (const Track
         
         try
         {
-            t.fpkm   = stod(tokens[T_FPKM]);
-            t.lFPKM  = stod(tokens[T_FPKM_LO]);
-            t.uFPKM  = stod(tokens[T_FPKM_HI]);
+            t.abund = stod(tokens[T_FPKM]);
+            t.lFPKM = stod(tokens[T_FPKM_LO]);
+            t.uFPKM = stod(tokens[T_FPKM_HI]);
         }
         catch (const std::out_of_range &)
         {
-            t.fpkm = t.lFPKM = t.uFPKM = 0;
+            t.abund = t.lFPKM = t.uFPKM = 0;
         }
         
         if (t.status != TrackingStatus::HIData)

@@ -11,9 +11,10 @@ namespace Anaquin
         {
             Cufflinks,
             StringTie,
+            Kallisto,
         };
         
-        enum class Level
+        enum class Metrics
         {
             Gene,
             Exon,
@@ -26,7 +27,7 @@ namespace Anaquin
             Options() {}
 
             // Default to gene level
-            Level lvl = Level::Gene;
+            Metrics metrs = Metrics::Gene;
             
             Software soft;
         };

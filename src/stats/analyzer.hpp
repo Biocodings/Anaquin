@@ -59,7 +59,7 @@ namespace Anaquin
         Locus l;
 
         // The expression for the abundance
-        FPKM fpkm;
+        FPKM abund;
     };
 
     struct Analyzer

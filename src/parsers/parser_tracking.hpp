@@ -6,19 +6,19 @@
 
 namespace Anaquin
 {
-    struct Tracking : public Expression
-    {
-        TrackID trackID;
-
-        FPKM lFPKM;
-        FPKM uFPKM;
-        
-        TrackingStatus status;
-    };
-    
     struct ParserTracking
     {
-        static void parse(const FileName &, std::function<void (const Tracking &, const ParserProgress &)>);
+        struct Data : public Expression
+        {
+            TrackID trackID;
+            
+            FPKM lFPKM;
+            FPKM uFPKM;
+            
+            TrackingStatus status;
+        };
+
+        static void parse(const FileName &, std::function<void (const Data &, const ParserProgress &)>);
     };    
 }
 

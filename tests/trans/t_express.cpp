@@ -14,14 +14,14 @@ TEST_CASE("TExpress_AllZeros")
     {
         Expression exp;
         
-        exp.cID  = "chrT";
-        exp.id   = i.first;
-        exp.fpkm = 0.0;
+        exp.cID   = "chrT";
+        exp.id    = i.first;
+        exp.abund = 0.0;
         exps.push_back(exp);
     }
     
     TExpress::Options o;
-    o.lvl = TExpress::Level::Isoform;
+    o.metrs = TExpress::Metrics::Isoform;
     
     REQUIRE_THROWS(TExpress::analyze(exps, o));
 }
@@ -36,14 +36,14 @@ TEST_CASE("TExpress_Perfect")
     {
         Expression exp;
         
-        exp.cID  = "chrT";
-        exp.id   = i.first;
-        exp.fpkm = i.second.mixes.at(Mix_1);
+        exp.cID   = "chrT";
+        exp.id    = i.first;
+        exp.abund = i.second.mixes.at(Mix_1);
         exps.push_back(exp);
     }
 
     TExpress::Options o;
-    o.lvl = TExpress::Level::Isoform;
+    o.metrs = TExpress::Metrics::Isoform;
     
     const auto r = TExpress::analyze(exps, o);
     const auto stats = r.data.at(ChrT).linear();
@@ -78,14 +78,14 @@ TEST_CASE("TExpress_FlatMix")
     {
         Expression exp;
         
-        exp.cID  = "chrT";
-        exp.id   = i.first;
-        exp.fpkm = 100 * rand();
+        exp.cID   = "chrT";
+        exp.id    = i.first;
+        exp.abund = 100 * rand();
         exps.push_back(exp);
     }
     
     TExpress::Options o;
-    o.lvl = TExpress::Level::Isoform;
+    o.metrs = TExpress::Metrics::Isoform;
     
     const auto r = TExpress::analyze(exps, o);
     const auto stats = r.data.at(ChrT).linear();

@@ -1109,11 +1109,11 @@ void parse(int argc, char ** argv)
                 {
                     auto parseLevel = [&](const std::string &key, const std::string &str)
                     {
-                        const static std::map<std::string, TExpress::Level> m =
+                        const static std::map<std::string, TExpress::Metrics> m =
                         {
-                            { "gene",    TExpress::Level::Gene    },
-                            { "isoform", TExpress::Level::Isoform },
-                            { "exon",    TExpress::Level::Exon    },
+                            { "gene",    TExpress::Metrics::Gene    },
+                            { "isoform", TExpress::Metrics::Isoform },
+                            { "exon",    TExpress::Metrics::Exon    },
                         };
                         
                         return parseEnum(key, str, m);
@@ -1123,6 +1123,7 @@ void parse(int argc, char ** argv)
                     {
                         const static std::map<std::string, TExpress::Software> m =
                         {
+                            { "kallisto",  TExpress::Software::Kallisto  },
                             { "cufflinks", TExpress::Software::Cufflinks },
                             { "stringtie", TExpress::Software::StringTie },
                         };
@@ -1136,7 +1137,12 @@ void parse(int argc, char ** argv)
                     
                     if (_p.opts.count(OPT_LEVEL))
                     {
-                        o.lvl = parseLevel("level", _p.opts[OPT_LEVEL]);
+                        o.metrs = parseLevel("level", _p.opts[OPT_LEVEL]);
+                    }
+                    
+                    if (o.soft == TExpress::Software::Kallisto)
+                    {
+                        o.metrs = TExpress::Metrics::Isoform;
                     }
 
                     analyze<TExpress>(_p.inputs, o);

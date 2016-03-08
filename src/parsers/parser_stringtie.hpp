@@ -9,7 +9,7 @@ namespace Anaquin
 {
     struct ParserStringTie
     {
-        typedef Expression STExpression;
+        typedef Expression Data;
         
         template <typename F> static void parse(const FileName &file, F f)
         {
@@ -57,9 +57,9 @@ namespace Anaquin
             TabFPKM
         };
 
-        static void parseGenes(const FileName &file, std::function<void (const STExpression &, const ParserProgress &)> f)
+        static void parseGenes(const FileName &file, std::function<void (const Data &, const ParserProgress &)> f)
         {
-            STExpression t;
+            Data t;
             
             ParserStringTie::parse(file, [&](const std::vector<Tokens::Token> &toks, const ParserProgress &p)
             {
@@ -76,26 +76,26 @@ namespace Anaquin
 //                        t.cID = "chr1";
 //                    }
                     
-                    t.l    = Locus(stod(toks[GeneField::GeneStart]), stod(toks[GeneField::GeneEnd]));
-                    t.fpkm = stod(toks[GeneField::GeneFPKM]);
+                    t.l     = Locus(stod(toks[GeneField::GeneStart]), stod(toks[GeneField::GeneEnd]));
+                    t.abund = stod(toks[GeneField::GeneFPKM]);
 
                     f(t, p);
                 }
             });
         }
             
-        static void parseCTab(const FileName &file, std::function<void (const STExpression &, const ParserProgress &)> f)
+        static void parseCTab(const FileName &file, std::function<void (const Data &, const ParserProgress &)> f)
         {
-            STExpression t;
+            Data t;
                       
             ParserStringTie::parse(file, [&](const std::vector<Tokens::Token> &toks, const ParserProgress &p)
             {
                 if (p.i)
                 {
-                    t.id   = toks[CTabField::TabTName];
-                    t.cID  = toks[CTabField::TabChrID];
-                    t.l    = Locus(stod(toks[CTabField::TabStart]), stod(toks[CTabField::TabEnd]));
-                    t.fpkm = stod(toks[CTabField::TabFPKM]);
+                    t.id    = toks[CTabField::TabTName];
+                    t.cID   = toks[CTabField::TabChrID];
+                    t.l     = Locus(stod(toks[CTabField::TabStart]), stod(toks[CTabField::TabEnd]));
+                    t.abund = stod(toks[CTabField::TabFPKM]);
 
                     f(t, p);
                 }
