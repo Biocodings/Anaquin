@@ -8,10 +8,10 @@ TEST_CASE("ParserVarScan_Test")
 {
     std::vector<ParserVarScan::Data> x;
     
-    ParserVarScan::parse(Reader("tests/data/VARQuin/varscan.tab"), [&](const ParserVarScan::Data &d, const ParserProgress &)
+    ParserVarScan::parse(Reader("tests/data/varscan.tab"), [&](const ParserVarScan::Data &d, const ParserProgress &)
     {
         x.push_back(d);
     });
     
-    REQUIRE(x.size() == 1469);
+    REQUIRE(x.size() == 1457);
 }

@@ -7,7 +7,7 @@ TEST_CASE("ParserStarFusion_Test")
 {
     std::vector<ParserStarFusion::Data> fs;
 
-    ParserStarFusion::parse(Reader("tests/data/F_1000/star-fusion.fusion_candidates.txt"), [&](const ParserStarFusion::Data &f, const ParserProgress &)
+    ParserStarFusion::parse(Reader("tests/data/star-fusion.fusion_candidates.txt"), [&](const ParserStarFusion::Data &f, const ParserProgress &)
     {
         fs.push_back(f);
     });

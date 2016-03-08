@@ -13,7 +13,7 @@ TEST_CASE("TDiff_DESeq2")
     o.lvl   = TDiffs::Level::Gene;
     o.dSoft = TDiffs::DiffSoft::DESeq2;
 
-    const auto r = TDiffs::analyze("tests/data/K_562/DESeq2.csv", o);
+    const auto r = TDiffs::analyze("tests/data/DESeq2.csv", o);
 
     REQUIRE(r.data.size() == 2);
 

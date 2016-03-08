@@ -4,15 +4,15 @@
 
 using namespace Anaquin;
 
-TEST_CASE("TAssembly_Reference")
+TEST_CASE("TAssembly_CompareWithItself")
 {
     Test::transA();
     
     TAssembly::Options o;
 
-    o.rChrT = "data/trans/ATR001.v032.gtf";
+    o.rChrT = "data/TransQuin/ATR001.v032.gtf";
 
-    const auto r = TAssembly::analyze("data/trans/ATR001.v032.gtf", o);
+    const auto r = TAssembly::analyze(o.rChrT, o);
 
     REQUIRE(r.chrT_exons == 1200);
     REQUIRE(r.endo_exons == 1200);

@@ -63,6 +63,7 @@ namespace Anaquin
                 d.readR = stod(toks[Reads1]);
                 d.readV = stod(toks[Reads2]);
 
+                // Why it's shown as a variant if there's no variant supporting reads?
                 if (!d.readV)
                 {
                     continue;
