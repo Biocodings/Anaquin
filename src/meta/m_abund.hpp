@@ -48,7 +48,7 @@ namespace Anaquin
                  * Measure concentration for this MetaQuin. Average out the coverage for each aligned contig.
                  */
                 
-                Concentration measured = 0;
+                Concent measured = 0;
                 
                 // Sum of k-mer lengths for all sequins
                 Base sumKLength = 0;

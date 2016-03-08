@@ -34,7 +34,7 @@ namespace Anaquin
         inline bool operator==(const SequinID &x) const { return this->id == x; }
 
         // Return the abundance for this sequin specified by the mixture        
-        inline Concentration abund(Mixture m, bool norm = false) const
+        inline Concent abund(Mixture m, bool norm = false) const
         {
             return mixes.at(m) / (norm ? l.length() : 1);
         }
@@ -42,7 +42,7 @@ namespace Anaquin
         SequinID id;
 
         // Spiked-in concentration (not available if no mixture provided)
-        std::map<Mixture, Concentration> mixes;
+        std::map<Mixture, Concent> mixes;
 
         Locus l;
     };
@@ -75,7 +75,7 @@ namespace Anaquin
             }
 
             // Add a sequin defined in a mixture file
-            inline void add(const SequinID &id, Base length, Concentration c, Mixture m)
+            inline void add(const SequinID &id, Base length, Concent c, Mixture m)
             {
                 _mixes[m].insert(MixtureData(id, length, c));
                 _rawMIDs.insert(id);
@@ -222,7 +222,7 @@ namespace Anaquin
         
             struct MixtureData
             {
-                MixtureData(const SequinID &id, Base length, Concentration abund)
+                MixtureData(const SequinID &id, Base length, Concent abund)
                         : id(id), length(length), abund(abund) {}
 
                 inline bool operator<(const SequinID &id)  const { return this->id < id;  }
@@ -237,7 +237,7 @@ namespace Anaquin
                 Base length;
 
                 // Amount of spiked-in abundance
-                Concentration abund;
+                Concent abund;
             };
 
             /*
@@ -366,8 +366,7 @@ namespace Anaquin
             Limit limitJoin(const JoinHist &) const;
 
             // Return abundance for all segments of a particular conjoined
-            void abund(const JoinID &, Concentration &, Concentration &, Concentration &, Concentration &,
-                             Mixture) const;
+            void abund(const JoinID &, Concent &, Concent &, Concent &, Concent &, Mixture) const;
 
         protected:
 
@@ -613,9 +612,9 @@ namespace Anaquin
                 }
 
                 // Calculate the abundance for the gene (summing up all the isoforms)
-                inline Concentration abund(Mixture m) const
+                inline Concent abund(Mixture m) const
                 {
-                    Concentration n = 0;
+                    Concent n = 0;
                 
                     for (const auto &i : seqs)
                     {

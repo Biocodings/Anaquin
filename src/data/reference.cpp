@@ -114,7 +114,7 @@ struct LadderRef::LadderRefImpl
     {
         const SequinData *A, *B, *C, *D;
         
-        inline Concentration abund(Mixture m) const
+        inline Concent abund(Mixture m) const
         {
             return A->abund(m) + B->abund(m) + C->abund(m) + D->abund(m);
         }
@@ -187,8 +187,7 @@ void LadderRef::validate()
     assert(!_impl->joined.empty());
 }
 
-void LadderRef::abund(const LadderRef::JoinID &id, Concentration &a, Concentration &b, Concentration &c,
-                                                   Concentration &d, Mixture m) const
+void LadderRef::abund(const LadderRef::JoinID &id, Concent &a, Concent &b, Concent &c, Concent &d, Mixture m) const
 {
     a = _impl->joined.at(id).A->abund(m);
     b = _impl->joined.at(id).A->abund(m);

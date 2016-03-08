@@ -97,7 +97,7 @@ namespace Anaquin
                     {
                         return;
                     }
-                    
+
                     stats.min = std::min(stats.min, cov);
                     stats.max = std::max(stats.max, cov);
                     

@@ -14,7 +14,7 @@ namespace Anaquin
         Counts counts;
 
         // Expected abundance for the limited sequin
-        Concentration abund = NAN;
+        Concent abund = NAN;
     };
 }
 
