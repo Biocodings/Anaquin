@@ -147,7 +147,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7F7C70521AB4726E00C6EE36 /* Spike */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Spike; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F7C70521AB4726E00C6EE36 /* Anaquin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anaquin; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF02A5231B7E0F8D00295799 /* compare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = compare.hpp; path = ../src/data/compare.hpp; sourceTree = "<group>"; };
 		EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = terminal_writer.hpp; path = ../src/writers/terminal_writer.hpp; sourceTree = "<group>"; };
 		EF0C67871C5F25070033168D /* v_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_align.cpp; path = ../src/VARQuin/v_align.cpp; sourceTree = "<group>"; };
@@ -420,7 +420,7 @@
 		7F7C70531AB4726E00C6EE36 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7F7C70521AB4726E00C6EE36 /* Spike */,
+				7F7C70521AB4726E00C6EE36 /* Anaquin */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -842,7 +842,7 @@
 			);
 			name = Anaquin;
 			productName = Anaquin;
-			productReference = 7F7C70521AB4726E00C6EE36 /* Spike */;
+			productReference = 7F7C70521AB4726E00C6EE36 /* Anaquin */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -1121,7 +1121,7 @@
 					"$(OTHER_CFLAGS)",
 					"-I/usr/include",
 				);
-				PRODUCT_NAME = Spike;
+				PRODUCT_NAME = Anaquin;
 			};
 			name = Debug;
 		};
@@ -1157,7 +1157,7 @@
 					"$(OTHER_CFLAGS)",
 					"-I/usr/include",
 				);
-				PRODUCT_NAME = Spike;
+				PRODUCT_NAME = Anaquin;
 			};
 			name = Release;
 		};
