@@ -1,0 +1,61 @@
+	    SUMMARY OF THE HDF5 CONFIGURATION
+	    =================================
+
+General Information:
+-------------------
+		   HDF5 Version: 1.8.14
+		  Configured on: Thu Feb 26 04:06:18 GMT 2015
+		  Configured by: brew@miniyosemite.local
+		 Configure mode: production
+		    Host system: i386-apple-darwin14.1.0
+	      Uname information: Darwin miniyosemite.local 14.1.0 Darwin Kernel Version 14.1.0: Mon Dec 22 23:10:38 PST 2014; root:xnu-2782.10.72~2/RELEASE_X86_64 x86_64
+		       Byte sex: little-endian
+		      Libraries: static, shared
+	     Installation point: /usr/local/Cellar/hdf5/1.8.14
+
+Compiling Options:
+------------------
+               Compilation Mode: production
+                     C Compiler: /usr/local/Library/ENV/4.3/clang ( Apple LLVM version 6.0 )
+                         CFLAGS: 
+                      H5_CFLAGS:  
+                      AM_CFLAGS: 
+                       CPPFLAGS: 
+                    H5_CPPFLAGS:   -DNDEBUG -UH5_DEBUG_API
+                    AM_CPPFLAGS: -I/usr/local/opt/szip/include 
+               Shared C Library: yes
+               Static C Library: yes
+  Statically Linked Executables: no
+                        LDFLAGS: 
+                     H5_LDFLAGS: 
+                     AM_LDFLAGS:  -L/usr/local/Cellar/hdf5/1.8.14/lib -L/usr/local/opt/szip/lib
+ 	 	Extra libraries:  -lsz -lz -ldl -lm 
+ 		       Archiver: ar
+ 		 	 Ranlib: ranlib
+ 	      Debugged Packages: 
+		    API Tracing: no
+
+Languages:
+----------
+                        Fortran: no
+
+                            C++: no
+
+Features:
+---------
+                  Parallel HDF5: no
+             High Level library: yes
+                   Threadsafety: no
+            Default API Mapping: v18
+ With Deprecated Public Symbols: yes
+         I/O filters (external): deflate(zlib),szip(encoder)
+         I/O filters (internal): shuffle,fletcher32,nbit,scaleoffset
+                            MPE: no
+                     Direct VFD: no
+                        dmalloc: no
+Clear file buffers before write: yes
+           Using memory checker: no
+         Function Stack Tracing: no
+      Strict File Format Checks: no
+   Optimization Instrumentation: no
+       Large File Support (LFS): yes
