@@ -2,7 +2,7 @@
 #define V_ALLELE_HPP
 
 #include "stats/analyzer.hpp"
-#include "VARQuin/VARQuin.hpp"
+#include "VARQuin/VarQuin.hpp"
 
 namespace Anaquin
 {

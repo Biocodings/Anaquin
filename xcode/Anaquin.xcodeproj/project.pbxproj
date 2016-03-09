@@ -381,6 +381,7 @@
 				EFA9DE741BCB897D00780182 /* Analyzers */,
 				EF2615691B5FF96400BE8037 /* Cufflinks */,
 				EF4270A31B214F8400C9ED4E /* Data */,
+				EFE700801C8FA8F80086A246 /* Kallisto */,
 				EFDD6A731B0DD73900450029 /* Htslib */,
 				EFB7FF261B4F79C20045DC6A /* Ladder */,
 				EFECDC0C1AE7510700F0FD9A /* Meta */,
@@ -688,6 +689,13 @@
 				EFDD6AC71B0DD76C00450029 /* zfio.c */,
 			);
 			name = cram;
+			sourceTree = "<group>";
+		};
+		EFE700801C8FA8F80086A246 /* Kallisto */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Kallisto;
 			sourceTree = "<group>";
 		};
 		EFE9A01D1AD3B10900557829 /* Writers */ = {
