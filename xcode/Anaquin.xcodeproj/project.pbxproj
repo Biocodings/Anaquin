@@ -36,7 +36,7 @@
 		EF3860E71AD3783A0062D246 /* parser_csv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860D91AD3783A0062D246 /* parser_csv.cpp */; };
 		EF3860E81AD3783A0062D246 /* parser_tracking.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DB1AD3783A0062D246 /* parser_tracking.cpp */; };
 		EF3860EA1AD3783A0062D246 /* parser_gtf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860DF1AD3783A0062D246 /* parser_gtf.cpp */; };
-		EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E11AD3783A0062D246 /* parser_sam.cpp */; };
+		EF3860EB1AD3783A0062D246 /* parser_sam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E11AD3783A0062D246 /* parser_sam.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3860E31AD3783A0062D246 /* parser_vcf.cpp */; };
 		EF3CD3061B6671F5005644C4 /* m_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3CD3021B6671F5005644C4 /* m_abund.cpp */; };
 		EF3F04A61B6F2F5000179B55 /* parser_star_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF3F04A41B6F2F5000179B55 /* parser_star_fusion.cpp */; };
@@ -113,20 +113,20 @@
 		EFDD6ADB1B0DDB8700450029 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADA1B0DDB8700450029 /* files.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADC1B0DE65D00450029 /* vcf.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE6C0A21AE9D0CF00CE37E5 /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECDC0F1AE7510700F0FD9A /* m_assembly.cpp */; };
-		EFE700A21C8FA9920086A246 /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700811C8FA9920086A246 /* Bootstrap.cpp */; };
+		EFE700A21C8FA9920086A246 /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700811C8FA9920086A246 /* Bootstrap.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE700A31C8FA9920086A246 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700841C8FA9920086A246 /* common.cpp */; };
 		EFE700A41C8FA9920086A246 /* h5utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700871C8FA9920086A246 /* h5utils.cpp */; };
-		EFE700A51C8FA9920086A246 /* H5Writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700891C8FA9920086A246 /* H5Writer.cpp */; };
+		EFE700A51C8FA9920086A246 /* H5Writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700891C8FA9920086A246 /* H5Writer.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE700A61C8FA9920086A246 /* hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7008B1C8FA9920086A246 /* hash.cpp */; };
-		EFE700A71C8FA9920086A246 /* Kmer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7008E1C8FA9920086A246 /* Kmer.cpp */; };
-		EFE700A81C8FA9920086A246 /* KmerIndex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700911C8FA9920086A246 /* KmerIndex.cpp */; };
-		EFE700A91C8FA9920086A246 /* KmerIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700931C8FA9920086A246 /* KmerIterator.cpp */; };
-		EFE700AA1C8FA9920086A246 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700961C8FA9920086A246 /* main.cpp */; };
-		EFE700AB1C8FA9920086A246 /* MinCollector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700971C8FA9920086A246 /* MinCollector.cpp */; };
+		EFE700A71C8FA9920086A246 /* Kmer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7008E1C8FA9920086A246 /* Kmer.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EFE700A81C8FA9920086A246 /* KmerIndex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700911C8FA9920086A246 /* KmerIndex.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EFE700A91C8FA9920086A246 /* KmerIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700931C8FA9920086A246 /* KmerIterator.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EFE700AA1C8FA9920086A246 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700961C8FA9920086A246 /* main.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EFE700AB1C8FA9920086A246 /* MinCollector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700971C8FA9920086A246 /* MinCollector.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE700AC1C8FA9920086A246 /* PlaintextWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009A1C8FA9920086A246 /* PlaintextWriter.cpp */; };
-		EFE700AD1C8FA9920086A246 /* ProcessReads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009C1C8FA9920086A246 /* ProcessReads.cpp */; };
-		EFE700AE1C8FA9920086A246 /* PseudoBam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009E1C8FA9920086A246 /* PseudoBam.cpp */; };
-		EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700A01C8FA9920086A246 /* weights.cpp */; };
+		EFE700AD1C8FA9920086A246 /* ProcessReads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009C1C8FA9920086A246 /* ProcessReads.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EFE700AE1C8FA9920086A246 /* PseudoBam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009E1C8FA9920086A246 /* PseudoBam.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700A01C8FA9920086A246 /* weights.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE700B31C8FAF620086A246 /* libhdf5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE700B21C8FAF620086A246 /* libhdf5.a */; };
 		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
 		EFE88F961C15A7DD00B46829 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE88F951C15A7DD00B46829 /* t_assembly.cpp */; };
@@ -1115,7 +1115,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					/Users/tedwong/Desktop/lib,
+					/Users/tedwong/Sources/QA/src/kallisto,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -1151,7 +1151,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					/Users/tedwong/Desktop/lib,
+					/Users/tedwong/Sources/QA/src/kallisto,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
