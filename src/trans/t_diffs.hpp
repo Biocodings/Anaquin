@@ -26,12 +26,12 @@ namespace Anaquin
             Cuffdiff,
             edgeR,
             DESeq2,
+            ParserSleuth,
         };
         
-        enum class Level
+        enum class Metrics
         {
             Gene,
-            Exon,
             Isoform
         };
 
@@ -42,8 +42,7 @@ namespace Anaquin
             // Files for the count table
             std::vector<FileName> counts;
             
-            // Default to gene level
-            Level lvl = Level::Gene;
+            Metrics metrs = Metrics::Gene;
 
             DiffSoft  dSoft;
             CountSoft cSoft;

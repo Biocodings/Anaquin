@@ -10,7 +10,7 @@ TEST_CASE("TDiff_DESeq2")
 
     TDiffs::Options o;
     
-    o.lvl   = TDiffs::Level::Gene;
+    o.metrs = TDiffs::Metrics::Gene;
     o.dSoft = TDiffs::DiffSoft::DESeq2;
 
     const auto r = TDiffs::analyze("tests/data/DESeq2.csv", o);
@@ -87,7 +87,7 @@ TEST_CASE("TDiff_AllExpressed")
     
     TDiffs::Options o;
     
-    o.lvl   = TDiffs::Level::Gene;
+    o.metrs = TDiffs::Metrics::Gene;
     o.dSoft = TDiffs::DiffSoft::Cuffdiff;
     
     const auto r = TDiffs::analyze(tests, o);
@@ -130,7 +130,7 @@ TEST_CASE("TDiff_NoneExpressed")
     }
     
     TDiffs::Options o;
-    o.lvl = TDiffs::Level::Gene;
+    o.metrs = TDiffs::Metrics::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
@@ -167,7 +167,7 @@ TEST_CASE("TDiff_NotSynthetic")
     }
     
     TDiffs::Options o;
-    o.lvl = TDiffs::Level::Gene;
+    o.metrs = TDiffs::Metrics::Gene;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();

@@ -284,6 +284,7 @@
 		EFA347341BD5E46D009ED5DC /* m_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_coverage.hpp; sourceTree = "<group>"; };
 		EFA347361BD5E47D009ED5DC /* l_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = l_coverage.cpp; sourceTree = "<group>"; };
 		EFA347371BD5E47D009ED5DC /* l_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = l_coverage.hpp; sourceTree = "<group>"; };
+		EFA4FB541C904013007094E8 /* parser_sleuth.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_sleuth.hpp; path = ../src/parsers/parser_sleuth.hpp; sourceTree = "<group>"; };
 		EFA9DE711BCB7D6100780182 /* coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = coverage.cpp; path = ../src/tools/coverage.cpp; sourceTree = "<group>"; };
 		EFA9DE721BCB7D6100780182 /* coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = coverage.hpp; path = ../src/tools/coverage.hpp; sourceTree = "<group>"; };
 		EFACC7591B1F0C80004A9770 /* m_histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_histogram.cpp; sourceTree = "<group>"; };
@@ -533,6 +534,7 @@
 				EF3860E21AD3783A0062D246 /* parser_sam.hpp */,
 				EFBB830C1ADF953B0002611E /* parser_sequins.cpp */,
 				EFBB830D1ADF953B0002611E /* parser_sequins.hpp */,
+				EFA4FB541C904013007094E8 /* parser_sleuth.hpp */,
 				EFB2F8891BDEFB9800A9F0AB /* parser_stab.hpp */,
 				EF3F04A41B6F2F5000179B55 /* parser_star_fusion.cpp */,
 				EF3F04A51B6F2F5000179B55 /* parser_star_fusion.hpp */,

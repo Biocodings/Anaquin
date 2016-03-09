@@ -388,7 +388,7 @@ loadMixture.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/MVA
     return (r)
 }
 
-loadMixture.TransQuin <- function(file='/Users/tedwong/Sources/QA/data/trans/MTR004.v013.csv')
+loadMixture.TransQuin <- function(file='/Users/tedwong/Sources/QA/data/TransQuin/MTR004.v013.csv')
 {
     mix <- read.csv(file, row.names=1, sep='\t')
     colnames(mix) <- c('length', 'A', 'B')

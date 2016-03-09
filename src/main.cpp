@@ -1156,13 +1156,12 @@ void parse(int argc, char ** argv)
                     
                 case TOOL_T_DIFF:
                 {
-                    auto parseLevel = [&](const std::string &str)
+                    auto parseMetrs = [&](const std::string &str)
                     {
-                        const static std::map<std::string, TDiffs::Level> m =
+                        const static std::map<std::string, TDiffs::Metrics> m =
                         {
-                            { "gene",    TDiffs::Level::Gene    },
-                            { "isoform", TDiffs::Level::Isoform },
-                            { "exon",    TDiffs::Level::Exon    },
+                            { "gene",    TDiffs::Metrics::Gene    },
+                            { "isoform", TDiffs::Metrics::Isoform },
                         };
                         
                         return parseEnum("levels", str, m);
@@ -1175,6 +1174,7 @@ void parse(int argc, char ** argv)
                             { "edgeR",    TDiffs::DiffSoft::edgeR    },
                             { "deseq2",   TDiffs::DiffSoft::DESeq2   },
                             { "cuffdiff", TDiffs::DiffSoft::Cuffdiff },
+                            { "sleuth",   TDiffs::DiffSoft::ParserSleuth },
                         };
                         
                         return parseEnum("soft", str, m);
@@ -1186,7 +1186,12 @@ void parse(int argc, char ** argv)
 
                     if (_p.opts.count(OPT_LEVEL))
                     {
-                        o.lvl = parseLevel(_p.opts[OPT_LEVEL]);
+                        o.metrs = parseMetrs(_p.opts[OPT_LEVEL]);
+                    }
+                    
+                    if (o.dSoft != TDiffs::DiffSoft::Cuffdiff)
+                    {
+                        o.metrs = TDiffs::Metrics::Isoform;
                     }
 
                     /*

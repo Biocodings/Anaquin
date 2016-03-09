@@ -8,13 +8,14 @@
 #include "trans/t_diffs.hpp"
 #include "data/experiment.hpp"
 #include "parsers/parser_edgeR.hpp"
+#include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_DESeq2.hpp"
 #include "parsers/parser_cdiffs.hpp"
 #include "parsers/parser_HTSeqCount.hpp"
 
 using namespace Anaquin;
 
-typedef TDiffs::Level    Level;
+typedef TDiffs::Metrics  Metrics;
 typedef DiffTest::Status Status;
 typedef TDiffs::DiffSoft Software;
 
@@ -60,9 +61,9 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
     // It's NAN if the sequin defined in reference but not in mixture
     Fold measured = NAN;
 
-    switch (o.lvl)
+    switch (o.metrs)
     {
-        case Level::Gene:
+        case Metrics::Gene:
         {
             if (t.status == Status::Tested && stats.hist.count(t.id))
             {
@@ -90,10 +91,10 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
 
             break;
         }
-            
-        case Level::Isoform:
+
+        case Metrics::Isoform:
         {
-            if (t.status == Status::Tested && !stats.hist.count(id))
+            if (t.status == Status::Tested && stats.hist.count(id))
             {
                 const auto *seq = r.match(id);
                 
@@ -115,11 +116,6 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
             }
 
             break;
-        }
-            
-        case Level::Exon:
-        {
-            throw "Not Implemented";
         }
     }
     
@@ -235,10 +231,10 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     stats.data[Endo];
     stats.data[ChrT];
 
-    switch (o.lvl)
+    switch (o.metrs)
     {
-        case Level::Gene: { stats.hist = r.geneHist(ChrT); break; }
-        default: { throw "Not supported"; }
+        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
+        case Metrics::Isoform: { stats.hist = r.hist();         break; }
     }
 
     assert(!stats.hist.empty());
@@ -247,12 +243,12 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
     f(stats);
     
     o.info("Calculating detection limit");
-    
-    switch (o.lvl)
+
+    switch (o.metrs)
     {
-        case Level::Exon:    { stats.limit = r.limitExon(stats.hist); break; }
-        case Level::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
-        case Level::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
+        case Metrics::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
+        //case Metrics::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
+        default: { break; } // TODO: Please fix this
     }
     
     /*
@@ -317,6 +313,16 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     {
         switch (o.dSoft)
         {
+            case DiffSoft::ParserSleuth:
+            {
+                ParserSleuth::parse(file, [&](const DiffTest &t, const ParserProgress &)
+                {
+                    update(stats, t, o);
+                });
+
+                break;
+            }
+
             case DiffSoft::DESeq2:
             {
                 ParserDESeq2::parse(file, [&](const DiffTest &t, const ParserProgress &)
@@ -427,14 +433,13 @@ void TDiffs::report(const FileName &file, const Options &o)
 {
     const auto stats = TDiffs::analyze(file, o);
     
-    const auto m = std::map<TDiffs::Level, std::string>
+    const auto m = std::map<Metrics, std::string>
     {
-        { TDiffs::Level::Gene, "gene"    },
-        { TDiffs::Level::Gene, "exon"    },
-        { TDiffs::Level::Gene, "isoform" },
+        { Metrics::Gene,    "gene"    },
+        { Metrics::Isoform, "isoform" },
     };
-    
-    const auto units = m.at(o.lvl);
+
+    const auto units = m.at(o.metrs);
     
     o.info("Generating statistics");
     
@@ -464,7 +469,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_scatter.R");
-    o.writer->write(RWriter::scatter(stats, ChrT, "", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
+    o.writer->write(RWriter::scatter(stats, ChrT, "????", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
     o.writer->close();
 
     /*
@@ -472,7 +477,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("TransDiffs_ROC.R");
-    o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
+    //o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
     o.writer->close();
 
     /*
