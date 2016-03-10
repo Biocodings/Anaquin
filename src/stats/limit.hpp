@@ -6,14 +6,18 @@
 
 namespace Anaquin
 {
+    /*
+     * This class represents limit of quantification
+     */
+
     struct Limit
     {
         SequinID id;
 
-        // Measured abundance for the limited sequin
+        // Measured abundance for the sequin
         Counts counts;
 
-        // Expected abundance for the limited sequin
+        // Expected abundance for the sequin
         Concent abund = NAN;
     };
 }

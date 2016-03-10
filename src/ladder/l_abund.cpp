@@ -181,7 +181,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
     stats.s_joined = r.limitJoin(stats.h_joined);
 
     o.info("Calculating detection limit (unjoined level)");
-    stats.ss = r.limit(stats.hist);
+    stats.absolute = r.absolute(stats.hist);
 
   	return stats;
 }

@@ -4,7 +4,7 @@ using namespace Anaquin;
 
 MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Options &o)
 {
-    MAbundance::logOptions(o);
+    const auto &r = Standard::instance().r_meta;
     
     MAbundance::Stats stats;
     
@@ -47,8 +47,6 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
 
     o.info("Analyzing the alignments");
 
-    const auto &r = Standard::instance().r_meta;
-
     for (auto &meta : stats.chrT->blat.metas)
     {
         auto &align = meta.second;
@@ -78,8 +76,8 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
             stats.chrT->add(align->seq->id, p.x, p.y);
         }
     }
-    
-    stats.chrT->ss = Standard::instance().r_meta.limit(stats.chrT->h);
+
+    stats.chrT->absolute = r.absolute(stats.chrT->h);
 
     return stats;
 }
@@ -91,7 +89,7 @@ void MAbundance::report(const FileName &file, const MAbundance::Options &o)
     o.info("Generating summary statistics");
     //AnalyzeReporter::linear("MetaAbund_summary.stats", file, stats, "contigs", o.writer, "sequins");
  
-    o.info("Generating Bioconductor");
+    o.info("Generating scatter plot");
     //AnalyzeReporter::scatter(stats,
                     //         "Expected abundance vs Measured coverage",
                       //       "MetaAbundance",

@@ -162,7 +162,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     });
 
-    stats.limit = r.limit(stats.data[ChrT].hist);
+    stats.limit = r.absolute(stats.data[ChrT].hist);
 
     /*
      * Calculating interval statistics

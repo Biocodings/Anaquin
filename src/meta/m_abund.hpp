@@ -7,16 +7,6 @@ namespace Anaquin
 {
     struct MAbundance
     {
-        template <typename Options> static void logOptions(const Options &o)
-        {
-            switch (o.coverage)
-            {
-                case WendySmooth:    { o.info("Wendy Smoothing");           break; }
-                case KMerCov_Contig: { o.info("K-mer coverage per contig"); break; }
-                case KMerCov_Sequin: { o.info("K-mer coverage per sequin"); break; }
-            }
-        };
-
         enum CoverageMethod
         {
             WendySmooth,
@@ -115,7 +105,7 @@ namespace Anaquin
                 // Statistics for the assembly
                 DAsssembly::Stats<Contig> assembly;
                 
-                Limit ss;
+                Limit absolute;
                 
                 // Distribution of the sequins
                 SequinHist h = Standard::instance().r_meta.hist();

@@ -127,7 +127,7 @@ LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
 
 Limit LadderRef::limitJoin(const JoinHist &h) const
 {
-    return Reference<SequinData, DefaultStats>::limit(h, [&](const JoinID &id)
+    return Reference<SequinData, DefaultStats>::absolute(h, [&](const JoinID &id)
     {
         return &(_impl->joined.at(id));
     });
@@ -526,7 +526,7 @@ std::vector<GeneID> TransRef::geneIDs(const ChromoID &cID) const
 
 Limit TransRef::limitGene(const SequinHist &hist) const
 {
-    return Reference<TransData, DefaultStats>::limit(hist, [&](const GeneID &id)
+    return Reference<TransData, DefaultStats>::absolute(hist, [&](const GeneID &id)
     {
         return findGene(ChrT, id);
     });

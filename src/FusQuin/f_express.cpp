@@ -1,12 +1,13 @@
 #include "FusQuin/f_express.hpp"
 #include "parsers/parser_stab.hpp"
+#include "parsers/parser_kallisto.hpp"
 
 using namespace Anaquin;
 
 // Defined resources.cpp
 extern Scripts PlotExpress_F();
 
-FExpress::Stats FExpress::analyze(const FileName &splice, const Options &o)
+FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_fus;
     
@@ -16,9 +17,14 @@ FExpress::Stats FExpress::analyze(const FileName &splice, const Options &o)
 
     switch (o.caller)
     {
+        case FusionCaller::Kallisto:
+        {
+            throw "Not supported";
+        }
+            
         case FusionCaller::StarFusion:
         {
-            ParserSTab::parse(Reader(splice), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
+            ParserSTab::parse(Reader(file), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
             {
                 if (c.id == ChrT)
                 {
@@ -50,7 +56,7 @@ FExpress::Stats FExpress::analyze(const FileName &splice, const Options &o)
         }
     }
 
-    stats.limit = r.limit(stats.hist);
+    stats.absolute = r.absolute(stats.hist);
 
     return stats;
 }

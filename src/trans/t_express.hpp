@@ -17,7 +17,6 @@ namespace Anaquin
         enum class Metrics
         {
             Gene,
-            Exon,
             Isoform
         };
 

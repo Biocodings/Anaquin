@@ -45,9 +45,9 @@ namespace Anaquin
             
             // Histogram at the joined level
             LadderRef::JoinHist h_joined  = Standard::instance().r_lad.joinHist();
-            
-            // Sensitivity at the unjoined level
-            Limit ss;
+
+            // Absolute detection limit
+            Limit absolute;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

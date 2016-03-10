@@ -96,11 +96,6 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                 
                 break;
             }
-
-            case Metrics::Exon:
-            {
-                throw "Not Implemented";
-            }
         }
     }
 }
@@ -120,22 +115,8 @@ template <typename Functor> TExpress::Stats calculate(const SampleName &name, co
     
     switch (o.metrs)
     {
-        case Metrics::Exon:
-        {
-            throw "Not Implemented";
-        }
-
-        case Metrics::Isoform:
-        {
-            stats.hist = r.hist();
-            break;
-        }
-
-        case Metrics::Gene:
-        {
-            stats.hist = r.geneHist(ChrT);
-            break;
-        }
+        case Metrics::Isoform: { stats.hist = r.hist();         break; }
+        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
     }
     
     f(stats);
@@ -147,22 +128,8 @@ template <typename Functor> TExpress::Stats calculate(const SampleName &name, co
     
     switch (o.metrs)
     {
-        case Metrics::Exon:
-        {
-            throw "Not Implemented";
-        }
-
-        case Metrics::Isoform:
-        {
-            stats.limit = r.limit(stats.hist);
-            break;
-        }
-
-        case Metrics::Gene:
-        {
-            stats.limit = r.limitGene(stats.hist);
-            break;
-        }
+        case Metrics::Isoform: { stats.limit = r.absolute(stats.hist);  break; }
+        case Metrics::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
     }
     
     return stats;
@@ -226,8 +193,6 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 
                         break;
                     }
-
-                    case Metrics::Exon: { throw "Not Implemented"; }
                 }
                 
                 break;
@@ -430,7 +395,6 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     
     const auto m = std::map<TExpress::Metrics, std::string>
     {
-        { TExpress::Metrics::Exon,    "exon"    },
         { TExpress::Metrics::Gene,    "gene"    },
         { TExpress::Metrics::Isoform, "isoform" },
     };

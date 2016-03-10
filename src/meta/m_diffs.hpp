@@ -44,7 +44,8 @@ namespace Anaquin
                 // Alignment for the two alignment files
                 MBlat::Stats align_1, align_2;
                 
-                Limit ss;
+                // Absolute detection limit
+                Limit absolute;
                 
                 // Distribution of the sequins
                 SequinHist h = Standard::instance().r_meta.hist();

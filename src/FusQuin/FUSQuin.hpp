@@ -11,6 +11,7 @@ namespace Anaquin
     {
         StarFusion,
         TopHatFusion,
+        Kallisto,
     };
 
     struct FUSQuin

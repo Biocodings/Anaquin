@@ -16,7 +16,7 @@ namespace Anaquin
         struct Stats : public FusionStats, public LinearStats, public SequinStats
         {
             // Absolute detection limit
-            Limit limit;
+            Limit absolute;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

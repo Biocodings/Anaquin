@@ -1113,7 +1113,6 @@ void parse(int argc, char ** argv)
                         {
                             { "gene",    TExpress::Metrics::Gene    },
                             { "isoform", TExpress::Metrics::Isoform },
-                            { "exon",    TExpress::Metrics::Exon    },
                         };
                         
                         return parseEnum(key, str, m);
@@ -1224,10 +1223,11 @@ void parse(int argc, char ** argv)
             {
                 const static std::map<std::string, FusionCaller> m =
                 {
-                    { "Star"  ,       FusionCaller::StarFusion   },
+                    { "Star"        , FusionCaller::StarFusion   },
                     { "StarFusion"  , FusionCaller::StarFusion   },
-                    { "TopHat"  ,     FusionCaller::TopHatFusion },
+                    { "TopHat"      , FusionCaller::TopHatFusion },
                     { "TopHatFusion", FusionCaller::TopHatFusion },
+                    { "Kallisto"    , FusionCaller::Kallisto     },
                 };
 
                 return parseEnum("soft", str, m);

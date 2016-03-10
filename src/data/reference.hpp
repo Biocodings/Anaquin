@@ -159,10 +159,13 @@ namespace Anaquin
                 }
             }
         
-            // Calculate the detection limits
-            inline Limit limit(const SequinHist &h) const
+            /*
+             * Calculate the absolute detection limits. The limit is defined as the detected sequin with the least abundance.
+             */
+
+            inline Limit absolute(const SequinHist &hist) const
             {
-                return limit(h, [&](const SequinID &id)
+                return absolute(hist, [&](const SequinID &id)
                 {
                     return this->match(id);
                 });
@@ -173,12 +176,10 @@ namespace Anaquin
             virtual void validate() = 0;
 
             /*
-             * Provides a common mechanism to calculate limit of detection given a histogram or a
-             * distribution.
+             * Provides a common mechanism to calculate absolute limit of quantification from a histogram of distribution
              */
 
-            template <typename F> Limit limit
-                                (const std::map<std::string, Counts> &h, F f, Mixture m = Mix_1) const
+            template <typename F> Limit absolute(const std::map<std::string, Counts> &h, F f, Mixture mix = Mix_1) const
             {
                 Limit s;
             
@@ -203,11 +204,11 @@ namespace Anaquin
                         // Hard to believe a sequin in the histogram is undefined
                         assert(seq);
 
-                        if (counts < s.counts || (counts == s.counts && seq->abund(m) < s.abund))
+                        if (counts < s.counts || (counts == s.counts && seq->abund(mix) < s.abund))
                         {
                             s.id     = id;
                             s.counts = counts;
-                            s.abund  = seq->abund(m);
+                            s.abund  = seq->abund(mix);
                         }
                     }
                 }

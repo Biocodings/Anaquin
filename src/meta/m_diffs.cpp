@@ -5,8 +5,8 @@ using namespace Anaquin;
 
 MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, const Options &o)
 {
-    MAbundance::logOptions(o);
-
+    const auto &r = Standard::instance().r_meta;
+    
     MDiffs::Stats stats;
 
     assert(!o.pA.empty() && !o.pB.empty());
@@ -110,7 +110,8 @@ MDiffs::Stats MDiffs::report(const FileName &file_1, const FileName &file_2, con
     stats.chrT->n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
     stats.chrT->n_endo = (dStats_1.n + dStats_2.n) - stats.chrT->n_chrT;
 
-    stats.chrT->ss = Standard::instance().r_meta.limit(stats.chrT->h);
+    // Calculating the absolute detection limit
+    stats.chrT->absolute = r.absolute(stats.chrT->h);
 
     o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.chrT->size()).str());
 
