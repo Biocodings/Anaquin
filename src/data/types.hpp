@@ -44,7 +44,6 @@ namespace Anaquin
     typedef std::string FileName;
     typedef std::string FilePath;
     typedef std::string AxisLabel;
-    typedef std::string FeatureName;
 
     typedef long long Base;
     typedef long long Counts;
