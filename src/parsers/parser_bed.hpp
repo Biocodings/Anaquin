@@ -12,9 +12,11 @@ namespace Anaquin
 {
     struct ParserBed
     {
+        typedef std::string Feature;
+        
         struct Data
         {
-            operator const FeatureName &() const { return name; }
+            operator const Feature &() const { return name; }
             
             ChromoID id;
             
@@ -22,11 +24,8 @@ namespace Anaquin
             Strand strand;
 
             Locus l;
-            
-            FeatureName name;
-            
-            // Locations of the sorted blocks
-            //std::vector<Locus> blocks;
+
+            Feature name;
         };
 
         typedef std::function<void(const Data &, const ParserProgress &)> Callback;
