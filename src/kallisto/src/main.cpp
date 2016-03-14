@@ -721,7 +721,11 @@ std::string get_local_time() {
   return ret.substr(0, ret.size() - 1);
 }
 
+#ifdef K_HACK
 int __main__(int argc, char *argv[]) {
+#else
+int main(int argc, char *argv[]) {
+#endif
   std::cout.sync_with_stdio(false);
   setvbuf(stdout, NULL, _IOFBF, 1048576);
 
