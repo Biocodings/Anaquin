@@ -1067,7 +1067,7 @@ void KmerIndex::match(const char *s, int l, std::vector<std::pair<KmerEntry, int
     int pos = kit->second;
 
     if (search != kmap.end()) {
-
+        const auto &kmer = search->first;
       KmerEntry val = search->second;
       
       v.push_back({val, kit->second});
