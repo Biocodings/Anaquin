@@ -1,3 +1,4 @@
+#include <map>
 #include "KmerIndex.h"
 #include <algorithm>
 #include <random>
@@ -1054,6 +1055,10 @@ int KmerIndex::mapPair(const char *s1, int l1, const char *s2, int l2, int ec) c
 
 }
 
+
+std::map<std::string, int> __matchedKmer__;
+
+
 // use:  match(s,l,v)
 // pre:  v is initialized
 // post: v contains all equiv classes for the k-mers in s
@@ -1072,6 +1077,9 @@ void KmerIndex::match(const char *s, int l, std::vector<std::pair<KmerEntry, int
       
       v.push_back({val, kit->second});
 
+        // [TW]: This must be a transformed k-mer match??
+        __matchedKmer__[kmer.toString()]++;
+        
       // see if we can skip ahead
       // bring thisback later
       bool forward = (kit->first == search->first);

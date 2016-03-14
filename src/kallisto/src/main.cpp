@@ -8,6 +8,7 @@
  #include <thread>
 #include <time.h>
 
+#include <map>
 #include <cstdio>
 
 #include <zlib.h>
@@ -620,7 +621,7 @@ void PrintVersion() {
 }
 
 void usage() {
-  cout << "kallisto " << KALLISTO_VERSION << endl << endl
+  cout << "kallisto++ " << KALLISTO_VERSION << endl << endl
        << "Usage: kallisto <CMD> [arguments] .." << endl << endl
        << "Where <CMD> can be one of:" << endl << endl
        << "    index         Builds a kallisto index "<< endl
@@ -632,7 +633,7 @@ void usage() {
 
 
 void usageIndex() {
-  cout << "kallisto " << KALLISTO_VERSION << endl
+  cout << "kallisto++ " << KALLISTO_VERSION << endl
        << "Builds a kallisto index" << endl << endl
        << "Usage: kallisto index [arguments] FASTA-files" << endl << endl
        << "Required argument:" << endl
@@ -645,7 +646,7 @@ void usageIndex() {
 }
 
 void usageh5dump() {
-  cout << "kallisto " << KALLISTO_VERSION << endl
+  cout << "kallisto++ " << KALLISTO_VERSION << endl
        << "Converts HDF5-formatted results to plaintext" << endl << endl
        << "Usage:  kallisto h5dump [arguments] abundance.h5" << endl << endl
        << "Required argument:" << endl
@@ -653,7 +654,7 @@ void usageh5dump() {
 }
 
 void usageInspect() {
-  cout << "kallisto " << KALLISTO_VERSION << endl << endl
+  cout << "kallisto++ " << KALLISTO_VERSION << endl << endl
        << "Usage: kallisto inspect INDEX-file" << endl << endl
        << "Optional arguments:" << endl
        << "    --gfa=STRING              Filename for GFA output of T-DBG" << endl << endl;
@@ -662,7 +663,7 @@ void usageInspect() {
 void usageEM(bool valid_input = true) {
   if (valid_input) {
 
-  cout << "kallisto " << KALLISTO_VERSION << endl
+  cout << "kallisto++ " << KALLISTO_VERSION << endl
        << "Computes equivalence classes for reads and quantifies abundances" << endl << endl;
   }
   cout << "Usage: kallisto quant [arguments] FASTQ-files" << endl << endl
@@ -685,7 +686,7 @@ void usageEM(bool valid_input = true) {
 }
 
 void usageEMOnly() {
-  cout << "kallisto " << KALLISTO_VERSION << endl
+  cout << "kallisto++ " << KALLISTO_VERSION << endl
        << "Computes equivalence classes for reads and quantifies abundance" << endl << endl
        << "Usage: kallisto quant-only [arguments]" << endl << endl
        << "Required argument:" << endl
@@ -893,6 +894,27 @@ int main(int argc, char *argv[]) {
         }
 
         cerr << endl;
+          
+          
+          
+          extern std::map<std::string, int> __matchedKmer__;
+          //           KmerHashTable<KmerEntry, KmerHash> kmap;
+          
+          /*
+           * [TW]: Write the distribution of the transformed k-mers (may need a conversion table back to the original k-mer)
+           */
+          
+          std::ofstream f;
+          f.open (opt.output + "/index.kmer");
+          
+          for (const auto &i : index.kmap)
+          {
+              const auto key = i.first.toString();
+
+              f << key << "\t" << __matchedKmer__.count(key) << std::endl;
+          }
+          
+          f.close();
       }
     } else if (cmd == "quant-only") {
       if (argc==2) {
