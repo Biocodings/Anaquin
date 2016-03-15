@@ -183,8 +183,67 @@ if __name__ == '__main__':
     # The k-mer file we're generating
     out = open('AFU010.v032.csv', 'w')
 
+
+
     #
-    # 2. Process normal genes
+    # 3. Process fusion genes
+    #
+
+    for fSeq in fSeqs:
+        kmers = buildKmers(fSeq.seq, 31)
+        query = generateTempFA(kmers)
+
+        #if fSeq.name != 'FG1_10_P1':
+        #    continue
+
+        # This is the only way we can find out whether the kmer is spanning...
+        os.system('blat ' + 'CTR001.v021.fa' + ' ' + query + ' output.psl')
+
+        # Read in the PSL alignment file
+        psls = readPSL('output.psl')
+        
+        # This is the breakpoint we need
+        b = breaks[fSeq.name.replace('FG', 'NG')]
+
+        lastStr = None
+        lastEnd = None
+        
+        # Is the k-mer in the spanning region?
+        spanning = False
+
+        # Number of spanning k-mers
+        nSpans = 0
+
+        for kmer in kmers:
+            if kmer.name in psls:
+                spanning = False
+                psl = psls[kmer.name]                
+                
+                lastStr = psl.qstart
+                lastEnd = psl.qend
+                
+                out.write(fSeq.name + '\t' + kmer.name + '\t' + 'FN' + '\t' + str(psl.qstart) + '\t' + str(psl.qend) + '\n')
+            else:
+                
+                if lastEnd != None and lastStr != None:                
+                    d1 = abs(lastEnd - b.b1)
+                    d2 = abs(lastStr - b.b2)
+                
+                    if (d1 <= 1 or d2 <= 1) and nSpans == 0:
+                        spanning = True
+                
+                if spanning:
+                    out.write(fSeq.name + '\t' + kmer.name + '\t' + 'FS' + '\t' + '-' + '\t' + '-' + '\n')
+                    nSpans = nSpans + 1
+                else:
+                    out.write(fSeq.name + '\t' + kmer.name + '\t' + 'FN' + '\t' + '-' + '\t' + '-' + '\n')
+        
+        if nSpans == 0:
+            print('Warn: ' + 'No spanning k-mer found for ' + fSeq.name)            
+            #raise Exception('No spanning k-mer found for ' + fSeq.name)
+            
+    #
+    # 3. Process normal genes
     #
 
     for nSeq in nSeqs:
@@ -192,8 +251,8 @@ if __name__ == '__main__':
         kmers = buildKmers(nSeq.seq, 31)
         query = generateTempFA(kmers)
         
-        if nSeq.name != 'NG1_1_P2':
-            continue
+        #if nSeq.name != 'NG1_3_P2':
+        #    continue
         
         # This is the only way we can find out whether the kmer is spanning...
         os.system('blat ' + 'CTR001.v021.fa' + ' ' + query + ' output.psl')
@@ -221,43 +280,31 @@ if __name__ == '__main__':
                 lastStr = psl.qstart
                 lastEnd = psl.qend
                 
-                out.write(kmer.name + '\t' + 'NormN' + '\t' + str(psl.qstart) + '\t' + str(psl.qend) + '\n')
+                out.write(nSeq.name + '\t' + kmer.name + '\t' + 'NN' + '\t' + str(psl.qstart) + '\t' + str(psl.qend) + '\n')
             else:
                 
-                isBackward = nSeq.name.endswith(('P2'))
+                if lastEnd != None and lastStr != None:                
+                    d1 = abs(lastEnd - b.b1)
+                    d2 = abs(lastStr - b.b2)
                 
-                if not isBackward and lastEnd == b.b1:
-                    spanning = True
-                if isBackward and lastStr == b.b2:
-                    spanning = True
+                    if (d1 <= 1 or d2 <= 1) and nSpans == 0:
+                        spanning = True
+                
+                #isBackward = nSeq.name.endswith(('P2'))
+
+                #if not isBackward and lastEnd == b.b1:
+                #    spanning = True
+                #if isBackward and lastStr == b.b2:
+                #    spanning = True
                 
                 if spanning:
-                    out.write(kmer.name + '\t' + 'NormS' + '\t' + '-' + '\t' + '-' + '\n')
+                    out.write(nSeq.name + '\t' + kmer.name + '\t' + 'NS' + '\t' + '-' + '\t' + '-' + '\n')
                     nSpans = nSpans + 1
                 else:
-                    out.write(kmer.name + '\t' + 'NormN' + '\t' + '-' + '\t' + '-' + '\n')
+                    out.write(nSeq.name + '\t' + kmer.name + '\t' + 'NN' + '\t' + '-' + '\t' + '-' + '\n')
         
         if nSpans == 0:
-            raise Exception('No spanning k-mer found for ' + nSeq.name)
-        
-        
-        
-        
-        
-    print 'AFU010.v032.csv generated'        
-    raise Exception('dsjkaskdsjkas')
-        
-        
-    #
-    # 3. Process fusion genes
-    #
-
-    for nSeq in nSeqs:
-        kmers = buildKmers(nSeq.seq, 31)
-
-        #
-        # Now, we have the kmers and we need to know those kmers which span the fusion point.
-        #
+            print('Warn: ' + 'No spanning k-mer found for ' + nSeq.name)
 
 
     out.close()
