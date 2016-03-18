@@ -895,23 +895,20 @@ int main(int argc, char *argv[]) {
 
         cerr << endl;
           
-          
-          
           extern std::map<std::string, int> __matchedKmer__;
-          //           KmerHashTable<KmerEntry, KmerHash> kmap;
           
           /*
-           * [TW]: Write the distribution of the transformed k-mers (may need a conversion table back to the original k-mer)
+           * Write the distribution of the transformed k-mers (not always transformed). We will need the original k-mer table
+           * for mapping.
            */
-          
+        
           std::ofstream f;
-          f.open (opt.output + "/index.kmer");
-          
+          f.open (opt.output + "/matched.kmers");
+
           for (const auto &i : index.kmap)
           {
               const auto key = i.first.toString();
-
-              f << key << "\t" << __matchedKmer__.count(key) << std::endl;
+              f << key << "\t" << __matchedKmer__.at(key) << std::endl;
           }
           
           f.close();
