@@ -352,6 +352,21 @@ loadReference.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/A
 #                                                      #
 ########################################################
 
+loadMixture.FusQuin <- function(file='/Users/tedwong/Sources/QA/data/FusQuin/MFU007.v013.csv')
+{
+    data <- read.csv(file, row.names=1, sep='\t')
+    colnames(data) <- c('length', 'A')
+
+    data$label <- 'Trans'
+    data[grep("FG", rownames(data)),]$label <- 'Fusion'
+    data[grep("NG", rownames(data)),]$label <- 'Normal'    
+
+    r <- list(seqs=data)
+    class(r) <- c("FusMixture")
+    
+    return (r)
+}
+
 loadMixture.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/MVA011.v013.csv')
 {
     mix <- read.csv(file, row.names=1, sep='\t')
