@@ -218,6 +218,8 @@ def generateVCF(file, vcfs):
 #
 if __name__ == '__main__':
 
+    oStart = time.time() 
+    
     # Eg: chr21
     chromID = sys.argv[1]
 
@@ -231,7 +233,9 @@ if __name__ == '__main__':
     # 1. Read in the variant annotation
     #
     start = time.time() 
+    print('Reading VCF file')
     vData = readVCF(vFile)
+    print('Loaded VCF file')
     end   = time.time()
     
     print str(end - start) + 's taken for reading variants'
@@ -358,3 +362,6 @@ if __name__ == '__main__':
 
     print ('Writing VCF file... Please check: [flipped_vars.vcf]')    
     generateVCF('flipped_vars.vcf', vcfs)
+    
+    oEnd = time.time()         
+    print str(oEnd - oStart) + 's taken for completion'
