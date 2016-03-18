@@ -7,6 +7,9 @@
 #include <unordered_set>
 #include "kseq.h"
 
+// Defined for k-mer mappings
+std::map<std::string, std::string> __kmer2Twin__;
+
 #ifndef KSEQ_INIT_READY
 #define KSEQ_INIT_READY
 KSEQ_INIT(gzFile, gzread)
@@ -177,23 +180,43 @@ void KmerIndex::BuildTranscripts(const ProgramOptions& opt) {
   BuildDeBruijnGraph(opt, seqs);
   BuildEquivalenceClasses(opt, seqs);
   //BuildEdges(opt);
-
+    
+    std::ofstream writer;
+    writer.open ("index.mapping");
+    
+    for (const auto &i : __kmer2Twin__)
+    {
+        writer << i.first << "\t" << i.second << std::endl;
+    }
+    
+    writer.close();
 }
 
-void KmerIndex::BuildDeBruijnGraph(const ProgramOptions& opt, const std::vector<std::string>& seqs) {
+void KmerIndex::BuildDeBruijnGraph(const ProgramOptions& opt, const std::vector<std::string>& seqs)
+{
+    std::cerr << "[build] counting k-mers ... "; std::cerr.flush();
   
+    // Gather all k-mers...
+    for (int i = 0; i < seqs.size(); i++)
+    {
+        const char *s = seqs[i].c_str();
+        KmerIterator kit(s),kit_end;
+    
+        for (; kit != kit_end; ++kit)
+        {
+            const auto &kmer = kit->first;
+            const auto s1 = kmer.toString();
+            
+            const auto twin = kmer.rep();
+            kmap.insert({twin, KmerEntry()}); // don't care about repeats
+            
+            __kmer2Twin__[s1] = twin.toString();
 
-  std::cerr << "[build] counting k-mers ... "; std::cerr.flush();
-  // gather all k-mers
-  for (int i = 0; i < seqs.size(); i++) {
-    const char *s = seqs[i].c_str();
-    KmerIterator kit(s),kit_end;
-    for (; kit != kit_end; ++kit) {
-      kmap.insert({kit->first.rep(), KmerEntry()}); // don't care about repeats
-      //    Kmer rep = kit->first.rep();
-      // std::cout << rep.toString() << "\t" << rep.hash() << std::endl;
+            //    Kmer rep = kit->first.rep();
+            // std::cout << rep.toString() << "\t" << rep.hash() << std::endl;
+        }
     }
-  }
+
   std::cerr << "done." << std::endl;
   
   std::cerr << "[build] building target de Bruijn graph ... "; std::cerr.flush();
