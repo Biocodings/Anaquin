@@ -105,11 +105,17 @@ static void writeEnd(const std::string &file, const ChrID &chrID, const std::pai
 
 void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, const std::string &str, std::map<Base, ModifedVCF> &vars)
 {
+    auto n = 0;
     auto i = str.length() - 1;
     auto node = startEnd.second;
     
     while (node)
     {
+        if (n++ / 1000)
+        {
+            std::cout << n << "/" << str.length() << std::endl;
+        }
+        
         if (vars.count(i))
         {
             const auto &var = vars.at(i);

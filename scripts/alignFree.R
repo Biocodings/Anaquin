@@ -59,5 +59,9 @@ r <- aggregate(kmerSeq$abund, list(kmerSeq$seq), FUN=mean)
 #
 # 5: Read mixture file for sequins
 #
-  
+
 mix <- loadMixture.FusQuin()
+
+
+
+
