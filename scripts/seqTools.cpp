@@ -6,6 +6,16 @@
 
 using namespace Anaquin;
 
+struct Node
+{
+    Node(char base) : base(base) {}
+    
+    char base;
+
+    Node *next = nullptr;
+    Node *prev = nullptr;
+};
+
 struct ModifedVCF : public ParserVCF::Data
 {
     // TODO: Why do we need a default constructor?
@@ -21,16 +31,6 @@ struct ModifedVCF : public ParserVCF::Data
     }
     
     Base newPos = 0;
-};
-
-struct Node
-{
-    Node(char base) : base(base) {}
-    
-    char base;
-
-    Node *next = nullptr;
-    Node *prev = nullptr;
 };
 
 std::pair<Node *, Node *> createList(const std::string &str)
@@ -301,7 +301,7 @@ static std::pair<std::string, std::map<Base, ModifedVCF>> createTestData()
  *    Eg: seqTools chr21.fa chr21.vcf chr21
  *
  *
- *    g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src -I ~/Sources/SS main.cpp
+ *    g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src -I ~/Sources/SS seqTools.cpp
  *    g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src ~/Sources/QA/src/data/reader.cpp
  *    g++ *.o -o seqTool
  */
