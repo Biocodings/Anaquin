@@ -194,7 +194,7 @@ void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, con
     
     std::map<Base, ModifedVCF> x = vars;
     
-    // We'll construct the variants again...
+    // We'll construct the variants again, since the position have changed...
     vars.clear();
     
     for (const auto &i : x)
@@ -303,7 +303,7 @@ static std::pair<std::string, std::map<Base, ModifedVCF>> createTestData()
  *
  *    g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src -I ~/Sources/SS seqTools.cpp
  *    g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src ~/Sources/QA/src/data/reader.cpp
- *    g++ *.o -o seqTool
+ *    g++ *.o -o seqTools
  */
 
 int main(int argc, const char * argv[])
@@ -327,21 +327,25 @@ int main(int argc, const char * argv[])
     readVCF(vFile, chrID, vars);
     std::cout << "Reading variants completed" << std::endl;
 
-    auto test = createTestData();
-    seq  = test.first;
-    vars = test.second;
+    //auto test = createTestData();
+    //seq  = test.first;
+    //vars = test.second;
 
+    std::cout << "Creating linked-list..." << std::endl;
+    
     // Create a linked-list representation for the sequence
     auto nodes = createList(seq);
+
+    std::cout << "Linked-list created" << std::endl;
     
     const auto n_vars = vars.size();
     
     FastaAlternateReferenceMaker(nodes, seq, vars);
 
-    if (vars.size() != n_vars)
-    {
-        throw std::runtime_error("vars.size() != n_vars");
-    }
+    //if (vars.size() != n_vars)
+    //{
+    //    throw std::runtime_error("vars.size() != n_vars");
+    //}
     
     // Length of the reference sequence
     const auto n = seq.length();
