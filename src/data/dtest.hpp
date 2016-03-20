@@ -14,7 +14,7 @@ namespace Anaquin
             NotTested,
         };
 
-        ChromoID cID;
+        ChrID cID;
         
         // Subject, eg: GeneID, SequinID or ExonID
         FeatureID id;

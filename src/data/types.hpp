@@ -22,12 +22,12 @@ namespace Anaquin
     typedef double Proportion;
     typedef double Probability;
 
+    typedef std::string ChrID;
     typedef std::string BinID;
     typedef std::string GeneID;
     typedef std::string ExonID;
     typedef std::string GenoID;
     typedef std::string GenomeID;
-    typedef std::string ChromoID;
     typedef std::string SequinID;
     typedef std::string ContigID;
     typedef std::string IntronID;
@@ -48,9 +48,9 @@ namespace Anaquin
     typedef long long Base;
     typedef long long Counts;
     
-    const ChromoID ChrT = "chrT";
-    const ChromoID Endo = "endo";
-    const ChromoID NChr = "NA";
+    const ChrID ChrT = "chrT";
+    const ChrID Endo = "endo";
+    const ChrID NChr = "NA";
 }
 
 #endif

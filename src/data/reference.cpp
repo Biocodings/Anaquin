@@ -488,7 +488,7 @@ struct TransRef::TransRefImpl
         std::map<GeneID, SequinData *> gene2Seqs;
     };
     
-    void addRef(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
+    void addRef(const ChrID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
     {
         const auto exon = ExonData(cID, iID, gID, l);
 
@@ -502,17 +502,17 @@ struct TransRef::TransRefImpl
      * Validated data and resources
      */
 
-    std::map<ChromoID, Data> data;
+    std::map<ChrID, Data> data;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
-Base TransRef::exonBase(const ChromoID &cID) const
+Base TransRef::exonBase(const ChrID &cID) const
 {
     return _impl->data[cID].exonBase;
 }
 
-std::vector<GeneID> TransRef::geneIDs(const ChromoID &cID) const
+std::vector<GeneID> TransRef::geneIDs(const ChrID &cID) const
 {
     std::vector<GeneID> gIDs;
 
@@ -542,7 +542,7 @@ Limit TransRef::limitIsof(const SequinHist &hist) const
     throw "Not Implemented";
 }
 
-void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
+void TransRef::addGene(const ChrID &cID, const GeneID &gID, const Locus &l)
 {
     // Synthetic is not supported for now...
     assert(cID != ChrT);
@@ -553,7 +553,7 @@ void TransRef::addGene(const ChromoID &cID, const GeneID &gID, const Locus &l)
     }
 }
 
-void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l)
+void TransRef::addExon(const ChrID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l)
 {
     if (cID == ChrT)
     {
@@ -565,9 +565,9 @@ void TransRef::addExon(const ChromoID &cID, const IsoformID &iID, const GeneID &
     }
 }
 
-std::set<ChromoID> TransRef::chromoIDs() const
+std::set<ChrID> TransRef::ChrIDs() const
 {
-    std::set<ChromoID> cIDs;
+    std::set<ChrID> cIDs;
     
     for (const auto &i : _impl->data)
     {
@@ -581,22 +581,22 @@ std::set<ChromoID> TransRef::chromoIDs() const
  * ------------------------- Accessors for TransQuin -------------------------
  */
 
-Counts TransRef::countExons(const ChromoID &cID) const
+Counts TransRef::countExons(const ChrID &cID) const
 {
     return _impl->data.at(cID).sortedExons.size();
 }
 
-Counts TransRef::countMerged(const ChromoID &cID) const
+Counts TransRef::countMerged(const ChrID &cID) const
 {
     return _impl->data.at(cID).mergedExons.size();
 }
 
-Counts TransRef::countIntrons(const ChromoID &cID) const
+Counts TransRef::countIntrons(const ChrID &cID) const
 {
     return _impl->data.at(cID).sortedIntrons.size();
 }
 
-const TransRef::GeneData * TransRef::findGene(const ChromoID &cID, const GeneID &id) const
+const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const GeneID &id) const
 {
     return _impl->data.at(cID).genes.count(id) ? &(_impl->data.at(cID).genes.at(id)) : nullptr;
 }
@@ -627,22 +627,22 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
     return nullptr;
 }
 
-const TransRef::GeneData * TransRef::findGene(const ChromoID &cID, const Locus &l, MatchRule m) const
+const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const Locus &l, MatchRule m) const
 {
     return findMap(_impl->data.at(cID).genes, l, m);
 }
 
-const TransRef::ExonData * TransRef::findExon(const ChromoID &cID, const Locus &l, MatchRule m) const
+const TransRef::ExonData * TransRef::findExon(const ChrID &cID, const Locus &l, MatchRule m) const
 {
     return findList(_impl->data.at(cID).sortedExons, l, m);
 }
 
-const TransRef::IntronData * TransRef::findIntron(const ChromoID &cID, const Locus &l, MatchRule m) const
+const TransRef::IntronData * TransRef::findIntron(const ChrID &cID, const Locus &l, MatchRule m) const
 {
     return findList(_impl->data.at(cID).sortedIntrons, l, m);
 }
 
-Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChromoID &cID) const
+Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChrID &cID) const
 {
     Intervals<ExonInterval> inters;
     
@@ -657,7 +657,7 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChromoID &cID) cons
     return inters;
 }
 
-Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChromoID &cID) const
+Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChrID &cID) const
 {
     Intervals<IntronInterval> inters;
     
@@ -672,7 +672,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChromoID &cID) 
     return inters;
 }
 
-SequinHist TransRef::geneHist(const ChromoID &cID) const
+SequinHist TransRef::geneHist(const ChrID &cID) const
 {
     if (cID == ChrT)
     {
@@ -752,7 +752,7 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     assert(!_data.empty());
 }
 
-template <typename T> void createTrans(const ChromoID &cID, T &t)
+template <typename T> void createTrans(const ChrID &cID, T &t)
 {
     /*
      * Generate the appropriate structure for analysis
@@ -889,7 +889,7 @@ struct VarRef::VariantPair
 struct VarRef::VarRefImpl
 {
     // The reference chromosome
-    ChromoID refChrID = NChr;
+    ChrID refChrID = NChr;
 
     // VarQuin standards (BED file)
     std::map<SequinID, Locus> stands;
@@ -926,7 +926,7 @@ void VarRef::addVar(const Variant &v)
     _impl->vars.insert(v);
 }
 
-void VarRef::addRInterval(const ChromoID &id, const Interval &i)
+void VarRef::addRInterval(const ChrID &id, const Interval &i)
 {
     if (_impl->refChrID != NChr && _impl->refChrID != id)
     {
@@ -1088,7 +1088,7 @@ const Intervals<> VarRef::endoInters() const
     return _impl->inters;    
 }
 
-ChromoID VarRef::endoID() const
+ChrID VarRef::endoID() const
 {
     return _impl->refChrID;
 }

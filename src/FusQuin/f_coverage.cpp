@@ -31,7 +31,7 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
     bo.writer = o.writer;
     bo.file   = "FusionCoverage_chrT.bedgraph";
 
-    CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_fus.match(Locus(i, j), MatchRule::Contains);
@@ -48,7 +48,7 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
     to.refs     = r.r_fus.hist().size();
     to.length   = r.r_fus.size();
 
-    CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_fus.match(Locus(i, j), MatchRule::Contains);

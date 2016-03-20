@@ -38,7 +38,7 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     bo.writer = o.writer;
     bo.file   = "VarCoverage_chrT.bedgraph";
 
-    CoverageTool::bedGraph(stats.chrT, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::bedGraph(stats.chrT, bo, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_var.match(Locus(i, j), MatchRule::Contains);
@@ -55,7 +55,7 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     to.refs     = r.r_var.hist().size();
     to.length   = r.r_var.size();
 
-    CoverageTool::summary(stats.chrT, to, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::summary(stats.chrT, to, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_var.match(Locus(i, j), MatchRule::Contains);

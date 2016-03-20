@@ -29,7 +29,7 @@ namespace Anaquin
         typedef std::function<bool (const Alignment &, const ParserProgress &)> AlignFunctor;
 
         // Whether to proceed with the coverage
-        typedef std::function<bool (const ChromoID &, Base, Base, Coverage)> CoverageFunctor;
+        typedef std::function<bool (const ChrID &, Base, Base, Coverage)> CoverageFunctor;
 
         struct CoverageReportOptions
         {

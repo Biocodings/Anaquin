@@ -179,7 +179,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         {
             Base covered = 0;
             
-            i.second.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+            i.second.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
             {
                 if (depth)
                 {

@@ -19,7 +19,7 @@ namespace Anaquin
         
         struct Data
         {
-            ChromoID cID;
+            ChrID cID;
             
             // Location of the segment
             Locus l;

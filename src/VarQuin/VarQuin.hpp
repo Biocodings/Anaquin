@@ -101,7 +101,7 @@ namespace Anaquin
         {
             case Caller::GATK:
             {
-                ParserVCF::parse(file, [&](const ParserVCF::VCFVariant &v, const ParserProgress &)
+                ParserVCF::parse(file, [&](const ParserVCF::Data &v, const ParserProgress &)
                 {
                     //f(match(v));
                 });

@@ -864,7 +864,7 @@ void KmerIndex::load(ProgramOptions& opt, bool loadKmerTable) {
   std::cerr << "[index] k-mer length: " << k << std::endl;
   std::cerr << "[index] number of targets: " << pretty_num(num_trans)
     << std::endl;
-  std::cerr << "[index] number of k-mers: " << pretty_num(kmap_size)
+  std::cerr << "[index] number of k-mers????????: " << pretty_num(kmap_size)
     << std::endl;
 
   kmap.clear();
@@ -990,6 +990,8 @@ void KmerIndex::load(ProgramOptions& opt, bool loadKmerTable) {
   delete[] buffer;
   buffer=nullptr;
   
+    std::cout << "111111" << std::endl;
+    
   in.close();
 }
 

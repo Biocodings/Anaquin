@@ -14,7 +14,7 @@ typedef TAlign::Stats::MissingMetrics MissingMetrics;
  * -------------------- Initalization --------------------
  */
 
-template <typename T> void initT(const ChromoID &cID, T &t)
+template <typename T> void initT(const ChrID &cID, T &t)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -91,7 +91,7 @@ static TAlign::Stats init()
 {
     TAlign::Stats stats;
 
-    for (const auto &cID : Standard::instance().r_trans.chromoIDs())
+    for (const auto &cID : Standard::instance().r_trans.ChrIDs())
     {
         initT(cID, stats.data[cID]);
     }
@@ -153,7 +153,7 @@ template <typename T> const T * matchT(const Alignment &align,
     return !cMatches.empty() ? cMatches[0] : nullptr;
 }
 
-template <typename T> void collect(const ChromoID &cID,
+template <typename T> void collect(const ChrID &cID,
                                    T &t,
                                    const TAlign::FPStats &lFPS,
                                    const TAlign::FPStats &rFPS,
@@ -290,7 +290,7 @@ template <typename T> void collect(const ChromoID &cID,
         
         Base covered = 0;
         
-        in.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+        in.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
         {
             if (depth)
             {
@@ -518,7 +518,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     });
 }
 
-template <typename F> std::string check(const TAlign::Stats &stats, F f, const ChromoID &cID)
+template <typename F> std::string check(const TAlign::Stats &stats, F f, const ChrID &cID)
 {
     const auto id = cID == ChrT ? ChrT : "chr1"; // TODO: Fix this...
     
@@ -618,8 +618,8 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
 
     #define BIND_R(x,y)   check(stats, std::bind(&x, &r, _1), y)
     #define BIND_Q(x,y)   check(stats, std::bind(&x, &stats, _1), y)
-    #define BIND_E(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
-    #define BIND_M(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChromoID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
+    #define BIND_E(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
+    #define BIND_M(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
 
     o.writer->open(file);
     o.writer->write((boost::format(replicateSummary())

@@ -28,7 +28,7 @@ template <typename T> static Counts sums(const std::map<T, Counts> &m)
     return c;
 }
 
-static bool checkAlign(const ChromoID &queryID, const ChromoID &id, const Locus &l)
+static bool checkAlign(const ChrID &queryID, const ChrID &id, const Locus &l)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -84,13 +84,13 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     o.info(std::to_string(stats.cov.inters.size()) + " intervals generated");
 
     o.info("Generating statistics for " + std::string(ChrT));
-    stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+    stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
     {
         return static_cast<bool>(r.match(Locus(i, j), MatchRule::Contains));
     });
 
     o.info("Generating statistics for " + r.endoID());
-    stats.endo = stats.cov.inters.find(r.endoID())->stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+    stats.endo = stats.cov.inters.find(r.endoID())->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
     {
         return static_cast<bool>(r.findEndo(r.endoID(), Locus(i, j)));
     });
@@ -233,7 +233,7 @@ void VSample::report(const FileName &file, const Options &o)
     pre.writer = o.writer;
     pre.file   = "VarSubsample_before.bedgraph";
 
-    CoverageTool::bedGraph(before.cov, pre, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::bedGraph(before.cov, pre, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         return checkAlign(r.endoID(), id, Locus(i, j));
     });
@@ -247,7 +247,7 @@ void VSample::report(const FileName &file, const Options &o)
     post.writer = o.writer;
     post.file   = "VarSubsample_after.bedgraph";
 
-    CoverageTool::bedGraph(after.cov, post, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::bedGraph(after.cov, post, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         return checkAlign(r.endoID(), id, Locus(i, j));
     });

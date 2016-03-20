@@ -49,8 +49,8 @@ namespace Anaquin
         {
             T stats;
             Histogram h;
-            
-            ParserFA::parse(file, [&](const FALine &l, const ParserProgress &)
+
+            ParserFA::parse(file, [&](const ParserFA::Data &l, const ParserProgress &)
             {
                 stats.n++;
                 

@@ -111,7 +111,7 @@ void Standard::addVar(const Reader &r)
 {
     std::vector<std::string> toks;
 
-    ParserVCF::parse(r, [&](const ParserVCF::VCFVariant &x, const ParserProgress &)
+    ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
         Variant v;
         

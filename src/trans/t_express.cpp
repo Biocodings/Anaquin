@@ -14,7 +14,7 @@ typedef TExpress::Software Software;
 
 struct InternalKallistoData : public ParseKallisto::Data
 {
-    ChromoID cID = ChrT;
+    ChrID cID = ChrT;
     
     // Dummy value...
     Locus l;
@@ -108,7 +108,7 @@ template <typename Functor> TExpress::Stats calculate(const SampleName &name, co
     stats.name = name;
     
     const auto &r   = Standard::instance().r_trans;
-    const auto cIDs = r.chromoIDs();
+    const auto cIDs = r.ChrIDs();
     
     stats.data[ChrT];
     stats.data[Endo];
@@ -330,7 +330,7 @@ static void writeFPKM(const FileName &file, const std::vector<TExpress::Stats> &
     // Number of samples
     const auto n = names.size();
     
-    auto f = [&](const ChromoID &id)
+    auto f = [&](const ChrID &id)
     {
         for (const auto &i : stats[0].data.at(id))
         {

@@ -88,7 +88,7 @@ TEST_CASE("Interval_Test_3")
     
     std::vector<Base> x, y, z;
     
-    i.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+    i.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
     {
         x.push_back(i);
         y.push_back(j);

@@ -31,7 +31,7 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     bo.writer = o.writer;
     bo.file   = "TransCoverage_chrT.bedgraph";
 
-    CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_trans.findExon("chrT", Locus(i, j), MatchRule::Contains);
@@ -48,7 +48,7 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     to.refs     = r.r_trans.hist().size();
     to.length   = r.r_trans.size();
 
-    CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_trans.match(Locus(i, j), MatchRule::Contains);

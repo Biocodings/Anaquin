@@ -59,7 +59,7 @@ void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o
     {
         const auto chr = i.second;
 
-        chr.bedGraph([&](const ChromoID &id, Base i, Base j, Base depth)
+        chr.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
         {
             if (depth && f(id, i, j, depth))
             {

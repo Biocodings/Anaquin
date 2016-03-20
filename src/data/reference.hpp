@@ -512,15 +512,15 @@ namespace Anaquin
             void addStand(const SequinID &, const Locus &);
 
             // Adds a reference interval (eg: chr21)
-            void addRInterval(const ChromoID &, const Interval &);
+            void addRInterval(const ChrID &, const Interval &);
 
             /*
              * Query functions
              */
 
-            ChromoID endoID() const;
+            ChrID endoID() const;
 
-            bool isEndoID(const ChromoID &cID) const { return cID == endoID(); }
+            bool isEndoID(const ChrID &cID) const { return cID == endoID(); }
 
             const Intervals<> endoInters() const;
         
@@ -545,7 +545,7 @@ namespace Anaquin
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
 
             Interval *findEndo(const Locus &) const;
-            Interval *findEndo(const ChromoID &cID, const Locus &l) const
+            Interval *findEndo(const ChrID &cID, const Locus &l) const
             {
                 return isEndoID(cID) ? findEndo(l) : nullptr;
             }
@@ -631,7 +631,7 @@ namespace Anaquin
 
             struct ExonData
             {
-                ExonData(const ChromoID  &cID,
+                ExonData(const ChrID  &cID,
                          const IsoformID &iID,
                          const GeneID    &gID,
                          const Locus &l)
@@ -655,7 +655,7 @@ namespace Anaquin
             
                 Locus     l;
                 GeneID    gID;
-                ChromoID  cID;
+                ChrID  cID;
                 IsoformID iID;
             };
 
@@ -668,22 +668,22 @@ namespace Anaquin
             
                 Locus     l;
                 GeneID    gID;
-                ChromoID  cID;
+                ChrID  cID;
                 IsoformID iID;
             };
 
             TransRef();
 
-            SequinHist geneHist(const ChromoID &) const;
+            SequinHist geneHist(const ChrID &) const;
 
             // Intervals for reference exons
-            Intervals<ExonInterval> exonInters(const ChromoID &) const;
+            Intervals<ExonInterval> exonInters(const ChrID &) const;
         
             // Intervals for reference introns
-            Intervals<IntronInterval> intronInters(const ChromoID &) const;
+            Intervals<IntronInterval> intronInters(const ChrID &) const;
         
-            void addGene(const ChromoID &, const GeneID    &, const Locus &);
-            void addExon(const ChromoID &, const IsoformID &, const GeneID &, const Locus &);
+            void addGene(const ChrID &, const GeneID    &, const Locus &);
+            void addExon(const ChrID &, const IsoformID &, const GeneID &, const Locus &);
 
             /*
              * Accessor functions
@@ -694,28 +694,28 @@ namespace Anaquin
             Limit limitIsof(const SequinHist &) const;
 
             // Number of non-overlapping bases in all exons
-            Base exonBase(const ChromoID &) const;
+            Base exonBase(const ChrID &) const;
 
             // Number of merged exons
-            Counts countMerged(const ChromoID &) const;
+            Counts countMerged(const ChrID &) const;
         
             // Number of unmerged exons
-            Counts countExons(const ChromoID &) const;
+            Counts countExons(const ChrID &) const;
         
             // Return number of introns
-            Counts countIntrons(const ChromoID &) const;
+            Counts countIntrons(const ChrID &) const;
 
             // List of chromosomes in the reference
-            std::set<ChromoID> chromoIDs() const;
+            std::set<ChrID> ChrIDs() const;
         
-            inline bool isOnlyChrT() const { return chromoIDs().size() == 1; }
+            inline bool isOnlyChrT() const { return ChrIDs().size() == 1; }
 
-            std::vector<GeneID> geneIDs(const ChromoID &) const;
+            std::vector<GeneID> geneIDs(const ChrID &) const;
 
-            const GeneData   *findGene  (const ChromoID &, const GeneID &)           const;
-            const GeneData   *findGene  (const ChromoID &, const Locus &, MatchRule) const;
-            const ExonData   *findExon  (const ChromoID &, const Locus &, MatchRule) const;
-            const IntronData *findIntron(const ChromoID &, const Locus &, MatchRule) const;
+            const GeneData   *findGene  (const ChrID &, const GeneID &)           const;
+            const GeneData   *findGene  (const ChrID &, const Locus &, MatchRule) const;
+            const ExonData   *findExon  (const ChrID &, const Locus &, MatchRule) const;
+            const IntronData *findIntron(const ChrID &, const Locus &, MatchRule) const;
 
         protected:
         

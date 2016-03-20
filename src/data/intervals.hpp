@@ -90,7 +90,7 @@ namespace Anaquin
             {
                 Stats stats;
             
-                bedGraph([&](const ChromoID &id, Base i, Base j, Coverage cov)
+                bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
                 {
                     // Should this be counted? For example, aligning to sequins?
                     if (!t(id, i, j, cov))
@@ -140,7 +140,7 @@ namespace Anaquin
         
             inline Stats stats() const
             {
-                return stats([&](const ChromoID &id, Base i, Base j, Coverage cov)
+                return stats([&](const ChrID &id, Base i, Base j, Coverage cov)
                 {
                     return true;
                 });

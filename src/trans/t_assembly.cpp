@@ -35,7 +35,7 @@ template <typename F> static void extractIntrons(const std::map<SequinID, std::v
     }
 }
 
-static FileName createFilters(const FileName &file, const ChromoID &cID)
+static FileName createFilters(const FileName &file, const ChrID &cID)
 {
     assert(cID == ChrT || cID == Endo);
     
@@ -182,7 +182,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
      * 2. Filtering transcripts
      */
     
-    auto copyStats = [&](const ChromoID &cID)
+    auto copyStats = [&](const ChrID &cID)
     {
         stats.data[cID].eSN  = std::min(__cmp__.e_sn  / 100.0, 1.0);
         stats.data[cID].eSP  = std::min(__cmp__.e_sp  / 100.0, 1.0);
@@ -222,7 +222,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         stats.data[cID].nIntronP  = __cmp__.novelIntronsP / 100.0;
     };
     
-    auto compareGTF = [&](const ChromoID &cID, const FileName &ref)
+    auto compareGTF = [&](const ChrID &cID, const FileName &ref)
     {
         // Filtered query
         const auto qry = createFilters(file, cID);
@@ -238,7 +238,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
     o.info("Generating filtered transcript");
 
-    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChromoID, TAssembly::Stats::Data> &p)
+    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, TAssembly::Stats::Data> &p)
     {
         compareGTF(p.first, p.first == ChrT ? o.rChrT : o.rEndo);
         copyStats(p.first);

@@ -35,7 +35,7 @@ namespace Anaquin
         {
             typedef LinearStats Data;
 
-            std::map<ChromoID, Data> data;
+            std::map<ChrID, Data> data;
 
             // Eg: A1
             SampleName name;

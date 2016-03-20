@@ -18,7 +18,7 @@ namespace Anaquin
         {
             operator const Feature &() const { return name; }
             
-            ChromoID id;
+            ChrID id;
             
             // Forward or reverse strand?
             Strand strand;

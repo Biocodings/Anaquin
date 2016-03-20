@@ -75,7 +75,7 @@ namespace Anaquin
                 std::vector<double> logFSEs;
             };
             
-            std::map<ChromoID, Data> data;
+            std::map<ChrID, Data> data;
 
             // Count table
             std::shared_ptr<CountTable> counts;

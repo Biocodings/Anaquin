@@ -73,12 +73,12 @@ LinearModel LinearStats::linear(bool shouldLog) const
         }
         
         const auto m = SS::lm(SS::R::data.frame(SS::R::c(d.y), SS::R::c(d.x)));
-        
+
         lm.F     = m.f;
         lm.p     = m.p;
         lm.r     = SS::cor(d.x, d.y);
-        lm.c     = m.coeffs[0].value;
-        lm.m     = m.coeffs[1].value;
+        lm.c     = m.coeffs[0].est;
+        lm.m     = m.coeffs[1].est;
         lm.R2    = m.r2;
         lm.ar2   = m.ar2;
         lm.SST   = m.total.ss;

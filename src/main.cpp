@@ -529,7 +529,7 @@ template <typename Mixture> void addMix(Mixture mix)
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
 
-template <typename Reference> void addRef(const ChromoID &cID, Reference ref, const FileName &file)
+template <typename Reference> void addRef(const ChrID &cID, Reference ref, const FileName &file)
 {
     if (cID == ChrT)
     {
@@ -544,7 +544,7 @@ template <typename Reference> void addRef(const ChromoID &cID, Reference ref, co
     ref(Reader(file));
 }
 
-template <typename Reference> void addRef(const ChromoID &cID, Reference ref)
+template <typename Reference> void addRef(const ChrID &cID, Reference ref)
 {
     for (const auto &i : _p.opts)
     {

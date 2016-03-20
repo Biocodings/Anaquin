@@ -24,7 +24,7 @@ namespace Anaquin
 
         struct Chimeric
         {
-            ChromoID id;
+            ChrID id;
             
             // Base of the intron
             Locus l;

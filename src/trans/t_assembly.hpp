@@ -58,7 +58,7 @@ namespace Anaquin
                 unsigned nExonN, nExonR, nIntronN, nIntronR;
             };
             
-            std::map<ChromoID, Data> data;
+            std::map<ChrID, Data> data;
             
             // Number of exons assembled for chrT
             Counts chrT_exons = 0;

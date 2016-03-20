@@ -9,7 +9,7 @@ namespace Anaquin
     {
         operator const Locus &() const { return l; }
 
-        ChromoID cID;
+        ChrID cID;
 
         // Eg: B7_591:6:155:12:674
         std::string name;

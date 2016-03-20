@@ -12,7 +12,7 @@
 
 namespace Anaquin
 {
-    template <typename T> ChromoID toChrTEndo(const T &t)
+    template <typename T> ChrID toChrTEndo(const T &t)
     {
         return t == ChrT ? ChrT : Endo;
     }
@@ -52,7 +52,7 @@ namespace Anaquin
 
     struct Expression
     {
-        ChromoID cID;
+        ChrID cID;
         
         GenericID id;
         
@@ -226,7 +226,7 @@ namespace Anaquin
         }
         
         // Chromosome for the left and right
-        ChromoID cID_1, cID_2;
+        ChrID cID_1, cID_2;
         
         // Strand for the left and right
         Strand s1, s2;

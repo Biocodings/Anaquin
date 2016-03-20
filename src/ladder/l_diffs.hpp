@@ -16,7 +16,7 @@ namespace Anaquin
                 // Empty Implementation
             };
             
-            std::map<ChromoID, Data> data;
+            std::map<ChrID, Data> data;
             
             // Sensitivity at the joined level
             Limit s_joined;

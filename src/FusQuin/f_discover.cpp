@@ -94,7 +94,7 @@ static void writeSummary(const FileName &file, const FDiscover::Stats &stats, co
     o.writer->close();
 }
 
-static void writeClass(const FileName &file, const ChromoID &cID, const FDiscover::Stats &stats, const FDiscover::Options &o)
+static void writeClass(const FileName &file, const ChrID &cID, const FDiscover::Stats &stats, const FDiscover::Options &o)
 {
     const auto &data  = stats.data.at(cID);
     const auto format = "%1%\t%2%\t%3%\t%4%";

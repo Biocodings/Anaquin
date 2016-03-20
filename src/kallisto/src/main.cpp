@@ -908,7 +908,7 @@ int main(int argc, char *argv[]) {
           for (const auto &i : index.kmap)
           {
               const auto key = i.first.toString();
-              f << key << "\t" << __matchedKmer__.at(key) << std::endl;
+              f << key << "\t" << (__matchedKmer__.count(key) ? __matchedKmer__.at(key) : 0)  << std::endl;
           }
           
           f.close();

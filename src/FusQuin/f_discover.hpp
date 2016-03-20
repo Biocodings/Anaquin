@@ -21,32 +21,32 @@ namespace Anaquin
             #define FP(x) data.at(x).fps
             #define FN(x) data.at(x).fns
             
-            inline Counts countTP(const ChromoID &id) const
+            inline Counts countTP(const ChrID &id) const
             {
                 return TP(id).size();
             }
 
-            inline Counts countFP(const ChromoID &id) const
+            inline Counts countFP(const ChrID &id) const
             {
                 return FP(id).size();
             }
             
-            inline Counts countKnown(const ChromoID &id) const
+            inline Counts countKnown(const ChrID &id) const
             {
                 return TP(id).size() + FN(id).size();
             }
 
-            inline Counts countDetect(const ChromoID &id) const
+            inline Counts countDetect(const ChrID &id) const
             {
                 return TP(id).size() + FP(id).size();
             }
 
-            inline Proportion sn(const ChromoID &id) const
+            inline Proportion sn(const ChrID &id) const
             {
                 return static_cast<Proportion>(TP(id).size()) / (TP(id).size() + FN(id).size());
             }
 
-            inline Proportion pc(const ChromoID &id) const
+            inline Proportion pc(const ChrID &id) const
             {
                 return static_cast<Proportion>(TP(id).size()) / countDetect(id);
             }
@@ -59,7 +59,7 @@ namespace Anaquin
                 std::vector<FUSQuin::Match> fps, tps;
             };
 
-            std::map<ChromoID, Data> data;
+            std::map<ChrID, Data> data;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

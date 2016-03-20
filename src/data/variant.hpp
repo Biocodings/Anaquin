@@ -12,7 +12,7 @@ namespace Anaquin
         
         inline bool operator<(const Locus &x) const { return l < x; }
 
-        inline Mutation type() const
+        inline VarType type() const
         {
             if (alt[0] == '-')
             {
@@ -35,9 +35,14 @@ namespace Anaquin
                 return Insertion;
             }
         }
-        
+
+        inline Base diff() const
+        {
+            return static_cast<Base>(abs(ref.size() - alt.size()));
+        }
+
         // Eg: chrT
-        ChromoID chrID;
+        ChrID chrID;
 
         // Eg: D_1_10
         SequinID id;

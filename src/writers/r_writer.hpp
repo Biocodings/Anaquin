@@ -98,10 +98,10 @@ namespace Anaquin
                                                                                             const Stats_1  &s1,
                                                                                             const Stats_2  &s2,
                                                                                             const Stats    &s,
-                                                                                            const ChromoID &cID,
+                                                                                            const ChrID    &cID,
                                                                                             const Units    &units,
-                                                                                            const Units &ref = "",
-                                                                                            const Label &samples = "")
+                                                                                            const Units    &ref = "",
+                                                                                            const Label    &samples = "")
         {
             const auto summary = "Summary for input: %1% and %2%\n\n"
                                  "   %3% (A):       %4% %5%\n"
@@ -224,7 +224,7 @@ namespace Anaquin
         static Scripts scatterPool(const FileName &);
 
         template <typename Stats> static Scripts scatter(const Stats &stats,
-                                                         const ChromoID &cID,
+                                                         const ChrID &cID,
                                                          const AxisLabel &title,
                                                          const std::string &prefix,
                                                          const AxisLabel &xLabel,

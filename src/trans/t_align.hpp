@@ -157,7 +157,7 @@ namespace Anaquin
                     FPStats lFPS, rFPS;
                 };
 
-                std::map<ChromoID, Data> data;
+                std::map<ChrID, Data> data;
                 
                 /*
                  * Accessor functions
@@ -172,15 +172,15 @@ namespace Anaquin
                 }
                 
                 // Number of non-split reads
-                inline Counts countNonSplit(const ChromoID &cID) const { return data.at(cID).overE.aNQ(); }
+                inline Counts countNonSplit(const ChrID &cID) const { return data.at(cID).overE.aNQ(); }
                 
                 // Number of split reads
-                inline Counts countSplit(const ChromoID &cID) const { return data.at(cID).overI.aNQ(); }
+                inline Counts countSplit(const ChrID &cID) const { return data.at(cID).overI.aNQ(); }
 
                 // Number of query bases in the input file
-                inline Counts countQBases(const ChromoID &cID) const { return data.at(cID).overB.m.nq(); }
+                inline Counts countQBases(const ChrID &cID) const { return data.at(cID).overB.m.nq(); }
 
-                inline CountPercent missing(const ChromoID &cID, MissingMetrics m) const
+                inline CountPercent missing(const ChrID &cID, MissingMetrics m) const
                 {
                     switch (m)
                     {
@@ -201,13 +201,13 @@ namespace Anaquin
                     }
                 }
 
-                inline double missProp(const ChromoID &cID, MissingMetrics m) const
+                inline double missProp(const ChrID &cID, MissingMetrics m) const
                 {
                     return missing(cID, m).percent();
                 }
                 
                 // Overall sensitivity
-                inline double sn(const ChromoID &cID, AlignMetrics m) const
+                inline double sn(const ChrID &cID, AlignMetrics m) const
                 {
                     switch (m)
                     {
@@ -218,13 +218,13 @@ namespace Anaquin
                 }
                 
                 // Sensitivity at the gene level
-                inline double sn(const ChromoID &cID, const GeneID &id) const
+                inline double sn(const ChrID &cID, const GeneID &id) const
                 {
                     return data.at(cID).geneE.at(id).sn();
                 }
 
                 // Overall precision
-                inline double pc(const ChromoID &cID, AlignMetrics m) const
+                inline double pc(const ChrID &cID, AlignMetrics m) const
                 {
                     switch (m)
                     {

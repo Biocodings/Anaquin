@@ -27,7 +27,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     bo.writer = o.writer;
     bo.file   = "MetaCoverage_community.bedgraph";
 
-    CoverageTool::bedGraph(stats, bo, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.match(Locus(i, j), MatchRule::Contains);
@@ -105,7 +105,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
 
 /*
  TODO: Need to give a fake name
-    CoverageTool::summary(stats, to, [&](const ChromoID &id, Base i, Base j, Coverage)
+    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_meta.match(Locus(i, j), MatchRule::Contains);

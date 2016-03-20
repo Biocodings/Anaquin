@@ -147,6 +147,9 @@ namespace Anaquin
             this->start = std::min(start, l.start);
             this->end   = std::max(end, l.end);
         }
+        
+        inline void operator+=(long n) { start += n; end += n; }
+        inline void operator-=(long n) { start -= n; end -= n; }
 
         inline bool operator!=(const Locus &l) const { return !operator==(l); }
         inline bool operator==(const Locus &l) const { return start == l.start && end == l.end; }

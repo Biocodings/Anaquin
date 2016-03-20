@@ -23,7 +23,7 @@ namespace Anaquin
             gID  = f.gID;
         }
         
-        ChromoID cID;
+        ChrID cID;
 
         // Forward or reverse strand?
         Strand strand;

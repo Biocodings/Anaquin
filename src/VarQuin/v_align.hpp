@@ -12,13 +12,13 @@ namespace Anaquin
         struct Stats : public AlignmentStats
         {
             // Returns the overall sensitivity
-            inline Proportion sn(const ChromoID &cID) const
+            inline Proportion sn(const ChrID &cID) const
             {
                 return static_cast<Proportion>(covered(cID)) / length(cID);
             }
 
             // Returns the individual sensitivity
-            inline Proportion sn(const ChromoID &cID, const SequinID &sID) const
+            inline Proportion sn(const ChrID &cID, const SequinID &sID) const
             {
                 // How many bases covered?
                 const auto covered = data.at(cID).covered.at(sID);
@@ -30,7 +30,7 @@ namespace Anaquin
             }
 
             // Returns the overall precision
-            inline Proportion pc(const ChromoID &cID) const
+            inline Proportion pc(const ChrID &cID) const
             {
                 const auto &tp = data.at(cID).tp;
                 const auto &fp = data.at(cID).fp;
@@ -38,8 +38,8 @@ namespace Anaquin
                 return static_cast<Proportion>(tp) / (tp + fp);
             }
 
-            inline Base length(const ChromoID &cID)  const { return sum(data.at(cID).length);  }
-            inline Base covered(const ChromoID &cID) const { return sum(data.at(cID).covered); }
+            inline Base length(const ChrID &cID)  const { return sum(data.at(cID).length);  }
+            inline Base covered(const ChrID &cID) const { return sum(data.at(cID).covered); }
             
             struct Data
             {
@@ -55,7 +55,7 @@ namespace Anaquin
                 SequinHist hist;                
             };
             
-            std::map<ChromoID, Data> data;
+            std::map<ChrID, Data> data;
 
             // Absolute detection limit
             Limit limit;

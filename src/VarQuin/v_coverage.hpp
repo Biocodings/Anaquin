@@ -11,7 +11,7 @@ namespace Anaquin
         struct Options : public AnalyzerOptions
         {
             // The endogenous chromosome to be compared with. Optional.
-            ChromoID endoID;
+            ChrID endoID;
         };
 
         struct Stats
