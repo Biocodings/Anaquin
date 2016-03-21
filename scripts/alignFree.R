@@ -1,6 +1,6 @@
 
 # Mapping for transformed k-mers
-kmerMap <- '/Users/tedwong/Desktop/kTest/index.mapping'
+kmerMap <- '/Users/tedwong/Sources/QA/data/FusQuin/AFU011.v032.map'
 
 # Generated abundance
 kmerAbund <- '/Users/tedwong/Desktop/kTest/output/matched.kmers'
@@ -54,7 +54,7 @@ kmerSeq$abund <- apply(kmerSeq, 1, f1)
 # 4: Aggregate into each individual sequin
 #
 
-r <- aggregate(kmerSeq$abund, list(kmerSeq$seq), FUN=mean)
+r <- aggregate(kmerSeq$abund, list(kmerSeq$seq), FUN=sum)
 
 #
 # 5: Read mixture file for sequins

@@ -11,6 +11,7 @@ struct Node
     Node(char base) : base(base) {}
     
     char base;
+    int  pos;
 
     Node *next = nullptr;
     Node *prev = nullptr;
@@ -28,8 +29,10 @@ struct ModifedVCF : public ParserVCF::Data
         this->l = d.l;
         this->ref = d.ref;
         this->alt = d.alt;
+        orgPos = this->l.start;
     }
     
+    Base orgPos = 0;
     Base newPos = 0;
 };
 
@@ -41,7 +44,8 @@ std::pair<Node *, Node *> createList(const std::string &str)
     for (auto i = 1; i < str.length(); i++)
     {
         Node *node = new Node(str[i]);
-     
+        node->pos  = i+1; // This is only used for testing
+        
         prev->next = node;
         node->prev = prev;
         
@@ -75,11 +79,18 @@ static void writeBegin(const std::string &file, const ChrID &chrID, const std::p
     f << ">" << chrID << std::endl;
     
     auto node = startEnd.first;
-    
+    int i = 0;
+
     while (node)
     {
         f << node->base;
         node = node->next;
+        
+        if (i++ == 60)
+        {
+            i = 0;
+            f << std::endl;
+        }
     }
     
     f.close();
@@ -103,15 +114,81 @@ static void writeEnd(const std::string &file, const ChrID &chrID, const std::pai
     f.close();
 }
 
-void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, const std::string &str, std::map<Base, ModifedVCF> &vars)
+static void checkSNP(const std::pair<Node *, Node *> &startEnd, const std::string &str, const std::map<Base, ModifedVCF> &vars, bool allowAlt=false)
 {
-    auto n = 0;
-    auto i = str.length() - 1;
+    auto i = str.length();
     auto node = startEnd.second;
     
     while (node)
     {
-        if (n++ / 1000)
+        if (vars.count(i))
+        {
+            const auto &var = vars.at(i);
+            
+            switch (var.type())
+            {
+                case VarType::SNP:
+                {
+                    assert(node->pos == i);
+                    assert(var.ref.size() == 1);
+                    
+                    if (!allowAlt)
+                    {
+                        assert(var.alt.size() == 1 && std::toupper(node->base) == std::toupper(var.ref[0]));
+                    }
+                    else
+                    {
+                        assert(var.alt.size() == 1 && std::toupper(node->base) == std::toupper(var.alt[0]));
+                    }
+                    
+                    break;
+                }
+                
+                default : { break; }
+            }
+        }
+        
+        i--;
+        node = node->prev;
+    }
+}
+
+static Base count(const std::pair<Node *, Node *> &startEnd)
+{
+    auto n = 1;
+    auto node = startEnd.first;
+    
+    while (node)
+    {
+        n++;
+        node = node->next;
+    }
+
+    return n;
+}
+
+// n is base 1
+static char fetchBase(const std::pair<Node *, Node *> &startEnd, int n)
+{
+    auto node = startEnd.first;
+
+    for (auto i = 1; i < n; i++)
+    {
+        node = node->next;
+    }
+    
+    return node->base;
+}
+
+void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, const std::string &str, std::map<Base, ModifedVCF> &vars)
+{
+    auto n = 0;
+    auto i = str.length();
+    auto node = startEnd.second;
+    
+    while (node)
+    {
+        if (!((n++) % 10000000))
         {
             std::cout << n << "/" << str.length() << std::endl;
         }
@@ -125,8 +202,15 @@ void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, con
             {
                 case VarType::SNP:
                 {
-                    assert(var.alt.size() == 1 && node->base == var.ref[0]);
+                    // Let's check the base before substitution
+                    assert(std::toupper(fetchBase(startEnd, (int)i)) == std::toupper(var.ref[0]));
+                    
+                    assert(var.alt.size() == 1 && std::toupper(node->base) == std::toupper(var.ref[0]));
                     node->base = var.alt[0];
+
+                    // Let's check the base after substitution
+                    assert(std::toupper(fetchBase(startEnd, (int)i)) == std::toupper(var.alt[0]));
+                    
                     break;
                 }
                     
@@ -189,6 +273,8 @@ void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, con
                         }
                     }
                     
+                   // node = startEnd.first;
+                    
                     break;
                 }
             }
@@ -227,6 +313,9 @@ void readVCF(const std::string &file, const ChrID &chrID, std::map<Base, Modifed
         if (d.chrID == chrID)
         {
             vars[d.l.start] = ModifedVCF(d);
+
+            assert(!vars[d.l.start].ref.empty());
+            assert(!vars[d.l.start].alt.empty());
         }
     });
     
@@ -234,20 +323,51 @@ void readVCF(const std::string &file, const ChrID &chrID, std::map<Base, Modifed
     assert(!vars.empty());
 }
 
-static void writeVCF(const std::string &file, const std::map<Base, ModifedVCF> &vars)
+static void writeBed(const std::string &file, const std::map<Base, ModifedVCF> &vars, const std::string &chrID)
 {
     std::ofstream f;
     f.open(file);
 
-    f << "##CHROM POS     ID        REF ALT\n" << std::endl;
-
+    std::vector<ModifedVCF> x;
+    
     for (const auto &var : vars)
     {
-        f << (boost::format("%1%\t%2%\t%3%\t%4%\t%5%\n") % "chrT"
-                                                         % var.second.newPos
-                                                         % var.second.l.start
-                                                         % var.second.ref
-                                                         % var.second.alt).str();
+        x.push_back(var.second);
+    }
+    
+    std::sort(x.begin(), x.end());
+    
+    for (const auto &var : x)
+    {
+        f << (boost::format("%1%\t%2%\t%3%\t%4%\n") % chrID
+                                                    % var.newPos
+                                                    % var.newPos
+                                                    % (std::to_string(var.orgPos) + "_" + var.ref + "_" + var.alt)).str();
+    }
+    
+    f.close();
+}
+
+static void writeOldBed(const std::string &file, const std::map<Base, ModifedVCF> &vars, const std::string &chrID)
+{
+    std::ofstream f;
+    f.open(file);
+    
+    std::vector<ModifedVCF> x;
+    
+    for (const auto &var : vars)
+    {
+        x.push_back(var.second);
+    }
+    
+    std::sort(x.begin(), x.end());
+    
+    for (const auto &var : x)
+    {
+        f << (boost::format("%1%\t%2%\t%3%\t%4%\n") % chrID
+                                                    % var.l.start
+                                                    % var.l.start
+                                                    % (std::to_string(var.orgPos) + "_" + var.ref + "_" + var.alt)).str();
     }
     
     f.close();
@@ -344,8 +464,13 @@ int main(int argc, const char * argv[])
 
     std::cout << "Linked-list created" << std::endl;
     
-    const auto n_vars = vars.size();
+    //const auto n_vars = vars.size();
+
+    writeBegin("origGenome.fa", chrID, nodes);
+    writeOldBed("origGenome.bed", vars,  chrID);
     
+    //checkSNP(nodes, seq, vars);
+
     FastaAlternateReferenceMaker(nodes, seq, vars);
 
     //if (vars.size() != n_vars)
@@ -354,9 +479,17 @@ int main(int argc, const char * argv[])
     //}
     
     // Length of the reference sequence
-    const auto n = seq.length();
-    
+    const auto n = count(nodes);
+
     std::cout << "Number of bases: " << n << std::endl;
+
+    /*
+     * Generating a FASTA file for the variant genome.
+     */
+    
+    writeBegin("varGenome.fa", chrID, nodes);
+    writeOldBed("varGenome.bed", vars, chrID);
+    std::cout << "Generated FASTA for modified genome: varGenome.fa" << std::endl;
 
     /*
      * Generating list of variants after flipping. This is only possible because we know the size of the chromosome.
@@ -371,23 +504,23 @@ int main(int argc, const char * argv[])
             case VarType::SNP:
             {
                 // What's the position of the SNP after reversing? It's n-(i+1)
-                var.second.newPos = n - (pos+1);
+                var.second.newPos = n-pos;
                 
                 break;
             }
-                
+
             case VarType::Insertion:
             {
                 // Number of characters inserted
                 const auto offset = var.second.alt.size() - var.second.ref.size();
                 
-                var.second.newPos = n-(pos+1)-offset;
+                var.second.newPos = n-pos-offset;
                 break;
             }
 
             case VarType::Deletion:
             {
-                var.second.newPos = n-(pos+1);
+                var.second.newPos = n-pos;
                 break;
             }
         }
@@ -398,25 +531,18 @@ int main(int argc, const char * argv[])
      */
 
     /*
-     * Generating a FASTA file for the variant genome.
-     */
-    
-    writeBegin("genome_with_vars.fa", chrID, nodes);
-    std::cout << "Generated FASTA for modified genome: genome_with_vars.fa" << std::endl;
-    
-    /*
      * Generating a FASTA file for the flipped genome
      */
     
-    writeEnd("flipped_genome_with_vars.fa", chrID, nodes);
-    std::cout << "Generated FASTA for flipped genome: flipped_genome_with_vars.fa" << std::endl;
+    writeEnd("flipGenome.fa", chrID, nodes);
+    std::cout << "Generated FASTA for flipped genome: flipGenome.fa" << std::endl;
 
     /*
      * Generating VCF file for the flipped genome
      */
     
-    writeVCF("flipped_vars.vcf", vars);
-    std::cout << "Generated VCF for flipped genome: flipped_vars.vcf" << std::endl;
+    writeBed("flipGenome.bed", vars, chrID);
+    std::cout << "Generated BED for flipped genome: flipGenome.bed" << std::endl;
     
     clock_t end = clock();
     std::cout << "Completed in: " << double(end - begin) / CLOCKS_PER_SEC << "s" << std::endl;
