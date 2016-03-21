@@ -340,10 +340,34 @@ alleleFreq <- function(data, ids)
 #                                                      #
 ########################################################
 
+normalFusion <- function(data)
+{
+    stopifnot(class(data) == 'FusQuin' | class(data) == 'FusMixture')
+    
+    if (class(data) == 'FusQuin')
+    {
+        data <- data$mix
+    }
+
+    require(dplyr)
+
+    x <- mix$seqs[mix$seqs$label!='T',]
+    x$names <- row.names(x)
+    
+    setDT(x)[, Grp:= .GRP, label]
+    x <- dcast(x[, N:= 1:.N, label], N~Grp, value.var=c('names', 'abund'), sep='')[,N:= NULL][]
+    x$abund <- x$abund1 / x$abund2
+        
+    return (data.frame(x))
+}
+
 normalToFusion <- function(names)
 {
     return (cat('F', substr(names, 2, nchar(names)), sep=''))
 }
+
+
+
 
 ########################################################
 #                                                      #

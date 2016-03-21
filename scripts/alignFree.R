@@ -61,6 +61,32 @@ r <- aggregate(kmerSeq$abund, list(kmerSeq$seq), FUN=mean)
 #
 
 mix <- loadMixture.FusQuin()
+merged <- normalFusion(mix)
+
+merged$m_abund1 <- NA
+merged$m_abund2 <- NA
+
+for (i in 1:nrow(r))
+{
+    row <- r[i,]
+    a <- row$Group.1
+
+    if (nrow(merged[merged$names1==a,]) > 0)
+    {
+        merged[merged$names1==a,]$m_abund1 <- row$x
+    }
+    else if (nrow(merged[merged$names2==a,]) > 0)
+    {
+        merged[merged$names2==a,]$m_abund2 <- row$x
+    }
+    else
+    {
+        stop ('????')
+    }
+}
+
+merged <- merged[!is.na(merged$m_abund1),]
+merged$measred <- merged$m_abund1 / merged$m_abund2
 
 
 
