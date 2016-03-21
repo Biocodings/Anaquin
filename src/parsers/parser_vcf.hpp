@@ -107,44 +107,45 @@ namespace Anaquin
                 
                 std::vector<Sequence> alts;
                 Tokens::split(fields[Field::ALT], ",", alts);
-                
+
+                for (auto i = 0; i < alts.size(); i++)
+                {
+                    v.alt = alts[i];
+/*
+                    Tokens::split(fields[Field::FORMAT_DATA + i], ":", t);
+                    assert(t.size() == formats.size());
+                    
+                    for (auto j = 0; j < t.size(); j++)
+                    {
+                        if (formats[j] == "GT")
+                        {
+                            v.gt = allele.at(t[j]);
+                        }
+                        else if (formats[j] == "AD")
+                        {
+                            std::vector<std::string> tokens;
+                            
+                            // Eg: 143,16 or 143
+                            Tokens::split(t[j], ",", tokens);
+                            
+                            assert(tokens.size() == 1 || tokens.size() == 2);
+                            
+                            if (tokens.size() == 2)
+                            {
+                                v.dp_r = stod(tokens[0]);
+                                v.dp_a = stod(tokens[1]);
+                            }
+                            else
+                            {
+                                v.dp_r = stod(tokens[0]);
+                                v.dp_a = stod(tokens[0]);
+                            }
+                        }
+                    }
+*/
+                }
+
                 c(v, p);
-                
-//                for (auto i = 0; i < alts.size(); i++)
-//                {
-//                    v.alt = alts[i];
-//                    
-//                    Tokens::split(fields[Field::FORMAT_DATA + i], ":", t);
-//                    assert(t.size() == formats.size());
-//                    
-//                    for (auto j = 0; j < t.size(); j++)
-//                    {
-//                        if (formats[j] == "GT")
-//                        {
-//                            v.gt = allele.at(t[j]);
-//                        }
-//                        else if (formats[j] == "AD")
-//                        {
-//                            std::vector<std::string> tokens;
-//                            
-//                            // Eg: 143,16 or 143
-//                            Tokens::split(t[j], ",", tokens);
-//                            
-//                            assert(tokens.size() == 1 || tokens.size() == 2);
-//                            
-//                            if (tokens.size() == 2)
-//                            {
-//                                v.dp_r = stod(tokens[0]);
-//                                v.dp_a = stod(tokens[1]);
-//                            }
-//                            else
-//                            {
-//                                v.dp_r = stod(tokens[0]);
-//                                v.dp_a = stod(tokens[0]);
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
     };

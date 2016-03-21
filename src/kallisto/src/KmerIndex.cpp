@@ -182,7 +182,7 @@ void KmerIndex::BuildTranscripts(const ProgramOptions& opt) {
   //BuildEdges(opt);
     
     std::ofstream writer;
-    writer.open ("index.mapping");
+    writer.open ("AFU011.v032.map");
     
     for (const auto &i : __kmer2Twin__)
     {
