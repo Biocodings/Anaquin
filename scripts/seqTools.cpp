@@ -167,7 +167,6 @@ static Base count(const std::pair<Node *, Node *> &startEnd)
     return n;
 }
 
-// n is base 1
 static char fetchBase(const std::pair<Node *, Node *> &startEnd, int n)
 {
     auto node = startEnd.first;
@@ -426,10 +425,9 @@ static std::pair<std::string, std::map<Base, ModifedVCF>> createTestData()
  *
  *    Eg: seqTools chr21.fa chr21.vcf chr21
  *
- *
- *    g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src -I ~/Sources/SS seqTools.cpp
- *    g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src ~/Sources/QA/src/data/reader.cpp
- *    g++ *.o -o seqTools
+ *        g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src -I ~/Sources/SS seqTools.cpp
+ *        g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src ~/Sources/QA/src/data/reader.cpp
+ *        g++ *.o -o seqTools
  */
 
 int main(int argc, const char * argv[])
@@ -437,11 +435,11 @@ int main(int argc, const char * argv[])
     std::string seq;
     std::map<Base, ModifedVCF> vars;
 
-    clock_t begin = clock();
-    
     const auto gFile = argv[1];
     const auto vFile = argv[2];
     const auto chrID = argv[3];
+
+    const auto begin = clock();
 
     std::cout << "Chromosome: " << chrID << std::endl;
     
@@ -544,7 +542,7 @@ int main(int argc, const char * argv[])
     writeBed("flipGenome.bed", vars, chrID);
     std::cout << "Generated BED for flipped genome: flipGenome.bed" << std::endl;
     
-    clock_t end = clock();
+    const auto end = clock();
     std::cout << "Completed in: " << double(end - begin) / CLOCKS_PER_SEC << "s" << std::endl;
     
     return 0;
