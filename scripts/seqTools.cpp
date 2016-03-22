@@ -432,6 +432,8 @@ static std::pair<std::string, std::map<Base, ModifedVCF>> createTestData()
 
 int main(int argc, const char * argv[])
 {
+    std::cout << "v2.0" << std::endl;
+    
     std::string seq;
     std::map<Base, ModifedVCF> vars;
 
