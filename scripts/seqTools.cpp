@@ -467,30 +467,30 @@ int main(int argc, const char * argv[])
     writeBegin("origGenome.fa", chrID, nodes);
     writeOldBed("origGenome.bed", vars,  chrID);
     
+    std::cout << "Generated: origGenome.fa"  << std::endl;
+    std::cout << "Generated: origGenome.bed" << std::endl;
+    
     //checkSNP(nodes, seq, vars);
 
-    FastaAlternateReferenceMaker(nodes, seq, vars);
+    //FastaAlternateReferenceMaker(nodes, seq, vars);
 
-    //if (vars.size() != n_vars)
-    //{
-    //    throw std::runtime_error("vars.size() != n_vars");
-    //}
-    
-    // Length of the reference sequence
+    // Length of the flipped sequence
     const auto n = count(nodes);
 
-    std::cout << "Number of bases: " << n << std::endl;
+    std::cout << "Number of bases in the flipped sequence: " << n << std::endl;
 
     /*
      * Generating a FASTA file for the variant genome.
      */
     
-    writeBegin("varGenome.fa", chrID, nodes);
-    writeOldBed("varGenome.bed", vars, chrID);
-    std::cout << "Generated FASTA for modified genome: varGenome.fa" << std::endl;
+    writeBegin("/Users/tedwong/Desktop/Ira/varGenome.fa", chrID, nodes);
+    writeOldBed("/Users/tedwong/Desktop/Ira/varGenome.bed", vars, chrID);
+
+    std::cout << "Generated: varGenome.fa"  << std::endl;
+    std::cout << "Generated: varGenome.bed" << std::endl;
 
     /*
-     * Generating list of variants after flipping. This is only possible because we know the size of the chromosome.
+     * Generating the variants after flipping. This is only possible because we know the size of the chromosome.
      */
 
     for (auto &var : vars)
@@ -510,15 +510,23 @@ int main(int argc, const char * argv[])
             case VarType::Insertion:
             {
                 // Number of characters inserted
-                const auto offset = var.second.alt.size() - var.second.ref.size();
+                //const auto offset = var.second.alt.size() - var.second.ref.size();
                 
-                var.second.newPos = n-pos-offset;
+                var.second.newPos = n-pos;
+                
+                std::cout << var.second.newPos << std::endl;
+                
                 break;
             }
 
             case VarType::Deletion:
             {
-                var.second.newPos = n-pos;
+                // Number of characters inserted
+                const auto offset = var.second.ref.size() - var.second.alt.size();
+                
+                // This'll be our new position
+                var.second.newPos = n-pos-offset;
+                
                 break;
             }
         }
@@ -532,15 +540,15 @@ int main(int argc, const char * argv[])
      * Generating a FASTA file for the flipped genome
      */
     
-    writeEnd("flipGenome.fa", chrID, nodes);
-    std::cout << "Generated FASTA for flipped genome: flipGenome.fa" << std::endl;
+    writeEnd("/Users/tedwong/Desktop/Ira/flipGenome.fa", chrID, nodes);
+    std::cout << "Generated: flipGenome.fa" << std::endl;
 
     /*
      * Generating VCF file for the flipped genome
      */
     
-    writeBed("flipGenome.bed", vars, chrID);
-    std::cout << "Generated BED for flipped genome: flipGenome.bed" << std::endl;
+    writeBed("/Users/tedwong/Desktop/Ira/flipGenome.bed", vars, chrID);
+    std::cout << "Generated: flipGenome.bed" << std::endl;
     
     const auto end = clock();
     std::cout << "Completed in: " << double(end - begin) / CLOCKS_PER_SEC << "s" << std::endl;
