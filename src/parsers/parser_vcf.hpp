@@ -11,8 +11,8 @@ namespace Anaquin
 {
     struct ParserVCF
     {
-        typedef Variant Data;
-       
+        typedef CalledVariant Data;
+
         /*
          * Refer to http://samtools.github.io/hts-specs/VCFv4.1.pdf for more details
          */
