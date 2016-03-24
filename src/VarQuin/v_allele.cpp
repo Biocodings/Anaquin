@@ -91,7 +91,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                     case Mutation::Deletion:
                     case Mutation::Insertion: { stats.ind.add(id, known, measured); break; }
                 }
-                
+
                 stats.readR[id] = m.query.readR;
                 stats.readV[id] = m.query.readV;
             }

@@ -72,7 +72,7 @@ LinearModel LinearStats::linear(bool shouldLog) const
             throw std::runtime_error("Failed to perform linear regression. Flat mixture.");
         }
         
-        const auto m = SS::lm(SS::R::data.frame(SS::R::c(d.y), SS::R::c(d.x)));
+        const auto m = SS::linearModel(d.y, d.x);
 
         lm.F     = m.f;
         lm.p     = m.p;

@@ -22,7 +22,7 @@ namespace Anaquin
         Transcript,
     };
     
-    enum VarType
+    enum Mutation
     {
         SNP,
         Insertion,

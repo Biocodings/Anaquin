@@ -1,3 +1,4 @@
+library(data.table)
 
 # Mapping for transformed k-mers
 kmerMap <- '/Users/tedwong/Sources/QA/data/FusQuin/AFU011.v032.map'
@@ -86,7 +87,29 @@ for (i in 1:nrow(r))
 }
 
 merged <- merged[!is.na(merged$m_abund1),]
-merged$measred <- merged$m_abund1 / merged$m_abund2
+merged$measured <- merged$m_abund1 / merged$m_abund2
+
+
+#> merged[log2(merged$measured) <= -5,]
+#names1    names2    abund1   abund2     abund m_abund1 m_abund2      measred     measured
+#4  NG1_10_P2 FG1_10_P2  483.4005   7.5570 63.967249        7    73130 9.571995e-05 9.571995e-05
+#10  NG1_2_P2  FG1_2_P2 1933.5938 483.4005  3.999983       45     9268 4.855416e-03 4.855416e-03
+
+a <- merged[log2(merged$measured) >= -5,]
+x <- log2(a$abund)
+y <- log2(a$measured)
+
+
+#kmerSeq[kmerSeq$seq=='NG1_10_P2'|kmerSeq$seq=='FG1_10_P2',]
+
+#library(ggplot2)
+
+#p <- ggplot(data=a, aes(x=m_abund1, y=m_abund2)) +
+#    geom_point() +
+#    geom_smooth(method='lm', formula=y~x)            +
+#    theme_bw()
+#print(p)
+
 
 
 

@@ -119,7 +119,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
         assert(SS::sum(normalize));
 
         // Fit a linear regression model
-        const auto lm = SS::lm(SS::R::data.frame(SS::R::c(normalize), SS::R::c(expect)));
+        const auto lm = SS::linearModel(normalize, expect);
 
         // Regression slope that we'll correct to 1
         const auto slope = lm.coeffs[1].est;

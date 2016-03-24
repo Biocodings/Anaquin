@@ -12,7 +12,7 @@ namespace Anaquin
         
         inline bool operator<(const Locus &x) const { return l < x; }
 
-        inline VarType type() const
+        inline Mutation type() const
         {
             if (alt[0] == '-')
             {
