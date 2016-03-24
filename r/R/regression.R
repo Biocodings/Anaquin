@@ -20,7 +20,7 @@ lm2str <- function(data)
 #   - Piecewise linear
 #
 
-plotInflection <- function(x, y, method='piecewise', showDetails=FALSE)
+plotLOQ <- function(x, y, method='piecewise', showDetails=FALSE)
 {
     require(ggplot2)
 
@@ -70,8 +70,8 @@ plotInflection <- function(x, y, method='piecewise', showDetails=FALSE)
         # Where this breakpoint occurs
         r$k[i] <<- fit$breaks
 
-        m1 <- fit$lModel  # The left regression model
-        m2 <- fit$rModel  # The right regression model
+        m1 <- fit$lModel # The left regression model
+        m2 <- fit$rModel # The right regression model
 
         sm1 <- summary(m1)
         sm2 <- summary(m2)
