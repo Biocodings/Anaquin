@@ -4,6 +4,7 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
+#include "data/errors.hpp"
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
 #include "data/standard.hpp"
@@ -37,8 +38,7 @@ static unsigned countColumns(const Reader &r)
     return static_cast<unsigned>(n);
 }
 
-template <typename Reference> void readMixture
-                (const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
+template <typename Reference> void readMixture(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
 {
     auto f = [&](const std::string &delim)
     {
@@ -74,20 +74,15 @@ template <typename Reference> void readMixture
 
             return succceed;
         }
-        catch (const std::exception &ex)
+        catch (...)
         {
-            std::cout << ex.what() << std::endl;
-            std::cerr << "[Error]: Error in the mixture file" << std::endl;
-            throw;
+            throw std::runtime_error("[Error]: Error in the mixture file. Please check and try again.");
         }
     };
 
-    if (!f("\t"))
+    if (!f("\t") && !f(","))
     {
-        if (!f(","))
-        {
-            throw std::runtime_error("Failed to read any sequin in the mixture file. A CSV file format is expected. Please check and try again.");
-        }
+        throw std::runtime_error("[Error]: No sequin is found in the mixture file. Please check and try again.");
     }
 }
 
@@ -126,7 +121,7 @@ void Standard::addVar(const Reader &r)
     });
 }
 
-void Standard::addMix(const Reader &r)
+void Standard::addVMix(const Reader &r)
 {
     readMixture(r, r_var, Mix_1, ID_Length_Mix, 2);
 }
@@ -219,13 +214,17 @@ void Standard::addTRef(const Reader &r)
     });
 }
 
-void Standard::addTMix(const Reader &r)
+void Standard::addTSMix(const Reader &r)
 {
-    const auto n = countColumns(r);
+    ASSERT(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
+
     readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
+}
+
+void Standard::addTDMix(const Reader &r)
+{
+    ASSERT(countColumns(r) == 4, "Invalid mixture file. Expected four columns for a double mixture.");
     
-    if (n >= 4)
-    {
-        readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);
-    }
+    readMixture(Reader(r), r_trans, Mix_1, ID_Length_Mix, 2);
+    readMixture(Reader(r), r_trans, Mix_2, ID_Length_Mix, 3);
 }

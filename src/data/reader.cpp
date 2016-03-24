@@ -11,6 +11,9 @@ struct Anaquin::ReaderInternal
 {
     std::string t;
     
+    // For tracking. Defined only for file mode
+    std::string file;
+    
     // Implementation for file
     std::shared_ptr<std::ifstream> f;
 

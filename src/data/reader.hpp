@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 #include "parsers/parser.hpp"
 
 namespace Anaquin

@@ -117,12 +117,12 @@ Scripts PlotROC_F()
 
 Scripts FusionDataMixA()
 {
-    return ToString(data_fusion_MFU007_v013_csv);
+    return ToString(data_FusQuin_MFU007_v013_csv);
 }
 
 Scripts FusionDataRef()
 {
-    return ToString(data_fusion_AFU004_v032_ref);
+    return ToString(data_FusQuin_AFU004_v032_ref);
 }
 
 Scripts PlotExpress_F()
@@ -146,17 +146,17 @@ Scripts PlotLadderAbund()
 
 Scripts LadderDataMixA()
 {
-    return ToString(data_ladder_MLA014_v013_csv);
+    return ToString(data_LadQuin_MLA014_v013_csv);
 }
 
 Scripts LadderDataMixB()
 {
-    return ToString(data_ladder_MLA016_v013_csv);
+    return ToString(data_LadQuin_MLA016_v013_csv);
 }
 
 Scripts LadderDataMixAB()
 {
-    return ToString(data_ladder_MLA020_v013_csv);
+    return ToString(data_LadQuin_MLA020_v013_csv);
 }
 
 /*
@@ -165,12 +165,12 @@ Scripts LadderDataMixAB()
 
 Scripts MetaDataMix()
 {
-    return ToString(data_meta_MME023_v013_csv);
+    return ToString(data_MetaQuin_MME023_v013_csv);
 }
 
 Scripts MetaDataBed()
 {
-    return ToString(data_meta_AME015_v032_bed);
+    return ToString(data_MetaQuin_AME015_v032_bed);
 }
 
 /*
@@ -194,27 +194,27 @@ Scripts PlotLODR_T()
 
 Scripts TransStandGTF()
 {
-    return ToString(data_trans_ATR001_v032_gtf);
+    return ToString(data_TransQuin_ATR001_v032_gtf);
 }
 
 Scripts TransDataMixA()
 {
-    return ToString(data_trans_MTR002_v013_csv);
+    return ToString(data_TransQuin_MTR002_v013_csv);
 }
 
 Scripts TransDataMixB()
 {
-    return ToString(data_trans_MTR003_v013_csv);
+    return ToString(data_TransQuin_MTR003_v013_csv);
 }
 
 Scripts TransDataMixF()
 {
-    return ToString(data_trans_MTR005_v013_csv);
+    return ToString(data_TransQuin_MTR005_v013_csv);
 }
 
 Scripts TransDataMixAB()
 {
-    return ToString(data_trans_MTR004_v013_csv);
+    return ToString(data_TransQuin_MTR004_v013_csv);
 }
 
 /*

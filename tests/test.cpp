@@ -62,7 +62,7 @@ void Test::transA()
 {
     Test::clear();
     Standard::instance().addTRef(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().addTMix(Reader(TransDataMixA(), DataMode::String));
+    Standard::instance().addTSMix(Reader(TransDataMixA(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
@@ -70,7 +70,7 @@ void Test::transB()
 {
     Test::clear();
     Standard::instance().addTRef(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().addTMix(Reader(TransDataMixB(), DataMode::String));
+    Standard::instance().addTSMix(Reader(TransDataMixB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
@@ -78,7 +78,7 @@ void Test::transF()
 {
     Test::clear();
     Standard::instance().addTRef(Reader(TransStandGTF(), DataMode::String));
-    Standard::instance().addTMix(Reader(TransDataMixF(), DataMode::String));
+    Standard::instance().addTSMix(Reader(TransDataMixF(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
@@ -86,7 +86,7 @@ void Test::transAB()
 {
     Test::clear();
     Standard::instance().addTRef(Reader(TransStandGTF(),  DataMode::String));
-    Standard::instance().addTMix(Reader(TransDataMixAB(), DataMode::String));
+    Standard::instance().addTDMix(Reader(TransDataMixAB(), DataMode::String));
     Standard::instance().r_trans.finalize();
 }
 
@@ -95,7 +95,7 @@ void Test::variantA()
     Test::clear();
     Standard::instance().addVar(Reader(VarDataVCF(),  DataMode::String));
     Standard::instance().addStd(Reader(VarDataBed(),  DataMode::String));
-    Standard::instance().addMix(Reader(VarDataMixA(), DataMode::String));
+    Standard::instance().addVMix(Reader(VarDataMixA(), DataMode::String));
     Standard::instance().r_var.finalize();
 }
 
@@ -104,7 +104,7 @@ void Test::variantF()
     Test::clear();
     Standard::instance().addVar(Reader(VarDataVCF(),  DataMode::String));
     Standard::instance().addVar(Reader(VarDataBed(),  DataMode::String));
-    Standard::instance().addMix(Reader(VarDataMixF(), DataMode::String));
+    Standard::instance().addVMix(Reader(VarDataMixF(), DataMode::String));
     Standard::instance().r_var.finalize();
 }
 
@@ -116,7 +116,7 @@ Test Test::test(const std::string &command)
     char *argv[tokens.size() + 1];
 
     argv[0] = new char(10);
-    strcpy(argv[0], "test.exe");
+    strcpy(argv[0], "anaquin");
 
     for (std::size_t i = 0; i < tokens.size(); i++)
     {

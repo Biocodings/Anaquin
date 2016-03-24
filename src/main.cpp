@@ -320,12 +320,21 @@ struct InvalidOptionException : public std::exception
 
 struct InvalidValueException : public std::exception
 {
-    InvalidValueException(const std::string &opt, const std::string &value) : opt(opt), value(value) {}
+    InvalidValueException(const std::string &opt, const std::string &val) : opt(opt), val(val) {}
 
-    const std::string opt, value;
+    const std::string opt, val;
 };
 
-// A mandatory option is missing, for instance, failing to specify the command
+struct NoValueError: public InvalidValueException
+{
+    NoValueError(const std::string &opt) : InvalidValueException(opt, "") {}
+};
+
+struct InvalidToolError : public InvalidValueException
+{
+    InvalidToolError(const std::string &val) : InvalidValueException("-t", val) {}
+};
+
 struct MissingOptionError : public std::exception
 {
     MissingOptionError(const std::string &opt) : opt(opt) {}
@@ -338,57 +347,22 @@ struct MissingOptionError : public std::exception
     const std::string range;
 };
 
-struct MissingInputError     : public std::exception {};
-struct InvalidNegativ30Error : public std::exception {};
-
-struct InvalidToolError : public std::exception
-{
-    InvalidToolError(const std::string &value) : value(value) {}
-
-    std::string value;
-};
-
-struct InvalidInputCountError : std::exception
-{
-    InvalidInputCountError(std::size_t expected, std::size_t actual) : expected(expected), actual(actual) {}
-    
-    // Number of inputs detected
-    std::size_t actual;
-    
-    // Number of inputs expected
-    std::size_t expected;
-};
-
-struct TooLessInputError : std::exception
-{
-    TooLessInputError(std::size_t n) : n(n) {}
-    
-    // Number of inputs expected
-    std::size_t n;
-};
-
 struct TooManyOptionsError : public std::runtime_error
 {
     TooManyOptionsError(const std::string &msg) : std::runtime_error(msg) {}
-};
-
-struct InvalidFilterError : public std::runtime_error
-{
-    InvalidFilterError(const std::string &msg) : std::runtime_error(msg) {}
 };
 
 /*
  * Argument options
  */
 
-static const char *short_options = "";
+static const char *short_options = ":";
 
 static const struct option long_options[] =
 {
     { "v", no_argument, 0, OPT_VERSION },
 
     { "t",    required_argument, 0, OPT_TOOL },
-    { "tool", required_argument, 0, OPT_TOOL },
 
     { "sign",    required_argument, 0, OPT_SIGN    },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
@@ -507,8 +481,8 @@ static void printError(const std::string &msg)
 {
     std::cerr << std::endl;
     std::cerr << "*********************************************************************" << std::endl;
-    std::cout << msg << std::endl;
-    std::cerr << "*********************************************************************" << std::endl;
+    std::cerr << msg << std::endl;
+    std::cerr << "*********************************************************************" << std::endl << std::endl;
 }
 
 static void readFilters(const FileName &file)
@@ -841,17 +815,24 @@ void parse(int argc, char ** argv)
         }
     }
 
+    // Prevent error message to stderr
+    opterr = NULL;
+    
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
-        if (next < OPT_TOOL)
+        if (next == ':')
+        {
+            throw NoValueError(argv[n+1]);
+        }
+        else if (next < OPT_TOOL)
         {
             throw InvalidOptionException(argv[n+1]);
         }
-        
+
         opts.push_back(next);
 
         // Whether this option has an value
-        const bool hasValue = optarg;
+        const auto hasValue = optarg;
         
         n += hasValue ? 2 : 1;
         
@@ -1040,7 +1021,7 @@ void parse(int argc, char ** argv)
 
         if (!required.empty())
         {
-            throw MissingOptionError(optToStr(*required.begin()));
+            throw MissingOptionError("-" + optToStr(*required.begin()));
         }
     }
 
@@ -1069,18 +1050,19 @@ void parse(int argc, char ** argv)
 
             if (_p.tool != TOOL_T_IGV)
             {
+                addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
+                
                 switch (_p.tool)
                 {
-                    case TOOL_T_COVERAGE:
+                    case TOOL_T_DIFF:
                     {
-                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
+                        addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     default:
                     {
-                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
-                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
+                        addMix(std::bind(&Standard::addTSMix, &s, std::placeholders::_1));
                         break;
                     }
                 }
@@ -1386,7 +1368,7 @@ void parse(int argc, char ** argv)
                     default: { break; }
                 }
 
-                addMix(std::bind(&Standard::addMix, &s, std::placeholders::_1));
+                addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                 Standard::instance().r_var.finalize();
             }
 
@@ -1554,9 +1536,13 @@ int parse_options(int argc, char ** argv)
         parse(argc, argv);
         return 0;
     }
+    catch (const NoValueError &ex)
+    {
+        printError("Invalid command. Need to specify " + ex.opt + ".");
+    }
     catch (const InvalidToolError &ex)
     {
-        printError("Invalid tool: " + ex.value + ". Please refer to the online documenation at http://www.anaquin.org for correct usage.");
+        printError("Invalid tool: " + ex.val + ". Please refer to the online documenation at http://www.anaquin.org for correct usage.");
     }
     catch (const InvalidOptionException &ex)
     {
@@ -1564,24 +1550,16 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidValueException &ex)
     {
-        printError((boost::format("%1% not expected for option -%2%. Please check and try again.") % ex.opt % ex.value).str());
+        printError((boost::format("%1% not expected for option -%2%. Please check and try again.") % ex.opt % ex.val).str());
     }
     catch (const MissingOptionError &ex)
     {
-        const auto format = "Mandatory option is missing. Please specify -%1%.";
+        const auto format = "Mandatory option is missing. Please specify %1%.";
         printError((boost::format(format) % ex.opt).str());
-    }
-    catch (const MissingInputError &ex)
-    {
-        printError("No input file given. Please give an input file and try again.");
     }
     catch (const InvalidFileError &ex)
     {
         printError((boost::format("%1%%2%") % "Invalid file: " % ex.file).str());
-    }
-    catch (const InvalidFilterError &ex)
-    {
-        printError((boost::format("%1%%2%") % "Invalid filter: " % ex.what()).str());
     }
     catch (const std::exception &ex)
     {

@@ -12,7 +12,7 @@ namespace Anaquin
         {
             Caller caller;
         };
-        
+
         struct Stats : public MappingStats, public SequinStats, public VariantStats
         {
             // Statistics for all variants

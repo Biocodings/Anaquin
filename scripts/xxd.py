@@ -25,17 +25,17 @@ data  = [ 'data/manual.txt',
           'src/r/plotROC_F.R',
           'src/r/plotExpress_F.R',
 
-          'data/fusion/AFU004.v032.ref',
-          'data/fusion/AFU005.v032.bed',
-          'data/fusion/MFU007.v013.csv',
+          'data/FusQuin/AFU004.v032.ref',
+          'data/FusQuin/AFU005.v032.bed',
+          'data/FusQuin/MFU007.v013.csv',
 
           # ------- Ladder -------
 
           'src/r/plotLadderAbund.R',
 
-          'data/ladder/MLA014.v013.csv',
-          'data/ladder/MLA016.v013.csv',
-          'data/ladder/MLA020.v013.csv',
+          'data/LadQuin/MLA014.v013.csv',
+          'data/LadQuin/MLA016.v013.csv',
+          'data/LadQuin/MLA020.v013.csv',
            
           # ---------- Transcriptome ----------
 
@@ -43,17 +43,17 @@ data  = [ 'data/manual.txt',
           'src/r/plotLODR_T.R',
           'src/r/plotScatter_T.R',
 
-          'data/trans/ATR001.v032.gtf',
-          'data/trans/MTR002.v013.csv',
-          'data/trans/MTR003.v013.csv',
-          'data/trans/MTR004.v013.csv',          
-          'data/trans/MTR005.v013.csv',
+          'data/TransQuin/ATR001.v032.gtf',
+          'data/TransQuin/MTR002.v013.csv',
+          'data/TransQuin/MTR003.v013.csv',
+          'data/TransQuin/MTR004.v013.csv',          
+          'data/TransQuin/MTR005.v013.csv',
 
           # ---------- META ----------
 
-          'data/meta/AME013.v032.fa',
-          'data/meta/MME023.v013.csv',
-          'data/meta/AME015.v032.bed',
+          'data/MetaQuin/AME013.v032.fa',
+          'data/MetaQuin/MME023.v013.csv',
+          'data/MetaQuin/AME015.v032.bed',
 
           # ---------- Variant ----------
 

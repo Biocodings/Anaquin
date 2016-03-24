@@ -1,61 +1,59 @@
-Program: anaquin (Tools for sequin data analysis) - www.anaquin.org
-Version: 1.0.00
+Anaquin (Tools for sequin data analysis) - www.sequins.xyz
 
-  Please visit our website for the latest information including the latest documentation
+Version: 1.1.1
+
+  Please visit our website for more information. Developed by Ted Wong & Tim Mercer, Garvan Institute of Medical Research.
 
   General options
  
        -t <tool>
-              Execute a data analysis tool.
-
-       -h
-              Print a help message and exit.
+            Execute a data analysis tool.
 
        -v
-              Display version information.
+            Display version information.
 
        -o <directory> = output
-              All output files will be saved in the directory. If not provided the default will be <output>.
+            All output files will be saved in the directory. The default is "output".
 
-  Analysis options
+  Analysis tools
 
-       Usage:   anaquin -t <tool> [options]
+       Usage: anaquin -t <tool> [options]
 
        Transcriptome Analysis (TransQuin)
-	   ----------------------------------
+       ----------------------------------
 	   
-	   TransAlign
-	   TransAssembly
-	   TransIGV
-	   TransNorm
-	   TransExpress
-	   TransDifferent
+       TransAlign
+       TransAssembly
+       TransIGV
+       TransNorm
+       TransExpress
+       TransDifferent
 	   
-	   Variant Analysis (VarQuin)
-	   --------------------------
+       Variant Analysis (VarQuin)
+       --------------------------
 	   
-	   VarAlign
-	   VarAllele
-	   VarIGV
-	   VarDiscover
+       VarAlign
+       VarAllele
+       VarIGV
+       VarDiscover
 
-	   Fusion Analysis (FusQuin)
-	   -------------------------
+       Fusion Analysis (FusQuin)
+       -------------------------
 	   
-	   FusionDiscover
-	   FusionExpress
-	   FusionIGV
+       FusionDiscover
+       FusionExpress
+       FusionIGV
 	   
-	   Metageonomic Analysis (MetaQuin)
-	   --------------------------------
+       Metageonomic Analysis (MetaQuin)
+       --------------------------------
 	   
-	   MetaAssembly
-	   MetaAlign
-	   MetaDiff
-	   MetaIGV
+       MetaAssembly
+       MetaAlign
+       MetaDiff
+       MetaIGV
 	   
-	   Ladder Analysis (LadderQuin)
-	   ----------------------------
+       Ladder Analysis (LadderQuin)
+       ----------------------------
 	   
-	   LadderQuin
-	   LadderDifferent
+       LadderAbund
+       LadderDiff

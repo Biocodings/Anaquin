@@ -13,6 +13,7 @@ namespace Anaquin
     class Standard
     {
         public:
+
             static Standard& instance(bool reload = false)
             {
                 static Standard s;
@@ -35,8 +36,8 @@ namespace Anaquin
             // Add a reference annotation
             void addTRef(const Reader &);
 
-            // Add a mixture file for transcriptome
-            void addTMix(const Reader &);
+            void addTSMix(const Reader &);
+            void addTDMix(const Reader &);
 
             TransRef r_trans;
 
@@ -44,7 +45,7 @@ namespace Anaquin
              * ---------------- Variant analysis ----------------
              */
 
-            void addMix(const Reader &);
+            void addVMix(const Reader &);
         
             // Add known variants
             void addVar(const Reader &);
