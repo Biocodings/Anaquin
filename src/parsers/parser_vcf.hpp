@@ -111,7 +111,7 @@ namespace Anaquin
                 for (auto i = 0; i < alts.size(); i++)
                 {
                     v.alt = alts[i];
-/*
+
                     Tokens::split(fields[Field::FORMAT_DATA + i], ":", t);
                     assert(t.size() == formats.size());
                     
@@ -142,7 +142,6 @@ namespace Anaquin
                             }
                         }
                     }
-*/
                 }
 
                 c(v, p);

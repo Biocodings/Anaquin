@@ -72,7 +72,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                 
                 // Measured coverage is the number of base calls aligned and used in variant calling
                 const auto measured = m.query.alleleFreq();
-
+                
                 /*
                  * Plotting the relative allele frequency that is established by differences
                  * in the concentration of reference and variant DNA standards.
@@ -95,6 +95,10 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                 stats.readR[id] = m.query.readR;
                 stats.readV[id] = m.query.readV;
             }
+        }
+        else
+        {
+            stats.n_endo++;
         }
     });
     

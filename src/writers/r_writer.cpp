@@ -243,7 +243,7 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
 
         // Calcluate the inflect point after log-transformation
         const auto inf = stats[i].limitQuant(true);
-        
+
         // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 

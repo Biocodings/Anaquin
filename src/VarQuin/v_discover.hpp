@@ -29,7 +29,7 @@ namespace Anaquin
                 {
                     return std::count_if(data.begin(), data.end(), [&](const ChrTData &d)
                     {
-                        return (d.query.type() == type && d.query.pval <= sign) ? 1 : 0;
+                        return (d.query.type() == type && d.query.p <= sign) ? 1 : 0;
                     });
                 }
 

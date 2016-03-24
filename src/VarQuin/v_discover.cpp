@@ -29,7 +29,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             {
                 stats.hist.at(m.match->id)++;
                 
-                if (m.query.pval <= o.sign)
+                if (m.query.p <= o.sign)
                 {
                     chrT.tps.push_back(m);
                 }
@@ -46,7 +46,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 }
                 else
                 {
-                    if (m.query.pval <= o.sign)
+                    if (m.query.p <= o.sign)
                     {
                         chrT.fps.push_back(m);
                     }
@@ -157,7 +157,7 @@ static void writeClass(const FileName &file,
             o.writer->write((boost::format(format) % i.seq->id
                                                    % i.query.l.start
                                                    % label
-                                                   % i.query.pval
+                                                   % i.query.p
                                                    % i.query.readR
                                                    % i.query.readV
                                                    % i.eFold

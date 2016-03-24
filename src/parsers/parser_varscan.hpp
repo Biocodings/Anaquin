@@ -73,11 +73,11 @@ namespace Anaquin
                 
                 try
                 {
-                    d.pval = stod(toks[Pvalue]);
+                    d.p = stod(toks[Pvalue]);
                 }
                 catch (...)
                 {
-                    d.pval = 0.0;
+                    d.p = 0.0;
                 }
 
                 f(d, p);

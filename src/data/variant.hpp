@@ -1,6 +1,7 @@
 #ifndef VARIANT_HPP
 #define VARIANT_HPP
 
+#include <iostream>
 #include <data/locus.hpp>
 #include <data/biology.hpp>
 
@@ -38,7 +39,7 @@ namespace Anaquin
 
         inline Base diff() const
         {
-            return static_cast<Base>(abs(ref.size() - alt.size()));
+            return labs((Base)ref.size() - (Base)alt.size());
         }
 
         // Eg: chrT
@@ -77,13 +78,21 @@ namespace Anaquin
     {
         inline Proportion alleleFreq() const
         {
-            return static_cast<Proportion>(readV) / (readR + readV);
+            if (readR && readV)
+            {
+                return static_cast<Proportion>(readV) / (readR + readV);
+            }
+
+            return static_cast<Proportion>(dp_a) / dp_r;
         }
     
-        Probability pval;
+        Probability p;
+
+        // Number of reads for the reference
+        Counts readR = 0;
         
-        // Number of reads for the reference and allele
-        Counts readR, readV;
+        // Number of reads for the variant
+        Counts readV = 0;
     };
 }
 
