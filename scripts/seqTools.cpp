@@ -852,14 +852,14 @@ static void deletionByScript(const FileName &genome, const FileName &bed, Base f
      */
     
     std::cout << "Merging..." << std::endl;
-    exec("mergeMultipleTab.pl /tmp/deletions.A.tab.fa deletions.D.tab.fa | sed s'/\t//2' > deletions.AD.tab.fa");
+    exec("mergeMultipleTab.pl /tmp/deletions.A.tab.fa /tmp/deletions.D.tab.fa | sed s'/\t//2' > deletions.AD.tab.fa");
     
     /*
      * Merging C and D
      */
     
     std::cout << "Merging..." << std::endl;
-    exec("mergeMultipleTab.pl /tmp/deletions.C.tab.fa deletions.D.tab.fa | sed s'/\t//2' > deletions.CD.tab.fa");
+    exec("mergeMultipleTab.pl /tmp/deletions.C.tab.fa /tmp/deletions.D.tab.fa | sed s'/\t//2' > deletions.CD.tab.fa");
 
     std::cout << "Please check: deletions.AD.tab.fa" << std::endl;
     std::cout << "Please check: deletions.CD.tab.fa" << std::endl;
