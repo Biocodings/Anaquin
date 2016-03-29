@@ -1041,6 +1041,7 @@ int main(int argc, const char * argv[])
     if (argc == 1)
     {
         std::cout << "seqTools deletion <genome (eg: hg38.fa)>  <deletion bed (eg: deletion.bed)> <flanking (eg: 300)" << std::endl;
+        std::cout << "seqTools invert <genome (eg: hg38.fa)>  <deletion bed (eg: deletion.bed)> <flanking (eg: 300)" << std::endl;
     }
     else
     {
@@ -1056,7 +1057,7 @@ int main(int argc, const char * argv[])
         }
         else if (mode == "inversion")
         {
-            inversion(argv[2], argv[3], argv[4], argv[5]);
+            invertByScript(argv[2], argv[3], std::stoi(argv[4]));
         }
     }
     
