@@ -845,7 +845,7 @@ static void deletionByScript(const FileName &genome, const FileName &bed, Base f
      */
     
     std::cout << "Merging..." << std::endl;
-    exec("mergeMultipleTab.pl /tmp/deletions.A.tab.fa /tmp/deletions.B.tab.fa | sed s'/\t//2' > /tmp/deletions.AB.tab.fa");
+    exec("mergeMultipleTab.pl /tmp/deletions.A.tab.fa /tmp/deletions.B.tab.fa | sed s'/\t//2' > deletions.AB.tab.fa");
     
     /*
      * Merging A and D
@@ -861,6 +861,7 @@ static void deletionByScript(const FileName &genome, const FileName &bed, Base f
     std::cout << "Merging..." << std::endl;
     exec("mergeMultipleTab.pl /tmp/deletions.C.tab.fa /tmp/deletions.D.tab.fa | sed s'/\t//2' > deletions.CD.tab.fa");
 
+    std::cout << "Please check: deletions.AB.tab.fa" << std::endl;    
     std::cout << "Please check: deletions.AD.tab.fa" << std::endl;
     std::cout << "Please check: deletions.CD.tab.fa" << std::endl;
 }
