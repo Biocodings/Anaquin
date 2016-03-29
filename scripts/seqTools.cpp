@@ -775,6 +775,7 @@ static void inversion(const FileName &gFile,
     std::cout << "Generated: sequins.invertion.B_D.rev.fa" << std::endl;
 }
 
+// Eg: seqTools deletion hg38.fa Personalis.deletions.large.bed 300
 static void deletionByScript(const FileName &genome, const FileName &bed, Base flank)
 {
     const auto fs = std::to_string(flank);
@@ -790,6 +791,8 @@ static void deletionByScript(const FileName &genome, const FileName &bed, Base f
      * Generate flanking regions
      */
     
+    std::cout << "Generating flanking regions" << std::endl;
+
     auto x = (boost::format("bedEnds2.sh -%1% %2% /tmp/deletions.start.bed /tmp/deletions.AB.bed")
                                     % flank
                                     % (flank - 1)).str();
@@ -799,11 +802,13 @@ static void deletionByScript(const FileName &genome, const FileName &bed, Base f
                                     % (flank - 1)).str();
     exec(x);
     exec(y);
-    
+
     /*
      * Extract the flanking sequence from the genome
      */
 
+    std::cout << "Extracting from the genome..." << std::endl;
+    
     exec("sequenceForBed.pl -case=upper " + genome + " /tmp/deletions.AB.bed > /tmp/deletions.AB.tab.fa");
     exec("sequenceForBed.pl -case=upper " + genome + " /tmp/deletions.CD.bed > /tmp/deletions.CD.tab.fa");
 
@@ -811,43 +816,53 @@ static void deletionByScript(const FileName &genome, const FileName &bed, Base f
      * Break the sequence from AB to A
      */
     
+    std::cout << "Generating A..." << std::endl;
     exec("fetchSubsequence.pl -end=5 -length=" + fs + " /tmp/deletions.AB.tab.fa > /tmp/deletions.A.tab.fa");
 
     /*
      * Break the sequence from AB to B
      */
     
+    std::cout << "Generating B..." << std::endl;
     exec("fetchSubsequence.pl -end=3 -length=" + fs + " /tmp/deletions.AB.tab.fa > /tmp/deletions.B.tab.fa");
     
     /*
      * Break the sequence from CD to C
      */
     
+    std::cout << "Generating C..." << std::endl;
     exec("fetchSubsequence.pl -end=5 -length=" + fs + " /tmp/deletions.CD.tab.fa > /tmp/deletions.C.tab.fa");
     
     /*
      * Break the sequence from CD to D
      */
     
+    std::cout << "Generating D..." << std::endl;
     exec("fetchSubsequence.pl -end=3 -length=" + fs + " /tmp/deletions.CD.tab.fa > /tmp/deletions.D.tab.fa");
     
     /*
      * Merging A and B
      */
     
+    std::cout << "Merging..." << std::endl;
     exec("mergeMultipleTab.pl /tmp/deletions.A.tab.fa /tmp/deletions.B.tab.fa | sed s'/\t//2' > /tmp/deletions.AB.tab.fa");
     
     /*
      * Merging A and D
      */
     
+    std::cout << "Merging..." << std::endl;
     exec("mergeMultipleTab.pl deletions.A.tab.fa deletions.D.tab.fa | sed s'/\t//2' > deletions.AD.tab.fa");
     
     /*
      * Merging C and D
      */
     
+    std::cout << "Merging..." << std::endl;
     exec("mergeMultipleTab.pl deletions.C.tab.fa deletions.D.tab.fa | sed s'/\t//2' > deletions.CD.tab.fa");
+
+    std::cout << "Please check: deletions.AD.tab.fa" << std::endl;
+    std::cout << "Please check: deletions.CD.tab.fa" << std::endl;
 }
 
 /*
