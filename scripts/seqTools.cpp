@@ -1055,7 +1055,7 @@ int main(int argc, const char * argv[])
         {
             deletionByScript(argv[2], argv[3], std::stoi(argv[4]));
         }
-        else if (mode == "inversion")
+        else if (mode == "invert")
         {
             invertByScript(argv[2], argv[3], std::stoi(argv[4]));
         }
