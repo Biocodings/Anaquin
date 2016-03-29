@@ -90,7 +90,7 @@ void Standard::addInters(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_var.addRInterval(f.id, Interval(f.name, f.l));
+        r_var.addRInterval(f.cID, Interval(f.id, f.l));
     });
 }
 
@@ -98,7 +98,7 @@ void Standard::addStd(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_var.addStand(f.name, f.l);
+        r_var.addStand(f.id, f.l);
     });
 }
 
@@ -130,7 +130,7 @@ void Standard::addMRef(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_meta.addStand(f.id, f.l);
+        r_meta.addStand(f.cID, f.l);
     });
 }
 
@@ -165,7 +165,7 @@ void Standard::addFStd(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_fus.addStand(f.name, f.l);
+        r_fus.addStand(f.id, f.l);
     });
 }
 
@@ -173,7 +173,7 @@ void Standard::addFSplice(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_fus.addSplice(f.name, f.l);
+        r_fus.addSplice(f.id, f.l);
     });
 }
 

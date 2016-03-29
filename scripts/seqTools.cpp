@@ -1,7 +1,9 @@
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include <boost/format.hpp>
 #include "parsers/parser_fa.hpp"
+#include "parsers/parser_bed.hpp"
 #include "parsers/parser_vcf.hpp"
 
 using namespace Anaquin;
@@ -24,9 +26,9 @@ struct ModifedVCF : public ParserVCF::Data
     
     ModifedVCF(const ParserVCF::Data &d)
     {
-        this->chrID = d.chrID;
-        this->id = d.id;
-        this->l = d.l;
+        this->cID = d.cID;
+        this->id  = d.id;
+        this->l   = d.l;
         this->ref = d.ref;
         this->alt = d.alt;
         orgPos = this->l.start;
@@ -36,14 +38,36 @@ struct ModifedVCF : public ParserVCF::Data
     Base newPos = 0;
 };
 
-std::pair<Node *, Node *> createList(const std::string &str)
+struct LinkedSequence
+{
+    // Hashing for each base
+    std::map<Base, const Node *> hash;
+
+    Node *start;
+    Node *end;
+};
+
+struct Flanks
+{
+    // Sequence to the left
+    std::string lSeq;
+    
+    // Sequence to the right
+    std::string rSeq;
+};
+
+LinkedSequence createList(const std::string &str)
 {
     Node *start = new Node(str[0]);
     Node *prev  = start;
     
+    LinkedSequence l;
+
     for (auto i = 1; i < str.length(); i++)
     {
         Node *node = new Node(str[i]);
+        l.hash[i] = node;
+
         node->pos  = i+1; // This is only used for testing
         
         prev->next = node;
@@ -52,10 +76,15 @@ std::pair<Node *, Node *> createList(const std::string &str)
         prev = node;
     }
 
-    return std::pair<Node *, Node *>(start, prev);
+    l.start = start;
+    l.end = prev;
+    
+    return l;
+    
+    //return std::pair<Node *, Node *>(start, prev);
 }
 
-Base print(const std::pair<Node *, Node *> &startEnd)
+static Base print(const std::pair<Node *, Node *> &startEnd)
 {
     Base n = 0;
     auto node = startEnd.first;
@@ -71,14 +100,19 @@ Base print(const std::pair<Node *, Node *> &startEnd)
     return n;
 }
 
-static void writeBegin(const std::string &file, const ChrID &chrID, const std::pair<Node *, Node *> &startEnd)
+static void exec(const std::string &cmd)
+{
+    system(cmd.c_str());
+}
+
+static void writeBegin(const std::string &file, const ChrID &chrID, const LinkedSequence &l)
 {
     std::ofstream f;
     f.open(file);
 
     f << ">" << chrID << std::endl;
     
-    auto node = startEnd.first;
+    auto node = l.start;
     int i = 0;
 
     while (node)
@@ -96,14 +130,14 @@ static void writeBegin(const std::string &file, const ChrID &chrID, const std::p
     f.close();
 }
 
-static void writeEnd(const std::string &file, const ChrID &chrID, const std::pair<Node *, Node *> &startEnd)
+static void writeEnd(const std::string &file, const ChrID &chrID, const LinkedSequence &l)
 {
     std::ofstream f;
     f.open(file);
     
     f << ">" << chrID << std::endl;
 
-    auto node = startEnd.second;
+    auto node = l.end;
     
     while (node)
     {
@@ -127,7 +161,7 @@ static void checkSNP(const std::pair<Node *, Node *> &startEnd, const std::strin
             
             switch (var.type())
             {
-                case VarType::SNP:
+                case Mutation::SNP:
                 {
                     assert(node->pos == i);
                     assert(var.ref.size() == 1);
@@ -153,10 +187,39 @@ static void checkSNP(const std::pair<Node *, Node *> &startEnd, const std::strin
     }
 }
 
-static Base count(const std::pair<Node *, Node *> &startEnd)
+static Flanks readFlank(const LinkedSequence &l, Base p, Base lFlank, Base rFlank)
+{
+    std::stringstream ss;
+    
+    auto node = l.hash.at(p - lFlank);
+
+    for (auto i = 0; i < lFlank; i++)
+    {
+        ss << node->base;
+        node = node->prev;
+    }
+    
+    Flanks f;
+    f.lSeq = ss.str();
+
+    ss.clear();
+    node = l.hash.at(p);
+    
+    for (auto i = 0; i < rFlank; i++)
+    {
+        ss << node->base;
+        node = node->next;
+    }
+
+    f.rSeq = ss.str();
+
+    return f;
+}
+
+static Base count(const LinkedSequence &l)
 {
     auto n = 1;
-    auto node = startEnd.first;
+    auto node = l.start;
     
     while (node)
     {
@@ -167,9 +230,9 @@ static Base count(const std::pair<Node *, Node *> &startEnd)
     return n;
 }
 
-static char fetchBase(const std::pair<Node *, Node *> &startEnd, int n)
+static char fetchBase(const LinkedSequence &l, int n)
 {
-    auto node = startEnd.first;
+    auto node = l.start;
 
     for (auto i = 1; i < n; i++)
     {
@@ -179,11 +242,11 @@ static char fetchBase(const std::pair<Node *, Node *> &startEnd, int n)
     return node->base;
 }
 
-void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, const std::string &str, std::map<Base, ModifedVCF> &vars)
+void FastaAlternateReferenceMaker(LinkedSequence &l, const std::string &str, std::map<Base, ModifedVCF> &vars)
 {
     auto n = 0;
     auto i = str.length();
-    auto node = startEnd.second;
+    auto node = l.end;
     
     while (node)
     {
@@ -199,21 +262,21 @@ void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, con
             
             switch (var.type())
             {
-                case VarType::SNP:
+                case Mutation::SNP:
                 {
                     // Let's check the base before substitution
-                    assert(std::toupper(fetchBase(startEnd, (int)i)) == std::toupper(var.ref[0]));
+                    assert(std::toupper(fetchBase(l, (int)i)) == std::toupper(var.ref[0]));
                     
                     assert(var.alt.size() == 1 && std::toupper(node->base) == std::toupper(var.ref[0]));
                     node->base = var.alt[0];
 
                     // Let's check the base after substitution
-                    assert(std::toupper(fetchBase(startEnd, (int)i)) == std::toupper(var.alt[0]));
+                    assert(std::toupper(fetchBase(l, (int)i)) == std::toupper(var.alt[0]));
                     
                     break;
                 }
                     
-                case VarType::Insertion:
+                case Mutation::Insertion:
                 {
                     auto temp = node;
 
@@ -244,7 +307,7 @@ void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, con
                     break;
                 }
                     
-                case VarType::Deletion:
+                case Mutation::Deletion:
                 {
                     auto temp = node;
 
@@ -294,22 +357,43 @@ void FastaAlternateReferenceMaker(const std::pair<Node *, Node *> &startEnd, con
     }
 }
 
-void readFA(const std::string &file, const ChrID &chrID, std::string &seq)
+static std::string readFA(const std::string &file, const ChrID &cID)
 {
+    std::string seq;
+    
     ParserFA::parse(file, [&](const ParserFA::Data &chr, const ParserProgress &)
     {
         seq = chr.seq;
-    }, chrID);
+    }, cID);
 
-    std::cout << "Number of bases in " + chrID + " is: " + std::to_string(seq.size()) << std::endl;
+    std::cout << "Number of bases in " + cID + " is: " + std::to_string(seq.size()) << std::endl;
     assert(!seq.empty());
+    
+    return seq;
 }
 
-void readVCF(const std::string &file, const ChrID &chrID, std::map<Base, ModifedVCF> &vars)
+typedef std::vector<ParserBed::Data> BedData;
+
+static std::vector<ParserBed::Data> readBed(const FileName &file, const ChrID &cID)
+{
+    std::vector<ParserBed::Data> x;
+    
+    ParserBed::parse(file, [&](const ParserBed::Data &d, const ParserProgress &)
+    {
+        if (d.cID == cID)
+        {
+            x.push_back(d);
+        }
+    });
+    
+    return x;
+}
+
+static void readVCF(const std::string &file, const ChrID &cID, std::map<Base, ModifedVCF> &vars)
 {
     ParserVCF::parse(file, [&](const ParserVCF::Data &d, const ParserProgress &)
     {
-        if (d.chrID == chrID)
+        if (d.cID == cID)
         {
             vars[d.l.start] = ModifedVCF(d);
 
@@ -390,25 +474,25 @@ static std::pair<std::string, std::map<Base, ModifedVCF>> createTestData()
     v1.l = Locus(5, 5);
     v1.ref = "5";
     v1.alt = "#";
-    assert(v1.type() == VarType::SNP);
+    assert(v1.type() == Mutation::SNP);
     
     ParserVCF::Data v2;
     v2.l = Locus(9, 9);
     v2.ref = "9";
     v2.alt = "@@@@";
-    assert(v2.type() == VarType::Insertion);
+    assert(v2.type() == Mutation::Insertion);
 
     ParserVCF::Data v3;
     v3.l = Locus(13, 13);
     v3.ref = "DEFGH";
     v3.alt = "&";
-    assert(v3.type() == VarType::Deletion);
+    assert(v3.type() == Mutation::Deletion);
 
     ParserVCF::Data v4;
     v4.l = Locus(26, 26);
     v4.ref = "Q";
     v4.alt = "!";
-    assert(v4.type() == VarType::SNP);
+    assert(v4.type() == Mutation::SNP);
 
     std::map<Base, ModifedVCF> m;
     
@@ -420,96 +504,77 @@ static std::pair<std::string, std::map<Base, ModifedVCF>> createTestData()
     return std::pair<std::string, std::map<Base, ModifedVCF>>("0123456789ABCDEFGHIJKLMNOPQ", m);
 }
 
-/*
- *  Usage: seqTools <genomeFile> <variantFile> <Chromosome>
- *
- *    Eg: seqTools chr21.fa chr21.vcf chr21
- *
- *        g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src -I ~/Sources/SS seqTools.cpp
- *        g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src ~/Sources/QA/src/data/reader.cpp
- *        g++ *.o -o seqTools
- */
-
-int main(int argc, const char * argv[])
+static void reverse(const FileName &gFile, const FileName &vFile, const ChrID &chrID)
 {
-    std::cout << "v2.0" << std::endl;
-    
-    std::string seq;
     std::map<Base, ModifedVCF> vars;
-
-    const auto gFile = argv[1];
-    const auto vFile = argv[2];
-    const auto chrID = argv[3];
-
+    
     const auto begin = clock();
-
+    
     std::cout << "Chromosome: " << chrID << std::endl;
     
     std::cout << "Reading genome..." << std::endl;
-    readFA(gFile, chrID, seq);
-    std::cout << "Reading genome completed" << std::endl;
-
+    const auto seq = readFA(gFile, chrID);
+    
     std::cout << "Reading variants..." << std::endl;
     readVCF(vFile, chrID, vars);
-    std::cout << "Reading variants completed" << std::endl;
-
+    
     //auto test = createTestData();
     //seq  = test.first;
     //vars = test.second;
-
+    
     std::cout << "Creating linked-list..." << std::endl;
     
     // Create a linked-list representation for the sequence
-    auto nodes = createList(seq);
-
+    auto l = createList(seq);
+    
     std::cout << "Linked-list created" << std::endl;
     
     //const auto n_vars = vars.size();
-
-    writeBegin("origGenome.fa", chrID, nodes);
+    
+    writeBegin("origGenome.fa", chrID, l);
     writeOldBed("origGenome.bed", vars,  chrID);
     
     std::cout << "Generated: origGenome.fa"  << std::endl;
     std::cout << "Generated: origGenome.bed" << std::endl;
     
     //checkSNP(nodes, seq, vars);
-
+    
     //FastaAlternateReferenceMaker(nodes, seq, vars);
-
+    
     // Length of the flipped sequence
-    const auto n = count(nodes);
-
+    const auto n = count(l);
+    
     std::cout << "Number of bases in the flipped sequence: " << n << std::endl;
-
+    
     /*
      * Generating a FASTA file for the variant genome.
      */
     
-    writeBegin("/Users/tedwong/Desktop/Ira/varGenome.fa", chrID, nodes);
+    writeBegin("/Users/tedwong/Desktop/Ira/varGenome.fa", chrID, l);
     writeOldBed("/Users/tedwong/Desktop/Ira/varGenome.bed", vars, chrID);
-
+    
     std::cout << "Generated: varGenome.fa"  << std::endl;
     std::cout << "Generated: varGenome.bed" << std::endl;
-
+    
     /*
      * Generating the variants after flipping. This is only possible because we know the size of the chromosome.
      */
-
+    
     for (auto &var : vars)
     {
         const auto pos = var.second.l.start;
         
         switch (var.second.type())
         {
-            case VarType::SNP:
+            case Mutation::SNP:
             {
                 // What's the position of the SNP after reversing? It's n-(i+1)
                 var.second.newPos = n-pos;
                 
                 break;
             }
-
-            case VarType::Insertion:
+                
+            case Mutation::Insertion:
             {
                 // Number of characters inserted
                 //const auto offset = var.second.alt.size() - var.second.ref.size();
@@ -520,8 +585,8 @@ int main(int argc, const char * argv[])
                 
                 break;
             }
-
-            case VarType::Deletion:
+                
+            case Mutation::Deletion:
             {
                 // Number of characters inserted
                 const auto offset = var.second.ref.size() - var.second.alt.size();
@@ -533,18 +598,18 @@ int main(int argc, const char * argv[])
             }
         }
     }
- 
+    
     /*
      * Now, flip the genome... This is easy with a linked-list implementation... In fact we don't have to do anything...
      */
-
+    
     /*
      * Generating a FASTA file for the flipped genome
      */
     
-    writeEnd("/Users/tedwong/Desktop/Ira/flipGenome.fa", chrID, nodes);
+    writeEnd("/Users/tedwong/Desktop/Ira/flipGenome.fa", chrID, l);
     std::cout << "Generated: flipGenome.fa" << std::endl;
-
+    
     /*
      * Generating VCF file for the flipped genome
      */
@@ -554,6 +619,332 @@ int main(int argc, const char * argv[])
     
     const auto end = clock();
     std::cout << "Completed in: " << double(end - begin) / CLOCKS_PER_SEC << "s" << std::endl;
+}
+
+static void writeFA(const FileName &file, const std::map<std::string, std::string> &m)
+{
+    std::ofstream f;
+    f.open(file);
     
+    for (const auto &i : m)
+    {
+        f << ">" << i.first << std::endl;
+        f << i.second << std::endl;
+    }
+
+    f.close();
+}
+
+typedef std::map<std::string, std::string> KeyToSeq;
+
+static void readFlanks(const LinkedSequence &l, const BedData &bs, const BedData &be, KeyToSeq &A, KeyToSeq &B, KeyToSeq &C, KeyToSeq &D, Base flank)
+{
+    for (const auto &i : bs)
+    {
+        const auto fls = readFlank(l, i.l.start, flank, flank);
+        
+        /*
+         * Divided the sequence into A and B. We'll merge them later.
+         */
+        
+        A[i.id] = fls.lSeq;
+        B[i.id] = fls.rSeq;
+    }
+    
+    for (const auto &i : be)
+    {
+        const auto fls = readFlank(l, i.l.start, flank, flank);
+        
+        /*
+         * Divided the sequence into C and D. We'll merge them later.
+         */
+        
+        C[i.id] = fls.lSeq;
+        D[i.id] = fls.rSeq;
+    }
+    
+    assert(A.size() == B.size());
+    assert(B.size() == C.size());
+    assert(C.size() == D.size());
+}
+
+static void reverseComp(KeyToSeq &x)
+{
+    for (auto &i : x)
+    {
+        i.second = i.second;
+    }
+}
+
+static void invert(KeyToSeq &x)
+{
+    for (auto &i : x)
+    {
+        std::reverse(i.second.begin(), i.second.end());
+    }
+}
+
+static void merge(const KeyToSeq &src1, const KeyToSeq &src2, KeyToSeq &dst)
+{
+    for (const auto &i : src1)
+    {
+        const auto x = src1.at(i.first);
+        const auto y = src2.at(i.first);
+        dst[i.first] = x + y;
+    }
+}
+
+/*
+ * Create sequins for strucutal inversions.
+ */
+
+static void inversion(const FileName &gFile,
+                      const FileName &bStart,
+                      const FileName &bEnd,
+                      const ChrID &cID,
+                      Base flank = 600)
+{
+    std::cout << "Reading genome..." << std::endl;
+    const auto seq = readFA(gFile, cID);
+    
+    std::cout << "Reading BED for starting..." << std::endl;
+    const auto bs = readBed(bStart, cID);
+    
+    std::cout << "Reading BED for stopping..." << std::endl;
+    const auto be = readBed(bEnd, cID);
+    
+    std::cout << "Reading linked representation..." << std::endl;
+    const auto l = createList(seq);
+    
+    KeyToSeq A, B, C, D;
+    readFlanks(l, bs, be, A, B, C, D, flank);
+
+    KeyToSeq A_, B_, C_, D_;
+    readFlanks(l, bs, be, A_, B_, C_, D_, flank);
+    
+    /*
+     * Perform a reverse complement on B and C
+     */
+    
+    reverseComp(B_);
+    std::cout << "Reverse complementing B" << std::endl;
+    
+    reverseComp(C_);
+    std::cout << "Reverse complementing C" << std::endl;
+
+    KeyToSeq AB, CD, AC_, B_D;
+    
+    /*
+     * Merging and inverting A and B
+     */
+    
+    merge(A, B, AB);
+    invert(AB);
+    
+    /*
+     * Merging and inverting C and D
+     */
+    
+    merge(C, D, CD);
+    invert(CD);
+
+    /*
+     * Merging and inverting A and C_
+     */
+    
+    merge(A, C_, AC_);
+    invert(AC_);
+    
+    /*
+     * Merging and inverting B_ and D
+     */
+    
+    merge(B_, D, B_D);
+    invert(B_D);
+    
+    writeFA("sequins.invertion.AB.rev.fa", AB);
+    std::cout << "Generated: sequins.invertion.AB.rev.fa" << std::endl;
+    
+    writeFA("sequins.invertion.CD.rev.fa", CD);
+    std::cout << "Generated: sequins.invertion.CD.rev.fa" << std::endl;
+    
+    writeFA("sequins.invertion.AC_.rev.fa", AC_);
+    std::cout << "Generated: sequins.invertion.AC_.rev.fa" << std::endl;
+
+    writeFA("sequins.invertion.B_D.rev.fa", B_D);
+    std::cout << "Generated: sequins.invertion.B_D.rev.fa" << std::endl;
+}
+
+static void deletionByScript(const FileName &genome, const FileName &bed, Base flank)
+{
+    const auto fs = std::to_string(flank);
+    
+    /*
+     * Get the starting base for each variant (tss) or ending base (3utr)
+     */
+    
+    exec("returnEnds.pl -end=tss  " + bed + " > /tmp/deletions.start.bed");
+    exec("returnEnds.pl -end=3utr " + bed + " > /tmp/deletions.stop.bed");
+    
+    /*
+     * Generate flanking regions
+     */
+    
+    auto x = (boost::format("bedEnds2.sh -%1% %2% /tmp/deletions.start.bed /tmp/deletions.AB.bed")
+                                    % flank
+                                    % (flank - 1)).str();
+
+    auto y = (boost::format("bedEnds2.sh -%1% %2% /tmp/deletions.stop.bed /tmp/deletions.CD.bed")
+                                    % flank
+                                    % (flank - 1)).str();
+    exec(x);
+    exec(y);
+    
+    /*
+     * Extract the flanking sequence from the genome
+     */
+
+    exec("sequenceForBed.pl -case=upper " + genome + " /tmp/deletions.AB.bed > /tmp/deletions.AB.tab.fa");
+    exec("sequenceForBed.pl -case=upper " + genome + " /tmp/deletions.CD.bed > /tmp/deletions.CD.tab.fa");
+
+    /*
+     * Break the sequence from AB to A
+     */
+    
+    exec("fetchSubsequence.pl -end=5 -length=" + fs + " /tmp/deletions.AB.tab.fa > /tmp/deletions.A.tab.fa");
+
+    /*
+     * Break the sequence from AB to B
+     */
+    
+    exec("fetchSubsequence.pl -end=3 -length=" + fs + " /tmp/deletions.AB.tab.fa > /tmp/deletions.B.tab.fa");
+    
+    /*
+     * Break the sequence from CD to C
+     */
+    
+    exec("fetchSubsequence.pl -end=5 -length=" + fs + " /tmp/deletions.CD.tab.fa > /tmp/deletions.C.tab.fa");
+    
+    /*
+     * Break the sequence from CD to D
+     */
+    
+    exec("fetchSubsequence.pl -end=3 -length=" + fs + " /tmp/deletions.CD.tab.fa > /tmp/deletions.D.tab.fa");
+    
+    /*
+     * Merging A and B
+     */
+    
+    exec("mergeMultipleTab.pl /tmp/deletions.A.tab.fa /tmp/deletions.B.tab.fa | sed s'/\t//2' > /tmp/deletions.AB.tab.fa");
+    
+    /*
+     * Merging A and D
+     */
+    
+    exec("mergeMultipleTab.pl deletions.A.tab.fa deletions.D.tab.fa | sed s'/\t//2' > deletions.AD.tab.fa");
+    
+    /*
+     * Merging C and D
+     */
+    
+    exec("mergeMultipleTab.pl deletions.C.tab.fa deletions.D.tab.fa | sed s'/\t//2' > deletions.CD.tab.fa");
+}
+
+/*
+ * Create sequins for strucutal deletions.
+ */
+
+static void deletion(const FileName &gFile,
+                     const FileName &bStart,
+                     const FileName &bEnd,
+                     const ChrID &cID,
+                     Base flank = 600)
+{
+    std::cout << "Reading genome..." << std::endl;
+    const auto seq = readFA(gFile, cID);
+    
+    std::cout << "Reading BED for starting..." << std::endl;
+    const auto bs = readBed(bStart, cID);
+
+    std::cout << "Reading BED for stopping..." << std::endl;
+    const auto be = readBed(bEnd, cID);
+    
+    std::cout << "Reading linked representation..." << std::endl;
+    const auto l = createList(seq);
+
+    std::map<std::string, std::string> A, B, C, D;
+    readFlanks(l, bs, be, A, B, C, D, flank);
+
+    std::map<std::string, std::string> AB, AD, CB;
+    
+    /*
+     * Merging A and B
+     */
+    
+    merge(A, B, AB);
+    std::cout << "Merged A and B. Check out: deletions.AB.fa" << std::endl;
+
+    /*
+     * Merging A and D
+     */
+    
+    merge(A, D, AD);
+    std::cout << "Merged A and D. Check out: deletions.AD.fa" << std::endl;
+
+    /*
+     * Merging C and B
+     */
+    
+    merge(C, B, CB);
+    std::cout << "Merged C and D. Check out: deletions.CD.fa" << std::endl;
+    
+    /*
+     * Invert them to minmise cross-alignment errors
+     */
+
+    invert(AB);
+    invert(AD);
+    invert(CB);
+    
+    writeFA("sequins.deletions.AB.rev.fa", AB);
+    std::cout << "Generated: sequins.deletions.AB.rev.fa" << std::endl;
+    
+    writeFA("sequins.deletions.AD.rev.fa", AD);
+    std::cout << "Generated: sequins.deletions.AD.rev.fa" << std::endl;
+    
+    writeFA("sequins.deletions.CB.rev.fa", CB);
+    std::cout << "Generated: sequins.deletions.CB.rev.fa" << std::endl;
+}
+
+/*
+ *  Usage: seqTools <genomeFile> <variantFile> <Chromosome>
+ *
+ *    Eg: seqTools reverse chr21.fa chr21.vcf chr21
+ *        seqTools
+ *
+ *        g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src -I ~/Sources/SS seqTools.cpp
+ *        g++ -std=c++11 -c -I /usr/include/boost -I ~/Sources/QA/src ~/Sources/QA/src/data/reader.cpp
+ *        g++ *.o -o seqTools
+ */
+
+int main(int argc, const char * argv[])
+{
+    std::cout << "Sequins Tool, v2.1." << std::endl;
+    
+    const auto mode = std::string(argv[1]);
+    
+    if (mode == "reverse")
+    {
+        reverse(argv[2], argv[3], argv[4]);
+    }
+    else if (mode == "deletion")
+    {
+        deletionByScript(argv[2], argv[3], std::stoi(argv[4]));
+    }
+    else if (mode == "inversion")
+    {
+        inversion(argv[2], argv[3], argv[4], argv[5]);
+    }
+
     return 0;
 }

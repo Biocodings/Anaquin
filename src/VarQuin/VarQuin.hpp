@@ -71,7 +71,7 @@ namespace Anaquin
             m.seq   = nullptr;
             m.match = nullptr;
 
-            if (query.chrID == ChrT)
+            if (query.cID == ChrT)
             {
                 // Can we match by position?
                 m.match = r.findVar(query.l, Exact);

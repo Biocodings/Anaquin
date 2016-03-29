@@ -21,7 +21,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 
     parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
-        if (m.query.chrID == ChrT)
+        if (m.query.cID == ChrT)
         {
             stats.n_chrT++;
             

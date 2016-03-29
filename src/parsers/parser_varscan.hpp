@@ -53,7 +53,7 @@ namespace Anaquin
                 
                 Tokens::split(line, "\t", toks);
                 
-                d.chrID = toks[Chrom];
+                d.cID = toks[Chrom];
 
                 // Always start and end at the same position
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));

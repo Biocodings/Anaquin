@@ -7,29 +7,64 @@
 #include "data/reader.hpp"
 #include "data/biology.hpp"
 #include "parsers/parser.hpp"
+#include <boost/algorithm/string.hpp>
 
 namespace Anaquin
 {
     struct ParserBed
     {
-        typedef std::string Feature;
-        
         struct Data
         {
-            operator const Feature &() const { return name; }
+            operator const std::string &() const { return id; }
             
-            ChrID id;
+            ChrID cID;
             
             // Forward or reverse strand?
             Strand strand;
 
             Locus l;
 
-            Feature name;
+            // Eg: chr1_10482481_10483779
+            std::string id;
         };
 
-        typedef std::function<void(const Data &, const ParserProgress &)> Callback;
-        static void parse(const Reader &, Callback);
+        static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
+        {
+            Data d;
+            ParserProgress p;
+            
+            std::vector<std::string> sizes, starts, tokens;
+            
+            while (r.nextTokens(tokens, "\t"))
+            {
+                // Empty line?
+                if (tokens.size() == 1)
+                {
+                    return;
+                }
+                
+                // Name of the chromosome
+                d.cID = tokens[0];
+                
+                // Position of the feature in standard chromosomal coordinates
+                d.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
+                
+                if (tokens.size() >= 6)
+                {
+                    // Defines the strand, either '+' or '-'
+                    d.strand = tokens[5] == "+" ? Forward : Backward;
+                }
+                
+                if (tokens.size() >= 4)
+                {
+                    // Name of the BED line (eg: gene)
+                    d.id = tokens[3];
+                }
+
+                f(d, p);
+                p.i++;
+            }            
+        }
     };
 }
 

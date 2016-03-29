@@ -69,13 +69,13 @@ void LCopy::report(const FileName &file, const Options &o)
         {
             const auto lRes = std::abs(i.l.start - data.l.start);
             const auto rRes = std::abs(i.l.end - data.l.end);
-            
+
             m = std::min((int)m, (int)(lRes + rRes));
-            
+
             if ((lRes + rRes) < 1000)
             {
-                stats.ids.push_back(i.name);
-                stats.expected.push_back(r.match(i.name)->abund(o.mix));
+                stats.ids.push_back(i.id);
+                stats.expected.push_back(r.match(i.id)->abund(o.mix));
                 stats.measured.push_back(data.fold);
             }
         }

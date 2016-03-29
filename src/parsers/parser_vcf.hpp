@@ -63,7 +63,7 @@ namespace Anaquin
                 Tokens::split(line, "\t", fields);
                 
                 // Eg: chrT
-                v.chrID = fields[Field::CHROM];
+                v.cID = fields[Field::CHROM];
                 
                 // Eg: D_1_3_R
                 v.id = fields[Field::ID];

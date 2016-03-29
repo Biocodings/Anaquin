@@ -43,7 +43,7 @@ namespace Anaquin
         }
 
         // Eg: chrT
-        ChrID chrID;
+        ChrID cID;
 
         // Eg: D_1_10
         SequinID id;

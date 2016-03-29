@@ -39,12 +39,12 @@ LOQModel LinearStats::limitQuant(bool shouldLog) const
     // The break we're looking for
     l.b = r.b;
     
-    l.lR2  = r.bkLR2();
-    l.rR2  = r.bkRR2();
-    l.lSl  = r.bkLSl();
-    l.rSl  = r.bkRSl();
-    l.lInt = r.bkLInt();
-    l.rInt = r.bkRInt();
+    l.lR2  = r.blR2();
+    l.rR2  = r.brR2();
+    l.lSl  = r.blSl();
+    l.rSl  = r.brSl();
+    l.lInt = r.blInt();
+    l.rInt = r.brInt();
 
     for (auto i = 0; i < d.ids.size(); i++)
     {
