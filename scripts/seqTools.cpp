@@ -775,6 +775,97 @@ static void inversion(const FileName &gFile,
     std::cout << "Generated: sequins.invertion.B_D.rev.fa" << std::endl;
 }
 
+// Eg: seqTools invert hg38.fa inversions.large.bed 300
+static void invertByScript(const FileName &genome, const FileName &bed, Base flank)
+{
+    const auto fs = std::to_string(flank);
+    
+    exec("returnEnds.pl -end=tss  " + bed + " > /tmp/inversions.start.bed");
+    exec("returnEnds.pl -end=3utr " + bed + " > /tmp/inversions.stop.bed");
+
+    std::cout << "Generating flanking regions" << std::endl;
+    
+    auto x = (boost::format("bedEnds2.sh -%1% %2% /tmp/inversions.start.bed /tmp/inversions.AB.bed")
+              % flank
+              % (flank - 1)).str();
+    
+    auto y = (boost::format("bedEnds2.sh -%1% %2% /tmp/inversions.stop.bed /tmp/inversions.CD.bed")
+              % flank
+              % (flank - 1)).str();
+    exec(x);
+    exec(y);
+    
+    /*
+     * Extract the flanking sequence from the genome
+     */
+    
+    std::cout << "Extracting from the genome..." << std::endl;
+    
+    exec("sequenceForBed.pl -case=upper " + genome + " /tmp/inversions.AB.bed > /tmp/inversions.AB.tab.fa");
+    exec("sequenceForBed.pl -case=upper " + genome + " /tmp/inversions.CD.bed > /tmp/inversions.CD.tab.fa");
+    
+    /*
+     * Break the sequence from AB to A
+     */
+    
+    std::cout << "Generating A..." << std::endl;
+    exec("fetchSubsequence.pl -end=5 -length=" + fs + " /tmp/inversions.AB.tab.fa > /tmp/inversions.A.tab.fa");
+    
+    /*
+     * Break the sequence from AB to B
+     */
+    
+    std::cout << "Generating B..." << std::endl;
+    exec("fetchSubsequence.pl -end=3 -length=" + fs + " /tmp/inversions.AB.tab.fa > /tmp/inversions.B.tab.fa");
+
+    /*
+     * Break the sequence from CD to C
+     */
+    
+    std::cout << "Generating C..." << std::endl;
+    exec("fetchSubsequence.pl -end=5 -length=" + fs + " /tmp/inversions.CD.tab.fa > /tmp/inversions.C.tab.fa");
+    
+    /*
+     * Break the sequence from CD to D
+     */
+    
+    std::cout << "Generating C..." << std::endl;
+    exec("fetchSubsequence.pl -end=3 -length=" + fs + " /tmp/inversions.CD.tab.fa > /tmp/inversions.D.tab.fa");
+    
+    exec("flattenFasta.pl -fa /tmp/inversions.B.tab.fa > /tmp/revtmp.fa; revcomp /tmp/revtmp.fa > /tmp/revtmp2.fa; flattenFasta.pl -tab /tmp/revtmp2.fa | sed 's/ //' > /tmp/inversions.B.revcomp.tab.fa");
+    exec("flattenFasta.pl -fa /tmp/inversions.C.tab.fa > /tmp/revtmp.fa; revcomp /tmp/revtmp.fa > /tmp/revtmp2.fa; flattenFasta.pl -tab /tmp/revtmp2.fa | sed 's/ //' > /tmp/inversions.C.revcomp.tab.fa");
+    
+    exec("mergeMultipleTab.pl /tmp/inversions.A.tab.fa /tmp/inversions.B.tab.fa | sed 's/\t//2' > /tmp/inversions.AB.tab.fa");
+    exec("mergeMultipleTab.pl /tmp/inversions.C.tab.fa /tmp/inversions.D.tab.fa | sed 's/\t//2' > /tmp/inversion.CD.tab.fa");
+    exec("mergeMultipleTab.pl /tmp/inversions.A.tab.fa /tmp/inversions.C.revcomp.tab.fa | sed 's/\t//2' > /tmp/inversions.ACrc.tab.fa");
+    exec("mergeMultipleTab.pl /tmp/inversions.B.revcomp.tab.fa /tmp/inversions.D.tab.fa | sed 's/\t//2' > /tmp/inversions.BrcD.tab.fa");
+    
+    exec("cut -f 2 /tmp/inversions.AB.tab.fa | rev > /tmp/revseq.txt");
+    exec("cut -f 1 /tmp/inversions.AB.tab.fa > /tmp/ids.txt");
+    exec("paste /tmp/ids.txt /tmp/revseq.txt > sequins.inversions.AB.rev.tab.fa");
+    
+    exec("cut -f 2 /tmp/inversions.AB.tab.fa | rev > /tmp/revseq.txt");
+    exec("cut -f 1 /tmp/inversions.AB.tab.fa > /tmp/ids.txt");
+    exec("paste /tmp/ids.txt /tmp/revseq.txt > sequins.inversions.AB.rev.tab.fa");
+
+    exec("cut -f 2 /tmp/inversions.CD.tab.fa | rev > /tmp/revseq.txt");
+    exec("cut -f 1 /tmp/inversions.CD.tab.fa > /tmp/ids.txt");
+    exec("paste /tmp/ids.txt /tmp/revseq.txt > sequins.inversions.CD.rev.tab.fa");
+
+    exec("cut -f 2 /tmp/inversions.ACrc.tab.fa | rev > /tmp/revseq.txt");
+    exec("cut -f 1 /tmp/inversions.ACrc.tab.fa > /tmp/ids.txt");
+    exec("paste /tmp/ids.txt /tmp/revseq.txt > sequins.inversions.ACrc.rev.tab.fa");
+
+    exec("cut -f 2 /tmp/inversions.BrcD.tab.fa | rev > /tmp/revseq.txt");
+    exec("cut -f 1 /tmp/inversions.BrcD.tab.fa > /tmp/ids.txt");
+    exec("paste /tmp/ids.txt /tmp/revseq.txt > sequins.inversions.BrcD.rev.tab.fa");
+    
+    std::cout << "Please check: sequins.inversions.AB.rev.tab.fa"   << std::endl;
+    std::cout << "Please check: sequins.inversions.CD.rev.tab.fa"   << std::endl;
+    std::cout << "Please check: sequins.inversions.ACrc.rev.tab.fa" << std::endl;
+    std::cout << "Please check: sequins.inversions.BrcD.rev.tab.fa" << std::endl;
+}
+
 // Eg: seqTools deletion hg38.fa Personalis.deletions.large.bed 300
 static void deletionByScript(const FileName &genome, const FileName &bed, Base flank)
 {
@@ -945,22 +1036,29 @@ static void deletion(const FileName &gFile,
 
 int main(int argc, const char * argv[])
 {
-    std::cout << "Sequins Tool, v2.1." << std::endl;
+    std::cout << "Sequins Tool, v2.1." << std::endl << std::endl;
     
-    const auto mode = std::string(argv[1]);
+    if (argc == 1)
+    {
+        std::cout << "seqTools deletion <genome (eg: hg38.fa)>  <deletion bed (eg: deletion.bed)> <flanking (eg: 300)" << std::endl;
+    }
+    else
+    {
+        const auto mode = std::string(argv[1]);
+        
+        if (mode == "reverse")
+        {
+            reverse(argv[2], argv[3], argv[4]);
+        }
+        else if (mode == "deletion")
+        {
+            deletionByScript(argv[2], argv[3], std::stoi(argv[4]));
+        }
+        else if (mode == "inversion")
+        {
+            inversion(argv[2], argv[3], argv[4], argv[5]);
+        }
+    }
     
-    if (mode == "reverse")
-    {
-        reverse(argv[2], argv[3], argv[4]);
-    }
-    else if (mode == "deletion")
-    {
-        deletionByScript(argv[2], argv[3], std::stoi(argv[4]));
-    }
-    else if (mode == "inversion")
-    {
-        inversion(argv[2], argv[3], argv[4], argv[5]);
-    }
-
     return 0;
 }
