@@ -58,9 +58,9 @@ data  = [ 'data/manual.txt',
           # ---------- Variant ----------
 
           'src/r/plotROC_V.R',
-          'src/r/plotAllCov.R',
+          'src/r/plotAlleleReads.R',
           'src/r/plotLODR_V.R',
-          'src/r/plotAlleleF.R',
+          'src/r/plotAlleleAllele.R',
           'src/r/plotDensity.R',
           'src/r/plotSubsample.R',
 

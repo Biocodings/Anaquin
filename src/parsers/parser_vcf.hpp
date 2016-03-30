@@ -122,13 +122,13 @@ namespace Anaquin
                             
                             if (toks.size() == 2)
                             {
-                                d.dp_r = stod(toks[0]);
-                                d.dp_a = stod(toks[1]);
+                                d.readR = stod(toks[0]);
+                                d.readV = stod(toks[1]);
                             }
                             else
                             {
-                                d.dp_r = stod(toks[0]);
-                                d.dp_a = stod(toks[0]);
+                                d.readR = stod(toks[0]);
+                                d.readV = stod(toks[0]);
                             }
                         }
                     }

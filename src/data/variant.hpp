@@ -44,12 +44,7 @@ namespace Anaquin
 
         inline Proportion alleleFreq() const
         {
-            if (readR && readV)
-            {
-                return static_cast<Proportion>(readV) / (readR + readV);
-            }
-            
-            return static_cast<Proportion>(dp_a) / dp_r;
+            return static_cast<Proportion>(readV) / (readR + readV);
         }
 
         // Eg: chrT
@@ -71,12 +66,6 @@ namespace Anaquin
         
         // Number of reads for the variant
         Counts readV = 0;
-        
-        // Depth for reference
-        Counts dp_r;
-        
-        // Depth for alternative
-        Counts dp_a;
         
         Probability p = NAN;
     };

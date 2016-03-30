@@ -62,11 +62,11 @@
  */
 
 #include "resources/plotROC_V.R"
-#include "resources/plotAllCov.R"
 #include "resources/plotLODR_V.R"
-#include "resources/plotAlleleF.R"
 #include "resources/plotDensity.R"
 #include "resources/plotSubsample.R"
+#include "resources/plotAlleleReads.R"
+#include "resources/plotAlleleAllele.R"
 
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
@@ -88,7 +88,7 @@ Scripts Manual()
 }
 
 /*
- * Scripts for Anaquin Bioconductor
+ * Scripts for Bioconductor
  */
 
 Scripts PlotScatterPool()
@@ -128,11 +128,6 @@ Scripts FusionDataRef()
 Scripts PlotExpress_F()
 {
     return ToString(src_r_plotExpress_F_R);
-}
-
-Scripts PlotAllCov()
-{
-    return ToString(src_r_plotAllCov_R);
 }
 
 /*
@@ -221,9 +216,14 @@ Scripts TransDataMixAB()
  * Variant Resources
  */
 
-Scripts PlotAlleleF()
+Scripts PlotAlleleReads()
 {
-    return ToString(src_r_plotAlleleF_R);
+    return ToString(src_r_plotAlleleReads_R);
+}
+
+Scripts PlotAlleleAllele()
+{
+    return ToString(src_r_plotAlleleAllele_R);
 }
 
 Scripts PlotROC_V()

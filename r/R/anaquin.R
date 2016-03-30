@@ -55,7 +55,7 @@ VarQuin <- function(..., mix=loadMixture.VarQuin())
 {
     x <- list(...)
 
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expected', 'measured', 'aligned')
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expect', 'measured', 'aligned')
     data <- .createData(x, keys)
 
     r <- list('seqs'=data, mix=mix)

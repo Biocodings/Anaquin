@@ -13,6 +13,7 @@ plotScatter <- function(data,
                         alpha = 1.0,
                         shouldLog2 = TRUE,
                         showLegend = FALSE,
+                        showStats  = "right",
                         title = '',
                         xname = 'Expected log2 fold change of mixture A and B',
                         yname = 'Measured log2 fold change of mixture A and B')
@@ -20,9 +21,9 @@ plotScatter <- function(data,
     require(ggplot2)
 
     data       <- data$seqs
-    data$x     <- data$expected
+    data$x     <- data$expect
     data$y     <- data$measured
-    data$logFC <- abs(log2(data$expected))
+    data$logFC <- abs(log2(data$expect))
 
     stopifnot(length(data$x) == length((data$y)))
     
@@ -37,7 +38,6 @@ plotScatter <- function(data,
         data$y <- log2(data$y)
     }
 
-    # Convert a linear model to string
     lm_eqn <- function(d)
     {
         m <- lm(y ~ x, d);
@@ -55,12 +55,23 @@ plotScatter <- function(data,
                               ylab(yname) +
                            ggtitle(title) +
                 geom_point(aes(colour=logFC), size=2, alpha=alpha) +
-                #xlim(min(data$x) - 0.10, max(data$x) + 0.10)      +
-                #ylim(min(data$y) - 0.10, max(data$y) + 0.10)      +
                 geom_smooth(method='lm', formula=y ~ x)            +
                 labs(colour='Ratio')                               +
-                annotate("text", label=lm_eqn(data), x=min(data$x)+4, y=max(data$y)-1, size=5, colour='black', parse=TRUE) +
                 theme_bw()
+
+    x_off <- ifelse(max(data$x) - min(data$x) <= 10, 1.5, 1.0)
+    y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 1.0)
+
+    if (showStats == 'right')
+    {
+        p <- p + annotate("text", label=lm_eqn(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=6, colour='black', parse=TRUE)
+    }
+    else
+    {
+        p <- p + annotate("text", label=lm_eqn(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=6, colour='black', parse=TRUE)
+    }
+    
+    print(min(data$x))
 
     p <- p +  theme(axis.title.x=element_text(face='bold', size=15))
     p <- p +  theme(axis.title.y=element_text(face='bold', size=15))

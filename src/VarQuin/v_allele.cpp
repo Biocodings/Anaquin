@@ -1,12 +1,12 @@
-#include "VarQuin/v_allele.hpp"
+    #include "VarQuin/v_allele.hpp"
 
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotAlleleF();
+extern Scripts PlotAlleleAllele();
 
 // Defined in resources.cpp
-extern Scripts PlotAllCov();
+extern Scripts PlotAlleleReads();
 
 static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VAllele::Options &o)
 {
@@ -135,18 +135,18 @@ void VAllele::report(const FileName &file, const Options &o)
     writeCSV("VarAllele_quins.csv", stats, o);
     
     /*
-     * Generating coverage plot
+     * Generating for AlleleReads
      */
 
-    o.writer->open("VarAllele_coverage.R");
-    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAllCov()));
+    o.writer->open("VarAllele_alleleReads.R");
+    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleReads()));
     o.writer->close();
 
     /*
-     * Generating for measured allele frequency
+     * Generating for AlleleAllele
      */
     
-    o.writer->open("VarAllele_scatter.R");
-    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleF()));
+    o.writer->open("VarAllele_alleleAllele.R");
+    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleAllele()));
     o.writer->close();
 }

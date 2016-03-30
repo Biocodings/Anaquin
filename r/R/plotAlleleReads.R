@@ -4,19 +4,19 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotVCoverage <- function(data,
-                          alpha = 1.0,
-                          title = 'Allele Frequency',
-                          xname = 'Expected Allele Fraction (Log2)',
-                          yname = 'Coverage (Log2)')
+plotAlleleReads <- function(data,
+                            alpha = 1.0,
+                            title = 'Allele Frequency vs Read count',
+                            xname = 'Allele Frequency (Log2)',
+                            yname = 'Observed read count (Log2)')
 {
     require(ggplot2)
 
     stopifnot(class(data) == 'VarQuin')
 
     data  <- data$seqs
-    rRead <- data.frame(x=log2(data$expected), y=log2(data$rRead), ratio=data$expected, type=data$type, label='Reference Allele')
-    vRead <- data.frame(x=log2(data$expected), y=log2(data$vRead), ratio=data$expected, type=data$type, label='Variant Allele')
+    rRead <- data.frame(x=log2(data$expect), y=log2(data$rRead), ratio=data$expect, type=data$type, label='Reference Allele')
+    vRead <- data.frame(x=log2(data$expect), y=log2(data$vRead), ratio=data$expect, type=data$type, label='Variant Allele')
     data  <- rbind(rRead, vRead)
 
     data$ratio <- as.factor(data$ratio)
