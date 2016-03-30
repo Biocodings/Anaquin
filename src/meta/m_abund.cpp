@@ -62,11 +62,11 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
          * concentration while still detectable in the experiment.
          */
 
-        if (stats.chrT->s.id.empty() || align->seq->abund(Mix_1, false) < stats.chrT->s.abund)
+        if (stats.chrT->limit.id.empty() || align->seq->abund(Mix_1, false) < stats.chrT->limit.abund)
         {
-            stats.chrT->s.id     = align->seq->id;
-            stats.chrT->s.abund  = align->seq->abund(Mix_1, false);
-            stats.chrT->s.counts = align->contigs.size();
+            stats.chrT->limit.id     = align->seq->id;
+            stats.chrT->limit.abund  = align->seq->abund(Mix_1, false);
+            stats.chrT->limit.counts = align->contigs.size();
         }
         
         const auto p = MAbundance::calculate(stats, stats.chrT->blat, stats.chrT->assembly, align->seq->id, *meta.second, o, o.coverage);

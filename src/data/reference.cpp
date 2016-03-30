@@ -2,6 +2,7 @@
 #include <boost/format.hpp>
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
+#include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
 
@@ -906,9 +907,14 @@ struct VarRef::VarRefImpl
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-double VarRef::alleleFreq(const SequinID &id) const
+Proportion VarRef::alleleFreq(const SequinID &id) const
 {
-    const auto &p = _impl->data.at(Mix_1).at(id);
+    auto id_ = id;
+    
+    // Just in case, for example, D_1_1_V
+    boost::replace_all(id_, "_V", "_R");
+
+    const auto &p = _impl->data.at(Mix_1).at(id_);
     const auto &r = p.r;
     const auto &v = p.v;
 

@@ -2,7 +2,6 @@
 #define VARQUIN_HPP
 
 #include "data/standard.hpp"
-
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_varscan.hpp"
 
@@ -55,6 +54,13 @@ namespace Anaquin
         VarScan,
     };
 
+    inline SequinID toVar(const SequinID &rID)
+    {
+        auto vID = rID;
+        boost::replace_all(vID, "_R", "_V");
+        return vID;
+    }
+    
     /*
      * Common framework for parsing and matching a variant output
      */

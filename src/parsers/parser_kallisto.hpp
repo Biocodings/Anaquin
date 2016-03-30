@@ -8,7 +8,7 @@
 
 namespace Anaquin
 {
-    struct ParseKallisto
+    struct ParserKallisto
     {
         enum Field
         {

@@ -12,7 +12,7 @@ using namespace Anaquin;
 typedef TExpress::Metrics  Metrics;
 typedef TExpress::Software Software;
 
-struct InternalKallistoData : public ParseKallisto::Data
+struct InternalKallistoData : public ParserKallisto::Data
 {
     ChrID cID = ChrT;
     
@@ -156,7 +156,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
         {
             case Software::Kallisto:
             {
-                ParseKallisto::parse(file, [&](const ParseKallisto::Data &data, const ParserProgress &p)
+                ParserKallisto::parse(file, [&](const ParserKallisto::Data &data, const ParserProgress &p)
                 {
                     InternalKallistoData x;
                     

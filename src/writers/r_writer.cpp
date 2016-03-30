@@ -37,12 +37,82 @@ extern Scripts PlotScatter_T();
 // Defined in resources.cpp
 extern Scripts PlotScatter_F();
 
+// Defined in main.cpp
+extern std::string mixture();
+
 Scripts RWriter::createScript(const FileName &file, const Scripts &scripts)
 {
     return (boost::format(scripts) % date()
                                    % __full_command__
                                    % __output__
                                    % file).str();
+}
+
+Scripts StatsWriter::linearSummary(const FileName &file, const FileName &ref, const LinearStats &stats, const Hist &hist)
+{
+    const auto summary = "Summary for input: %1%\n\n"
+                         "   Reference:   %2%\n"
+                         "   Mixture:     %3%\n\n"
+                         "   Detected:    %4%/%5%\n"
+                         "   Limit:       %6% (%7%)\n\n"
+                         "   Correlation: %8%\n"
+                         "   Slope:       %9%\n"
+                         "   R2:          %10%\n"
+                         "   F-statistic: %11%\n"
+                         "   P-value:     %12%\n"
+                         "   SSM:         %13%, DF: %14%\n"
+                         "   SSE:         %15%, DF: %16%\n"
+                         "   SST:         %17%, DF: %18%\n\n"
+                         "   ***\n"
+                         "   *** The following statistics are computed on the log2 scale.\n"
+                         "   ***\n"
+                         "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
+                         "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
+                         "   ***\n\n"
+                         "   Correlation: %19%\n"
+                         "   Slope:       %20%\n"
+                         "   R2:          %21%\n"
+                         "   F-statistic: %22%\n"
+                         "   P-value:     %23%\n"
+                         "   SSM:         %24%, DF: %25%\n"
+                         "   SSE:         %26%, DF: %27%\n"
+                         "   SST:         %28%, DF: %29%\n";
+    
+    // Linear regression without logarithm
+    const auto nlm = stats.linear(false);
+    
+    // Linear regression with logarithm
+    const auto llm = stats.linear(true);
+
+    return (boost::format(summary) % file
+                                   % ref
+                                   % mixture()
+                                   % count(hist)
+                                   % hist.size()
+                                   % stats.limit.id
+                                   % stats.limit.abund
+                                   % nlm.r
+                                   % nlm.m
+                                   % nlm.R2
+                                   % nlm.F
+                                   % nlm.p
+                                   % nlm.SSM
+                                   % nlm.SSM_D
+                                   % nlm.SSE
+                                   % nlm.SSE_D
+                                   % nlm.SST
+                                   % nlm.SST_D
+                                   % llm.r
+                                   % llm.m
+                                   % llm.R2
+                                   % llm.F
+                                   % llm.p
+                                   % llm.SSM
+                                   % llm.SSM_D
+                                   % llm.SSE
+                                   % llm.SSE_D
+                                   % llm.SST
+                                   % llm.SST_D).str();
 }
 
 Scripts RWriter::scatter(const std::vector<SequinID> &seqs,

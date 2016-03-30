@@ -3,11 +3,11 @@
 
 using namespace Anaquin;
 
-TEST_CASE("ParseKallisto_Test")
+TEST_CASE("ParserKallisto_Test")
 {
-    std::vector<ParseKallisto::Data> x;
+    std::vector<ParserKallisto::Data> x;
     
-    ParseKallisto::parse(Reader("tests/data/abundance.tsv"), [&](const ParseKallisto::Data &d, const ParserProgress &)
+    ParserKallisto::parse(Reader("tests/data/abundance.tsv"), [&](const ParserKallisto::Data &d, const ParserProgress &)
     {
         x.push_back(d);
     });

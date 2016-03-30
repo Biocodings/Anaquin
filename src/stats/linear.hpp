@@ -138,7 +138,8 @@ namespace Anaquin
             std::vector<double> x, y;
         };
 
-        Limit s;
+        // Absolute detection limit
+        Limit limit;
 
         inline void add(const SequinID &id, double x, double y)
         {

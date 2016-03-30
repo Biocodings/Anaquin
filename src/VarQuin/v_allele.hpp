@@ -29,9 +29,6 @@ namespace Anaquin
 
             // Mapping for variant read counts
             std::map<SequinID, Counts> readV;
-
-            // Absolute detection limit
-            Limit limit;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

@@ -92,6 +92,11 @@ namespace Anaquin
          * -------------------- Linear Statistics --------------------
          */
         
+        static Scripts linearSummary(const FileName &,
+                                     const FileName &,
+                                     const LinearStats &,
+                                     const Hist &hist);
+
         template <typename Stats_1, typename Stats_2, typename Stats> static Scripts linear(const FileName &f,
                                                                                             const FileName &d1,
                                                                                             const FileName &d2,

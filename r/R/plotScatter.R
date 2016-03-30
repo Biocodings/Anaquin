@@ -59,7 +59,7 @@ plotScatter <- function(data,
                 labs(colour='Ratio')                               +
                 theme_bw()
 
-    x_off <- ifelse(max(data$x) - min(data$x) <= 10, 1.5, 1.0)
+    x_off <- ifelse(max(data$x) - min(data$x) <= 10, 1.5, 2.0)
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 1.0)
 
     if (showStats == 'right')
@@ -71,8 +71,6 @@ plotScatter <- function(data,
         p <- p + annotate("text", label=lm_eqn(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=6, colour='black', parse=TRUE)
     }
     
-    print(min(data$x))
-
     p <- p +  theme(axis.title.x=element_text(face='bold', size=15))
     p <- p +  theme(axis.title.y=element_text(face='bold', size=15))
 

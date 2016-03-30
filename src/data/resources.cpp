@@ -65,6 +65,7 @@
 #include "resources/plotLODR_V.R"
 #include "resources/plotDensity.R"
 #include "resources/plotSubsample.R"
+#include "resources/plotVAbundAbund.R"
 #include "resources/plotAlleleReads.R"
 #include "resources/plotAlleleAllele.R"
 
@@ -215,6 +216,11 @@ Scripts TransDataMixAB()
 /*
  * Variant Resources
  */
+
+Scripts PlotVAbundAbund()
+{
+    return ToString(src_r_plotVAbundAbund_R);
+}
 
 Scripts PlotAlleleReads()
 {

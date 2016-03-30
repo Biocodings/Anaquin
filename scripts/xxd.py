@@ -63,6 +63,7 @@ data  = [ 'data/manual.txt',
           'src/r/plotAlleleAllele.R',
           'src/r/plotDensity.R',
           'src/r/plotSubsample.R',
+	  'src/r/plotVAbundAbund.R',
 
           'data/VarQuin/AVA017.v032.bed',
           'data/VarQuin/AVA009.v032.vcf',

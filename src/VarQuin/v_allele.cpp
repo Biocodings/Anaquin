@@ -1,4 +1,4 @@
-    #include "VarQuin/v_allele.hpp"
+#include "VarQuin/v_allele.hpp"
 
 using namespace Anaquin;
 
@@ -66,8 +66,9 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
             if (m.match && m.ref && m.alt)
             {
                 stats.hist.at(m.match->id)++;
+                stats.hist.at(toVar(m.match->id))++;
 
-                // Expected allele frequence
+                // Expected allele frequency
                 const auto known = r.alleleFreq(m.match->id);
                 
                 // Measured coverage is the number of base calls aligned and used in variant calling
@@ -102,6 +103,8 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
         }
     });
     
+    stats.all.limit = r.absolute(stats.hist);
+    
     return stats;
 }
 
@@ -119,13 +122,7 @@ void VAllele::report(const FileName &file, const Options &o)
      */
 
     o.writer->open("VarAllele_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rEndo,
-                                                file,
-                                                stats.hist,
-                                                stats,
-                                                stats.all,
-                                                "variants"));
+    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats.all, stats.hist));
     o.writer->close();
 
     /*

@@ -12,3 +12,12 @@ plotAlleleAllele <- function(data)
                   showStats='left',
                  showLegend=TRUE)
 }
+
+plotVAbundAbund <- function(data)
+{
+    plotScatter(data, title='Expected abundance vs Measured abundance',
+                      xname='Expected abundance',
+                      yname='Measured abundance',
+                  showStats='left',
+                 showLegend=FALSE)
+}

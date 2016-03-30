@@ -20,6 +20,7 @@
 #include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_viewer.hpp"
 #include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_express.hpp"
 #include "VarQuin/v_discover.hpp"
 #include "VarQuin/v_coverage.hpp"
 
@@ -86,6 +87,7 @@ typedef std::set<Value> Range;
 #define TOOL_F_COVERAGE  293
 #define TOOL_F_DIFF      295
 #define TOOL_L_COPY      296
+#define TOOL_V_EXPRESS   297
 
 /*
  * Options specified in the command line
@@ -186,6 +188,7 @@ static std::map<Value, Tool> _tools =
     { "VarAllele",        TOOL_V_ALLELE    },
     { "VarCoverage",      TOOL_V_COVERAGE  },
     { "VarSubsample",     TOOL_V_SUBSAMPLE },
+    { "VarExpress",       TOOL_V_EXPRESS   },
 
     { "MetaAssembly",     TOOL_M_ASSEMBLY  },
     { "MetaAbund",        TOOL_M_ABUND     },
@@ -255,6 +258,7 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_EXPRESS,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_COVERAGE,  { OPT_R_BED, OPT_U_FILES                        } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
     { TOOL_V_IGV,       { OPT_BAM_1                                     } },
@@ -466,7 +470,7 @@ static void print(Reader &r)
     }
 }
 
-static std::string mixture()
+std::string mixture()
 {
     return _p.opts[OPT_MIXTURE];
 }
@@ -1314,6 +1318,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_IGV:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
+        case TOOL_V_EXPRESS:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
         case TOOL_V_SUBSAMPLE:
@@ -1322,9 +1327,19 @@ void parse(int argc, char ** argv)
             {
                 const static std::map<std::string, Caller> m =
                 {
-                    { "gatk"   ,  Caller::GATK    },
-                    { "VarScan",  Caller::VarScan },
-                    { "VarScan2", Caller::VarScan },
+                    { "gatk"   ,  Caller::GATK     },
+                    { "VarScan",  Caller::VarScan  },
+                    { "VarScan2", Caller::VarScan  },
+                };
+
+                return parseEnum("soft", str, m);
+            };
+            
+            auto parseExpress = [&](const std::string &str)
+            {
+                const static std::map<std::string, VExpress::Software> m =
+                {
+                    { "kallisto", VExpress::Software::Kallisto },
                 };
 
                 return parseEnum("soft", str, m);
@@ -1352,6 +1367,7 @@ void parse(int argc, char ** argv)
                     }
 
                     case TOOL_V_ALLELE:
+                    case TOOL_V_EXPRESS:
                     {
                         applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
                         break;
@@ -1377,6 +1393,15 @@ void parse(int argc, char ** argv)
                 case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }
 
+                case TOOL_V_EXPRESS:
+                {
+                    VExpress::Options o;
+                    o.soft = parseExpress(_p.opts.at(OPT_SOFT));
+                    
+                    analyze_1<VExpress>(OPT_U_FILES, o);
+                    break;
+                }
+                    
                 case TOOL_V_ALLELE:
                 {
                     VAllele::Options o;
