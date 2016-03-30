@@ -35,8 +35,8 @@ namespace Anaquin
          * Defined only if seq is defined.
          */
         
-        double eFold;
-        double eAllFreq;
+        Proportion eFold;
+        Proportion eAllFreq;
         
         /*
          * Defined only if there's a match

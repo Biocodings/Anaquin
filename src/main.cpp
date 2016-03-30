@@ -16,12 +16,12 @@
 #include "trans/t_assembly.hpp"
 #include "trans/t_coverage.hpp"
 
-#include "VARQuin/v_align.hpp"
-#include "VARQuin/v_allele.hpp"
-#include "VARQuin/v_viewer.hpp"
-#include "VARQuin/v_sample.hpp"
-#include "VARQuin/v_discover.hpp"
-#include "VARQuin/v_coverage.hpp"
+#include "VarQuin/v_align.hpp"
+#include "VarQuin/v_allele.hpp"
+#include "VarQuin/v_viewer.hpp"
+#include "VarQuin/v_sample.hpp"
+#include "VarQuin/v_discover.hpp"
+#include "VarQuin/v_coverage.hpp"
 
 #include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
@@ -254,7 +254,7 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_ALLELE,    { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_COVERAGE,  { OPT_R_BED, OPT_U_FILES                        } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
     { TOOL_V_IGV,       { OPT_BAM_1                                     } },
@@ -816,7 +816,7 @@ void parse(int argc, char ** argv)
     }
 
     // Prevent error message to stderr
-    opterr = NULL;
+    opterr = 0;
     
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
@@ -1323,7 +1323,6 @@ void parse(int argc, char ** argv)
                 const static std::map<std::string, Caller> m =
                 {
                     { "gatk"   ,  Caller::GATK    },
-                    { "GATK"   ,  Caller::GATK    },
                     { "VarScan",  Caller::VarScan },
                     { "VarScan2", Caller::VarScan },
                 };
@@ -1542,7 +1541,7 @@ int parse_options(int argc, char ** argv)
     }
     catch (const InvalidToolError &ex)
     {
-        printError("Invalid tool: " + ex.val + ". Please refer to the online documenation at http://www.anaquin.org for correct usage.");
+        printError("Invalid tool: " + ex.val + ". Please check the user manual and try again.");
     }
     catch (const InvalidOptionException &ex)
     {

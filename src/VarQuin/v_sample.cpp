@@ -1,5 +1,5 @@
 #include "tools/sampling.hpp"
-#include "VARQuin/v_sample.hpp"
+#include "VarQuin/v_sample.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/writer_sam.hpp"
 

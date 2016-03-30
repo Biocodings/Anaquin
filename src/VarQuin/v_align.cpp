@@ -1,5 +1,5 @@
-#include "VARQuin/v_align.hpp"
-#include "VARQuin/v_sample.hpp"
+#include "VarQuin/v_align.hpp"
+#include "VarQuin/v_sample.hpp"
 #include "parsers/parser_sam.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 

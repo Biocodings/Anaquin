@@ -31,7 +31,7 @@ namespace Anaquin
             FORMAT_DATA,
         };
 
-        static void parse(const Reader &r, std::function<void (const Data &, const ParserProgress &)> c)
+        static void parse(const Reader &r, std::function<void (const Data &, const ParserProgress &)> f)
         {
             const std::map<std::string, Genotype> allele =
             {
@@ -43,7 +43,7 @@ namespace Anaquin
 
             std::string line;
             
-            Data v;
+            Data d;
             ParserProgress p;
             
             std::vector<std::string> t;
@@ -63,23 +63,20 @@ namespace Anaquin
                 Tokens::split(line, "\t", fields);
                 
                 // Eg: chrT
-                v.cID = fields[Field::CHROM];
+                d.cID = fields[Field::CHROM];
                 
                 // Eg: D_1_3_R
-                v.id = fields[Field::ID];
+                d.id = fields[Field::ID];
                 
-                v.l.start = v.l.end = stod(fields[Field::POS]);
+                d.l.start = d.l.end = stod(fields[Field::POS]);
                 
                 // Reference allele
-                v.ref = fields[Field::REF];
+                d.ref = fields[Field::REF];
                 
                 /*
                  * Additional information
                  *
-                 *    AC: allele count in genotypes, for each ALT allele, in the same order as listed
                  *    AF: allele frequency for each ALT allele in the same order as listed
-                 *    AN: total number of alleles in called genotypes
-                 *    DP: combined depth across samples
                  */
                 
                 if (fields[Field::INFO] != ".")
@@ -91,10 +88,7 @@ namespace Anaquin
                         Tokens::split(info, "=", t);
                         assert(t.size() == 2);
                         
-                        if (t[0] == "AC") { v.ac = stof(t[1]); }
-                        if (t[0] == "AF") { v.af = stof(t[1]); }
-                        if (t[0] == "AN") { v.an = stof(t[1]); }
-                        if (t[0] == "DP") { v.dp = stod(t[1]); }
+                        if (t[0] == "AF") { d.af = stof(t[1]); }
                     }
                 }
                 
@@ -110,41 +104,37 @@ namespace Anaquin
 
                 for (auto i = 0; i < alts.size(); i++)
                 {
-                    v.alt = alts[i];
+                    d.alt = alts[i];
 
                     Tokens::split(fields[Field::FORMAT_DATA + i], ":", t);
                     assert(t.size() == formats.size());
                     
                     for (auto j = 0; j < t.size(); j++)
                     {
-                        if (formats[j] == "GT")
+                        if (formats[j] == "AD")
                         {
-                            v.gt = allele.at(t[j]);
-                        }
-                        else if (formats[j] == "AD")
-                        {
-                            std::vector<std::string> tokens;
+                            std::vector<std::string> toks;
                             
                             // Eg: 143,16 or 143
-                            Tokens::split(t[j], ",", tokens);
+                            Tokens::split(t[j], ",", toks);
                             
-                            assert(tokens.size() == 1 || tokens.size() == 2);
+                            assert(toks.size() == 1 || toks.size() == 2);
                             
-                            if (tokens.size() == 2)
+                            if (toks.size() == 2)
                             {
-                                v.dp_r = stod(tokens[0]);
-                                v.dp_a = stod(tokens[1]);
+                                d.dp_r = stod(toks[0]);
+                                d.dp_a = stod(toks[1]);
                             }
                             else
                             {
-                                v.dp_r = stod(tokens[0]);
-                                v.dp_a = stod(tokens[0]);
+                                d.dp_r = stod(toks[0]);
+                                d.dp_a = stod(toks[0]);
                             }
                         }
                     }
                 }
 
-                c(v, p);
+                f(d, p);
             }
         }
     };

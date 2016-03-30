@@ -2,7 +2,7 @@
 #define V_ALLELE_HPP
 
 #include "stats/analyzer.hpp"
-#include "VARQuin/VarQuin.hpp"
+#include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
@@ -16,7 +16,7 @@ namespace Anaquin
         struct Stats : public MappingStats, public SequinStats, public VariantStats
         {
             // Statistics for all variants
-            LinearStats tot;
+            LinearStats all;
             
             // Statistics for SNPs
             LinearStats snp;

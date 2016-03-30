@@ -1,4 +1,4 @@
-#include "VARQuin/v_coverage.hpp"
+#include "VarQuin/v_coverage.hpp"
 
 using namespace Anaquin;
 

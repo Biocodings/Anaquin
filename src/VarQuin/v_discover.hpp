@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "stats/analyzer.hpp"
-#include "VARQuin/VarQuin.hpp"
+#include "VarQuin/varQuin.hpp"
 
 namespace Anaquin
 {

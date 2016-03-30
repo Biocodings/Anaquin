@@ -159,7 +159,7 @@
 		EF0C678F1C5F25070033168D /* v_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_sample.cpp; path = ../src/VARQuin/v_sample.cpp; sourceTree = "<group>"; };
 		EF0C67901C5F25070033168D /* v_sample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_sample.hpp; path = ../src/VARQuin/v_sample.hpp; sourceTree = "<group>"; };
 		EF0C67911C5F25070033168D /* v_viewer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_viewer.hpp; path = ../src/VARQuin/v_viewer.hpp; sourceTree = "<group>"; };
-		EF0C67921C5F25070033168D /* VARQuin.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VARQuin.hpp; path = ../src/VARQuin/VARQuin.hpp; sourceTree = "<group>"; };
+		EF0C67921C5F25070033168D /* VarQuin.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VarQuin.hpp; path = ../src/VARQuin/VarQuin.hpp; sourceTree = "<group>"; };
 		EF17D29C1BCF246700F503F7 /* t_intervals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_intervals.cpp; path = ../tests/data/t_intervals.cpp; sourceTree = "<group>"; };
 		EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = alignment.hpp; path = ../src/data/alignment.hpp; sourceTree = "<group>"; };
 		EF1DE0A81B21EC6D00DEC381 /* biology.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = biology.hpp; path = ../src/data/biology.hpp; sourceTree = "<group>"; };
@@ -438,14 +438,14 @@
 				EF9ACCDB1B5FB5480085D1B2 /* Trans */,
 				EFA9DE701BCB7D5A00780182 /* Tools */,
 				EF65DDB71C6C3EB5003EE08A /* FusQuin */,
-				EF0C67861C5F1D460033168D /* VARQuin */,
+				EF0C67861C5F1D460033168D /* VarQuin */,
 				EFE9A01D1AD3B10900557829 /* Writers */,
 				EF2290351AC0E58000CE76BF /* main.cpp */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
 		};
-		EF0C67861C5F1D460033168D /* VARQuin */ = {
+		EF0C67861C5F1D460033168D /* VarQuin */ = {
 			isa = PBXGroup;
 			children = (
 				EF0C67871C5F25070033168D /* v_align.cpp */,
@@ -459,9 +459,9 @@
 				EF0C678F1C5F25070033168D /* v_sample.cpp */,
 				EF0C67901C5F25070033168D /* v_sample.hpp */,
 				EF0C67911C5F25070033168D /* v_viewer.hpp */,
-				EF0C67921C5F25070033168D /* VARQuin.hpp */,
+				EF0C67921C5F25070033168D /* VarQuin.hpp */,
 			);
-			name = VARQuin;
+			name = VarQuin;
 			sourceTree = "<group>";
 		};
 		EF150F4D1AD505D50004E613 /* Framework */ = {

@@ -1,4 +1,4 @@
-#include "VARQuin/v_discover.hpp"
+#include "VarQuin/v_discover.hpp"
 
 using namespace Anaquin;
 

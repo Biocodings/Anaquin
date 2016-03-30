@@ -1,4 +1,4 @@
-#include "VARQuin/v_allele.hpp"
+#include "VarQuin/v_allele.hpp"
 
 using namespace Anaquin;
 
@@ -83,7 +83,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                                                                    % m.match->ref
                                                                    % m.match->l.start
                                                                    % m.match->alt).str();
-                stats.tot.add(id, known, measured);
+                stats.all.add(id, known, measured);
 
                 switch (m.query.type())
                 {
@@ -124,7 +124,7 @@ void VAllele::report(const FileName &file, const Options &o)
                                                 file,
                                                 stats.hist,
                                                 stats,
-                                                stats.tot,
+                                                stats.all,
                                                 "variants"));
     o.writer->close();
 

@@ -1,7 +1,7 @@
 #ifndef VARIANT_HPP
 #define VARIANT_HPP
 
-#include <iostream>
+#include <cmath>
 #include <data/locus.hpp>
 #include <data/biology.hpp>
 
@@ -42,6 +42,16 @@ namespace Anaquin
             return labs((Base)ref.size() - (Base)alt.size());
         }
 
+        inline Proportion alleleFreq() const
+        {
+            if (readR && readV)
+            {
+                return static_cast<Proportion>(readV) / (readR + readV);
+            }
+            
+            return static_cast<Proportion>(dp_a) / dp_r;
+        }
+
         // Eg: chrT
         ChrID cID;
 
@@ -53,46 +63,27 @@ namespace Anaquin
         
         Sequence ref, alt;
         
-        Genotype gt;
-        
         // Allelle frequency
-        double af;
+        Proportion af;
         
-        // Allele count in genotypes
-        Counts ac;
-        
-        // Total number of alleles in called genotypes
-        Counts an;
-        
-        // Combined depth across samples
-        unsigned dp;
-        
-        // Depth for reference
-        unsigned dp_r;
-        
-        // Depth for alternative
-        unsigned dp_a;
-    };
-    
-    struct CalledVariant : public Variant
-    {
-        inline Proportion alleleFreq() const
-        {
-            if (readR && readV)
-            {
-                return static_cast<Proportion>(readV) / (readR + readV);
-            }
-
-            return static_cast<Proportion>(dp_a) / dp_r;
-        }
-    
-        Probability p;
-
         // Number of reads for the reference
         Counts readR = 0;
         
         // Number of reads for the variant
         Counts readV = 0;
+        
+        // Depth for reference
+        Counts dp_r;
+        
+        // Depth for alternative
+        Counts dp_a;
+        
+        Probability p = NAN;
+    };
+
+    struct CalledVariant : public Variant
+    {
+
     };
 }
 
