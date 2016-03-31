@@ -15,6 +15,7 @@ def xxd(src, dst):
 
 data  = [ 'data/manual.txt',    
           'scripts/viewer.py',
+	  'scripts/reports.py',
 
           'src/r/plotMA.R',
           'src/r/plotSplice.R',

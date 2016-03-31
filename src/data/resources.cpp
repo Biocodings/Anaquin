@@ -14,6 +14,7 @@
 
 #include "resources/viewer.py"
 #include "resources/manual.txt"
+#include "resources/reports.py"
 
 /*
  * Fusion Resources
@@ -77,6 +78,11 @@
 #define ToString(x) std::string(reinterpret_cast<char*>(x))
 
 typedef std::string Scripts;
+
+Scripts ReportScript()
+{
+    return ToString(scripts_reports_py);
+}
 
 Scripts ViewerScript()
 {

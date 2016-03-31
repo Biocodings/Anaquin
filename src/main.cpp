@@ -19,6 +19,7 @@
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_viewer.hpp"
+#include "VarQuin/v_report.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_express.hpp"
 #include "VarQuin/v_discover.hpp"
@@ -272,7 +273,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
     
-    { TOOL_V_REPORT,    { OPT_U_FILES                                   } },
+    { TOOL_V_REPORT,    {                                    } },
     { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_EXPRESS,   { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
@@ -665,6 +666,14 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 #ifndef DEBUG
     o.logger->close();
 #endif
+}
+
+template <typename Report> void report(typename Report::Options o = typename Report::Options())
+{
+    // Where the session files are generated
+    o.path = _p.path;
+    
+    Report::generate("", o);
 }
 
 template <typename Viewer> void viewer(typename Viewer::Options o = typename Viewer::Options())
@@ -1429,6 +1438,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_V_REPORT:    { report<VReport>();                 break; }
                 case TOOL_V_IGV:       { viewer<VViewer>();                 break; }
                 case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }

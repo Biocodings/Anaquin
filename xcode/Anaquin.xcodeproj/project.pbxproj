@@ -286,6 +286,7 @@
 		EF7278511CAD06FD0012648F /* t_express.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_express.cpp; sourceTree = "<group>"; };
 		EF7278521CAD06FD0012648F /* t_express.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = t_express.o; sourceTree = "<group>"; };
 		EF7278531CAD06FD0012648F /* t_viewer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_viewer.cpp; sourceTree = "<group>"; };
+		EF7278541CAD48F70012648F /* v_report.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = v_report.hpp; path = ../src/VarQuin/v_report.hpp; sourceTree = "<group>"; };
 		EF72F0EC1B6898940092DA34 /* t_parser_top_fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_top_fusion.cpp; path = parsers/t_parser_top_fusion.cpp; sourceTree = "<group>"; };
 		EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_gtf.cpp; path = ../tests/parsers/t_parser_gtf.cpp; sourceTree = "<group>"; };
 		EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = file_writer.hpp; path = ../src/writers/file_writer.hpp; sourceTree = "<group>"; };
@@ -453,8 +454,6 @@
 		EF0C67861C5F1D460033168D /* VarQuin */ = {
 			isa = PBXGroup;
 			children = (
-				EF7278101CACD9400012648F /* v_kexpress.cpp */,
-				EF7278111CACD9400012648F /* v_kexpress.hpp */,
 				EF0C67871C5F25070033168D /* v_align.cpp */,
 				EF0C67881C5F25070033168D /* v_align.hpp */,
 				EF0C67891C5F25070033168D /* v_allele.cpp */,
@@ -465,6 +464,9 @@
 				EF0C678E1C5F25070033168D /* v_discover.hpp */,
 				EFDC8F471CABB75C0031EF77 /* v_express.cpp */,
 				EFDC8F481CABB75C0031EF77 /* v_express.hpp */,
+				EF7278101CACD9400012648F /* v_kexpress.cpp */,
+				EF7278111CACD9400012648F /* v_kexpress.hpp */,
+				EF7278541CAD48F70012648F /* v_report.hpp */,
 				EF0C678F1C5F25070033168D /* v_sample.cpp */,
 				EF0C67901C5F25070033168D /* v_sample.hpp */,
 				EF0C67911C5F25070033168D /* v_viewer.hpp */,

@@ -5,7 +5,11 @@
 #include <iostream>
 #include <stdexcept>
 
+// Defined in resources.cpp
 extern std::string ViewerScript();
+
+// Defined in resources.cpp
+extern std::string ReportScript();
 
 namespace Anaquin
 {
@@ -38,9 +42,14 @@ namespace Anaquin
                 remove(script);
             }
 
+            static void report(const std::string &args)
+            {
+                Script::run(ReportScript(), "python", args);            
+            }
+        
             static void viewer(const std::string &args)
             {
-                return Script::run(ViewerScript(), "python", args);
+                Script::run(ViewerScript(), "python", args);
             }
     };
 }

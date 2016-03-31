@@ -918,7 +918,7 @@ if __name__ == '__main__':
             elif (__mode__ == 'VarQuin'):
                 VarQuin(parse(file), output)
             elif (__mode__ == 'FusQuin'):
-                FusQuin(parse(file), output)        
+                FusQuin(parse(file), output)
         else:
             mix   = sys.argv[2]
             file1 = sys.argv[3]
