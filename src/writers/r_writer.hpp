@@ -29,8 +29,8 @@ namespace Anaquin
     struct StatsWriter
     {
         static Scripts writeCSV(const LinearStats &stats,
-                                const Label &xLabel,
-                                const Label &yLabel)
+                                const Label &xLabel = "EAbund",
+                                const Label &yLabel = "MAbund")
         {
             const auto d = stats.data(false);
             return StatsWriter::writeCSV(d.x, d.y, d.ids, xLabel, yLabel);

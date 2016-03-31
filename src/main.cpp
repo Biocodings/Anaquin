@@ -347,6 +347,16 @@ struct InvalidValueException : public std::exception
     const std::string opt, val;
 };
 
+struct NotSingleInputError : public std::exception
+{
+    // Empty Implementation
+};
+
+struct NotDoubleInputError : public std::exception
+{
+    // Empty Implementation
+};
+
 struct NoValueError: public InvalidValueException
 {
     NoValueError(const std::string &opt) : InvalidValueException(opt, "") {}
@@ -673,6 +683,11 @@ template <typename Analyzer, typename Files> void analyze(const Files &files, ty
 {
     // Copying over for the experiment
     o.exp = _p.exp;
+    
+    if (_p.inputs.size() != 1)
+    {
+        throw NotSingleInputError();
+    }
 
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
@@ -698,6 +713,11 @@ template < typename Analyzer> void analyze_2(typename Analyzer::Options o = type
 {
     return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
     {
+        if (_p.inputs.size() != 2)
+        {
+            throw NotDoubleInputError();
+        }
+
         Analyzer::report(_p.inputs[0], _p.inputs[1], o);
     }, o);
 }
@@ -839,7 +859,7 @@ void parse(int argc, char ** argv)
     }
 
     // Prevent error message to stderr
-    opterr = 0;
+    //opterr = 0;
     
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
@@ -1588,30 +1608,38 @@ int parse_options(int argc, char ** argv)
         parse(argc, argv);
         return 0;
     }
+    catch (const NotSingleInputError &ex)
+    {
+        printError("Invalid command. An input file is required.");
+    }
+    catch (const NotDoubleInputError &ex)
+    {
+        printError("Invalid command. Two input files are required.");
+    }
     catch (const NoValueError &ex)
     {
         printError("Invalid command. Need to specify " + ex.opt + ".");
     }
     catch (const InvalidToolError &ex)
     {
-        printError("Invalid tool: " + ex.val + ". Please check the user manual and try again.");
+        printError("Invalid command. Unknown tool: " + ex.val + ". Please check the user manual and try again.");
     }
     catch (const InvalidOptionException &ex)
     {
-        printError((boost::format("Unknown option: %1%") % ex.opt).str());
+        printError((boost::format("Invalid command. Unknown option: %1%") % ex.opt).str());
     }
     catch (const InvalidValueException &ex)
     {
-        printError((boost::format("%1% not expected for option -%2%. Please check and try again.") % ex.opt % ex.val).str());
+        printError((boost::format("Invalid command. %1% not expected for option -%2%. Please check and try again.") % ex.opt % ex.val).str());
     }
     catch (const MissingOptionError &ex)
     {
-        const auto format = "Mandatory option is missing. Please specify %1%.";
+        const auto format = "Invalid command. Mandatory option is missing. Please specify %1%.";
         printError((boost::format(format) % ex.opt).str());
     }
     catch (const InvalidFileError &ex)
     {
-        printError((boost::format("%1%%2%") % "Invalid file: " % ex.file).str());
+        printError((boost::format("%1%%2%") % "Invalid command. File is invalid: " % ex.file).str());
     }
     catch (const std::exception &ex)
     {

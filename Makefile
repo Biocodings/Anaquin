@@ -46,7 +46,7 @@ CC_FLAGS = -std=c++11
 EXEC         = anaquin
 SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/TransQuin/*.cpp src/VARQuin/*.cpp src/MetaQuin/*.cpp src/LadQuin/*.cpp src/FusQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
 OBJECTS      = $(SOURCES:.cpp=.o)
-SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/trans/*.cpp tests/meta/*.cpp tests/*.cpp)
+SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/TransQuin/*.cpp tests/MetaQuin/*.cpp tests/*.cpp)
 OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
 SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)

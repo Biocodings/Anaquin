@@ -9,7 +9,7 @@ namespace Anaquin
     {
         typedef IndexOptions Options;
         
-        struct Stats : public SequinStats, public LinearStats
+        struct Stats : public MappingStats, public SequinStats, public LinearStats
         {
             // Absolute detection limit
             Limit limit;

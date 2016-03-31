@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "unit/test.hpp"
-#include "meta/m_abund.hpp"
+#include "MetaQuin/m_abund.hpp"
 
 using namespace Anaquin;
 
