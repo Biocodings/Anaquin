@@ -47,7 +47,7 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
     strcpy(argv[6], file1.c_str());
     strcpy(argv[7], file2.c_str());
 
-    optind = optreset = 1;
+    optind = 1;
     
     /*
      * Execute Kallisto as if it were a standalone program
