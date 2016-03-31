@@ -1,8 +1,6 @@
 #ifndef STANDARD_HPP
 #define STANDARD_HPP
 
-#include <map>
-#include <vector>
 #include <memory>
 #include "data/reader.hpp"
 #include "data/feature.hpp"

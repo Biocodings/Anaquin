@@ -204,6 +204,11 @@ namespace Anaquin
         // Experimental data
         std::shared_ptr<Experiment> exp;
     };
+    
+    struct IndexOptions : public AnalyzerOptions
+    {
+        FileName file;
+    };
 
     struct SingleMixtureOption : public AnalyzerOptions
     {

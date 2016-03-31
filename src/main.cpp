@@ -23,6 +23,7 @@
 #include "VarQuin/v_express.hpp"
 #include "VarQuin/v_discover.hpp"
 #include "VarQuin/v_coverage.hpp"
+#include "VarQuin/v_kexpress.hpp"
 
 #include "meta/m_blat.hpp"
 #include "meta/m_diffs.hpp"
@@ -88,6 +89,14 @@ typedef std::set<Value> Range;
 #define TOOL_F_DIFF      295
 #define TOOL_L_COPY      296
 #define TOOL_V_EXPRESS   297
+#define TOOL_V_KEXPRESS  298
+#define TOOL_T_KEXPRESS  299
+#define TOOL_V_REPORT    300
+#define TOOL_M_REPORT    301
+#define TOOL_L_REPORT    302
+#define TOOL_F_REPORT    303
+#define TOOL_T_KDIFF     305
+#define TOOL_T_REPORT    306
 
 /*
  * Options specified in the command line
@@ -116,6 +125,7 @@ typedef std::set<Value> Range;
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
 #define OPT_R_ENDO  808
+#define OPT_R_IND   809
 #define OPT_U_BASE  900
 
 #define OPT_U_GTF   902
@@ -174,13 +184,14 @@ static std::map<Value, Tool> _tools =
     { "TransAlign",       TOOL_T_ALIGN     },
     { "TransAssembly",    TOOL_T_ASSEMBLY  },
     { "TransExpress",     TOOL_T_EXPRESS   },
-    { "TransExpression",  TOOL_T_EXPRESS   },
+    { "TransKExpress",    TOOL_T_KEXPRESS  },
     { "TransDiff",        TOOL_T_DIFF      },
-    { "TransDifferent",   TOOL_T_DIFF      },
+    { "TransKDiff",       TOOL_T_KDIFF     },
     { "TransCount",       TOOL_T_COUNT     },
     { "TransNorm",        TOOL_T_NORM      },
     { "TransIGV",         TOOL_T_IGV       },
     { "TransCoverage",    TOOL_T_COVERAGE  },
+    { "TransReport",      TOOL_T_REPORT    },
 
     { "VarAlign",         TOOL_V_ALIGN     },
     { "VarDiscover",      TOOL_V_DISCOVER  },
@@ -189,6 +200,8 @@ static std::map<Value, Tool> _tools =
     { "VarCoverage",      TOOL_V_COVERAGE  },
     { "VarSubsample",     TOOL_V_SUBSAMPLE },
     { "VarExpress",       TOOL_V_EXPRESS   },
+    { "VarKExpress",      TOOL_V_KEXPRESS  },
+    { "VarReport",        TOOL_V_REPORT    },
 
     { "MetaAssembly",     TOOL_M_ASSEMBLY  },
     { "MetaAbund",        TOOL_M_ABUND     },
@@ -197,6 +210,7 @@ static std::map<Value, Tool> _tools =
     { "MetaDifferent",    TOOL_M_DIFF      },
     { "MetaIGV",          TOOL_M_IGV       },
     { "MetaCoverage",     TOOL_M_COVERAGE  },
+    { "MetaReport",       TOOL_M_REPORT    },
 
     { "LadderCopy",       TOOL_L_COPY     },
     { "LadderAbund",      TOOL_L_ABUND     },
@@ -204,6 +218,7 @@ static std::map<Value, Tool> _tools =
     { "LadderDiff",       TOOL_L_DIFF      },
     { "LadderDifferent",  TOOL_L_DIFF      },
     { "LadderCoverage",   TOOL_L_COVERAGE  },
+    { "LadderReport",     TOOL_L_REPORT    },
 
     { "FusionDiscover",   TOOL_F_DISCOVER  },
     { "FusionExpress",    TOOL_F_EXPRESS   },
@@ -211,6 +226,7 @@ static std::map<Value, Tool> _tools =
     { "FusionIGV",        TOOL_F_IGV       },
     { "FusionCoverage",   TOOL_F_COVERAGE  },
     { "FusionDiff",       TOOL_F_DIFF      },
+    { "FusionReport",     TOOL_F_REPORT    },
 };
 
 static std::map<Tool, std::set<Option>> _required =
@@ -256,9 +272,11 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
     
+    { TOOL_V_REPORT,    { OPT_U_FILES                                   } },
     { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_V_ALLELE,    { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_EXPRESS,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_EXPRESS,   { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_COVERAGE,  { OPT_R_BED, OPT_U_FILES                        } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
     { TOOL_V_IGV,       { OPT_BAM_1                                     } },
@@ -388,6 +406,7 @@ static const struct option long_options[] =
     { "rgtf",    required_argument, 0, OPT_R_GTF   },
     { "rvcf",    required_argument, 0, OPT_R_VCF   },
     { "rfus",    required_argument, 0, OPT_R_FUS   },
+    { "rind",    required_argument, 0, OPT_R_IND   },
 
     { "ufa",     required_argument, 0, OPT_FA_1   },
     { "ufa1",    required_argument, 0, OPT_FA_1   },
@@ -971,6 +990,7 @@ void parse(int argc, char ** argv)
             case OPT_PSL_1:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
+            case OPT_R_IND:
             case OPT_R_FUS:
             case OPT_R_VCF:
             case OPT_R_BED:
@@ -1275,9 +1295,7 @@ void parse(int argc, char ** argv)
 
                 case TOOL_F_DIFF:
                 {
-                    FDiff::Options o;
-
-                    analyze_2<FDiff>(o);
+                    analyze_2<FDiff>();
                     break;
                 }
 
@@ -1318,9 +1336,11 @@ void parse(int argc, char ** argv)
         case TOOL_V_IGV:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
+        case TOOL_V_REPORT:
         case TOOL_V_EXPRESS:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
+        case TOOL_V_KEXPRESS:
         case TOOL_V_SUBSAMPLE:
         {
             auto parseCaller = [&](const std::string &str)
@@ -1347,7 +1367,7 @@ void parse(int argc, char ** argv)
             
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            if (_p.tool != TOOL_V_IGV)
+            if (_p.tool != TOOL_V_IGV && _p.tool != TOOL_V_REPORT)
             {
                 switch (_p.tool)
                 {
@@ -1392,6 +1412,14 @@ void parse(int argc, char ** argv)
                 case TOOL_V_IGV:       { viewer<VViewer>();                 break; }
                 case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }
+
+                case TOOL_V_KEXPRESS:
+                {
+                    VKExpress::Options o;
+                    o.file = _p.opts[OPT_R_IND];
+                    analyze_2<VKExpress>(o);
+                    break;
+                }
 
                 case TOOL_V_EXPRESS:
                 {
