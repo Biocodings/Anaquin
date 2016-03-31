@@ -17,7 +17,7 @@ import tempfile
 ########################################################
 
 # Where Anaquin is located
-ANAQUIN_PATH = '/Users/tedwong/Sources/QA/anaquin'
+ANAQUIN_PATH = './anaquin'
 
 
 ########################################################
@@ -39,7 +39,7 @@ EXPECT_FILES = 'Files'
 EXPECT_LIST = 'List'
 
 # Where the temporary files are saved
-TEMP_PATH = '/tmp/anaquin'
+TEMP_PATH = '/tmp'
 
 
 # Do we want to do unit testing?
@@ -865,7 +865,7 @@ def VarQuinSeq(mix, file1, file2):
     print ('----------------------- K-Mer Express -----------------------\n')
     
     # Index file for the sequins
-    index = '/Users/tedwong/Sources/QA/data/VarQuin/AVA010.v032.index'
+    index = 'data/VarQuin/AVA010.v032.index'
 
     #
     # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
