@@ -224,6 +224,11 @@ namespace Anaquin
     {
         Path path;
     };
+    
+    struct ReportOptions : public AnalyzerOptions
+    {
+        FileName mix;
+    };
 
     struct DoubleMixtureOptions : public AnalyzerOptions
     {

@@ -273,15 +273,15 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
     
-    { TOOL_V_REPORT,    {                                    } },
-    { TOOL_V_ALIGN,     { OPT_R_BED, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_V_ALLELE,    { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_EXPRESS,   { OPT_R_VCF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_V_COVERAGE,  { OPT_R_BED, OPT_U_FILES                        } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF, OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
-    { TOOL_V_IGV,       { OPT_BAM_1                                     } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED, OPT_R_ENDO, OPT_U_FILES            } },
+    { TOOL_V_IGV,       { OPT_BAM_1                                       } },
+    { TOOL_V_REPORT,    { OPT_MIXTURE, OPT_U_FILES                        } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED, OPT_R_ENDO, OPT_U_FILES              } },
+    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_EXPRESS,   { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
 };
 
 /*
@@ -670,10 +670,14 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 
 template <typename Report> void report(typename Report::Options o = typename Report::Options())
 {
-    // Where the session files are generated
-    o.path = _p.path;
+    if (_p.inputs.size() != 2)
+    {
+        throw NotDoubleInputError();
+    }
     
-    Report::generate("", o);
+    o.mix = mixture();
+    
+    Report::generate(_p.inputs[0], _p.inputs[1], o);
 }
 
 template <typename Viewer> void viewer(typename Viewer::Options o = typename Viewer::Options())

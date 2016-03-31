@@ -924,6 +924,10 @@ if __name__ == '__main__':
             file1 = sys.argv[3]
             file2 = sys.argv[4]
             
+            print('Mixture: ' + mix)
+            print('File1: '   + file1)
+            print('File2: '   + file2)
+            
             if   (__mode__ == 'TransQuin'):
                 TransQuinSeq(mix, file1, file2)
             elif (__mode__ == 'VarQuin'):
