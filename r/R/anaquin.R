@@ -402,7 +402,7 @@ loadMixture.FusQuin <- function(file='/Users/tedwong/Sources/QA/data/FusQuin/MFU
     return (r)
 }
 
-loadMixture.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/MVA011.v013.csv')
+loadMixture.VarQuin <- function(file='data/VarQuin/MVA011.v013.csv')
 {
     mix <- read.csv(file, row.names=1, sep='\t')
     colnames(mix) <- c('length', 'A')
