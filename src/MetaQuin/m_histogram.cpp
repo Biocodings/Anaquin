@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
-#include "meta/m_histogram.h"
+#include "MetaQuin/m_histogram.h"
 
 using namespace std;
 

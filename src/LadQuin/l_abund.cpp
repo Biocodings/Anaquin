@@ -1,4 +1,4 @@
-#include "ladder/l_abund.hpp"
+#include "LadQuin/l_abund.hpp"
 #include "parsers/parser_sam.hpp"
 #include <ss/regression/linear.hpp>
 

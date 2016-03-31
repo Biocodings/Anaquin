@@ -3,9 +3,9 @@
 
 #include <numeric>
 #include "data/tokens.hpp"
-#include "meta/m_blat.hpp"
+#include "MetaQuin/m_blat.hpp"
 #include "stats/analyzer.hpp"
-#include "meta/m_assembler.hpp"
+#include "MetaQuin/m_assembler.hpp"
 
 namespace Anaquin
 {

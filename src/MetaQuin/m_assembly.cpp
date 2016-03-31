@@ -1,5 +1,5 @@
-#include "meta/m_blat.hpp"
-#include "meta/m_assembly.hpp"
+#include "MetaQuin/m_blat.hpp"
+#include "MetaQuin/m_assembly.hpp"
 #include "parsers/parser_tsv.hpp"
 
 using namespace Anaquin;

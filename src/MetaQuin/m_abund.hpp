@@ -1,7 +1,7 @@
 #ifndef M_ABUNDANCE_HPP
 #define M_ABUNDANCE_HPP
 
-#include "meta/m_assembly.hpp"
+#include "MetaQuin/m_assembly.hpp"
 
 namespace Anaquin
 {

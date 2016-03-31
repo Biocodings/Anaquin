@@ -1,7 +1,7 @@
 #ifndef M_VELVET_HPP
 #define M_VELVET_HPP
 
-#include "meta/m_histogram.h"
+#include "MetaQuin/m_histogram.h"
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_tsv.hpp"
 

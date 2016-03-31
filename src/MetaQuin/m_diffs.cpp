@@ -1,5 +1,5 @@
-#include "meta/m_diffs.hpp"
-#include "meta/m_assembly.hpp"
+#include "MetaQuin/m_diffs.hpp"
+#include "MetaQuin/m_assembly.hpp"
 
 using namespace Anaquin;
 

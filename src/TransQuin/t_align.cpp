@@ -1,4 +1,4 @@
-#include "trans/t_align.hpp"
+#include "TransQuin/t_align.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;

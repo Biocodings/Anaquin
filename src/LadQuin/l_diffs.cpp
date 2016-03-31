@@ -1,5 +1,5 @@
-#include "ladder/l_diffs.hpp"
-#include "ladder/l_abund.hpp"
+#include "LadQuin/l_diffs.hpp"
+#include "LadQuin/l_abund.hpp"
 
 using namespace Anaquin;
 

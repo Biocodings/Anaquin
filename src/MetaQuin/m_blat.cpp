@@ -1,5 +1,5 @@
 #include <numeric>
-#include "meta/m_blat.hpp"
+#include "MetaQuin/m_blat.hpp"
 #include <boost/format.hpp>
 #include "parsers/parser_blast.hpp"
 

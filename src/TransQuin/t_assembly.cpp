@@ -1,7 +1,7 @@
 #include <fstream>
 #include "data/compare.hpp"
 #include "data/experiment.hpp"
-#include "trans/t_assembly.hpp"
+#include "TransQuin/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
 
 #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }

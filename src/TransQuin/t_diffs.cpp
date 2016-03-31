@@ -5,7 +5,7 @@
  */
 
 #include <ss/misc.hpp>
-#include "trans/t_diffs.hpp"
+#include "TransQuin/t_diffs.hpp"
 #include "data/experiment.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_sleuth.hpp"
