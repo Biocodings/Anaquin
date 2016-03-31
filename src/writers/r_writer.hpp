@@ -88,6 +88,12 @@ namespace Anaquin
                                       const LinearStats  &,
                                       const Units &units);
 
+        static Scripts inflectSummary(const FileName &,
+                                      const FileName &,
+                                      const Hist     &,
+                                      const LinearStats  &,
+                                      const Units &units);
+        
         /*
          * -------------------- Linear Statistics --------------------
          */

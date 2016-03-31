@@ -15,6 +15,8 @@ VExpress::Stats VExpress::analyze(const FileName &file, const Options &o)
     // Initialize the distribution for each sequin
     stats.hist = r.hist();
 
+    stats.n_endo = NAN;
+
     ParserKallisto::parse(Reader(file), [&](const ParserKallisto::Data &d, const ParserProgress &)
     {
         const auto m = r.match(d.id);
@@ -28,6 +30,9 @@ VExpress::Stats VExpress::analyze(const FileName &file, const Options &o)
             const auto measured = d.abund;
             
             stats.add(d.id, known, measured);
+            
+            stats.n_chrT++;
+            stats.hist.at(d.id)++;            
         }
     });
     
@@ -49,7 +54,7 @@ void VExpress::report(const FileName &file, const Options &o)
                                                 stats.hist,
                                                 stats,
                                                 stats,
-                                                "variants"));
+                                                "sequins"));
     o.writer->close();
     
     /*

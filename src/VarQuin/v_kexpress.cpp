@@ -16,6 +16,11 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
 
     VKExpress::Stats stats;
     
+    // Initialize the distribution for each sequin
+    stats.hist = r.hist();
+    
+    stats.n_endo = NAN;
+    
     char *argv[8];
     
     const auto temp = std::string("/tmp/output");
@@ -48,7 +53,7 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
      * Execute Kallisto as if it were a standalone program
      */
 
-    //__main__(8, argv);
+    __main__(8, argv);
     
     /*
      * Parse the generated files. We're interested in the file listing the abundance.
@@ -67,6 +72,9 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
             const auto measured = d.abund;
             
             stats.add(d.id, known, measured);
+            
+            stats.n_chrT++;
+            stats.hist.at(d.id)++;            
         }
     });
     
@@ -88,7 +96,7 @@ void VKExpress::report(const FileName &file1, const FileName &file2, const Optio
                                                 stats.hist,
                                                 stats,
                                                 stats,
-                                                "variants"));
+                                                "sequins"));
     o.writer->close();
     
     /*

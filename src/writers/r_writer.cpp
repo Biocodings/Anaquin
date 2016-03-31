@@ -152,27 +152,27 @@ Scripts StatsWriter::inflectSummary()
     return "Summary for input: %1%\n\n"
            "%41%"
            "   ***\n"
-           "   *** Fraction of %40% for synthetic and experiment relative to all %40% detected in the input file\n"
+           "   *** Proportion of %40% for synthetic and experiment relative to all %40% detected in the input file\n"
            "   ***\n\n"
            "   Synthetic:  %2% (%3%)\n"
            "   Experiment: %4% (%5%)\n\n"
            "   ***\n"
-           "   *** Reference annotation (Synthetic)\n"
+           "   *** Reference annotation\n"
            "   ***\n\n"
            "   File:      %6%\n"
            "   Reference: %7% %8%\n"
            "   Detected:  %9% %8%\n\n"
            "   ***\n"
-           "   *** Please refer to the online documentation for more details on the regression statistics.\n"
+           "   *** Please refer to the online documentation for more details on the statistics.\n"
            "   ***\n"
-           "   *** Correlation: Pearson’s correlation\n"
-           "   *** Slope:       Regression slope for the regression\n"
-           "   *** R2:          Coefficient of determination for the regression\n"
-           "   *** F-stat:      The F test statistic under the null hypothesis\n"
-           "   *** P-value:     The p-value under the null hypothesis\n"
-           "   *** SSM:         Sum of squares of model in ANOVA\n"
-           "   *** SSE:         Sum of squares of errors in ANOVA\n"
-           "   *** SST:         Total sum of squares in ANOVA\n"
+           "   ***   Correlation: Pearson’s correlation\n"
+           "   ***   Slope:       Regression slope for the regression\n"
+           "   ***   R2:          Coefficient of determination for the regression\n"
+           "   ***   F-stat:      The F test statistic under the null hypothesis\n"
+           "   ***   P-value:     The p-value under the null hypothesis\n"
+           "   ***   SSM:         Sum of squares of model in ANOVA\n"
+           "   ***   SSE:         Sum of squares of errors in ANOVA\n"
+           "   ***   SST:         Total sum of squares in ANOVA\n"
            "   ***\n\n"
            "   ***\n"
            "   *** Limit of Quantificiation (LOQ). Estimated by piecewise segmented regression.\n"
@@ -272,6 +272,15 @@ Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR
                                                          % intro
             ).str();
 };
+
+Scripts StatsWriter::inflectSummary(const FileName    &ref,
+                                    const FileName    &query,
+                                    const Hist        &hist,
+                                    const LinearStats &stats,
+                                    const Units &units)
+{
+    throw "Not Implemented";
+}
 
 Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
                                     const FileName     &endoR,
