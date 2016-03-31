@@ -50,7 +50,7 @@ __mode__ = None
 
 def execute(cmd):
     print(cmd)
-    #os.system(cmd)
+    os.system(cmd)
 
 # Execute a FusQuin command
 def rFusQuin(tool, args, config, onlyPrint=False):
@@ -842,6 +842,14 @@ def parse(file):
 
 def generatePDF(r):
     r.generate('report.RMarkdown', 'RMarkdown')
+    
+    # Prepare an R script for 
+    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > /tmp/r2pdf.R')
+
+    # Create the PDF report
+    execute('R CMD BATCH /tmp/r2pdf.R')
+
+    print('PDF generated. Please check report.pdf.')
 
 # Generate a VarQuin report with alignment-free k-mers
 def VarQuinSeq(mix, file1, file2):
