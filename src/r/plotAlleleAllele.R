@@ -7,7 +7,7 @@
 #
 
 #
-# Create a plot for expected allele fraction vs measured allele fraction.
+# Create a plot for expected allele fraction vs measured allele fraction
 #
 
 library(Anaquin)

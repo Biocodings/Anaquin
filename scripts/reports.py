@@ -17,7 +17,7 @@ import tempfile
 ########################################################
 
 # Where Anaquin is located
-ANAQUIN_PATH = '/Users/tedwong/Sources/QA'
+ANAQUIN_PATH = '/Users/tedwong/Sources/QA/anaquin'
 
 
 ########################################################
@@ -39,7 +39,7 @@ EXPECT_FILES = 'Files'
 EXPECT_LIST = 'List'
 
 # Where the temporary files are saved
-TEMP_PATH = ANAQUIN_PATH + os.sep + '__temp__' #str(uuid.uuid4())
+TEMP_PATH = '/tmp/anaquin'
 
 
 # Do we want to do unit testing?
@@ -47,6 +47,10 @@ __unitTesting__ = True
 
 # Global variable
 __mode__ = None
+
+def execute(cmd):
+    print(cmd)
+    #os.system(cmd)
 
 # Execute a FusQuin command
 def rFusQuin(tool, args, config, onlyPrint=False):
@@ -836,18 +840,85 @@ def parse(file):
     print ('Parsing completed. ' + str(len(dict)) + ' keys found.')
     return dict
 
+def generatePDF(r):
+    r.generate('report.RMarkdown', 'RMarkdown')
+
+# Generate a VarQuin report with alignment-free k-mers
+def VarQuinSeq(mix, file1, file2):
+    
+    r = Report()
+    
+    #########################################
+    #                                       #
+    #       1. Generating VarKExpress       #
+    #                                       #
+    #########################################
+    
+    print ('----------------------- K-Mer Express -----------------------\n')
+    
+    # Index file for the sequins
+    index = '/Users/tedwong/Sources/QA/data/VarQuin/AVA010.v032.index'
+
+    #
+    # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
+    #    
+    execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    
+    r.startChapter('Statistics (' + file1 + ' and ' + file2 + ')')
+    
+    r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
+    r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+
+    r.endChapter()
+    
+    ##############################################
+    #                                            #
+    #           2. Generating Apprendix          #
+    #                                            #
+    ##############################################
+
+    r.startChapter('Apprendix: Sequins')
+    r.addTextFile('Expression statistics: ', 'VarKExpress_quins.csv', )
+    r.endChapter()
+
+    generatePDF(r)
+
+#
+# Generates reports for sequins. This script is not meant for extenral use, but embedded within Anaquin.
+#
+
 if __name__ == '__main__':
 
     __mode__ = sys.argv[1]
 
-    # The raw SAM file  
-    file = sys.argv[2]
-    
-    output = 'RMarkdown'
+    if (len(sys.argv) != 3 and len(sys.argv) != 5):
+        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <SAM/BAM File>'
+        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <Mixture> <Paired 1> <Paired 2>'
+    else:
 
-    if   (__mode__ == 'TransQuin'):
-        TransQuin(parse(file), output)
-    elif (__mode__ == 'VarQuin'):
-        VarQuin(parse(file), output)
-    elif (__mode__ == 'FusQuin'):
-        FusQuin(parse(file), output)
+        #
+        # There're two possibilities, either a SAM/BAM file or paired-end sequence files.
+        #
+
+        if (len(sys.argv) == 3):
+            file = sys.argv[2]
+    
+            output = 'RMarkdown'
+
+            if   (__mode__ == 'TransQuin'):
+                TransQuin(parse(file), output)
+            elif (__mode__ == 'VarQuin'):
+                VarQuin(parse(file), output)
+            elif (__mode__ == 'FusQuin'):
+                FusQuin(parse(file), output)        
+        else:
+            mix   = sys.argv[2]
+            file1 = sys.argv[3]
+            file2 = sys.argv[4]
+            
+            if   (__mode__ == 'TransQuin'):
+                TransQuinSeq(mix, file1, file2)
+            elif (__mode__ == 'VarQuin'):
+                VarQuinSeq(mix, file1, file2)
+            elif (__mode__ == 'FusQuin'):
+                FusQuinSeq(mix, file1, file2)
