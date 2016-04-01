@@ -13,10 +13,10 @@ namespace Anaquin
     struct Kallisto
     {
         // Where the output should be saved to
-        static constexpr auto output = "/tmp/output";
+        static constexpr auto output = "/tmp/kallisto";
 
         // Where the abundance file generated
-        static constexpr auto abundFile = "/tmp/output/abundance.tsv";
+        static constexpr auto abundFile = "/tmp/kallisto/abundance.tsv";
         
         static void quant(const std::string &index, const std::string &file1, const std::string &file2)
         {            

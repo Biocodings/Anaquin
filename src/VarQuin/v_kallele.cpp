@@ -19,32 +19,57 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     stats.n_endo = NAN;
     
     // Run quantification in Kallisto
-    Kallisto::quant(o.file, file1, file2);
+    //Kallisto::quant(o.file, file1, file2);
 
     /*
-     * Parsing the generated files. We're interested in the file listing the abundance.
+     * Parsing the generated files. Obviosuly, we can't estimate the allele frequency unless we can detect both
+     * reference and variant sequins.
      */
-    
+
+    std::set<SequinID> ids;
+    std::map<SequinID, Coverage> matchr, matchv;
+
     ParserKallisto::parse(Reader(Kallisto::abundFile), [&](const ParserKallisto::Data &d, const ParserProgress &)
     {
-        const auto m = r.match(d.id);
+        const auto match = r.match(d.id);
         
-        if (m)
+        if (match)
         {
-            // Expected abundance
-            const auto known = r.alleleFreq(m->id);
+            const auto bID = baseID(d.id);
+            ids.insert(bID);
             
-            // Measured abundance
-            const auto measured = d.abund;
-            
-            stats.add(d.id, known, measured);
+            if (isRefID(d.id))
+            {
+                matchr[bID] = d.abund;
+            }
+            else
+            {
+                matchv[bID] = d.abund;
+            }
             
             stats.n_chrT++;
             stats.hist.at(d.id)++;
         }
     });
+
+    for (const auto &id : ids)
+    {
+        if (matchr.count(id) && matchv.count(id))
+        {
+            const auto ref = matchr[id];
+            const auto var = matchv[id];
+            
+            // Expected abundance
+            const auto known = r.alleleFreq(id);
+            
+            // Measured abundance
+            const auto measured = var / (ref + var);
+            
+            stats.add(id, known, measured);
+        }
+    }
     
-    //stats.all.limit = r.absolute(stats.hist);
+    stats.limit = r.absolute(stats.hist);
     
     return stats;
 }

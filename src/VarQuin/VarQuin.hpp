@@ -4,6 +4,7 @@
 #include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_varscan.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace Anaquin
 {
@@ -54,11 +55,28 @@ namespace Anaquin
         VarScan,
     };
 
-    inline SequinID toVar(const SequinID &rID)
+    inline bool isRefID(const SequinID &id)
     {
-        auto vID = rID;
-        boost::replace_all(vID, "_R", "_V");
-        return vID;
+        if (boost::algorithm::ends_with(id, "_R"))
+        {
+            return true;
+        }
+        else if (boost::algorithm::ends_with(id, "_V"))
+        {
+            return false;
+        }
+        
+        throw std::runtime_error("Unknown sequin: " + id);
+    }
+    
+    inline SequinID baseID(const SequinID &id)
+    {
+        auto tmp = id;
+
+        boost::replace_all(tmp, "_R", "");
+        boost::replace_all(tmp, "_V", "");
+        
+        return tmp;
     }
     
     /*

@@ -1,7 +1,7 @@
-#include <iostream>
 #include <boost/format.hpp>
 #include "data/tokens.hpp"
 #include "data/reference.hpp"
+#include "VarQuin/VarQuin.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
@@ -1032,41 +1032,38 @@ void VarRef::validate()
     }
     
     /*
-     * Constructing structure for the variants
+     * Constructing allele frequency for the variants
      */
 
     for (const auto &i : _mixes)
     {
         const auto &data = _mixes.at(i.first);
-        
-        for (const auto &j : _impl->vars)
+
+        for (const auto &j : data)
         {
-            // Eg: D_1_3_R
-            const auto rID = j.id;
-            
-            // Eg: D_1_3_V
-            const auto vID = rID.substr(0, rID.size() - 2) + "_V";
-            
-            auto rIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
+            if (isRefID(j.id))
             {
-                return m.id == rID;
-            });
-
-            auto vIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
-            {
-                return m.id == vID;
-            });
-            
-            assert(rIter != data.end() && vIter != data.end());
-            
-            /*
-             * Important: VARQuin is mapped by it's reference. For example, D_1_3_R. We may also map
-             *            by D_1_3, but it's not implemented. In contrast, mixtures are mapped by both
-             *            D_1_3_R and D_1_3_V.
-             */
-
-            _impl->data[i.first][rID].r = &(*rIter);
-            _impl->data[i.first][rID].v = &(*vIter);
+                // Eg: D_1_3_R
+                const auto rID = j.id;
+                
+                // Eg: D_1_3_V
+                const auto vID = rID.substr(0, rID.size() - 2) + "_V";
+             
+                auto rIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
+                {
+                    return m.id == rID;
+                });
+                
+                auto vIter = std::find_if(data.begin(), data.end(), [&](const MixtureData &m)
+                {
+                    return m.id == vID;
+                });
+                
+                assert(rIter != data.end() && vIter != data.end());
+                
+                _impl->data[i.first][baseID(j.id)].r = &(*rIter);
+                _impl->data[i.first][baseID(j.id)].v = &(*vIter);
+            }
         }
     }
     

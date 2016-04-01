@@ -39,7 +39,7 @@ EXPECT_FILES = 'Files'
 EXPECT_LIST = 'List'
 
 # Where the temporary files are saved
-TEMP_PATH = '/tmp'
+TEMP_PATH = '/tmp/anaquin'
 
 
 # Do we want to do unit testing?
@@ -869,10 +869,12 @@ def VarQuinSeq(mix, file1, file2):
 
     #
     # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
-    #    
-    execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    # 
+    #execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
-    r.startChapter('Statistics (' + file1 + ' and ' + file2 + ')')
+    r.addText(file1 + ' and ' + file2)
+    
+    r.startChapter('Statistics (Expression)')
     
     r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
     r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
@@ -885,7 +887,12 @@ def VarQuinSeq(mix, file1, file2):
     #                                       #
     #########################################
     
+    r.startChapter('Statistics (Allele Frequency)')
     
+    r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
+    r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+
+    r.endChapter()
     
     ##############################################
     #                                            #
@@ -901,6 +908,8 @@ def VarQuinSeq(mix, file1, file2):
 
 #
 # Generates reports for sequins. This script is not meant for extenral use, but embedded within Anaquin.
+#
+#   Eg: scripts/reports.py VarQuin data/VarQuin/MVA011.v013.csv LVA086.1_val_1.fq LVA086.2_val_2.fq
 #
 
 if __name__ == '__main__':
