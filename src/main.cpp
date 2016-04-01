@@ -22,6 +22,7 @@
 #include "VarQuin/v_report.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_express.hpp"
+#include "VarQuin/v_kallele.hpp"
 #include "VarQuin/v_discover.hpp"
 #include "VarQuin/v_coverage.hpp"
 #include "VarQuin/v_kexpress.hpp"
@@ -98,6 +99,7 @@ typedef std::set<Value> Range;
 #define TOOL_F_REPORT    303
 #define TOOL_T_KDIFF     305
 #define TOOL_T_REPORT    306
+#define TOOL_V_KALLELE   307
 
 /*
  * Options specified in the command line
@@ -203,6 +205,7 @@ static std::map<Value, Tool> _tools =
     { "VarExpress",       TOOL_V_EXPRESS   },
     { "VarKExpress",      TOOL_V_KEXPRESS  },
     { "VarReport",        TOOL_V_REPORT    },
+    { "VarKAllele",       TOOL_V_KALLELE   },
 
     { "MetaAssembly",     TOOL_M_ASSEMBLY  },
     { "MetaAbund",        TOOL_M_ABUND     },
@@ -275,11 +278,12 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_V_IGV,       { OPT_BAM_1                                       } },
     { TOOL_V_REPORT,    { OPT_MIXTURE, OPT_U_FILES                        } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED, OPT_R_ENDO, OPT_U_FILES              } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_ENDO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_EXPRESS,   { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
 };
@@ -1371,6 +1375,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_ALLELE:
         case TOOL_V_REPORT:
         case TOOL_V_EXPRESS:
+        case TOOL_V_KALLELE:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
         case TOOL_V_KEXPRESS:
@@ -1447,6 +1452,14 @@ void parse(int argc, char ** argv)
                 case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }
 
+                case TOOL_V_KALLELE:
+                {
+                    VKAllele::Options o;
+                    o.file = _p.opts[OPT_R_IND];
+                    analyze_2<VKAllele>(o);
+                    break;
+                }
+                    
                 case TOOL_V_KEXPRESS:
                 {
                     VKExpress::Options o;

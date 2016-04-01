@@ -98,5 +98,5 @@ string Histogram::barplot(unsigned nbins) const
 string Histogram::barplot() const
 {
 	const char *columns = getenv("COLUMNS");
-	return barplot(columns == NULL ? 80 : strtoul(columns, NULL, 0));
+	return barplot(columns == NULL ? 80 : (int)strtoul(columns, NULL, 0));
 }

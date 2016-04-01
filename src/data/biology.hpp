@@ -13,12 +13,9 @@ namespace Anaquin
 
     enum RNAFeature
     {
-        CDS,
         Exon,
         Gene,
         Intron,
-        StopCodon,
-        StartCodon,
         Transcript,
     };
     

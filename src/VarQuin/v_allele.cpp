@@ -121,6 +121,7 @@ void VAllele::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
 
+    o.info("Generating VarAllele_summary.stats");
     o.writer->open("VarAllele_summary.stats");
     o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats.all, stats.hist));
     o.writer->close();
@@ -129,12 +130,14 @@ void VAllele::report(const FileName &file, const Options &o)
      * Generating CSV for all variants
      */
 
+    o.info("Generating VarAllele_quins.csv");
     writeCSV("VarAllele_quins.csv", stats, o);
     
     /*
      * Generating for AlleleReads
      */
 
+    o.info("Generating VarAllele_alleleReads.R");
     o.writer->open("VarAllele_alleleReads.R");
     o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleReads()));
     o.writer->close();
@@ -143,6 +146,7 @@ void VAllele::report(const FileName &file, const Options &o)
      * Generating for AlleleAllele
      */
     
+    o.info("Generating VarAllele_alleleAllele.R");
     o.writer->open("VarAllele_alleleAllele.R");
     o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleAllele()));
     o.writer->close();

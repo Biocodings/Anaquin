@@ -261,6 +261,8 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
                 stats.endo_trans++;
                 break;
             }
+
+            default: { break; }
         }
     });
     
