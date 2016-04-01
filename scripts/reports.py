@@ -856,6 +856,8 @@ def VarQuinSeq(mix, file1, file2):
     
     r = Report()
     
+    #r.addText(file1 + ' and ' + file2)
+    
     #########################################
     #                                       #
     #       1. Generating VarKExpress       #
@@ -872,8 +874,6 @@ def VarQuinSeq(mix, file1, file2):
     # 
     #execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
-    r.addText(file1 + ' and ' + file2)
-    
     r.startChapter('Statistics (Expression)')
     
     r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
@@ -887,10 +887,15 @@ def VarQuinSeq(mix, file1, file2):
     #                                       #
     #########################################
     
+    #
+    # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
+    # 
+    #execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKAllele -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    
     r.startChapter('Statistics (Allele Frequency)')
     
-    r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
-    r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+    r.addTextFile('Summary statistics', 'VarKAllele_summary.stats', )
+    r.addRCode('Expected allele frequency vs measured allele frequency', 'VarKAllele_abundAbund.R', '')
 
     r.endChapter()
     

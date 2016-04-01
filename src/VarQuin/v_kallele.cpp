@@ -19,7 +19,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     stats.n_endo = NAN;
     
     // Run quantification in Kallisto
-    //Kallisto::quant(o.file, file1, file2);
+    Kallisto::quant(o.file, file1, file2);
 
     /*
      * Parsing the generated files. Obviosuly, we can't estimate the allele frequency unless we can detect both
