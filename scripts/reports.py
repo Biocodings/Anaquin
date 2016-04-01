@@ -872,7 +872,7 @@ def VarQuinSeq(mix, file1, file2):
     #
     # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
     # 
-    #execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Expression)')
     
@@ -890,7 +890,7 @@ def VarQuinSeq(mix, file1, file2):
     #
     # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
     # 
-    #execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKAllele -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKAllele -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Allele Frequency)')
     
