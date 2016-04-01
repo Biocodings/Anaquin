@@ -25,11 +25,11 @@ namespace Anaquin
             
             struct ChrTStats
             {
-                inline Counts count(const std::vector<ChrTData> &data, Mutation type, Probability sign = 1.00) const
+                inline Counts count(const std::vector<ChrTData> &data, Mutation type) const
                 {
                     return std::count_if(data.begin(), data.end(), [&](const ChrTData &d)
                     {
-                        return (d.query.type() == type && d.query.p <= sign) ? 1 : 0;
+                        return (d.query.type() == type) ? 1 : 0;
                     });
                 }
 
@@ -48,14 +48,14 @@ namespace Anaquin
                 inline Counts fnTot() const { return fns.size(); }
                 inline Counts fnSNP() const { return count(fns, Mutation::SNP); }
                 inline Counts fnInd() const { return fnTot() - fnSNP(); }
-
-                inline Counts detectTot() const { return tpTot() + fpTot() + tnTot() + fnTot(); }
-                inline Counts detectSNP() const { return tpSNP() + fpSNP() + tnSNP() + fnSNP(); }
-                inline Counts detectInd() const { return tpInd() + fpInd() + tnInd() + fnInd(); }
                 
-                inline Counts filterTot() const { return tpTot() + fpTot(); }
-                inline Counts filterSNP() const { return tpSNP() + fpSNP(); }
-                inline Counts filterInd() const { return tpInd() + fpInd(); }
+                inline Counts sTot() const { return tpTot() + fpTot(); }
+                inline Counts sSNP() const { return tpSNP() + fpSNP(); }
+                inline Counts sInd() const { return tpInd() + fpInd(); }
+
+                inline Counts dTot() const { return tpTot() + fpTot() + tnTot() + fnTot(); }
+                inline Counts dSNP() const { return tpSNP() + fpSNP() + tnSNP() + fnSNP(); }
+                inline Counts dInd() const { return tpInd() + fpInd() + tnInd() + fnInd(); }
                 
                 std::vector<ChrTData> fps, tps, tns, fns;
 

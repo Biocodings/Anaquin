@@ -26,7 +26,7 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
     Kallisto::quant(o.file, file1, file2);
     
     /*
-     * Parse the generated files. We're interested in the file listing the abundance.
+     * Parsing the generated files. We're interested in the file listing the abundance.
      */
     
     ParserKallisto::parse(Reader(Kallisto::abundFile), [&](const ParserKallisto::Data &d, const ParserProgress &)

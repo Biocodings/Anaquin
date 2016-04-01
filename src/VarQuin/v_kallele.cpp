@@ -22,7 +22,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     Kallisto::quant(o.file, file1, file2);
 
     /*
-     * Parse the generated files. We're interested in the file listing the abundance.
+     * Parsing the generated files. We're interested in the file listing the abundance.
      */
     
     ParserKallisto::parse(Reader(Kallisto::abundFile), [&](const ParserKallisto::Data &d, const ParserProgress &)
@@ -32,7 +32,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
         if (m)
         {
             // Expected abundance
-            const auto known = m->mixes.at(Mix_1);
+            const auto known = r.alleleFreq(m->id);
             
             // Measured abundance
             const auto measured = d.abund;
