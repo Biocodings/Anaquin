@@ -2,6 +2,8 @@
 #define KALLISTO_HPP
 
 #include <string>
+#include <cstring>
+#include <unistd.h>
 
 // Defined by Kallisto
 extern int __main__(int argc, char *argv[]);
