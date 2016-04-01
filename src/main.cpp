@@ -680,8 +680,11 @@ template <typename Report> void report(typename Report::Options o = typename Rep
     }
     
     o.mix = mixture();
-    
-    Report::generate(_p.inputs[0], _p.inputs[1], o);
+
+    return analyzeF<Report>([&](const typename Report::Options &o)
+    {
+        Report::generate(_p.inputs[0], _p.inputs[1], o);
+    }, o);
 }
 
 template <typename Viewer> void viewer(typename Viewer::Options o = typename Viewer::Options())

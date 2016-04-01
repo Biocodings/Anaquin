@@ -64,11 +64,11 @@ plotScatter <- function(data,
 
     if (showStats == 'right')
     {
-        p <- p + annotate("text", label=lm_eqn(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=6, colour='black', parse=TRUE)
+        p <- p + annotate("text", label=lm_eqn(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=4, colour='black', parse=TRUE)
     }
     else
     {
-        p <- p + annotate("text", label=lm_eqn(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=6, colour='black', parse=TRUE)
+        p <- p + annotate("text", label=lm_eqn(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=4, colour='black', parse=TRUE)
     }
     
     p <- p +  theme(axis.title.x=element_text(face='bold', size=15))
