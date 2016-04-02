@@ -276,7 +276,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_ENDO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_EXPRESS,   { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
@@ -597,7 +597,11 @@ template <typename Reference> void addRef(Reference ref)
 template <typename Reference> void applyRef(Reference ref, Option opt)
 {
     std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
-    ref(Reader(_p.opts[opt]));
+    
+    if (!_p.opts[opt].empty())
+    {
+        ref(Reader(_p.opts[opt]));
+    }
 }
 
 /*
@@ -1409,7 +1413,7 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addStd,    &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addStd,    &s, std::placeholders::_1), OPT_R_BED);
                         applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_ENDO);
                         break;
                     }

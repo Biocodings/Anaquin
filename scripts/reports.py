@@ -8,6 +8,7 @@ import os
 import sys
 import math
 import uuid
+import urllib
 import tempfile
 
 ########################################################
@@ -47,6 +48,12 @@ __unitTesting__ = True
 
 # Global variable
 __mode__ = None
+
+def download(url):
+    path = tempfile.gettempdir()
+    path = path + os.sep + str(uuid.uuid4())
+    urllib.urlretrieve(url, path)    
+    return path
 
 def execute(cmd):
     print(cmd)
@@ -852,7 +859,7 @@ def generatePDF(r):
     print('PDF generated. Please check report.pdf.')
 
 # Generate a VarQuin report with alignment-free k-mers
-def VarQuinSeq(mix, file1, file2):
+def VarQuinKM(mix, file1, file2):
     
     r = Report()
     
@@ -867,7 +874,7 @@ def VarQuinSeq(mix, file1, file2):
     print ('----------------------- K-Mer Express -----------------------\n')
     
     # Index file for the sequins
-    index = 'data/VarQuin/AVA010.v032.index'
+    index = download('www.sequin.xyz/data/VarQuin/AVA010.v032.index')
 
     #
     # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
@@ -955,8 +962,8 @@ if __name__ == '__main__':
             print('File2: '   + file2)
             
             if   (__mode__ == 'TransQuin'):
-                TransQuinSeq(mix, file1, file2)
+                TransQuinKM(mix, file1, file2)
             elif (__mode__ == 'VarQuin'):
-                VarQuinSeq(mix, file1, file2)
+                VarQuinKM(mix, file1, file2)
             elif (__mode__ == 'FusQuin'):
-                FusQuinSeq(mix, file1, file2)
+                FusQuinKM(mix, file1, file2)
