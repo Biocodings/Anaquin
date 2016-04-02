@@ -15,9 +15,6 @@ TEST_CASE("Anaquin_InvalidMixture")
 {
     const auto r = Test::test("-t VarAllele -soft gatk -rvcf data/VarQuinAVA009.v032.vcf -m variant.vcf -ufiles variant.vcf");
     
-    
-    
-    
 }
 
 TEST_CASE("Anaquin_EmptyMixture")

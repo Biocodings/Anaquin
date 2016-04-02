@@ -17,7 +17,7 @@ import tempfile
 ########################################################
 
 # Where Anaquin is located
-ANAQUIN_PATH = './anaquin'
+ANAQUIN_PATH = 'anaquin'
 
 
 ########################################################
