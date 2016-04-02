@@ -113,8 +113,8 @@ namespace Anaquin
                 
                 if (m.seq)
                 {
-                    m.eFold    = r.fold(m.seq->id);
-                    m.eAllFreq = r.alleleFreq(m.seq->id);
+                    m.eFold    = r.fold(baseID(m.seq->id));
+                    m.eAllFreq = r.alleleFreq(baseID(m.seq->id));
                 }
             }
 

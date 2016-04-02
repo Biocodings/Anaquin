@@ -2,7 +2,7 @@ Anaquin (Tools for sequin data analysis) - www.sequins.xyz
 
 Version: 1.1.1
 
-  Please visit our website for more information. Developed by Ted Wong & Tim Mercer, Garvan Institute of Medical Research.
+  Please visit our website for more information. Developed by Ted Wong & Timothy Mercer, Garvan Institute of Medical Research.
 
   General options
  
@@ -24,36 +24,51 @@ Version: 1.1.1
 	   
        TransAlign
        TransAssembly
-       TransIGV
-       TransNorm
        TransExpress
-       TransDifferent
+	   TransKExpress
+       TransDiff
+	   TransKDiff
+	   TransReport
+       TransIGV
 	   
        Variant Analysis (VarQuin)
        --------------------------
 	   
        VarAlign
-       VarAllele
-       VarIGV
        VarDiscover
+       VarAllele
+	   VarKAllele
+	   VarKExpress
+	   VarExpress
+	   VarReport
+	   VarSubsample
+       VarIGV
 
        Fusion Analysis (FusQuin)
        -------------------------
 	   
        FusionDiscover
        FusionExpress
+	   FusionDiff
+	   FusionCoverage
+	   FusionReport
        FusionIGV
 	   
        Metageonomic Analysis (MetaQuin)
        --------------------------------
 	   
        MetaAssembly
-       MetaAlign
+       MetaAbund
        MetaDiff
+	   MetaCoverage
+	   MetaReport
        MetaIGV
 	   
        Ladder Analysis (LadderQuin)
        ----------------------------
 	   
        LadderAbund
+	   LadderCopy
        LadderDiff
+	   LadderCoverage
+	   LadderReport
