@@ -4,12 +4,16 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <boost/format.hpp>
 
 // Defined in resources.cpp
 extern std::string ViewerScript();
 
 // Defined in resources.cpp
 extern std::string ReportScript();
+
+// Defined in resources.cpp
+extern std::string __anaquin__;
 
 namespace Anaquin
 {
@@ -42,9 +46,20 @@ namespace Anaquin
                 remove(script);
             }
 
-            static void report(const std::string &args)
+            template <typename Option> static void report(const std::string &type,
+                                                          const FileName &file1,
+                                                          const FileName &file2,
+                                                          const Option &o)
             {
-                Script::run(ReportScript(), "python", args);            
+                const auto cmd = ((boost::format("%1% %2% %3% %4% %5% %6% %7%")
+                                                    % type
+                                                    % __anaquin__
+                                                    % o.work
+                                                    % o.mix
+                                                    % o.index
+                                                    % file1
+                                                    % file2)).str();
+                Script::run(ReportScript(), "python", cmd);
             }
         
             static void viewer(const std::string &args)

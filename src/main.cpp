@@ -158,6 +158,10 @@ Path __working__;
 // Shared with other modules
 Path __output__;
 
+// Full path where Anaquin is
+Path __anaquin__;
+
+
 
 // Shared with other modules
 std::string date()
@@ -272,11 +276,11 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_V_IGV,       { OPT_BAM_1                                       } },
-    { TOOL_V_REPORT,    { OPT_MIXTURE, OPT_U_FILES                        } },
+    { TOOL_V_REPORT,    { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_ENDO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_U_FILES              } },
     { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
@@ -636,16 +640,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
     o.logger->open("anaquin.log");
 #endif
 
-    char cwd[1024];
-
-    if (getcwd(cwd, sizeof(cwd)))
-    {
-        o.working = path; //std::string(cwd) + "/" + path;
-    }
-    else
-    {
-        o.working = path;
-    }
+    o.work = path;
     
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
@@ -679,6 +674,7 @@ template <typename Report> void report(typename Report::Options o = typename Rep
     }
     
     o.mix = mixture();
+    o.index = _p.opts[OPT_R_IND];
 
     return analyzeF<Report>([&](const typename Report::Options &o)
     {
@@ -779,11 +775,8 @@ void parse(int argc, char ** argv)
         printUsage();
     }
 
-    int next, index;
-
-#ifdef UNIT_TESTING
+    // Required for unit-testing
     optind = optreset = 1;
-#endif
 
     /*
      * Reconstruct the overall command
@@ -795,6 +788,8 @@ void parse(int argc, char ** argv)
     }
 
     assert(!_p.command.empty());
+
+    int next, index;
 
     // Attempt to parse and store a floating point from string
     auto parseDouble = [&](const std::string &str, double &r)
@@ -1059,7 +1054,8 @@ void parse(int argc, char ** argv)
         }
     }
 
-    __output__ = _p.path = checkPath(_p.path);
+    __anaquin__ = argv[0];
+    __output__  = _p.path = checkPath(_p.path);
 
     // Exception should've already been thrown if tool is not specified
     assert(_p.tool);
@@ -1457,7 +1453,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_KALLELE:
                 {
                     VKAllele::Options o;
-                    o.file = _p.opts[OPT_R_IND];
+                    o.index = _p.opts[OPT_R_IND];
                     analyze_2<VKAllele>(o);
                     break;
                 }
@@ -1465,7 +1461,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_KEXPRESS:
                 {
                     VKExpress::Options o;
-                    o.file = _p.opts[OPT_R_IND];
+                    o.index = _p.opts[OPT_R_IND];
                     analyze_2<VKExpress>(o);
                     break;
                 }

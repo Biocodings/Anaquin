@@ -856,10 +856,13 @@ def generatePDF(r):
     # Create the PDF report
     execute('R CMD BATCH /tmp/r2pdf.R')
 
+    # Move it to where it's supposed to be
+    execute('mv report.pdf ' + path + ' 2>/dev/null')
+
     print('PDF generated. Please check report.pdf.')
 
 # Generate a VarQuin report with alignment-free k-mers
-def VarQuinKM(mix, file1, file2):
+def VarQuinKM(anaq, path, mix, index, file1, file2):
     
     r = Report()
     
@@ -871,15 +874,8 @@ def VarQuinKM(mix, file1, file2):
     #                                       #
     #########################################
     
-    print ('----------------------- K-Mer Express -----------------------\n')
-    
-    # Index file for the sequins
-    index = download('www.sequin.xyz/data/VarQuin/AVA010.v032.index')
-
-    #
     # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
-    # 
-    execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    execute(anaq + ' -o ' + TEMP_PATH + ' -t VarKExpress -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Expression)')
     
@@ -894,10 +890,8 @@ def VarQuinKM(mix, file1, file2):
     #                                       #
     #########################################
     
-    #
     # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
-    # 
-    execute(ANAQUIN_PATH + ' -o ' + TEMP_PATH + ' -t VarKAllele -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    execute(anaq + ' -o ' + TEMP_PATH + ' -t VarKAllele -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Allele Frequency)')
     
@@ -920,21 +914,21 @@ def VarQuinKM(mix, file1, file2):
     r.addTextFile('Statistics for allele frequency: ', 'VarKAllele_quins.csv', )
     r.endChapter()
 
-    generatePDF(r)
+    generatePDF(r, path)
 
 #
 # Generates reports for sequins. This script is not meant for extenral use, but embedded within Anaquin.
 #
-#   Eg: scripts/reports.py VarQuin data/VarQuin/MVA011.v013.csv LVA086.1_val_1.fq LVA086.2_val_2.fq
+#   Eg: scripts/reports.py VarQuin ./anaquin data/VarQuin/MVA011.v013.csv data/VarQuin/AVA010.v032.index LVA086.1_val_1.fq LVA086.2_val_2.fq
 #
 
 if __name__ == '__main__':
 
     __mode__ = sys.argv[1]
 
-    if (len(sys.argv) != 3 and len(sys.argv) != 5):
+    if (len(sys.argv) != 3 and len(sys.argv) != 8):
         print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <SAM/BAM File>'
-        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <Mixture> <Paired 1> <Paired 2>'
+        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <Anaquin> <Output> <Mixture> <Index> <Paired 1> <Paired 2>'
     else:
 
         #
@@ -953,17 +947,16 @@ if __name__ == '__main__':
             elif (__mode__ == 'FusQuin'):
                 FusQuin(parse(file), output)
         else:
-            mix   = sys.argv[2]
-            file1 = sys.argv[3]
-            file2 = sys.argv[4]
-            
-            print('Mixture: ' + mix)
-            print('File1: '   + file1)
-            print('File2: '   + file2)
+            anaq  = sys.argv[2]
+            path  = sys.argv[3]
+            mix   = sys.argv[4]
+            ind   = sys.argv[5]
+            file1 = sys.argv[6]
+            file2 = sys.argv[7]
             
             if   (__mode__ == 'TransQuin'):
-                TransQuinKM(mix, file1, file2)
+                TransQuinKM(anaq, path, mix, ind, file1, file2)
             elif (__mode__ == 'VarQuin'):
-                VarQuinKM(mix, file1, file2)
+                VarQuinKM(anaq, path, mix, ind, file1, file2)
             elif (__mode__ == 'FusQuin'):
-                FusQuinKM(mix, file1, file2)
+                FusQuinKM(anaq, path, mix, ind, file1, file2)

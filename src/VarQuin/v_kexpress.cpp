@@ -23,7 +23,7 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
     stats.n_endo = NAN;
 
     // Run quantification in Kallisto
-    Kallisto::quant(o.file, file1, file2);
+    Kallisto::quant(o.index, file1, file2);
     
     /*
      * Parsing the generated files. We're interested in the file listing the abundance.

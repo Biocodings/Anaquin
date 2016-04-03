@@ -144,7 +144,7 @@ namespace Anaquin
         };
 
         // Working directory
-        FilePath working;
+        Path work;
         
         std::shared_ptr<Writer> writer = std::shared_ptr<Writer>(new MockWriter());
         std::shared_ptr<Writer> logger = std::shared_ptr<Writer>(new MockWriter());
@@ -207,7 +207,7 @@ namespace Anaquin
     
     struct IndexOptions : public AnalyzerOptions
     {
-        FileName file;
+        FileName index;
     };
 
     struct SingleMixtureOption : public AnalyzerOptions
@@ -228,6 +228,7 @@ namespace Anaquin
     struct ReportOptions : public AnalyzerOptions
     {
         FileName mix;
+        FileName index;
     };
 
     struct DoubleMixtureOptions : public AnalyzerOptions

@@ -219,10 +219,10 @@ void VSample::report(const FileName &file, const Options &o)
     const auto before = VSample::stats(file, o);
 
     // Subsample the alignment
-    VSample::sample(file, o.working + "/VarSample_sampled.sam", before);
+    VSample::sample(file, o.work + "/VarSample_sampled.sam", before);
 
     // Statistics after alignment
-    const auto after = VSample::stats(o.working + "/VarSample_sampled.sam", o);
+    const auto after = VSample::stats(o.work + "/VarSample_sampled.sam", o);
 
     /*
      * Generating bedgraph for the pre-statistics
