@@ -32,19 +32,6 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     CoverageTool::CoverageBedGraphOptions bo;
 
     /*
-     * Generating bedgraph for the standards
-     */
-
-    bo.writer = o.writer;
-    bo.file   = "VarCoverage_chrT.bedgraph";
-
-    CoverageTool::bedGraph(stats.chrT, bo, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.r_var.match(Locus(i, j), MatchRule::Contains);
-    });
-
-    /*
      * Generating summary statistics
      */
     
@@ -54,13 +41,26 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     to.summary  = "VarCoverage_summary.stats";
     to.refs     = r.r_var.hist().size();
     to.length   = r.r_var.size();
-
+    
     CoverageTool::summary(stats.chrT, to, [&](const ChrID &id, Base i, Base j, Coverage)
     {
         // Filter to the regions in the standards
         return r.r_var.match(Locus(i, j), MatchRule::Contains);
     });
-    
+
+    /*
+     * Generating bedgraph for the standards
+     */
+
+    bo.writer = o.writer;
+    bo.file   = "VarCoverage_density.bedgraph";
+
+    CoverageTool::bedGraph(stats.chrT, bo, [&](const ChrID &id, Base i, Base j, Coverage)
+    {
+        // Filter to the regions in the standards
+        return r.r_var.match(Locus(i, j), MatchRule::Contains);
+    });
+
     /*
      * Generating density plot
      */

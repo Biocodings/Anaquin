@@ -402,8 +402,13 @@ loadMixture.FusQuin <- function(file='/Users/tedwong/Sources/QA/data/FusQuin/MFU
     return (r)
 }
 
-loadMixture.VarQuin <- function(file='data/VarQuin/MVA011.v013.csv')
+loadMixture.VarQuin <- function(file='A')
 {
+    if (file == 'A')
+    {
+        file <- url('https://s3.amazonaws.com/anaquin/mixtures/MVA011.v013.csv')
+    }
+
     mix <- read.csv(file, row.names=1, sep='\t')
     colnames(mix) <- c('length', 'A')
     
