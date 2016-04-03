@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 #
-# This script generates a IGV session for sequin analysis. It is a part of the Anaquin distribution, where it's being used in the
-# C++ code. The script can also run by itself.
+# This script generates a IGV session for sequin analysis. It is a part of the Anaquin distribution, where it's being bundled with
+# the C++ code. The script can also run by itself.
 #
 
 import os
@@ -80,34 +80,37 @@ def run(cmd):
     os.system(cmd)
 
 # Generate an index for a SAM/BAM file
-def index(path, align):
-    print('Generating index for ' + align + ' to ' + path)
+def index(path, file):
+    print('Generating index for ' + file + ' to ' + path)
 
-    tmp = '__temp__'
+    tmp = '/tmp'
 
     # Silently create a temporary directory for indexing
     os.system('mkdir -p ' + tmp)
 
     # Eg: /home/tedwong/ABCD.bam to ABCD.bam
-    file = os.path.basename(align)
+    file = os.path.basename(file)
 
     # Eg: ABCD.sam to ABCD
     base = os.path.splitext(os.path.split(file)[-1])[0]
 
-    # Create a sorted alignment, this is always needed for generating an index
-    run('samtools sort ' + align + ' ' + tmp + '/' + base)
-
-    # Generate the index
-    run('samtools index ' + tmp + '/' + file)
+    if (file.endswith('.sam')):
+        bam = file.replace('.sam', '.bam')
+        
+        run('samtools view -Sb ' + file + ' | samtools sort - ' + tmp + os.sep + base)
+        run('samtools index ' + tmp + os.sep + bam)
+        
+        # From now on, we'll deal only with BAM format
+        file = bam
+    else:
+        run('samtools sort ' + file + ' ' + tmp + '/' + base)
+        run('samtools index ' + tmp + '/' + file)
 
     # Copy the alignment file
     run('cp ' + tmp + '/' + file + ' ' + path)
 
     # Move the index
     run('mv ' + tmp + '/*.bai ' + path)
-    
-    # Cleanup the index directory
-    run('rm -rf ' + tmp)
     
     return path + '/' + file
 
@@ -241,12 +244,7 @@ def generateMeta(path, align):
 def printUsage():
         print '\nProgram: viewer.py (Tool for generating IGV session)'
         print 'Version: 1.0.0\n'
-        print 'Usage: python viewer.py <Trans|Fusion|Variant|Meta> <output> <alignment file> <files>'
-        print '\nMode: Trans   -  Transcriptome Analysis'
-        print '      Variant -  Variant Analysis'
-        print '      Ladder  -  Ladder Analysis'
-        print '      Meta    -  Metagenomics Analysis'
-        print '      Fusion  -  Fusion Analysis'
+        print 'Usage: python viewer.py <TransQuin|FusQuin|VarQuin|MetaQuin|LadQuin> <Output> <Alignment File>'
         print ''
 
 if __name__ == '__main__':
@@ -274,22 +272,19 @@ if __name__ == '__main__':
     # Eg: accepted_hits.bam
     align = sys.argv[3]
 
-    if (align.endswith('.sam')):
-        raise Exception('The SAM file format is not supported. Please convert it to the BAM format. Check https://www.biostars.org/p/93559 for further information.')
-
     # Custom file for the standards (eg: annotation for the genes)
     annot = None
 
     # Custom file for the reference genome (eg: synthetic chromosome)
     synth = None
 
-    if (mode == 'Trans'):
+    if (mode == 'TransQuin'):
         generateTrans(path, file, synth, annot)
-    if (mode == 'Fusion'):
+    if (mode == 'FusQuin'):
         generateFusion(path, file)
-    elif (mode == 'Variant'):
+    elif (mode == 'VarQuin'):
         generateVar(path, file)
-    elif (mode == 'Meta'):
+    elif (mode == 'MetQuin'):
         generateMeta(path, file)
     else:
         printUsage()
