@@ -776,7 +776,7 @@ void parse(int argc, char ** argv)
     }
 
     // Required for unit-testing
-    optind = optreset = 1;
+    optind = 1;
 
     /*
      * Reconstruct the overall command

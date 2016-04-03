@@ -47,8 +47,8 @@ namespace Anaquin
             }
 
             template <typename Option> static void report(const std::string &type,
-                                                          const FileName &file1,
-                                                          const FileName &file2,
+                                                          const std::string &file1,
+                                                          const std::string &file2,
                                                           const Option &o)
             {
                 const auto cmd = ((boost::format("%1% %2% %3% %4% %5% %6% %7%")
