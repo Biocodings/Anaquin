@@ -57,18 +57,19 @@ namespace Anaquin
     {
         virtual operator std::string() const
         {
-            if (SSamples<double>::_data.size() == 0)
+            const auto &data = SSamples<double>::_data;
+            
+            if (data.size() == 0)
             {
                 return "-";
             }
-            else if (SSamples<double>::_data.size() > 1)
+            else if (data.size() > 1)
             {
-                return (boost::format("%1% \u00B1 %2%") % SS::mean(SSamples<double>::_data)
-                                                        % SS::sd(SSamples<double>::_data)).str();
+                return (boost::format("%1$.2f \u00B1 %2$.2f") % SS::mean(data) % SS::sd(data)).str();
             }
             else
             {
-                return (boost::format("%1%") % SSamples<double>::_data.front()).str();
+                return (boost::format("%1$.2f") % data.front()).str();
             }
         }
     };
