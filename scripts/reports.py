@@ -847,7 +847,7 @@ def parse(file):
     print ('Parsing completed. ' + str(len(dict)) + ' keys found.')
     return dict
 
-def generatePDF(r):
+def generatePDF(r, path):
     r.generate('report.RMarkdown', 'RMarkdown')
     
     # Prepare an R script for 
@@ -857,7 +857,7 @@ def generatePDF(r):
     execute('R CMD BATCH /tmp/r2pdf.R')
 
     # Move it to where it's supposed to be
-    execute('mv report.pdf ' + path + ' 2>/dev/null')
+    execute('mv report.pdf ' + path + os.sep + ' 2>/dev/null')
 
     print('PDF generated. Please check report.pdf.')
 
