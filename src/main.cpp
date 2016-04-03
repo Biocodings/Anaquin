@@ -132,8 +132,6 @@ typedef std::set<Value> Range;
 #define OPT_U_BASE  900
 
 #define OPT_U_GTF   902
-#define OPT_BAM_1   903
-#define OPT_BAM_2   904
 #define OPT_PSL_1   905
 #define OPT_PSL_2   906
 #define OPT_FA_1    907
@@ -275,7 +273,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
     
-    { TOOL_V_IGV,       { OPT_BAM_1                                       } },
+    { TOOL_V_IGV,       { OPT_U_FILES                                     } },
     { TOOL_V_REPORT,    { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_ENDO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
@@ -403,13 +401,6 @@ static const struct option long_options[] =
     { "sign",    required_argument, 0, OPT_SIGN    },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
     { "cfiles",  required_argument, 0, OPT_C_FILES },
-
-    { "usams",   required_argument, 0, OPT_BAM_1 },
-    { "usam1",   required_argument, 0, OPT_BAM_1 },
-    { "usam2",   required_argument, 0, OPT_BAM_2 },
-    { "ubams",   required_argument, 0, OPT_BAM_1 },
-    { "ubam1",   required_argument, 0, OPT_BAM_1 },
-    { "ubam2",   required_argument, 0, OPT_BAM_2 },
 
     { "factors", required_argument, 0, OPT_U_FACTS },
     { "level",   required_argument, 0, OPT_LEVEL   },
@@ -642,7 +633,7 @@ template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::O
 
     o.work = path;
     
-    auto t = std::time(nullptr);
+    auto t  = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
     o.info(_p.command);
@@ -687,7 +678,7 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
     // Where the session files are generated
     o.path = _p.path;
 
-    Viewer::generate(_p.opts.at(OPT_BAM_1), o);
+    Viewer::generate(_p.opts.at(OPT_U_FILES), o);
 }
 
 /*
@@ -991,18 +982,6 @@ void parse(int argc, char ** argv)
                 break;
             }
                 
-            case OPT_BAM_1:
-            {
-                Tokens::split(val, ",", _p.inputs);
-
-                for (auto i = _p.inputs.size(); i-- > 0;)
-                {
-                    checkFile(_p.opts[opt] = _p.inputs[i]);
-                }
-                
-                break;
-            }
-
             case OPT_U_FACTS:
             {
                 _p.exp->addFactors(_p.opts[opt] = val);
@@ -1020,7 +999,6 @@ void parse(int argc, char ** argv)
             case OPT_U_COV:
             case OPT_U_GTF:
             case OPT_PSL_2:
-            case OPT_BAM_2:
             case OPT_PSL_1:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
@@ -1131,8 +1109,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_SEQUIN:   { printMixture();                  break; }
-                case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_BAM_1); break; }
+                case TOOL_T_SEQUIN:   { printMixture();                    break; }
+                case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_T_ALIGN:
                 {
@@ -1316,8 +1294,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_IGV:      { viewer<FViewer>();               break; }
-                case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_BAM_1); break; }
+                case TOOL_F_IGV:      { viewer<FViewer>();                 break; }
+                case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_F_EXPRESS:
                 {
@@ -1544,8 +1522,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV:      { viewer<FViewer>();               break; }
-                case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_BAM_1); break; }
+                case TOOL_M_IGV:      { viewer<FViewer>();                 break; }
+                case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_M_DIFF:
                 case TOOL_M_ABUND:

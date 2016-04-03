@@ -13,7 +13,7 @@ namespace Anaquin
         // Generate a IGV session for variant analysis
         static void generate(const FileName &file, const Options &o = Options())
         {
-            Script::viewer("Variant " + o.path + " " + file);
+            Script::viewer("VarQuin " + o.path + " " + file);
         }
     };
 }

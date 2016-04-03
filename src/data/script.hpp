@@ -61,7 +61,7 @@ namespace Anaquin
                                                     % file2)).str();
                 Script::run(ReportScript(), "python", cmd);
             }
-        
+
             static void viewer(const std::string &args)
             {
                 Script::run(ViewerScript(), "python", args);
