@@ -2,7 +2,6 @@
 #define REFERENCE_HPP
 
 #include <set>
-#include <map>
 #include "stats/limit.hpp"
 #include "data/variant.hpp"
 #include "data/intervals.hpp"
@@ -674,6 +673,8 @@ namespace Anaquin
 
             TransRef();
 
+            ChrID endoID() const;
+        
             SequinHist geneHist(const ChrID &) const;
 
             // Intervals for reference exons
@@ -689,7 +690,6 @@ namespace Anaquin
              * Accessor functions
              */
 
-            Limit limitExon(const SequinHist &) const;
             Limit limitGene(const SequinHist &) const;
             Limit limitIsof(const SequinHist &) const;
 
@@ -704,11 +704,6 @@ namespace Anaquin
         
             // Return number of introns
             Counts countIntrons(const ChrID &) const;
-
-            // List of chromosomes in the reference
-            std::set<ChrID> ChrIDs() const;
-        
-            inline bool isOnlyChrT() const { return ChrIDs().size() == 1; }
 
             std::vector<GeneID> geneIDs(const ChrID &) const;
 

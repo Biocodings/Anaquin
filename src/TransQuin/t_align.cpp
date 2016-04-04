@@ -89,13 +89,17 @@ template <typename T> void initT(const ChrID &cID, T &t)
 
 static TAlign::Stats init()
 {
+    const auto &r = Standard::instance().r_trans;
+
     TAlign::Stats stats;
 
-    for (const auto &cID : Standard::instance().r_trans.ChrIDs())
-    {
-        initT(cID, stats.data[cID]);
-    }
+    initT(ChrT, stats.data[ChrT]);
 
+    if (!r.endoID().empty())
+    {
+        initT(r.endoID(), stats.data[r.endoID()]);
+    }
+    
     assert(stats.data.size() >= 1);
     
     return stats;
@@ -744,21 +748,21 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
     o.writer->close();
 }
 
-void TAlign::report(const std::vector<FileName> &files, const Options &o)
+void TAlign::report(const FileName &file, const Options &o)
 {
-    const auto stats = TAlign::analyze(files, o);
+    const auto stats = TAlign::analyze(file, o);
     
-    for (auto i = 0; i < files.size(); i++)
-    {
-        const auto &name = o.exp->names().at(i);
-        
-        // Create the directory if haven't
-        o.writer->create(name);
-        
-        // Generating summary statistics for the replicate
-        writeSummary(name + "/TransAlign_summary.stats", extractFile(files[i]), stats[i], o);
-        
-        // Generating sequin statistics for the replicate
-        writeSequins(name + "/TransAlign_quins.stats", extractFile(files[i]), stats[i], o);
-    }
+    /*
+     * Generating summary statistics
+     */
+    
+    o.info("Generating TransAlign_summary.stats");
+    writeSummary("TransAlign_summary.stats", file, stats, o);
+
+    /*
+     * Generating statistics for the sequins
+     */
+    
+    o.info("Generating TransAlign_quins.stats");
+    writeSequins("TransAlign_quins.stats", file, stats, o);
 }

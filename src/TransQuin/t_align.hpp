@@ -238,18 +238,6 @@ namespace Anaquin
             static Stats analyze(const FileName &, const Options &o = Options());
             static Stats analyze(const std::vector<Alignment> &, const Options &o = Options());
 
-            static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o = Options())
-            {
-                std::vector<TAlign::Stats> stats;
-            
-                for (const auto &file : files)
-                {
-                    stats.push_back(analyze(file, o));
-                }
-            
-                return stats;
-            }
-
             static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &aligns, const Options &o = Options())
             {
                 std::vector<TAlign::Stats> stats;
@@ -262,7 +250,7 @@ namespace Anaquin
                 return stats;            
             }
 
-            static void report(const std::vector<FileName> &, const Options &o = Options());
+            static void report(const FileName &, const Options &o = Options());
     };
 }
 

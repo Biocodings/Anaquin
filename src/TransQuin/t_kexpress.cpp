@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include "data/experiment.hpp"
 #include "writers/r_writer.hpp"
 #include "TransQuin/t_express.hpp"
 #include "parsers/parser_kallisto.hpp"
@@ -101,37 +100,39 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
 
 template <typename Functor> TExpress::Stats calculate(const SampleName &name, const TExpress::Options &o, Functor f)
 {
-    TExpress::Stats stats;
+//    TExpress::Stats stats;
+//    
+//    // Eg: A1
+//    stats.name = name;
+//    
+//    const auto &r   = Standard::instance().r_trans;
+//    const auto cIDs = r.ChrIDs();
+//    
+//    stats.data[ChrT];
+//    stats.data[Endo];
+//    
+//    switch (o.metrs)
+//    {
+//        case Metrics::Isoform: { stats.hist = r.hist();         break; }
+//        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
+//    }
+//    
+//    f(stats);
+//    
+//    if (stats.data.at(ChrT).empty())
+//    {
+//        throw std::runtime_error("Failed to find anything from the synthetic chromosome");
+//    }
+//    
+//    switch (o.metrs)
+//    {
+//        case Metrics::Isoform: { stats.limit = r.absolute(stats.hist);  break; }
+//        case Metrics::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
+//    }
+//    
+//    return stats;
     
-    // Eg: A1
-    stats.name = name;
-    
-    const auto &r   = Standard::instance().r_trans;
-    const auto cIDs = r.ChrIDs();
-    
-    stats.data[ChrT];
-    stats.data[Endo];
-    
-    switch (o.metrs)
-    {
-        case Metrics::Isoform: { stats.hist = r.hist();         break; }
-        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
-    }
-    
-    f(stats);
-    
-    if (stats.data.at(ChrT).empty())
-    {
-        throw std::runtime_error("Failed to find anything from the synthetic chromosome");
-    }
-    
-    switch (o.metrs)
-    {
-        case Metrics::Isoform: { stats.limit = r.absolute(stats.hist);  break; }
-        case Metrics::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
-    }
-    
-    return stats;
+    throw "";
 }
 
 TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Options &o)
@@ -349,19 +350,19 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     
     for (auto i = 0; i < files.size(); i++)
     {
-        // Generating summary statistics for the sample
-        writeSummary(stats[i], files[i], o.exp->names().at(i), units, o);
-        
-        o.writer->open(o.exp->names().at(i) + "/TransExpress_quins.csv");
-        o.writer->write(StatsWriter::writeCSV(stats[i].data.at(ChrT), "Expected concentration (attomol/ul)", "Measured abundance (attomol/ul)"));
-        o.writer->close();
-        
-        // Generating scatter plot for the sample
-        writeScatter(stats[i], files[i], o.exp->names().at(i), units, o);
-
-        data_.push_back(stats[i]);
-        hists.push_back(stats[i].hist);
-        data.push_back(stats[i].data.at(ChrT));
+//        // Generating summary statistics for the sample
+//        writeSummary(stats[i], files[i], o.exp->names().at(i), units, o);
+//        
+//        o.writer->open(o.exp->names().at(i) + "/TransExpress_quins.csv");
+//        o.writer->write(StatsWriter::writeCSV(stats[i].data.at(ChrT), "Expected concentration (attomol/ul)", "Measured abundance (attomol/ul)"));
+//        o.writer->close();
+//        
+//        // Generating scatter plot for the sample
+//        writeScatter(stats[i], files[i], o.exp->names().at(i), units, o);
+//
+//        data_.push_back(stats[i]);
+//        hists.push_back(stats[i].hist);
+//        data.push_back(stats[i].data.at(ChrT));
     }
     
     /*

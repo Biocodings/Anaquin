@@ -241,7 +241,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
     { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
     { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES                                     } },
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
@@ -1116,13 +1116,8 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_T_SEQUIN:   { printMixture();                    break; }
+                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
-
-                case TOOL_T_ALIGN:
-                {
-                    analyze<TAlign>(_p.inputs);
-                    break;
-                }
 
                 case TOOL_T_ASSEMBLY:
                 {

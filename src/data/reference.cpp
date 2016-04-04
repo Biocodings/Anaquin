@@ -491,11 +491,24 @@ struct TransRef::TransRefImpl
     
     void addRef(const ChrID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
     {
+        if (cID != ChrT && !refChrID.empty() && cID != refChrID)
+        {
+            throw "Multiple chromosomes in the genome not supported";
+        }
+        
+        if (cID != ChrT)
+        {
+            refChrID = cID;
+        }
+        
         const auto exon = ExonData(cID, iID, gID, l);
 
         raw.exonsByTrans[iID].push_back(exon);
         raw.rawMapper[iID] = gID;
     }
+
+    // Eg: chr21...
+    ChrID refChrID;
     
     RawData cRaw;
 
@@ -507,6 +520,11 @@ struct TransRef::TransRefImpl
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
+
+ChrID TransRef::endoID() const
+{
+    return _impl->refChrID;
+}
 
 Base TransRef::exonBase(const ChrID &cID) const
 {
@@ -531,11 +549,6 @@ Limit TransRef::limitGene(const SequinHist &hist) const
     {
         return findGene(ChrT, id);
     });
-}
-
-Limit TransRef::limitExon(const SequinHist &hist) const
-{
-    throw "Not Implemented";
 }
 
 Limit TransRef::limitIsof(const SequinHist &hist) const
@@ -564,18 +577,6 @@ void TransRef::addExon(const ChrID &cID, const IsoformID &iID, const GeneID &gID
     {
         _impl->data[cID].sortedExons.push_back(ExonData(cID, iID, gID, l));
     }
-}
-
-std::set<ChrID> TransRef::ChrIDs() const
-{
-    std::set<ChrID> cIDs;
-    
-    for (const auto &i : _impl->data)
-    {
-        cIDs.insert(i.first);
-    }
-    
-    return cIDs;
 }
 
 /*
