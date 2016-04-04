@@ -1,6 +1,7 @@
 #ifndef R_WRITER_HPP
 #define R_WRITER_HPP
 
+#include <set>
 #include <math.h>
 #include <sstream>
 #include <numeric>

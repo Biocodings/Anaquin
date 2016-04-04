@@ -9,10 +9,12 @@
 
 #include "data/experiment.hpp"
 
-#include "TransQuin/t_diffs.hpp"
+#include "TransQuin/t_diff.hpp"
+#include "TransQuin/t_kdiff.hpp"
 #include "TransQuin/t_align.hpp"
 #include "TransQuin/t_viewer.hpp"
 #include "TransQuin/t_express.hpp"
+#include "TransQuin/t_kexpress.hpp"
 #include "TransQuin/t_assembly.hpp"
 #include "TransQuin/t_coverage.hpp"
 
@@ -1155,7 +1157,6 @@ void parse(int argc, char ** argv)
                     {
                         const static std::map<std::string, TExpress::Software> m =
                         {
-                            { "kallisto",  TExpress::Software::Kallisto  },
                             { "cufflinks", TExpress::Software::Cufflinks },
                             { "stringtie", TExpress::Software::StringTie },
                         };
@@ -1172,11 +1173,6 @@ void parse(int argc, char ** argv)
                         o.metrs = parseLevel("level", _p.opts[OPT_LEVEL]);
                     }
                     
-                    if (o.soft == TExpress::Software::Kallisto)
-                    {
-                        o.metrs = TExpress::Metrics::Isoform;
-                    }
-
                     analyze<TExpress>(_p.inputs, o);
                     break;
                 }

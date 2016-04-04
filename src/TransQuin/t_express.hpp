@@ -11,7 +11,6 @@ namespace Anaquin
         {
             Cufflinks,
             StringTie,
-            Kallisto,
         };
         
         enum class Metrics
@@ -22,12 +21,12 @@ namespace Anaquin
 
         struct Options : public AnalyzerOptions
         {
-            // This's required by gcc...
             Options() {}
 
-            // Default to gene level
-            Metrics metrs = Metrics::Gene;
+            // Gene or isoform?
+            Metrics metrs;
             
+            // Only Kallisto is supported
             Software soft;
         };
 
