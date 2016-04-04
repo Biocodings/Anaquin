@@ -238,11 +238,13 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
     { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
+    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
-    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
+    { TOOL_T_KEXPRESS, { OPT_SOFT, OPT_R_IND, OPT_U_FILES                         } },
+    { TOOL_T_KDIFF,    { OPT_SOFT, OPT_R_IND, OPT_U_FILES                         } },
 
     /*
      * Ladder Analysis
@@ -279,8 +281,8 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_U_FILES              } },
-    { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_V_KEXPRESS,  { OPT_SOFT, OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_KALLELE,   { OPT_SOFT, OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
 };
@@ -1077,9 +1079,11 @@ void parse(int argc, char ** argv)
         case TOOL_T_IGV:
         case TOOL_T_NORM:
         case TOOL_T_DIFF:
+        case TOOL_T_KDIFF:
         case TOOL_T_ALIGN:
         case TOOL_T_SEQUIN:
         case TOOL_T_EXPRESS:
+        case TOOL_T_KEXPRESS:
         case TOOL_T_ASSEMBLY:
         case TOOL_T_COVERAGE:
         {
@@ -1123,7 +1127,17 @@ void parse(int argc, char ** argv)
                     analyze<TAssembly>(_p.inputs);
                     break;
                 }
+                    
+                case TOOL_T_KEXPRESS:
+                {
+                    break;
+                }
 
+                case TOOL_T_KDIFF:
+                {
+                    break;
+                }
+                    
                 case TOOL_T_EXPRESS:
                 {
                     auto parseLevel = [&](const std::string &key, const std::string &str)

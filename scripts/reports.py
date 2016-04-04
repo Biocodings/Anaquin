@@ -857,7 +857,7 @@ def generatePDF(r, path, name):
     execute('R CMD BATCH /tmp/r2pdf.R')
 
     # Move it to where it's supposed to be
-    execute('mv report.pdf ' + path + os.sep + name ' 2>/dev/null')
+    execute('mv report.pdf ' + path + os.sep + name + ' 2>/dev/null')
 
     print('PDF generated. Please check report.pdf.')
 
