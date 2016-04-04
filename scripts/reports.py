@@ -847,7 +847,7 @@ def parse(file):
     print ('Parsing completed. ' + str(len(dict)) + ' keys found.')
     return dict
 
-def generatePDF(r, path):
+def generatePDF(r, path, name):
     r.generate('report.RMarkdown', 'RMarkdown')
     
     # Prepare an R script for 
@@ -857,7 +857,7 @@ def generatePDF(r, path):
     execute('R CMD BATCH /tmp/r2pdf.R')
 
     # Move it to where it's supposed to be
-    execute('mv report.pdf ' + path + os.sep + ' 2>/dev/null')
+    execute('mv report.pdf ' + path + os.sep + name ' 2>/dev/null')
 
     print('PDF generated. Please check report.pdf.')
 
@@ -914,7 +914,7 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     r.addTextFile('Statistics for allele frequency: ', 'VarKAllele_quins.csv', )
     r.endChapter()
 
-    generatePDF(r, path)
+    generatePDF(r, path, 'VarReport_report.pdf')
 
 #
 # Generates reports for sequins. This script is not meant for extenral use, but embedded within Anaquin.
