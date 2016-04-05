@@ -17,11 +17,6 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
 
     switch (o.caller)
     {
-        case FusionCaller::Kallisto:
-        {
-            throw "Not supported";
-        }
-            
         case FusionCaller::StarFusion:
         {
             ParserSTab::parse(Reader(file), [&](const ParserSTab::Chimeric &c, const ParserProgress &)

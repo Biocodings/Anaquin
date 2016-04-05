@@ -54,11 +54,11 @@
 		EF708C1D1C4C3DDF00039DE4 /* t_parser_HTSeqCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF708C1C1C4C3DDF00039DE4 /* t_parser_HTSeqCount.cpp */; };
 		EF7278121CACD9400012648F /* v_kexpress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278101CACD9400012648F /* v_kexpress.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF72781F1CACEC2F0012648F /* t_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278141CACEC2F0012648F /* t_align.cpp */; };
-		EF7278201CACEC2F0012648F /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278161CACEC2F0012648F /* t_assembly.cpp */; };
+		EF7278201CACEC2F0012648F /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278161CACEC2F0012648F /* t_assembly.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF7278211CACEC2F0012648F /* t_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278181CACEC2F0012648F /* t_coverage.cpp */; };
 		EF7278221CACEC2F0012648F /* t_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72781A1CACEC2F0012648F /* t_diff.cpp */; };
-		EF7278231CACEC2F0012648F /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72781C1CACEC2F0012648F /* t_express.cpp */; };
-		EF72782F1CACEC5E0012648F /* l_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278251CACEC5E0012648F /* l_abund.cpp */; };
+		EF7278231CACEC2F0012648F /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72781C1CACEC2F0012648F /* t_express.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EF72782F1CACEC5E0012648F /* l_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278251CACEC5E0012648F /* l_abund.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF7278301CACEC5E0012648F /* l_copy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278271CACEC5E0012648F /* l_copy.cpp */; };
 		EF7278311CACEC5E0012648F /* l_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278291CACEC5E0012648F /* l_coverage.cpp */; };
 		EF7278321CACEC5E0012648F /* l_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72782B1CACEC5E0012648F /* l_diffs.cpp */; };
@@ -130,7 +130,7 @@
 		EFE700B31C8FAF620086A246 /* libhdf5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE700B21C8FAF620086A246 /* libhdf5.a */; };
 		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
 		EFF4B1D21C53A3CA00DF6A0E /* stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */; };
-		EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF5DE161C4B8AF8001C3496 /* linear.cpp */; };
+		EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF5DE161C4B8AF8001C3496 /* linear.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */

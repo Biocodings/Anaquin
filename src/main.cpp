@@ -1238,7 +1238,6 @@ void parse(int argc, char ** argv)
                     { "StarFusion"  , FusionCaller::StarFusion   },
                     { "TopHat"      , FusionCaller::TopHatFusion },
                     { "TopHatFusion", FusionCaller::TopHatFusion },
-                    { "Kallisto"    , FusionCaller::Kallisto     },
                 };
 
                 return parseEnum("soft", str, m);
