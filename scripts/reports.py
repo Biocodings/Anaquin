@@ -839,7 +839,7 @@ def generatePDF(r, path, name):
     r.generate('report.RMarkdown', 'RMarkdown')
 
     # Prepare an R script for the report
-    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > ' + tempfile.gettempdir() + '/r2pdf.R')
+    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > ' + path + '/r2pdf.R')
 
     # Create the PDF report
     execute('R CMD BATCH /tmp/r2pdf.R')

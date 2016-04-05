@@ -179,7 +179,7 @@ Scripts MetaDataBed()
  * Transcriptome Resources
  */
 
-Scripts PlotScatter_T()
+Scripts PlotTAbundAbund()
 {
     return ToString(src_r_plotScatter_T_R);
 }

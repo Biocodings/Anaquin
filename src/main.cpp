@@ -48,6 +48,7 @@
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
+#include "parsers/parser_tracking.hpp"
 
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
@@ -139,7 +140,6 @@ typedef std::set<Value> Range;
 #define OPT_FA_2    908
 #define OPT_U_COV   911
 #define OPT_U_FACTS 912
-#define OPT_LEVEL   913
 #define OPT_U_FILES 914
 #define OPT_U_NAMES 915
 #define OPT_C_FILES 916
@@ -242,8 +242,8 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_SOFT,    OPT_U_FILES } },
     { TOOL_T_KDIFF,    { OPT_R_IND, OPT_SOFT,    OPT_U_FILES } },
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES  } },
-    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
+    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
 
     /*
      * Ladder Analysis
@@ -404,7 +404,6 @@ static const struct option long_options[] =
     { "cfiles",  required_argument, 0, OPT_C_FILES },
 
     { "factors", required_argument, 0, OPT_U_FACTS },
-    { "level",   required_argument, 0, OPT_LEVEL   },
     { "names",   required_argument, 0, OPT_U_NAMES },
 
     { "rexp",    required_argument, 0, OPT_R_ENDO  },
@@ -949,7 +948,6 @@ void parse(int argc, char ** argv)
              */
 
             case OPT_SOFT:
-            case OPT_LEVEL:
             case OPT_C_SOFT: { _p.opts[opt] = val; break; }
 
             case OPT_U_FILES:
@@ -1088,6 +1086,31 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
+            /*
+             * It's possible to do an expression analysis with Cufflink at the gene or isoform level. We don't know
+             * which, thus we'll compare number of matches.
+             */
+            
+            auto checkCufflinkGene = [&](const FileName &file)
+            {
+                const auto &r = Standard::instance().r_trans;
+                
+                Counts gens = 0;
+                Counts isos = 0;
+                
+                ParserTracking::parse(file, [&](const ParserTracking::Data &data, const ParserProgress &p)
+                {
+                    try
+                    {
+                        if (r.match(data.id))              { isos++; }
+                        if (r.findGene(data.cID, data.id)) { gens++; }
+                    }
+                    catch (...) {}                    
+                });
+                
+                return gens > isos;
+            };
+
             if (_p.tool != TOOL_T_IGV)
             {
                 addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
@@ -1144,7 +1167,7 @@ void parse(int argc, char ** argv)
                     {
                         const static std::map<std::string, TExpress::Software> m =
                         {
-                            { "cufflinks", TExpress::Software::Cufflinks },
+                            { "cufflink", TExpress::Software::Cufflinks },
                             { "stringtie", TExpress::Software::StringTie },
                         };
                         
@@ -1153,11 +1176,12 @@ void parse(int argc, char ** argv)
 
                     TExpress::Options o;
                     
-                    o.soft = parseSoft("soft", _p.opts.at(OPT_SOFT));
+                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
+                    o.metrs = TExpress::Metrics::Gene;
                     
-                    if (_p.opts.count(OPT_LEVEL))
+                    if (o.soft == TExpress::Software::Cufflinks)
                     {
-                        o.metrs = parseLevel("level", _p.opts[OPT_LEVEL]);
+                        o.metrs = checkCufflinkGene(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
                     }
                     
                     analyze<TExpress>(_p.inputs, o);
@@ -1179,12 +1203,11 @@ void parse(int argc, char ** argv)
 
                     auto parseSoft = [&](const std::string &str)
                     {
-                        const static std::map<std::string, TDiffs::DiffSoft> m =
+                        const static std::map<std::string, TDiffs::Software> m =
                         {
-                            { "edgeR",    TDiffs::DiffSoft::edgeR    },
-                            { "deseq2",   TDiffs::DiffSoft::DESeq2   },
-                            { "cuffdiff", TDiffs::DiffSoft::Cuffdiff },
-                            { "sleuth",   TDiffs::DiffSoft::ParserSleuth },
+                            { "edgeR",    TDiffs::Software::edgeR    },
+                            { "deseq2",   TDiffs::Software::DESeq2   },
+                            { "cuffdiff", TDiffs::Software::Cuffdiff },
                         };
                         
                         return parseEnum("soft", str, m);
@@ -1194,12 +1217,7 @@ void parse(int argc, char ** argv)
 
                     o.dSoft = parseSoft(_p.opts[OPT_SOFT]);
 
-                    if (_p.opts.count(OPT_LEVEL))
-                    {
-                        o.metrs = parseMetrs(_p.opts[OPT_LEVEL]);
-                    }
-                    
-                    if (o.dSoft != TDiffs::DiffSoft::Cuffdiff)
+                    if (o.dSoft != TDiffs::Software::Cuffdiff)
                     {
                         o.metrs = TDiffs::Metrics::Isoform;
                     }

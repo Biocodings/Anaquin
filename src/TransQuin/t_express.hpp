@@ -25,8 +25,7 @@ namespace Anaquin
 
             // Gene or isoform?
             Metrics metrs;
-            
-            // Only Kallisto is supported
+
             Software soft;
         };
 
@@ -34,7 +33,7 @@ namespace Anaquin
         {
             typedef LinearStats Data;
 
-            std::map<ChrID, Data> data;
+            Data data;
 
             // Eg: A1
             SampleName name;

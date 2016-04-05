@@ -19,6 +19,7 @@ LinearStats::Data LinearStats::data(bool shouldLog) const
     {
         if (!isnan(p.second.x) && !isnan(p.second.y))
         {
+            
             d.x.push_back(f(p.second.x));
             d.y.push_back(f(p.second.y));
             d.ids.push_back(p.first);

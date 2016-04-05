@@ -17,7 +17,7 @@ using namespace Anaquin;
 
 typedef TDiffs::Metrics  Metrics;
 typedef DiffTest::Status Status;
-typedef TDiffs::DiffSoft Software;
+typedef TDiffs::Software Software;
 
 std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
@@ -313,7 +313,8 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     {
         switch (o.dSoft)
         {
-            case DiffSoft::ParserSleuth:
+/*
+            case Software::ParserSleuth:
             {
                 ParserSleuth::parse(file, [&](const DiffTest &t, const ParserProgress &)
                 {
@@ -322,8 +323,8 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 
                 break;
             }
-
-            case DiffSoft::DESeq2:
+*/
+            case Software::DESeq2:
             {
                 ParserDESeq2::parse(file, [&](const DiffTest &t, const ParserProgress &)
                 {
@@ -333,12 +334,12 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
                 break;                
             }
                 
-            case DiffSoft::edgeR:
+            case Software::edgeR:
             {
                 break;
             }
 
-            case DiffSoft::Cuffdiff:
+            case Software::Cuffdiff:
             {
                 ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
                 {

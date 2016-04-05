@@ -19,7 +19,7 @@ namespace Anaquin
         };
 
         static void parse(const FileName &, std::function<void (const Data &, const ParserProgress &)>);
-    };    
+    };
 }
 
 #endif

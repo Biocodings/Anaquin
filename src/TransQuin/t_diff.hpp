@@ -21,12 +21,11 @@ namespace Anaquin
             HTSeqCount,
         };
         
-        enum class DiffSoft
+        enum class Software
         {
             Cuffdiff,
             edgeR,
             DESeq2,
-            ParserSleuth,
         };
         
         enum class Metrics
@@ -44,7 +43,7 @@ namespace Anaquin
             
             Metrics metrs = Metrics::Gene;
 
-            DiffSoft  dSoft;
+            Software  dSoft;
             CountSoft cSoft;
         };
 

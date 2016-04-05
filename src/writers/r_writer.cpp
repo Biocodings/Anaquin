@@ -32,7 +32,7 @@ extern Scripts PlotSplice();
 extern Scripts PlotScatterPool();
 
 // Defined in resources.cpp
-extern Scripts PlotScatter_T();
+extern Scripts PlotTAbundAbund();
 
 // Defined in resources.cpp
 extern Scripts PlotScatter_F();
@@ -125,7 +125,7 @@ Scripts RWriter::scatter(const std::vector<SequinID> &seqs,
     assert(!xLabel.empty() && !yLabel.empty());
     
     std::stringstream ss;
-    ss << PlotScatter_T();
+    ss << PlotTAbundAbund();
     
     return (boost::format(ss.str()) % date()
                                     % __full_command__
