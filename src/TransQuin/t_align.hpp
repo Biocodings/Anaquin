@@ -168,7 +168,7 @@ namespace Anaquin
                     const auto h = (m == AlignMetrics::AlignExon)   ? &data.at(ChrT).histE :
                                    (m == AlignMetrics::AlignIntron) ? &data.at(ChrT).histI :
                                                                       &data.at(ChrT).overB.hist;
-                    return Standard::instance().r_trans.limitGene(*h);
+                    return Standard::instance().r_trans.absoluteGene(*h);
                 }
                 
                 // Number of non-split reads

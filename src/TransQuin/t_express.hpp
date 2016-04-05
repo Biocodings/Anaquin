@@ -26,20 +26,13 @@ namespace Anaquin
             // Gene or isoform?
             Metrics metrs;
 
+            // What software generated the files?
             Software soft;
         };
 
         struct Stats : public MappingStats, public SequinStats
         {
-            typedef LinearStats Data;
-
-            Data data;
-
-            // Eg: A1
-            SampleName name;
-
-            // Detection limit
-            Limit limit;
+            LinearStats data;
         };
 
         static Stats analyze(const FileName &, const Options &o);

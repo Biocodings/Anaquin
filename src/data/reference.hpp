@@ -686,12 +686,8 @@ namespace Anaquin
             void addGene(const ChrID &, const GeneID    &, const Locus &);
             void addExon(const ChrID &, const GeneID &, const IsoformID &, const Locus &);
 
-            /*
-             * Accessor functions
-             */
-
-            Limit limitGene(const SequinHist &) const;
-            Limit limitIsof(const SequinHist &) const;
+            // Absolute detection limit at the gene level
+            Limit absoluteGene(const SequinHist &) const;
 
             // Number of non-overlapping bases in all exons
             Base exonBase(const ChrID &) const;

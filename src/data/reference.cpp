@@ -543,17 +543,12 @@ std::vector<GeneID> TransRef::geneIDs(const ChrID &cID) const
     return gIDs;
 }
 
-Limit TransRef::limitGene(const SequinHist &hist) const
+Limit TransRef::absoluteGene(const SequinHist &hist) const
 {
     return Reference<TransData, DefaultStats>::absolute(hist, [&](const GeneID &id)
     {
         return findGene(ChrT, id);
     });
-}
-
-Limit TransRef::limitIsof(const SequinHist &hist) const
-{
-    throw "Not Implemented";
 }
 
 void TransRef::addGene(const ChrID &cID, const GeneID &gID, const Locus &l)

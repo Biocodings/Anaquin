@@ -1,14 +1,6 @@
 #include <string>
 
 /*
- * Anaquin R-bioconductor
- */
-
-#include "resources/plotMA.R"
-#include "resources/plotSplice.R"
-#include "resources/plotScatterPool.R"
-
-/*
  * Scripts
  */
 
@@ -41,9 +33,12 @@
  * Transcriptome Resources
  */
 
+#include "resources/plotMA.R"
 #include "resources/plotROC_T.R"
+#include "resources/plotSplice.R"
 #include "resources/plotLODR_T.R"
-#include "resources/plotScatter_T.R"
+#include "resources/plotScatterPool.R"
+#include "resources/plotTAbundAbund.R"
 
 #include "resources/ATR001.v032.gtf"
 #include "resources/MTR002.v013.csv"
@@ -181,7 +176,7 @@ Scripts MetaDataBed()
 
 Scripts PlotTAbundAbund()
 {
-    return ToString(src_r_plotScatter_T_R);
+    return ToString(src_r_plotTAbundAbund_R);
 }
 
 Scripts PlotROC_T()

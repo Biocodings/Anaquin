@@ -246,7 +246,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
 
     switch (o.metrs)
     {
-        case Metrics::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
+        case Metrics::Gene:    { stats.limit = r.absoluteGene(stats.hist); break; }
         //case Metrics::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
         default: { break; } // TODO: Please fix this
     }

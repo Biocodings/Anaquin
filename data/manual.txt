@@ -24,6 +24,7 @@ Version: 1.1.1
 	   
        TransAlign
        TransAssembly
+       TransPooled	   
        TransExpress
        TransKExpress
        TransDiff

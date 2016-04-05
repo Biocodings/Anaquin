@@ -91,12 +91,9 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
     }
 }
 
-template <typename Functor> TExpress::Stats calculate(const SampleName &name, const TExpress::Options &o, Functor f)
+template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o, Functor f)
 {
     TExpress::Stats stats;
-    
-    // Eg: A1
-    stats.name = name;
     
     const auto &r = Standard::instance().r_trans;
     
@@ -115,16 +112,16 @@ template <typename Functor> TExpress::Stats calculate(const SampleName &name, co
     
     switch (o.metrs)
     {
-        case Metrics::Isoform: { stats.limit = r.absolute(stats.hist);  break; }
-        case Metrics::Gene:    { stats.limit = r.limitGene(stats.hist); break; }
+        case Metrics::Isoform: { stats.data.limit = r.absolute(stats.hist);     break; }
+        case Metrics::Gene:    { stats.data.limit = r.absoluteGene(stats.hist); break; }
     }
-    
+
     return stats;
 }
 
 TExpress::Stats TExpress::analyze(const std::vector<Expression> &exps, const Options &o)
 {
-    return calculate("...", o, [&](TExpress::Stats &stats)
+    return calculate(o, [&](TExpress::Stats &stats)
     {
         for (const auto &i : exps)
         {
@@ -137,7 +134,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
 {
     o.info("Parsing: " + file);
     
-    return calculate("", o, [&](TExpress::Stats &stats)
+    return calculate(o, [&](TExpress::Stats &stats)
     {
         switch (o.soft)
         {
@@ -173,20 +170,15 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     });
 }
 
-static void writeSummary(const TExpress::Stats &stats,
-                         const FileName        &file,
-                         const Units           &units,
-                         const TExpress::Options &o)
+static Scripts generateSummary(const TExpress::Stats &stats, const FileName &file, const Units &units, const TExpress::Options &o)
 {
-    o.writer->open("TransExpress_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rEndo,
-                                                std::vector<FileName>     { file  },
-                                                std::vector<SequinHist>   { stats.hist },
-                                                std::vector<MappingStats> { stats },
-                                                std::vector<LinearStats>  { stats.data },
-                                                units));
-    o.writer->close();
+    return StatsWriter::inflectSummary(o.rChrT,
+                                       o.rEndo,
+                                       std::vector<FileName>     { file  },
+                                       std::vector<SequinHist>   { stats.hist },
+                                       std::vector<MappingStats> { stats },
+                                       std::vector<LinearStats>  { stats.data },
+                                       units);
 }
 
 template <typename Stats, typename Options> Scripts writeSampleCSV(const std::vector<SequinID> &ids, const Stats &stats, const Options &o)
@@ -226,10 +218,10 @@ template <typename Stats, typename Options> Scripts writeSampleCSV(const std::ve
             const auto &id = j.first;
             
             // Eg: A1
-            const auto name = i.name;
+            //const auto name = i.name;
             
-            expected[id][i.name] = j.second.x;
-            measured[id][i.name] = j.second.y;
+            //expected[id][i.name] = j.second.x;
+            //measured[id][i.name] = j.second.y;
         }
     }
     
@@ -298,30 +290,47 @@ static void writeScatter(const TExpress::Stats   &stats,
 
 void TExpress::report(const std::vector<FileName> &files, const Options &o)
 {
-    const auto stats = TExpress::analyze(files, o);
-    
     const auto m = std::map<TExpress::Metrics, std::string>
     {
         { TExpress::Metrics::Gene,    "gene"    },
         { TExpress::Metrics::Isoform, "isoform" },
     };
     
+    const auto stats = TExpress::analyze(files, o);
     const auto units = m.at(o.metrs);
     
-    o.info("Generating statistics");
+    /*
+     * Generating summary statistics
+     */
+
+    o.info("Generating summary statistics");
+    o.writer->open("TransExpress_summary.stats");
+    
+    for (auto i = 0; i < files.size(); i++)
+    {
+        o.writer->write(generateSummary(stats[i], files[i], units, o));
+
+        if (i != files.size() - 1)
+        {
+            o.writer->write("\n\n");
+        }
+    }
+    
+    o.writer->close();
     
     /*
      * Generating summary statistics for each sample
      */
     
-    std::vector<TExpress::Stats::Data> data;
+    std::vector<LinearStats> data;
     std::vector<MappingStats> data_;
     std::vector<SequinHist> hists;
     
     for (auto i = 0; i < files.size(); i++)
     {
-        // Generating summary statistics for the sample
-        writeSummary(stats[i], files[i], units, o);
+        /*
+         * Generating detailed statistics for the sequins
+         */
         
         o.writer->open("TransExpress_quins.csv");
         o.writer->write(StatsWriter::writeCSV(stats[i].data, "Expected concentration (attomol/ul)", "Measured abundance (attomol/ul)"));
@@ -348,51 +357,58 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating summary statistics for all samples
      */
     
-    o.writer->open("TransExpress_pooled.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rEndo, files, hists, data_, data, units));
-    o.writer->close();
-
-    /*
-     * Generating CSV of expression for all samples
-     */
-    
-    const auto &r = Standard::instance().r_trans;
-    
-    o.writer->open("TExpress_quins.csv");
-    
-    switch (o.metrs)
+    if (files.size() >= 2)
     {
-        case Metrics::Gene:
-        {
-            o.writer->write(writeSampleCSV(r.geneIDs(ChrT), stats, o));
-            break;
-        }
-            
-        case Metrics::Isoform:
-        {
-            o.writer->write(writeSampleCSV(r.seqIDs(), stats, o));
-            break;
-        }
+        /*
+         * Generating pooled summary statistics
+         */
+        
+        o.writer->open("TransExpress_pooled.stats");
+        o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rEndo, files, hists, data_, data, units));
+        o.writer->close();
+        
+        /*
+         * Generating pooled abundance
+         */
+        
+        o.writer->open("TransExpress_pooled.R");
+        o.writer->write(RWriter::scatterPool("TExpress_quins.csv"));
+        o.writer->close();
     }
-    
-    o.writer->close();
-    
-    /*
-     * Generating scatter plot for all samples
-     */
-    
-    o.writer->open("TransExpress_pooled.R");
-    o.writer->write(RWriter::scatterPool("TExpress_quins.csv"));
-    o.writer->close();
-    
+
     /*
      * Generating spliced plot for all samples (but only if we have the isoforms...)
      */
     
     if (o.metrs == TExpress::Metrics::Isoform)
     {
-        o.writer->open("TransExpress_Splice.R");
+        o.writer->open("TransExpress_splice.R");
         o.writer->write(RWriter::createSplice("TExpress_quins.csv"));
         o.writer->close();
     }
+    
+//    /*
+//     * Generating CSV of expression for all samples
+//     */
+//    
+//    const auto &r = Standard::instance().r_trans;
+//    
+//    o.writer->open("TExpress_quinsA.csv");
+//    
+//    switch (o.metrs)
+//    {
+//        case Metrics::Gene:
+//        {
+//            o.writer->write(writeSampleCSV(r.geneIDs(ChrT), stats, o));
+//            break;
+//        }
+//            
+//        case Metrics::Isoform:
+//        {
+//            o.writer->write(writeSampleCSV(r.seqIDs(), stats, o));
+//            break;
+//        }
+//    }
+//    
+//    o.writer->close();
 }

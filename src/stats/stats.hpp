@@ -95,7 +95,26 @@ namespace Anaquin
         // Emtpy Implementation
     };
     
-    typedef SReals SCounts;
+    struct SCounts : public SSamples<unsigned>
+    {
+        virtual operator std::string() const
+        {
+            const auto &data = SSamples<unsigned>::_data;
+            
+            if (data.size() == 0)
+            {
+                return "-";
+            }
+            else if (data.size() > 1)
+            {
+                return (boost::format("%1% \u00B1 %2%") % SS::mean(data) % SS::sd(data)).str();
+            }
+            else
+            {
+                return (boost::format("%1%") % data.front()).str();
+            }
+        }
+    };
 }
 
 #endif

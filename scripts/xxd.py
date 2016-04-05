@@ -42,7 +42,7 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotROC_T.R',
           'src/r/plotLODR_T.R',
-          'src/r/plotScatter_T.R',
+          'src/r/plotTAbundAbund.R',
 
           'data/TransQuin/ATR001.v032.gtf',
           'data/TransQuin/MTR002.v013.csv',

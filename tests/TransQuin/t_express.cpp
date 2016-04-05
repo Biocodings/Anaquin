@@ -46,7 +46,7 @@ TEST_CASE("TExpress_Perfect")
     o.metrs = TExpress::Metrics::Isoform;
     
     const auto r = TExpress::analyze(exps, o);
-    const auto stats = r.data.at(ChrT).linear();
+    const auto stats = r.data.linear();
 
     REQUIRE(stats.r  == Approx(1.0));
     REQUIRE(stats.m  == Approx(1.0));
@@ -88,7 +88,7 @@ TEST_CASE("TExpress_FlatMix")
     o.metrs = TExpress::Metrics::Isoform;
     
     const auto r = TExpress::analyze(exps, o);
-    const auto stats = r.data.at(ChrT).linear();
+    const auto stats = r.data.linear();
 
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));

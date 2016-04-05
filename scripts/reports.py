@@ -854,6 +854,9 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     
     r = Report()
     
+    global TEMP_PATH    
+    TEMP_PATH = path
+    
     #########################################
     #                                       #
     #       1. Generating VarKExpress       #
@@ -875,8 +878,6 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     #       2. Generating VarKAllele        #
     #                                       #
     #########################################
-    
-    TEMP_PATH = path
     
     # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
     execute(anaq + ' -o ' + path + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)

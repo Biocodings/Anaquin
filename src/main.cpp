@@ -64,7 +64,6 @@ typedef std::set<Value> Range;
 
 #define TOOL_VERSION     'v'
 #define TOOL_TEST        264
-#define TOOL_T_SEQUIN    265
 #define TOOL_T_ALIGN     266
 #define TOOL_T_ASSEMBLY  267
 #define TOOL_T_EXPRESS   268
@@ -184,50 +183,49 @@ std::string date()
 
 static std::map<Value, Tool> _tools =
 {
-    { "test",             TOOL_TEST        },
+    { "test",           TOOL_TEST        },
 
-    { "TransSequin",      TOOL_T_SEQUIN    },
-    { "TransAlign",       TOOL_T_ALIGN     },
-    { "TransAssembly",    TOOL_T_ASSEMBLY  },
-    { "TransExpress",     TOOL_T_EXPRESS   },
-    { "TransKExpress",    TOOL_T_KEXPRESS  },
-    { "TransDiff",        TOOL_T_DIFF      },
-    { "TransKDiff",       TOOL_T_KDIFF     },
-    { "TransNorm",        TOOL_T_NORM      },
-    { "TransIGV",         TOOL_T_IGV       },
-    { "TransCoverage",    TOOL_T_COVERAGE  },
-    { "TransReport",      TOOL_T_REPORT    },
+    { "TransAlign",     TOOL_T_ALIGN     },
+    { "TransAssembly",  TOOL_T_ASSEMBLY  },
+    { "TransExpress",   TOOL_T_EXPRESS   },
+    { "TransKExpress",  TOOL_T_KEXPRESS  },
+    { "TransDiff",      TOOL_T_DIFF      },
+    { "TransKDiff",     TOOL_T_KDIFF     },
+    { "TransNorm",      TOOL_T_NORM      },
+    { "TransIGV",       TOOL_T_IGV       },
+    { "TransCoverage",  TOOL_T_COVERAGE  },
+    { "TransReport",    TOOL_T_REPORT    },
 
-    { "VarAlign",         TOOL_V_ALIGN     },
-    { "VarDiscover",      TOOL_V_DISCOVER  },
-    { "VarIGV",           TOOL_V_IGV       },
-    { "VarAllele",        TOOL_V_ALLELE    },
-    { "VarCoverage",      TOOL_V_COVERAGE  },
-    { "VarSubsample",     TOOL_V_SUBSAMPLE },
-    { "VarExpress",       TOOL_V_EXPRESS   },
-    { "VarKExpress",      TOOL_V_KEXPRESS  },
-    { "VarReport",        TOOL_V_REPORT    },
-    { "VarKAllele",       TOOL_V_KALLELE   },
+    { "VarAlign",       TOOL_V_ALIGN     },
+    { "VarDiscover",    TOOL_V_DISCOVER  },
+    { "VarIGV",         TOOL_V_IGV       },
+    { "VarAllele",      TOOL_V_ALLELE    },
+    { "VarCoverage",    TOOL_V_COVERAGE  },
+    { "VarSubsample",   TOOL_V_SUBSAMPLE },
+    { "VarExpress",     TOOL_V_EXPRESS   },
+    { "VarKExpress",    TOOL_V_KEXPRESS  },
+    { "VarReport",      TOOL_V_REPORT    },
+    { "VarKAllele",     TOOL_V_KALLELE   },
 
-    { "MetaAssembly",     TOOL_M_ASSEMBLY  },
-    { "MetaAbund",        TOOL_M_ABUND     },
-    { "MetaDiff",         TOOL_M_DIFF      },
-    { "MetaIGV",          TOOL_M_IGV       },
-    { "MetaCoverage",     TOOL_M_COVERAGE  },
-    { "MetaReport",       TOOL_M_REPORT    },
+    { "MetaAssembly",   TOOL_M_ASSEMBLY  },
+    { "MetaAbund",      TOOL_M_ABUND     },
+    { "MetaDiff",       TOOL_M_DIFF      },
+    { "MetaIGV",        TOOL_M_IGV       },
+    { "MetaCoverage",   TOOL_M_COVERAGE  },
+    { "MetaReport",     TOOL_M_REPORT    },
 
-    { "LadderCopy",       TOOL_L_COPY     },
-    { "LadderAbund",      TOOL_L_ABUND     },
-    { "LadderDiff",       TOOL_L_DIFF      },
-    { "LadderCoverage",   TOOL_L_COVERAGE  },
-    { "LadderReport",     TOOL_L_REPORT    },
+    { "LadderCopy",     TOOL_L_COPY      },
+    { "LadderAbund",    TOOL_L_ABUND     },
+    { "LadderDiff",     TOOL_L_DIFF      },
+    { "LadderCoverage", TOOL_L_COVERAGE  },
+    { "LadderReport",   TOOL_L_REPORT    },
 
-    { "FusionDiscover",   TOOL_F_DISCOVER  },
-    { "FusionExpress",    TOOL_F_EXPRESS   },
-    { "FusionIGV",        TOOL_F_IGV       },
-    { "FusionCoverage",   TOOL_F_COVERAGE  },
-    { "FusionDiff",       TOOL_F_DIFF      },
-    { "FusionReport",     TOOL_F_REPORT    },
+    { "FusionDiscover", TOOL_F_DISCOVER  },
+    { "FusionExpress",  TOOL_F_EXPRESS   },
+    { "FusionIGV",      TOOL_F_IGV       },
+    { "FusionCoverage", TOOL_F_COVERAGE  },
+    { "FusionDiff",     TOOL_F_DIFF      },
+    { "FusionReport",   TOOL_F_REPORT    },
 };
 
 static std::map<Tool, std::set<Option>> _required =
@@ -236,15 +234,16 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,      { OPT_U_FILES            } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_SOFT,    OPT_U_FILES } },
-    { TOOL_T_KDIFF,    { OPT_R_IND, OPT_SOFT,    OPT_U_FILES } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES  } },
+    { TOOL_T_IGV,      { OPT_U_FILES                                   } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_U_FILES                        } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                        } },
+    { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_SOFT,    OPT_U_FILES           } },
+    { TOOL_T_KDIFF,    { OPT_R_IND, OPT_SOFT,    OPT_U_FILES           } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_T_REPORT,   { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-
+    
     /*
      * Ladder Analysis
      */
@@ -1078,7 +1077,7 @@ void parse(int argc, char ** argv)
         case TOOL_T_DIFF:
         case TOOL_T_KDIFF:
         case TOOL_T_ALIGN:
-        case TOOL_T_SEQUIN:
+        case TOOL_T_REPORT:
         case TOOL_T_EXPRESS:
         case TOOL_T_KEXPRESS:
         case TOOL_T_ASSEMBLY:
@@ -1135,11 +1134,15 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_SEQUIN:   { printMixture();                    break; }
                 case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
                 case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_FILES); break; }
 
+                case TOOL_T_REPORT:
+                {
+                    break;
+                }
+                    
                 case TOOL_T_KEXPRESS:
                 {
                     break;
@@ -1152,17 +1155,6 @@ void parse(int argc, char ** argv)
                     
                 case TOOL_T_EXPRESS:
                 {
-                    auto parseLevel = [&](const std::string &key, const std::string &str)
-                    {
-                        const static std::map<std::string, TExpress::Metrics> m =
-                        {
-                            { "gene",    TExpress::Metrics::Gene    },
-                            { "isoform", TExpress::Metrics::Isoform },
-                        };
-                        
-                        return parseEnum(key, str, m);
-                    };
-
                     auto parseSoft = [&](const std::string &key, const std::string &str)
                     {
                         const static std::map<std::string, TExpress::Software> m =

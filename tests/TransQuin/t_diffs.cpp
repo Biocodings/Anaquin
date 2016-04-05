@@ -11,7 +11,7 @@ TEST_CASE("TDiff_DESeq2")
     TDiffs::Options o;
     
     o.metrs = TDiffs::Metrics::Gene;
-    o.dSoft = TDiffs::DiffSoft::DESeq2;
+    o.dSoft = TDiffs::Software::DESeq2;
 
     const auto r = TDiffs::analyze("tests/data/DESeq2.csv", o);
 
@@ -88,7 +88,7 @@ TEST_CASE("TDiff_AllExpressed")
     TDiffs::Options o;
     
     o.metrs = TDiffs::Metrics::Gene;
-    o.dSoft = TDiffs::DiffSoft::Cuffdiff;
+    o.dSoft = TDiffs::Software::Cuffdiff;
     
     const auto r = TDiffs::analyze(tests, o);
     const auto stats = r.data.at(ChrT).linear();
