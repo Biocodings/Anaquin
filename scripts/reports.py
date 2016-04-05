@@ -20,6 +20,9 @@ import tempfile
 # Where Anaquin is located
 ANAQUIN_PATH = 'anaquin'
 
+# Where the temporary files are saved
+TEMP_PATH = tempfile.gettempdir()
+
 
 ########################################################
 #                                                      #
@@ -39,8 +42,6 @@ EXPECT_FILES = 'Files'
 # Eg: ['1',2',3','4']
 EXPECT_LIST = 'List'
 
-# Where the temporary files are saved
-TEMP_PATH = '/tmp/anaquin'
 
 
 # Do we want to do unit testing?
@@ -872,8 +873,8 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     #                                       #
     #########################################
     
-    # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
-    execute(anaq + ' -o ' + path + ' -t VarKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq
+    execute(anaq + ' -o ' + TEMP_PATH + ' -t VarKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Expression)')
     
@@ -889,7 +890,7 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     #########################################
     
     # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
-    execute(anaq + ' -o ' + path + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    execute(anaq + ' -o ' + TEMP_PATH + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Allele Frequency)')
     
