@@ -1,12 +1,12 @@
 #include <stdexcept>
 #include "writers/r_writer.hpp"
-#include "TransQuin/TransQuin.hpp"
 #include "TransQuin/t_express.hpp"
+#include "parsers/parser_tracking.hpp"
 #include "parsers/parser_stringtie.hpp"
 
-//extern Scripts PlotTAbundAbund();
-
 using namespace Anaquin;
+
+extern Scripts PlotTAbundAbund();
 
 typedef TExpress::Metrics  Metrics;
 typedef TExpress::Software Software;
