@@ -126,24 +126,24 @@ TKExpress::Stats TKExpress::analyze(const FileName &file, const Options &o)
     throw "";
 }
 
-static void writeSummary(const TKExpress::Stats &stats,
-                         const FileName        &file,
-                         const std::string     &name,
-                         const Units           &units,
-                         const TKExpress::Options &o)
-{
-//    o.writer->create(name);
-//    o.writer->open(name + "/TransExpress_summary.stats");
-//    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-//                                                o.rEndo,
-//                                                std::vector<FileName>     { file  },
-//                                                std::vector<SequinHist>   { stats.hist },
-//                                                std::vector<MappingStats> { stats },
-//                                                std::vector<LinearStats>  { stats.data.at(ChrT) },
-//                                                units));
-//    o.writer->close();
-}
-
+//static void writeSummary(const TKExpress::Stats &stats,
+//                         const FileName        &file,
+//                         const std::string     &name,
+//                         const Units           &units,
+//                         const TKExpress::Options &o)
+//{
+////    o.writer->create(name);
+////    o.writer->open(name + "/TransExpress_summary.stats");
+////    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
+////                                                o.rEndo,
+////                                                std::vector<FileName>     { file  },
+////                                                std::vector<SequinHist>   { stats.hist },
+////                                                std::vector<MappingStats> { stats },
+////                                                std::vector<LinearStats>  { stats.data.at(ChrT) },
+////                                                units));
+////    o.writer->close();
+//}
+//
 template <typename Stats, typename Options> Scripts writeSampleCSV(const std::vector<SequinID> &ids, const Stats &stats, const Options &o)
 {
     assert(!ids.empty());

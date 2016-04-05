@@ -51,7 +51,7 @@ template <typename T> void update(TKDiff::Stats &stats, const T &t, const TKDiff
 
 template <typename Functor> TKDiff::Stats calculate(const TKDiff::Options &o, Functor f)
 {
-    const auto &r = Standard::instance().r_trans;
+    //const auto &r = Standard::instance().r_trans;
 
     TKDiff::Stats stats;
 
@@ -169,8 +169,8 @@ TKDiff::Stats TKDiff::analyze(const FileName &file, const Options &o)
     throw "";
 }
 
-static void writeDifferent(const FileName &file, const TKDiff::Stats &stats, const TKDiff::Options &o)
-{
+//static void writeDifferent(const FileName &file, const TKDiff::Stats &stats, const TKDiff::Options &o)
+//{
 //    /*
 //     * Generating a file for differential results. The file should list the relevant information for
 //     * plotting an MA and LODR plot.
@@ -215,9 +215,7 @@ static void writeDifferent(const FileName &file, const TKDiff::Stats &stats, con
 //    }
 //    
 //    o.writer->close();
-    
-    throw "";
-}
+//}
 
 void TKDiff::report(const FileName &file, const Options &o)
 {

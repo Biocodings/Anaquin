@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EF0572711CADFE00004A5280 /* v_kallele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF05726F1CADFE00004A5280 /* v_kallele.cpp */; };
+		EF0572711CADFE00004A5280 /* v_kallele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF05726F1CADFE00004A5280 /* v_kallele.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF0C67931C5F25070033168D /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67871C5F25070033168D /* v_align.cpp */; };
 		EF0C67941C5F25070033168D /* v_allele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67891C5F25070033168D /* v_allele.cpp */; };
 		EF0C67951C5F25070033168D /* v_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C678B1C5F25070033168D /* v_coverage.cpp */; };
@@ -17,7 +17,7 @@
 		EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */; };
 		EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0AE1B21EC6D00DEC381 /* resources.cpp */; };
 		EF1DE0B61B21EC6D00DEC381 /* standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1DE0B01B21EC6D00DEC381 /* standard.cpp */; };
-		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; };
+		EF2290571AC0E58000CE76BF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF2290351AC0E58000CE76BF /* main.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF26156C1B5FF98A00BE8037 /* gdna.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26156A1B5FF98A00BE8037 /* gdna.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF26156D1B5FF98A00BE8037 /* GStr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26156B1B5FF98A00BE8037 /* GStr.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF2615701B5FF99F00BE8037 /* GArgs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF26156E1B5FF99F00BE8037 /* GArgs.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -52,7 +52,7 @@
 		EF6B01D11C60975000D82709 /* t_parser_varscan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6B01D01C60975000D82709 /* t_parser_varscan.cpp */; };
 		EF6D05F31BD3E6040048044F /* sampling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6D05F21BD3E6040048044F /* sampling.cpp */; };
 		EF708C1D1C4C3DDF00039DE4 /* t_parser_HTSeqCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF708C1C1C4C3DDF00039DE4 /* t_parser_HTSeqCount.cpp */; };
-		EF7278121CACD9400012648F /* v_kexpress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278101CACD9400012648F /* v_kexpress.cpp */; };
+		EF7278121CACD9400012648F /* v_kexpress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278101CACD9400012648F /* v_kexpress.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF72781F1CACEC2F0012648F /* t_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278141CACEC2F0012648F /* t_align.cpp */; };
 		EF7278201CACEC2F0012648F /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278161CACEC2F0012648F /* t_assembly.cpp */; };
 		EF7278211CACEC2F0012648F /* t_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278181CACEC2F0012648F /* t_coverage.cpp */; };
@@ -71,7 +71,7 @@
 		EF7278491CACED620012648F /* m_histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278401CACEC940012648F /* m_histogram.cpp */; };
 		EF72F0ED1B6898940092DA34 /* t_parser_top_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72F0EC1B6898940092DA34 /* t_parser_top_fusion.cpp */; };
 		EF73B08B1CB292090073B1D4 /* t_kdiff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF73B0891CB292090073B1D4 /* t_kdiff.cpp */; };
-		EF73B08E1CB292130073B1D4 /* t_kexpress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF73B08D1CB292130073B1D4 /* t_kexpress.cpp */; };
+		EF73B08E1CB292130073B1D4 /* t_kexpress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF73B08D1CB292130073B1D4 /* t_kexpress.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF745EEB1C1E8B1B0072CEBB /* t_parser_gtf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */; };
 		EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF98D6BB1C616B5D00697051 /* t_standard.cpp */; };
 		EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9F70ED1B9C397900B8BD7B /* reference.cpp */; };

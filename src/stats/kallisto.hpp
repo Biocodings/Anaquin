@@ -1,9 +1,9 @@
 #ifndef KALLISTO_HPP
 #define KALLISTO_HPP
 
-#include <string>
 #include <cstring>
 #include <unistd.h>
+#include "data/types.hpp"
 
 // Defined by Kallisto
 extern int __main__(int argc, char *argv[]);
@@ -12,21 +12,16 @@ namespace Anaquin
 {
     struct Kallisto
     {
-        // Where the output should be saved to
-        static constexpr auto output = "/tmp/kallisto";
-
-        // Where the abundance file generated
-        static constexpr auto abundFile = "/tmp/kallisto/abundance.tsv";
-        
-        static void quant(const std::string &index, const std::string &file1, const std::string &file2)
-        {            
+        static FileName quant(const std::string &index, const std::string &file1, const std::string &file2)
+        {
             char *argv[8];
             
             /*
              * Eg: kallisto quant -i /data/index/VarQuin/AVA010.v032.index -o output LVA086.1_val_1.fq LVA086.2_val_2.fq
              */
             
-            const auto output = std::string(Kallisto::output);
+            const auto output = "/tmp/" + std::string(tmpnam(NULL));
+            const auto abund  = output + "/abundance.tsv";
             
             argv[0] = new char[9];
             argv[1] = new char[6];
@@ -53,8 +48,9 @@ namespace Anaquin
              */
             
             __main__(8, argv);
+            
+            return abund;
         }
-        
     };
 }
 

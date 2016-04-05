@@ -19,7 +19,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     stats.n_endo = NAN;
     
     // Run quantification in Kallisto
-    Kallisto::quant(o.index, file1, file2);
+    const auto abundFile = Kallisto::quant(o.index, file1, file2);
 
     /*
      * Parsing the generated files. Obviosuly, we can't estimate the allele frequency unless we can detect both
@@ -29,7 +29,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     std::set<SequinID> ids;
     std::map<SequinID, Coverage> matchr, matchv;
 
-    ParserKallisto::parse(Reader(Kallisto::abundFile), [&](const ParserKallisto::Data &d, const ParserProgress &)
+    ParserKallisto::parse(Reader(abundFile), [&](const ParserKallisto::Data &d, const ParserProgress &)
     {
         const auto match = r.match(d.id);
         

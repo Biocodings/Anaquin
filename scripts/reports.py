@@ -837,9 +837,9 @@ def parse(file):
 
 def generatePDF(r, path, name):
     r.generate('report.RMarkdown', 'RMarkdown')
-    
-    # Prepare an R script for 
-    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > /tmp/r2pdf.R')
+
+    # Prepare an R script for the report
+    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > ' + tempfile.gettempdir() + '/r2pdf.R')
 
     # Create the PDF report
     execute('R CMD BATCH /tmp/r2pdf.R')

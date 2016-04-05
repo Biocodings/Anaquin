@@ -23,13 +23,13 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
     stats.n_endo = NAN;
 
     // Run quantification in Kallisto
-    Kallisto::quant(o.index, file1, file2);
+    const auto abundFile = Kallisto::quant(o.index, file1, file2);
     
     /*
      * Parsing the generated files. We're interested in the file listing the abundance.
      */
     
-    ParserKallisto::parse(Reader(Kallisto::abundFile), [&](const ParserKallisto::Data &d, const ParserProgress &)
+    ParserKallisto::parse(Reader(abundFile), [&](const ParserKallisto::Data &d, const ParserProgress &)
     {
         const auto m = r.match(d.id);
         
