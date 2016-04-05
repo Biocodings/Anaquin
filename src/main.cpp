@@ -67,7 +67,6 @@ typedef std::set<Value> Range;
 #define TOOL_T_ALIGN     266
 #define TOOL_T_ASSEMBLY  267
 #define TOOL_T_EXPRESS   268
-#define TOOL_T_COUNT     269
 #define TOOL_T_DIFF      270
 #define TOOL_T_NORM      271
 #define TOOL_T_IGV       272
@@ -194,7 +193,6 @@ static std::map<Value, Tool> _tools =
     { "TransKExpress",    TOOL_T_KEXPRESS  },
     { "TransDiff",        TOOL_T_DIFF      },
     { "TransKDiff",       TOOL_T_KDIFF     },
-    { "TransCount",       TOOL_T_COUNT     },
     { "TransNorm",        TOOL_T_NORM      },
     { "TransIGV",         TOOL_T_IGV       },
     { "TransCoverage",    TOOL_T_COVERAGE  },
@@ -238,15 +236,14 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,      { OPT_U_FILES                                                             } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                                                  } },
-    { TOOL_T_COUNT,    { OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES                         } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES                                     } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_MIXTURE, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES           } },
+    { TOOL_T_IGV,      { OPT_U_FILES            } },
+    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_SOFT,    OPT_U_FILES } },
+    { TOOL_T_KDIFF,    { OPT_R_IND, OPT_SOFT,    OPT_U_FILES } },
+    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES  } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FACTS, OPT_U_NAMES, OPT_U_FILES } },
-    { TOOL_T_KEXPRESS, { OPT_SOFT, OPT_R_IND, OPT_U_FILES                         } },
-    { TOOL_T_KDIFF,    { OPT_SOFT, OPT_R_IND, OPT_U_FILES                         } },
 
     /*
      * Ladder Analysis
@@ -1118,13 +1115,8 @@ void parse(int argc, char ** argv)
                 case TOOL_T_SEQUIN:   { printMixture();                    break; }
                 case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
+                case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_FILES); break; }
 
-                case TOOL_T_ASSEMBLY:
-                {
-                    analyze<TAssembly>(_p.inputs);
-                    break;
-                }
-                    
                 case TOOL_T_KEXPRESS:
                 {
                     break;
@@ -1172,11 +1164,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_T_COUNT:
-                {                    
-                    break;
-                }
-                    
                 case TOOL_T_DIFF:
                 {
                     auto parseMetrs = [&](const std::string &str)

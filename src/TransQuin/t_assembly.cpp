@@ -269,58 +269,55 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeSummary(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
+static void writeSummary(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto data = stats.data.at(ChrT);
 
-    o.info("Generating statistics for: " + name);
-    
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
     
-    o.writer->create(name);
-    o.writer->open(name + "/TransAssembly_summary.stats");
+    o.writer->open("TransAssembly_summary.stats");
     o.writer->write((boost::format(chrTSummary()) % file
-                                               % stats.chrT_exons
-                                               % stats.endo_exons
-                                               % stats.chrT_trans
-                                               % stats.endo_trans
-                                               % o.rChrT
-                                               % r.countExons(ChrT)
-                                               % r.countIntrons(ChrT)
-                                               % (o.rEndo.empty() ? "-"  : o.rEndo)
-                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons("chr1")))
-                                               % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
-                                               % S(data.eSN)            // 12
-                                               % S(data.eFSN)
-                                               % S(data.eSP)
-                                               % S(data.eFSP)
-                                               % S(data.iSN)            // 16
-                                               % S(data.iFSN)
-                                               % S(data.iSP)
-                                               % S(data.iFSP)
-                                               % S(data.bSN)            // 20
-                                               % S(data.bSP)
-                                               % S(data.cSN)            // 22
-                                               % S(data.cFSN)
-                                               % S(data.cSP)
-                                               % S(data.cFSP)
-                                               % S(data.tSN)
-                                               % S(data.tFSN)
-                                               % S(data.tSP)
-                                               % S(data.tFSP)           // 29
-                                               % data.mExonN            // 31
-                                               % data.mExonR
-                                               % S(data.mExonP)
-                                               % data.mIntronN
-                                               % data.mIntronR          // 34
-                                               % S(data.mIntronP)
-                                               % data.nExonN
-                                               % data.nExonR
-                                               % S(data.nExonP)
-                                               % data.nIntronN
-                                               % data.nIntronR          // 40
-                                               % S(data.nIntronP)).str());
+                                                  % stats.chrT_exons
+                                                  % stats.endo_exons
+                                                  % stats.chrT_trans
+                                                  % stats.endo_trans
+                                                  % o.rChrT
+                                                  % r.countExons(ChrT)
+                                                  % r.countIntrons(ChrT)
+                                                  % (o.rEndo.empty() ? "-"  : o.rEndo)
+                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons("chr1")))
+                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
+                                                  % S(data.eSN)            // 12
+                                                  % S(data.eFSN)
+                                                  % S(data.eSP)
+                                                  % S(data.eFSP)
+                                                  % S(data.iSN)            // 16
+                                                  % S(data.iFSN)
+                                                  % S(data.iSP)
+                                                  % S(data.iFSP)
+                                                  % S(data.bSN)            // 20
+                                                  % S(data.bSP)
+                                                  % S(data.cSN)            // 22
+                                                  % S(data.cFSN)
+                                                  % S(data.cSP)
+                                                  % S(data.cFSP)
+                                                  % S(data.tSN)
+                                                  % S(data.tFSN)
+                                                  % S(data.tSP)
+                                                  % S(data.tFSP)           // 29
+                                                  % data.mExonN            // 31
+                                                  % data.mExonR
+                                                  % S(data.mExonP)
+                                                  % data.mIntronN
+                                                  % data.mIntronR          // 34
+                                                  % S(data.mIntronP)
+                                                  % data.nExonN
+                                                  % data.nExonR
+                                                  % S(data.nExonP)
+                                                  % data.nIntronN
+                                                  % data.nIntronR          // 40
+                                                  % S(data.nIntronP)).str());
     if (stats.data.count(Endo))
     {
         const auto &data = stats.data.at(Endo);
@@ -360,28 +357,9 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
     o.writer->close();
 }
 
-//static void writeSequins(const FileName &file, const FileName &name, const TAssembly::Stats &stats, const TAssembly::Options &o)
-//{
-//    o.writer->open(name + "/TransAssembly_sequin.stats");
-//    o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
-//    
-//    auto format = "%1%\t%2%\t%3%\t%4%";
-//    o.writer->write((boost::format(format) % "ID" % "Exon" % "Intron" % "Transcript").str());
-//    
-//    for (const auto &i : stats.eHist)
-//    {
-//        o.writer->write((boost::format(format) % i.first
-//                                               % stats.eHist.at(i.first)
-//                                               % stats.iHist.at(i.first)
-//                                               % stats.tHist.at(i.first)).str());
-//    }
-//
-//    o.writer->close();
-//}
-
-void TAssembly::report(const std::vector<FileName> &files, const Options &o)
+void TAssembly::report(const FileName &file, const Options &o)
 {
-    const auto stats = TAssembly::analyze(files, o);
+    const auto stats = TAssembly::analyze(file, o);
 
     /*
      * Generating summary statistics for each sample
@@ -389,17 +367,5 @@ void TAssembly::report(const std::vector<FileName> &files, const Options &o)
     
     o.info("Generating summary statistics");
 
-    for (auto i = 0; i < files.size(); i++)
-    {
-        writeSummary(files[i], o.exp->names().at(i), stats[i], o);
-    }
-    
-    /*
-     * Generating sequin statistics for each sample
-     */
-    
-    //for (auto i = 0; i < files.size(); i++)
-    //{
-    //    writeSequins(files[i], o.exp->names().at(i), stats[i], o);
-    //}
+    writeSummary(file, stats, o);
 }

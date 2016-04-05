@@ -11,24 +11,11 @@ import uuid
 import urllib
 import tempfile
 
-########################################################
-#                                                      #
-#         User options. Adjust them for yourself       #
-#                                                      #
-########################################################
-
 # Where Anaquin is located
 ANAQUIN_PATH = 'anaquin'
 
 # Where the temporary files are saved
 TEMP_PATH = tempfile.gettempdir()
-
-
-########################################################
-#                                                      #
-#        DON'T modify anything below this point!       #
-#                                                      #
-########################################################
 
 EXPECT_NUM = 'Number'
 EXPECT_STR = 'String'
@@ -874,7 +861,7 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     #########################################
     
     # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq
-    execute(anaq + ' -o ' + TEMP_PATH + ' -t VarKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    execute(anaq + ' -o ' + path + ' -t VarKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Expression)')
     
@@ -889,8 +876,10 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     #                                       #
     #########################################
     
+    TEMP_PATH = path
+    
     # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
-    execute(anaq + ' -o ' + TEMP_PATH + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    execute(anaq + ' -o ' + path + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
     r.startChapter('Statistics (Allele Frequency)')
     

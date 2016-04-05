@@ -73,23 +73,11 @@ namespace Anaquin
             Counts endo_trans = 0;
         };
 
-        // Analyze a single sample
+        // Analyze for a single sample
         static Stats analyze(const FileName &, const Options &o = Options());
-        
-        // Analyze multiple replicates
-        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o = Options())
-        {
-            std::vector<TAssembly::Stats> stats;
-            
-            for (auto &file : files)
-            {
-                stats.push_back(analyze(file, o));
-            }
-            
-            return stats;
-        }
 
-        static void report(const std::vector<FileName> &, const Options &o = Options());
+        // Report for a single sample
+        static void report(const FileName &, const Options &o = Options());
     };
 }
 
