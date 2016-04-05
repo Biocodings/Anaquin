@@ -67,7 +67,7 @@ static FileName createFilters(const FileName &file, const ChrID &cID)
     return tmp;
 }
 
-static Scripts sSummary()
+static Scripts chrTSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
@@ -119,7 +119,7 @@ static Scripts sSummary()
            "   Novel introns:   %39%/%40% (%41%)\n\n";
 }
 
-static Scripts eSummary()
+static Scripts endoSummary()
 {
     return "   ***************************************************************\n"
            "   ***                                                         ***\n"
@@ -280,7 +280,7 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
     
     o.writer->create(name);
     o.writer->open(name + "/TransAssembly_summary.stats");
-    o.writer->write((boost::format(sSummary()) % file
+    o.writer->write((boost::format(chrTSummary()) % file
                                                % stats.chrT_exons
                                                % stats.endo_exons
                                                % stats.chrT_trans
@@ -325,36 +325,36 @@ static void writeSummary(const FileName &file, const FileName &name, const TAsse
     {
         const auto &data = stats.data.at(Endo);
 
-        o.writer->write((boost::format(eSummary()) % S(data.eSN)        // 1
-                                                   % S(data.eFSN)
-                                                   % S(data.eSP)
-                                                   % S(data.eFSP)
-                                                   % S(data.iSN)        // 5
-                                                   % S(data.iFSN)
-                                                   % S(data.iSP)
-                                                   % S(data.iFSP)
-                                                   % S(data.bSN)        // 9
-                                                   % S(data.bSP)
-                                                   % S(data.cSN)        // 11
-                                                   % S(data.cFSN)
-                                                   % S(data.cSP)
-                                                   % S(data.cFSP)
-                                                   % S(data.tSN)
-                                                   % S(data.tFSN)
-                                                   % S(data.tSP)
-                                                   % S(data.tFSP)       // 18
-                                                   % data.mExonN        // 19
-                                                   % data.mExonR
-                                                   % S(data.mExonP)
-                                                   % data.mIntronN
-                                                   % data.mIntronR      // 23
-                                                   % S(data.mIntronP)
-                                                   % data.nExonN
-                                                   % data.nExonR
-                                                   % S(data.nExonP)
-                                                   % data.nIntronN
-                                                   % data.nIntronR      // 29
-                                                   % S(data.nIntronP)).str());
+        o.writer->write((boost::format(endoSummary()) % S(data.eSN)        // 1
+                                                      % S(data.eFSN)
+                                                      % S(data.eSP)
+                                                      % S(data.eFSP)
+                                                      % S(data.iSN)        // 5
+                                                      % S(data.iFSN)
+                                                      % S(data.iSP)
+                                                      % S(data.iFSP)
+                                                      % S(data.bSN)        // 9
+                                                      % S(data.bSP)
+                                                      % S(data.cSN)        // 11
+                                                      % S(data.cFSN)
+                                                      % S(data.cSP)
+                                                      % S(data.cFSP)
+                                                      % S(data.tSN)
+                                                      % S(data.tFSN)
+                                                      % S(data.tSP)
+                                                      % S(data.tFSP)       // 18
+                                                      % data.mExonN        // 19
+                                                      % data.mExonR
+                                                      % S(data.mExonP)
+                                                      % data.mIntronN
+                                                      % data.mIntronR      // 23
+                                                      % S(data.mIntronP)
+                                                      % data.nExonN
+                                                      % data.nExonR
+                                                      % S(data.nExonP)
+                                                      % data.nIntronN
+                                                      % data.nIntronR      // 29
+                                                      % S(data.nIntronP)).str());
     }
 
     o.writer->close();
