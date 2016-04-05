@@ -1,6 +1,7 @@
 #ifndef KALLISTO_HPP
 #define KALLISTO_HPP
 
+#include <iostream>
 #include <cstring>
 #include <unistd.h>
 #include "data/types.hpp"
@@ -22,6 +23,8 @@ namespace Anaquin
             
             const auto output = std::string(tmpnam(NULL));
             const auto abund  = output + "/abundance.tsv";
+            
+            std::cout << abund << std::endl;
             
             argv[0] = new char[9];
             argv[1] = new char[6];
