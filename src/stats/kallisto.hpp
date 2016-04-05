@@ -20,7 +20,7 @@ namespace Anaquin
              * Eg: kallisto quant -i /data/index/VarQuin/AVA010.v032.index -o output LVA086.1_val_1.fq LVA086.2_val_2.fq
              */
             
-            const auto output = "/tmp/" + std::string(tmpnam(NULL));
+            const auto output = std::string(tmpnam(NULL));
             const auto abund  = output + "/abundance.tsv";
             
             argv[0] = new char[9];
