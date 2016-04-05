@@ -34,7 +34,7 @@ namespace Anaquin
             // Add a reference annotation
             void addTRef(const Reader &);
 
-            void addTSMix(const Reader &);
+            void addTMix(const Reader &);
             void addTDMix(const Reader &);
 
             TransRef r_trans;

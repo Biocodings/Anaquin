@@ -1105,7 +1105,7 @@ void parse(int argc, char ** argv)
 
                     default:
                     {
-                        addMix(std::bind(&Standard::addTSMix, &s, std::placeholders::_1));
+                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
                         break;
                     }
                 }

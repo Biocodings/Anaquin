@@ -684,7 +684,7 @@ namespace Anaquin
             Intervals<IntronInterval> intronInters(const ChrID &) const;
         
             void addGene(const ChrID &, const GeneID    &, const Locus &);
-            void addExon(const ChrID &, const IsoformID &, const GeneID &, const Locus &);
+            void addExon(const ChrID &, const GeneID &, const IsoformID &, const Locus &);
 
             /*
              * Accessor functions

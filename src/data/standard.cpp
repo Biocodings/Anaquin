@@ -208,13 +208,13 @@ void Standard::addTRef(const Reader &r)
         switch (f.type)
         {
             case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
-            case Exon: { r_trans.addExon(f.cID, f.tID, f.gID, f.l); break; }
+            case Exon: { r_trans.addExon(f.cID, f.gID, f.tID, f.l); break; }
             default:   { break; }
         }
     });
 }
 
-void Standard::addTSMix(const Reader &r)
+void Standard::addTMix(const Reader &r)
 {
     ASSERT(countColumns(r) == 3, "Invalid mixture file. Expected three columns for a single mixture.");
 

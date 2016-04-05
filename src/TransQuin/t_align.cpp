@@ -10,10 +10,6 @@ typedef std::function<void (TAlign::Stats &)> Functor;
 typedef TAlign::Stats::AlignMetrics   AlignMetrics;
 typedef TAlign::Stats::MissingMetrics MissingMetrics;
 
-/*
- * -------------------- Initalization --------------------
- */
-
 template <typename T> void initT(const ChrID &cID, T &t)
 {
     const auto &r = Standard::instance().r_trans;
@@ -97,10 +93,10 @@ static TAlign::Stats init()
 
     if (!r.endoID().empty())
     {
-        initT(r.endoID(), stats.data[r.endoID()]);
+        initT(Endo, stats.data[Endo]);
     }
     
-    assert(stats.data.size() >= 1);
+    assert(!stats.data.empty());
     
     return stats;
 }
@@ -428,6 +424,8 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
     return match;
 }
 
+#define REPORT_STATUS() if (!align.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
+
 static void classifyEndo(TAlign::Stats::Data &t,
                          const Alignment &align,
                          const ParserSAM::AlignmentInfo &info,
@@ -439,8 +437,7 @@ static void classifyEndo(TAlign::Stats::Data &t,
     {
         return;
     }
-
-    if (!matchAlign(t, align))
+    else if (!matchAlign(t, align))
     {
         t.unknowns.push_back(UnknownAlignment(align.name, align.l));
     }
@@ -481,7 +478,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
             }
             else
             {
-                classifyEndo(stats.data.at(align.cID), align, info, o);
+                classifyEndo(stats.data.at(Endo), align, info, o);
             }
         }
     });
@@ -511,7 +508,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
             }
             else if (stats.data.count(align.cID))
             {
-                classifyEndo(stats.data.at(align.cID), align, info, o);
+                classifyEndo(stats.data.at(Endo), align, info, o);
             }
             
             /*

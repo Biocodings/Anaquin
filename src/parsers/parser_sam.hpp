@@ -26,8 +26,6 @@ namespace Anaquin
 
         static void parse(const FileName &file, Functor);
     };
-
-    #define REPORT_STATUS() if (!align.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
 }
 
 #endif

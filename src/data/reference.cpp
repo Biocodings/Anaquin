@@ -567,7 +567,7 @@ void TransRef::addGene(const ChrID &cID, const GeneID &gID, const Locus &l)
     }
 }
 
-void TransRef::addExon(const ChrID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l)
+void TransRef::addExon(const ChrID &cID, const GeneID &gID, const IsoformID &iID, const Locus &l)
 {
     if (cID == ChrT)
     {
