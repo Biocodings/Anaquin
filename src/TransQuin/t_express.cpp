@@ -335,7 +335,6 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
         o.writer->open("TransExpress_quins.csv");
         o.writer->write(StatsWriter::writeCSV(stats[i].data, "Expected concentration (attomol/ul)", "Measured abundance (attomol/ul)"));
         o.writer->close();
-        
 
         /*
          * Generating for AbundAbund

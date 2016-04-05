@@ -65,7 +65,7 @@ Version: 1.1.1
        MetaReport
        MetaIGV
 	   
-       Ladder Analysis (LadderQuin)
+       Ladder Analysis (LadQuin)
        ----------------------------
 	   
        LadderAbund
