@@ -1,6 +1,6 @@
 #include <catch.hpp>
 #include "unit/test.hpp"
-#include "TransQuin/t_diffs.hpp"
+#include "TransQuin/t_diff.hpp"
 
 using namespace Anaquin;
 
