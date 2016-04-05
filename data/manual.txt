@@ -25,10 +25,10 @@ Version: 1.1.1
        TransAlign
        TransAssembly
        TransExpress
-	   TransKExpress
+       TransKExpress
        TransDiff
-	   TransKDiff
-	   TransReport
+       TransKDiff
+       TransReport
        TransIGV
 	   
        Variant Analysis (VarQuin)
@@ -37,11 +37,11 @@ Version: 1.1.1
        VarAlign
        VarDiscover
        VarAllele
-	   VarKAllele
-	   VarKExpress
-	   VarExpress
-	   VarReport
-	   VarSubsample
+       VarKAllele
+       VarKExpress
+       VarExpress
+       VarReport
+       VarSubsample
        VarIGV
 
        Fusion Analysis (FusQuin)
@@ -49,9 +49,9 @@ Version: 1.1.1
 	   
        FusionDiscover
        FusionExpress
-	   FusionDiff
-	   FusionCoverage
-	   FusionReport
+       FusionDiff
+       FusionCoverage
+       FusionReport
        FusionIGV
 	   
        Metageonomic Analysis (MetaQuin)
@@ -60,15 +60,15 @@ Version: 1.1.1
        MetaAssembly
        MetaAbund
        MetaDiff
-	   MetaCoverage
-	   MetaReport
+       MetaCoverage
+       MetaReport
        MetaIGV
 	   
        Ladder Analysis (LadderQuin)
        ----------------------------
 	   
        LadderAbund
-	   LadderCopy
+       LadderCopy
        LadderDiff
-	   LadderCoverage
-	   LadderReport
+       LadderCoverage
+       LadderReport
