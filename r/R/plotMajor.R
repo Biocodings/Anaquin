@@ -23,8 +23,8 @@ expectSplice <- function(data, ids, mix='Mix.A')
         
         stopifnot(nrow(isos) >= 1)
         
-        minor <- isos[which.min(isos$Mix.A),]$Mix.A
-        major <- isos[which.max(isos$Mix.A),]$Mix.A
+        minor <- isos[which.min(isos$A),]$A
+        major <- isos[which.max(isos$A),]$A
 
         splice[row.names(splice) == gID,] <- (minor / major)
     }
@@ -47,7 +47,7 @@ plotMajor <- function(data,
     # Count table for the replicates
     #samples <- data.frame(A1=data$seqs$A1, A2=data$seqs$A2, A2=data$seqs$A3)
     
-    samples <- data.frame(B1=data$seqs$B1, B2=data$seqs$B2, B3=data$seqs$B3) # TODO: FIX THIS!!!!
+    samples <- data.frame(A1=data$seqs$A1, A2=data$seqs$A2, A3=data$seqs$A3) # TODO: FIX THIS!!!!
     row.names(samples) <- row.names(data$seqs)
 
     # Maximum for the samples

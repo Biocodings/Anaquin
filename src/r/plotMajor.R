@@ -8,7 +8,7 @@
 
 library(Anaquin)
 
-data <- read.csv('%3%/%4%', row.names=1)
-data <- TransQuin(seqs=row.names(data), B1=data$B1, B2=data$B2, B3=data$B3)
+data <- read.csv('%3%/%4%', sep='\t', row.names=1)
+data <- TransQuin(seqs=row.names(data), A1=data[,2], A2=data[,3], A3=data[,4])
 
 plotMajor(data)
