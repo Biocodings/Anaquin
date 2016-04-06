@@ -34,6 +34,7 @@
  */
 
 #include "resources/plotMA.R"
+#include "resources/plotFold.R"
 #include "resources/plotROC_T.R"
 #include "resources/plotMajor.R"
 #include "resources/plotLODR_T.R"
@@ -154,6 +155,11 @@ Scripts MetaDataBed()
 /*
  * Transcriptome Resources
  */
+
+Scripts PlotFold()
+{
+    return ToString(src_r_plotFold_R);
+}
 
 Scripts PlotRAbundAbund()
 {

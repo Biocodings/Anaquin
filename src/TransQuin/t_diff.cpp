@@ -14,11 +14,23 @@
 
 using namespace Anaquin;
 
-typedef TDiffs::Metrics  Metrics;
-typedef DiffTest::Status Status;
-typedef TDiffs::Software Software;
+// Defined in resources.cpp
+extern Scripts PlotFold();
 
-std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
+// Defined in resources.cpp
+extern Scripts PlotROC_T();
+
+// Defined in resources.cpp
+extern Scripts PlotMA();
+
+// Defined in resources.cpp
+extern Scripts PlotLODR_T();
+
+typedef TDiff::Metrics  Metrics;
+typedef DiffTest::Status Status;
+typedef TDiff::Software Software;
+
+std::vector<std::string> TDiff::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
     assert(qs.size() == folds.size());
     
@@ -42,7 +54,7 @@ std::vector<std::string> TDiffs::classify(const std::vector<double> &qs, const s
     return r;
 }
 
-template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const TDiffs::Options &o)
+template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const TDiff::Options &o)
 {
     assert(t.cID == ChrT);
     
@@ -85,7 +97,7 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
                     measured = std::pow(2, measured);
                 }
 
-                stats.data[t.cID].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                stats.data.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
 
             break;
@@ -111,22 +123,22 @@ template <typename T> void classifyChrT(TDiffs::Stats &stats, const T &t, const 
                     measured = std::pow(2, measured);
                 }
                 
-                stats.data[ChrT].add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                stats.data.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
 
             break;
         }
     }
     
-    stats.data[t.cID].eLogFs.push_back(log2(known));
+    stats.data.eLogFs.push_back(log2(known));
 }
 
-template <typename T> void classifyEndo(TDiffs::Stats &stats, const T &t, const TDiffs::Options &)
+template <typename T> void classifyEndo(TDiff::Stats &stats, const T &t, const TDiff::Options &)
 {
-    stats.data[t.cID].eLogFs.push_back(NAN);
+    stats.data.eLogFs.push_back(NAN);
 }
 
-template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs::Options &o)
+template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::Options &o)
 {
     if (t.cID == ChrT)
     {
@@ -139,7 +151,7 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
         classifyEndo(stats, t, o);
     }
 
-    stats.data[t.cID].ids.push_back(t.id);
+    stats.data.ids.push_back(t.id);
     
     /*
      * The expected log-folds is done in the classifer (because it can only be done for synthetic)
@@ -147,28 +159,25 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
     
     if (t.status == Status::Tested)
     {
-        stats.data[t.cID].ps.push_back(t.p);
-        stats.data[t.cID].logFs.push_back(t.logF);
-        stats.data[t.cID].logFSEs.push_back(t.logFSE);
-        stats.data[t.cID].baseMeans.push_back(t.baseMean);
+        stats.data.ps.push_back(t.p);
+        stats.data.logFs.push_back(t.logF);
+        stats.data.logFSEs.push_back(t.logFSE);
+        stats.data.baseMeans.push_back(t.baseMean);
     }
     else
     {
-        stats.data[t.cID].ps.push_back(NAN);
-        stats.data[t.cID].logFs.push_back(NAN);
-        stats.data[t.cID].logFSEs.push_back(NAN);
-        stats.data[t.cID].baseMeans.push_back(NAN);
+        stats.data.ps.push_back(NAN);
+        stats.data.logFs.push_back(NAN);
+        stats.data.logFSEs.push_back(NAN);
+        stats.data.baseMeans.push_back(NAN);
     }
 }
 
-template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
+template <typename Functor> TDiff::Stats calculate(const TDiff::Options &o, Functor f)
 {
     const auto &r = Standard::instance().r_trans;
 
-    TDiffs::Stats stats;
-
-    stats.data[Endo];
-    stats.data[ChrT];
+    TDiff::Stats stats;
 
     switch (o.metrs)
     {
@@ -185,7 +194,7 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
 
     switch (o.metrs)
     {
-        case Metrics::Gene:    { stats.limit = r.absoluteGene(stats.hist); break; }
+        case Metrics::Gene:    { stats.data.limit = r.absoluteGene(stats.hist); break; }
         //case Metrics::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
         default: { break; } // TODO: Please fix this
     }
@@ -196,43 +205,43 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
      */
     
     // Used for quickly sort the count tables
-    std::set<FeatureID> isChrT, isEndo;
-    
-    for (auto &i : stats.data)
-    {
-        const auto p = SS::sortPerm(i.second.ids, [&](const FeatureID &x, const FeatureID &y)
-        {
-            return x < y;
-        });
-        
-        i.second.ps        = SS::applyPerm(i.second.ps,       p);
-        i.second.ids       = SS::applyPerm(i.second.ids,      p);
-        i.second.logFs     = SS::applyPerm(i.second.logFs,    p);
-        i.second.eLogFs    = SS::applyPerm(i.second.eLogFs,   p);
-        i.second.logFSEs   = SS::applyPerm(i.second.logFSEs,  p);
-        i.second.baseMeans = SS::applyPerm(i.second.baseMeans, p);
-        
-        for (const auto &id : i.second.ids)
-        {
-            assert(!isChrT.count(id) && !isEndo.count(id));
-            
-            if (i.first == ChrT)
-            {
-                isChrT.insert(id);
-            }
-            else
-            {
-                isEndo.insert(id);
-            }
-        }
-    }
+//    std::set<FeatureID> isChrT, isEndo;
+//    
+//    for (auto &i : stats)
+//    {
+//        const auto p = SS::sortPerm(i.second.ids, [&](const FeatureID &x, const FeatureID &y)
+//        {
+//            return x < y;
+//        });
+//        
+//        i.second.ps        = SS::applyPerm(i.second.ps,       p);
+//        i.second.ids       = SS::applyPerm(i.second.ids,      p);
+//        i.second.logFs     = SS::applyPerm(i.second.logFs,    p);
+//        i.second.eLogFs    = SS::applyPerm(i.second.eLogFs,   p);
+//        i.second.logFSEs   = SS::applyPerm(i.second.logFSEs,  p);
+//        i.second.baseMeans = SS::applyPerm(i.second.baseMeans, p);
+//        
+//        for (const auto &id : i.second.ids)
+//        {
+//            assert(!isChrT.count(id) && !isEndo.count(id));
+//            
+//            if (i.first == ChrT)
+//            {
+//                isChrT.insert(id);
+//            }
+//            else
+//            {
+//                isEndo.insert(id);
+//            }
+//        }
+//    }
     
     return stats;
 }
 
-TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options &o)
+TDiff::Stats TDiff::analyze(const std::vector<DiffTest> &tests, const Options &o)
 {
-    return calculate(o, [&](TDiffs::Stats &stats)
+    return calculate(o, [&](TDiff::Stats &stats)
     {
         for (auto &test : tests)
         {
@@ -241,9 +250,9 @@ TDiffs::Stats TDiffs::analyze(const std::vector<DiffTest> &tests, const Options 
     });
 }
 
-TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
+TDiff::Stats TDiff::analyze(const FileName &file, const Options &o)
 {
-    return calculate(o, [&](TDiffs::Stats &stats)
+    return calculate(o, [&](TDiff::Stats &stats)
     {
         switch (o.dSoft)
         {
@@ -275,115 +284,77 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     });
 }
 
-static void writeDifferent(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
+void TDiff::report(const FileName &file, const Options &o)
 {
-    /*
-     * Generating a file for differential results. The file should list the relevant information for
-     * plotting an MA and LODR plot.
-     *
-     * We will need the following information:
-     *
-     *     - BaseMean
-     *     - Expected LF
-     *     - LogFold
-     *     - LogFold SE
-     *     - PValue
-     */
-    
-    o.writer->open(file);
-    o.writer->write(",baseMean,elfc,lfc,lfcSE,pval");
-
-    for (const auto &i : stats.data)
-    {
-        const auto &ps        = i.second.ps;
-        const auto &ids       = i.second.ids;
-        const auto &logFs     = i.second.logFs;
-        const auto &eLogFs    = i.second.eLogFs;
-        const auto &logFSEs   = i.second.logFSEs;
-        const auto &baseMeans = i.second.baseMeans;
-
-        for (auto j = 0; j < ids.size(); j++)
-        {
-            if (isnan(ps[j]))
-            {
-                o.writer->write((boost::format("%1%,NA,NA,NA") % ids[j]).str());
-            }
-            else
-            {
-                o.writer->write((boost::format("%1%,%2%,%3%,%4%,%5%,%6%") % ids[j]
-                                                                          % toNA(baseMeans[j])
-                                                                          % toNA(eLogFs[j])
-                                                                          % toNA(logFs[j])
-                                                                          % toNA(logFSEs[j])
-                                                                          % toNA(ps[j])).str());
-            }
-        }
-    }
-    
-    o.writer->close();
-}
-
-void TDiffs::report(const FileName &file, const Options &o)
-{
-    const auto stats = TDiffs::analyze(file, o);
-    
     const auto m = std::map<Metrics, std::string>
     {
         { Metrics::Gene,    "gene"    },
         { Metrics::Isoform, "isoform" },
     };
 
+    const auto stats = TDiff::analyze(file, o);
     const auto units = m.at(o.metrs);
     
     o.info("Generating statistics");
     
     /*
-     * There's no need to write summary for each replicate because differential analysis has already incorporated them.
+     * 1. Generating summary statistics
      */
     
-    /*
-     * Generating summary statistics
-     */
-    
+    o.info("Generating TransDiff_summary.stats");
     o.writer->open("TransDiff_summary.stats");
-    //o.writer->write(StatsWriter::linear(file, stats, ChrT, units));
+    o.writer->write(StatsWriter::linearSummary(file, "", stats.data, stats.hist));
     o.writer->close();
     
     /*
-     * Generating scatter plot for the log-fold changes
+     * 2. Generating differential results (CSV)
      */
     
-    o.writer->open("TransDiff_scatter.R");
-    o.writer->write(RWriter::scatter(stats, ChrT, "????", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
+    o.info("Generating TransDiff_quins.csv");
+    o.writer->open("TransDiff_quins.csv");
+    o.writer->write(TDiff::writeCSV(stats, o));
+    o.writer->close();
+    
+    /*
+     * 3. Generating scatter plot for the log-fold changes
+     */
+    
+    o.info("Generating TransDiff_fold.R");
+    o.writer->open("TransDiff_fold.R");
+    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotFold()));
+    //o.writer->write(RWriter::scatter(stats, ChrT, "????", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
     o.writer->close();
 
     /*
-     * Generating ROC plot
+     * 4. Generating ROC plot
      */
     
+    o.info("Generating TransDiff_ROC.R");
     o.writer->open("TransDiff_ROC.R");
+    //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotROC_T()));
     //o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
     o.writer->close();
 
     /*
-     * Generating differential results (CSV)
+     * 5. Generating MA plot
      */
     
-    writeDifferent("TransDiff_diffs.csv", stats, o);
-
+    if (!o.counts.empty())
+    {
+        o.info("Generating TransDiff_MA.R");
+        o.writer->open("TransDiff_MA.R");
+        o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotMA()));
+        //o.writer->write(RWriter::createMA("TransDiff_diffs.csv", units));
+        o.writer->close();
+    }
+    
     /*
-     * Generating MA plot
+     * 6. Generating LODR plot
      */
     
-    o.writer->open("TransDiff_MA.R");
-    o.writer->write(RWriter::createMA("TransDiff_diffs.csv", units));
-    o.writer->close();
-    
-    /*
-     * Generating LODR plot
-     */
-    
+    o.info("Generating TransDiff_LODR.R");
     o.writer->open("TransDiff_LODR.R");
-    o.writer->write(RWriter::createLODR_T("TransDiff_diffs.csv"));
+    //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR_T()));
+    //o.writer->write(RWriter::createLODR_T("TransDiff_diffs.csv"));
     o.writer->close();
 }

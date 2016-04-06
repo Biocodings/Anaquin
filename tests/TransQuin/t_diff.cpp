@@ -8,35 +8,35 @@ TEST_CASE("TDiff_DESeq2")
 {
     Test::transAB();
 
-    TDiffs::Options o;
+    TDiff::Options o;
     
-    o.metrs = TDiffs::Metrics::Gene;
-    o.dSoft = TDiffs::Software::DESeq2;
+    o.metrs = TDiff::Metrics::Gene;
+    o.dSoft = TDiff::Software::DESeq2;
 
-    const auto r = TDiffs::analyze("tests/data/DESeq2.csv", o);
+    const auto r = TDiff::analyze("tests/data/DESeq2.csv", o);
 
     REQUIRE(r.data.size() == 2);
 
-    REQUIRE(r.data.at(ChrT).ids[0]       == "R1_101");
-    REQUIRE(r.data.at(ChrT).ps[0]        == Approx(5.207225e-02));
-    REQUIRE(r.data.at(ChrT).logFs[0]     == Approx(-1.79218027));
-    REQUIRE(r.data.at(ChrT).eLogFs[0]    == Approx(-3.0));
-    REQUIRE(r.data.at(ChrT).logFSEs[0]   == Approx(0.92259825));
-    REQUIRE(r.data.at(ChrT).baseMeans[0] == Approx(3.924675));
+    REQUIRE(r.data.ids[0]       == "R1_101");
+    REQUIRE(r.data.ps[0]        == Approx(5.207225e-02));
+    REQUIRE(r.data.logFs[0]     == Approx(-1.79218027));
+    REQUIRE(r.data.eLogFs[0]    == Approx(-3.0));
+    REQUIRE(r.data.logFSEs[0]   == Approx(0.92259825));
+    REQUIRE(r.data.baseMeans[0] == Approx(3.924675));
 
-    REQUIRE(r.data.at(ChrT).ids[2]       == "R1_103");
-    REQUIRE(r.data.at(ChrT).ps[2]        == Approx(6.250000e-27));
-    REQUIRE(r.data.at(ChrT).logFs[2]     == Approx(-0.99634137));
-    REQUIRE(r.data.at(ChrT).eLogFs[2]    == Approx(-1.0));
-    REQUIRE(r.data.at(ChrT).logFSEs[2]   == Approx(0.09272531));
-    REQUIRE(r.data.at(ChrT).baseMeans[2] == Approx(691.727098));
+    REQUIRE(r.data.ids[2]       == "R1_103");
+    REQUIRE(r.data.ps[2]        == Approx(6.250000e-27));
+    REQUIRE(r.data.logFs[2]     == Approx(-0.99634137));
+    REQUIRE(r.data.eLogFs[2]    == Approx(-1.0));
+    REQUIRE(r.data.logFSEs[2]   == Approx(0.09272531));
+    REQUIRE(r.data.baseMeans[2] == Approx(691.727098));
 
-    REQUIRE(r.data.at(ChrT).ids[5]       == "R1_13");
-    REQUIRE(r.data.at(ChrT).ps[5]        == Approx(5.981102e-01));
-    REQUIRE(r.data.at(ChrT).logFs[5]     == Approx(0.03421518));
-    REQUIRE(r.data.at(ChrT).eLogFs[5]    == Approx(0.0));
-    REQUIRE(r.data.at(ChrT).logFSEs[5]   == Approx(0.06490966));
-    REQUIRE(r.data.at(ChrT).baseMeans[5] == Approx(5658.731489));
+    REQUIRE(r.data.ids[5]       == "R1_13");
+    REQUIRE(r.data.ps[5]        == Approx(5.981102e-01));
+    REQUIRE(r.data.logFs[5]     == Approx(0.03421518));
+    REQUIRE(r.data.eLogFs[5]    == Approx(0.0));
+    REQUIRE(r.data.logFSEs[5]   == Approx(0.06490966));
+    REQUIRE(r.data.baseMeans[5] == Approx(5658.731489));
 }
 
 TEST_CASE("TDiff_Classify")
@@ -44,7 +44,7 @@ TEST_CASE("TDiff_Classify")
     const auto qvals = std::vector<double> { 0.01, 0.02, 0.98, 0.99 };
     const auto folds = std::vector<double> { 1.00, 4.00, 1.00, 4.00 };
 
-    const auto r = TDiffs::classify(qvals, folds, 0.05, 1.00);
+    const auto r = TDiff::classify(qvals, folds, 0.05, 1.00);
     
     REQUIRE(r.size() == 4);
 
@@ -85,13 +85,13 @@ TEST_CASE("TDiff_AllExpressed")
         tests.push_back(test);
     }
     
-    TDiffs::Options o;
+    TDiff::Options o;
     
-    o.metrs = TDiffs::Metrics::Gene;
-    o.dSoft = TDiffs::Software::Cuffdiff;
+    o.metrs = TDiff::Metrics::Gene;
+    o.dSoft = TDiff::Software::Cuffdiff;
     
-    const auto r = TDiffs::analyze(tests, o);
-    const auto stats = r.data.at(ChrT).linear();
+    const auto r = TDiff::analyze(tests, o);
+    const auto stats = r.data.linear();
     
     REQUIRE(stats.r  == 1.0);
     REQUIRE(stats.m  == 1.0);
@@ -129,11 +129,11 @@ TEST_CASE("TDiff_NoneExpressed")
         tests.push_back(test);
     }
     
-    TDiffs::Options o;
-    o.metrs = TDiffs::Metrics::Gene;
+    TDiff::Options o;
+    o.metrs = TDiff::Metrics::Gene;
     
-    const auto r = TDiffs::analyze(tests, o);
-    const auto stats = r.data.at(ChrT).linear();
+    const auto r = TDiff::analyze(tests, o);
+    const auto stats = r.data.linear();
     
     REQUIRE(stats.r  == 1.0);
     REQUIRE(stats.m  == 1.0);
@@ -166,11 +166,11 @@ TEST_CASE("TDiff_NotSynthetic")
         tests.push_back(test);
     }
     
-    TDiffs::Options o;
-    o.metrs = TDiffs::Metrics::Gene;
+    TDiff::Options o;
+    o.metrs = TDiff::Metrics::Gene;
     
-    const auto r = TDiffs::analyze(tests, o);
-    const auto stats = r.data.at(ChrT).linear();
+    const auto r = TDiff::analyze(tests, o);
+    const auto stats = r.data.linear();
     
     REQUIRE(isnan(stats.r));
     REQUIRE(isnan(stats.m));

@@ -1212,10 +1212,10 @@ void parse(int argc, char ** argv)
                 {
                     auto parseMetrs = [&](const std::string &str)
                     {
-                        const static std::map<std::string, TDiffs::Metrics> m =
+                        const static std::map<std::string, TDiff::Metrics> m =
                         {
-                            { "gene",    TDiffs::Metrics::Gene    },
-                            { "isoform", TDiffs::Metrics::Isoform },
+                            { "gene",    TDiff::Metrics::Gene    },
+                            { "isoform", TDiff::Metrics::Isoform },
                         };
                         
                         return parseEnum("levels", str, m);
@@ -1223,11 +1223,11 @@ void parse(int argc, char ** argv)
 
                     auto parseSoft = [&](const std::string &str)
                     {
-                        const static std::map<std::string, TDiffs::Software> m =
+                        const static std::map<std::string, TDiff::Software> m =
                         {
-                            { "edgeR",    TDiffs::Software::edgeR    },
-                            { "deseq2",   TDiffs::Software::DESeq2   },
-                            { "cuffdiff", TDiffs::Software::Cuffdiff },
+                            { "edgeR",    TDiff::Software::edgeR    },
+                            { "deseq2",   TDiff::Software::DESeq2   },
+                            { "cuffdiff", TDiff::Software::Cuffdiff },
                         };
                         
                         return parseEnum("soft", str, m);
@@ -1267,14 +1267,14 @@ void parse(int argc, char ** argv)
                         return gs > is;
                     };
                     
-                    TDiffs::Options o;
+                    TDiff::Options o;
 
                     o.dSoft = parseSoft(_p.opts[OPT_SOFT]);
-                    o.metrs = TDiffs::Metrics::Gene;
+                    o.metrs = TDiff::Metrics::Gene;
                     
-                    if (o.dSoft == TDiffs::Software::Cuffdiff && !checkCufflink(_p.inputs[0]))
+                    if (o.dSoft == TDiff::Software::Cuffdiff && !checkCufflink(_p.inputs[0]))
                     {
-                        o.metrs = TDiffs::Metrics::Isoform;
+                        o.metrs = TDiff::Metrics::Isoform;
                     }
                     
                     /*
@@ -1283,11 +1283,11 @@ void parse(int argc, char ** argv)
                     
                     if (_p.opts.count(OPT_C_FILES))
                     {
-                        o.cSoft  = parseCSoft<TDiffs::CountSoft>(_p.opts[OPT_C_SOFT], "csoft");
+                        o.cSoft  = parseCSoft<TDiff::Counting>(_p.opts[OPT_C_SOFT], "csoft");
                         o.counts = _p.oInputs;
                     }
 
-                    analyze_1<TDiffs>(OPT_U_FILES, o);
+                    analyze_1<TDiff>(OPT_U_FILES, o);
                     break;
                 }
 

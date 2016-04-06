@@ -6,27 +6,6 @@ using namespace Anaquin;
 // Defined in main.cpp
 extern Path __output__;
 
-// Defined in resources.cpp
-extern Scripts PlotROC_T();
-
-// Defined in resources.cpp
-extern Scripts PlotROC_V();
-
-// Defined in resources.cpp
-extern Scripts PlotROC_F();
-
-// Defined in resources.cpp
-extern Scripts PlotLODR_T();
-
-// Defined in resources.cpp
-extern Scripts PlotLODR_V();
-
-// Defined in resources.cpp
-extern Scripts PlotMA();
-
-// Defined in resources.cpp
-extern Scripts PlotTAbundAbund();
-
 // Defined in main.cpp
 extern std::string mixture();
 
@@ -103,27 +82,6 @@ Scripts StatsWriter::linearSummary(const FileName &file, const FileName &ref, co
                                    % llm.SSE_D
                                    % llm.SST
                                    % llm.SST_D).str();
-}
-
-Scripts RWriter::scatter(const std::vector<SequinID> &seqs,
-                         const std::vector<double>   &x,
-                         const std::vector<double>   &y,
-                         const AxisLabel &title,
-                         const AxisLabel &xLabel,
-                         const AxisLabel &yLabel)
-{
-    assert(!xLabel.empty() && !yLabel.empty());
-    
-    std::stringstream ss;
-    ss << PlotTAbundAbund();
-    
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                    % concat(x)
-                                    % concat(y)
-                                    % xLabel
-                                    % yLabel).str();
 }
 
 Scripts StatsWriter::inflectSummary()
@@ -348,50 +306,65 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
     return inflectSummary(chrTR, endoR, r, units);
 }
 
-Scripts RWriter::createLODR_T(const FileName &dFile)
-{
-    std::stringstream ss;
-    ss << PlotLODR_T();
-    
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % __output__
-                                    % dFile).str();
-}
 
-Scripts RWriter::createLODR_V(const FileName &file)
-{
-    std::stringstream ss;
-    ss << PlotLODR_V();
-    
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % __output__
-                                    % file).str();
-}
 
-Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
-{
-    std::stringstream ss;
-    ss << PlotMA();
-    
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % __output__
-                                    % file
-                                    % lvl).str();
-}
 
-Scripts RWriter::createROC_T(const std::vector<FeatureID> &seqs, const std::vector<double> &ps, const std::string &lvl)
-{
-    assert(!seqs.empty() && seqs.size() == ps.size());
 
-    std::stringstream ss;
-    ss << PlotROC_T();
-    
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-                                    % concat(ps)
-                                    % lvl).str();
-}
+//Scripts RWriter::createMajor(const FileName &fpkms)
+//{
+//    std::stringstream ss;
+//    ss << PlotMajor();
+//    
+//    return (boost::format(ss.str()) % date()
+//            % __full_command__
+//            % __output__
+//            % fpkms).str();
+//}
+//
+//Scripts RWriter::createLODR_T(const FileName &dFile)
+//{
+//    std::stringstream ss;
+//    ss << PlotLODR_T();
+//    
+//    return (boost::format(ss.str()) % date()
+//            % __full_command__
+//            % __output__
+//            % dFile).str();
+//}
+//
+//Scripts RWriter::createLODR_V(const FileName &file)
+//{
+//    std::stringstream ss;
+//    ss << PlotLODR_V();
+//    
+//    return (boost::format(ss.str()) % date()
+//            % __full_command__
+//            % __output__
+//            % file).str();
+//}
+//
+//Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
+//{
+//    std::stringstream ss;
+//    ss << PlotMA();
+//    
+//    return (boost::format(ss.str()) % date()
+//            % __full_command__
+//            % __output__
+//            % file
+//            % lvl).str();
+//}
+//
+//Scripts RWriter::createROC_T(const std::vector<FeatureID> &seqs, const std::vector<double> &ps, const std::string &lvl)
+//{
+//    assert(!seqs.empty() && seqs.size() == ps.size());
+//    
+//    std::stringstream ss;
+//    ss << PlotROC_T();
+//    
+//    return (boost::format(ss.str()) % date()
+//            % __full_command__
+//            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
+//            % concat(ps)
+//            % lvl).str();
+//}
