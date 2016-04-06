@@ -37,6 +37,7 @@ data  = [ 'data/manual.txt',
           # ---------- Transcriptome ----------
 
 	  'src/r/plotMA.R',
+	  'src/r/plotFold.R',
 	  'src/r/plotMajor.R',
           'src/r/plotROC_T.R',
           'src/r/plotLODR_T.R',
