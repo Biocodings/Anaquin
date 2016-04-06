@@ -45,6 +45,7 @@
 #include "FusQuin/f_coverage.hpp"
 
 #include "parsers/parser_csv.hpp"
+#include "parsers/parser_cdiffs.hpp"
 #include "parsers/parser_sequins.hpp"
 #include "parsers/parser_cufflink.hpp"
 
@@ -1074,8 +1075,8 @@ void parse(int argc, char ** argv)
             {
                 const auto &r = Standard::instance().r_trans;
                 
-                Counts gens = 0;
-                Counts isos = 0;
+                Counts gs = 0;
+                Counts is = 0;
                 
                 ParserCufflink::parse(file, [&](const ParserCufflink::Data &data, const ParserProgress &p)
                 {
@@ -1085,7 +1086,7 @@ void parse(int argc, char ** argv)
                         {
                             if (r.match(data.tID))
                             {
-                                isos++;
+                                is++;
                                 
                                 // Important, if there's match for isoform, don't match for it's gene
                                 return;
@@ -1095,13 +1096,13 @@ void parse(int argc, char ** argv)
 
                         try
                         {
-                            if (r.findGene(data.cID, data.id)) { gens++; }
+                            if (r.findGene(data.cID, data.id)) { gs++; }
                         }
                         catch (...) {}
                     }
                 });
                 
-                return gens > isos;
+                return gs > is;
             };
 
             if (_p.tool != TOOL_T_IGV)
@@ -1199,15 +1200,50 @@ void parse(int argc, char ** argv)
                         return parseEnum("soft", str, m);
                     };
                     
+                    auto checkCufflink = [&](const FileName &file)
+                    {
+                        const auto &r = Standard::instance().r_trans;
+                        
+                        Counts gs = 0;
+                        Counts is = 0;
+                        
+                        ParserCDiffs::parse(file, [&](const ParserCDiffs::Data &data, const ParserProgress &p)
+                        {
+                            if (data.cID == ChrT)
+                            {
+                                try
+                                {
+                                    if (r.match(data.id))
+                                    {
+                                        is++;
+                                        
+                                        // Important, if there's match for isoform, don't match for it's gene
+                                        return;
+                                    }
+                                }
+                                catch (...) {}
+                                
+                                try
+                                {
+                                    if (r.findGene(data.cID, data.id)) { gs++; }
+                                }
+                                catch (...) {}
+                            }
+                        });
+                        
+                        return gs > is;
+                    };
+                    
                     TDiffs::Options o;
 
                     o.dSoft = parseSoft(_p.opts[OPT_SOFT]);
-
-                    if (o.dSoft != TDiffs::Software::Cuffdiff)
+                    o.metrs = TDiffs::Metrics::Gene;
+                    
+                    if (o.dSoft == TDiffs::Software::Cuffdiff && !checkCufflink(_p.inputs[0]))
                     {
                         o.metrs = TDiffs::Metrics::Isoform;
                     }
-
+                    
                     /*
                      * Optional count tables (eg: HTSeqCount)
                      */

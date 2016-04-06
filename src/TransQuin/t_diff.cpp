@@ -247,17 +247,6 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
     {
         switch (o.dSoft)
         {
-/*
-            case Software::ParserSleuth:
-            {
-                ParserSleuth::parse(file, [&](const DiffTest &t, const ParserProgress &)
-                {
-                    update(stats, t, o);
-                });
-
-                break;
-            }
-*/
             case Software::DESeq2:
             {
                 ParserDESeq2::parse(file, [&](const DiffTest &t, const ParserProgress &)
@@ -275,9 +264,9 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
 
             case Software::Cuffdiff:
             {
-                ParserCDiffs::parse(file, [&](const TrackingDiffs &t, const ParserProgress &)
+                ParserCDiffs::parse(file, [&](const ParserCDiffs::Data &data, const ParserProgress &)
                 {
-                    update(stats, t, o);
+                    update(stats, data, o);
                 });
 
                 break;
@@ -352,15 +341,6 @@ void TDiffs::report(const FileName &file, const Options &o)
      * There's no need to write summary for each replicate because differential analysis has already incorporated them.
      */
     
-    /*
-     *  - Summary statistics
-     *  - Sequin statistics
-     *  - Scatter plot
-     *  - ROC plot
-     *  - MA plot
-     *  - LODR Plot
-     */
-
     /*
      * Generating summary statistics
      */

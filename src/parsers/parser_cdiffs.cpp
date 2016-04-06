@@ -19,17 +19,18 @@ enum TrackingField
     FQValue    = 12,
 };
 
-static const std::map<TrackID, DiffTest::Status> tok2Status =
+static const std::map<ParserCDiffs::TrackID, DiffTest::Status> tok2Status =
 {
     { "OK",     DiffTest::Status::Tested    },
     { "HIDATA", DiffTest::Status::NotTested },
     { "NOTEST", DiffTest::Status::NotTested },
 };
 
-void ParserCDiffs::parse(const FileName &file, std::function<void (const TrackingDiffs &, const ParserProgress &)> f)
+void ParserCDiffs::parse(const FileName &file, std::function<void (const ParserCDiffs::Data &, const ParserProgress &)> f)
 {
     Reader i(file);
-    TrackingDiffs t;
+
+    Data t;
     ParserProgress p;
 
     std::string line;
@@ -47,7 +48,7 @@ void ParserCDiffs::parse(const FileName &file, std::function<void (const Trackin
         Tokens::split(line, "\t", toks);
 
         t.id     = toks[FGeneID];
-        t.testID = toks[FTestID];
+        t.tID    = toks[FTestID];
         t.status = tok2Status.at(toks[FStatus]);
         t.logF   = stof(toks[FLogFold]);
         t.stats  = stof(toks[FTestStats]);
