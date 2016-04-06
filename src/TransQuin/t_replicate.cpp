@@ -32,20 +32,48 @@ std::vector<TReplicate::Stats> TReplicate::analyze(const std::vector<FileName> &
 
 static Scripts writeCSV(const std::vector<TReplicate::Stats> &stats)
 {
-    std::stringstream ss;
-    ss << ((boost::format("Sequin\tSample\tEAbund\tMAbund\n")).str());
+    std::set<SequinID> seqs;
+
+    // This is the data structure that will be convenient
+    std::map<unsigned, std::map<SequinID, Concent>> data;
     
+    // Expected concentration
+    std::map<SequinID, Concent> expect;
+    
+    std::stringstream ss;
+    ss << "Sequin\tEAbund";
+
     for (auto i = 0; i < stats.size(); i++)
     {
-        const auto &data = stats[i].data;
-
-        for (const auto &j : data)
+        ss << ((boost::format("\tA%1%") % (i+1)).str());
+        
+        for (const auto &j : stats[i].data)
         {
-            ss << ((boost::format("%1%\t%2%\t%3%t%4%\n") % j.first
-                                                         % (i+1)
-                                                         % j.second.x
-                                                         % j.second.y).str());
+            seqs.insert(j.first);
+            expect[j.first]  = j.second.x;
+            data[i][j.first] = j.second.y;
         }
+    }
+    
+    ss << "\n";
+
+    for (const auto &seq : seqs)
+    {
+        ss << ((boost::format("%1%\t%2%") % seq % expect.at(seq)).str());
+        
+        for (auto i = 0; i < stats.size(); i++)
+        {
+            if (data[i].count(seq))
+            {
+                ss << "\t" << data[i][seq];
+            }
+            else
+            {
+                ss << "\tNA";
+            }
+        }
+        
+        ss << "\n";
     }
     
     return ss.str();

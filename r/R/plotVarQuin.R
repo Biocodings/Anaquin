@@ -7,8 +7,8 @@
 plotAlleleAllele <- function(data)
 {
     plotScatter(data, title='Expected allele frequency vs Measured allele frequency',
-                      xname='Expected allele frequency',
-                      yname='Measured allele frequency',
+                      xname='Expected allele frequency (log2)',
+                      yname='Measured allele frequency (log2)',
                   showStats='left',
                  showLegend=TRUE)
 }
@@ -16,8 +16,8 @@ plotAlleleAllele <- function(data)
 plotVAbundAbund <- function(data)
 {
     plotScatter(data, title='Expected abundance vs Measured abundance',
-                      xname='Expected abundance',
-                      yname='Measured abundance',
+                      xname='Expected abundance (log2)',
+                      yname='Measured abundance (log2)',
                   showStats='left',
                  showLegend=FALSE)
 }

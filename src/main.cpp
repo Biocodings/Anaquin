@@ -7,8 +7,6 @@
 #include <strings.h>
 #include <execinfo.h>
 
-#include "data/experiment.hpp"
-
 #include "TransQuin/t_diff.hpp"
 #include "TransQuin/t_kdiff.hpp"
 #include "TransQuin/t_align.hpp"
@@ -134,15 +132,12 @@ typedef std::set<Value> Range;
 #define OPT_R_IND   809
 #define OPT_U_BASE  900
 
-#define OPT_U_GTF   902
 #define OPT_PSL_1   905
 #define OPT_PSL_2   906
 #define OPT_FA_1    907
 #define OPT_FA_2    908
 #define OPT_U_COV   911
-#define OPT_U_FACTS 912
 #define OPT_U_FILES 914
-#define OPT_U_NAMES 915
 #define OPT_C_FILES 916
 #define OPT_SIGN    917
 
@@ -331,9 +326,6 @@ struct Parsing
     unsigned fuzzy = 0;
     
     Tool tool = 0;
-
-    // Experimental meta-data
-    std::shared_ptr<Experiment> exp = std::shared_ptr<Experiment>(new Experiment());
 };
 
 // Wrap the variables so that it'll be easier to reset them
@@ -406,9 +398,6 @@ static const struct option long_options[] =
     { "ufiles",  required_argument, 0, OPT_U_FILES },
     { "cfiles",  required_argument, 0, OPT_C_FILES },
 
-    { "factors", required_argument, 0, OPT_U_FACTS },
-    { "names",   required_argument, 0, OPT_U_NAMES },
-
     { "rexp",    required_argument, 0, OPT_R_ENDO  },
     { "rbed",    required_argument, 0, OPT_R_BED   },
     { "rgtf",    required_argument, 0, OPT_R_GTF   },
@@ -419,7 +408,6 @@ static const struct option long_options[] =
     { "ufa",     required_argument, 0, OPT_FA_1   },
     { "ufa1",    required_argument, 0, OPT_FA_1   },
     { "ufa2",    required_argument, 0, OPT_FA_2   },
-    { "ugtf",    required_argument, 0, OPT_U_GTF  },
     { "upsl",    required_argument, 0, OPT_PSL_1  },
     { "upsl1",   required_argument, 0, OPT_PSL_1  },
     { "upsl2",   required_argument, 0, OPT_PSL_2  },
@@ -690,9 +678,6 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
 
 template <typename Analyzer, typename Files> void analyze(const Files &files, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    // Copying over for the experiment
-    o.exp = _p.exp;
-    
     if (_p.inputs.size() != 1)
     {
         throw NotSingleInputError();
@@ -970,7 +955,6 @@ void parse(int argc, char ** argv)
                 for (auto i = 0; i < temp.size(); i++)
                 {
                     checkFile(_p.opts[opt] = temp[i]);
-                    _p.exp->addFile(_p.opts[opt]);
                     _p.inputs.push_back(temp[i]);
                 }
                 
@@ -992,23 +976,10 @@ void parse(int argc, char ** argv)
 
                 break;
             }
-                
-            case OPT_U_FACTS:
-            {
-                _p.exp->addFactors(_p.opts[opt] = val);
-                break;
-            }
-
-            case OPT_U_NAMES:
-            {
-                _p.exp->addNames(_p.opts[opt] = val);
-                break;
-            }
 
             case OPT_FA_1:
             case OPT_FA_2:
             case OPT_U_COV:
-            case OPT_U_GTF:
             case OPT_PSL_2:
             case OPT_PSL_1:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
