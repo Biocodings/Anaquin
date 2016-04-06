@@ -58,18 +58,6 @@ namespace Anaquin
         });
     }
 
-    struct Expression
-    {
-        ChrID cID;
-        
-        GenericID id;
-        
-        Locus l;
-
-        // The expression for the abundance
-        FPKM abund;
-    };
-
     struct Analyzer
     {
         // Empty Implementation

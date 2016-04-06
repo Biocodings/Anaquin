@@ -3,13 +3,22 @@
 
 #include "data/tokens.hpp"
 #include "stats/analyzer.hpp"
-#include "parsers/parser_cuffs.hpp"
 
 namespace Anaquin
 {
     struct ParserStringTie
     {
-        typedef Expression Data;
+        struct Data
+        {
+            ChrID cID;
+            
+            IsoformID id;
+            
+            Locus l;
+            
+            // The expression for the abundance
+            FPKM abund;
+        };
         
         template <typename F> static void parse(const FileName &file, F f)
         {

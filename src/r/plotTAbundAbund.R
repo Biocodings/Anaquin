@@ -9,8 +9,8 @@
 #
 # This script generates a TransQuin plot for expected expression against measured expression.
 #
-#    - x-axis: expected expression in attomol/ul
-#    - y-axis: measured expression
+#    - x-axis: log2 expected expression in attomol/ul
+#    - y-axis: log2 measured expression
 #
 
 library(Anaquin)

@@ -3,7 +3,6 @@
 
 #include "stats/analyzer.hpp"
 #include "data/alignment.hpp"
-#include "data/experiment.hpp"
 
 namespace Anaquin
 {

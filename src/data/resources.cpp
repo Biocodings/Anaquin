@@ -35,9 +35,9 @@
 
 #include "resources/plotMA.R"
 #include "resources/plotROC_T.R"
-#include "resources/plotSplice.R"
+#include "resources/plotMajor.R"
 #include "resources/plotLODR_T.R"
-#include "resources/plotScatterPool.R"
+#include "resources/plotRAbundAbund.R"
 #include "resources/plotTAbundAbund.R"
 
 #include "resources/ATR001.v032.gtf"
@@ -87,25 +87,6 @@ Scripts ViewerScript()
 Scripts Manual()
 {
     return ToString(data_manual_txt);
-}
-
-/*
- * Scripts for Bioconductor
- */
-
-Scripts PlotScatterPool()
-{
-    return ToString(src_r_plotScatterPool_R);
-}
-
-Scripts PlotSplice()
-{
-    return ToString(src_r_plotSplice_R);
-}
-
-Scripts PlotMA()
-{
-    return ToString(src_r_plotMA_R);
 }
 
 /*
@@ -173,6 +154,21 @@ Scripts MetaDataBed()
 /*
  * Transcriptome Resources
  */
+
+Scripts PlotRAbundAbund()
+{
+    return ToString(src_r_plotRAbundAbund_R);
+}
+
+Scripts PlotMajor()
+{
+    return ToString(src_r_plotMajor_R);
+}
+
+Scripts PlotMA()
+{
+    return ToString(src_r_plotMA_R);
+}
 
 Scripts PlotTAbundAbund()
 {

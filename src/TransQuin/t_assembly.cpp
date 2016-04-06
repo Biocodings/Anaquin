@@ -1,6 +1,5 @@
 #include <fstream>
 #include "data/compare.hpp"
-#include "data/experiment.hpp"
 #include "TransQuin/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
 

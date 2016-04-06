@@ -17,10 +17,6 @@ data  = [ 'data/manual.txt',
           'scripts/viewer.py',
 	  'scripts/reports.py',
 
-          'src/r/plotMA.R',
-          'src/r/plotSplice.R',
-          'src/r/plotScatterPool.R',
-
           # ------- Fusion -------
 
           'src/r/plotROC_F.R',
@@ -40,8 +36,11 @@ data  = [ 'data/manual.txt',
            
           # ---------- Transcriptome ----------
 
+	  'src/r/plotMA.R',
+	  'src/r/plotMajor.R',
           'src/r/plotROC_T.R',
           'src/r/plotLODR_T.R',
+	  'src/r/plotRAbundAbund.R',
           'src/r/plotTAbundAbund.R',
 
           'data/TransQuin/ATR001.v032.gtf',

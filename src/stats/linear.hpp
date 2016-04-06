@@ -35,7 +35,7 @@ namespace Anaquin
     struct SInflectStats
     {
         SStrings files;
-        
+
         // Eg: 2387648 (15.56%)
         SCounts n_chrT, n_endo;
         
@@ -43,7 +43,7 @@ namespace Anaquin
         SProps p_chrT, p_endo;
         
         // Eg: 56 sequins
-        SCounts n_ref;
+        Counts n_ref;
         
         // Eg: sequins
         Units units;

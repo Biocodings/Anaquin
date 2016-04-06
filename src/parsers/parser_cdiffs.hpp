@@ -3,10 +3,11 @@
 
 #include "data/dtest.hpp"
 #include "stats/analyzer.hpp"
-#include "parsers/parser_cuffs.hpp"
 
 namespace Anaquin
 {
+    typedef std::string TrackID;
+    
     struct TrackingDiffs : public DiffTest
     {
         TrackID testID;

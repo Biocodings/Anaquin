@@ -1,6 +1,6 @@
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
-#include "parsers/parser_tracking.hpp"
+#include "parsers/parser_cufflink.hpp"
 
 using namespace Anaquin;
 
@@ -15,7 +15,7 @@ enum TrackingField
     T_Status  = 12,
 };
 
-void ParserTracking::parse(const FileName &file, std::function<void (const ParserTracking::Data &, const ParserProgress &)> f)
+void ParserCufflink::parse(const FileName &file, std::function<void (const ParserCufflink::Data &, const ParserProgress &)> f)
 {
     Reader i(file);
 
@@ -25,7 +25,7 @@ void ParserTracking::parse(const FileName &file, std::function<void (const Parse
         { "HIDATA", HIData }
     };
 
-    ParserTracking::Data t;
+    ParserCufflink::Data t;
     ParserProgress p;
     
     std::string line;
@@ -51,9 +51,9 @@ void ParserTracking::parse(const FileName &file, std::function<void (const Parse
         assert(!tokens[T_FPKM_HI].empty());
         assert(!tokens[T_Status].empty());
 
-        t.id = tokens[T_GeneID];
-        t.trackID = tokens[T_TrackID];
-        
+        t.id  = tokens[T_GeneID];
+        t.tID = tokens[T_TrackID];
+
         // Eg: chrT:1082119-1190836
         Tokens::split(tokens[T_Locus], ":", temp);
         

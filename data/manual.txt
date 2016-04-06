@@ -27,6 +27,7 @@ Version: 1.1.1
        TransPooled	   
        TransExpress
        TransKExpress
+	   TransReplicate
        TransDiff
        TransKDiff
        TransReport

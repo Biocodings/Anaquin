@@ -248,7 +248,7 @@ void TKDiff::report(const FileName &file, const Options &o)
 //     * Generating summary statistics
 //     */
 //    
-//    o.writer->open("TransDiffs_summary.stats");
+//    o.writer->open("TransDiff_summary.stats");
 //    //o.writer->write(StatsWriter::linear(file, stats, ChrT, units));
 //    o.writer->close();
 //    
@@ -256,7 +256,7 @@ void TKDiff::report(const FileName &file, const Options &o)
 //     * Generating scatter plot for the log-fold changes
 //     */
 //    
-//    o.writer->open("TransDiffs_scatter.R");
+//    o.writer->open("TransDiff_scatter.R");
 //    o.writer->write(RWriter::scatter(stats, ChrT, "????", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
 //    o.writer->close();
 //
@@ -264,7 +264,7 @@ void TKDiff::report(const FileName &file, const Options &o)
 //     * Generating ROC plot
 //     */
 //    
-//    o.writer->open("TransDiffs_ROC.R");
+//    o.writer->open("TransDiff_ROC.R");
 //    //o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
 //    o.writer->close();
 //
@@ -272,21 +272,21 @@ void TKDiff::report(const FileName &file, const Options &o)
 //     * Generating differential results (CSV)
 //     */
 //    
-//    writeDifferent("TransDiffs_diffs.csv", stats, o);
+//    writeDifferent("TransDiff_diffs.csv", stats, o);
 //
 //    /*
 //     * Generating MA plot
 //     */
 //    
-//    o.writer->open("TransDiffs_MA.R");
-//    o.writer->write(RWriter::createMA("TransDiffs_diffs.csv", units));
+//    o.writer->open("TransDiff_MA.R");
+//    o.writer->write(RWriter::createMA("TransDiff_diffs.csv", units));
 //    o.writer->close();
 //    
 //    /*
 //     * Generating LODR plot
 //     */
 //    
-//    o.writer->open("TransDiffs_LODR.R");
-//    o.writer->write(RWriter::createLODR_T("TransDiffs_diffs.csv"));
+//    o.writer->open("TransDiff_LODR.R");
+//    o.writer->write(RWriter::createLODR_T("TransDiff_diffs.csv"));
 //    o.writer->close();
 }

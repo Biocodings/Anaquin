@@ -6,7 +6,6 @@
 
 #include <ss/misc.hpp>
 #include "TransQuin/t_diff.hpp"
-#include "data/experiment.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_DESeq2.hpp"
@@ -162,66 +161,6 @@ template <typename T> void update(TDiffs::Stats &stats, const T &t, const TDiffs
     }
 }
 
-static void readCounts(const std::set<FeatureID> &isChrT, const std::set<FeatureID> &isEndo, TDiffs::Stats &stats, const TDiffs::Options &o)
-{
-    // Create an empty count table
-    stats.counts = std::shared_ptr<CountTable>(new CountTable(o.exp->countTable()));
-
-    const auto &names = stats.counts->names();
-    
-    for (auto i = 0; i < o.counts.size(); i++)
-    {
-        switch (o.cSoft)
-        {
-            case TDiffs::CountSoft::HTSeqCount:
-            {
-                const auto &name = names.at(i);
-                
-                ParserHTSeqCount::parse(Reader(o.counts[i]), [&](const ParserHTSeqCount::Sample &s, const ParserProgress &)
-                {
-                    if (!isChrT.count(s.id) && !isEndo.count(s.id))
-                    {
-                        o.warn((boost::format("Unknown %1% in %2%. Not found in the differential analysis. Ignored.)") % s.id
-                                                                                                                       % o.counts[i]).str());
-                        return;
-                    }
-
-                    if (!i)
-                    {
-                        stats.counts->addFeature(s.id);
-                    }
-                    
-                    stats.counts->addCount(name, s.count);
-                });
-
-                break;
-            }
-        }
-    }
-    
-    /*
-     * Sort the table by placing sequins before endogenous features.
-     */
-    
-    const auto &ids = stats.counts->ids();
-    
-    const auto p = SS::sortPerm(ids, [&](const FeatureID &x, const FeatureID &y)
-    {
-        if (isChrT.count(x) && isEndo.count(y))
-        {
-            return true;
-        }
-        else if (isEndo.count(x) && isChrT.count(y))
-        {
-            return false;
-        }
-
-        return x < y;
-    });
-    
-    stats.counts->sort(p);
-}
-
 template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Functor f)
 {
     const auto &r = Standard::instance().r_trans;
@@ -288,11 +227,6 @@ template <typename Functor> TDiffs::Stats calculate(const TDiffs::Options &o, Fu
         }
     }
     
-    if (stats.counts)
-    {
-        readCounts(isChrT, isEndo, stats, o);
-    }
-    
     return stats;
 }
 
@@ -350,36 +284,6 @@ TDiffs::Stats TDiffs::analyze(const FileName &file, const Options &o)
             }
         }
     });
-}
-
-static void writeCounts(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
-{
-    o.writer->open(file);
-    
-    const auto &names = stats.counts->names();
-    
-    for (const auto &name : names)
-    {
-        o.writer->write("," + name, false);
-    }
-    
-    o.writer->write("\n", false);
-    
-    const auto &ids = stats.counts->ids();
-    
-    for (auto i = 0; i < ids.size(); i++)
-    {
-        o.writer->write(ids[i], false);
-        
-        for (const auto &name : names)
-        {
-            o.writer->write("," + std::to_string(stats.counts->counts(name).at(i)), false);
-        }
-        
-        o.writer->write("\n", false);
-    }
-    
-    o.writer->close();
 }
 
 static void writeDifferent(const FileName &file, const TDiffs::Stats &stats, const TDiffs::Options &o)
@@ -461,7 +365,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
     
-    o.writer->open("TransDiffs_summary.stats");
+    o.writer->open("TransDiff_summary.stats");
     //o.writer->write(StatsWriter::linear(file, stats, ChrT, units));
     o.writer->close();
     
@@ -469,7 +373,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      * Generating scatter plot for the log-fold changes
      */
     
-    o.writer->open("TransDiffs_scatter.R");
+    o.writer->open("TransDiff_scatter.R");
     o.writer->write(RWriter::scatter(stats, ChrT, "????", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
     o.writer->close();
 
@@ -477,7 +381,7 @@ void TDiffs::report(const FileName &file, const Options &o)
      * Generating ROC plot
      */
     
-    o.writer->open("TransDiffs_ROC.R");
+    o.writer->open("TransDiff_ROC.R");
     //o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
     o.writer->close();
 
@@ -485,30 +389,21 @@ void TDiffs::report(const FileName &file, const Options &o)
      * Generating differential results (CSV)
      */
     
-    writeDifferent("TransDiffs_diffs.csv", stats, o);
+    writeDifferent("TransDiff_diffs.csv", stats, o);
 
     /*
      * Generating MA plot
      */
     
-    o.writer->open("TransDiffs_MA.R");
-    o.writer->write(RWriter::createMA("TransDiffs_diffs.csv", units));
+    o.writer->open("TransDiff_MA.R");
+    o.writer->write(RWriter::createMA("TransDiff_diffs.csv", units));
     o.writer->close();
     
     /*
      * Generating LODR plot
      */
     
-    o.writer->open("TransDiffs_LODR.R");
-    o.writer->write(RWriter::createLODR_T("TransDiffs_diffs.csv"));
+    o.writer->open("TransDiff_LODR.R");
+    o.writer->write(RWriter::createLODR_T("TransDiff_diffs.csv"));
     o.writer->close();
-
-    /*
-     * Generating count table (CSV)
-     */
-
-    if (stats.counts)
-    {
-        writeCounts("TransDiffs_counts.csv", stats, o);
-    }
 }

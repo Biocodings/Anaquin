@@ -17,6 +17,7 @@
 #include "TransQuin/t_kexpress.hpp"
 #include "TransQuin/t_assembly.hpp"
 #include "TransQuin/t_coverage.hpp"
+#include "TransQuin/t_replicate.hpp"
 
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
@@ -48,7 +49,7 @@
 
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_sequins.hpp"
-#include "parsers/parser_tracking.hpp"
+#include "parsers/parser_cufflink.hpp"
 
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
@@ -101,6 +102,7 @@ typedef std::set<Value> Range;
 #define TOOL_T_KDIFF     305
 #define TOOL_T_REPORT    306
 #define TOOL_V_KALLELE   307
+#define TOOL_T_REPLICATE 308
 
 /*
  * Options specified in the command line
@@ -192,6 +194,7 @@ static std::map<Value, Tool> _tools =
     { "TransDiff",      TOOL_T_DIFF      },
     { "TransKDiff",     TOOL_T_KDIFF     },
     { "TransNorm",      TOOL_T_NORM      },
+    { "TransReplicate", TOOL_T_REPLICATE },
     { "TransIGV",       TOOL_T_IGV       },
     { "TransCoverage",  TOOL_T_COVERAGE  },
     { "TransReport",    TOOL_T_REPORT    },
@@ -242,6 +245,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_REPORT,   { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_T_REPLICATE,{ OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     
     /*
@@ -616,7 +620,7 @@ template <typename Reference> void applyRef(Reference ref)
     }
 }
 
-template <typename Analyzer, typename F> void analyzeF(F f, typename Analyzer::Options o)
+template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyzer::Options o)
 {
     const auto path = _p.path;
 
@@ -666,7 +670,7 @@ template <typename Report> void report(typename Report::Options o = typename Rep
     o.mix = mixture();
     o.index = _p.opts[OPT_R_IND];
 
-    return analyzeF<Report>([&](const typename Report::Options &o)
+    return startAnalysis<Report>([&](const typename Report::Options &o)
     {
         Report::generate(_p.inputs[0], _p.inputs[1], o);
     }, o);
@@ -694,16 +698,10 @@ template <typename Analyzer, typename Files> void analyze(const Files &files, ty
         throw NotSingleInputError();
     }
 
-    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
+    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::report(files, o);
     }, o);
-}
-
-// Analyze for a single sample
-template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
-{
-    return analyze<Analyzer>(_p.opts.at(x), o);
 }
 
 // Analyze for a single sample with fuzzy matching
@@ -713,10 +711,16 @@ template <typename Analyzer> void analyzeFuzzy(typename Analyzer::Options o = ty
     return analyze<Analyzer>(_p.inputs[0], o);
 }
 
+// Analyze for a single sample
+template <typename Analyzer> void analyze_1(Option x, typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return analyze<Analyzer>(_p.opts.at(x), o);
+}
+
 // Analyze for two samples
 template < typename Analyzer> void analyze_2(typename Analyzer::Options o = typename Analyzer::Options())
 {
-    return analyzeF<Analyzer>([&](const typename Analyzer::Options &o)
+    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
         if (_p.inputs.size() != 2)
         {
@@ -724,6 +728,15 @@ template < typename Analyzer> void analyze_2(typename Analyzer::Options o = type
         }
 
         Analyzer::report(_p.inputs[0], _p.inputs[1], o);
+    }, o);
+}
+
+// Analyze for n samples
+template < typename Analyzer> void analyze_n(typename Analyzer::Options o = typename Analyzer::Options())
+{
+    return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
+    {
+        Analyzer::report(_p.inputs, o);
     }, o);
 }
 
@@ -1082,6 +1095,7 @@ void parse(int argc, char ** argv)
         case TOOL_T_KEXPRESS:
         case TOOL_T_ASSEMBLY:
         case TOOL_T_COVERAGE:
+        case TOOL_T_REPLICATE:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
@@ -1090,21 +1104,35 @@ void parse(int argc, char ** argv)
              * which, thus we'll compare number of matches.
              */
             
-            auto checkCufflinkGene = [&](const FileName &file)
+            auto checkCufflink = [&](const FileName &file)
             {
                 const auto &r = Standard::instance().r_trans;
                 
                 Counts gens = 0;
                 Counts isos = 0;
                 
-                ParserTracking::parse(file, [&](const ParserTracking::Data &data, const ParserProgress &p)
+                ParserCufflink::parse(file, [&](const ParserCufflink::Data &data, const ParserProgress &p)
                 {
-                    try
+                    if (data.cID == ChrT)
                     {
-                        if (r.match(data.id))              { isos++; }
-                        if (r.findGene(data.cID, data.id)) { gens++; }
+                        try
+                        {
+                            if (r.match(data.tID))
+                            {
+                                isos++;
+                                
+                                // Important, if there's match for isoform, don't match for it's gene
+                                return;
+                            }
+                        }
+                        catch (...) {}
+
+                        try
+                        {
+                            if (r.findGene(data.cID, data.id)) { gens++; }
+                        }
+                        catch (...) {}
                     }
-                    catch (...) {}                    
                 });
                 
                 return gens > isos;
@@ -1153,13 +1181,40 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
+                case TOOL_T_REPLICATE:
+                {
+                    auto parseSoft = [&](const std::string &key, const std::string &str)
+                    {
+                        const static std::map<std::string, TReplicate::Software> m =
+                        {
+                            { "cufflink",  TReplicate::Software::Cufflinks },
+                            { "stringtie", TReplicate::Software::StringTie },
+                        };
+                        
+                        return parseEnum(key, str, m);
+                    };
+                    
+                    TReplicate::Options o;
+                    
+                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
+                    o.metrs = TReplicate::Metrics::Gene;
+                    
+                    if (o.soft == TReplicate::Software::Cufflinks)
+                    {
+                        o.metrs = checkCufflink(_p.inputs[0]) ? TReplicate::Metrics::Gene : TReplicate::Metrics::Isoform;
+                    }
+                    
+                    analyze_n<TReplicate>(o);
+                    break;
+                }
+
                 case TOOL_T_EXPRESS:
                 {
                     auto parseSoft = [&](const std::string &key, const std::string &str)
                     {
                         const static std::map<std::string, TExpress::Software> m =
                         {
-                            { "cufflink", TExpress::Software::Cufflinks },
+                            { "cufflink",  TExpress::Software::Cufflinks },
                             { "stringtie", TExpress::Software::StringTie },
                         };
                         
@@ -1173,10 +1228,10 @@ void parse(int argc, char ** argv)
                     
                     if (o.soft == TExpress::Software::Cufflinks)
                     {
-                        o.metrs = checkCufflinkGene(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
+                        o.metrs = checkCufflink(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
                     }
                     
-                    analyze<TExpress>(_p.inputs, o);
+                    analyze_1<TExpress>(OPT_U_FILES, o);
                     break;
                 }
 

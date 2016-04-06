@@ -223,16 +223,8 @@ namespace Anaquin
         static Scripts createLODR_V(const FileName &);
 
         /*
-         * --------------------- Splice Plot ---------------------
-         */
-
-        static Scripts createSplice(const FileName &);
-
-        /*
          * -------------------- Scatter Plot --------------------
          */
-
-        static Scripts scatterPool(const FileName &);
 
         template <typename Stats> static Scripts scatter(const Stats &stats,
                                                          const ChrID &cID,
@@ -261,7 +253,6 @@ namespace Anaquin
                 }
             }
             
-            //return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title, stats.limit.abund);
             return RWriter::scatter(z, x, y, shoudLog2 ? xLogLabel : xLabel, shoudLog2 ? yLogLabel : yLabel, title);
         }
 

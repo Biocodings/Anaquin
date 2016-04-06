@@ -76,9 +76,6 @@ namespace Anaquin
             
             std::map<ChrID, Data> data;
 
-            // Count table
-            std::shared_ptr<CountTable> counts;
-
             // Average counts for each condition if provided
             std::vector<std::map<std::string, Counts>> avgs;
 

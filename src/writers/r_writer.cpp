@@ -1,5 +1,4 @@
 #include "stats/analyzer.hpp"
-#include "data/experiment.hpp"
 #include "writers/r_writer.hpp"
 
 using namespace Anaquin;
@@ -26,16 +25,7 @@ extern Scripts PlotLODR_V();
 extern Scripts PlotMA();
 
 // Defined in resources.cpp
-extern Scripts PlotSplice();
-
-// Defined in resources.cpp
-extern Scripts PlotScatterPool();
-
-// Defined in resources.cpp
 extern Scripts PlotTAbundAbund();
-
-// Defined in resources.cpp
-extern Scripts PlotScatter_F();
 
 // Defined in main.cpp
 extern std::string mixture();
@@ -136,17 +126,6 @@ Scripts RWriter::scatter(const std::vector<SequinID> &seqs,
                                     % yLabel).str();
 }
 
-Scripts RWriter::scatterPool(const FileName &file)
-{
-    std::stringstream ss;
-    ss << PlotScatterPool();
-
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % __output__
-                                    % file).str();
-}
-
 Scripts StatsWriter::inflectSummary()
 {
     return "Summary for input: %1%\n\n"
@@ -233,7 +212,7 @@ Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR
                                                          % STRING(stats.n_endo)     // 4
                                                          % STRING(stats.p_endo)     // 5
                                                          % chrTR                    // 6
-                                                         % STRING(stats.n_ref)      // 7
+                                                         % stats.n_ref              // 7
                                                          % STRING(stats.units)      // 8
                                                          % STRING(stats.n_det)      // 9
                                                          % STRING(stats.b)          // 10
@@ -329,7 +308,7 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.p_chrT.add(mStats[i].chrTProp());
         r.p_endo.add(mStats[i].endoProp());
 
-        r.n_ref.add((unsigned)hist[i].size());
+        r.n_ref = hist[i].size();
         r.n_det.add((unsigned)detect(hist[i]));
 
         r.b.add((unsigned)b);
@@ -367,17 +346,6 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
     }
 
     return inflectSummary(chrTR, endoR, r, units);
-}
-
-Scripts RWriter::createSplice(const FileName &fpkms)
-{
-    std::stringstream ss;
-    ss << PlotSplice();
-    
-    return (boost::format(ss.str()) % date()
-                                    % __full_command__
-                                    % __output__
-                                    % fpkms).str();
 }
 
 Scripts RWriter::createLODR_T(const FileName &dFile)
