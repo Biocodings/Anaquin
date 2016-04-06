@@ -6,10 +6,28 @@
 
 using namespace Anaquin;
 
+// Defined in resources.cpp
 extern Scripts PlotTAbundAbund();
+
+// Defined in resources.cpp
+extern Scripts PlotRAbundAbund();
+
+// Defined in resources.cpp
+extern Scripts PlotMajor();
 
 typedef TExpress::Metrics  Metrics;
 typedef TExpress::Software Software;
+
+static Scripts generateSummary(const TExpress::Stats &stats, const FileName &file, const Units &units, const TExpress::Options &o)
+{
+    return StatsWriter::inflectSummary(o.rChrT,
+                                       o.rEndo,
+                                       std::vector<FileName>     { file  },
+                                       std::vector<SequinHist>   { stats.hist },
+                                       std::vector<MappingStats> { stats },
+                                       std::vector<LinearStats>  { stats.data },
+                                       units);
+}
 
 template <typename T> void update(TExpress::Stats &stats, const T &t, const TExpress::Options &o)
 {
@@ -115,7 +133,7 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
         case Metrics::Isoform: { stats.data.limit = r.absolute(stats.hist);     break; }
         case Metrics::Gene:    { stats.data.limit = r.absoluteGene(stats.hist); break; }
     }
-
+    
     return stats;
 }
 
@@ -136,7 +154,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
                      */
                     
                     auto tmp = data;
-
+                    
                     if (o.metrs == Metrics::Isoform)
                     {
                         tmp.id = tmp.tID;
@@ -170,18 +188,56 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     });
 }
 
-static Scripts generateSummary(const TExpress::Stats &stats, const FileName &file, const Units &units, const TExpress::Options &o)
+static Scripts writeCSV(const std::vector<TExpress::Stats> &stats)
 {
-    return StatsWriter::inflectSummary(o.rChrT,
-                                       o.rEndo,
-                                       std::vector<FileName>     { file  },
-                                       std::vector<SequinHist>   { stats.hist },
-                                       std::vector<MappingStats> { stats },
-                                       std::vector<LinearStats>  { stats.data },
-                                       units);
+    std::set<SequinID> seqs;
+
+    // This is the data structure that will be convenient
+    std::map<unsigned, std::map<SequinID, Concent>> data;
+    
+    // Expected concentration
+    std::map<SequinID, Concent> expect;
+    
+    std::stringstream ss;
+    ss << "Sequin\tEAbund";
+
+    for (auto i = 0; i < stats.size(); i++)
+    {
+        ss << ((boost::format("\tA%1%") % (i+1)).str());
+        
+        for (const auto &j : stats[i].data)
+        {
+            seqs.insert(j.first);
+            expect[j.first]  = j.second.x;
+            data[i][j.first] = j.second.y;
+        }
+    }
+    
+    ss << "\n";
+
+    for (const auto &seq : seqs)
+    {
+        ss << ((boost::format("%1%\t%2%") % seq % expect.at(seq)).str());
+        
+        for (auto i = 0; i < stats.size(); i++)
+        {
+            if (data[i].count(seq))
+            {
+                ss << "\t" << data[i][seq];
+            }
+            else
+            {
+                ss << "\tNA";
+            }
+        }
+        
+        ss << "\n";
+    }
+    
+    return ss.str();
 }
 
-void TExpress::report(const FileName &file, const Options &o)
+void TExpress::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto m = std::map<TExpress::Metrics, std::string>
     {
@@ -189,33 +245,85 @@ void TExpress::report(const FileName &file, const Options &o)
         { TExpress::Metrics::Isoform, "isoforms" },
     };
     
-    const auto stats = TExpress::analyze(file, o);
     const auto units = m.at(o.metrs);
+    const auto stats = analyze(files, o);
     
-    /*
-     * Generating summary statistics (all together if multiple samples)
-     */
+    std::vector<SequinHist>   sHists;
+    std::vector<LinearStats>  lStats;
+    std::vector<MappingStats> mStats;
+    
+    for (auto i = 0; i < files.size(); i++)
+    {
+        mStats.push_back(stats[i]);
+        sHists.push_back(stats[i].hist);
+        lStats.push_back(stats[i].data);
+    }
 
+    /*
+     * Generating summary statistics (single sample or replicates)
+     */
+    
     o.info("Generating TransExpress_summary.stats");
-    o.writer->open("TransExpress_summary.stats");
-    o.writer->write(generateSummary(stats, file, units, o));
-    o.writer->close();
+    
+    if (files.size() == 1)
+    {
+        o.writer->open("TransExpress_summary.stats");
+        o.writer->write(generateSummary(stats[0], files[0], units, o));
+        o.writer->close();
+    }
+    else
+    {
+        o.info("Generating TransReplicate_summary.stats");
+        o.writer->open("TransReplicate_summary.stats");
+        o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rEndo, files, sHists, mStats, lStats, units));
+        o.writer->close();
+    }
     
     /*
      * Generating detailed statistics for the sequins
      */
     
-    o.info("Generated TransExpress_quins.csv");
-    o.writer->open("TransExpress_quins.csv");
-    o.writer->write(StatsWriter::writeCSV(stats.data, "EAbund", "MAbund"));
+    o.info("Generating TransReplicate_quin.csv");
+    o.writer->open("TransReplicate_quin.csv");
+    
+    if (files.size() == 1)
+    {
+        o.writer->write(StatsWriter::writeCSV(stats[0].data, "EAbund", "MAbund"));
+    }
+    else
+    {
+        o.writer->write(writeCSV(stats));
+        o.writer->close();
+    }
+    
     o.writer->close();
     
     /*
-     * Generating for AbundAbund
+     * Generating abundance vs abundance (single sample or replicates)
      */
     
-    o.info("Generated TranExpress_abundAbund.R");
+    o.info("Generating TransReplicate_abundAbund.R");
     o.writer->open("TransExpress_abundAbund.R");
-    o.writer->write(RWriter::createScript("TransExpress_quins.csv", PlotTAbundAbund()));
+    
+    if (files.size() == 1)
+    {
+        o.writer->write(RWriter::createScript("TransExpress_quins.csv", PlotTAbundAbund()));
+    }
+    else
+    {
+        o.writer->write(RWriter::createScript("TransReplicate_quin.csv", PlotRAbundAbund()));
+    }
+
     o.writer->close();
+    
+    /*
+     * Generating major plot for all samples (but only if we have the isoforms...)
+     */
+    
+    if (files.size() >= 2 && o.metrs == TExpress::Metrics::Isoform)
+    {
+        o.writer->open("TransReplicate_major.R");
+        o.writer->write(RWriter::createScript("TransReplicate_quin.csv", PlotMajor()));
+        o.writer->close();
+    }
 }

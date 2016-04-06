@@ -15,7 +15,6 @@
 #include "TransQuin/t_kexpress.hpp"
 #include "TransQuin/t_assembly.hpp"
 #include "TransQuin/t_coverage.hpp"
-#include "TransQuin/t_replicate.hpp"
 
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_allele.hpp"
@@ -100,7 +99,6 @@ typedef std::set<Value> Range;
 #define TOOL_T_KDIFF     305
 #define TOOL_T_REPORT    306
 #define TOOL_V_KALLELE   307
-#define TOOL_T_REPLICATE 308
 
 /*
  * Options specified in the command line
@@ -189,7 +187,6 @@ static std::map<Value, Tool> _tools =
     { "TransDiff",      TOOL_T_DIFF      },
     { "TransKDiff",     TOOL_T_KDIFF     },
     { "TransNorm",      TOOL_T_NORM      },
-    { "TransReplicate", TOOL_T_REPLICATE },
     { "TransIGV",       TOOL_T_IGV       },
     { "TransCoverage",  TOOL_T_COVERAGE  },
     { "TransReport",    TOOL_T_REPORT    },
@@ -240,7 +237,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_REPORT,   { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_T_REPLICATE,{ OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     
     /*
@@ -1066,7 +1062,6 @@ void parse(int argc, char ** argv)
         case TOOL_T_KEXPRESS:
         case TOOL_T_ASSEMBLY:
         case TOOL_T_COVERAGE:
-        case TOOL_T_REPLICATE:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
@@ -1152,33 +1147,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case TOOL_T_REPLICATE:
-                {
-                    auto parseSoft = [&](const std::string &key, const std::string &str)
-                    {
-                        const static std::map<std::string, TReplicate::Software> m =
-                        {
-                            { "cufflink",  TReplicate::Software::Cufflinks },
-                            { "stringtie", TReplicate::Software::StringTie },
-                        };
-                        
-                        return parseEnum(key, str, m);
-                    };
-                    
-                    TReplicate::Options o;
-                    
-                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
-                    o.metrs = TReplicate::Metrics::Gene;
-                    
-                    if (o.soft == TReplicate::Software::Cufflinks)
-                    {
-                        o.metrs = checkCufflink(_p.inputs[0]) ? TReplicate::Metrics::Gene : TReplicate::Metrics::Isoform;
-                    }
-                    
-                    analyze_n<TReplicate>(o);
-                    break;
-                }
-
                 case TOOL_T_EXPRESS:
                 {
                     auto parseSoft = [&](const std::string &key, const std::string &str)
@@ -1191,7 +1159,7 @@ void parse(int argc, char ** argv)
                         
                         return parseEnum(key, str, m);
                     };
-
+                    
                     TExpress::Options o;
                     
                     o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
@@ -1202,7 +1170,7 @@ void parse(int argc, char ** argv)
                         o.metrs = checkCufflink(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
                     }
                     
-                    analyze_1<TExpress>(OPT_U_FILES, o);
+                    analyze_n<TExpress>(o);
                     break;
                 }
 
