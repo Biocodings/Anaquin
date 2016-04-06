@@ -25,7 +25,9 @@ namespace Anaquin
             FinalSigmaSQ,
         } Field;
 
-        static void parse(const FileName &file, std::function<void (const DiffTest &, const ParserProgress &)> f)
+        typedef DiffTest Data;
+        
+        static void parse(const FileName &file, std::function<void (const Data &, const ParserProgress &)> f)
         {
             Reader r(file);
             ParserProgress p;
@@ -40,7 +42,7 @@ namespace Anaquin
             {
                 Tokens::split(line, ",", toks);
 
-                DiffTest t;
+                Data t;
 
                 if (p.i)
                 {

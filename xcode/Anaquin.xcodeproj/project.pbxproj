@@ -73,7 +73,7 @@
 		EF7765C21CB4DD9F007C61C3 /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278511CAD06FD0012648F /* t_express.cpp */; };
 		EF7765C31CB4DDA8007C61C3 /* t_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72784B1CAD06FD0012648F /* t_align.cpp */; };
 		EF7765C41CB4DDAA007C61C3 /* t_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72784D1CAD06FD0012648F /* t_assembly.cpp */; };
-		EF7765C51CB4DDAD007C61C3 /* t_diffs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72784F1CAD06FD0012648F /* t_diffs.cpp */; };
+		EF7765C51CB4DDAD007C61C3 /* t_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72784F1CAD06FD0012648F /* t_diff.cpp */; };
 		EF7765C61CB4DDB1007C61C3 /* t_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278531CAD06FD0012648F /* t_viewer.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF7765C91CB4E2EB007C61C3 /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7765C71CB4E2EB007C61C3 /* t_express.cpp */; };
 		EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF98D6BB1C616B5D00697051 /* t_standard.cpp */; };
@@ -282,7 +282,7 @@
 		EF7278421CACEC940012648F /* m_viewer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_viewer.hpp; sourceTree = "<group>"; };
 		EF72784B1CAD06FD0012648F /* t_align.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_align.cpp; sourceTree = "<group>"; };
 		EF72784D1CAD06FD0012648F /* t_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_assembly.cpp; sourceTree = "<group>"; };
-		EF72784F1CAD06FD0012648F /* t_diffs.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_diffs.cpp; sourceTree = "<group>"; };
+		EF72784F1CAD06FD0012648F /* t_diff.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_diff.cpp; sourceTree = "<group>"; };
 		EF7278511CAD06FD0012648F /* t_express.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_express.cpp; sourceTree = "<group>"; };
 		EF7278531CAD06FD0012648F /* t_viewer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = t_viewer.cpp; sourceTree = "<group>"; };
 		EF7278541CAD48F70012648F /* v_report.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = v_report.hpp; path = ../src/VarQuin/v_report.hpp; sourceTree = "<group>"; };
@@ -708,7 +708,7 @@
 			children = (
 				EF72784B1CAD06FD0012648F /* t_align.cpp */,
 				EF72784D1CAD06FD0012648F /* t_assembly.cpp */,
-				EF72784F1CAD06FD0012648F /* t_diffs.cpp */,
+				EF72784F1CAD06FD0012648F /* t_diff.cpp */,
 				EF7278511CAD06FD0012648F /* t_express.cpp */,
 				EF7278531CAD06FD0012648F /* t_viewer.cpp */,
 			);
@@ -982,7 +982,7 @@
 				EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */,
 				EF7765C91CB4E2EB007C61C3 /* t_express.cpp in Sources */,
 				EFBC882B1C3E78F500B604A7 /* t_r_writer.cpp in Sources */,
-				EF7765C51CB4DDAD007C61C3 /* t_diffs.cpp in Sources */,
+				EF7765C51CB4DDAD007C61C3 /* t_diff.cpp in Sources */,
 				EFBB830E1ADF953B0002611E /* parser_sequins.cpp in Sources */,
 				EFDD6AD81B0DD76C00450029 /* vlen.c in Sources */,
 				EF2615751B5FF9AD00BE8037 /* GFastaIndex.cpp in Sources */,

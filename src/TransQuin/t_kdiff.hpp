@@ -19,18 +19,9 @@ namespace Anaquin
             Kallisto,
         };
         
-        enum class Metrics
-        {
-            Gene,
-            Isoform
-        };
-
         struct Options : public DoubleMixtureOptions
         {
             Options() {}
-
-            // Gene or isoform?
-            Metrics metrs;
 
             // Only Kallisto is supported
             Software soft;

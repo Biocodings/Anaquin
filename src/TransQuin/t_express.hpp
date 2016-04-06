@@ -8,6 +8,96 @@ namespace Anaquin
 {
     struct TExpress : public Analyzer
     {
+        /*
+         * Generate summary statistics for a single sample
+         */
+        
+        template <typename Stats, typename Options> static Scripts singleSummary(const Stats &stats,
+                                                                                 const FileName &file,
+                                                                                 const Units &units,
+                                                                                 const Options &o)
+        {
+            return StatsWriter::inflectSummary(o.rChrT,
+                                               o.rEndo,
+                                               std::vector<FileName>     { file  },
+                                               std::vector<SequinHist>   { stats.hist },
+                                               std::vector<MappingStats> { stats },
+                                               std::vector<LinearStats>  { stats },
+                                               units);
+        }
+        
+        /*
+         * Generate summary statistics for multiple samples
+         */
+        
+        template <typename Stats, typename Options> static Scripts multipleSummary(const std::vector<FileName> &files,
+                                                                                   const std::vector<Stats>    &stats,
+                                                                                   const Units &units,
+                                                                                   const Options &o)
+        {
+            std::vector<SequinHist>   sHists;
+            std::vector<LinearStats>  lStats;
+            std::vector<MappingStats> mStats;
+            
+            for (auto i = 0; i < files.size(); i++)
+            {
+                mStats.push_back(stats[i]);
+                sHists.push_back(stats[i].hist);
+                lStats.push_back(stats[i]);
+            }
+            
+            return StatsWriter::inflectSummary(o.rChrT, o.rEndo, files, sHists, mStats, lStats, units);
+        }
+        
+        template <typename Stats> static Scripts multipleCSV(const std::vector<Stats> &stats)
+        {
+            std::set<SequinID> seqs;
+            
+            // This is the data structure that will be convenient
+            std::map<unsigned, std::map<SequinID, Concent>> data;
+            
+            // Expected concentration
+            std::map<SequinID, Concent> expect;
+            
+            std::stringstream ss;
+            ss << "Sequin\tEAbund";
+            
+            for (auto i = 0; i < stats.size(); i++)
+            {
+                ss << ((boost::format("\tA%1%") % (i+1)).str());
+                
+                for (const auto &j : stats[i])
+                {
+                    seqs.insert(j.first);
+                    expect[j.first]  = j.second.x;
+                    data[i][j.first] = j.second.y;
+                }
+            }
+            
+            ss << "\n";
+            
+            for (const auto &seq : seqs)
+            {
+                ss << ((boost::format("%1%\t%2%") % seq % expect.at(seq)).str());
+                
+                for (auto i = 0; i < stats.size(); i++)
+                {
+                    if (data[i].count(seq))
+                    {
+                        ss << "\t" << data[i][seq];
+                    }
+                    else
+                    {
+                        ss << "\tNA";
+                    }
+                }
+                
+                ss << "\n";
+            }
+            
+            return ss.str();
+        }
+        
         typedef ParserCufflink::Data TestData;
         
         enum class Metrics
@@ -33,9 +123,9 @@ namespace Anaquin
             Software soft;
         };
         
-        struct Stats : public MappingStats, public SequinStats
+        struct Stats : public LinearStats, public MappingStats, public SequinStats
         {
-            LinearStats data;
+            // Empty Implementation
         };
 
         static Stats analyze(const FileName &, const Options &o);

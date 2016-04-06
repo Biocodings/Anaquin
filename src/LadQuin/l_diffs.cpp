@@ -45,7 +45,7 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%\t%12%\t%13%";
 
-    o.writer->open("LadderDifferent_quin.csv");
+    o.writer->open("LadderDifferent_quins.csv");
     o.writer->write((boost::format(format) % "ID"
                                            % "Expected A"
                                            % "Expected B"

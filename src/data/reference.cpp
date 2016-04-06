@@ -717,12 +717,12 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
         auto d = TransData();
         
         d.id  = id;
-        d.gID = _impl->cRaw.rawMapper.at(d.id);
+        d.gID = !_impl->cRaw.rawMapper.empty() ? _impl->cRaw.rawMapper.at(d.id) : "";
         
         // Add a new entry for the validated sequin
         _data[id] = d;
         
-        assert(!d.id.empty() && !d.gID.empty());
+        //assert(!d.id.empty() && !d.gID.empty());
     });
     
     /*
@@ -815,25 +815,25 @@ void TransRef::validate()
 {
     const auto iIDs = getKeys(_impl->cRaw.exonsByTrans);
     
-    if (iIDs.empty())
-    {
-        throw std::runtime_error("There is no synthetic chromosome in the annotation file. Anaquin is unable to proceed unless a valid annotation is given. Please check and try again.");
-    }
-    
     /*
-     * Validation rules:
+     * Building rules:
      *
-     *   1: Annotation (eg: TransCoverage)
-     *   2: Evertyhing (eg: TransAlign)
+     *   1: Only annoation
+     *   2: Only mixture
+     *   3: Annotation and mixture
      */
 
     if (_rawMIDs.empty())
     {
-        merge(iIDs, iIDs);     // Rule 1
+        merge(iIDs, iIDs);         // Rule 1
+    }
+    else if (!iIDs.empty())
+    {
+        merge(_rawMIDs, iIDs);     // Rule 3
     }
     else
     {
-        merge(_rawMIDs, iIDs); // Rule 2
+        merge(_rawMIDs, _rawMIDs); // Rule 2
     }
 
     /*
@@ -871,7 +871,7 @@ void TransRef::validate()
         createTrans(i.first, _impl->data[i.first]);
     }
     
-    assert(_impl->data.count(ChrT));
+    //assert(_impl->data.count(ChrT));
 }
 
 /*

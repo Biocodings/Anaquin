@@ -263,13 +263,13 @@ void LAbund::report(const FileName &file, const Options &o)
      * Generating CSV for the abundance
      */
     
-    writeCSV("LadderAbundance_quin.csv", stats, o);
+    writeCSV("LadderAbundance_quins.csv", stats, o);
 
     /*
      * Generating scatter plot
      */
 
     o.writer->open("LadderAbundance_scatter.R");
-    o.writer->write(RWriter::createScript("LadderAbundance_quin.csv", PlotLadderAbund()));
+    o.writer->write(RWriter::createScript("LadderAbundance_quins.csv", PlotLadderAbund()));
     o.writer->close();
 }

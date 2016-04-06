@@ -560,6 +560,11 @@ template <typename Reference> void addRef(Reference ref)
         {
             switch (opt)
             {
+                case OPT_R_IND:
+                {
+                    continue;
+                }
+                    
                 case OPT_R_ENDO:
                 {
                     addRef(Endo, ref, _p.opts[opt]);
@@ -1137,17 +1142,45 @@ void parse(int argc, char ** argv)
                 {
                     break;
                 }
-                    
-                case TOOL_T_KEXPRESS:
-                {
-                    break;
-                }
 
                 case TOOL_T_KDIFF:
                 {
+                    auto parseSoft = [&](const std::string &key, const std::string &str)
+                    {
+                        const static std::map<std::string, TKDiff::Software> m =
+                        {
+                            { "kallisto",  TKDiff::Software::Kallisto },
+                        };
+                        
+                        return parseEnum(key, str, m);
+                    };
+                    
+                    TKDiff::Options o;
+                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
+                    
+                    analyze_1<TKDiff>(OPT_U_FILES, o);
                     break;
                 }
+
+                case TOOL_T_KEXPRESS:
+                {
+                    auto parseSoft = [&](const std::string &key, const std::string &str)
+                    {
+                        const static std::map<std::string, TKExpress::Software> m =
+                        {
+                            { "kallisto",  TKExpress::Software::Kallisto },
+                        };
+                        
+                        return parseEnum(key, str, m);
+                    };
                     
+                    TKExpress::Options o;
+                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
+                    
+                    analyze_n<TKExpress>(o);
+                    break;
+                }
+
                 case TOOL_T_EXPRESS:
                 {
                     auto parseSoft = [&](const std::string &key, const std::string &str)

@@ -12,19 +12,10 @@ namespace Anaquin
             Kallisto,
         };
         
-        enum class Metrics
-        {
-            Gene,
-            Isoform
-        };
-
         struct Options : public AnalyzerOptions
         {
             Options() {}
 
-            // Gene or isoform?
-            Metrics metrs;
-            
             // Only Kallisto is supported
             Software soft;
         };
@@ -35,6 +26,19 @@ namespace Anaquin
         };
 
         static Stats analyze(const FileName &, const Options &o);
+        
+        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
+        {
+            std::vector<Stats> stats;
+            
+            for (const auto &file : files)
+            {
+                stats.push_back(analyze(file, o));
+            }
+
+            return stats;
+        }
+        
         static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
