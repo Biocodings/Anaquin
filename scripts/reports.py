@@ -842,7 +842,7 @@ def generatePDF(r, path, name):
     execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > ' + path + '/r2pdf.R')
 
     # Create the PDF report
-    execute('R CMD BATCH /tmp/r2pdf.R')
+    execute('R CMD BATCH ' + path + '/r2pdf.R')
 
     # Move it to where it's supposed to be
     execute('mv report.pdf ' + path + os.sep + name + ' 2>/dev/null')

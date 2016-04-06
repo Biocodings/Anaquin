@@ -536,7 +536,7 @@ static Scripts replicateSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Fraction of reads mapped to the synthetic and experimental chromosomes\n"
+           "   *** Number of reads mapped to the synthetic and experimental chromosomes\n"
            "   ***\n\n"
            "   Unmapped:   %2% reads\n"
            "   Synthetic:  %3% (%4%%%) reads\n"
@@ -567,8 +567,6 @@ static Scripts replicateSummary()
            "   Covered bases (Experiment):   %21% bases\n\n"
            "   ***\n"
            "   *** The following statistics are computed at the exon, intron and base level.\n"
-           "   ***\n"
-           "   *** Please refer to the online documentation at www.sequin.xyz for more details.\n"
            "   ***\n\n"
            "   *************************************************\n"
            "   ***                                           ***\n"

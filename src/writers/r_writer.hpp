@@ -3,7 +3,6 @@
 
 #include <set>
 #include <math.h>
-#include <sstream>
 #include <numeric>
 #include "stats/linear.hpp"
 #include <boost/format.hpp>

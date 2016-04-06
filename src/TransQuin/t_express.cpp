@@ -269,31 +269,12 @@ template <typename Stats, typename Options> Scripts writeSampleCSV(const std::ve
     return ss.str();
 }
 
-static void writeScatter(const TExpress::Stats   &stats,
-                         const FileName          &file,
-                         const std::string       &units,
-                         const TExpress::Options &o)
-{
-    o.writer->open("TransExpress_scatter.R");
-
-    /*
-    o.writer->write(RWriter::scatter(stats, ChrT, "????",
-                                     "TransExpress",
-                                     "Expected concentration (attomol/ul)",
-                                     "Measured coverage (FPKM)",
-                                     "Expected concentration (log2 attomol/ul)",
-                                     "Measured coverage (log2 FPKM)"));
-     */
-    
-    o.writer->close();
-}
-
 void TExpress::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto m = std::map<TExpress::Metrics, std::string>
     {
-        { TExpress::Metrics::Gene,    "gene"    },
-        { TExpress::Metrics::Isoform, "isoform" },
+        { TExpress::Metrics::Gene,    "genes"    },
+        { TExpress::Metrics::Isoform, "isoforms" },
     };
     
     const auto stats = TExpress::analyze(files, o);
@@ -333,20 +314,17 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
          */
         
         o.writer->open("TransExpress_quins.csv");
-        o.writer->write(StatsWriter::writeCSV(stats[i].data, "Expected concentration (attomol/ul)", "Measured abundance (attomol/ul)"));
+        o.writer->write(StatsWriter::writeCSV(stats[i].data, "EAbund", "MAbund"));
         o.writer->close();
 
         /*
          * Generating for AbundAbund
          */
         
-        //o.writer->open("VarExpress_abundAbund.R");
-        //o.writer->write(RWriter::createScript("VarExpress_quins.csv", PlotTAbundAbund()));
-        //o.writer->close();
+        o.writer->open("TranExpress_abundAbund.R");
+        o.writer->write(RWriter::createScript("TransExpress_quins.csv", PlotTAbundAbund()));
+        o.writer->close();
 
-        // Generating scatter plot for the sample
-        //writeScatter(stats[i], files[i], units, o);
-        
         data_.push_back(stats[i]);
         hists.push_back(stats[i].hist);
         data.push_back(stats[i].data);

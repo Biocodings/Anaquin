@@ -7,7 +7,10 @@
 #
 
 #
-# Create a plot for expected abundance vs measured abundance
+# This script generates a VarQuin plot for expected expression against measured expression.
+#
+#    - x-axis: expected expression in attomol/ul
+#    - y-axis: measured expression
 #
 
 library(Anaquin)

@@ -37,7 +37,7 @@ namespace Anaquin
         SStrings files;
         
         // Eg: 2387648 (15.56%)
-        SReals n_chrT, n_endo;
+        SCounts n_chrT, n_endo;
         
         // Eg: 25738262 (67.56%)
         SProps p_chrT, p_endo;
