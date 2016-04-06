@@ -281,10 +281,10 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     const auto units = m.at(o.metrs);
     
     /*
-     * Generating summary statistics
+     * Generating summary statistics (all together if multiple samples)
      */
 
-    o.info("Generating summary statistics");
+    o.info("Generating TransExpress_summary.stats");
     o.writer->open("TransExpress_summary.stats");
     
     for (auto i = 0; i < files.size(); i++)
@@ -303,9 +303,9 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating summary statistics for each sample
      */
     
-    std::vector<LinearStats> data;
-    std::vector<MappingStats> data_;
-    std::vector<SequinHist> hists;
+    std::vector<SequinHist>   hists;
+    std::vector<LinearStats>  lStats;
+    std::vector<MappingStats> mStats;
     
     for (auto i = 0; i < files.size(); i++)
     {
@@ -313,6 +313,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
          * Generating detailed statistics for the sequins
          */
         
+        o.info("Generated TransExpress_quins.csv");
         o.writer->open("TransExpress_quins.csv");
         o.writer->write(StatsWriter::writeCSV(stats[i].data, "EAbund", "MAbund"));
         o.writer->close();
@@ -321,17 +322,18 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
          * Generating for AbundAbund
          */
         
+        o.info("Generated TranExpress_abundAbund.R");
         o.writer->open("TranExpress_abundAbund.R");
         o.writer->write(RWriter::createScript("TransExpress_quins.csv", PlotTAbundAbund()));
         o.writer->close();
 
-        data_.push_back(stats[i]);
+        mStats.push_back(stats[i]);
         hists.push_back(stats[i].hist);
-        data.push_back(stats[i].data);
+        lStats.push_back(stats[i].data);
     }
     
     /*
-     * Generating summary statistics for all samples
+     * Generating summary statistics for multiple samples
      */
     
     if (files.size() >= 2)
@@ -341,7 +343,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
          */
         
         o.writer->open("TransExpress_pooled.stats");
-        o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rEndo, files, hists, data_, data, units));
+        o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rEndo, files, hists, mStats, lStats, units));
         o.writer->close();
         
         /*

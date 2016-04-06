@@ -302,37 +302,37 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
                                     const std::vector<FileName>     &files,
                                     const std::vector<SequinHist>   &hist,
                                     const std::vector<MappingStats> &mStats,
-                                    const std::vector<LinearStats>  &stats,
+                                    const std::vector<LinearStats>  &lstats,
                                     const Units &units)
 {
     SInflectStats r;
     r.units = units;
     
-    for (auto i = 0; i < stats.size(); i++)
+    for (auto i = 0; i < lstats.size(); i++)
     {
         r.files.add(files[i]);
 
         // Linear regression without logarithm
-        const auto n_lm = stats[i].linear(false);
+        const auto n_lm = lstats[i].linear(false);
         
         // Linear regression with logarithm
-        const auto l_lm = stats[i].linear(true);
+        const auto l_lm = lstats[i].linear(true);
 
-        // Calcluate the inflect point after log-transformation
-        const auto inf = stats[i].limitQuant(true);
+        // Calcluate the inflection point with logarithm
+        const auto inf = lstats[i].limitQuant(true);
 
         // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 
-        r.n_chrT.add(mStats[i].n_chrT);
-        r.n_endo.add(mStats[i].n_endo);
+        r.n_chrT.add((unsigned)mStats[i].n_chrT);
+        r.n_endo.add((unsigned)mStats[i].n_endo);
         r.p_chrT.add(mStats[i].chrTProp());
         r.p_endo.add(mStats[i].endoProp());
 
-        r.n_ref.add(hist[i].size());
-        r.n_det.add(detect(hist[i]));
+        r.n_ref.add((unsigned)hist[i].size());
+        r.n_det.add((unsigned)detect(hist[i]));
 
-        r.b.add(b);
+        r.b.add((unsigned)b);
         r.bID.add(inf.id);
         r.lInt.add(inf.lInt);
         r.rInt.add(inf.rInt);

@@ -366,9 +366,6 @@ normalToFusion <- function(names)
     return (cat('F', substr(names, 2, nchar(names)), sep=''))
 }
 
-
-
-
 ########################################################
 #                                                      #
 #                 Reference Loading                    #
@@ -404,10 +401,8 @@ loadMixture.FusQuin <- function(file='/Users/tedwong/Sources/QA/data/FusQuin/MFU
 
 loadMixture.VarQuin <- function(file='A')
 {
-    if (file == 'A')
-    {
-        file <- url('https://s3.amazonaws.com/anaquin/mixtures/MVA011.v013.csv')
-    }
+    if (file == 'A')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MVA011.v013.csv') }
+    if (file == 'F')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MVA012.v013.csv') }
 
     mix <- read.csv(file, row.names=1, sep='\t')
     colnames(mix) <- c('length', 'A')
@@ -443,17 +438,22 @@ loadMixture.VarQuin <- function(file='A')
     return (r)
 }
 
-loadMixture.TransQuin <- function(file='/Users/tedwong/Sources/QA/data/TransQuin/MTR004.v013.csv')
+loadMixture.TransQuin <- function(file='A')
 {
+    if (file == 'A')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv') }
+    if (file == 'B')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv') }
+    if (file == 'F')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv') }
+    if (file == 'AB') { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv') }
+    
     mix <- read.csv(file, row.names=1, sep='\t')
     colnames(mix) <- c('length', 'A', 'B')
     
     #
     #           length     A           B
-    # R1_11_1     703  161.13281    5.035400
-    # R1_11_2     785   80.56641   10.070801
+    # R1_11_1    703  161.13281    5.035400
+    # R1_11_2    785   80.56641   10.070801
     #
-    
+
     mix$fold    <- mix[[3]] / mix[[2]]
     mix$logFold <- log(mix$fold)
     
