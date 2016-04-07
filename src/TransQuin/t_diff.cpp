@@ -4,7 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
-#include <ss/misc.hpp>
+//#include <ss/misc.hpp>
 #include "TransQuin/t_diff.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_sleuth.hpp"
@@ -271,7 +271,7 @@ void TDiff::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * 2. Generating differential results (CSV)
+     * 2. Generating differential results
      */
     
     o.info("Generating TransDiff_quins.csv");

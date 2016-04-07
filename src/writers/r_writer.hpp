@@ -30,20 +30,21 @@ namespace Anaquin
     {
         static Scripts writeCSV(const LinearStats &stats,
                                 const Label &xLabel = "EAbund",
-                                const Label &yLabel = "MAbund")
+                                const Label &yLabel = "MAbund",
+                                bool shouldLog = false)
         {
             const auto d = stats.data(false);
-            return StatsWriter::writeCSV(d.x, d.y, d.ids, xLabel, yLabel);
+            return StatsWriter::writeCSV(d.x, d.y, d.ids, xLabel, yLabel, shouldLog);
         }
-        
+
         static Scripts writeCSV(const std::vector<double> &x,
                                 const std::vector<double> &y,
                                 const std::vector<SequinID> &ids,
                                 const Label &xLabel,
-                                const Label &yLabel)
+                                const Label &yLabel,
+                                bool shouldLog = false)
         {
             std::stringstream ss;
-            
             ss << ((boost::format("Sequin\t%1%\t%2%\n") % xLabel % yLabel).str());
 
             std::set<SequinID> sorted(ids.begin(), ids.end());
@@ -53,7 +54,9 @@ namespace Anaquin
                 const auto it = std::find(ids.begin(), ids.end(), s);
                 const auto i  = std::distance(ids.begin(), it);
                 
-                ss << ((boost::format("%1%\t%2%\t%3%\n") % ids.at(i) % x.at(i) % y.at(i)).str());
+                ss << ((boost::format("%1%\t%2%\t%3%\n") % ids.at(i)
+                                                         % (shouldLog ? log2(x.at(i)) : x.at(i))
+                                                         % (shouldLog ? log2(y.at(i)) : y.at(i))).str());
             }
 
             return ss.str();

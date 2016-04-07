@@ -1078,6 +1078,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_T_DIFF:
+                    case TOOL_T_KDIFF:
                     {
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;

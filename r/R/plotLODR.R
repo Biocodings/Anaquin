@@ -6,7 +6,7 @@
 
 .plotLODR <- function(data,
                       band='pred',
-                      choseFDR=0.1,
+                      chosenFDR=0.1,
                       shouldTable=FALSE,
                       multiTest=TRUE)
 {
@@ -24,7 +24,7 @@
     #
     
     data$qval <- if(multiTest) qvalue(data$pval)$qvalues else data$pval
-    cutoff    <- max(data$pval[data$qval < choseFDR])
+    cutoff    <- max(data$pval[data$qval < chosenFDR])
     
     print(paste('FDR threshold:', cutoff))
     
@@ -352,7 +352,7 @@ plotLODR.LadQuin <- function(data, title=NULL)
 plotLODR.TransQuin <- function(data,
                      lvl,
                      title = NULL,
-                     choseFDR = 0.1,
+                     chosenFDR = 0.1,
                      xBreaks = NULL,
                      yBreaks = NULL,
                      xLabels = NULL,
