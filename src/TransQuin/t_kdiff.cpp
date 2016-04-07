@@ -102,20 +102,4 @@ void TKDiff::report(const FileName &file, const Options &o)
     o.writer->open("TransKDiff_fold.R");
     o.writer->write(RWriter::createScript("TransKDiff_quins.csv", PlotFold()));
     o.writer->close();
-
-//    /*
-//     * Generating ROC plot
-//     */
-//    
-//    o.writer->open("TransDiff_ROC.R");
-//    //o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
-//    o.writer->close();
-//
-//    /*
-//     * Generating LODR plot
-//     */
-//    
-//    o.writer->open("TransDiff_LODR.R");
-//    o.writer->write(RWriter::createLODR_T("TransDiff_diffs.csv"));
-//    o.writer->close();
 }
