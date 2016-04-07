@@ -20,10 +20,10 @@ plotScatter <- function(data,
 {
     require(ggplot2)
 
-    data       <- data$seqs
-    data$x     <- data$expect
-    data$y     <- data$measured
-    data$logFC <- abs(log2(data$expect))
+    data     <- data$seqs
+    data$x   <- data$expect
+    data$y   <- data$measured
+    data$grp <- abs(data$expect) #ifelse(shouldLog2, abs(log2(data$expect)), abs(data$expect))
 
     stopifnot(length(data$x) == length((data$y)))
     
@@ -48,13 +48,13 @@ plotScatter <- function(data,
         as.character(as.expression(eq));
     }
 
-    data$logFC <- as.factor(data$logFC)
+    data$grp <- as.factor(data$grp)
     
     p <- ggplot(data=data, aes(x=x, y=y)) +
                               xlab(xname) +
                               ylab(yname) +
                            ggtitle(title) +
-                geom_point(aes(colour=logFC), size=2, alpha=alpha) +
+                geom_point(aes(colour=grp), size=2, alpha=alpha) +
                 geom_smooth(method='lm', formula=y ~ x)            +
                 labs(colour='Ratio')                               +
                 theme_bw()

@@ -197,6 +197,8 @@ namespace Anaquin
     struct RWriter
     {
         static Scripts createScript(const FileName &name, const Scripts &scripts);
+        
+        static Scripts createMA(const FileName &, const std::string &);
     };
 }
 

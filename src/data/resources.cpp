@@ -35,9 +35,9 @@
 
 #include "resources/plotMA.R"
 #include "resources/plotFold.R"
-#include "resources/plotROC_T.R"
+#include "resources/plotTROC.R"
 #include "resources/plotMajor.R"
-#include "resources/plotLODR_T.R"
+#include "resources/plotLODR.R"
 #include "resources/plotRAbundAbund.R"
 #include "resources/plotTAbundAbund.R"
 
@@ -181,14 +181,14 @@ Scripts PlotTAbundAbund()
     return ToString(src_r_plotTAbundAbund_R);
 }
 
-Scripts PlotROC_T()
+Scripts PlotTROC()
 {
-    return ToString(src_r_plotROC_T_R);
+    return ToString(src_r_plotTROC_R);
 }
 
-Scripts PlotLODR_T()
+Scripts PlotLODR()
 {
-    return ToString(src_r_plotLODR_T_R);
+    return ToString(src_r_plotLODR_R);
 }
 
 Scripts TransStandGTF()

@@ -7,15 +7,16 @@
 #
 
 #
-# This script generates a VarQuin plot for expected expression against measured expression.
+# This script generates a log-fold plot for expected log-fold against measured log-fold.
 #
-#    - x-axis: expected expression in attomol/ul
-#    - y-axis: measured expression
+#    - x-axis: expected log-fold
+#    - y-axis: measured log-fold
 #
 
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- VarQuin(seqs=row.names(data), expect=data$EAbund, measured=data$MAbund)
+data <- data[!is.na(data$ELFold),]
+data <- TransQuin(seqs=row.names(data), expect=data$ELFold, measured=data$MLFold)
 
-plotVAbundAbund(data)
+plotTLogFold(data)

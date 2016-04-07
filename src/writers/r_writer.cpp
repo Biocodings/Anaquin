@@ -6,6 +6,12 @@ using namespace Anaquin;
 // Defined in main.cpp
 extern Path __output__;
 
+// Defined in resources.cpp
+extern Scripts PlotTROC();
+
+// Defined in resources.cpp
+extern Scripts PlotMA();
+
 // Defined in main.cpp
 extern std::string mixture();
 
@@ -306,25 +312,22 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
     return inflectSummary(chrTR, endoR, r, units);
 }
 
+Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
+{
+    std::stringstream ss;
+    ss << PlotMA();
 
+    return (boost::format(ss.str()) % date()
+            % __full_command__
+            % __output__
+            % file
+            % lvl).str();
+}
 
-
-
-//Scripts RWriter::createMajor(const FileName &fpkms)
-//{
-//    std::stringstream ss;
-//    ss << PlotMajor();
-//    
-//    return (boost::format(ss.str()) % date()
-//            % __full_command__
-//            % __output__
-//            % fpkms).str();
-//}
-//
 //Scripts RWriter::createLODR_T(const FileName &dFile)
 //{
 //    std::stringstream ss;
-//    ss << PlotLODR_T();
+//    ss << PlotLODR();
 //    
 //    return (boost::format(ss.str()) % date()
 //            % __full_command__
@@ -343,28 +346,3 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
 //            % file).str();
 //}
 //
-//Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
-//{
-//    std::stringstream ss;
-//    ss << PlotMA();
-//    
-//    return (boost::format(ss.str()) % date()
-//            % __full_command__
-//            % __output__
-//            % file
-//            % lvl).str();
-//}
-//
-//Scripts RWriter::createROC_T(const std::vector<FeatureID> &seqs, const std::vector<double> &ps, const std::string &lvl)
-//{
-//    assert(!seqs.empty() && seqs.size() == ps.size());
-//    
-//    std::stringstream ss;
-//    ss << PlotROC_T();
-//    
-//    return (boost::format(ss.str()) % date()
-//            % __full_command__
-//            % ("\'" + boost::algorithm::join(seqs, "\',\'") + "\'")
-//            % concat(ps)
-//            % lvl).str();
-//}

@@ -45,7 +45,7 @@
 #include "FusQuin/f_coverage.hpp"
 
 #include "parsers/parser_csv.hpp"
-#include "parsers/parser_cdiffs.hpp"
+#include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_sequins.hpp"
 #include "parsers/parser_cufflink.hpp"
 
@@ -1071,45 +1071,6 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
-            /*
-             * It's possible to do an expression analysis with Cufflink at the gene or isoform level. We don't know
-             * which, thus we'll compare number of matches.
-             */
-            
-            auto checkCufflink = [&](const FileName &file)
-            {
-                const auto &r = Standard::instance().r_trans;
-                
-                Counts gs = 0;
-                Counts is = 0;
-                
-                ParserCufflink::parse(file, [&](const ParserCufflink::Data &data, const ParserProgress &p)
-                {
-                    if (data.cID == ChrT)
-                    {
-                        try
-                        {
-                            if (r.match(data.tID))
-                            {
-                                is++;
-                                
-                                // Important, if there's match for isoform, don't match for it's gene
-                                return;
-                            }
-                        }
-                        catch (...) {}
-
-                        try
-                        {
-                            if (r.findGene(data.cID, data.id)) { gs++; }
-                        }
-                        catch (...) {}
-                    }
-                });
-                
-                return gs > is;
-            };
-
             if (_p.tool != TOOL_T_IGV)
             {
                 addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
@@ -1149,7 +1110,7 @@ void parse(int argc, char ** argv)
                     {
                         const static std::map<std::string, TKDiff::Software> m =
                         {
-                            { "kallisto",  TKDiff::Software::Kallisto },
+                            { "sleuth",  TKDiff::Software::Sleuth },
                         };
                         
                         return parseEnum(key, str, m);
@@ -1183,6 +1144,40 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_EXPRESS:
                 {
+                    auto checkCufflink = [&](const FileName &file)
+                    {
+                        const auto &r = Standard::instance().r_trans;
+                        
+                        Counts gs = 0;
+                        Counts is = 0;
+                        
+                        ParserCufflink::parse(file, [&](const ParserCufflink::Data &data, const ParserProgress &p)
+                        {
+                            if (data.cID == ChrT)
+                            {
+                                try
+                                {
+                                    if (r.match(data.tID))
+                                    {
+                                        is++;
+                                        
+                                        // Important, if there's match for isoform, don't match for it's gene
+                                        return;
+                                    }
+                                }
+                                catch (...) {}
+                                
+                                try
+                                {
+                                    if (r.findGene(data.cID, data.id)) { gs++; }
+                                }
+                                catch (...) {}
+                            }
+                        });
+                        
+                        return gs > is;
+                    };
+                    
                     auto parseSoft = [&](const std::string &key, const std::string &str)
                     {
                         const static std::map<std::string, TExpress::Software> m =
@@ -1233,14 +1228,14 @@ void parse(int argc, char ** argv)
                         return parseEnum("soft", str, m);
                     };
                     
-                    auto checkCufflink = [&](const FileName &file)
+                    auto checkCuffdiff = [&](const FileName &file)
                     {
                         const auto &r = Standard::instance().r_trans;
                         
                         Counts gs = 0;
                         Counts is = 0;
                         
-                        ParserCDiffs::parse(file, [&](const ParserCDiffs::Data &data, const ParserProgress &p)
+                        ParserCDiff::parse(file, [&](const ParserCDiff::Data &data, const ParserProgress &p)
                         {
                             if (data.cID == ChrT)
                             {
@@ -1272,7 +1267,7 @@ void parse(int argc, char ** argv)
                     o.dSoft = parseSoft(_p.opts[OPT_SOFT]);
                     o.metrs = TDiff::Metrics::Gene;
                     
-                    if (o.dSoft == TDiff::Software::Cuffdiff && !checkCufflink(_p.inputs[0]))
+                    if (o.dSoft == TDiff::Software::Cuffdiff && !checkCuffdiff(_p.inputs[0]))
                     {
                         o.metrs = TDiff::Metrics::Isoform;
                     }

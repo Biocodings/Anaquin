@@ -19,45 +19,36 @@ namespace Anaquin
         template <typename Stats, typename Options> static Scripts writeCSV(const Stats &stats, const Options &o)
         {
             /*
-             * Generating a file for differential results. The file should list the relevant information for
-             * plotting an MA and LODR plot.
-             *
-             * We will need the following information:
-             *
-             *     - BaseMean
-             *     - Expected LF
-             *     - LogFold
-             *     - LogFold SE
-             *     - PValue
+             * Generating a file for differential analysis. The file should give the relevant data
+             * for MA and LODR plot.
              */
-            
+
             std::stringstream ss;
-            ss << ",baseMean,elfc,lfc,lfcSE,pval";
+            ss << "Sequin\tBaseMean\tELFold\tMLFold\tMLFoldSE\tPValue\tQValue\n";
             
-//            for (const auto &i : stats.data)
+            const auto &ps        = stats.ps;
+            const auto &qs        = stats.qs;
+            const auto &ids       = stats.ids;
+            const auto &logFs     = stats.mLogFs;
+            const auto &eLogFs    = stats.eLogFs;
+            const auto &logFSEs   = stats.logFSEs;
+            const auto &baseMeans = stats.baseMeans;
+            
+            for (auto j = 0; j < ids.size(); j++)
             {
-                const auto &ps        = stats.data.ps;
-                const auto &ids       = stats.data.ids;
-                const auto &logFs     = stats.data.logFs;
-                const auto &eLogFs    = stats.data.eLogFs;
-                const auto &logFSEs   = stats.data.logFSEs;
-                const auto &baseMeans = stats.data.baseMeans;
-                
-                for (auto j = 0; j < ids.size(); j++)
+                if (isnan(ps[j]))
                 {
-                    if (isnan(ps[j]))
-                    {
-                        ss << (boost::format("%1%,NA,NA,NA") % ids[j]).str();
-                    }
-                    else
-                    {
-                        ss << ((boost::format("%1%,%2%,%3%,%4%,%5%,%6%") % ids[j]
-                                % toNA(baseMeans[j])
-                                % toNA(eLogFs[j])
-                                % toNA(logFs[j])
-                                % toNA(logFSEs[j])
-                                % toNA(ps[j])).str());
-                    }
+                    ss << (boost::format("%1%\tNA\tNA\tNA\tNA\n") % ids[j]).str();
+                }
+                else
+                {
+                    ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % ids[j]
+                                    % toNA(baseMeans[j])
+                                    % toNA(eLogFs[j])
+                                    % toNA(logFs[j])
+                                    % toNA(logFSEs[j])
+                                    % toNA(ps[j])
+                                    % toNA(qs[j])).str());
                 }
             }
             
@@ -98,42 +89,37 @@ namespace Anaquin
             Counting cSoft = Counting::None;
         };
 
-        struct Stats : public MappingStats, public SequinStats
+        struct Stats : public LinearStats, public MappingStats, public SequinStats
         {
-            struct Data : public LinearStats
-            {
-                // Detected features
-                std::vector<FeatureID> ids;
-                
-                // Probability under the null hypothesis
-                std::vector<double> ps;
-                
-                // Log-fold ratios
-                std::vector<double> logFs;
-                
-                // Expected log-fold ratios (only for the synthetic)
-                std::vector<double> eLogFs;
-                
-                /*
-                 * Optional inputs. For example, Cuffdiffs wouldn't give them.
-                 */
-                
-                // Normalized average counts for the replicates
-                std::vector<double> baseMeans;
-                
-                // Log-fold ratios standard deviation
-                std::vector<double> logFSEs;
-            };
+            // Detected features (genes or isoforms)
+            std::vector<FeatureID> ids;
             
-            Data data;
+            // Probability under the null hypothesis
+            std::vector<Probability> ps, qs;
+            
+            // Expected log-fold ratios
+            std::vector<Concent> eLogFs;
 
+            // Measured log-fold ratios
+            std::vector<Concent> mLogFs;
+
+            /*
+             * Optional inputs. For example, Cuffdiffs wouldn't give them.
+             */
+            
+            // Normalized average counts for the replicates
+            std::vector<double> baseMeans;
+            
+            // Log-fold ratios standard deviation
+            std::vector<double> logFSEs;
+            
             // Average counts for each condition if provided
             std::vector<std::map<std::string, Counts>> avgs;
         };
 
         /*
-         * Classify and construct a vector of TP/FP/TN/FN, given a vector of q-values and expected fold-changes. The threshold
-         * for the TP classification is also required.
+         * Classify and construct a vector of TP/FP/TN/FN, given a vector of q-values and expected
+         * fold-changes. The threshold for the TP classification is also required.
          */
         
         static std::vector<std::string> classify(const std::vector<double> &, const std::vector<double> &, double qCut, double foldCut);

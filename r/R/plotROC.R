@@ -157,10 +157,12 @@ plotROC <- function(data, title=NULL, plotPerf=FALSE, refRatio=NULL, shouldPseuo
     stopifnot(!is.null(data$seqs$pval))
     stopifnot(!is.null(data$seqs$label))
     stopifnot(!is.null(data$seqs$ratio))    
-    stopifnot(!is.null(data$seqs$expected))
+    stopifnot(!is.null(data$seqs$expect))
 
-    data <- .plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), plotPerf=plotPerf,
-                                                                                                       refRatio=refRatio,
-                                                                                                 shouldPseuoLog=shouldPseuoLog)
+    data <- .plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$ratio),
+                     plotPerf=plotPerf,
+                     refRatio=refRatio,
+                     shouldPseuoLog=shouldPseuoLog)
+
     .plotROC.Plot(data, title)
 }

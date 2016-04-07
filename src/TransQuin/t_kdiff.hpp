@@ -16,7 +16,7 @@ namespace Anaquin
     {
         enum class Software
         {
-            Kallisto,
+            Sleuth,
         };
         
         struct Options : public DoubleMixtureOptions

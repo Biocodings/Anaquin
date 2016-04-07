@@ -22,8 +22,8 @@ namespace Anaquin
         // Log-fold ratio
         LogFold logF;
 
-        // The p-value and q-value under null-hypothesis
-        double p, q;
+        // The p-value and q-value under null hypothesis
+        Probability p, q;
 
         Status status = Status::Tested;
         

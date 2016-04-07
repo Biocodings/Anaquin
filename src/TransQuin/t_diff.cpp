@@ -9,7 +9,7 @@
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_DESeq2.hpp"
-#include "parsers/parser_cdiffs.hpp"
+#include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_HTSeqCount.hpp"
 
 using namespace Anaquin;
@@ -18,13 +18,13 @@ using namespace Anaquin;
 extern Scripts PlotFold();
 
 // Defined in resources.cpp
-extern Scripts PlotROC_T();
+extern Scripts PlotLODR();
+
+// Defined in resources.cpp
+extern Scripts PlotTROC();
 
 // Defined in resources.cpp
 extern Scripts PlotMA();
-
-// Defined in resources.cpp
-extern Scripts PlotLODR_T();
 
 typedef TDiff::Metrics  Metrics;
 typedef DiffTest::Status Status;
@@ -58,11 +58,6 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
 {
     assert(t.cID == ChrT);
     
-    if (t.status != Status::Tested)
-    {
-        return;
-    }
-    
     const auto &id = t.id;
     const auto &r  = Standard::instance().r_trans;
 
@@ -76,16 +71,16 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
     {
         case Metrics::Gene:
         {
-            if (t.status == Status::Tested && stats.hist.count(t.id))
+            if (stats.hist.count(t.id))
             {
-                const auto *g = r.findGene(t.cID, id);
+                const auto *match = r.findGene(t.cID, id);
                 
-                if (g)
+                if (match)
                 {
                     stats.hist.at(id)++;
 
                     // Calculate the known fold-change between B and A
-                    known = (g->abund(Mix_2) / g->abund(Mix_1));
+                    known = match->abund(Mix_2) / match->abund(Mix_1);
                     
                     // This is not on the log scale, so it can't be zero...
                     assert(known);
@@ -97,7 +92,7 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
                     measured = std::pow(2, measured);
                 }
 
-                stats.data.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
 
             break;
@@ -105,16 +100,16 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
 
         case Metrics::Isoform:
         {
-            if (t.status == Status::Tested && stats.hist.count(id))
+            if (stats.hist.count(id))
             {
-                const auto *seq = r.match(id);
+                const auto *match = r.match(id);
                 
-                if (seq)
+                if (match)
                 {
-                    // Known fold-change between the two mixtures
-                    known = seq->abund(Mix_2) / seq->abund(Mix_1);
-                    
                     stats.hist.at(id)++;
+
+                    // Known fold-change between the two mixtures
+                    known = match->abund(Mix_2) / match->abund(Mix_1);
                     
                     // Measured fold-change between the two mixtures
                     measured = t.logF;
@@ -123,24 +118,23 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
                     measured = std::pow(2, measured);
                 }
                 
-                stats.data.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
 
             break;
         }
     }
     
-    stats.data.eLogFs.push_back(log2(known));
-}
-
-template <typename T> void classifyEndo(TDiff::Stats &stats, const T &t, const TDiff::Options &)
-{
-    stats.data.eLogFs.push_back(NAN);
+    stats.eLogFs.push_back(log2(known));
 }
 
 template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::Options &o)
 {
-    if (t.cID == ChrT)
+    if (t.status != Status::Tested)
+    {
+        return;
+    }
+    else if (t.cID == ChrT)
     {
         stats.n_chrT++;
         classifyChrT(stats, t, o);
@@ -148,28 +142,30 @@ template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::
     else
     {
         stats.n_endo++;
-        classifyEndo(stats, t, o);
+        stats.eLogFs.push_back(NAN);
     }
 
-    stats.data.ids.push_back(t.id);
-    
     /*
-     * The expected log-folds is done in the classifer (because it can only be done for synthetic)
+     * The expected log-fold is done in the classifer because it can only happen for synthetic
      */
+
+    stats.ids.push_back(t.id);
     
     if (t.status == Status::Tested)
     {
-        stats.data.ps.push_back(t.p);
-        stats.data.logFs.push_back(t.logF);
-        stats.data.logFSEs.push_back(t.logFSE);
-        stats.data.baseMeans.push_back(t.baseMean);
+        stats.ps.push_back(t.p);
+        stats.qs.push_back(t.q);
+        stats.mLogFs.push_back(t.logF);
+        stats.logFSEs.push_back(t.logFSE);
+        stats.baseMeans.push_back(t.baseMean);
     }
     else
     {
-        stats.data.ps.push_back(NAN);
-        stats.data.logFs.push_back(NAN);
-        stats.data.logFSEs.push_back(NAN);
-        stats.data.baseMeans.push_back(NAN);
+        stats.ps.push_back(NAN);
+        stats.qs.push_back(NAN);
+        stats.mLogFs.push_back(NAN);
+        stats.logFSEs.push_back(NAN);
+        stats.baseMeans.push_back(NAN);
     }
 }
 
@@ -194,48 +190,11 @@ template <typename Functor> TDiff::Stats calculate(const TDiff::Options &o, Func
 
     switch (o.metrs)
     {
-        case Metrics::Gene:    { stats.data.limit = r.absoluteGene(stats.hist); break; }
+        case Metrics::Gene:    { stats.limit = r.absoluteGene(stats.hist); break; }
         //case Metrics::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
-        default: { break; } // TODO: Please fix this
+        default: { break; }
     }
-    
-    /*
-     * We shouldn't assume any ordering in the inputs, we'll sort the data and assume
-     * uniqueness in the genome.
-     */
-    
-    // Used for quickly sort the count tables
-//    std::set<FeatureID> isChrT, isEndo;
-//    
-//    for (auto &i : stats)
-//    {
-//        const auto p = SS::sortPerm(i.second.ids, [&](const FeatureID &x, const FeatureID &y)
-//        {
-//            return x < y;
-//        });
-//        
-//        i.second.ps        = SS::applyPerm(i.second.ps,       p);
-//        i.second.ids       = SS::applyPerm(i.second.ids,      p);
-//        i.second.logFs     = SS::applyPerm(i.second.logFs,    p);
-//        i.second.eLogFs    = SS::applyPerm(i.second.eLogFs,   p);
-//        i.second.logFSEs   = SS::applyPerm(i.second.logFSEs,  p);
-//        i.second.baseMeans = SS::applyPerm(i.second.baseMeans, p);
-//        
-//        for (const auto &id : i.second.ids)
-//        {
-//            assert(!isChrT.count(id) && !isEndo.count(id));
-//            
-//            if (i.first == ChrT)
-//            {
-//                isChrT.insert(id);
-//            }
-//            else
-//            {
-//                isEndo.insert(id);
-//            }
-//        }
-//    }
-    
+
     return stats;
 }
 
@@ -265,15 +224,20 @@ TDiff::Stats TDiff::analyze(const FileName &file, const Options &o)
 
                 break;                
             }
-                
+
             case Software::edgeR:
             {
+                ParserEdgeR::parse(file, [&](const DiffTest &t, const ParserProgress &)
+                {
+                    //update(stats, t, o);
+                });
+
                 break;
             }
 
             case Software::Cuffdiff:
             {
-                ParserCDiffs::parse(file, [&](const ParserCDiffs::Data &data, const ParserProgress &)
+                ParserCDiff::parse(file, [&](const ParserCDiff::Data &data, const ParserProgress &)
                 {
                     update(stats, data, o);
                 });
@@ -303,7 +267,7 @@ void TDiff::report(const FileName &file, const Options &o)
     
     o.info("Generating TransDiff_summary.stats");
     o.writer->open("TransDiff_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file, "", stats.data, stats.hist));
+    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats.hist));
     o.writer->close();
     
     /*
@@ -316,13 +280,12 @@ void TDiff::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * 3. Generating scatter plot for the log-fold changes
+     * 3. Generating log-fold plot
      */
     
     o.info("Generating TransDiff_fold.R");
     o.writer->open("TransDiff_fold.R");
     o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotFold()));
-    //o.writer->write(RWriter::scatter(stats, ChrT, "????", "TransDiff", "Expected fold change", "Measured fold change", "Expected log2 fold change", "Measured log2 fold change"));
     o.writer->close();
 
     /*
@@ -331,8 +294,7 @@ void TDiff::report(const FileName &file, const Options &o)
     
     o.info("Generating TransDiff_ROC.R");
     o.writer->open("TransDiff_ROC.R");
-    //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotROC_T()));
-    //o.writer->write(RWriter::createROC_T(stats.data.at(ChrT).ids, stats.data.at(ChrT).ps, units));
+    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotTROC()));
     o.writer->close();
 
     /*
@@ -343,7 +305,7 @@ void TDiff::report(const FileName &file, const Options &o)
     {
         o.info("Generating TransDiff_MA.R");
         o.writer->open("TransDiff_MA.R");
-        o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotMA()));
+        //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotMA()));
         //o.writer->write(RWriter::createMA("TransDiff_diffs.csv", units));
         o.writer->close();
     }
@@ -354,7 +316,7 @@ void TDiff::report(const FileName &file, const Options &o)
     
     o.info("Generating TransDiff_LODR.R");
     o.writer->open("TransDiff_LODR.R");
-    //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR_T()));
+    //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR()));
     //o.writer->write(RWriter::createLODR_T("TransDiff_diffs.csv"));
     o.writer->close();
 }

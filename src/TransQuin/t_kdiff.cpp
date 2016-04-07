@@ -18,7 +18,7 @@ TKDiff::Stats TKDiff::analyze(const FileName &file, const Options &o)
     
     ParserSleuth::parse(file, [&](const ParserSleuth::Data &d, const ParserProgress &)
     {
-                            
+        
     });
     
     return stats;
