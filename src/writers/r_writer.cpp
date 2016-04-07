@@ -323,26 +323,3 @@ Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
             % file
             % lvl).str();
 }
-
-//Scripts RWriter::createLODR_T(const FileName &dFile)
-//{
-//    std::stringstream ss;
-//    ss << PlotLODR();
-//    
-//    return (boost::format(ss.str()) % date()
-//            % __full_command__
-//            % __output__
-//            % dFile).str();
-//}
-//
-//Scripts RWriter::createLODR_V(const FileName &file)
-//{
-//    std::stringstream ss;
-//    ss << PlotLODR_V();
-//    
-//    return (boost::format(ss.str()) % date()
-//            % __full_command__
-//            % __output__
-//            % file).str();
-//}
-//

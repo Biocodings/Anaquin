@@ -316,7 +316,6 @@ void TDiff::report(const FileName &file, const Options &o)
     
     o.info("Generating TransDiff_LODR.R");
     o.writer->open("TransDiff_LODR.R");
-    //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR()));
-    //o.writer->write(RWriter::createLODR_T("TransDiff_diffs.csv"));
+    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR()));
     o.writer->close();
 }

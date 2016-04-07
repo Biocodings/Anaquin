@@ -5,64 +5,60 @@
 #
 
 #
-# TransQuin classification. Classify each differential test by:
+# Classification for differential analysis. Classify each differential test by:
 #
 #    TP: fold-change with more than logFC and expressed
 #    FP: fold-change with at most logFC and expressed
 #    FN: fold-change with more than logFC and not expressed
 #    TN: fold-change with at most logFC and not expressed
 #
-classify <- function(data, lvl, qCutoff=0.1, logFC=0)
+TransDiff <- function(data, qCutoff=0.1, logFC=0)
 {
     stopifnot(class(data) == 'TransQuin')
-    stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
-
-    seqs <- filter(data, name='seqs')
-    seqs$cls <- NA
 
     print(paste('Probability threshold:', qCutoff))
-    
+
+    data <- data$seqs
+    data$label <- NA
+
     # Expected log-fold
-    seqs$elfc <- expectLF(data, lvl=lvl, ids=row.names(seqs))$logFC
+    data$elfc <- data$expect #expectLF(data, lvl=lvl, ids=row.names(seqs))$logFC
     
-    for (id in row.names(seqs))
+    for (id in row.names(data))
     {
-        qval = seqs[id,]$qval
+        qval = data[id,]$qval
 
         if  (!is.na(qval))
         {
-            elfc <- seqs[id,]$elfc
+            elfc <- data[id,]$elfc
             
             if (length(elfc) > 0)
             {
                 #
-                # Say if the known log-fold change is -3, should this be differentially expressed? That depends on the context.
-                # Usuaully, we'd think anything more than log-fold change of 0 should be expressed.
+                # Say if the known log-fold change is -3, should this be differentially expressed? That depends on the
+                # threshold. Usuaully, we'd assume anything more than log-fold change of 0 would be expressed.
                 #
                 
                 # Differential expressed?
                 if (qval <= qCutoff)
                 {
-                    seqs[id,]$cls <- ifelse(abs(elfc) <= abs(logFC), 'FP', 'TP')
+                    data[id,]$label <- ifelse(abs(elfc) <= abs(logFC), 'FP', 'TP')
                 }
 
                 # Non-dfifferential expressed?
                 else
                 {
-                    seqs[id,]$cls <- ifelse(abs(elfc) <= abs(logFC), 'TN', 'FN')
+                    data[id,]$label <- ifelse(abs(elfc) <= abs(logFC), 'TN', 'FN')
                 }
             }
         }
     }
     
-    print(sprintf("Detected %d false positives", nrow(seqs[seqs$cls=='FP',])))
-    print(sprintf("Detected %d true positives",  nrow(seqs[seqs$cls=='TP',])))
-    print(sprintf("Detected %d true negatives",  nrow(seqs[seqs$cls=='TN',])))
-    print(sprintf("Detected %d false negatives", nrow(seqs[seqs$cls=='FN',])))
+    print(sprintf("Detected %d false positives", nrow(data[data$label=='FP',])))
+    print(sprintf("Detected %d true positives",  nrow(data[data$label=='TP',])))
+    print(sprintf("Detected %d true negatives",  nrow(data[data$label=='TN',])))
+    print(sprintf("Detected %d false negatives", nrow(data[data$label=='FN',])))
 
-    # A new column has been added
-    data$seqs <- seqs
-    
     return (data)
 }
 

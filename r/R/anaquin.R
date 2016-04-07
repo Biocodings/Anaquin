@@ -68,7 +68,7 @@ TransQuin <- function(..., mix=loadMixture.TransQuin())
 {
     x <- list(...)
     
-    keys <- c('label', 'pval', 'qval', 'ratio', 'expect', 'measured', 'A1', 'A2', 'A3')
+    keys <- c('label', 'pval', 'qval', 'mean', 'lfc', 'lfcSE', 'ratio', 'expect', 'measured', 'A1', 'A2', 'A3')
     data <- .createData(x, keys)
     
     r <- list('seqs'=data, mix=mix)
