@@ -6,6 +6,8 @@ Anaquin is a C++/R bioinformatics framework for sequins, providing qualitative a
 <ul>
 <li>TransQuin
 <li>VarQuin
+<li>LadQuin
+<li>FusQuin
 <li>MetaQuin
 </ul>
 
