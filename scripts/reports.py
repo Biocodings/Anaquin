@@ -905,6 +905,62 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
 
     generatePDF(r, path, 'VarReport_report.pdf')
 
+# Generate a TransQuin report with alignment-free k-mers
+def TransQuinKM(anaq, path, mix, index, file1, file2):
+
+    r = Report()
+    
+    global TEMP_PATH    
+    TEMP_PATH = path
+    
+    ###########################################
+    #                                         #
+    #       1. Generating TransKExpress       #
+    #                                         #
+    ###########################################
+
+    # Eg: anaquin -t TransKExpress -soft kallisto -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR002.v013.csv  -ufiles kallisto/abundance.tsv
+    execute(anaq + ' -o ' + path + ' -t TransKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    
+    r.startChapter('Statistics (Expression)')
+    
+    r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
+    r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+
+    r.endChapter()
+    
+    #########################################
+    #                                       #
+    #       2. Generating TransKDiff         #
+    #                                       #
+    #########################################
+    
+    # Eg: anaquin -t TransKDiff -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR004.v013.csv -soft sleuth -ufiles results.csv 
+    execute(anaq + ' -o ' + path + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    
+    r.startChapter('Statistics (Allele Frequency)')
+    
+    r.addTextFile('Summary statistics', 'VarKAllele_summary.stats', )
+    r.addRCode('Expected allele frequency vs measured allele frequency', 'VarKAllele_alleleAllele.R', '')
+
+    r.endChapter()
+    
+    ##############################################
+    #                                            #
+    #           3. Generating Apprendix          #
+    #                                            #
+    ##############################################
+
+    r.startChapter('Apprendix:')
+    r.addTextFile('Statistics for expression: ', 'VarKExpress_quins.csv', )
+    r.endChapter()
+
+    r.startChapter('Apprendix:')
+    r.addTextFile('Statistics for allele frequency: ', 'VarKAllele_quins.csv', )
+    r.endChapter()
+
+    generatePDF(r, path, 'VarReport_report.pdf')
+
 #
 # Generates reports for sequins. This script is not meant for extenral use, but embedded within Anaquin.
 #
