@@ -11,7 +11,7 @@ namespace Anaquin
         
         static void generate(const FileName &file, const Options &o = Options())
         {
-            Script::viewer("Fusion " + o.path + " " + file);
+            Script::viewer("FusQuin " + o.path + " " + file);
         }
     };
 }

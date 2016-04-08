@@ -13,7 +13,7 @@ namespace Anaquin
         // Generate a IGV session for transcriptome analysis
         static void generate(const FileName &file, const Options &o = Options())
         {
-            Script::viewer("Trans " + o.path + " " + file);
+            Script::viewer("TransQuin " + o.path + " " + file);
         }
     };
 }

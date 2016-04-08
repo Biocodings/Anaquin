@@ -9,7 +9,7 @@ namespace Anaquin
     
     static void generate(const FileName &file, const Options &o = Options())
     {
-        Script::viewer("Meta " + o.path + " " + file);
+        Script::viewer("MetaQuin " + o.path + " " + file);
     }
 }
 
