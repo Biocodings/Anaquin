@@ -4,7 +4,6 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
-//#include <ss/misc.hpp>
 #include "TransQuin/t_diff.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_sleuth.hpp"
@@ -27,7 +26,6 @@ extern Scripts PlotTROC();
 extern Scripts PlotMA();
 
 typedef TDiff::Metrics  Metrics;
-typedef DiffTest::Status Status;
 typedef TDiff::Software Software;
 
 std::vector<std::string> TDiff::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
@@ -130,6 +128,8 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
 
 template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::Options &o)
 {
+    typedef DiffTest::Status Status;
+    
     if (t.status != Status::Tested)
     {
         return;
@@ -215,6 +215,16 @@ TDiff::Stats TDiff::analyze(const FileName &file, const Options &o)
     {
         switch (o.dSoft)
         {
+            case Software::Sleuth:
+            {
+                ParserSleuth::parse(file, [&](const ParserSleuth::Data &data, const ParserProgress &)
+                {
+                    update(stats, data, o);
+                });
+
+                break;
+            }
+                
             case Software::DESeq2:
             {
                 ParserDESeq2::parse(file, [&](const DiffTest &t, const ParserProgress &)
@@ -298,7 +308,16 @@ void TDiff::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * 5. Generating MA plot
+     * 5. Generating LODR plot
+     */
+    
+    o.info("Generating TransDiff_LODR.R");
+    o.writer->open("TransDiff_LODR.R");
+    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR()));
+    o.writer->close();
+    
+    /*
+     * 6. Generating MA plot
      */
     
     if (!o.counts.empty())
@@ -309,13 +328,4 @@ void TDiff::report(const FileName &file, const Options &o)
         //o.writer->write(RWriter::createMA("TransDiff_diffs.csv", units));
         o.writer->close();
     }
-    
-    /*
-     * 6. Generating LODR plot
-     */
-    
-    o.info("Generating TransDiff_LODR.R");
-    o.writer->open("TransDiff_LODR.R");
-    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR()));
-    o.writer->close();
 }

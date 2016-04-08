@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
 #ifndef T_KEXPRESS_HPP
 #define T_KEXPRESS_HPP
 
@@ -7,39 +13,15 @@ namespace Anaquin
 {
     struct TKExpress : public Analyzer
     {
-        enum class Software
-        {
-            Kallisto,
-        };
-        
-        struct Options : public AnalyzerOptions
-        {
-            Options() {}
-
-            // Only Kallisto is supported
-            Software soft;
-        };
+        typedef IndexOptions Options;
 
         struct Stats : public MappingStats, public SequinStats, public LinearStats
         {
             // Empty Implementation
         };
 
-        static Stats analyze(const FileName &, const Options &o);
-        
-        static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
-        {
-            std::vector<Stats> stats;
-            
-            for (const auto &file : files)
-            {
-                stats.push_back(analyze(file, o));
-            }
-
-            return stats;
-        }
-        
-        static void report(const std::vector<FileName> &, const Options &o = Options());
+        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
+        static void report(const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

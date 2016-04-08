@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include "writers/r_writer.hpp"
 #include "TransQuin/t_express.hpp"
+#include "parsers/parser_kallisto.hpp"
 #include "parsers/parser_cufflink.hpp"
 #include "parsers/parser_stringtie.hpp"
 
@@ -134,6 +135,29 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     {
         switch (o.soft)
         {
+            case Software::Kallisto:
+            {
+                struct TempData : public ParserKallisto::Data
+                {
+                    ChrID cID = ChrT;
+
+                    // Dummy locus, it'll never be matched
+                    Locus l;
+                };
+                
+                ParserKallisto::parse(file, [&](const ParserKallisto::Data &data, const ParserProgress &)
+                {
+                    TempData tmp;
+                    
+                    tmp.id = data.id;
+                    tmp.abund = data.abund;
+                    
+                    update(stats, tmp, o);
+                });
+
+                break;
+            }
+
             case Software::Cufflinks:
             {
                 ParserCufflink::parse(file, [&](const ParserCufflink::Data &data, const ParserProgress &)

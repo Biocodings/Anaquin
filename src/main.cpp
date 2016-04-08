@@ -11,6 +11,7 @@
 #include "TransQuin/t_kdiff.hpp"
 #include "TransQuin/t_align.hpp"
 #include "TransQuin/t_viewer.hpp"
+#include "TransQuin/t_report.hpp"
 #include "TransQuin/t_express.hpp"
 #include "TransQuin/t_kexpress.hpp"
 #include "TransQuin/t_assembly.hpp"
@@ -1096,50 +1097,26 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_T_REPORT:   { report<TReport>();                 break; }
                 case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
                 case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_FILES); break; }
 
-                case TOOL_T_REPORT:
-                {
-                    break;
-                }
-
                 case TOOL_T_KDIFF:
                 {
-                    auto parseSoft = [&](const std::string &key, const std::string &str)
-                    {
-                        const static std::map<std::string, TKDiff::Software> m =
-                        {
-                            { "sleuth",  TKDiff::Software::Sleuth },
-                        };
-                        
-                        return parseEnum(key, str, m);
-                    };
-                    
                     TKDiff::Options o;
-                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
-                    
-                    analyze_1<TKDiff>(OPT_U_FILES, o);
+                    o.index = _p.opts[OPT_R_IND];
+                    analyze_n<TKDiff>(o);
+
                     break;
                 }
 
                 case TOOL_T_KEXPRESS:
                 {
-                    auto parseSoft = [&](const std::string &key, const std::string &str)
-                    {
-                        const static std::map<std::string, TKExpress::Software> m =
-                        {
-                            { "kallisto",  TKExpress::Software::Kallisto },
-                        };
-                        
-                        return parseEnum(key, str, m);
-                    };
-                    
                     TKExpress::Options o;
-                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
-                    
+                    o.index = _p.opts[OPT_R_IND];
                     analyze_n<TKExpress>(o);
+
                     break;
                 }
 
@@ -1183,6 +1160,7 @@ void parse(int argc, char ** argv)
                     {
                         const static std::map<std::string, TExpress::Software> m =
                         {
+                            { "kallisto",  TExpress::Software::Kallisto  },
                             { "cufflink",  TExpress::Software::Cufflinks },
                             { "stringtie", TExpress::Software::StringTie },
                         };
@@ -1206,21 +1184,11 @@ void parse(int argc, char ** argv)
 
                 case TOOL_T_DIFF:
                 {
-                    auto parseMetrs = [&](const std::string &str)
-                    {
-                        const static std::map<std::string, TDiff::Metrics> m =
-                        {
-                            { "gene",    TDiff::Metrics::Gene    },
-                            { "isoform", TDiff::Metrics::Isoform },
-                        };
-                        
-                        return parseEnum("levels", str, m);
-                    };
-
                     auto parseSoft = [&](const std::string &str)
                     {
                         const static std::map<std::string, TDiff::Software> m =
                         {
+                            { "sleuth",   TDiff::Software::Sleuth   },
                             { "edgeR",    TDiff::Software::edgeR    },
                             { "deseq2",   TDiff::Software::DESeq2   },
                             { "cuffdiff", TDiff::Software::Cuffdiff },

@@ -14,26 +14,15 @@ namespace Anaquin
 {
     struct TKDiff : public Analyzer
     {
-        enum class Software
-        {
-            Sleuth,
-        };
-        
-        struct Options : public DoubleMixtureOptions
-        {
-            Options() {}
-
-            // Only Kallisto is supported
-            Software soft;
-        };
+        typedef IndexOptions Options;
 
         struct Stats : public MappingStats, public SequinStats, public LinearStats
         {
             // Empty Implementation
         };
 
-        static Stats analyze(const FileName &, const Options &o);
-        static void report(const FileName &, const Options &o = Options());
+        static Stats analyze(const std::vector<FileName> &, const Options &o);
+        static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
 

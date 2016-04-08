@@ -63,9 +63,10 @@ namespace Anaquin
         
         enum class Software
         {
-            Cuffdiff,
             edgeR,
             DESeq2,
+            Sleuth,
+            Cuffdiff,
         };
         
         enum class Metrics
@@ -118,12 +119,15 @@ namespace Anaquin
         };
 
         /*
-         * Classify and construct a vector of TP/FP/TN/FN, given a vector of q-values and expected
+         * Classify and construct a vector of TP/FP/TN/FN, given the q-values and expected
          * fold-changes. The threshold for the TP classification is also required.
          */
         
-        static std::vector<std::string> classify(const std::vector<double> &, const std::vector<double> &, double qCut, double foldCut);
-        
+        static std::vector<std::string> classify(const std::vector<double> &,
+                                                 const std::vector<double> &,
+                                                 double qCut,
+                                                 double foldCut);
+
         static Stats analyze(const FileName &, const Options &o);
         static Stats analyze(const std::vector<DiffTest> &, const Options &o);
 

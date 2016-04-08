@@ -108,6 +108,7 @@ namespace Anaquin
         
         enum class Software
         {
+            Kallisto,
             Cufflinks,
             StringTie,
         };
