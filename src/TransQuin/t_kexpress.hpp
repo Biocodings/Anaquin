@@ -8,17 +8,14 @@
 #define T_KEXPRESS_HPP
 
 #include "stats/analyzer.hpp"
+#include "TransQuin/t_express.hpp"
 
 namespace Anaquin
 {
     struct TKExpress : public Analyzer
     {
         typedef IndexOptions Options;
-
-        struct Stats : public MappingStats, public SequinStats, public LinearStats
-        {
-            // Empty Implementation
-        };
+        typedef TExpress::Stats Stats;
 
         static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
         static void report(const FileName &, const FileName &, const Options &o = Options());

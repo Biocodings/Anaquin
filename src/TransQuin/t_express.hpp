@@ -6,6 +6,15 @@
 
 namespace Anaquin
 {
+    // Defined in resources.cpp
+    extern Scripts PlotTAbundAbund();
+    
+    // Defined in resources.cpp
+    extern Scripts PlotRAbundAbund();
+
+    // Defined in resources.cpp
+    extern Scripts PlotMajor();
+
     struct TExpress : public Analyzer
     {
         /*
@@ -131,6 +140,95 @@ namespace Anaquin
 
         static Stats analyze(const FileName &, const Options &o);
 
+        /*
+         * 4. Generating major plot (but only if we have the isoforms...)
+         */
+
+        template <typename Options> static void generateRMajor(const FileName &output,
+                                                               const FileName &csv,
+                                                               const std::vector<Stats> &stats,
+                                                               const Options &o)
+        {
+            if (stats.size() >= 2 && o.metrs == TExpress::Metrics::Isoform)
+            {
+                o.writer->open(output);
+                o.writer->write(RWriter::createScript(csv, PlotMajor()));
+                o.writer->close();
+            }
+        }
+
+        /*
+         * Generate an R-script for expected abundance against measured abundance
+         */
+        
+        template <typename Options> static void generateRAbund(const FileName &output,
+                                                               const FileName &csv,
+                                                               const std::vector<Stats> &stats,
+                                                               const Options &o)
+        {
+            o.info("Generating " + output);
+            o.writer->open(output);
+            
+            if (stats.size() == 1)
+            {
+                o.writer->write(RWriter::createScript(csv, PlotTAbundAbund()));
+            }
+            else
+            {
+                o.writer->write(RWriter::createScript(csv, PlotRAbundAbund()));
+            }
+            
+            o.writer->close();
+        }
+
+        /*
+         * Generate sequin statistics in the CSV format
+         */
+        
+        template <typename Stats, typename Options> static void generateCSV(const FileName &output,
+                                                                            const std::vector<Stats> &stats,
+                                                                            const Options &o)
+        {
+            o.info("Generating " + output);
+            o.writer->open(output);
+            
+            if (stats.size() == 1)
+            {
+                o.writer->write(StatsWriter::writeCSV(stats[0], "EAbund", "MAbund"));
+            }
+            else
+            {
+                o.writer->write(TExpress::multipleCSV(stats));
+            }
+            
+            o.writer->close();
+        }
+
+        /*
+         * Generate summary statistics for a single sample and multiple samples.
+         */
+        
+        template <typename Stats, typename Options> static void generateSummary(const FileName &summary,
+                                                                                const std::vector<FileName >&files,
+                                                                                const std::vector<Stats> &stats,
+                                                                                const Options  &o,
+                                                                                const Units &units)
+        {
+            o.info("Generating " + summary);
+            o.writer->open(summary);
+            
+            if (files.size() == 1)
+            {
+                o.writer->write(singleSummary(stats[0], files[0], units, o));
+            }
+            else
+            {
+                o.writer->write(multipleSummary(files, stats, units, o));
+            }
+            
+            o.writer->close();
+        }
+        
         static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
         {
             if (files.size() < 2)
@@ -147,7 +245,7 @@ namespace Anaquin
             
             return stats;
         }
-        
+
         static std::vector<Stats> analyze(const std::vector<TestData> &, const Options &);
 
         static void report(const std::vector<FileName> &, const Options &o = Options());

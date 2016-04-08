@@ -1115,7 +1115,7 @@ void parse(int argc, char ** argv)
                 {
                     TKExpress::Options o;
                     o.index = _p.opts[OPT_R_IND];
-                    analyze_n<TKExpress>(o);
+                    analyze_2<TKExpress>(o);
 
                     break;
                 }
