@@ -9,21 +9,18 @@
 
 namespace Anaquin
 {
-    enum MetaAssembler
-    {
-        Velvet,
-        RayMeta,
-    };
-    
     struct MAssembly
     {
+        enum Software
+        {
+            Velvet,
+            RayMeta,
+        };
+
         struct Stats : public DAsssembly::Stats<Contig>
         {
             // Statistics for the alignment
             MBlat::Stats blat;
-            
-            // Statistics for abundance
-            LinearStats lm;
         };
 
         struct Options : public AnalyzerOptions
@@ -40,8 +37,7 @@ namespace Anaquin
             // Alignment file by blat
             FileName psl;
 
-            // The type of the assembler used
-            MetaAssembler tool = MetaAssembler::Velvet;
+            Software soft = Software::Velvet;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

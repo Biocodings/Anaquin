@@ -1506,14 +1506,12 @@ void parse(int argc, char ** argv)
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
         {
-            auto parseAssembler = [&](const std::string &str)
+            auto parse = [&](const std::string &str)
             {
-                const static std::map<std::string, MetaAssembler> m =
+                const static std::map<std::string, MAssembly::Software> m =
                 {
-                    { "velvet"  , MetaAssembler::Velvet  },
-                    { "ray",      MetaAssembler::RayMeta },
-                    { "raymeta",  MetaAssembler::RayMeta },
-                    { "ray-meta", MetaAssembler::RayMeta },
+                    { "velvet"  , MAssembly::Velvet  },
+                    { "raymeta",  MAssembly::RayMeta },
                 };
                 
                 return parseEnum("soft", str, m);
@@ -1555,9 +1553,9 @@ void parse(int argc, char ** argv)
                     // Only defined for certain assemblers
                     FileName conts;
                     
-                    const auto tool = parseAssembler(_p.opts.at(OPT_SOFT));
+                    const auto soft = parse(_p.opts.at(OPT_SOFT));
                     
-                    if (tool == MetaAssembler::RayMeta)
+                    if (soft == MAssembly::RayMeta)
                     {
                         if (!_p.opts.count(OPT_U_COV))
                         {
@@ -1584,7 +1582,7 @@ void parse(int argc, char ** argv)
                         {
                             MAssembly::Options o;
                             
-                            o.tool    = tool;
+                            o.soft    = soft;
                             o.contigs = conts;
                             
                             // An alignment file is needed to identify contigs
@@ -1596,15 +1594,15 @@ void parse(int argc, char ** argv)
                             
                         case TOOL_M_ABUND:
                         {
-                            MAbundance::Options o;
+                            MAbund::Options o;
                             
-                            o.tool    = tool;
+                            o.soft    = soft;
                             o.contigs = conts;
                             
                             // An alignment file is needed to identify contigs
                             o.psl = _p.opts.at(OPT_PSL_1);
                             
-                            analyze_1<MAbundance>(OPT_U_FILES, o);
+                            analyze_1<MAbund>(OPT_U_FILES, o);
                             break;
                         }
 

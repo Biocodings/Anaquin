@@ -5,8 +5,14 @@
 
 namespace Anaquin
 {
-    struct MAbundance
+    struct MAbund
     {
+        enum Software
+        {
+            Velvet,
+            RayMeta,
+        };
+        
         enum CoverageMethod
         {
             WendySmooth,
@@ -29,7 +35,7 @@ namespace Anaquin
             
             if (!align.contigs.empty())
             {
-                stats.chrT->h.at(id)++;
+                stats.hist.at(id)++;
                 
                 // Known concentration
                 const auto known = align.seq->abund(Mix_1, false);
@@ -96,22 +102,15 @@ namespace Anaquin
             return Point(0 ,0);
         }
         
-        struct Stats
+        struct Stats : public LinearStats, public MappingStats
         {
-            struct ChrT : public LinearStats, public MappingStats
-            {
-                MBlat::Stats blat;
-                
-                // Statistics for the assembly
-                DAsssembly::Stats<Contig> assembly;
-                
-                Limit absolute;
-                
-                // Distribution of the sequins
-                SequinHist h = Standard::instance().r_meta.hist();
-            };
+            MBlat::Stats blat;
             
-            std::shared_ptr<ChrT> chrT;
+            // Statistics for the assembly
+            DAsssembly::Stats<Contig> assembly;
+            
+            // Distribution of the sequins
+            SequinHist hist;
         };
 
         struct Options : public MAssembly::Options

@@ -44,9 +44,10 @@ void VExpress::report(const FileName &file, const Options &o)
     const auto &stats = analyze(file, o);
     
     /*
-     * Generating summary statistics
+     * 1. Generating summary statistics
      */
     
+    o.info("Generating VarExpress_summary.stats");
     o.writer->open("VarExpress_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
                                                 o.rEndo,
@@ -58,17 +59,19 @@ void VExpress::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * Generating CSV for all sequins
+     * 2. Generating CSV for all sequins
      */
     
+    o.info("Generating VarExpress_quins.csv");
     o.writer->open("VarExpress_quins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
     /*
-     * Generating for AbundAbund
+     * 3. Generating for AbundAbund
      */
     
+    o.info("Generating VarExpress_abundAbund.R");
     o.writer->open("VarExpress_abundAbund.R");
     o.writer->write(RWriter::createScript("VarExpress_quins.csv", PlotVAbundAbund()));
     o.writer->close();

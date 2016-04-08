@@ -37,24 +37,19 @@ namespace Anaquin
             Coverage mFold;
         };
 
-        struct Stats
+        struct Stats : public LinearStats, public MappingStats
         {
-            struct ChrT : public LinearStats, public MappingStats
-            {
-                // Alignment for the two alignment files
-                MBlat::Stats align_1, align_2;
-                
-                // Absolute detection limit
-                Limit absolute;
-                
-                // Distribution of the sequins
-                SequinHist h = Standard::instance().r_meta.hist();
-                
-                // Differential differences
-                std::set<SequinDiff> diffs;
-            };
+            // Alignment for the two alignment files
+            MBlat::Stats align_1, align_2;
             
-            std::shared_ptr<ChrT> chrT;
+            // Absolute detection limit
+            Limit limit;
+            
+            // Distribution of the sequins
+            SequinHist hist;
+            
+            // Differential differences
+            std::set<SequinDiff> diffs;
         };
 
         struct Options : public DoubleMixtureOptions
@@ -63,7 +58,7 @@ namespace Anaquin
             Options() {}
             
             // How the measured coverage is computed
-            MAbundance::CoverageMethod coverage = MAbundance::WendySmooth;
+            MAbund::CoverageMethod coverage = MAbund::WendySmooth;
             
             // An optional PSL file for mixture A
             FileName pA;

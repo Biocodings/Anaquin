@@ -2,11 +2,17 @@
 
 using namespace Anaquin;
 
-MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Options &o)
+// Defined in resources.cpp
+extern Scripts PlotVAbundAbund();
+
+MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     
-    MAbundance::Stats stats;
+    MAbund::Stats stats;
+
+    // Initialize the sequins
+    stats.hist = r.hist();
     
     assert(!o.psl.empty());
     
@@ -25,29 +31,29 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
  
     o.info("Analyzing: " + file);
 
-    switch (o.tool)
+    switch (o.soft)
     {
-        case Velvet:  { stats.chrT->assembly = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
-        case RayMeta: { stats.chrT->assembly = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
+        case Software::Velvet:  { stats.assembly = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
+        case Software::RayMeta: { stats.assembly = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
     }
 
-    stats.chrT->blat = t;
+    stats.blat = t;
 
-    if (!stats.chrT->assembly.n)
+    if (!stats.assembly.n)
     {
         throw std::runtime_error("No contig detected in the input file. Please check and try again.");
     }
-    else if (stats.chrT->assembly.contigs.empty())
+    else if (stats.assembly.contigs.empty())
     {
         throw std::runtime_error("No contig aligned in the input file. Please check and try again.");
     }
 
-    stats.chrT->n_chrT = stats.chrT->assembly.contigs.size();
-    stats.chrT->n_endo = stats.chrT->assembly.n - stats.chrT->n_chrT;
+    stats.n_chrT = stats.assembly.contigs.size();
+    stats.n_endo = stats.assembly.n - stats.n_chrT;
 
     o.info("Analyzing the alignments");
 
-    for (auto &meta : stats.chrT->blat.metas)
+    for (auto &meta : stats.blat.metas)
     {
         auto &align = meta.second;
         
@@ -62,82 +68,104 @@ MAbundance::Stats MAbundance::analyze(const FileName &file, const MAbundance::Op
          * concentration while still detectable in the experiment.
          */
 
-        if (stats.chrT->limit.id.empty() || align->seq->abund(Mix_1, false) < stats.chrT->limit.abund)
+        if (stats.limit.id.empty() || align->seq->abund(Mix_1, false) < stats.limit.abund)
         {
-            stats.chrT->limit.id     = align->seq->id;
-            stats.chrT->limit.abund  = align->seq->abund(Mix_1, false);
-            stats.chrT->limit.counts = align->contigs.size();
+            stats.limit.id     = align->seq->id;
+            stats.limit.abund  = align->seq->abund(Mix_1, false);
+            stats.limit.counts = align->contigs.size();
         }
         
-        const auto p = MAbundance::calculate(stats, stats.chrT->blat, stats.chrT->assembly, align->seq->id, *meta.second, o, o.coverage);
+        const auto p = MAbund::calculate(stats, stats.blat, stats.assembly, align->seq->id, *meta.second, o, o.coverage);
         
         if (p.x && p.y)
         {
-            stats.chrT->add(align->seq->id, p.x, p.y);
+            stats.add(align->seq->id, p.x, p.y);
         }
     }
 
-    stats.chrT->absolute = r.absolute(stats.chrT->h);
+    stats.limit = r.absolute(stats.hist);
 
     return stats;
 }
 
-void MAbundance::report(const FileName &file, const MAbundance::Options &o)
+static void generateContigs(const FileName &file, const MAbund::Stats &stats, const MAbund::Options &o)
 {
-    const auto stats = MAbundance::analyze(file, o);
-
-    o.info("Generating summary statistics");
-    //AnalyzeReporter::linear("MetaAbund_summary.stats", file, stats, "contigs", o.writer, "sequins");
- 
-    o.info("Generating scatter plot");
-    //AnalyzeReporter::scatter(stats,
-                    //         "Expected abundance vs Measured coverage",
-                      //       "MetaAbundance",
-                        //     "Expected abudnance (attomol/ul)",
-                          //   "Measured coverage (k-mer)",
-                            // "Expected abdunance (log2 attomol/ul)",
-                            // "Measured coverage (log2 k-mer)",
-                            // o.writer);
+    o.info("Generating " + file);
+    o.writer->open(file);
     
+    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    
+    o.writer->write((boost::format(format) % "ID"
+                                           % "Sequin ID"
+                                           % "Length"
+                                           % "Coverage"
+                                           % "Normalized").str());
+    
+    for (const auto &i : stats.blat.aligns)
+    {
+        if (stats.assembly.contigs.count(i.first))
+        {
+            const auto &contig = stats.assembly.contigs.at(i.first);
+            
+            o.writer->write((boost::format(format) % i.first
+                                                   % i.second->id()
+                                                   % contig.k_len
+                                                   % contig.k_cov
+                                                   % contig.normalized()).str());
+        }
+        else
+        {
+            o.writer->write((boost::format(format) % i.first
+                                                   % i.second->id()
+                                                   % "-"
+                                                   % "-"
+                                                   % "-").str());
+        }
+    }
+    
+    o.writer->close();
+}
+
+void MAbund::report(const FileName &file, const MAbund::Options &o)
+{
+    const auto stats = MAbund::analyze(file, o);
+
     /*
-     * Generating detailed statistics for each contig
+     * 1. Generating summary statistics
      */
     
-    {
-        o.writer->open("MetaAbund_contigs.stats");
-        
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+    o.info("Generating MetaAbund_summary.stats");
+    o.writer->open("MetaAbund_summary.stats");
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
+                                                o.rEndo,
+                                                file,
+                                                stats.hist,
+                                                stats,
+                                                stats,
+                                                "sequins"));
+    o.writer->close();
+    
+    /*
+     * 2. Generating CSV for all sequins
+     */
+    
+    o.info("Generating MetaAbund_quins.csv");
+    o.writer->open("MetaAbund_quins.csv");
+    o.writer->write(StatsWriter::writeCSV(stats));
+    o.writer->close();
 
-        o.writer->write((boost::format(format) % "ID"
-                                               % "Sequin ID"
-                                               % "Length"
-                                               % "Coverage"
-                                               % "Normalized").str());
-        
-        for (const auto &i : stats.chrT->blat.aligns)
-        {
-            if (stats.chrT->assembly.contigs.count(i.first))
-            {
-                const auto &contig = stats.chrT->assembly.contigs.at(i.first);
-                
-                o.writer->write((boost::format(format) % i.first
-                                                       % i.second->id()
-                                                       % contig.k_len
-                                                       % contig.k_cov
-                                                       % contig.normalized()
-                                 ).str());
-            }
-            else
-            {
-                o.writer->write((boost::format(format) % i.first
-                                                       % i.second->id()
-                                                       % "-"
-                                                       % "-"
-                                                       % "-"
-                                 ).str());
-            }
-        }
-        
-        o.writer->close();
-    }
+    /*
+     * 3. Generating for AbundAbund
+     */
+    
+    o.info("Generating MetaAbund_abundAbund.R");
+    o.writer->open("MetaAbund_abundAbund.R");
+    o.writer->write(RWriter::createScript("MetaAbund_quins.csv", PlotVAbundAbund()));
+    o.writer->close();
+    
+    /*
+     * 4. Generating detailed statistics for each contig
+     */
+    
+    generateContigs("MetaAbund_contigs.stats", stats, o);
 }

@@ -9,7 +9,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     MAssembly::Stats stats;
 
     assert(!o.psl.empty());
-    assert(o.tool != MetaAssembler::RayMeta || !o.contigs.empty());
+    assert(o.soft != MAssembly::Software::RayMeta || !o.contigs.empty());
 
     /*
      * Generate statistics for the alignment
@@ -28,7 +28,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
     o.analyze(file);
 
-    switch (o.tool)
+    switch (o.soft)
     {
         case Velvet:  { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
         case RayMeta: { stats = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }

@@ -41,11 +41,6 @@ namespace Anaquin
                 {
                     CALL_BACK();
                     
-                    if (l.id == chrID)
-                    {
-                        return;
-                    }
-                    
                     l.id = s.substr(1, s.size() - 1);
                 }
                 
