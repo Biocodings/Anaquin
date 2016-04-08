@@ -195,9 +195,6 @@ def session(path, align, files):
 #
 # Generate an IGV session for transcriptome analysis
 #
-#     - Synthetic chromosome
-#     - TransQuin standard
-#
 
 def generateTrans(path, align, chrT=None, standard=None):
     
