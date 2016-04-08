@@ -225,5 +225,8 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * 4. Generating major plot (but only if we have the isoforms...)
      */
 
-    TExpress::generateRMajor("TransExpress_major.R", "TransExpress_quins.csv", stats, o);
+    if (stats.size() >= 2 && o.metrs == TExpress::Metrics::Isoform)
+    {
+        TExpress::generateRMajor("TransExpress_major.R", "TransExpress_quins.csv", o);        
+    }
 }

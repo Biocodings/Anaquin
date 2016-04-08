@@ -4,17 +4,17 @@
 #include "stats/analyzer.hpp"
 #include "parsers/parser_cufflink.hpp"
 
+// Defined in resources.cpp
+extern Anaquin::Scripts PlotTAbundAbund();
+
+// Defined in resources.cpp
+extern Anaquin::Scripts PlotRAbundAbund();
+
+// Defined in resources.cpp
+extern Anaquin::Scripts PlotMajor();
+
 namespace Anaquin
 {
-    // Defined in resources.cpp
-    extern Scripts PlotTAbundAbund();
-    
-    // Defined in resources.cpp
-    extern Scripts PlotRAbundAbund();
-
-    // Defined in resources.cpp
-    extern Scripts PlotMajor();
-
     struct TExpress : public Analyzer
     {
         /*
@@ -146,15 +146,11 @@ namespace Anaquin
 
         template <typename Options> static void generateRMajor(const FileName &output,
                                                                const FileName &csv,
-                                                               const std::vector<Stats> &stats,
                                                                const Options &o)
         {
-            if (stats.size() >= 2 && o.metrs == TExpress::Metrics::Isoform)
-            {
-                o.writer->open(output);
-                o.writer->write(RWriter::createScript(csv, PlotMajor()));
-                o.writer->close();
-            }
+            o.writer->open(output);
+            o.writer->write(RWriter::createScript(csv, PlotMajor()));
+            o.writer->close();
         }
 
         /*

@@ -57,5 +57,8 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * 4. Generating major plot (but only if we have the isoforms...)
      */
     
-    TExpress::generateRMajor("TransExpress_major.R", "TransExpress_quins.csv", stats, o);
+    if (stats.size() >= 2)
+    {
+        TExpress::generateRMajor("TransExpress_major.R", "TransExpress_quins.csv", o);
+    }
 }
