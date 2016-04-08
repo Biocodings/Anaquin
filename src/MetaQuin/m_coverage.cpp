@@ -2,7 +2,7 @@
 
 using namespace Anaquin;
 
-MCoverage::Stats MCoverage::stats(const FileName &file, const Options &o)
+MCoverage::Stats MCoverage::analyze(const FileName &file, const Options &o)
 {
     o.analyze(file);
     const auto &r = Standard::instance().r_meta;
@@ -16,12 +16,29 @@ MCoverage::Stats MCoverage::stats(const FileName &file, const Options &o)
 void MCoverage::report(const FileName &file, const MCoverage::Options &o)
 {
     const auto &r    = Standard::instance().r_meta;
-    const auto stats = MCoverage::stats(file, o);
+    const auto stats = MCoverage::analyze(file, o);
 
     CoverageTool::CoverageBedGraphOptions bo;
 
     /*
-     * Generating bedgraph for the community
+     * 1. Generating summary statistics
+     */
+    
+    CoverageTool::CoverageReportOptions to;
+    
+    to.writer   = o.writer;
+    to.summary  = "MetaCoverage_summary.stats";
+    to.refs     = r.hist().size();
+    to.length   = r.size();
+    
+    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
+    {
+        // Filter to the regions in the standards
+        return r.match(Locus(i, j), MatchRule::Contains);
+    });
+    
+    /*
+     * 2. Generating bedgraph for the community
      */
     
     bo.writer = o.writer;
@@ -34,7 +51,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     });
 
     /*
-     * Generating detailed statistics for each MetaQuin
+     * 3. Generating detailed statistics for each MetaQuin
      */
 
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
@@ -68,47 +85,4 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     }
     
     o.writer->close();
-    
-    /*
-     * Generating summary statistics
-     */
-/*
-    const auto summary = "Summary for input: %1%\n\n"
-                         "   Experiment: %2%\n"
-                         "   Synthetic: %3%\n\n"
-                         "   ************ References ************\n\n"
-                         "   Sequins: %4%\n"
-                         "   Bases:   %5%\n\n"
-                         "   ************ Statistics ************\n\n"
-                         "   Minimum: %6%\n"
-                         "   Maximum: %7%\n"
-                         "   Mean:    %8%\n"
-                         "   Covered  %9%\n";
-*/
-    const auto overallStats = inters.stats();
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    CoverageTool::CoverageReportOptions to;
-    
-    to.writer   = o.writer;
-    to.summary  = "MetaCoverage_summary.stats";
-    to.refs     = r.hist().size();
-    to.length   = r.size();
-
-/*
- TODO: Need to give a fake name
-    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.r_meta.match(Locus(i, j), MatchRule::Contains);
-    });
-*/
 }

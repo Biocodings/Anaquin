@@ -28,8 +28,7 @@
 #include "VarQuin/v_coverage.hpp"
 #include "VarQuin/v_kexpress.hpp"
 
-#include "MetaQuin/m_blat.hpp"
-#include "MetaQuin/m_diffs.hpp"
+#include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
@@ -134,8 +133,6 @@ typedef std::set<Value> Range;
 
 #define OPT_PSL_1   905
 #define OPT_PSL_2   906
-#define OPT_FA_1    907
-#define OPT_FA_2    908
 #define OPT_U_COV   911
 #define OPT_U_FILES 914
 #define OPT_C_FILES 916
@@ -251,11 +248,11 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
 
-    { TOOL_M_IGV,      { OPT_U_FILES                                                     } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_U_FILES, OPT_SOFT                     } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT                   } },
-    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                          } },
-    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_FA_1, OPT_FA_2, OPT_SOFT } },
+    { TOOL_M_IGV,      { OPT_U_FILES                                              } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_U_FILES, OPT_SOFT              } },
+    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT            } },
+    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                   } },
+    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
 
     /*
      * Fusion Analysis
@@ -403,9 +400,6 @@ static const struct option long_options[] =
     { "rfus",    required_argument, 0, OPT_R_FUS   },
     { "rind",    required_argument, 0, OPT_R_IND   },
 
-    { "ufa",     required_argument, 0, OPT_FA_1   },
-    { "ufa1",    required_argument, 0, OPT_FA_1   },
-    { "ufa2",    required_argument, 0, OPT_FA_2   },
     { "upsl",    required_argument, 0, OPT_PSL_1  },
     { "upsl1",   required_argument, 0, OPT_PSL_1  },
     { "upsl2",   required_argument, 0, OPT_PSL_2  },
@@ -980,8 +974,6 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_FA_1:
-            case OPT_FA_2:
             case OPT_U_COV:
             case OPT_PSL_2:
             case OPT_PSL_1:
@@ -1569,12 +1561,12 @@ void parse(int argc, char ** argv)
                     {
                         case TOOL_M_DIFF:
                         {
-                            MDiffs::Options o;
+                            MDiff::Options o;
 
                             o.pA = _p.opts.at(OPT_PSL_1);
                             o.pB = _p.opts.at(OPT_PSL_2);
 
-                            analyze_2<MDiffs>(o);
+                            analyze_2<MDiff>(o);
                             break;
                         }
 

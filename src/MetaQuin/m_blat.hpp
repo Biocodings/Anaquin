@@ -117,11 +117,10 @@ namespace Anaquin
             // Total number of sequins that are assembled (i.e: at least a single contig)
             inline Counts countAssembled() const
             {
-                return std::count_if(metas.begin(), metas.end(),
-                            [&](const std::pair<SequinID, std::shared_ptr<MetaAlignment>> &p)
-                            {
-                                return p.second->contigs.empty() ? 0 : 1;
-                            });
+                return std::count_if(metas.begin(), metas.end(), [&](const std::pair<SequinID, std::shared_ptr<MetaAlignment>> &p)
+                {
+                    return p.second->contigs.empty() ? 0 : 1;
+                });
             }
 
             // Sum of bases for all sequins

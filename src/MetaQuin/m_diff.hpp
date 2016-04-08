@@ -1,5 +1,5 @@
-#ifndef M_DIFFS_HPP
-#define M_DIFFS_HPP
+#ifndef M_DIFF_HPP
+#define M_DIFF_HPP
 
 #include "MetaQuin/m_blat.hpp"
 #include "MetaQuin/m_abund.hpp"
@@ -7,7 +7,7 @@
 
 namespace Anaquin
 {
-    struct MDiffs
+    struct MDiff
     {
         // Represent a differential result for a MetaQuin sequin
         struct SequinDiff
@@ -67,7 +67,8 @@ namespace Anaquin
             FileName pB;
         };
 
-        static Stats report(const FileName &, const FileName &, const Options &o = Options());
+        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
+        static void report(const FileName &, const FileName &, const Options &o = Options());
     };
 }
 

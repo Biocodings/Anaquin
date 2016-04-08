@@ -51,6 +51,8 @@
  * Metagenomics Resources
  */
 
+#include "resources/plotMFold.R"
+
 #include "resources/MME023.v013.csv"
 #include "resources/AME015.v032.bed"
 
@@ -141,6 +143,11 @@ Scripts LadderDataMixAB()
 /*
  * Metagenomics Resources
  */
+
+Scripts PlotMFlod()
+{
+    return ToString(src_r_plotMFold_R);
+}
 
 Scripts MetaDataMix()
 {
