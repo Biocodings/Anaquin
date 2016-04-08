@@ -103,7 +103,7 @@ void MAssembly::report(const FileName &file, const Options &o)
 
     {
         o.info("Generating MetaAssembly_contigs.stats");
-        o.writer->open("MetaAssembly_contigs.stats");
+        o.writer->open("MetaAssembly_contigs.csv");
         
         const std::string format = "%1%\t%2%";
         
@@ -123,7 +123,7 @@ void MAssembly::report(const FileName &file, const Options &o)
 
     {
         o.logInfo("Generating sequins statistics");
-        o.writer->open("MetaAssembly_quins.stats");
+        o.writer->open("MetaAssembly_quins.csv");
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 

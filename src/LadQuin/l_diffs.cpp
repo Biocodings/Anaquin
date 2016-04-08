@@ -1,5 +1,5 @@
 #include "LadQuin/l_diffs.hpp"
-#include "LadQuin/l_abund.hpp"
+#include "LadQuin/l_express.hpp"
 
 using namespace Anaquin;
 
@@ -8,17 +8,17 @@ LDiffs::Stats LDiffs::report(const FileName &fileA, const FileName &fileB, const
     LDiffs::Stats stats;
 
     // Copy the pointers across
-    auto opt = LAbund::Options();
+    auto opt = LExpress::Options();
     
     opt.writer = o.writer;
     opt.logger = o.logger;
     opt.output = o.output;
 
     opt.mix = Mix_1;
-    const auto a = LAbund::analyze(fileA, opt);
+    const auto a = LExpress::analyze(fileA, opt);
 
     opt.mix = Mix_2;
-    const auto b = LAbund::analyze(fileB, opt);
+    const auto b = LExpress::analyze(fileB, opt);
 
     /*
      * Print a warning message for each sequin detected in B but not in A

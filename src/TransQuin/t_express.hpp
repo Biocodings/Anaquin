@@ -190,7 +190,7 @@ namespace Anaquin
             
             if (stats.size() == 1)
             {
-                o.writer->write(StatsWriter::writeCSV(stats[0], "EAbund", "MAbund"));
+                o.writer->write(StatsWriter::writeCSV(stats[0], "EAbund", "MExpress"));
             }
             else
             {

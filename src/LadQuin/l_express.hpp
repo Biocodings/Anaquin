@@ -1,11 +1,11 @@
-#ifndef L_ABUND_HPP
-#define L_ABUND_HPP
+#ifndef L_EXPRESS_HPP
+#define L_EXPRESS_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct LAbund
+    struct LExpress
     {
         typedef SingleMixtureOption Options;
 

@@ -2,8 +2,8 @@
 #define M_DIFF_HPP
 
 #include "MetaQuin/m_blat.hpp"
-#include "MetaQuin/m_abund.hpp"
 #include "stats/analyzer.hpp"
+#include "MetaQuin/m_express.hpp"
 
 namespace Anaquin
 {
@@ -58,7 +58,7 @@ namespace Anaquin
             Options() {}
             
             // How the measured coverage is computed
-            MAbund::CoverageMethod coverage = MAbund::WendySmooth;
+            MExpress::CoverageMethod coverage = MExpress::WendySmooth;
             
             // An optional PSL file for mixture A
             FileName pA;

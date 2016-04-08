@@ -64,7 +64,7 @@ static void writeCSV(const FileName &file, const FExpress::Stats &stats, const F
     
     o.writer->write((boost::format(format) % "Sequin"
                                            % "EAbund"
-                                           % "MAbund").str());
+                                           % "MExpress").str());
     
     const auto data = stats.data(false);
 

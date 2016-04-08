@@ -29,13 +29,13 @@
 #include "VarQuin/v_kexpress.hpp"
 
 #include "MetaQuin/m_diff.hpp"
-#include "MetaQuin/m_abund.hpp"
+#include "MetaQuin/m_express.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
 
 #include "LadQuin/l_copy.hpp"
 #include "LadQuin/l_diffs.hpp"
-#include "LadQuin/l_abund.hpp"
+#include "LadQuin/l_express.hpp"
 #include "LadQuin/l_coverage.hpp"
 
 #include "FusQuin/f_diff.hpp"
@@ -81,7 +81,7 @@ typedef std::set<Value> Range;
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
 #define TOOL_M_COVERAGE  286
-#define TOOL_L_ABUND     287
+#define TOOL_L_EXPRESS     287
 #define TOOL_L_DIFF      288
 #define TOOL_L_COVERAGE  289
 #define TOOL_F_DISCOVER  290
@@ -209,7 +209,7 @@ static std::map<Value, Tool> _tools =
     { "MetaReport",     TOOL_M_REPORT    },
 
     { "LadderCopy",     TOOL_L_COPY      },
-    { "LadderAbund",    TOOL_L_ABUND     },
+    { "LadderAbund",    TOOL_L_EXPRESS     },
     { "LadderDiff",     TOOL_L_DIFF      },
     { "LadderCoverage", TOOL_L_COVERAGE  },
     { "LadderReport",   TOOL_L_REPORT    },
@@ -242,7 +242,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Ladder Analysis
      */
 
-    { TOOL_L_ABUND,    { OPT_U_FILES, OPT_MIXTURE } },
+    { TOOL_L_EXPRESS,    { OPT_U_FILES, OPT_MIXTURE } },
 
     /*
      * Metagenomics Analysis
@@ -1342,7 +1342,7 @@ void parse(int argc, char ** argv)
 
         case TOOL_L_COPY:
         case TOOL_L_DIFF:
-        case TOOL_L_ABUND:
+        case TOOL_L_EXPRESS:
         case TOOL_L_COVERAGE:
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
@@ -1353,7 +1353,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_L_COPY:     { analyze_1<LCopy>(OPT_U_FILES);             break; }
-                case TOOL_L_ABUND:    { analyze_1<LAbund>(OPT_U_FILES);            break; }
+                case TOOL_L_EXPRESS:    { analyze_1<LExpress>(OPT_U_FILES);            break; }
                 case TOOL_L_DIFF:     { /*analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break;*/ }
                 case TOOL_L_COVERAGE: { analyze_1<LCoverage>(OPT_U_FILES);         break; }
             }
@@ -1586,7 +1586,7 @@ void parse(int argc, char ** argv)
                             
                         case TOOL_M_ABUND:
                         {
-                            MAbund::Options o;
+                            MExpress::Options o;
                             
                             o.soft    = soft;
                             o.contigs = conts;
@@ -1594,7 +1594,7 @@ void parse(int argc, char ** argv)
                             // An alignment file is needed to identify contigs
                             o.psl = _p.opts.at(OPT_PSL_1);
                             
-                            analyze_1<MAbund>(OPT_U_FILES, o);
+                            analyze_1<MExpress>(OPT_U_FILES, o);
                             break;
                         }
 

@@ -30,7 +30,7 @@ namespace Anaquin
     {
         static Scripts writeCSV(const LinearStats &stats,
                                 const Label &xLabel = "EAbund",
-                                const Label &yLabel = "MAbund",
+                                const Label &yLabel = "MExpress",
                                 bool shouldLog = false)
         {
             const auto d = stats.data(false);

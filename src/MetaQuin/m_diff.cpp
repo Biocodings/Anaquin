@@ -54,7 +54,7 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
     {
         const auto &align = meta.second;
         
-        const auto p = MAbund::calculate(stats, stats.align_1, dStats_1, align->id(), *meta.second, o, o.coverage);
+        const auto p = MExpress::calculate(stats, stats.align_1, dStats_1, align->id(), *meta.second, o, o.coverage);
         y1[align->id()] = p.y;
     }
     
@@ -70,7 +70,7 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
     {
         const auto &align = meta.second;
         
-        const auto p = MAbund::calculate(stats, stats.align_2, dStats_2, align->id(), *meta.second, o, o.coverage);
+        const auto p = MExpress::calculate(stats, stats.align_2, dStats_2, align->id(), *meta.second, o, o.coverage);
         y2[align->id()] = p.y;
     }
     

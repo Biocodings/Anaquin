@@ -1,11 +1,11 @@
-#ifndef M_ABUNDANCE_HPP
-#define M_ABUNDANCE_HPP
+#ifndef M_EXPRESS_HPP
+#define M_EXPRESS_HPP
 
 #include "MetaQuin/m_assembly.hpp"
 
 namespace Anaquin
 {
-    struct MAbund
+    struct MExpress
     {
         enum Software
         {

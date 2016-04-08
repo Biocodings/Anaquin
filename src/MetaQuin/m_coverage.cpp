@@ -42,7 +42,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
      */
     
     bo.writer = o.writer;
-    bo.file   = "MetaCoverage_community.bedgraph";
+    bo.file   = "MetaCoverage_coverage.bedgraph";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
     {

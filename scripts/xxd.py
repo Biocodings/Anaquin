@@ -52,6 +52,8 @@ data  = [ 'data/manual.txt',
 
           # ---------- META ----------
 
+	  'src/r/plotMFold.R',
+
           'data/MetaQuin/AME013.v032.fa',
           'data/MetaQuin/MME023.v013.csv',
           'data/MetaQuin/AME015.v032.bed',

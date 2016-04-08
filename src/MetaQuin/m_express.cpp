@@ -1,15 +1,15 @@
-#include "MetaQuin/m_abund.hpp"
+#include "MetaQuin/m_express.hpp"
 
 using namespace Anaquin;
 
 // Defined in resources.cpp
 extern Scripts PlotVAbundAbund();
 
-MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
+MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     
-    MAbund::Stats stats;
+    MExpress::Stats stats;
 
     // Initialize the sequins
     stats.hist = r.hist();
@@ -75,7 +75,7 @@ MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
             stats.limit.counts = align->contigs.size();
         }
         
-        const auto p = MAbund::calculate(stats, stats.blat, stats.assembly, align->seq->id, *meta.second, o, o.coverage);
+        const auto p = MExpress::calculate(stats, stats.blat, stats.assembly, align->seq->id, *meta.second, o, o.coverage);
         
         if (p.x && p.y)
         {
@@ -88,18 +88,18 @@ MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
     return stats;
 }
 
-static void generateContigs(const FileName &file, const MAbund::Stats &stats, const MAbund::Options &o)
+static void generateContigs(const FileName &file, const MExpress::Stats &stats, const MExpress::Options &o)
 {
     o.info("Generating " + file);
     o.writer->open(file);
     
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
-    o.writer->write((boost::format(format) % "ID"
-                                           % "Sequin ID"
-                                           % "Length"
-                                           % "Coverage"
-                                           % "Normalized").str());
+    o.writer->write((boost::format(format) % "contigID"
+                                           % "seqID"
+                                           % "length"
+                                           % "coverage"
+                                           % "normalized").str());
     
     for (const auto &i : stats.blat.aligns)
     {
@@ -126,9 +126,9 @@ static void generateContigs(const FileName &file, const MAbund::Stats &stats, co
     o.writer->close();
 }
 
-void MAbund::report(const FileName &file, const MAbund::Options &o)
+void MExpress::report(const FileName &file, const MExpress::Options &o)
 {
-    const auto stats = MAbund::analyze(file, o);
+    const auto stats = MExpress::analyze(file, o);
 
     /*
      * 1. Generating summary statistics
@@ -164,7 +164,7 @@ void MAbund::report(const FileName &file, const MAbund::Options &o)
     o.writer->close();
     
     /*
-     * 4. Generating detailed statistics for each contig
+     * 4. Generating detailed statistics for the contigs
      */
     
     generateContigs("MetaAbund_contigs.stats", stats, o);

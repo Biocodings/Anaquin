@@ -1,4 +1,4 @@
-#include "LadQuin/l_abund.hpp"
+#include "LadQuin/l_express.hpp"
 #include "parsers/parser_sam.hpp"
 #include <ss/regression/linear.hpp>
 
@@ -16,9 +16,9 @@ static std::vector<double> create(Coverage rA, Coverage rB, Coverage rC, Coverag
     return std::vector<double> { nA, nB, nC, nD };
 }
 
-LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
+LExpress::Stats LExpress::analyze(const FileName &file, const Options &o)
 {
-    LAbund::Stats stats;
+    LExpress::Stats stats;
     const auto &r = Standard::instance().r_lad;
 
     // Sequins detected in the experiment
@@ -186,7 +186,7 @@ LAbund::Stats LAbund::analyze(const FileName &file, const Options &o)
   	return stats;
 }
 
-static void writeCSV(const FileName &file, const LAbund::Stats &stats, const LAbund::Options &o)
+static void writeCSV(const FileName &file, const LExpress::Stats &stats, const LExpress::Options &o)
 {
     const auto &abund  = stats.data.measured;
     const auto &expect = stats.data.expect;
@@ -239,9 +239,9 @@ static void writeCSV(const FileName &file, const LAbund::Stats &stats, const LAb
 };
 
 
-void LAbund::report(const FileName &file, const Options &o)
+void LExpress::report(const FileName &file, const Options &o)
 {
-    const auto stats = LAbund::analyze(file, o);
+    const auto stats = LExpress::analyze(file, o);
     
     o.info("Generating statistics");
     
