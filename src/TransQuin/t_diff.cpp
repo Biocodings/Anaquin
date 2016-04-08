@@ -324,8 +324,7 @@ void TDiff::report(const FileName &file, const Options &o)
     {
         o.info("Generating TransDiff_MA.R");
         o.writer->open("TransDiff_MA.R");
-        //o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotMA()));
-        //o.writer->write(RWriter::createMA("TransDiff_diffs.csv", units));
+        o.writer->write(RWriter::createScript("TransDiff_counts.csv", PlotMA()));
         o.writer->close();
     }
 }

@@ -10,7 +10,6 @@ namespace Anaquin
     {
         typedef ViewerOptions Options;
         
-        // Generate a IGV session for variant analysis
         static void generate(const FileName &file, const Options &o = Options())
         {
             Script::viewer("VarQuin " + o.path + " " + file);

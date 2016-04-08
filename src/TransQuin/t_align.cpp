@@ -747,6 +747,8 @@ void TAlign::report(const FileName &file, const Options &o)
 {
     const auto stats = TAlign::analyze(file, o);
     
+    o.info("Generating statistics");
+    
     /*
      * Generating summary statistics
      */
