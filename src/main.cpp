@@ -1323,6 +1323,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_F_IGV:      { viewer<FViewer>();                 break; }
+                case TOOL_F_DIFF:     { analyze_2<FDiff>();                break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_F_EXPRESS:
@@ -1331,12 +1332,6 @@ void parse(int argc, char ** argv)
                     o.caller = parseAligner(_p.opts.at(OPT_SOFT));
 
                     analyze_1<FExpress>(OPT_U_FILES, o);
-                    break;
-                }
-
-                case TOOL_F_DIFF:
-                {
-                    analyze_2<FDiff>();
                     break;
                 }
 
@@ -1577,14 +1572,14 @@ void parse(int argc, char ** argv)
                         case TOOL_M_DIFF:
                         {
                             MDiffs::Options o;
-                            
+
                             o.pA = _p.opts.at(OPT_PSL_1);
                             o.pB = _p.opts.at(OPT_PSL_2);
-                            
-                            //analyze_2<MDiffs>(OPT_FA_1, OPT_FA_2, o);
+
+                            analyze_2<MDiffs>(o);
                             break;
                         }
-                            
+
                         case TOOL_M_ASSEMBLY:
                         {
                             MAssembly::Options o;
@@ -1595,7 +1590,7 @@ void parse(int argc, char ** argv)
                             // An alignment file is needed to identify contigs
                             o.psl = _p.opts.at(OPT_PSL_1);
                             
-                            analyze_1<MAssembly>(OPT_FA_1, o);
+                            analyze_1<MAssembly>(OPT_U_FILES, o);
                             break;
                         }
                             
@@ -1609,7 +1604,7 @@ void parse(int argc, char ** argv)
                             // An alignment file is needed to identify contigs
                             o.psl = _p.opts.at(OPT_PSL_1);
                             
-                            analyze_1<MAbundance>(OPT_FA_1, o);
+                            analyze_1<MAbundance>(OPT_U_FILES, o);
                             break;
                         }
 

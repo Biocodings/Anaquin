@@ -39,65 +39,70 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
+static Scripts generateSummary(const FileName &file, const MAssembly::Stats &stats)
+{
+    const auto summary = "Summary for input: %1%\n\n"
+                         "   Community: %2%\n"
+                         "   Synthetic: %3%\n\n"
+                         "   Contigs:   %4%\n"
+                         "   Assembled: %5%\n"
+                         "   Reference: %6%\n\n"
+                         "   ***\n"
+                         "   *** The following statistics are computed on the synthetic community\n"
+                         "   ***\n\n"
+                         "   N20:      %7%\n"
+                         "   N50:      %8%\n"
+                         "   N80:      %9%\n"
+                         "   Min:      %10%\n"
+                         "   Mean:     %11%\n"
+                         "   Max:      %12%\n\n"
+                         "   ***\n"
+                         "   *** The following overlapping statistics are computed as proportion\n"
+                         "   ***\n\n"
+                         "   Match:    %13%\n"
+                         "   Mismatch: %14%\n"
+                         "   Gaps (sequins): %15%\n"
+                         "   Gaps (contigs): %16%\n";
+    
+    return (boost::format(summary) % file
+                                   % stats.blat.n_endo
+                                   % stats.blat.n_chrT
+                                   % stats.blat.aligns.size()
+                                   % stats.blat.countAssembled()
+                                   % stats.blat.metas.size()
+                                   % stats.N20
+                                   % stats.N50
+                                   % stats.N80
+                                   % stats.min
+                                   % stats.mean
+                                   % stats.max
+                                   % stats.blat.overMatch()
+                                   % stats.blat.overRGaps()
+                                   % stats.blat.overQGaps()
+                                   % stats.blat.overMismatch()).str();
+}
+
 void MAssembly::report(const FileName &file, const Options &o)
 {
     const auto stats = MAssembly::analyze(file, o);
 
+    o.info("Generating statistics");
+    
     /*
-     * Generating summary statistics
+     * 1: Generating summary statistics
      */
 
-    {
-        o.logInfo("Generating summary statistics");
-        o.writer->open("MetaAssembly_summary.stats");
-        
-        const auto summary = "Summary for input: %1%\n\n"
-                             "   Community: %2%\n"
-                             "   Synthetic: %3%\n\n"
-                             "   Contigs:   %4%\n"
-                             "   Assembled: %5%\n"
-                             "   Reference: %6%\n\n"
-                             "   ***\n"
-                             "   *** The following statistics are computed on the synthetic community\n"
-                             "   ***\n\n"
-                             "   N20:      %7%\n"
-                             "   N50:      %8%\n"
-                             "   N80:      %9%\n"
-                             "   Min:      %10%\n"
-                             "   Mean:     %11%\n"
-                             "   Max:      %12%\n\n"
-                             "   ***\n"
-                             "   *** The following overlapping statistics are computed as proportion\n"
-                             "   ***\n\n"
-                             "   Match:    %13%\n"
-                             "   Mismatch: %14%\n"
-                             "   Gaps (sequins): %15%\n"
-                             "   Gaps (contigs): %16%\n";
-
-        o.writer->write((boost::format(summary) % file
-                                                % stats.blat.n_endo
-                                                % stats.blat.n_chrT
-                                                % stats.blat.aligns.size()
-                                                % stats.blat.countAssembled()
-                                                % stats.blat.metas.size()
-                                                % stats.N20
-                                                % stats.N50
-                                                % stats.N80
-                                                % stats.min
-                                                % stats.mean
-                                                % stats.max
-                                                % stats.blat.overMatch()
-                                                % stats.blat.overRGaps()
-                                                % stats.blat.overQGaps()
-                                                % stats.blat.overMismatch()).str());
-        o.writer->close();
-    }
+    o.logInfo("Generating MetaAssembly_summary.stats");
+    o.writer->open("MetaAssembly_summary.stats");
+    o.writer->write(generateSummary("MetaAssembly_summary.stats", stats));
+    o.writer->close();
 
     /*
      * Generating detailed statistics for each contig
      */
 
     {
+        o.info("Generating MetaAssembly_contigs.stats");
         o.writer->open("MetaAssembly_contigs.stats");
         
         const std::string format = "%1%\t%2%";
@@ -108,10 +113,10 @@ void MAssembly::report(const FileName &file, const Options &o)
         {
             o.writer->write((boost::format(format) % i.first % i.second->id()).str());
         }
-
+        
         o.writer->close();
     }
-    
+
     /*
      * Generating detailed statistics for each sequin
      */

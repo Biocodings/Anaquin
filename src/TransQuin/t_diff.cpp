@@ -239,7 +239,7 @@ TDiff::Stats TDiff::analyze(const FileName &file, const Options &o)
             {
                 ParserEdgeR::parse(file, [&](const DiffTest &t, const ParserProgress &)
                 {
-                    //update(stats, t, o);
+                    update(stats, t, o);
                 });
 
                 break;
