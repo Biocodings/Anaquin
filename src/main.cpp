@@ -258,7 +258,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Fusion Analysis
      */
 
-    { TOOL_F_DISCOVER, { OPT_R_FUS, OPT_SOFT, OPT_U_FILES               } },
+    { TOOL_F_DISCOVER, { OPT_R_BED, OPT_SOFT, OPT_U_FILES               } },
     { TOOL_F_EXPRESS,  { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
     { TOOL_F_COVERAGE, { OPT_R_BED, OPT_U_FILES                         } },
     { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_MIXTURE, OPT_U_FILES } },
@@ -1340,10 +1340,7 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_L_COPY:
-        case TOOL_L_DIFF:
         case TOOL_L_EXPRESS:
-        case TOOL_L_COVERAGE:
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
@@ -1352,10 +1349,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_L_COPY:     { analyze_1<LCopy>(OPT_U_FILES);             break; }
-                case TOOL_L_EXPRESS:    { analyze_1<LExpress>(OPT_U_FILES);            break; }
-                case TOOL_L_DIFF:     { /*analyze_2<LDiffs>(OPT_BAM_1, OPT_BAM_2); break;*/ }
-                case TOOL_L_COVERAGE: { analyze_1<LCoverage>(OPT_U_FILES);         break; }
+                case TOOL_L_EXPRESS:  { analyze_1<LExpress>(OPT_U_FILES); break; }
             }
 
             break;

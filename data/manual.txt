@@ -68,8 +68,4 @@ Version: 1.1.1
        Ladder Analysis (LadQuin)
        ----------------------------
 	   
-       LadderAbund
-       LadderCopy
-       LadderDiff
-       LadderCoverage
-       LadderReport
+       LadderExpress
