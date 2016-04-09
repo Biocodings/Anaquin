@@ -61,6 +61,7 @@ Features
 <li> Genome comparisons
 <li> Data visualization
 <li> R-integration
+<li> R-Shiny
 </ul>
 
 
