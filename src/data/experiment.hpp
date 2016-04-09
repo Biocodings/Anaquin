@@ -51,7 +51,8 @@ namespace Anaquin
                 {
                     if (!m.count(fact))
                     {
-                        m[fact] = static_cast<unsigned>(m.size());
+                        const int tmp = m.size();
+                        m[fact] = tmp;
                     }
                     
                     _samples.push_back(m[fact]);
