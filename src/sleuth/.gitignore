@@ -1,7 +1,0 @@
-.Rproj.user
-.R*history
-.RData
-*.Rproj
-
-*.DS_Store
-inst/doc
