@@ -1,4 +1,4 @@
-#include "stats/kallisto.hpp"
+#include "data/kallisto.hpp"
 #include "VarQuin/v_kallele.hpp"
 #include "parsers/parser_kallisto.hpp"
 
@@ -19,7 +19,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     stats.n_endo = NAN;
     
     // Run quantification in Kallisto
-    const auto abundFile = Kallisto::quant(o.index, file1, file2);
+    const auto abundFile = Pachter::quant(o.index, file1, file2);
 
     /*
      * Parsing the generated files. Obviosuly, we can't estimate the allele frequency unless we can detect both

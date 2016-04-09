@@ -9,20 +9,22 @@
 
 #include "data/dtest.hpp"
 #include "stats/analyzer.hpp"
+#include "TransQuin/t_diff.hpp"
 
 namespace Anaquin
 {
     struct TKDiff : public Analyzer
     {
         typedef IndexOptions Options;
+        typedef TDiff::Stats Stats;
+        
+        static Stats analyze(const std::vector<FileName> &,
+                             const std::vector<FileName> &,
+                             const std::vector<FileName> &,
+                             const std::vector<FileName> &,
+                             const Options &o);
 
-        struct Stats : public MappingStats, public SequinStats, public LinearStats
-        {
-            // Empty Implementation
-        };
-
-        static Stats analyze(const std::vector<FileName> &, const Options &o);
-        static void report(const std::vector<FileName> &, const Options &o = Options());
+        static void report(const FileName &, const Options &o = Options());
     };
 }
 

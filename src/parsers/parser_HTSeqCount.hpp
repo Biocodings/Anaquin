@@ -78,18 +78,18 @@ namespace Anaquin
             
             Sample s;
             
-            ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+            ParserCSV::parse(r, [&](const ParserCSV::Data &d, const ParserProgress &p)
             {
-                if (fields.size() != 2)
+                if (d.size() != 2)
                 {
                     throw std::runtime_error("Invalid file for HTSeqCount. Please try and check again.");
                 }
                 
                 // Eg: ENSG00000000457.13
-                s.id = fields[0];
+                s.id = d[0];
                 
                 // Eg: 49
-                s.count = stoi(fields[1]);
+                s.count = stoi(d[1]);
 
                 f(s, p);
             }, "\t");

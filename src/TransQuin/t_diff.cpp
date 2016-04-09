@@ -13,18 +13,6 @@
 
 using namespace Anaquin;
 
-// Defined in resources.cpp
-extern Scripts PlotFold();
-
-// Defined in resources.cpp
-extern Scripts PlotLODR();
-
-// Defined in resources.cpp
-extern Scripts PlotTROC();
-
-// Defined in resources.cpp
-extern Scripts PlotMA();
-
 typedef TDiff::Metrics  Metrics;
 typedef TDiff::Software Software;
 
@@ -274,47 +262,32 @@ void TDiff::report(const FileName &file, const Options &o)
     /*
      * 1. Generating summary statistics
      */
-    
-    o.info("Generating TransDiff_summary.stats");
-    o.writer->open("TransDiff_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats.hist));
-    o.writer->close();
-    
+
+    TDiff::generateSummary("TransDiff_summary.stats", stats, o);
+
     /*
      * 2. Generating differential results
      */
-    
-    o.info("Generating TransDiff_quins.csv");
-    o.writer->open("TransDiff_quins.csv");
-    o.writer->write(TDiff::writeCSV(stats, o));
-    o.writer->close();
+
+    TDiff::generateCSV("TransDiff_quins.csv", stats, o);
     
     /*
      * 3. Generating log-fold plot
      */
     
-    o.info("Generating TransDiff_fold.R");
-    o.writer->open("TransDiff_fold.R");
-    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotFold()));
-    o.writer->close();
+    TDiff::generateFoldR("TransDiff_fold.R", "TransDiff_quins.csv", o);
 
     /*
      * 4. Generating ROC plot
      */
     
-    o.info("Generating TransDiff_ROC.R");
-    o.writer->open("TransDiff_ROC.R");
-    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotTROC()));
-    o.writer->close();
-
+    TDiff::generateROC("TransDiff_ROC.R", "TransDiff_quins.csv", o);
+    
     /*
      * 5. Generating LODR plot
      */
     
-    o.info("Generating TransDiff_LODR.R");
-    o.writer->open("TransDiff_LODR.R");
-    o.writer->write(RWriter::createScript("TransDiff_quins.csv", PlotLODR()));
-    o.writer->close();
+    TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.csv", o);
     
     /*
      * 6. Generating MA plot
@@ -322,9 +295,6 @@ void TDiff::report(const FileName &file, const Options &o)
     
     if (!o.counts.empty())
     {
-        o.info("Generating TransDiff_MA.R");
-        o.writer->open("TransDiff_MA.R");
-        o.writer->write(RWriter::createScript("TransDiff_counts.csv", PlotMA()));
-        o.writer->close();
+        TDiff::generateMA("TransDiff_MA.R", "TransDiff_counts.csv", o);
     }
 }

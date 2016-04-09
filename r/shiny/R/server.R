@@ -1,5 +1,10 @@
 library(shiny)
 
+TestTKExpress <- function() {
+  .Call('SmallQuant_TestTKExpress', PACKAGE = 'SmallQuant')
+}
+
+
 shinyServer(function(input, output) {
   output$contents <- renderTable({
     

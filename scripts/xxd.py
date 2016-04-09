@@ -15,7 +15,8 @@ def xxd(src, dst):
 
 data  = [ 'data/manual.txt',    
           'scripts/viewer.py',
-	  'scripts/reports.py',
+          'scripts/reports.py',
+          'scripts/sleuth.R',
 
           # ------- Fusion -------
 
@@ -36,12 +37,12 @@ data  = [ 'data/manual.txt',
            
           # ---------- Transcriptome ----------
 
-	  'src/r/plotMA.R',
-	  'src/r/plotFold.R',
-	  'src/r/plotMajor.R',
+          'src/r/plotMA.R',
+	      'src/r/plotFold.R',
+	      'src/r/plotMajor.R',
           'src/r/plotTROC.R',
-          'src/r/plotLODR.R',
-	  'src/r/plotRAbundAbund.R',
+          'src/r/plotLODR.R',          
+	      'src/r/plotRAbundAbund.R',
           'src/r/plotTAbundAbund.R',
 
           'data/TransQuin/ATR001.v032.gtf',
@@ -52,7 +53,7 @@ data  = [ 'data/manual.txt',
 
           # ---------- META ----------
 
-	  'src/r/plotMFold.R',
+          'src/r/plotMFold.R',
 
           'data/MetaQuin/AME013.v032.fa',
           'data/MetaQuin/MME023.v013.csv',

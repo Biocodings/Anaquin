@@ -4,6 +4,7 @@
  * Scripts
  */
 
+#include "resources/sleuth.R"
 #include "resources/viewer.py"
 #include "resources/manual.txt"
 #include "resources/reports.py"
@@ -162,6 +163,11 @@ Scripts MetaDataBed()
 /*
  * Transcriptome Resources
  */
+
+Scripts SleuthR()
+{
+    return ToString(scripts_sleuth_R);
+}
 
 Scripts PlotFold()
 {

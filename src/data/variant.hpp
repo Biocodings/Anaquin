@@ -69,11 +69,8 @@ namespace Anaquin
         
         Probability p = NAN;
     };
-
-    struct CalledVariant : public Variant
-    {
-
-    };
+    
+    typedef Variant CalledVariant;
 }
 
 #endif

@@ -5,7 +5,6 @@
 #include <memory>
 #include <numeric>
 #include <sstream>
-#include <boost/format.hpp>
 #include "stats/classify.hpp"
 #include "writers/r_writer.hpp"
 #include "writers/mock_writer.hpp"
@@ -26,7 +25,7 @@ namespace Anaquin
 
     template <typename T> std::string toNA(const T &x)
     {
-        return isnan(x) ? "NA" : (boost::format("%1%") % x).str();
+        return isnan(x) ? "NA" : std::to_string(x);
     }
     
     inline FileName extractFile(const Path &path)

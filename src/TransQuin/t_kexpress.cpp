@@ -4,28 +4,19 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#include "stats/kallisto.hpp"
+#include "data/kallisto.hpp"
 #include "TransQuin/t_kexpress.hpp"
 
 using namespace Anaquin;
 
 TKExpress::Stats TKExpress::analyze(const FileName &file1, const FileName &file2, const Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
-    
-    TKExpress::Stats stats;
-    
-    // Initialize the distribution for each sequin
-    stats.hist = r.hist();
-    
-    stats.n_endo = NAN;
-    
     TExpress::Options o_;
     
     o_.soft = TExpress::Software::Kallisto;
 
     // Run quantification in Kallisto
-    return TExpress::analyze(Kallisto::quant(o.index, file1, file2), o_);
+    return TExpress::analyze(Pachter::quant(o.index, file1, file2), o_);
 }
 
 void TKExpress::report(const FileName &file1, const FileName &file2, const Options &o)
@@ -39,19 +30,19 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * 1. Generating summary statistics (single or multiple samples)
      */
     
-    TExpress::generateSummary("TransExpress_summary.stats", files, stats, o, units);
+    TExpress::generateSummary("TransKExpress_summary.stats", files, stats, o, units);
     
     /*
      * 2. Generating detailed statistics for the sequins
      */
     
-    TExpress::generateCSV("TransExpress_quins.csv", stats, o);
+    TExpress::generateCSV("TransKExpress_quins.csv", stats, o);
     
     /*
      * 3. Generating abundance vs abundance (single or multiple samples)
      */
     
-    TExpress::generateRAbund("TransExpress_abundAbund.R", "TransExpress_quins.csv", stats, o);
+    TExpress::generateRAbund("TransKExpress_abundAbund.R", "TransKExpress_quins.csv", stats, o);
     
     /*
      * 4. Generating major plot (but only if we have the isoforms...)
@@ -59,6 +50,6 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
     
     if (stats.size() >= 2)
     {
-        TExpress::generateRMajor("TransExpress_major.R", "TransExpress_quins.csv", o);
+        TExpress::generateRMajor("TransKExpress_major.R", "TransKExpress_quins.csv", o);
     }
 }

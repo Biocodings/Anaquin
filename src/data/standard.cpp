@@ -25,14 +25,14 @@ static unsigned countColumns(const Reader &r)
 {
     std::size_t n = 0;
 
-    ParserCSV::parse(r, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(r, [&](const ParserCSV::Data &d, const ParserProgress &p)
     {
-        n = std::max(n, fields.size());
+        n = std::max(n, d.size());
     }, ",");
 
-    ParserCSV::parse(Reader(r), [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+    ParserCSV::parse(Reader(r), [&](const ParserCSV::Data &d, const ParserProgress &p)
     {
-        n = std::max(n, fields.size());
+        n = std::max(n, d.size());
     }, "\t");
     
     return static_cast<unsigned>(n);
@@ -48,10 +48,10 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
         {
             bool succceed = false;
             
-            ParserCSV::parse(t, [&](const ParserCSV::Fields &fields, const ParserProgress &p)
+            ParserCSV::parse(t, [&](const ParserCSV::Data &d, const ParserProgress &p)
             {
                 // Don't bother if this is the first line or an invalid line
-                if (p.i == 0 || fields.size() <= 1)
+                if (p.i == 0 || d.size() <= 1)
                 {
                     return;
                 }
@@ -61,13 +61,13 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
                     case ID_Length_Mix:
                     {
                         succceed = true;
-                        ref.add(fields[0], stoi(fields[1]), stof(fields[column]), m); break;
+                        ref.add(d[0], stoi(d[1]), stof(d[column]), m); break;
                     }
 
                     case ID_Mix:
                     {
                         succceed = true;
-                        ref.add(fields[0], 0.0, stof(fields[column]), m); break;
+                        ref.add(d[0], 0.0, stof(d[column]), m); break;
                     }
                 }
             }, delim);
@@ -179,7 +179,7 @@ void Standard::addFSplice(const Reader &r)
 
 void Standard::addFRef(const Reader &r)
 {
-    ParserCSV::parse(r, [&](const ParserCSV::Fields &f, const ParserProgress &)
+    ParserCSV::parse(r, [&](const ParserCSV::Data &f, const ParserProgress &)
     {
         if (f[0] != "chrT-chrT")
         {

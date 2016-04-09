@@ -44,7 +44,6 @@
 #include "FusQuin/f_discover.hpp"
 #include "FusQuin/f_coverage.hpp"
 
-#include "parsers/parser_csv.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_sequins.hpp"
 #include "parsers/parser_cufflink.hpp"
@@ -231,8 +230,8 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_IGV,      { OPT_U_FILES                                   } },
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_U_FILES                        } },
     { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                        } },
-    { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_U_FILES                        } },
-    { TOOL_T_KDIFF,    { OPT_R_IND, OPT_U_FILES                        } },
+    { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_T_KDIFF,    { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_REPORT,   { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
@@ -1098,7 +1097,7 @@ void parse(int argc, char ** argv)
                 {
                     TKDiff::Options o;
                     o.index = _p.opts[OPT_R_IND];
-                    analyze_n<TKDiff>(o);
+                    analyze_1<TKDiff>(OPT_U_FILES, o);
 
                     break;
                 }

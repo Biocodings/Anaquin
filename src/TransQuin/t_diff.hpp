@@ -10,6 +10,18 @@
 #include "data/dtest.hpp"
 #include "stats/analyzer.hpp"
 
+// Defined in resources.cpp
+extern Anaquin::Scripts PlotFold();
+
+// Defined in resources.cpp
+extern Anaquin::Scripts PlotLODR();
+
+// Defined in resources.cpp
+extern Anaquin::Scripts PlotTROC();
+
+// Defined in resources.cpp
+extern Anaquin::Scripts PlotMA();
+
 namespace Anaquin
 {
     class CountTable;
@@ -22,7 +34,7 @@ namespace Anaquin
              * Generating a file for differential analysis. The file should give the relevant data
              * for MA and LODR plot.
              */
-
+            
             std::stringstream ss;
             ss << "Sequin\tBaseMean\tELFold\tMLFold\tMLFoldSE\tPValue\tQValue\n";
             
@@ -43,18 +55,78 @@ namespace Anaquin
                 else
                 {
                     ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % ids[j]
-                                    % toNA(baseMeans[j])
-                                    % toNA(eLogFs[j])
-                                    % toNA(logFs[j])
-                                    % toNA(logFSEs[j])
-                                    % toNA(ps[j])
-                                    % toNA(qs[j])).str());
+                                                                                 % toNA(baseMeans[j])
+                                                                                 % toNA(eLogFs[j])
+                                                                                 % toNA(logFs[j])
+                                                                                 % toNA(logFSEs[j])
+                                                                                 % toNA(ps[j])
+                                                                                 % toNA(qs[j])).str());
                 }
             }
             
             return ss.str();
         }
         
+        template <typename Options> static void generateMA(const FileName &file,
+                                                           const FileName &csv,
+                                                           const Options &o)
+        {
+            o.info("Generating " + file);
+            o.writer->open(file);
+            o.writer->write(RWriter::createScript(csv, PlotMA()));
+            o.writer->close();
+        }
+        
+        template <typename Options> static void generateLODR(const FileName &file,
+                                                             const FileName &csv,
+                                                             const Options &o)
+        {
+            o.info("Generating " + file);
+            o.writer->open(file);
+            o.writer->write(RWriter::createScript(csv, PlotLODR()));
+            o.writer->close();
+        }
+
+        template <typename Options> static void generateROC(const FileName &file,
+                                                            const FileName &csv,
+                                                            const Options &o)
+        {
+            o.info("Generating " + file);
+            o.writer->open(file);
+            o.writer->write(RWriter::createScript(csv, PlotTROC()));
+            o.writer->close();
+        }
+        
+        template <typename Options> static void generateFoldR(const FileName &file,
+                                                              const FileName &csv,
+                                                              const Options &o)
+        {
+            o.info(file);
+            o.writer->open(file);
+            o.writer->write(RWriter::createScript(csv, PlotFold()));
+            o.writer->close();
+        }
+
+        template <typename Stats, typename Options> static void generateCSV(const FileName &file,
+                                                                            const Stats &stats,
+                                                                            const Options &o)
+        {
+            o.info("Generating " + file);
+            o.writer->open(file);
+            o.writer->write(TDiff::writeCSV(stats, o));
+            o.writer->close();
+        }
+        
+        template <typename Stats, typename Options> static void generateSummary(const FileName &file,
+                                                                                const Stats &stats,
+                                                                                const Options &o)
+        {
+            o.info("Generating " + file);
+            o.writer->open(file);
+            o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats.hist));
+            o.writer->close();
+        }
+
         enum class Counting
         {
             None,
