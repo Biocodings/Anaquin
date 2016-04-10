@@ -12,6 +12,7 @@
 #include <vector>
 #include <assert.h>
 #include "data/types.hpp"
+#include "parsers/parser_csv.hpp"
 
 namespace Anaquin
 {
@@ -75,6 +76,60 @@ namespace Anaquin
                 return samp;
             }
         
+            /*
+             * Read a paired-end metadata for two-conditions replicates.
+             */
+
+            static void readMeta(const FileName &meta,
+                                std::vector<FileName> &a1,
+                                std::vector<FileName> &a2,
+                                std::vector<FileName> &b1,
+                                std::vector<FileName> &b2)
+            {
+                std::vector<std::string> samp1, samp2, facts;
+            
+                ParserCSV::parse(meta, [&](const ParserCSV::Data &d, const ParserProgress &)
+                {
+                    if (d.size() != 3)
+                    {
+                        throw std::runtime_error("Invalid metadata. Three columns are expected.");
+                    }
+                    
+                    samp1.push_back(d[0]);
+                    samp2.push_back(d[1]);
+                    facts.push_back(d[2]);
+                }, "\t");
+            
+                Experiment exp(samp1, samp2, facts);
+            
+                if (exp.countFacts() != 2)
+                {
+                    throw std::runtime_error("Two factors required assumed");
+                }
+            
+                /*
+                 * Construct the files for both conditions, A and B.
+                 */
+            
+                for (auto i = 0; i < samp1.size(); i++)
+                {
+                    const auto samp = exp.sample(i);
+                
+                    if (samp.fact)
+                    {
+                        b1.push_back(samp.file1);
+                        b2.push_back(samp.file2);
+                    }
+                    else
+                    {
+                        a1.push_back(samp.file1);
+                        a2.push_back(samp.file2);
+                    }
+                }
+            
+                assert(!a1.empty() && !b1.empty());
+            }
+
         private:
         
             // Factors for the files

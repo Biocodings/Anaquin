@@ -8,7 +8,6 @@
 #include "data/pachter.hpp"
 #include "data/experiment.hpp"
 #include "TransQuin/t_kdiff.hpp"
-#include "parsers/parser_csv.hpp"
 
 using namespace Anaquin;
 
@@ -36,8 +35,6 @@ TKDiff::Stats TKDiff::analyze(const std::vector<FileName> &a1,
     assert(a1.size() == a2.size());
     assert(b1.size() == b2.size());
     
-    const auto &r = Standard::instance().r_trans;
-
     std::vector<std::thread> thds;
     outputs.resize(a1.size() + b1.size());
     
@@ -82,53 +79,11 @@ TKDiff::Stats TKDiff::analyze(const std::vector<FileName> &a1,
     return TDiff::analyze(__sleuth__ = Pachter::sleuth(outputs, names, facts), o_);
 }
 
-void TKDiff::report(const FileName &meta, const Options &o)
+void TKDiff::report(const FileName &file, const Options &o)
 {
-    std::vector<std::string> samp1, samp2, facts;
-    
-    ParserCSV::parse(meta, [&](const ParserCSV::Data &d, const ParserProgress &)
-    {
-        if (d.size() != 3)
-        {
-            throw std::runtime_error("Invalid metadata. Three columns are expected.");
-        }
-
-        samp1.push_back(d[0]);
-        samp2.push_back(d[1]);
-        facts.push_back(d[2]);
-    }, "\t");
-
-    Experiment exp(samp1, samp2, facts);
-
-    if (exp.countFacts() != 2)
-    {
-        throw std::runtime_error("Two factors required for differential analysis.");
-    }
-
-    /*
-     * Construct the files for both conditions, A and B.
-     */
-    
     std::vector<FileName> a1, a2, b1, b2;
-    
-    for (auto i = 0; i < samp1.size(); i++)
-    {
-        const auto samp = exp.sample(i);
-        
-        if (samp.fact)
-        {
-            b1.push_back(samp.file1);
-            b2.push_back(samp.file2);
-        }
-        else
-        {   
-            a1.push_back(samp.file1);
-            a2.push_back(samp.file2);
-        }
-    }
-    
-    assert(!a1.empty() && !b1.empty());
-    
+    Experiment::readMeta(file, a1, a2, b1, b2);
+
     const auto stats = analyze(a1, a2, b1, b2, o);
     const auto units = "isoform";
     
