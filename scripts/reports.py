@@ -950,7 +950,7 @@ def TransQuinKM(anaq, path, index, mix, file1, file2):
     
         r.addTextFile('Summary statistics', 'TransKDiff_summary.stats', )
         r.addRCode('Expected log-fold vs measured log-fold', 'TransKDiff_fold.R', '')
-        r.addRCode('ROC Curve', 'TransKDiff_ROC.R', '')
+        #r.addRCode('ROC Curve', 'TransKDiff_ROC.R', '')
 
         r.endChapter()
 
