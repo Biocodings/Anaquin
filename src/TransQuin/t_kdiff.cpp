@@ -5,7 +5,7 @@
  */
 
 #include <thread>
-#include "data/kallisto.hpp"
+#include "data/pachter.hpp"
 #include "data/experiment.hpp"
 #include "TransQuin/t_kdiff.hpp"
 #include "parsers/parser_csv.hpp"
@@ -24,7 +24,7 @@ static FileName __sleuth__;
 static void worker(unsigned i, const FileName &index, const FileName &file1, const FileName &file2)
 {
     // Run quantification in Kallisto
-    outputs[i] = Pachter::quant(index, file1, file2, true);
+    outputs[i] = Pachter::externalQuant(index, file1, file2, true);
 }
 
 TKDiff::Stats TKDiff::analyze(const std::vector<FileName> &a1,

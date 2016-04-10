@@ -1,5 +1,5 @@
-#ifndef KALLISTO_HPP
-#define KALLISTO_HPP
+#ifndef PACHTER_HPP
+#define PACHTER_HPP
 
 #include <cstring>
 #include <unistd.h>
@@ -36,14 +36,19 @@ namespace Anaquin
             return output;
         }
         
-        static FileName quant_(const FileName &index, const FileName &file1, const FileName &file2)
+        static FileName externalQuant(const FileName &index,
+                                      const FileName &file1,
+                                      const FileName &file2,
+                                      bool  bootstrap = false)
         {
             const auto output = std::string(tmpnam(NULL));
             
-            const auto cmd = (boost::format("kallisto quant -i %1% -o %2% -b 2000 %3% %4%") % index
-                                                                                            % output
-                                                                                            % file1
-                                                                                            % file2).str();
+            const auto cmd = (boost::format("kallisto quant -i %1% -o %2% -b %3% %4% %5%")
+                                                    % index
+                                                    % output
+                                                    % (bootstrap ? 2000 : 10)
+                                                    % file1
+                                                    % file2).str();
             const int status = system(cmd.c_str());
             
             if (!status)
@@ -54,10 +59,10 @@ namespace Anaquin
             throw output + "/abundance.tsv";
         }
         
-        static FileName quant(const FileName &index,
-                              const FileName &file1,
-                              const FileName &file2,
-                              bool bootstrap = false)
+        static FileName internalQuant(const FileName &index,
+                                      const FileName &file1,
+                                      const FileName &file2,
+                                      bool  bootstrap = false)
         {
             char *argv[10];
             

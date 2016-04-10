@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 #
-# This script implements TransReport, VarReport, FusionReport and MetaReport.
+# This script implements TransReport, VarReport, FusionReport and MetaReport. It's designed to embed within Anaquin and not for
+# external usage.
 #
 
 import os
@@ -910,8 +911,11 @@ def TransQuinKM(anaq, path, mix, index, file1, file2):
 
     r = Report()
     
-    global TEMP_PATH    
+    global TEMP_PATH
     TEMP_PATH = path
+    
+    # In TransQuin, the file is the metadata
+    file = file1
     
     ###########################################
     #                                         #
@@ -931,7 +935,7 @@ def TransQuinKM(anaq, path, mix, index, file1, file2):
     
     #########################################
     #                                       #
-    #       2. Generating TransKDiff         #
+    #       2. Generating TransKDiff        #
     #                                       #
     #########################################
     
@@ -972,14 +976,11 @@ if __name__ == '__main__':
     __mode__ = sys.argv[1]
 
     if (len(sys.argv) != 3 and len(sys.argv) != 8):
-        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <SAM/BAM File>'
+        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <SAM/BAM>'
         print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <Anaquin> <Output> <Mixture> <Index> <Paired 1> <Paired 2>'
     else:
 
-        #
-        # There're two possibilities, either a SAM/BAM file or paired-end sequence files.
-        #
-
+        # Alignment-required methods
         if (len(sys.argv) == 3):
             file = sys.argv[2]
     
@@ -991,6 +992,8 @@ if __name__ == '__main__':
                 VarQuin(parse(file), output)
             elif (__mode__ == 'FusQuin'):
                 FusQuin(parse(file), output)
+                
+        # Alignment-free methods
         else:
             anaq  = sys.argv[2]
             path  = sys.argv[3]

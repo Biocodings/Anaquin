@@ -4,7 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#include "data/kallisto.hpp"
+#include "data/pachter.hpp"
 #include "TransQuin/t_kexpress.hpp"
 
 using namespace Anaquin;
@@ -16,7 +16,7 @@ TKExpress::Stats TKExpress::analyze(const FileName &file1, const FileName &file2
     o_.soft = TExpress::Software::Kallisto;
 
     // Run quantification in Kallisto
-    return TExpress::analyze(Pachter::quant(o.index, file1, file2), o_);
+    return TExpress::analyze(Pachter::externalQuant(o.index, file1, file2), o_);
 }
 
 void TKExpress::report(const FileName &file1, const FileName &file2, const Options &o)

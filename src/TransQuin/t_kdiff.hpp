@@ -7,7 +7,6 @@
 #ifndef T_KDIFF_HPP
 #define T_KDIFF_HPP
 
-#include "data/dtest.hpp"
 #include "stats/analyzer.hpp"
 #include "TransQuin/t_diff.hpp"
 

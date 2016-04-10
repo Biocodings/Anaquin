@@ -4,7 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#include "data/kallisto.hpp"
+#include "data/pachter.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_kexpress.hpp"
 #include "parsers/parser_kallisto.hpp"
@@ -29,8 +29,8 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
     stats.n_endo = NAN;
 
     // Run quantification in Kallisto
-    const auto abundFile = Pachter::quant(o.index, file1, file2);
-    
+    const auto abundFile = Pachter::externalQuant(o.index, file1, file2);
+
     /*
      * Parsing the generated files. We're interested in the file listing the abundance.
      */
