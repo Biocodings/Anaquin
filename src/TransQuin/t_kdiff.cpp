@@ -56,7 +56,6 @@ TKDiff::Stats TKDiff::analyze(const std::vector<FileName> &a1,
         facts.push_back("A");
         names.push_back("A" + std::to_string(i));
         thds.push_back(std::thread(worker, thds.size(), o.index, a1[i], a2[i]));
-        wait();
     }
 
     for (int i = 0; i < b1.size(); ++i)
@@ -64,9 +63,10 @@ TKDiff::Stats TKDiff::analyze(const std::vector<FileName> &a1,
         facts.push_back("B");
         names.push_back("B" + std::to_string(i));
         thds.push_back(std::thread(worker, thds.size(), o.index, b1[i], b2[i]));
-        wait();
     }
 
+    wait();
+    
     /*
      * We've run Kallisto for all the samples. Next, we'll need to give them to sleuth.
      */
