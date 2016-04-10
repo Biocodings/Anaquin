@@ -46,17 +46,17 @@ namespace Anaquin
             const auto cmd = (boost::format("kallisto quant -i %1% -o %2% -b %3% %4% %5%")
                                                     % index
                                                     % output
-                                                    % (bootstrap ? 2000 : 10)
+                                                    % (bootstrap ? 1000 : 10)
                                                     % file1
                                                     % file2).str();
             const int status = system(cmd.c_str());
             
-            if (!status)
+            if (status)
             {
                 throw std::runtime_error("Failed to run kallisto. Status code: " + std::to_string(status));
             }
             
-            throw output + "/abundance.tsv";
+            return output + "/abundance.tsv";
         }
         
         static FileName internalQuant(const FileName &index,
@@ -91,7 +91,7 @@ namespace Anaquin
             strcpy(argv[4], "-o");
             strcpy(argv[5], output.c_str());
             strcpy(argv[6], "-b");
-            strcpy(argv[7], (bootstrap ? "2000" : "10"));
+            strcpy(argv[7], (bootstrap ? "1000" : "10"));
             strcpy(argv[8], file1.c_str());
             strcpy(argv[9], file2.c_str());
             

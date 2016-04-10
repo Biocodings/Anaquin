@@ -851,7 +851,7 @@ def generatePDF(r, path, name):
     print('PDF generated. Please check report.pdf.')
 
 # Generate a VarQuin report with alignment-free k-mers
-def VarQuinKM(anaq, path, mix, index, file1, file2):
+def VarQuinKM(anaq, path, index, mix, file1, file2):
     
     r = Report()
     
@@ -907,7 +907,7 @@ def VarQuinKM(anaq, path, mix, index, file1, file2):
     generatePDF(r, path, 'VarReport_report.pdf')
 
 # Generate a TransQuin report with alignment-free k-mers
-def TransQuinKM(anaq, path, mix, index, file1, file2):
+def TransQuinKM(anaq, path, index, mix, file1, file2):
 
     r = Report()
     
@@ -917,37 +917,45 @@ def TransQuinKM(anaq, path, mix, index, file1, file2):
     # In TransQuin, the file is the metadata
     file = file1
     
-    ###########################################
-    #                                         #
-    #       1. Generating TransKExpress       #
-    #                                         #
-    ###########################################
+    def TransKExpress(r):
+        
+        ###########################################
+        #                                         #
+        #       1. Generating TransKExpress       #
+        #                                         #
+        ###########################################
+        
+        # Eg: anaquin -t TransKExpress -soft kallisto -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR002.v013.csv  -ufiles kallisto/abundance.tsv
+        execute(anaq + ' -o ' + path + ' -t TransKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+    
+        r.startChapter('Statistics (Expression)')
+    
+        r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
+        r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
 
-    # Eg: anaquin -t TransKExpress -soft kallisto -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR002.v013.csv  -ufiles kallisto/abundance.tsv
-    execute(anaq + ' -o ' + path + ' -t TransKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
-    
-    r.startChapter('Statistics (Expression)')
-    
-    r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
-    r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+        r.endChapter()
 
-    r.endChapter()
+    def TransKDiff(r, meta):
     
-    #########################################
-    #                                       #
-    #       2. Generating TransKDiff        #
-    #                                       #
-    #########################################
+        #########################################
+        #                                       #
+        #       2. Generating TransKDiff        #
+        #                                       #
+        #########################################
     
-    # Eg: anaquin -t TransKDiff -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR004.v013.csv -soft sleuth -ufiles results.csv 
-    execute(anaq + ' -o ' + path + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+        # Eg: anaquin -t TransKDiff -rind data/TransQuin/ATR003.v032.index -m data/TransQuin/MTR004.v013.csv -soft sleuth -ufiles meta.csv
+        execute(anaq + ' -o ' + path + ' -t TransKDiff -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + meta)
     
-    r.startChapter('Statistics (Allele Frequency)')
+        r.startChapter('Statistics (Differential analysis)')
     
-    r.addTextFile('Summary statistics', 'VarKAllele_summary.stats', )
-    r.addRCode('Expected allele frequency vs measured allele frequency', 'VarKAllele_alleleAllele.R', '')
+        r.addTextFile('Summary statistics', 'TransKDiff_summary.stats', )
+        r.addRCode('Expected log-fold vs measured log-fold', 'TransKDiff_fold.R', '')
+        r.addRCode('ROC Curve', 'TransKDiff_ROC.R', '')
 
-    r.endChapter()
+        r.endChapter()
+
+    # Run differential analysis
+    TransKDiff(r, file)
     
     ##############################################
     #                                            #
@@ -956,14 +964,10 @@ def TransQuinKM(anaq, path, mix, index, file1, file2):
     ##############################################
 
     r.startChapter('Apprendix:')
-    r.addTextFile('Statistics for expression: ', 'VarKExpress_quins.csv', )
+    r.addTextFile('Statistics for differential: ', 'TransKDiff_quins.csv', )
     r.endChapter()
 
-    r.startChapter('Apprendix:')
-    r.addTextFile('Statistics for allele frequency: ', 'VarKAllele_quins.csv', )
-    r.endChapter()
-
-    generatePDF(r, path, 'VarReport_report.pdf')
+    generatePDF(r, path, 'TransReport_report.pdf')
 
 #
 # Generates reports for sequins. This script is not meant for extenral use, but embedded within Anaquin.
@@ -976,8 +980,8 @@ if __name__ == '__main__':
     __mode__ = sys.argv[1]
 
     if (len(sys.argv) != 3 and len(sys.argv) != 8):
-        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <SAM/BAM>'
-        print 'python reports.py TransQuin|VarQuin|FusQuin|LadQuin <Anaquin> <Output> <Mixture> <Index> <Paired 1> <Paired 2>'
+        print 'python reports.py TransQuin|VarQuin <SAM/BAM>'
+        print 'python reports.py TransQuin|VarQuin <Anaquin> <Output> <Mixture> <Index> <Paired 1> <Paired 2>'
     else:
 
         # Alignment-required methods
@@ -1003,8 +1007,6 @@ if __name__ == '__main__':
             file2 = sys.argv[7]
             
             if   (__mode__ == 'TransQuin'):
-                TransQuinKM(anaq, path, mix, ind, file1, file2)
+                TransQuinKM(anaq, path, ind, mix, file1, file2)
             elif (__mode__ == 'VarQuin'):
-                VarQuinKM(anaq, path, mix, ind, file1, file2)
-            elif (__mode__ == 'FusQuin'):
-                FusQuinKM(anaq, path, mix, ind, file1, file2)
+                VarQuinKM(anaq, path, ind, mix, file1, file2)

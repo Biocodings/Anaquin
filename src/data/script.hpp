@@ -59,6 +59,7 @@ namespace Anaquin
                                                     % o.index
                                                     % file1
                                                     % file2)).str();
+                std::cout << cmd << std::endl;                
                 Script::run(ReportScript(), "python", cmd);
             }
 

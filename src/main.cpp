@@ -644,7 +644,23 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
 #endif
 }
 
-template <typename Report> void report(typename Report::Options o = typename Report::Options())
+template <typename Report> void report_1(typename Report::Options o = typename Report::Options())
+{
+    if (_p.inputs.size() != 1)
+    {
+        throw NotSingleInputError();
+    }
+    
+    o.mix = mixture();
+    o.index = _p.opts[OPT_R_IND];
+    
+    return startAnalysis<Report>([&](const typename Report::Options &o)
+    {
+        Report::generate(_p.inputs[0], o);
+    }, o);
+}
+
+template <typename Report> void report_2(typename Report::Options o = typename Report::Options())
 {
     if (_p.inputs.size() != 2)
     {
@@ -1075,6 +1091,20 @@ void parse(int argc, char ** argv)
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
                     }
+                        
+                    case TOOL_T_REPORT:
+                    {
+                        if (_p.inputs.size() == 2)
+                        {
+                            addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+                        }
+                        else
+                        {
+                            addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
+                        }
+                        
+                        break;
+                    }
 
                     default:
                     {
@@ -1088,7 +1118,20 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_REPORT:   { report<TReport>();                 break; }
+                case TOOL_T_REPORT:
+                {
+                    if (_p.inputs.size() == 1)
+                    {
+                        report_1<TReport>();
+                    }
+                    else
+                    {
+                        report_2<TReport>();
+                    }
+
+                    break;
+                }
+                    
                 case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
                 case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_FILES); break; }
@@ -1431,8 +1474,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_REPORT:    { report<VReport>();                 break; }
                 case TOOL_V_IGV:       { viewer<VViewer>();                 break; }
+                case TOOL_V_REPORT:    { report_2<VReport>();               break; }
                 case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }
 
