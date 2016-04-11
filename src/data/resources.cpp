@@ -1,4 +1,5 @@
 #include <string>
+#include <algorithm>
 
 /*
  * Scripts
@@ -73,33 +74,24 @@
 #include "resources/MVA011.v013.csv"
 #include "resources/MVA012.v013.csv"
 #include "resources/AVA017.v032.bed"
-#include <iostream>
-#include <fstream>
-#include <sstream>
+
 typedef std::string Scripts;
 
 bool invalidChar (char c)
 {
     return !(c>=0 && c <128);
 }
+
 void stripUnicode(std::string & str)
 {
-    str.erase(remove_if(str.begin(),str.end(), invalidChar), str.end());
+    str.erase(std::remove_if(str.begin(),str.end(), invalidChar), str.end());
 }
 
 template <typename T> Scripts check(T t)
 {
     auto str = std::string(reinterpret_cast<char*>(t));
-    
-    std::ifstream f("/home/tedwon/Sources/QA/VarKExpress_abundAbund.R");
-    std::stringstream buffer;
-    buffer << f.rdbuf();
-    auto s = buffer.str();
-    std::cout << s.size() << std::endl;
-    
-    stripUnicode(s);
-    std::cout << s.size() << std::endl;
-    
+    stripUnicode(str);
+
     return str;
 }
 
