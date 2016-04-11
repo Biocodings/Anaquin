@@ -21,17 +21,6 @@ plotAlleleReads <- function(data,
 
     data$ratio <- as.factor(data$ratio)
 
-    # Convert a linear model to string
-    lm_eqn <- function(d)
-    {
-        m <- lm(y ~ x, d);
-        eq <- substitute(italic(y) == a + b * italic(x)*','~~italic(r)^2~'='~r2, 
-                         list(a  = format(coef(m)[1], digits = 2), 
-                              b  = format(coef(m)[2], digits = 2), 
-                              r2 = format(summary(m)$r.squared, digits = 3)))
-        as.character(as.expression(eq));
-    }
-
     p <- ggplot(data=data, aes(x=x, y=y)) +
                               xlab(xname) +
                               ylab(yname) +

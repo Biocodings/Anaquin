@@ -83,17 +83,17 @@ TransQuin <- function(..., mix=loadMixture.TransQuin())
 #                                                      #
 ########################################################
 
-colors <- function(n)
-{
-    if (n == 5)
-    {
-        return (c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"))
-    }
-    else
-    {
-        return (c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd'))
-    }
-}
+#colors <- function(n)
+#{
+#    if (n == 5)
+#    {
+#        return (c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"))
+#    }
+#    else
+#    {
+#        return (c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd'))
+#    }
+#}
 
 pval <- function(data)
 {
@@ -116,32 +116,32 @@ pval <- function(data)
 #   'sequins'
 #   'endos'
 #
-filter <- function(data, name)
-{
-    stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'MetaQuin')
-    
-    stopifnot(name == 'seqs'    |
-                  name == 'sequins' |
-                  name == 'endos')
-    
-    if (name == 'seqs' | name == 'sequins')
-    {
-        if (!is.null(data$seqs$elf))
-        {
-            return (data$seqs[!is.na(data$seqs$elf),])
-        }
-        else
-        {
-            return (data$seqs) # TODO: Fix this
-        }
-    }
-    else if (name == 'endos')
-    {
-        return (data$seqs[is.na(data$seqs$elf),])        
-    }
-}
+#filter <- function(data, name)
+#{
+#    stopifnot(class(data) == 'TransQuin' |
+#                  class(data) == 'VarQuin'   |
+#                  class(data) == 'MetaQuin')
+#    
+#    stopifnot(name == 'seqs'    |
+#                  name == 'sequins' |
+#                  name == 'endos')
+#    
+#    if (name == 'seqs' | name == 'sequins')
+#    {
+#        if (!is.null(data$seqs$elf))
+#        {
+#            return (data$seqs[!is.na(data$seqs$elf),])
+#        }
+#        else
+#       {
+#            return (data$seqs) # TODO: Fix this
+#        }
+#    }
+#    else if (name == 'endos')
+#    {
+#        return (data$seqs[is.na(data$seqs$elf),])        
+#    }
+#}
 
 sequins <- function(data)
 {
@@ -157,17 +157,17 @@ sequins <- function(data)
 # over all samples.
 #
 
-baseMean <- function(data)
-{
-    stopifnot(class(data) == 'TransQuin')
-    
-    if (is.null(data$seqs$baseMean))
-    {
-        # TODO: Implement me
-    }
-    
-    return (data$seqs$baseMean)
-}
+#baseMean <- function(data)
+#{
+#    stopifnot(class(data) == 'TransQuin')
+#    
+#    if (is.null(data$seqs$baseMean))
+#    {
+#        # TODO: Implement me
+#    }
+#    
+#    return (data$seqs$baseMean)
+#}
 
 seqs <- function(data)
 {
@@ -372,11 +372,11 @@ normalToFusion <- function(names)
 #                                                      #
 ########################################################
 
-loadReference.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf')
-{
-    ref <- 
-        a <- readVcf('/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf', 'chrT')  
-}
+#loadReference.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf')
+#{
+#    ref <- 
+#        a <- readVcf('/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf', 'chrT')  
+#}
 
 ########################################################
 #                                                      #
