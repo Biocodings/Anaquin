@@ -854,7 +854,7 @@ def generatePDF(r, path, name):
 # Running threads
 thds = []
 
-def addCmd(target=target, args=args):
+def addCmd(target, args):
 
     global thds    
 
@@ -870,6 +870,9 @@ def wait():
 
 # Generate a VarQuin report with alignment-free k-mers
 def VarQuinKM(anaq, path, index, mix, file1, file2):
+    
+    global TEMP_PATH
+    TEMP_PATH = path
     
     r = Report()
     
@@ -931,6 +934,9 @@ def VarQuinKM(anaq, path, index, mix, file1, file2):
 
 # Generate a TransQuin report with alignment-free k-mers
 def TransQuinKM(anaq, path, index, mix, file1, file2):
+
+    global TEMP_PATH
+    TEMP_PATH = path
 
     r = Report()
     
@@ -997,12 +1003,11 @@ def TransQuinKM(anaq, path, index, mix, file1, file2):
 
 if __name__ == '__main__':
 
-    __mode__ = sys.argv[1]
-
     if (len(sys.argv) != 3 and len(sys.argv) != 8):
         print 'python reports.py TransQuin|VarQuin <SAM/BAM>'
         print 'python reports.py TransQuin|VarQuin <Anaquin> <Output> <Mixture> <Index> <Paired 1> <Paired 2>'
     else:
+        __mode__ = sys.argv[1]
 
         # Alignment-required methods
         if (len(sys.argv) == 3):
@@ -1026,9 +1031,6 @@ if __name__ == '__main__':
             file1 = sys.argv[6]
             file2 = sys.argv[7]
             
-            global TEMP_PATH    
-            TEMP_PATH = path
-
             if   (__mode__ == 'TransQuin'):
                 TransQuinKM(anaq, path, ind, mix, file1, file2)
             elif (__mode__ == 'VarQuin'):

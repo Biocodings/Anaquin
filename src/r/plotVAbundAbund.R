@@ -19,3 +19,4 @@ data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 data <- VarQuin(seqs=row.names(data), expect=data$EAbund, measured=data$MAbund)
 
 plotVAbundAbund(data)
+
