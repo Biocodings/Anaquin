@@ -49,6 +49,10 @@ namespace Anaquin
                                                     % (bootstrap ? 1000 : 10)
                                                     % file1
                                                     % file2).str();
+            
+            std::cout << cmd << std::endl;
+            
+            
             const int status = system(cmd.c_str());
             
             if (status)

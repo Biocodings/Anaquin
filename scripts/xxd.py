@@ -80,3 +80,17 @@ r = data
 for i in range(0,len(r)):
     file = os.path.basename(r[i])
     xxd(r[i], 'src/resources/' + file)
+    
+    for file in os.listdir('src/resources/'):
+        path = os.path.join('src/resources/', file)
+        if os.path.isfile(path):
+            with open(path, 'r') as f:
+                data = f.read()
+                if ('0x0a, 0x0a\n' in data):
+                    raise Exception('Error: ' + path)
+    
+    
+    
+    
+    
+    
