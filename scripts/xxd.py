@@ -88,9 +88,3 @@ for i in range(0,len(r)):
                 data = f.read()
                 if ('0x0a, 0x0a\n' in data):
                     raise Exception('Error: ' + path)
-    
-    
-    
-    
-    
-    
