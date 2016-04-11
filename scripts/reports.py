@@ -11,6 +11,7 @@ import math
 import uuid
 import urllib
 import tempfile
+import threading
 
 # Where Anaquin is located
 ANAQUIN_PATH = 'anaquin'
@@ -850,46 +851,68 @@ def generatePDF(r, path, name):
 
     print('PDF generated. Please check report.pdf.')
 
+# Running threads
+thds = []
+
+def addCmd(target=target, args=args):
+
+    global thds    
+
+    thd = threading.Thread(target=target, args=args)
+    thds.append(thd)
+
+def wait():
+    for thd in thds:
+        thd.start()
+
+    for thd in thds:
+        thd.join()
+
 # Generate a VarQuin report with alignment-free k-mers
 def VarQuinKM(anaq, path, index, mix, file1, file2):
     
     r = Report()
     
-    global TEMP_PATH    
-    TEMP_PATH = path
+    def VarKExpress(r):
+        
+        #########################################
+        #                                       #
+        #       1. Generating VarKExpress       #
+        #                                       #
+        #########################################
     
-    #########################################
-    #                                       #
-    #       1. Generating VarKExpress       #
-    #                                       #
-    #########################################
+        # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq
+        execute(anaq + ' -o ' + path + ' -t VarKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
-    # Eg: anaquin -t VarKExpress -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq
-    execute(anaq + ' -o ' + path + ' -t VarKExpress -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+        r.startChapter('Statistics (Expression)')
     
-    r.startChapter('Statistics (Expression)')
-    
-    r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
-    r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+        r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
+        r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
 
-    r.endChapter()
+        r.endChapter()
     
-    #########################################
-    #                                       #
-    #       2. Generating VarKAllele        #
-    #                                       #
-    #########################################
+    def VarKAllele(r):
+            
+        #########################################
+        #                                       #
+        #       2. Generating VarKAllele        #
+        #                                       #
+        #########################################
     
-    # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
-    execute(anaq + ' -o ' + path + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
+        # Eg: anaquin -t VarKAllele -m MVA011.v013.csv -rind AVA010.v032.index -ufiles LVA086.1_val_1.fq -ufiles LVA086.2_val_2.fq 
+        execute(anaq + ' -o ' + path + ' -t VarKAllele -soft kallisto -m ' + mix + ' -rind ' + index + ' -ufiles ' + file1 + ' -ufiles ' + file2)
     
-    r.startChapter('Statistics (Allele Frequency)')
+        r.startChapter('Statistics (Allele Frequency)')
     
-    r.addTextFile('Summary statistics', 'VarKAllele_summary.stats', )
-    r.addRCode('Expected allele frequency vs measured allele frequency', 'VarKAllele_alleleAllele.R', '')
+        r.addTextFile('Summary statistics', 'VarKAllele_summary.stats', )
+        r.addRCode('Expected allele frequency vs measured allele frequency', 'VarKAllele_alleleAllele.R', '')
 
-    r.endChapter()
-    
+        r.endChapter()
+
+    addCmd(VarKAllele,  [r])    
+    addCmd(VarKExpress, [r])
+    wait()
+
     ##############################################
     #                                            #
     #           3. Generating Apprendix          #
@@ -910,9 +933,6 @@ def VarQuinKM(anaq, path, index, mix, file1, file2):
 def TransQuinKM(anaq, path, index, mix, file1, file2):
 
     r = Report()
-    
-    global TEMP_PATH
-    TEMP_PATH = path
     
     # In TransQuin, the file is the metadata
     file = file1
@@ -1006,6 +1026,9 @@ if __name__ == '__main__':
             file1 = sys.argv[6]
             file2 = sys.argv[7]
             
+            global TEMP_PATH    
+            TEMP_PATH = path
+
             if   (__mode__ == 'TransQuin'):
                 TransQuinKM(anaq, path, ind, mix, file1, file2)
             elif (__mode__ == 'VarQuin'):

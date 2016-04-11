@@ -91,7 +91,7 @@ namespace Anaquin
             strcpy(argv[4], "-o");
             strcpy(argv[5], output.c_str());
             strcpy(argv[6], "-b");
-            strcpy(argv[7], (bootstrap ? "500" : "10"));
+            strcpy(argv[7], (bootstrap ? "200" : "10"));
             strcpy(argv[8], file1.c_str());
             strcpy(argv[9], file2.c_str());
             
