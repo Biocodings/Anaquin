@@ -76,6 +76,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 typedef std::string Scripts;
 
 bool invalidChar (char c)
@@ -84,22 +85,19 @@ bool invalidChar (char c)
 }
 void stripUnicode(std::string & str)
 {
-    str.erase(remove_if(str.begin(),str.end(), invalidChar), str.end());
+    str.erase(std::remove_if(str.begin(),str.end(), invalidChar), str.end());
 }
 
 template <typename T> Scripts check(T t)
 {
     auto str = std::string(reinterpret_cast<char*>(t));
     
-    std::ifstream f("/home/tedwon/Sources/QA/VarKExpress_abundAbund.R");
-    std::stringstream buffer;
-    buffer << f.rdbuf();
-    auto s = buffer.str();
-    std::cout << s.size() << std::endl;
+	
+    std::cout << str.size() << std::endl;    
+    stripUnicode(str);
+    std::cout << str.size() << std::endl;
     
-    stripUnicode(s);
-    std::cout << s.size() << std::endl;
-    
+	std::cout << str << std::endl;
     
     
     return str;
