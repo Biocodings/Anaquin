@@ -980,8 +980,8 @@ def TransQuinKM(anaq, path, index, mix, file1, file2):
 
         r.endChapter()
 
-    # Run differential analysis
-    TransKDiff(r, file)
+    addCmd(TransKDiff, [r, file])
+    wait()
     
     ##############################################
     #                                            #
@@ -1035,4 +1035,3 @@ if __name__ == '__main__':
                 TransQuinKM(anaq, path, ind, mix, file1, file2)
             elif (__mode__ == 'VarQuin'):
                 VarQuinKM(anaq, path, ind, mix, file1, file2)
-
