@@ -333,7 +333,7 @@ expectAbund <- function(data, ids, lvl, mix='A')
 }
 
 #
-# Eg: R1_1_1 to R1_1
+# Eg: R1_1_1 to R1_1. Works for TransQuin sequins.
 #
 isoformsToGenes <- function(ids)
 {
