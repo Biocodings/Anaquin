@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <cstdio>
+#include <algorithm>
 #include "data/types.hpp"
 
 namespace Anaquin
