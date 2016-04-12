@@ -106,11 +106,7 @@ typedef std::set<Value> Range;
 
 #define OPT_TEST     320
 #define OPT_TOOL     321
-#define OPT_MIN      322
-#define OPT_MAX      323
-#define OPT_LOS      324
 #define OPT_PATH     325
-#define OPT_FILTER   326
 #define OPT_VERSION  338
 #define OPT_SOFT     339
 #define OPT_C_SOFT   340
@@ -135,7 +131,6 @@ typedef std::set<Value> Range;
 #define OPT_U_COV   911
 #define OPT_U_FILES 914
 #define OPT_C_FILES 916
-#define OPT_SIGN    917
 
 using namespace Anaquin;
 
@@ -386,11 +381,15 @@ static const struct option long_options[] =
 {
     { "v", no_argument, 0, OPT_VERSION },
 
-    { "t",    required_argument, 0, OPT_TOOL },
+    { "t",       required_argument, 0, OPT_TOOL },
+    { "tool",    required_argument, 0, OPT_TOOL },
 
-    { "sign",    required_argument, 0, OPT_SIGN    },
     { "ufiles",  required_argument, 0, OPT_U_FILES },
     { "cfiles",  required_argument, 0, OPT_C_FILES },
+
+    { "m",       required_argument, 0, OPT_MIXTURE },
+    { "mix",     required_argument, 0, OPT_MIXTURE },
+    { "rmix",    required_argument, 0, OPT_MIXTURE },
 
     { "rexp",    required_argument, 0, OPT_R_ENDO  },
     { "rbed",    required_argument, 0, OPT_R_BED   },
@@ -404,22 +403,13 @@ static const struct option long_options[] =
     { "upsl2",   required_argument, 0, OPT_PSL_2  },
     { "ucov",    required_argument, 0, OPT_U_COV  },
 
-    { "min", required_argument, 0, OPT_MIN },
-    { "max", required_argument, 0, OPT_MAX },
-
-    { "m",   required_argument, 0, OPT_MIXTURE },
-    { "mix", required_argument, 0, OPT_MIXTURE },
-
-    { "fuzzy", required_argument, 0, OPT_FUZZY },
+    { "fuzzy",   required_argument, 0, OPT_FUZZY },
     
-    { "o",      required_argument, 0, OPT_PATH },
-    { "output", required_argument, 0, OPT_PATH },
+    { "o",       required_argument, 0, OPT_PATH },
+    { "output",  required_argument, 0, OPT_PATH },
 
-    { "soft",   required_argument, 0, OPT_SOFT   },
-    { "csoft",  required_argument, 0, OPT_C_SOFT },
-
-    { "f",      required_argument, 0, OPT_FILTER },
-    { "filter", required_argument, 0, OPT_FILTER },
+    { "soft",    required_argument, 0, OPT_SOFT   },
+    { "csoft",   required_argument, 0, OPT_C_SOFT },
 
     {0, 0, 0, 0 }
 };
@@ -476,15 +466,9 @@ static void print(Reader &r)
     }
 }
 
-std::string mixture()
+FileName mixture()
 {
     return _p.opts[OPT_MIXTURE];
-}
-
-static void printMixture()
-{
-    Reader r(mixture());
-    print(r);
 }
 
 static void printError(const std::string &msg)
@@ -493,11 +477,6 @@ static void printError(const std::string &msg)
     std::cerr << "*********************************************************************" << std::endl;
     std::cerr << msg << std::endl;
     std::cerr << "*********************************************************************" << std::endl << std::endl;
-}
-
-static void readFilters(const FileName &file)
-{
-    // Empty Implementation
 }
 
 template <typename Mixture> void addMix(Mixture mix)
@@ -1009,13 +988,8 @@ void parse(int argc, char ** argv)
                 checkFile(_p.opts[opt] = _p.rEndo = val);
                 break;
             }
-                
-            case OPT_PATH:    { _p.path = val;              break; }
-            case OPT_FILTER:  { readFilters(val);           break; }
-            case OPT_MAX:     { parseDouble(val, _p.max);   break; }
-            case OPT_MIN:     { parseDouble(val, _p.min);   break; }
-            case OPT_LOS:     { parseDouble(val, _p.limit); break; }
-            case OPT_SIGN:    { parseDouble(val, _p.sign);  break; }
+
+            case OPT_PATH: { _p.path = val; break; }
 
             default:
             {

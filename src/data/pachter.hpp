@@ -46,7 +46,7 @@ namespace Anaquin
             const auto cmd = (boost::format("kallisto quant -i %1% -o %2% -b %3% %4% %5%")
                                                     % index
                                                     % output
-                                                    % (bootstrap ? 1000 : 10)
+                                                    % (bootstrap ? 200 : 10)
                                                     % file1
                                                     % file2).str();
             const int status = system(cmd.c_str());

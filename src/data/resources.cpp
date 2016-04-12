@@ -77,25 +77,7 @@
 
 typedef std::string Scripts;
 
-bool invalidChar (char c)
-{
-    return !(c>=0 && c <128);
-}
-
-void stripUnicode(std::string & str)
-{
-    str.erase(std::remove_if(str.begin(),str.end(), invalidChar), str.end());
-}
-
-template <typename T> Scripts check(T t)
-{
-    auto str = std::string(reinterpret_cast<char*>(t));
-    stripUnicode(str);
-
-    return str;
-}
-
-#define ToString(x) check(x)
+#define ToString(x) std::string(reinterpret_cast<char*>(x))
 
 Scripts ReportScript()
 {
