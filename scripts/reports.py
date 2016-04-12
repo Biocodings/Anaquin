@@ -838,18 +838,26 @@ def parse(file):
     return dict
 
 def generatePDF(r, path, name):
-    r.generate('report.RMarkdown', 'RMarkdown')
+    r.generate(path + '/report.RMarkdown', 'RMarkdown')
+
+    # The script required to construct a PDF from markdown
+    r2pdf = path + '/r2pdf.R'
 
     # Prepare an R script for the report
-    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > ' + path + '/r2pdf.R')
+    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > ' + r2pdf)
+
+    # The script should be run relative to the output directory
+    os.chdir(path)
 
     # Create the PDF report
-    execute('R CMD BATCH ' + path + '/r2pdf.R')
+    execute('R CMD BATCH ' + r2pdf)
 
     # Move it to where it's supposed to be
     execute('mv report.pdf ' + path + os.sep + name + ' 2>/dev/null')
 
-    print('PDF generated. Please check report.pdf.')
+    execute('rm ' + r2pdf)
+
+    print('PDF generated. Please check: ' + path + os.sep + name)
 
 # Running threads
 thds = []
@@ -942,7 +950,7 @@ def TransQuinKM(anaq, path, index, mix, file1, file2):
     
     # In TransQuin, the file is the metadata
     file = file1
-    
+
     def TransKExpress(r):
         
         ###########################################
