@@ -11,9 +11,6 @@
 
 using namespace Anaquin;
 
-// Defined in resources.cpp
-extern Scripts PlotFold();
-
 // Used in the worker
 static std::vector<FileName> outputs;
 

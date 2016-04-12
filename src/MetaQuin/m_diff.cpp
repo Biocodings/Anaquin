@@ -4,7 +4,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotMFlod();
+extern Scripts PlotMFold();
 
 MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, const Options &o)
 {
@@ -184,6 +184,6 @@ void MDiff::report(const FileName &file1, const FileName &file2, const Options &
     
     o.info("Generating MetaDiff_fold.R");
     o.writer->open("MetaDiff_fold.R");
-    o.writer->write(RWriter::createScript("MetaDiff_quins.csv", PlotMFlod()));
+    o.writer->write(RWriter::createScript("MetaDiff_quins.csv", PlotMFold()));
     o.writer->close();
 }

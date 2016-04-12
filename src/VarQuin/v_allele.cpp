@@ -3,10 +3,10 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotAlleleAllele();
+extern Scripts PlotVAllele();
 
 // Defined in resources.cpp
-extern Scripts PlotAlleleReads();
+extern Scripts PlotVAlleleReads();
 
 static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VAllele::Options &o)
 {
@@ -133,20 +133,20 @@ void VAllele::report(const FileName &file, const Options &o)
     writeCSV("VarAllele_quins.csv", stats, o);
     
     /*
-     * Generating for AlleleReads
-     */
-
-    o.info("Generating VarAllele_alleleReads.R");
-    o.writer->open("VarAllele_alleleReads.R");
-    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleReads()));
-    o.writer->close();
-
-    /*
-     * Generating for AlleleAllele
+     * Generating for allele vs allele
      */
     
     o.info("Generating VarAllele_alleleAllele.R");
     o.writer->open("VarAllele_alleleAllele.R");
-    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotAlleleAllele()));
+    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAllele()));
+    o.writer->close();
+    
+    /*
+     * Generating for allele vs reads
+     */
+    
+    o.info("Generating VarAllele_alleleReads.R");
+    o.writer->open("VarAllele_alleleReads.R");
+    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAlleleReads()));
     o.writer->close();
 }

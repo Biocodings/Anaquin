@@ -5,7 +5,7 @@
 using namespace Anaquin;
 
 // Defined resources.cpp
-extern Scripts PlotExpress_F();
+extern Scripts PlotFExpress();
 
 FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
 {
@@ -62,9 +62,9 @@ static void writeCSV(const FileName &file, const FExpress::Stats &stats, const F
     
     const auto format = "%1%\t%2%\t%3%";
     
-    o.writer->write((boost::format(format) % "Sequin"
-                                           % "EAbund"
-                                           % "MExpress").str());
+    o.writer->write((boost::format(format) % "sequin"
+                                           % "expected"
+                                           % "measured").str());
     
     const auto data = stats.data(false);
 
@@ -103,6 +103,6 @@ void FExpress::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("FusionExpress_scatter.R");
-    o.writer->write(RWriter::createScript("FusionExpress_quins.csv", PlotExpress_F()));
+    o.writer->write(RWriter::createScript("FusionExpress_quins.csv", PlotFExpress()));
     o.writer->close();
 }

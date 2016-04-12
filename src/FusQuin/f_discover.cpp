@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-extern Scripts PlotROC_F();
+extern Scripts PlotFROC();
 
 FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Options &o)
 {
@@ -163,7 +163,7 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
      */
     
     o.writer->open("FusionDiscover_ROC.R");
-    o.writer->write(RWriter::createScript("FusionDiscover_labels.csv", PlotROC_F()));
+    o.writer->write(RWriter::createScript("FusionDiscover_labels.csv", PlotFROC()));
     o.writer->close();
 
     /*

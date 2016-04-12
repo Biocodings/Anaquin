@@ -219,7 +219,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * 3. Generating abundance vs abundance (single or multiple samples)
      */
     
-    TExpress::generateRAbund("TransExpress_abundAbund.R", "TransExpress_quins.csv", stats, o);
+    TExpress::generateRAbund("TransExpress_express.R", "TransExpress_quins.csv", stats, o);
     
     /*
      * 4. Generating major plot (but only if we have the isoforms...)

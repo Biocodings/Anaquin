@@ -12,7 +12,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotVAbundAbund();
+extern Scripts PlotVExpress();
 
 // Defined by Kallisto
 extern int __main__(int argc, char *argv[]);
@@ -88,11 +88,11 @@ void VKExpress::report(const FileName &file1, const FileName &file2, const Optio
     o.writer->close();
 
     /*
-     * Generating for AbundAbund
+     * Generating for expression vs expression
      */
 
-    o.info("Generating VarKExpress_abundAbund.R");
-    o.writer->open("VarKExpress_abundAbund.R");
-    o.writer->write(RWriter::createScript("VarKExpress_quins.csv", PlotVAbundAbund()));
+    o.info("Generating VarKExpress_express.R");
+    o.writer->open("VarKExpress_express.R");
+    o.writer->write(RWriter::createScript("VarKExpress_quins.csv", PlotVExpress()));
     o.writer->close();
 }

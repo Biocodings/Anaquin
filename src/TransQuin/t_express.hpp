@@ -5,13 +5,13 @@
 #include "parsers/parser_cufflink.hpp"
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotTAbundAbund();
+extern Anaquin::Scripts PlotTExpress();
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotRAbundAbund();
+extern Anaquin::Scripts PlotTMultiple();
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotMajor();
+extern Anaquin::Scripts PlotTMajor();
 
 namespace Anaquin
 {
@@ -69,7 +69,7 @@ namespace Anaquin
             std::map<SequinID, Concent> expect;
             
             std::stringstream ss;
-            ss << "Sequin\tEAbund";
+            ss << "sequin\texpected";
             
             for (auto i = 0; i < stats.size(); i++)
             {
@@ -149,7 +149,7 @@ namespace Anaquin
                                                                const Options &o)
         {
             o.writer->open(output);
-            o.writer->write(RWriter::createScript(csv, PlotMajor()));
+            o.writer->write(RWriter::createScript(csv, PlotTMajor()));
             o.writer->close();
         }
 
@@ -167,11 +167,11 @@ namespace Anaquin
             
             if (stats.size() == 1)
             {
-                o.writer->write(RWriter::createScript(csv, PlotTAbundAbund()));
+                o.writer->write(RWriter::createScript(csv, PlotTExpress()));
             }
             else
             {
-                o.writer->write(RWriter::createScript(csv, PlotRAbundAbund()));
+                o.writer->write(RWriter::createScript(csv, PlotTMultiple()));
             }
             
             o.writer->close();
@@ -190,7 +190,7 @@ namespace Anaquin
             
             if (stats.size() == 1)
             {
-                o.writer->write(StatsWriter::writeCSV(stats[0], "EAbund", "MExpress"));
+                o.writer->write(StatsWriter::writeCSV(stats[0]));
             }
             else
             {

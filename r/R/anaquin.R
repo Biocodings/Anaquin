@@ -6,7 +6,6 @@
 
 .createData <- function(x, keys)
 {
-    # Sequin names must be present. We can use it to construct a data frame with the appropriate size.
     stopifnot(!is.null(x$seqs))
 
     data <- data.frame(row.names=x$seqs)
@@ -19,63 +18,114 @@
         }
     }
 
-    # Sequins are always sorted in orders
     data <- data[order(row.names(data)),]
-
     return (data)    
 }
 
-FusQuin <- function(..., mix=loadMixture.FusQuin())
+.createMixture <- function(x)
+{
+    if (!is.null(x))
+    {
+        #
+        # There're several possibilities:
+        #
+        #     1. local file (eg: /home/tedwon/data/mixture.csv)
+        #     2. URL (eg: https://s3.amazonaws.com/anaquin/mixtures/MTR002.v013.csv)
+        #     3. Data frame (or matrix)
+        #
+    
+        if (is(x, 'url'))        { return (read.csv(x)) }
+        if (is(x, 'character'))  { return (read.csv(x)) }
+        if (is(x, 'data.frame')) { return (x) }
+        if (is(x, 'matrix'))     { return (data.frame(x)) }
+    }
+    
+    return (NULL)
+}
+
+#
+# Create an Anaquin dataset for transcriptome analysis
+#
+
+TransQuin <- function(...)
+{
+    x <- list(...)
+    
+    keys <- c('label', 'pval', 'qval', 'mean', 'lfc', 'lfcSE', 'ratio', 'expect', 'measured', 'A1', 'A2', 'A3')
+    data <- .createData(x, keys)
+
+    r <- list('seqs'=data, mix=.createMixture(x$mix))
+    class(r) <- 'TransQuin'
+    
+    return (r)
+}
+
+#
+# Create an Anaquin dataset for variant analysis
+#
+
+VarQuin <- function(..., mix=loadMixture.VarQuin())
+{
+    x <- list(...)
+    
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expect', 'measured', 'aligned')
+    data <- .createData(x, keys)
+    
+    r <- list('seqs'=data, mix=.createMixture(x$mix))
+    class(r) <- 'VarQuin'
+    
+    return (r)
+}
+
+#
+# Create an Anaquin dataset for fusion analysis
+#
+
+FusQuin <- function(...)
 {
     x <- list(...)
     
     keys <- c('label', 'pos1', 'pos2')
     data <- .createData(x, keys)
 
-    r <- list('seqs'=data, mix=mix)
+    r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'FusQuin'
     
     return (r)
 }
 
-LadQuin <- function(..., mix=loadMixture.VarQuin())
+#
+# Create an Anaquin dataset for ladder analysis
+#
+
+LadQuin <- function(...)
 {
     x <- list(...)
     
     keys <- c('label', 'elfc', 'lfc', 'pval', 'abund', 'type', 'expected', 'measured', 'aligned')
     data <- .createData(x, keys)
     
-    r <- list('seqs'=data, mix=mix)
+    r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'LadQuin'
     
     return (r)
 }
 
-VarQuin <- function(..., mix=loadMixture.VarQuin())
+########################################################
+#                                                      #
+#                 Online Mixtures                      #
+#                                                      #
+########################################################
+
+#
+# Returns a URL of mixture for TransQuin. This saves the trouble of downloading it explicitly.
+#
+
+transMixURL <- function()
 {
-    x <- list(...)
-
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'expect', 'measured', 'aligned')
-    data <- .createData(x, keys)
-
-    r <- list('seqs'=data, mix=mix)
-    class(r) <- 'VarQuin'
     
-    return (r)
 }
 
-TransQuin <- function(..., mix=loadMixture.TransQuin())
-{
-    x <- list(...)
-    
-    keys <- c('label', 'pval', 'qval', 'mean', 'lfc', 'lfcSE', 'ratio', 'expect', 'measured', 'A1', 'A2', 'A3')
-    data <- .createData(x, keys)
-    
-    r <- list('seqs'=data, mix=mix)
-    class(r) <- 'TransQuin'
-    
-    return (r)
-}
 
 ########################################################
 #                                                      #

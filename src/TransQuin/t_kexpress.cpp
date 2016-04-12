@@ -42,7 +42,7 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * 3. Generating abundance vs abundance (single or multiple samples)
      */
     
-    TExpress::generateRAbund("TransKExpress_abundAbund.R", "TransKExpress_quins.csv", stats, o);
+    TExpress::generateRAbund("TransKExpress_express.R", "TransKExpress_quins.csv", stats, o);
     
     /*
      * 4. Generating major plot (but only if we have the isoforms...)

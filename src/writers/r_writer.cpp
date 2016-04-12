@@ -10,7 +10,7 @@ extern Path __output__;
 extern Scripts PlotTROC();
 
 // Defined in resources.cpp
-extern Scripts PlotMA();
+extern Scripts PlotTMA();
 
 // Defined in main.cpp
 extern std::string mixture();
@@ -315,7 +315,7 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
 Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
 {
     std::stringstream ss;
-    ss << PlotMA();
+    ss << PlotTMA();
 
     return (boost::format(ss.str()) % date()
             % __full_command__

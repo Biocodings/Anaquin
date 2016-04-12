@@ -2,7 +2,8 @@
 #include "parsers/parser_sam.hpp"
 #include <ss/regression/linear.hpp>
 
-extern std::string PlotLadderAbund();
+// Defined in resources.cpp
+extern std::string PlotLExpress();
 
 using namespace Anaquin;
 
@@ -249,6 +250,7 @@ void LExpress::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
 
+    o.info("Generating LadderAbundance_summary.stats");
     o.writer->open("LadderAbundance_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
                                                 o.rEndo,
@@ -262,14 +264,16 @@ void LExpress::report(const FileName &file, const Options &o)
     /*
      * Generating CSV for the abundance
      */
-    
+
+    o.info("Generating LadderAbundance_quins.csv");
     writeCSV("LadderAbundance_quins.csv", stats, o);
 
     /*
-     * Generating scatter plot
+     * Generating expression vs expression
      */
 
-    o.writer->open("LadderAbundance_scatter.R");
-    o.writer->write(RWriter::createScript("LadderAbundance_quins.csv", PlotLadderAbund()));
+    o.info("Generating LadderAbundance_express.R");
+    o.writer->open("LadderAbundance_express.R");
+    o.writer->write(RWriter::createScript("LadderAbundance_quins.csv", PlotLExpress()));
     o.writer->close();
 }

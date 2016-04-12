@@ -3,10 +3,10 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotLODR_V();
+extern Scripts PlotVProb();
 
 // Defined in resources.cpp
-extern Scripts PlotROC_V();
+extern Scripts PlotVROC();
 
 VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
@@ -295,7 +295,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.info("Generating VarDiscover_ROC.R");
     o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createScript("VarDiscover_quins.csv", PlotROC_V()));
+    o.writer->write(RWriter::createScript("VarDiscover_quins.csv", PlotVROC()));
     o.writer->close();
 
     /*
@@ -306,7 +306,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     {
         o.info("Generating VarDiscover_Prob.R");
         o.writer->open("VarDiscover_Prob.R");
-        o.writer->write(RWriter::createScript("VarDiscover_quins.csv", PlotLODR_V()));
+        o.writer->write(RWriter::createScript("VarDiscover_quins.csv", PlotVProb()));
         o.writer->close();
     }
 }

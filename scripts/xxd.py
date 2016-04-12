@@ -20,8 +20,8 @@ data  = [ 'data/manual.txt',
 
           # ------- Fusion -------
 
-          'src/r/plotROC_F.R',
-          'src/r/plotExpress_F.R',
+          'src/r/plotFROC.R',
+          'src/r/plotFExpress.R',
 
           'data/FusQuin/AFU004.v032.ref',
           'data/FusQuin/AFU005.v032.bed',
@@ -29,7 +29,7 @@ data  = [ 'data/manual.txt',
 
           # ------- Ladder -------
 
-          'src/r/plotLadderAbund.R',
+          'src/r/plotLExpress.R',
 
           'data/LadQuin/MLA014.v013.csv',
           'data/LadQuin/MLA016.v013.csv',
@@ -37,13 +37,13 @@ data  = [ 'data/manual.txt',
            
           # ---------- Transcriptome ----------
 
-          'src/r/plotMA.R',
-	      'src/r/plotFold.R',
-	      'src/r/plotMajor.R',
+          'src/r/plotTMA.R',
+	      'src/r/plotTFold.R',
+	      'src/r/plotTMajor.R',
           'src/r/plotTROC.R',
-          'src/r/plotLODR.R',          
-	      'src/r/plotRAbundAbund.R',
-          'src/r/plotTAbundAbund.R',
+          'src/r/plotTLODR.R',          
+	      'src/r/plotTMultiple.R',
+          'src/r/plotTExpress.R',
 
           'data/TransQuin/ATR001.v032.gtf',
           'data/TransQuin/MTR002.v013.csv',
@@ -61,13 +61,13 @@ data  = [ 'data/manual.txt',
 
           # ---------- Variant ----------
 
-          'src/r/plotROC_V.R',
-          'src/r/plotAlleleReads.R',
-          'src/r/plotLODR_V.R',
-          'src/r/plotAlleleAllele.R',
-          'src/r/plotDensity.R',
-          'src/r/plotSubsample.R',
-	      'src/r/plotVAbundAbund.R',
+          'src/r/plotVROC.R',
+          'src/r/plotVAlleleReads.R',
+          'src/r/plotVProb.R',
+          'src/r/plotVAllele.R',
+          'src/r/plotVDensity.R',
+          'src/r/plotVSubsample.R',
+	      'src/r/plotVExpress.R',
 
           'data/VarQuin/AVA017.v032.bed',
           'data/VarQuin/AVA009.v032.vcf',

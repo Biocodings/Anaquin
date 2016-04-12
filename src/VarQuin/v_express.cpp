@@ -4,7 +4,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotVAbundAbund();
+extern Scripts PlotVExpress();
 
 VExpress::Stats VExpress::analyze(const FileName &file, const Options &o)
 {
@@ -68,11 +68,11 @@ void VExpress::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * 3. Generating for AbundAbund
+     * 3. Generating for expression vs expression
      */
     
-    o.info("Generating VarExpress_abundAbund.R");
-    o.writer->open("VarExpress_abundAbund.R");
-    o.writer->write(RWriter::createScript("VarExpress_quins.csv", PlotVAbundAbund()));
+    o.info("Generating VarExpress_express.R");
+    o.writer->open("VarExpress_express.R");
+    o.writer->write(RWriter::createScript("VarExpress_quins.csv", PlotVExpress()));
     o.writer->close();
 }

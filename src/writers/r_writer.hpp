@@ -29,8 +29,8 @@ namespace Anaquin
     struct StatsWriter
     {
         static Scripts writeCSV(const LinearStats &stats,
-                                const Label &xLabel = "EAbund",
-                                const Label &yLabel = "MAbund",
+                                const Label &xLabel = "expected",
+                                const Label &yLabel = "measured",
                                 bool shouldLog = false)
         {
             const auto d = stats.data(false);
@@ -45,7 +45,7 @@ namespace Anaquin
                                 bool shouldLog = false)
         {
             std::stringstream ss;
-            ss << ((boost::format("Sequin\t%1%\t%2%\n") % xLabel % yLabel).str());
+            ss << ((boost::format("sequin\t%1%\t%2%\n") % xLabel % yLabel).str());
 
             std::set<SequinID> sorted(ids.begin(), ids.end());
             

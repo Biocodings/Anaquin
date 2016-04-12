@@ -3,7 +3,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotVAbundAbund();
+extern Scripts PlotVExpress();
 
 MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options &o)
 {
@@ -158,9 +158,9 @@ void MExpress::report(const FileName &file, const MExpress::Options &o)
      * 3. Generating for AbundAbund
      */
     
-    o.info("Generating MetaAbund_abundAbund.R");
-    o.writer->open("MetaAbund_abundAbund.R");
-    o.writer->write(RWriter::createScript("MetaAbund_quins.csv", PlotVAbundAbund()));
+    o.info("Generating MetaAbund_express.R");
+    o.writer->open("MetaAbund_express.R");
+    o.writer->write(RWriter::createScript("MetaAbund_quins.csv", PlotVExpress()));
     o.writer->close();
     
     /*

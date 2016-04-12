@@ -14,8 +14,8 @@
  * Fusion Resources
  */
 
-#include "resources/plotROC_F.R"
-#include "resources/plotExpress_F.R"
+#include "resources/plotFROC.R"
+#include "resources/plotFExpress.R"
 
 #include "resources/AFU004.v032.ref"
 #include "resources/AFU005.v032.bed"
@@ -25,7 +25,7 @@
  * Ladder Resources
  */
 
-#include "resources/plotLadderAbund.R"
+#include "resources/plotLExpress.R"
 
 #include "resources/MLA014.v013.csv"
 #include "resources/MLA016.v013.csv"
@@ -35,13 +35,13 @@
  * Transcriptome Resources
  */
 
-#include "resources/plotMA.R"
-#include "resources/plotFold.R"
+#include "resources/plotTMA.R"
+#include "resources/plotTFold.R"
 #include "resources/plotTROC.R"
-#include "resources/plotMajor.R"
-#include "resources/plotLODR.R"
-#include "resources/plotRAbundAbund.R"
-#include "resources/plotTAbundAbund.R"
+#include "resources/plotTMajor.R"
+#include "resources/plotTLODR.R"
+#include "resources/plotTMultiple.R"
+#include "resources/plotTExpress.R"
 
 #include "resources/ATR001.v032.gtf"
 #include "resources/MTR002.v013.csv"
@@ -62,13 +62,13 @@
  * Variant Resources
  */
 
-#include "resources/plotROC_V.R"
-#include "resources/plotLODR_V.R"
-#include "resources/plotDensity.R"
-#include "resources/plotSubsample.R"
-#include "resources/plotVAbundAbund.R"
-#include "resources/plotAlleleReads.R"
-#include "resources/plotAlleleAllele.R"
+#include "resources/plotVROC.R"
+#include "resources/plotVProb.R"
+#include "resources/plotVAllele.R"
+#include "resources/plotVDensity.R"
+#include "resources/plotVExpress.R"
+#include "resources/plotVSubsample.R"
+#include "resources/plotVAlleleReads.R"
 
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
@@ -98,9 +98,9 @@ Scripts Manual()
  * Fusion Resources
  */
 
-Scripts PlotROC_F()
+Scripts PlotFROC()
 {
-    return ToString(src_r_plotROC_F_R);
+    return ToString(src_r_plotFROC_R);
 }
 
 Scripts FusionDataMixA()
@@ -113,18 +113,18 @@ Scripts FusionDataRef()
     return ToString(data_FusQuin_AFU004_v032_ref);
 }
 
-Scripts PlotExpress_F()
+Scripts PlotFExpress()
 {
-    return ToString(src_r_plotExpress_F_R);
+    return ToString(src_r_plotFExpress_R);
 }
 
 /*
  * Ladder Resources
  */
 
-Scripts PlotLadderAbund()
+Scripts PlotLExpress()
 {
-    return ToString(src_r_plotLadderAbund_R);
+    return ToString(src_r_plotLExpress_R);
 }
 
 Scripts LadderDataMixA()
@@ -146,7 +146,7 @@ Scripts LadderDataMixAB()
  * Metagenomics Resources
  */
 
-Scripts PlotMFlod()
+Scripts PlotMFold()
 {
     return ToString(src_r_plotMFold_R);
 }
@@ -170,29 +170,29 @@ Scripts SleuthR()
     return ToString(scripts_sleuth_R);
 }
 
-Scripts PlotFold()
+Scripts PlotTFold()
 {
-    return ToString(src_r_plotFold_R);
+    return ToString(src_r_plotTFold_R);
 }
 
-Scripts PlotRAbundAbund()
+Scripts PlotTMultiple()
 {
-    return ToString(src_r_plotRAbundAbund_R);
+    return ToString(src_r_plotTMultiple_R);
 }
 
-Scripts PlotMajor()
+Scripts PlotTMajor()
 {
-    return ToString(src_r_plotMajor_R);
+    return ToString(src_r_plotTMajor_R);
 }
 
-Scripts PlotMA()
+Scripts PlotTMA()
 {
-    return ToString(src_r_plotMA_R);
+    return ToString(src_r_plotTMA_R);
 }
 
-Scripts PlotTAbundAbund()
+Scripts PlotTExpress()
 {
-    return ToString(src_r_plotTAbundAbund_R);
+    return ToString(src_r_plotTExpress_R);
 }
 
 Scripts PlotTROC()
@@ -200,9 +200,9 @@ Scripts PlotTROC()
     return ToString(src_r_plotTROC_R);
 }
 
-Scripts PlotLODR()
+Scripts PlotTLODR()
 {
-    return ToString(src_r_plotLODR_R);
+    return ToString(src_r_plotTLODR_R);
 }
 
 Scripts TransStandGTF()
@@ -234,39 +234,39 @@ Scripts TransDataMixAB()
  * Variant Resources
  */
 
-Scripts PlotVAbundAbund()
+Scripts PlotVExpress()
 {
-    return ToString(src_r_plotVAbundAbund_R);
+    return ToString(src_r_plotVExpress_R);
 }
 
-Scripts PlotAlleleReads()
+Scripts PlotVAlleleReads()
 {
-    return ToString(src_r_plotAlleleReads_R);
+    return ToString(src_r_plotVAlleleReads_R);
 }
 
-Scripts PlotAlleleAllele()
+Scripts PlotVAllele()
 {
-    return ToString(src_r_plotAlleleAllele_R);
+    return ToString(src_r_plotVAllele_R);
 }
 
-Scripts PlotROC_V()
+Scripts PlotVROC()
 {
-    return ToString(src_r_plotROC_V_R);
+    return ToString(src_r_plotVROC_R);
 }
 
-Scripts PlotLODR_V()
+Scripts PlotVProb()
 {
-    return ToString(src_r_plotLODR_V_R);
+    return ToString(src_r_plotVProb_R);
 }
 
-Scripts PlotDensity()
+Scripts PlotVDensity()
 {
-    return ToString(src_r_plotDensity_R);
+    return ToString(src_r_plotVDensity_R);
 }
 
-Scripts PlotSubsample()
+Scripts PlotVSubsample()
 {
-    return ToString(src_r_plotSubsample_R);
+    return ToString(src_r_plotVSubsample_R);
 }
 
 Scripts VarDataMixA()

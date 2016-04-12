@@ -11,16 +11,16 @@
 #include "stats/analyzer.hpp"
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotFold();
+extern Anaquin::Scripts PlotTFold();
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotLODR();
+extern Anaquin::Scripts PlotTLODR();
 
 // Defined in resources.cpp
 extern Anaquin::Scripts PlotTROC();
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotMA();
+extern Anaquin::Scripts PlotTMA();
 
 namespace Anaquin
 {
@@ -73,7 +73,7 @@ namespace Anaquin
         {
             o.info("Generating " + file);
             o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotMA()));
+            o.writer->write(RWriter::createScript(csv, PlotTMA()));
             o.writer->close();
         }
         
@@ -83,7 +83,7 @@ namespace Anaquin
         {
             o.info("Generating " + file);
             o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotLODR()));
+            o.writer->write(RWriter::createScript(csv, PlotTLODR()));
             o.writer->close();
         }
 
@@ -103,7 +103,7 @@ namespace Anaquin
         {
             o.info(file);
             o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotFold()));
+            o.writer->write(RWriter::createScript(csv, PlotTFold()));
             o.writer->close();
         }
 

@@ -5,7 +5,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotAlleleAllele();
+extern Scripts PlotVAllele();
 
 VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, const Options &o)
 {
@@ -105,11 +105,11 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
     o.writer->close();
     
     /*
-     * Generating for AlleleAllele
+     * Generating for allele vs allele
      */
 
-    o.info("Generating VarKAllele_alleleAllele.R");
-    o.writer->open("VarKAllele_alleleAllele.R");
-    o.writer->write(RWriter::createScript("VarKAllele_quins.csv", PlotAlleleAllele()));
+    o.info("Generating VarKAllele_allele.R");
+    o.writer->open("VarKAllele_allele.R");
+    o.writer->write(RWriter::createScript("VarKAllele_quins.csv", PlotVAllele()));
     o.writer->close();
 }

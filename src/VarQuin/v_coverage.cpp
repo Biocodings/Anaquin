@@ -2,7 +2,8 @@
 
 using namespace Anaquin;
 
-extern Scripts PlotDensity();
+// Defined in resources.cpp
+extern Scripts PlotVDensity();
 
 VCoverage::Stats VCoverage::analyze(const FileName &file, const Options &o)
 {
@@ -58,6 +59,6 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
      */
     
     o.writer->open("VarCoverage_density.R");
-    o.writer->write(RWriter::createScript("VarCoverage_chrT.bedgraph", PlotDensity()));
+    o.writer->write(RWriter::createScript("VarCoverage_chrT.bedgraph", PlotVDensity()));
     o.writer->close();
 }
