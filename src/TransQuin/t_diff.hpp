@@ -36,7 +36,7 @@ namespace Anaquin
              */
             
             std::stringstream ss;
-            ss << "Sequin\tBaseMean\tELFold\tMLFold\tMLFoldSE\tPValue\tQValue\n";
+            ss << "sequin\tmean\texpected\tmeasured\tse\tpval\tqval\n";
             
             const auto &ps        = stats.ps;
             const auto &qs        = stats.qs;

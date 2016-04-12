@@ -607,7 +607,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info("Path: " + path);
 
     o.rChrT = _p.rChrT;
-    o.rEndo = _p.rEndo.empty() ? "NA" : _p.rEndo;
 
     std::clock_t begin = std::clock();
 

@@ -187,9 +187,6 @@ namespace Anaquin
     {
         // Files for the reference annotation
         FileName rChrT, rEndo;
-
-        // Experimental data
-        std::shared_ptr<Experiment> exp;
     };
     
     struct IndexOptions : public AnalyzerOptions

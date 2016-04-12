@@ -7,14 +7,14 @@
 #
 
 #
-# This script generates an ROC curve for the TransQuin sequins
+# This script generates an ROC curve with TransQuin sequins
 #
 
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- data[!is.na(data$ELFold),]
-data <- TransQuin(seqs=row.names(data), expect=data$ELFold, measured=data$MLFold, pval=data$PValue, qval=data$QValue,
-                  ratio=abs(data$ELFold))
+data <- data[!is.na(data$expected),]
+data <- TransQuin(seqs=row.names(data), expected=data$expected, measured=data$measured, pval=data$pval, qval=data$qval,
+                  ratio=abs(data$fold))
 
 plotTROC(data)

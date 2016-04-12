@@ -486,9 +486,6 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
 
 TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
 {
-    // We'll need the factors for generation.
-    assert(o.exp);
-    
     o.analyze(file);
     
     return calculate(o, [&](TAlign::Stats &stats)
