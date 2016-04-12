@@ -18,30 +18,31 @@
     data     <- data$seqs
     data$x   <- data$expected
     data$y   <- data$measured
-    data$grp <- abs(data$expected) #ifelse(shouldLog2, abs(log2(data$expect)), abs(data$expect))
+    data$grp <- as.factor(ifelse(shouldLog2, abs(log2(data$expected)), abs(data$expected)))
 
-    stopifnot(length(data$x) == length((data$y)))
+    stopifnot(length(data$x) > 0)
+    stopifnot(length(data$x) == length((data$y)) || length(data$x) == nrow((data$y)))
     
-    if (length(data$x) == 0)
-    {
-        warning('Failed to create scatter plot. No data found.')
-        return (NULL)
-    }
-    else if (shouldLog2)
+    if (shouldLog2)
     {
         data$x <- log2(data$x)
         data$y <- log2(data$y)
     }
 
-    data$grp <- as.factor(data$grp)
+    isMulti <- is(data$y, 'data.frame')
+    
+    data$sd   <- if (isMulti) apply(data$y, 1, sd) else NULL
+    data$y    <- if (isMulti) rowMeans(data$y)     else data$y
+    data$ymax <- if (isMulti) data$y + data$sd     else NULL
+    data$ymin <- if (isMulti) data$y - data$sd     else NULL
     
     p <- ggplot(data=data, aes(x=x, y=y)) +
                               xlab(xname) +
                               ylab(yname) +
                            ggtitle(title) +
                 geom_point(aes(colour=grp), size=2, alpha=alpha) +
-                geom_smooth(method='lm', formula=y ~ x)            +
-                labs(colour='Ratio')                               +
+                geom_smooth(method='lm', formula=y ~ x)          +
+                labs(colour='Ratio')                             +
                 theme_bw()
 
     x_off <- ifelse(max(data$x) - min(data$x) <= 10, 1.5, 2.0)
@@ -63,7 +64,12 @@
     {
         p <- p + guides(colour=FALSE)        
     }
-
+    
+    if (!is.null(data$sd))
+    {
+        p <- p + geom_errorbar(aes(ymax=ymax, ymin=ymin), size=0.3, alpha=0.7)
+    }
+    
     print(p)
 
     return (list('xname' = xname, 'yname' = yname))

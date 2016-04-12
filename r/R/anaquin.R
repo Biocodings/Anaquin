@@ -332,21 +332,19 @@ expectAbund <- function(data, ids, lvl, mix='A')
     return (signif(data[mix][[1]], digits=2))
 }
 
-isoformsToGenes <- function(data, ids)
+#
+# Eg: R1_1_1 to R1_1
+#
+isoformsToGenes <- function(ids)
 {
-    stopifnot(class(data) == 'TransQuin')
+    ids <- strsplit(ids, '_')
     
-    r <- data.frame(gID=rep(NA, length(ids))) 
-    row.names(r) <- ids
+    f <- function(x)
+    {
+        paste(x[1:length(x)-1], collapse='_')
+    }
     
-    # Known isoforms
-    knowns <- row.names(r)
-    knowns <- knowns[row.names(r) %in% row.names(data$mix$isoforms)]
-    
-    # Map all the known isoforms    
-    r[row.names(r) %in% knowns,] <- data$mix$isoforms[row.names(data$mix$isoforms) %in% knowns,]$GeneID
-    
-    return (r$gID)
+    unlist(lapply(ids, f))
 }
 
 .isoformsToGenes <- function(trans)

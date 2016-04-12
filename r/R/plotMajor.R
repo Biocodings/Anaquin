@@ -4,50 +4,38 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-#
-# Pool plot is a scatter plot where the variable in the x-axis is categorical. It is a common visualization
-# tool for exporing the relationship between sequin groups.
-#
-
-expectSplice <- function(data, ids, mix='Mix.A')
+expectSplice <- function(data, gIDs)
 {
-    stopifnot(class(data) == 'TransQuin')
+    r <- data.frame('prop'=rep(NA, length(gIDs)), row.names=gIDs)
 
-    splice <- data.frame('prop'=rep(NA, length(ids)))
-    row.names(splice) <- ids
-
-    for (gID in row.names(splice))
+    for (gID in row.names(r))
     {
-        # The isoforms for the gene
-        isos <- data$mix$isoforms[data$mix$isoforms$GeneID == gID,]
+        # Relevant isoforms
+        x <- data[grep(gID, row.names(data)),]
         
-        stopifnot(nrow(isos) >= 1)
+        stopifnot(nrow(x) >= 1)
         
-        minor <- isos[which.min(isos$A),]$A
-        major <- isos[which.max(isos$A),]$A
+        minor <- x[which.min(x$expected),]$expected
+        major <- x[which.max(x$expected),]$expected
 
-        splice[row.names(splice) == gID,] <- (minor / major)
+        r[row.names(r) == gID,] <- (minor / major)
     }
     
-    return (splice)
+    return (r)
 }
 
-plotMajor <- function(data,
+plotTMajor <- function(data,
                        xname = 'Log2 expected minor/major',
                        yname = 'Log2 aveagre counts',
                        shouldError = FALSE,
-                       cname='Ratio',
-                       mix=loadMixture())
+                       cname='Ratio')
 {
     require(ggplot2)
     require(RColorBrewer)
     
     stopifnot(class(data) == 'TransQuin')
 
-    # Count table for the replicates
-    #samples <- data.frame(A1=data$seqs$A1, A2=data$seqs$A2, A2=data$seqs$A3)
-    
-    samples <- data.frame(A1=data$seqs$A1, A2=data$seqs$A2, A3=data$seqs$A3) # TODO: FIX THIS!!!!
+    samples <- data$seqs$measured
     row.names(samples) <- row.names(data$seqs)
 
     # Maximum for the samples
@@ -60,7 +48,7 @@ plotMajor <- function(data,
     samples$avg <- rowMeans(samples)
 
     # Mapping from isoforms to genes
-    samples$gID <- isoformsToGenes(data, row.names(samples))
+    samples$gID <- isoformsToGenes(row.names(samples))
 
     # We can't plot anything that is undefined
     samples <- samples[!is.na(samples$gID),]
@@ -69,7 +57,7 @@ plotMajor <- function(data,
     row.names(measured) <- unique(samples$gID)
     
     # Expected splicing (minor/major)
-    expected <- expectSplice(data, row.names(measured))
+    expected <- expectSplice(data$seqs, row.names(measured))
     
     for (gID in row.names(measured))
     {
@@ -77,8 +65,6 @@ plotMajor <- function(data,
         isos <- samples[samples$gID == gID,]
      
         stopifnot(nrow(isos) >= 1)
-        
-        print (isos)
         
         minor <- isos[which.min(isos$avg),]$avg
         major <- isos[which.max(isos$avg),]$avg
@@ -88,9 +74,9 @@ plotMajor <- function(data,
     }
 
     # Expected abundance for each sequin
-    abund <- expectAbund(data, lvl='gene', ids=row.names(measured))
+    abund <- expected  #expectAbund(data, lvl='gene', ids=row.names(measured))
     
-    data <- data.frame(eProp=expected$prop, prop=measured$prop, abund=abund)
+    data <- data.frame(eProp=expected$prop, prop=measured$prop, abund=abund$prop)
     row.names(data) <- row.names(measured)
     
     data <- data[data$prop != 0,]
