@@ -1,4 +1,5 @@
 #include <fstream>
+#include "data/path.hpp"
 #include "data/compare.hpp"
 #include "TransQuin/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
@@ -40,8 +41,7 @@ static FileName createFilters(const FileName &file, const ChrID &cID)
     
     std::string line;
 
-    const auto tmp = tmpnam(NULL);
-    
+    const auto tmp = tmpFile();
     std::ofstream out(tmp);
 
     auto f = [&](const FileName &file, std::ofstream &out)

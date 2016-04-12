@@ -24,7 +24,7 @@ namespace Anaquin
             assert(!files.empty() && files.size() == facts.size());
             
             // Where the differential analysis should be saved
-            const auto output = std::string(tmpnam(NULL));
+            const auto output = tmpFile();
 
             // The R-script to run
             const auto script = (boost::format(SleuthR()) % concat(files)
@@ -41,7 +41,7 @@ namespace Anaquin
                                       const FileName &file2,
                                       bool  bootstrap = false)
         {
-            const auto output = std::string(tmpnam(NULL));
+            const auto output = tmpFile();
             
             const auto cmd = (boost::format("kallisto quant -i %1% -o %2% -b %3% %4% %5%")
                                                     % index
@@ -70,7 +70,7 @@ namespace Anaquin
              * Eg: kallisto quant -i /data/index/VarQuin/AVA010.v032.index -o output LVA086.1_val_1.fq LVA086.2_val_2.fq
              */
             
-            const auto output = std::string(tmpnam(NULL));
+            const auto output = tmpFile();
             const auto abund  = output + "/abundance.tsv";
             
             argv[0] = new char[9];

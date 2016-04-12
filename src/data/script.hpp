@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include "data/path.hpp"
 #include <boost/format.hpp>
 
 // Defined in resources.cpp
@@ -34,16 +35,14 @@ namespace Anaquin
                 };
 
                 // Create a copy of the script
-                const auto script = tmpnam(NULL);
+                const auto tmp = tmpFile();
 
-                std::ofstream out(script);
+                std::ofstream out(tmp);
                 out << code;
                 out.close();
                 
                 // Run the script with given arguments
-                f(prefix + " " + script + " " + args);
-
-                remove(script);
+                f(prefix + " " + tmp + " " + args);
             }
 
             template <typename Option> static void report(const std::string &type,
@@ -59,7 +58,6 @@ namespace Anaquin
                                                     % o.index
                                                     % file1
                                                     % file2)).str();
-                std::cout << cmd << std::endl;                
                 Script::run(ReportScript(), "python", cmd);
             }
 
