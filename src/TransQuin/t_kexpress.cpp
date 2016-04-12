@@ -13,7 +13,8 @@ TKExpress::Stats TKExpress::analyze(const FileName &file1, const FileName &file2
 {
     TExpress::Options o_;
     
-    o_.soft = TExpress::Software::Kallisto;
+    o_.metrs = TExpress::Metrics::Isoform;
+    o_.soft  = TExpress::Software::Kallisto;
 
     // Run quantification in Kallisto
     return TExpress::analyze(Pachter::externalQuant(o.index, file1, file2), o_);
