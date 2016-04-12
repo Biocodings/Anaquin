@@ -488,6 +488,9 @@ template <typename Mixture> void addMix(Mixture mix)
     
     std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
     mix(Reader(mixture()));
+    
+    // Always save a copy of the mixture if available
+    system(("cp " + mixture() + " " + __output__).c_str());
 }
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)

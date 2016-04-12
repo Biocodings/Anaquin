@@ -384,6 +384,7 @@
 		EFF4B1D01C539FFD00DF6A0E /* stats.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = stats.hpp; path = ../src/stats/stats.hpp; sourceTree = "<group>"; };
 		EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stats.cpp; path = ../tests/stats/stats.cpp; sourceTree = "<group>"; };
 		EFF5DE161C4B8AF8001C3496 /* linear.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = linear.cpp; path = ../src/stats/linear.cpp; sourceTree = "<group>"; };
+		EFFAAE051CBCB16E00EE2DCB /* path.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = path.hpp; path = ../src/data/path.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -573,8 +574,9 @@
 				EF1DE0A91B21EC6D00DEC381 /* feature.hpp */,
 				EF2002531BCEFD6900F8CE08 /* intervals.hpp */,
 				EF40C2AD1C21C0E30057415D /* itree.hpp */,
-				EF4E334E1CB924DC0067B16B /* pachter.hpp */,
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,
+				EF4E334E1CB924DC0067B16B /* pachter.hpp */,
+				EFFAAE051CBCB16E00EE2DCB /* path.hpp */,
 				EF1DE0AC1B21EC6D00DEC381 /* reader.cpp */,
 				EF1DE0AD1B21EC6D00DEC381 /* reader.hpp */,
 				EF9F70ED1B9C397900B8BD7B /* reference.cpp */,
