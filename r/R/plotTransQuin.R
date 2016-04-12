@@ -22,15 +22,6 @@ plotTLogFold <- function(data)
                 showLegend=FALSE)
 }
 
-plotTAbundAbund <- function(data)
-{
-    plotScatter(data, title='Expected abundance vs Measured abundance',
-                      xname='Expected abundance (log2)',
-                      yname='Measured abundance (log2)',
-                  showStats='left',
-                 showLegend=FALSE)
-}
-
 #
 # Plot a scatter plot for technical replicates, the expected concentration against the measured
 # concentration.
