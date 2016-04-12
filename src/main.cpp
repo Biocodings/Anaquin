@@ -488,9 +488,6 @@ template <typename Mixture> void addMix(Mixture mix)
     
     std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
     mix(Reader(mixture()));
-    
-    // Always save a copy of the mixture if available
-    system(("cp " + mixture() + " " + __output__).c_str());
 }
 
 #define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
@@ -613,13 +610,16 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.rEndo = _p.rEndo.empty() ? "NA" : _p.rEndo;
 
     std::clock_t begin = std::clock();
-    
+
     f(o);
     
     std::clock_t end = std::clock();
 
     const auto elapsed = (boost::format("Completed. %1% seconds.") % (double(end - begin) / CLOCKS_PER_SEC)).str();
     o.info(elapsed);
+
+    // Always save a copy of the mixture if available
+    system(("cp " + mixture() + " " + __output__ + "/").c_str());
 
 #ifndef DEBUG
     o.logger->close();

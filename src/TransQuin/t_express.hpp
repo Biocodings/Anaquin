@@ -227,11 +227,6 @@ namespace Anaquin
         
         static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
         {
-            if (files.size() < 2)
-            {
-                throw std::runtime_error("Two or more replicates required");
-            }
-            
             std::vector<TExpress::Stats> stats;
             
             for (const auto &file : files)
