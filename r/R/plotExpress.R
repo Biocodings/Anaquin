@@ -18,8 +18,8 @@
     data     <- data$seqs
     data$x   <- data$expected
     data$y   <- data$measured
-    data$grp <- as.factor(ifelse(shouldLog2, abs(log2(data$expected)), abs(data$expected)))
-
+    data$grp <- if (shouldLog2) as.factor(abs(log2(data$x))) else as.factor(abs(data$x))
+        
     stopifnot(length(data$x) > 0)
     stopifnot(length(data$x) == length((data$y)) || length(data$x) == nrow((data$y)))
     
@@ -45,16 +45,15 @@
                 labs(colour='Ratio')                             +
                 theme_bw()
 
-    x_off <- ifelse(max(data$x) - min(data$x) <= 10, 1.5, 2.0)
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 1.0)
 
     if (showStats == 'right')
     {
-        p <- p + annotate("text", label=lm2str(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=4, colour='black', parse=TRUE)
+        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
     }
     else
     {
-        p <- p + annotate("text", label=lm2str(data), x=min(data$x)+x_off, y=max(data$y)-y_off, size=4, colour='black', parse=TRUE)
+        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
     }
     
     p <- p +  theme(axis.title.x=element_text(face='bold', size=12))
