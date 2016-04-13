@@ -213,7 +213,7 @@ namespace Anaquin
             o.info("Generating " + summary);
             o.writer->open(summary);
             
-            if (files.size() == 1)
+            if (stats.size() == 1)
             {
                 o.writer->write(singleSummary(stats[0], files[0], units, o));
             }

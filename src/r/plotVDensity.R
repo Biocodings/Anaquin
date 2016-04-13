@@ -10,4 +10,7 @@ library(Anaquin)
 
 file <- '/Users/tedwong/Sources/QA/__temp__/VarCoverage_chrT.bedgraph'
 
+%3%
+%4%
+
 plotDensity(file)

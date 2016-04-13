@@ -618,7 +618,10 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info(elapsed);
 
     // Always save a copy of the mixture if available
-    system(("cp " + mixture() + " " + __output__ + "/").c_str());
+    if (!mixture().empty())
+    {
+        system(("cp " + mixture() + " " + __output__ + "/").c_str());
+    }
 
 #ifndef DEBUG
     o.logger->close();
