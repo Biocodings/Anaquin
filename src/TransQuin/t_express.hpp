@@ -11,7 +11,7 @@ extern Anaquin::Scripts PlotTExpress();
 extern Anaquin::Scripts PlotTMultiple();
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotTMajor();
+extern Anaquin::Scripts PlotTMinor();
 
 namespace Anaquin
 {
@@ -149,7 +149,7 @@ namespace Anaquin
                                                                const Options &o)
         {
             o.writer->open(output);
-            o.writer->write(RWriter::createScript(csv, PlotTMajor()));
+            o.writer->write(RWriter::createScript(csv, PlotTMinor()));
             o.writer->close();
         }
 

@@ -4,6 +4,51 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+
+mLogFSE <- function(data, ids)
+{
+    stopifnot(class(data) == 'TransQuin' |
+                  class(data) == 'VarQuin'   |
+                  class(data) == 'MetaQuin')
+    
+    # Internal representation
+    data <- data$seqs
+    
+    if (is.null(data$lfcSE))
+    {
+        # TODO: Implement me
+    }
+    
+    return (data$lfcSE)
+}
+
+
+sequins <- function(data)
+{
+    stopifnot(class(data) == 'TransQuin' |
+                  class(data) == 'VarQuin'   |
+                  class(data) == 'MetaQuin')
+    
+    return (row.names(filter(data, 'seqs')))
+}
+
+#
+# Returns the measured logFold
+#
+mLogF <- function(data, ids)
+{
+    stopifnot(class(data) == 'TransQuin' |
+                  class(data) == 'VarQuin'   |
+                  class(data) == 'MetaQuin')
+    
+    if (is.null(data$seqs$lfc))
+    {
+        # TODO: Implement me
+    }
+    
+    return (data$seqs$lfc)
+}
+
 #
 # Draw an MA plot for differential analysis. The plot depicts the relationship between abundance and variability.
 #

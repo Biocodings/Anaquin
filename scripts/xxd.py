@@ -39,7 +39,7 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotTMA.R',
 	      'src/r/plotTFold.R',
-	      'src/r/plotTMajor.R',
+	      'src/r/plotTMinor.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
 	      'src/r/plotTMultiple.R',

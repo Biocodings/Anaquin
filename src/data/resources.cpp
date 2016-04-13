@@ -38,7 +38,7 @@
 #include "resources/plotTMA.R"
 #include "resources/plotTFold.R"
 #include "resources/plotTROC.R"
-#include "resources/plotTMajor.R"
+#include "resources/plotTMinor.R"
 #include "resources/plotTLODR.R"
 #include "resources/plotTMultiple.R"
 #include "resources/plotTExpress.R"
@@ -180,9 +180,9 @@ Scripts PlotTMultiple()
     return ToString(src_r_plotTMultiple_R);
 }
 
-Scripts PlotTMajor()
+Scripts PlotTMinor()
 {
-    return ToString(src_r_plotTMajor_R);
+    return ToString(src_r_plotTMinor_R);
 }
 
 Scripts PlotTMA()

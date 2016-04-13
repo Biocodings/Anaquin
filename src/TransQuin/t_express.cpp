@@ -227,6 +227,6 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
 
     if (stats.size() >= 2 && o.metrs == TExpress::Metrics::Isoform)
     {
-        TExpress::generateRMajor("TransExpress_major.R", "TransExpress_quins.csv", o);        
+        TExpress::generateRMajor("TransExpress_minor.R", "TransExpress_quins.csv", o);
     }
 }

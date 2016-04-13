@@ -32,8 +32,8 @@ namespace Anaquin
         double missedExonsN,   missedExonsR,   missedExonsP;
         double missedIntronsN, missedIntronsR, missedIntronsP;
 
-        unsigned novelExonsN, novelExonsR, novelIntronsN, novelIntronsR;
         double novelExonsP, novelIntronsP;
+        unsigned novelExonsN, novelExonsR, novelIntronsN, novelIntronsR;
     };
 }
 

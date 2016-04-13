@@ -4,6 +4,33 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+#colors <- function(n)
+#{
+#    if (n == 5)
+#    {
+#        return (c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"))
+#    }
+#    else
+#    {
+#        return (c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd'))
+#    }
+#}
+
+pval <- function(data)
+{
+    stopifnot(class(data) == 'TransQuin' |
+                  class(data) == 'VarQuin'   |
+                  class(data) == 'LadQuin')
+    
+    if (is.null(data$seqs$pval)) 
+    {
+        stop('Probability not provided. Please check and try again.')
+    }
+    
+    return (data$seqs$pval)
+}
+
+
 .plotLODR <- function(data,
                       band='pred',
                       chosenFDR=0.1,

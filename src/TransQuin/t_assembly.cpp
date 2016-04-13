@@ -1,8 +1,8 @@
 #include <fstream>
 #include "data/path.hpp"
 #include "data/compare.hpp"
-#include "TransQuin/t_assembly.hpp"
 #include "parsers/parser_gtf.hpp"
+#include "TransQuin/t_assembly.hpp"
 
 #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
 
@@ -275,6 +275,7 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
 
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
     
+    o.info("Generating TransAssembly_summary.stats");
     o.writer->open("TransAssembly_summary.stats");
     o.writer->write((boost::format(chrTSummary()) % file
                                                   % stats.chrT_exons
@@ -361,10 +362,8 @@ void TAssembly::report(const FileName &file, const Options &o)
     const auto stats = TAssembly::analyze(file, o);
 
     /*
-     * Generating summary statistics for each sample
+     * Generating summary statistics
      */
     
-    o.info("Generating summary statistics");
-
     writeSummary(file, stats, o);
 }

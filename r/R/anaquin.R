@@ -126,38 +126,11 @@ transMixURL <- function()
     
 }
 
-
 ########################################################
 #                                                      #
 #                Accessor functions                    #
 #                                                      #
 ########################################################
-
-#colors <- function(n)
-#{
-#    if (n == 5)
-#    {
-#        return (c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00"))
-#    }
-#    else
-#    {
-#        return (c('#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd'))
-#    }
-#}
-
-pval <- function(data)
-{
-    stopifnot(class(data) == 'TransQuin' |
-              class(data) == 'VarQuin'   |
-              class(data) == 'LadQuin')
-
-    if (is.null(data$seqs$pval)) 
-    {
-        stop('Probability not provided. Please check and try again.')
-    }
-    
-    return (data$seqs$pval)
-}
 
 #
 # Filtering functionality The following are supported:
@@ -193,15 +166,6 @@ pval <- function(data)
 #    }
 #}
 
-sequins <- function(data)
-{
-    stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'MetaQuin')
-    
-    return (row.names(filter(data, 'seqs')))
-}
-
 #
 # Normalize the counts and calculate the base mean. Base mean is the average of the normalized count values, taken
 # over all samples.
@@ -229,108 +193,18 @@ seqs <- function(data)
     return (row.names(data$seqs))
 }
 
-mLogFSE <- function(data, ids)
+.isoformsToGenes <- function(trans)
 {
-    stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'MetaQuin')
-    
-    # Internal representation
-    data <- data$seqs
-    
-    if (is.null(data$lfcSE))
-    {
-        # TODO: Implement me
-    }
-    
-    return (data$lfcSE)
+    trans <- as.character(trans)
+    genes <- substr(as.character(trans), 1, nchar(trans)-2)
+    genes
 }
 
-#
-# Returns the measured logFold
-#
-mLogF <- function(data, ids)
-{
-    stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'MetaQuin')
-    
-    if (is.null(data$seqs$lfc))
-    {
-        # TODO: Implement me
-    }
-    
-    return (data$seqs$lfc)
-}
-
-#
-# Returns the expected logFold. The following levels are supported:
-#
-#   TransQuin: 'exon'
-#              'gene'
-#              'isoform'
-#
-
-expectLF <- function(data, lvl, ids)
-{
-    stopifnot(lvl == 'gene' | lvl == 'isoform')
-    stopifnot(class(data) == 'TransQuin' | class(data) == 'TransMixture')
-
-    # Has the user specified the expected log-fold explicity?
-    if (!is.null(data$seqs) & !is.null(data$seqs$elfc))
-    {
-        return (data$seqs$elf)
-    }
-    
-    if (class(data) == 'TransQuin')
-    {
-        data <- data$mix
-    }
-    
-    #
-    # Eg:
-    #
-    #      A        B      fold   logFold
-    #   R2_59 0.4720688 0.4720688     1
-    #
-    
-    switch(lvl, 'gene' = { data <- data$genes }, 'isoform' = { data <- data$isoforms })
-
-    data <- data[row.names(data) %in% ids,]
-
-    return (round(log2(data$B / data$A)))
-}
-
-#
-# Returns the expected concentration for a sequin. The following levels are supported:
-#
-#   TransQuin: 'exon', 'isoform' and 'gene'
-#
-
-expectAbund <- function(data, ids, lvl, mix='A')
-{
-    stopifnot(lvl == 'exon'    |
-                  lvl == 'gene'    |
-                  lvl == 'isoform')
-    
-    stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'MetaQuin'  |
-                  class(data) == 'Mixture')
-    
-    data <- data$mix
-    
-    switch(lvl, 'gene'    = { data <- data$genes[row.names(data$genes) %in% ids,]       },
-           'isoform' = { data <- data$isoforms[row.names(data$isoforms) %in% ids,] },
-           'exon'    = { data <- data$exons[row.names(data$exons) %in% ids,]       })
-    
-    if (is.null(data[mix]))
-    {
-        error(paste('Unknown mixture:', mix))
-    }
-    
-    return (signif(data[mix][[1]], digits=2))
-}
+########################################################
+#                                                      #
+#                TransQuin functions                   #
+#                                                      #
+########################################################
 
 #
 # Eg: R1_1_1 to R1_1. Works for TransQuin sequins.
@@ -347,19 +221,33 @@ isoformsToGenes <- function(ids)
     unlist(lapply(ids, f))
 }
 
-.isoformsToGenes <- function(trans)
+#
+# This function takes a TransQuin data set and a list of gene IDs. It gives the expected expression for
+# each of the gene requested.
+#
+
+expectForGenes <- function(data, gIDs)
 {
-    trans <- as.character(trans)
-    genes <- substr(as.character(trans), 1, nchar(trans)-2)
-    genes
+    stopifnot(class(data) == 'TransQuin')
+    data <- data$seqs
+        
+    r <- data.frame(expected=rep(NA, length(gIDs)), efrac=rep(NA, length(gIDs)), row.names=gIDs)
+    
+    for (gID in row.names(r))
+    {
+        x <- data[grep(gID, row.names(data)),]
+        
+        stopifnot(nrow(x) >= 1)
+        
+        minor <- x[which.min(x$expected),]$expected
+        major <- x[which.max(x$expected),]$expected
+        
+        r[row.names(r) == gID,]$efrac <- (minor / major)
+        r[row.names(r) == gID,]$expected <- sum(x$expected)
+    }
+    
+    return (r)
 }
-
-########################################################
-#                                                      #
-#                TransQuin functions                   #
-#                                                      #
-########################################################
-
 
 ########################################################
 #                                                      #
@@ -413,18 +301,6 @@ normalToFusion <- function(names)
 {
     return (cat('F', substr(names, 2, nchar(names)), sep=''))
 }
-
-########################################################
-#                                                      #
-#                 Reference Loading                    #
-#                                                      #
-########################################################
-
-#loadReference.VarQuin <- function(file='/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf')
-#{
-#    ref <- 
-#        a <- readVcf('/Users/tedwong/Sources/QA/data/VARQuin/AVA009.v032.vcf', 'chrT')  
-#}
 
 ########################################################
 #                                                      #

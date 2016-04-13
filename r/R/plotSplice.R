@@ -5,6 +5,37 @@
 #
 
 #
+# Returns the expected concentration for a sequin. The following levels are supported:
+#
+#   TransQuin: 'exon', 'isoform' and 'gene'
+#
+
+expectAbund <- function(data, ids, lvl, mix='A')
+{
+    stopifnot(lvl == 'exon'    |
+                  lvl == 'gene'    |
+                  lvl == 'isoform')
+    
+    stopifnot(class(data) == 'TransQuin' |
+                  class(data) == 'VarQuin'   |
+                  class(data) == 'MetaQuin'  |
+                  class(data) == 'Mixture')
+    
+    data <- data$mix
+    
+    switch(lvl, 'gene'    = { data <- data$genes[row.names(data$genes) %in% ids,]       },
+           'isoform' = { data <- data$isoforms[row.names(data$isoforms) %in% ids,] },
+           'exon'    = { data <- data$exons[row.names(data$exons) %in% ids,]       })
+    
+    if (is.null(data[mix]))
+    {
+        error(paste('Unknown mixture:', mix))
+    }
+    
+    return (signif(data[mix][[1]], digits=2))
+}
+
+#
 # Pool plot is a scatter plot where the variable in the x-axis is categorical. It is a common visualization
 # tool for exporing the relationship between sequin groups.
 #
