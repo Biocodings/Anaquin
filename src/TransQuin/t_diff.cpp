@@ -179,7 +179,7 @@ template <typename Functor> TDiff::Stats calculate(const TDiff::Options &o, Func
     switch (o.metrs)
     {
         case Metrics::Gene:    { stats.limit = r.absoluteGene(stats.hist); break; }
-        //case Metrics::Isoform: { stats.limit = r.limitIsof(stats.hist); break; }
+        case Metrics::Isoform: { stats.limit = r.absolute(stats.hist);     break; }
         default: { break; }
     }
 
