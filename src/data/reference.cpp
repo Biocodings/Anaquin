@@ -648,9 +648,7 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChrID &cID) const
         inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
     
-    // Build the interval tree
     inters.build();
-    
     return inters;
 }
 
@@ -663,9 +661,7 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChrID &cID) con
         inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
     }
 
-    // Build the interval tree
     inters.build();
-
     return inters;
 }
 
@@ -714,13 +710,13 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     
     std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
     {
-        auto d = TransData();
+        auto data = TransData();
         
-        d.id  = id;
-        d.gID = !_impl->cRaw.rawMapper.empty() ? _impl->cRaw.rawMapper.at(d.id) : "";
-        
+        data.id  = id;
+        data.gID = !_impl->cRaw.rawMapper.empty() ? _impl->cRaw.rawMapper.at(data.id) : "";
+
         // Add a new entry for the validated sequin
-        _data[id] = d;
+        _data[id] = data;
         
         //assert(!d.id.empty() && !d.gID.empty());
     });
@@ -745,8 +741,16 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
             }
         }
     }
-    
+
     assert(!_data.empty());
+    
+    // Only a single reference chromosome is supported
+    assert(_impl->refChrID.size() <= 1);
+    
+    if (!_impl->data.empty())
+    {
+        _impl->refChrID = (*_impl->data.begin()).first;
+    }
 }
 
 template <typename T> void createTrans(const ChrID &cID, T &t)
@@ -886,7 +890,7 @@ struct VarRef::VariantPair
 struct VarRef::VarRefImpl
 {
     // The reference chromosome
-    ChrID refChrID = NChr;
+    ChrID refChrID;
 
     // VarQuin standards (BED file)
     std::map<SequinID, Locus> stands;
@@ -930,7 +934,7 @@ void VarRef::addVar(const Variant &v)
 
 void VarRef::addRInterval(const ChrID &id, const Interval &i)
 {
-    if (_impl->refChrID != NChr && _impl->refChrID != id)
+    if (!_impl->refChrID.empty() && _impl->refChrID != id)
     {
         throw std::runtime_error("Multi chromosomes is not supported. Only a single chromosome can be used.");
     }

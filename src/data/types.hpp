@@ -49,7 +49,6 @@ namespace Anaquin
     
     const ChrID ChrT = "chrT";
     const ChrID Endo = "endo";
-    const ChrID NChr = "NA";
 }
 
 #endif

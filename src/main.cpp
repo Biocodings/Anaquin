@@ -391,7 +391,7 @@ static const struct option long_options[] =
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "rmix",    required_argument, 0, OPT_MIXTURE },
 
-    { "rexp",    required_argument, 0, OPT_R_ENDO  },
+    { "rgen",    required_argument, 0, OPT_R_ENDO  },
     { "rbed",    required_argument, 0, OPT_R_BED   },
     { "rgtf",    required_argument, 0, OPT_R_GTF   },
     { "rvcf",    required_argument, 0, OPT_R_VCF   },
@@ -607,6 +607,7 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info("Path: " + path);
 
     o.rChrT = _p.rChrT;
+    o.rEndo = _p.rEndo;
 
     std::clock_t begin = std::clock();
 

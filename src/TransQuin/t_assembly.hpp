@@ -61,16 +61,16 @@ namespace Anaquin
             std::map<ChrID, Data> data;
             
             // Number of exons assembled for chrT
-            Counts chrT_exons = 0;
+            Counts cExons = 0;
 
             // Number of transcripts assembled for chrT
-            Counts chrT_trans = 0;
+            Counts cTrans = 0;
 
             // Number of exons assembled for endogenous
-            Counts endo_exons = 0;
+            Counts eExons = 0;
             
             // Number of transcripts assembled for endogenous
-            Counts endo_trans = 0;
+            Counts eTrans = 0;
         };
 
         // Analyze for a single sample

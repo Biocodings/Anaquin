@@ -14,27 +14,6 @@ Compare __cmp__;
 // Defined for cuffcompare
 extern int cuffcompare_main(const char *ref, const char *query);
 
-template <typename F> static void extractIntrons(const std::map<SequinID, std::vector<Feature>> &x, F f)
-{
-    Feature ir;
-
-    for (const auto & ts : x)
-    {
-        for (auto i = 0; i < ts.second.size(); i++)
-        {
-            if (i)
-            {
-                if (ts.second[i-1].tID == ts.second[i].tID)
-                {
-                    ir = ts.second[i];
-                    ir.l = Locus(ts.second[i - 1].l.end + 1, ts.second[i].l.start - 1);
-                    f(ts.second[i-1], ts.second[i], ir);
-                }
-            }
-        }
-    }
-}
-
 static FileName createFilters(const FileName &file, const ChrID &cID)
 {
     assert(cID == ChrT || cID == Endo);
@@ -72,10 +51,10 @@ static Scripts chrTSummary()
            "   ***\n"
            "   *** Fraction of user assembly mapped to the synthetic and experimental chromosomes\n"
            "   ***\n\n"
-           "   Exons (Synthetic):        %2% genes\n"
-           "   Exons (Experiment):       %3% genes\n\n"
-           "   Transcripts (Synthetic):  %4% transcripts\n"
-           "   Transcripts (Experiment): %5% transcripts\n\n"
+           "   Exons (Synthetic):       %2% genes\n"
+           "   Exons (Genome):          %3% genes\n\n"
+           "   Transcripts (Synthetic): %4% transcripts\n"
+           "   Transcripts (Genome):    %5% transcripts\n\n"
            "   ***\n"
            "   *** Reference annotation (Synthetic)\n"
            "   ***\n\n"
@@ -83,11 +62,11 @@ static Scripts chrTSummary()
            "   Synthetic:  %7% exons\n"
            "   Synthetic:  %8% introns\n\n"
            "   ***\n"
-           "   *** Reference annotation (Experiment)\n"
+           "   *** Reference annotation (Genome)\n"
            "   ***\n\n"
            "   File: %9%\n\n"
-           "   Experiment:  %10% exons\n"
-           "   Experiment:  %11% introns\n\n"
+           "   Genome:  %10% exons\n"
+           "   Genome:  %11% introns\n\n"
            "   ************************************************************\n"
            "   ***                                                      ***\n"
            "   ***    Comparison of assembly to synthetic annotation    ***\n"
@@ -122,7 +101,7 @@ static Scripts endoSummary()
 {
     return "   ***************************************************************\n"
            "   ***                                                         ***\n"
-           "   ***    Comparison of assembly to experimental annotation    ***\n"
+           "   ***       Comparison of assembly to genome annotation       ***\n"
            "   ***                                                         ***\n"
            "   ***************************************************************\n\n"
            "   ***\n"
@@ -168,7 +147,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
-    // We'll need the reference annotation for comparison (endogenous is optional)
+    // We'll need the annotation for comparison (endogenous is optional)
     assert(!o.rChrT.empty());
 
     /*
@@ -249,15 +228,29 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         {
             case Exon:
             {
-                stats.chrT_exons++;
-                stats.endo_exons++;
+                if (f.cID == ChrT)
+                {
+                    stats.cExons++;
+                }
+                else
+                {
+                    stats.eExons++;
+                }
+                
                 break;
             }
 
             case Transcript:
             {
-                stats.chrT_trans++;
-                stats.endo_trans++;
+                if (f.cID == ChrT)
+                {
+                    stats.cTrans++;
+                }
+                else
+                {
+                    stats.eTrans++;
+                }
+                
                 break;
             }
 
@@ -275,19 +268,21 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
 
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
     
+    const auto endoID = r.endoID();
+    
     o.info("Generating TransAssembly_summary.stats");
     o.writer->open("TransAssembly_summary.stats");
     o.writer->write((boost::format(chrTSummary()) % file
-                                                  % stats.chrT_exons
-                                                  % stats.endo_exons
-                                                  % stats.chrT_trans
-                                                  % stats.endo_trans
+                                                  % stats.cExons
+                                                  % stats.eExons
+                                                  % stats.cTrans
+                                                  % stats.eTrans
                                                   % o.rChrT
                                                   % r.countExons(ChrT)
                                                   % r.countIntrons(ChrT)
                                                   % (o.rEndo.empty() ? "-"  : o.rEndo)
-                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons("chr1")))
-                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons("chr1")))
+                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons(endoID)))
+                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons(endoID)))
                                                   % S(data.eSN)            // 12
                                                   % S(data.eFSN)
                                                   % S(data.eSP)

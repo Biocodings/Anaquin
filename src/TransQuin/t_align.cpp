@@ -518,7 +518,8 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
 
 template <typename F> std::string check(const TAlign::Stats &stats, F f, const ChrID &cID)
 {
-    const auto id = cID == ChrT ? ChrT : "chr1"; // TODO: Fix this...
+    const auto &r = Standard::instance().r_trans;
+    const auto id = cID == ChrT ? ChrT : r.endoID();
     
     // Don't try unless we're sure it'll work
     if (!stats.data.count(id))

@@ -190,8 +190,11 @@ namespace Anaquin
     
     struct AnalyzerOptions : public WriterOptions
     {
-        // Files for the reference annotation
-        FileName rChrT, rEndo;
+        // Reference annotation for the synthetic
+        FileName rChrT;
+        
+        // Reference annotation for the endogenous
+        FileName rEndo;
     };
     
     struct IndexOptions : public AnalyzerOptions

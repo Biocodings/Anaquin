@@ -191,8 +191,7 @@ namespace Anaquin
                 
                     /*
                      * Is this sequin detectable? If it's detectable, what about the concentration?
-                     * By definition, detection limit is defined as the smallest abundance while
-                     * still being detected.
+                     * By definition, detection limit is defined as the smallest abundance while still detected.
                      */
                 
                     if (counts)

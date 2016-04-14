@@ -76,14 +76,14 @@ namespace Anaquin
                 {
                     t.id = toks[GeneField::GeneID];
                     
-//                    if (Standard::instance().r_trans.findGene("chrT", t.id))
-//                    {
-                        t.cID = "chrT";
-//                    }
-//                    else
-//                    {
-//                        t.cID = "chr1";
-//                    }
+                    if (Standard::instance().r_trans.findGene(ChrT, t.id))
+                    {
+                        t.cID = ChrT;
+                    }
+                    else
+                    {
+                        t.cID = Endo;
+                    }
                     
                     t.l     = Locus(stod(toks[GeneField::GeneStart]), stod(toks[GeneField::GeneEnd]));
                     t.abund = stod(toks[GeneField::GeneFPKM]);
