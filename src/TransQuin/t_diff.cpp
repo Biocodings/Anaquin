@@ -111,7 +111,7 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
         }
     }
     
-    stats.eLogFs.push_back(log2(known));
+    stats.elfs.push_back(log2(known));
 }
 
 template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::Options &o)
@@ -130,7 +130,7 @@ template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::
     else
     {
         stats.n_endo++;
-        stats.eLogFs.push_back(NAN);
+        stats.elfs.push_back(NAN);
     }
 
     /*
@@ -143,17 +143,17 @@ template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::
     {
         stats.ps.push_back(t.p);
         stats.qs.push_back(t.q);
-        stats.mLogFs.push_back(t.logF);
-        stats.logFSEs.push_back(t.logFSE);
-        stats.baseMeans.push_back(t.baseMean);
+        stats.mlfs.push_back(t.logF);
+        stats.ses.push_back(t.logFSE);
+        stats.means.push_back(t.baseMean);
     }
     else
     {
         stats.ps.push_back(NAN);
         stats.qs.push_back(NAN);
-        stats.mLogFs.push_back(NAN);
-        stats.logFSEs.push_back(NAN);
-        stats.baseMeans.push_back(NAN);
+        stats.mlfs.push_back(NAN);
+        stats.ses.push_back(NAN);
+        stats.means.push_back(NAN);
     }
 }
 

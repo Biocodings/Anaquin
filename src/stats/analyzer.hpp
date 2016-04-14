@@ -16,16 +16,21 @@ namespace Anaquin
         return t == ChrT ? ChrT : Endo;
     }
     
-    template <typename T> std::string toString(const T &x, const unsigned n = 2)
+    template <typename T> std::string toString(const T &x, unsigned n = 2)
     {
         std::ostringstream out;
         out << std::fixed << std::setprecision(n) << x;
         return out.str();
     }
 
-    template <typename T> std::string toNA(const T &x)
+    template <typename T> std::string n2str(const T &x)
     {
-        return isnan(x) ? "NA" : std::to_string(x);
+        return isnan(x) ? "NA" : toString(x);
+    }
+    
+    template <typename T> std::string p2str(const T &x)
+    {
+        return isnan(x) ? "NA" : toString(x, 310);
     }
     
     inline FileName extractFile(const Path &path)

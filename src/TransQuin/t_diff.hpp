@@ -38,13 +38,13 @@ namespace Anaquin
             std::stringstream ss;
             ss << "sequin\tmean\texpected\tmeasured\tse\tpval\tqval\n";
             
-            const auto &ps        = stats.ps;
-            const auto &qs        = stats.qs;
-            const auto &ids       = stats.ids;
-            const auto &logFs     = stats.mLogFs;
-            const auto &eLogFs    = stats.eLogFs;
-            const auto &logFSEs   = stats.logFSEs;
-            const auto &baseMeans = stats.baseMeans;
+            const auto &ps    = stats.ps;
+            const auto &qs    = stats.qs;
+            const auto &ids   = stats.ids;
+            const auto &elfs  = stats.elfs;
+            const auto &mlfs  = stats.mlfs;
+            const auto &ses   = stats.ses;
+            const auto &means = stats.means;
             
             for (auto j = 0; j < ids.size(); j++)
             {
@@ -55,12 +55,12 @@ namespace Anaquin
                 else
                 {
                     ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % ids[j]
-                                                                                 % toNA(baseMeans[j])
-                                                                                 % toNA(eLogFs[j])
-                                                                                 % toNA(logFs[j])
-                                                                                 % toNA(logFSEs[j])
-                                                                                 % toNA(ps[j])
-                                                                                 % toNA(qs[j])).str());
+                                                                                 % n2str(means[j])
+                                                                                 % n2str(elfs[j])
+                                                                                 % n2str(mlfs[j])
+                                                                                 % n2str(ses[j])
+                                                                                 % p2str(ps[j])
+                                                                                 % p2str(qs[j])).str());
                 }
             }
             
@@ -172,20 +172,20 @@ namespace Anaquin
             std::vector<Probability> ps, qs;
             
             // Expected log-fold ratios
-            std::vector<Concent> eLogFs;
+            std::vector<Concent> elfs;
 
             // Measured log-fold ratios
-            std::vector<Concent> mLogFs;
+            std::vector<Concent> mlfs;
 
             /*
              * Optional inputs. For example, Cuffdiffs wouldn't give them.
              */
             
             // Normalized average counts for the replicates
-            std::vector<double> baseMeans;
+            std::vector<double> means;
             
             // Log-fold ratios standard deviation
-            std::vector<double> logFSEs;
+            std::vector<double> ses;
             
             // Average counts for each condition if provided
             std::vector<std::map<std::string, Counts>> avgs;

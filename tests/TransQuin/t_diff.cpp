@@ -17,26 +17,26 @@ TEST_CASE("TDiff_DESeq2")
 
     REQUIRE(r.size() == 2);
 
-    REQUIRE(r.ids[0]       == "R1_101");
-    REQUIRE(r.ps[0]        == Approx(5.207225e-02));
-    REQUIRE(r.mLogFs[0]    == Approx(-1.79218027));
-    REQUIRE(r.eLogFs[0]    == Approx(-3.0));
-    REQUIRE(r.logFSEs[0]   == Approx(0.92259825));
-    REQUIRE(r.baseMeans[0] == Approx(3.924675));
+    REQUIRE(r.ids[0]   == "R1_101");
+    REQUIRE(r.ps[0]    == Approx(5.207225e-02));
+    REQUIRE(r.mlfs[0]  == Approx(-1.79218027));
+    REQUIRE(r.elfs[0]  == Approx(-3.0));
+    REQUIRE(r.ses[0]   == Approx(0.92259825));
+    REQUIRE(r.means[0] == Approx(3.924675));
 
-    REQUIRE(r.ids[2]       == "R1_103");
-    REQUIRE(r.ps[2]        == Approx(6.250000e-27));
-    REQUIRE(r.mLogFs[2]    == Approx(-0.99634137));
-    REQUIRE(r.eLogFs[2]    == Approx(-1.0));
-    REQUIRE(r.logFSEs[2]   == Approx(0.09272531));
-    REQUIRE(r.baseMeans[2] == Approx(691.727098));
+    REQUIRE(r.ids[2]   == "R1_103");
+    REQUIRE(r.ps[2]    == Approx(6.250000e-27));
+    REQUIRE(r.mlfs[2]  == Approx(-0.99634137));
+    REQUIRE(r.elfs[2]  == Approx(-1.0));
+    REQUIRE(r.ses[2]   == Approx(0.09272531));
+    REQUIRE(r.means[2] == Approx(691.727098));
 
-    REQUIRE(r.ids[5]       == "R1_13");
-    REQUIRE(r.ps[5]        == Approx(5.981102e-01));
-    REQUIRE(r.mLogFs[5]    == Approx(0.03421518));
-    REQUIRE(r.eLogFs[5]    == Approx(0.0));
-    REQUIRE(r.logFSEs[5]   == Approx(0.06490966));
-    REQUIRE(r.baseMeans[5] == Approx(5658.731489));
+    REQUIRE(r.ids[5]   == "R1_13");
+    REQUIRE(r.ps[5]    == Approx(5.981102e-01));
+    REQUIRE(r.mlfs[5]  == Approx(0.03421518));
+    REQUIRE(r.elfs[5]  == Approx(0.0));
+    REQUIRE(r.ses[5]   == Approx(0.06490966));
+    REQUIRE(r.means[5] == Approx(5658.731489));
 }
 
 TEST_CASE("TDiff_Classify")
