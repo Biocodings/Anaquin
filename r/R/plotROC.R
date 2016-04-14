@@ -145,9 +145,12 @@ plotROC.VarQuin <- function(data, title=NULL, plotPerf=FALSE)
     .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), plotPerf), title)
 }
 
-plotROC.LadQuin <- function(data, refRatio, title=NULL, plotPerf=FALSE)
+plotTROC <- function(data, title=NULL, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
 {
-    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), refRatio=refRatio, plotPerf), title)
+    # Classify the sequins
+    data$seqs <- TransDiff(data)
+    
+    plotROC(data, title=title, plotPerf=plotPerf, refRatio=0, shouldPseuoLog=shouldPseuoLog)
 }
 
 plotROC <- function(data, title=NULL, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)

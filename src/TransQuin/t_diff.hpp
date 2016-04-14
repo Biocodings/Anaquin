@@ -101,7 +101,7 @@ namespace Anaquin
                                                               const FileName &csv,
                                                               const Options &o)
         {
-            o.info(file);
+            o.info("Generating " + file);
             o.writer->open(file);
             o.writer->write(RWriter::createScript(csv, PlotTFold()));
             o.writer->close();
@@ -119,11 +119,12 @@ namespace Anaquin
         
         template <typename Stats, typename Options> static void generateSummary(const FileName &file,
                                                                                 const Stats &stats,
-                                                                                const Options &o)
+                                                                                const Options &o,
+                                                                                const Units &units)
         {
             o.info("Generating " + file);
             o.writer->open(file);
-            o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats.hist));
+            o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats, stats.hist, units));
             o.writer->close();
         }
 

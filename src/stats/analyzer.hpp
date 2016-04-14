@@ -45,7 +45,7 @@ namespace Anaquin
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)
         {
-            return c + p.second ? 1 : 0;
+            return c + (p.second ? 1 : 0);
         });
     }
     

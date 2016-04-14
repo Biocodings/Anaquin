@@ -134,7 +134,7 @@ template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::
     }
 
     /*
-     * The expected log-fold is done in the classifer because it can only happen for synthetic
+     * The expected log-fold is done in the classifer because it can only happen with synthetic
      */
 
     stats.ids.push_back(t.id);
@@ -250,8 +250,8 @@ void TDiff::report(const FileName &file, const Options &o)
 {
     const auto m = std::map<Metrics, std::string>
     {
-        { Metrics::Gene,    "gene"    },
-        { Metrics::Isoform, "isoform" },
+        { Metrics::Gene,    "genes"    },
+        { Metrics::Isoform, "isoforms" },
     };
 
     const auto stats = TDiff::analyze(file, o);
@@ -263,7 +263,7 @@ void TDiff::report(const FileName &file, const Options &o)
      * 1. Generating summary statistics
      */
 
-    TDiff::generateSummary("TransDiff_summary.stats", stats, o);
+    TDiff::generateSummary("TransDiff_summary.stats", stats, o, units);
 
     /*
      * 2. Generating differential results

@@ -169,7 +169,7 @@ void MDiff::report(const FileName &file1, const FileName &file2, const Options &
     
     o.info("Generating MetaDiff_summary.stats");
     o.writer->open("MetaDiff_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file1 + " & " + file2, o.rChrT, stats, stats.hist));
+    //o.writer->write(StatsWriter::linearSummary(file1 + " & " + file2, o.rChrT, stats, stats.hist));
     o.writer->close();
 
     /*

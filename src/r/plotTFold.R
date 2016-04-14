@@ -17,6 +17,6 @@ library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 data <- data[!is.na(data$expected),]
-data <- TransQuin(seqs=row.names(data), expect=data$expected, measured=data$measured)
-
+data <- TransQuin(seqs=row.names(data), expected=data$expected, measured=data$measured)
+ 
 plotLogFold(data)

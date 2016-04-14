@@ -122,7 +122,7 @@ void VAllele::report(const FileName &file, const Options &o)
 
     o.info("Generating VarAllele_summary.stats");
     o.writer->open("VarAllele_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats.all, stats.hist));
+    //o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats.all, stats.hist));
     o.writer->close();
 
     /*

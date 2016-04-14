@@ -13,7 +13,7 @@ extern Scripts PlotTROC();
 extern Scripts PlotTMA();
 
 // Defined in main.cpp
-extern std::string mixture();
+extern Scripts mixture();
 
 Scripts RWriter::createScript(const FileName &file, const Scripts &scripts)
 {
@@ -23,50 +23,74 @@ Scripts RWriter::createScript(const FileName &file, const Scripts &scripts)
                                    % file).str();
 }
 
-Scripts StatsWriter::linearSummary(const FileName &file, const FileName &ref, const LinearStats &stats, const Hist &hist)
+Scripts StatsWriter::linearSummary(const FileName &file,
+                                   const FileName &annot,
+                                   const LinearStats &stats,
+                                   const MappingStats &mStats,
+                                   const Hist &hist,
+                                   const Units &units)
 {
-    const auto summary = "Summary for input: %1%\n\n"
-                         "   Reference:   %2%\n"
-                         "   Mixture:     %3%\n\n"
-                         "   Detected:    %4%/%5%\n"
-                         "   Limit:       %6% (%7%)\n\n"
-                         "   Correlation: %8%\n"
-                         "   Slope:       %9%\n"
-                         "   R2:          %10%\n"
-                         "   F-statistic: %11%\n"
-                         "   P-value:     %12%\n"
-                         "   SSM:         %13%, DF: %14%\n"
-                         "   SSE:         %15%, DF: %16%\n"
-                         "   SST:         %17%, DF: %18%\n\n"
+    const auto summary = "   ***\n"
+                         "   *** Number of %1% for synthetic and experiment detected in the input file\n"
+                         "   ***\n\n"
+                         "   Synthetic:  %2% (%3%)\n"
+                         "   Experiment: %4% (%5%)\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation\n"
+                         "   ***\n\n"
+                         "   Annotation: %6%\n"
+                         "   Mixture:    %7%\n"
+                         "   Reference:  %8% %1%\n"
+                         "   Detected:   %9% %1%\n\n"
+                         "   Limit:      %10% (%11%)\n\n"
+                         "   ***\n"
+                         "   ***   Correlation: Pearson’s correlation\n"
+                         "   ***   Slope:       Regression slope for the regression\n"
+                         "   ***   R2:          Coefficient of determination for the regression\n"
+                         "   ***   F-stat:      F-test statistic under the null hypothesis\n"
+                         "   ***   P-value:     P-value under the null hypothesis\n"
+                         "   ***   SSM:         Total sum of squares for model\n"
+                         "   ***   SSE:         Total sum of squares for residuals\n"
+                         "   ***   SST:         Total sum of squares\n"
+                         "   ***\n\n"
+                         "   Correlation: %12%\n"
+                         "   Slope:       %13%\n"
+                         "   R2:          %14%\n"
+                         "   F-statistic: %15%\n"
+                         "   P-value:     %16%\n"
+                         "   SSM:         %17%, DF: %18%\n"
+                         "   SSE:         %19%, DF: %20%\n"
+                         "   SST:         %21%, DF: %22%\n\n"
                          "   ***\n"
                          "   *** The following statistics are computed on the log2 scale.\n"
                          "   ***\n"
                          "   ***   Eg: If the data points are (1,1), (2,2). The correlation will\n"
                          "   ***       be computed on (log2(1), log2(1)), (log2(2), log2(2)))\n"
                          "   ***\n\n"
-                         "   Correlation: %19%\n"
-                         "   Slope:       %20%\n"
-                         "   R2:          %21%\n"
-                         "   F-statistic: %22%\n"
-                         "   P-value:     %23%\n"
-                         "   SSM:         %24%, DF: %25%\n"
-                         "   SSE:         %26%, DF: %27%\n"
-                         "   SST:         %28%, DF: %29%\n";
+                         "   Correlation: %23%\n"
+                         "   Slope:       %24%\n"
+                         "   R2:          %25%\n"
+                         "   F-statistic: %26%\n"
+                         "   P-value:     %27%\n"
+                         "   SSM:         %28%, DF: %29%\n"
+                         "   SSE:         %30%, DF: %31%\n"
+                         "   SST:         %32%, DF: %33%\n";
     
-    // Linear regression without logarithm
     const auto nlm = stats.linear(false);
-    
-    // Linear regression with logarithm
     const auto llm = stats.linear(true);
 
-    return (boost::format(summary) % file
-                                   % ref
-                                   % mixture()
-                                   % count(hist)
-                                   % hist.size()
-                                   % stats.limit.id
-                                   % stats.limit.abund
-                                   % nlm.r
+    return (boost::format(summary) % units
+                                   % mStats.n_chrT
+                                   % mStats.chrTProp()
+                                   % mStats.n_endo
+                                   % mStats.endoProp()
+                                   % annot
+                                   % mixture()           // 7
+                                   % hist.size()         // 8
+                                   % count(hist)         // 9
+                                   % stats.limit.id      // 10
+                                   % stats.limit.abund   // 11
+                                   % nlm.r               // 12
                                    % nlm.m
                                    % nlm.R2
                                    % nlm.F
@@ -77,7 +101,7 @@ Scripts StatsWriter::linearSummary(const FileName &file, const FileName &ref, co
                                    % nlm.SSE_D
                                    % nlm.SST
                                    % nlm.SST_D
-                                   % llm.r
+                                   % llm.r                // 23
                                    % llm.m
                                    % llm.R2
                                    % llm.F
@@ -95,16 +119,17 @@ Scripts StatsWriter::inflectSummary()
     return "Summary for input: %1%\n\n"
            "%41%"
            "   ***\n"
-           "   *** Number of %40% for synthetic and experiment relative to all %40% detected in the input file\n"
+           "   *** Number of %40% for synthetic and experiment detected in the input file\n"
            "   ***\n\n"
            "   Synthetic:  %2% (%3%)\n"
            "   Experiment: %4% (%5%)\n\n"
            "   ***\n"
            "   *** Reference annotation\n"
            "   ***\n\n"
-           "   File:      %6%\n"
-           "   Reference: %7% %8%\n"
-           "   Detected:  %9% %8%\n\n"
+           "   Annotation: %6%\n"
+           "   Mixture:    %42%\n"
+           "   Reference:  %7% %8%\n"
+           "   Detected:   %9% %8%\n\n"
            "   ***\n"
            "   ***   Correlation: Pearson’s correlation\n"
            "   ***   Slope:       Regression slope for the regression\n"
@@ -112,7 +137,7 @@ Scripts StatsWriter::inflectSummary()
            "   ***   F-stat:      F-test statistic under the null hypothesis\n"
            "   ***   P-value:     P-value under the null hypothesis\n"
            "   ***   SSM:         Total sum of squares for model\n"
-           "   ***   SSE:         Total sum of squares for errors\n"
+           "   ***   SSE:         Total sum of squares for residuals\n"
            "   ***   SST:         Total sum of squares\n"
            "   ***\n\n"
            "   ***\n"
@@ -209,8 +234,9 @@ Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR
                                                          % STRING(stats.wLog.SSE_D)
                                                          % STRING(stats.wLog.SST)
                                                          % STRING(stats.wLog.SST_D)
-                                                         % units
+                                                         % units                     // 40
                                                          % intro
+                                                         % mixture()
             ).str();
 };
 
@@ -310,16 +336,4 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
     }
 
     return inflectSummary(chrTR, endoR, r, units);
-}
-
-Scripts RWriter::createMA(const FileName &file, const std::string &lvl)
-{
-    std::stringstream ss;
-    ss << PlotTMA();
-
-    return (boost::format(ss.str()) % date()
-            % __full_command__
-            % __output__
-            % file
-            % lvl).str();
 }

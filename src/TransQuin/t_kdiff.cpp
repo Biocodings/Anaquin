@@ -91,7 +91,7 @@ void TKDiff::report(const FileName &file, const Options &o)
      * 1. Generating summary statistics
      */
     
-    TDiff::generateSummary("TransKDiff_summary.stats", stats, o);
+    TDiff::generateSummary("TransKDiff_summary.stats", stats, o, units);
     
     /*
      * 2. Generating differential results

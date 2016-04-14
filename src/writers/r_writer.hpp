@@ -104,7 +104,9 @@ namespace Anaquin
         static Scripts linearSummary(const FileName &,
                                      const FileName &,
                                      const LinearStats &,
-                                     const Hist &hist);
+                                     const MappingStats &,
+                                     const Hist  &,
+                                     const Units &units);
 
         template <typename Stats_1, typename Stats_2, typename Stats> static Scripts linear(const FileName &f,
                                                                                             const FileName &d1,
@@ -200,8 +202,6 @@ namespace Anaquin
     struct RWriter
     {
         static Scripts createScript(const FileName &name, const Scripts &scripts);
-        
-        static Scripts createMA(const FileName &, const std::string &);
     };
 }
 
