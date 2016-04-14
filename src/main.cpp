@@ -618,12 +618,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     const auto elapsed = (boost::format("Completed. %1% seconds.") % (double(end - begin) / CLOCKS_PER_SEC)).str();
     o.info(elapsed);
 
-    // Always save a copy of the mixture if available
-    if (!mixture().empty())
-    {
-        system(("cp " + mixture() + " " + __output__ + "/").c_str());
-    }
-
 #ifndef DEBUG
     o.logger->close();
 #endif

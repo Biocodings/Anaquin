@@ -14,10 +14,10 @@ TEST_CASE("TAssembly_CompareWithItself")
 
     const auto r = TAssembly::analyze(o.rChrT, o);
 
-    REQUIRE(r.chrT_exons == 1200);
-    REQUIRE(r.endo_exons == 1200);
-    REQUIRE(r.chrT_trans == 0);
-    REQUIRE(r.endo_trans == 0);
+    REQUIRE(r.cExons == 1200);
+    REQUIRE(r.eExons == 1200);
+    REQUIRE(r.cTrans == 0);
+    REQUIRE(r.eTrans == 0);
 
     REQUIRE(r.data.at(ChrT).eSN == 1.0);
     REQUIRE(r.data.at(ChrT).eSP == 1.0);
