@@ -19,8 +19,7 @@
 pval <- function(data)
 {
     stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'LadQuin')
+                  class(data) == 'VarQuin')
     
     if (is.null(data$seqs$pval)) 
     {
@@ -376,7 +375,7 @@ plotLODR.LadQuin <- function(data, title=NULL)
                   )
 }
 
-plotLODR.TransQuin <- function(data,
+plotLODR <- function(data,
                      lvl,
                      title = NULL,
                      chosenFDR = 0.1,
