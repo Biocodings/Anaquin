@@ -6,10 +6,6 @@
 #    %2%
 #
 
-#
-# This script generates a LODR (limit-of-detection-ratio) plot.
-#
-
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.name=1, sep='\t')
