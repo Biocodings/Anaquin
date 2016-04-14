@@ -4,12 +4,13 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotROC <- function(data, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
+.plotROC <- function(data, title=NULL, refRatio=NULL, shouldPseuoLog=TRUE, shouldAUC=FALSE)
 {
     require(ROCR)
     require(grid)
     require(gridExtra)
     
+    data <- data$seqs
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
     
     # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
@@ -25,9 +26,8 @@
     # Turn the probabilities into ranking classifer
     data$score <- 1-data$lpval
     
-    ROCDat <- NULL
-    AUCDat <- NULL
-    
+    rocDat <- NULL
+    aucDat <- NULL
     ratios <- sort(data$ratio)
     
     for (ratio in unique(ratios))
@@ -48,13 +48,13 @@
             # No false-positive or true-positive?
             if (length(unique(t$label)) == 1)
             {
-                # No TP...
+                # No TP... Add a TP...
                 if (unique(t$label) == 'FP')
                 {
                     x <- data.frame(pval=0, label='TP', ratio=ratio, lpval=0, score=0)
                 }
             
-                # No FP...
+                # No FP... Add a FP...
                 else
                 {
                     x <- data.frame(pval=0, label='FP', ratio=ratio, lpval=0, score=0)                    
@@ -77,95 +77,55 @@
             AUC   <- round(unlist(auc@y.values), 4)
             print(paste(c('AUC for ', ratio, ': ', AUC), collapse=''))
 
-            if (plotPerf)
-            {
-                tps <- unlist(perf@y.values)
-                fps <- unlist(perf@x.values)
-
-                # What's the FP when TP reaches 100%?
-                cutoff_100 <- fps[which(tps == 1.0)[1]]
-                
-                # What's the FP when TP reaches 75%?
-                cutoff_75  <- fps[which(tps >= 0.75)[1] - 1]                
-
-                prec_75 = 0.75 / (0.75 + cutoff_75)
-                
-                print(paste(c('Precision for 75% for ratio', ratio, 'is :', prec_75), collapse=' '))
-                
-                plot(perf)
-                mtext(paste(c('AUC:', AUC, 'for ratio:', ratio, '. TP==1.0, FP==', cutoff_100), collapse=' '))
-            }
-
-            AUCDatNew <- data.frame(Ratio=ratio, AUC=round(AUC, digits=3))
-            AUCDat <- rbind(AUCDat, AUCDatNew)
+            aucDatNew <- data.frame(Ratio=ratio, AUC=round(AUC, digits=3))
+            aucDat <- rbind(aucDat, aucDatNew)
             
             FPR <- c(unlist(perf@x.values)) 
             TPR <- c(unlist(perf@y.values))
             
-            ROCDatNew <- data.frame(FPR=FPR, TPR=TPR, ratio=ratio)
-            ROCDat    <- rbind(ROCDat, ROCDatNew)
+            rocDatNew <- data.frame(FPR=FPR, TPR=TPR, ratio=ratio)
+            rocDat    <- rbind(rocDat, rocDatNew)
         }
     }
     
-    ROCDat$ratio = as.factor(ROCDat$ratio)
+    rocDat$ratio = as.factor(rocDat$ratio)
     
-    return (list(roc=ROCDat, auc=AUCDat))
-}
-
-.plotROC.Plot <- function(data, title=NULL)
-{
-    require(ggplot2)
+    p <- ggplot(data=rocDat, aes(x=FPR, y=TPR))              + 
+            geom_path(size=1, aes(colour=ratio), alpha=0.7)  + 
+            geom_point(size=2, aes(colour=ratio), alpha=0.7) + 
+            geom_abline(intercept=0, slope=1, linetype=2)    +
+            labs(colour='Fold')                              +
+            theme_bw()
     
-    aucData <- data$auc
-    rocData <- data$roc
-    
-    p <- ggplot(data=rocData, aes(x=FPR, y=TPR))              + 
-             geom_path(size=1, aes(colour=ratio), alpha=0.7)  + 
-             geom_point(size=2, aes(colour=ratio), alpha=0.7) + 
-             geom_abline(intercept=0, slope=1, linetype=2)    +
-             labs(colour='Fold')                              +
-             theme_bw()
-
     if (!is.null(title))
     {
         p <- p + ggtitle(title)
     }
-
-    theme <- gridExtra::ttheme_default(core = list(fg_params=list(cex = 0.7)),
-                                    colhead = list(fg_params=list(cex = 1,0)),
-                                    rowhead = list(fg_params=list(cex = 1.0)))
-    #g <- tableGrob(aucData)
-    #p <- grid.arrange(p, g, ncol = 1, heights = c(1.0,0.5))
     
-    print(p)
+    if (shouldAUC)
+    {
+        theme <- gridExtra::ttheme_default(core    = list(fg_params=list(cex = 0.7)),
+                                           colhead = list(fg_params=list(cex = 1,0)),
+                                           rowhead = list(fg_params=list(cex = 1.0)))
+        g <- tableGrob(aucDat)
+        p <- grid.arrange(p, g, ncol=1, heights=c(1.0,0.5))
+    }
+
+    print(p)    
 }
 
-plotROC.VarQuin <- function(data, title=NULL, plotPerf=FALSE)
+plotROC.VarQuin <- function(data, title=NULL)
 {
-    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected), plotPerf), title)
+    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected)), title)
 }
 
-plotTROC <- function(data, title=NULL, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
+plotROC.TransQuin <- function(data)
 {
-    # Classify the sequins
     data$seqs <- TransDiff(data)
-    
-    plotROC(data, title=title, plotPerf=plotPerf, refRatio=0, shouldPseuoLog=shouldPseuoLog)
+    .plotROC(data, title='ROC for TransQuin differential', refRatio=0)
 }
 
-plotROC <- function(data, title=NULL, plotPerf=FALSE, refRatio=NULL, shouldPseuoLog=TRUE)
+plotROC <- function(data)
 {
-    stopifnot(class(data) == 'TransQuin' | class(data) == 'VarQuin')
-    
-    stopifnot(!is.null(data$seqs$pval))
-    stopifnot(!is.null(data$seqs$label))
-    stopifnot(!is.null(data$seqs$ratio))    
-    stopifnot(!is.null(data$seqs$expect))
-
-    data <- .plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$ratio),
-                     plotPerf=plotPerf,
-                     refRatio=refRatio,
-                     shouldPseuoLog=shouldPseuoLog)
-
-    .plotROC.Plot(data, title)
+    UseMethod("plotROC", data)
 }

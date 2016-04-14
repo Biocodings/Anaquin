@@ -6,13 +6,6 @@
 #    %2%
 #
 
-#
-# This script generates a log-fold plot for expected log-fold against measured log-fold.
-#
-#    - x-axis: expected log-fold
-#    - y-axis: measured log-fold
-#
-
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
