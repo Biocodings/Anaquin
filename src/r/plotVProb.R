@@ -13,14 +13,13 @@ sign <- 0.10
 
 data <- read.csv('%3%/%4%', sep='\t')
 
-data[data$Label=='FP',]$ERatio   <- 1
-data[data$Label=='FP',]$EAlleleF <- 1
+data$name <- paste(data$seq, data$pos, sep='_')
+data$name <- paste(data$name, data$type, sep='_')
 
-snp <- data[data$Type=='SNP',]
-ind <- data[data$Type=='Indel',]
+data[data$label=='FP',]$ratio  <- 1
+data[data$label=='FP',]$allele <- 1
 
-# Plot for SNP
-plotAllelePValue(data.frame(pval=log10(snp$PValue), abund=log10(snp$EAlleleF), ratio=as.factor(snp$EAlleleF)))
+data <- data[data$type=='SNP',] # Change it to indel if required
+data <- VarQuin(seqs=data$name, ratio=as.factor(data$ratio), pval=data$pval, measured=data$allele)
 
-# Plot for indels
-#plotAllelePValue(data.frame(pval=log10(ind$PValue), abund=log10(ind$EAlleleF), ratio=as.factor(ind$EAlleleF)))
+plotAlleleP(data)

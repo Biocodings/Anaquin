@@ -4,20 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-pval <- function(data)
-{
-    stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin')
-    
-    if (is.null(data$seqs$pval)) 
-    {
-        stop('Probability not provided. Please check and try again.')
-    }
-    
-    return (data$seqs$pval)
-}
-
-.plotLODR <- function(data,
+.fitLODR <- function(data,
                       band='pred',
                       chosenFDR=0.1,
                       shouldTable=FALSE,
@@ -25,10 +12,12 @@ pval <- function(data)
 {
     require(locfit)
 
-    stopifnot(!is.null(data$ratio) & !is.null(data$pval) & !is.null(data$abund))
+    stopifnot(!is.null(data$pval))
+    stopifnot(!is.null(data$ratio))
+    stopifnot(!is.null(data$measured))
     
     data <- data[!is.na(data$pval),]
-    data <- data[!is.na(data$abund),]
+    data <- data[!is.na(data$measured),]
 
     #
     # Estimate the q-value for false discovery rate.
@@ -108,7 +97,6 @@ pval <- function(data)
     
     lineDat <- NULL;
     
-    # Apply to loaded data
     lodr.resPlot <- NULL; set.seed(1)
     lodr.resLess <- NULL; set.seed(1)
     
@@ -127,7 +115,7 @@ pval <- function(data)
     for (ratio in unique(ratios))
     {
         t <- data[data$ratio == ratio,]
-        t <- t[t$abund != 0,]
+        t <- t[t$measured != 0,]
         t <- t[t$pval != 0,]
 
         #
@@ -139,10 +127,10 @@ pval <- function(data)
         {
             print(paste('Estmating LODR for', ratio))
             
-            plot(log10(t$abund), log10(t$pval))
+            plot(log10(t$measured), log10(t$pval))
             
             # Performs a local regression
-            fit <- locfit(log10(t$pval)~lp(log10(t$abund)), maxk=300)
+            fit <- locfit(log10(t$pval)~lp(log10(t$measured)), maxk=300)
             
             # Plot how the points are fitted
             plot(fit, band=band, get.data=TRUE, main=paste('Local regression for LFC:', ratio))
@@ -151,7 +139,7 @@ pval <- function(data)
             # Generate new data points and use those data points for the prediction band
             #
             
-            x.new <- seq(min(log10(t$abund)), max(log10(t$abund)), length.out=100)
+            x.new <- seq(min(log10(t$measured)), max(log10(t$measured)), length.out=100)
             X <- preplot(fit, band=band, newdata=x.new)
             
             x.new    <- 10^x.new
@@ -171,7 +159,7 @@ pval <- function(data)
         {
             tryCatch (
             {
-                t.res <- LODR(t$pval, t$abund, cutoff=cutoff, prob=prob)
+                t.res <- LODR(t$pval, t$measured, cutoff=cutoff, prob=prob)
                 t.res[-1]<-signif(10^t.res[-1],2)
                 
                 #if (t.res[1]>.01)
@@ -181,8 +169,8 @@ pval <- function(data)
                 #}
                 
                 t.resLess <- t.res
-                t.resLess[-1][t.resLess[-1] == signif(min(t$abund),2)] <- paste("<", signif(min(t$abund),2), sep="")
-                t.res[-1][t.res[-1]==signif(min(t$abund),2)] <- Inf
+                t.resLess[-1][t.resLess[-1] == signif(min(t$measured),2)] <- paste("<", signif(min(t$measured),2), sep="")
+                t.res[-1][t.res[-1]==signif(min(t$measured),2)] <- Inf
 
                 lodr.resPlot <- rbind(lodr.resPlot, c(round(abs(as.numeric(ratio)), 3), t.res))
                 lodr.resLess <- rbind(lodr.resLess, c(round(abs(as.numeric(ratio)), 3), t.resLess))
@@ -233,42 +221,51 @@ pval <- function(data)
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
     
-    x <- data.frame(abund=data$abund, pval=data$pval, ratio=as.factor(data$ratio))
+    x <- data.frame(abund=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
 
-    plotLODR.Plot(data=x, lineDat=lineDat, shouldBand=TRUE, cutoff=cutoff)
+    .plotLODR(data=x, lineDat=lineDat, shouldBand=TRUE, cutoff=cutoff)
 }
 
-plotAllelePValue <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
+plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
 {
     require(plyr)
+
+    stopifnot(class(data) == 'VarQuin')
+    data <- data$seqs
+    
+    stopifnot(!is.null(data$pval))
+    stopifnot(!is.null(data$ratio))    
     
     data$ratio <- revalue(data$ratio, c('1'='FP'))
     
     xLabels <- xBreaks
     xLabels[xLabels==0] <- 'FP'
     
-    plotLODR.Plot(data, title='Expected allele frequency vs p-value (SNP)', xname='Expected allele frequency (log10)', yname='P-value (log10)', xBreaks=xBreaks, xLabels=xLabels)
+    .plotLODR(data,
+                  title='Expected allele frequency vs p-value',
+                  xname='Expected allele frequency (log10)', yname='P-value (log10)',
+                  xBreaks=xBreaks,
+                  xLabels=xLabels)
 }
 
-#
-# Construct the LODR plot. The x-axis would be the measured expression while the y-axis would be the p-value.
-# This function doesn't apply any transformation to the inputs.
-#
-
-plotLODR.Plot <- function(data, ...)
+.plotLODR <- function(data, ...)
 {
     require(grid)
     require(qvalue)
     require(ggplot2)
     require(gridExtra)
     
+    stopifnot(!is.null(data$pval))
+    stopifnot(!is.null(data$ratio))
+    stopifnot(!is.null(data$measured))
+    
     x <- list(...)
-    p <- ggplot(data, aes(x=abund, y=pval, colour=ratio)) + geom_point(size=3) + theme_bw()
+    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=3) + theme_bw()
 
     
     x$xBreaks <- c(1, 10, 100, 1000, 10000)
     x$xLabels <- c('1e+00', '1e+01', '1e+02', '1e+03', '1e+04')
-    x$yBreaks <- c(1e-300, 1e-200, 1e-100, 1e-10, 1.00)
+    x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
     
     
     if (!is.null(x$xname)) { p <- p + xlab(x$xname)    }
@@ -311,8 +308,8 @@ plotLODR.Plot <- function(data, ...)
     }
     else
     {
-        p <- p + scale_x_log10(limits=c(min(data$abund), max(data$abund)))
-        p <- p + scale_x_log10(limits=c(min(data$abund), max(data$abund)), breaks=c(arrowDat$x, round(max(data$baseMean))))
+        p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)))
+        p <- p + scale_x_log10(limits=c(min(data$measured), max(data$measured)), breaks=c(arrowDat$x, round(max(data$baseMean))))
     }
     
     if (!is.null(x$yBreaks))
@@ -331,7 +328,7 @@ plotLODR.Plot <- function(data, ...)
 plotProb <- function(data, title=NULL)
 {
     # Probability under the null hypothesis (y-axis)
-    pval <- pval(data)
+    pval <- data$seqs$pval #pval(data)
 
     # Number of reads for the reference
     rReads <- data$seqs$rRead
@@ -339,27 +336,7 @@ plotProb <- function(data, title=NULL)
     # Number of reads for the variant
     vReads <- data$seqs$vRead
     
-    .plotLODR(data.frame(abund=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
-}
-
-plotLODR.LadQuin <- function(data, title=NULL)
-{
-    # Probability under the null hypothesis (y-axis)
-    pval <- pval(data)
-    
-    # Number of reads for the reference
-    abund <- data$seqs$abund
-
-    plotLODR.Plot(data.frame(abund=abund, pval=pval, ratio=data$seqs$expected),
-                  title='Significance vs Expression',
-                  xname='Expression (log10 Average Reads)',
-                  yname='Significance (log10 T-test Stats)',
-                  multiTest=FALSE#,
-                  #yMin=-2,
-                  #yMax=4,
-                  #xMin=-3,
-                  #xMax=3
-                  )
+    .fitLODR(data.frame(abund=rReads+vReads, pval=pval, ratio=data$seqs$eAFreq), multiTest=FALSE)
 }
 
 plotLODR <- function(data,
@@ -375,5 +352,5 @@ plotLODR <- function(data,
                      shouldTable = FALSE,
                      shouldBand  = FALSE)
 {
-    .plotLODR(data.frame(abund=data$seqs$mean, pval=pval(data), ratio=abs(data$seqs$expect)), multiTest=FALSE)
+    .fitLODR(data.frame(abund=data$seqs$mean, pval=pval(data), ratio=abs(data$seqs$expect)), multiTest=FALSE)
 }

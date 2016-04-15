@@ -6,8 +6,8 @@
 
 plotDensity <- function(file, seqIDs = NULL, minBase = NULL, maxBase = NULL)
 {
-    require(Sushi)
     require(plyr)
+    require(Sushi)
     require(rtracklayer)
 
     data <- read.csv(file, header=FALSE, sep='\t')

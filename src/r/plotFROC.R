@@ -14,6 +14,6 @@ data <- read.csv('/Users/tedwong/Sources/QA/output/FusionDiscover_labels.csv', s
 data[data$Label=='FP',]$Sequin <- c(1:nrow(data[data$Label=='FP',]))
 
 # Create a FusQuin data set for Anaquin
-data <- FusQuin(seqs=data$Sequin, label=data$Label, pos1=data$Position_1, pos2=data$Position_2)
+data <- FusQuin(seqs=data$seq, label=data$label, pos1=data$pos1, pos2=data$pos2)
 
 #plotROC.FusQuin(data)
