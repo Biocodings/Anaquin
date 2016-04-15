@@ -4,6 +4,15 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+plotAllele <- function(data)
+{
+    .plotExpress(data, title='Expected allele frequency vs Measured allele frequency',
+                       xname='Expected allele frequency (log2)',
+                       yname='Measured allele frequency (log2)',
+                   showStats='left',
+                  showLegend=TRUE)
+}
+
 plotAlleleReads <- function(data,
                             alpha = 1.0,
                             title = 'Allele Frequency vs Read count',

@@ -29,12 +29,12 @@ static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VA
         }
     };
 
-    o.writer->write((boost::format(format) % "Sequin"
-                                           % "EAlleleF"
-                                           % "MAlleleF"
-                                           % "RCount"
-                                           % "VCount"
-                                           % "Type").str());
+    o.writer->write((boost::format(format) % "sequin"
+                                           % "expected"
+                                           % "measured"
+                                           % "rcount"
+                                           % "vcount"
+                                           % "type").str());
     f(stats.snp, "SNP");
     f(stats.ind, "Indel");
 
@@ -122,7 +122,7 @@ void VAllele::report(const FileName &file, const Options &o)
 
     o.info("Generating VarAllele_summary.stats");
     o.writer->open("VarAllele_summary.stats");
-    //o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats.all, stats.hist));
+    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats.all, stats, stats.hist, "variants"));
     o.writer->close();
 
     /*
@@ -136,8 +136,8 @@ void VAllele::report(const FileName &file, const Options &o)
      * Generating for allele vs allele
      */
     
-    o.info("Generating VarAllele_alleleAllele.R");
-    o.writer->open("VarAllele_alleleAllele.R");
+    o.info("Generating VarAllele_allele.R");
+    o.writer->open("VarAllele_allele.R");
     o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAllele()));
     o.writer->close();
     
@@ -145,8 +145,8 @@ void VAllele::report(const FileName &file, const Options &o)
      * Generating for allele vs reads
      */
     
-    o.info("Generating VarAllele_alleleReads.R");
-    o.writer->open("VarAllele_alleleReads.R");
+    o.info("Generating VarAllele_reads.R");
+    o.writer->open("VarAllele_reads.R");
     o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAlleleReads()));
     o.writer->close();
 }

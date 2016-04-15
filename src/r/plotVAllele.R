@@ -6,10 +6,6 @@
 #    %2%
 #
 
-#
-# Create a plot for expected allele fraction vs measured allele fraction
-#
-
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
