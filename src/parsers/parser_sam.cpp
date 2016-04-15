@@ -48,13 +48,28 @@ void ParserSAM::parse(const FileName &file, Functor x)
             align.spliced = false;
 
             /*
+             * Check if this is a spliced alignment. A spliced alignment is an alignment that has bases skipped.
+             */
+            
+            info.spliced = false;
+            
+            for (auto i = 0; i < t->core.n_cigar; i++)
+            {
+                switch (bam_cigar_op(cigar[i]))
+                {
+                    case BAM_CREF_SKIP: { info.spliced = true; break; }
+                    default: { break; }
+                }
+            }
+            
+            /*
              * What to do with something like "528084 50 79M10250N22M"? We'd split it into three blocks.
              */
 
             for (; align.i < t->core.n_cigar; align.i++)
             {
-                const int op = bam_cigar_op(cigar[align.i]);
-                const int ol = bam_cigar_oplen(cigar[align.i]);
+                const auto op = bam_cigar_op(cigar[align.i]);
+                const auto ol = bam_cigar_oplen(cigar[align.i]);
 
                 // 1-based leftmost coordinate is assumed
                 align.l = Locus(n + 1, n + ol);

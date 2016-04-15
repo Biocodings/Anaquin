@@ -1086,6 +1086,24 @@ void VarRef::validate()
     }
 }
 
+// Absolute detection limit at the gene level
+Limit VarRef::absoluteGene(const SequinHist &hist) const
+{
+    throw "";
+}
+
+SequinHist VarRef::baseHist() const
+{
+    SequinHist hist;
+    
+    for (const auto &i : _data)
+    {
+        hist[baseID(i.first)];
+    }
+    
+    return hist;
+}
+
 const Intervals<> VarRef::endoInters() const
 {
     return _impl->inters;    

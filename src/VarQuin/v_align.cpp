@@ -1,4 +1,5 @@
 #include "VarQuin/v_align.hpp"
+#include "VarQuin/VarQuin.hpp"
 #include "VarQuin/v_sample.hpp"
 #include "parsers/parser_sam.hpp"
 #include <boost/algorithm/string/predicate.hpp>
@@ -51,9 +52,13 @@ static VAlign::Stats init()
 
     const auto &r = Standard::instance().r_var;
 
-    stats.data[ChrT].hist = r.hist();
-    stats.data[Endo].hist = r.endoHist();
+    stats.data[ChrT].hist = r.baseHist();
     
+    if (!r.endoID().empty())
+    {
+        stats.data[Endo].hist = r.endoHist();
+    }
+
     return stats;
 }
 
@@ -66,12 +71,14 @@ static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals
     {
         stats.data[ChrT].tp++;
         
+        const auto bID = baseID(match->id);
+        
         /*
          * It's important to map the position relative to the beginning of the sequin, as interval
          * has been designed for chromosome and thus starts from position 0.
          */
         
-        const auto l = inters.find(match->id);
+        const auto l = inters.find(bID);
 
         assert(l);
         assert(l->l() == match->l);
@@ -79,8 +86,8 @@ static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals
         const auto t = Locus(align.l.start - l->l().start, align.l.end - l->l().start);
         assert(t.length() <= l->l().length());
 
-        inters.find(match->id)->add(t);        
-        stats.data[ChrT].hist.at(match->id)++;
+        inters.find(bID)->add(t);
+        stats.data[ChrT].hist.at(bID)++;
     }
     else
     {
@@ -131,7 +138,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             continue;
         }
         
-        inters.add(Interval(i.first, i.second.l));
+        inters.add(Interval(baseID(i.first), i.second.l));
     }
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
@@ -156,13 +163,13 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         {
             classifyChrT(align, stats, inters);
         }
-        else
+        else if (r.isEndoID(align.cID))
         {
             classifyEndo(align, stats, inters);
         }
     });
 
-    stats.limit = r.absolute(stats.data[ChrT].hist);
+    // TODO: stats.limit = r.absolute(stats.data[ChrT].hist);
 
     /*
      * Calculating interval statistics
@@ -200,7 +207,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     };
     
     f(stats.data[ChrT], inters);
-    f(stats.data[Endo], r.endoInters());
+    
+    if (!r.endoID().empty())
+    {
+        f(stats.data[Endo], r.endoInters());
+    }
 
     return stats;
 }
@@ -211,22 +222,23 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
-                         "   *** Fraction of reads mapped to the synthetic and experimental chromosomes\n"
+                         "   *** Number of alignments aligned to the synthetic and genome\n"
                          "   ***\n\n"
-                         "   Unmapped:   %2% reads\n"
-                         "   Synthetic:  %3% (%4%%%) reads\n"
-                         "   Experiment: %5% (%6%%%) reads\n\n"
-                         "   Dilution:   %7%\n\n"
+                         "   Unmapped:  %2%\n"
+                         "   Synthetic: %3% (%4%%%)\n"
+                         "   Genome:    %5% (%6%%%)\n\n"
+                         "   Dilution:  %7%\n\n"
                          "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
                          "   File: %8%\n\n"
-                         "   Synthetic: %9% sequins\n\n"
+                         "   Synthetic: %9% sequins\n"
+                         "   Detected:  %18% sequins\n\n"
                          "   ***\n"
-                         "   *** Reference annotation (Experiment)\n"
+                         "   *** Reference annotation (Genome)\n"
                          "   ***\n\n"
-                         "   File: %10%\n\n"
-                         "   Experiment: %11% genes\n\n"
+                         "   File:   %10%\n\n"
+                         "   Genome: %11% genes\n\n"
                          "   *************************************************\n"
                          "   ***                                           ***\n"
                          "   ***    Comparison with synthetic annotation   ***\n"
@@ -243,6 +255,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "   Sensitivity:  %16%\n"
                          "   Specificity:  %17%\n\n";
     
+    const auto hasEndo = !o.rEndo.empty();
+
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src
                                             % stats.unmapped
@@ -252,27 +266,29 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.endoProp()
                                             % stats.dilution()
                                             % o.rChrT
-                                            % r.countSeqs()
-                                            % o.rEndo            // 10
-                                            % r.countInters()    // 11
-                                            % stats.sn(ChrT)     // 12
-                                            % stats.pc(ChrT)     // 13
-                                            % stats.limit.abund  // 14
-                                            % stats.limit.id     // 15
-                                            % stats.sn(ChrT)     // 16
-                                            % stats.pc(ChrT)     // 17
+                                            % stats.data.at(ChrT).hist.size()
+                                            % (!hasEndo ? "-" : o.rEndo) // 10
+                                            % (!hasEndo ? "-" : toString(r.countInters())) // 11
+                                            % stats.sn(ChrT)             // 12
+                                            % stats.pc(ChrT)             // 13
+                                            % stats.limit.abund          // 14
+                                            % stats.limit.id             // 15
+                                            % stats.sn(ChrT)             // 16
+                                            % stats.pc(ChrT)             // 17
+                                            % count(stats.data.at(ChrT).hist)
                      ).str());
     o.writer->close();
 }
 
 void VAlign::report(const FileName &file, const Options &o)
 {
+    //const auto &r = Standard::instance().r_var;
     const auto stats = analyze(file, o);
 
     o.info("Generating statistics");
     
     /*
-     * Write out summary statistics
+     * Generating summary statistics
      */
     
     writeSummary("VarAlign_summary.stats", file, stats, o);
@@ -284,13 +300,17 @@ void VAlign::report(const FileName &file, const Options &o)
     o.writer->open("VarAlign_quins.stats");
     o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
     
-    const auto format = "%1%\t%2%";
-    o.writer->write((boost::format(format) % "ID" % "Counts (reads)").str());
-    
-//    for (const auto &i : stats.h)
-//    {
-//        o.writer->write((boost::format(format) % i.first % stats.h.at(i.first)).str());
-//    }
+    const auto format = "%1%\t%2%\t%3%";
+    o.writer->write((boost::format(format) % "sequin"
+                                           % "expected"
+                                           % "sn").str());
+
+    for (const auto &i : stats.data.at(ChrT).hist)
+    {        
+        o.writer->write((boost::format(format) % i.first
+                                               % "-" //r.match(i.first)->abund(Mix_1)
+                                               % stats.sn(ChrT, i.first)).str());
+    }
     
     o.writer->close();
 }

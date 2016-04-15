@@ -19,16 +19,16 @@ namespace Anaquin
         Locus l;
     };
 
-    struct CountPercent
+    struct CountProp
     {
-        CountPercent(Counts i, Counts n) : i(i), n(n) {}
+        CountProp(Counts i, Counts n) : i(i), n(n) {}
         
         inline operator std::string() const
         {
             return (boost::format("%1% (%2%)") % i % n).str();
         }
         
-        inline double percent() const
+        inline Proportion percent() const
         {
             assert(i <= n);
             return static_cast<double>(i) / n;
@@ -73,7 +73,7 @@ namespace Anaquin
                 Counts aFP = 0;
             
                 /*
-                 * Level statistics (eg: exons and introns)
+                 * Metric statistics (eg: exons and introns)
                  */
                 
                 Counts lTP = 0;
@@ -127,6 +127,12 @@ namespace Anaquin
                      * Overall statistics
                      */
                     
+                    // Number of spliced alignments
+                    Counts spliced = 0;
+                    
+                    // Number of non-spliced alignments
+                    Counts nspliced = 0;
+
                     MergedConfusion overE, overI;
                     
                     // Overall performance at the base level
@@ -170,32 +176,35 @@ namespace Anaquin
                     return Standard::instance().r_trans.absoluteGene(*h);
                 }
                 
-                // Number of non-split reads
-                inline Counts countNonSplit(const ChrID &cID) const { return data.at(cID).overE.aNQ(); }
+                // Number of non-spliced alignments
+                inline Counts countNSpliced(const ChrID &cID) const { return data.at(cID).overE.aNQ(); }
                 
-                // Number of split reads
-                inline Counts countSplit(const ChrID &cID) const { return data.at(cID).overI.aNQ(); }
+                // Number of spliced alignments
+                inline Counts countSpliced(const ChrID &cID) const { return data.at(cID).overI.aNQ(); }
 
-                // Number of query bases in the input file
-                inline Counts countQBases(const ChrID &cID) const { return data.at(cID).overB.m.nq(); }
+                // Proportion of bases covered
+                inline Proportion countQBases(const ChrID &cID) const
+                {
+                    return CountProp(data.at(cID).overB.m.nq(), data.at(cID).overB.m.nr()).percent();
+                }
 
-                inline CountPercent missing(const ChrID &cID, MissingMetrics m) const
+                inline CountProp missing(const ChrID &cID, MissingMetrics m) const
                 {
                     switch (m)
                     {
                         case MissingMetrics::MissingGene:
                         {
-                            return CountPercent(data.at(cID).missG.size(), data.at(cID).histE.size());
+                            return CountProp(data.at(cID).missG.size(), data.at(cID).histE.size());
                         }
                             
                         case MissingMetrics::MissingExon:
                         {
-                            return CountPercent(data.at(cID).missE.size(), data.at(cID).eContains.size());
+                            return CountProp(data.at(cID).missE.size(), data.at(cID).eContains.size());
                         }
 
                         case MissingMetrics::MissingIntron:
                         {
-                            return CountPercent(data.at(cID).missI.size(), data.at(cID).iContains.size());
+                            return CountProp(data.at(cID).missI.size(), data.at(cID).iContains.size());
                         }
                     }
                 }

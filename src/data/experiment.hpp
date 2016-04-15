@@ -39,7 +39,7 @@ namespace Anaquin
             {
                 if (_file1.empty())
                 {
-                    throw std::runtime_error("Empty experimental files");
+                    throw std::runtime_error("No files given");
                 }
                 else if (_file1.size() != _file2.size())
                 {

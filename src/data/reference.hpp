@@ -119,14 +119,14 @@ namespace Anaquin
 
             template <typename T> SequinHist hist(const T &data) const
             {
-                SequinHist h;
+                SequinHist hist;
             
                 for (const auto &i : data)
                 {
-                    h[i.first] = 0;
+                    hist[i.first] = 0;
                 }
 
-                return h;
+                return hist;
             }
 
             inline SequinHist hist() const { return hist(_data); }
@@ -522,6 +522,9 @@ namespace Anaquin
 
             const Intervals<> endoInters() const;
         
+            // Absolute detection limit at the gene level
+            Limit absoluteGene(const SequinHist &) const;
+        
             // Returns number of known variants
             Counts countVars() const;
 
@@ -537,6 +540,9 @@ namespace Anaquin
             // Returns number of reference intervals
             Counts countInters() const;
 
+            // Eg: D_1_11, D_1_12
+            SequinHist baseHist() const;
+        
             EndoHist endoHist() const;
 
             const Variant *findVar(const SequinID &) const;

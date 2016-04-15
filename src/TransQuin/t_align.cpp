@@ -10,6 +10,9 @@ typedef std::function<void (TAlign::Stats &)> Functor;
 typedef TAlign::Stats::AlignMetrics   AlignMetrics;
 typedef TAlign::Stats::MissingMetrics MissingMetrics;
 
+// Defined for convenience
+static ChrID __gID__;
+
 template <typename T> void initT(const ChrID &cID, T &t)
 {
     const auto &r = Standard::instance().r_trans;
@@ -93,7 +96,7 @@ static TAlign::Stats init()
 
     if (!r.endoID().empty())
     {
-        initT(Endo, stats.data[Endo]);
+        initT(r.endoID(), stats.data[__gID__ = r.endoID()]);
     }
     
     assert(!stats.data.empty());
@@ -163,29 +166,27 @@ template <typename T> void collect(const ChrID &cID,
      * 1. Calculating alignment statistics.
      */
     
-    o.info("Calculating alignment statistics");
-    
     auto aligns = [](std::map<GeneID, TAlign::MergedConfusion> &gene,
                      TAlign::MergedConfusion &over,
-                     SequinHist &h,
+                     SequinHist &hist,
                      Counts unknowns,
                      const BinCounts &contains,
                      const BinCounts &overlaps,
                      const std::map<BinID, GeneID> &m)
     {
         /*
-         * Every containment is counted as a TP.
+         * Every containment is counted as a TP
          */
         
         for (const auto &i : contains)
         {
-            h.at(m.at(i.first)) += i.second;
+            hist.at(m.at(i.first)) += i.second;
             gene.at(m.at(i.first)).aTP += i.second;
             over.aTP += i.second;
         }
         
         /*
-         * Every overlapping is counted as a FP.
+         * Every overlapping is counted as a FP
          */
         
         for (const auto &i : overlaps)
@@ -424,42 +425,21 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
     return match;
 }
 
-#define REPORT_STATUS() if (!align.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
-
-static void classifyEndo(TAlign::Stats::Data &t,
-                         const Alignment &align,
-                         const ParserSAM::AlignmentInfo &info,
-                         const TAlign::Options &o)
+static bool matchAlign(TAlign::Stats::Data &t,
+                      const Alignment &align,
+                      const ParserSAM::AlignmentInfo &info,
+                      const TAlign::Options &o)
 {
+    #define REPORT_STATUS() if (!align.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
     REPORT_STATUS();
     
-    if (!align.mapped)
-    {
-        return;
-    }
-    else if (!matchAlign(t, align))
+    if (!matchAlign(t, align))
     {
         t.unknowns.push_back(UnknownAlignment(align.name, align.l));
+        return true;
     }
-}
-
-static void classifyChrT(TAlign::Stats::Data &t,
-                         const Alignment &align,
-                         const ParserSAM::AlignmentInfo &info,
-                         const TAlign::Options &o)
-{
-    assert(align.cID == ChrT);
     
-    REPORT_STATUS();
-    
-    if (!align.mapped)
-    {
-        return;
-    }
-    else if (!matchAlign(t, align))
-    {
-        t.unknowns.push_back(UnknownAlignment(align.name, align.l));
-    }
+    return false;
 }
 
 TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Options &o)
@@ -472,13 +452,17 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
         {
             stats.update(align);
 
-            if (align.cID == ChrT)
+            if (!align.mapped)
             {
-                classifyChrT(stats.data.at(ChrT), align, info, o);
+                return;
+            }
+            else if (align.cID == ChrT)
+            {
+                matchAlign(stats.data.at(ChrT), align, info, o);
             }
             else
             {
-                classifyEndo(stats.data.at(Endo), align, info, o);
+                matchAlign(stats.data.at(__gID__), align, info, o);
             }
         }
     });
@@ -499,18 +483,33 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
                 return;
             }
             
+            ChrID cID;
+            bool succeed = false;
+
             if (align.cID == ChrT)
             {
-                classifyChrT(stats.data.at(ChrT), align, info, o);
+                succeed = matchAlign(stats.data.at(cID = ChrT), align, info, o);
             }
             else if (stats.data.count(align.cID))
             {
-                classifyEndo(stats.data.at(Endo), align, info, o);
+                succeed = matchAlign(stats.data.at(cID = align.cID), align, info, o);
             }
             
+            if (succeed && !align.i)
+            {
+                if (info.spliced)
+                {
+                    stats.data[cID].spliced++;
+                }
+                else
+                {
+                    stats.data[cID].nspliced++;
+                }
+            }
+
             /*
-             * Any read that is not aligned into the reference annoation is worthless. We don't know if the locus is an exon
-             * or an intron... We can't really do much...
+             * Any read that is not covered by the reference annoation is worthless. We don't know if the
+             * aligned position is an exon or an intron... We can't really do much...
              */
         });
     });
@@ -518,28 +517,19 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
 
 template <typename F> std::string check(const TAlign::Stats &stats, F f, const ChrID &cID)
 {
-    const auto &r = Standard::instance().r_trans;
-    const auto id = cID == ChrT ? ChrT : r.endoID();
-    
-    // Don't try unless we're sure it'll work
-    if (!stats.data.count(id))
-    {
-        return "????";
-    }
-
-    return std::to_string(f(id));
+    return stats.data.count(cID) ? std::to_string(f(cID)) : "-";
 }
 
 static Scripts replicateSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Number of reads mapped to the synthetic and experimental chromosomes\n"
+           "   *** Number of alignments mapped to the synthetic and genome\n"
            "   ***\n\n"
-           "   Unmapped:   %2% reads\n"
-           "   Synthetic:  %3% (%4%%%) reads\n"
-           "   Experiment: %5% (%6%%%) reads\n"
-           "   Dilution:   %7%\n\n"
+           "   Unmapped:  %2%\n"
+           "   Synthetic: %3% (%4%%%)\n"
+           "   Genome:    %5% (%6%%%)\n"
+           "   Dilution:  %7%\n\n"
            "   ***\n"
            "   *** Reference annotation (Synthetic)\n"
            "   ***\n\n"
@@ -548,21 +538,21 @@ static Scripts replicateSummary()
            "   Synthetic: %10% introns\n"
            "   Synthetic: %11% bases\n\n"
            "   ***\n"
-           "   *** Reference annotation (Experiment)\n"
+           "   *** Reference annotation (Genome)\n"
            "   ***\n\n"
            "   File: %12%\n\n"
-           "   Experiment: %13% exons\n"
-           "   Experiment: %14% introns\n"
-           "   Experiment: %15% bases\n\n"
+           "   Genome: %13% exons\n"
+           "   Genome: %14% introns\n"
+           "   Genome: %15% bases\n\n"
            "   ***\n"
-           "   *** User Alignments\n"
+           "   *** Alignments\n"
            "   ***\n\n"
-           "   Split reads (Synthetic):      %16% reads\n"
-           "   Non-split reads (Synthetic):  %17% reads\n"
-           "   Covered bases (Synthetic):    %18% bases\n\n"
-           "   Split reads (Experiment):     %19% reads\n"
-           "   Non-split reads (Experiment): %20% reads\n"
-           "   Covered bases (Experiment):   %21% bases\n\n"
+           "   Non-spliced (Synthetic):   %16%\n"
+           "   Spliced (Synthetic):       %17%\n"
+           "   Covered bases (Synthetic): %18%\n\n"
+           "   Non-spliced (Genome):      %19%\n"
+           "   Spliced (Genome):          %20% \n"
+           "   Covered bases (Genome):    %21%\n\n"
            "   ***\n"
            "   *** The following statistics are computed at the exon, intron and base level.\n"
            "   ***\n\n"
@@ -589,7 +579,7 @@ static Scripts replicateSummary()
            "   Gene:   %36%\n\n"
            "   *****************************************************\n"
            "   ***                                               ***\n"
-           "   ***    Comparison with experimental annotation    ***\n"
+           "   ***       Comparison with genomic annotation      ***\n"
            "   ***                                               ***\n"
            "   *****************************************************\n\n"
            "   -------------------- Exon level --------------------\n\n"
@@ -609,15 +599,17 @@ static Scripts replicateSummary()
 
 static void writeSummary(const FileName &file, const FileName &src, const TAlign::Stats &stats, const TAlign::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
-
     typedef TAlign::Stats Stats;
+
+    const auto &r = Standard::instance().r_trans;
 
     #define BIND_R(x,y)   check(stats, std::bind(&x, &r, _1), y)
     #define BIND_Q(x,y)   check(stats, std::bind(&x, &stats, _1), y)
     #define BIND_E(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
     #define BIND_M(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
 
+    const auto hasEndo = !o.rEndo.empty();
+    
     o.writer->open(file);
     o.writer->write((boost::format(replicateSummary())
                                           % src
@@ -627,20 +619,20 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % stats.n_endo
                                           % (100.0 * stats.endoProp())
                                           % stats.dilution()                                                // 7
-                                          % extractFile(o.rChrT)                                            // 8
+                                          % o.rChrT                                                         // 8
                                           % BIND_R(TransRef::countExons, ChrT)                              // 9
                                           % BIND_R(TransRef::countIntrons, ChrT)                            // 10
                                           % BIND_R(TransRef::exonBase, ChrT)                                // 11
-                                          % ""//(o.rEndo.empty() ? "-" : extractFile(o.rEndo))                  // 12
-                                          % ""//(o.rEndo.empty() ? "NA" : BIND_R(TransRef::countExons, Endo))   // 13
-                                          % ""//(o.rEndo.empty() ? "NA" : BIND_R(TransRef::countIntrons, Endo)) // 14
-                                          % ""//(o.rEndo.empty() ? "NA" : BIND_R(TransRef::exonBase, Endo))     // 15
-                                          % BIND_Q(Stats::countNonSplit, ChrT)                              // 16
-                                          % BIND_Q(Stats::countSplit, ChrT)                                 // 17
-                                          % BIND_Q(Stats::countQBases, ChrT)                                // 18
-                                          % BIND_Q(Stats::countNonSplit, Endo)                              // 19
-                                          % BIND_Q(Stats::countSplit, Endo)                                 // 20
-                                          % BIND_Q(Stats::countQBases, Endo)                                // 21
+                                          % (!hasEndo ? "-"  : o.rEndo)                                     // 12
+                                          % (!hasEndo ? "-" : BIND_R(TransRef::countExons, __gID__))        // 13
+                                          % (!hasEndo ? "-" : BIND_R(TransRef::countIntrons, __gID__))      // 14
+                                          % (!hasEndo ? "-" : BIND_R(TransRef::exonBase, __gID__))          // 15
+                                          % BIND_Q(Stats::countNSpliced, ChrT)                              // 16
+                                          % BIND_Q(Stats::countSpliced,  ChrT)                              // 17
+                                          % BIND_Q(Stats::countQBases,   ChrT)                              // 18
+                                          % BIND_Q(Stats::countNSpliced, __gID__)                           // 19
+                                          % BIND_Q(Stats::countSpliced,  __gID__)                           // 20
+                                          % BIND_Q(Stats::countQBases,   __gID__)                           // 21
                                           % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 22
                                           % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 23
                                           % stats.limit(AlignMetrics::AlignExon).abund                      // 24
@@ -656,15 +648,15 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % BIND_M(Stats::missProp, MissingMetrics::MissingExon, ChrT)      // 34
                                           % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, ChrT)    // 35
                                           % BIND_M(Stats::missProp, MissingMetrics::MissingGene, ChrT)      // 36
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, Endo)                // 37
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, Endo)                // 38
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignIntron, Endo)              // 39
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignIntron, Endo)              // 40
-                                          % BIND_E(Stats::sn, AlignMetrics::AlignBase, Endo)                // 41
-                                          % BIND_E(Stats::pc, AlignMetrics::AlignBase, Endo)                // 42
-                                          % BIND_M(Stats::missProp, MissingMetrics::MissingExon, Endo)      // 43
-                                          % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, Endo)    // 44
-                                          % BIND_M(Stats::missProp, MissingMetrics::MissingGene, Endo)      // 45
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, __gID__)             // 37
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, __gID__)             // 38
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignIntron, __gID__)           // 39
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignIntron, __gID__)           // 40
+                                          % BIND_E(Stats::sn, AlignMetrics::AlignBase, __gID__)             // 41
+                                          % BIND_E(Stats::pc, AlignMetrics::AlignBase, __gID__)             // 42
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingExon, __gID__)   // 43
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, __gID__) // 44
+                                          % BIND_M(Stats::missProp, MissingMetrics::MissingGene, __gID__)   // 45
                      ).str());
     o.writer->close();
 }
@@ -672,20 +664,18 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
 static void writeSequins(const FileName &file, const FileName &src, const TAlign::Stats &stats, const TAlign::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
     o.writer->open(file);
-    
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
-    
-    o.writer->write((boost::format(format) % "ID"
-                                           % "Abundance (attomol/ul)"
-                                           % "Covered"
-                                           % "Sensitivity (Exon)"
-                                           % "Specificity (Exon)"
-                                           % "Sensitivity (Intron)"
-                                           % "Specificity (Intron)"
-                                           % "Sensitivity (Base)"
-                                           % "Specificity (Base)").str());
+    o.writer->write((boost::format(format) % "sequin"
+                                           % "expected"
+                                           % "covered"
+                                           % "sn (exon)"
+                                           % "sp (exon)"
+                                           % "sn (intron)"
+                                           % "sp (intron)"
+                                           % "sn (base)"
+                                           % "sp (base)").str());
 
     for (const auto &i : stats.data.at(ChrT).overB.hist)
     {

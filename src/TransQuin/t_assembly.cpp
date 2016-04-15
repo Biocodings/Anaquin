@@ -49,7 +49,7 @@ static Scripts chrTSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Fraction of user assembly mapped to the synthetic and experimental chromosomes\n"
+           "   *** Fraction of user assembly mapped to the synthetic and genome\n"
            "   ***\n\n"
            "   Exons (Synthetic):       %2% genes\n"
            "   Exons (Genome):          %3% genes\n\n"

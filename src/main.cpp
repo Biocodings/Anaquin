@@ -500,7 +500,7 @@ template <typename Reference> void addRef(const ChrID &cID, Reference ref, const
     }
     else
     {
-        std::cout << "[INFO]: Found experimental reference" << std::endl;
+        std::cout << "[INFO]: Found genome reference" << std::endl;
     }
 
     std::cout << "[INFO]: Reference: " << file << std::endl;
@@ -520,7 +520,7 @@ template <typename Reference> void addRef(const ChrID &cID, Reference ref)
 }
 
 /*
- * This provideds a convenient function for adding reference annotations. Experimental annotations are also added if found.
+ * This provideds a convenient function for adding reference annotations. Genomic annotations are also added if found.
  */
 
 template <typename Reference> void addRef(Reference ref)

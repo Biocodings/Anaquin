@@ -260,18 +260,18 @@ void VSample::report(const FileName &file, const Options &o)
     
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
-                         "   *** Fraction of reads mapped to the synthetic and experimental chromosomes\n"
+                         "   *** Fraction of reads mapped to the synthetic and genome\n"
                          "   ***\n\n"
-                         "   Unmapped:   %2% reads\n"
-                         "   Synthetic:  %3% reads\n"
-                         "   Experiment: %4% reads\n\n"
+                         "   Unmapped:  %2% reads\n"
+                         "   Synthetic: %3% reads\n"
+                         "   Genome:    %4% reads\n\n"
                          "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
                          "   File: %5%\n\n"
                          "   Reference: %6% sequins\n\n"
                          "   ***\n"
-                         "   *** Reference annotation (Experiment)\n"
+                         "   *** Reference annotation (Genome)\n"
                          "   ***\n\n"
                          "   File: %7%\n\n"
                          "   Reference:  %8% intervals\n\n"
@@ -295,7 +295,7 @@ void VSample::report(const FileName &file, const Options &o)
                          "   *******************************************\n\n"
                          "   Reads: %10%\n"
                          "   Coverage (Synthetic):  %11%\n"
-                         "   Coverage (Experiment): %12%\n\n"
+                         "   Coverage (Genome): %12%\n\n"
                          "   *******************************************\n"
                          "   ***                                     ***\n"
                          "   ***    Statistics after subsampling     ***\n"
@@ -303,7 +303,7 @@ void VSample::report(const FileName &file, const Options &o)
                          "   *******************************************\n\n"
                          "   Reads: %13%\n"
                          "   Coverage (Synthetic):  %14%\n"
-                         "   Coverage (Experiment): %15%\n";
+                         "   Coverage (Genome): %15%\n";
 
     o.writer->open("VarSubsample_summary.stats");
     o.writer->write((boost::format(summary) % file

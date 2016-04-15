@@ -12,6 +12,9 @@ namespace Anaquin
         {
             ParserProgress p;
 
+            // Whether this is a spliced-alignment
+            bool spliced;
+            
             // Size of the chromosome of the alignment
             Base length;
             

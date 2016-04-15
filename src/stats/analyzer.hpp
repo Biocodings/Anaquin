@@ -33,19 +33,6 @@ namespace Anaquin
         return isnan(x) ? "NA" : toString(x, 310);
     }
     
-    inline FileName extractFile(const Path &path)
-    {
-        auto r   = path;
-        auto sep = r.find_last_of("\\/");
-        
-        if (sep != std::string::npos)
-        {
-            r = path.substr(sep + 1, path.size() - sep - 1);
-        }
-
-        return r;
-    }
-
     template <typename T> Counts count(const std::map<T, Counts> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)
