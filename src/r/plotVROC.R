@@ -14,9 +14,9 @@ sign <- 0.10
 data <- read.csv('%3%/%4%', sep='\t')
 data <- data[data$pval <= sign,]
 
-data$name <- paste(data$sequin, data$Position, sep='_')
-data$name <- paste(data$name, data$Type, sep='_')
+data$name <- paste(data$sequin, data$pos, sep='_')
+data$name <- paste(data$name, data$type, sep='_')
 
-data <- VarQuin(seqs=data$name, expected=data$expected, pval=data$pval, label=data$label, type=data$type)
+data <- VarQuin(seqs=data$name, ratio=data$ratio, pval=data$pval, label=data$label)
 
 plotROC(data)

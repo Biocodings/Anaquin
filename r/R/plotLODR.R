@@ -328,7 +328,7 @@ plotLODR.Plot <- function(data, ...)
     print(p)
 }
 
-plotLODR.VarQuin <- function(data, title=NULL)
+plotProb <- function(data, title=NULL)
 {
     # Probability under the null hypothesis (y-axis)
     pval <- pval(data)

@@ -13,6 +13,8 @@
     data <- data$seqs
     stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
     
+    data <- data[, order(names(data))]
+    
     # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
     if (shouldPseuoLog)
     {
@@ -51,13 +53,13 @@
                 # No TP... Add a TP...
                 if (unique(t$label) == 'FP')
                 {
-                    x <- data.frame(pval=0, label='TP', ratio=ratio, lpval=0, score=0)
+                    x <- data.frame(label='TP', pval=0, ratio=ratio, lpval=0, score=0)
                 }
             
                 # No FP... Add a FP...
                 else
                 {
-                    x <- data.frame(pval=0, label='FP', ratio=ratio, lpval=0, score=0)                    
+                    x <- data.frame(label='FP', pval=0, ratio=ratio, lpval=0, score=0)                    
                 }
                 
                 t  <- rbind(t, x)
@@ -116,7 +118,7 @@
 
 plotROC.VarQuin <- function(data, title=NULL)
 {
-    .plotROC.Plot(.plotROC(data.frame(pval=data$seqs$pval, label=data$seqs$label, ratio=data$seqs$expected)), title)
+    .plotROC(data)
 }
 
 plotROC.TransQuin <- function(data)

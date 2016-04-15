@@ -13,7 +13,7 @@ extern Scripts PlotTROC();
 extern Scripts PlotTMA();
 
 // Defined in main.cpp
-extern Scripts mixture();
+extern FileName mixture();
 
 Scripts RWriter::createScript(const FileName &file, const Scripts &scripts)
 {

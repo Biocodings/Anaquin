@@ -537,7 +537,7 @@ namespace Anaquin
             // Returns number of sequins
             Counts countSeqs() const;
 
-            // Returns number of reference intervals
+            // Returns number of genomic intervals
             Counts countInters() const;
 
             // Eg: D_1_11, D_1_12

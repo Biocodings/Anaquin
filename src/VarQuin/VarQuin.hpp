@@ -6,6 +6,9 @@
 #include "parsers/parser_varscan.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
+// Defined in main.cpp
+extern std::string mixture();
+
 namespace Anaquin
 {
     struct VariantStats
@@ -111,7 +114,7 @@ namespace Anaquin
                     m.seq = r.findVar(query.l, Contains);
                 }
                 
-                if (m.seq)
+                if (m.seq && !mixture().empty())
                 {
                     m.eFold    = r.fold(baseID(m.seq->id));
                     m.eAllFreq = r.alleleFreq(baseID(m.seq->id));

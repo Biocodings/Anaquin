@@ -126,22 +126,22 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeClass(const FileName &file,
-                       const VDiscover::Stats::ChrTStats &stats,
-                       const VDiscover::Options &o)
+static void writeCSV(const FileName &file,
+                     const VDiscover::Stats::ChrTStats &stats,
+                     const VDiscover::Options &o)
 {
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Sequin"
-                                           % "Position"
-                                           % "Label"
-                                           % "PValue"
-                                           % "RefRead"
-                                           % "VarRead"
-                                           % "ERatio"
-                                           % "EAlleleF"
-                                           % "Type").str());
+    o.writer->write((boost::format(format) % "seq"
+                                           % "pos"
+                                           % "label"
+                                           % "pval"
+                                           % "rcount"
+                                           % "vcount"
+                                           % "ratio"
+                                           % "allele"
+                                           % "type").str());
 
     auto f = [&](const std::vector<VDiscover::Stats::ChrTData> &x, const std::string &label)
     {
@@ -159,7 +159,7 @@ static void writeClass(const FileName &file,
             o.writer->write((boost::format(format) % i.seq->id
                                                    % i.query.l.start
                                                    % label
-                                                   % (isnan(i.query.p) ? "-" : std::to_string(i.query.p))
+                                                   % (isnan(i.query.p) ? "-" : p2str(i.query.p))
                                                    % i.query.readR
                                                    % i.query.readV
                                                    % i.eFold
@@ -201,16 +201,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "   Detected:    %8% SNPs\n"
                          "   Detected:    %9% indels\n"
                          "   Detected:    %10% variants\n\n"
-                         "   Signficiance: %11%\n\n"
+                         "   Significance: %11%\n\n"
                          "   Significant: %12% SNPs\n"
                          "   Significant: %13% indels\n"
                          "   Significant: %14% variants\n\n"
-                         "   True Positives:   %15% SNPS\n"
-                         "   True Positives:   %16% indels\n"
-                         "   True Positives:   %17% variants\n\n"
-                         "   False Positives:  %18% SNPS\n"
-                         "   False Positives:  %19% SNPS\n"
-                         "   False Positives:  %20% variants\n\n"
+                         "   True Positive:   %15% SNPS\n"
+                         "   True Positive:   %16% indels\n"
+                         "   True Positive:   %17% variants\n\n"
+                         "   False Positive:  %18% SNPS\n"
+                         "   False Positive:  %19% SNPS\n"
+                         "   False Positive:  %20% variants\n\n"
                          "   ***\n"
                          "   *** Performance metrics (Overall)\n"
                          "   ***\n\n"
@@ -230,6 +230,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "   Specificity: %28$.2f\n"
                          "   Precision:   %29$.2f\n\n";
 
+    o.info("Generating VarDiscover_summary.stats");
     o.writer->open("VarDiscover_summary.stats");    
     o.writer->write((boost::format(summary) % src
                                             % stats.chrT.dTot()
@@ -284,10 +285,10 @@ void VDiscover::report(const FileName &file, const Options &o)
     writeSummary("VarDiscover_summary.stats", file, stats, o);
 
     /*
-     * Generating classified statistics for the variants
+     * Generating CSV
      */
     
-    writeClass("VarDiscover_quins.csv", stats.chrT, o);
+    writeCSV("VarDiscover_quins.csv", stats.chrT, o);
 
     /*
      * Generating ROC curve

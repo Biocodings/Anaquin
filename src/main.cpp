@@ -262,15 +262,15 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_V_IGV,       { OPT_U_FILES                                     } },
+    { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
+    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT,    OPT_U_FILES           } },
     { TOOL_V_REPORT,    { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_ENDO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_U_FILES              } },
-    { TOOL_V_KEXPRESS,  { OPT_SOFT, OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_KALLELE,   { OPT_SOFT, OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED, OPT_SOFT, OPT_U_FILES   } },
+    { TOOL_V_KEXPRESS,  { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_KALLELE,   { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED, OPT_SOFT, OPT_U_FILES, OPT_MIXTURE } },
 };
 
 /*

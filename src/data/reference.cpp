@@ -898,7 +898,7 @@ struct VarRef::VarRefImpl
     // VarQuin variants (VCF file)
     std::set<Variant> vars;
 
-    // Reference intervals (eg: chr21)
+    // Genomic intervals (eg: chr21)
     Intervals<> inters;
 
     // Mixture data
@@ -986,31 +986,17 @@ Counts VarRef::countVars() const
 void VarRef::validate()
 {
     /*
-     * Validation rules:
+     * Rules:
      *
-     *   1: Annotation (eg: VarCoverage)
+     *   1: Annotation (eg: VarDiscover)
      *   2: Annotation & mixture (eg: VarAlign)
-     *   3: Variants (eg: VarDiscover)
-     *   4: Variants & mixture (eg: VarAllele)
+     *   3: Variants & mixture (eg: VarAllele)
      */
     
-    // Rule: 2 and 4
+    // Rule: 2 and 3
     if (!_rawMIDs.empty())
     {
         merge(_rawMIDs);
-    }
-    
-    // Rule: 3
-    else if (!_impl->vars.empty())
-    {
-        std::set<SequinID> varIDs;
-        
-        for (const auto var: _impl->vars)
-        {
-            varIDs.insert(var.id);
-        }
-        
-        merge(varIDs);
     }
     
     // Rule: 1
@@ -1023,7 +1009,6 @@ void VarRef::validate()
             ids.insert(i.first);
         }
 
-        // Validate by annotation
         merge(ids);
     }
     else
@@ -1077,7 +1062,7 @@ void VarRef::validate()
     }
 
     /*
-     * Constructing the reference intervals (eg: chr21)
+     * Constructing the genomic intervals (eg: chr21)
      */
 
     if (_impl->inters.size())
