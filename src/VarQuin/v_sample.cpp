@@ -219,10 +219,10 @@ void VSample::report(const FileName &file, const Options &o)
     const auto before = VSample::stats(file, o);
 
     // Subsample the alignment
-    VSample::sample(file, o.work + "/VarSample_sampled.sam", before);
+    VSample::sample(file, o.work + "/VarSubsample_sampled.sam", before);
 
     // Statistics after alignment
-    const auto after = VSample::stats(o.work + "/VarSample_sampled.sam", o);
+    const auto after = VSample::stats(o.work + "/VarSubsample_sampled.sam", o);
 
     /*
      * Generating bedgraph for the pre-statistics
@@ -260,11 +260,11 @@ void VSample::report(const FileName &file, const Options &o)
     
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
-                         "   *** Fraction of reads mapped to the synthetic and genome\n"
+                         "   *** Proportion of alignments mapped to the synthetic and genome\n"
                          "   ***\n\n"
-                         "   Unmapped:  %2% reads\n"
-                         "   Synthetic: %3% reads\n"
-                         "   Genome:    %4% reads\n\n"
+                         "   Unmapped:  %2% aligns\n"
+                         "   Synthetic: %3% aligns\n"
+                         "   Genome:    %4% aligns\n\n"
                          "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
@@ -293,17 +293,17 @@ void VSample::report(const FileName &file, const Options &o)
                          "   ***    Statistics before subsampling    ***\n"
                          "   ***                                     ***\n"
                          "   *******************************************\n\n"
-                         "   Reads: %10%\n"
-                         "   Coverage (Synthetic):  %11%\n"
-                         "   Coverage (Genome): %12%\n\n"
+                         "   Aligns: %10%\n"
+                         "   Depth (Synthetic): %11%\n"
+                         "   Depth (Genome):    %12%\n\n"
                          "   *******************************************\n"
                          "   ***                                     ***\n"
                          "   ***    Statistics after subsampling     ***\n"
                          "   ***                                     ***\n"
                          "   *******************************************\n\n"
-                         "   Reads: %13%\n"
-                         "   Coverage (Synthetic):  %14%\n"
-                         "   Coverage (Genome): %15%\n";
+                         "   Aligns: %13%\n"
+                         "   Depth (Synthetic): %14%\n"
+                         "   Depth (Genome):    %15%\n";
 
     o.writer->open("VarSubsample_summary.stats");
     o.writer->write((boost::format(summary) % file

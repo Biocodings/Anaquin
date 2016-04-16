@@ -86,7 +86,7 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
     const auto iStats  = inter->stats(f);
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
-                         "   *** Fraction of reads mapped to the synthetic and genome\n"
+                         "   *** Proportion of reads mapped to the synthetic and genome\n"
                          "   ***\n\n"
                          "   Unmapped:  %2%\n"
                          "   Synthetic: %3%\n"
