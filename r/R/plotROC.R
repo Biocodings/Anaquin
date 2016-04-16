@@ -8,6 +8,7 @@
 {
     require(ROCR)
     require(grid)
+    require(ggplot2)
     require(gridExtra)
     
     data <- data$seqs
