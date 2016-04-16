@@ -91,40 +91,64 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
                          "   Unmapped:  %2%\n"
                          "   Synthetic: %3%\n"
                          "   Genome:    %4%\n"
-                         "   ***\n"
+                         "   ***\n\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
-                         "   Synthetic: %5% sequins\n"
-                         "   Synthetic: %6% bases\n\n"
+                         "   File: %5%\n\n"
+                         "   Synthetic: %6% sequins\n"
+                         "   Synthetic: %7% bases\n\n"
                          "   ***\n"
                          "   *** Reference annotation (Genome)\n"
                          "   ***\n\n"
-                         "   Genome: %7%\n\n"
+                         "   File: %8%\n\n"
+                         "   Genome: %9% intervals\n"
+                         "   Genome: %10% bases\n\n"
                          "   ****************************************************\n"
                          "   ***                                              ***\n"
-                         "   ***    Statistics for the coverge (Synthetic)    ***\n"
+                         "   ***    Statistics for the synthetic chromosome   ***\n"
                          "   ***                                              ***\n"
                          "   ****************************************************\n\n"
-                         "   Minimum: %8%\n"
-                         "   Maximum: %9%\n"
-                         "   Mean:    %10%\n"
-                         "   25th:    %11%\n"
-                         "   50th:    %12%\n"
-                         "   75th:    %13%\n";
+                         "   Minimum: %11%\n"
+                         "   Maximum: %12%\n"
+                         "   Mean:    %13%\n"
+                         "   25th:    %14%\n"
+                         "   50th:    %15%\n"
+                         "   75th:    %16%\n\n"
+                         "   ****************************************************\n"
+                         "   ***                                              ***\n"
+                         "   ***         Statistics for the genome            ***\n"
+                         "   ***                                              ***\n"
+                         "   ****************************************************\n\n"
+                         "   Minimum: %17%\n"
+                         "   Maximum: %18%\n"
+                         "   Mean:    %19%\n"
+                         "   25th:    %20%\n"
+                         "   50th:    %21%\n"
+                         "   75th:    %22%\n\n";
 
     o.writer->open(o.summary);
     o.writer->write((boost::format(summary) % stats.src
                                             % stats.unmapped
                                             % stats.n_chrT
                                             % stats.n_endo
-                                            % o.refs
-                                            % o.length
-                                            % "NA"
-                                            % iStats.min
-                                            % iStats.max
-                                            % iStats.mean
-                                            % iStats.p25
-                                            % iStats.p50
-                                            % iStats.p75).str());
+                                            % "-"           // 5
+                                            % o.refs        // 6
+                                            % o.length      // 7
+                                            % "-"           // 8
+                                            % "-"           // 9
+                                            % "-"           // 10
+                                            % iStats.min    // 11
+                                            % iStats.max    // 12
+                                            % iStats.mean   // 13
+                                            % iStats.p25    // 14
+                                            % iStats.p50    // 15
+                                            % iStats.p75    // 16
+                                            % "-"           // 17
+                                            % "-"           // 18
+                                            % "-"           // 19
+                                            % "-"           // 20
+                                            % "-"           // 21
+                                            % "-"           // 22
+                     ).str());
     o.writer->close();
 }

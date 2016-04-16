@@ -28,6 +28,8 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
      * Generating summary statistics
      */
     
+    o.info("Generating VarCoverage_summary.stats");
+
     CoverageTool::CoverageReportOptions to;
     
     to.writer   = o.writer;
