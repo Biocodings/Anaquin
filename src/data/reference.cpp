@@ -903,6 +903,9 @@ struct VarRef::VarRefImpl
 
     // Mixture data
     std::map<Mixture, std::map<SequinID, VariantPair>> data;
+
+    // Mixture for bases (eg: D1_1)
+    std::map<SequinID, Base> baseMix;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
@@ -1069,12 +1072,31 @@ void VarRef::validate()
     {
         _impl->inters.build();
     }
+
+    /*
+     * Merging the reference and variant sequins
+     */
+
+    for (const auto &i : _mixes)
+    {
+        for (const auto &j : _mixes.at(i.first))
+        {
+            _impl->baseMix[baseID(j.id)].total[i.first] += j.abund;
+        }
+    }
 }
 
-// Absolute detection limit at the gene level
-Limit VarRef::absoluteGene(const SequinHist &hist) const
+const VarRef::Base * VarRef::matchBase(const SequinID &id, Mixture mix) const
 {
-    throw "";
+    return _impl->baseMix.count(id) ? &(_impl->baseMix.at(id)) : nullptr;
+}
+
+Limit VarRef::absoluteBase(const SequinHist &hist, Mixture mix) const
+{
+    return Reference<SequinData, DefaultStats>::absolute(hist, [&](const SequinID &id)
+    {
+        return matchBase(id);
+    }, mix);
 }
 
 SequinHist VarRef::baseHist() const
@@ -1099,9 +1121,9 @@ ChrID VarRef::endoID() const
     return _impl->refChrID;
 }
 
-EndoHist VarRef::endoHist() const
+GenomeHist VarRef::genomeHist() const
 {
-    EndoHist hist;
+    GenomeHist hist;
     
     for (const auto &i : _impl->inters.data())
     {

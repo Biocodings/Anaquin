@@ -56,7 +56,7 @@ static VAlign::Stats init()
     
     if (!r.endoID().empty())
     {
-        stats.data[Endo].hist = r.endoHist();
+        stats.data[Endo].hist = r.genomeHist();
     }
 
     return stats;
@@ -115,11 +115,11 @@ static void classifyEndo(const Alignment &align, VAlign::Stats &stats, Intervals
 
 VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+
     auto stats = init();
     
     o.analyze(file);
-
-    const auto &r = Standard::instance().r_var;
 
     /*
      * We'll need the intervals for measuring at the base level.
@@ -169,7 +169,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     });
 
-    // TODO: stats.limit = r.absolute(stats.data[ChrT].hist);
+    stats.limit = r.absoluteBase(stats.data[ChrT].hist);
 
     /*
      * Calculating interval statistics
@@ -249,7 +249,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "   Detection limit: %14% (%15%)\n\n"
                          "   *************************************************\n"
                          "   ***                                           ***\n"
-                         "   ***    Comparison with endogenous annotation   ***\n"
+                         "   ***     Comparison with genomic annotation    ***\n"
                          "   ***                                           ***\n"
                          "   *************************************************\n\n"
                          "   Sensitivity:  %16%\n"

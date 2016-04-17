@@ -8,7 +8,7 @@
 
 namespace Anaquin
 {
-    typedef std::map<SequinID, Counts> EndoHist;
+    typedef std::map<SequinID, Counts> GenomeHist;
     typedef std::map<SequinID, Counts> SequinHist;
 
     enum Mixture
@@ -497,6 +497,16 @@ namespace Anaquin
     {
         public:
 
+            struct Base
+            {
+                inline double abund(Mixture mix = Mix_1) const
+                {
+                    return total.at(mix);
+                }
+                
+                std::map<Mixture, Concent> total;
+            };
+
             VarRef();
 
             /*
@@ -515,16 +525,16 @@ namespace Anaquin
             /*
              * Query functions
              */
-
+        
             ChrID endoID() const;
 
             bool isEndoID(const ChrID &cID) const { return cID == endoID(); }
 
             const Intervals<> endoInters() const;
         
-            // Absolute detection limit at the gene level
-            Limit absoluteGene(const SequinHist &) const;
-        
+            // Absolute detection limit at the base level
+            Limit absoluteBase(const SequinHist &, Mixture mix = Mix_1) const;
+
             // Returns number of known variants
             Counts countVars() const;
 
@@ -542,8 +552,9 @@ namespace Anaquin
 
             // Eg: D_1_11, D_1_12
             SequinHist baseHist() const;
-        
-            EndoHist endoHist() const;
+
+            // Eg: chr21 intervals
+            GenomeHist genomeHist() const;
 
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
@@ -553,6 +564,8 @@ namespace Anaquin
             {
                 return isEndoID(cID) ? findEndo(l) : nullptr;
             }
+        
+            const Base *matchBase(const SequinID &, Mixture mix = Mix_1) const;
 
             // Returns the expected fold-change
             Fold fold(const SequinID &) const;

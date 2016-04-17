@@ -72,6 +72,7 @@ namespace Anaquin
         throw std::runtime_error("Unknown sequin: " + id);
     }
     
+    // Eg: D1_1_R to D1_1
     inline SequinID baseID(const SequinID &id)
     {
         auto tmp = id;
@@ -82,6 +83,16 @@ namespace Anaquin
         return tmp;
     }
     
+    inline SequinID refID(const SequinID &id)
+    {
+        return baseID(id) + "_R";
+    }
+    
+    inline SequinID varID(const SequinID &id)
+    {
+        return baseID(id) + "_V";
+    }
+
     /*
      * Common framework for parsing and matching a variant output
      */
