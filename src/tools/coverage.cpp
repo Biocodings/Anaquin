@@ -102,7 +102,7 @@ void CoverageTool::summary(const CoverageTool::Stats &stats,
     const auto iStats  = inter->stats(f);
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
-                         "   *** Proportion of aligned mapped to the synthetic and genome\n"
+                         "   *** Proportion of alignments mapped to the synthetic and genome\n"
                          "   ***\n\n"
                          "   Unmapped:  %2%\n"
                          "   Synthetic: %3%\n"
@@ -147,24 +147,24 @@ void CoverageTool::summary(const CoverageTool::Stats &stats,
                                             % stats.unmapped
                                             % stats.n_chrT
                                             % stats.n_endo
-                                            % o.rChrT       // 5
-                                            % o.refs        // 6
-                                            % o.length      // 7
-                                            % o.rGeno       // 8
-                                            % "-"           // 9
-                                            % "-"           // 10
-                                            % iStats.min    // 11
-                                            % iStats.max    // 12
-                                            % iStats.mean   // 13
-                                            % iStats.p25    // 14
-                                            % iStats.p50    // 15
-                                            % iStats.p75    // 16
-                                            % "-"           // 17
-                                            % "-"           // 18
-                                            % "-"           // 19
-                                            % "-"           // 20
-                                            % "-"           // 21
-                                            % "-"           // 22
+                                            % o.rChrT                           // 5
+                                            % o.refs                            // 6
+                                            % o.length                          // 7
+                                            % (o.rGeno.empty() ? "-" : o.rGeno) // 8
+                                            % "-"                               // 9
+                                            % "-"                               // 10
+                                            % iStats.min                        // 11
+                                            % iStats.max                        // 12
+                                            % iStats.mean                       // 13
+                                            % iStats.p25                        // 14
+                                            % iStats.p50                        // 15
+                                            % iStats.p75                        // 16
+                                            % "-"                               // 17
+                                            % "-"                               // 18
+                                            % "-"                               // 19
+                                            % "-"                               // 20
+                                            % "-"                               // 21
+                                            % "-"                               // 22
                      ).str());
     o.writer->close();
 }

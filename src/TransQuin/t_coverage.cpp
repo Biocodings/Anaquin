@@ -12,32 +12,17 @@ TCoverage::Stats TCoverage::stats(const FileName &file, const Options &o)
     {
         if (align.cID == ChrT)
         {
-            return r.match(align.l, MatchRule::Contains);
+            return r.findGene(ChrT, align.l, MatchRule::Contains);
         }
-        
-        return (const TransData *) nullptr;
+
+        return (const TransRef::GeneData *) nullptr;
     });
 }
 
 void TCoverage::report(const FileName &file, const TCoverage::Options &o)
 {
-    const auto &r    = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_trans;
     const auto stats = TCoverage::stats(file, o);
-
-    CoverageTool::CoverageBedGraphOptions bo;
-
-    /*
-     * Generating bedgraph for the standards
-     */
-    
-    bo.writer = o.writer;
-    bo.file   = "TransCoverage_chrT.bedgraph";
-
-    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.findExon(ChrT, Locus(i, j), MatchRule::Contains);
-    });
 
     /*
      * Generating summary statistics
@@ -45,16 +30,42 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     
     o.info("Generating TransCoverage_summary.stats");
     
-    CoverageTool::CoverageReportOptions to;
+    CoverageTool::CoverageReportOptions x;
     
-    to.writer   = o.writer;
-    to.summary  = "TransCoverage_summary.stats";
-    to.refs     = r.hist().size();
-    to.length   = r.size();
-
-    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
+    x.rChrT   = o.rChrT;
+    x.rGeno   = o.rEndo;
+    x.writer  = o.writer;
+    x.refs    = r.hist().size();
+    x.length  = r.size();
+    x.summary = "TransCoverage_summary.stats";
+    
+    CoverageTool::summary(stats, x, [&](const ChrID &id, Base i, Base j, Coverage)
     {
-        // Filter to the regions in the standards
         return r.match(Locus(i, j), MatchRule::Contains);
+    });
+    
+    /*
+     * Generating detailed CSV for the sequins
+     */
+    
+    o.info("Generating VarCoverage_quins.csv");
+    o.writer->open("VarCoverage_quins.csv");
+    o.writer->write(CoverageTool::writeCSV(stats, x));
+    o.writer->close();
+
+    /*
+     * Generating bedgraph for the standards
+     */
+    
+    CoverageTool::CoverageBedGraphOptions y;
+    
+    y.writer = o.writer;
+    y.file   = "TransCoverage_chrT.bedgraph";
+
+    o.info("Generating TransCoverage_chrT.bedgraph");
+    
+    CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
+    {
+        return r.findExon(ChrT, Locus(i, j), MatchRule::Contains);
     });
 }
