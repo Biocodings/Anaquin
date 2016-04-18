@@ -11,11 +11,6 @@
 
 namespace Anaquin
 {
-    template <typename T> ChrID toChrTEndo(const T &t)
-    {
-        return t == ChrT ? ChrT : Endo;
-    }
-    
     template <typename T> std::string toString(const T &x, unsigned n = 2)
     {
         std::ostringstream out;
