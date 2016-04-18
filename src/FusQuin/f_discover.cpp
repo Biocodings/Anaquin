@@ -5,6 +5,11 @@ using namespace Anaquin;
 
 extern Scripts PlotFROC();
 
+template <typename T> ChrID toChrTEndo(const T &t)
+{
+    return t == ChrT ? ChrT : Endo;
+}
+
 FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_fus;
