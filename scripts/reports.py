@@ -898,7 +898,7 @@ def VarQuinKM(anaq, path, index, mix, file1, file2):
         r.startChapter('Statistics (Expression)')
     
         r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
-        r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+        r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_express.R', '')
 
         r.endChapter()
     
@@ -916,7 +916,7 @@ def VarQuinKM(anaq, path, index, mix, file1, file2):
         r.startChapter('Statistics (Allele Frequency)')
     
         r.addTextFile('Summary statistics', 'VarKAllele_summary.stats', )
-        r.addRCode('Expected allele frequency vs measured allele frequency', 'VarKAllele_alleleAllele.R', '')
+        r.addRCode('Expected allele frequency vs measured allele frequency', 'VarKAllele_allele.R', '')
 
         r.endChapter()
 
@@ -964,8 +964,8 @@ def TransQuinKM(anaq, path, index, mix, file1, file2):
     
         r.startChapter('Statistics (Expression)')
     
-        r.addTextFile('Summary statistics', 'VarKExpress_summary.stats', )
-        r.addRCode('Expected abundance vs measured abundance', 'VarKExpress_abundAbund.R', '')
+        r.addTextFile('Summary statistics', 'TransKExpress_summary.stats', )
+        r.addRCode('Expected abundance vs measured abundance', 'TransKExpress_express.R', '')
 
         r.endChapter()
 
