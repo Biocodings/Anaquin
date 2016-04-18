@@ -499,7 +499,10 @@ namespace Anaquin
 
             struct Base
             {
-                inline double abund(Mixture mix = Mix_1) const
+                // Eg: D_1_1 and D_2_2
+                SequinID id;
+                
+                inline Concent abund(Mixture mix = Mix_1) const
                 {
                     return total.at(mix);
                 }
@@ -530,7 +533,7 @@ namespace Anaquin
 
             bool isEndoID(const ChrID &cID) const { return cID == endoID(); }
 
-            const Intervals<> endoInters() const;
+            const Intervals<> genoInters() const;
         
             // Absolute detection limit at the base level
             Limit absoluteBase(const SequinHist &, Mixture mix = Mix_1) const;
@@ -556,6 +559,10 @@ namespace Anaquin
             // Eg: chr21 intervals
             GenomeHist genomeHist() const;
 
+            /*
+             * Finding functions
+             */
+        
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
 
@@ -565,13 +572,19 @@ namespace Anaquin
                 return isEndoID(cID) ? findEndo(l) : nullptr;
             }
         
-            const Base *matchBase(const SequinID &, Mixture mix = Mix_1) const;
+            const Base *findBase(const SequinID &, Mixture mix = Mix_1) const;
+
+            /*
+             * Matching functions
+             */
+        
+            Locus matchStand(const SequinID &) const;
 
             // Returns the expected fold-change
-            Fold fold(const SequinID &) const;
-        
+            Fold matchFold(const SequinID &) const;
+
             // Returns the expected allele frequency
-            Proportion alleleFreq(const SequinID &) const;
+            Proportion matchAlleleFreq(const SequinID &) const;
 
         protected:
 

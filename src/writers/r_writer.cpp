@@ -15,12 +15,21 @@ extern Scripts PlotTMA();
 // Defined in main.cpp
 extern FileName mixture();
 
-Scripts RWriter::createScript(const FileName &file, const Scripts &scripts)
+Scripts RWriter::createScript(const FileName &file, const Scripts &script)
 {
-    return (boost::format(scripts) % date()
-                                   % __full_command__
-                                   % __output__
-                                   % file).str();
+    return (boost::format(script) % date()
+                                  % __full_command__
+                                  % __output__
+                                  % file).str();
+}
+
+Scripts RWriter::createScript(const FileName &file, const Scripts &script, const std::string &x)
+{
+    return (boost::format(script) % date()
+                                  % __full_command__
+                                  % __output__
+                                  % file
+                                  % x).str();
 }
 
 Scripts StatsWriter::linearSummary(const FileName &file,

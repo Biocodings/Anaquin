@@ -58,7 +58,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     /*
      * Generating coverage for both chromosomes
      */
-     
+
     stats.cov = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &p)
     {
         if (!align.i && !(p.i % 1000000))

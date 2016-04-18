@@ -6,15 +6,17 @@ TCoverage::Stats TCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    const auto &r = Standard::instance();
-    Stats stats;
+    const auto &r = Standard::instance().r_trans;
     
-    stats = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
+    return CoverageTool::stats_(file, r.geneHist(ChrT), [&](const Alignment &align, const ParserProgress &)
     {
-        return align.cID == ChrT ? static_cast<bool>(r.r_trans.match(align.l, MatchRule::Contains)) : false;
+        if (align.cID == ChrT)
+        {
+            return r.match(align.l, MatchRule::Contains);
+        }
+        
+        return (const TransData *) nullptr;
     });
-
-    return stats;
 }
 
 void TCoverage::report(const FileName &file, const TCoverage::Options &o)

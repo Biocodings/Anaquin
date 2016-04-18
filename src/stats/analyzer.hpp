@@ -54,10 +54,12 @@ namespace Anaquin
         // Empty Implementation
     };
     
+    typedef std::map<SequinID, Counts> Hist;
+    
     struct SequinStats
     {
         // Distribution of counts across sequins
-        std::map<SequinID, Counts> hist;
+        Hist hist;
     };
 
     struct MappingStats

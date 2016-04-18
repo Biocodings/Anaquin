@@ -60,7 +60,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
             const auto var = matchv[id];
             
             // Expected abundance
-            const auto known = r.alleleFreq(id);
+            const auto known = r.matchAlleleFreq(id);
             
             // Measured abundance
             const auto measured = var / (ref + var);

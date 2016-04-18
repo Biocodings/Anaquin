@@ -1,5 +1,4 @@
 #include "tools/coverage.hpp"
-#include "parsers/parser_sam.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
@@ -8,26 +7,26 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
 {
     CoverageTool::Stats stats;
 
-    stats.src = file;
+    stats.src  = file;
     
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
     {
-        if (!align.i)
-        {
-            stats.hist[align.mapped ? align.cID : "NA"]++;
-        }
-
         stats.update(align);
 
-        if (align.mapped && f(align, info.p))
+        if (align.mapped)
         {
-            if (!stats.inters.find(align.cID))
-            {
-                // Add a new interva for the chromosome
-                stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
-            }
+            const auto match = f(align, info.p);
 
-            stats.inters.find(align.cID)->add(align.l);
+            if (match)
+            {
+                if (!stats.inters.find(align.cID))
+                {
+                    // Add a new interval for the chromosome
+                    stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
+                }
+                
+                stats.inters.find(align.cID)->add(align.l);
+            }
         }
     });
 
@@ -74,7 +73,24 @@ void CoverageTool::bedGraph(const Stats &stats, const CoverageBedGraphOptions &o
     o.writer->close();
 }
 
-void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageReportOptions &o, CoverageFunctor f)
+Scripts CoverageTool::writeCSV(const CoverageTool::Stats &stats, const CoverageReportOptions &o)
+{
+    const auto format = "%1%\t%2%\n";
+    
+    std::stringstream ss;
+    ss << ((boost::format(format) % "seq" % "count").str());
+
+    for (const auto &seq : stats.hist)
+    {
+        ss << ((boost::format(format) % seq.first % seq.second).str());
+    }
+
+    return ss.str();
+}
+
+void CoverageTool::summary(const CoverageTool::Stats &stats,
+                           const CoverageReportOptions &o,
+                           CoverageFunctor f)
 {
     const auto inter = stats.inters.find(o.id);
 
@@ -86,12 +102,12 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
     const auto iStats  = inter->stats(f);
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
-                         "   *** Proportion of reads mapped to the synthetic and genome\n"
+                         "   *** Proportion of aligned mapped to the synthetic and genome\n"
                          "   ***\n\n"
                          "   Unmapped:  %2%\n"
                          "   Synthetic: %3%\n"
-                         "   Genome:    %4%\n"
-                         "   ***\n\n"
+                         "   Genome:    %4%\n\n"
+                         "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
                          "   File: %5%\n\n"
@@ -131,10 +147,10 @@ void CoverageTool::summary(const CoverageTool::Stats &stats, const CoverageRepor
                                             % stats.unmapped
                                             % stats.n_chrT
                                             % stats.n_endo
-                                            % "-"           // 5
+                                            % o.rChrT       // 5
                                             % o.refs        // 6
                                             % o.length      // 7
-                                            % "-"           // 8
+                                            % o.rGeno       // 8
                                             % "-"           // 9
                                             % "-"           // 10
                                             % iStats.min    // 11

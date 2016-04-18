@@ -8,9 +8,8 @@
 
 library(Anaquin)
 
-file <- '/Users/tedwong/Sources/QA/__temp__/VarCoverage_chrT.bedgraph'
+bedgr <- '%3%/%4%'
+annot <- '%3%/%5%'
 
-%3%
-%4%
-
-plotDensity(file)
+data <- VarQuin(bedgr=bedgr, annot=annot)
+plotDensity(data)

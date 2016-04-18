@@ -889,28 +889,48 @@ struct VarRef::VariantPair
 
 struct VarRef::VarRefImpl
 {
-    // The reference chromosome
-    ChrID refChrID;
-
-    // VarQuin standards (BED file)
-    std::map<SequinID, Locus> stands;
-
-    // VarQuin variants (VCF file)
-    std::set<Variant> vars;
-
-    // Genomic intervals (eg: chr21)
-    Intervals<> inters;
-
     // Mixture data
     std::map<Mixture, std::map<SequinID, VariantPair>> data;
 
-    // Mixture for bases (eg: D1_1)
+    /*
+     * Data structure for the genome
+     */
+    
+    ChrID genoID;
+    
+    // Genomic intervals (eg: chr21)
+    Intervals<> inters;
+
+    /*
+     * Data structure for the standards
+     */
+    
+    // VarQuin standards
+    std::map<SequinID, Locus> stands;
+
+    /*
+     * Data structure for the variants
+     */
+    
+    // VarQuin variants (VCF file)
+    std::set<Variant> vars;
+
+    /*
+     * Data structure for bases (eg: D1_1)
+     */
+
+    // Mixture for bases
     std::map<SequinID, Base> baseMix;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
 
-Proportion VarRef::alleleFreq(const SequinID &id) const
+Locus VarRef::matchStand(const SequinID &id) const
+{
+    return _impl->stands.at(id);
+}
+
+Proportion VarRef::matchAlleleFreq(const SequinID &id) const
 {
     auto id_ = id;
     
@@ -924,7 +944,7 @@ Proportion VarRef::alleleFreq(const SequinID &id) const
     return v->abund / (r->abund + v->abund);
 }
 
-Fold VarRef::fold(const SequinID &id) const
+Fold VarRef::matchFold(const SequinID &id) const
 {
     const auto &p = _impl->data.at(Mix_1).at(id);
     return round(p.r->abund / p.v->abund);
@@ -937,12 +957,12 @@ void VarRef::addVar(const Variant &v)
 
 void VarRef::addRInterval(const ChrID &id, const Interval &i)
 {
-    if (!_impl->refChrID.empty() && _impl->refChrID != id)
+    if (!_impl->genoID.empty() && _impl->genoID != id)
     {
         throw std::runtime_error("Multi chromosomes is not supported. Only a single chromosome can be used.");
     }
 
-    _impl->refChrID = id;
+    _impl->genoID = id;
     _impl->inters.add(i);
 }
 
@@ -1056,7 +1076,7 @@ void VarRef::validate()
     }
     
     /*
-     * Constructing structure for the standards
+     * Constructing for the standards
      */
     
     for (const auto &i : _impl->stands)
@@ -1074,19 +1094,32 @@ void VarRef::validate()
     }
 
     /*
-     * Merging the reference and variant sequins
+     * Merging the reference and variant sequins. Mixture might not be defined.
      */
-
-    for (const auto &i : _mixes)
+    
+    if (_mixes.empty())
     {
-        for (const auto &j : _mixes.at(i.first))
+        for (const auto &i : _data)
         {
-            _impl->baseMix[baseID(j.id)].total[i.first] += j.abund;
+            _impl->baseMix[baseID(i.first)].id = baseID(i.first);
         }
     }
+    else
+    {
+        for (const auto &i : _mixes)
+        {
+            for (const auto &j : _mixes.at(i.first))
+            {
+                _impl->baseMix[baseID(j.id)].id = baseID(j.id);
+                _impl->baseMix[baseID(j.id)].total[i.first] += j.abund;
+            }
+        }
+    }
+    
+    assert(!_impl->baseMix.empty());
 }
 
-const VarRef::Base * VarRef::matchBase(const SequinID &id, Mixture mix) const
+const VarRef::Base * VarRef::findBase(const SequinID &id, Mixture mix) const
 {
     return _impl->baseMix.count(id) ? &(_impl->baseMix.at(id)) : nullptr;
 }
@@ -1095,7 +1128,7 @@ Limit VarRef::absoluteBase(const SequinHist &hist, Mixture mix) const
 {
     return Reference<SequinData, DefaultStats>::absolute(hist, [&](const SequinID &id)
     {
-        return matchBase(id);
+        return findBase(id);
     }, mix);
 }
 
@@ -1111,14 +1144,14 @@ SequinHist VarRef::baseHist() const
     return hist;
 }
 
-const Intervals<> VarRef::endoInters() const
+const Intervals<> VarRef::genoInters() const
 {
     return _impl->inters;    
 }
 
 ChrID VarRef::endoID() const
 {
-    return _impl->refChrID;
+    return _impl->genoID;
 }
 
 GenomeHist VarRef::genomeHist() const

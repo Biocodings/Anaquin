@@ -4,7 +4,7 @@
 #include "parsers/parser.hpp"
 #include "stats/analyzer.hpp"
 #include "data/intervals.hpp"
-#include "data/alignment.hpp"
+#include "parsers/parser_sam.hpp"
 
 namespace Anaquin
 {
@@ -36,9 +36,11 @@ namespace Anaquin
             // Filename for the summary statistics
             FileName summary;
             
+            FileName rChrT, rGeno;
+            
             // Number of sequins
             Counts refs;
-            
+
             // Size of all sequins
             Base length;
             
@@ -60,6 +62,39 @@ namespace Anaquin
         // Analyze a BAM file sorted by position
         static Stats stats(const FileName &, AlignFunctor);
 
+        // Analyze a BAM file sorted by position
+        template <typename F> static Stats stats_(const FileName &file, const Hist &hist, F f)
+        {
+            CoverageTool::Stats stats;
+            
+            stats.src  = file;
+            stats.hist = hist;
+            
+            ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+            {
+                stats.update(align);
+                
+                if (align.mapped)
+                {
+                    const auto match = f(align, info.p);
+                    
+                    if (match)
+                    {
+                        if (!stats.inters.find(align.cID))
+                        {
+                            // Add a new interval for the chromosome
+                            stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
+                        }
+                        
+                        stats.hist.at(match->id)++;
+                        stats.inters.find(align.cID)->add(align.l);
+                    }
+                }
+            });
+            
+            return stats;
+        }
+
         // Analyze a list of mappings assume sorted
         static Stats stats(const std::vector<Mapping> &, const std::map<GenericID, Base> &);
         
@@ -68,6 +103,8 @@ namespace Anaquin
 
         // Generate summary statistics for the coverage
         static void summary(const Stats &, const CoverageReportOptions &, CoverageFunctor);
+
+        static Scripts writeCSV(const Stats &, const CoverageReportOptions &);
     };
 }
 

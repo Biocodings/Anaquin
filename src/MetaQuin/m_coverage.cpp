@@ -6,10 +6,16 @@ MCoverage::Stats MCoverage::analyze(const FileName &file, const Options &o)
 {
     o.analyze(file);
     const auto &r = Standard::instance().r_meta;
-    
-    return CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &)
+
+    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
     {
-        return r.match(align.cID) && r.match(align.cID)->l.contains(align.l);
+        if (align.cID == ChrT)
+        {
+            return r.match(align.l, MatchRule::Contains);
+        }
+        
+        return (const SequinData *) nullptr;
+        //return r.match(align.cID) && r.match(align.cID)->l.contains(align.l);
     });
 }
 

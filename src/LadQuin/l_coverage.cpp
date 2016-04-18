@@ -6,11 +6,16 @@ LCoverage::Stats LCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    const auto &r = Standard::instance();
+    const auto &r = Standard::instance().r_lad;
 
-    return CoverageTool::stats(file,  [&](const Alignment &align, const ParserProgress &)
+    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
     {
-        return align.cID == ChrT ? static_cast<bool>(r.r_lad.match(align.l, MatchRule::Contains)) : false;
+        if (align.cID == ChrT)
+        {
+            return r.match(align.l, MatchRule::Contains);
+        }
+        
+        return (const SequinData *) nullptr;
     });
 }
 

@@ -68,7 +68,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                 stats.hist.at(m.match->id)++;
 
                 // Expected allele frequency
-                const auto known = r.alleleFreq(baseID(m.match->id));
+                const auto known = r.matchAlleleFreq(baseID(m.match->id));
                 
                 // Measured coverage is the number of base calls aligned and used in variant calling
                 const auto measured = m.query.alleleFreq();

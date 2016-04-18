@@ -11,7 +11,11 @@ namespace Anaquin
         
         struct Stats : public AlignmentStats
         {
-            // Returns the overall sensitivity
+            /*
+             * Returns the overall sensitivity, defined by the number of bases aligned
+             * with respect to the reference.
+             */
+
             inline Proportion sn(const ChrID &cID) const
             {
                 return static_cast<Proportion>(covered(cID)) / length(cID);

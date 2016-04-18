@@ -471,6 +471,23 @@ FileName mixture()
     return _p.opts[OPT_MIXTURE];
 }
 
+#define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
+
+FileName refFile()
+{
+    for (const auto &i : _p.opts)
+    {
+        const auto opt = i.first;
+        
+        if (CHECK_REF(opt))
+        {
+            return _p.opts[opt];
+        }
+    }
+    
+    throw "No reference file found";
+}
+
 static void printError(const std::string &msg)
 {
     std::cerr << std::endl;
@@ -489,8 +506,6 @@ template <typename Mixture> void addMix(Mixture mix)
     std::cout << "[INFO]: Mixture: " << mixture() << std::endl;
     mix(Reader(mixture()));
 }
-
-#define CHECK_REF(x) (x != OPT_MIXTURE && x > OPT_R_BASE && x < OPT_U_BASE)
 
 template <typename Reference> void addRef(const ChrID &cID, Reference ref, const FileName &file)
 {
@@ -550,6 +565,18 @@ template <typename Reference> void addRef(Reference ref)
                     break;
                 }
             }
+        }
+    }
+}
+
+static void saveRef()
+{
+    for (const auto &i : _p.opts)
+    {
+        if (CHECK_REF(i.first) && !i.second.empty())
+        {
+            std::cout << ("cp " + i.second + " " + __output__) << std::endl;
+            system(("cp " + i.second + " " + __output__).c_str());
         }
     }
 }
@@ -621,6 +648,9 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
 #ifndef DEBUG
     o.logger->close();
 #endif
+    
+    // Always save the reference files
+    saveRef();
 }
 
 template <typename Report> void report_1(typename Report::Options o = typename Report::Options())

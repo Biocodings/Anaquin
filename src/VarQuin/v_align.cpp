@@ -48,15 +48,14 @@ template <typename T, typename F> const AlignmentMatch<T> * matchT(const Alignme
 
 static VAlign::Stats init()
 {
-    VAlign::Stats stats;
-
     const auto &r = Standard::instance().r_var;
 
+    VAlign::Stats stats;
     stats.data[ChrT].hist = r.baseHist();
     
     if (!r.endoID().empty())
     {
-        stats.data[Endo].hist = r.genomeHist();
+        stats.data[r.endoID()].hist = r.genomeHist();
     }
 
     return stats;
@@ -95,7 +94,7 @@ static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals
     }
 }
 
-static void classifyEndo(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
+static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -104,12 +103,12 @@ static void classifyEndo(const Alignment &align, VAlign::Stats &stats, Intervals
         return r.findEndo(align.cID, align.l);
     }))
     {
-        stats.data[Endo].tp++;
-        stats.data[Endo].hist.at(__match__.cMatch->id())++;
+        stats.data[align.cID].tp++;
+        stats.data[align.cID].hist.at(__match__.cMatch->id())++;
     }
     else
     {
-        stats.data[Endo].fp++;
+        stats.data[align.cID].fp++;
     }
 }
 
@@ -165,7 +164,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
         else if (r.isEndoID(align.cID))
         {
-            classifyEndo(align, stats, inters);
+            classifyGenome(align, stats, inters);
         }
     });
 
@@ -206,13 +205,18 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         assert(totLen == inters.length());
     };
     
-    f(stats.data[ChrT], inters);
-    
-    if (!r.endoID().empty())
+    for (auto &i : stats.data)
     {
-        f(stats.data[Endo], r.endoInters());
+        if (i.first == ChrT)
+        {
+            f(stats.data[ChrT], inters);
+        }
+        else
+        {
+            f(stats.data[i.first], r.genoInters());
+        }
     }
-
+    
     return stats;
 }
 
@@ -255,7 +259,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "   Sensitivity:  %16%\n"
                          "   Specificity:  %17%\n\n";
     
-    const auto hasEndo = !o.rEndo.empty();
+    const auto hasEndo = !r.endoID().empty();
 
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src
@@ -267,14 +271,14 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.dilution()
                                             % o.rChrT
                                             % stats.data.at(ChrT).hist.size()
-                                            % (!hasEndo ? "-" : o.rEndo) // 10
-                                            % (!hasEndo ? "-" : toString(r.countInters())) // 11
-                                            % stats.sn(ChrT)             // 12
-                                            % stats.pc(ChrT)             // 13
-                                            % stats.limit.abund          // 14
-                                            % stats.limit.id             // 15
-                                            % stats.sn(ChrT)             // 16
-                                            % stats.pc(ChrT)             // 17
+                                            % (!hasEndo ? "-" : o.rEndo)                        // 10
+                                            % (!hasEndo ? "-" : toString(r.countInters()))      // 11
+                                            % stats.sn(ChrT)                                    // 12
+                                            % stats.pc(ChrT)                                    // 13
+                                            % stats.limit.abund                                 // 14
+                                            % stats.limit.id                                    // 15
+                                            % (!hasEndo ? "-" : toString(stats.sn(r.endoID()))) // 16
+                                            % (!hasEndo ? "-" : toString(stats.pc(r.endoID()))) // 17
                                             % count(stats.data.at(ChrT).hist)
                      ).str());
     o.writer->close();
@@ -282,7 +286,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
 
 void VAlign::report(const FileName &file, const Options &o)
 {
-    //const auto &r = Standard::instance().r_var;
+    const auto &r = Standard::instance().r_var;
     const auto stats = analyze(file, o);
 
     o.info("Generating statistics");
@@ -308,7 +312,7 @@ void VAlign::report(const FileName &file, const Options &o)
     for (const auto &i : stats.data.at(ChrT).hist)
     {        
         o.writer->write((boost::format(format) % i.first
-                                               % "-" //r.match(i.first)->abund(Mix_1)
+                                               % r.findBase(i.first)->abund()
                                                % stats.sn(ChrT, i.first)).str());
     }
     

@@ -127,8 +127,8 @@ namespace Anaquin
                 
                 if (m.seq && !mixture().empty())
                 {
-                    m.eFold    = r.fold(baseID(m.seq->id));
-                    m.eAllFreq = r.alleleFreq(baseID(m.seq->id));
+                    m.eFold    = r.matchFold(baseID(m.seq->id));
+                    m.eAllFreq = r.matchAlleleFreq(baseID(m.seq->id));
                 }
             }
 

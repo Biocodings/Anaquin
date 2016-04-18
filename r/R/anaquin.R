@@ -6,8 +6,11 @@
 
 .createData <- function(x, keys)
 {
-    stopifnot(!is.null(x$seqs))
-
+    if (is.null(x$seqs))
+    {
+        return (NULL)
+    }
+    
     data <- data.frame(row.names=x$seqs)
     
     for (key in keys)
@@ -18,7 +21,6 @@
         }
     }
 
-    data <- data[order(row.names(data)),]
     return (data)    
 }
 
@@ -43,10 +45,6 @@
     return (NULL)
 }
 
-#
-# Create an Anaquin dataset for transcriptome analysis
-#
-
 TransQuin <- function(...)
 {
     x <- list(...)
@@ -60,26 +58,21 @@ TransQuin <- function(...)
     return (r)
 }
 
-#
-# Create an Anaquin dataset for variant analysis
-#
-
-VarQuin <- function(..., mix=loadMixture.VarQuin())
+VarQuin <- function(...)
 {
     x <- list(...)
     
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'expected', 'measured', 'aligned')
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'expected', 'measured', 'bedgr', 'annot')
     data <- .createData(x, keys)
     
     r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'VarQuin'
     
+    if (!is.null(x[['bedgr']])) { r$bedgr <- x$bedgr }
+    if (!is.null(x[['annot']])) { r$annot <- x$annot }
+
     return (r)
 }
-
-#
-# Create an Anaquin dataset for fusion analysis
-#
 
 FusQuin <- function(...)
 {
@@ -93,10 +86,6 @@ FusQuin <- function(...)
     
     return (r)
 }
-
-#
-# Create an Anaquin dataset for ladder analysis
-#
 
 LadQuin <- function(...)
 {
