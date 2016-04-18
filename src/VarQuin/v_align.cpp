@@ -100,7 +100,7 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
 
     if (matchT(align, __match__, [&](const Locus &l, MatchRule rule)
     {
-        return r.findEndo(align.cID, align.l);
+        return r.findGeno(align.cID, align.l);
     }))
     {
         stats.data[align.cID].tp++;
@@ -162,7 +162,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         {
             classifyChrT(align, stats, inters);
         }
-        else if (r.isEndoID(align.cID))
+        else if (r.isGenoID(align.cID))
         {
             classifyGenome(align, stats, inters);
         }
