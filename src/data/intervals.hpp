@@ -3,12 +3,13 @@
 
 #include <map>
 #include <numeric>
+#include "data/data.hpp"
 #include "data/itree.hpp"
 #include "data/locus.hpp"
 
 namespace Anaquin
 {
-    class Interval
+    class Interval : public Matched
     {
         public:
         
@@ -180,6 +181,8 @@ namespace Anaquin
         
             inline Locus l()       const { return _l;  }
             inline IntervalID id() const { return _id; }
+        
+            inline IntervalID name() const override { return id(); }
         
         private:
         

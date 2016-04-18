@@ -1166,7 +1166,7 @@ GenomeHist VarRef::genomeHist() const
     return hist;
 }
 
-Interval * VarRef::findEndo(const Locus &l) const
+Interval * VarRef::findGeno(const Locus &l) const
 {
     return _impl->inters.contains(l);
 }

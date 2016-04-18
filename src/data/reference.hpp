@@ -2,6 +2,7 @@
 #define REFERENCE_HPP
 
 #include <set>
+#include "data/data.hpp"
 #include "stats/limit.hpp"
 #include "data/variant.hpp"
 #include "data/intervals.hpp"
@@ -27,7 +28,7 @@ namespace Anaquin
      * sequins are expected to derive from this class.
      */
     
-    struct SequinData
+    struct SequinData : public Matched
     {
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
         inline bool operator==(const SequinID &x) const { return this->id == x; }
@@ -38,12 +39,17 @@ namespace Anaquin
             return mixes.at(m) / (norm ? l.length() : 1);
         }
 
+        inline SequinID name() const override
+        {
+            return id;
+        }
+        
         SequinID id;
 
-        // Spiked-in concentration (not available if no mixture provided)
-        std::map<Mixture, Concent> mixes;
-
         Locus l;
+
+        // Expected concentration (not available if no mixture provided)
+        std::map<Mixture, Concent> mixes;
     };
 
     /*
@@ -497,11 +503,16 @@ namespace Anaquin
     {
         public:
 
-            struct Base
+            struct Base : public Matched
             {
                 // Eg: D_1_1 and D_2_2
                 SequinID id;
                 
+                inline SequinID name() const override
+                {
+                    return id;
+                }
+
                 inline Concent abund(Mixture mix = Mix_1) const
                 {
                     return total.at(mix);
@@ -531,7 +542,7 @@ namespace Anaquin
         
             ChrID endoID() const;
 
-            bool isEndoID(const ChrID &cID) const { return cID == endoID(); }
+            bool isGenoID(const ChrID &cID) const { return cID == endoID(); }
 
             const Intervals<> genoInters() const;
         
@@ -566,10 +577,10 @@ namespace Anaquin
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
 
-            Interval *findEndo(const Locus &) const;
-            Interval *findEndo(const ChrID &cID, const Locus &l) const
+            Interval *findGeno(const Locus &) const;
+            Interval *findGeno(const ChrID &cID, const Locus &l) const
             {
-                return isEndoID(cID) ? findEndo(l) : nullptr;
+                return isGenoID(cID) ? findGeno(l) : nullptr;
             }
         
             const Base *findBase(const SequinID &, Mixture mix = Mix_1) const;
@@ -624,10 +635,15 @@ namespace Anaquin
         
             typedef ExonInterval IntronInterval;
         
-            struct GeneData
+            struct GeneData : public Matched
             {
                 GeneID id;
 
+                inline GeneID name() const
+                {
+                    return id;
+                }
+                
                 inline Locus l() const
                 {
                     Base end   = std::numeric_limits<Base>::min();
