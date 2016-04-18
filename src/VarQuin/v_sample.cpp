@@ -38,7 +38,7 @@ static bool checkAlign(const ChrID &queryID, const ChrID &id, const Locus &l)
     }
     else if (id == queryID)
     {
-        return r.findEndo(queryID, l);
+        return r.findGeno(queryID, l);
     }
 
     return false;
@@ -92,7 +92,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     o.info("Generating statistics for " + r.endoID());
     stats.endo = stats.cov.inters.find(r.endoID())->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.findEndo(r.endoID(), Locus(i, j)));
+        return static_cast<bool>(r.findGeno(r.endoID(), Locus(i, j)));
     });
 
     assert(stats.chrT.mean && stats.endo.mean);
