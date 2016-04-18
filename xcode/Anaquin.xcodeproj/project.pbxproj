@@ -293,6 +293,7 @@
 		EF7765C81CB4E2EB007C61C3 /* t_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = t_express.hpp; path = ../src/TransQuin/t_express.hpp; sourceTree = "<group>"; };
 		EF7908AC1B81759100B7C8AF /* parser_feature.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_feature.hpp; path = ../src/parsers/parser_feature.hpp; sourceTree = "<group>"; };
 		EF92BC3D1CA3A9000054E8C8 /* errors.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = errors.hpp; path = ../src/data/errors.hpp; sourceTree = "<group>"; };
+		EF94CB061CC4D2D600EDDDA7 /* data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = data.hpp; path = ../src/data/data.hpp; sourceTree = "<group>"; };
 		EF98D6BB1C616B5D00697051 /* t_standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_standard.cpp; path = ../tests/data/t_standard.cpp; sourceTree = "<group>"; };
 		EF9F70EC1B9C331200B8BD7B /* variant.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = variant.hpp; path = ../src/data/variant.hpp; sourceTree = "<group>"; };
 		EF9F70ED1B9C397900B8BD7B /* reference.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = reference.cpp; path = ../src/data/reference.cpp; sourceTree = "<group>"; };
@@ -568,6 +569,7 @@
 				EF1DE0A71B21EC6D00DEC381 /* alignment.hpp */,
 				EF1DE0A81B21EC6D00DEC381 /* biology.hpp */,
 				EF02A5231B7E0F8D00295799 /* compare.hpp */,
+				EF94CB061CC4D2D600EDDDA7 /* data.hpp */,
 				EF5B07BF1C48E24100751B46 /* dtest.hpp */,
 				EF92BC3D1CA3A9000054E8C8 /* errors.hpp */,
 				EF4E334C1CB8FAF30067B16B /* experiment.hpp */,
