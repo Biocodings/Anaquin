@@ -843,8 +843,11 @@ def generatePDF(r, path, name):
     # The script required to construct a PDF from markdown
     r2pdf = path + '/r2pdf.R'
 
-    # Prepare an R script for the report
-    execute('echo "library(Anaquin); library(rmarkdown); render(\'report.RMarkdown\', \'pdf_document\')" > ' + r2pdf)
+    f = open(r2pdf, 'w')
+    f.write('library(Anaquin)\n')
+    f.write('library(rmarkdown)\n')
+    f.write('render("report.RMarkdown", "pdf_document")\n')
+    f.close()
 
     # The script should be run relative to the output directory
     os.chdir(path)
