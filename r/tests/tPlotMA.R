@@ -73,4 +73,4 @@ plotForGenes <- function()
     checkEquals(r$yname, 'Log2 Ratio of Normalized Counts')
 }
 
-plotForGenes()
+#plotForGenes()

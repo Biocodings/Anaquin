@@ -114,7 +114,7 @@ void MAssembly::report(const FileName &file, const Options &o)
         
         const auto format = "%1%\t%2%";
         
-        o.writer->write((boost::format(format) % "contig" % "seq").str());
+        o.writer->write((boost::format(format) % "contig" % "sequin").str());
         
         for (const auto &i : stats.blat.aligns)
         {
@@ -134,7 +134,7 @@ void MAssembly::report(const FileName &file, const Options &o)
         
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
-        o.writer->write((boost::format(format) % "seq"
+        o.writer->write((boost::format(format) % "sequin"
                                                % "contig"
                                                % "covered"
                                                % "match"

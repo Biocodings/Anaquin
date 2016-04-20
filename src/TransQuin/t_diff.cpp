@@ -260,37 +260,37 @@ void TDiff::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * 1. Generating summary statistics
+     * Generating summary statistics
      */
 
     TDiff::generateSummary("TransDiff_summary.stats", stats, o, units);
 
     /*
-     * 2. Generating differential results
+     * Generating differential results
      */
 
     TDiff::generateCSV("TransDiff_quins.csv", stats, o);
     
     /*
-     * 3. Generating log-fold plot
+     * Generating log-fold plot
      */
     
     TDiff::generateFoldR("TransDiff_fold.R", "TransDiff_quins.csv", o);
 
     /*
-     * 4. Generating ROC plot
+     * Generating ROC plot
      */
     
     TDiff::generateROC("TransDiff_ROC.R", "TransDiff_quins.csv", o);
     
     /*
-     * 5. Generating LODR plot
+     * Generating LODR plot
      */
     
     TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.csv", o);
     
     /*
-     * 6. Generating MA plot
+     * Generating MA plot
      */
     
     if (!o.counts.empty())

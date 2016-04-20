@@ -17,4 +17,4 @@ testPiecewiseLinear <- function()
     checkEquals(r$breaks$k, -1)
 }
 
-testPiecewiseLinear()
+#testPiecewiseLinear()

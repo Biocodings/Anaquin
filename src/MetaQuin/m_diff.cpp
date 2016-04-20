@@ -126,32 +126,20 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
 
 static void writeCSV(const FileName &file, const MDiff::Stats &stats, const MDiff::Options &o)
 {
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    const std::string format = "%1%\t%2%\t%3%";
     
     /*
      * Generating detailed statistics for each sequin
      */
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "ID"
-                                           % "Expected 1 (attomol/ul)"
-                                           % "Expected 2 (attomol/ul)"
-                                           % "Measured 1 (k-mer average)"
-                                           % "Measured 2 (k-mer average)"
-                                           % "Expected Fold"
-                                           % "Measured Fold"
-                                           % "Expected Log-Fold"
-                                           % "Measured Log-Fold").str());
+    o.writer->write((boost::format(format) % "sequin"
+                                           % "expected"
+                                           % "measured").str());
     
     for (const auto &diff : stats.diffs)
     {
         o.writer->write((boost::format(format) % diff.id
-                                               % diff.e1
-                                               % diff.m1
-                                               % diff.e2
-                                               % diff.m2
-                                               % diff.eFold
-                                               % diff.mFold
                                                % log2(diff.eFold)
                                                % log2(diff.mFold)).str());
     }
@@ -164,19 +152,20 @@ void MDiff::report(const FileName &file1, const FileName &file2, const Options &
     const auto stats = MDiff::analyze(file1, file2, o);
 
     /*
-     * Generating differential comparisons for both samples
+     * Generating summary statistics
      */
     
     o.info("Generating MetaDiff_summary.stats");
     o.writer->open("MetaDiff_summary.stats");
-    //o.writer->write(StatsWriter::linearSummary(file1 + " & " + file2, o.rChrT, stats, stats.hist));
+    o.writer->write(StatsWriter::linearSummary(file1 + " & " + file2, o.rChrT, stats, stats, stats.hist, "sequins"));
     o.writer->close();
 
     /*
-     * 2. Generating differential results
+     * Generating differential results
      */
     
-    writeCSV("MetaDiff_quin.stats", stats, o);
+    o.info("Generating MetaDiff_quins.stats");
+    writeCSV("MetaDiff_quins.stats", stats, o);
 
     /*
      * 3. Generating log-fold plot
@@ -184,6 +173,6 @@ void MDiff::report(const FileName &file1, const FileName &file2, const Options &
     
     o.info("Generating MetaDiff_fold.R");
     o.writer->open("MetaDiff_fold.R");
-    o.writer->write(RWriter::createScript("MetaDiff_quins.csv", PlotMFold()));
+    o.writer->write(RWriter::createScript("MetaDiff_quins.stats", PlotMFold()));
     o.writer->close();
 }

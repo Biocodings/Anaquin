@@ -78,7 +78,7 @@ Scripts CoverageTool::writeCSV(const CoverageTool::Stats &stats, const CoverageR
     const auto format = "%1%\t%2%\n";
     
     std::stringstream ss;
-    ss << ((boost::format(format) % "seq" % "count").str());
+    ss << ((boost::format(format) % "sequin" % "count").str());
 
     for (const auto &seq : stats.hist)
     {

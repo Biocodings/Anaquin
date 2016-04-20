@@ -31,4 +31,4 @@ DESeq2 <- function()
     r <- plotLODR(data, shouldBand=FALSE, locBand='pred', choseFDR=0.1, shouldTable=FALSE, lvl='gene', yBreaks=yBreaks, xBreaks=xBreaks, xLabels=xLabels)
 }
 
-DESeq2()
+#DESeq2()

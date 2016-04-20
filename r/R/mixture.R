@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-loadMixture.FusQuin <- function(data, file='A')
+loadFusMix <- function(data, file='A')
 {
     data <- read.csv(file, row.names=1, sep='\t')
     colnames(data) <- c('length', 'abund')

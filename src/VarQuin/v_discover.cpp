@@ -133,7 +133,7 @@ static void writeCSV(const FileName &file,
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "seq"
+    o.writer->write((boost::format(format) % "sequin"
                                            % "pos"
                                            % "label"
                                            % "pval"

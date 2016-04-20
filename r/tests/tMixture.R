@@ -41,6 +41,6 @@ testVarF <- function()
     checkEquals(nrow(x$seqs), 72)
 }
 
-testTransAB()
-testVarA()
-testVarF()
+#testTransAB()
+#testVarA()
+#testVarF()

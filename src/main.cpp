@@ -126,11 +126,12 @@ typedef std::set<Value> Range;
 #define OPT_R_IND   809
 #define OPT_U_BASE  900
 
-#define OPT_PSL_1   905
-#define OPT_PSL_2   906
-#define OPT_U_COV   911
-#define OPT_U_FILES 914
-#define OPT_C_FILES 916
+#define OPT_PSL     905
+#define OPT_PSL_1   906
+#define OPT_PSL_2   907
+#define OPT_U_COV   908
+#define OPT_U_FILES 909
+#define OPT_C_FILES 910
 
 using namespace Anaquin;
 
@@ -243,8 +244,8 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_M_IGV,      { OPT_U_FILES                                              } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_U_FILES, OPT_SOFT              } },
-    { TOOL_M_EXPRESS,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT            } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_PSL, OPT_U_FILES, OPT_SOFT              } },
+    { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_PSL, OPT_U_FILES, OPT_SOFT              } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                   } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
 
@@ -398,7 +399,7 @@ static const struct option long_options[] =
     { "rfus",    required_argument, 0, OPT_R_FUS   },
     { "rind",    required_argument, 0, OPT_R_IND   },
 
-    { "rpsl",    required_argument, 0, OPT_PSL_1  },
+    { "rpsl",    required_argument, 0, OPT_PSL    },
     { "rpsl1",   required_argument, 0, OPT_PSL_1  },
     { "rpsl2",   required_argument, 0, OPT_PSL_2  },
     { "rcov",    required_argument, 0, OPT_U_COV  },
@@ -997,6 +998,7 @@ void parse(int argc, char ** argv)
                 break;
             }
 
+            case OPT_PSL:
             case OPT_U_COV:
             case OPT_PSL_2:
             case OPT_PSL_1:
@@ -1617,7 +1619,7 @@ void parse(int argc, char ** argv)
                             o.contigs = conts;
                             
                             // An alignment file is needed to identify contigs
-                            o.psl = _p.opts.at(OPT_PSL_1);
+                            o.psl = _p.opts.at(OPT_PSL);
                             
                             analyze_1<MAssembly>(OPT_U_FILES, o);
                             break;
@@ -1631,7 +1633,7 @@ void parse(int argc, char ** argv)
                             o.contigs = conts;
                             
                             // An alignment file is needed to identify contigs
-                            o.psl = _p.opts.at(OPT_PSL_1);
+                            o.psl = _p.opts.at(OPT_PSL);
                             
                             analyze_1<MExpress>(OPT_U_FILES, o);
                             break;

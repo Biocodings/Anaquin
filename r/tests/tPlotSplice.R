@@ -55,4 +55,4 @@ testStringTie <- function()
 }
 
 #testGenes()
-testStringTie()
+#testStringTie()

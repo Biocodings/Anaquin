@@ -90,8 +90,6 @@ tVarScan <- function()
     plotROCForVar(data)
 }
 
-test_1()
-test_2()
-tVarScan()
-
-
+#test_1()
+#test_2()
+#tVarScan()
