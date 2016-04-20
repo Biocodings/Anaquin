@@ -75,7 +75,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALLELE    278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
-#define TOOL_M_ABUND     282
+#define TOOL_M_EXPRESS     282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
@@ -196,7 +196,7 @@ static std::map<Value, Tool> _tools =
     { "VarKAllele",     TOOL_V_KALLELE   },
 
     { "MetaAssembly",   TOOL_M_ASSEMBLY  },
-    { "MetaAbund",      TOOL_M_ABUND     },
+    { "MetaAbund",      TOOL_M_EXPRESS     },
     { "MetaDiff",       TOOL_M_DIFF      },
     { "MetaIGV",        TOOL_M_IGV       },
     { "MetaCoverage",   TOOL_M_COVERAGE  },
@@ -244,7 +244,7 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_M_IGV,      { OPT_U_FILES                                              } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_U_FILES, OPT_SOFT              } },
-    { TOOL_M_ABUND,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT            } },
+    { TOOL_M_EXPRESS,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT            } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                   } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
 
@@ -1533,7 +1533,7 @@ void parse(int argc, char ** argv)
 
         case TOOL_M_IGV:
         case TOOL_M_DIFF:
-        case TOOL_M_ABUND:
+        case TOOL_M_EXPRESS:
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
         {
@@ -1564,7 +1564,7 @@ void parse(int argc, char ** argv)
                     default: { break; }
                 }
 
-                if (_p.tool == TOOL_M_ABUND || _p.tool == TOOL_M_DIFF)
+                if (_p.tool == TOOL_M_EXPRESS || _p.tool == TOOL_M_DIFF)
                 {
                     addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
                 }
@@ -1578,7 +1578,7 @@ void parse(int argc, char ** argv)
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_M_DIFF:
-                case TOOL_M_ABUND:
+                case TOOL_M_EXPRESS:
                 case TOOL_M_ASSEMBLY:
                 {
                     // Only defined for certain assemblers
@@ -1586,7 +1586,7 @@ void parse(int argc, char ** argv)
                     
                     const auto soft = parse(_p.opts.at(OPT_SOFT));
                     
-                    if (soft == MAssembly::RayMeta)
+                    if (soft == MAssembly::RayMeta && _p.tool == TOOL_M_EXPRESS)
                     {
                         if (!_p.opts.count(OPT_U_COV))
                         {
@@ -1595,7 +1595,7 @@ void parse(int argc, char ** argv)
                         
                         conts = _p.opts.at(OPT_U_COV);
                     }
-                    
+
                     switch (_p.tool)
                     {
                         case TOOL_M_DIFF:
@@ -1623,7 +1623,7 @@ void parse(int argc, char ** argv)
                             break;
                         }
                             
-                        case TOOL_M_ABUND:
+                        case TOOL_M_EXPRESS:
                         {
                             MExpress::Options o;
                             

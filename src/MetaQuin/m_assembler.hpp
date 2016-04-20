@@ -143,12 +143,15 @@ namespace Anaquin
         {
             std::map<ContigID, KMers> covs, lens;
             
-            ParseTSV::parse(Reader(contigs), [&](const ParseTSV::TSV &t, const ParserProgress &)
+            if (!contigs.empty())
             {
-                covs[t.id] = t.kmer;
-                lens[t.id] = t.klen;
-            });
-            
+                ParseTSV::parse(Reader(contigs), [&](const ParseTSV::TSV &t, const ParserProgress &)
+                {
+                    covs[t.id] = t.kmer;
+                    lens[t.id] = t.klen;
+                });
+            }
+
             Stats stats;
             
             return DAsssembly::analyze<C, Stats>(file, align, [&](C &node)

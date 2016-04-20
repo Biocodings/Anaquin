@@ -9,7 +9,6 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     MAssembly::Stats stats;
 
     assert(!o.psl.empty());
-    assert(o.soft != MAssembly::Software::RayMeta || !o.contigs.empty());
 
     /*
      * Generate statistics for the alignment
@@ -39,37 +38,45 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static Scripts generateSummary(const FileName &file, const MAssembly::Stats &stats)
+static Scripts generateSummary(const FileName &file, const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
+    const auto &r = Standard::instance().r_meta;
+
     const auto summary = "Summary for input: %1%\n\n"
-                         "   Community: %2%\n"
-                         "   Synthetic: %3%\n\n"
+                         "   Synthetic: %2%\n"
+                         "   Community: %3%\n\n"
                          "   Contigs:   %4%\n"
-                         "   Assembled: %5%\n"
-                         "   Reference: %6%\n\n"
+                         "   Assembled: %5%\n\n"
+                         "   ***\n"
+                         "   *** Reference annotation (Synthetic)\n"
+                         "   ***\n\n"
+                         "   File: %6%\n"
+                         "   Synthetic: %7% sequins\n\n"
+                         "   ***\n"
                          "   ***\n"
                          "   *** The following statistics are computed on the synthetic community\n"
                          "   ***\n\n"
-                         "   N20:      %7%\n"
-                         "   N50:      %8%\n"
-                         "   N80:      %9%\n"
-                         "   Min:      %10%\n"
-                         "   Mean:     %11%\n"
-                         "   Max:      %12%\n\n"
+                         "   N20:      %8%\n"
+                         "   N50:      %9%\n"
+                         "   N80:      %10%\n"
+                         "   Min:      %11%\n"
+                         "   Mean:     %12%\n"
+                         "   Max:      %13%\n\n"
                          "   ***\n"
                          "   *** The following overlapping statistics are computed as proportion\n"
                          "   ***\n\n"
-                         "   Match:    %13%\n"
-                         "   Mismatch: %14%\n"
-                         "   Gaps (sequins): %15%\n"
-                         "   Gaps (contigs): %16%\n";
+                         "   Match:    %14%\n"
+                         "   Mismatch: %15%\n"
+                         "   Gaps (sequins): %16%\n"
+                         "   Gaps (contigs): %17%\n";
     
     return (boost::format(summary) % file
-                                   % stats.blat.n_geno
                                    % stats.blat.n_chrT
+                                   % stats.blat.n_geno
                                    % stats.blat.aligns.size()
                                    % stats.blat.countAssembled()
-                                   % stats.blat.metas.size()
+                                   % o.rChrT
+                                   % r.data().size()
                                    % stats.N20
                                    % stats.N50
                                    % stats.N80
@@ -94,7 +101,7 @@ void MAssembly::report(const FileName &file, const Options &o)
 
     o.info("Generating MetaAssembly_summary.stats");
     o.writer->open("MetaAssembly_summary.stats");
-    o.writer->write(generateSummary("MetaAssembly_summary.stats", stats));
+    o.writer->write(generateSummary("MetaAssembly_summary.stats", stats, o));
     o.writer->close();
     
     /*
