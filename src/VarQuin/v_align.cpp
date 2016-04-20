@@ -266,7 +266,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.unmapped
                                             % stats.n_chrT
                                             % stats.chrTProp()
-                                            % stats.n_endo
+                                            % stats.n_geno
                                             % stats.endoProp()
                                             % stats.dilution()
                                             % o.rChrT

@@ -1,6 +1,6 @@
 #include "MetaQuin/m_blat.hpp"
-#include "MetaQuin/m_assembly.hpp"
 #include "parsers/parser_tsv.hpp"
+#include "MetaQuin/m_assembly.hpp"
 
 using namespace Anaquin;
 
@@ -17,7 +17,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
     
     o.analyze(o.psl);
     
-    // Analyse the blat alignment file
+    // Analyse the alignment file
     const auto t = MBlat::analyze(o.psl);
  
     o.info("Found: " + std::to_string(t.aligns.size()) + " in " + o.psl);
@@ -65,7 +65,7 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
                          "   Gaps (contigs): %16%\n";
     
     return (boost::format(summary) % file
-                                   % stats.blat.n_endo
+                                   % stats.blat.n_geno
                                    % stats.blat.n_chrT
                                    % stats.blat.aligns.size()
                                    % stats.blat.countAssembled()

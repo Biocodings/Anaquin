@@ -616,7 +616,7 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % stats.unmapped
                                           % stats.n_chrT
                                           % (100.0 * stats.chrTProp())
-                                          % stats.n_endo
+                                          % stats.n_geno
                                           % (100.0 * stats.endoProp())
                                           % stats.dilution()                                                // 7
                                           % o.rChrT                                                         // 8

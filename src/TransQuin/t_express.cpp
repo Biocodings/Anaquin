@@ -14,7 +14,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
 {
     if (t.cID != ChrT)
     {
-        stats.n_endo++;
+        stats.n_geno++;
     }
     else
     {

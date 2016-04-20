@@ -1,19 +1,21 @@
 #include <numeric>
-#include "MetaQuin/m_blat.hpp"
 #include <boost/format.hpp>
+#include "MetaQuin/m_blat.hpp"
 #include "parsers/parser_blast.hpp"
 
 using namespace Anaquin;
 
 MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_meta;
+    
     /*
      * Create data-structure for each of the sequin
      */
     
     SequinAlign m;
 
-    for (const auto &i : Standard::instance().r_meta.data())
+    for (const auto &i : r.data())
     {
         m[i.second.id] = std::shared_ptr<MetaAlignment>(new MetaAlignment());
         m[i.second.id]->seq = &i.second;
@@ -22,13 +24,13 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
     MBlat::Stats stats;
 
     /*
-     * Create data-structure for the alignment
+     * Create data-structure for the alignments
      */
     
     ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
     {
         // Eg: M2_G, M10_G
-        const SequinID id = l.tName;
+        const auto id = l.tName;
 
         if (m.count(id))
         {
@@ -60,7 +62,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
         }
         else
         {
-            stats.n_endo++;
+            stats.n_geno++;
             o.warn((boost::format("%1% is not a sequin") % id).str());
         }
     });
@@ -199,7 +201,7 @@ void MBlat::report(const FileName &file, const Options &o)
         ;
 
         o.writer->write((boost::format(summary) % file
-                                                % stats.n_endo
+                                                % stats.n_geno
                                                 % stats.n_chrT
                                                 % stats.aligns.size()
                                                 % stats.countAssembled()

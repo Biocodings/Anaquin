@@ -398,10 +398,10 @@ static const struct option long_options[] =
     { "rfus",    required_argument, 0, OPT_R_FUS   },
     { "rind",    required_argument, 0, OPT_R_IND   },
 
-    { "upsl",    required_argument, 0, OPT_PSL_1  },
-    { "upsl1",   required_argument, 0, OPT_PSL_1  },
-    { "upsl2",   required_argument, 0, OPT_PSL_2  },
-    { "ucov",    required_argument, 0, OPT_U_COV  },
+    { "rpsl",    required_argument, 0, OPT_PSL_1  },
+    { "rpsl1",   required_argument, 0, OPT_PSL_1  },
+    { "rpsl2",   required_argument, 0, OPT_PSL_2  },
+    { "rcov",    required_argument, 0, OPT_U_COV  },
 
     { "fuzzy",   required_argument, 0, OPT_FUZZY },
     
@@ -575,7 +575,6 @@ static void saveRef()
     {
         if (CHECK_REF(i.first) && !i.second.empty())
         {
-            std::cout << ("cp " + i.second + " " + __output__) << std::endl;
             system(("cp " + i.second + " " + __output__).c_str());
         }
     }

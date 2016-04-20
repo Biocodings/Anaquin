@@ -4,8 +4,8 @@
 #include <vector>
 #include <iomanip>
 #include <sstream>
-#include <ss/stats.hpp>
 #include <boost/format.hpp>
+#include <ss/maths/stats.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 

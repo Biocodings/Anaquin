@@ -27,7 +27,7 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
                 }
                 else
                 {
-                    stats.n_endo++;
+                    stats.n_geno++;
                 }
 
                 const SequinData *match;

@@ -129,7 +129,7 @@ template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::
     }
     else
     {
-        stats.n_endo++;
+        stats.n_geno++;
         stats.elfs.push_back(NAN);
     }
 

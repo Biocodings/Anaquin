@@ -159,10 +159,10 @@ namespace Anaquin
             return (boost::format(summary) % d1                          // 1
                                            % d2
                                            % (samples.empty() ? "Genome" : samples)
-                                           % s1.n_endo
+                                           % s1.n_geno
                                            % units
                                            % s1.n_chrT
-                                           % s2.n_endo
+                                           % s2.n_geno
                                            % s2.n_chrT
                                            % s1.data.at(ChrT).h.size()
                                            % (ref.empty() ? units : ref) // 10

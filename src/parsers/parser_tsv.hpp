@@ -1,6 +1,7 @@
 #ifndef PARSER_TSV_HPP
 #define PARSER_TSV_HPP
 
+#include "data/tokens.hpp"
 #include "parsers/parser.hpp"
 
 namespace Anaquin
@@ -13,7 +14,7 @@ namespace Anaquin
             KMerLength,
             ContigLength,
             ColoredKMers,
-            ProportionColoredKMers,
+            PropColoredKMers,
             ModeKMer,
             KMerObs,
             Total,

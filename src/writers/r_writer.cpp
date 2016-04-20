@@ -91,7 +91,7 @@ Scripts StatsWriter::linearSummary(const FileName &file,
     return (boost::format(summary) % units
                                    % mStats.n_chrT
                                    % mStats.chrTProp()
-                                   % mStats.n_endo
+                                   % mStats.n_geno
                                    % mStats.endoProp()
                                    % annot
                                    % mixture()           // 7
@@ -207,7 +207,7 @@ Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR
     return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
                                                          % STRING(stats.n_chrT)     // 2
                                                          % STRING(stats.p_chrT)     // 3
-                                                         % STRING(stats.n_endo)     // 4
+                                                         % STRING(stats.n_geno)     // 4
                                                          % STRING(stats.p_endo)     // 5
                                                          % chrTR                    // 6
                                                          % stats.n_ref              // 7
@@ -303,7 +303,7 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         const auto b = pow(2, inf.b);
 
         r.n_chrT.add((unsigned)mStats[i].n_chrT);
-        r.n_endo.add((unsigned)mStats[i].n_endo);
+        r.n_geno.add((unsigned)mStats[i].n_geno);
         r.p_chrT.add(mStats[i].chrTProp());
         r.p_endo.add(mStats[i].endoProp());
 

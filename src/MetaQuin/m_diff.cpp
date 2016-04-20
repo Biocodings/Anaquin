@@ -114,7 +114,7 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
     }
     
     stats.n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
-    stats.n_endo = (dStats_1.n + dStats_2.n) - stats.n_chrT;
+    stats.n_geno = (dStats_1.n + dStats_2.n) - stats.n_chrT;
     
     // Calculating the absolute detection limit
     stats.limit = r.absolute(stats.hist);

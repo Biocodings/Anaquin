@@ -61,7 +61,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         }
         else
         {
-            stats.n_endo++;
+            stats.n_geno++;
             stats.endo.push_back(m.query);
         }
     });

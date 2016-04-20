@@ -28,8 +28,9 @@ namespace Anaquin
             Options() {}
 
             /*
-             * Metagenomics assembler report results differently. For example, RayMeta generates
-             * "Contigs.tsv" which specifies the coverage of the contigs.
+             * The assemblers report results differently. For example, RayMeta generates
+             * "Contigs.tsv" that specifies the coverage of the contigs. This is defined
+             * for RayMeta.
              */
             
             FileName contigs;
@@ -37,7 +38,7 @@ namespace Anaquin
             // Alignment file by blat
             FileName psl;
 
-            Software soft = Software::Velvet;
+            Software soft;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

@@ -98,7 +98,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
         }
         else
         {
-            stats.n_endo++;
+            stats.n_geno++;
         }
     });
     

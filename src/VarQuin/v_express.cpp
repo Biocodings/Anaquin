@@ -15,7 +15,7 @@ VExpress::Stats VExpress::analyze(const FileName &file, const Options &o)
     // Initialize the distribution for each sequin
     stats.hist = r.hist();
 
-    stats.n_endo = NAN;
+    stats.n_geno = NAN;
 
     ParserKallisto::parse(Reader(file), [&](const ParserKallisto::Data &d, const ParserProgress &)
     {

@@ -309,7 +309,7 @@ void VSample::report(const FileName &file, const Options &o)
     o.writer->write((boost::format(summary) % file
                                             % before.cov.unmapped
                                             % before.cov.n_chrT
-                                            % before.cov.n_endo
+                                            % before.cov.n_geno
                                             % o.rChrT
                                             % r.countSeqs()
                                             % o.rEndo

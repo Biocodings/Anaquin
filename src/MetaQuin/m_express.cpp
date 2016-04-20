@@ -49,7 +49,7 @@ MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options 
     }
 
     stats.n_chrT = stats.assembly.contigs.size();
-    stats.n_endo = stats.assembly.n - stats.n_chrT;
+    stats.n_geno = stats.assembly.n - stats.n_chrT;
 
     o.info("Analyzing the alignments");
 

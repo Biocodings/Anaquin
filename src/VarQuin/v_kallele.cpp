@@ -16,7 +16,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     // Initialize the distribution for each sequin
     stats.hist = r.hist();
     
-    stats.n_endo = NAN;
+    stats.n_geno = NAN;
     
     // Run quantification in Kallisto
     const auto abundFile = Pachter::externalQuant(o.index, file1, file2);

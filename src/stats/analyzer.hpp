@@ -61,7 +61,7 @@ namespace Anaquin
     {
         inline Proportion endoProp() const
         {
-            return (n_chrT + n_endo) ? static_cast<Proportion>(n_endo) / (n_chrT + n_endo) : NAN;
+            return (n_chrT + n_geno) ? static_cast<Proportion>(n_geno) / (n_chrT + n_geno) : NAN;
         }
 
         inline Proportion chrTProp() const
@@ -71,14 +71,14 @@ namespace Anaquin
 
         inline Proportion dilution() const
         {
-            return (n_chrT + n_endo) ? static_cast<Proportion>(n_chrT) / (n_chrT + n_endo) : NAN;
+            return (n_chrT + n_geno) ? static_cast<Proportion>(n_chrT) / (n_chrT + n_geno) : NAN;
         }
 
         // Total mapped to the synthetic chromosome
         Counts n_chrT = 0;
 
         // Total mapped to the endogenous
-        Counts n_endo = 0;
+        Counts n_geno = 0;
     };
 
     struct AlignmentStats : public MappingStats
@@ -91,7 +91,7 @@ namespace Anaquin
             {
                 if      (!t.mapped) { unmapped++; }
                 else if (!f(t))     { n_chrT++;   }
-                else                { n_endo++;   }
+                else                { n_geno++;   }
             }
         }
 
