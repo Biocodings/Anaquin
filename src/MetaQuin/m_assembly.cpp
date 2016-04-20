@@ -50,7 +50,7 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
                          "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
-                         "   File: %6%\n"
+                         "   File: %6%\n\n"
                          "   Synthetic: %7% sequins\n\n"
                          "   ***\n"
                          "   ***\n"
@@ -135,12 +135,12 @@ void MAssembly::report(const FileName &file, const Options &o)
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
         o.writer->write((boost::format(format) % "seq"
-                                               % "contigs"
+                                               % "contig"
                                                % "covered"
                                                % "match"
                                                % "mismatch"
-                                               % "tgaps"
-                                               % "qgaps").str());
+                                               % "tgap"
+                                               % "qgap").str());
 
         for (const auto &i : stats.blat.metas)
         {
