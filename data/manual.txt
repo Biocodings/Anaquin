@@ -61,6 +61,7 @@ Version: 1.1.1
        MetaAssembly
        MetaExpress
        MetaDiff
+       MetaCoverage
        MetaReport
        MetaIGV
 	   

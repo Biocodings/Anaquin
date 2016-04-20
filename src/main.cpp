@@ -31,6 +31,7 @@
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_express.hpp"
 #include "MetaQuin/m_assembly.hpp"
+#include "MetaQuin/m_coverage.hpp"
 
 #include "LadQuin/l_copy.hpp"
 #include "LadQuin/l_diffs.hpp"
@@ -74,11 +75,12 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALLELE    278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
-#define TOOL_M_EXPRESS   282
+#define TOOL_M_EXPRESS     282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
-#define TOOL_L_EXPRESS   287
+#define TOOL_M_COVERAGE  286
+#define TOOL_L_EXPRESS     287
 #define TOOL_L_DIFF      288
 #define TOOL_L_COVERAGE  289
 #define TOOL_F_DISCOVER  290
@@ -197,6 +199,7 @@ static std::map<Value, Tool> _tools =
     { "MetaExpress",    TOOL_M_EXPRESS   },
     { "MetaDiff",       TOOL_M_DIFF      },
     { "MetaIGV",        TOOL_M_IGV       },
+    { "MetaCoverage",   TOOL_M_COVERAGE  },
     { "MetaReport",     TOOL_M_REPORT    },
 
     { "LadderCopy",     TOOL_L_COPY      },
@@ -241,7 +244,8 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_M_IGV,      { OPT_U_FILES                                              } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED, OPT_PSL_1, OPT_U_FILES, OPT_SOFT              } },
-    { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT            } },
+    { TOOL_M_EXPRESS,    { OPT_MIXTURE, OPT_PSL_1, OPT_U_FILES, OPT_SOFT            } },
+    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                   } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
 
     /*
@@ -1531,6 +1535,7 @@ void parse(int argc, char ** argv)
         case TOOL_M_DIFF:
         case TOOL_M_EXPRESS:
         case TOOL_M_ASSEMBLY:
+        case TOOL_M_COVERAGE:
         {
             auto parse = [&](const std::string &str)
             {
@@ -1550,6 +1555,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_M_ASSEMBLY:
+                    case TOOL_M_COVERAGE:
                     {
                         applyRef(std::bind(&Standard::addMRef, &s, std::placeholders::_1));
                         break;
@@ -1568,7 +1574,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV: { viewer<FViewer>(); break; }
+                case TOOL_M_IGV:      { viewer<FViewer>();                 break; }
+                case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_M_DIFF:
                 case TOOL_M_EXPRESS:
