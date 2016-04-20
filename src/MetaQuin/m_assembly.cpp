@@ -89,25 +89,25 @@ void MAssembly::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * 1: Generating summary statistics
+     * Generating summary statistics
      */
 
-    o.logInfo("Generating MetaAssembly_summary.stats");
+    o.info("Generating MetaAssembly_summary.stats");
     o.writer->open("MetaAssembly_summary.stats");
     o.writer->write(generateSummary("MetaAssembly_summary.stats", stats));
     o.writer->close();
-
+    
     /*
      * Generating detailed statistics for each contig
      */
 
     {
         o.info("Generating MetaAssembly_contigs.stats");
-        o.writer->open("MetaAssembly_contigs.csv");
+        o.writer->open("MetaAssembly_contigs.stats");
         
-        const std::string format = "%1%\t%2%";
+        const auto format = "%1%\t%2%";
         
-        o.writer->write((boost::format(format) % "ID" % "Sequin ID").str());
+        o.writer->write((boost::format(format) % "contig" % "seq").str());
         
         for (const auto &i : stats.blat.aligns)
         {
@@ -122,18 +122,18 @@ void MAssembly::report(const FileName &file, const Options &o)
      */
 
     {
-        o.logInfo("Generating sequins statistics");
-        o.writer->open("MetaAssembly_quins.csv");
+        o.logInfo("Generating MetaAssembly_quins.stats");
+        o.writer->open("MetaAssembly_quins.stats");
         
-        const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
 
-        o.writer->write((boost::format(format) % "ID"
-                                               % "Contigs"
-                                               % "Covered"
-                                               % "Match"
-                                               % "Mismatch"
-                                               % "TGaps"
-                                               % "QGaps").str());
+        o.writer->write((boost::format(format) % "seq"
+                                               % "contigs"
+                                               % "covered"
+                                               % "match"
+                                               % "mismatch"
+                                               % "tgaps"
+                                               % "qgaps").str());
 
         for (const auto &i : stats.blat.metas)
         {

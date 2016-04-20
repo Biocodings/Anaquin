@@ -44,19 +44,22 @@ namespace Anaquin
             Counts n = 0;
         };
 
+        /*
+         * Analyze a de-novo assembly given the assembly and blat alignment.
+         */
+
         template <typename C = Contig, typename T = DAsssembly::Stats<C>> static T analyze
                 (const FileName &file, const MBlat::Stats *blat, std::function<void (C&)> f)
         {
             T stats;
-            Histogram h;
+            Histogram hist;
 
-            ParserFA::parse(file, [&](const ParserFA::Data &l, const ParserProgress &)
+            ParserFA::parse(file, [&](const ParserFA::Data &data, const ParserProgress &)
             {
                 stats.n++;
                 
                 C c;
-                
-                c.id = l.id;
+                c.id = data.id;
                 
                 auto id = c.id;
                 
@@ -75,10 +78,10 @@ namespace Anaquin
                 }
                 
                 // Size of the config
-                c.len = l.seq.size();
+                c.len = data.seq.size();
                 
                 // The histogram needs the size of the sequence
-                h.insert(l.seq.size());
+                hist.insert(data.seq.size());
                 
                 // Allows to apply custom operation
                 f(c);
@@ -90,14 +93,14 @@ namespace Anaquin
              * https://github.com/bcgsc/abyss/blob/e58e5a6666e0de0e6bdc15c81fe488f5d83085d1/Common/Histogram.h
              */
             
-            stats.sum   = h.sum();
-            stats.N50   = h.n50();
-            stats.min   = h.minimum();
-            stats.max   = h.maximum();
-            stats.mean  = h.expectedValue();
-            stats.N80   = h.weightedPercentile(1 - 0.8);
-            stats.N20   = h.weightedPercentile(1 - 0.2);
-            stats.sum   = h.sum();
+            stats.sum   = hist.sum();
+            stats.N50   = hist.n50();
+            stats.min   = hist.minimum();
+            stats.max   = hist.maximum();
+            stats.mean  = hist.expectedValue();
+            stats.N80   = hist.weightedPercentile(1 - 0.8);
+            stats.N20   = hist.weightedPercentile(1 - 0.2);
+            stats.sum   = hist.sum();
             stats.total = std::accumulate(stats.contigs.begin(), stats.contigs.end(), 0,
                             [&](int sum, const std::pair<std::string, C> &p)
                             {
@@ -109,8 +112,8 @@ namespace Anaquin
 
     struct Velvet
     {
-        template <typename Stats, typename C> static Stats analyze
-                        (const FileName &file, const MBlat::Stats *align = NULL)
+        template <typename Stats, typename C> static Stats analyze(const FileName &file,
+                                                                   const MBlat::Stats *align = NULL)
         {
             Stats stats;
             
@@ -134,8 +137,9 @@ namespace Anaquin
     
     struct RayMeta
     {
-        template <typename Stats, typename C> static Stats analyze
-                    (const FileName &file, const FileName &contigs, const MBlat::Stats *align)
+        template <typename Stats, typename C> static Stats analyze(const FileName &file,
+                                                                   const FileName &contigs,
+                                                                   const MBlat::Stats *align)
         {
             std::map<ContigID, KMers> covs, lens;
             

@@ -68,7 +68,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
     });
 
     /*
-     * Traverse through all sequins, and calculate statistics for all alignments for each of those sequin.
+     * Traverse through the sequins, and calculate statistics for all alignments for each of those sequin.
      */
     
     // For each sequin in the reference...
@@ -114,7 +114,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             }
 
             /*
-             * Update statistics for this sequin
+             * Update statistics for the sequins
              */
             
             const auto l = align->seq->l.length();
@@ -135,7 +135,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             align->oQGaps = static_cast<double>(oQGaps) / qSums;
 
             /*
-             * Update overall statistics for all sequins
+             * Update overall statistics for the sequins
              */
             
             // Overall total gaps in all sequins
