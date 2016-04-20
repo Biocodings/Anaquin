@@ -61,7 +61,6 @@
 		EF7278441CACED620012648F /* m_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278351CACEC940012648F /* m_express.cpp */; };
 		EF7278451CACED620012648F /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278381CACEC940012648F /* m_assembly.cpp */; };
 		EF7278461CACED620012648F /* m_blat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72783A1CACEC940012648F /* m_blat.cpp */; };
-		EF7278471CACED620012648F /* m_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72783C1CACEC940012648F /* m_coverage.cpp */; };
 		EF7278481CACED620012648F /* m_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72783E1CACEC940012648F /* m_diff.cpp */; };
 		EF7278491CACED620012648F /* m_histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278401CACEC940012648F /* m_histogram.cpp */; };
 		EF72F0ED1B6898940092DA34 /* t_parser_top_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72F0EC1B6898940092DA34 /* t_parser_top_fusion.cpp */; };
@@ -268,8 +267,6 @@
 		EF7278391CACEC940012648F /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
 		EF72783A1CACEC940012648F /* m_blat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_blat.cpp; sourceTree = "<group>"; };
 		EF72783B1CACEC940012648F /* m_blat.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_blat.hpp; sourceTree = "<group>"; };
-		EF72783C1CACEC940012648F /* m_coverage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_coverage.cpp; sourceTree = "<group>"; };
-		EF72783D1CACEC940012648F /* m_coverage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_coverage.hpp; sourceTree = "<group>"; };
 		EF72783E1CACEC940012648F /* m_diff.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_diff.cpp; sourceTree = "<group>"; };
 		EF72783F1CACEC940012648F /* m_diff.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_diff.hpp; sourceTree = "<group>"; };
 		EF7278401CACEC940012648F /* m_histogram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_histogram.cpp; sourceTree = "<group>"; };
@@ -679,8 +676,6 @@
 				EF7278391CACEC940012648F /* m_assembly.hpp */,
 				EF72783A1CACEC940012648F /* m_blat.cpp */,
 				EF72783B1CACEC940012648F /* m_blat.hpp */,
-				EF72783C1CACEC940012648F /* m_coverage.cpp */,
-				EF72783D1CACEC940012648F /* m_coverage.hpp */,
 				EF72783E1CACEC940012648F /* m_diff.cpp */,
 				EF72783F1CACEC940012648F /* m_diff.hpp */,
 				EF7278401CACEC940012648F /* m_histogram.cpp */,
@@ -926,7 +921,6 @@
 				EF7278441CACED620012648F /* m_express.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */,
-				EF7278471CACED620012648F /* m_coverage.cpp in Sources */,
 				EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */,
 				EFDD6A991B0DD76200450029 /* md5.c in Sources */,
 				EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */,

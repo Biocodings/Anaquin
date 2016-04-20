@@ -131,11 +131,11 @@ void MExpress::report(const FileName &file, const MExpress::Options &o)
     const auto stats = MExpress::analyze(file, o);
 
     /*
-     * 1. Generating summary statistics
+     * Generating summary statistics
      */
     
-    o.info("Generating MetaAbund_summary.stats");
-    o.writer->open("MetaAbund_summary.stats");
+    o.info("Generating MetaExpress_summary.stats");
+    o.writer->open("MetaExpress_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
                                                 o.rEndo,
                                                 file,
@@ -146,26 +146,26 @@ void MExpress::report(const FileName &file, const MExpress::Options &o)
     o.writer->close();
     
     /*
-     * 2. Generating CSV for all sequins
+     * Generating CSV for all sequins
      */
     
-    o.info("Generating MetaAbund_quins.csv");
-    o.writer->open("MetaAbund_quins.csv");
+    o.info("Generating MetaExpress_quins.stats");
+    o.writer->open("MetaExpress_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
 
     /*
-     * 3. Generating for AbundAbund
+     * Generating for expression plot
      */
     
-    o.info("Generating MetaAbund_express.R");
-    o.writer->open("MetaAbund_express.R");
-    o.writer->write(RWriter::createScript("MetaAbund_quins.csv", PlotVExpress()));
+    o.info("Generating MetaExpress_express.R");
+    o.writer->open("MetaExpress_express.R");
+    o.writer->write(RWriter::createScript("MetaExpress_quins.stats", PlotVExpress()));
     o.writer->close();
     
     /*
      * 4. Generating detailed statistics for the contigs
      */
     
-    generateContigs("MetaAbund_contigs.stats", stats, o);
+    generateContigs("MetaExpress_contigs.stats", stats, o);
 }
