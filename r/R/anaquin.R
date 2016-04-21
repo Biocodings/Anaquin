@@ -58,6 +58,22 @@ TransQuin <- function(...)
     return (r)
 }
 
+MetaQuin <- function(...)
+{
+    x <- list(...)
+    
+    keys <- c('mix', 'seqs', 'expected', 'measured')
+    data <- .createData(x, keys)
+    
+    r <- list('seqs'=data, mix=.createMixture(x$mix))
+    class(r) <- 'MetaQuin'
+    
+    if (!is.null(x[['bedgr']])) { r$bedgr <- x$bedgr }
+    if (!is.null(x[['annot']])) { r$annot <- x$annot }
+    
+    return (r)
+}
+
 VarQuin <- function(...)
 {
     x <- list(...)

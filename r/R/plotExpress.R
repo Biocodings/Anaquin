@@ -74,6 +74,15 @@
     return (list('xname' = xname, 'yname' = yname))
 }
 
+plotExpress.MetaQuin <- function(data)
+{
+    .plotExpress(data, title='Expected expression vs Measured expression',
+                 xname='Expected expression (log2)',
+                 yname='Measured expression (log2)',
+                 showStats='left',
+                 showLegend=FALSE)
+}
+
 plotExpress.VarQuin <- function(data)
 {
     .plotExpress(data, title='Expected expression vs Measured expression',
