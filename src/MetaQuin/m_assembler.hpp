@@ -21,7 +21,7 @@ namespace Anaquin
         Coverage k_cov;
         
         // Normalized k-mer coverage
-        inline Coverage normalized() const { return k_cov / k_len; }
+        inline Coverage normalized() const { return k_cov ; }
     };
 
     struct DAsssembly

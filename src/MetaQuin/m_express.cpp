@@ -3,7 +3,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotVExpress();
+extern Scripts PlotMExpress();
 
 MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options &o)
 {
@@ -160,7 +160,7 @@ void MExpress::report(const FileName &file, const MExpress::Options &o)
     
     o.info("Generating MetaExpress_express.R");
     o.writer->open("MetaExpress_express.R");
-    o.writer->write(RWriter::createScript("MetaExpress_quins.stats", PlotVExpress()));
+    o.writer->write(RWriter::createScript("MetaExpress_quins.stats", PlotMExpress()));
     o.writer->close();
     
     /*

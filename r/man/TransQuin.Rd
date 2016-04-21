@@ -27,8 +27,6 @@ Specify a design for transcriptome analysis.
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}
-\note{The interface might change in future release as the command-line \code{Anaquin}
-  stabilises its own API.}
 \seealso
 {
 \code{\link{VarQuin}}
@@ -43,6 +41,10 @@ TransQuin(mix='/home/tedwong/mixture.csv')
 
 # Load mixture A online
 TransQuin(mix='A')
+
+# Load mixture B online
+TransQuin(mix='B')
+}
 
 # Load mixture B online
 TransQuin(mix='B')
