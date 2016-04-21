@@ -1,40 +1,51 @@
-\name{Anaquin-package}
-\alias{Anaquin-package}
-\alias{Anaquin}
-\docType{package}
-\title{
-Hello World Package Documentation
-~~ package title ~~
-}
+\name{TransQuin}
+\alias{TransQuin}
+\title{TransQuin sequins}
 \description{
-Hello World Package Documentation (MORE)
-~~ A concise (1-5 lines) description of the package ~~
+Specify a design for variant analysis.
+}
+\usage{
+\method{FusQuin}{default}(mix)
+}
+\arguments{
+  \item{mix}{the name of the mixture file which the input concentration are to be read from. The file must be in the CSV format delimited by tabs. Each row of the file gives the input concentration of a sequin, which differs for each mixture type.
+  
+  The latest mixture files can be downloaded at www.sequin.xyz, it is important to use the correct mixture file. More details at the website.
+  
+  Alternatively, \code{mix} can be 'A', 'B' or 'AB', for mixture A, B and AB respectively. Anaquin will download the mixture files, thus active Internet connection is required.}
 }
 \details{
-\tabular{ll}{
-Package: \tab Anaquin\cr
-Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2015-09-28\cr
-License: \tab What license is it under?\cr
+  The \code{TransQuin} object combines all the design information needed for variant analysis. Theses objects are used by the statistical modelling and data analysis functions. While all arguments are optional, \code{mix} or \code{annot} must be given. If these variables are specified they must be a valid file either locally or remotely.
+  
+  Once created, the object can be used for fusion data analysis. All fusion functions will require this object.  
+  
+  The internal representation is unimportant and might change in future release as the command-line Anaquin stabilses its
+  own API. 
 }
-~~ An overview of how to use the package, including the most important functions ~~
+\value{
+  An object of class \code{TransQuin} is returned. It contains the metadata required for data analysis. All variant functions requires this object.
 }
-\author{
-Who wrote it
 
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
-}
-\references{
-~~ Literature or other references for background information ~~
-}
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
-\keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+\author{Ted Wong \email{t.wong@garvan.org.au}}
+\note{The interface might change in future release as the command-line \code{Anaquin}
+  stabilises its own API.}
+\seealso
+{
+\code{\link{VarQuin}}
+\code{\link{FusQuin}}
+\code{\link{LadQuin}}
+\code{\link{MetaQuin}}
 }
 \examples{
 
+# Load a mixture from file
+VarQuin(mix='/home/tedwong/mixture.csv')
+
+# Load mixture A online
+VarQuin(mix='A')
+
+# Load mixture B online
+VarQuin(mix='B')
 }
+
+\keyword{misc}

@@ -1,9 +1,68 @@
 ---
 title: "Anaquin"
 author: "Ted Wong"
-date: "28 September 2015"
-output: pdf_document
+output:
+    pdf_document:
+        keep_tex: true
+        toc: yes
+        toc_depth: 2
 ---
+
+# Introduction
+
+## Scope
+## Citation
+## How to get helo
+## Quick start
+
+# Overview
+## Terminology
+## Motivation
+## Reference mixtures
+## Reference annotation
+## Visualization
+
+# TransQuin
+## Overview
+## Aligning reads to a genome
+## Producing a table of read counts
+## Reading the counts from a file
+## Running DESeq2
+## Validating DESeq2
+## Running edgeR
+## Validating edgeR
+## Running Sleuth
+## Validating Sleuth
+## Running command-line
+
+# VarQuin
+## Overview
+## Aligning reads to a genome
+## Running GATK
+## Validating GATK
+## Running VarScan
+## Validating VarScan
+## Running Kallisto
+## Validating Kallisto
+
+# FusQuin
+## Aligning reads to a genome
+## Running Tophat-Star
+## Validating Tophat-Fusion
+## Running Star-Fusion
+## Validating Star-Fusion
+
+# MetaQuin
+## Running Velvet
+## Validating Velvet
+## Running RayMeta
+## Validating RayMeta
+
+
+
+
+
+
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
