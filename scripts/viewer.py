@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #
-# This script generates a IGV session for sequin analysis. It is a part of the Anaquin distribution, where it's being bundled with
+# This script generates an IGV session for sequin analysis. It is a part of the Anaquin distribution, where it's being bundled with
 # the C++ code. The script can also run by itself.
 #
 
@@ -9,20 +9,25 @@ import os
 import sys
 import urllib
 
-# URL for the synthetic chromosome
-chrTAmazon   = 'https://s3.amazonaws.com/anaquin/chromosomes/CTR001.v021.fa'
+#
+# TransQuin
+#
 
-# URL of the transcriptome standard
-tStandAmazon = 'https://s3.amazonaws.com/anaquin/annotations/ATR001.v032.gtf'
+T_CHR_T = 'https://s3.amazonaws.com/anaquin/chromosomes/CTR001.v021.fa'
+T_STAND = 'https://s3.amazonaws.com/anaquin/annotations/ATR001.v032.gtf'
+
+#
+# VarQuin
+#
 
 # URL for the in-silico chromosome (variant)
-chrVTAmazon  = 'https://s3.amazonaws.com/anaquin/chromosomes/CVA002.v015.fa'
+V_CHR_T  = 'https://s3.amazonaws.com/anaquin/chromosomes/CVA002.v015.fa'
 
 # URL of the variant standard
-vStandAmazon = 'https://s3.amazonaws.com/anaquin/annotations/AVA017.v032.bed'
+V_STAND = 'https://s3.amazonaws.com/anaquin/annotations/AVA017.v032.bed'
 
 # URL of the known variants
-variantAmazon = 'https://s3.amazonaws.com/anaquin/annotations/AVA009.v032.vcf'
+V_VAR = 'https://s3.amazonaws.com/anaquin/annotations/AVA009.v032.vcf'
 
 # URL of the normal standard
 fusNStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
@@ -196,39 +201,26 @@ def session(path, align, files):
 # Generate an IGV session for transcriptome analysis
 #
 
-def generateTrans(path, align, chrT=None, standard=None):
-    
-    if chrT is None:
-        chrT = chrTAmazon
-    if standard is None:
-        standard = tStandAmazon
+def generateTrans(path, align, chrT=T_CHR_T, stand=T_STAND):
     
     align = index(path, align)
-    session(path, align, download(path, [ chrT, standard ]))
-
-#
-# Generate an IGV session for fusion analysis
-#
-
-def generateFusion(path, align, chrT=None, standard=None):
-    align = index(path, align)
-    session(path, align, download(path, [ chrTFA, transStand, fusNStand, fusFStand ]))
+    session(path, align, download(path, [ chrT, stand ]))
 
 #
 # Generate an IGV session for variant analysis
 #
 
-def generateVar(path, align, chrT=None, standard=None, variant=None):
-
-    if chrT is None:
-        chrT = chrVTAmazon
-    if standard is None:
-        standard = vStandAmazon
-    if variant is None:
-        variant = variantAmazon
-
+def generateVar(path, align, chrT=V_CHR_T, stand=V_STAND, variant=V_VAR):
     align = index(path, align)
-    session(path, align, download(path, [ chrT, standard, variant ]))
+    session(path, align, download(path, [ chrT, stand, variant ]))
+
+#
+# Generate an IGV session for fusion analysis
+#
+
+def generateFusion(path, align, chrT=None, stand=None):
+    align = index(path, align)
+    session(path, align, download(path, [ chrTFA, transStand, fusNStand, fusFStand ]))
 
 #
 # Generate an IGV session for metagenomic analysis
@@ -269,15 +261,9 @@ if __name__ == '__main__':
     # Eg: accepted_hits.bam
     align = sys.argv[3]
 
-    # Custom file for the standards (eg: annotation for the genes)
-    annot = None
-
-    # Custom file for the reference genome (eg: synthetic chromosome)
-    synth = None
-
     if (mode == 'TransQuin'):
-        generateTrans(path, file, synth, annot)
-    if (mode == 'FusQuin'):
+        generateTrans(path, file)
+    elif (mode == 'FusQuin'):
         generateFusion(path, file)
     elif (mode == 'VarQuin'):
         generateVar(path, file)
