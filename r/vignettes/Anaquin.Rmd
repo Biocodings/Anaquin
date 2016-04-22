@@ -233,17 +233,20 @@ We have developed a set of RNA sequins that we term TransQuins (transcriptome se
 
 ## Data
 
-## Running TopHat2 & Cufflinks
+## TopHat2 & Cufflinks
 
-### ABCD
+### Aligning reads to synthetic genome
+### Assembling genes & isoforms
+### Gene/Isoform expression
+### Differential analysis
 
-## Validating TopHat2 & Cufflinks
-## Running DESeq2
-## Validating DESeq2
-## Running edgeR
-## Validating edgeR
-## Running Sleuth
-## Validating Sleuth
+## DESeq2
+
+## edgeR
+
+## Kallisot & Sleuth
+
+### Overview
 
 \newpage
 

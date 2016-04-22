@@ -4,17 +4,16 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotLogFold.TransQuin <- function(data)
+plotFold.TransQuin <- function(data, x)
 {
     .plotExpress(data, title='Expected log-fold vs Measured log-fold',
                        xname='Expected log-fold',
                        yname='Measured log-fold',
-                       shouldLog2=FALSE,
                        showStats='left',
                        showLegend=FALSE)
 }
 
-plotLogFold <- function(data)
+plotFold <- function(data, title)
 {
-    UseMethod("plotLogFold", data)
+    UseMethod("plotFold", data, x=title)
 }
