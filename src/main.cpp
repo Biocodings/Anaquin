@@ -224,7 +224,7 @@ static std::map<Tool, std::set<Option>> _required =
      */
     
     { TOOL_T_IGV,      { OPT_U_FILES                                   } },
-    { TOOL_T_DIFF,     { OPT_MIXTURE, OPT_SOFT, OPT_U_FILES            } },
+    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_U_FILES                        } },
     { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                        } },
     { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
