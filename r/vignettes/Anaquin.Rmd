@@ -1,11 +1,11 @@
 ---
-title: "Anaquin - Manual & Documentation"
+title: "Anaquin - Documentation"
 author: "Ted Wong (t.wong@garvan.org.au)"
 output:
     pdf_document:
         keep_tex: true
         toc: yes
-        toc_depth: 2
+        toc_depth: 3
 ---
 
 \newpage
@@ -14,9 +14,11 @@ output:
 
 ## Project
 
-The project is lead by Dr Timothy Mercer who conceived the project and applied the funding with Australian National Health and Medical Research Council (NHMRC). The contents of the published material are solely the responsibility of Garvan Institute of Medical Research and do not reflect the views of NHMRC.
+The project is lead by Dr Timothy Mercer at Garvan Institute of Medical Research who conceived the project and applied the funding with Australian National Health and Medical Research Council (NHMRC). The contents of the published material are solely the responsibility of Garvan Institute and do not reflect the views of NHMRC.
 
-Garvan Institute is one of Australia's largest medical research institutions. Its mission as being *"...to make significant contributions to medical research that will change the directions of science and medicine and have major impacts on human health. Garvan strives to enhance and develop research programs that combine fundamental science with strong clinical interactions."*
+Garvan Institute is one of Australia's largest medical research institutions. Its mission as being:
+
+*"...to make significant contributions to medical research that will change the directions of science and medicine and have major impacts on human health. Garvan strives to enhance and develop research programs that combine fundamental science with strong clinical interactions."*
 
 ## Citation
 
@@ -29,7 +31,7 @@ Most questions about Anaquin will hopefully be answered by the documentation or 
 
 The Anaquin authors always appreciate receiving reports of bugs in the software or in the documentation. The same goes for well-considered suggestions for improvements. All other questions or problems concerning Anaquin should be emailed to t.mercer@garvan.org.au.
 
-Note that each command-line tool and R-function has its own online help page at www.sequin.xyz. If you have a question about any particular tool or function, reading the online documentation will often answer the question very quickly.
+Note that each command-line tool and R-function has its own online help page at [ABC](http://example.com) www.sequin.xyz. If you have a question about any particular tool or function, reading the online documentation will often answer the question very quickly.
 
 \newpage
 
@@ -123,7 +125,9 @@ R1_13_1	     1940	      5156.25
 R1_13_2	     698	      2578.125
 ```
 
-You will need to choose the right mixture file for your experiment. Anaquin performs statistical analysis based on the input concentration specified by the mixture file.
+This is the mixture A for TransQuin. In this mixture, R1_11_1` is higher expressed than `R1_11_2` by about two-fold. Different mixture gives different input concentration.
+
+You will need to choose the right mixture file for your experiment. Anaquin performs statistical analysis based on the concentration specified in the mixture file.
 
 ## Annotation file
 
@@ -149,7 +153,7 @@ to run an analysis. For example, **VarAllele** allows one to validate the sensit
 
   - Mixture file for the input (or expected) allele frequency for each sequin
   - Reference annoation of where the SNPs are
-  - Use generated VCF file by a bioinformatic software (such as VarScan)
+  - Use generated VCF file by a bioinformatic software (such as VarScan2)
   
 The command to run the analysis would look like:
 
@@ -210,12 +214,12 @@ Fusion analysis:
    - *LadCoverage*
    - *LadDiff*
 
-Please read the online documentation for more details.
+Please check the online documentation for more details.
 
 \newpage
 
 # TransQuin
-## Overview
+## Background
 
 Human genes are typically encoded as smaller component exon sequences interspersed between long intervening intron. Following transcription, the introns are removed during splicing to generate a mature mRNA isoform. The alternative splicing of exons can generate a diverse range of isoforms from a single gene loci. The pervasive transcription of the human gene loci generates a transcriptome with huge and complex scale.
 
@@ -227,18 +231,13 @@ The accurate alignment of reads across large intron junctions, repetitive DNA se
 
 We have developed a set of RNA sequins that we term TransQuins (transcriptome sequencing spike-ins) for use with RNA sequencing experiments. TransQuins enable users to improve the qualitative and quantitative analysis of their RNAseq workflow.
 
-## Sample data set
+## Data
 
+## Running TopHat2 & Cufflinks
 
+### ABCD
 
-
-## Aligning reads to a genome
-
-
-
-
-## Producing a table of read counts
-## Reading the counts from a file
+## Validating TopHat2 & Cufflinks
 ## Running DESeq2
 ## Validating DESeq2
 ## Running edgeR

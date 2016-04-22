@@ -68,8 +68,6 @@ namespace Anaquin
                     
                     sumKLength += contig.k_len;
                     
-                    std::cout << contig.id << std::endl;
-                    
                     // Normalized k-mer coverage
                     const auto n_cov = contig.normalized();
 
