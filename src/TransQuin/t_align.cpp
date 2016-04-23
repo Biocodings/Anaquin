@@ -608,7 +608,7 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
     #define BIND_E(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
     #define BIND_M(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
 
-    const auto hasEndo = !o.rEndo.empty();
+    const auto hasEndo = !o.rGeno.empty();
     
     o.writer->open(file);
     o.writer->write((boost::format(replicateSummary())
@@ -623,7 +623,7 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
                                           % BIND_R(TransRef::countExons, ChrT)                              // 9
                                           % BIND_R(TransRef::countIntrons, ChrT)                            // 10
                                           % BIND_R(TransRef::exonBase, ChrT)                                // 11
-                                          % (!hasEndo ? "-"  : o.rEndo)                                     // 12
+                                          % (!hasEndo ? "-"  : o.rGeno)                                     // 12
                                           % (!hasEndo ? "-" : BIND_R(TransRef::countExons, __gID__))        // 13
                                           % (!hasEndo ? "-" : BIND_R(TransRef::countIntrons, __gID__))      // 14
                                           % (!hasEndo ? "-" : BIND_R(TransRef::exonBase, __gID__))          // 15

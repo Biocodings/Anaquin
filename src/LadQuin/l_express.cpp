@@ -253,7 +253,7 @@ void LExpress::report(const FileName &file, const Options &o)
     o.info("Generating LadderAbundance_summary.stats");
     o.writer->open("LadderAbundance_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rEndo,
+                                                o.rGeno,
                                                 file,
                                                 stats.hist,
                                                 stats,

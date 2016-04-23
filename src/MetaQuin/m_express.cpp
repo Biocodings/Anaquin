@@ -137,7 +137,7 @@ void MExpress::report(const FileName &file, const MExpress::Options &o)
     o.info("Generating MetaExpress_summary.stats");
     o.writer->open("MetaExpress_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rEndo,
+                                                o.rGeno,
                                                 file,
                                                 stats.hist,
                                                 stats,

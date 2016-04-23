@@ -271,7 +271,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.dilution()
                                             % o.rChrT
                                             % stats.data.at(ChrT).hist.size()
-                                            % (!hasEndo ? "-" : o.rEndo)                        // 10
+                                            % (!hasEndo ? "-" : o.rGeno)                        // 10
                                             % (!hasEndo ? "-" : toString(r.countInters()))      // 11
                                             % stats.sn(ChrT)                                    // 12
                                             % stats.pc(ChrT)                                    // 13

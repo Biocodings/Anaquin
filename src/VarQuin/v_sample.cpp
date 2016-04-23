@@ -312,7 +312,7 @@ void VSample::report(const FileName &file, const Options &o)
                                             % before.cov.n_geno
                                             % o.rChrT
                                             % r.countSeqs()
-                                            % o.rEndo
+                                            % o.rGeno
                                             % r.countInters()
                                             % meth2Str()
                                             % sums(before.cov.hist)

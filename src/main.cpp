@@ -284,7 +284,7 @@ struct Parsing
     FileName rChrT;
 
     // Reference annotation file for endogenous
-    FileName rEndo;
+    FileName rGeno;
     
     // The path that outputs are written
     std::string path = "output";
@@ -634,7 +634,7 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info("Path: " + path);
 
     o.rChrT = _p.rChrT;
-    o.rEndo = _p.rEndo;
+    o.rGeno = _p.rGeno;
 
     std::clock_t begin = std::clock();
 
@@ -1016,7 +1016,7 @@ void parse(int argc, char ** argv)
                 
             case OPT_R_ENDO:
             {
-                checkFile(_p.opts[opt] = _p.rEndo = val);
+                checkFile(_p.opts[opt] = _p.rGeno = val);
                 break;
             }
 

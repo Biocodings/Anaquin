@@ -89,7 +89,7 @@ void FExpress::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("FusionExpress_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rEndo, file, stats.hist, stats, stats, ""));
+    o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rGeno, file, stats.hist, stats, stats, ""));
     o.writer->close();
 
     /*

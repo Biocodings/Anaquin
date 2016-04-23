@@ -97,11 +97,11 @@ static Scripts chrTSummary()
            "   Novel introns:   %39%/%40% (%41%)\n\n";
 }
 
-static Scripts endoSummary()
+static Scripts genoSummary()
 {
     return "   ***************************************************************\n"
            "   ***                                                         ***\n"
-           "   ***       Comparison of assembly to genome annotation       ***\n"
+           "   ***      Comparison of assembly to genomic annotation       ***\n"
            "   ***                                                         ***\n"
            "   ***************************************************************\n\n"
            "   ***\n"
@@ -135,7 +135,7 @@ static TAssembly::Stats init(const TAssembly::Options &o)
     
     stats.data[ChrT];
     
-    if (!o.rEndo.empty())
+    if (!o.rGeno.empty())
     {
         stats.data[Endo];
     }
@@ -207,7 +207,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
         o.logInfo("Reference: " + ref);
         o.logInfo("Query: " + qry);
-        
+
         if (cuffcompare_main(ref.c_str(), qry.c_str()))
         {
             throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again.");
@@ -218,7 +218,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
     std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, TAssembly::Stats::Data> &p)
     {
-        compareGTF(p.first, p.first == ChrT ? o.rChrT : o.rEndo);
+        compareGTF(p.first, p.first == ChrT ? o.rChrT : o.rGeno);
         copyStats(p.first);
     });
     
@@ -280,9 +280,9 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
                                                   % o.rChrT
                                                   % r.countExons(ChrT)
                                                   % r.countIntrons(ChrT)
-                                                  % (o.rEndo.empty() ? "-"  : o.rEndo)
-                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countExons(endoID)))
-                                                  % (o.rEndo.empty() ? "NA" : std::to_string(r.countIntrons(endoID)))
+                                                  % (o.rGeno.empty() ? "-"  : o.rGeno)
+                                                  % (o.rGeno.empty() ? "NA" : std::to_string(r.countExons(endoID)))
+                                                  % (o.rGeno.empty() ? "NA" : std::to_string(r.countIntrons(endoID)))
                                                   % S(data.eSN)            // 12
                                                   % S(data.eFSN)
                                                   % S(data.eSP)
@@ -317,7 +317,7 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
     {
         const auto &data = stats.data.at(Endo);
 
-        o.writer->write((boost::format(endoSummary()) % S(data.eSN)        // 1
+        o.writer->write((boost::format(genoSummary()) % S(data.eSN)        // 1
                                                       % S(data.eFSN)
                                                       % S(data.eSP)
                                                       % S(data.eFSP)

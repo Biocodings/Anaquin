@@ -178,7 +178,7 @@ namespace Anaquin
         FileName rChrT;
         
         // Reference annotation for the endogenous
-        FileName rEndo;
+        FileName rGeno;
     };
     
     struct IndexOptions : public AnalyzerOptions

@@ -87,7 +87,7 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
     o.info("Generating VarKAllele_summary.stats");
     o.writer->open("VarKAllele_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rEndo,
+                                                o.rGeno,
                                                 (file1 + " & " + file2),
                                                 stats.hist,
                                                 stats,
