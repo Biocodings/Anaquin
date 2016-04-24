@@ -4,16 +4,18 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotFold.TransQuin <- function(data, x)
+plotFold.TransQuin <- function(data, title)
 {
-    .plotExpress(data, title='Expected log-fold vs Measured log-fold',
-                       xname='Expected log-fold',
-                       yname='Measured log-fold',
-                       showStats='left',
-                       showLegend=FALSE)
+    .plotExpress(data, title=title,
+                       showLOQ=FALSE,
+                       xlab='Expected log-fold',
+                       ylab='Measured log-fold',
+                       showStats='left')
 }
 
 plotFold <- function(data, title)
 {
-    UseMethod("plotFold", data, x=title)
+    stopifnot (class(data) == 'TransQuin')
+    
+    if (class(data) == 'TransQuin') { plotFold.TransQuin(data, title=title) }
 }

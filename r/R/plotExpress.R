@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotExpress <- function(data, showStats='left', showLOQ=TRUE, title=NULL, xlab=NULL, ylab=NULL, xBreaks=NULL)
+.plotExpress <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=NULL)
 {
     require(ggplot2)
 

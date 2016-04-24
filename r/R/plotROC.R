@@ -117,18 +117,21 @@
     print(p)    
 }
 
-plotROC.VarQuin <- function(data, title=NULL)
+plotROC.VarQuin <- function(data, title)
 {
-    .plotROC(data)
+    .plotROC(data, title=title)
 }
 
-plotROC.TransQuin <- function(data)
+plotROC.TransQuin <- function(data, title)
 {
     data$seqs <- TransDiff(data)
-    .plotROC(data, title='ROC for TransQuin differential', refRatio=0)
+    .plotROC(data, title=title, refRatio=0)
 }
 
-plotROC <- function(data)
+plotROC <- function(data, title=NULL)
 {
-    UseMethod("plotROC", data)
+    stopifnot (class(data) == 'TransQuin' || class(data) == 'VarQuin')
+    
+    if (class(data) == 'VarQuin')   { plotROC.VarQuin(data, title)   }
+    if (class(data) == 'TransQuin') { plotROC.TransQuin(data, title) }
 }

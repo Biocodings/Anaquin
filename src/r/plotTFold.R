@@ -12,4 +12,4 @@ data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 data <- data[!is.na(data$expected),]
 data <- TransQuin(seqs=row.names(data), expected=data$expected, measured=data$measured)
  
-plotLogFold(data)
+plotFold(data, title='Expected log-fold vs Measured log-fold')

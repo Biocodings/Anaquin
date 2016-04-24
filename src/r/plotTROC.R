@@ -13,4 +13,4 @@ data <- data[!is.na(data$expected),]
 data <- TransQuin(seqs=row.names(data), expected=data$expected, measured=data$measured, pval=data$pval, qval=data$qval,
                   ratio=abs(data$expected))
  
-plotROC(data)
+plotROC(data, title='ROC for TransQuin differential')
