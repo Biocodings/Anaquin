@@ -31,13 +31,6 @@ We would like to achieve a perfect correlation. However, this is typically not p
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}
-\seealso
-{
-\code{\link{VarQuin}}
-\code{\link{FusQuin}}
-\code{\link{LadQuin}}
-\code{\link{MetaQuin}}
-}
 \examples{
 # Plot the gene expression
 

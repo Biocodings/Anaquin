@@ -4,6 +4,20 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
+pval <- function(data)
+{
+    stopifnot(class(data) == 'TransQuin' |
+                  class(data) == 'VarQuin'   |
+                  class(data) == 'LadQuin')
+    
+    if (is.null(data$seqs$pval)) 
+    {
+        stop('Probability not provided. Please check and try again.')
+    }
+    
+    return (data$seqs$pval)
+}
+
 .fitLODR <- function(data,
                       band='pred',
                       chosenFDR=0.1,

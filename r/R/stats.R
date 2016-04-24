@@ -15,12 +15,10 @@ lm2str <- function(data)
 }
 
 #
-# The point of inflection is defined as the level of concentration where accurate interpreation starts becoming questionable.
-#
-#   - Piecewise linear
+# Limit-of-quantification (LOQ) is defined as the level of concentration where accurate interpreation starts becoming questionable.
 #
 
-plotLOQ <- function(x, y, method='piecewise', showDetails=FALSE)
+showLOQ <- function(x, y, showDetails=FALSE)
 {
     require(ggplot2)
 
@@ -125,11 +123,11 @@ plotLOQ <- function(x, y, method='piecewise', showDetails=FALSE)
 
     data <- data.frame(x=x, y=y)
 
-    p <- ggplot(data=data, aes(x=x, y=y)) +
-                geom_point() +
-                geom_vline(xintercept=c(b$k), linetype="dotted") +
-                theme_bw()
-    print(p)
+    #p <- ggplot(data=data, aes(x=x, y=y)) +
+    #            geom_point() +
+    #            geom_vline(xintercept=c(b$k), linetype="dotted") +
+    #            theme_bw()
+    #print(p)
 
     return (list('model'=fit, 'breaks'=b, 'details'=r))
 }
