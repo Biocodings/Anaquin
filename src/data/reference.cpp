@@ -521,7 +521,7 @@ struct TransRef::TransRefImpl
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
-ChrID TransRef::endoID() const
+ChrID TransRef::genoID() const
 {
     return _impl->refChrID;
 }
@@ -1149,7 +1149,7 @@ const Intervals<> VarRef::genoInters() const
     return _impl->inters;    
 }
 
-ChrID VarRef::endoID() const
+ChrID VarRef::genoID() const
 {
     return _impl->genoID;
 }

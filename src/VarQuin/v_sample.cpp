@@ -48,9 +48,9 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    assert(!r.endoID().empty());
+    assert(!r.genoID().empty());
     
-    o.info("Query: " + r.endoID());
+    o.info("Query: " + r.genoID());
     o.analyze(file);
 
     Stats stats;
@@ -66,21 +66,21 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
             o.wait(std::to_string(p.i));
         }
 
-        return checkAlign(r.endoID(), align.cID, align.l);
+        return checkAlign(r.genoID(), align.cID, align.l);
     });
 
     if (!stats.cov.hist.count(ChrT))
     {
         throw std::runtime_error("Failed to find any alignment for " + ChrT);
     }
-    else if (!stats.cov.hist.count(r.endoID()))
+    else if (!stats.cov.hist.count(r.genoID()))
     {
-        throw std::runtime_error("Failed to find any alignment for " + r.endoID());
+        throw std::runtime_error("Failed to find any alignment for " + r.genoID());
     }
     
     o.info(std::to_string(sums(stats.cov.hist)) + " alignments in total");
     o.info(std::to_string(stats.cov.hist.at(ChrT)) + " alignments to chrT");
-    o.info(std::to_string(stats.cov.hist.at(r.endoID())) + " alignments to " + r.endoID());
+    o.info(std::to_string(stats.cov.hist.at(r.genoID())) + " alignments to " + r.genoID());
     o.info(std::to_string(stats.cov.inters.size()) + " intervals generated");
 
     o.info("Generating statistics for " + std::string(ChrT));
@@ -89,15 +89,15 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
         return static_cast<bool>(r.match(Locus(i, j), MatchRule::Contains));
     });
 
-    o.info("Generating statistics for " + r.endoID());
-    stats.endo = stats.cov.inters.find(r.endoID())->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
+    o.info("Generating statistics for " + r.genoID());
+    stats.endo = stats.cov.inters.find(r.genoID())->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
     {
-        return static_cast<bool>(r.findGeno(r.endoID(), Locus(i, j)));
+        return static_cast<bool>(r.findGeno(r.genoID(), Locus(i, j)));
     });
 
     assert(stats.chrT.mean && stats.endo.mean);
 
-    o.info("Calculating coverage for " + ChrT + " and " + r.endoID());
+    o.info("Calculating coverage for " + ChrT + " and " + r.genoID());
 
     /*
      * Now we have the data, we'll need to compare the coverage and determine what fraction that
@@ -235,7 +235,7 @@ void VSample::report(const FileName &file, const Options &o)
 
     CoverageTool::bedGraph(before.cov, pre, [&](const ChrID &id, Base i, Base j, Coverage)
     {
-        return checkAlign(r.endoID(), id, Locus(i, j));
+        return checkAlign(r.genoID(), id, Locus(i, j));
     });
 
     /*
@@ -249,7 +249,7 @@ void VSample::report(const FileName &file, const Options &o)
 
     CoverageTool::bedGraph(after.cov, post, [&](const ChrID &id, Base i, Base j, Coverage)
     {
-        return checkAlign(r.endoID(), id, Locus(i, j));
+        return checkAlign(r.genoID(), id, Locus(i, j));
     });
     
     /*

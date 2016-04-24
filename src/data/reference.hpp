@@ -540,9 +540,9 @@ namespace Anaquin
              * Query functions
              */
         
-            ChrID endoID() const;
+            ChrID genoID() const;
 
-            bool isGenoID(const ChrID &cID) const { return cID == endoID(); }
+            bool isGenoID(const ChrID &cID) const { return cID == genoID(); }
 
             const Intervals<> genoInters() const;
         
@@ -720,7 +720,7 @@ namespace Anaquin
 
             TransRef();
 
-            ChrID endoID() const;
+            ChrID genoID() const;
         
             SequinHist geneHist(const ChrID &) const;
 

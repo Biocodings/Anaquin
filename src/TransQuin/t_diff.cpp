@@ -269,25 +269,25 @@ void TDiff::report(const FileName &file, const Options &o)
      * Generating differential results
      */
 
-    TDiff::generateCSV("TransDiff_quins.csv", stats, o);
+    TDiff::generateCSV("TransDiff_quins.stats", stats, o);
     
     /*
      * Generating log-fold plot
      */
     
-    TDiff::generateFoldR("TransDiff_fold.R", "TransDiff_quins.csv", o);
+    TDiff::generateFoldR("TransDiff_fold.R", "TransDiff_quins.stats", o);
 
     /*
      * Generating ROC plot
      */
     
-    TDiff::generateROC("TransDiff_ROC.R", "TransDiff_quins.csv", o);
+    TDiff::generateROC("TransDiff_ROC.R", "TransDiff_quins.stats", o);
     
     /*
      * Generating LODR plot
      */
     
-    TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.csv", o);
+    TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.stats", o);
     
     /*
      * Generating MA plot
@@ -295,6 +295,6 @@ void TDiff::report(const FileName &file, const Options &o)
     
     if (!o.counts.empty())
     {
-        TDiff::generateMA("TransDiff_MA.R", "TransDiff_counts.csv", o);
+        TDiff::generateMA("TransDiff_MA.R", "TransDiff_counts.stats", o);
     }
 }

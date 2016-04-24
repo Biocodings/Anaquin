@@ -53,9 +53,9 @@ static VAlign::Stats init()
     VAlign::Stats stats;
     stats.data[ChrT].hist = r.baseHist();
     
-    if (!r.endoID().empty())
+    if (!r.genoID().empty())
     {
-        stats.data[r.endoID()].hist = r.genomeHist();
+        stats.data[r.genoID()].hist = r.genomeHist();
     }
 
     return stats;
@@ -259,7 +259,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "   Sensitivity:  %16%\n"
                          "   Specificity:  %17%\n\n";
     
-    const auto hasEndo = !r.endoID().empty();
+    const auto hasEndo = !r.genoID().empty();
 
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src
@@ -277,8 +277,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.pc(ChrT)                                    // 13
                                             % stats.limit.abund                                 // 14
                                             % stats.limit.id                                    // 15
-                                            % (!hasEndo ? "-" : toString(stats.sn(r.endoID()))) // 16
-                                            % (!hasEndo ? "-" : toString(stats.pc(r.endoID()))) // 17
+                                            % (!hasEndo ? "-" : toString(stats.sn(r.genoID()))) // 16
+                                            % (!hasEndo ? "-" : toString(stats.pc(r.genoID()))) // 17
                                             % count(stats.data.at(ChrT).hist)
                      ).str());
     o.writer->close();

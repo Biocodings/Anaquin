@@ -94,9 +94,9 @@ static TAlign::Stats init()
 
     initT(ChrT, stats.data[ChrT]);
 
-    if (!r.endoID().empty())
+    if (!r.genoID().empty())
     {
-        initT(r.endoID(), stats.data[__gID__ = r.endoID()]);
+        initT(r.genoID(), stats.data[__gID__ = r.genoID()]);
     }
     
     assert(!stats.data.empty());

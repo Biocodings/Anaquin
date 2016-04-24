@@ -16,8 +16,6 @@ extern int cuffcompare_main(const char *ref, const char *query);
 
 static FileName createFilters(const FileName &file, const ChrID &cID)
 {
-    assert(cID == ChrT || cID == Endo);
-    
     std::string line;
 
     const auto tmp = tmpFile();
@@ -27,10 +25,7 @@ static FileName createFilters(const FileName &file, const ChrID &cID)
     {
         ParserGTF::parse(file, [&](const Feature &f, const std::string &l, const ParserProgress &)
         {
-            // Remember the tool pools all the endogenous together
-            const auto &id = (f.cID == ChrT ? ChrT : Endo);
-            
-            if (cID == id)
+            if (cID == f.cID)
             {
                 out << l << std::endl;
             }
@@ -49,7 +44,7 @@ static Scripts chrTSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Fraction of user assembly mapped to the synthetic and genome\n"
+           "   *** Fraction of assembly mapped to the synthetic and genome\n"
            "   ***\n\n"
            "   Exons (Synthetic):       %2% genes\n"
            "   Exons (Genome):          %3% genes\n\n"
@@ -131,13 +126,15 @@ static Scripts genoSummary()
 
 static TAssembly::Stats init(const TAssembly::Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+
     TAssembly::Stats stats;
     
     stats.data[ChrT];
     
     if (!o.rGeno.empty())
     {
-        stats.data[Endo];
+        stats.data[r.genoID()];
     }
 
     return stats;
@@ -202,7 +199,6 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     
     auto compareGTF = [&](const ChrID &cID, const FileName &ref)
     {
-        // Filtered query
         const auto qry = createFilters(file, cID);
 
         o.logInfo("Reference: " + ref);
@@ -268,7 +264,7 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
 
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
     
-    const auto endoID = r.endoID();
+    const auto genoID = r.genoID();
     
     o.info("Generating TransAssembly_summary.stats");
     o.writer->open("TransAssembly_summary.stats");
@@ -280,9 +276,9 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
                                                   % o.rChrT
                                                   % r.countExons(ChrT)
                                                   % r.countIntrons(ChrT)
-                                                  % (o.rGeno.empty() ? "-"  : o.rGeno)
-                                                  % (o.rGeno.empty() ? "NA" : std::to_string(r.countExons(endoID)))
-                                                  % (o.rGeno.empty() ? "NA" : std::to_string(r.countIntrons(endoID)))
+                                                  % (o.rGeno.empty() ? "-" : o.rGeno)
+                                                  % (o.rGeno.empty() ? "-" : std::to_string(r.countExons(genoID)))
+                                                  % (o.rGeno.empty() ? "-" : std::to_string(r.countIntrons(genoID)))
                                                   % S(data.eSN)            // 12
                                                   % S(data.eFSN)
                                                   % S(data.eSP)
@@ -313,9 +309,9 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
                                                   % data.nIntronN
                                                   % data.nIntronR          // 40
                                                   % S(data.nIntronP)).str());
-    if (stats.data.count(Endo))
+    if (!r.genoID().empty())
     {
-        const auto &data = stats.data.at(Endo);
+        const auto &data = stats.data.at(r.genoID());
 
         o.writer->write((boost::format(genoSummary()) % S(data.eSN)        // 1
                                                       % S(data.eFSN)
