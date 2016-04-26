@@ -51,6 +51,6 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
     
     if (stats.size() >= 2)
     {
-        TExpress::generateRMajor("TransKExpress_major.R", "TransKExpress_quins.csv", o);
+        TExpress::generateRSplice("TransKExpress_splice.R", "TransKExpress_quins.csv", o);
     }
 }

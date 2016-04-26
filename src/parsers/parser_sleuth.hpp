@@ -35,9 +35,6 @@ namespace Anaquin
             std::string line;
             std::vector<std::string> toks;
             
-            // We'll need it for checking sequins
-            //const auto &ref = Standard::instance().r_trans;
-
             while (r.nextLine(line))
             {
                 Tokens::split(line, ",", toks);
@@ -47,7 +44,7 @@ namespace Anaquin
                 if (p.i)
                 {
                     t.id  = toks[Field::TargetID];
-                    t.cID = "chrT"; // TODO: ref.match(t.id) ? ChrT : Endo;
+                    t.cID = ChrT; // TODO: ref.match(t.id) ? ChrT : Endo;
 
                     if (toks[Field::PValue] == "NA" || toks[Field::QValue] == "NA")
                     {

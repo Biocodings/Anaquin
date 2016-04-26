@@ -150,7 +150,7 @@ Scripts StatsWriter::inflectSummary()
            "   ***   SST:         Total sum of squares\n"
            "   ***\n\n"
            "   ***\n"
-           "   *** Limit of Quantificiation (LOQ). Estimated by piecewise segmented regression.\n"
+           "   *** Limit of Quantification (LOQ). Estimated by piecewise segmented regression.\n"
            "   ***\n\n"
            ""
            "   Break: %10% (%11%)\n\n"

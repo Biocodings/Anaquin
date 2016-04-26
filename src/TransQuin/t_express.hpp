@@ -144,9 +144,9 @@ namespace Anaquin
          * 4. Generating major plot (but only if we have the isoforms...)
          */
 
-        template <typename Options> static void generateRMajor(const FileName &output,
-                                                               const FileName &csv,
-                                                               const Options &o)
+        template <typename Options> static void generateRSplice(const FileName &output,
+                                                                const FileName &csv,
+                                                                const Options &o)
         {
             o.writer->open(output);
             o.writer->write(RWriter::createScript(csv, PlotTMinor()));

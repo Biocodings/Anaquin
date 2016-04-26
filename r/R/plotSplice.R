@@ -4,9 +4,9 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotTMajor <- function(data,
-                       xname = 'Expected minor fraction (log2)',
-                       yname = 'Measured minor fraction (log2)')
+plotSplicing <- function(data,
+                         xname = 'Expected minor isoform fraction (log2)',
+                         yname = 'Measured minor isoform fraction (log2)')
 {
     require(ggplot2)
 

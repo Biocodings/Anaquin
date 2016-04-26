@@ -1217,6 +1217,11 @@ void parse(int argc, char ** argv)
                         o.metrs = checkCufflink(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
                     }
                     
+                    if (o.soft == TExpress::Software::Kallisto)
+                    {
+                        o.metrs = TExpress::Metrics::Isoform;
+                    }
+                    
                     analyze_n<TExpress>(o);
                     break;
                 }
@@ -1276,6 +1281,11 @@ void parse(int argc, char ** argv)
                     o.metrs = TDiff::Metrics::Gene;
                     
                     if (o.dSoft == TDiff::Software::Cuffdiff && !checkCuffdiff(_p.inputs[0]))
+                    {
+                        o.metrs = TDiff::Metrics::Isoform;
+                    }
+                    
+                    if (o.dSoft == TDiff::Software::Sleuth)
                     {
                         o.metrs = TDiff::Metrics::Isoform;
                     }

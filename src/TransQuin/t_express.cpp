@@ -213,20 +213,20 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * 2. Generating detailed statistics for the sequins
      */
     
-    TExpress::generateCSV("TransExpress_quins.csv", stats, o);
+    TExpress::generateCSV("TransExpress_quins.stats", stats, o);
     
     /*
      * 3. Generating abundance vs abundance (single or multiple samples)
      */
     
-    TExpress::generateRAbund("TransExpress_express.R", "TransExpress_quins.csv", stats, o);
+    TExpress::generateRAbund("TransExpress_express.R", "TransExpress_quins.stats", stats, o);
     
     /*
-     * 4. Generating major plot (but only if we have the isoforms...)
+     * 4. Generating major plot (but only if we have isoforms...)
      */
 
     if (stats.size() >= 2 && o.metrs == TExpress::Metrics::Isoform)
     {
-        TExpress::generateRMajor("TransExpress_minor.R", "TransExpress_quins.csv", o);
+        TExpress::generateRSplice("TransExpress_splice.R", "TransExpress_quins.stats", o);
     }
 }
