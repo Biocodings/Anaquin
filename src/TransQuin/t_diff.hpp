@@ -178,7 +178,7 @@ namespace Anaquin
             std::vector<Concent> mlfs;
 
             /*
-             * Optional inputs. For example, Cuffdiffs wouldn't give them.
+             * Optional inputs
              */
             
             // Normalized average counts for the replicates

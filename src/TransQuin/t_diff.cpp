@@ -287,8 +287,11 @@ void TDiff::report(const FileName &file, const Options &o)
      * Generating LODR plot
      */
     
-    TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.stats", o);
-    
+    if (o.dSoft != Software::edgeR)
+    {
+        TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.stats", o);
+    }
+
     /*
      * Generating MA plot
      */

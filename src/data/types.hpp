@@ -20,7 +20,7 @@ namespace Anaquin
     typedef double Fold;
     typedef double LogFold;
     typedef double Proportion;
-    typedef double Probability;
+    typedef long double Probability;
 
     typedef std::string ChrID;
     typedef std::string BinID;
@@ -48,7 +48,7 @@ namespace Anaquin
     typedef long long Counts;
     
     const ChrID ChrT = "chrT";
-    const ChrID Endo = "endo";
+    const ChrID Geno = "endo";
 }
 
 #endif

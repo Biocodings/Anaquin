@@ -66,6 +66,8 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
 
 .TransDiff <- function(data, r, detected, p, logFC)
 {
+    haveMean <- !is.null(r$mean)
+    
     # Reference genes    
     refs <- as.character(row.names(data$mix$genes))
     
@@ -105,11 +107,15 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
     
     for (id in rownames(r))
     {
-        x[id,]$pval      <- r[id,]$pvalue
-        x[id,]$qval      <- r[id,]$padj
-        x[id,]$mean      <- r[id,]$baseMean
-        x[id,]$measured  <- r[id,]$log2FoldChange
-        x[id,]$expressed <- ifelse(r[id,]$padj <= p, 'T', 'F')
+        if (!is.null(r[id,]$mean))
+        {
+            x[id,]$mean <- r[id,]$mean
+        }
+
+        x[id,]$pval      <- r[id,]$pval
+        x[id,]$qval      <- r[id,]$qval
+        x[id,]$measured  <- r[id,]$lfc
+        x[id,]$expressed <- ifelse(r[id,]$qval <= p, 'T', 'F')
     }
 
     # Sort by adjusted p-values so that the expressed genes are at the front
@@ -124,35 +130,62 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
     
     #d <- .classify(d, logFC)
 
-    x <- x[!is.na(x$pval),]
-    x <- x[!is.nan(x$pval),]
+    x  <- x[!is.na(x$pval),]
+    x  <- x[!is.nan(x$pval),]
+    td <- TransQuin(seqs=row.names(x), expected=x$expected, measured=x$measured, pval=x$pval, qval=x$qval)
 
-    data <- TransQuin(seqs=row.names(x), mean=x$mean, expected=x$expected, measured=x$measured, pval=x$pval, qval=x$qval)
+    if (haveMean)
+    {
+        td$mean <- x$mean
+    }
 
-    plotExpress(data,
+    plotExpress(td,
                 showLOQ=FALSE,
                 title='Input concentration vs measured expression',
                 xlab='Input concentration (log2)',
                 ylab='Measured expression (log2)')
 
-    plotROC(data, title='ROC for TransQuin differential')
-    plotLODR(data, chosenFDR=0.1)
+    plotROC(td, title='ROC for TransQuin differential')
+    
+    if (haveMean)
+    {
+        plotLODR(td, chosenFDR=0.1)
+    }
 }
 
 TransDiff.DESeq2 <- function(data, r, p=0.1, logFC=0)
 {
+    require(DESeq2)
+
     stopifnot(class(data) == 'TransQuin')
+    
+    r <- data.frame(mean=r$baseMean,
+                    lfc=r$log2FoldChange,
+                    pval=r$pvalue,
+                    qval=r$padj,
+                    row.names=rownames(r))
+
     .TransDiff(data, r, rownames(r), p, logFC)
 }
 
 TransDiff.edgeR <- function(data, r, p=0.1, logFC=0)
 {
-    stopifnot(class(data) == 'TransQuin')    
+    require(edgeR)
+    
+    stopifnot(class(data) == 'TransQuin')
+    
+    r <- data.frame(lfc=r$table$logFC,
+                    pval=r$table$PValue,
+                    qval=r$table$PValue,
+                    row.names=rownames(r))
+
+    .TransDiff(data, r, rownames(r), p, logFC)    
 }
 
 TransDiff <- function(data, r)
 {
-    stopifnot(class(r) == 'DESeqResults')
+    stopifnot(class(r) == 'DESeqResults' || class(r) == 'DGEExact')
     
     if (class(r) == 'DESeqResults') { TransDiff.DESeq2(data, r) }
+    if (class(r) == 'DGEExact')     { TransDiff.edgeR(data, r)  }
 }

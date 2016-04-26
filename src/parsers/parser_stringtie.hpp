@@ -82,7 +82,7 @@ namespace Anaquin
                     }
                     else
                     {
-                        t.cID = Endo;
+                        t.cID = Geno;
                     }
                     
                     t.l     = Locus(stod(toks[GeneField::GeneStart]), stod(toks[GeneField::GeneEnd]));

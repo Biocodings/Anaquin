@@ -556,7 +556,7 @@ template <typename Reference> void addRef(Reference ref)
                     
                 case OPT_R_ENDO:
                 {
-                    addRef(Endo, ref, _p.opts[opt]);
+                    addRef(Geno, ref, _p.opts[opt]);
                     break;
                 }
 

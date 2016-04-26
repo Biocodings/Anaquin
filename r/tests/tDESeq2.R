@@ -8,7 +8,7 @@ library('RUnit')
 library('DESeq2')
 library('Anaquin')
 
-testTR04449 <- function()
+testTR04449_DESeq2 <- function()
 {
     meta <- read.csv(file.path('tests/data/meta.csv'), row.names=1)
 
@@ -23,4 +23,4 @@ testTR04449 <- function()
     TransDiff(data, r)
 }
 
-testTR04449()
+testTR04449_DESeq2()

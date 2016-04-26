@@ -7,7 +7,7 @@ extern Scripts PlotFROC();
 
 template <typename T> ChrID toChrTEndo(const T &t)
 {
-    return t == ChrT ? ChrT : Endo;
+    return t == ChrT ? ChrT : Geno;
 }
 
 FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Options &o)
@@ -18,7 +18,7 @@ FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Optio
     
     stats.data[ChrT];
     stats.data[ChrT].hist = r.fusionHist();
-    stats.data[Endo];
+    stats.data[Geno];
 
     FUSQuin::analyze<FDiscover::Options>(file, o, [&](const FUSQuin::Match &match)
     {
@@ -37,7 +37,7 @@ FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Optio
             }
             else
             {
-                stats.data[Endo].fps.push_back(match);
+                stats.data[Geno].fps.push_back(match);
             }
         }
     });
