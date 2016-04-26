@@ -17,7 +17,7 @@ Specify a design for fusion analysis.
 }
 
 \details{
-  The \code{FusQuin} object combines all the design information needed for fusion analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies by analysis, thus it is important to check the documentation carefully.
+  The \code{FusQuin} object combines the design information required for fusion analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies by analysis, thus it is important to check the documentation carefully.
 
   Once created, the object can be used for fusion analysis. All fusion functions require this object.  
   

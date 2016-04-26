@@ -85,8 +85,7 @@ plotMA <- function(data,
     require(ggplot2)
     require(gridExtra)
 
-    stopifnot(class(data) == 'TransQuin' |
-              class(data) == 'LadQuin')
+    stopifnot(class(data) == 'TransQuin' | class(data) == 'LadQuin')
     stopifnot(lvl == 'gene' | lvl == 'isoform' | lvl == 'exon')
 
     # Names of all the features

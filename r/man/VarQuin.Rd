@@ -18,7 +18,7 @@ Specify a design for variant analysis.
 }
 
 \details{
-  The \code{VarQuin} object combines all the design information needed for variant analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies for by analysis, thus it is important to check the documentation carefully.
+  The \code{VarQuin} object combines the design information required for variant analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies for by analysis, thus it is important to check the documentation carefully.
 
   Once created, the object can be used for variant analysis. All variant functions require this object.  
   

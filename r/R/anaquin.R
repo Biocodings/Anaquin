@@ -37,9 +37,15 @@
         #
     
         if (is(x, 'url'))        { return (read.csv(x)) }
-        if (is(x, 'character'))  { return (read.csv(x)) }
         if (is(x, 'data.frame')) { return (x) }
         if (is(x, 'matrix'))     { return (data.frame(x)) }
+        
+        if (identical(x, 'A'))  { return('A')  }
+        if (identical(x, 'B'))  { return('B')  }
+        if (identical(x, 'F'))  { return('F')  }
+        if (identical(x, 'AB')) { return('AB') }
+        
+        if (is(x, 'character'))  { return (read.csv(x)) }
     }
     
     return (NULL)
@@ -48,13 +54,31 @@
 TransQuin <- function(...)
 {
     x <- list(...)
-    
-    keys <- c('label', 'pval', 'qval', 'mean', 'se', 'ratio', 'expected', 'measured')
-    data <- .createData(x, keys)
+    keys <- c('pval', 'qval', 'mean', 'expected', 'measured')
 
-    r <- list('seqs'=data, mix=.createMixture(x$mix))
-    class(r) <- 'TransQuin'
+    r <- list('seqs'=.createData(x, keys))
     
+    if (is.null(r$seqs))
+    {
+        r$mix <- loadTransMix(.createMixture(x$mix))
+        
+        if (!is.null(r$mix))
+        {
+            # This is differential AB...
+            if (ncol(r$mix$isoforms) == 6)
+            {
+                r$seqs <- data.frame(row.names=row.names(r$mix$isoforms), expected=r$mix$isoforms$fold)
+            }
+        }
+        else
+        {
+            stop('No sequin found. Please check and try again.') 
+        }
+    }
+
+    stopifnot(!is.null(r$seqs))
+    
+    class(r) <- 'TransQuin'
     return (r)
 }
 
@@ -64,6 +88,8 @@ MetaQuin <- function(...)
     
     keys <- c('mix', 'seqs', 'expected', 'measured')
     data <- .createData(x, keys)
+
+    stopifnot(!is.null(r$seqs))
     
     r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'MetaQuin'
@@ -81,6 +107,8 @@ VarQuin <- function(...)
     keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'expected', 'measured', 'bedgr', 'annot')
     data <- .createData(x, keys)
     
+    stopifnot(!is.null(r$seqs))
+
     r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'VarQuin'
     
@@ -97,6 +125,8 @@ FusQuin <- function(...)
     keys <- c('label', 'pos1', 'pos2')
     data <- .createData(x, keys)
 
+    stopifnot(!is.null(r$seqs))
+
     r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'FusQuin'
     
@@ -110,6 +140,8 @@ LadQuin <- function(...)
     keys <- c('label', 'elfc', 'lfc', 'pval', 'abund', 'type', 'expected', 'measured', 'aligned')
     data <- .createData(x, keys)
     
+    stopifnot(!is.null(r$seqs))
+
     r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'LadQuin'
     

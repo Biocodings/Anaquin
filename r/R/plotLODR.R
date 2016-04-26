@@ -276,12 +276,11 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     x <- list(...)
     p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=3) + theme_bw()
 
-    
-    x$xBreaks <- c(1, 10, 100, 1000, 10000)
-    x$xLabels <- c('1e+00', '1e+01', '1e+02', '1e+03', '1e+04')
+    x$xBreaks <- 10^(0:round(log10(max(data$measured)))-1)
+    x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
     x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
-    
-    
+    x$yBreaks <- c(1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
+
     if (!is.null(x$xname)) { p <- p + xlab(x$xname)    }
     if (!is.null(x$yname)) { p <- p + ylab(x$yname)    }
     if (!is.null(x$title)) { p <- p + ggtitle(x$title) }
@@ -366,5 +365,5 @@ plotLODR <- function(data,
                      shouldTable = FALSE,
                      shouldBand  = FALSE)
 {
-    .fitLODR(data.frame(measured=data$seqs$mean, pval=pval(data), ratio=abs(data$seqs$expect)), multiTest=FALSE)
+    .fitLODR(data.frame(measured=data$seqs$mean, pval=pval(data), ratio=abs(round(data$seqs$expect))), multiTest=FALSE)
 }

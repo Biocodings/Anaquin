@@ -5,17 +5,23 @@
 Specify a design for transcriptome analysis.
 }
 \usage{
-\method{TransQuin}{default}(mix)
+\method{TransQuin}{default}(seqs, ...)
 }
 \arguments{
+  \item{seqs}{List of sequins}
   \item{mix}{the name of the mixture file which the input concentration are to be read from. The file must be in the CSV format delimited by tabs. Each row of the file gives the input concentration of a sequin, which differs for each mixture type.
   
   The latest mixture files can be downloaded at www.sequin.xyz, it is important to use the correct mixture file. More details available at the website.
   
-  Alternatively, \code{mix} can be 'A', 'B' or 'AB', for mixture A, B and AB respectively. Anaquin will download the mixture files, thus active Internet connection is required.}
+  Alternatively, \code{mix} can be 'A', 'B' or 'AB', for mixture A, B and AB respectively. Anaquin will download the mixture file, thus active Internet connection is required.}
+  \item{expected}{Expected input concentration (attomol/ul)}
+  \item{measured}{Measured abundance}
+  \item{mean}{Empirically mean abundance of the replicates}  
+  \item{pval}{P-value estimated for differential analysis }  
+  \item{qpval}{Q-value estimated for differential analysis}  
 }
 \details{
-  The \code{TransQuin} object combines all the design information needed for transcriptome analysis. While all arguments are optional, \code{mix} or \code{annot} must be given. If these variables are specified they must be a valid file either locally or remotely.
+  The \code{TransQuin} object combines the design information required for transcriptome analysis. While all arguments are optional, \code{mix} or \code{annot} must be given. If these variables are specified they must be a valid file either locally or remotely.
   
   Once created, the object can be used for transcriptome data analysis. All transcriptome functions will require this object.  
   
@@ -35,7 +41,6 @@ Specify a design for transcriptome analysis.
 \code{\link{MetaQuin}}
 }
 \examples{
-
 # Load a mixture from file
 TransQuin(mix='/home/tedwong/mixture.csv')
 

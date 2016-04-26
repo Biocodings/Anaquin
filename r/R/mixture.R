@@ -60,18 +60,25 @@ loadVarMix <- function(data, file='A')
 
 loadTransMix <- function(file='A')
 {
-    if (file == 'A')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR002.v013.csv') }
-    if (file == 'B')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR003.v013.csv') }
-    if (file == 'F')  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR005.v013.csv') }
-    if (file == 'AB') { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv') }
+    if (is.null(file))
+    {
+        return(NULL)
+    }
+
+    stopifnot(identical(file, 'A') || identical(file, 'B') || identical(file, 'F') || identical(file, 'AB'))
+
+    if (identical(file, 'A'))  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR002.v013.csv') }
+    if (identical(file, 'B'))  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR003.v013.csv') }
+    if (identical(file, 'F'))  { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR005.v013.csv') }
+    if (identical(file, 'AB')) { file <- url('https://s3.amazonaws.com/anaquin/mixtures/MTR004.v013.csv') }
     
     mix <- read.csv(file, row.names=1, sep='\t')
     
     stopifnot(ncol(mix) == 2 || ncol(mix) == 3)
     isAB <- ncol(mix) == 3
 
-    colnames(mix) <- ifelse(isAB, c('length', 'A', 'B'), c('length', 'A'))
-    
+    if (isAB) { colnames(mix) <- c('length', 'A', 'B') } else { colnames(mix) <- c('length', 'A') }
+
     #
     #           length     A           B
     # R1_11_1    703  161.13281    5.035400
@@ -88,22 +95,22 @@ loadTransMix <- function(file='A')
     mix$GeneID <- isoformsToGenes(row.names(mix))
     
     # Genes that are defined in the mixture
-    geneIDs <- unique(mix$GeneID)
+    gIDs <- unique(mix$GeneID)
 
     if (isAB)
     {
-        gd <- data.frame(row.names=geneIDs,
-                         A=rep(0, length(geneIDs)),
-                         B=rep(0, length(geneIDs)),
-                         fold=rep(0, length(geneIDs)),
-                         logFold=rep(0, length(geneIDs)))
+        gd <- data.frame(row.names=gIDs,
+                         A=rep(0, length(gIDs)),
+                         B=rep(0, length(gIDs)),
+                         fold=rep(0, length(gIDs)),
+                         logFold=rep(0, length(gIDs)))
     }
     else
     {
-        gd <- data.frame(row.names=geneIDs, A=rep(0, length(geneIDs)))
+        gd <- data.frame(row.names=gIDs, A=rep(0, length(gIDs)))
     }
         
-    for (id in geneIDs)
+    for (id in gIDs)
     {
         seqs <- mix[mix$GeneID == id,]
 

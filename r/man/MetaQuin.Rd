@@ -15,7 +15,7 @@ Specify a design for metagenomic analysis.
   Alternatively, \code{mix} can be 'A', 'B' or 'AB', for mixture A, B and AB respectively. Anaquin will download the mixture files, thus active Internet connection is required.}
 }
 \details{
-  The \code{MetaQuin} object combines all the design information needed for metagenomic analysis. Theses objects are used by the statistical modelling and data analysis functions. While all arguments are optional, \code{mix} or \code{annot} must be given. If these variables are specified they must be a valid file either locally or remotely.
+  The \code{MetaQuin} object combines the design information required for metagenomic analysis. Theses objects are used by the statistical modelling and data analysis functions. While all arguments are optional, \code{mix} or \code{annot} must be given. If these variables are specified they must be a valid file either locally or remotely.
   
   Once created, the object can be used for metagenomic data analysis. All metagenomic functions will require this object.  
   

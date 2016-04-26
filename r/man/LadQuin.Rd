@@ -17,7 +17,7 @@ Specify a design for ladder analysis.
 }
 
 \details{
-  The \code{LadQuin} object combines all the design information needed for ladder analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies for by analysis, thus it is important to check the documentation carefully.
+  The \code{LadQuin} object combines the design information required for ladder analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies for by analysis, thus it is important to check the documentation carefully.
 
   Once created, the object can be used for ladder analysis. All ladder functions require this object.  
   

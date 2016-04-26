@@ -12,7 +12,7 @@
     require(gridExtra)
     
     data <- data$seqs
-    stopifnot(!is.null(data$pval) & !is.null(data$label) & !is.null(data$ratio))
+    stopifnot(!is.null(data$pval) & !is.null(data$label))
     
     data <- data[, order(names(data))]
     
@@ -28,7 +28,12 @@
 
     # Turn the probabilities into ranking classifer
     data$score <- 1-data$lpval
-    
+
+    if (is.null(data$ratio))
+    {
+        data$ratio <- abs(round(data$expected))
+    }
+
     rocDat <- NULL
     aucDat <- NULL
     ratios <- sort(data$ratio)
@@ -124,7 +129,7 @@ plotROC.VarQuin <- function(data, title)
 
 plotROC.TransQuin <- function(data, title)
 {
-    data$seqs <- TransDiff(data)
+    data$seqs <- TransDiff_(data)
     .plotROC(data, title=title, refRatio=0)
 }
 
