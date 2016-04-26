@@ -2,7 +2,7 @@
 \alias{plotMajor}
 \title{Create a major plot}
 \description{
-Create a major plot.
+Create a major-minor plot.
 }
 \usage{
 \method{plotMajor}{TransQuin}(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='')

@@ -2,7 +2,7 @@
 \alias{plotExpress}
 \title{Create an expression plot}
 \description{
-Create an expression plot where the x-axis is the input concentration and the y-axis is the measured abundance. This the most common but also most powerful data visualization in Anaquin.
+Create an expression plot where the x-axis is the input concentration and the y-axis is the measured abundance. This the most common but also most effective data visualization in Anaquin.
 }
 \usage{
 \method{plotExpress}{TransQuin}(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='')

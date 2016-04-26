@@ -235,7 +235,7 @@ pval <- function(data)
     lineDat$ratio  <- as.factor(lineDat$ratio)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
     
-    x <- data.frame(abund=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
+    x <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
 
     .plotLODR(data=x, lineDat=lineDat, shouldBand=TRUE, cutoff=cutoff)
 }
@@ -255,11 +255,11 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     xLabels <- xBreaks
     xLabels[xLabels==0] <- 'FP'
     
-    .plotLODR(data,
-                  title='Expected allele frequency vs p-value',
-                  xname='Expected allele frequency (log10)', yname='P-value (log10)',
-                  xBreaks=xBreaks,
-                  xLabels=xLabels)
+    .plotLODR(data, title='Expected allele frequency vs p-value',
+                    xname='Expected allele frequency (log10)',
+                    yname='P-value (log10)',
+                    xBreaks=xBreaks,
+                    xLabels=xLabels)
 }
 
 .plotLODR <- function(data, ...)
@@ -366,5 +366,5 @@ plotLODR <- function(data,
                      shouldTable = FALSE,
                      shouldBand  = FALSE)
 {
-    .fitLODR(data.frame(abund=data$seqs$mean, pval=pval(data), ratio=abs(data$seqs$expect)), multiTest=FALSE)
+    .fitLODR(data.frame(measured=data$seqs$mean, pval=pval(data), ratio=abs(data$seqs$expect)), multiTest=FALSE)
 }
