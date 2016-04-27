@@ -288,7 +288,7 @@ void VDiscover::report(const FileName &file, const Options &o)
      * Generating CSV
      */
     
-    writeCSV("VarDiscover_quins.csv", stats.chrT, o);
+    writeCSV("VarDiscover_quins.stats", stats.chrT, o);
 
     /*
      * Generating ROC curve
@@ -296,7 +296,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.info("Generating VarDiscover_ROC.R");
     o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createScript("VarDiscover_quins.csv", PlotVROC()));
+    o.writer->write(RWriter::createScript("VarDiscover_quins.stats", PlotVROC()));
     o.writer->close();
 
     /*
@@ -307,7 +307,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     {
         o.info("Generating VarDiscover_Prob.R");
         o.writer->open("VarDiscover_Prob.R");
-        o.writer->write(RWriter::createScript("VarDiscover_quins.csv", PlotVProb()));
+        o.writer->write(RWriter::createScript("VarDiscover_quins.stats", PlotVProb()));
         o.writer->close();
     }
 }
