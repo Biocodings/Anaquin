@@ -42,6 +42,8 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             }
             else
             {
+                std::cout << m.query.l.start << " " << m.query.l.end << std::endl;
+                
                 if (!m.seq)
                 {
                     o.warn("Variant [" + std::to_string(m.query.l.start) + "] not aligned with any of the sequins. Ignored.");
@@ -230,7 +232,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "   Specificity: %28$.2f\n"
                          "   Precision:   %29$.2f\n\n";
 
-    o.info("Generating VarDiscover_summary.stats");
+    o.info("Generating " + file);
     o.writer->open("VarDiscover_summary.stats");    
     o.writer->write((boost::format(summary) % src
                                             % stats.chrT.dTot()
@@ -279,13 +281,13 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generate summary statistics
+     * Generating summary statistics
      */
     
     writeSummary("VarDiscover_summary.stats", file, stats, o);
 
     /*
-     * Generating CSV
+     * Generating detailed statistics
      */
     
     writeCSV("VarDiscover_quins.stats", stats.chrT, o);
