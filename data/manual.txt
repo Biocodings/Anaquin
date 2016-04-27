@@ -48,12 +48,11 @@ Version: 1.1.1
        Fusion Analysis (FusQuin)
        -------------------------
 	   
-       FusionDiscover
-       FusionExpress
-       FusionDiff
-       FusionCoverage
-       FusionReport
-       FusionIGV
+       FusDiscover
+       FusExpress
+       FusCoverage
+	   FusDiff
+       FusIGV
 	   
        Metageonomic Analysis (MetaQuin)
        --------------------------------
