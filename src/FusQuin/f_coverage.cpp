@@ -32,12 +32,12 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
      * 1. Generating summary statistics
      */
     
-    o.info("Generating FusionCoverage_summary.stats");
+    o.info("Generating FusCoverage_summary.stats");
     
     CoverageTool::CoverageReportOptions to;
     
     to.writer   = o.writer;
-    to.summary  = "FusionCoverage_summary.stats";
+    to.summary  = "FusCoverage_summary.stats";
     to.refs     = r.hist().size();
     to.length   = r.size();
     
@@ -51,10 +51,10 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
      * 2. Generating bedgraph for the standards
      */
     
-    o.info("Generating FusionCoverage_coverage.bedgraph");
+    o.info("Generating FusCoverage_coverage.bedgraph");
     
     bo.writer = o.writer;
-    bo.file   = "FusionCoverage_coverage.bedgraph";
+    bo.file   = "FusCoverage_coverage.bedgraph";
 
     CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
     {

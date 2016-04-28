@@ -100,11 +100,11 @@ void FDiff::report(const FileName &splice, const FileName &chim, const Options &
      * Generating summary statistics
      */
 
-    //AnalyzeReporter::linear("FusionDiff_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
+    //AnalyzeReporter::linear("FusDiff_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
 
     /*
      * Generating scatter plot
      */
     
-    //AnalyzeReporter::scatter(stats, "", "FusionDiff", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    //AnalyzeReporter::scatter(stats, "", "FusDiff", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
 }

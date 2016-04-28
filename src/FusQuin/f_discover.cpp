@@ -105,10 +105,10 @@ static void writeClass(const FileName &file, const ChrID &cID, const FDiscover::
     const auto format = "%1%\t%2%\t%3%\t%4%";
 
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Sequin"
-                                           % "Label"
-                                           % "Position_1"
-                                           % "Position_2").str());
+    o.writer->write((boost::format(format) % "seq"
+                                           % "label"
+                                           % "pos1"
+                                           % "pos2").str());
 
     for (const auto &tp : data.tps)
     {
@@ -155,25 +155,25 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
      * Generating summary statistics
      */
 
-    writeSummary("FusionDiscover_summary.stats", stats, o);
+    writeSummary("FusDiscover_summary.stats", stats, o);
 
     /*
      * Generating classified statistics for the fusions
      */
     
-    writeClass("FusionDiscover_labels.csv", ChrT, stats, o);
+    writeClass("FusDiscover_query.stats", ChrT, stats, o);
     
     /*
      * Generating ROC curve
      */
     
-    o.writer->open("FusionDiscover_ROC.R");
-    o.writer->write(RWriter::createScript("FusionDiscover_labels.csv", PlotFROC()));
+    o.writer->open("FusDiscover_ROC.R");
+    //o.writer->write(RWriter::createScript("FusDiscover_query.stats", PlotFROC()));
     o.writer->close();
 
     /*
      * Generating sequin statistics
      */
 
-    writeQuins("FusionDiscover_quins.stats", stats, o);
+    writeQuins("FusDiscover_quins.stats", stats, o);
 }

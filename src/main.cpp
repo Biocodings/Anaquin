@@ -203,18 +203,18 @@ static std::map<Value, Tool> _tools =
     { "MetaCoverage",   TOOL_M_COVERAGE  },
     { "MetaReport",     TOOL_M_REPORT    },
 
-    { "LadderCopy",     TOOL_L_COPY      },
-    { "LadderAbund",    TOOL_L_EXPRESS     },
-    { "LadderDiff",     TOOL_L_DIFF      },
-    { "LadderCoverage", TOOL_L_COVERAGE  },
-    { "LadderReport",   TOOL_L_REPORT    },
+    { "LadCopy",     TOOL_L_COPY      },
+    { "LadExpress",  TOOL_L_EXPRESS   },
+    { "LadDiff",     TOOL_L_DIFF      },
+    { "LadCoverage", TOOL_L_COVERAGE  },
+    { "LadReport",   TOOL_L_REPORT    },
 
-    { "FusionDiscover", TOOL_F_DISCOVER  },
-    { "FusionExpress",  TOOL_F_EXPRESS   },
-    { "FusionIGV",      TOOL_F_IGV       },
-    { "FusionCoverage", TOOL_F_COVERAGE  },
-    { "FusionDiff",     TOOL_F_DIFF      },
-    { "FusionReport",   TOOL_F_REPORT    },
+    { "FusDiscover", TOOL_F_DISCOVER  },
+    { "FusExpress",  TOOL_F_EXPRESS   },
+    { "FusIGV",      TOOL_F_IGV       },
+    { "FusCoverage", TOOL_F_COVERAGE  },
+    { "FusDiff",     TOOL_F_DIFF      },
+    { "FusReport",   TOOL_F_REPORT    },
 };
 
 static std::map<Tool, std::set<Option>> _required =

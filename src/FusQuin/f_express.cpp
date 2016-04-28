@@ -47,7 +47,7 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
 
         case FusionCaller::TopHatFusion:
         {
-            throw "TopHatFusion not supported in FusionExpress";
+            throw "TopHatFusion not supported in FusExpress";
         }
     }
 
@@ -88,7 +88,7 @@ void FExpress::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
     
-    o.writer->open("FusionExpress_summary.stats");
+    o.writer->open("FusExpress_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rGeno, file, stats.hist, stats, stats, ""));
     o.writer->close();
 
@@ -96,13 +96,13 @@ void FExpress::report(const FileName &file, const Options &o)
      * Generating CSV for all fusions
      */
     
-    writeCSV("FusionExpress_quins.csv", stats, o);
+    writeCSV("FusExpress_quins.csv", stats, o);
 
     /*
      * Generating scatter plot
      */
     
-    o.writer->open("FusionExpress_scatter.R");
-    o.writer->write(RWriter::createScript("FusionExpress_quins.csv", PlotFExpress()));
+    o.writer->open("FusExpress_scatter.R");
+    o.writer->write(RWriter::createScript("FusExpress_quins.csv", PlotFExpress()));
     o.writer->close();
 }

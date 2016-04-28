@@ -297,11 +297,11 @@ void FusionRef::validate()
     /*
      * Validation:
      *
-     *   1: Mixtures & Fusions (eg: FusionExpress)
-     *   2: Fusions (eg: FusionDiscover)
+     *   1: Mixtures & Fusions (eg: FusExpress)
+     *   2: Fusions (eg: FusDiscover)
      *   3: Standards & Mixtures (eg: FusionAlign)
-     *   4: Splicing & Fusions & Mixtures (eg: FusionDiff)
-     *   5: Splicing & Mixtures (eg: FusionExpress)
+     *   4: Splicing & Fusions & Mixtures (eg: FusDiff)
+     *   5: Splicing & Mixtures (eg: FusExpress)
      */
 
     // Case 4
