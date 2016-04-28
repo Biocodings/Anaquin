@@ -12,24 +12,37 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_fus;
     
     FExpress::Stats stats;
-    
-    //stats.hist = r.fusionHist();
+    stats.hist = r.fusionHist();
 
+    FUSQuin::analyze<FExpress::Options>(file, o, [&](const FUSQuin::Match &match)
+    {
+        switch (match.label)
+        {
+            case FUSQuin::Label::Positive:
+            {
+                stats.n_chrT++;
+                break;
+            }
+
+            case FUSQuin::Label::GenoChrT:
+            case FUSQuin::Label::Negative: { break; }
+
+            case FUSQuin::Label::Geno:
+            {
+                stats.n_geno++;
+                break;
+            }
+        }
+    });
+    
+    
+    
     switch (o.caller)
     {
         case FusionCaller::StarFusion:
         {
             ParserSTab::parse(Reader(file), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
             {
-                if (c.id == ChrT)
-                {
-                    stats.n_chrT++;
-                }
-                else
-                {
-                    stats.n_geno++;
-                }
-
                 const SequinData *match;
                 
                 if ((match = r.findSplice(c.l)))
@@ -56,28 +69,6 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeCSV(const FileName &file, const FExpress::Stats &stats, const FExpress::Options &o)
-{
-    o.writer->open(file);
-    
-    const auto format = "%1%\t%2%\t%3%";
-    
-    o.writer->write((boost::format(format) % "sequin"
-                                           % "expected"
-                                           % "measured").str());
-    
-    const auto data = stats.data(false);
-
-    for (auto i = 0; i < data.ids.size(); i++)
-    {
-        o.writer->write((boost::format(format) % data.ids[i]
-                                               % data.x[i]
-                                               % data.y[i]).str());
-    }
-    
-    o.writer->close();
-}
-
 void FExpress::report(const FileName &file, const Options &o)
 {
     const auto stats = FExpress::analyze(file, o);
@@ -96,13 +87,16 @@ void FExpress::report(const FileName &file, const Options &o)
      * Generating CSV for all fusions
      */
     
-    writeCSV("FusExpress_quins.csv", stats, o);
-
+    o.info("Generating FusExpress_quins.stats");
+    o.writer->open("FusExpress_quins.stats");
+    o.writer->write(StatsWriter::writeCSV(stats));
+    o.writer->close();
+    
     /*
-     * Generating scatter plot
+     * Generating expression plot
      */
     
-    o.writer->open("FusExpress_scatter.R");
-    o.writer->write(RWriter::createScript("FusExpress_quins.csv", PlotFExpress()));
+    o.writer->open("FusExpress_express.R");
+    o.writer->write(RWriter::createScript("FusExpress_quins.stats", PlotFExpress()));
     o.writer->close();
 }

@@ -17,9 +17,10 @@ namespace Anaquin
     {
         enum Label
         {
-            EndoChrT = -1,
+            Geno     = -2,
+            GenoChrT = -1,
             Negative = 0,
-            Positive = 1, // Either chrT or endogenous
+            Positive = 1,
         };
 
         struct Match
@@ -75,11 +76,11 @@ namespace Anaquin
             {
                 if (f.cID_1 != ChrT && f.cID_2 != ChrT)
                 {
-                    match.label = Negative; // TODO: What to do with endogenous?
+                    match.label = Geno;
                 }
                 else
                 {
-                    match.label = EndoChrT;
+                    match.label = GenoChrT;
                 }
             }
             else
@@ -91,7 +92,7 @@ namespace Anaquin
                 
                 const auto &r = Standard::instance().r_fus;
 
-                // Any match by position and fuzzy?
+                // Any match by position with fuzzy?
                 if ((match.known = r.findFusion(min, max, f.s1, f.s2, fuzzy)))
                 {
                     match.label = Positive;

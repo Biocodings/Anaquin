@@ -186,18 +186,22 @@ void Standard::addFRef(const Reader &r)
             throw std::runtime_error("Invalid reference file. chrT-chrT is expected.");
         }
 
-        FusionRef::KnownFusion known;
+        FusionRef::KnownFusion data;
 
-        known.id = f[4];;
-        known.l1 = stod(f[1]) + 1;
-        known.l2 = stod(f[2]) + 1;
+        data.id = f[4];;
+        data.l1 = stod(f[1]) + 1;
+        data.l2 = stod(f[2]) + 1;
 
-        if      (f[3] == "ff") { known.s1 = Strand::Forward;  known.s2 = Strand::Forward;  }
-        else if (f[3] == "fr") { known.s1 = Strand::Forward;  known.s2 = Strand::Backward; }
-        else if (f[3] == "rf") { known.s1 = Strand::Backward; known.s2 = Strand::Forward;  }
-        else if (f[3] == "rr") { known.s1 = Strand::Backward; known.s2 = Strand::Backward; }
+        if      (f[3] == "ff") { data.s1 = Strand::Forward;  data.s2 = Strand::Forward;  }
+        else if (f[3] == "fr") { data.s1 = Strand::Forward;  data.s2 = Strand::Backward; }
+        else if (f[3] == "rf") { data.s1 = Strand::Backward; data.s2 = Strand::Forward;  }
+        else if (f[3] == "rr") { data.s1 = Strand::Backward; data.s2 = Strand::Backward; }
+        else
+        {
+            throw std::runtime_error("Unknown: " + f[3]);
+        }
 
-        r_fus.addFusion(known);
+        r_fus.addFusion(data);
     }, "\t");
 }
 

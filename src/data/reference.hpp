@@ -427,7 +427,7 @@ namespace Anaquin
                 // Where this fusion belongs
                 SequinID id;
             
-                // The position of the break-point
+                // The position of the breakpoint
                 Base l1, l2;
             
                 // Orientation for each of the segment

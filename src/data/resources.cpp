@@ -17,7 +17,7 @@
 #include "resources/plotFROC.R"
 #include "resources/plotFExpress.R"
 
-#include "resources/AFU004.v032.ref"
+#include "resources/AFU004.v032.bed"
 #include "resources/AFU005.v032.bed"
 #include "resources/MFU007.v013.csv"
 
@@ -112,7 +112,7 @@ Scripts FusionDataMixA()
 
 Scripts FusionDataRef()
 {
-    return ToString(data_FusQuin_AFU004_v032_ref);
+    return ToString(data_FusQuin_AFU004_v032_bed);
 }
 
 Scripts PlotFExpress()

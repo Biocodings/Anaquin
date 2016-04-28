@@ -48,7 +48,7 @@ namespace Anaquin
     typedef long long Counts;
     
     const ChrID ChrT = "chrT";
-    const ChrID Geno = "endo";
+    const ChrID Geno = "geno";
 }
 
 #endif

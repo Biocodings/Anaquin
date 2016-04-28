@@ -5,54 +5,55 @@ using namespace Anaquin;
 
 extern Scripts PlotFROC();
 
-template <typename T> ChrID toChrTEndo(const T &t)
-{
-    return t == ChrT ? ChrT : Geno;
-}
-
 FDiscover::Stats FDiscover::analyze(const FileName &file, const FDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_fus;
     
     FDiscover::Stats stats;
     
-    stats.data[ChrT];
-    stats.data[ChrT].hist = r.fusionHist();
     stats.data[Geno];
+    stats.data[ChrT].hist = r.fusionHist();
 
     FUSQuin::analyze<FDiscover::Options>(file, o, [&](const FUSQuin::Match &match)
     {
-        if (match.label == FUSQuin::Label::Positive)
+        switch (match.label)
         {
-            const auto cID = toChrTEndo(match.query.cID_1);
-
-            stats.data[cID].tps.push_back(match);
-            stats.data[cID].hist[match.known->id]++;
-        }
-        else
-        {
-            if (match.query.cID_1 == ChrT && match.query.cID_2 == ChrT)
+            case FUSQuin::Label::Positive:
+            {
+                stats.data[ChrT].tps.push_back(match);
+                stats.data[ChrT].hist[match.known->id]++;
+                break;
+            }
+                
+            case FUSQuin::Label::GenoChrT:
+            case FUSQuin::Label::Negative:
             {
                 stats.data[ChrT].fps.push_back(match);
+                break;
             }
-            else
+                
+            case FUSQuin::Label::Geno:
             {
                 stats.data[Geno].fps.push_back(match);
+                break;
             }
         }
     });
     
     /*
-     * Find out all the missing references
+     * Find out all the missing fusions (only chrT for now)
      */
 
     for (auto &i : stats.data)
     {
-        for (const auto &j : i.second.hist)
+        if (i.first == ChrT)
         {
-            if (i.first == ChrT)
+            for (const auto &j : i.second.hist)
             {
-                i.second.fns.push_back(*r.findFusion(j.first));
+                if (!j.second)
+                {
+                    i.second.fns.push_back(*r.findFusion(j.first));
+                }
             }
         }
     }
@@ -66,40 +67,44 @@ static void writeSummary(const FileName &file, const FDiscover::Stats &stats, co
 
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
-                         "   *** Number of fusions detected in the synthetic chromosome\n"
+                         "   *** Number of fusions detected in the synthetic and genome\n"
                          "   ***\n\n"
-                         "   Synthetic: %2% fusions\n\n"
+                         "   Synthetic: %2% fusions\n"
+                         "   Genome:    %3% fusions\n\n"
                          "   ***\n"
                          "   *** Reference annotation (Synthetic)\n"
                          "   ***\n\n"
-                         "   File: %3%\n\n"
-                         "   Synthetic: %4% fusions\n\n"
+                         "   File: %4%\n\n"
+                         "   Synthetic: %5% fusions\n\n"
                          "   ************************************************************\n"
                          "   ***                                                      ***\n"
                          "   ***        Statistics for the synthetic chromosome       ***\n"
                          "   ***                                                      ***\n"
                          "   ************************************************************\n\n"
-                         "   True Positives:  %5% fusions\n"
-                         "   False Positives: %6% fusions\n\n"
+                         "   True Positives:  %6% fusions\n"
+                         "   False Positives: %7% fusions\n\n"
                          "   ***\n"
                          "   *** Performance metrics\n"
                          "   ***\n\n"
-                         "   Sensitivity: %7%\n"
-                         "   Specificity: %8%\n\n";
+                         "   FPR:       : %8%\n"
+                         "   Sensitivity: %9%\n"
+                         "   Precision:   %10%\n\n";
     
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
                                             % stats.countDetect(ChrT)
+                                            % stats.countDetect(Geno)
                                             % o.rChrT
                                             % r.countFusion()
                                             % stats.countTP(ChrT)
                                             % stats.countFP(ChrT)
+                                            % "?"
                                             % stats.sn(ChrT)
                                             % stats.pc(ChrT)).str());
     o.writer->close();
 }
 
-static void writeClass(const FileName &file, const ChrID &cID, const FDiscover::Stats &stats, const FDiscover::Options &o)
+static void writeQuery(const FileName &file, const ChrID &cID, const FDiscover::Stats &stats, const FDiscover::Options &o)
 {
     const auto &data  = stats.data.at(cID);
     const auto format = "%1%\t%2%\t%3%\t%4%";
@@ -133,8 +138,8 @@ static void writeQuins(const FileName &file, const FDiscover::Stats &stats, cons
     
     const auto format = "%1%\t%2%";
     
-    o.writer->write((boost::format(format) % "ID"
-                                           % "Counts").str());
+    o.writer->write((boost::format(format) % "seq"
+                                           % "counts").str());
 
     for (const auto &i : stats.data.at(ChrT).hist)
     {
@@ -158,22 +163,22 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
     writeSummary("FusDiscover_summary.stats", stats, o);
 
     /*
-     * Generating classified statistics for the fusions
+     * Generating sequin statistics
      */
     
-    writeClass("FusDiscover_query.stats", ChrT, stats, o);
+    writeQuins("FusDiscover_quins.stats", stats, o);
     
     /*
-     * Generating ROC curve
+     * Generating statistics for the query
+     */
+    
+    writeQuery("FusDiscover_query.stats", ChrT, stats, o);
+    
+    /*
+     * Generating ROC plot
      */
     
     o.writer->open("FusDiscover_ROC.R");
     //o.writer->write(RWriter::createScript("FusDiscover_query.stats", PlotFROC()));
     o.writer->close();
-
-    /*
-     * Generating sequin statistics
-     */
-
-    writeQuins("FusDiscover_quins.stats", stats, o);
 }
