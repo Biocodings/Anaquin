@@ -23,7 +23,7 @@ data  = [ 'data/manual.txt',
           'src/r/plotFROC.R',
           'src/r/plotFExpress.R',
 
-          'data/FusQuin/AFU004.v032.ref',
+          'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',
           'data/FusQuin/MFU007.v013.csv',
 
