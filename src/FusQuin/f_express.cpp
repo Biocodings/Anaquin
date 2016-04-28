@@ -12,8 +12,9 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_fus;
     
     FExpress::Stats stats;
-    stats.hist = r.fusionHist();
+    //stats.hist = r.fusionHist();
 
+/*
     FUSQuin::analyze<FExpress::Options>(file, o, [&](const FUSQuin::Match &match)
     {
         switch (match.label)
@@ -34,6 +35,8 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
             }
         }
     });
+*/
+    
     
     
     

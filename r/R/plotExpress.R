@@ -68,14 +68,21 @@
     print(p)
 }
 
-plotExpress.MetaQuin <- function(data)
+plotExpress.FusQuin <- function(data, title, xlab, ylab, showLOQ)
+{
+    .plotExpress(data, title='Expected expression vs Measured expression',
+                 xlab='Expected expression (log2)',
+                 ylab='Measured expression (log2)')
+}
+
+plotExpress.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     .plotExpress(data, title='Expected expression vs Measured expression',
                         xlab='Expected expression (log2)',
                         ylab='Measured expression (log2)')
 }
 
-plotExpress.VarQuin <- function(data)
+plotExpress.VarQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     .plotExpress(data, title='Expected expression vs Measured expression',
                         xlab='Expected expression (log2)',
@@ -90,9 +97,13 @@ plotExpress.TransQuin <- function(data, title, xlab, ylab, showLOQ)
 
 plotExpress <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
 {
-    stopifnot(class(data)=='TransQuin' || class(data)=='VarQuin' || class(data)=='MetaQuin')
-    
+    stopifnot(class(data) =='TransQuin' ||
+              class(data) =='VarQuin'   ||
+              class(data) =='MetaQuin'  ||
+              class(data) == 'FusQuin')
+
     if (class(data) == 'TransQuin') { plotExpress.TransQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }
     if (class(data) == 'VarQuin')   { plotExpress.VarQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)   }
     if (class(data) == 'MetaQuin')  { plotExpress.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)  }
+    if (class(data) == 'FusQuin')   { plotExpress.FusQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=FALSE)     }    
 }

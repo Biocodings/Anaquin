@@ -122,14 +122,26 @@ FusQuin <- function(...)
 {
     x <- list(...)
     
-    keys <- c('label', 'pos1', 'pos2')
-    data <- .createData(x, keys)
+    keys <- c('expected', 'measured', 'label', 'pos1', 'pos2')
+    r <- list('seqs'=.createData(x, keys))
+    
+    if (is.null(r$seqs))
+    {
+        r$mix <- loadFusMix(.createMixture(x$mix))
+        
+        if (!is.null(r$mix))
+        {
+            # TODO: Implement me
+        }
+        else
+        {
+            stop('No sequin found. Please check and try again.') 
+        }
+    }
 
     stopifnot(!is.null(r$seqs))
-
-    r <- list('seqs'=data, mix=.createMixture(x$mix))
-    class(r) <- 'FusQuin'
     
+    class(r) <- 'FusQuin'
     return (r)
 }
 
