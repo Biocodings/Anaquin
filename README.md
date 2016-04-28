@@ -45,23 +45,22 @@ Bioinformatics
 ============
 
 <ul>
-<li>Gene expression
-<li>Alternative Splicing
-<li>De-novo assembly
-<li>Variant analysis
-<li>Read alignment
+<li>Gene expression</li>
+<li>Alternative Splicing</li>
+<li>De-novo assembly</li>
+<li>Variant analysis</li>
+<li>Fusion detection</li>
 </ul>
 
 Features
 ============
 
 <ul>
-<li> Statistical analysis
-<li> Tool modules
-<li> Genome comparisons
-<li> Data visualization
-<li> R-integration
-<li> R-Shiny
+<li> Statistical analysis</li>
+<li> Tool modules</li>
+<li> Genome comparisons</li>
+<li> Data visualization</li>
+<li> R-integration</li>
 </ul>
 
 
