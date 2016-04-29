@@ -122,6 +122,12 @@
     print(p)    
 }
 
+plotROC.FusQuin <- function(data, title)
+{
+    data$seqs$pval <- (max(data$seqs$measured) + 1) - data$seqs$measured
+    .plotROC(data, title=title, refRatio=0)
+}
+
 plotROC.VarQuin <- function(data, title)
 {
     .plotROC(data, title=title)
@@ -135,8 +141,13 @@ plotROC.TransQuin <- function(data, title)
 
 plotROC <- function(data, title=NULL)
 {
-    stopifnot (class(data) == 'TransQuin' || class(data) == 'VarQuin')
+    stopifnot (class(data) == 'TransQuin' ||
+               class(data) == 'VarQuin'   ||
+               class(data) == 'FusQuin'   ||
+               class(data) == 'MetaQuin')
     
     if (class(data) == 'VarQuin')   { plotROC.VarQuin(data, title)   }
     if (class(data) == 'TransQuin') { plotROC.TransQuin(data, title) }
+    if (class(data) == 'FusQuin')   { plotROC.FusQuin(data, title)   }
+    if (class(data) == 'MetaQuin')  { plotROC.MetaQuin(data, title)  }    
 }
