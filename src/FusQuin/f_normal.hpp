@@ -1,22 +1,21 @@
-#ifndef F_PARENT_HPP
-#define F_PARENT_HPP
+#ifndef F_NORMAL_HPP
+#define F_NORMAL_HPP
 
 #include "stats/analyzer.hpp"
 #include "FusQuin/FUSQuin.hpp"
 
 namespace Anaquin
 {
-    struct FParent
+    struct FNormal
     {
         struct Options : public FuzzyOptions
         {
-            FusionCaller caller;
+            FusionCaller soft;
         };
 
         struct Stats : public FusionStats, public LinearStats, public SequinStats
         {
-            // Absolute detection limit
-            Limit absolute;
+            // Empty Implementation
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

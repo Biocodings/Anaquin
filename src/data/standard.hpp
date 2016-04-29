@@ -74,8 +74,8 @@ namespace Anaquin
             // Standards for FuseQuin
             void addFStd(const Reader &);
 
-            // Splicing for FuseQuin
-            void addFSplice(const Reader &);
+            // Intron junctions for FuseQuin
+            void addFJunct(const Reader &);
         
             // Mixture for FuseQuin
             void addFMix(const Reader &);

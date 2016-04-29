@@ -2,7 +2,8 @@
 #define F_DIFF_HPP
 
 #include "stats/analyzer.hpp"
-#include "FusQuin/f_parent.hpp"
+#include "FusQuin/f_normal.hpp"
+#include "FusQuin/f_fusion.hpp"
 
 namespace Anaquin
 {
@@ -13,10 +14,10 @@ namespace Anaquin
         struct Stats : public LinearStats, public FusionStats, public SequinStats
         {
             // Statistics for the normal genes
-            FParent::Stats normal;
+            FNormal::Stats normal;
 
             // Statistics for the fusion genes
-            FParent::Stats fusion;
+            FFusion::Stats fusion;
         };
 
         static Stats analyze(const FileName &, const FileName &, const Options &o = Options());        

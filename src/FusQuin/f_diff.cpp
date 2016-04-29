@@ -24,12 +24,12 @@ FDiff::Stats FDiff::analyze(const FileName &normal, const FileName &fusion, cons
     
     ParserSTab::parse(Reader(normal), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
     {
-        //if (c.id == ChrT) { stats.chrT->n_chrT++; }
-        //else              { stats.chrT->n_geno++; }
+        if (c.id == ChrT) { stats.n_chrT++; }
+        else              { stats.n_geno++; }
 
         const SequinData *match;
 
-        if (c.id == ChrT && (match = r.findSplice(c.l)))
+        if (c.id == ChrT && (match = r.findJunct(c.l)))
         {
             normals[match->id] = c.unique;
             //stats.chrT->h.at(match->id)++;

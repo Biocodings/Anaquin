@@ -15,6 +15,7 @@ template <typename T> SequinHist createHist(const T& t)
         hist[i.first] = 0;
     }
     
+    assert(!hist.empty());
     return hist;
 }
 
@@ -28,7 +29,6 @@ template <typename T> SequinHist createHist(const std::set<T> & t)
     }
     
     assert(!hist.empty());
-
     return hist;
 }
 
@@ -202,8 +202,8 @@ void LadderRef::abund(const LadderRef::JoinID &id, Concent &a, Concent &b, Conce
 
 struct FusionRef::FusionRefImpl
 {
-    // Known splices
-    std::map<SequinID, Locus> splices;
+    // Reference junctions in the parent genes
+    std::map<SequinID, Locus> juncts;
 
     // Known fusions
     std::set<KnownFusion> knowns;
@@ -229,8 +229,8 @@ struct FusionRef::FusionRefImpl
 
 FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
 
-Counts FusionRef::countFusion() const { return _impl->knowns.size();  }
-Counts FusionRef::countSplice() const { return _impl->splices.size(); }
+Counts FusionRef::countFusion() const { return _impl->knowns.size(); }
+Counts FusionRef::countJuncts() const { return _impl->juncts.size(); }
 
 const FusionRef::SpliceChimeric * FusionRef::findSpliceChim(const SequinID &id) const
 {
@@ -247,14 +247,19 @@ void FusionRef::addFusion(const KnownFusion &f)
     _impl->knowns.insert(f);
 }
 
-void FusionRef::addSplice(const SequinID &id, const Locus &l)
+void FusionRef::addJunct(const SequinID &id, const Locus &l)
 {
-    _impl->splices[id] = l;
+    _impl->juncts[id] = l;
 }
 
 void FusionRef::addStand(const SequinID &id, const Locus &l)
 {
     _impl->stands[id].push_back(l);
+}
+
+SequinHist FusionRef::normalHist() const
+{
+    return createHist(_impl->juncts);
 }
 
 SequinHist FusionRef::fusionHist() const
@@ -277,11 +282,11 @@ const FusionRef::KnownFusion * FusionRef::findFusion(const SequinID &id) const
     return nullptr;
 }
 
-const SequinData *FusionRef::findSplice(const Locus &l) const
+const SequinData *FusionRef::findJunct(const Locus &l) const
 {
-    assert(!_impl->splices.empty());
+    assert(!_impl->juncts.empty());
 
-    for (auto &i : _impl->splices)
+    for (auto &i : _impl->juncts)
     {
         if (i.second == l)
         {
@@ -305,9 +310,9 @@ void FusionRef::validate()
      */
 
     // Case 4
-    if (!_rawMIDs.empty() && !_impl->knowns.empty() && !_impl->splices.empty())
+    if (!_rawMIDs.empty() && !_impl->knowns.empty() && !_impl->juncts.empty())
     {
-        if (_impl->knowns.size() != _impl->splices.size())
+        if (_impl->knowns.size() != _impl->juncts.size())
         {
             throw std::runtime_error("Number of fusions not equal to splicing. Please check and try again.");
         }
@@ -326,7 +331,7 @@ void FusionRef::validate()
         
         for (auto &i: _impl->knowns)
         {
-            for (auto &j : _impl->splices)
+            for (auto &j : _impl->juncts)
             {
                 if (f(i.id, j.first))
                 {
@@ -366,9 +371,9 @@ void FusionRef::validate()
     }
 
     // Case 5
-    else if (!_rawMIDs.empty() && !_impl->splices.empty())
+    else if (!_rawMIDs.empty() && !_impl->juncts.empty())
     {
-        merge(_rawMIDs, getKeys(_impl->splices));
+        merge(_rawMIDs, getKeys(_impl->juncts));
     }
 
     // Case 3

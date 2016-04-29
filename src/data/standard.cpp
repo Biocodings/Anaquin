@@ -169,11 +169,11 @@ void Standard::addFStd(const Reader &r)
     });
 }
 
-void Standard::addFSplice(const Reader &r)
+void Standard::addFJunct(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_fus.addSplice(f.id, f.l);
+        r_fus.addJunct(f.id, f.l);
     });
 }
 

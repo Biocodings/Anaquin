@@ -21,7 +21,8 @@ data  = [ 'data/manual.txt',
           # ------- Fusion -------
 
           'src/r/plotFROC.R',
-          'src/r/plotFExpress.R',
+          'src/r/plotFNormal.R',
+	  'src/r/plotFFusion.R',
 
           'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',

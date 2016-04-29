@@ -10,7 +10,7 @@ namespace Anaquin
     {
         struct Options : public FuzzyOptions
         {
-            FusionCaller caller;
+            FusionCaller soft;
         };
 
         struct Stats : public FusionStats, public LinearStats, public SequinStats

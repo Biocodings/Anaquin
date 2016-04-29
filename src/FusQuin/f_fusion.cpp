@@ -4,7 +4,7 @@
 using namespace Anaquin;
 
 // Defined resources.cpp
-extern Scripts PlotFExpress();
+extern Scripts PlotFFusion();
 
 FFusion::Stats FFusion::analyze(const FileName &file, const Options &o)
 {
@@ -37,34 +37,34 @@ FFusion::Stats FFusion::analyze(const FileName &file, const Options &o)
 */
     
     
-    
-    
-    switch (o.caller)
-    {
-        case FusionCaller::StarFusion:
-        {
-            ParserSTab::parse(Reader(file), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
-            {
-                const SequinData *match;
-                
-                if ((match = r.findSplice(c.l)))
-                {
-                    const auto expected = match->mixes.at(Mix_1);
-                    const auto measured = c.unique;
-
-                    stats.add(match->id, expected, measured);
-                    //stats.hist.at(match->id)++;
-                }
-            });
-
-            break;
-        }
-
-        case FusionCaller::TopHatFusion:
-        {
-            throw "TopHatFusion not supported in FFusion";
-        }
-    }
+//    
+//    
+//    switch (o.caller)
+//    {
+//        case FusionCaller::StarFusion:
+//        {
+//            ParserSTab::parse(Reader(file), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
+//            {
+//                const SequinData *match;
+//                
+//                if ((match = r.findFusion(c.l)))
+//                {
+//                    const auto expected = match->mixes.at(Mix_1);
+//                    const auto measured = c.unique;
+//
+//                    stats.add(match->id, expected, measured);
+//                    //stats.hist.at(match->id)++;
+//                }
+//            });
+//
+//            break;
+//        }
+//
+//        case FusionCaller::TopHatFusion:
+//        {
+//            throw "TopHatFusion not supported in FFusion";
+//        }
+//    }
 
     stats.absolute = r.absolute(stats.hist);
 
@@ -98,7 +98,8 @@ void FFusion::report(const FileName &file, const Options &o)
      * Generating expression plot
      */
     
+    o.info("Generating FFusion_express.R");
     o.writer->open("FFusion_express.R");
-    o.writer->write(RWriter::createScript("FFusion_quins.stats", PlotFExpress()));
+    o.writer->write(RWriter::createScript("FFusion_quins.stats", PlotFFusion()));
     o.writer->close();
 }

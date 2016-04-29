@@ -457,26 +457,24 @@ namespace Anaquin
         
             void addFusion(const KnownFusion &);
         
-            // Add splicing for an intron in the normal gene
-            void addSplice(const SequinID &, const Locus &);
+            // Add an intron junction for the normal genes
+            void addJunct(const SequinID &, const Locus &);
 
             // Add fusion or normal genes comprised of the standards
             void addStand(const SequinID &, const Locus &);
 
-            /*
-             * Query operations
-             */
-
-            // Histogram for each known fusion
+            SequinHist normalHist() const;
             SequinHist fusionHist() const;
 
             Counts countFusion() const;
-            Counts countSplice() const;
+            Counts countJuncts() const;
 
             const KnownFusion *findFusion(const SequinID &) const;
             const KnownFusion *findFusion(Base x, Base y, Strand o1, Strand o2, double fuzzy) const;
 
-            const SequinData *findSplice(const Locus &) const;
+            // Find a reference junction for the normal genes
+            const SequinData *findJunct(const Locus &) const;
+
             const SpliceChimeric *findSpliceChim(const SequinID &) const;
 
             // Convert the normal gene to it's equivalent fusion (eg: NG1_1_P1 to FG1_1_P1)

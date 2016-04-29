@@ -40,7 +40,7 @@
 
 #include "FusQuin/f_diff.hpp"
 #include "FusQuin/f_viewer.hpp"
-#include "FusQuin/f_parent.hpp"
+#include "FusQuin/f_normal.hpp"
 #include "FusQuin/f_fusion.hpp"
 #include "FusQuin/f_discover.hpp"
 #include "FusQuin/f_coverage.hpp"
@@ -85,7 +85,7 @@ typedef std::set<Value> Range;
 #define TOOL_L_DIFF      288
 #define TOOL_L_COVERAGE  289
 #define TOOL_F_DISCOVER  290
-#define TOOL_F_PARENT    291
+#define TOOL_F_NORMAL    291
 #define TOOL_F_FUSION    292
 #define TOOL_F_IGV       293
 #define TOOL_F_COVERAGE  294
@@ -212,7 +212,7 @@ static std::map<Value, Tool> _tools =
     { "LadReport",   TOOL_L_REPORT    },
 
     { "FusDiscover", TOOL_F_DISCOVER },
-    { "FusParent",   TOOL_F_PARENT   },
+    { "FusNormal",   TOOL_F_NORMAL   },
     { "FusFusion",   TOOL_F_FUSION   },
     { "FusIGV",      TOOL_F_IGV      },
     { "FusCoverage", TOOL_F_COVERAGE },
@@ -257,7 +257,7 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_F_DISCOVER, { OPT_R_BED, OPT_SOFT, OPT_U_FILES               } },
-    { TOOL_F_PARENT,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
+    { TOOL_F_NORMAL,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
     { TOOL_F_FUSION,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
     { TOOL_F_COVERAGE, { OPT_R_BED, OPT_U_FILES                         } },
     { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_MIXTURE, OPT_U_FILES } },
@@ -1316,7 +1316,7 @@ void parse(int argc, char ** argv)
 
         case TOOL_F_IGV:
         case TOOL_F_DIFF:
-        case TOOL_F_PARENT:
+        case TOOL_F_NORMAL:
         case TOOL_F_FUSION:
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
@@ -1338,23 +1338,25 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_PARENT:
+                case TOOL_F_NORMAL:
                 {
                     addMix(std::bind(&Standard::addFMix,      &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED);
+                    applyRef(std::bind(&Standard::addFJunct, &s, std::placeholders::_1), OPT_R_BED);
                     break;
                 }
 
                 case TOOL_F_FUSION:
                 {                 
+                    addMix(std::bind(&Standard::addFMix,   &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1), OPT_R_FUS);
                     break;
                 }
 
                 case TOOL_F_DIFF:
                 {
-                    addMix(std::bind(&Standard::addFMix,    &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFRef,    &s, std::placeholders::_1), OPT_R_FUS);
-                    applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED);
+                    addMix(std::bind(&Standard::addFMix,     &s, std::placeholders::_1));
+                    applyRef(std::bind(&Standard::addFRef,   &s, std::placeholders::_1), OPT_R_FUS);
+                    applyRef(std::bind(&Standard::addFJunct, &s, std::placeholders::_1), OPT_R_BED);
                     break;
                 }
 
@@ -1385,19 +1387,19 @@ void parse(int argc, char ** argv)
                 case TOOL_F_DIFF:     { analyze_2<FDiff>();                break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_U_FILES); break; }
 
-                case TOOL_F_PARENT:
+                case TOOL_F_NORMAL:
                 {
-                    FParent::Options o;
-                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
+                    FNormal::Options o;
+                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
 
-                    analyze_1<FParent>(OPT_U_FILES, o);
+                    analyze_1<FNormal>(OPT_U_FILES, o);
                     break;
                 }
 
                 case TOOL_F_FUSION:
                 {
                     FFusion::Options o;
-                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
+                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
                     
                     analyze_1<FFusion>(OPT_U_FILES, o);
                     break;
