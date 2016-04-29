@@ -229,7 +229,7 @@ namespace Anaquin
         // Where the fusion occurs
         Base l1, l2;
         
-        // Number of reads that span the fusion
+        // Number of reads that span the fusion (junction reads)
         Reads reads;
     };
 }

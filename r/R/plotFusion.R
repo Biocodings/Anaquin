@@ -70,17 +70,23 @@
 
 plotExpress.FusQuin <- function(data, title, xlab, ylab, showLOQ)
 {
-    .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
+    .plotExpress(data, title='Expected expression vs Measured expression',
+                 xlab='Expected expression (log2)',
+                 ylab='Measured expression (log2)')
 }
 
 plotExpress.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
 {
-    .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
+    .plotExpress(data, title='Expected expression vs Measured expression',
+                        xlab='Expected expression (log2)',
+                        ylab='Measured expression (log2)')
 }
 
 plotExpress.VarQuin <- function(data, title, xlab, ylab, showLOQ)
 {
-    .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
+    .plotExpress(data, title='Expected expression vs Measured expression',
+                        xlab='Expected expression (log2)',
+                        ylab='Measured expression (log2)')
 }
 
 plotExpress.TransQuin <- function(data, title, xlab, ylab, showLOQ)

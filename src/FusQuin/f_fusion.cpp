@@ -11,62 +11,33 @@ FFusion::Stats FFusion::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_fus;
     
     FFusion::Stats stats;
-    //stats.hist = r.fusionHist();
+    stats.hist = r.fusionHist();
 
-/*
-    FUSQuin::analyze<FExpress::Options>(file, o, [&](const FUSQuin::Match &match)
+    FUSQuin::analyze<FFusion::Options>(file, o, [&](const FUSQuin::Match &match)
     {
         switch (match.label)
         {
             case FUSQuin::Label::Positive:
             {
-                stats.n_chrT++;
+                const auto expected = r.match(match.known->id)->mixes.at(Mix_1);
+                const auto measured = match.query.reads;
+                
+                stats.add(match.known->id, expected, measured);
+                stats.hist.at(match.known->id)++;
+
                 break;
             }
-
-            case FUSQuin::Label::GenoChrT:
-            case FUSQuin::Label::Negative: { break; }
-
+                
             case FUSQuin::Label::Geno:
+            case FUSQuin::Label::GenoChrT:
+            case FUSQuin::Label::Negative:
             {
-                stats.n_geno++;
                 break;
             }
         }
     });
-*/
     
-    
-//    
-//    
-//    switch (o.caller)
-//    {
-//        case FusionCaller::StarFusion:
-//        {
-//            ParserSTab::parse(Reader(file), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
-//            {
-//                const SequinData *match;
-//                
-//                if ((match = r.findFusion(c.l)))
-//                {
-//                    const auto expected = match->mixes.at(Mix_1);
-//                    const auto measured = c.unique;
-//
-//                    stats.add(match->id, expected, measured);
-//                    //stats.hist.at(match->id)++;
-//                }
-//            });
-//
-//            break;
-//        }
-//
-//        case FusionCaller::TopHatFusion:
-//        {
-//            throw "TopHatFusion not supported in FFusion";
-//        }
-//    }
-
-    stats.absolute = r.absolute(stats.hist);
+    stats.limit = r.absolute(stats.hist);
 
     return stats;
 }
@@ -81,16 +52,16 @@ void FFusion::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
     
-    o.writer->open("FFusion_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rGeno, file, stats.hist, stats, stats, ""));
+    o.writer->open("FusFusion_summary.stats");
+    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats, stats.hist, "sequins"));
     o.writer->close();
 
     /*
      * Generating CSV for all fusions
      */
     
-    o.info("Generating FFusion_quins.stats");
-    o.writer->open("FFusion_quins.stats");
+    o.info("Generating FusFusion_quins.stats");
+    o.writer->open("FusFusion_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
@@ -98,8 +69,8 @@ void FFusion::report(const FileName &file, const Options &o)
      * Generating expression plot
      */
     
-    o.info("Generating FFusion_express.R");
-    o.writer->open("FFusion_express.R");
-    o.writer->write(RWriter::createScript("FFusion_quins.stats", PlotFFusion()));
+    o.info("Generating FusFusion_express.R");
+    o.writer->open("FusFusion_express.R");
+    o.writer->write(RWriter::createScript("FusFusion_quins.stats", PlotFFusion()));
     o.writer->close();
 }

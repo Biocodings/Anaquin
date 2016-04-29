@@ -33,12 +33,6 @@ FNormal::Stats FNormal::analyze(const FileName &file, const Options &o)
                     const auto expected = match->mixes.at(Mix_1);
                     const auto measured = c.unique;
                     
-                    if (match->id == "NG1_2_P2")
-                    {
-                        std::cout << c.l.start << " " << c.l.end << std::endl;
-                        stats = stats;
-                    }
-
                     stats.add(match->id, expected, measured);
                     stats.hist.at(match->id)++;
                 }

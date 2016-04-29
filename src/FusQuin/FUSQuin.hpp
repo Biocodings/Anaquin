@@ -107,7 +107,7 @@ namespace Anaquin
             o.info("Fuzzy level: " + std::to_string(o.fuzzy));
             o.info("Parsing alignment file");
 
-            switch (o.caller)
+            switch (o.soft)
             {
                 case StarFusion:
                 {

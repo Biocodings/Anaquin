@@ -1345,13 +1345,6 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_F_FUSION:
-                {                 
-                    addMix(std::bind(&Standard::addFMix,   &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1), OPT_R_FUS);
-                    break;
-                }
-
                 case TOOL_F_DIFF:
                 {
                     addMix(std::bind(&Standard::addFMix,     &s, std::placeholders::_1));
@@ -1366,10 +1359,16 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_F_DISCOVER:
+                case TOOL_F_FUSION:
                 {
                     applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
                     addMix(std::bind(&Standard::addFMix,   &s, std::placeholders::_1));
+                    break;
+                }
+                    
+                case TOOL_F_DISCOVER:
+                {
+                    applyRef(std::bind(&Standard::addFRef, &s, std::placeholders::_1));
                     break;
                 }
                     
@@ -1408,7 +1407,7 @@ void parse(int argc, char ** argv)
                 case TOOL_F_DISCOVER:
                 {
                     FDiscover::Options o;
-                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
+                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
 
                     analyzeFuzzy<FDiscover>(o);
                     break;
