@@ -574,10 +574,6 @@ void TransRef::addExon(const ChrID &cID, const GeneID &gID, const IsoformID &iID
     }
 }
 
-/*
- * ------------------------- Accessors for TransQuin -------------------------
- */
-
 Counts TransRef::countExons(const ChrID &cID) const
 {
     return _impl->data.at(cID).sortedExons.size();

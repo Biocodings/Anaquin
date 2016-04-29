@@ -40,7 +40,8 @@
 
 #include "FusQuin/f_diff.hpp"
 #include "FusQuin/f_viewer.hpp"
-#include "FusQuin/f_express.hpp"
+#include "FusQuin/f_parent.hpp"
+#include "FusQuin/f_fusion.hpp"
 #include "FusQuin/f_discover.hpp"
 #include "FusQuin/f_coverage.hpp"
 
@@ -75,18 +76,19 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALLELE    278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
-#define TOOL_M_EXPRESS     282
+#define TOOL_M_EXPRESS   282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
 #define TOOL_M_COVERAGE  286
-#define TOOL_L_EXPRESS     287
+#define TOOL_L_EXPRESS   287
 #define TOOL_L_DIFF      288
 #define TOOL_L_COVERAGE  289
 #define TOOL_F_DISCOVER  290
-#define TOOL_F_EXPRESS   291
-#define TOOL_F_IGV       292
-#define TOOL_F_COVERAGE  293
+#define TOOL_F_PARENT    291
+#define TOOL_F_FUSION    292
+#define TOOL_F_IGV       293
+#define TOOL_F_COVERAGE  294
 #define TOOL_F_DIFF      295
 #define TOOL_L_COPY      296
 #define TOOL_V_EXPRESS   297
@@ -96,9 +98,9 @@ typedef std::set<Value> Range;
 #define TOOL_M_REPORT    301
 #define TOOL_L_REPORT    302
 #define TOOL_F_REPORT    303
-#define TOOL_T_KDIFF     305
-#define TOOL_T_REPORT    306
-#define TOOL_V_KALLELE   307
+#define TOOL_T_KDIFF     304
+#define TOOL_T_REPORT    305
+#define TOOL_V_KALLELE   306
 
 /*
  * Options specified in the command line
@@ -209,12 +211,13 @@ static std::map<Value, Tool> _tools =
     { "LadCoverage", TOOL_L_COVERAGE  },
     { "LadReport",   TOOL_L_REPORT    },
 
-    { "FusDiscover", TOOL_F_DISCOVER  },
-    { "FusExpress",  TOOL_F_EXPRESS   },
-    { "FusIGV",      TOOL_F_IGV       },
-    { "FusCoverage", TOOL_F_COVERAGE  },
-    { "FusDiff",     TOOL_F_DIFF      },
-    { "FusReport",   TOOL_F_REPORT    },
+    { "FusDiscover", TOOL_F_DISCOVER },
+    { "FusParent",   TOOL_F_PARENT   },
+    { "FusFusion",   TOOL_F_FUSION   },
+    { "FusIGV",      TOOL_F_IGV      },
+    { "FusCoverage", TOOL_F_COVERAGE },
+    { "FusDiff",     TOOL_F_DIFF     },
+    { "FusReport",   TOOL_F_REPORT   },
 };
 
 static std::map<Tool, std::set<Option>> _required =
@@ -254,7 +257,8 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_F_DISCOVER, { OPT_R_BED, OPT_SOFT, OPT_U_FILES               } },
-    { TOOL_F_EXPRESS,  { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
+    { TOOL_F_PARENT,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
+    { TOOL_F_FUSION,   { OPT_R_BED, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES  } },
     { TOOL_F_COVERAGE, { OPT_R_BED, OPT_U_FILES                         } },
     { TOOL_F_DIFF,     { OPT_R_BED, OPT_R_FUS, OPT_MIXTURE, OPT_U_FILES } },
 
@@ -1312,7 +1316,8 @@ void parse(int argc, char ** argv)
 
         case TOOL_F_IGV:
         case TOOL_F_DIFF:
-        case TOOL_F_EXPRESS:
+        case TOOL_F_PARENT:
+        case TOOL_F_FUSION:
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
         {
@@ -1333,10 +1338,15 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_F_EXPRESS:
+                case TOOL_F_PARENT:
                 {
                     addMix(std::bind(&Standard::addFMix,      &s, std::placeholders::_1));
                     applyRef(std::bind(&Standard::addFSplice, &s, std::placeholders::_1), OPT_R_BED);
+                    break;
+                }
+
+                case TOOL_F_FUSION:
+                {                 
                     break;
                 }
 
@@ -1375,15 +1385,24 @@ void parse(int argc, char ** argv)
                 case TOOL_F_DIFF:     { analyze_2<FDiff>();                break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_U_FILES); break; }
 
-                case TOOL_F_EXPRESS:
+                case TOOL_F_PARENT:
                 {
-                    FExpress::Options o;
+                    FParent::Options o;
                     o.caller = parseAligner(_p.opts.at(OPT_SOFT));
 
-                    analyze_1<FExpress>(OPT_U_FILES, o);
+                    analyze_1<FParent>(OPT_U_FILES, o);
                     break;
                 }
 
+                case TOOL_F_FUSION:
+                {
+                    FFusion::Options o;
+                    o.caller = parseAligner(_p.opts.at(OPT_SOFT));
+                    
+                    analyze_1<FFusion>(OPT_U_FILES, o);
+                    break;
+                }
+                    
                 case TOOL_F_DISCOVER:
                 {
                     FDiscover::Options o;

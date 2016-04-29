@@ -107,28 +107,43 @@ static void writeSummary(const FileName &file, const FDiscover::Stats &stats, co
 static void writeQuery(const FileName &file, const ChrID &cID, const FDiscover::Stats &stats, const FDiscover::Options &o)
 {
     const auto &data  = stats.data.at(cID);
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
     o.writer->open(file);
     o.writer->write((boost::format(format) % "seq"
                                            % "label"
+                                           % "chr1"
+                                           % "chr2"
+                                           % "str1"
+                                           % "str2"
                                            % "pos1"
-                                           % "pos2").str());
+                                           % "pos2"
+                                           % "read").str());
 
     for (const auto &tp : data.tps)
     {
         o.writer->write((boost::format(format) % tp.known->id
                                                % "TP"
+                                               % tp.query.cID_1
+                                               % tp.query.cID_2
+                                               % tp.query.s1
+                                               % tp.query.s2
                                                % tp.query.l1
-                                               % tp.query.l2).str());
+                                               % tp.query.l2
+                                               % tp.query.reads).str());
     }
 
     for (const auto &fp : data.fps)
     {
         o.writer->write((boost::format(format) % "-"
                                                % "FP"
+                                               % fp.query.cID_1
+                                               % fp.query.cID_2
+                                               % fp.query.s1
+                                               % fp.query.s2
                                                % fp.query.l1
-                                               % fp.query.l2).str());
+                                               % fp.query.l2
+                                               % fp.query.reads).str());
     }
 }
 

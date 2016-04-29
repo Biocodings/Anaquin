@@ -1,17 +1,16 @@
-#include "FusQuin/f_express.hpp"
+#include "FusQuin/f_parent.hpp"
 #include "parsers/parser_stab.hpp"
-#include "parsers/parser_kallisto.hpp"
 
 using namespace Anaquin;
 
 // Defined resources.cpp
 extern Scripts PlotFExpress();
 
-FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
+FParent::Stats FParent::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_fus;
     
-    FExpress::Stats stats;
+    FParent::Stats stats;
     //stats.hist = r.fusionHist();
 
 /*
@@ -63,7 +62,7 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
 
         case FusionCaller::TopHatFusion:
         {
-            throw "TopHatFusion not supported in FusExpress";
+            throw "TopHatFusion not supported in FusParent";
         }
     }
 
@@ -72,9 +71,9 @@ FExpress::Stats FExpress::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-void FExpress::report(const FileName &file, const Options &o)
+void FParent::report(const FileName &file, const Options &o)
 {
-    const auto stats = FExpress::analyze(file, o);
+    const auto stats = FParent::analyze(file, o);
 
     o.info("Generating statistics");
     
@@ -82,7 +81,7 @@ void FExpress::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
     
-    o.writer->open("FusExpress_summary.stats");
+    o.writer->open("FusParent_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT, o.rGeno, file, stats.hist, stats, stats, ""));
     o.writer->close();
 
@@ -90,8 +89,8 @@ void FExpress::report(const FileName &file, const Options &o)
      * Generating CSV for all fusions
      */
     
-    o.info("Generating FusExpress_quins.stats");
-    o.writer->open("FusExpress_quins.stats");
+    o.info("Generating FusParent_quins.stats");
+    o.writer->open("FusParent_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
@@ -99,7 +98,7 @@ void FExpress::report(const FileName &file, const Options &o)
      * Generating expression plot
      */
     
-    o.writer->open("FusExpress_express.R");
-    o.writer->write(RWriter::createScript("FusExpress_quins.stats", PlotFExpress()));
+    o.writer->open("FusParent_express.R");
+    o.writer->write(RWriter::createScript("FusParent_quins.stats", PlotFExpress()));
     o.writer->close();
 }

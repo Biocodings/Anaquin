@@ -14,7 +14,7 @@ FCoverage::Stats FCoverage::stats(const FileName &file, const Options &o)
         {
             return r.match(align.l, MatchRule::Contains);
         }
-        
+
         return (const SequinData *) nullptr;
     });
 }

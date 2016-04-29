@@ -1,12 +1,12 @@
-#ifndef F_EXPRESS_HPP
-#define F_EXPRESS_HPP
+#ifndef F_FUSION_HPP
+#define F_FUSION_HPP
 
 #include "stats/analyzer.hpp"
 #include "FusQuin/FUSQuin.hpp"
 
 namespace Anaquin
 {
-    struct FExpress
+    struct FFusion
     {
         struct Options : public FuzzyOptions
         {
