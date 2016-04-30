@@ -15,6 +15,7 @@
  */
 
 #include "resources/plotFROC.R"
+#include "resources/plotFFold.R"
 #include "resources/plotFNormal.R"
 #include "resources/plotFFusion.R"
 
@@ -124,6 +125,11 @@ Scripts PlotFNormal()
 Scripts PlotFFusion()
 {
     return ToString(src_r_plotFFusion_R);
+}
+
+Scripts PlotFFold()
+{
+    return ToString(src_r_plotFFold_R);
 }
 
 /*

@@ -4,6 +4,7 @@
 #include "stats/analyzer.hpp"
 #include "parsers/parser_top_fusion.hpp"
 #include "parsers/parser_star_fusion.hpp"
+#include <boost/algorithm/string/replace.hpp>
 
 namespace Anaquin
 {
@@ -15,6 +16,16 @@ namespace Anaquin
 
     struct FUSQuin
     {
+        static SequinID normToFusion(const SequinID &id)
+        {
+            auto x = id;
+            
+            // Eg: NG1_1_P1 to FG1_1_P1
+            boost::replace_all(x, "NG", "FG");
+            
+            return x;
+        }
+
         enum Label
         {
             Geno     = -2,

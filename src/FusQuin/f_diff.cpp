@@ -6,105 +6,79 @@
 
 using namespace Anaquin;
 
+// Defined in resources.cpp
+extern Scripts PlotFFold();
+
 FDiff::Stats FDiff::analyze(const FileName &normal, const FileName &fusion, const Options &o)
 {
     FDiff::Stats stats;
     
+    stats.normal = FNormal::analyze(normal);
+    stats.fusion = FFusion::analyze(fusion);
+    
     const auto &r = Standard::instance().r_fus;
 
-    // Measured abundance for the normal genes
-    std::map<SequinID, Counts> normals;
-    
-    // Measured abundance for the fusion genes
-    std::map<SequinID, Counts> fusions;
-    
-    /*
-     * Parse normal junctions
-     */
-    
-    ParserSTab::parse(Reader(normal), [&](const ParserSTab::Chimeric &c, const ParserProgress &)
+    for (const auto &i : stats.normal)
     {
-        if (c.id == ChrT) { stats.n_chrT++; }
-        else              { stats.n_geno++; }
-
-        const SequinData *match;
-
-        if (c.id == ChrT && (match = r.findJunct(c.l)))
+        for (const auto &j : stats.fusion)
         {
-            normals[match->id] = c.unique;
-            //stats.chrT->h.at(match->id)++;
-        }
-    });
-
-    /*
-     * Parse chimeric junctions
-     */
-    
-    ParserStarFusion::parse(Reader(fusion), [&](const CalledFusion &f, const ParserProgress &)
-    {
-/*
-        const auto r = FClassify::classifyFusion(f, o);
-
-        switch (r.code)
-        {
-            case FUSQuin::Label::Genome:
-            case FUSQuin::Label::GenomeChrT: { stats.chrT->n_geno++; }
-            case FUSQuin::Label::Positive:
-            case FUSQuin::Label::Negative:   { stats.chrT->n_chrT++; }
-        }
-        
-        if (r.code == FUSQuin::Label::Positive)
-        {
-            fusions[r.match->id] = f.reads;
-            //stats.chrT->h.at(r.match->id)++;
-        }
-*/
-    });
-
-    o.info("Found " + std::to_string(normals.size()) + " introns");
-    o.info("Found " + std::to_string(fusions.size()) + " fusions");
-    
-    /*
-     * Compare the genes that are detected in both conditions.
-     */
-    
-    for (const auto &i : normals)
-    {
-        for (const auto &j : fusions)
-        {
-            if (r.normalToFusion(i.first) == j.first)
+            if (FUSQuin::normToFusion(i.first) == j.first)
             {
-//                // Either the normal ID or fusion ID can be used
-//                const auto expected = r.findSpliceChim(i.first);
-//                
-//                // Measured fold change between normal and fusion gene
-//                const auto measured = static_cast<double>(i.second) / j.second;
-//                
-//                stats.chrT->add(i.first + " - " + j.first, expected->fold(), measured);
+                // Exptected relative expression
+                const auto expected = r.findNormFus(i.first)->fold();
+                
+                // Measured relative expression
+                const auto measured = static_cast<double>(i.second.y) / j.second.y;
+  
+                stats.add(i.first + " - " + j.first, expected, measured);
             }
         }
     }
+    
+    stats.hist = stats.normal.hist;
+    stats.hist.insert(stats.fusion.hist.begin(), stats.fusion.hist.end());
 
-    //stats.chrT->ss = Standard::instance().r_fus.limit(stats.chrT->h);
-
+    if (stats.normal.limit.abund < stats.fusion.limit.abund)
+    {
+        stats.limit = stats.normal.limit;
+    }
+    else
+    {
+        stats.limit = stats.fusion.limit;
+    }
+    
     return stats;
 }
 
-void FDiff::report(const FileName &splice, const FileName &chim, const Options &o)
+void FDiff::report(const FileName &normal, const FileName &fusion, const Options &o)
 {
-    const auto stats = FDiff::analyze(splice, chim, o);
+    const auto stats = FDiff::analyze(normal, fusion, o);
 
     o.info("Generating statistics");
     
     /*
      * Generating summary statistics
      */
-
-    //AnalyzeReporter::linear("FusDiff_summary.stats", splice + " & " + chim, stats, "fusions", o.writer);
-
+    
+    o.writer->open("FusDiff_summary.stats");
+    o.writer->write(StatsWriter::linearSummary(normal + " & " + fusion, o.rChrT, stats, stats, stats.hist, "sequins"));
+    o.writer->close();
+    
     /*
-     * Generating scatter plot
+     * Generating CSV for all ratios
      */
     
-    //AnalyzeReporter::scatter(stats, "", "FusDiff", "Expected Fold", "Measured Fold", "Expected log2 fold change of mixture A and B", "Expected log2 fold change of mixture A and B", o.writer);
+    o.info("Generating FusDiff_quins.stats");
+    o.writer->open("FusDiff_quins.stats");
+    o.writer->write(StatsWriter::writeCSV(stats));
+    o.writer->close();
+    
+    /*
+     * Generating folding plot
+     */
+    
+    o.info("Generating FusDiff_fold.R");
+    o.writer->open("FusDiff_fold.R");
+    o.writer->write(RWriter::createScript("FusDiff_quins.stats", PlotFFold()));
+    o.writer->close();
 }

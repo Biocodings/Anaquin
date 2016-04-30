@@ -224,7 +224,7 @@ struct FusionRef::FusionRefImpl
     std::map<SequinID, SequinID> normToFus;
     std::map<SequinID, SequinID> fusToNorm;
 
-    std::map<SequinID, SpliceChimeric> spliceChim;
+    std::map<SequinID, NormalFusion> normFus;
 };
 
 FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
@@ -232,14 +232,9 @@ FusionRef::FusionRef() : _impl(new FusionRefImpl()) {}
 Counts FusionRef::countFusion() const { return _impl->knowns.size(); }
 Counts FusionRef::countJuncts() const { return _impl->juncts.size(); }
 
-const FusionRef::SpliceChimeric * FusionRef::findSpliceChim(const SequinID &id) const
+const FusionRef::NormalFusion * FusionRef::findNormFus(const SequinID &id) const
 {
-    return _impl->spliceChim.count(id) ? &_impl->spliceChim.at(id) : nullptr;
-}
-
-SequinID FusionRef::normalToFusion(const SequinID &id) const
-{
-    return _impl->normToFus.at(id);
+    return _impl->normFus.count(id) ? &_impl->normFus.at(id) : nullptr;
 }
 
 void FusionRef::addFusion(const KnownFusion &f)
@@ -352,21 +347,21 @@ void FusionRef::validate()
         }
         
         /*
-         * Constructing differential between normal and fusion genes
+         * Building differential between normal and fusion genes
          */
         
         for (const auto &i : _impl->normToFus)
         {
-            SpliceChimeric s;
+            NormalFusion d;
             
             const auto normal = match(i.first);
             const auto fusion = match(i.second);
 
-            s.normal = normal->abund(Mix_1);
-            s.fusion = fusion->abund(Mix_1);
+            d.normal = normal->abund(Mix_1);
+            d.fusion = fusion->abund(Mix_1);
             
-            _impl->spliceChim[i.first]  = s;
-            _impl->spliceChim[i.second] = s;
+            _impl->normFus[i.first]  = d;
+            _impl->normFus[i.second] = d;
         }
     }
 

@@ -9,7 +9,10 @@ namespace Anaquin
 {
     struct FDiff
     {
-        typedef FuzzyOptions Options;
+        struct Options : public FuzzyOptions
+        {
+            FusionCaller soft;
+        };
 
         struct Stats : public LinearStats, public FusionStats, public SequinStats
         {

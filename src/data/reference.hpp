@@ -435,10 +435,10 @@ namespace Anaquin
             };
 
             /*
-             * This class represents the concentration between normal and fusion gene
+             * Represents the concentration between normal and fusion gene
              */
 
-            struct SpliceChimeric
+            struct NormalFusion
             {
                 // Concentration for the normal splicing
                 Concent normal;
@@ -475,10 +475,7 @@ namespace Anaquin
             // Find a reference junction for the normal genes
             const SequinData *findJunct(const Locus &) const;
 
-            const SpliceChimeric *findSpliceChim(const SequinID &) const;
-
-            // Convert the normal gene to it's equivalent fusion (eg: NG1_1_P1 to FG1_1_P1)
-            SequinID normalToFusion(const SequinID &) const;
+            const NormalFusion *findNormFus(const SequinID &) const;
 
         protected:
         

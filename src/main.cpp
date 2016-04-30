@@ -1348,8 +1348,8 @@ void parse(int argc, char ** argv)
                 case TOOL_F_DIFF:
                 {
                     addMix(std::bind(&Standard::addFMix,     &s, std::placeholders::_1));
-                    applyRef(std::bind(&Standard::addFRef,   &s, std::placeholders::_1), OPT_R_FUS);
-                    applyRef(std::bind(&Standard::addFJunct, &s, std::placeholders::_1), OPT_R_BED);
+                    applyRef(std::bind(&Standard::addFRef,   &s, std::placeholders::_1), OPT_R_BED);
+                    applyRef(std::bind(&Standard::addFJunct, &s, std::placeholders::_1), OPT_R_FUS);
                     break;
                 }
 
@@ -1383,7 +1383,6 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_F_IGV:      { viewer<FViewer>();                 break; }
-                case TOOL_F_DIFF:     { analyze_2<FDiff>();                break; }
                 case TOOL_F_COVERAGE: { analyze_1<FCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_F_NORMAL:
@@ -1404,6 +1403,15 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
+                case TOOL_F_DIFF:
+                {
+                    FDiff::Options o;
+                    o.soft = parseAligner(_p.opts.at(OPT_SOFT));
+
+                    analyze_2<FDiff>();
+                    break;
+                }
+
                 case TOOL_F_DISCOVER:
                 {
                     FDiscover::Options o;
