@@ -194,6 +194,6 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
      */
     
     o.writer->open("FusDiscover_ROC.R");
-    //o.writer->write(RWriter::createScript("FusDiscover_query.stats", PlotFROC()));
+    o.writer->write(RWriter::createScript("FusDiscover_query.stats", PlotFROC()));
     o.writer->close();
 }

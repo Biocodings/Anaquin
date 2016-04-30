@@ -9,7 +9,6 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data$name <- paste(data$pos1, data$pos2)
-data <- FusQuin(seqs=data$name, expected=1, label=data$label, measured=data$reads)
+data <- FusQuin(seqs=paste(data$pos1, data$pos2), expected=1, label=data$label, measured=data$read)
  
 plotROC(data, title='ROC for FusQuin')

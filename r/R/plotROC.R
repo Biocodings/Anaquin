@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotROC <- function(data, title=NULL, refRatio=NULL, shouldPseuoLog=TRUE, shouldAUC=FALSE)
+.plotROC <- function(data, title=NULL, refRatio=NULL, shouldPseuoLog=TRUE, showAUC=FALSE, showGuide=TRUE)
 {
     require(ROCR)
     require(grid)
@@ -110,13 +110,18 @@
         p <- p + ggtitle(title)
     }
     
-    if (shouldAUC)
+    if (showAUC)
     {
         theme <- gridExtra::ttheme_default(core    = list(fg_params=list(cex = 0.7)),
                                            colhead = list(fg_params=list(cex = 1,0)),
                                            rowhead = list(fg_params=list(cex = 1.0)))
         g <- tableGrob(aucDat)
         p <- grid.arrange(p, g, ncol=1, heights=c(1.0,0.5))
+    }
+    
+    if (!showGuide)
+    {
+        p <- p + guides(colour=FALSE)
     }
 
     print(p)    
@@ -125,7 +130,7 @@
 plotROC.FusQuin <- function(data, title)
 {
     data$seqs$pval <- (max(data$seqs$measured) + 1) - data$seqs$measured
-    .plotROC(data, title=title, refRatio=0)
+    .plotROC(data, title=title, refRatio=0, showGuide=FALSE)
 }
 
 plotROC.VarQuin <- function(data, title)
