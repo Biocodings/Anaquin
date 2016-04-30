@@ -29,17 +29,29 @@ V_STAND = 'https://s3.amazonaws.com/anaquin/annotations/AVA017.v032.bed'
 # URL of the known variants
 V_VAR = 'https://s3.amazonaws.com/anaquin/annotations/AVA009.v032.vcf'
 
-# URL of the normal standard
-fusNStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
+#
+# FusQuin
+#
 
-# URL of the fusion standard
-fusFStand = 'https://s3.amazonaws.com/anaquin/annotations/????'
+F_CHR_T = 'https://s3.amazonaws.com/anaquin/chromosomes/CTR001.v021.fa'
+
+F_STAND = 'https://s3.amazonaws.com/anaquin/annotations/AFU005.v032.bed'
+
+# URL of the normal standard
+F_NORMAL = 'https://s3.amazonaws.com/anaquin/annotations/AFU006.v032.bed'
+
+# URL of the fusion breakpoints
+F_FUSION = 'https://s3.amazonaws.com/anaquin/annotations/AFU004.v032.bed'
+
+#
+# MetaQuin
+#
 
 # URL of the synthetic metagenomic community
-commAmazon = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
+M_CHR_T = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
 
 # URL of the metagenomic standard
-mStandAmazon = 'https://s3.amazonaws.com/anaquin/annotations/AME015.v032.bed'
+M_STAND = 'https://s3.amazonaws.com/anaquin/annotations/AME015.v032.bed'
 
 #
 # Default template for generating a IGV session. We always show a in-silico chromosome, and it's assumed have a file name of chrT.fa.
@@ -207,20 +219,20 @@ def generateTrans(path, align, chrT=T_CHR_T, stand=T_STAND):
     session(path, align, download(path, [ chrT, stand ]))
 
 #
+# Generate an IGV session for fusion analysis
+#
+
+def generateFusion(path, align, chrT=F_CHR_T, stand=F_STAND, normal=F_NORMAL, fusion=F_FUSION):
+    align = index(path, align)
+    session(path, align, download(path, [ chrT, stand, normal, fusion ]))
+
+#
 # Generate an IGV session for variant analysis
 #
 
 def generateVar(path, align, chrT=V_CHR_T, stand=V_STAND, variant=V_VAR):
     align = index(path, align)
     session(path, align, download(path, [ chrT, stand, variant ]))
-
-#
-# Generate an IGV session for fusion analysis
-#
-
-def generateFusion(path, align, chrT=None, stand=None):
-    align = index(path, align)
-    session(path, align, download(path, [ chrTFA, transStand, fusNStand, fusFStand ]))
 
 #
 # Generate an IGV session for metagenomic analysis
