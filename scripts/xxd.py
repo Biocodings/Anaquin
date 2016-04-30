@@ -23,6 +23,7 @@ data  = [ 'data/manual.txt',
           'src/r/plotFROC.R',
           'src/r/plotFNormal.R',
 	  'src/r/plotFFusion.R',
+	  'src/r/plotFFold.R',
 
           'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',
