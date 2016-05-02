@@ -440,7 +440,7 @@ static void printUsage()
 
 static void printVersion()
 {
-    std::cout << "Anaquin v1.1.1" << std::endl;
+    std::cout << "v1.1.1" << std::endl;
 }
 
 // Print a file of mixture A and B
