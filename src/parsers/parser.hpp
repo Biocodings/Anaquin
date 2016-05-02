@@ -20,17 +20,18 @@ namespace Anaquin
         const std::string file;
     };
     
-    struct Parser
+    template <typename F> void protectParse(const std::string &msg, F f)
     {
-        
-        protected:
-        
-//            virtual
-        
-        //        static void parse(const FileName &file, Functor);
-        
-        //        static void parse(const std::string &, std::function<void (const TMap &, const ParserProgress &)>);
-    };
+        try
+        {
+            f();
+        }
+        catch (...)
+        {
+            throw std::runtime_error("Invalid file, expected " + msg + ". Please check and try again.");
+        }
+    }
+    
 }
 
 #endif

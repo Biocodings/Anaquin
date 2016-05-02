@@ -30,40 +30,43 @@ namespace Anaquin
 
         static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
         {
-            Data d;
-            ParserProgress p;
-            
-            std::vector<std::string> sizes, starts, tokens;
-            
-            while (r.nextTokens(tokens, "\t"))
+            protectParse("BED", [&]()
             {
-                // Empty line?
-                if (tokens.size() == 1)
+                Data d;
+                ParserProgress p;
+                
+                std::vector<std::string> sizes, starts, tokens;
+                
+                while (r.nextTokens(tokens, "\t"))
                 {
-                    return;
+                    // Empty line?
+                    if (tokens.size() == 1)
+                    {
+                        return;
+                    }
+                    
+                    // Name of the chromosome
+                    d.cID = tokens[0];
+                    
+                    // Position of the feature in standard chromosomal coordinates
+                    d.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
+                    
+                    if (tokens.size() >= 6)
+                    {
+                        // Defines the strand, either '+' or '-'
+                        d.strand = tokens[5] == "+" ? Forward : Backward;
+                    }
+                    
+                    if (tokens.size() >= 4)
+                    {
+                        // Name of the BED line (eg: gene)
+                        d.id = tokens[3];
+                    }
+                    
+                    f(d, p);
+                    p.i++;
                 }
-                
-                // Name of the chromosome
-                d.cID = tokens[0];
-                
-                // Position of the feature in standard chromosomal coordinates
-                d.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
-                
-                if (tokens.size() >= 6)
-                {
-                    // Defines the strand, either '+' or '-'
-                    d.strand = tokens[5] == "+" ? Forward : Backward;
-                }
-                
-                if (tokens.size() >= 4)
-                {
-                    // Name of the BED line (eg: gene)
-                    d.id = tokens[3];
-                }
-
-                f(d, p);
-                p.i++;
-            }            
+            });
         }
     };
 }
