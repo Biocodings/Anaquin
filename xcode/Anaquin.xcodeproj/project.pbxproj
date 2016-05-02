@@ -243,6 +243,7 @@
 		EF6B01D01C60975000D82709 /* t_parser_varscan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_varscan.cpp; path = ../tests/parsers/t_parser_varscan.cpp; sourceTree = "<group>"; };
 		EF6D05F01BD3E5DF0048044F /* sampling.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = sampling.hpp; path = ../src/tools/sampling.hpp; sourceTree = "<group>"; };
 		EF6D05F21BD3E6040048044F /* sampling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sampling.cpp; path = ../tests/tools/sampling.cpp; sourceTree = "<group>"; };
+		EF6EC8031CD76D0400B4CABC /* pdf_writer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = pdf_writer.hpp; path = ../src/writers/pdf_writer.hpp; sourceTree = "<group>"; };
 		EF708C1B1C4C3BFB00039DE4 /* parser_HTSeqCount.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_HTSeqCount.hpp; path = ../src/parsers/parser_HTSeqCount.hpp; sourceTree = "<group>"; };
 		EF708C1C1C4C3DDF00039DE4 /* t_parser_HTSeqCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_HTSeqCount.cpp; path = ../tests/parsers/t_parser_HTSeqCount.cpp; sourceTree = "<group>"; };
 		EF7278101CACD9400012648F /* v_kexpress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_kexpress.cpp; path = ../src/VarQuin/v_kexpress.cpp; sourceTree = "<group>"; };
@@ -830,6 +831,7 @@
 			children = (
 				EF76C91A1ADBD59F003D45F9 /* file_writer.hpp */,
 				EF76C91D1ADBD59F003D45F9 /* mock_writer.hpp */,
+				EF6EC8031CD76D0400B4CABC /* pdf_writer.hpp */,
 				EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */,
 				EF5180E41AE09A56007010F3 /* r_writer.hpp */,
 				EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */,
