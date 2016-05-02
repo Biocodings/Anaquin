@@ -1,5 +1,6 @@
 #include "FusQuin/FUSQuin.hpp"
 #include "FusQuin/f_discover.hpp"
+#include "writers/pdf_writer.hpp"
 
 using namespace Anaquin;
 
@@ -102,6 +103,7 @@ static void writeSummary(const FileName &file, const FDiscover::Stats &stats, co
                                             % stats.sn(ChrT)
                                             % stats.pc(ChrT)).str());
     o.writer->close();
+    o.report->addFile(file);
 }
 
 static void writeQuery(const FileName &file, const ChrID &cID, const FDiscover::Stats &stats, const FDiscover::Options &o)
@@ -145,6 +147,8 @@ static void writeQuery(const FileName &file, const ChrID &cID, const FDiscover::
                                                % fp.query.l2
                                                % fp.query.reads).str());
     }
+    
+    o.report->addFile(file);
 }
 
 static void writeQuins(const FileName &file, const FDiscover::Stats &stats, const FDiscover::Options &o)
@@ -163,6 +167,7 @@ static void writeQuins(const FileName &file, const FDiscover::Stats &stats, cons
     }
     
     o.writer->close();
+    o.report->addFile(file);
 }
 
 void FDiscover::report(const FileName &file, const FDiscover::Options &o)
@@ -170,6 +175,9 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
     const auto stats = analyze(file, o);
 
     o.info("Generating statistics");
+
+    o.report->open("FusDiscover_report.pdf");
+    o.report->addTitle("FusDiscover_report");
     
     /*
      * Generating summary statistics
@@ -196,4 +204,5 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
     o.writer->open("FusDiscover_ROC.R");
     o.writer->write(RWriter::createScript("FusDiscover_query.stats", PlotFROC()));
     o.writer->close();
+    o.report->addFile("FusDiscover_ROC.R", "FusDiscover_ROC.R");
 }

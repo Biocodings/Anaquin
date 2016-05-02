@@ -19,6 +19,18 @@ namespace Anaquin
 
         const std::string file;
     };
+    
+    struct Parser
+    {
+        
+        protected:
+        
+//            virtual
+        
+        //        static void parse(const FileName &file, Functor);
+        
+        //        static void parse(const std::string &, std::function<void (const TMap &, const ParserProgress &)>);
+    };
 }
 
 #endif

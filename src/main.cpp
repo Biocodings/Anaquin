@@ -49,6 +49,7 @@
 #include "parsers/parser_sequins.hpp"
 #include "parsers/parser_cufflink.hpp"
 
+#include "writers/pdf_writer.hpp"
 #include "writers/file_writer.hpp"
 #include "writers/terminal_writer.hpp"
 
@@ -119,12 +120,12 @@ typedef std::set<Value> Range;
 
 #define OPT_R_BASE  800
 #define OPT_R_BED   801
-#define OPT_R_GTF 803
+#define OPT_R_GTF   803
 #define OPT_R_FUS   804
 #define OPT_R_VCF   805
 #define OPT_MIXTURE 806
 #define OPT_FUZZY   807
-#define OPT_R_ENDO  808
+#define OPT_R_GENO  808
 #define OPT_R_IND   809
 #define OPT_U_BASE  900
 
@@ -134,6 +135,7 @@ typedef std::set<Value> Range;
 #define OPT_U_COV   908
 #define OPT_U_FILES 909
 #define OPT_C_FILES 910
+#define OPT_REPORT  911
 
 using namespace Anaquin;
 
@@ -270,7 +272,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT,    OPT_U_FILES           } },
     { TOOL_V_REPORT,    { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_ENDO,  OPT_U_FILES           } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_GENO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_KEXPRESS,  { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
@@ -305,21 +307,15 @@ struct Parsing
     // Signifcance level
     Probability sign;
     
-    // Minmium concentration
-    double min = 0;
-    
-    // Maximum concentration
-    double max = std::numeric_limits<double>::max();
-
-    // Limit of detection
-    double limit;
-    
     // How Anaquin is invoked
     std::string command;
 
     unsigned fuzzy = 0;
     
     Tool tool = 0;
+    
+    // Generate a PDF report?
+    bool pdf = false;
 };
 
 // Wrap the variables so that it'll be easier to reset them
@@ -396,7 +392,7 @@ static const struct option long_options[] =
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "rmix",    required_argument, 0, OPT_MIXTURE },
 
-    { "rgen",    required_argument, 0, OPT_R_ENDO  },
+    { "rgen",    required_argument, 0, OPT_R_GENO  },
     { "rbed",    required_argument, 0, OPT_R_BED   },
     { "rgtf",    required_argument, 0, OPT_R_GTF   },
     { "rvcf",    required_argument, 0, OPT_R_VCF   },
@@ -416,6 +412,8 @@ static const struct option long_options[] =
     { "soft",    required_argument, 0, OPT_SOFT   },
     { "csoft",   required_argument, 0, OPT_C_SOFT },
 
+    { "report",  required_argument, 0, OPT_REPORT },
+    
     {0, 0, 0, 0 }
 };
 
@@ -558,7 +556,7 @@ template <typename Reference> void addRef(Reference ref)
                     continue;
                 }
                     
-                case OPT_R_ENDO:
+                case OPT_R_GENO:
                 {
                     addRef(Geno, ref, _p.opts[opt]);
                     break;
@@ -628,6 +626,7 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.logger->open("anaquin.log");
 #endif
 
+    o.report = std::shared_ptr<PDFWriter>(new PDFWriter());
     o.work = path;
     
     auto t  = std::time(nullptr);
@@ -652,7 +651,12 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
 #ifndef DEBUG
     o.logger->close();
 #endif
-    
+
+    if (_p.pdf)
+    {
+        o.report->create(o.work);
+    }
+
     // Always save the reference files
     saveRef();
 }
@@ -962,6 +966,20 @@ void parse(int argc, char ** argv)
                 _p.tool = _tools.at(val);
                 break;
             }
+            
+            case OPT_REPORT:
+            {
+                if (val == "pdf")
+                {
+                    _p.pdf = true;
+                }
+                else
+                {
+                    throw InvalidValueException("-report", val);
+                }
+
+                break;
+            }
 
             case OPT_FUZZY: { parseInt(val, _p.fuzzy); break; }
 
@@ -1018,7 +1036,7 @@ void parse(int argc, char ** argv)
                 break;
             }
                 
-            case OPT_R_ENDO:
+            case OPT_R_GENO:
             {
                 checkFile(_p.opts[opt] = _p.rGeno = val);
                 break;
@@ -1482,7 +1500,7 @@ void parse(int argc, char ** argv)
                     case TOOL_V_SUBSAMPLE:
                     {
                         applyRef(std::bind(&Standard::addStd,    &s, std::placeholders::_1), OPT_R_BED);
-                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_ENDO);
+                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_GENO);
                         break;
                     }
 
@@ -1490,7 +1508,7 @@ void parse(int argc, char ** argv)
                     case TOOL_V_COVERAGE:
                     {
                         applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1),    OPT_R_BED);
-                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_ENDO);
+                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_GENO);
                         break;
                     }
 
