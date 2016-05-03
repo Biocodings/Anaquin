@@ -46,7 +46,6 @@
 #include "FusQuin/f_coverage.hpp"
 
 #include "parsers/parser_cdiff.hpp"
-#include "parsers/parser_sequins.hpp"
 #include "parsers/parser_cufflink.hpp"
 
 #include "writers/pdf_writer.hpp"
@@ -249,7 +248,7 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_M_IGV,      { OPT_U_FILES                                              } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_PSL, OPT_U_FILES, OPT_SOFT              } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT              } },
     { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_PSL, OPT_U_FILES, OPT_SOFT              } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                   } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
@@ -1599,8 +1598,9 @@ void parse(int argc, char ** argv)
             {
                 const static std::map<std::string, MAssembly::Software> m =
                 {
-                    { "velvet"  , MAssembly::Velvet  },
-                    { "raymeta",  MAssembly::RayMeta },
+                    { "velvet"  , MAssembly::Velvet    },
+                    { "raymeta",  MAssembly::RayMeta   },
+                    { "quast",    MAssembly::MetaQuast },
                 };
                 
                 return parseEnum("soft", str, m);
@@ -1621,12 +1621,18 @@ void parse(int argc, char ** argv)
 
                     default: { break; }
                 }
-
-                if (_p.tool == TOOL_M_EXPRESS || _p.tool == TOOL_M_DIFF)
-                {
-                    addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
-                }
                 
+                switch (_p.tool)
+                {
+                    case TOOL_M_ASSEMBLY:
+                    case TOOL_M_EXPRESS:
+                    case TOOL_M_DIFF:
+                    {
+                        addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
+                        break;
+                    }
+                }
+
                 Standard::instance().r_meta.finalize();
             }
 
@@ -1675,7 +1681,7 @@ void parse(int argc, char ** argv)
                             o.contigs = conts;
                             
                             // An alignment file is needed to identify contigs
-                            o.psl = _p.opts.at(OPT_PSL);
+                            //o.psl = _p.opts.at(OPT_PSL);
                             
                             analyze_1<MAssembly>(OPT_U_FILES, o);
                             break;

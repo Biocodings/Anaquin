@@ -312,7 +312,7 @@ void VAlign::report(const FileName &file, const Options &o)
     for (const auto &i : stats.data.at(ChrT).hist)
     {        
         o.writer->write((boost::format(format) % i.first
-                                               % r.findBase(i.first)->abund()
+                                               % r.findBase(i.first)->concent()
                                                % stats.sn(ChrT, i.first)).str());
     }
     

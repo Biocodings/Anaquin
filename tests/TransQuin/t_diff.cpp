@@ -80,7 +80,7 @@ TEST_CASE("TDiff_AllExpressed")
         test.q = 0.005;
 
         // Expected log-fold
-        test.logF = log2(s.findGene(ChrT, gID)->abund(Mix_2) / s.findGene(ChrT, gID)->abund(Mix_1));
+        test.logF = log2(s.findGene(ChrT, gID)->concent(Mix_2) / s.findGene(ChrT, gID)->concent(Mix_1));
         
         tests.push_back(test);
     }
@@ -124,7 +124,7 @@ TEST_CASE("TDiff_NoneExpressed")
         test.q = 0.99;
         
         // Expected log-fold
-        test.logF = log2(s.findGene(ChrT, gID)->abund(Mix_2) / s.findGene(ChrT, gID)->abund(Mix_1));
+        test.logF = log2(s.findGene(ChrT, gID)->concent(Mix_2) / s.findGene(ChrT, gID)->concent(Mix_1));
         
         tests.push_back(test);
     }

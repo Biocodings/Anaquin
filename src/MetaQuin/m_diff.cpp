@@ -91,7 +91,7 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
             if (y2.at(align->id()) && y1.at(align->id()))
             {
                 // Known concentration
-                const auto known = align->seq->abund(Mix_2, false) / align->seq->abund(Mix_1, false);
+                const auto known = align->seq->concent(Mix_2, false) / align->seq->concent(Mix_1, false);
                 
                 // Ratio of the marginal concentration
                 const auto measured = y2.at(align->id()) / y1.at(align->id());
@@ -101,8 +101,8 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
                 SequinDiff d;
                 
                 d.id    = align->id();
-                d.e1    = align->seq->abund(Mix_1, false);
-                d.e2    = align->seq->abund(Mix_2, false);
+                d.e1    = align->seq->concent(Mix_1, false);
+                d.e2    = align->seq->concent(Mix_2, false);
                 d.m1    = y1.at(align->id());
                 d.m2    = y2.at(align->id());
                 d.eFold = known;

@@ -38,7 +38,7 @@ namespace Anaquin
                 stats.hist.at(id)++;
                 
                 // Known concentration
-                const auto known = align.seq->abund(Mix_1, false);
+                const auto known = align.seq->concent(Mix_1, false);
                 
                 /*
                  * Measure concentration for this MetaQuin. Average out the coverage for each aligned contig.

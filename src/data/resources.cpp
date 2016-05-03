@@ -57,7 +57,7 @@
 
 #include "resources/plotMFold.R"
 #include "resources/plotMExpress.R"
-#include "resources/plotMFraction.R"
+#include "resources/plotMSigmoid.R"
 
 #include "resources/MME023.v013.csv"
 #include "resources/AME015.v032.bed"
@@ -105,6 +105,11 @@ Scripts Manual()
 Scripts PlotFROC()
 {
     return ToString(src_r_plotFROC_R);
+}
+
+Scripts PlotMSigmoid()
+{
+    return ToString(src_r_plotMSigmoid_R);
 }
 
 Scripts FusionDataMixA()
@@ -159,11 +164,6 @@ Scripts LadderDataMixAB()
 /*
  * Metagenomics Resources
  */
-
-Scripts PlotMFraction()
-{
-    return ToString(src_r_plotMFraction_R);
-}
 
 Scripts PlotMExpress()
 {

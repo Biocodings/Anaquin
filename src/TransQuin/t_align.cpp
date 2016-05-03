@@ -705,7 +705,7 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
         if (mi.lNR)
         {
             o.writer->write((boost::format(format) % i.first
-                                                   % r.findGene(ChrT, i.first)->abund(Mix_1)
+                                                   % r.findGene(ChrT, i.first)->concent(Mix_1)
                                                    % covered
                                                    % me.sn()
                                                    % me.pc()
@@ -717,7 +717,7 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
         else
         {
             o.writer->write((boost::format(format) % i.first
-                                                   % r.findGene(ChrT, i.first)->abund(Mix_1)
+                                                   % r.findGene(ChrT, i.first)->concent(Mix_1)
                                                    % covered
                                                    % me.sn()
                                                    % me.pc()

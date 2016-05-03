@@ -68,10 +68,10 @@ MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options 
          * concentration while still detectable in the experiment.
          */
 
-        if (stats.limit.id.empty() || align->seq->abund(Mix_1, false) < stats.limit.abund)
+        if (stats.limit.id.empty() || align->seq->concent(Mix_1, false) < stats.limit.abund)
         {
             stats.limit.id     = align->seq->id;
-            stats.limit.abund  = align->seq->abund(Mix_1, false);
+            stats.limit.abund  = align->seq->concent(Mix_1, false);
             stats.limit.counts = align->contigs.size();
         }
         

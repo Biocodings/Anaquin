@@ -26,7 +26,7 @@ namespace Anaquin
 
     struct DAsssembly
     {
-        template <typename T> struct Stats : public MappingStats
+        template <typename T> struct Stats : public MappingStats, public LinearStats
         {
             Base mean, min, max;
             Base N20, N50, N80;

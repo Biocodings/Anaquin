@@ -15,6 +15,7 @@ namespace Anaquin
         {
             Velvet,
             RayMeta,
+            MetaQuast,
         };
 
         struct Stats : public DAsssembly::Stats<Contig>

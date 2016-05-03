@@ -115,9 +115,9 @@ struct LadderRef::LadderRefImpl
     {
         const SequinData *A, *B, *C, *D;
         
-        inline Concent abund(Mixture m) const
+        inline Concent concent(Mixture m) const
         {
-            return A->abund(m) + B->abund(m) + C->abund(m) + D->abund(m);
+            return A->concent(m) + B->concent(m) + C->concent(m) + D->concent(m);
         }
     };
 
@@ -188,12 +188,12 @@ void LadderRef::validate()
     assert(!_impl->joined.empty());
 }
 
-void LadderRef::abund(const LadderRef::JoinID &id, Concent &a, Concent &b, Concent &c, Concent &d, Mixture m) const
+void LadderRef::concent(const LadderRef::JoinID &id, Concent &a, Concent &b, Concent &c, Concent &d, Mixture m) const
 {
-    a = _impl->joined.at(id).A->abund(m);
-    b = _impl->joined.at(id).A->abund(m);
-    c = _impl->joined.at(id).A->abund(m);
-    d = _impl->joined.at(id).A->abund(m);
+    a = _impl->joined.at(id).A->concent(m);
+    b = _impl->joined.at(id).A->concent(m);
+    c = _impl->joined.at(id).A->concent(m);
+    d = _impl->joined.at(id).A->concent(m);
 }
 
 /*
@@ -357,8 +357,8 @@ void FusionRef::validate()
             const auto normal = match(i.first);
             const auto fusion = match(i.second);
 
-            d.normal = normal->abund(Mix_1);
-            d.fusion = fusion->abund(Mix_1);
+            d.normal = normal->concent(Mix_1);
+            d.fusion = fusion->concent(Mix_1);
             
             _impl->normFus[i.first]  = d;
             _impl->normFus[i.second] = d;

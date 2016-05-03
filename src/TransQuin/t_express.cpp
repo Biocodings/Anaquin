@@ -50,7 +50,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                     
                     if (t.abund)
                     {
-                        stats.add(t.id, m->abund(Mix_1), t.abund);
+                        stats.add(t.id, m->concent(Mix_1), t.abund);
                     }
                 }
                 
@@ -76,7 +76,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                     
                     if (t.abund)
                     {
-                        stats.add(t.id, m->abund(Mix_1), t.abund);
+                        stats.add(t.id, m->concent(Mix_1), t.abund);
                     }
                 }
                 else

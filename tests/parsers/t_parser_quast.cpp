@@ -16,7 +16,6 @@ TEST_CASE("ParserQuast_Test")
     REQUIRE(x[0].id      == "MG_29");
     REQUIRE(x[0].total   == 2974);
     REQUIRE(x[0].covered == 0);
-
     REQUIRE(x[1].id      == "M3_G");
     REQUIRE(x[1].total   == 1824);
     REQUIRE(x[1].covered == 1793);

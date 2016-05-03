@@ -1,25 +1,29 @@
 #include "MetaQuin/m_blat.hpp"
 #include "parsers/parser_tsv.hpp"
 #include "MetaQuin/m_assembly.hpp"
+#include "parsers/parser_quast.hpp"
 
 using namespace Anaquin;
 
+// Defined in resources.cpp
+extern Scripts PlotMSigmoid();
+
 MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 {
-    MAssembly::Stats stats;
+    const auto &r = Standard::instance().r_meta;
 
-    assert(!o.psl.empty());
+    MAssembly::Stats stats;
 
     /*
      * Generate statistics for the alignment
      */
     
-    o.analyze(o.psl);
+    //o.analyze(o.psl);
     
     // Analyse the alignment file
-    const auto t = MBlat::analyze(o.psl);
+    //const auto t = MBlat::analyze(o.psl);
  
-    o.info("Found: " + std::to_string(t.aligns.size()) + " in " + o.psl);
+    //o.info("Found: " + std::to_string(t.aligns.size()) + " in " + o.psl);
     
     /*
      * Generate statistics for the assembler
@@ -29,11 +33,26 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
     switch (o.soft)
     {
-        case Velvet:  { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
-        case RayMeta: { stats = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
+        //case Velvet:  { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
+        //case RayMeta: { stats = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
+
+        case MetaQuast:
+        {
+            ParserQuast::parseGenomeInfo(Reader(file), [&](const ParserQuast::GenomeData &x, const ParserProgress &)
+            {
+                const auto match = r.match(x.id);
+
+                if (match)
+                {
+                    stats.add(match->id, match->concent(Mix_1), static_cast<Proportion>(x.covered) / x.total);
+                }
+            });
+
+            break;
+        }
     }
     
-    stats.blat = t;
+    //stats.blat = t;
 
     return stats;
 }
@@ -101,9 +120,27 @@ void MAssembly::report(const FileName &file, const Options &o)
 
     o.info("Generating MetaAssembly_summary.stats");
     o.writer->open("MetaAssembly_summary.stats");
-    o.writer->write(generateSummary("MetaAssembly_summary.stats", stats, o));
+    //o.writer->write(generateSummary("MetaAssembly_summary.stats", stats, o));
     o.writer->close();
     
+    /*
+     * Generating detailed statistics for the sequins
+     */
+    
+    o.info("Generating MetaAssembly_quins.stats");
+    o.writer->open("MetaAssembly_quins.stats");
+    o.writer->write(StatsWriter::writeCSV(stats));
+    o.writer->close();
+
+    /*
+     * Generating limit of assembly (LOA)
+     */
+    
+    o.info("Generating MetaAssembly_assembly.R");
+    o.writer->open("MetaAssembly_assembly.R");
+    o.writer->write(RWriter::createScript("MetaAssembly_quins.stats", PlotMSigmoid()));
+    o.writer->close();
+
     /*
      * Generating detailed statistics for each contig
      */
@@ -129,32 +166,32 @@ void MAssembly::report(const FileName &file, const Options &o)
      */
 
     {
-        o.logInfo("Generating MetaAssembly_quins.stats");
-        o.writer->open("MetaAssembly_quins.stats");
-        
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
-
-        o.writer->write((boost::format(format) % "sequin"
-                                               % "contig"
-                                               % "covered"
-                                               % "match"
-                                               % "mismatch"
-                                               % "tgap"
-                                               % "qgap").str());
-
-        for (const auto &i : stats.blat.metas)
-        {
-            const auto &align = i.second;
-            
-            o.writer->write((boost::format(format) % align->seq->id
-                                                   % align->contigs.size()
-                                                   % align->covered
-                                                   % align->oMatch
-                                                   % align->oMismatch
-                                                   % align->oRGaps
-                                                   % align->oQGaps).str());
-        }
-        
-        o.writer->close();
+//        o.logInfo("Generating MetaAssembly_quins.stats");
+//        o.writer->open("MetaAssembly_quins.stats");
+//        
+//        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+//
+//        o.writer->write((boost::format(format) % "sequin"
+//                                               % "contig"
+//                                               % "covered"
+//                                               % "match"
+//                                               % "mismatch"
+//                                               % "tgap"
+//                                               % "qgap").str());
+//
+//        for (const auto &i : stats.blat.metas)
+//        {
+//            const auto &align = i.second;
+//            
+//            o.writer->write((boost::format(format) % align->seq->id
+//                                                   % align->contigs.size()
+//                                                   % align->covered
+//                                                   % align->oMatch
+//                                                   % align->oMismatch
+//                                                   % align->oRGaps
+//                                                   % align->oQGaps).str());
+//        }
+//        
+//        o.writer->close();
     }
 }

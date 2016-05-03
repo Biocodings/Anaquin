@@ -66,7 +66,7 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
                     stats.hist.at(id)++;
 
                     // Calculate the known fold-change between B and A
-                    known = match->abund(Mix_2) / match->abund(Mix_1);
+                    known = match->concent(Mix_2) / match->concent(Mix_1);
                     
                     // This is not on the log scale, so it can't be zero...
                     assert(known);
@@ -95,7 +95,7 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
                     stats.hist.at(id)++;
 
                     // Known fold-change between the two mixtures
-                    known = match->abund(Mix_2) / match->abund(Mix_1);
+                    known = match->concent(Mix_2) / match->concent(Mix_1);
                     
                     // Measured fold-change between the two mixtures
                     measured = t.logF;

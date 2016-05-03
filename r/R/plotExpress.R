@@ -99,5 +99,5 @@ plotExpress <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
     if (class(data) == 'TransQuin') { plotExpress.TransQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }
     if (class(data) == 'VarQuin')   { plotExpress.VarQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)   }
     if (class(data) == 'MetaQuin')  { plotExpress.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)  }
-    if (class(data) == 'FusQuin')   { plotExpress.FusQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=FALSE)     }    
+    if (class(data) == 'FusQuin')   { plotExpress.FusQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=FALSE)     }
 }

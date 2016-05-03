@@ -68,7 +68,7 @@ LExpress::Stats LExpress::analyze(const FileName &file, const Options &o)
 
     for (const auto &seqID : seqIDs)
     {
-        stats.data.expTotal += r.match(seqID)->abund(o.mix);
+        stats.data.expTotal += r.match(seqID)->concent(o.mix);
     }
 
     if (!stats.data.expTotal)
@@ -109,10 +109,10 @@ LExpress::Stats LExpress::analyze(const FileName &file, const Options &o)
         const auto normalize = create(COUNT(A), COUNT(B), COUNT(C), COUNT(D), 1.0, stats.data.obsTotal);
 
         // Create a vector for normalized expected coverage
-        const auto expect = create(r.match(A)->abund(o.mix),
-                                   r.match(B)->abund(o.mix),
-                                   r.match(C)->abund(o.mix),
-                                   r.match(D)->abund(o.mix), 1.0, stats.data.expTotal);
+        const auto expect = create(r.match(A)->concent(o.mix),
+                                   r.match(B)->concent(o.mix),
+                                   r.match(C)->concent(o.mix),
+                                   r.match(D)->concent(o.mix), 1.0, stats.data.expTotal);
 
         assert(SS::sum(expect));
         

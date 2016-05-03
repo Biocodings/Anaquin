@@ -24,8 +24,7 @@ namespace Anaquin
     };
 
     /*
-     * Generic template for a sequin. The definitions are appropriate for all sequins. Specalized
-     * sequins are expected to derive from this class.
+     * Generic template for a sequin. Specalized definitions expected to derive from this class.
      */
     
     struct SequinData : public Matched
@@ -33,8 +32,8 @@ namespace Anaquin
         inline bool operator<(const SequinID &x)  const { return this->id < x;  }
         inline bool operator==(const SequinID &x) const { return this->id == x; }
 
-        // Return the abundance for this sequin specified by the mixture        
-        inline Concent abund(Mixture m, bool norm = false) const
+        // Input concentration
+        inline Concent concent(Mixture m = Mix_1, bool norm = false) const
         {
             return mixes.at(m) / (norm ? l.length() : 1);
         }
@@ -208,11 +207,11 @@ namespace Anaquin
                         // Hard to believe a sequin in the histogram is undefined
                         assert(seq);
 
-                        if (counts < s.counts || (counts == s.counts && seq->abund(mix) < s.abund))
+                        if (counts < s.counts || (counts == s.counts && seq->concent(mix) < s.abund))
                         {
                             s.id     = id;
                             s.counts = counts;
-                            s.abund  = seq->abund(mix);
+                            s.abund  = seq->concent(mix);
                         }
                     }
                 }
@@ -371,7 +370,7 @@ namespace Anaquin
             Limit limitJoin(const JoinHist &) const;
 
             // Return abundance for all segments of a particular conjoined
-            void abund(const JoinID &, Concent &, Concent &, Concent &, Concent &, Mixture) const;
+            void concent(const JoinID &, Concent &, Concent &, Concent &, Concent &, Mixture) const;
 
         protected:
 
@@ -508,7 +507,7 @@ namespace Anaquin
                     return id;
                 }
 
-                inline Concent abund(Mixture mix = Mix_1) const
+                inline Concent concent(Mixture mix = Mix_1) const
                 {
                     return total.at(mix);
                 }
@@ -654,13 +653,13 @@ namespace Anaquin
                 }
 
                 // Calculate the abundance for the gene (summing up all the isoforms)
-                inline Concent abund(Mixture m) const
+                inline Concent concent(Mixture m) const
                 {
                     Concent n = 0;
                 
                     for (const auto &i : seqs)
                     {
-                        n += (*i).abund(m);
+                        n += (*i).concent(m);
                     }
                 
                     return n;
