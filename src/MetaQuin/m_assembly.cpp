@@ -6,7 +6,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotMSigmoid();
+extern Scripts PlotMSen();
 
 MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 {
@@ -14,28 +14,10 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
     MAssembly::Stats stats;
 
-    /*
-     * Generate statistics for the alignment
-     */
-    
-    //o.analyze(o.psl);
-    
-    // Analyse the alignment file
-    //const auto t = MBlat::analyze(o.psl);
- 
-    //o.info("Found: " + std::to_string(t.aligns.size()) + " in " + o.psl);
-    
-    /*
-     * Generate statistics for the assembler
-     */
-
     o.analyze(file);
 
     switch (o.soft)
     {
-        //case Velvet:  { stats = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
-        //case RayMeta: { stats = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
-
         case MetaQuast:
         {
             ParserQuast::parseGenomeInfo(Reader(file), [&](const ParserQuast::GenomeData &x, const ParserProgress &)
@@ -44,7 +26,7 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 
                 if (match)
                 {
-                    stats.add(match->id, match->concent(Mix_1), static_cast<Proportion>(x.covered) / x.total);
+                    stats.add(match->id, match->concent(), static_cast<Proportion>(x.covered) / x.total);
                 }
             });
 
@@ -52,8 +34,6 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
         }
     }
     
-    //stats.blat = t;
-
     return stats;
 }
 
@@ -124,7 +104,7 @@ void MAssembly::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * Generating detailed statistics for the sequins
+     * Generating detailed statistics
      */
     
     o.info("Generating MetaAssembly_quins.stats");
@@ -138,28 +118,28 @@ void MAssembly::report(const FileName &file, const Options &o)
     
     o.info("Generating MetaAssembly_assembly.R");
     o.writer->open("MetaAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("MetaAssembly_quins.stats", PlotMSigmoid()));
+    o.writer->write(RWriter::createScript("MetaAssembly_quins.stats", PlotMSen()));
     o.writer->close();
 
     /*
      * Generating detailed statistics for each contig
      */
 
-    {
-        o.info("Generating MetaAssembly_contigs.stats");
-        o.writer->open("MetaAssembly_contigs.stats");
-        
-        const auto format = "%1%\t%2%";
-        
-        o.writer->write((boost::format(format) % "contig" % "sequin").str());
-        
-        for (const auto &i : stats.blat.aligns)
-        {
-            o.writer->write((boost::format(format) % i.first % i.second->id()).str());
-        }
-        
-        o.writer->close();
-    }
+//    {
+//        o.info("Generating MetaAssembly_contigs.stats");
+//        o.writer->open("MetaAssembly_contigs.stats");
+//        
+//        const auto format = "%1%\t%2%";
+//        
+//        o.writer->write((boost::format(format) % "contig" % "sequin").str());
+//        
+//        for (const auto &i : stats.blat.aligns)
+//        {
+//            o.writer->write((boost::format(format) % i.first % i.second->id()).str());
+//        }
+//        
+//        o.writer->close();
+//    }
 
     /*
      * Generating detailed statistics for each sequin

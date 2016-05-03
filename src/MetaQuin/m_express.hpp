@@ -113,10 +113,22 @@ namespace Anaquin
             SequinHist hist;
         };
 
-        struct Options : public MAssembly::Options
+        struct Options : public AnalyzerOptions
         {
             // Required by the GCC compiler ...
             Options() {}
+
+            FileName psl;
+            
+            Software soft;
+            
+            /*
+             * The assemblers report results differently. For example, RayMeta generates
+             * "Contigs.tsv" that specifies the coverage of the contigs. This is defined
+             * for RayMeta.
+             */
+            
+            FileName contigs;
 
             // How the measured coverage is computed
             CoverageMethod coverage = WendySmooth;

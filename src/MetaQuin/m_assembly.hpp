@@ -13,8 +13,6 @@ namespace Anaquin
     {
         enum Software
         {
-            Velvet,
-            RayMeta,
             MetaQuast,
         };
 
@@ -27,17 +25,6 @@ namespace Anaquin
         struct Options : public AnalyzerOptions
         {
             Options() {}
-
-            /*
-             * The assemblers report results differently. For example, RayMeta generates
-             * "Contigs.tsv" that specifies the coverage of the contigs. This is defined
-             * for RayMeta.
-             */
-            
-            FileName contigs;
-            
-            // Alignment file by blat
-            FileName psl;
 
             Software soft;
         };

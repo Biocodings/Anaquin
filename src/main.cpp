@@ -1594,18 +1594,6 @@ void parse(int argc, char ** argv)
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
         {
-            auto parse = [&](const std::string &str)
-            {
-                const static std::map<std::string, MAssembly::Software> m =
-                {
-                    { "velvet"  , MAssembly::Velvet    },
-                    { "raymeta",  MAssembly::RayMeta   },
-                    { "quast",    MAssembly::MetaQuast },
-                };
-                
-                return parseEnum("soft", str, m);
-            };
-
             std::cout << "[INFO]: Metagenomics Analysis" << std::endl;
 
             if (_p.tool != TOOL_M_IGV)
@@ -1641,16 +1629,25 @@ void parse(int argc, char ** argv)
                 case TOOL_M_IGV:      { viewer<FViewer>();                 break; }
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
 
-                case TOOL_M_DIFF:
                 case TOOL_M_EXPRESS:
-                case TOOL_M_ASSEMBLY:
                 {
+                    auto parse = [&](const std::string &str)
+                    {
+                        const static std::map<std::string, MExpress::Software> m =
+                        {
+                            { "velvet",  MExpress::Velvet  },
+                            { "raymeta", MExpress::RayMeta },
+                        };
+                        
+                        return parseEnum("soft", str, m);
+                    };
+                    
                     // Only defined for certain assemblers
                     FileName conts;
                     
                     const auto soft = parse(_p.opts.at(OPT_SOFT));
-                    
-                    if (soft == MAssembly::RayMeta && _p.tool == TOOL_M_EXPRESS)
+
+                    if (soft == MExpress::RayMeta && _p.tool == TOOL_M_EXPRESS)
                     {
                         if (!_p.opts.count(OPT_U_COV))
                         {
@@ -1659,7 +1656,34 @@ void parse(int argc, char ** argv)
                         
                         conts = _p.opts.at(OPT_U_COV);
                     }
+                    
+                    MExpress::Options o;
+                    
+                    o.soft    = soft;
+                    o.contigs = conts;
+                    
+                    // An alignment file is needed to identify contigs
+                    o.psl = _p.opts.at(OPT_PSL);
+                    
+                    analyze_1<MExpress>(OPT_U_FILES, o);
+                    break;
+                }
 
+                case TOOL_M_DIFF:
+                case TOOL_M_ASSEMBLY:
+                {
+                    auto parse = [&](const std::string &str)
+                    {
+                        const static std::map<std::string, MAssembly::Software> m =
+                        {
+                            { "quast", MAssembly::MetaQuast },
+                        };
+                        
+                        return parseEnum("soft", str, m);
+                    };
+
+                    const auto soft = parse(_p.opts.at(OPT_SOFT));
+                    
                     switch (_p.tool)
                     {
                         case TOOL_M_DIFF:
@@ -1677,8 +1701,7 @@ void parse(int argc, char ** argv)
                         {
                             MAssembly::Options o;
                             
-                            o.soft    = soft;
-                            o.contigs = conts;
+                            o.soft = soft;
                             
                             // An alignment file is needed to identify contigs
                             //o.psl = _p.opts.at(OPT_PSL);
@@ -1687,20 +1710,6 @@ void parse(int argc, char ** argv)
                             break;
                         }
                             
-                        case TOOL_M_EXPRESS:
-                        {
-                            MExpress::Options o;
-                            
-                            o.soft    = soft;
-                            o.contigs = conts;
-                            
-                            // An alignment file is needed to identify contigs
-                            o.psl = _p.opts.at(OPT_PSL);
-                            
-                            analyze_1<MExpress>(OPT_U_FILES, o);
-                            break;
-                        }
-
                         default: { break; }
                     }
                 }

@@ -210,7 +210,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     TExpress::generateSummary("TransExpress_summary.stats", files, stats, o, units);
     
     /*
-     * 2. Generating detailed statistics for the sequins
+     * 2. Generating detailed statistics
      */
     
     TExpress::generateCSV("TransExpress_quins.stats", stats, o);

@@ -34,7 +34,7 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
     TExpress::generateSummary("TransKExpress_summary.stats", files, stats, o, units);
     
     /*
-     * 2. Generating detailed statistics for the sequins
+     * 2. Generating detailed statistics
      */
     
     TExpress::generateCSV("TransKExpress_quins.csv", stats, o);

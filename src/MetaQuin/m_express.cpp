@@ -20,7 +20,7 @@ MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options 
      * Generate statistics for the alignment
      */
     
-    o.info("Analyzing: " + o.psl);
+    //o.info("Analyzing: " + o.psl);
 
     // Generate statistics for BLAT
     auto t = MBlat::analyze(o.psl);

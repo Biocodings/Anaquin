@@ -55,9 +55,9 @@
  * Metagenomics Resources
  */
 
+#include "resources/plotMSen.R"
 #include "resources/plotMFold.R"
 #include "resources/plotMExpress.R"
-#include "resources/plotMSigmoid.R"
 
 #include "resources/MME023.v013.csv"
 #include "resources/AME015.v032.bed"
@@ -107,9 +107,9 @@ Scripts PlotFROC()
     return ToString(src_r_plotFROC_R);
 }
 
-Scripts PlotMSigmoid()
+Scripts PlotMSen()
 {
-    return ToString(src_r_plotMSigmoid_R);
+    return ToString(src_r_plotMSen_R);
 }
 
 Scripts FusionDataMixA()
