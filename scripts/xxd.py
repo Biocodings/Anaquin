@@ -22,8 +22,8 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotFROC.R',
           'src/r/plotFNormal.R',
-	  'src/r/plotFFusion.R',
-	  'src/r/plotFFold.R',
+	      'src/r/plotFFusion.R',
+	      'src/r/plotFFold.R',
 
           'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',
@@ -40,11 +40,11 @@ data  = [ 'data/manual.txt',
           # ---------- Transcriptome ----------
 
           'src/r/plotTMA.R',
-	  'src/r/plotTFold.R',
-	  'src/r/plotTMinor.R',
+   	      'src/r/plotTFold.R',
+	      'src/r/plotTMinor.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
-	  'src/r/plotTMultiple.R',
+	      'src/r/plotTMultiple.R',
           'src/r/plotTExpress.R',
 
           'data/TransQuin/ATR001.v032.gtf',
@@ -57,7 +57,7 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotMFold.R',
           'src/r/plotMExpress.R',
-          'src/r/plotMFraction.R',
+          'src/r/plotMSigmoid.R',
 
           'data/MetaQuin/AME013.v032.fa',
           'data/MetaQuin/MME023.v013.csv',
