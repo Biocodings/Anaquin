@@ -17,8 +17,6 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     // Initialize the distribution for each sequin
     stats.hist = r.hist();
 
-    auto &chrT = stats.chrT;
-
     parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
         if (m.query.cID == ChrT)
@@ -33,17 +31,15 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 
                 if (p <= o.sign)
                 {
-                    chrT.tps.push_back(m);
+                    stats.chrT.tps.push_back(m);
                 }
                 else
                 {
-                    chrT.fns.push_back(m);
+                    stats.chrT.fns.push_back(m);
                 }
             }
             else
             {
-                std::cout << m.query.l.start << " " << m.query.l.end << std::endl;
-                
                 if (!m.seq)
                 {
                     o.warn("Variant [" + std::to_string(m.query.l.start) + "] not aligned with any of the sequins. Ignored.");
@@ -52,11 +48,11 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 {
                     if (p <= o.sign)
                     {
-                        chrT.fps.push_back(m);
+                        stats.chrT.fps.push_back(m);
                     }
                     else
                     {
-                        chrT.tns.push_back(m);
+                        stats.chrT.tns.push_back(m);
                     }
                 }
             }
@@ -68,62 +64,62 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         }
     });
 
-    for (const auto &i : chrT.tps)
+    for (const auto &i : stats.chrT.tps)
     {
-        chrT.m.tp()++;
+        stats.chrT.m.tp()++;
         
         switch (i.query.type())
         {
-            case Mutation::SNP:       { chrT.m_snp.tp()++; break; }
+            case Mutation::SNP:       { stats.chrT.m_snp.tp()++; break; }
             case Mutation::Deletion:
-            case Mutation::Insertion: { chrT.m_ind.tp()++; break; }
+            case Mutation::Insertion: { stats.chrT.m_ind.tp()++; break; }
         }
     }
 
-    for (const auto &i : chrT.fps)
+    for (const auto &i : stats.chrT.fps)
     {
-        chrT.m.fp()++;
+        stats.chrT.m.fp()++;
         
         switch (i.query.type())
         {
-            case Mutation::SNP:       { chrT.m_snp.fp()++; break; }
+            case Mutation::SNP:       { stats.chrT.m_snp.fp()++; break; }
             case Mutation::Deletion:
-            case Mutation::Insertion: { chrT.m_ind.fp()++; break; }
+            case Mutation::Insertion: { stats.chrT.m_ind.fp()++; break; }
         }
     }
 
-    for (const auto &i : chrT.tns)
+    for (const auto &i : stats.chrT.tns)
     {
-        chrT.m.tn()++;
+        stats.chrT.m.tn()++;
 
         switch (i.query.type())
         {
-            case Mutation::SNP:       { chrT.m_snp.tn()++; break; }
+            case Mutation::SNP:       { stats.chrT.m_snp.tn()++; break; }
             case Mutation::Deletion:
-            case Mutation::Insertion: { chrT.m_ind.tn()++; break; }
+            case Mutation::Insertion: { stats.chrT.m_ind.tn()++; break; }
         }
     }
 
-    for (const auto &i : chrT.fns)
+    for (const auto &i : stats.chrT.fns)
     {
-        chrT.m.fn()++;
+        stats.chrT.m.fn()++;
         
         switch (i.query.type())
         {
-            case Mutation::SNP:       { chrT.m_snp.fn()++; break; }
+            case Mutation::SNP:       { stats.chrT.m_snp.fn()++; break; }
             case Mutation::Deletion:
-            case Mutation::Insertion: { chrT.m_ind.fn()++; break; }
+            case Mutation::Insertion: { stats.chrT.m_ind.fn()++; break; }
         }
     }
     
-    chrT.m_snp.nq() = chrT.dSNP();
-    chrT.m_snp.nr() = r.countSNPs();
+    stats.chrT.m_snp.nq() = stats.chrT.dSNP();
+    stats.chrT.m_snp.nr() = r.countSNPs();
 
-    chrT.m_ind.nq() = chrT.dInd();
-    chrT.m_ind.nr() = r.countIndels();
+    stats.chrT.m_ind.nq() = stats.chrT.dInd();
+    stats.chrT.m_ind.nr() = r.countIndels();
 
-    chrT.m.nq() = stats.chrT.m_snp.nq() + stats.chrT.m_ind.nq();
-    chrT.m.nr() = stats.chrT.m_snp.nr() + stats.chrT.m_ind.nr();
+    stats.chrT.m.nq() = stats.chrT.m_snp.nq() + stats.chrT.m_ind.nq();
+    stats.chrT.m.nr() = stats.chrT.m_snp.nr() + stats.chrT.m_ind.nr();
     
     return stats;
 }

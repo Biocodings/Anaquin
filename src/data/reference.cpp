@@ -904,11 +904,7 @@ struct VarRef::VarRefImpl
     // VarQuin standards
     std::map<SequinID, Locus> stands;
 
-    /*
-     * Data structure for the variants
-     */
-    
-    // VarQuin variants (VCF file)
+    // Variants (SNPs + indels)
     std::set<Variant> vars;
 
     /*
@@ -1166,6 +1162,8 @@ Interval * VarRef::findGeno(const Locus &l) const
 {
     return _impl->inters.contains(l);
 }
+
+
 
 const Variant * VarRef::findVar(const SequinID &id) const
 {
