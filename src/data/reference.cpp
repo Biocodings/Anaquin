@@ -1,5 +1,5 @@
-#include <boost/format.hpp>
 #include "data/tokens.hpp"
+#include <boost/format.hpp>
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include <boost/algorithm/string/replace.hpp>
@@ -1146,6 +1146,19 @@ ChrID VarRef::genoID() const
     return _impl->genoID;
 }
 
+HashHist VarRef::varHist() const
+{
+    HashHist hist;
+    
+    for (const auto &i : _impl->vars)
+    {
+        hist[var2hash(i.id, i.type(), i.l)];
+    }
+    
+    assert(!hist.empty());
+    return hist;
+}
+
 GenomeHist VarRef::genomeHist() const
 {
     GenomeHist hist;
@@ -1155,6 +1168,7 @@ GenomeHist VarRef::genomeHist() const
         hist[i.second.id()];
     }
 
+    assert(!hist.empty());
     return hist;
 }
 
@@ -1163,7 +1177,18 @@ Interval * VarRef::findGeno(const Locus &l) const
     return _impl->inters.contains(l);
 }
 
-
+const Variant * VarRef::hashVar(long key) const
+{
+    for (const auto &i : _impl->vars)
+    {
+        if (var2hash(i.id, i.type(), i.l) == key)
+        {
+            return &i;
+        }
+    }
+    
+    return nullptr;
+}
 
 const Variant * VarRef::findVar(const SequinID &id) const
 {

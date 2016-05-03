@@ -13,9 +13,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_var;
 
     VDiscover::Stats stats;
-
-    // Initialize the distribution for each sequin
-    stats.hist = r.hist();
+    stats.hist = r.varHist();
 
     parseVariant(file, o.caller, [&](const VariantMatch &m)
     {
@@ -27,7 +25,8 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             
             if (m.match && m.ref && m.alt)
             {
-                stats.hist.at(m.match->id)++;
+                const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
+                stats.hist.at(key)++;
                 
                 if (p <= o.sign)
                 {
@@ -112,6 +111,19 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         }
     }
     
+    for (const auto &i : stats.hist)
+    {
+        if (!i.second)
+        {
+            const auto m = r.hashVar(i.first);
+            
+            if (m && m->type() == Mutation::SNP)
+            {
+                //std::cout << m->l.start << std::endl;
+            }
+        }
+    }
+    
     stats.chrT.m_snp.nq() = stats.chrT.dSNP();
     stats.chrT.m_snp.nr() = r.countSNPs();
 
@@ -128,15 +140,15 @@ static void writeCSV(const FileName &file,
                      const VDiscover::Stats::ChrTStats &stats,
                      const VDiscover::Options &o)
 {
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.writer->open(file);
     o.writer->write((boost::format(format) % "sequin"
                                            % "pos"
                                            % "label"
                                            % "pval"
-                                           % "rcount"
-                                           % "vcount"
+                                           % "ref"
+                                           % "var"
                                            % "ratio"
                                            % "allele"
                                            % "type").str());
@@ -177,6 +189,9 @@ static void writeCSV(const FileName &file,
 static void writeSummary(const FileName &file, const FileName &src, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
+    
+    // Can specificity (requires p-value) shown?
+    const auto noSP = o.caller == Caller::VarScan;
     
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
@@ -250,15 +265,15 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.chrT.fpSNP()
                                             % stats.chrT.fpInd()
                                             % stats.chrT.fpTot()
-                                            % stats.chrT.m.sn()       // 21
-                                            % stats.chrT.m.sp()       // 22
-                                            % stats.chrT.m.pc()       // 23
-                                            % stats.chrT.m_snp.sn()   // 24
-                                            % stats.chrT.m_snp.sp()   // 25
-                                            % stats.chrT.m_snp.pc()   // 26
-                                            % stats.chrT.m_ind.sn()   // 27
-                                            % stats.chrT.m_ind.sp()   // 28
-                                            % stats.chrT.m_ind.pc()   // 29
+                                            % stats.chrT.m.sn()                              // 21
+                                            % stats.chrT.m.sp()                              // 22
+                                            % stats.chrT.m.pc()                              // 23
+                                            % stats.chrT.m_snp.sn()                          // 24
+                                            % (noSP ? "-" : toString(stats.chrT.m_snp.sp())) // 25
+                                            % stats.chrT.m_snp.pc()                          // 26
+                                            % stats.chrT.m_ind.sn()                          // 27
+                                            % (noSP ? "-" : toString(stats.chrT.m_ind.sp())) // 28
+                                            % stats.chrT.m_ind.pc()                          // 29
                      ).str());
     o.writer->close();
 }
@@ -288,21 +303,21 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     writeCSV("VarDiscover_quins.stats", stats.chrT, o);
 
-    /*
-     * Generating ROC curve
-     */
-    
-    o.info("Generating VarDiscover_ROC.R");
-    o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createScript("VarDiscover_quins.stats", PlotVROC()));
-    o.writer->close();
-
-    /*
-     * Generating probability curve (only if probability is given, for instance, not possible with GATK)
-     */
-
     if (o.caller == Caller::VarScan)
     {
+        /*
+         * Generating ROC curve
+         */
+        
+        o.info("Generating VarDiscover_ROC.R");
+        o.writer->open("VarDiscover_ROC.R");
+        o.writer->write(RWriter::createScript("VarDiscover_quins.stats", PlotVROC()));
+        o.writer->close();
+        
+        /*
+         * Generating probability curve (only if probability is given, for instance, not possible with GATK)
+         */
+        
         o.info("Generating VarDiscover_Prob.R");
         o.writer->open("VarDiscover_Prob.R");
         o.writer->write(RWriter::createScript("VarDiscover_quins.stats", PlotVProb()));

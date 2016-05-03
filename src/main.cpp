@@ -431,7 +431,7 @@ static std::string optToStr(int opt)
 
 static void printUsage()
 {
-    extern std::string Manual();
+    extern Scripts Manual();
     std::cout << Manual() << std::endl;
 }
 

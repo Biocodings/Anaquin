@@ -294,6 +294,7 @@
 		EF7765C71CB4E2EB007C61C3 /* t_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_express.cpp; path = ../src/TransQuin/t_express.cpp; sourceTree = "<group>"; };
 		EF7765C81CB4E2EB007C61C3 /* t_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = t_express.hpp; path = ../src/TransQuin/t_express.hpp; sourceTree = "<group>"; };
 		EF7908AC1B81759100B7C8AF /* parser_feature.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_feature.hpp; path = ../src/parsers/parser_feature.hpp; sourceTree = "<group>"; };
+		EF8DB9BA1CD8DC4B00648FA9 /* hist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = hist.hpp; path = ../src/data/hist.hpp; sourceTree = "<group>"; };
 		EF92BC3D1CA3A9000054E8C8 /* errors.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = errors.hpp; path = ../src/data/errors.hpp; sourceTree = "<group>"; };
 		EF94CB061CC4D2D600EDDDA7 /* data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = data.hpp; path = ../src/data/data.hpp; sourceTree = "<group>"; };
 		EF98D6BB1C616B5D00697051 /* t_standard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_standard.cpp; path = ../tests/data/t_standard.cpp; sourceTree = "<group>"; };
@@ -574,6 +575,7 @@
 				EF92BC3D1CA3A9000054E8C8 /* errors.hpp */,
 				EF4E334C1CB8FAF30067B16B /* experiment.hpp */,
 				EF1DE0A91B21EC6D00DEC381 /* feature.hpp */,
+				EF8DB9BA1CD8DC4B00648FA9 /* hist.hpp */,
 				EF2002531BCEFD6900F8CE08 /* intervals.hpp */,
 				EF40C2AD1C21C0E30057415D /* itree.hpp */,
 				EF1DE0AB1B21EC6D00DEC381 /* locus.hpp */,

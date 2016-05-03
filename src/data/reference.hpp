@@ -3,15 +3,13 @@
 
 #include <set>
 #include "data/data.hpp"
+#include "data/hist.hpp"
 #include "stats/limit.hpp"
 #include "data/variant.hpp"
 #include "data/intervals.hpp"
 
 namespace Anaquin
 {
-    typedef std::map<SequinID, Counts> GenomeHist;
-    typedef std::map<SequinID, Counts> SequinHist;
-
     enum Mixture
     {
         Mix_1,
@@ -563,10 +561,14 @@ namespace Anaquin
 
             // Eg: chr21 intervals
             GenomeHist genomeHist() const;
-
+        
+            HashHist varHist() const;
+        
             /*
              * Finding functions
              */
+        
+            const Variant *hashVar(long key) const;
         
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;

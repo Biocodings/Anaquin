@@ -2,6 +2,7 @@
 #define V_DISCOVER_HPP
 
 #include <vector>
+#include "data/hist.hpp"
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
 
@@ -19,7 +20,7 @@ namespace Anaquin
             Probability sign = 0.1;
         };
 
-        struct Stats : public MappingStats, public SequinStats, public VariantStats
+        struct Stats : public MappingStats, public VariantStats
         {
             typedef VariantMatch ChrTData;
             
@@ -71,6 +72,9 @@ namespace Anaquin
 
             // Statistics for endogenous variants
             EndoStats endo;
+            
+            // Distribution for variants
+            HashHist hist;            
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());
