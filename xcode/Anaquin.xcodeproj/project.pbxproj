@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EF0572711CADFE00004A5280 /* v_kallele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF05726F1CADFE00004A5280 /* v_kallele.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EF09C4BB1CD865D2006CFD27 /* t_parser_quast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF09C4BA1CD865D2006CFD27 /* t_parser_quast.cpp */; };
 		EF0C67931C5F25070033168D /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67871C5F25070033168D /* v_align.cpp */; };
 		EF0C67941C5F25070033168D /* v_allele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67891C5F25070033168D /* v_allele.cpp */; };
 		EF0C67951C5F25070033168D /* v_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C678B1C5F25070033168D /* v_coverage.cpp */; };
@@ -152,6 +153,8 @@
 		EF05726F1CADFE00004A5280 /* v_kallele.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_kallele.cpp; path = ../src/VarQuin/v_kallele.cpp; sourceTree = "<group>"; };
 		EF0572701CADFE00004A5280 /* v_kallele.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_kallele.hpp; path = ../src/VarQuin/v_kallele.hpp; sourceTree = "<group>"; };
 		EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = terminal_writer.hpp; path = ../src/writers/terminal_writer.hpp; sourceTree = "<group>"; };
+		EF09C4B91CD86205006CFD27 /* parser_quast.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_quast.hpp; path = ../src/parsers/parser_quast.hpp; sourceTree = "<group>"; };
+		EF09C4BA1CD865D2006CFD27 /* t_parser_quast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_quast.cpp; path = ../tests/parsers/t_parser_quast.cpp; sourceTree = "<group>"; };
 		EF0C67871C5F25070033168D /* v_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_align.cpp; path = ../src/VARQuin/v_align.cpp; sourceTree = "<group>"; };
 		EF0C67881C5F25070033168D /* v_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_align.hpp; path = ../src/VARQuin/v_align.hpp; sourceTree = "<group>"; };
 		EF0C67891C5F25070033168D /* v_allele.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_allele.cpp; path = ../src/VARQuin/v_allele.cpp; sourceTree = "<group>"; };
@@ -532,6 +535,8 @@
 				EF4BD9AA1ADDFB92007BE6AB /* parser_cdiff.hpp */,
 				EF4E9E1C1C7B235800EE0A24 /* parser_cnvnator.hpp */,
 				EF3860DA1AD3783A0062D246 /* parser_csv.hpp */,
+				EF3860DB1AD3783A0062D246 /* parser_cufflink.cpp */,
+				EF3860DC1AD3783A0062D246 /* parser_cufflink.hpp */,
 				EF5B07C01C48E8A900751B46 /* parser_DESeq2.hpp */,
 				EF5B07C11C48E8A900751B46 /* parser_edgeR.hpp */,
 				EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */,
@@ -540,6 +545,7 @@
 				EF3860E01AD3783A0062D246 /* parser_gtf.hpp */,
 				EF708C1B1C4C3BFB00039DE4 /* parser_HTSeqCount.hpp */,
 				EF3302BC1C8E81FF007A73A2 /* parser_kallisto.hpp */,
+				EF09C4B91CD86205006CFD27 /* parser_quast.hpp */,
 				EF3860E11AD3783A0062D246 /* parser_sam.cpp */,
 				EF3860E21AD3783A0062D246 /* parser_sam.hpp */,
 				EFBB830C1ADF953B0002611E /* parser_sequins.cpp */,
@@ -553,8 +559,6 @@
 				EF44A81E1AF78FA20036C894 /* parser_tmap.hpp */,
 				EFB3FF601B4A30DC0065CEA0 /* parser_top_fusion.cpp */,
 				EFB3FF611B4A30DC0065CEA0 /* parser_top_fusion.hpp */,
-				EF3860DB1AD3783A0062D246 /* parser_cufflink.cpp */,
-				EF3860DC1AD3783A0062D246 /* parser_cufflink.hpp */,
 				EF2537B21BF0A49800ABAABC /* parser_tsv.hpp */,
 				EF6B01CF1C60956500D82709 /* parser_varscan.hpp */,
 				EF3860E31AD3783A0062D246 /* parser_vcf.cpp */,
@@ -598,6 +602,7 @@
 		EF4BD9AD1ADE4035007BE6AB /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
+				EF09C4BA1CD865D2006CFD27 /* t_parser_quast.cpp */,
 				EF745EEA1C1E8B1B0072CEBB /* t_parser_gtf.cpp */,
 				EF708C1C1C4C3DDF00039DE4 /* t_parser_HTSeqCount.cpp */,
 				EF3302BD1C8E8498007A73A2 /* t_parser_kallisto.cpp */,
@@ -989,6 +994,7 @@
 				EFE700A21C8FA9920086A246 /* Bootstrap.cpp in Sources */,
 				EF0572711CADFE00004A5280 /* v_kallele.cpp in Sources */,
 				EFE700A61C8FA9920086A246 /* hash.cpp in Sources */,
+				EF09C4BB1CD865D2006CFD27 /* t_parser_quast.cpp in Sources */,
 				EF7278321CACEC5E0012648F /* l_diffs.cpp in Sources */,
 				EFDD6A9E1B0DD76200450029 /* tbx.c in Sources */,
 				EFDD6ACF1B0DD76C00450029 /* cram_stats.c in Sources */,
