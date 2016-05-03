@@ -269,7 +269,7 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_V_IGV,       { OPT_U_FILES                                     } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
-    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT,    OPT_U_FILES           } },
+    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_R_VCF, OPT_U_FILES           } },
     { TOOL_V_REPORT,    { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_GENO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
@@ -1468,18 +1468,6 @@ void parse(int argc, char ** argv)
         case TOOL_V_KEXPRESS:
         case TOOL_V_SUBSAMPLE:
         {
-            auto parseCaller = [&](const std::string &str)
-            {
-                const static std::map<std::string, Caller> m =
-                {
-                    { "gatk"   ,  Caller::GATK     },
-                    { "VarScan",  Caller::VarScan  },
-                    { "VarScan2", Caller::VarScan  },
-                };
-
-                return parseEnum("soft", str, m);
-            };
-            
             auto parseExpress = [&](const std::string &str)
             {
                 const static std::map<std::string, VExpress::Software> m =
@@ -1566,8 +1554,21 @@ void parse(int argc, char ** argv)
                     
                 case TOOL_V_ALLELE:
                 {
+                    auto parse = [&](const std::string &str)
+                    {
+                        const static std::map<std::string, VAllele::Software> m =
+                        {
+                            { "gatk"   ,  VAllele::Software::GATK     },
+                            { "VarScan",  VAllele::Software::VarScan  },
+                            { "VarScan2", VAllele::Software::VarScan  },
+                            { "kallisto", VAllele::Software::Kallisto  },
+                        };
+                        
+                        return parseEnum("soft", str, m);
+                    };
+
                     VAllele::Options o;
-                    o.caller = parseCaller(_p.opts.at(OPT_SOFT));
+                    o.soft = parse(_p.opts.at(OPT_SOFT));
 
                     analyze_1<VAllele>(OPT_U_FILES, o);
                     break;
@@ -1575,8 +1576,20 @@ void parse(int argc, char ** argv)
 
                 case TOOL_V_DISCOVER:
                 {
+                    auto parse = [&](const std::string &str)
+                    {
+                        const static std::map<std::string, VDiscover::Software> m =
+                        {
+                            { "gatk"   ,  VDiscover::Software::GATK     },
+                            { "VarScan",  VDiscover::Software::VarScan  },
+                            { "VarScan2", VDiscover::Software::VarScan  },
+                        };
+                        
+                        return parseEnum("soft", str, m);
+                    };
+
                     VDiscover::Options o;
-                    o.caller = parseCaller(_p.opts.at(OPT_SOFT));
+                    o.soft = parse(_p.opts.at(OPT_SOFT));
 
                     analyze_1<VDiscover>(OPT_U_FILES, o);
                     break;

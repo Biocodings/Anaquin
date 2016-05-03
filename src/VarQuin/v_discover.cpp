@@ -15,7 +15,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     VDiscover::Stats stats;
     stats.hist = r.varHist();
 
-    parseVariant(file, o.caller, [&](const VariantMatch &m)
+    parseVariant(file, o.soft, [&](const VariantMatch &m)
     {
         if (m.query.cID == ChrT)
         {
@@ -191,7 +191,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     const auto &r = Standard::instance().r_var;
     
     // Can specificity (requires p-value) shown?
-    const auto noSP = o.caller == Caller::VarScan;
+    const auto noSP = o.soft == VDiscover::Software::VarScan;
     
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
@@ -303,7 +303,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     writeCSV("VarDiscover_quins.stats", stats.chrT, o);
 
-    if (o.caller == Caller::VarScan)
+    if (o.soft == Software::VarScan)
     {
         /*
          * Generating ROC curve

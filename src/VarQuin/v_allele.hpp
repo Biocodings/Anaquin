@@ -8,9 +8,16 @@ namespace Anaquin
 {
     struct VAllele
     {
+        enum class Software
+        {
+            GATK,
+            VarScan,
+            Kallisto
+        };
+        
         struct Options : public AnalyzerOptions
         {
-            Caller caller;
+            Software soft;
         };
 
         struct Stats : public MappingStats, public SequinStats, public VariantStats

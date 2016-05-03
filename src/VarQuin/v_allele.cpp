@@ -49,58 +49,58 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
     
     // Initialize the distribution for each sequin
     stats.hist = r.hist();
-
-    parseVariant(file, o.caller, [&](const VariantMatch &m)
-    {
-        if (m.query.cID == ChrT)
-        {
-            stats.n_chrT++;
-            
-            switch (m.query.type())
-            {
-                case Mutation::SNP:       { stats.n_snp++; break; }
-                case Mutation::Deletion:
-                case Mutation::Insertion: { stats.n_ind++; break; }
-            }
-
-            if (m.match && m.ref && m.alt)
-            {
-                stats.hist.at(m.match->id)++;
-
-                // Expected allele frequency
-                const auto known = r.matchAlleleFreq(baseID(m.match->id));
-                
-                // Measured coverage is the number of base calls aligned and used in variant calling
-                const auto measured = m.query.alleleFreq();
-                
-                /*
-                 * Plotting the relative allele frequency that is established by differences
-                 * in the concentration of reference and variant DNA standards.
-                 */
-                
-                // Eg: D_1_12_R_373892_G/A
-                const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m.match->id
-                                                                   % m.match->ref
-                                                                   % m.match->l.start
-                                                                   % m.match->alt).str();
-                stats.all.add(id, known, measured);
-
-                switch (m.query.type())
-                {
-                    case Mutation::SNP:       { stats.snp.add(id, known, measured); break; }
-                    case Mutation::Deletion:
-                    case Mutation::Insertion: { stats.ind.add(id, known, measured); break; }
-                }
-
-                stats.readR[id] = m.query.readR;
-                stats.readV[id] = m.query.readV;
-            }
-        }
-        else
-        {
-            stats.n_geno++;
-        }
-    });
+    
+//    parseVariant(file, o.soft, [&](const VariantMatch &m)
+//    {
+//        if (m.query.cID == ChrT)
+//        {
+//            stats.n_chrT++;
+//            
+//            switch (m.query.type())
+//            {
+//                case Mutation::SNP:       { stats.n_snp++; break; }
+//                case Mutation::Deletion:
+//                case Mutation::Insertion: { stats.n_ind++; break; }
+//            }
+//
+//            if (m.match && m.ref && m.alt)
+//            {
+//                stats.hist.at(m.match->id)++;
+//
+//                // Expected allele frequency
+//                const auto known = r.matchAlleleFreq(baseID(m.match->id));
+//                
+//                // Measured coverage is the number of base calls aligned and used in variant calling
+//                const auto measured = m.query.alleleFreq();
+//                
+//                /*
+//                 * Plotting the relative allele frequency that is established by differences
+//                 * in the concentration of reference and variant DNA standards.
+//                 */
+//                
+//                // Eg: D_1_12_R_373892_G/A
+//                const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m.match->id
+//                                                                   % m.match->ref
+//                                                                   % m.match->l.start
+//                                                                   % m.match->alt).str();
+//                stats.all.add(id, known, measured);
+//
+//                switch (m.query.type())
+//                {
+//                    case Mutation::SNP:       { stats.snp.add(id, known, measured); break; }
+//                    case Mutation::Deletion:
+//                    case Mutation::Insertion: { stats.ind.add(id, known, measured); break; }
+//                }
+//
+//                stats.readR[id] = m.query.readR;
+//                stats.readV[id] = m.query.readV;
+//            }
+//        }
+//        else
+//        {
+//            stats.n_geno++;
+//        }
+//    });
     
     stats.all.limit = r.absolute(stats.hist);
     

@@ -53,12 +53,6 @@ namespace Anaquin
         bool ref;
     };
 
-    enum class Caller
-    {
-        GATK,
-        VarScan,
-    };
-
     inline long var2hash(const SequinID &id, Mutation type, const Locus &l)
     {
         const auto str = (boost::format("%1%_%2%_%3%_%4%") % id
@@ -107,7 +101,7 @@ namespace Anaquin
      * Common framework for parsing and matching a variant output
      */
 
-    template <typename F> void parseVariant(const FileName &file, Caller caller, F f)
+    template <typename F, typename Soft> void parseVariant(const FileName &file, Soft soft, F f)
     {
         const auto &r = Standard::instance().r_var;
 
@@ -145,9 +139,9 @@ namespace Anaquin
             return m;
         };
 
-        switch (caller)
+        switch (soft)
         {
-            case Caller::GATK:
+            case Soft::GATK:
             {
                 ParserVCF::parse(file, [&](const ParserVCF::Data &d, const ParserProgress &)
                 {
@@ -157,7 +151,7 @@ namespace Anaquin
                 break;
             }
 
-            case Caller::VarScan:
+            case Soft::VarScan:
             {
                 ParserVarScan::parse(file, [&](const ParserVarScan::Data &d, const ParserProgress &)
                 {
