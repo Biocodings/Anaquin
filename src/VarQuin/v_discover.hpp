@@ -70,14 +70,14 @@ namespace Anaquin
                 Confusion m, m_snp, m_ind;
             };
 
-            typedef CalledVariant EndoData;
-            typedef std::vector<EndoData> EndoStats;
+            typedef CalledVariant GenoData;
+            typedef std::vector<GenoData> GenoStats;
             
             // Statistics for synthetic variants
             ChrTStats chrT;
 
             // Statistics for endogenous variants
-            EndoStats endo;
+            GenoStats geno;
             
             // Distribution for variants
             HashHist hist;            
