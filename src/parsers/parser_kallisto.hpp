@@ -30,26 +30,29 @@ namespace Anaquin
 
         static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
         {
-            Data d;
-            ParserProgress p;
-            
-            Line line;
-            std::vector<Tokens::Token> toks;
-
-            while (r.nextLine(line))
+            protectParse("TSV (Kallisto)", [&]()
             {
-                if (p.i++ == 0)
+                Data d;
+                ParserProgress p;
+                
+                Line line;
+                std::vector<Tokens::Token> toks;
+                
+                while (r.nextLine(line))
                 {
-                    continue;
+                    if (p.i++ == 0)
+                    {
+                        continue;
+                    }
+                    
+                    Tokens::split(line, "\t", toks);
+                    
+                    d.id    = toks[TargetID];
+                    d.abund = stod(toks[EstCounts]);
+                    
+                    f(d, p);
                 }
-                
-                Tokens::split(line, "\t", toks);
-                
-                d.id    = toks[TargetID];
-                d.abund = stod(toks[EstCounts]);
-
-                f(d, p);
-            }
+            });
         }
     };
 }

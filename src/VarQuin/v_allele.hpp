@@ -25,17 +25,21 @@ namespace Anaquin
             // Statistics for all variants
             LinearStats all;
             
+            /*
+             * Not available for Kallisto
+             */
+            
             // Statistics for SNPs
             LinearStats snp;
             
             // Statistics for indels
             LinearStats ind;
-
-            // Mapping for reference read counts
+            
+            // Abundance for reference allele
             std::map<SequinID, Counts> readR;
-
-            // Mapping for variant read counts
-            std::map<SequinID, Counts> readV;
+            
+            // Abundance for variant allele
+            std::map<SequinID, Counts> readV;            
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

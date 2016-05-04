@@ -98,7 +98,7 @@ namespace Anaquin
     }
 
     /*
-     * Common framework for parsing and matching a variant output
+     * Common framework for parsing and matching a called variant
      */
 
     template <typename F, typename Soft> void parseVariant(const FileName &file, Soft soft, F f)
@@ -160,6 +160,8 @@ namespace Anaquin
 
                 break;
             }
+                
+            default : { break; }
         }
     }
 }

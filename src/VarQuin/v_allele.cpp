@@ -1,4 +1,5 @@
 #include "VarQuin/v_allele.hpp"
+#include "parsers/parser_kallisto.hpp"
 
 using namespace Anaquin;
 
@@ -35,6 +36,7 @@ static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VA
                                            % "rcount"
                                            % "vcount"
                                            % "type").str());
+    
     f(stats.snp, "SNP");
     f(stats.ind, "Indel");
 
@@ -49,59 +51,127 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
     
     // Initialize the distribution for each sequin
     stats.hist = r.hist();
-    
-//    parseVariant(file, o.soft, [&](const VariantMatch &m)
-//    {
-//        if (m.query.cID == ChrT)
-//        {
-//            stats.n_chrT++;
-//            
-//            switch (m.query.type())
-//            {
-//                case Mutation::SNP:       { stats.n_snp++; break; }
-//                case Mutation::Deletion:
-//                case Mutation::Insertion: { stats.n_ind++; break; }
-//            }
-//
-//            if (m.match && m.ref && m.alt)
-//            {
-//                stats.hist.at(m.match->id)++;
-//
-//                // Expected allele frequency
-//                const auto known = r.matchAlleleFreq(baseID(m.match->id));
-//                
-//                // Measured coverage is the number of base calls aligned and used in variant calling
-//                const auto measured = m.query.alleleFreq();
-//                
-//                /*
-//                 * Plotting the relative allele frequency that is established by differences
-//                 * in the concentration of reference and variant DNA standards.
-//                 */
-//                
-//                // Eg: D_1_12_R_373892_G/A
-//                const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m.match->id
-//                                                                   % m.match->ref
-//                                                                   % m.match->l.start
-//                                                                   % m.match->alt).str();
-//                stats.all.add(id, known, measured);
-//
-//                switch (m.query.type())
-//                {
-//                    case Mutation::SNP:       { stats.snp.add(id, known, measured); break; }
-//                    case Mutation::Deletion:
-//                    case Mutation::Insertion: { stats.ind.add(id, known, measured); break; }
-//                }
-//
-//                stats.readR[id] = m.query.readR;
-//                stats.readV[id] = m.query.readV;
-//            }
-//        }
-//        else
-//        {
-//            stats.n_geno++;
-//        }
-//    });
-    
+
+    switch (o.soft)
+    {
+        case Software::Kallisto:
+        {
+            /*
+             * The implementation differs to a variant caller. Typically, we'd estimate by
+             * the number of reads supporting the reference and alternative allele. Obviously,
+             * we don't have the alleles here. We should model by pooling the reference and
+             * variant sequins.
+             */
+            
+            std::set<SequinID> ids;
+            std::map<SequinID, Coverage> matchr, matchv;
+
+            ParserKallisto::parse(Reader(file), [&](const ParserKallisto::Data &d, const ParserProgress &)
+            {
+                const auto m = r.match(d.id);
+                
+                if (m)
+                {
+                    const auto bID = baseID(d.id);
+                    ids.insert(bID);
+                    
+                    if (isRefID(d.id))
+                    {
+                        matchr[bID] = d.abund;
+                    }
+                    else
+                    {
+                        matchv[bID] = d.abund;
+                    }
+                    
+                    stats.n_chrT++;
+                    stats.hist.at(m->id)++;
+                }
+            });
+            
+            for (const auto &id : ids)
+            {
+                if (matchr.count(id) && matchv.count(id))
+                {
+                    const auto ref = matchr[id];
+                    const auto var = matchv[id];
+                    
+                    // Expected abundance
+                    const auto known = r.matchAlleleFreq(id);
+                    
+                    // Measured abundance
+                    const auto measured = var / (ref + var);
+                    
+                    stats.all.add(id, known, measured);
+                }
+            }
+            
+            assert(stats.snp.empty());
+            assert(stats.ind.empty());
+            assert(stats.readR.empty());
+            assert(stats.readV.empty());
+            
+            break;
+        }
+
+        default:
+        {
+            parseVariant(file, o.soft, [&](const VariantMatch &m)
+            {
+                if (m.query.cID == ChrT)
+                {
+                    stats.n_chrT++;
+                    
+                    switch (m.query.type())
+                    {
+                        case Mutation::SNP:       { stats.n_snp++; break; }
+                        case Mutation::Deletion:
+                        case Mutation::Insertion: { stats.n_ind++; break; }
+                    }
+                    
+                    if (m.match && m.ref && m.alt)
+                    {
+                        stats.hist.at(m.match->id)++;
+                        
+                        // Expected allele frequency
+                        const auto known = r.matchAlleleFreq(baseID(m.match->id));
+                        
+                        // Measured coverage is the number of base calls aligned and used in variant calling
+                        const auto measured = m.query.alleleFreq();
+                        
+                        /*
+                         * Plotting the relative allele frequency that is established by differences
+                         * in the concentration of reference and variant DNA standards.
+                         */
+                        
+                        // Eg: D_1_12_R_373892_G/A
+                        const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m.match->id
+                                         % m.match->ref
+                                         % m.match->l.start
+                                         % m.match->alt).str();
+                        stats.all.add(id, known, measured);
+                        
+                        switch (m.query.type())
+                        {
+                            case Mutation::SNP:       { stats.snp.add(id, known, measured); break; }
+                            case Mutation::Deletion:
+                            case Mutation::Insertion: { stats.ind.add(id, known, measured); break; }
+                        }
+                        
+                        stats.readR[id] = m.query.readR;
+                        stats.readV[id] = m.query.readV;
+                    }
+                }
+                else
+                {
+                    stats.n_geno++;
+                }
+            });
+
+            break;
+        }
+    }
+
     stats.all.limit = r.absolute(stats.hist);
     
     return stats;
@@ -116,6 +186,7 @@ void VAllele::report(const FileName &file, const Options &o)
 
     o.info("Generating statistics");
     
+    
     /*
      * Generating summary statistics
      */
@@ -126,12 +197,28 @@ void VAllele::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating CSV for all variants
+     * Generating detailed statistics
      */
 
     o.info("Generating VarAllele_quins.csv");
-    writeCSV("VarAllele_quins.csv", stats, o);
     
+    switch (o.soft)
+    {
+        case VAllele::Software::Kallisto:
+        {
+            o.writer->open("VarAllele_quins.csv");
+            o.writer->write(StatsWriter::writeCSV(stats.all));
+            o.writer->close();
+            break;
+        }
+
+        default:
+        {
+            writeCSV("VarAllele_quins.csv", stats, o);
+            break;
+        }
+    }
+
     /*
      * Generating for allele vs allele
      */
@@ -149,4 +236,15 @@ void VAllele::report(const FileName &file, const Options &o)
     o.writer->open("VarAllele_reads.R");
     o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAlleleReads()));
     o.writer->close();
+    
+    /*
+     * Generating a report
+     */
+    
+    o.report->open("VAllele_report.pdf");
+    o.report->addTitle("VAllele_report");
+    o.report->addFile("VarAllele_summary.stats");
+    o.report->addFile("VarAllele_quins.csv");
+    o.report->addFile("VarAllele_allele.R");
+    o.report->addFile("VarAllele_reads.R");
 }

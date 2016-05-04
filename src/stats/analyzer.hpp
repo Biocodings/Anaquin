@@ -7,6 +7,7 @@
 #include <sstream>
 #include "stats/classify.hpp"
 #include "writers/r_writer.hpp"
+#include "writers/pdf_writer.hpp"
 #include "writers/mock_writer.hpp"
 
 namespace Anaquin
@@ -110,8 +111,6 @@ namespace Anaquin
         Counts chrT_endo = 0;
     };
 
-    struct PDFWriter;
-    
     struct WriterOptions
     {
         enum LogLevel
