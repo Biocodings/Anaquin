@@ -191,7 +191,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     const auto &r = Standard::instance().r_var;
     
     // Can specificity (requires p-value) shown?
-    const auto noSP = o.soft == VDiscover::Software::VarScan;
+    const auto noSP = o.soft != VDiscover::Software::VarScan;
     
     const auto summary = "Summary for input: %1%\n\n"
                          "   ***\n"
