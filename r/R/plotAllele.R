@@ -6,18 +6,18 @@
 
 plotAllele <- function(data)
 {
-    .plotExpress(data, title='Expected allele frequency vs Measured allele frequency',
-                       xname='Expected allele frequency (log2)',
-                       yname='Measured allele frequency (log2)',
-                   showStats='left',
-                  showLegend=TRUE)
+    .plotExpress(data, title='Allele frequency',
+                        xlab='Expected allele frequency (log2)',
+                        ylab='Measured allele frequency (log2)',
+                     showLOQ=FALSE,
+                   showStats='left')
 }
 
 plotAlleleReads <- function(data,
                             alpha = 1.0,
                             title = 'Allele Frequency vs Read count',
-                            xname = 'Allele Frequency (Log2)',
-                            yname = 'Observed read count (Log2)')
+                             xlab = 'Allele Frequency (Log2)',
+                             ylab = 'Observed read count (Log2)')
 {
     require(ggplot2)
 

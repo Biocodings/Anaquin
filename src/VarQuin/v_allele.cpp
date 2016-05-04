@@ -215,6 +215,16 @@ void VAllele::report(const FileName &file, const Options &o)
         default:
         {
             writeCSV("VarAllele_quins.csv", stats, o);
+
+            /*
+             * Generating for allele vs reads
+             */
+            
+            o.info("Generating VarAllele_reads.R");
+            o.writer->open("VarAllele_reads.R");
+            o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAlleleReads()));
+            o.writer->close();
+            
             break;
         }
     }
@@ -226,15 +236,6 @@ void VAllele::report(const FileName &file, const Options &o)
     o.info("Generating VarAllele_allele.R");
     o.writer->open("VarAllele_allele.R");
     o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAllele()));
-    o.writer->close();
-    
-    /*
-     * Generating for allele vs reads
-     */
-    
-    o.info("Generating VarAllele_reads.R");
-    o.writer->open("VarAllele_reads.R");
-    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAlleleReads()));
     o.writer->close();
     
     /*
