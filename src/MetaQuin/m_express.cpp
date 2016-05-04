@@ -20,8 +20,6 @@ MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options 
      * Generate statistics for the alignment
      */
     
-    //o.info("Analyzing: " + o.psl);
-
     // Generate statistics for BLAT
     auto t = MBlat::analyze(o.psl);
 
@@ -38,7 +36,7 @@ MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options 
     }
 
     stats.blat = t;
-
+ 
     if (!stats.assembly.n)
     {
         throw std::runtime_error("No contig detected in the input file. Please check and try again.");
@@ -68,15 +66,15 @@ MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options 
          * concentration while still detectable in the experiment.
          */
 
-        if (stats.limit.id.empty() || align->seq->concent(Mix_1, false) < stats.limit.abund)
+        if (stats.limit.id.empty() || align->seq->concent() < stats.limit.abund)
         {
             stats.limit.id     = align->seq->id;
-            stats.limit.abund  = align->seq->concent(Mix_1, false);
+            stats.limit.abund  = align->seq->concent();
             stats.limit.counts = align->contigs.size();
         }
         
         const auto p = MExpress::calculate(stats, stats.blat, stats.assembly, align->seq->id, *meta.second, o, o.coverage);
-        
+
         if (p.x && p.y)
         {
             stats.add(align->seq->id, p.x, p.y);
@@ -92,8 +90,8 @@ static void generateContigs(const FileName &file, const MExpress::Stats &stats, 
 {
     o.info("Generating " + file);
     o.writer->open(file);
-    
-    const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
+
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     
     o.writer->write((boost::format(format) % "contigID"
                                            % "seqID"
@@ -146,7 +144,7 @@ void MExpress::report(const FileName &file, const MExpress::Options &o)
     o.writer->close();
     
     /*
-     * Generating CSV for all sequins
+     * Generating detailed statistics for sequins
      */
     
     o.info("Generating MetaExpress_quins.stats");
@@ -164,8 +162,8 @@ void MExpress::report(const FileName &file, const MExpress::Options &o)
     o.writer->close();
     
     /*
-     * 4. Generating detailed statistics for the contigs
+     * Generating detailed statistics for the contigs
      */
-    
+
     generateContigs("MetaExpress_contigs.stats", stats, o);
 }
