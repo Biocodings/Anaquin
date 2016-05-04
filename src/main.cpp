@@ -1650,6 +1650,7 @@ void parse(int argc, char ** argv)
                         {
                             { "velvet",  MExpress::Velvet  },
                             { "raymeta", MExpress::RayMeta },
+                            { "quast",   MExpress::Quast   },
                         };
                         
                         return parseEnum("soft", str, m);
@@ -1715,9 +1716,6 @@ void parse(int argc, char ** argv)
                             MAssembly::Options o;
                             
                             o.soft = soft;
-                            
-                            // An alignment file is needed to identify contigs
-                            //o.psl = _p.opts.at(OPT_PSL);
                             
                             analyze_1<MAssembly>(OPT_U_FILES, o);
                             break;
