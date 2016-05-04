@@ -89,14 +89,14 @@ MetaQuin <- function(...)
     keys <- c('mix', 'seqs', 'expected', 'measured')
     data <- .createData(x, keys)
 
-    stopifnot(!is.null(r$seqs))
-    
     r <- list('seqs'=data, mix=.createMixture(x$mix))
-    class(r) <- 'MetaQuin'
     
     if (!is.null(x[['bedgr']])) { r$bedgr <- x$bedgr }
     if (!is.null(x[['annot']])) { r$annot <- x$annot }
     
+    stopifnot(!is.null(r$seqs))
+    
+    class(r) <- 'MetaQuin'
     return (r)
 }
 
@@ -107,14 +107,14 @@ VarQuin <- function(...)
     keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'expected', 'measured', 'bedgr', 'annot')
     data <- .createData(x, keys)
     
-    stopifnot(!is.null(r$seqs))
-
     r <- list('seqs'=data, mix=.createMixture(x$mix))
-    class(r) <- 'VarQuin'
     
     if (!is.null(x[['bedgr']])) { r$bedgr <- x$bedgr }
     if (!is.null(x[['annot']])) { r$annot <- x$annot }
 
+    stopifnot(!is.null(r$seqs))
+    
+    class(r) <- 'VarQuin'
     return (r)
 }
 
@@ -145,6 +145,21 @@ FusQuin <- function(...)
     return (r)
 }
 
+StructQuin <- function(...)
+{
+    x <- list(...)
+    
+    keys <- c()
+    data <- .createData(x, keys)
+    
+    r <- list('seqs'=data, mix=.createMixture(x$mix))
+    
+    stopifnot(!is.null(r$seqs))
+    
+    class(r) <- 'StructQuin'
+    return (r)    
+}
+
 LadQuin <- function(...)
 {
     x <- list(...)
@@ -152,11 +167,11 @@ LadQuin <- function(...)
     keys <- c('label', 'elfc', 'lfc', 'pval', 'abund', 'type', 'expected', 'measured', 'aligned')
     data <- .createData(x, keys)
     
+    r <- list('seqs'=data, mix=.createMixture(x$mix))
+
     stopifnot(!is.null(r$seqs))
 
-    r <- list('seqs'=data, mix=.createMixture(x$mix))
     class(r) <- 'LadQuin'
-    
     return (r)
 }
 
