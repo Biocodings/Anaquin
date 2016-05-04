@@ -6,6 +6,10 @@
 
 namespace Anaquin
 {
+    /*
+     * Parser for Contigs.tsv for RayMeta.
+     */
+    
     struct ParseTSV
     {
         enum TSVField
@@ -24,6 +28,8 @@ namespace Anaquin
         struct TSV
         {
             ContigID id;
+
+            Depth dep;
 
             // Unnormalized k-mer observations
             KMers kmer;
@@ -64,6 +70,7 @@ namespace Anaquin
                 Tokens::split(line, "\t", toks);
                 
                 t.id   = toks[Contig];
+                t.dep  = stoi(toks[ModeKMer]);
                 t.kmer = stoi(toks[KMerObs]);
                 t.klen = stoi(toks[ContigLength]);
                 
