@@ -11,6 +11,7 @@ namespace Anaquin
         {
             Velvet,
             RayMeta,
+            Quast,
         };
         
         enum CoverageMethod
@@ -38,7 +39,7 @@ namespace Anaquin
                 stats.hist.at(id)++;
                 
                 // Known concentration
-                const auto known = align.seq->concent(Mix_1, false);
+                const auto known = align.seq->concent();
                 
                 /*
                  * Measure concentration for this MetaQuin. Average out the coverage for each aligned contig.
@@ -90,7 +91,7 @@ namespace Anaquin
                 {
                     measured = measured / sumKLength;
                 }
-                
+
                 if (measured)
                 {
                     assert(align.seq->l.length());
@@ -101,7 +102,7 @@ namespace Anaquin
             
             return Point(0 ,0);
         }
-        
+
         struct Stats : public LinearStats, public MappingStats
         {
             MBlat::Stats blat;
