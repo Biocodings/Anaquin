@@ -51,7 +51,7 @@ namespace Anaquin
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());
-        static void  report (const FileName &, const Options &o = Options());
+        static void report(const FileName &, const Options &o = Options());
     };
 }
 
