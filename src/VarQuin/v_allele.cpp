@@ -185,8 +185,7 @@ void VAllele::report(const FileName &file, const Options &o)
     o.info("Detected: " + std::to_string(stats.n_ind) + " indels");
 
     o.info("Generating statistics");
-    
-    
+
     /*
      * Generating summary statistics
      */

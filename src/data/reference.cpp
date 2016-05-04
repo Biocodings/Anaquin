@@ -197,6 +197,30 @@ void LadderRef::concent(const LadderRef::JoinID &id, Concent &a, Concent &b, Con
 }
 
 /*
+ * ------------------------- Structual Analysis -------------------------
+ */
+
+struct StructRef::StructRefImpl
+{
+    struct Data
+    {
+        // TODO: Implement me
+    };
+
+    std::map<SequinID, Data> data;
+};
+
+void StructRef::addStruct(const SequinID &id) const
+{
+    _impl->data[id];
+}
+
+void StructRef::validate()
+{
+    
+}
+
+/*
  * ------------------------- Fusion Analysis -------------------------
  */
 

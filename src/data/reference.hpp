@@ -348,7 +348,7 @@ namespace Anaquin
     {
         public:
         
-            StructRef();
+            void addStruct(const SequinID &) const;
         
         protected:
         
@@ -357,7 +357,7 @@ namespace Anaquin
         private:
         
             struct StructRefImpl;
-        
+
             std::shared_ptr<StructRefImpl> _impl;
     };
     

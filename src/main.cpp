@@ -33,6 +33,8 @@
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
 
+#include "StructQuin/s_discover.hpp"
+
 #include "LadQuin/l_copy.hpp"
 #include "LadQuin/l_diffs.hpp"
 #include "LadQuin/l_express.hpp"
@@ -101,6 +103,7 @@ typedef std::set<Value> Range;
 #define TOOL_T_KDIFF     304
 #define TOOL_T_REPORT    305
 #define TOOL_V_KALLELE   306
+#define TOOL_S_DISCOVER  307
 
 /*
  * Options specified in the command line
@@ -206,6 +209,8 @@ static std::map<Value, Tool> _tools =
     { "MetaCoverage",   TOOL_M_COVERAGE  },
     { "MetaReport",     TOOL_M_REPORT    },
 
+    { "StructDiscover", TOOL_S_DISCOVER },
+    
     { "LadCopy",     TOOL_L_COPY      },
     { "LadExpress",  TOOL_L_EXPRESS   },
     { "LadDiff",     TOOL_L_DIFF      },
@@ -244,11 +249,17 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_L_EXPRESS,    { OPT_U_FILES, OPT_MIXTURE } },
 
     /*
+     * Structural analysis
+     */
+    
+    { TOOL_S_DISCOVER, { OPT_R_BED, OPT_U_FILES } },
+
+    /*
      * Metagenomics Analysis
      */
 
     { TOOL_M_IGV,      { OPT_U_FILES                                              } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT              } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT                       } },
     { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_PSL, OPT_U_FILES, OPT_SOFT              } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                   } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
@@ -1326,6 +1337,34 @@ void parse(int argc, char ** argv)
                 }
 
                 case TOOL_T_IGV: { viewer<TViewer>(); break; }
+            }
+
+            break;
+        }
+
+        case TOOL_S_DISCOVER:
+        {
+            std::cout << "[INFO]: Structual Analysis" << std::endl;
+            
+            switch (_p.tool)
+            {
+                case TOOL_S_DISCOVER:
+                {
+                    applyRef(std::bind(&Standard::addSStruct, &s, std::placeholders::_1), OPT_R_BED);
+                    break;
+                }
+
+                default: { break; }
+            }
+            
+            switch (_p.tool)
+            {
+                case TOOL_S_DISCOVER:
+                {
+                    break;
+                }
+                    
+                default: { break; }
             }
 
             break;
