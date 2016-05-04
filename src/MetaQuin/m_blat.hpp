@@ -73,24 +73,24 @@ namespace Anaquin
          */
 
         // Proportion of non-overlapping bases covered by alignments
-        double covered = 0.0;
+        Proportion covered = 0.0;
         
-        double oMatch = 0.0;
+        Proportion oMatch = 0.0;
         
         // Proportion of bases not covered by alignments
-        double oMismatch = 0.0;
+        Proportion oMismatch = 0.0;
 
         // Proportion of bases that are gaps in the sequin (reference)
-        double oRGaps = 0.0;
+        Proportion oRGaps = 0.0;
 
         // Proportion of bases that are gaps in all contigs aligned to this sequin
-        double oQGaps = 0.0;
+        Proportion oQGaps = 0.0;
         
         // Average coverage depth across assembled sequence
-        double depthAlign = 0.0; // TODO: ????
+        Proportion depthAlign = 0.0; // TODO: ????
 
         // Average coverage depth across entire sequin
-        double depthSequin = 0.0; // TODO: ????
+        Proportion depthSequin = 0.0; // TODO: ????
 
         inline bool operator<(const MetaAlignment &x)  const { return seq->id < x.seq->id;  }
         inline bool operator==(const MetaAlignment &x) const { return seq->id == x.seq->id; }
