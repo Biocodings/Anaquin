@@ -130,6 +130,7 @@
 		EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700A01C8FA9920086A246 /* weights.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE700B31C8FAF620086A246 /* libhdf5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE700B21C8FAF620086A246 /* libhdf5.a */; };
 		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
+		EFECC1721CDA04B400D579B5 /* s_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECC1701CDA04B400D579B5 /* s_discover.cpp */; };
 		EFF4B1D21C53A3CA00DF6A0E /* stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */; };
 		EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF5DE161C4B8AF8001C3496 /* linear.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
@@ -385,6 +386,8 @@
 		EFE700B21C8FAF620086A246 /* libhdf5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libhdf5.a; path = ../src/kallisto/libhdf5.a; sourceTree = "<group>"; };
 		EFE8168E1B5370600004D9BF /* cmd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd.cpp; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
+		EFECC1701CDA04B400D579B5 /* s_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = s_discover.cpp; path = ../src/StructQuin/s_discover.cpp; sourceTree = "<group>"; };
+		EFECC1711CDA04B400D579B5 /* s_discover.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = s_discover.hpp; path = ../src/StructQuin/s_discover.hpp; sourceTree = "<group>"; };
 		EFF4B1D01C539FFD00DF6A0E /* stats.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = stats.hpp; path = ../src/stats/stats.hpp; sourceTree = "<group>"; };
 		EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stats.cpp; path = ../tests/stats/stats.cpp; sourceTree = "<group>"; };
 		EFF5DE161C4B8AF8001C3496 /* linear.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = linear.cpp; path = ../src/stats/linear.cpp; sourceTree = "<group>"; };
@@ -445,6 +448,7 @@
 				EF7278241CACEC570012648F /* LadQuin */,
 				EF7278431CACEC9E0012648F /* Libraries */,
 				EF7278341CACEC940012648F /* MetaQuin */,
+				EFECC16F1CDA048300D579B5 /* StructQuin */,
 				EF3860D61AD378190062D246 /* Parsers */,
 				EF1DE0B81B21EC7C00DEC381 /* Stats */,
 				EFA9DE701BCB7D5A00780182 /* Tools */,
@@ -839,6 +843,15 @@
 			name = Writers;
 			sourceTree = "<group>";
 		};
+		EFECC16F1CDA048300D579B5 /* StructQuin */ = {
+			isa = PBXGroup;
+			children = (
+				EFECC1701CDA04B400D579B5 /* s_discover.cpp */,
+				EFECC1711CDA04B400D579B5 /* s_discover.hpp */,
+			);
+			name = StructQuin;
+			sourceTree = "<group>";
+		};
 		EFF4B1CD1C53895C00DF6A0E /* Stats */ = {
 			isa = PBXGroup;
 			children = (
@@ -903,6 +916,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFECC1721CDA04B400D579B5 /* s_discover.cpp in Sources */,
 				EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */,
 				EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */,
 				EF0C67971C5F25070033168D /* v_sample.cpp in Sources */,
