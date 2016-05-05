@@ -82,6 +82,7 @@
 		EFB7FF3A1B4F848D0045DC6A /* t_locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFB7FF381B4F848D0045DC6A /* t_locus.cpp */; };
 		EFBC882B1C3E78F500B604A7 /* t_r_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFBC882A1C3E78F500B604A7 /* t_r_writer.cpp */; };
 		EFD6292B1C4CAE2400FDF262 /* r_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */; };
+		EFDC34FB1CDB203E00519F8A /* libnmaths.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDC34FA1CDB203E00519F8A /* libnmaths.a */; };
 		EFDC8F491CABB75C0031EF77 /* v_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFDC8F471CABB75C0031EF77 /* v_express.cpp */; };
 		EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EFDD6A701B0DD60500450029 /* libz.dylib */; };
 		EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6A751B0DD75B00450029 /* bgzf.c */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -316,6 +317,7 @@
 		EFBDBDC21CB57C0200E1245C /* t_report.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = t_report.hpp; path = ../src/TransQuin/t_report.hpp; sourceTree = "<group>"; };
 		EFC0DAC51B8C056F005F6C85 /* reference.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = reference.hpp; path = ../src/data/reference.hpp; sourceTree = "<group>"; };
 		EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_writer.cpp; path = ../src/writers/r_writer.cpp; sourceTree = "<group>"; };
+		EFDC34FA1CDB203E00519F8A /* libnmaths.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnmaths.a; path = ../../SS/libnmaths.a; sourceTree = "<group>"; };
 		EFDC8F471CABB75C0031EF77 /* v_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_express.cpp; path = ../src/VarQuin/v_express.cpp; sourceTree = "<group>"; };
 		EFDC8F481CABB75C0031EF77 /* v_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_express.hpp; path = ../src/VarQuin/v_express.hpp; sourceTree = "<group>"; };
 		EFDD6A701B0DD60500450029 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -400,6 +402,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EFE700B31C8FAF620086A246 /* libhdf5.a in Frameworks */,
+				EFDC34FB1CDB203E00519F8A /* libnmaths.a in Frameworks */,
 				EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -491,6 +494,7 @@
 			children = (
 				EFE700B21C8FAF620086A246 /* libhdf5.a */,
 				EFDD6A701B0DD60500450029 /* libz.dylib */,
+				EFDC34FA1CDB203E00519F8A /* libnmaths.a */,
 			);
 			name = Framework;
 			sourceTree = "<group>";
@@ -1153,6 +1157,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					/Users/tedwong/Sources/QA/src/kallisto,
+					/Users/tedwong/Sources/SS,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -1189,6 +1194,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					/Users/tedwong/Sources/QA/src/kallisto,
+					/Users/tedwong/Sources/SS,
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
