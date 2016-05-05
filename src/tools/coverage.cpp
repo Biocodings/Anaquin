@@ -25,6 +25,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
                     stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
                 }
                 
+                stats.hist[align.cID]++;                
                 stats.inters.find(align.cID)->add(align.l);
             }
         }

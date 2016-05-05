@@ -40,12 +40,13 @@ data  = [ 'data/manual.txt',
           # ---------- Transcriptome ----------
 
           'src/r/plotTMA.R',
-   	      'src/r/plotTFold.R',
-	      'src/r/plotTMinor.R',
+   	  'src/r/plotTFold.R',
+	  'src/r/plotTMinor.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
-	      'src/r/plotTMultiple.R',
+	  'src/r/plotTMultiple.R',
           'src/r/plotTExpress.R',
+	  'src/r/plotTSen.R',
 
           'data/TransQuin/ATR001.v032.gtf',
           'data/TransQuin/MTR002.v013.csv',

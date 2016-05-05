@@ -11,12 +11,42 @@ using namespace Anaquin;
 // Defined for cuffcompare
 Compare __cmp__;
 
+// Defined in resources.cpp
+extern Scripts PlotTSen();
+
 // Defined for cuffcompare
 extern int cuffcompare_main(const char *ref, const char *query);
 
+template <typename F> inline FileName grepGTF(const FileName &file, F f)
+{
+    assert(!file.empty());
+
+    Line line;
+    
+    const auto tmp = tmpFile();
+    std::ofstream out(tmp);
+    
+    auto parse = [&](const FileName &file, std::ofstream &out)
+    {
+        ParserGTF::parse(file, [&](const Feature &x, const std::string &l, const ParserProgress &)
+        {
+            if (f(x))
+            {
+                out << l << std::endl;
+            }
+        });
+    };
+    
+    parse(file, out);
+    
+    out.close();
+    
+    return tmp;
+}
+
 static FileName createFilters(const FileName &file, const ChrID &cID)
 {
-    std::string line;
+    Line line;
 
     const auto tmp = tmpFile();
     std::ofstream out(tmp);
@@ -147,14 +177,10 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     // We'll need the annotation for comparison (endogenous is optional)
     assert(!o.rChrT.empty());
 
-    /*
-     * 1. Initalize the statistics
-     */
-    
     TAssembly::Stats stats = init(o);
-    
+
     /*
-     * 2. Filtering transcripts
+     * Filtering transcripts
      */
     
     auto copyStats = [&](const ChrID &cID)
@@ -199,15 +225,40 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     
     auto compareGTF = [&](const ChrID &cID, const FileName &ref)
     {
+        // Generate a new GTF for the chromosome
         const auto qry = createFilters(file, cID);
 
         o.logInfo("Reference: " + ref);
         o.logInfo("Query: " + qry);
 
-        if (cuffcompare_main(ref.c_str(), qry.c_str()))
+        #define CUFFCOMPARE(x, y) { if (cuffcompare_main(ref.c_str(), qry.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
+
+        if (cID == ChrT)
         {
-            throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again.");
+            /*
+             * Calculating sensitivty for each sequin. Unfortunately, there is no simpler way
+             * than cuffcompare. Cuffcompare doesn't show sensitivity for each isoform,
+             * thus we'll need to generate a GTF file for each sequin.
+             */
+            
+            const auto hist = r.hist();
+            
+            for (const auto &i : hist)
+            {
+                const auto tmp = grepGTF(o.rChrT, [&](const Feature &f)
+                {
+                    return f.tID == i.first;
+                });
+                
+                // Compare only the sequin against the reference
+                CUFFCOMPARE(ref.c_str(), tmp.c_str());
+                
+                stats.tSPs[i.first] = __cmp__.t_sn;
+            }
         }
+
+        // Compare everything about the chromosome against the reference
+        CUFFCOMPARE(ref.c_str(), qry.c_str());
     };
 
     o.info("Generating filtered transcript");
@@ -255,6 +306,30 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     });
     
     return stats;
+}
+
+static void writeQuins(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
+{
+    const auto &r = Standard::instance().r_trans;
+
+    o.writer->open(file);
+    
+    const auto format = "%1%\t%2%\t%3%\t%4%";
+
+    o.writer->write((boost::format(format) % "seq"
+                                           % "expected"
+                                           % "exon_sen"
+                                           % "intron_sen").str());
+
+    for (const auto &i : stats.tSPs)
+    {
+        o.writer->write((boost::format(format) % i.first
+                                               % r.match(i.first)->concent()
+                                               % stats.tSPs.at(i.first)
+                                               % stats.tSPs.at(i.first)).str());
+    }
+    
+    o.writer->close();
 }
 
 static void writeSummary(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
@@ -357,4 +432,20 @@ void TAssembly::report(const FileName &file, const Options &o)
      */
     
     writeSummary(file, stats, o);
+    
+    /*
+     * Generating detailed statistics
+     */
+
+    o.info("Generating TransAssembly_quins.stats");
+    writeQuins("TransAssembly_quins.stats", stats, o);
+    
+    /*
+     * Generating limit of assembly (LOA)
+     */
+    
+    o.info("Generating TransAssembly_assembly.R");
+    o.writer->open("TransAssembly_assembly.R");
+    o.writer->write(RWriter::createScript("TransAssembly_quins.stats", PlotTSen()));
+    o.writer->close();
 }

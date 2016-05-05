@@ -146,9 +146,9 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                         
                         // Eg: D_1_12_R_373892_G/A
                         const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m.match->id
-                                         % m.match->ref
-                                         % m.match->l.start
-                                         % m.match->alt).str();
+                                                                           % m.match->ref
+                                                                           % m.match->l.start
+                                                                           % m.match->alt).str();
                         stats.all.add(id, known, measured);
                         
                         switch (m.query.type())

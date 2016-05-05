@@ -59,14 +59,9 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     {
         if (!align.i && !(p.i % 1000000))
         {
-            //o.wait(std::to_string(p.i));
+            o.wait(std::to_string(p.i));
         }
         
-        if (align.cID == ChrT)
-        {
-            std::cout << checkAlign(r.genoID(), align.cID, align.l) << std::endl;
-        }
-
         return checkAlign(r.genoID(), align.cID, align.l);
     });
 

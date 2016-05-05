@@ -31,19 +31,17 @@ plotAlleleReads <- function(data,
     data$ratio <- as.factor(data$ratio)
 
     p <- ggplot(data=data, aes(x=x, y=y)) +
-                              xlab(xname) +
-                              ylab(yname) +
+                               xlab(xlab) +
+                               ylab(ylab) +
                            ggtitle(title) +
                              geom_point() +
                         scale_x_reverse() +
                          labs(colour='')  +
-            geom_point(aes(colour=label), size=2, alpha=alpha) +
+            geom_point(aes(colour=label), size=1, alpha=alpha) +
                 theme_bw()
 
     p <- p +  theme(axis.title.x=element_text(face='bold', size=15))
     p <- p +  theme(axis.title.y=element_text(face='bold', size=15))
 
     print(p)
-
-    return (list('xname' = xname, 'yname' = yname))
 }

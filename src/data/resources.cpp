@@ -38,10 +38,11 @@
  */
 
 #include "resources/plotTMA.R"
-#include "resources/plotTFold.R"
 #include "resources/plotTROC.R"
-#include "resources/plotTMinor.R"
+#include "resources/plotTSen.R"
 #include "resources/plotTLODR.R"
+#include "resources/plotTFold.R"
+#include "resources/plotTMinor.R"
 #include "resources/plotTMultiple.R"
 #include "resources/plotTExpress.R"
 
@@ -192,6 +193,11 @@ Scripts MetaDataBed()
 Scripts SleuthR()
 {
     return ToString(scripts_sleuth_R);
+}
+
+Scripts PlotTSen()
+{
+    return ToString(src_r_plotTSen_R);
 }
 
 Scripts PlotTFold()

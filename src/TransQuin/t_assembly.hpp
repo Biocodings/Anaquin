@@ -60,6 +60,9 @@ namespace Anaquin
             
             std::map<ChrID, Data> data;
             
+            // Sensitivity for each sequin
+            std::map<SequinID, Proportion> tSPs;
+
             // Number of exons assembled for chrT
             Counts cExons = 0;
 
