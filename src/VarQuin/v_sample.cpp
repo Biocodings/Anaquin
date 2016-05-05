@@ -28,7 +28,7 @@ template <typename T> static Counts sums(const std::map<T, Counts> &m)
     return c;
 }
 
-static bool checkAlign(const ChrID &queryID, const ChrID &id, const Locus &l)
+static bool checkAlign(const ChrID &genoID, const ChrID &id, const Locus &l)
 {
     const auto &r = Standard::instance().r_var;
 
@@ -36,9 +36,9 @@ static bool checkAlign(const ChrID &queryID, const ChrID &id, const Locus &l)
     {
         return r.match(l, MatchRule::Contains);
     }
-    else if (id == queryID)
+    else if (id == genoID)
     {
-        return r.findGeno(queryID, l);
+        return r.findGeno(genoID, l);
     }
 
     return false;
@@ -55,15 +55,16 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
 
     Stats stats;
 
-    /*
-     * Generating coverage for both chromosomes
-     */
-
     stats.cov = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &p)
     {
         if (!align.i && !(p.i % 1000000))
         {
-            o.wait(std::to_string(p.i));
+            //o.wait(std::to_string(p.i));
+        }
+        
+        if (align.cID == ChrT)
+        {
+            std::cout << checkAlign(r.genoID(), align.cID, align.l) << std::endl;
         }
 
         return checkAlign(r.genoID(), align.cID, align.l);
@@ -77,7 +78,7 @@ VSample::Stats VSample::stats(const FileName &file, const Options &o)
     {
         throw std::runtime_error("Failed to find any alignment for " + r.genoID());
     }
-    
+
     o.info(std::to_string(sums(stats.cov.hist)) + " alignments in total");
     o.info(std::to_string(stats.cov.hist.at(ChrT)) + " alignments to chrT");
     o.info(std::to_string(stats.cov.hist.at(r.genoID())) + " alignments to " + r.genoID());
