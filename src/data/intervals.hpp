@@ -87,14 +87,14 @@ namespace Anaquin
                 return left + right;
             }
         
-            template <typename T> Stats stats(T t) const
+            template <typename F> Stats stats(F f) const
             {
                 Stats stats;
             
                 bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
                 {
                     // Should this be counted? For example, aligning to sequins?
-                    if (!t(id, i, j, cov))
+                    if (!f(id, i, j, cov))
                     {
                         return;
                     }

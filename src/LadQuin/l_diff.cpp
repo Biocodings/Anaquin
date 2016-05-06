@@ -124,11 +124,11 @@ void LDiff::report(const FileName &fileA, const FileName &fileB, const Options &
     o.writer->close();
 
     /*
-     * Generating summary statistics
+     * Generating LadDiff_summary.stats
      */
 
-    o.info("Generating summary statistics");
-    //AnalyzeReporter::linear("LadderDifferent_summary.stats", fileA, fileB, a, b, stats, "sequins", o.writer);
+    o.info("Generating LadDiff_summary.stats");
+    //AnalyzeReporter::linear("LadDiff_summary.stats", fileA, fileB, a, b, stats, "sequins", o.writer);
 
     /*
      * Generating LadDiff_diff.R

@@ -199,6 +199,7 @@
 		EF26157E1B5FF9F500BE8037 /* codons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = codons.cpp; path = ../src/cufflinks/codons.cpp; sourceTree = "<group>"; };
 		EF26157F1B5FF9F500BE8037 /* cuffcompare.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cuffcompare.cpp; path = ../src/cufflinks/cuffcompare.cpp; sourceTree = "<group>"; };
 		EF2947F81C1A5BFA00F48EFB /* parser_stringtie.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_stringtie.hpp; path = ../src/parsers/parser_stringtie.hpp; sourceTree = "<group>"; };
+		EF2E58731CDCE452009A35D4 /* subsample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = subsample.hpp; path = ../src/tools/subsample.hpp; sourceTree = "<group>"; };
 		EF3211931B1DBC1A0062BB10 /* parser_blast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = parser_blast.cpp; path = ../src/parsers/parser_blast.cpp; sourceTree = "<group>"; };
 		EF3211941B1DBC1A0062BB10 /* parser_blast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_blast.hpp; path = ../src/parsers/parser_blast.hpp; sourceTree = "<group>"; };
 		EF3302BC1C8E81FF007A73A2 /* parser_kallisto.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_kallisto.hpp; path = ../src/parsers/parser_kallisto.hpp; sourceTree = "<group>"; };
@@ -733,6 +734,7 @@
 				EFA9DE711BCB7D6100780182 /* coverage.cpp */,
 				EFA9DE721BCB7D6100780182 /* coverage.hpp */,
 				EF6D05F01BD3E5DF0048044F /* sampling.hpp */,
+				EF2E58731CDCE452009A35D4 /* subsample.hpp */,
 			);
 			name = Tools;
 			sourceTree = "<group>";

@@ -13,21 +13,16 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
     {
         stats.update(align);
 
-        if (align.mapped)
+        if (align.mapped && f(align, info.p))
         {
-            const auto match = f(align, info.p);
-
-            if (match)
+            if (!stats.inters.find(align.cID))
             {
-                if (!stats.inters.find(align.cID))
-                {
-                    // Add a new interval for the chromosome
-                    stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
-                }
-                
-                stats.hist[align.cID]++;                
-                stats.inters.find(align.cID)->add(align.l);
+                // Add a new interval for the chromosome
+                stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
             }
+            
+            stats.hist[align.cID]++;
+            stats.inters.find(align.cID)->add(align.l);
         }
     });
 

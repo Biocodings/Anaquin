@@ -78,6 +78,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALLELE    278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
+#define TOOL_T_SUBSAMPLE 281
 #define TOOL_M_EXPRESS   282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
@@ -184,6 +185,7 @@ static std::map<Value, Tool> _tools =
     { "TransNorm",      TOOL_T_NORM      },
     { "TransIGV",       TOOL_T_IGV       },
     { "TransCoverage",  TOOL_T_COVERAGE  },
+    { "TransSubsample", TOOL_T_SUBSAMPLE },
 
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
@@ -222,14 +224,15 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,      { OPT_U_FILES                                   } },
-    { TOOL_T_DIFF,     { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_T_ASSEMBLY, { OPT_R_GTF, OPT_U_FILES                        } },
-    { TOOL_T_COVERAGE, { OPT_R_GTF, OPT_U_FILES                        } },
-    { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_KDIFF,    { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_T_IGV,       { OPT_U_FILES                                   } },
+    { TOOL_T_DIFF,      { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_T_ASSEMBLY,  { OPT_R_GTF, OPT_U_FILES                        } },
+    { TOOL_T_COVERAGE,  { OPT_R_GTF, OPT_U_FILES                        } },
+    { TOOL_T_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_T_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_T_ALIGN,     { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_T_EXPRESS,   { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
+    { TOOL_T_SUBSAMPLE, { OPT_R_BED, OPT_R_GENO,  OPT_U_FILES } },
     
     /*
      * Ladder Analysis
@@ -269,7 +272,7 @@ static std::map<Tool, std::set<Option>> _required =
     
     { TOOL_V_IGV,       { OPT_U_FILES                                     } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
-    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_R_VCF, OPT_U_FILES           } },
+    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_R_VCF, OPT_U_FILES   } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_GENO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
@@ -1104,6 +1107,19 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
+            switch (_p.tool)
+            {
+                case TOOL_T_SUBSAMPLE:
+                {
+                    break;
+                }
+                    
+                default:
+                {
+                    break;
+                }
+            }
+
             if (_p.tool != TOOL_T_IGV)
             {
                 addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
@@ -1157,6 +1173,11 @@ void parse(int argc, char ** argv)
 //                    break;
 //                }
                     
+                case TOOL_T_SUBSAMPLE:
+                {
+                    break;
+                }
+
                 case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
                 case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_FILES); break; }
@@ -1364,6 +1385,7 @@ void parse(int argc, char ** argv)
         case TOOL_F_FUSION:
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
+        case TOOL_T_SUBSAMPLE:
         {
             auto parseAligner = [&](const std::string &str)
             {
