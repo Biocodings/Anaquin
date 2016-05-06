@@ -47,9 +47,15 @@ plotSensitivity.FusQuin <- function(data, title, xlab, ylab, limit)
     .plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
 }
 
+plotSensitivity.TransQuin <- function(data, title, xlab, ylab, limit)
+{
+    .plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
+}
+
 plotSensitivity <- function(data, title=NULL, xlab=NULL, ylab=NULL, limit=0.98)
 {
-    stopifnot(class(data) == 'FusQuin')
+    stopifnot(class(data) == 'FusQuin' | class(data) == 'TransQuin')
 
-    if (class(data) == 'FusQuin') { plotSensitivity.FusQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit) } 
+    if (class(data) == 'FusQuin')   { plotSensitivity.FusQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit) } 
+    if (class(data) == 'TransQuin') { plotSensitivity.TransQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit) } 
 }

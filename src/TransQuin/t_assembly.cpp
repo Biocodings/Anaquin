@@ -231,7 +231,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         o.logInfo("Reference: " + ref);
         o.logInfo("Query: " + qry);
 
-        #define CUFFCOMPARE(x, y) { if (cuffcompare_main(ref.c_str(), qry.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
+        #define CUFFCOMPARE(x, y) { if (cuffcompare_main(x.c_str(), y.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
 
         if (cID == ChrT)
         {
@@ -245,23 +245,29 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
             
             for (const auto &i : hist)
             {
+                /*
+                 * Generate a new GTF solely for the sequin, which will be the reference.
+                 */
+                
                 const auto tmp = grepGTF(o.rChrT, [&](const Feature &f)
                 {
                     return f.tID == i.first;
                 });
                 
-                // Compare only the sequin against the reference
-                CUFFCOMPARE(ref.c_str(), tmp.c_str());
+                o.logInfo("Comparing: " + i.first);
                 
-                stats.tSPs[i.first] = __cmp__.t_sn;
+                // Compare only the sequin against the reference
+                CUFFCOMPARE(tmp, qry);
+                
+                stats.tSPs[i.first] = __cmp__.b_sn;
             }
         }
 
         // Compare everything about the chromosome against the reference
-        CUFFCOMPARE(ref.c_str(), qry.c_str());
+        CUFFCOMPARE(ref, qry);
     };
 
-    o.info("Generating filtered transcript");
+    o.info("Comparing transcripts");
 
     std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, TAssembly::Stats::Data> &p)
     {
@@ -314,19 +320,17 @@ static void writeQuins(const FileName &file, const TAssembly::Stats &stats, cons
 
     o.writer->open(file);
     
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%";
 
     o.writer->write((boost::format(format) % "seq"
                                            % "expected"
-                                           % "exon_sen"
-                                           % "intron_sen").str());
+                                           % "measured").str());
 
     for (const auto &i : stats.tSPs)
     {
         o.writer->write((boost::format(format) % i.first
                                                % r.match(i.first)->concent()
-                                               % stats.tSPs.at(i.first)
-                                               % stats.tSPs.at(i.first)).str());
+                                               % (stats.tSPs.at(i.first) / 100.0)).str());
     }
     
     o.writer->close();
