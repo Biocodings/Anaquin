@@ -10,8 +10,6 @@ library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 data <- data[!is.na(data$Ratio),]
+data <- LadQuin(seqs=row.names(data), expected=data$expected, measured=data$measured, ratio=data$ratio)
 
-# Create a data set for Anaquin
-data <- LadQuin(seqs=row.names(data), expected=data$Expected, measured=data$Observed)
-
-plotScatter(data, title='Expected ladders vs measured ladders')
+plotNorm(data)

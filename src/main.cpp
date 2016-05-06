@@ -35,9 +35,9 @@
 
 #include "StructQuin/s_discover.hpp"
 
+#include "LadQuin/l_norm.hpp"
 #include "LadQuin/l_copy.hpp"
-#include "LadQuin/l_diffs.hpp"
-#include "LadQuin/l_express.hpp"
+#include "LadQuin/l_diff.hpp"
 #include "LadQuin/l_coverage.hpp"
 
 #include "FusQuin/f_diff.hpp"
@@ -83,7 +83,7 @@ typedef std::set<Value> Range;
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
 #define TOOL_M_COVERAGE  286
-#define TOOL_L_EXPRESS   287
+#define TOOL_L_NORM       287
 #define TOOL_L_DIFF      288
 #define TOOL_L_COVERAGE  289
 #define TOOL_F_DISCOVER  290
@@ -96,12 +96,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_EXPRESS   297
 #define TOOL_V_KEXPRESS  298
 #define TOOL_T_KEXPRESS  299
-#define TOOL_V_REPORT    300
-#define TOOL_M_REPORT    301
-#define TOOL_L_REPORT    302
-#define TOOL_F_REPORT    303
 #define TOOL_T_KDIFF     304
-#define TOOL_T_REPORT    305
 #define TOOL_V_KALLELE   306
 #define TOOL_S_DISCOVER  307
 
@@ -189,7 +184,6 @@ static std::map<Value, Tool> _tools =
     { "TransNorm",      TOOL_T_NORM      },
     { "TransIGV",       TOOL_T_IGV       },
     { "TransCoverage",  TOOL_T_COVERAGE  },
-    { "TransReport",    TOOL_T_REPORT    },
 
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
@@ -199,7 +193,6 @@ static std::map<Value, Tool> _tools =
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarExpress",     TOOL_V_EXPRESS   },
     { "VarKExpress",    TOOL_V_KEXPRESS  },
-    { "VarReport",      TOOL_V_REPORT    },
     { "VarKAllele",     TOOL_V_KALLELE   },
 
     { "MetaAssembly",   TOOL_M_ASSEMBLY  },
@@ -207,15 +200,13 @@ static std::map<Value, Tool> _tools =
     { "MetaDiff",       TOOL_M_DIFF      },
     { "MetaIGV",        TOOL_M_IGV       },
     { "MetaCoverage",   TOOL_M_COVERAGE  },
-    { "MetaReport",     TOOL_M_REPORT    },
 
     { "StructDiscover", TOOL_S_DISCOVER },
     
-    { "LadCopy",     TOOL_L_COPY      },
-    { "LadExpress",  TOOL_L_EXPRESS   },
-    { "LadDiff",     TOOL_L_DIFF      },
-    { "LadCoverage", TOOL_L_COVERAGE  },
-    { "LadReport",   TOOL_L_REPORT    },
+    { "LadCopy",     TOOL_L_COPY     },
+    { "LadNorm",     TOOL_L_NORM     },
+    { "LadDiff",     TOOL_L_DIFF     },
+    { "LadCoverage", TOOL_L_COVERAGE },
 
     { "FusDiscover", TOOL_F_DISCOVER },
     { "FusNormal",   TOOL_F_NORMAL   },
@@ -223,7 +214,6 @@ static std::map<Value, Tool> _tools =
     { "FusIGV",      TOOL_F_IGV      },
     { "FusCoverage", TOOL_F_COVERAGE },
     { "FusDiff",     TOOL_F_DIFF     },
-    { "FusReport",   TOOL_F_REPORT   },
 };
 
 static std::map<Tool, std::set<Option>> _required =
@@ -239,14 +229,13 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_KEXPRESS, { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_KDIFF,    { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_ALIGN,    { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_REPORT,   { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,  { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     
     /*
      * Ladder Analysis
      */
 
-    { TOOL_L_EXPRESS,    { OPT_U_FILES, OPT_MIXTURE } },
+    { TOOL_L_NORM, { OPT_U_FILES, OPT_MIXTURE } },
 
     /*
      * Structural analysis
@@ -281,7 +270,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_IGV,       { OPT_U_FILES                                     } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_R_VCF, OPT_U_FILES           } },
-    { TOOL_V_REPORT,    { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_GENO,  OPT_U_FILES           } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
@@ -548,7 +536,8 @@ template <typename Reference> void addRef(const ChrID &cID, Reference ref)
 }
 
 /*
- * This provideds a convenient function for adding reference annotations. Genomic annotations are also added if found.
+ * This provideds a convenient function for adding reference annotations. Genomic annotations are also
+ * added if found.
  */
 
 template <typename Reference> void addRef(Reference ref)
@@ -687,21 +676,21 @@ template <typename Report> void report_1(typename Report::Options o = typename R
     }, o);
 }
 
-template <typename Report> void report_2(typename Report::Options o = typename Report::Options())
-{
-    if (_p.inputs.size() != 2)
-    {
-        throw NotDoubleInputError();
-    }
-    
-    o.mix = mixture();
-    o.index = _p.opts[OPT_R_IND];
-
-    return startAnalysis<Report>([&](const typename Report::Options &o)
-    {
-        Report::generate(_p.inputs[0], _p.inputs[1], o);
-    }, o);
-}
+//template <typename Report> void report_2(typename Report::Options o = typename Report::Options())
+//{
+//    if (_p.inputs.size() != 2)
+//    {
+//        throw NotDoubleInputError();
+//    }
+//    
+//    o.mix = mixture();
+//    o.index = _p.opts[OPT_R_IND];
+//
+//    return startAnalysis<Report>([&](const typename Report::Options &o)
+//    {
+//        Report::generate(_p.inputs[0], _p.inputs[1], o);
+//    }, o);
+//}
 
 template <typename Viewer> void viewer(typename Viewer::Options o = typename Viewer::Options())
 {
@@ -1108,7 +1097,6 @@ void parse(int argc, char ** argv)
         case TOOL_T_DIFF:
         case TOOL_T_KDIFF:
         case TOOL_T_ALIGN:
-        case TOOL_T_REPORT:
         case TOOL_T_EXPRESS:
         case TOOL_T_KEXPRESS:
         case TOOL_T_ASSEMBLY:
@@ -1129,19 +1117,19 @@ void parse(int argc, char ** argv)
                         break;
                     }
                         
-                    case TOOL_T_REPORT:
-                    {
-                        if (_p.inputs.size() == 2)
-                        {
-                            addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
-                        }
-                        else
-                        {
-                            addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
-                        }
-                        
-                        break;
-                    }
+//                    case TOOL_T_REPORT:
+//                    {
+//                        if (_p.inputs.size() == 2)
+//                        {
+//                            addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
+//                        }
+//                        else
+//                        {
+//                            addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
+//                        }
+//                        
+//                        break;
+//                    }
 
                     default:
                     {
@@ -1155,19 +1143,19 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_REPORT:
-                {
-                    if (_p.inputs.size() == 1)
-                    {
-                        report_1<TReport>();
-                    }
-                    else
-                    {
-                        report_2<TReport>();
-                    }
-
-                    break;
-                }
+//                case TOOL_T_REPORT:
+//                {
+//                    if (_p.inputs.size() == 1)
+//                    {
+//                        report_1<TReport>();
+//                    }
+//                    else
+//                    {
+//                        report_2<TReport>();
+//                    }
+//
+//                    break;
+//                }
                     
                 case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
                 case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
@@ -1481,7 +1469,7 @@ void parse(int argc, char ** argv)
             break;
         }
 
-        case TOOL_L_EXPRESS:
+        case TOOL_L_NORM:
         {
             std::cout << "[INFO]: Ladder Analysis" << std::endl;
 
@@ -1490,7 +1478,8 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_L_EXPRESS:  { analyze_1<LExpress>(OPT_U_FILES); break; }
+                case TOOL_L_NORM:  { analyze_1<LNorm>(OPT_U_FILES); break; }
+                case TOOL_L_DIFF:  { analyze_2<LDiff>(); break; }
             }
 
             break;
@@ -1499,7 +1488,6 @@ void parse(int argc, char ** argv)
         case TOOL_V_IGV:
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
-        case TOOL_V_REPORT:
         case TOOL_V_EXPRESS:
         case TOOL_V_KALLELE:
         case TOOL_V_DISCOVER:
@@ -1519,7 +1507,7 @@ void parse(int argc, char ** argv)
             
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            if (_p.tool != TOOL_V_IGV && _p.tool != TOOL_V_REPORT)
+            if (_p.tool != TOOL_V_IGV)
             {
                 switch (_p.tool)
                 {
@@ -1562,7 +1550,6 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_V_IGV:       { viewer<VViewer>();                 break; }
-                case TOOL_V_REPORT:    { report_2<VReport>();               break; }
                 case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }
 

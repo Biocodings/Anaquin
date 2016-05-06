@@ -31,7 +31,7 @@ data  = [ 'data/manual.txt',
 
           # ------- Ladder -------
 
-          'src/r/plotLExpress.R',
+          'src/r/plotLNorm.R',
 
           'data/LadQuin/MLA014.v013.csv',
           'data/LadQuin/MLA016.v013.csv',
@@ -93,3 +93,4 @@ for i in range(0,len(r)):
                 data = f.read()
                 if ('0x0a, 0x0a\n' in data):
                     raise Exception('Error: ' + path)
+

@@ -27,7 +27,7 @@
  * Ladder Resources
  */
 
-#include "resources/plotLExpress.R"
+#include "resources/plotLNorm.R"
 
 #include "resources/MLA014.v013.csv"
 #include "resources/MLA016.v013.csv"
@@ -142,9 +142,9 @@ Scripts PlotFFold()
  * Ladder Resources
  */
 
-Scripts PlotLExpress()
+Scripts PlotLNorm()
 {
-    return ToString(src_r_plotLExpress_R);
+    return ToString(src_r_plotLNorm_R);
 }
 
 Scripts LadderDataMixA()
