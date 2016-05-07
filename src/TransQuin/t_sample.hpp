@@ -9,23 +9,56 @@ namespace Anaquin
 {
     struct TSample
     {
-        struct SampleImpl : public Subsampler::SampleImpl
+        struct SampleImpl : public Subsampler::StatsImpl
         {
-            #define V_REF Standard::instance().r_var
+            #define REF Standard::instance().r_var
             
             inline ChrID genoID() const
             {
-                return V_REF.genoID();
+                return REF.genoID();
             }
             
             inline bool shouldGenomic(const ChrID &id, const Locus &l) const
             {
-                return static_cast<bool>(V_REF.findGeno(id, l));
+                return static_cast<bool>(REF.findGeno(id, l));
             }
             
             inline bool shouldChrT(const ChrID &id, const Locus &l) const
             {
-                return static_cast<bool>(V_REF.match(l, MatchRule::Contains));
+                return static_cast<bool>(REF.match(l, MatchRule::Contains));
+            }
+        };
+        
+        struct ReportImpl : public Subsampler::ReportImpl
+        {
+            inline FileName summary() const
+            {
+                return "TransSubsample_summary.stats";
+            }
+            
+            virtual FileName beforeBG() const
+            {
+                return "TransSubsample_before.bedgraph";
+            }
+            
+            virtual FileName afterBG() const
+            {
+                return "TransSubsample_after.bedgraph";
+            }
+            
+            virtual FileName sampled() const
+            {
+                return "TransSubsample_sampled.sam";
+            }
+            
+            virtual Counts countSeqs() const
+            {
+                return REF.countSeqs();
+            }
+            
+            virtual Counts countInters() const
+            {
+                return REF.countInters();
             }
         };
         
@@ -36,7 +69,7 @@ namespace Anaquin
             // How coverage is calculated
             Subsampler::CoverageMethod method = Subsampler::CoverageMethod::ArithAverage;
         };
-
+        
         typedef Subsampler::Stats Stats;
         
         static Stats stats(const FileName &file, const Options &o = Options())
@@ -46,8 +79,7 @@ namespace Anaquin
         
         static void report(const FileName &file, const Options &o = Options())
         {
-            const auto stats = VSample::stats(file, o);
-            //Subsampler::report(file, o);
+            Subsampler::report(file, o, SampleImpl(), ReportImpl());
         }
     };
 }

@@ -11,21 +11,21 @@ namespace Anaquin
     {
         struct SampleImpl : public Subsampler::StatsImpl
         {
-            #define V_REF Standard::instance().r_var
+            #define REF Standard::instance().r_var
 
             inline ChrID genoID() const
             {
-                return V_REF.genoID();
+                return REF.genoID();
             }
             
             inline bool shouldGenomic(const ChrID &id, const Locus &l) const
             {
-                return static_cast<bool>(V_REF.findGeno(id, l));
+                return static_cast<bool>(REF.findGeno(id, l));
             }
 
             inline bool shouldChrT(const ChrID &id, const Locus &l) const
             {
-                return static_cast<bool>(V_REF.match(l, MatchRule::Contains));
+                return static_cast<bool>(REF.match(l, MatchRule::Contains));
             }
         };
         
@@ -53,12 +53,12 @@ namespace Anaquin
             
             virtual Counts countSeqs() const
             {
-                return V_REF.countSeqs();
+                return REF.countSeqs();
             }
             
             virtual Counts countInters() const
             {
-                return V_REF.countInters();
+                return REF.countInters();
             }
         };
         
@@ -79,7 +79,6 @@ namespace Anaquin
 
         static void report(const FileName &file, const Options &o = Options())
         {
-            const auto stats = VSample::stats(file, o);
             Subsampler::report(file, o, SampleImpl(), ReportImpl());
         }
     };
