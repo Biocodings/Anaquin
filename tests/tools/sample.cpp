@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "tools/sampling.hpp"
+#include "tools/sample.hpp"
 
 using namespace Anaquin;
 

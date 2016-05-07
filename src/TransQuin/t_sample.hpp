@@ -1,5 +1,5 @@
-#ifndef V_SAMPLE_HPP
-#define V_SAMPLE_HPP
+#ifndef T_SAMPLE_HPP
+#define T_SAMPLE_HPP
 
 #include "tools/sample.hpp"
 #include "tools/coverage.hpp"
@@ -7,12 +7,12 @@
 
 namespace Anaquin
 {
-    struct VSample
+    struct TSample
     {
-        struct SampleImpl : public Subsampler::StatsImpl
+        struct SampleImpl : public Subsampler::SampleImpl
         {
             #define V_REF Standard::instance().r_var
-
+            
             inline ChrID genoID() const
             {
                 return V_REF.genoID();
@@ -22,65 +22,32 @@ namespace Anaquin
             {
                 return static_cast<bool>(V_REF.findGeno(id, l));
             }
-
+            
             inline bool shouldChrT(const ChrID &id, const Locus &l) const
             {
                 return static_cast<bool>(V_REF.match(l, MatchRule::Contains));
             }
         };
         
-        struct ReportImpl : public Subsampler::ReportImpl
-        {
-            inline FileName summary() const
-            {
-                return "VarSubsample_summary.stats";
-            }
-            
-            virtual FileName beforeBG() const
-            {
-                return "VarSubsample_before.bedgraph";
-            }
-            
-            virtual FileName afterBG() const
-            {
-                return "VarSubsample_after.bedgraph";
-            }
-            
-            virtual FileName sampled() const
-            {
-                return "VarSubsample_sampled.sam";
-            }
-            
-            virtual Counts countSeqs() const
-            {
-                return V_REF.countSeqs();
-            }
-            
-            virtual Counts countInters() const
-            {
-                return V_REF.countInters();
-            }
-        };
-        
         struct Options : public AnalyzerOptions
         {
             Options() {}
-
+            
             // How coverage is calculated
             Subsampler::CoverageMethod method = Subsampler::CoverageMethod::ArithAverage;
         };
 
         typedef Subsampler::Stats Stats;
-
+        
         static Stats stats(const FileName &file, const Options &o = Options())
         {
             return Subsampler::stats(file, o, SampleImpl());
         }
-
+        
         static void report(const FileName &file, const Options &o = Options())
         {
             const auto stats = VSample::stats(file, o);
-            Subsampler::report(file, o, SampleImpl(), ReportImpl());
+            //Subsampler::report(file, o);
         }
     };
 }

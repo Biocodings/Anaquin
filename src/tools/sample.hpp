@@ -1,13 +1,38 @@
 #ifndef SAMPLE_HPP
 #define SAMPLE_HPP
 
-#include "tools/sampling.hpp"
+#include <klib/khash.h>
+#include "tools/coverage.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/writer_sam.hpp"
-#include "parsers/parser_sam.hpp"
 
 namespace Anaquin
 {
+    class SamplingTool
+    {
+        public:
+        
+        SamplingTool(double prob) : _prob(prob)
+        {
+            assert(prob >= 0.0);
+            _seed = rand();
+        }
+        
+        inline bool select(const std::string &hash) const
+        {
+            const uint32_t k = __ac_Wang_hash(__ac_X31_hash_string(hash.c_str()) ^ _seed);
+            return ((double)(k&0xffffff) / 0x1000000 >= _prob);
+        }
+        
+        private:
+        
+            // Random seed
+            int _seed;
+        
+            // The probability of selection
+            const double _prob;
+    };
+    
     struct Subsampler
     {
         enum CoverageMethod
@@ -82,14 +107,46 @@ namespace Anaquin
             return false;
         }
         
-        template <typename Options> static Stats stats(const FileName &file,
-                                                       const Options &o)
+        struct StatsImpl
         {
-            const auto &r = Standard::instance().r_var;
+            // Returns the chromosome for the genomic region
+            virtual ChrID genoID() const = 0;
+
+            // Whether the genomic region should be selected
+            virtual bool shouldGenomic(const ChrID &, const Locus &) const = 0;
+
+            // Whether the synthetic region should be selected
+            virtual bool shouldChrT(const ChrID &, const Locus &) const = 0;
+        };
+        
+        struct ReportImpl
+        {
+            // File name for the summary statistics
+            virtual FileName summary() const = 0;
             
-            assert(!r.genoID().empty());
+            // File name for the bedgraph before subsampling
+            virtual FileName beforeBG() const = 0;
             
-            o.info("Query: " + r.genoID());
+            // File Name for the bedgraph after subsampling
+            virtual FileName afterBG() const = 0;
+          
+            // File name for the subsampled alignment
+            virtual FileName sampled() const = 0;
+            
+            // Number of synthetic sequins
+            virtual Counts countSeqs() const = 0;
+            
+            // Number of genomic intervals
+            virtual Counts countInters() const = 0;
+        };
+
+        template <typename Options> static Stats stats(const FileName &file,
+                                                       const Options &o,
+                                                       const StatsImpl &impl)
+        {
+            const auto genoID = impl.genoID();
+            
+            o.info("Query: " + genoID);
             o.analyze(file);
             
             Stats stats;
@@ -101,38 +158,38 @@ namespace Anaquin
                     o.wait(std::to_string(p.i));
                 }
                 
-                return checkAlign(r.genoID(), align.cID, align.l);
+                return checkAlign(genoID, align.cID, align.l);
             });
             
             if (!stats.cov.hist.count(ChrT))
             {
                 throw std::runtime_error("Failed to find any alignment for " + ChrT);
             }
-            else if (!stats.cov.hist.count(r.genoID()))
+            else if (!stats.cov.hist.count(genoID))
             {
-                throw std::runtime_error("Failed to find any alignment for " + r.genoID());
+                throw std::runtime_error("Failed to find any alignment for " + genoID);
             }
             
             o.info(toString(sums(stats.cov.hist)) + " alignments in total");
             o.info(toString(stats.cov.hist.at(ChrT)) + " alignments to chrT");
-            o.info(toString(stats.cov.hist.at(r.genoID())) + " alignments to " + r.genoID());
+            o.info(toString(stats.cov.hist.at(genoID)) + " alignments to " + genoID);
             o.info(toString(stats.cov.inters.size()) + " intervals generated");
             
             o.info("Generating statistics for: " + ChrT);
             stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
             {
-                return static_cast<bool>(r.match(Locus(i, j), MatchRule::Contains));
+                return impl.shouldChrT(id, Locus(i,j));
             });
             
-            o.info("Generating statistics for: " + r.genoID());
-            stats.endo = stats.cov.inters.find(r.genoID())->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
+            o.info("Generating statistics for: " + genoID);
+            stats.endo = stats.cov.inters.find(genoID)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
             {
-                return static_cast<bool>(r.findGeno(r.genoID(), Locus(i, j)));
+                return impl.shouldGenomic(id, Locus(i,j));
             });
             
             assert(stats.chrT.mean && stats.endo.mean);
             
-            o.info("Calculating coverage for " + ChrT + " and " + r.genoID());
+            o.info("Calculating coverage for " + ChrT + " and " + genoID);
             
             /*
              * Now we have the data, we'll need to compare the coverage and determine what fraction that
@@ -234,9 +291,12 @@ namespace Anaquin
             writer.close();
         }
         
-        template <typename Options> static void report(const FileName &file, const Options &o)
+        template <typename Options> static void report(const FileName &file,
+                                                       const Options &o,
+                                                       const StatsImpl &si,
+                                                       const ReportImpl &ri)
         {
-            const auto &r = Standard::instance().r_var;
+            const auto genoID = si.genoID();
             
             auto meth2Str = [&]()
             {
@@ -251,14 +311,16 @@ namespace Anaquin
             
             o.info(meth2Str());
             
+            const auto sampled = ri.sampled();
+            
             // Statistics before alignment
-            const auto before = Subsampler::stats(file, o);
+            const auto before = Subsampler::stats(file, o, si);
             
             // Subsample the alignment
-            Subsampler::sample(file, o.work + "/VarSubsample_sampled.sam", before, o);
+            Subsampler::sample(file, o.work + "/" + sampled, before, o);
             
             // Statistics after alignment
-            const auto after = Subsampler::stats(o.work + "/VarSubsample_sampled.sam", o);
+            const auto after = Subsampler::stats(o.work + "/" + sampled, o, si);
             
             /*
              * Generating bedgraph before subsampling
@@ -267,11 +329,11 @@ namespace Anaquin
             auto pre = CoverageTool::CoverageBedGraphOptions();
             
             pre.writer = o.writer;
-            pre.file   = "VarSubsample_before.bedgraph";
+            pre.file   = ri.beforeBG();;
             
             CoverageTool::bedGraph(before.cov, pre, [&](const ChrID &id, Base i, Base j, Coverage)
             {
-                return checkAlign(r.genoID(), id, Locus(i, j));
+                return checkAlign(genoID, id, Locus(i, j));
             });
             
             /*
@@ -281,11 +343,11 @@ namespace Anaquin
             auto post = CoverageTool::CoverageBedGraphOptions();
             
             post.writer = o.writer;
-            post.file   = "VarSubsample_after.bedgraph";
+            post.file   = ri.afterBG();
             
             CoverageTool::bedGraph(after.cov, post, [&](const ChrID &id, Base i, Base j, Coverage)
             {
-                return checkAlign(r.genoID(), id, Locus(i, j));
+                return checkAlign(genoID, id, Locus(i, j));
             });
             
             /*
@@ -339,16 +401,16 @@ namespace Anaquin
                                  "   Depth (Synthetic): %14%\n"
                                  "   Depth (Genome):    %15%\n";
             
-            o.info("Generating VarSubsample_summary.stats");
-            o.writer->open("VarSubsample_summary.stats");
+            o.info("Generating " + ri.summary());
+            o.writer->open(ri.summary());
             o.writer->write((boost::format(summary) % file
                                                     % before.cov.unmapped
                                                     % before.cov.n_chrT
                                                     % before.cov.n_geno
                                                     % o.rChrT
-                                                    % r.countSeqs()
+                                                    % ri.countSeqs()
                                                     % o.rGeno
-                                                    % r.countInters()
+                                                    % ri.countInters()
                                                     % meth2Str()
                                                     % sums(before.cov.hist)
                                                     % before.chrTC
