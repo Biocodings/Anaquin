@@ -16,10 +16,10 @@ data <- read.csv('%3%/%4%', sep='\t')
 data$name <- paste(data$seq, data$pos, sep='_')
 data$name <- paste(data$name, data$type, sep='_')
 
-data[data$label=='FP',]$ratio  <- 1
-data[data$label=='FP',]$allele <- 1
+data[data$label=='FP',]$eFold  <- 1
+data[data$label=='FP',]$eAllele <- 1
 
-data <- data[data$type=='SNP',] # Change it to indel if required
-data <- VarQuin(seqs=data$name, ratio=as.factor(data$ratio), pval=data$pval, measured=data$allele)
+data <- data[data$type=='SNP',] # Can be changed to indels
+data <- VarQuin(seqs=data$name, ratio=as.factor(data$eFold), pval=data$pval, measured=data$eAllele)
 
 plotAlleleP(data)
