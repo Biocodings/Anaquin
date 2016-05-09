@@ -133,6 +133,7 @@
 		EFECC1721CDA04B400D579B5 /* s_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECC1701CDA04B400D579B5 /* s_discover.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFF4B1D21C53A3CA00DF6A0E /* stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */; };
 		EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF5DE161C4B8AF8001C3496 /* linear.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EFF6644A1CE0A55C00A6F0D8 /* t_sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF664491CE0A55C00A6F0D8 /* t_sample.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -392,6 +393,7 @@
 		EFF4B1D01C539FFD00DF6A0E /* stats.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = stats.hpp; path = ../src/stats/stats.hpp; sourceTree = "<group>"; };
 		EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stats.cpp; path = ../tests/stats/stats.cpp; sourceTree = "<group>"; };
 		EFF5DE161C4B8AF8001C3496 /* linear.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = linear.cpp; path = ../src/stats/linear.cpp; sourceTree = "<group>"; };
+		EFF664491CE0A55C00A6F0D8 /* t_sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_sample.cpp; path = ../src/TransQuin/t_sample.cpp; sourceTree = "<group>"; };
 		EFFAAE051CBCB16E00EE2DCB /* path.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = path.hpp; path = ../src/data/path.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -662,6 +664,7 @@
 				EF73B08D1CB292130073B1D4 /* t_kexpress.cpp */,
 				EF73B08C1CB292130073B1D4 /* t_kexpress.hpp */,
 				EFBDBDC21CB57C0200E1245C /* t_report.hpp */,
+				EFF664491CE0A55C00A6F0D8 /* t_sample.cpp */,
 				EFC4CB1B1CDD938D0053F2E7 /* t_sample.hpp */,
 				EF72781E1CACEC2F0012648F /* t_viewer.hpp */,
 			);
@@ -949,6 +952,7 @@
 				EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */,
 				EF7278471CACED620012648F /* m_coverage.cpp in Sources */,
 				EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */,
+				EFF6644A1CE0A55C00A6F0D8 /* t_sample.cpp in Sources */,
 				EFDD6A991B0DD76200450029 /* md5.c in Sources */,
 				EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,

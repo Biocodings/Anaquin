@@ -1,8 +1,8 @@
 #include <stdexcept>
 #include "writers/r_writer.hpp"
 #include "TransQuin/t_express.hpp"
-#include "parsers/parser_kallisto.hpp"
 #include "parsers/parser_cufflink.hpp"
+#include "parsers/parser_kallisto.hpp"
 #include "parsers/parser_stringtie.hpp"
 
 using namespace Anaquin;
