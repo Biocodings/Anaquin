@@ -12,6 +12,7 @@
 #include "TransQuin/t_align.hpp"
 #include "TransQuin/t_viewer.hpp"
 #include "TransQuin/t_report.hpp"
+#include "TransQuin/t_sample.hpp"
 #include "TransQuin/t_express.hpp"
 #include "TransQuin/t_kexpress.hpp"
 #include "TransQuin/t_assembly.hpp"
