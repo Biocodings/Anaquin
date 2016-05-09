@@ -47,7 +47,6 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 {
                     if (p <= o.sign)
                     {
-                        std::cout << 1 << std::endl;
                         stats.chrT.fps.push_back(m);
                     }
                     else
@@ -367,7 +366,7 @@ void VDiscover::report(const FileName &file, const Options &o)
      * Generating detailed statistics for the queries
      */
     
-    writeQuery("VarDiscover_query.stats", stats, o);
+    writeQuery("VarDiscover_queries.stats", stats, o);
 
     switch (o.soft)
     {
@@ -379,7 +378,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             
             o.info("Generating VarDiscover_ROC.R");
             o.writer->open("VarDiscover_ROC.R");
-            o.writer->write(RWriter::createScript("VarDiscover_query.stats", PlotVROC()));
+            o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVROC()));
             o.writer->close();
             
             /*
@@ -388,7 +387,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             
             o.info("Generating VarDiscover_Prob.R");
             o.writer->open("VarDiscover_Prob.R");
-            o.writer->write(RWriter::createScript("VarDiscover_query.stats", PlotVProb()));
+            o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
             o.writer->close();
 
             /*
@@ -399,7 +398,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             o.report->addTitle("VarDiscover");
             o.report->addFile("VarDiscover_summary.stats");
             o.report->addFile("VarDiscover_quins.stats");
-            o.report->addFile("VarDiscover_query.stats");
+            o.report->addFile("VarDiscover_queries.stats");
             o.report->addFile("VarDiscover_ROC.R");
             o.report->addFile("VarDiscover_Prob.R");
 
@@ -416,7 +415,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             o.report->addTitle("VarDiscover");
             o.report->addFile("VarDiscover_summary.stats");
             o.report->addFile("VarDiscover_quins.stats");
-            o.report->addFile("VarDiscover_query.stats");
+            o.report->addFile("VarDiscover_queries.stats");
 
             break;
         }
