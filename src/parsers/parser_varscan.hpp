@@ -4,6 +4,7 @@
 #include "data/tokens.hpp"
 #include "data/variant.hpp"
 #include "parsers/parser.hpp"
+#include <boost/algorithm/string.hpp>
 
 namespace Anaquin
 {
@@ -58,18 +59,50 @@ namespace Anaquin
                 // Always start and end at the same position
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
-                d.ref = toks[Ref];
-
                 d.readR = stod(toks[Reads1]);
                 d.readV = stod(toks[Reads2]);
-
-                // Why it's shown as a variant if there's no variant supporting reads?
+                
+                // Why it's shown as a variant if no variant supporting reads?
                 if (!d.readV)
                 {
                     continue;
                 }
+                
+                if (toks[Cons][0] == '*')
+                {
+                    /*
+                     * Eg:
+                     *
+                     *     chrT	8288872	C	* /-CCTG	2443	367	13.05%	2	2	29	19	1.8024382198605343E-112	1	1	1228	1215	186	181	-CCTG
+                     *
+                     */
 
-                d.alt = toks[VarAllele];
+                    // Eg: C*/-CCTG
+                    d.ref = toks[Ref] + toks[Cons];
+
+                    // Eg: C/-CCTG
+                    boost::replace_all(d.ref, "*", "");
+                    
+                    // Eg: C-CCTG
+                    boost::replace_all(d.ref, "/", "");
+                    
+                    // Eg: CCCTG
+                    boost::replace_all(d.ref, "-", "");
+                    
+                    // Eg: -CCTG
+                    auto tmp = toks[VarAllele];
+                    
+                    // Eg: CCTG
+                    boost::replace_all(tmp, "-", "");
+                    
+                    // Eg: C
+                    boost::replace_all(d.alt = d.ref, tmp, "");
+                }
+                else
+                {
+                    d.ref = toks[Ref];
+                    d.alt = toks[VarAllele];
+                }
                 
                 try
                 {

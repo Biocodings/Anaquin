@@ -12,27 +12,33 @@
     require(gridExtra)
     
     data <- data$seqs
-    stopifnot(!is.null(data$pval) & !is.null(data$label))
     
-    data <- data[, order(names(data))]
-    
-    # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
-    if (shouldPseuoLog)
-    {
-        data$lpval <- log2(data$pval + 0.00001)
-    }
-    else
-    {
-        data$lpval <- log2(data$pval)
-    }
-
-    # Turn the probabilities into ranking classifer
-    data$score <- 1-data$lpval
-
     if (is.null(data$ratio))
     {
         data$ratio <- abs(round(data$expected))
     }
+
+    stopifnot(!is.null(data$pval))
+    stopifnot(!is.null(data$ratio))
+    stopifnot(!is.null(data$label))
+    
+    data <- data[, order(names(data))]
+    data <- data.frame(label=data$label,
+                       pval=data$pval,
+                       ratio=data$ratio)
+
+    # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
+    if (shouldPseuoLog)
+    {
+        data$pval <- log2(data$pval + 0.00001)
+    }
+    else
+    {
+        data$pval <- log2(data$pval)
+    }
+
+    # Turn the probabilities into ranking classifer
+    data$score <- 1-data$pval
 
     rocDat <- NULL
     aucDat <- NULL
@@ -51,7 +57,7 @@
                 t <- data[!is.na(data$ratio) & (data$ratio == ratio | data$ratio == refRatio),]                
             }
             
-            print(paste(c('Detectd for ', ratio, ': ', nrow(t)), collapse = ''))
+            #print(paste(c('Detectd for ', ratio, ': ', nrow(t)), collapse = ''))
             
             # No false-positive or true-positive?
             if (length(unique(t$label)) == 1)
@@ -59,13 +65,13 @@
                 # No TP... Add a TP...
                 if (unique(t$label) == 'FP')
                 {
-                    x <- data.frame(label='TP', pval=0, ratio=ratio, lpval=0, score=0)
+                    x <- data.frame(label='TP', pval=0, ratio=ratio, score=0)
                 }
             
                 # No FP... Add a FP...
                 else
                 {
-                    x <- data.frame(label='FP', pval=0, ratio=ratio, lpval=0, score=0)                    
+                    x <- data.frame(label='FP', pval=0, ratio=ratio, score=0)                    
                 }
                 
                 t  <- rbind(t, x)
@@ -100,9 +106,9 @@
     
     p <- ggplot(data=rocDat, aes(x=FPR, y=TPR))              + 
             geom_path(size=1, aes(colour=ratio), alpha=0.7)  + 
-            geom_point(size=2, aes(colour=ratio), alpha=0.7) + 
+            geom_point(size=1, aes(colour=ratio), alpha=0.7) + 
             geom_abline(intercept=0, slope=1, linetype=2)    +
-            labs(colour='Fold')                              +
+            labs(colour='')                                  +
             theme_bw()
     
     if (!is.null(title))

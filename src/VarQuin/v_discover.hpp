@@ -76,7 +76,7 @@ namespace Anaquin
             // Statistics for synthetic variants
             ChrTStats chrT;
 
-            // Statistics for endogenous variants
+            // Statistics for genomic variants
             GenoStats geno;
             
             // Distribution for variants

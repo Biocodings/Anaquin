@@ -47,6 +47,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 {
                     if (p <= o.sign)
                     {
+                        std::cout << 1 << std::endl;
                         stats.chrT.fps.push_back(m);
                     }
                     else
@@ -137,21 +138,68 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Stats &stats,
                        const VDiscover::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+
     o.writer->open("VarDiscover_quins.stats");
+    o.writer->write((boost::format(format) % "seq"
+                                           % "pos"
+                                           % "label"
+                                           % "ref"
+                                           % "var"
+                                           % "eFold"
+                                           % "eAllele"
+                                           % "pval"
+                                           % "type").str());
 
     for (const auto &i : stats.hist)
     {
         const auto &r = Standard::instance().r_var;
         
-        if (!i.second)
+        if (i.second)
+        {
+            auto f = [&](const std::vector<VDiscover::Stats::ChrTData> &x, const std::string &label)
+            {
+                for (const auto &j : x)
+                {
+                    if (i.first == j.seq->key())
+                    {
+                        o.writer->write((boost::format(format) % j.seq->id
+                                                               % j.query.l.start
+                                                               % label
+                                                               % j.query.readR
+                                                               % j.query.readV
+                                                               % j.eFold
+                                                               % j.eAllFreq
+                                                               % (isnan(j.query.p) ? "-" : p2str(j.query.p))
+                                                               % type2str(j.query.type())).str());
+                        return true;
+                    }
+                }
+                
+                return false;
+            };
+            
+            if (!f(stats.chrT.tps, "TP") &&
+                !f(stats.chrT.fps, "FP") &&
+                !f(stats.chrT.tns, "TN") &&
+                !f(stats.chrT.fns, "FN"))
+            {
+                throw std::runtime_error("Failed to find hash key in writeQuins()");
+            }
+        }
+        else
         {
             const auto m = r.hashVar(i.first);
             assert(m);
             
             o.writer->write((boost::format(format) % m->id
-                                                   % "MISSING"
                                                    % m->l.start
+                                                   % "FN"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
+                                                   % "NA"
                                                    % type2str(m->type())).str());
         }
     }
@@ -164,14 +212,14 @@ static void writeQuery(const FileName &file, const VDiscover::Stats &stats, cons
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "sequin"
+    o.writer->write((boost::format(format) % "seq"
                                            % "pos"
                                            % "label"
-                                           % "pval"
                                            % "ref"
                                            % "var"
-                                           % "ratio"
-                                           % "allele"
+                                           % "eFold"
+                                           % "eAllele"
+                                           % "pval"
                                            % "type").str());
 
     auto f = [&](const std::vector<VDiscover::Stats::ChrTData> &x, const std::string &label)
@@ -181,11 +229,11 @@ static void writeQuery(const FileName &file, const VDiscover::Stats &stats, cons
             o.writer->write((boost::format(format) % i.seq->id
                                                    % i.query.l.start
                                                    % label
-                                                   % (isnan(i.query.p) ? "-" : p2str(i.query.p))
                                                    % i.query.readR
                                                    % i.query.readV
                                                    % i.eFold
                                                    % i.eAllFreq
+                                                   % (isnan(i.query.p) ? "-" : p2str(i.query.p))
                                                    % type2str(i.query.type())).str());
         }
     };
@@ -331,7 +379,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             
             o.info("Generating VarDiscover_ROC.R");
             o.writer->open("VarDiscover_ROC.R");
-            o.writer->write(RWriter::createScript("VarDiscover_quins.stats", PlotVROC()));
+            o.writer->write(RWriter::createScript("VarDiscover_query.stats", PlotVROC()));
             o.writer->close();
             
             /*
@@ -340,12 +388,37 @@ void VDiscover::report(const FileName &file, const Options &o)
             
             o.info("Generating VarDiscover_Prob.R");
             o.writer->open("VarDiscover_Prob.R");
-            o.writer->write(RWriter::createScript("VarDiscover_quins.stats", PlotVProb()));
+            o.writer->write(RWriter::createScript("VarDiscover_query.stats", PlotVProb()));
             o.writer->close();
+
+            /*
+             * Generating a PDF report
+             */
+            
+            o.report->open("VarDiscover_report.pdf");
+            o.report->addTitle("VarDiscover");
+            o.report->addFile("VarDiscover_summary.stats");
+            o.report->addFile("VarDiscover_quins.stats");
+            o.report->addFile("VarDiscover_query.stats");
+            o.report->addFile("VarDiscover_ROC.R");
+            o.report->addFile("VarDiscover_Prob.R");
 
             break;
         }
 
-        default: { break; }
+        default:
+        {
+            /*
+             * Generating a PDF report
+             */
+            
+            o.report->open("VarDiscover_report.pdf");
+            o.report->addTitle("VarDiscover");
+            o.report->addFile("VarDiscover_summary.stats");
+            o.report->addFile("VarDiscover_quins.stats");
+            o.report->addFile("VarDiscover_query.stats");
+
+            break;
+        }
     }
 }

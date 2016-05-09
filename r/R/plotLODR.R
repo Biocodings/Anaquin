@@ -259,7 +259,8 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
                     xname='Expected allele frequency (log10)',
                     yname='P-value (log10)',
                     xBreaks=xBreaks,
-                    xLabels=xLabels)
+                    xLabels=xLabels,
+                    p_size = 2)
 }
 
 .plotLODR <- function(data, ...)
@@ -274,8 +275,16 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     stopifnot(!is.null(data$measured))
     
     x <- list(...)
-    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=3) + theme_bw()
+    
+    #
+    # Fill out optional graphical parameters
+    #
+    
+    if (is.null(x$p_size)) { x$p_size <- 3 }
 
+    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=x$p_size) + theme_bw()
+    p <- p + labs(colour='')
+    
     x$xBreaks <- 10^(0:round(log10(max(data$measured)))-1)
     x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
     x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)

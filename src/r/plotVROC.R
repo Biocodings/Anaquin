@@ -12,11 +12,11 @@ library(Anaquin)
 sign <- 0.10
 
 data <- read.csv('%3%/%4%', sep='\t')
-data <- data[data$pval <= sign,]
+data <- data[!is.na(data$pval) & data$pval <= sign,]
 
 data$name <- paste(data$sequin, data$pos, sep='_')
 data$name <- paste(data$name, data$type, sep='_')
 
-data <- VarQuin(seqs=data$name, ratio=data$ratio, pval=data$pval, label=data$label)
+data <- VarQuin(seqs=data$name, expected=log2(data$eFold), pval=data$pval, label=data$label)
 
 plotROC(data)

@@ -4,9 +4,19 @@
 #include <cmath>
 #include <data/locus.hpp>
 #include <data/biology.hpp>
+#include <boost/format.hpp>
 
 namespace Anaquin
 {
+    inline long var2hash(const SequinID &id, Mutation type, const Locus &l)
+    {
+        const auto str = (boost::format("%1%_%2%_%3%_%4%") % id
+                                                           % type
+                                                           % l.start
+                                                           % l.end).str();
+        return std::hash<std::string>{}(str);
+    }
+
     struct Variant
     {
         operator const Locus &() const { return l; }
@@ -46,7 +56,12 @@ namespace Anaquin
         {
             return static_cast<Proportion>(readV) / (readR + readV);
         }
-
+        
+        inline long key() const
+        {
+            return var2hash(id, type(), l);
+        }
+        
         // Eg: chrT
         ChrID cID;
 

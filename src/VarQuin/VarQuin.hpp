@@ -1,7 +1,6 @@
 #ifndef VARQUIN_HPP
 #define VARQUIN_HPP
 
-#include <boost/format.hpp>
 #include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
 #include "parsers/parser_varscan.hpp"
@@ -53,15 +52,6 @@ namespace Anaquin
         bool ref;
     };
 
-    inline long var2hash(const SequinID &id, Mutation type, const Locus &l)
-    {
-        const auto str = (boost::format("%1%_%2%_%3%_%4%") % id
-                                                           % type
-                                                           % l.start
-                                                           % l.end).str();
-        return std::hash<std::string>{}(str);
-    }
-    
     inline bool isRefID(const SequinID &id)
     {
         if (boost::algorithm::ends_with(id, "_R"))

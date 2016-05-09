@@ -104,6 +104,10 @@ VarQuin <- function(...)
 {
     x <- list(...)
     
+    #
+    #  pval - Probability of detection under the null hypothesis
+    #
+    
     keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'expected', 'measured', 'bedgr', 'annot')
     data <- .createData(x, keys)
     
