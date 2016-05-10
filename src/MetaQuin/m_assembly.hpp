@@ -5,7 +5,7 @@
 #include "data/tokens.hpp"
 #include "MetaQuin/m_blat.hpp"
 #include "stats/analyzer.hpp"
-#include "MetaQuin/m_assembler.hpp"
+#include "MetaQuin/MetaQuin.hpp"
 
 namespace Anaquin
 {
@@ -16,15 +16,21 @@ namespace Anaquin
             MetaQuast,
         };
 
-        struct Stats : public DAsssembly::Stats<Contig>
+        struct Stats : public LinearStats
         {
-            // Statistics for the alignment
-            MBlat::Stats blat;
+            // Statistics for de-novo assembly
+            DAsssembly::Stats<DAsssembly::Contig> dnovo;
         };
-
+        
         struct Options : public AnalyzerOptions
         {
             Options() {}
+
+            // Eg: alignments_contigs.tsv (MetaQuast)
+            FileName contigs;
+            
+            // Eg: genome_info.txt (MetaQuast)
+            FileName genome;
 
             Software soft;
         };

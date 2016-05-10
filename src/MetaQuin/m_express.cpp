@@ -29,11 +29,13 @@ MExpress::Stats MExpress::analyze(const FileName &file, const MExpress::Options 
  
     o.info("Analyzing: " + file);
 
+/*
     switch (o.soft)
     {
-        case Software::Velvet:  { stats.assembly = Velvet::analyze<MAssembly::Stats, Contig>(file, &t);             break; }
-        case Software::RayMeta: { stats.assembly = RayMeta::analyze<MAssembly::Stats, Contig>(file, o.contigs, &t); break; }
+        case Software::Velvet:  { stats.assembly = Velvet::analyze<MAssembly::Stats, DAsssembly::Contig>(file, &t);             break; }
+        case Software::RayMeta: { stats.assembly = RayMeta::analyze<MAssembly::Stats, DAsssembly::Contig>(file, o.contigs, &t); break; }
     }
+*/
 
     stats.blat = t;
  

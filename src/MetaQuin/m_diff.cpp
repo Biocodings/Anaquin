@@ -29,10 +29,10 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
      */
     
     o.info((boost::format("Analyzing: %1%") % file_1).str());
-    const auto dStats_1 = Velvet::analyze<MAssembly::Stats, Contig>(file_1, &stats.align_1);
+    const auto dStats_1 = Velvet::analyze<MAssembly::Stats, DAsssembly::Contig>(file_1, &stats.align_1);
     
     o.info((boost::format("Analyzing: %1%") % file_2).str());
-    const auto dStats_2 = Velvet::analyze<MAssembly::Stats, Contig>(file_2, &stats.align_2);
+    const auto dStats_2 = Velvet::analyze<MAssembly::Stats, DAsssembly::Contig>(file_2, &stats.align_2);
     
     /*
      * Plot the coverage relative to the known concentration (in attamoles/ul) of each assembled contig.
@@ -113,11 +113,11 @@ MDiff::Stats MDiff::analyze(const FileName &file_1, const FileName &file_2, cons
         }
     }
     
-    stats.n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
-    stats.n_geno = (dStats_1.n + dStats_2.n) - stats.n_chrT;
+    //stats.n_chrT = dStats_1.contigs.size() + dStats_2.contigs.size();
+    //stats.n_geno = (dStats_1.n + dStats_2.n) - stats.n_chrT;
     
     // Calculating the absolute detection limit
-    stats.limit = r.absolute(stats.hist);
+    //stats.limit = r.absolute(stats.hist);
     
     o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.size()).str());
 

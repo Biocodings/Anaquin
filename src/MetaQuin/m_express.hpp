@@ -52,39 +52,39 @@ namespace Anaquin
                 
                 for (auto i = 0; i < align.contigs.size(); i++)
                 {
-                    if (!bStats.aligns.count(align.contigs[i].id))
-                    {
-                        continue;
-                    }
-                    else if (!dStats.contigs.count(align.contigs[i].id))
-                    {
-                        o.warn((boost::format("%1% not found in the input file") % align.contigs[i].id).str());
-                        continue;
-                    }
-                    
-                    const auto &contig = dStats.contigs.at(align.contigs[i].id);
-
-                    assert(align.seq->l.length());
-                    assert(contig.k_cov && contig.k_len);
-                    
-                    sumKLength += contig.k_len;
-                    
-                    // Normalized k-mer coverage
-                    const auto n_cov = contig.normalized();
-
-                    switch (cov)
-                    {
-                        case WendySmooth:    { measured += n_cov * contig.k_len;          break; }
-                        case KMerCov_Contig: { measured += n_cov / contig.k_len;          break; }
-                        case KMerCov_Sequin: { measured += n_cov / align.seq->l.length(); break; }
-                    }
-                    
-                    /*
-                     * Calculate for the average depth for alignment and sequin
-                     */
-                    
-                    align.depthAlign  += align.contigs[i].l.length() * contig.k_cov / align.contigs[i].l.length();
-                    align.depthSequin += align.contigs[i].l.length() * contig.k_cov;
+//                    if (!bStats.aligns.count(align.contigs[i].id))
+//                    {
+//                        continue;
+//                    }
+//                    else if (!dStats.contigs.count(align.contigs[i].id))
+//                    {
+//                        o.warn((boost::format("%1% not found in the input file") % align.contigs[i].id).str());
+//                        continue;
+//                    }
+//                    
+//                    const auto &contig = dStats.contigs.at(align.contigs[i].id);
+//
+//                    assert(align.seq->l.length());
+//                    assert(contig.k_cov && contig.k_len);
+//                    
+//                    sumKLength += contig.k_len;
+//                    
+//                    // Normalized k-mer coverage
+//                    const auto n_cov = contig.normalized();
+//
+//                    switch (cov)
+//                    {
+//                        case WendySmooth:    { measured += n_cov * contig.k_len;          break; }
+//                        case KMerCov_Contig: { measured += n_cov / contig.k_len;          break; }
+//                        case KMerCov_Sequin: { measured += n_cov / align.seq->l.length(); break; }
+//                    }
+//                    
+//                    /*
+//                     * Calculate for the average depth for alignment and sequin
+//                     */
+//                    
+//                    align.depthAlign  += align.contigs[i].l.length() * contig.k_cov / align.contigs[i].l.length();
+//                    align.depthSequin += align.contigs[i].l.length() * contig.k_cov;
                 }
                 
                 if (o.coverage == WendySmooth)
@@ -108,7 +108,7 @@ namespace Anaquin
             MBlat::Stats blat;
             
             // Statistics for the assembly
-            DAsssembly::Stats<Contig> assembly;
+            DAsssembly::Stats<DAsssembly::Contig> assembly;
             
             // Distribution of the sequins
             SequinHist hist;

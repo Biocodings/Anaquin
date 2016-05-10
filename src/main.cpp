@@ -49,6 +49,7 @@
 #include "FusQuin/f_coverage.hpp"
 
 #include "parsers/parser_cdiff.hpp"
+#include "parsers/parser_quast.hpp"
 #include "parsers/parser_cufflink.hpp"
 
 #include "writers/pdf_writer.hpp"
@@ -443,6 +444,79 @@ static void printVersion()
     std::cout << "v1.1.1" << std::endl;
 }
 
+template <typename F> bool testFile(const FileName &x, F f)
+{
+    try
+    {
+        // Anything found?
+        if (!f(x))
+        {
+            return false;
+        }
+    }
+    catch (...)
+    {
+        return false;
+    }
+    
+    return true;
+}
+
+template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileName &x,
+                                                                     const FileName &y,
+                                                                     const FileName &z,
+                                                                     F1 f1,
+                                                                     F2 f2)
+{
+    #define ORDER(a,b,c) std::vector<FileName> { a,b,c };
+
+    if (testFile(x, f1))
+    {
+        /*
+         * [x,?,?]
+         */
+        
+        if (testFile(y, f2))
+        {
+            return ORDER(x,y,z);
+        }
+        else
+        {
+            return ORDER(x,z,y);
+        }
+    }
+    else if (testFile(y, f1))
+    {
+        /*
+         * [y,?,?]
+         */
+        
+        if (testFile(x, f2))
+        {
+            return ORDER(y,x,z);
+        }
+        else
+        {
+            return ORDER(y,z,x);
+        }
+    }
+    else
+    {
+        /*
+         * [z,?,?]
+         */
+        
+        if (testFile(x, f2))
+        {
+            return ORDER(z,x,y);
+        }
+        else
+        {
+            return ORDER(z,y,x);
+        }
+    }
+}
+
 // Print a file of mixture A and B
 static void print(Reader &r)
 {
@@ -710,11 +784,6 @@ template <typename Viewer> void viewer(typename Viewer::Options o = typename Vie
 
 template <typename Analyzer, typename Files> void analyze(const Files &files, typename Analyzer::Options o = typename Analyzer::Options())
 {
-    if (_p.inputs.size() != 1)
-    {
-        throw NotSingleInputError();
-    }
-
     return startAnalysis<Analyzer>([&](const typename Analyzer::Options &o)
     {
         Analyzer::report(files, o);
@@ -1766,7 +1835,51 @@ void parse(int argc, char ** argv)
                             
                             o.soft = soft;
                             
-                            analyze_1<MAssembly>(OPT_U_FILES, o);
+                            switch (o.soft)
+                            {
+                                case MAssembly::MetaQuast:
+                                {
+                                    const auto checkGenome = [&](const FileName &x)
+                                    {
+                                        Counts n = 0;
+                                        
+                                        ParserQuast::parseGenome(Reader(x),
+                                                                 [&](const ParserQuast::GenomeData &,
+                                                                     const ParserProgress &)
+                                        {
+                                            n++;
+                                        });
+                                        
+                                        return n;
+                                    };
+
+                                    const auto checkContigs = [&](const FileName &x)
+                                    {
+                                        Counts n = 0;
+
+                                        ParserQuast::parseContigs(Reader(x),
+                                                                 [&](const ParserQuast::ContigData &,
+                                                                     const ParserProgress &)
+                                        {
+                                            n++;
+                                        });
+                                        
+                                        return n;
+                                    };
+
+                                    const auto sorted = sortInputs(_p.inputs[0],
+                                                                   _p.inputs[1],
+                                                                   _p.inputs[2],
+                                                                   checkGenome,
+                                                                   checkContigs);
+                                    o.genome  = sorted[0];
+                                    o.contigs = sorted[1];
+
+                                    analyze<MAssembly>(sorted[2], o);
+                                    break;
+                                }
+                            }
+                            
                             break;
                         }
                             
