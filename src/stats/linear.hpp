@@ -136,6 +136,9 @@ namespace Anaquin
         {
             std::vector<SequinID> ids;
             std::vector<double> x, y;
+
+            std::map<SequinID, double> id2x;
+            std::map<SequinID, double> id2y;
         };
 
         // Absolute detection limit

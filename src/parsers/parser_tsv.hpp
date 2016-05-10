@@ -2,6 +2,7 @@
 #define PARSER_TSV_HPP
 
 #include "data/tokens.hpp"
+#include "data/reader.hpp"
 #include "parsers/parser.hpp"
 
 namespace Anaquin

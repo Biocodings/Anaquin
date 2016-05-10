@@ -5,7 +5,7 @@ using namespace Anaquin;
 
 LinearStats::Data LinearStats::data(bool shouldLog) const
 {
-    Data d;
+    Data r;
     
     auto f = [&](double v)
     {
@@ -19,14 +19,19 @@ LinearStats::Data LinearStats::data(bool shouldLog) const
     {
         if (!isnan(p.second.x) && !isnan(p.second.y))
         {
+            const auto x = f(p.second.x);
+            const auto y = f(p.second.y);
             
-            d.x.push_back(f(p.second.x));
-            d.y.push_back(f(p.second.y));
-            d.ids.push_back(p.first);
+            r.x.push_back(x);
+            r.y.push_back(y);
+            r.ids.push_back(p.first);
+            
+            r.id2x[p.first] = x;
+            r.id2y[p.first] = y;
         }
     }
     
-    return d;
+    return r;
 }
 
 LOQModel LinearStats::limitQuant(bool shouldLog) const

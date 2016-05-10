@@ -1,9 +1,10 @@
 #ifndef META_QUIN_HPP
 #define META_QUIN_HPP
 
-#include "MetaQuin/m_histogram.h"
+#include "MetaQuin/m_blat.hpp"
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_tsv.hpp"
+#include "MetaQuin/m_histogram.h"
 
 namespace Anaquin
 {
@@ -66,8 +67,14 @@ namespace Anaquin
                 
                 if (seqID.empty())
                 {
+                    stats.n_geno++;
+                    
                     // Don't bother if the contig isn't part of the sequins...
                     return;
+                }
+                else
+                {
+                    stats.n_chrT++;
                 }
                 
                 // Size of the config
@@ -75,9 +82,6 @@ namespace Anaquin
                 
                 // The histogram needs the size of the sequence
                 hist.insert(x.seq.size());
-                
-                // Allows to apply custom operation
-                //f(c);
                 
                 stats.contigs[seqID] = c;
 
