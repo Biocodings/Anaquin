@@ -7,6 +7,7 @@
 .plotSensitivity <- function(data, limit, title='', xlab='', ylab='', showLimit=TRUE, showGuide=FALSE)
 {
     require(ggplot2)
+    require(reshape2)
 
     data     <- data$seqs
     data$x   <- data$expected
@@ -16,14 +17,26 @@
     stopifnot(length(data$x) > 0)
     stopifnot(length(data$x) == length((data$y)) || length(data$x) == nrow((data$y)))
     
+    sigmoid = function(params, x) {
+        params[1] / (1 + exp(-params[2] * (x - params[3])))
+    }
     
-    p <- ggplot(data=data, aes(x=x, y=y)) +
-                               xlab(xlab) +
-                               ylab(ylab) +
-                               ggtitle(title) +
-                               geom_point(aes(colour=grp), size=2, alpha=1.0) +        
-                               theme_bw()
+    x <- data$x
+    y <- data$y
+    
+    fitmodel <- nls(y~a/(1 + exp(-b * (x-c))), start=list(a=1,b=1,c=0))
+    
+    params=coef(fitmodel)
+    data$f <- sigmoid(params,x)
 
+    p <- ggplot(data=data, aes(x)) +
+                        xlab(xlab) +
+                        ylab(ylab) +
+                    ggtitle(title) +
+                        theme_bw()
+
+    p <- p + geom_point(aes(y=y, colour="1"), alpha=1.0)
+    p <- p + geom_line(aes(y=f, colour="2"), alpha=1.0)
     p <- p + theme(axis.title.x=element_text(face='bold', size=12))
     p <- p + theme(axis.title.y=element_text(face='bold', size=12))
 
