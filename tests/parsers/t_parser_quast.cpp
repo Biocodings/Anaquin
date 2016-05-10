@@ -4,11 +4,36 @@
 
 using namespace Anaquin;
 
-TEST_CASE("ParserQuast_Test")
+TEST_CASE("ParserQuast_TestContig")
+{
+    std::vector<ParserQuast::ContigData> x;
+    
+    ParserQuast::parseContigs(Reader("tests/data/alignments_Contigs.tsv"), [&](const ParserQuast::ContigData &d, const ParserProgress &)
+    {
+        x.push_back(d);
+    });
+    
+    REQUIRE(x[0].id == "M3_G");
+    REQUIRE(x[1].id == "MG_28");
+    REQUIRE(x[2].id == "MG_23");
+    
+    REQUIRE(x[0].contigs.size() == 1);
+    REQUIRE(x[1].contigs.size() == 2);
+    REQUIRE(x[2].contigs.size() == 1);
+    
+    REQUIRE(x[0].contigs[0] == "contig-2042000000_1793_nucleotides");
+    REQUIRE(x[1].contigs[0] == "contig-1936000000_2957_nucleotides");
+    REQUIRE(x[1].contigs[1] == "contig-21984000000_278_nucleotides");
+    REQUIRE(x[2].contigs[0] == "contig-51786000000_140751_nucleotides");
+    
+    REQUIRE(x.size() == 30);
+}
+
+TEST_CASE("ParserQuast_TestGenome")
 {
     std::vector<ParserQuast::GenomeData> x;
     
-    ParserQuast::parseGenomeInfo(Reader("tests/data/genome_info.txt"), [&](const ParserQuast::GenomeData &d, const ParserProgress &)
+    ParserQuast::parseGenome(Reader("tests/data/genome_info.txt"), [&](const ParserQuast::GenomeData &d, const ParserProgress &)
     {
         x.push_back(d);
     });
@@ -23,8 +48,8 @@ TEST_CASE("ParserQuast_Test")
     REQUIRE(x.size() == 63);
 }
 
-TEST_CASE("ParserQuast_Invalid")
+TEST_CASE("ParserQuast_InvalidGenome")
 {
-    REQUIRE_THROWS(ParserQuast::parseGenomeInfo(Reader("tests/data/DESeq2.csv"),
+    REQUIRE_THROWS(ParserQuast::parseGenome(Reader("tests/data/DESeq2.csv"),
                     [&](const ParserQuast::GenomeData &d, const ParserProgress &) {}));
 }
