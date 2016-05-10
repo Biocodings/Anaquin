@@ -266,7 +266,7 @@
 		EF72782C1CACEC5E0012648F /* l_diff.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = l_diff.hpp; path = ../src/LadQuin/l_diff.hpp; sourceTree = "<group>"; };
 		EF7278351CACEC940012648F /* m_express.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_express.cpp; sourceTree = "<group>"; };
 		EF7278361CACEC940012648F /* m_express.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_express.hpp; sourceTree = "<group>"; };
-		EF7278371CACEC940012648F /* m_assembler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembler.hpp; sourceTree = "<group>"; };
+		EF7278371CACEC940012648F /* MetaQuin.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetaQuin.hpp; sourceTree = "<group>"; };
 		EF7278381CACEC940012648F /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EF7278391CACEC940012648F /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
 		EF72783A1CACEC940012648F /* m_blat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_blat.cpp; sourceTree = "<group>"; };
@@ -687,9 +687,6 @@
 		EF7278341CACEC940012648F /* MetaQuin */ = {
 			isa = PBXGroup;
 			children = (
-				EF7278351CACEC940012648F /* m_express.cpp */,
-				EF7278361CACEC940012648F /* m_express.hpp */,
-				EF7278371CACEC940012648F /* m_assembler.hpp */,
 				EF7278381CACEC940012648F /* m_assembly.cpp */,
 				EF7278391CACEC940012648F /* m_assembly.hpp */,
 				EF72783A1CACEC940012648F /* m_blat.cpp */,
@@ -698,9 +695,12 @@
 				EF72783D1CACEC940012648F /* m_coverage.hpp */,
 				EF72783E1CACEC940012648F /* m_diff.cpp */,
 				EF72783F1CACEC940012648F /* m_diff.hpp */,
+				EF7278351CACEC940012648F /* m_express.cpp */,
+				EF7278361CACEC940012648F /* m_express.hpp */,
 				EF7278401CACEC940012648F /* m_histogram.cpp */,
 				EF7278411CACEC940012648F /* m_histogram.h */,
 				EF7278421CACEC940012648F /* m_viewer.hpp */,
+				EF7278371CACEC940012648F /* MetaQuin.hpp */,
 			);
 			name = MetaQuin;
 			path = ../src/MetaQuin;
