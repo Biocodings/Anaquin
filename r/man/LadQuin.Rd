@@ -13,7 +13,6 @@ Specify a design for ladder analysis.
   The latest mixture files can be downloaded at www.sequin.xyz, it is important to use the correct mixture file. More details available at the website.
   
   Alternatively, \code{mix} can be 'A', 'B' or 'AB', for mixture A, B and AB respectively. Anaquin will download the mixture files, thus active Internet connection is required.}
-  \item{annot} {the name of the annotation file for ladder analysis. The format of the file varies by analysis. Please check your analysis for further details.}
 }
 
 \details{
@@ -30,13 +29,6 @@ Specify a design for ladder analysis.
 \author{Ted Wong \email{t.wong@garvan.org.au}}
 \note{The interface might change in future release as the command-line \code{Anaquin}
   stabilises its own API.}
-\seealso
-{
-\code{\link{TransQuin}}
-\code{\link{VarQuin}}
-\code{\link{FusQuin}}
-\code{\link{MetaQuin}}
-}
 \examples{
 # Load a mixture from file
 LadQuin(mix='/home/tedwong/mixture.csv')

@@ -132,7 +132,6 @@ typedef std::set<Value> Range;
 #define OPT_PSL     905
 #define OPT_PSL_1   906
 #define OPT_PSL_2   907
-#define OPT_U_COV   908
 #define OPT_U_FILES 909
 #define OPT_C_FILES 910
 #define OPT_REPORT  911
@@ -252,10 +251,10 @@ static std::map<Tool, std::set<Option>> _required =
      * Metagenomics Analysis
      */
 
-    { TOOL_M_IGV,      { OPT_U_FILES                                              } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT                       } },
-    { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_PSL, OPT_U_FILES, OPT_SOFT              } },
-    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES                                   } },
+    { TOOL_M_IGV,      { OPT_U_FILES } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT } },
+    { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
+    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES             } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
 
     /*
@@ -405,7 +404,6 @@ static const struct option long_options[] =
     { "rpsl",    required_argument, 0, OPT_PSL    },
     { "rpsl1",   required_argument, 0, OPT_PSL_1  },
     { "rpsl2",   required_argument, 0, OPT_PSL_2  },
-    { "rcov",    required_argument, 0, OPT_U_COV  },
 
     { "fuzzy",   required_argument, 0, OPT_FUZZY },
     
@@ -830,7 +828,7 @@ template < typename Analyzer> void analyze_n(typename Analyzer::Options o = type
  * Functions for parsing string to enums
  */
 
-template <typename T> T parseEnum(const std::string &key, const std::string &str, const std::map<std::string, T> &m)
+template <typename T> T parseEnum(const std::string &key, const std::string &str, const std::map<Value, T> &m)
 {
     for (const auto &i : m)
     {
@@ -843,9 +841,9 @@ template <typename T> T parseEnum(const std::string &key, const std::string &str
     throw InvalidValueException(str, key);
 };
 
-template <typename T> T parseCSoft(const std::string &str, const std::string &key)
+template <typename T> T parseCSoft(const Value &str, const std::string &key)
 {
-    const static std::map<std::string, T> m =
+    const static std::map<Value, T> m =
     {
         { "HTSeqCount", T::HTSeqCount },
     };
@@ -1093,7 +1091,6 @@ void parse(int argc, char ** argv)
             }
 
             case OPT_PSL:
-            case OPT_U_COV:
             case OPT_PSL_2:
             case OPT_PSL_1:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
@@ -1308,7 +1305,7 @@ void parse(int argc, char ** argv)
                     
                     auto parseSoft = [&](const std::string &key, const std::string &str)
                     {
-                        const static std::map<std::string, TExpress::Software> m =
+                        const static std::map<Value, TExpress::Software> m =
                         {
                             { "kallisto",  TExpress::Software::Kallisto  },
                             { "cufflink",  TExpress::Software::Cufflinks },
@@ -1341,7 +1338,7 @@ void parse(int argc, char ** argv)
                 {
                     auto parseSoft = [&](const std::string &str)
                     {
-                        const static std::map<std::string, TDiff::Software> m =
+                        const static std::map<Value, TDiff::Software> m =
                         {
                             { "sleuth",   TDiff::Software::Sleuth   },
                             { "edgeR",    TDiff::Software::edgeR    },
@@ -1459,7 +1456,7 @@ void parse(int argc, char ** argv)
         {
             auto parseAligner = [&](const std::string &str)
             {
-                const static std::map<std::string, FusionCaller> m =
+                const static std::map<Value, FusionCaller> m =
                 {
                     { "Star"        , FusionCaller::StarFusion   },
                     { "StarFusion"  , FusionCaller::StarFusion   },
@@ -1589,7 +1586,7 @@ void parse(int argc, char ** argv)
         {
             auto parseExpress = [&](const std::string &str)
             {
-                const static std::map<std::string, VExpress::Software> m =
+                const static std::map<Value, VExpress::Software> m =
                 {
                     { "kallisto", VExpress::Software::Kallisto },
                 };
@@ -1674,7 +1671,7 @@ void parse(int argc, char ** argv)
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<std::string, VAllele::Software> m =
+                        const static std::map<Value, VAllele::Software> m =
                         {
                             { "gatk"   ,  VAllele::Software::GATK     },
                             { "VarScan",  VAllele::Software::VarScan  },
@@ -1696,7 +1693,7 @@ void parse(int argc, char ** argv)
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<std::string, VDiscover::Software> m =
+                        const static std::map<Value, VDiscover::Software> m =
                         {
                             { "gatk"   ,  VDiscover::Software::GATK     },
                             { "VarScan",  VDiscover::Software::VarScan  },
@@ -1764,11 +1761,13 @@ void parse(int argc, char ** argv)
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<std::string, MExpress::Software> m =
+                        const static std::map<Value, MExpress::Software> m =
                         {
+                            { "bwa",     MExpress::BWA    },
+                            { "bowtie",  MExpress::Bowtie },
+                            { "bowtie2", MExpress::Bowtie },
                             { "velvet",  MExpress::Velvet  },
                             { "raymeta", MExpress::RayMeta },
-                            { "quast",   MExpress::Quast   },
                         };
                         
                         return parseEnum("soft", str, m);
@@ -1779,25 +1778,12 @@ void parse(int argc, char ** argv)
                     
                     const auto soft = parse(_p.opts.at(OPT_SOFT));
 
-                    if (soft == MExpress::RayMeta && _p.tool == TOOL_M_EXPRESS)
-                    {
-                        if (!_p.opts.count(OPT_U_COV))
-                        {
-                            throw MissingOptionError("rcov");
-                        }
-                        
-                        conts = _p.opts.at(OPT_U_COV);
-                    }
-                    
                     MExpress::Options o;
                     
                     o.soft    = soft;
                     o.contigs = conts;
                     
-                    // An alignment file is needed to identify contigs
-                    o.psl = _p.opts.at(OPT_PSL);
-                    
-                    analyze_1<MExpress>(OPT_U_FILES, o);
+                    analyze_n<MExpress>(o);
                     break;
                 }
 
@@ -1806,7 +1792,7 @@ void parse(int argc, char ** argv)
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<std::string, MAssembly::Software> m =
+                        const static std::map<Value, MAssembly::Software> m =
                         {
                             { "quast", MAssembly::MetaQuast },
                         };

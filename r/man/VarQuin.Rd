@@ -31,14 +31,6 @@ Specify a design for variant analysis.
 \author{Ted Wong \email{t.wong@garvan.org.au}}
 \note{The interface might change in future release as the command-line \code{Anaquin}
   stabilises its own API.}
-\seealso
-{
-\code{\link{TransQuin}}
-
-\code{\link{VarQuin}}
-\code{\link{FusQuin}}
-\code{\link{MetaQuin}}
-}
 \examples{
 # Load a mixture from file
 VarQuin(mix='/home/tedwong/mixture.csv')

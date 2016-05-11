@@ -33,23 +33,12 @@ Specify a design for transcriptome analysis.
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}
-\seealso
-{
-\code{\link{VarQuin}}
-\code{\link{FusQuin}}
-\code{\link{LadQuin}}
-\code{\link{MetaQuin}}
-}
 \examples{
 # Load a mixture from file
 TransQuin(mix='/home/tedwong/mixture.csv')
 
 # Load mixture A online
 TransQuin(mix='A')
-
-# Load mixture B online
-TransQuin(mix='B')
-}
 
 # Load mixture B online
 TransQuin(mix='B')

@@ -9,6 +9,6 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- MetaQuin(seqs=row.names(data), expected=data$expected, measured=data$measured)
+data <- MetaQuin(seqs=row.names(data), expected=log2(data$expected), measured=log2(data$measured))
 
-plotExpress(data)
+plotKExpress(data)

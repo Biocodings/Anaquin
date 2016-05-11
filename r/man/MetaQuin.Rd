@@ -29,14 +29,6 @@ Specify a design for metagenomic analysis.
 \author{Ted Wong \email{t.wong@garvan.org.au}}
 \note{The interface might change in future release as the command-line \code{Anaquin}
   stabilises its own API.}
-\seealso
-{
-\code{\link{TransQuin}}
-\code{\link{VarQuin}}
-\code{\link{FusQuin}}
-\code{\link{LadQuin}}
-\code{\link{MetaQuin}}
-}
 \examples{
 
 # Load a mixture from file

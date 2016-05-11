@@ -11,7 +11,7 @@ namespace Anaquin
      * Parser for Contigs.tsv for RayMeta.
      */
     
-    struct ParseTSV
+    struct ParserTSV
     {
         enum TSVField
         {
