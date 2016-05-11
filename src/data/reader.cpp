@@ -107,14 +107,14 @@ bool Reader::nextLine(std::string &line) const
     }
 }
 
-bool Reader::nextTokens(std::vector<std::string> &tokens, const std::string &c) const
+bool Reader::nextTokens(std::vector<std::string> &toks, const std::string &c) const
 {
     _imp->t.clear();
 
     if (nextLine(_imp->t))
     {
-        tokens.clear();
-        boost::split(tokens, _imp->t, boost::is_any_of(c));
+        toks.clear();
+        boost::split(toks, _imp->t, boost::is_any_of(c));
         return true;
     }
     else
