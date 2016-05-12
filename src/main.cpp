@@ -129,9 +129,6 @@ typedef std::set<Value> Range;
 #define OPT_R_IND   809
 #define OPT_U_BASE  900
 
-#define OPT_PSL     905
-#define OPT_PSL_1   906
-#define OPT_PSL_2   907
 #define OPT_U_FILES 909
 #define OPT_C_FILES 910
 #define OPT_REPORT  911
@@ -255,7 +252,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES             } },
-    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_PSL_1, OPT_PSL_2, OPT_U_FILES, OPT_SOFT } },
+    { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
 
     /*
      * Fusion Analysis
@@ -400,10 +397,6 @@ static const struct option long_options[] =
     { "rvcf",    required_argument, 0, OPT_R_VCF   },
     { "rfus",    required_argument, 0, OPT_R_FUS   },
     { "rind",    required_argument, 0, OPT_R_IND   },
-
-    { "rpsl",    required_argument, 0, OPT_PSL    },
-    { "rpsl1",   required_argument, 0, OPT_PSL_1  },
-    { "rpsl2",   required_argument, 0, OPT_PSL_2  },
 
     { "fuzzy",   required_argument, 0, OPT_FUZZY },
     
@@ -1090,9 +1083,6 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_PSL:
-            case OPT_PSL_2:
-            case OPT_PSL_1:
             case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
 
             case OPT_R_IND:
@@ -1329,7 +1319,7 @@ void parse(int argc, char ** argv)
                     {
                         o.metrs = TExpress::Metrics::Isoform;
                     }
-                    
+
                     analyze_n<TExpress>(o);
                     break;
                 }
@@ -1728,6 +1718,7 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
+                    case TOOL_M_EXPRESS:                        
                     case TOOL_M_ASSEMBLY:
                     case TOOL_M_COVERAGE:
                     {
@@ -1788,6 +1779,29 @@ void parse(int argc, char ** argv)
                 }
 
                 case TOOL_M_DIFF:
+                {
+                    auto parse = [&](const std::string &str)
+                    {
+                        const static std::map<Value, MDiff::Software> m =
+                        {
+                            { "stamp", MDiff::Software::STAMP },
+                        };
+                        
+                        return parseEnum("soft", str, m);
+                    };
+
+                    const auto soft = parse(_p.opts.at(OPT_SOFT));
+                    
+                    MDiff::Options o;
+                    
+                    //o.pA = _p.opts.at(OPT_PSL_1);
+                    //o.pB = _p.opts.at(OPT_PSL_2);
+                    
+                    analyze_n<MDiff>(o);
+
+                    break;
+                }
+
                 case TOOL_M_ASSEMBLY:
                 {
                     auto parse = [&](const std::string &str)
@@ -1802,74 +1816,53 @@ void parse(int argc, char ** argv)
 
                     const auto soft = parse(_p.opts.at(OPT_SOFT));
                     
-                    switch (_p.tool)
+                    MAssembly::Options o;
+                    
+                    o.soft = soft;
+                    
+                    switch (o.soft)
                     {
-                        case TOOL_M_DIFF:
+                        case MAssembly::MetaQuast:
                         {
-                            MDiff::Options o;
-
-                            o.pA = _p.opts.at(OPT_PSL_1);
-                            o.pB = _p.opts.at(OPT_PSL_2);
-
-                            analyze_2<MDiff>(o);
-                            break;
-                        }
-
-                        case TOOL_M_ASSEMBLY:
-                        {
-                            MAssembly::Options o;
-                            
-                            o.soft = soft;
-                            
-                            switch (o.soft)
+                            const auto checkGenome = [&](const FileName &x)
                             {
-                                case MAssembly::MetaQuast:
+                                Counts n = 0;
+                                
+                                ParserQuast::parseGenome(Reader(x),
+                                                         [&](const ParserQuast::GenomeData &,
+                                                             const ParserProgress &)
                                 {
-                                    const auto checkGenome = [&](const FileName &x)
-                                    {
-                                        Counts n = 0;
-                                        
-                                        ParserQuast::parseGenome(Reader(x),
-                                                                 [&](const ParserQuast::GenomeData &,
-                                                                     const ParserProgress &)
-                                        {
-                                            n++;
-                                        });
-                                        
-                                        return n;
-                                    };
-
-                                    const auto checkContigs = [&](const FileName &x)
-                                    {
-                                        Counts n = 0;
-
-                                        ParserQuast::parseContigs(Reader(x),
-                                                                 [&](const ParserQuast::ContigData &,
-                                                                     const ParserProgress &)
-                                        {
-                                            n++;
-                                        });
-                                        
-                                        return n;
-                                    };
-
-                                    const auto sorted = sortInputs(_p.inputs[0],
-                                                                   _p.inputs[1],
-                                                                   _p.inputs[2],
-                                                                   checkGenome,
-                                                                   checkContigs);
-                                    o.genome  = sorted[0];
-                                    o.contigs = sorted[1];
-
-                                    analyze<MAssembly>(sorted[2], o);
-                                    break;
-                                }
-                            }
+                                    n++;
+                                });
+                                
+                                return n;
+                            };
                             
+                            const auto checkContigs = [&](const FileName &x)
+                            {
+                                Counts n = 0;
+                                
+                                ParserQuast::parseContigs(Reader(x),
+                                                          [&](const ParserQuast::ContigData &,
+                                                              const ParserProgress &)
+                                {
+                                    n++;
+                                });
+                                
+                                return n;
+                            };
+                            
+                            const auto sorted = sortInputs(_p.inputs[0],
+                                                           _p.inputs[1],
+                                                           _p.inputs[2],
+                                                           checkGenome,
+                                                           checkContigs);
+                            o.genome  = sorted[0];
+                            o.contigs = sorted[1];
+                            
+                            analyze<MAssembly>(sorted[2], o);
                             break;
                         }
-                            
-                        default: { break; }
                     }
                 }
             }
