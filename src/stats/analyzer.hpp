@@ -146,6 +146,11 @@ namespace Anaquin
             info("Analyzing: " + s);
         }
         
+        inline void generate(const FileName &f) const
+        {
+            info("Generating: " + f);
+        }
+        
         inline void info(const std::string &s) const
         {
             logInfo(s);
