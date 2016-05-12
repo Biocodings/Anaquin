@@ -53,13 +53,13 @@ namespace Anaquin
                 boost::trim(line);
                 
                 /*
-                 * Eg: CME003.v013_MG_28  contig-1936000000_2957_nucleotides  contig-21984000000_278_nucleotides
+                 * Eg: CME003.v013_GC_24_2  contig-1936000000_2957_nucleotides  contig-21984000000_278_nucleotides
                  */
                 
                 Tokens::split(line, "\t", toks);
                 assert(toks.size() >= 2);
                 
-                // Eg: MG_28
+                // Eg: GC_24_2
                 x.id = parseSequin(toks[0]);
 
                 x.contigs.clear();
@@ -130,13 +130,18 @@ namespace Anaquin
         
         private:
         
-            // Eg: CME003.v013_MG_29
+            // Eg: CME003.v013_GC_24_2
             static std::string parseSequin(const std::string &x)
             {
                 std::vector<Tokens::Token> toks;
                 Tokens::split(x, "_", toks);
             
-                // Eg: MG_29
+                if (toks.size() == 4)
+                {
+                    return toks[1] + "_" + toks[2] + "_" + toks[3]; // TODO: ....
+                }
+                
+                // Eg: GC_24_2
                 return toks[1] + "_" + toks[2];
             }
     };
