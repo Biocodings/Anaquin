@@ -1,0 +1,21 @@
+#
+#  Copyright (C) 2016 - Garvan Institute of Medical Research
+#
+#  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
+#
+
+plotKExpress.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
+{
+    title <- ifelse(is.null(title), 'Metagenomics Detection', title)
+    xlab  <- ifelse(is.null(xlab),  'Input Concentration (log2 attomoles/ul)', xlab)
+    ylab  <- ifelse(is.null(ylab),  'K-mer Coverage (log2)', ylab)
+
+    .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
+}
+
+plotKExpress <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
+{
+    stopifnot(class(data) == 'MetaQuin')
+
+    if (class(data) == 'MetaQuin')  { plotKExpress.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)  }
+}

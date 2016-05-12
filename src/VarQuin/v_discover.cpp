@@ -373,27 +373,28 @@ void VDiscover::report(const FileName &file, const Options &o)
         case Software::VarScan:
         {
             /*
-             * Generating ROC plot
+             * Generating VarDiscover_ROC.R
              */
             
-            o.info("Generating VarDiscover_ROC.R");
+            o.generate("VarDiscover_ROC.R");
             o.writer->open("VarDiscover_ROC.R");
             o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVROC()));
             o.writer->close();
             
             /*
-             * Generating probability plot
+             * Generating VarDiscover_prob.R
              */
             
-            o.info("Generating VarDiscover_Prob.R");
-            o.writer->open("VarDiscover_Prob.R");
+            o.generate("VarDiscover_prob.R");
+            o.writer->open("VarDiscover_prob.R");
             o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
             o.writer->close();
 
             /*
-             * Generating a PDF report
+             * Generating VarDiscover_report.pdf
              */
             
+            o.generate("VarDiscover_report.pdf");
             o.report->open("VarDiscover_report.pdf");
             o.report->addTitle("VarDiscover");
             o.report->addFile("VarDiscover_summary.stats");

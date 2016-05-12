@@ -9,6 +9,11 @@ namespace Anaquin
 {
     struct MDiff
     {
+        enum class Software
+        {
+            STAMP,
+        };
+        
         // Represent a differential result for a MetaQuin sequin
         struct SequinDiff
         {
@@ -37,38 +42,36 @@ namespace Anaquin
             Coverage mFold;
         };
 
+        struct Options : public DoubleMixtureOptions
+        {
+            // Required by the GCC compiler...
+            Options() {}
+            
+            Software soft;
+        };
+
         struct Stats : public LinearStats, public MappingStats
         {
-            // Alignment for the two alignment files
-            MBlat::Stats align_1, align_2;
-            
             // Absolute detection limit
             Limit limit;
             
             // Distribution of the sequins
             SequinHist hist;
             
+            std::set<SequinID> miss;
+            
+            // Mapping for p-values
+            std::map<SequinID, Probability> s2p;
+            
+            // Mapping for adjusted p-values
+            std::map<SequinID, Probability> s2q;
+            
             // Differential differences
-            std::set<SequinDiff> diffs;
+            //std::set<SequinDiff> diffs;
         };
 
-        struct Options : public DoubleMixtureOptions
-        {
-            // Required by the GCC compiler...
-            Options() {}
-            
-            // How the measured coverage is computed
-            MExpress::CoverageMethod coverage = MExpress::WendySmooth;
-            
-            // An optional PSL file for mixture A
-            FileName pA;
-
-            // An optional PSL file for mixture B
-            FileName pB;
-        };
-
-        static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
-        static void report(const FileName &, const FileName &, const Options &o = Options());
+        static Stats analyze(const std::vector<FileName> &, const Options &o = Options());
+        static void report(const std::vector<FileName> &, const Options &o = Options());
     };
 }
 

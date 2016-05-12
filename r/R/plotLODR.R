@@ -362,7 +362,6 @@ plotProb <- function(data, title=NULL)
 }
 
 plotLODR <- function(data,
-                     lvl,
                      title = NULL,
                      chosenFDR = 0.1,
                      xBreaks = NULL,

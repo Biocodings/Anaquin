@@ -1,5 +1,6 @@
 #include "parsers/parser_sam.hpp"
 #include "MetaQuin/m_express.hpp"
+#include "parsers/parser_quast.hpp"
 
 using namespace Anaquin;
 
@@ -50,12 +51,30 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                 
             case MExpress::RayMeta:
             {
-                /*
-                 *      Format: <Contigs> <TSV> <PSL>
-                 */
+                std::map<ContigID, SequinID> c2s;
+                std::map<ContigID, Coverage> c2l;
+                std::map<SequinID, std::vector<ContigID>> s2c;
+                
+                ParserQuast::parseContigs(Reader(files[2]), [&](const ParserQuast::ContigData &x,
+                                                                const ParserProgress &)
+                {
+                    for (const auto &c : x.contigs)
+                    {
+                        // Contigs.fasta doesn't have "_"
+                        auto t = c;
+                        
+                        // Eg: contig-1056000000 2818 nucleotides
+                        boost::replace_all(t, "_", " ");
+                        
+                        std::vector<std::string> toks;
+                        Tokens::split(t, " ", toks);
 
-                const auto t = MBlat::analyze(files[2]);
-
+                        c2s[toks[0]] = x.id;
+                        c2l[toks[0]] = stod(toks[1]);
+                        s2c[x.id].push_back(toks[0]);
+                    }
+                });
+                
                 /*
                  * Mapping contigs to k-mer coverage
                  */
@@ -69,25 +88,6 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                 
                 assert(!c2m.empty());
 
-                /*
-                 * Mapping sequins to k-mer coverage
-                 */
-                
-                std::map<ContigID, SequinID> c2s;
-                std::map<SequinID, std::vector<const AlignedContig *>> s2c;
-
-                for (auto &seq : stats.hist)
-                {
-                    if (t.metas.count(seq.first))
-                    {
-                        for (auto &i : t.metas.at(seq.first)->contigs)
-                        {
-                            s2c[seq.first].push_back(&i);
-                            c2s[i.id] = seq.first;
-                        }
-                    }
-                }
-                
                 /*
                  * Quantifying expressions
                  */
@@ -104,12 +104,15 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                     
                     for (const auto &j : i.second)
                     {
-                        x += c2m.at(j->id);
-                        y += j->l.length();
+                        const auto l = c2l[j];
+                        
+                        x += c2m.at(j);
+                        y += l; //j->l.length();
                     }
                     
-                    measured = x / y;
-                    
+                    //measured = x / y;
+                    measured = x;
+
                     stats.add(i.first, expected, measured);
                 }
                 

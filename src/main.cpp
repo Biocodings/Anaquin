@@ -1790,15 +1790,11 @@ void parse(int argc, char ** argv)
                         return parseEnum("soft", str, m);
                     };
 
-                    const auto soft = parse(_p.opts.at(OPT_SOFT));
-                    
                     MDiff::Options o;
-                    
-                    //o.pA = _p.opts.at(OPT_PSL_1);
-                    //o.pB = _p.opts.at(OPT_PSL_2);
+
+                    o.soft = parse(_p.opts.at(OPT_SOFT));
                     
                     analyze_n<MDiff>(o);
-
                     break;
                 }
 
