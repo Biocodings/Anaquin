@@ -177,7 +177,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     // We'll need the annotation for comparison (endogenous is optional)
     assert(!o.rChrT.empty());
 
-    TAssembly::Stats stats = init(o);
+    auto stats = init(o);
 
     /*
      * Filtering transcripts
