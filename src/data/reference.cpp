@@ -613,9 +613,9 @@ Counts TransRef::countIntrons(const ChrID &cID) const
     return _impl->data.at(cID).sortedIntrons.size();
 }
 
-const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const GeneID &id) const
+const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
 {
-    return _impl->data.at(cID).genes.count(id) ? &(_impl->data.at(cID).genes.at(id)) : nullptr;
+    return _impl->data.at(cID).genes.count(gID) ? &(_impl->data.at(cID).genes.at(gID)) : nullptr;
 }
 
 template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)

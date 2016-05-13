@@ -4,6 +4,9 @@
 using namespace Anaquin;
 using namespace std::placeholders;
 
+// Defined in resources.cpp
+extern Scripts PlotTReads();
+
 // Internal implementation
 typedef std::function<void (TAlign::Stats &)> Functor;
 
@@ -18,7 +21,7 @@ template <typename T> void initT(const ChrID &cID, T &t)
     const auto &r = Standard::instance().r_trans;
 
     /*
-     * 1. Create the structure and initalize the genes, it's different depends on the context
+     * Create the structure and initalize the genes, it's different depends on the context
      */
     
     // Initalize the distributions
@@ -163,7 +166,7 @@ template <typename T> void collect(const ChrID &cID,
                                    const TAlign::Options &o)
 {
     /*
-     * 1. Calculating alignment statistics.
+     * Calculating alignment statistics
      */
     
     auto aligns = [](std::map<GeneID, TAlign::MergedConfusion> &gene,
@@ -375,22 +378,15 @@ template <typename T> void collect(const ChrID &cID,
 
 TAlign::Stats calculate(const TAlign::Options &o, Functor cal)
 {
-    /*
-     * 1: Initalize the statistics
-     */
+    auto stats = init();
     
-    TAlign::Stats stats = init();
-    
-    /*
-     * 2: Parsing the inputs. For instance, parsing an input file.
-     */
-    
+    // Parsing input files
     cal(stats);
 
     o.info("Collecting statistics");
     
     /*
-     * 3: Collecting statistics
+     * Collecting statistics
      */
 
     for (auto &i : stats.data)
@@ -398,6 +394,17 @@ TAlign::Stats calculate(const TAlign::Options &o, Functor cal)
         collect(i.first, i.second, i.second.lFPS, i.second.rFPS, o);
     }
 
+    /*
+     * Mapping from sequins to reads
+     */
+
+    for (const auto &i : stats.data.at(ChrT).histE)
+    {
+        stats.s2r[i.first] = i.second;
+    }
+    
+    assert(!stats.s2r.empty());
+    
     return stats;
 }
 
@@ -563,15 +570,15 @@ static Scripts replicateSummary()
            "   *************************************************\n\n"
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %22%\n"
-           "   Specificity: %23%\n"
+           "   Precision:   %23%\n"
            "   Detection Limit: %24% (attomol/ul) (%25%)\n\n"
            "   -------------------- Intron level --------------------\n\n"
            "   Sensitivity: %26%\n"
-           "   Specificity: %27%\n"
+           "   Precision:   %27%\n"
            "   Detection Limit: %28% (attomol/ul) (%29%)\n\n"
            "   -------------------- Base level --------------------\n\n"
            "   Sensitivity: %30%\n"
-           "   Specificity: %31%\n"
+           "   Precision:   %31%\n"
            "   Detection Limit: %32% (attomol/ul) (%33%)\n\n"
            "   -------------------- Undetected --------------------\n\n"
            "   Exon:   %34%\n"
@@ -584,20 +591,23 @@ static Scripts replicateSummary()
            "   *****************************************************\n\n"
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %37%\n"
-           "   Specificity: %38%\n\n"
+           "   Precision:   %38%\n\n"
            "   -------------------- Intron level --------------------\n\n"
            "   Sensitivity: %39%\n"
-           "   Specificity: %40%\n\n"
+           "   Precision:   %40%\n\n"
            "   -------------------- Base level --------------------\n\n"
            "   Sensitivity: %41%\n"
-           "   Specificity: %42%\n\n"
+           "   Precision:   %42%\n\n"
            "   -------------------- Undetected --------------------\n\n"
            "   Exon:   %43%\n"
            "   Intron: %44%\n"
            "   Gene:   %45%\n\n";
 }
 
-static void writeSummary(const FileName &file, const FileName &src, const TAlign::Stats &stats, const TAlign::Options &o)
+static void generateSummary(const FileName &file,
+                            const FileName &src,
+                            const TAlign::Stats &stats,
+                            const TAlign::Options &o)
 {
     typedef TAlign::Stats Stats;
 
@@ -661,52 +671,47 @@ static void writeSummary(const FileName &file, const FileName &src, const TAlign
     o.writer->close();
 }
 
-static void writeSequins(const FileName &file, const FileName &src, const TAlign::Stats &stats, const TAlign::Options &o)
+static void generateQuins(const FileName &file,
+                          const FileName &src,
+                          const TAlign::Stats &stats,
+                          const TAlign::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
+    const auto &data = stats.data.at(ChrT);
+    
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "sequin"
-                                           % "expected"
-                                           % "covered"
-                                           % "sn (exon)"
-                                           % "sp (exon)"
-                                           % "sn (intron)"
-                                           % "sp (intron)"
-                                           % "sn (base)"
-                                           % "sp (base)").str());
+    o.writer->write((boost::format(format) % "seq"
+                                           % "input"
+                                           % "reads"
+                                           % "sn_exon"
+                                           % "pc_exon"
+                                           % "sn_intron"
+                                           % "pc_intron"
+                                           % "sn_base"
+                                           % "pc_base").str());
 
-    for (const auto &i : stats.data.at(ChrT).overB.hist)
+    for (const auto &i : data.overB.hist)
     {
-        Base length   = 0;
-        Base nonZeros = 0;
+        // Eg: R1_1
+        const auto &id = i.first;
         
-        for (const auto &j : stats.data.at(ChrT).eInters.data())
-        {
-            if (j.second.gID == i.first)
-            {
-                const auto eStats = j.second.stats();
-                
-                length   += eStats.length;
-                nonZeros += eStats.nonZeros;
-                
-                assert(length >= nonZeros);
-            }
-        }
+        const auto &mb = data.geneB.at(id);
+        const auto &me = data.geneE.at(id);
+        const auto &mi = data.geneI.at(id);
+
+        const auto m = r.findGene(ChrT, id);
+        const auto reads = stats.s2r.at(id);
         
-        const auto covered = static_cast<double>(nonZeros) / length;
-        
-        const auto &mb = stats.data.at(ChrT).geneB.at(i.first);
-        const auto &me = stats.data.at(ChrT).geneE.at(i.first);
-        const auto &mi = stats.data.at(ChrT).geneI.at(i.first);
+        assert(m);
         
         // Not all sequins have an intron...
         if (mi.lNR)
         {
-            o.writer->write((boost::format(format) % i.first
-                                                   % r.findGene(ChrT, i.first)->concent(Mix_1)
-                                                   % covered
+            o.writer->write((boost::format(format) % id
+                                                   % m->concent(Mix_1)
+                                                   % reads
                                                    % me.sn()
                                                    % me.pc()
                                                    % mi.sn()
@@ -716,9 +721,9 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
         }
         else
         {
-            o.writer->write((boost::format(format) % i.first
-                                                   % r.findGene(ChrT, i.first)->concent(Mix_1)
-                                                   % covered
+            o.writer->write((boost::format(format) % id
+                                                   % m->concent(Mix_1)
+                                                   % reads
                                                    % me.sn()
                                                    % me.pc()
                                                    % "--"
@@ -727,7 +732,7 @@ static void writeSequins(const FileName &file, const FileName &src, const TAlign
                                                    % mb.pc()).str());
         }
     }
-    
+
     o.writer->close();
 }
 
@@ -738,16 +743,35 @@ void TAlign::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Generating summary statistics
+     * Generating TransAlign_summary.stats
      */
     
-    o.info("Generating TransAlign_summary.stats");
-    writeSummary("TransAlign_summary.stats", file, stats, o);
+    o.analyze("TransAlign_summary.stats");
+    generateSummary("TransAlign_summary.stats", file, stats, o);
 
     /*
-     * Generating statistics for the sequins
+     * Generating TransAlign_quins.stats
      */
     
-    o.info("Generating TransAlign_quins.stats");
-    writeSequins("TransAlign_quins.stats", file, stats, o);
+    o.analyze("TransAlign_quins.stats");
+    generateQuins("TransAlign_quins.stats", file, stats, o);
+
+    /*
+     * Generating TransAlign_reads.R
+     */
+    
+    o.generate("TransAlign_reads.R");
+    o.writer->open("TransAlign_reads.R");
+    o.writer->write(RWriter::createScript("TransAlign_quins.stats", PlotTReads()));
+    o.writer->close();
+
+    /*
+     * Generating a PDF report
+     */
+    
+    o.report->open("TransAlign_report.pdf");
+    o.report->addTitle("TransAlign");
+    o.report->addFile("TransAlign_summary.stats");
+    o.report->addFile("TransAlign_quins.stats");
+    o.report->addFile("TransAlign_reads.R");
 }

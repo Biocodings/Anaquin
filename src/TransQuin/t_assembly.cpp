@@ -345,7 +345,7 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
     
     const auto genoID = r.genoID();
     
-    o.info("Generating TransAssembly_summary.stats");
+    o.generate("TransAssembly_summary.stats");
     o.writer->open("TransAssembly_summary.stats");
     o.writer->write((boost::format(chrTSummary()) % file
                                                   % stats.cExons
@@ -438,17 +438,17 @@ void TAssembly::report(const FileName &file, const Options &o)
     writeSummary(file, stats, o);
     
     /*
-     * Generating detailed statistics
+     * Generating TransAssembly_quins.stats
      */
 
-    o.info("Generating TransAssembly_quins.stats");
+    o.generate("TransAssembly_quins.stats");
     writeQuins("TransAssembly_quins.stats", stats, o);
     
     /*
-     * Generating limit of assembly (LOA)
+     * Generating TransAssembly_assembly.R
      */
     
-    o.info("Generating TransAssembly_assembly.R");
+    o.generate("TransAssembly_assembly.R");
     o.writer->open("TransAssembly_assembly.R");
     o.writer->write(RWriter::createScript("TransAssembly_quins.stats", PlotTSen()));
     o.writer->close();

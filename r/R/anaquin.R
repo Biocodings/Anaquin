@@ -54,7 +54,7 @@
 TransQuin <- function(...)
 {
     x <- list(...)
-    keys <- c('pval', 'qval', 'mean', 'expected', 'measured')
+    keys <- c('pval', 'qval', 'mean', 'expected', 'input', 'measured')
 
     r <- list('seqs'=.createData(x, keys))
     

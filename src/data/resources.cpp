@@ -42,9 +42,10 @@
 #include "resources/plotTSen.R"
 #include "resources/plotTLODR.R"
 #include "resources/plotTFold.R"
+#include "resources/plotTReads.R"
 #include "resources/plotTMinor.R"
-#include "resources/plotTMultiple.R"
 #include "resources/plotTExpress.R"
+#include "resources/plotTMultiple.R"
 
 #include "resources/ATR001.v032.gtf"
 #include "resources/MTR002.v013.csv"
@@ -193,6 +194,11 @@ Scripts MetaDataBed()
 Scripts SleuthR()
 {
     return ToString(scripts_sleuth_R);
+}
+
+Scripts PlotTReads()
+{
+    return ToString(src_r_plotTReads_R);
 }
 
 Scripts PlotTSen()

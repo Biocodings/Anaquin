@@ -164,6 +164,9 @@ namespace Anaquin
 
                 std::map<ChrID, Data> data;
                 
+                // Number of reads mapped to each sequin gene (eg: R1_1)
+                std::map<SequinID, Counts> s2r;
+
                 /*
                  * Accessor functions
                  */

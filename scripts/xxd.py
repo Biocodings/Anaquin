@@ -22,8 +22,8 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotFROC.R',
           'src/r/plotFNormal.R',
-	      'src/r/plotFFusion.R',
-	      'src/r/plotFFold.R',
+	  'src/r/plotFFusion.R',
+	  'src/r/plotFFold.R',
 
           'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',
@@ -47,6 +47,7 @@ data  = [ 'data/manual.txt',
 	  'src/r/plotTMultiple.R',
           'src/r/plotTExpress.R',
 	  'src/r/plotTSen.R',
+	  'src/r/plotTReads.R',
 
           'data/TransQuin/ATR001.v032.gtf',
           'data/TransQuin/MTR002.v013.csv',
