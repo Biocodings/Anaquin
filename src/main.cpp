@@ -230,7 +230,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_ALIGN,     { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,   { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_T_SUBSAMPLE, { OPT_R_BED, OPT_U_FILES } },
+    { TOOL_T_SUBSAMPLE, { OPT_MIXTURE, OPT_U_FILES } },
     
     /*
      * Ladder Analysis
