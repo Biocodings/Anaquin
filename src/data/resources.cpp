@@ -39,12 +39,12 @@
 
 #include "resources/plotTMA.R"
 #include "resources/plotTROC.R"
-#include "resources/plotTSen.R"
 #include "resources/plotTLODR.R"
 #include "resources/plotTFold.R"
 #include "resources/plotTReads.R"
 #include "resources/plotTMinor.R"
 #include "resources/plotTExpress.R"
+#include "resources/plotTAssembly.R"
 #include "resources/plotTMultiple.R"
 
 #include "resources/ATR001.v032.gtf"
@@ -201,9 +201,9 @@ Scripts PlotTReads()
     return ToString(src_r_plotTReads_R);
 }
 
-Scripts PlotTSen()
+Scripts PlotTAssembly()
 {
-    return ToString(src_r_plotTSen_R);
+    return ToString(src_r_plotTAssembly_R);
 }
 
 Scripts PlotTFold()

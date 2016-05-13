@@ -12,7 +12,7 @@ using namespace Anaquin;
 Compare __cmp__;
 
 // Defined in resources.cpp
-extern Scripts PlotTSen();
+extern Scripts PlotTAssembly();
 
 // Defined for cuffcompare
 extern int cuffcompare_main(const char *ref, const char *query);
@@ -452,7 +452,7 @@ void TAssembly::report(const FileName &file, const Options &o)
     
     o.generate("TransAssembly_assembly.R");
     o.writer->open("TransAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("TransAssembly_quins.stats", PlotTSen()));
+    o.writer->write(RWriter::createScript("TransAssembly_quins.stats", PlotTAssembly()));
     o.writer->close();
     
     /*

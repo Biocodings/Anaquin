@@ -46,7 +46,7 @@ data  = [ 'data/manual.txt',
           'src/r/plotTLODR.R',          
 	  'src/r/plotTMultiple.R',
           'src/r/plotTExpress.R',
-	  'src/r/plotTSen.R',
+	  'src/r/plotTAssembly.R',
 	  'src/r/plotTReads.R',
 
           'data/TransQuin/ATR001.v032.gtf',

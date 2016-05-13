@@ -31,7 +31,7 @@ namespace Anaquin
             
             Software soft;
             
-            Method meth = Method::FiveP;
+            Method meth = Method::OneP;
         };
 
         struct Stats : public MappingStats
