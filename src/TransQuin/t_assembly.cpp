@@ -74,24 +74,24 @@ static Scripts chrTSummary()
 {
     return "Summary for input: %1%\n\n"
            "   ***\n"
-           "   *** Fraction of assembly mapped to the synthetic and genome\n"
+           "   *** Proportion of assembly mapped to the synthetic and genome\n"
            "   ***\n\n"
-           "   Exons (Synthetic):       %2% genes\n"
-           "   Exons (Genome):          %3% genes\n\n"
+           "   Exons (Synthetic):       %2% exons\n"
+           "   Exons (Genome):          %3% exons\n\n"
            "   Transcripts (Synthetic): %4% transcripts\n"
            "   Transcripts (Genome):    %5% transcripts\n\n"
            "   ***\n"
            "   *** Reference annotation (Synthetic)\n"
            "   ***\n\n"
            "   File: %6%\n\n"
-           "   Synthetic:  %7% exons\n"
-           "   Synthetic:  %8% introns\n\n"
+           "   Synthetic: %7% exons\n"
+           "   Synthetic: %8% introns\n\n"
            "   ***\n"
            "   *** Reference annotation (Genome)\n"
            "   ***\n\n"
            "   File: %9%\n\n"
-           "   Genome:  %10% exons\n"
-           "   Genome:  %11% introns\n\n"
+           "   Genome: %10% exons\n"
+           "   Genome: %11% introns\n\n"
            "   ************************************************************\n"
            "   ***                                                      ***\n"
            "   ***    Comparison of assembly to synthetic annotation    ***\n"
@@ -254,7 +254,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
                     return f.tID == i.first;
                 });
                 
-                o.logInfo("Comparing: " + i.first);
+                o.logInfo("Analyzing: " + i.first);
                 
                 // Compare only the sequin against the reference
                 CUFFCOMPARE(tmp, qry);
@@ -267,13 +267,17 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
         CUFFCOMPARE(ref, qry);
     };
 
-    o.info("Comparing transcripts");
+    o.info("Analyzing transcripts");
 
     std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, TAssembly::Stats::Data> &p)
     {
         compareGTF(p.first, p.first == ChrT ? o.rChrT : o.rGeno);
         copyStats(p.first);
     });
+    
+    /*
+     * Counting exons and transcripts
+     */
     
     ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
     {
@@ -314,17 +318,16 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void writeQuins(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
+static void generateQuins(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-
-    o.writer->open(file);
-    
     const auto format = "%1%\t%2%\t%3%";
 
+    o.generate(file);
+    o.writer->open(file);
     o.writer->write((boost::format(format) % "seq"
-                                           % "expected"
-                                           % "measured").str());
+                                           % "input"
+                                           % "sn").str());
 
     for (const auto &i : stats.tSPs)
     {
@@ -336,7 +339,7 @@ static void writeQuins(const FileName &file, const TAssembly::Stats &stats, cons
     o.writer->close();
 }
 
-static void writeSummary(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
+static void generateSummary(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto data = stats.data.at(ChrT);
@@ -356,37 +359,37 @@ static void writeSummary(const FileName &file, const TAssembly::Stats &stats, co
                                                   % r.countExons(ChrT)
                                                   % r.countIntrons(ChrT)
                                                   % (o.rGeno.empty() ? "-" : o.rGeno)
-                                                  % (o.rGeno.empty() ? "-" : std::to_string(r.countExons(genoID)))
-                                                  % (o.rGeno.empty() ? "-" : std::to_string(r.countIntrons(genoID)))
-                                                  % S(data.eSN)            // 12
+                                                  % (o.rGeno.empty() ? "-" : toString(r.countExons(genoID)))
+                                                  % (o.rGeno.empty() ? "-" : toString(r.countIntrons(genoID)))
+                                                  % S(data.eSN)          // 12
                                                   % S(data.eFSN)
                                                   % S(data.eSP)
                                                   % S(data.eFSP)
-                                                  % S(data.iSN)            // 16
+                                                  % S(data.iSN)          // 16
                                                   % S(data.iFSN)
                                                   % S(data.iSP)
                                                   % S(data.iFSP)
-                                                  % S(data.bSN)            // 20
+                                                  % S(data.bSN)          // 20
                                                   % S(data.bSP)
-                                                  % S(data.cSN)            // 22
+                                                  % S(data.cSN)          // 22
                                                   % S(data.cFSN)
                                                   % S(data.cSP)
                                                   % S(data.cFSP)
                                                   % S(data.tSN)
                                                   % S(data.tFSN)
                                                   % S(data.tSP)
-                                                  % S(data.tFSP)           // 29
-                                                  % data.mExonN            // 31
+                                                  % S(data.tFSP)         // 29
+                                                  % data.mExonN          // 31
                                                   % data.mExonR
                                                   % S(data.mExonP)
                                                   % data.mIntronN
-                                                  % data.mIntronR          // 34
+                                                  % data.mIntronR        // 34
                                                   % S(data.mIntronP)
                                                   % data.nExonN
                                                   % data.nExonR
                                                   % S(data.nExonP)
                                                   % data.nIntronN
-                                                  % data.nIntronR          // 40
+                                                  % data.nIntronR        // 40
                                                   % S(data.nIntronP)).str());
     if (!r.genoID().empty())
     {
@@ -432,17 +435,16 @@ void TAssembly::report(const FileName &file, const Options &o)
     const auto stats = TAssembly::analyze(file, o);
 
     /*
-     * Generating summary statistics
+     * Generating TransAssembly_summary.stats
      */
     
-    writeSummary(file, stats, o);
+    generateSummary(file, stats, o);
     
     /*
      * Generating TransAssembly_quins.stats
      */
 
-    o.generate("TransAssembly_quins.stats");
-    writeQuins("TransAssembly_quins.stats", stats, o);
+    generateQuins("TransAssembly_quins.stats", stats, o);
     
     /*
      * Generating TransAssembly_assembly.R
@@ -452,4 +454,14 @@ void TAssembly::report(const FileName &file, const Options &o)
     o.writer->open("TransAssembly_assembly.R");
     o.writer->write(RWriter::createScript("TransAssembly_quins.stats", PlotTSen()));
     o.writer->close();
+    
+    /*
+     * Generating a PDF report
+     */
+    
+    o.report->open("TransAssembly_report.pdf");
+    o.report->addTitle("TransAssembly");
+    o.report->addFile("TransAssembly_summary.stats");
+    o.report->addFile("TransAssembly_quins.stats");
+    o.report->addFile("TransAssembly_assembly.R");
 }

@@ -10,6 +10,7 @@
     require(reshape2)
 
     data     <- data$seqs
+    data$f   <- NA
     data$x   <- data$expected
     data$y   <- data$measured
     data$grp <- as.factor(round(abs(data$x)))
@@ -17,25 +18,32 @@
     stopifnot(length(data$x) > 0)
     stopifnot(length(data$x) == length((data$y)) || length(data$x) == nrow((data$y)))
 
-    sigmoid = function(params, x) {
-        params[1] / (1 + exp(-params[2] * (x - params[3])))
-    }
+    result = tryCatch(
+    {
+        sigmoid = function(params, x) {
+            params[1] / (1 + exp(-params[2] * (x - params[3])))
+        }
+        
+        #
+        # Fit a sigmoid curve to the data, which is equivalent to logistic regression.
+        #
+        
+        perf <- min(data[data$y >= 1.00,]$expected)
+        
+        t <- data
+        t <- t[t$x <= perf | t$y > 0,]
+        x <- t$x
+        y <- t$y
+        
+        fitmodel <- nls(y~a/(1 + exp(-b * (x-c))), start=list(a=1,b=1,c=0))
+        params=coef(fitmodel)
+        data$f <- sigmoid(params,data$x)
+    }, error = function(e)
+    {
+        showLimit <<- FALSE
+        warning(e)
+    })
     
-    #
-    # Fit a sigmoid curve to the data, which is equivalent to logistic regression.
-    #
-    
-    perf <- min(data[data$y >= 1.00,]$expected)
-
-    t <- data
-    t <- t[t$x <= perf | t$y > 0,]
-    x <- t$x
-    y <- t$y
-    
-    fitmodel <- nls(y~a/(1 + exp(-b * (x-c))), start=list(a=1,b=1,c=0))
-    params=coef(fitmodel)
-    data$f <- sigmoid(params,data$x)
-
     p <- ggplot(data=data, aes(x)) +
                         xlab(xlab) +
                         ylab(ylab) +
@@ -43,10 +51,17 @@
                         theme_bw()
 
     p <- p + geom_point(aes(y=y, colour=grp), alpha=1.0)
-    p <- p + geom_line(aes(y=f, colour="line"), alpha=1.0)
+    
+    if (!is.na(data$f))
+    {
+        p <- p + geom_line(aes(y=f, colour="line"), alpha=1.0)
+    }
+
     p <- p + theme(axis.title.x=element_text(face='bold', size=12))
     p <- p + theme(axis.title.y=element_text(face='bold', size=12))
 
+    print (showLimit)
+    
     if (showLimit)
     {
         r <- min(data[data$y >= limit,]$expected)

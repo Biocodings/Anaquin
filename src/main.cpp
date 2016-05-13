@@ -230,7 +230,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_ALIGN,     { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,   { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_T_SUBSAMPLE, { OPT_R_BED, OPT_R_GENO,  OPT_U_FILES } },
+    { TOOL_T_SUBSAMPLE, { OPT_R_BED, OPT_U_FILES } },
     
     /*
      * Ladder Analysis
@@ -1161,21 +1161,9 @@ void parse(int argc, char ** argv)
         case TOOL_T_KEXPRESS:
         case TOOL_T_ASSEMBLY:
         case TOOL_T_COVERAGE:
+        case TOOL_T_SUBSAMPLE:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
-
-            switch (_p.tool)
-            {
-                case TOOL_T_SUBSAMPLE:
-                {
-                    break;
-                }
-                    
-                default:
-                {
-                    break;
-                }
-            }
 
             if (_p.tool != TOOL_T_IGV)
             {
@@ -1216,28 +1204,10 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-//                case TOOL_T_REPORT:
-//                {
-//                    if (_p.inputs.size() == 1)
-//                    {
-//                        report_1<TReport>();
-//                    }
-//                    else
-//                    {
-//                        report_2<TReport>();
-//                    }
-//
-//                    break;
-//                }
-                    
-                case TOOL_T_SUBSAMPLE:
-                {
-                    break;
-                }
-
-                case TOOL_T_ALIGN:    { analyze_1<TAlign>(OPT_U_FILES);    break; }
-                case TOOL_T_COVERAGE: { analyze_1<TCoverage>(OPT_U_FILES); break; }
-                case TOOL_T_ASSEMBLY: { analyze_1<TAssembly>(OPT_U_FILES); break; }
+                case TOOL_T_ALIGN:     { analyze_1<TAlign>(OPT_U_FILES);    break; }
+                case TOOL_T_COVERAGE:  { analyze_1<TCoverage>(OPT_U_FILES); break; }
+                case TOOL_T_ASSEMBLY:  { analyze_1<TAssembly>(OPT_U_FILES); break; }
+                case TOOL_T_SUBSAMPLE: { analyze_1<TSample>(OPT_U_FILES);   break; }
 
                 case TOOL_T_KDIFF:
                 {
@@ -1442,7 +1412,6 @@ void parse(int argc, char ** argv)
         case TOOL_F_FUSION:
         case TOOL_F_DISCOVER:
         case TOOL_F_COVERAGE:
-        case TOOL_T_SUBSAMPLE:
         {
             auto parseAligner = [&](const std::string &str)
             {

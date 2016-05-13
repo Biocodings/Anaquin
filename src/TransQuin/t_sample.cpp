@@ -14,6 +14,11 @@ TSample::Stats TSample::stats(const FileName &file, const Options &o)
     
     switch (o.soft)
     {
+        case Software::None:
+        {
+            break;
+        }
+            
         case Software::Cufflinks:
         {
             ParserCufflink::parse(file, [&](const ParserCufflink::Data &x, const ParserProgress &)
@@ -40,6 +45,24 @@ TSample::Stats TSample::stats(const FileName &file, const Options &o)
      
     switch (o.meth)
     {
+        case Method::OneP:
+        {
+            stats.prop = 0.01;
+            break;
+        }
+            
+        case Method::FiveP:
+        {
+            stats.prop = 0.05;
+            break;
+        }
+
+        case Method::TenP:
+        {
+            stats.prop = 0.10;
+            break;
+        }
+
         case Method::Mean:
         {
             stats.genoBefore = SS::mean(stats.geno);
@@ -67,11 +90,16 @@ TSample::Stats TSample::stats(const FileName &file, const Options &o)
 
 static void generateSummary(const FileName &file, const TSample::Stats &stats, const TSample::Options &o)
 {
+    o.generate(file);
+    
     auto meth2Str = [&]()
     {
         switch (o.meth)
         {
-            case TSample::Method::Mean: { return "Mean"; }
+            case TSample::Method::OneP:  { return "1%";   }
+            case TSample::Method::FiveP: { return "5%";   }
+            case TSample::Method::TenP:  { return "10%";  }
+            case TSample::Method::Mean:  { return "Mean"; }
         }
     };
     
@@ -143,15 +171,16 @@ void TSample::report(const FileName &file, const Options &o)
      * Generating TransSubsample_summary.stats
      */
     
-    o.info("Generating TransSubsample_summary.stats");
     generateSummary("TransSubsample_summary.stats", stats, o);
     
     /*
      * Generating TransSubsample_sampled.sam
      */
     
+    o.generate("TransSubsample_sampled.sam");
+    
     WriterSAM writer;
-    writer.open("TransSubsample.sam");
+    writer.open(o.work + "/TransSubsample_sampled.sam");
 
     SamplingTool sampler(1 - stats.prop);
 

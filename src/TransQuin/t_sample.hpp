@@ -9,6 +9,7 @@ namespace Anaquin
     {
         enum class Software
         {
+            None,
             Cufflinks,
         };
         
@@ -18,8 +19,10 @@ namespace Anaquin
         
         enum class Method
         {
-            // Calculate by averaging
             Mean,
+            OneP,
+            FiveP,
+            TenP,
         };
 
         struct Options : public AnalyzerOptions
@@ -28,7 +31,7 @@ namespace Anaquin
             
             Software soft;
             
-            Method meth = Method::Mean;
+            Method meth = Method::FiveP;
         };
 
         struct Stats : public MappingStats
