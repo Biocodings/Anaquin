@@ -41,7 +41,7 @@
     }, error = function(e)
     {
         showLimit <<- FALSE
-        warning(e)
+        #warning(e)
     })
     
     p <- ggplot(data=data, aes(x)) +
@@ -60,8 +60,6 @@
     p <- p + theme(axis.title.x=element_text(face='bold', size=12))
     p <- p + theme(axis.title.y=element_text(face='bold', size=12))
 
-    print (showLimit)
-    
     if (showLimit)
     {
         r <- min(data[data$y >= limit,]$expected)

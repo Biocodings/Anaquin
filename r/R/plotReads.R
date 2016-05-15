@@ -6,6 +6,10 @@
 
 plotReads.TransQuin <- function(data, title, xlab, ylab, showLOQ)
 {
+    if (is.null(title)) { title <- 'TransQuin Reads' }
+    if (is.null(xlab))  { xlab  <- 'Input concentration (log2 attomol/ul)' }
+    if (is.null(ylab))  { ylab  <- 'Reads (log2)' }
+    
     .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
 }
 
