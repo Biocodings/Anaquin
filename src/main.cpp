@@ -120,6 +120,7 @@ typedef std::set<Value> Range;
 
 #define OPT_R_BASE  800
 #define OPT_R_BED   801
+#define OPT_METHOD  802
 #define OPT_R_GTF   803
 #define OPT_R_FUS   804
 #define OPT_R_VCF   805
@@ -389,7 +390,7 @@ static const struct option long_options[] =
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
-    { "rmix",    required_argument, 0, OPT_MIXTURE },
+    { "meth",    required_argument, 0, OPT_METHOD  },
 
     { "rgen",    required_argument, 0, OPT_R_GENO  },
     { "rbed",    required_argument, 0, OPT_R_BED   },
@@ -1045,6 +1046,11 @@ void parse(int argc, char ** argv)
             }
 
             case OPT_FUZZY: { parseInt(val, _p.fuzzy); break; }
+
+            case OPT_METHOD:
+            {
+                break;
+            }
 
             /*
              * The following options can only be validated by the tool
