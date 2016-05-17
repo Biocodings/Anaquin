@@ -63,6 +63,7 @@ namespace Anaquin
 
             static void viewer(const std::string &args)
             {
+                std::cout << args << std::endl;
                 Script::run(ViewerScript(), "python", args);
             }
     };
