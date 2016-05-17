@@ -105,6 +105,8 @@ def index(path, file):
     # Silently create a temporary directory for indexing
     os.system('mkdir -p ' + tmp)
 
+    old = file
+
     # Eg: /home/tedwong/ABCD.bam to ABCD.bam
     file = os.path.basename(file)
 
@@ -120,7 +122,7 @@ def index(path, file):
         # From now on, we'll deal only with BAM format
         file = bam
     else:
-        run('samtools sort ' + file + ' ' + tmp + '/' + base)
+        run('samtools sort ' + old + ' ' + tmp + '/' + base)
         run('samtools index ' + tmp + '/' + file)
 
     # Copy the alignment file
