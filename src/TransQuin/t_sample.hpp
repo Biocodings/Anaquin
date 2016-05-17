@@ -19,10 +19,12 @@ namespace Anaquin
         
         enum class Method
         {
-            Mean,
-            OneP,
-            FiveP,
-            TenP,
+            _1,
+            _5,
+            _10,
+            _15,
+            _20,
+            _50
         };
 
         struct Options : public AnalyzerOptions
@@ -31,7 +33,7 @@ namespace Anaquin
             
             Software soft;
             
-            Method meth = Method::OneP;
+            Method meth = Method::_10;
         };
 
         struct Stats : public MappingStats
@@ -39,16 +41,16 @@ namespace Anaquin
             typedef std::vector<double> ChrTData;
             typedef std::vector<double> GenoData;
             
-            // Statistics for synthetic sequins
+            // Statistics for the sequins
             ChrTData chrT;
             
-            // Statistics for genomic transcripts
+            // Statistics for the genome
             GenoData geno;
             
-            Depth genoBefore;
-            Depth chrTBefore;
-            Depth genoAfter;
-            Depth chrTAfter;
+            Coverage genoBefore;
+            Coverage chrTBefore;
+            Coverage genoAfter;
+            Coverage chrTAfter;
             
             // Proportion required for subsampling
             Proportion prop;

@@ -45,24 +45,15 @@ TSample::Stats TSample::stats(const FileName &file, const Options &o)
      
     switch (o.meth)
     {
-        case Method::OneP:
-        {
-            stats.prop = 0.01;
-            break;
-        }
+        case Method::_1:  { stats.prop = 0.01; break; }
+        case Method::_5:  { stats.prop = 0.05; break; }
+        case Method::_10: { stats.prop = 0.10; break; }
+        case Method::_15: { stats.prop = 0.15; break; }
+        case Method::_20: { stats.prop = 0.20; break; }
+        case Method::_50: { stats.prop = 0.50; break; }
             
-        case Method::FiveP:
-        {
-            stats.prop = 0.05;
-            break;
-        }
-
-        case Method::TenP:
-        {
-            stats.prop = 0.10;
-            break;
-        }
-
+            
+/*
         case Method::Mean:
         {
             stats.genoBefore = SS::mean(stats.geno);
@@ -80,11 +71,13 @@ TSample::Stats TSample::stats(const FileName &file, const Options &o)
 
             break;
         }
+ */
     }
 
+    assert(stats.prop > 0 && stats.prop < 1.0);
+    
     o.info("Proportion: " + toString(stats.prop));
     
-    assert(stats.prop > 0 && stats.prop < 1.0);
     return stats;
 }
 
@@ -96,10 +89,12 @@ static void generateSummary(const FileName &file, const TSample::Stats &stats, c
     {
         switch (o.meth)
         {
-            case TSample::Method::OneP:  { return "1%";   }
-            case TSample::Method::FiveP: { return "5%";   }
-            case TSample::Method::TenP:  { return "10%";  }
-            case TSample::Method::Mean:  { return "Mean"; }
+            case TSample::Method::_1:  { return "1%";  }
+            case TSample::Method::_5:  { return "5%";  }
+            case TSample::Method::_10: { return "10%"; }
+            case TSample::Method::_15: { return "15%"; }
+            case TSample::Method::_20: { return "20%"; }
+            case TSample::Method::_50: { return "50%"; }
         }
     };
     
@@ -115,18 +110,13 @@ static void generateSummary(const FileName &file, const TSample::Stats &stats, c
                          "   ***\n\n"
                          "   File: %5%\n\n"
                          "   Reference: %6% sequins\n\n"
-                         "   ********************************************************************\n"
-                         "   ***                                                              ***\n"
-                         "   ***      How the coverage is calculated? Possibilities:          ***\n"
-                         "   ***                                                              ***\n"
-                         "   ***           - Mean                                             ***\n"
-                         "   ***           - Quartile                                         ***\n"
-                         "   ***           - Median                                           ***\n"
-                         "   ***           - Maximum                                          ***\n"
-                         "   ***                                                              ***\n"
-                         "   ***      Please refer to the online documentation for details    ***\n"
-                         "   ***                                                              ***\n"
-                         "   ********************************************************************\n\n"
+                         "   *************************************************************\n"
+                         "   ***                                                       ***\n"
+                         "   ***      How the coverage is calculated?                  ***\n"
+                         "   ***                                                       ***\n"
+                         "   ***      Please refer to the documentation for details    ***\n"
+                         "   ***                                                       ***\n"
+                         "   *************************************************************\n\n"
                          "   Method: %7%\n\n"
                          "   *******************************************\n"
                          "   ***                                     ***\n"
