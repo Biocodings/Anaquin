@@ -27,7 +27,7 @@
                                xlab(xlab) +
                                ylab(ylab) +
                            ggtitle(title) +
-                geom_point(aes(colour=grp), size=2, alpha=1.0) +
+                geom_point(aes(colour=grp), size=1, alpha=1.0) +
                 geom_smooth(method='lm', formula=y ~ x)        +
                 labs(colour='Ratio')                           +
                 theme_bw()
