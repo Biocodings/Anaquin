@@ -29,7 +29,7 @@ namespace Anaquin
     struct StatsWriter
     {
         static Scripts writeCSV(const LinearStats &stats,
-                                const Label &xLabel = "expected",
+                                const Label &xLabel = "input",
                                 const Label &yLabel = "measured",
                                 bool shouldLog = false)
         {
