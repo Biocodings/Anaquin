@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotExpress <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=NULL)
+.plotExpress <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='', limitLabel='LOQ', xBreaks=NULL)
 {
     require(ggplot2)
 
@@ -49,7 +49,7 @@
     {
         loq <- showLOQ(data$x, data$y)
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype="dotted")
-        p <- p + geom_label(aes(x=loq$breaks$k, y=0, label=paste('LOQ', signif(loq$breaks$k, 3))), colour = "black", show.legend=FALSE)
+        p <- p + geom_label(aes(x=loq$breaks$k, y=0, label=paste(limitLabel, signif(loq$breaks$k, 3))), colour = "black", show.legend=FALSE)
     }
 
     if (!is.null(xBreaks))

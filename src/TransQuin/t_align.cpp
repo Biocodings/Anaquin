@@ -554,12 +554,10 @@ static Scripts replicateSummary()
            "   ***\n"
            "   *** Alignments\n"
            "   ***\n\n"
-           "   Non-spliced (Synthetic):   %16%\n"
-           "   Spliced (Synthetic):       %17%\n"
-           "   Covered bases (Synthetic): %18%\n\n"
-           "   Non-spliced (Genome):      %19%\n"
-           "   Spliced (Genome):          %20% \n"
-           "   Covered bases (Genome):    %21%\n\n"
+           "   Non-spliced (Synthetic): %16%\n"
+           "   Spliced (Synthetic):     %17%\n\n"
+           "   Non-spliced (Genome):    %19%\n"
+           "   Spliced (Genome):        %20%\n\n"
            "   ***\n"
            "   *** The following statistics are computed at the exon, intron and base level.\n"
            "   ***\n\n"
@@ -582,9 +580,9 @@ static Scripts replicateSummary()
            "   Exon:   %34%\n"
            "   Intron: %35%\n"
            "   Gene:   %36%\n\n"
-           "   ***                                    \n"
-           "   ***  Comparison with genomic annotation\n"
-           "   ***                                    \n\n"
+           "   ***                                   \n"
+           "   *** Comparison with genomic annotation\n"
+           "   ***                                   \n\n"
            "   -------------------- Exon level --------------------\n\n"
            "   Sensitivity: %37%\n"
            "   Precision:   %38%\n\n"
@@ -635,10 +633,10 @@ static void generateSummary(const FileName &file,
                                           % (!hasGeno ? "-" : BIND_R(TransRef::exonBase, __gID__))          // 15
                                           % BIND_Q(Stats::countNSpliced, ChrT)                              // 16
                                           % BIND_Q(Stats::countSpliced,  ChrT)                              // 17
-                                          % BIND_Q(Stats::countQBases,   ChrT)                              // 18
+                                          % "" //BIND_Q(Stats::countQBases,   ChrT)                              // 18
                                           % BIND_Q(Stats::countNSpliced, __gID__)                           // 19
                                           % BIND_Q(Stats::countSpliced,  __gID__)                           // 20
-                                          % BIND_Q(Stats::countQBases,   __gID__)                           // 21
+                                          % "" //BIND_Q(Stats::countQBases,   __gID__)                           // 21
                                           % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 22
                                           % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 23
                                           % stats.limit(AlignMetrics::AlignExon).abund                      // 24
