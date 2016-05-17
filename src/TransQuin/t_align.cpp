@@ -757,11 +757,11 @@ void TAlign::report(const FileName &file, const Options &o)
     generateQuins("TransAlign_quins.stats", file, stats, o);
 
     /*
-     * Generating TransAlign_reads.R
+     * Generating TransAlign_align.R
      */
     
-    o.generate("TransAlign_reads.R");
-    o.writer->open("TransAlign_reads.R");
+    o.generate("TransAlign_align.R");
+    o.writer->open("TransAlign_align.R");
     o.writer->write(RWriter::createScript("TransAlign_quins.stats", PlotTReads()));
     o.writer->close();
 
