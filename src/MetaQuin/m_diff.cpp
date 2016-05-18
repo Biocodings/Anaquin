@@ -171,7 +171,7 @@ static void writeCSV(const FileName &file, const MDiff::Stats &stats, const MDif
 //    
 //    o.writer->open(file);
 //    o.writer->write((boost::format(format) % "sequin"
-//                                           % "expected"
+//                                           % "input"
 //                                           % "measured").str());
 //    
 //    for (const auto &diff : stats.diffs)

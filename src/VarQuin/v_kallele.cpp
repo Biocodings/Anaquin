@@ -44,7 +44,7 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
 
     o.info("Generating VarKAllele_quins.csv");
     o.writer->open("VarKAllele_quins.csv");
-    o.writer->write(StatsWriter::writeCSV(stats.all, "expected", "measured"));
+    o.writer->write(StatsWriter::writeCSV(stats.all, "input", "measured"));
     o.writer->close();
     
     /*

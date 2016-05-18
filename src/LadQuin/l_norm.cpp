@@ -199,7 +199,7 @@ static void writeCSV(const FileName &file, const LNorm::Stats &stats, const LNor
     
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
-                                           % "expected" // "Abund (counts)"
+                                           % "input" // "Abund (counts)"
                                            % "measured" // "Expected (attomol/ul)"
                                            % "Observed" // "Observed (normalized counts)"
                                            % "adjusted" // "Adjusted (normalized counts)"

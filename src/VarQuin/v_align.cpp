@@ -306,7 +306,7 @@ void VAlign::report(const FileName &file, const Options &o)
     
     const auto format = "%1%\t%2%\t%3%";
     o.writer->write((boost::format(format) % "sequin"
-                                           % "expected"
+                                           % "input"
                                            % "sn").str());
 
     for (const auto &i : stats.data.at(ChrT).hist)

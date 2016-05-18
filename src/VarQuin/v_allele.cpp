@@ -31,7 +31,7 @@ static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VA
     };
 
     o.writer->write((boost::format(format) % "sequin"
-                                           % "expected"
+                                           % "input"
                                            % "measured"
                                            % "rcount"
                                            % "vcount"
