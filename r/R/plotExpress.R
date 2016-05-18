@@ -85,7 +85,7 @@ plotExpress.VarQuin <- function(data, title, xlab, ylab, showLOQ)
 
 plotExpress.TransQuin <- function(data, title, xlab, ylab, showLOQ)
 {
-    if (is.null(title)) { title <- 'Gene Expression' }
+    if (is.null(title)) { title <- 'Isoform Expression' }
     if (is.null(xlab))  { xlab <- 'Input concentration (log2) '}
     if (is.null(ylab))  { ylab <- 'FPKM (log2) '}
     
