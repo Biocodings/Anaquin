@@ -88,25 +88,25 @@ void TKDiff::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * 1. Generating summary statistics
+     * Generating TransKDiff_summary.stats
      */
     
     TDiff::generateSummary("TransKDiff_summary.stats", stats, o, units);
     
     /*
-     * 2. Generating differential results
+     * Generating TransKDiff_quins.csv
      */
     
     TDiff::generateCSV("TransKDiff_quins.csv", stats, o);
     
     /*
-     * 3. Generating log-fold plot
+     * Generating TransKDiff_fold.R
      */
     
     TDiff::generateFoldR("TransKDiff_fold.R", "TransKDiff_quins.csv", o);
     
     /*
-     * 4. Generating ROC plot
+     * Generating TransKDiff_ROC.R
      */
     
     TDiff::generateROC("TransKDiff_ROC.R", "TransKDiff_quins.csv", o);
