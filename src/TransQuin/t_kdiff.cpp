@@ -110,4 +110,10 @@ void TKDiff::report(const FileName &file, const Options &o)
      */
     
     TDiff::generateROC("TransKDiff_ROC.R", "TransKDiff_quins.csv", o);
+    
+    /*
+     * Generating TransKDiff_LODR.R
+     */
+    
+    TDiff::generateLODR("TransDiff_LODR.R", "TransKDiff_quins.stats", o);
 }
