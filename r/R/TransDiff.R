@@ -141,11 +141,11 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
 
     plotExpress(td,
                 showLOQ=FALSE,
-                title='Input concentration vs measured expression',
-                xlab='Input concentration (log2)',
-                ylab='Measured expression (log2)')
+                title='TransQuin Differential',
+                xlab='Expected log-fold (log2)',
+                ylab='Measured log-fold (log2)')
 
-    plotROC(td, title='ROC for TransQuin differential')
+    plotROC(td, title='TransQuin Differential')
     
     if (haveMean)
     {
