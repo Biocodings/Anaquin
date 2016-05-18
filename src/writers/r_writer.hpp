@@ -45,7 +45,7 @@ namespace Anaquin
                                 bool shouldLog = false)
         {
             std::stringstream ss;
-            ss << ((boost::format("sequin\t%1%\t%2%\n") % xLabel % yLabel).str());
+            ss << ((boost::format("seq\t%1%\t%2%\n") % xLabel % yLabel).str());
 
             std::set<SequinID> sorted(ids.begin(), ids.end());
             

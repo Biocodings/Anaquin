@@ -115,5 +115,5 @@ void TKDiff::report(const FileName &file, const Options &o)
      * Generating TransKDiff_LODR.R
      */
     
-    TDiff::generateLODR("TransDiff_LODR.R", "TransKDiff_quins.stats", o);
+    TDiff::generateLODR("TransKDiff_LODR.R", "TransKDiff_quins.stats", o);
 }

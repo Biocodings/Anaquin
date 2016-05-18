@@ -101,7 +101,7 @@ namespace Anaquin
                                                               const FileName &csv,
                                                               const Options &o)
         {
-            o.info("Generating " + file);
+            o.generate(file);
             o.writer->open(file);
             o.writer->write(RWriter::createScript(csv, PlotTFold()));
             o.writer->close();
@@ -111,7 +111,7 @@ namespace Anaquin
                                                                             const Stats &stats,
                                                                             const Options &o)
         {
-            o.info("Generating " + file);
+            o.generate(file);
             o.writer->open(file);
             o.writer->write(TDiff::writeCSV(stats, o));
             o.writer->close();
@@ -122,7 +122,7 @@ namespace Anaquin
                                                                                 const Options &o,
                                                                                 const Units &units)
         {
-            o.info("Generating " + file);
+            o.generate(file);
             o.writer->open(file);
             o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats, stats.hist, units));
             o.writer->close();
