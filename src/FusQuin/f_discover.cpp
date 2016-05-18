@@ -76,17 +76,17 @@ static void writeSummary(const FileName &file, const FDiscover::Stats &stats, co
                          "   ***\n\n"
                          "   File: %4%\n\n"
                          "   Synthetic: %5% fusions\n\n"
+                         "   Fuzzy:     %6%\n\n"
                          "   ************************************************************\n"
                          "   ***                                                      ***\n"
                          "   ***        Statistics for the synthetic chromosome       ***\n"
                          "   ***                                                      ***\n"
                          "   ************************************************************\n\n"
-                         "   True Positives:  %6% fusions\n"
-                         "   False Positives: %7% fusions\n\n"
+                         "   True Positives:  %7% fusions\n"
+                         "   False Positives: %8% fusions\n\n"
                          "   ***\n"
                          "   *** Performance metrics\n"
                          "   ***\n\n"
-                         "   FPR:       : %8%\n"
                          "   Sensitivity: %9%\n"
                          "   Precision:   %10%\n\n";
     
@@ -96,9 +96,9 @@ static void writeSummary(const FileName &file, const FDiscover::Stats &stats, co
                                             % stats.countDetect(Geno)
                                             % o.rChrT
                                             % r.countFusion()
+                                            % o.fuzzy
                                             % stats.countTP(ChrT)
                                             % stats.countFP(ChrT)
-                                            % "?"
                                             % stats.sn(ChrT)
                                             % stats.pc(ChrT)).str());
     o.writer->close();
@@ -118,7 +118,7 @@ static void writeQuery(const FileName &file, const ChrID &cID, const FDiscover::
                                            % "str2"
                                            % "pos1"
                                            % "pos2"
-                                           % "read").str());
+                                           % "reads").str());
 
     for (const auto &tp : data.tps)
     {

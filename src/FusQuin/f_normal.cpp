@@ -59,27 +59,28 @@ void FNormal::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Generating summary statistics
+     * Generating FusNormal_summary.stats
      */
     
+    o.generate("FusNormal_summary.stats");
     o.writer->open("FusNormal_summary.stats");
     o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats, stats.hist, "sequins"));
     o.writer->close();
 
     /*
-     * Generating CSV for all fusions
+     * Generating FusNormal_quins.stats
      */
     
-    o.info("Generating FusNormal_quins.stats");
+    o.generate("FusNormal_quins.stats");
     o.writer->open("FusNormal_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
     /*
-     * Generating expression plot
+     * Generating FusNormal_express.R
      */
     
-    o.info("Generating FusNormal_express.R");
+    o.generate("FusNormal_express.R");
     o.writer->open("FusNormal_express.R");
     o.writer->write(RWriter::createScript("FusNormal_quins.stats", PlotFNormal()));
     o.writer->close();
