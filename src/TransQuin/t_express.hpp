@@ -69,7 +69,7 @@ namespace Anaquin
             std::map<SequinID, Concent> expect;
             
             std::stringstream ss;
-            ss << "sequin\texpected";
+            ss << "seq\tinput";
             
             for (auto i = 0; i < stats.size(); i++)
             {

@@ -154,7 +154,7 @@ static void writeQuins(const FileName &file, const FDiscover::Stats &stats, cons
     const auto format = "%1%\t%2%";
     
     o.writer->write((boost::format(format) % "seq"
-                                           % "counts").str());
+                                           % "reads").str());
 
     for (const auto &i : stats.data.at(ChrT).hist)
     {

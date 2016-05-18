@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotSplicing <- function(data,
+plotSplice <- function(data,
                          xname = 'Expected minor isoform fraction (log2)',
                          yname = 'Measured minor isoform fraction (log2)')
 {

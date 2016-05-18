@@ -40,10 +40,10 @@ Scripts StatsWriter::linearSummary(const FileName &file,
                                    const Units &units)
 {
     const auto summary = "   ***\n"
-                         "   *** Number of %1% for synthetic and experiment detected in the input file\n"
+                         "   *** Number of %1% for synthetic and genome detected in the input file\n"
                          "   ***\n\n"
-                         "   Synthetic:  %2% (%3%)\n"
-                         "   Experiment: %4% (%5%)\n\n"
+                         "   Synthetic: %2% (%3%)\n"
+                         "   Genome:    %4% (%5%)\n\n"
                          "   ***\n"
                          "   *** Reference annotation\n"
                          "   ***\n\n"
