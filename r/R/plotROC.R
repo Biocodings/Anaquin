@@ -57,7 +57,7 @@
                 t <- data[!is.na(data$ratio) & (data$ratio == ratio | data$ratio == refRatio),]                
             }
             
-            #print(paste(c('Detectd for ', ratio, ': ', nrow(t)), collapse = ''))
+            #print(paste(c('Detected for ', ratio, ': ', nrow(t)), collapse = ''))
             
             # No false-positive or true-positive?
             if (length(unique(t$label)) == 1)

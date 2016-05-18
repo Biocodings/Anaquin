@@ -132,11 +132,11 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
 
     x  <- x[!is.na(x$pval),]
     x  <- x[!is.nan(x$pval),]
-    td <- TransQuin(seqs=row.names(x), expected=x$expected, measured=x$measured, pval=x$pval, qval=x$qval)
+    td <- TransQuin(seqs=row.names(x), expected=x$expect, measured=x$measured, pval=x$pval, qval=x$qval)
 
     if (haveMean)
     {
-        td$mean <- x$mean
+        td$seqs$mean <- x$mean
     }
 
     plotExpress(td,

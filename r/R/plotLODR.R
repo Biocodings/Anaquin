@@ -19,10 +19,14 @@ pval <- function(data)
 }
 
 .fitLODR <- function(data,
-                      band='pred',
-                      chosenFDR=0.1,
-                      shouldTable=FALSE,
-                      multiTest=TRUE)
+                     legend='LFC Fold',
+                     xlab='Average Counts',
+                     ylab='P-value',
+                     title='LODR Curves',
+                     band='pred',
+                     chosenFDR=0.1,
+                     shouldTable=FALSE,
+                     multiTest=TRUE)
 {
     require(locfit)
 
@@ -237,7 +241,14 @@ pval <- function(data)
     
     x <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
 
-    .plotLODR(data=x, lineDat=lineDat, shouldBand=TRUE, cutoff=cutoff)
+    .plotLODR(data=x,
+              lineDat=lineDat,
+              shouldBand=TRUE,
+              xlab=xlab,
+              ylab=ylab,
+              title=title,
+              legend=legend,
+              cutoff=cutoff)
 }
 
 plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
@@ -258,6 +269,7 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     .plotLODR(data, title='Expected allele frequency vs p-value',
                     xname='Expected allele frequency (log10)',
                     yname='P-value (log10)',
+                    legned='LFC Fold',
                     xBreaks=xBreaks,
                     xLabels=xLabels,
                     p_size = 2)
@@ -283,16 +295,16 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     if (is.null(x$p_size)) { x$p_size <- 3 }
 
     p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=x$p_size) + theme_bw()
-    p <- p + labs(colour='')
     
     x$xBreaks <- 10^(0:round(log10(max(data$measured)))-1)
     x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
     x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
     x$yBreaks <- c(1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
 
-    if (!is.null(x$xname)) { p <- p + xlab(x$xname)    }
-    if (!is.null(x$yname)) { p <- p + ylab(x$yname)    }
-    if (!is.null(x$title)) { p <- p + ggtitle(x$title) }
+    if (!is.null(x$xlab))   { p <- p + xlab(x$xlab)     }
+    if (!is.null(x$ylab))   { p <- p + ylab(x$ylab)     }
+    if (!is.null(x$title))  { p <- p + ggtitle(x$title) }
+    if (!is.null(x$legend)) { p <- p + labs(colour=x$legend) }
 
     if (!is.null(x$lineDat))
     {
@@ -373,5 +385,6 @@ plotLODR <- function(data,
                      shouldTable = FALSE,
                      shouldBand  = FALSE)
 {
-    .fitLODR(data.frame(measured=data$seqs$mean, pval=pval(data), ratio=abs(round(data$seqs$expect))), multiTest=FALSE)
+    seqs <- data$seqs
+    .fitLODR(data.frame(measured=seqs$mean, pval=pval(data), ratio=abs(round(seqs$expected))), multiTest=FALSE)
 }
