@@ -71,7 +71,7 @@ namespace Anaquin
                                                            const FileName &csv,
                                                            const Options &o)
         {
-            o.info("Generating " + file);
+            o.generate(file);
             o.writer->open(file);
             o.writer->write(RWriter::createScript(csv, PlotTMA()));
             o.writer->close();
@@ -81,7 +81,7 @@ namespace Anaquin
                                                              const FileName &csv,
                                                              const Options &o)
         {
-            o.info("Generating " + file);
+            o.generate(file);
             o.writer->open(file);
             o.writer->write(RWriter::createScript(csv, PlotTLODR()));
             o.writer->close();

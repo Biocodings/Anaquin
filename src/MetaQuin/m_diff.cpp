@@ -170,7 +170,7 @@ static void writeCSV(const FileName &file, const MDiff::Stats &stats, const MDif
 //     */
 //    
 //    o.writer->open(file);
-//    o.writer->write((boost::format(format) % "sequin"
+//    o.writer->write((boost::format(format) % "seq"
 //                                           % "input"
 //                                           % "measured").str());
 //    

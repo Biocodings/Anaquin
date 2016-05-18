@@ -305,7 +305,7 @@ void VAlign::report(const FileName &file, const Options &o)
     o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
     
     const auto format = "%1%\t%2%\t%3%";
-    o.writer->write((boost::format(format) % "sequin"
+    o.writer->write((boost::format(format) % "seq"
                                            % "input"
                                            % "sn").str());
 
