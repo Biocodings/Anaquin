@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotAlign.TransQuin <- function(data, title, xlab, ylab, showLOQ)
+plotAlignRead.TransQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     if (is.null(title)) { title <- 'TransQuin Alignment' }
     if (is.null(xlab))  { xlab  <- 'Input concentration (log2 attomol/ul)' }
@@ -13,7 +13,7 @@ plotAlign.TransQuin <- function(data, title, xlab, ylab, showLOQ)
     .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ, limitLabel='LOA')
 }
 
-plotAlign <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
+plotAlignRead <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
 {
     stopifnot(class(data) == 'TransQuin')
 

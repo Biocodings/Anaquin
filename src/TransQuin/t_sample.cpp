@@ -124,16 +124,16 @@ static void generateSummary(const FileName &file, const TSample::Stats &stats, c
                          "   ***                                     ***\n"
                          "   *******************************************\n\n"
                          "   Aligns: %8%\n"
-                         "   Depth (Synthetic): %9%\n"
-                         "   Depth (Genome):    %10%\n\n"
+                         "   Coverage (Synthetic): %9%\n"
+                         "   Coverage (Genome):    %10%\n\n"
                          "   *******************************************\n"
                          "   ***                                     ***\n"
                          "   ***    Statistics after subsampling     ***\n"
                          "   ***                                     ***\n"
                          "   *******************************************\n\n"
                          "   Aligns: %11%\n"
-                         "   Depth (Synthetic): %12%\n"
-                         "   Depth (Genome):    %13%\n";
+                         "   Coverage (Synthetic): %12%\n"
+                         "   Coverage (Genome):    %13%\n";
     
     o.info("Generating " + file);
     o.writer->open(file);

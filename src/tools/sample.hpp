@@ -390,16 +390,16 @@ namespace Anaquin
                                  "   ***                                     ***\n"
                                  "   *******************************************\n\n"
                                  "   Aligns: %10%\n"
-                                 "   Depth (Synthetic): %11%\n"
-                                 "   Depth (Genome):    %12%\n\n"
+                                 "   Coverage (Synthetic): %11%\n"
+                                 "   Coverage (Genome):    %12%\n\n"
                                  "   *******************************************\n"
                                  "   ***                                     ***\n"
                                  "   ***    Statistics after subsampling     ***\n"
                                  "   ***                                     ***\n"
                                  "   *******************************************\n\n"
                                  "   Aligns: %13%\n"
-                                 "   Depth (Synthetic): %14%\n"
-                                 "   Depth (Genome):    %15%\n";
+                                 "   Coverage (Synthetic): %14%\n"
+                                 "   Coverage (Genome):    %15%\n";
             
             o.info("Generating " + ri.summary());
             o.writer->open(ri.summary());

@@ -54,6 +54,15 @@
 TransQuin <- function(...)
 {
     x <- list(...)
+    
+    #
+    # seqs      Unique sequin names
+    # input:    Expected abundance (attomol/ul etc) 
+    # measured: Measured abundance
+    # mean:     Replicate means
+    # pval:     Probability under the null hypothesis
+    # qval:     Adjusted probability under the null hypothesis
+    #
     keys <- c('pval', 'qval', 'mean', 'expected', 'input', 'measured')
 
     r <- list('seqs'=.createData(x, keys))
@@ -86,7 +95,7 @@ MetaQuin <- function(...)
 {
     x <- list(...)
     
-    keys <- c('mix', 'seqs', 'expected', 'measured')
+    keys <- c('mix', 'seqs', 'input', 'measured')
     data <- .createData(x, keys)
 
     r <- list('seqs'=data, mix=.createMixture(x$mix))
@@ -105,7 +114,16 @@ VarQuin <- function(...)
     x <- list(...)
     
     #
-    #  pval - Probability of detection under the null hypothesis
+    # seqs     Unique sequin names
+    # label    Sequin classification
+    # rRead    Number of reads supporting the reference allele
+    # vRead    Number of reads supporting the alternative allele
+    # type     Variant type
+    # ratio    Input fold-change
+    # input    Input concentration (eg: allele frequency)
+    # measured Measured expression (eg: allele frequency)
+    # bedgr    Bedgraph file name
+    # annot    Annotation file name
     #
     
     keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'expected', 'measured', 'bedgr', 'annot')
@@ -126,20 +144,23 @@ FusQuin <- function(...)
 {
     x <- list(...)
     
-    keys <- c('expected', 'measured', 'label', 'pos1', 'pos2')
+    #
+    # seqs      Unique sequin names
+    # input:    expected abundance (attomol/ul etc) 
+    # measured: measured abundance
+    # label:    sequin classification
+    #
+
+    keys <- c('input', 'measured', 'label')
     r <- list('seqs'=.createData(x, keys))
     
     if (is.null(r$seqs))
     {
         r$mix <- loadFusMix(.createMixture(x$mix))
         
-        if (!is.null(r$mix))
+        if (is.null(r$mix))
         {
-            # TODO: Implement me
-        }
-        else
-        {
-            stop('No sequin found. Please check and try again.') 
+            stop('No mixture found. Please check and try again.') 
         }
     }
 
@@ -168,7 +189,14 @@ LadQuin <- function(...)
 {
     x <- list(...)
     
-    keys <- c('label', 'elfc', 'lfc', 'pval', 'abund', 'type', 'expected', 'measured', 'aligned')
+    #
+    # seqs     Unique sequin names
+    # input    Input abundance (eg: attomol/ul)
+    # measured Measured abundance
+    # mix      Mixture details
+    #
+    
+    keys <- c('label', 'input', 'measured')
     data <- .createData(x, keys)
     
     r <- list('seqs'=data, mix=.createMixture(x$mix))

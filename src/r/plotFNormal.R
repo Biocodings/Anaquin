@@ -9,6 +9,6 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- FusQuin(seqs=row.names(data), expected=log2(data$expected), measured=log2(data$measured))
+data <- FusQuin(seqs=row.names(data), input=log2(data$input), measured=log2(data$measured))
 
-plotExpress(data, title='Input concentration vs Junction reads', xlab='Input concentration (log2)', ylab='Junction reads (log2)')
+plotNormal(data)
