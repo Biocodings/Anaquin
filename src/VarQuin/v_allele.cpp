@@ -33,8 +33,8 @@ static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VA
     o.writer->write((boost::format(format) % "seq"
                                            % "input"
                                            % "measured"
-                                           % "rcount"
-                                           % "vcount"
+                                           % "rreads"
+                                           % "vreads"
                                            % "type").str());
     
     f(stats.snp, "SNP");
