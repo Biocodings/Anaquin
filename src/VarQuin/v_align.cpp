@@ -243,21 +243,17 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "   ***\n\n"
                          "   File:   %10%\n\n"
                          "   Genome: %11% genes\n\n"
-                         "   *************************************************\n"
-                         "   ***                                           ***\n"
-                         "   ***    Comparison with synthetic annotation   ***\n"
-                         "   ***                                           ***\n"
-                         "   *************************************************\n\n"
-                         "   Sensitivity:  %12%\n"
-                         "   Specificity:  %13%\n\n"
+                         "   ***                                           \n"
+                         "   ***    Comparison with synthetic annotation   \n"
+                         "   ***                                           \n"
+                         "   Sensitivity: %12%\n"
+                         "   Precision:   %13%\n\n"
                          "   Detection limit: %14% (%15%)\n\n"
-                         "   *************************************************\n"
-                         "   ***                                           ***\n"
-                         "   ***     Comparison with genomic annotation    ***\n"
-                         "   ***                                           ***\n"
-                         "   *************************************************\n\n"
-                         "   Sensitivity:  %16%\n"
-                         "   Specificity:  %17%\n\n";
+                         "   ***                                           \n"
+                         "   ***     Comparison with genomic annotation    \n"
+                         "   ***                                           \n"
+                         "   Sensitivity: %16%\n"
+                         "   Precision:   %17%\n\n";
     
     const auto hasEndo = !r.genoID().empty();
 
