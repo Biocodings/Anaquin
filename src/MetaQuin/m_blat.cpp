@@ -59,6 +59,20 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
  
             // That's because we might have multiple contigs aligned to a sequin
             m.at(id)->contigs.push_back(contig);
+
+            assert(contig.l.length());
+            
+            /*
+             * TODO: What about a contig being mapped to the same sequin multiple times?
+             */
+            
+            // This is the size of the entire contig, regardless of whether they're aligned or not
+            stats.c2l[contig.id]  = contig.qSize;
+            
+            // This is the size of the aligned contig (not the entire contig would be aligned)
+            stats.c2tl[contig.id] = contig.l.length() - 1;
+
+            assert(contig.l.length()-1 <= contig.qSize);
         }
         else
         {

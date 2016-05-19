@@ -146,6 +146,15 @@ namespace Anaquin
 
             // For each contig listed in the alignment file
             std::map<ContigID, std::shared_ptr<MetaAlignment>> aligns;
+
+            // Mapping from sequin to contig
+            std::map<SequinID, ContigID> s2c;
+            
+            // Mapping from contig to their aligned (target) length
+            std::map<ContigID, Base> c2tl;
+            
+            // Mapping from contig to their length (this is the size of the entire contig)
+            std::map<ContigID, Base> c2l;
         };
 
         typedef AnalyzerOptions Options;

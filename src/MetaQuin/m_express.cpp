@@ -14,16 +14,18 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
     MExpress::Stats stats;
     stats.hist = r.hist();
     
-    for (auto &file : files)
+    const auto contigF = files[0];
+    
+    //for (auto &file : files)
     {
-        o.analyze(file);
+        o.analyze(contigF);
         
         switch (o.soft)
         {
             case MExpress::BWA:
             case MExpress::Bowtie:
             {
-                ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+                ParserSAM::parse(contigF, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
                 {
                     if (align.cID == ChrT)
                     {
@@ -51,39 +53,73 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                 
             case MExpress::RayMeta:
             {
+                std::map<ContigID, Base> c2l;
                 std::map<ContigID, SequinID> c2s;
-                std::map<ContigID, Coverage> c2l;
                 std::map<SequinID, std::vector<ContigID>> s2c;
                 
-                ParserQuast::parseContigs(Reader(files[2]), [&](const ParserQuast::ContigData &x,
-                                                                const ParserProgress &)
-                {
-                    for (const auto &c : x.contigs)
-                    {
-                        // Contigs.fasta doesn't have "_"
-                        auto t = c;
-                        
-                        // Eg: contig-1056000000 2818 nucleotides
-                        boost::replace_all(t, "_", " ");
-                        
-                        std::vector<std::string> toks;
-                        Tokens::split(t, " ", toks);
-
-                        c2s[toks[0]] = x.id;
-                        c2l[toks[0]] = stod(toks[1]);
-                        s2c[x.id].push_back(toks[0]);
-                    }
-                });
-                
                 /*
-                 * Mapping contigs to k-mer coverage
+                 * What alignment methods is being used?
                  */
                 
+                const auto align = files[2];
+                const auto isPSL = align.find("psl") != std::string::npos;
+                
+                if (isPSL)
+                {
+                    const auto x = MBlat::analyze(align);
+                    
+                    c2l = x.c2l;
+                    
+                    for (auto &i : x.aligns)
+                    {
+                        c2s[i.first] = i.second->id();
+                    }
+                    
+                    for (auto &i : x.metas)
+                    {
+                        for (auto &j : i.second->contigs)
+                        {
+                            s2c[i.first].push_back(j.id);
+                        }
+                    }
+                }
+                else
+                {
+                    ParserQuast::parseContigs(Reader(files[2]), [&](const ParserQuast::ContigData &x,
+                                                                    const ParserProgress &)
+                    {
+                        for (const auto &c : x.contigs)
+                        {
+                            // Contigs.fasta doesn't have "_"
+                            auto t = c;
+                            
+                            // Eg: contig-1056000000 2818 nucleotides
+                            boost::replace_all(t, "_", " ");
+                            
+                            std::vector<std::string> toks;
+                            Tokens::split(t, " ", toks);
+                            
+                            c2s[toks[0]] = x.id;
+                            c2l[toks[0]] = stod(toks[1]);
+                            s2c[x.id].push_back(toks[0]);
+                        }
+                    });
+                }
+                
+                assert(!c2s.empty());
+                assert(!c2l.empty());
+                assert(!s2c.empty());
+                
+                // Mapping from contigs to k-mer coverage
                 std::map<ContigID, Coverage> c2m;
+                
+                // Mapping from contigs to k-mer length
+                std::map<ContigID, Base> c2kl;
 
                 ParserTSV::parse(Reader(files[1]), [&](const ParserTSV::TSV &x, const ParserProgress &)
                 {
-                    c2m[x.id] = x.kmer;
+                    c2m[x.id]  = x.kmer;
+                    c2kl[x.id] = x.klen;
                 });
                 
                 assert(!c2m.empty());
@@ -97,22 +133,33 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                     const auto m = r.match(i.first);
                     
                     const auto expected = m->concent();
-                    auto measured = 0;
+                    auto measured = 0.0;
                     
                     auto x = 0.0;
                     auto y = 0.0;
                     
                     for (const auto &j : i.second)
                     {
+                        // K-mer length
+                        const auto kl = c2kl.at(j);
+                        
+                        // Entire size of the contig (including bases that are not mapped)
                         const auto l = c2l[j];
                         
-                        x += c2m.at(j);
+                        /*
+                         * How should we normalize the k-mer observations? Should we normalize by the k-mer length?
+                         * Should we normalize by the size of the contig?
+                         *
+                         * TODO: Is the k-mer observations reported in RayMeta already normalized?
+                         */
+                        
+                        x += (double)c2m.at(j); // / kl;// / l;
                         y += l; //j->l.length();
                     }
                     
                     //measured = x / y;
                     measured = x;
-
+                    
                     stats.add(i.first, expected, measured);
                 }
                 
@@ -133,7 +180,7 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                 //                    }
                 //
                 //                    /*
-                //                     * Calculate for the average depth for alignment and sequin
+                //                     * Calculate the average depth for alignment and sequin
                 //                     */
                 //                    
                 //                    align.depthAlign  += align.contigs[i].l.length() * contig.k_cov / align.contigs[i].l.length();
@@ -279,7 +326,7 @@ void MExpress::report(const std::vector<FileName> &files, const MExpress::Option
      * Generating MetaExpress_summary.stats
      */
     
-    o.info("Generating MetaExpress_summary.stats");
+    o.generate("MetaExpress_summary.stats");
     o.writer->open("MetaExpress_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
                                                 o.rGeno,
@@ -294,7 +341,7 @@ void MExpress::report(const std::vector<FileName> &files, const MExpress::Option
      * Generating MetaExpress_quins.stats
      */
     
-    o.info("Generating MetaExpress_quins.stats");
+    o.generate("MetaExpress_quins.stats");
     o.writer->open("MetaExpress_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
@@ -303,7 +350,7 @@ void MExpress::report(const std::vector<FileName> &files, const MExpress::Option
      * Generating MetaExpress_express.R
      */
     
-    o.info("Generating MetaExpress_express.R");
+    o.generate("MetaExpress_express.R");
     o.writer->open("MetaExpress_express.R");
     o.writer->write(RWriter::createScript("MetaExpress_quins.stats", PlotMExpress()));
     o.writer->close();
