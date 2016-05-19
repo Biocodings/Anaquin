@@ -8,7 +8,10 @@ Specify a design for ladder analysis.
 \method{LadQuin}{default}(mix)
 }
 \arguments{
-  \item{mix}{the name of the mixture file which the input concentration are to be read from. The file must be in the CSV format delimited by tabs. Each row of the file gives the input concentration of a sequin, which differs for each mixture type.
+  \item{seqs}{Unique sequin names}
+  \item{input}{Input abundance (eg: attomol/ul)}
+  \item{measured}{Measured abundance}
+  \item{mix}{The name of the mixture file which the input concentration are to be read from. The file must be in the CSV format delimited by tabs. Each row of the file gives the input concentration of a sequin, which differs for each mixture type.
 
   The latest mixture files can be downloaded at www.sequin.xyz, it is important to use the correct mixture file. More details available at the website.
   
@@ -19,19 +22,15 @@ Specify a design for ladder analysis.
   The \code{LadQuin} object combines the design information required for ladder analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies for by analysis, thus it is important to check the documentation carefully.
 
   Once created, the object can be used for ladder analysis. All ladder functions require this object.  
-  
-  The internal representation is unimportant and might change in future release as the command-line Anaquin stabilses its own API. 
 }
 \value{
-  An object of class \code{FusQuin} is returned. It contains the metadata required for data analysis. All fusion functions requires this object.
+  An object of class \code{LadQuin} is returned. It contains the metadata required for data analysis. All ladder functions requires this object.
 }
 
 \author{Ted Wong \email{t.wong@garvan.org.au}}
-\note{The interface might change in future release as the command-line \code{Anaquin}
-  stabilises its own API.}
 \examples{
 # Load a mixture from file
-LadQuin(mix='/home/tedwong/mixture.csv')
+LadQuin(mix='mixture.csv')
 
 # Load mixture A online
 LadQuin(mix='A')

@@ -8,25 +8,22 @@ Specify a design for transcriptome analysis.
 \method{TransQuin}{default}(seqs, ...)
 }
 \arguments{
-  \item{seqs}{List of sequins}
+  \item{seqs}{Unique sequin names (eg: F1_1_1)}
+  \item{input}{Input abundance (eg: attomol/ul)}
+  \item{measured}{Measured abundance (eg: FPKM)}
+  \item{mean}{Average count of replicates}
+  \item{pval}{Probability under the null hypothesis}
+  \item{qval}{Adjusted probability under the null hypothesis}
   \item{mix}{the name of the mixture file which the input concentration are to be read from. The file must be in the CSV format delimited by tabs. Each row of the file gives the input concentration of a sequin, which differs for each mixture type.
   
   The latest mixture files can be downloaded at www.sequin.xyz, it is important to use the correct mixture file. More details available at the website.
   
-  Alternatively, \code{mix} can be 'A', 'B' or 'AB', for mixture A, B and AB respectively. Anaquin will download the mixture file, thus active Internet connection is required.}
-  \item{expected}{Expected input concentration (attomol/ul)}
-  \item{measured}{Measured abundance}
-  \item{mean}{Empirically mean abundance of the replicates}  
-  \item{pval}{P-value estimated for differential analysis }  
-  \item{qpval}{Q-value estimated for differential analysis}  
-}
+  \code{mix} can be 'A', 'B' or 'AB', for mixture A, B and AB respectively. Anaquin will download the mixture file, thus active Internet connection is required.}}
 \details{
-  The \code{TransQuin} object combines the design information required for transcriptome analysis. While all arguments are optional, \code{mix} or \code{annot} must be given. If these variables are specified they must be a valid file either locally or remotely.
-  
-  Once created, the object can be used for transcriptome data analysis. All transcriptome functions will require this object.  
-  
-  The internal representation is unimportant and might change in future release as the command-line Anaquin stabilses its
-  own API. 
+  The \code{TransQuin} object combines the design information required for fusion analysis. While all arguments are optional, some information about the sequins must be given. Exactly what needs to be specified varies by analysis, thus it is important to check the documentation carefully.
+
+  Once created, the object can be used for transcriptome analysis. All transcriptome functions require this object.  
+  The internal representation is unimportant and might change in future release.
 }
 \value{
   An object of class \code{TransQuin} is returned. It contains the metadata required for data analysis. All transcriptome functions requires this object.
@@ -35,9 +32,9 @@ Specify a design for transcriptome analysis.
 \author{Ted Wong \email{t.wong@garvan.org.au}}
 \examples{
 # Load a mixture from file
-TransQuin(mix='/home/tedwong/mixture.csv')
+TransQuin(mix='mixture.csv')
 
-# Load mixture A online
+# Load mixture A
 TransQuin(mix='A')
 
 # Load mixture B online
