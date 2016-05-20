@@ -68,6 +68,8 @@ namespace Anaquin
                 // Eg: D_1_3_R
                 d.id = fields[Field::ID];
                 
+                std::cout << line << std::endl;
+                
                 d.l.start = d.l.end = stod(fields[Field::POS]);
                 
                 // Reference allele

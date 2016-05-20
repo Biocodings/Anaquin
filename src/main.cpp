@@ -659,6 +659,7 @@ template <typename Reference> void applyRef(Reference ref, Option opt)
     
     if (!_p.opts[opt].empty())
     {
+        std::cout << _p.opts[opt] << std::endl;
         ref(Reader(_p.opts[opt]));
     }
 }
