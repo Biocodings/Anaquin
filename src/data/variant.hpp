@@ -82,6 +82,7 @@ namespace Anaquin
         // Number of reads for the variant
         Counts readV = 0;
         
+        // Optional, not always provided.
         Probability p = NAN;
     };
     

@@ -88,10 +88,10 @@ namespace Anaquin
     }
 
     /*
-     * Common framework for parsing and matching a called variant
+     * Common framework for parsing and matching called variants
      */
 
-    template <typename F, typename Soft> void parseVariant(const FileName &file, Soft soft, F f)
+    template <typename F, typename Soft> void parseVariants(const FileName &file, Soft soft, F f)
     {
         const auto &r = Standard::instance().r_var;
 

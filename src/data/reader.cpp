@@ -11,7 +11,7 @@ struct Anaquin::ReaderInternal
 {
     std::string t;
     
-    // For tracking. Defined only for file mode
+    // Defined only for file input
     std::string file;
     
     // Implementation for file
@@ -40,6 +40,7 @@ Reader::Reader(const std::string &file, DataMode mode)
     }
     
     _imp = new ReaderInternal();
+    _imp->file = file;
 
     if (mode == DataMode::File)
     {
@@ -85,6 +86,11 @@ void Reader::reset()
         _imp->s->clear();
         _imp->s->seekg(0, std::ios::beg);
     }
+}
+
+std::string Reader::src() const
+{
+    return _imp->file;
 }
 
 bool Reader::nextLine(std::string &line) const

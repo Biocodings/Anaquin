@@ -31,6 +31,9 @@ namespace Anaquin
 
             void reset();
         
+            // Returns description for the source
+            std::string src() const;
+        
             // Returns the next line in the file
             bool nextLine(std::string &) const;
 

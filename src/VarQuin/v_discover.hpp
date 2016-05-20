@@ -2,7 +2,6 @@
 #define V_DISCOVER_HPP
 
 #include <vector>
-#include "data/hist.hpp"
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
 
@@ -70,14 +69,13 @@ namespace Anaquin
                 Confusion m, m_snp, m_ind;
             };
 
-            typedef CalledVariant GenoData;
-            typedef std::vector<GenoData> GenoStats;
+            typedef std::vector<CalledVariant> GenomeStats;
             
             // Statistics for synthetic variants
             ChrTStats chrT;
 
             // Statistics for genomic variants
-            GenoStats geno;
+            GenomeStats geno;
             
             // Distribution for variants
             HashHist hist;            

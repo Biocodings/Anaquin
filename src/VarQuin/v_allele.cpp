@@ -116,7 +116,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
 
         default:
         {
-            parseVariant(file, o.soft, [&](const VariantMatch &m)
+            parseVariants(file, o.soft, [&](const VariantMatch &m)
             {
                 if (m.query.cID == ChrT)
                 {

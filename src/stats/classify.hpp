@@ -23,7 +23,7 @@ namespace Anaquin
                 return _fp + _tp + _fn + _tn;
             }
         
-            // Sensitivity, metrics for positive classification
+            // Calculate for the sensitivity
             inline Proportion sn() const
             {
                 assert(_nr && _nr >= _tp);
@@ -34,18 +34,24 @@ namespace Anaquin
                 return (_tp + _fn) ? static_cast<Proportion>(_tp) / (_tp + _fn) : NAN;
             }
 
-            // Specificity, metrics for negative classification
+            // Calculate for the specificity
             inline Proportion sp() const
             {
                 assert(_nr && _nr >= _tp);
                 return (_tn + _fp) ? static_cast<Proportion>(_tn) / (_tn + _fp) : NAN;
             }
 
-            // Precision, metrics for accuracy
+            // Calculate for the precision
             inline Proportion pc() const
             {
                 assert(_nr && _nr >= _tp);
                 return ((tp() + fp()) && fp() != n()) ? static_cast<Proportion>(tp()) / (tp() + fp()) : NAN;
+            }
+        
+            // Calculate for the FDR
+            inline Proportion fdr() const
+            {
+                return 1.0 - pc();
             }
 
         private:
