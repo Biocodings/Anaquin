@@ -133,6 +133,11 @@ namespace Anaquin
                         }
                     }
                 }
+                
+                if (d.alt == ".")
+                {
+                    continue;
+                }
 
                 f(d, p);
             }

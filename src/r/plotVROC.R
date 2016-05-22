@@ -19,4 +19,4 @@ data$name <- paste(data$name, data$type, sep='_')
 
 data <- VarQuin(seqs=data$name, expected=log2(data$eFold), pval=data$pval, label=data$label)
 
-plotROC(data)
+plotROC(data) 

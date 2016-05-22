@@ -146,7 +146,7 @@ namespace Anaquin
         {
             const auto genoID = impl.genoID();
             
-            o.info("Query: " + genoID);
+            o.info("Genome: " + genoID);
             o.analyze(file);
             
             Stats stats;
@@ -167,7 +167,7 @@ namespace Anaquin
             }
             else if (!stats.cov.hist.count(genoID))
             {
-                throw std::runtime_error("Failed to find any alignment for " + genoID);
+                throw std::runtime_error("Failed to find any alignment for: " + genoID);
             }
             
             o.info(toString(sums(stats.cov.hist)) + " alignments in total");
