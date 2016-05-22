@@ -329,7 +329,7 @@ namespace Anaquin
             auto pre = CoverageTool::CoverageBedGraphOptions();
             
             pre.writer = o.writer;
-            pre.file   = ri.beforeBG();;
+            pre.file   = ri.beforeBG();
             
             CoverageTool::bedGraph(before.cov, pre, [&](const ChrID &id, Base i, Base j, Coverage)
             {
