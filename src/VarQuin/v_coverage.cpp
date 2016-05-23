@@ -10,7 +10,6 @@ extern Scripts PlotVDensity();
 // Defined in resources.cpp
 extern FileName refFile();
 
-
 VCoverage::Stats VCoverage::analyze(const FileName &file, const Options &o)
 {
     o.analyze(file);
@@ -25,7 +24,7 @@ VCoverage::Stats VCoverage::analyze(const FileName &file, const Options &o)
             
             if (m)
             {
-                return r.findBase(baseID(m->id));
+                return r.findGene(baseID(m->id));
             }
         }
 
@@ -39,19 +38,19 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     const auto stats = VCoverage::analyze(file, o);
 
     /*
-     * Generating summary statistics
+     * Generating VarCoverage_summary.stats
      */
     
-    o.info("Generating VarCoverage_summary.stats");
+    o.generate("VarCoverage_summary.stats");
 
     CoverageTool::CoverageReportOptions x;
     
-    x.rChrT    = o.rChrT;
-    x.rGeno    = o.rGeno;
-    x.writer   = o.writer;
-    x.refs     = r.hist().size();
-    x.length   = r.size();
-    x.summary  = "VarCoverage_summary.stats";
+    x.rChrT   = o.rChrT;
+    x.rGeno   = o.rGeno;
+    x.writer  = o.writer;
+    x.refs    = r.hist().size();
+    x.length  = r.size();
+    x.summary = "VarCoverage_summary.stats";
     
     CoverageTool::summary(stats, x, [&](const ChrID &id, Base i, Base j, Coverage)
     {
@@ -59,24 +58,24 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     });
 
     /*
-     * Generating detailed CSV for the sequins
+     * Generating VarCoverage_quins.csv
      */
 
-    o.info("Generating VarCoverage_quins.csv");
+    o.generate("VarCoverage_quins.csv");
     o.writer->open("VarCoverage_quins.csv");
     o.writer->write(CoverageTool::writeCSV(stats, x));
     o.writer->close();
 
     /*
-     * Generating bedgraph for the standards
+     * Generating VarCoverage_quins.bedgraph
      */
 
     CoverageTool::CoverageBedGraphOptions y;
     
     y.writer = o.writer;
-    y.file   = "VarCoverage_chrT.bedgraph";
+    y.file   = "VarCoverage_quins.bedgraph";
 
-    o.info("Generating VarCoverage_chrT.bedgraph");
+    o.generate("VarCoverage_quins.bedgraph");
 
     CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
     {
@@ -84,13 +83,11 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     });
 
     /*
-     * Generating density plot
+     * Generating VarCoverage_density.R
      */
 
-    auto f = refFile();
-    
-    o.info("Generating VarCoverage_chrT.R");
-    o.writer->open("VarCoverage_chrT.R");
-    o.writer->write(RWriter::createScript("VarCoverage_chrT.bedgraph", PlotVDensity(), path2file(refFile())));
+    o.generate("VarCoverage_density.R");
+    o.writer->open("VarCoverage_density.R");
+    o.writer->write(RWriter::createScript("VarCoverage_quins.bedgraph", PlotVDensity(), path2file(refFile())));
     o.writer->close();
 }
