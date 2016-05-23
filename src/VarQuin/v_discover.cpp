@@ -8,6 +8,9 @@ extern Scripts PlotVProb();
 // Defined in resources.cpp
 extern Scripts PlotVROC();
 
+// Defined in resources.cpp
+extern Scripts PlotVROC2();
+
 VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -323,9 +326,12 @@ static void writeSummaryNP(const FileName &file, const FileName &src, const VDis
                          "   True Positive:  %11% SNPS\n"
                          "   True Positive:  %12% indels\n"
                          "   True Positive:  %13% variants\n\n"
-                         "   False Positive: %14% SNPS\n"
-                         "   False Positive: %15% SNPS\n"
+                         "   False Positive: %14% SNPs\n"
+                         "   False Positive: %15% indels\n"
                          "   False Positive: %16% variants\n\n"
+                         "   False Negative: %26% SNPs\n"
+                         "   False Negative: %27% indels\n"
+                         "   False Negative: %28% variants\n\n"
                          "   ***\n"
                          "   *** Performance metrics (Overall)\n"
                          "   ***\n\n"
@@ -372,6 +378,9 @@ static void writeSummaryNP(const FileName &file, const FileName &src, const VDis
                                             % stats.chrT.m_ind.sn()  // 23
                                             % stats.chrT.m_ind.pc()  // 24
                                             % stats.chrT.m_snp.fdr() // 25
+                                            % stats.chrT.fnSNP()     // 26
+                                            % stats.chrT.fnInd()     // 27
+                                            % stats.chrT.fnTot()     // 28
                      ).str());
     o.writer->close();
 }
@@ -407,8 +416,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "   True Positive:  %16% indels\n"
                          "   True Positive:  %17% variants\n\n"
                          "   False Positive: %18% SNPS\n"
-                         "   False Positive: %19% SNPS\n"
+                         "   False Positive: %19% indels\n"
                          "   False Positive: %20% variants\n\n"
+                         "   False Negative: %30% SNPS\n"
+                         "   False Negative: %31% indels\n"
+                         "   False Negative: %32% variants\n\n"
                          "   ***\n"
                          "   *** Performance metrics (Overall)\n"
                          "   ***\n\n"
@@ -459,6 +471,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.chrT.m_ind.sn()           // 27
                                             % toString(stats.chrT.m_ind.sp()) // 28
                                             % stats.chrT.m_ind.pc()           // 29
+                                            % stats.chrT.fnSNP()              // 30
+                                            % stats.chrT.fnInd()              // 31
+                                            % stats.chrT.fnTot()              // 32
                      ).str());
     o.writer->close();
 }
@@ -508,11 +523,11 @@ void VDiscover::report(const FileName &file, const Options &o)
             o.writer->close();
             
             /*
-             * Generating VarDiscover_prob.R
+             * Generating VarDiscover_detect.R
              */
             
-            o.generate("VarDiscover_prob.R");
-            o.writer->open("VarDiscover_prob.R");
+            o.generate("VarDiscover_detect.R");
+            o.writer->open("VarDiscover_detect.R");
             o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
             o.writer->close();
 
@@ -527,7 +542,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             o.report->addFile("VarDiscover_quins.stats");
             o.report->addFile("VarDiscover_queries.stats");
             o.report->addFile("VarDiscover_ROC.R");
-            o.report->addFile("VarDiscover_Prob.R");
+            o.report->addFile("VarDiscover_prob.R");
 
             break;
         }
@@ -552,7 +567,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             
             o.generate("VarDiscover_ROC.R");
             o.writer->open("VarDiscover_ROC.R");
-            o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVROC()));
+            o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVROC2()));
             o.writer->close();
             
             /*
