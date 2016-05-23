@@ -4,8 +4,22 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-# library('RUnit')
-# library('Anaquin')
+library('RUnit')
+library('Anaquin')
+
+test.VarQuin.genes <- function()
+{
+    seqs <- c('D_2_8_R', 'D_2_8_V', 'D_2_9_R', 'D_2_9_V')
+    r <- VarQuin.genes(seqs)
+
+    checkEquals(length(r), 2)    
+    checkEquals(r[1], 'D_2_8')
+    checkEquals(r[2], 'D_2_9')    
+}
+    
+test.VarQuin.genes()
+
+
 # 
 # testVMixture <- function()
 # {
