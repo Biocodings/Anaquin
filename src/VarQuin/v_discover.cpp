@@ -523,11 +523,11 @@ void VDiscover::report(const FileName &file, const Options &o)
             o.writer->close();
             
             /*
-             * Generating VarDiscover_detect.R
+             * Generating VarDiscover_LOD.R
              */
             
-            o.generate("VarDiscover_detect.R");
-            o.writer->open("VarDiscover_detect.R");
+            o.generate("VarDiscover_LOD.R");
+            o.writer->open("VarDiscover_LOD.R");
             o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
             o.writer->close();
 
@@ -542,7 +542,7 @@ void VDiscover::report(const FileName &file, const Options &o)
             o.report->addFile("VarDiscover_quins.stats");
             o.report->addFile("VarDiscover_queries.stats");
             o.report->addFile("VarDiscover_ROC.R");
-            o.report->addFile("VarDiscover_prob.R");
+            o.report->addFile("VarDiscover_LOD.R");
 
             break;
         }

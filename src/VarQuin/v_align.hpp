@@ -56,13 +56,24 @@ namespace Anaquin
                 std::map<SequinID, Base> length;
                 
                 // Distribution for the sequins
-                SequinHist hist;                
+                Hist hist;
+                
+                /*
+                 * False-positive alignments. Alignments that are only aligned partial correctly.
+                 */
+                
+                std::vector<ReadID> afp;
             };
-            
-            // Mapping from sequins to reads
-            std::map<SequinID, Coverage> s2r;
+
+            /*
+             * Since each chromosome can be verified independently and similarly, we should be
+             * able to pool the data structure together.
+             */
             
             std::map<ChrID, Data> data;
+
+            // Mapping from sequin genes to reads
+            std::map<SequinID, Coverage> s2r;
 
             // Absolute detection limit
             Limit limit;

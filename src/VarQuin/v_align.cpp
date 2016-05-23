@@ -89,6 +89,7 @@ static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals
     else
     {
         stats.data[ChrT].fp++;
+        stats.data[ChrT].afp.push_back(align.name);
     }
 }
 
@@ -240,16 +241,13 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "   Genome:    %5% (%6%%%)\n\n"
                          "   Dilution:  %7%\n\n"
                          "   ***\n"
-                         "   *** Reference annotation (Synthetic)\n"
+                         "   *** Reference annotation\n"
                          "   ***\n\n"
                          "   File: %8%\n\n"
                          "   Synthetic: %9% sequins\n"
-                         "   Detected:  %18% sequins\n\n"
-                         "   ***\n"
-                         "   *** Reference annotation (Genome)\n"
-                         "   ***\n\n"
-                         "   File:   %10%\n\n"
-                         "   Genome: %11% genes\n\n"
+                         "   Detected:  %10% sequins\n\n"
+                         "   Genome:    %11% genes\n"
+                         "   Detected:  - genes\n\n"
                          "   ***                                      \n"
                          "   *** Comparison with synthetic annotation \n"
                          "   ***                                      \n"
@@ -269,13 +267,13 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     o.writer->write((boost::format(summary) % src
                                             % stats.unmapped
                                             % stats.n_chrT
-                                            % stats.chrTProp()
+                                            % (100 * stats.chrTProp())
                                             % stats.n_geno
-                                            % stats.endoProp()
+                                            % (100 * stats.endoProp())
                                             % stats.dilution()
                                             % o.rChrT
                                             % stats.data.at(ChrT).hist.size()
-                                            % (!hasGeno ? "-" : o.rGeno)                        // 10
+                                            % count(stats.data.at(ChrT).hist)
                                             % (!hasGeno ? "-" : toString(r.countInters()))      // 11
                                             % stats.sn(ChrT)                                    // 12
                                             % stats.pc(ChrT)                                    // 13
@@ -283,7 +281,6 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.limit.id                                    // 15
                                             % (!hasGeno ? "-" : toString(stats.sn(r.genoID()))) // 16
                                             % (!hasGeno ? "-" : toString(stats.pc(r.genoID()))) // 17
-                                            % count(stats.data.at(ChrT).hist)
                      ).str());
     o.writer->close();
 }
@@ -314,6 +311,25 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     o.writer->close();
 }
 
+static void writeQueries(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
+{
+    o.generate(file);
+    o.writer->open(file);
+    
+    const auto format = "%1%\t%2%";
+    o.writer->write((boost::format(format) % "read" % "label").str());
+
+    for (const auto &i : stats.data)
+    {
+        for (const auto &j : i.second.afp)
+        {
+            o.writer->write((boost::format(format) % j % "FP").str());
+        }
+    }
+
+    o.writer->close();
+}
+
 void VAlign::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
@@ -333,6 +349,12 @@ void VAlign::report(const FileName &file, const Options &o)
     writeQuins("VarAlign_quins.stats", stats, o);
 
     /*
+     * Generating VarAlign_queries.stats
+     */
+    
+    writeQueries("VarAlign_queries.stats", stats, o);
+    
+    /*
      * Generating VarAlign_report.pdf
      */
 
@@ -340,4 +362,5 @@ void VAlign::report(const FileName &file, const Options &o)
     o.report->addTitle("VarAlign");
     o.report->addFile("VarAlign_summary.stats");
     o.report->addFile("VarAlign_quins.stats");
+    o.report->addFile("VarAlign_queries.stats");
 }

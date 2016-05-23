@@ -23,7 +23,7 @@ namespace Anaquin
                 return static_cast<bool>(REF.findGeno(id, l));
             }
 
-            inline bool shouldChrT(const ChrID &id, const Locus &l) const
+            inline bool shouldSynthetic(const ChrID &id, const Locus &l) const
             {
                 return static_cast<bool>(REF.match(l, MatchRule::Contains));
             }
