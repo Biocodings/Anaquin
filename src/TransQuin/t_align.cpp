@@ -665,10 +665,10 @@ static void generateSummary(const FileName &file,
     o.writer->close();
 }
 
-static void generateQuins(const FileName &file,
-                          const FileName &src,
-                          const TAlign::Stats &stats,
-                          const TAlign::Options &o)
+static void writeQuins(const FileName &file,
+                       const FileName &src,
+                       const TAlign::Stats &stats,
+                       const TAlign::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
@@ -748,19 +748,19 @@ void TAlign::report(const FileName &file, const Options &o)
      */
     
     o.analyze("TransAlign_quins.stats");
-    generateQuins("TransAlign_quins.stats", file, stats, o);
+    writeQuins("TransAlign_quins.stats", file, stats, o);
 
     /*
-     * Generating TransAlign_align.R
+     * Generating TransAlign_reads.R
      */
     
-    o.generate("TransAlign_align.R");
-    o.writer->open("TransAlign_align.R");
+    o.generate("TransAlign_reads.R");
+    o.writer->open("TransAlign_reads.R");
     o.writer->write(RWriter::createScript("TransAlign_quins.stats", PlotTReads()));
     o.writer->close();
 
     /*
-     * Generating a PDF report
+     * Generating TransAlign_report.pdf
      */
     
     o.report->open("TransAlign_report.pdf");
