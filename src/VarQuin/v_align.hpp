@@ -59,6 +59,9 @@ namespace Anaquin
                 SequinHist hist;                
             };
             
+            // Mapping from sequins to reads
+            std::map<SequinID, Coverage> s2r;
+            
             std::map<ChrID, Data> data;
 
             // Absolute detection limit

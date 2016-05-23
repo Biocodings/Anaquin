@@ -1,8 +1,6 @@
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/VarQuin.hpp"
-#include "VarQuin/v_sample.hpp"
 #include "parsers/parser_sam.hpp"
-#include <boost/algorithm/string/predicate.hpp>
 
 using namespace Anaquin;
 
@@ -217,6 +215,15 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     }
     
+    /*
+     * Mapping from sequins to reads
+     */
+    
+    for (const auto &i : stats.data.at(ChrT).hist)
+    {
+        stats.s2r[i.first] = i.second;
+    }
+    
     return stats;
 }
 
@@ -243,20 +250,21 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "   ***\n\n"
                          "   File:   %10%\n\n"
                          "   Genome: %11% genes\n\n"
-                         "   ***                                           \n"
-                         "   ***    Comparison with synthetic annotation   \n"
-                         "   ***                                           \n"
+                         "   ***                                      \n"
+                         "   *** Comparison with synthetic annotation \n"
+                         "   ***                                      \n"
                          "   Sensitivity: %12%\n"
                          "   Precision:   %13%\n\n"
                          "   Detection limit: %14% (%15%)\n\n"
-                         "   ***                                           \n"
-                         "   ***     Comparison with genomic annotation    \n"
-                         "   ***                                           \n"
+                         "   ***                                    \n"
+                         "   *** Comparison with genomic annotation \n"
+                         "   ***                                    \n"
                          "   Sensitivity: %16%\n"
                          "   Precision:   %17%\n\n";
     
-    const auto hasEndo = !r.genoID().empty();
+    const auto hasGeno = !r.genoID().empty();
 
+    o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src
                                             % stats.unmapped
@@ -267,50 +275,69 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.dilution()
                                             % o.rChrT
                                             % stats.data.at(ChrT).hist.size()
-                                            % (!hasEndo ? "-" : o.rGeno)                        // 10
-                                            % (!hasEndo ? "-" : toString(r.countInters()))      // 11
+                                            % (!hasGeno ? "-" : o.rGeno)                        // 10
+                                            % (!hasGeno ? "-" : toString(r.countInters()))      // 11
                                             % stats.sn(ChrT)                                    // 12
                                             % stats.pc(ChrT)                                    // 13
                                             % stats.limit.abund                                 // 14
                                             % stats.limit.id                                    // 15
-                                            % (!hasEndo ? "-" : toString(stats.sn(r.genoID()))) // 16
-                                            % (!hasEndo ? "-" : toString(stats.pc(r.genoID()))) // 17
+                                            % (!hasGeno ? "-" : toString(stats.sn(r.genoID()))) // 16
+                                            % (!hasGeno ? "-" : toString(stats.pc(r.genoID()))) // 17
                                             % count(stats.data.at(ChrT).hist)
                      ).str());
     o.writer->close();
 }
 
-void VAlign::report(const FileName &file, const Options &o)
+static void writeQuins(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
 {
     const auto &r = Standard::instance().r_var;
+
+    o.generate(file);
+    o.writer->open(file);
+    
+    const auto format = "%1%\t%2%\t%3%\t%4%";
+    o.writer->write((boost::format(format) % "seq"
+                                           % "input"
+                                           % "reads"
+                                           % "sn"
+                                           % "pc").str());
+
+    for (const auto &i : stats.data.at(ChrT).hist)
+    {
+        o.writer->write((boost::format(format) % i.first
+                                               % r.findGene(i.first)->concent()
+                                               % stats.s2r.at(i.first)
+                                               % stats.sn(ChrT, i.first)
+                                               % "-").str());
+    }
+    
+    o.writer->close();
+}
+
+void VAlign::report(const FileName &file, const Options &o)
+{
     const auto stats = analyze(file, o);
 
     o.info("Generating statistics");
     
     /*
-     * Generating summary statistics
+     * Generating VarAlign_summary.stats
      */
     
     writeSummary("VarAlign_summary.stats", file, stats, o);
 
     /*
-     * Generating sequin statistics
+     * Generating VarAlign_quins.stats
      */
     
-    o.writer->open("VarAlign_quins.stats");
-    o.writer->write((boost::format("Summary for input: %1%\n") % file).str());
-    
-    const auto format = "%1%\t%2%\t%3%";
-    o.writer->write((boost::format(format) % "seq"
-                                           % "input"
-                                           % "sn").str());
+    writeQuins("VarAlign_quins.stats", stats, o);
 
-    for (const auto &i : stats.data.at(ChrT).hist)
-    {        
-        o.writer->write((boost::format(format) % i.first
-                                               % r.findBase(i.first)->concent()
-                                               % stats.sn(ChrT, i.first)).str());
-    }
-    
-    o.writer->close();
+    /*
+     * Generating VarAlign_report.pdf
+     */
+
+    o.report->open("VarAlign_report.pdf");
+    o.report->addTitle("VarAlign");
+    o.report->addFile("VarAlign_summary.stats");
+    o.report->addFile("VarAlign_quins.stats");
 }
