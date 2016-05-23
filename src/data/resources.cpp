@@ -69,7 +69,9 @@
  */
 
 #include "resources/plotVROC.R"
+#include "resources/plotVROC2.R"
 #include "resources/plotVProb.R"
+#include "resources/PlotVReads.R"
 #include "resources/plotVAllele.R"
 #include "resources/plotVDensity.R"
 #include "resources/plotVExpress.R"
@@ -270,6 +272,11 @@ Scripts TransDataMixAB()
  * Variant Resources
  */
 
+Scripts PlotVReads()
+{
+    return ToString(src_r_plotVReads_R);
+}
+
 Scripts PlotVExpress()
 {
     return ToString(src_r_plotVExpress_R);
@@ -288,6 +295,11 @@ Scripts PlotVAllele()
 Scripts PlotVROC()
 {
     return ToString(src_r_plotVROC_R);
+}
+
+Scripts PlotVROC2()
+{
+    return ToString(src_r_plotVROC2_R);
 }
 
 Scripts PlotVProb()

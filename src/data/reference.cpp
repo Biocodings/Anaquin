@@ -1110,7 +1110,7 @@ void VarRef::validate()
     }
 
     /*
-     * Merging the reference and variant sequins. Mixture might not be defined.
+     * Building the input concentration for the sequins
      */
     
     if (_mixes.empty())
@@ -1135,7 +1135,7 @@ void VarRef::validate()
     assert(!_impl->baseMix.empty());
 }
 
-const VarRef::Base * VarRef::findBase(const SequinID &id, Mixture mix) const
+const VarRef::Base * VarRef::findGene(const SequinID &id, Mixture mix) const
 {
     return _impl->baseMix.count(id) ? &(_impl->baseMix.at(id)) : nullptr;
 }
@@ -1144,7 +1144,7 @@ Limit VarRef::absoluteBase(const SequinHist &hist, Mixture mix) const
 {
     return Reference<SequinData, DefaultStats>::absolute(hist, [&](const SequinID &id)
     {
-        return findBase(id);
+        return findGene(id);
     }, mix);
 }
 

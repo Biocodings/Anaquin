@@ -600,7 +600,7 @@ namespace Anaquin
                 return isGenoID(cID) ? findGeno(l) : nullptr;
             }
         
-            const Base *findBase(const SequinID &, Mixture mix = Mix_1) const;
+            const Base *findGene(const SequinID &, Mixture mix = Mix_1) const;
 
             /*
              * Matching functions
