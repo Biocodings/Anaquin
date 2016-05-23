@@ -12,4 +12,4 @@ bedgr <- '%3%/%4%'
 annot <- '%3%/%5%'
 
 data <- VarQuin(bedgr=bedgr, annot=annot)
-plotDensity(data)
+plotCoverage(data)

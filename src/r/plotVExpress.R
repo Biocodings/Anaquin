@@ -9,6 +9,6 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- VarQuin(seqs=row.names(data), expected=log2(data$expected), measured=log2(data$measured))
+data <- VarQuin(seqs=row.names(data), expected=log2(data$input), measured=log2(data$measured))
 
-plotExpress(data, title='Expression plot', xlab='Expected expression (log2)', ylab='Measured expression (log2)')
+plotKExpress(data)

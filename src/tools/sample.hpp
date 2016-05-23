@@ -116,7 +116,7 @@ namespace Anaquin
             virtual bool shouldGenomic(const ChrID &, const Locus &) const = 0;
 
             // Whether the synthetic region should be selected
-            virtual bool shouldChrT(const ChrID &, const Locus &) const = 0;
+            virtual bool shouldSynthetic(const ChrID &, const Locus &) const = 0;
         };
         
         struct ReportImpl
@@ -178,7 +178,7 @@ namespace Anaquin
             o.info("Generating statistics for: " + ChrT);
             stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
             {
-                return impl.shouldChrT(id, Locus(i,j));
+                return impl.shouldSynthetic(id, Locus(i,j));
             });
             
             o.info("Generating statistics for: " + genoID);
@@ -362,15 +362,11 @@ namespace Anaquin
                                  "   Synthetic: %3% aligns\n"
                                  "   Genome:    %4% aligns\n\n"
                                  "   ***\n"
-                                 "   *** Reference annotation (Synthetic)\n"
+                                 "   *** Reference annotation\n"
                                  "   ***\n\n"
                                  "   File: %5%\n\n"
-                                 "   Reference: %6% sequins\n\n"
-                                 "   ***\n"
-                                 "   *** Reference annotation (Genome)\n"
-                                 "   ***\n\n"
-                                 "   File: %7%\n\n"
-                                 "   Reference:  %8% intervals\n\n"
+                                 "   Synehtic: %6% sequins\n\n"
+                                 "   Genome:   %7% intervals\n\n"
                                  "   ***                                                      \n"
                                  "   *** How the coverage is calculated? Possibilities:       \n"
                                  "   ***                                                      \n"
@@ -381,21 +377,19 @@ namespace Anaquin
                                  "   ***                                                      \n"
                                  "   *** Please refer to the online documentation for details \n"
                                  "   ***                                                      \n\n"
-                                 "   Method: %9%\n\n"
+                                 "   Method: %8%\n\n"
                                  "   ***                               \n"
                                  "   *** Statistics before subsampling \n"
                                  "   ***                               \n\n"
-                                 "   Aligns: %10%\n"
-                                 "   Coverage (Synthetic): %11%\n"
-                                 "   Coverage (Genome):    %12%\n\n"
+                                 "   Coverage (Synthetic): %9%\n"
+                                 "   Coverage (Genome):    %10%\n\n"
                                  "   ***                              \n"
                                  "   *** Statistics after subsampling \n"
                                  "   ***                              \n\n"
-                                 "   Aligns: %13%\n"
-                                 "   Coverage (Synthetic): %14%\n"
-                                 "   Coverage (Genome):    %15%\n";
+                                 "   Coverage (Synthetic): %11%\n"
+                                 "   Coverage (Genome):    %12%\n";
             
-            o.info("Generating " + ri.summary());
+            o.generate(ri.summary());
             o.writer->open(ri.summary());
             o.writer->write((boost::format(summary) % file
                                                     % before.cov.unmapped
@@ -403,13 +397,12 @@ namespace Anaquin
                                                     % before.cov.n_geno
                                                     % o.rChrT
                                                     % ri.countSeqs()
-                                                    % o.rGeno
                                                     % ri.countInters()
                                                     % meth2Str()
-                                                    % sums(before.cov.hist)
+                                                    //% sums(before.cov.hist)
                                                     % before.chrTC
                                                     % before.endoC
-                                                    % sums(after.cov.hist)
+                                                    //% sums(after.cov.hist)
                                                     % after.chrTC
                                                     % after.endoC).str());
             o.writer->close();

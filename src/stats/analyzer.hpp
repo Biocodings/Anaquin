@@ -74,11 +74,11 @@ namespace Anaquin
         {
             return (n_chrT + n_geno) ? static_cast<Proportion>(n_chrT) / (n_chrT + n_geno) : NAN;
         }
-
+        
         // Total mapped to the synthetic chromosome
         Counts n_chrT = 0;
 
-        // Total mapped to the endogenous
+        // Total mapped to the genome
         Counts n_geno = 0;
     };
 

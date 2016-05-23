@@ -22,4 +22,4 @@ data[data$label=='FP',]$eAllele <- 1
 data <- data[data$type=='SNP',] # Can be changed to indels
 data <- VarQuin(seqs=data$name, ratio=as.factor(data$eFold), pval=data$pval, measured=data$eAllele)
 
-plotAlleleP(data)
+plotLOD(data)
