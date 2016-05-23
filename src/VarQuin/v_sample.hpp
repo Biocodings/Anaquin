@@ -66,8 +66,8 @@ namespace Anaquin
         {
             Options() {}
 
-            // How coverage is calculated
-            Subsampler::CoverageMethod method = Subsampler::CoverageMethod::ArithAverage;
+            // How coverage is calculated. The default method follows Ira Deveson's 2016 paper.
+            Subsampler::CoverageMethod method = Subsampler::CoverageMethod::Median;
         };
 
         typedef Subsampler::Stats Stats;
