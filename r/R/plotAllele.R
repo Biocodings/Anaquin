@@ -4,12 +4,12 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotAllele <- function(data)
+plotAllele <- function(data, showLOQ=TRUE)
 {
     .plotExpress(data, title='Allele frequency',
                         xlab='Expected allele frequency (log2)',
                         ylab='Measured allele frequency (log2)',
-                     showLOQ=FALSE,
+                     showLOQ=showLOQ,
                    showStats='left')
 }
 

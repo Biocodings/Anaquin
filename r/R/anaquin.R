@@ -134,7 +134,8 @@ VarQuin <- function(...)
     if (!is.null(x[['bedgr']])) { r$bedgr <- x$bedgr }
     if (!is.null(x[['annot']])) { r$annot <- x$annot }
 
-    stopifnot(!is.null(r$seqs))
+    # TODO: This should be activated, but won't work for VarCoverage_density.R (we should read the sequins from the file directly)
+    #stopifnot(!is.null(r$seqs))
     
     class(r) <- 'VarQuin'
     return (r)
@@ -261,6 +262,18 @@ expectForGenes <- function(data, gIDs)
 #                VarQuin functions                     #
 #                                                      #
 ########################################################
+
+#
+# Collapse VarQuin sequins to sequin genes. For example, 'D_2_8_R' and 'D_2_8_V' to just 'D_2_8'.
+#
+
+VarQuin.genes <- function(seqs)
+{
+    seqs <- gsub('_R', '', seqs)
+    seqs <- gsub('_V', '', seqs)
+    
+    return (unique(seqs))
+}
 
 alleleFreq <- function(data, ids)
 {

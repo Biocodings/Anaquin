@@ -251,8 +251,17 @@ pval <- function(data)
               cutoff=cutoff)
 }
 
-plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
+plotLOD <- function(data, ..., title='Limit of Detection',
+                               xlab='Expected allele frequency (log10)',
+                               ylab='P-value (log10)',
+                               legend='Allele\nFrequency',
+                               xBreaks=c(1e-3, 1e-2, 1e-1, 1e-0),
+                               xLabels=c('-3', '-2', '-1', 'FP'),
+                               yBreaks=c(1e-100, 1e-200, 1e-300),
+                               yLabels=c(-100, -200, -300))
 {
+    # TODO: Add type...
+    
     require(plyr)
 
     stopifnot(class(data) == 'VarQuin')
@@ -261,18 +270,17 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     stopifnot(!is.null(data$pval))
     stopifnot(!is.null(data$ratio))    
     
-    data$ratio <- revalue(data$ratio, c('1'='FP'))
-    
-    xLabels <- xBreaks
-    xLabels[xLabels==0] <- 'FP'
-    
-    .plotLODR(data, title='Expected allele frequency vs p-value',
-                    xname='Expected allele frequency (log10)',
-                    yname='P-value (log10)',
-                    legned='LFC Fold',
+    data$ratio <- revalue(data$ratio, c('0'='FP'))
+
+    .plotLODR(data, title=title,
+                    xlab=xlab,
+                    ylab=ylab,
+                    legend=legend,
                     xBreaks=xBreaks,
                     xLabels=xLabels,
-                    p_size = 2)
+                    yBreaks=yBreaks,
+                    yLabels=yLabels,
+                    p_size=1.5)
 }
 
 .plotLODR <- function(data, ...)
@@ -295,17 +303,32 @@ plotAlleleP <- function(data, ..., xBreaks=c(-3, -2, -1, 0))
     if (is.null(x$p_size)) { x$p_size <- 3 }
 
     p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=x$p_size) + theme_bw()
+
+    if (is.null(x$xBreaks))
+    {
+        x$xBreaks <- 10^(0:round(log10(max(data$measured)))-1)
+    }
     
-    x$xBreaks <- 10^(0:round(log10(max(data$measured)))-1)
-    x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
-    x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
-    x$yBreaks <- c(1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
+    if (is.null(x$xLabels))
+    {
+        x$xLabels <- paste('1e+0', 0:(length(x$xBreaks)-1), sep='')
+    }
+    
+    if (is.null(x$yBreaks))
+    {
+        x$yBreaks <- c(1e-310, 1e-300, 1e-200, 1e-100, 1e-10, 1.00)
+    }
+    
+    if (is.null(x$yLabels))
+    {
+        x$yBreaks <- c(1e-100, 1e-80, 1e-60, 1e-40, 1e-20, 1.00)
+    }
 
     if (!is.null(x$xlab))   { p <- p + xlab(x$xlab)     }
     if (!is.null(x$ylab))   { p <- p + ylab(x$ylab)     }
     if (!is.null(x$title))  { p <- p + ggtitle(x$title) }
     if (!is.null(x$legend)) { p <- p + labs(colour=x$legend) }
-
+    
     if (!is.null(x$lineDat))
     {
         p <- p + geom_line(data=x$lineDat, aes(x=x.new, y=fitLine, colour=ratio), show_guide=FALSE)

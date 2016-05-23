@@ -27,11 +27,11 @@
                                xlab(xlab) +
                                ylab(ylab) +
                            ggtitle(title) +
-                geom_point(aes(colour=grp), size=1, alpha=1.0) +
+                geom_point(aes(colour=grp), size=1.0, alpha=1.0) +
                 geom_smooth(method='lm', formula=y ~ x)        +
                 labs(colour='Ratio')                           +
                 theme_bw()
-
+    
     p <-p + guides(colour=FALSE)
 
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 1.0)
