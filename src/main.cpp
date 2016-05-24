@@ -30,6 +30,8 @@
 #include "VarQuin/v_kexpress.hpp"
 
 #include "MetaQuin/m_diff.hpp"
+#include "MetaQuin/m_align.hpp"
+#include "MetaQuin/m_viewer.hpp"
 #include "MetaQuin/m_express.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
@@ -86,7 +88,7 @@ typedef std::set<Value> Range;
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
 #define TOOL_M_COVERAGE  286
-#define TOOL_L_NORM       287
+#define TOOL_L_NORM      287
 #define TOOL_L_DIFF      288
 #define TOOL_L_COVERAGE  289
 #define TOOL_F_DISCOVER  290
@@ -99,6 +101,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_EXPRESS   297
 #define TOOL_V_KEXPRESS  298
 #define TOOL_T_KEXPRESS  299
+#define TOOL_M_ALIGN     300
 #define TOOL_T_KDIFF     304
 #define TOOL_V_KALLELE   306
 #define TOOL_S_DISCOVER  307
@@ -196,6 +199,7 @@ static std::map<Value, Tool> _tools =
     { "VarKExpress",    TOOL_V_KEXPRESS  },
     { "VarKAllele",     TOOL_V_KALLELE   },
 
+    { "MetaAlign",      TOOL_M_ALIGN     },
     { "MetaAssembly",   TOOL_M_ASSEMBLY  },
     { "MetaExpress",    TOOL_M_EXPRESS   },
     { "MetaDiff",       TOOL_M_DIFF      },
@@ -250,6 +254,7 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_M_IGV,      { OPT_U_FILES } },
+    { TOOL_M_ALIGN,    { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES             } },
@@ -1684,6 +1689,7 @@ void parse(int argc, char ** argv)
 
         case TOOL_M_IGV:
         case TOOL_M_DIFF:
+        case TOOL_M_ALIGN:
         case TOOL_M_EXPRESS:
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
@@ -1707,9 +1713,10 @@ void parse(int argc, char ** argv)
                 
                 switch (_p.tool)
                 {
-                    case TOOL_M_ASSEMBLY:
-                    case TOOL_M_EXPRESS:
                     case TOOL_M_DIFF:
+                    case TOOL_M_ALIGN:
+                    case TOOL_M_EXPRESS:
+                    case TOOL_M_ASSEMBLY:
                     {
                         addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
                         break;
@@ -1721,18 +1728,16 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_M_IGV:      { viewer<FViewer>();                 break; }
+                case TOOL_M_IGV:      { viewer<MViewer>();                 break; }
+                case TOOL_M_ALIGN:    { analyze_1<MAlign>(OPT_U_FILES);    break; }
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
-
+                    
                 case TOOL_M_EXPRESS:
                 {
                     auto parse = [&](const std::string &str)
                     {
                         const static std::map<Value, MExpress::Software> m =
                         {
-                            { "bwa",     MExpress::BWA    },
-                            { "bowtie",  MExpress::Bowtie },
-                            { "bowtie2", MExpress::Bowtie },
                             { "velvet",  MExpress::Velvet  },
                             { "raymeta", MExpress::RayMeta },
                         };
