@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotExpress <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='', limitLabel='LOQ', xBreaks=NULL)
+.plotScatter <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='', limitLabel='LOQ', xBreaks=NULL)
 {
     require(ggplot2)
 

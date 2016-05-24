@@ -95,7 +95,7 @@ MetaQuin <- function(...)
 {
     x <- list(...)
     
-    keys <- c('mix', 'seqs', 'input', 'measured')
+    keys <- c('mix', 'seqs', 'input', 'expected', 'measured')
     data <- .createData(x, keys)
 
     r <- list('seqs'=data, mix=.createMixture(x$mix))
