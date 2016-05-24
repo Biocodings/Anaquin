@@ -139,7 +139,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         inters.add(Interval(baseID(i.first), i.second.l));
     }
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
         if (align.spliced)
         {
@@ -265,7 +265,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src
-                                            % stats.unmapped
+                                            % stats.n_unmap
                                             % stats.n_chrT
                                             % (100 * stats.chrTProp())
                                             % stats.n_geno

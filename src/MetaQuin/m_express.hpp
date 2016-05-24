@@ -9,8 +9,6 @@ namespace Anaquin
     {
         enum Software
         {
-            BWA,
-            Bowtie,
             RayMeta,
             Velvet,
         };

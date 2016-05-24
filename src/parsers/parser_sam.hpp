@@ -8,7 +8,7 @@ namespace Anaquin
 {
     struct ParserSAM
     {
-        struct AlignmentInfo
+        struct Info
         {
             ParserProgress p;
 
@@ -25,7 +25,7 @@ namespace Anaquin
             void *header;
         };
         
-        typedef std::function<void (const Alignment &, const AlignmentInfo &)> Functor;
+        typedef std::function<void (const Alignment &, const Info &)> Functor;
 
         static void parse(const FileName &file, Functor);
     };

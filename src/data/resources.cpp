@@ -57,9 +57,10 @@
  * Metagenomics Resources
  */
 
-#include "resources/plotMSen.R"
 #include "resources/plotMFold.R"
+#include "resources/plotMReads.R"
 #include "resources/plotMExpress.R"
+#include "resources/plotMAssembly.R"
 
 #include "resources/MME023.v013.csv"
 #include "resources/AME015.v032.bed"
@@ -111,9 +112,14 @@ Scripts PlotFROC()
     return ToString(src_r_plotFROC_R);
 }
 
-Scripts PlotMSen()
+Scripts PlotMReads()
 {
-    return ToString(src_r_plotMSen_R);
+    return ToString(src_r_plotMReads_R);
+}
+
+Scripts PlotMAssembly()
+{
+    return ToString(src_r_plotMAssembly_R);
 }
 
 Scripts FusionDataMixA()

@@ -5,12 +5,15 @@
 
 namespace Anaquin
 {
-    typedef ViewerOptions Options;
-    
-    static void generate(const FileName &file, const Options &o = Options())
+    struct MViewer
     {
-        Script::viewer("MetaQuin " + o.path + " " + file);
-    }
+        typedef ViewerOptions Options;
+    
+        static void generate(const FileName &file, const Options &o = Options())
+        {
+            Script::viewer("MetaQuin " + o.path + " " + file);
+        }
+    };
 }
 
 #endif

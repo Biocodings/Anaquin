@@ -16,7 +16,7 @@ void ParserSAM::parse(const FileName &file, Functor x)
     auto h = sam_hdr_read(f);
 
     Alignment align;
-    AlignmentInfo info;
+    Info info;
     
     while (sam_read1(f, h, t) >= 0)
     {

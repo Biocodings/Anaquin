@@ -50,18 +50,14 @@ template <typename Key, typename Value> std::set<Key> getKeys(const std::map<Key
 
 struct MetaRef::MetaRefImpl
 {
-    /*
-     * Raw data
-     */
-
-    std::map<SequinID, Locus> rawStands;
+    std::map<SequinID, Locus> s2l;
 };
 
 MetaRef::MetaRef() : _impl(new MetaRefImpl()) {}
 
 void MetaRef::addStand(const SequinID &id, const Locus &l)
 {
-    _impl->rawStands[id] = l;
+    _impl->s2l[id] = l;
 }
 
 void MetaRef::validate()
@@ -69,29 +65,33 @@ void MetaRef::validate()
     /*
      * Validation rule:
      *
-     *   1: Standards & Mixtures (eg: MetaAlign)
-     *   2: Mixtures  (eg: MetaAssembly, MetaExpress)
-     *   3: Standards (eg: MetaCoverage)
+     *   1: Standards & Mixtures
+     *   2: Mixtures
+     *   3: Standards
      */
     
-    if (!_rawMIDs.empty() && !_impl->rawStands.empty()) // Case 1
+    if (!_rawMIDs.empty() && !_impl->s2l.empty()) // Case 1
     {
-        merge(_rawMIDs, getKeys(_impl->rawStands));
+        merge(_rawMIDs, getKeys(_impl->s2l));
     }
     else if (!_rawMIDs.empty())                         // Case 2
     {
         merge(_rawMIDs);
     }
-    else if (!_impl->rawStands.empty())
+    else if (!_impl->s2l.empty())
     {
-        merge(getKeys(_impl->rawStands));
+        merge(getKeys(_impl->s2l));
     }
     else
     {
         throw std::runtime_error("Unknown validation error");
     }
 
-    for (const auto &i : _impl->rawStands)
+    /*
+     * Build length for each synthetic genome
+     */
+    
+    for (const auto &i : _impl->s2l)
     {
         if (_data.count(i.first))
         {

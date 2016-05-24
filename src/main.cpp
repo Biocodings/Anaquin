@@ -254,7 +254,7 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_M_IGV,      { OPT_U_FILES } },
-    { TOOL_M_ALIGN,    { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_M_ALIGN,    { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES             } },
@@ -1700,6 +1700,7 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
+                    case TOOL_M_ALIGN:
                     case TOOL_M_EXPRESS:                        
                     case TOOL_M_ASSEMBLY:
                     case TOOL_M_COVERAGE:

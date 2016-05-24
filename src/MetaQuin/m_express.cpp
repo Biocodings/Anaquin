@@ -22,30 +22,6 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
         
         switch (o.soft)
         {
-            case MExpress::BWA:
-            case MExpress::Bowtie:
-            {
-                ParserSAM::parse(contigF, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
-                {
-                    if (align.cID == ChrT)
-                    {
-                        throw std::runtime_error("Invalid alignments. Please check the documentation and try again.");
-                    }
-                    
-                    if (align.mapped)
-                    {
-                        const auto m = r.match(align.cID);
-                        
-                        if (m)
-                        {
-                            stats.hist.at(m->id)++;
-                        }
-                    }
-                });
-                
-                break;
-            }
-                
             case MExpress::Velvet:
             {
                 break;
@@ -190,33 +166,6 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                 
                 break;
             }
-        }
-        
-        /*
-         * Post-processing... Add up the histogram...
-         */
-        
-        switch (o.soft)
-        {
-            case MExpress::BWA:
-            case MExpress::Bowtie:
-            {
-                for (auto &i : stats.hist)
-                {
-                    if (i.second)
-                    {
-                        stats.add(i.first, r.match(i.first)->concent(), i.second);
-                    }
-                    else
-                    {
-                        std::cout << i.first << std::endl;
-                    }
-                }
-                
-                break;
-            }
-                
-            default : { break; }
         }
     }
     

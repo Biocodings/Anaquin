@@ -70,7 +70,7 @@ namespace Anaquin
             stats.src  = file;
             stats.hist = hist;
             
-            ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+            ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
             {
                 stats.update(align);
                 

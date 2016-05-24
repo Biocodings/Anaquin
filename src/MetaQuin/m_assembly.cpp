@@ -6,7 +6,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotMSen();
+extern Scripts PlotMAssembly();
 
 MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
 {
@@ -224,6 +224,6 @@ void MAssembly::report(const FileName &file, const Options &o)
 
     o.info("Generating MetaAssembly_assembly.R");
     o.writer->open("MetaAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("MetaAssembly_quins.stats", PlotMSen()));
+    o.writer->write(RWriter::createScript("MetaAssembly_quins.stats", PlotMAssembly()));
     o.writer->close();
 }

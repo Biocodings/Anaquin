@@ -9,7 +9,7 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
 
     stats.src  = file;
     
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
         stats.update(align);
 
@@ -115,9 +115,9 @@ void CoverageTool::summary(const CoverageTool::Stats &stats,
                          "   File: %8%\n\n"
                          "   Genome: %9% intervals\n"
                          "   Genome: %10% bases\n\n"
-                         "   ***                                          \n"
-                         "   ***  Statistics for the synthetic chromosome \n"
-                         "   ***                                          \n\n"
+                         "   ***                                         \n"
+                         "   *** Statistics for the synthetic chromosome \n"
+                         "   ***                                         \n\n"
                          "   Minimum: %11%\n"
                          "   Maximum: %12%\n"
                          "   Mean:    %13%\n"
@@ -136,7 +136,7 @@ void CoverageTool::summary(const CoverageTool::Stats &stats,
 
     o.writer->open(o.summary);
     o.writer->write((boost::format(summary) % stats.src
-                                            % stats.unmapped
+                                            % stats.n_unmap
                                             % stats.n_chrT
                                             % stats.n_geno
                                             % o.rChrT                           // 5

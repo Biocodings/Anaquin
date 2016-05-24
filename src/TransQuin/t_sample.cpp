@@ -168,7 +168,7 @@ void TSample::report(const FileName &file, const Options &o)
 
     SamplingTool sampler(1 - stats.prop);
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
         if (!align.i && !(info.p.i % 1000000))
         {

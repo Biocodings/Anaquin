@@ -236,12 +236,17 @@ namespace Anaquin
             
             return stats;
         }
-        
+
+        /*
+         * Perform subsampling to a proportion of input synthetic reads
+         */
+
         template <typename Options> static void sample(const FileName &src,
                                                        const FileName &dst,
-                                                       const Stats &stats,
+                                                       Proportion prop,
                                                        const Options &o)
         {
+            assert(prop >= 0 && prop <= 1.0);
             assert(!src.empty() && !dst.empty());
             
             /*
@@ -254,18 +259,18 @@ namespace Anaquin
             WriterSAM writer;
             writer.open(dst);
             
-            if (stats.sample() == 0.0)
+            if (prop == 0.0)
             {
                 o.warn("Sampling fraction is zero. This could be an error in the inputs.");
             }
-            else if (stats.sample() == 1.0)
+            else if (prop == 1.0)
             {
                 o.warn("Sampling fraction is one. This could be an error in the inputs.");
             }
             
-            SamplingTool sampler(1 - stats.sample());
+            SamplingTool sampler(1 - prop);
             
-            ParserSAM::parse(src, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+            ParserSAM::parse(src, [&](const Alignment &align, const ParserSAM::Info &info)
             {
                 if (!align.i && !(info.p.i % 1000000))
                 {
@@ -317,11 +322,13 @@ namespace Anaquin
             const auto before = Subsampler::stats(file, o, si);
             
             // Subsample the alignment
-            Subsampler::sample(file, o.work + "/" + sampled, before, o);
+            Subsampler::sample(file, o.work + "/" + sampled, before.sample(), o);
             
             // Statistics after alignment
             const auto after = Subsampler::stats(o.work + "/" + sampled, o, si);
-            
+
+            o.info("Proportion (after): " + toString(after.sample()));
+
             /*
              * Generating bedgraph before subsampling
              */
@@ -392,7 +399,7 @@ namespace Anaquin
             o.generate(ri.summary());
             o.writer->open(ri.summary());
             o.writer->write((boost::format(summary) % file
-                                                    % before.cov.unmapped
+                                                    % before.cov.n_unmap
                                                     % before.cov.n_chrT
                                                     % before.cov.n_geno
                                                     % o.rChrT

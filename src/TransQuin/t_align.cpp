@@ -434,7 +434,7 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
 
 static bool matchAlign(TAlign::Stats::Data &t,
                       const Alignment &align,
-                      const ParserSAM::AlignmentInfo &info,
+                      const ParserSAM::Info &info,
                       const TAlign::Options &o)
 {
     #define REPORT_STATUS() if (!align.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
@@ -453,7 +453,7 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
 {
     return calculate(o, [&](TAlign::Stats &stats)
     {
-        ParserSAM::AlignmentInfo info;
+        ParserSAM::Info info;
         
         for (const auto &align : aligns)
         {
@@ -481,7 +481,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     
     return calculate(o, [&](TAlign::Stats &stats)
     {
-        ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::AlignmentInfo &info)
+        ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
         {
             stats.update(align);
 
@@ -617,7 +617,7 @@ static void generateSummary(const FileName &file,
     o.writer->open(file);
     o.writer->write((boost::format(replicateSummary())
                                           % src
-                                          % stats.unmapped
+                                          % stats.n_unmap
                                           % stats.n_chrT
                                           % (100.0 * stats.chrTProp())
                                           % stats.n_geno
