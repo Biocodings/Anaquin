@@ -71,7 +71,7 @@
 #include "resources/plotVROC.R"
 #include "resources/plotVROC2.R"
 #include "resources/plotVProb.R"
-#include "resources/PlotVReads.R"
+#include "resources/plotVReads.R"
 #include "resources/plotVAllele.R"
 #include "resources/plotVDensity.R"
 #include "resources/plotVExpress.R"
