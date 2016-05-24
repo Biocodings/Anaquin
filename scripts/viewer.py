@@ -48,7 +48,7 @@ F_FUSION = 'https://s3.amazonaws.com/anaquin/annotations/AFU004.v032.bed'
 #
 
 # URL of the synthetic metagenomic community
-M_CHR_T = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
+M_CHR   = 'https://s3.amazonaws.com/anaquin/chromosomes/CME003.v013.fa'
 
 # URL of the metagenomic standard
 M_STAND = 'https://s3.amazonaws.com/anaquin/annotations/AME015.v032.bed'
@@ -240,9 +240,9 @@ def generateVar(path, align, chrT=V_CHR_T, stand=V_STAND, variant=V_VAR):
 # Generate an IGV session for metagenomic analysis
 #
 
-def generateMeta(path, align):
+def generateMeta(path, align, chr=M_CHR, stand=M_STAND):
     align = index(path, align)
-    session(path, align, download(path, [ commAmazon, mStandAmazon ]))
+    session(path, align, download(path, [ chr, stand ]))
 
 def printUsage():
         print '\nProgram: viewer.py (Tool for generating IGV session)'
@@ -283,7 +283,7 @@ if __name__ == '__main__':
         generateFusion(path, file)
     elif (mode == 'VarQuin'):
         generateVar(path, file)
-    elif (mode == 'MetQuin'):
+    elif (mode == 'MetaQuin'):
         generateMeta(path, file)
     else:
-        printUsage()
+        printUsage() 
