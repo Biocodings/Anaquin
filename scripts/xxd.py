@@ -58,9 +58,10 @@ data  = [ 'data/manual.txt',
           # ---------- META ----------
 
           'src/r/plotMFold.R',
+          'src/r/plotMKMer.R',
+          'src/r/plotMReads.R',
           'src/r/plotMExpress.R',
           'src/r/plotMAssembly.R',
-          'src/r/plotMReads.R',
 
           'data/MetaQuin/AME013.v032.fa',
           'data/MetaQuin/MME023.v013.csv',

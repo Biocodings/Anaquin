@@ -11,6 +11,8 @@ namespace Anaquin
     {
         enum class Software
         {
+            BWA,
+            Bowtie,
             STAMP,
         };
         

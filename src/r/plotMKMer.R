@@ -11,4 +11,4 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 data <- MetaQuin(seqs=row.names(data), input=log2(data$input), measured=log2(data$measured))
 
-plotFold(data)
+plotKExpress(data)

@@ -57,6 +57,7 @@
  * Metagenomics Resources
  */
 
+#include "resources/plotMKMer.R"
 #include "resources/plotMFold.R"
 #include "resources/plotMReads.R"
 #include "resources/plotMExpress.R"
@@ -174,6 +175,11 @@ Scripts LadderDataMixAB()
 /*
  * Metagenomics Resources
  */
+
+Scripts PlotMKMer()
+{
+    return ToString(src_r_plotMKMer_R);
+}
 
 Scripts PlotMExpress()
 {

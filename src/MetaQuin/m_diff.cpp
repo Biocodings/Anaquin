@@ -1,4 +1,5 @@
 #include "MetaQuin/m_diff.hpp"
+#include "MetaQuin/m_align.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "parsers/parser_stamp.hpp"
 
@@ -21,6 +22,33 @@ MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o
 
     switch (o.soft)
     {
+        case Software::BWA:
+        case Software::Bowtie:
+        {
+            const auto statsA = MAlign::analyze(files[0]);
+            const auto statsB = MAlign::analyze(files[1]);
+            
+            const auto dataA = statsA.data(false);
+            const auto dataB = statsB.data(false);
+
+            for (const auto &i : r.data())
+            {
+                if (dataA.id2x.count(i.first) && dataB.id2x.count(i.first))
+                {
+                    const auto expected = i.second.concent(Mix_2) / i.second.concent(Mix_1);
+                    const auto measured = dataB.id2y.at(i.first) / dataA.id2y.at(i.first);
+                    
+                    stats.add(i.first, expected, measured);
+                }
+                else
+                {
+                    std::cout << i.first << std::endl;
+                }
+            }
+
+            break;
+        }
+            
         case Software::STAMP:
         {
             ParserStamp::parse(Reader(files[0]), [&](const ParserStamp::Data &x, const ParserProgress &)
