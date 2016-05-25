@@ -160,24 +160,18 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
             ).str();
 }
 
-static Scripts generateMapping(const MAssembly::Stats &stats)
+static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
 
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
     std::stringstream ss;
     ss << ((boost::format(format) % "seq"
                                   % "input"
                                   % "contig"
-                                  % "sn"
                                   % "match"
-                                  % "mismatch"
-                                  % "tgap"
-                                  % "qgap")) << std::endl;
-
-    // Statistics for sensitivity
-    const auto sst = stats.data(false);
+                                  % "mismatch")) << std::endl;
 
     for (const auto &seq : r.data())
     {
@@ -185,44 +179,36 @@ static Scripts generateMapping(const MAssembly::Stats &stats)
         {
             for (const auto &c : stats.s2c.at(seq.first))
             {
-                ss << ((boost::format(format) % seq.first
-                                              % seq.second.concent()
-                                              % c
-                                              % sst.id2y.at(seq.first)
-                                              % "-"
-                                              % "-"
-                                              % "-"
-                                              % "-").str());
+                switch (o.align)
+                {
+                    case MAssembly::Blat:
+                    {
+                        throw "Not Implementd";
+                        break;
+                    }
+                        
+                    case MAssembly::MetaQuast:
+                    {
+                        /*
+                         * The alignment input: "genome_info.txt" combines the sensitivity for all contigs aligned
+                         * to the sequin. Thus, it's not possible to give the information at the contig level.
+                         */
+                        
+                        ss << ((boost::format(format) % seq.first
+                                                      % seq.second.concent()
+                                                      % c
+                                                      % "-"
+                                                      % "-").str());
+                        ss << std::endl;
+
+                        break;
+                    }
+                }
+                
             }
         }
-        else
-        {
-            ss << ((boost::format(format) % seq.first
-                                          % seq.second.concent()
-                                          % "-"
-                                          % "-"
-                                          % "-"
-                                          % "-"
-                                          % "-"
-                                          % "-").str());
-        }
     }
 
-    return ss.str();
-}
-
-static Scripts generateContigs(const MAssembly::Stats &stats)
-{
-    const auto format = "%1%\t%2%";
-    
-    std::stringstream ss;
-    ss << (boost::format(format) % "contig" % "seq").str() << std::endl;
-    
-    for (const auto &i : stats.c2s)
-    {
-        ss << (boost::format(format) % i.first % i.second).str() << std::endl;
-    }
-    
     return ss.str();
 }
 
@@ -233,7 +219,7 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Generating summary statistics
+     * Generating MetaAssembly_summary.stats
      */
 
     o.info("Generating MetaAssembly_summary.stats");
@@ -242,7 +228,7 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
     o.writer->close();
     
     /*
-     * Generating detailed statistics
+     * Generating MetaAssembly_quins.stats
      */
     
     o.info("Generating MetaAssembly_quins.stats");
@@ -251,21 +237,12 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
     o.writer->close();
 
     /*
-     * Generating MetaAssembly_mapping.stats
+     * Generating MetaAssembly_queries.stats
      */
     
-    o.info("Generating MetaAssembly_mapping.stats");
-    o.writer->open("MetaAssembly_mapping.stats");
-    o.writer->write(generateMapping(stats));
-    o.writer->close();
-
-    /*
-     * Generating MetaAssembly_contigs.stats
-     */
-
-    o.info("Generating MetaAssembly_contigs.stats");
-    o.writer->open("MetaAssembly_contigs.stats");
-    o.writer->write(generateContigs(stats));
+    o.info("Generating MetaAssembly_queries.stats");
+    o.writer->open("MetaAssembly_queries.stats");
+    o.writer->write(writeContigs(stats, o));
     o.writer->close();
 
     /*

@@ -48,8 +48,16 @@ namespace Anaquin
             Assembler soft;
             Alignment align;
 
-            std::map<ContigID, SequinID> c2s;
             std::map<SequinID, std::vector<ContigID>> s2c;
+
+            // Mapping from contigs to sequins
+            std::map<ContigID, SequinID> c2s;
+            
+            // Mapping from contigs to their length
+            std::map<ContigID, Base> c2l;
+            
+            // Mapping from contigs to number of bases aligned (part of the contig alignable)
+            std::map<ContigID, Base> c2c;
             
             // Statistics for de-novo assembly
             DAsssembly::Stats<DAsssembly::Contig> dnovo;
