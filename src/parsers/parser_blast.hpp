@@ -9,7 +9,7 @@ namespace Anaquin
 {
     struct ParserBlast
     {
-        struct BlastLine
+        struct Data
         {
             // Target sequence name
             std::string tName;
@@ -54,7 +54,7 @@ namespace Anaquin
             Base mismatch;
         };
 
-        typedef std::function<void(const BlastLine &, const ParserProgress &)> Callback;
+        typedef std::function<void(const Data &, const ParserProgress &)> Callback;
         static void parse(const Reader &, Callback);
     };
 }

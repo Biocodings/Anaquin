@@ -39,7 +39,7 @@ namespace Anaquin
          *   CME003.v013_MG_28  contig-1936000000_2957_nucleotides  contig-21984000000_278_nucleotides
          */
         
-        static void parseContigs(const Reader &r, std::function<void(const ContigData &, const ParserProgress &)> f)
+        static void parseAlign(const Reader &r, std::function<void(const ContigData &, const ParserProgress &)> f)
         {
             ContigData x;
             ParserProgress p;
@@ -57,8 +57,12 @@ namespace Anaquin
                  */
                 
                 Tokens::split(line, "\t", toks);
-                assert(toks.size() >= 2);
                 
+                if (toks.size() < 2)
+                {
+                    throw std::runtime_error("Error: " + r.src() + ". Invalid: " + line);
+                }
+
                 // Eg: GC_24_2
                 x.id = parseSequin(toks[0]);
 
@@ -93,7 +97,7 @@ namespace Anaquin
                 
                 while (r.nextLine(line))
                 {
-                    // Skip: "referebce chromosome:"
+                    // Skip: "reference chromosome:"
                     if (p.i++ == 0)
                     {
                         continue;
@@ -107,6 +111,7 @@ namespace Anaquin
 
                     /*
                      * Eg: CME003.v013_MG_29 (total length: 2974 bp, maximal covered length: 100 bp)
+                     *     CME003.v013_GC_24_2 (total length: 1000 bp, maximal covered length: 976 bp)
                      */
                     
                     Tokens::split(line, " ", toks);
@@ -120,9 +125,25 @@ namespace Anaquin
                     // Eg: CME003.v013_MG_29
                     Tokens::split(toks[0], "_", toks);
                     
-                    // Eg: MG_29
-                    x.id = toks[1] + "_" + toks[2];
+                    x.id.clear();
                     
+                    for (auto i = 1; i < toks.size(); i++)
+                    {
+                        if (i == 1)
+                        {
+                            x.id += toks[i];
+                        }
+                        else
+                        {
+                            x.id += ("_" + toks[i]);
+                        }
+                    }
+                    
+                    if (x.id.empty())
+                    {
+                        throw std::runtime_error("Unexpected line: " + line);
+                    }
+
                     f(x, p);
                 }
             });

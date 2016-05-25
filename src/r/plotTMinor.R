@@ -9,6 +9,6 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- TransQuin(seqs=row.names(data), expected=data$input, measured=data[,2:ncol(data)])
+data <- TransQuin(seqs=row.names(data), input=data$input, measured=data[,2:ncol(data)])
 
 plotSplice(data)

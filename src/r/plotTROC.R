@@ -9,7 +9,7 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- data[!is.na(data$expected),]
-data <- TransQuin(seqs=row.names(data), expected=data$expected, measured=data$measured, pval=data$pval, qval=data$qval)
+data <- data[!is.na(data$input),]
+data <- TransQuin(seqs=row.names(data), input=data$input, measured=data$measured, pval=data$pval, qval=data$qval)
  
-plotROC(data, title='ROC for TransQuin differential')
+plotROC(data)

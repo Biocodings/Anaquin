@@ -15,6 +15,6 @@ data$name <- paste(data$sequin, data$pos, sep='_')
 data$name <- paste(data$name, data$type, sep='_')
 
 m <- max(data$ref + data$var)
-data <- VarQuin(seqs=data$name, expected=1, pval=m-(data$ref + data$var), label=data$label)
+data <- VarQuin(seqs=data$name, input=1, pval=m-(data$ref + data$var), label=data$label)
 
 plotROC(data)

@@ -36,7 +36,7 @@ void ParserBlast::parse(const Reader &r, Callback c)
     std::string line;
     std::vector<std::string> toks;
 
-    BlastLine l;
+    Data l;
     
     while (r.nextLine(line))
     {

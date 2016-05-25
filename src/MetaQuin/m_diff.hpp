@@ -3,7 +3,7 @@
 
 #include "MetaQuin/m_blat.hpp"
 #include "stats/analyzer.hpp"
-#include "MetaQuin/m_express.hpp"
+#include "MetaQuin/m_kexpress.hpp"
 
 namespace Anaquin
 {

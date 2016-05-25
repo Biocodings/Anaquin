@@ -27,7 +27,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
      * Create data-structure for the alignments
      */
     
-    ParserBlast::parse(file, [&](const ParserBlast::BlastLine &l, const ParserProgress &)
+    ParserBlast::parse(file, [&](const ParserBlast::Data &l, const ParserProgress &)
     {
         // Eg: M2_G, M10_G
         const auto id = l.tName;

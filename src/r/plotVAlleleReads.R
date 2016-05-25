@@ -13,6 +13,6 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- VarQuin(seqs=row.names(data), expected=data$expected, rRead=data$rcount, vRead=data$vcount, type=data$type)
+data <- VarQuin(seqs=row.names(data), input=data$input, rRead=data$rcount, vRead=data$vcount, type=data$type)
 
 plotAlleleReads(data)

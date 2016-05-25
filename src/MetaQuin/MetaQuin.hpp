@@ -58,8 +58,6 @@ namespace Anaquin
 
             ParserFA::parse(file, [&](const ParserFA::Data &x, const ParserProgress &)
             {
-                //stats.n++;
-                
                 Contig c;
                 
                 // Can this contig be mapped to a sequin?
@@ -69,7 +67,7 @@ namespace Anaquin
                 {
                     stats.n_geno++;
                     
-                    // Don't bother if the contig isn't part of the sequins...
+                    // Don't bother if the contig isn't part of MetaQuins...
                     return;
                 }
                 else

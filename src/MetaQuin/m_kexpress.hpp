@@ -1,11 +1,11 @@
-#ifndef M_EXPRESS_HPP
-#define M_EXPRESS_HPP
+#ifndef M_KEXPRESS_HPP
+#define M_KEXPRESS_HPP
 
 #include "MetaQuin/m_assembly.hpp"
 
 namespace Anaquin
 {
-    struct MExpress
+    struct MKExpress
     {
         enum Software
         {

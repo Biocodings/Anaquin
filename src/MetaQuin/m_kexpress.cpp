@@ -1,5 +1,5 @@
 #include "parsers/parser_sam.hpp"
-#include "MetaQuin/m_express.hpp"
+#include "MetaQuin/m_kexpress.hpp"
 #include "parsers/parser_quast.hpp"
 
 using namespace Anaquin;
@@ -7,11 +7,11 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern Scripts PlotMExpress();
 
-MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExpress::Options &o)
+MKExpress::Stats MKExpress::analyze(const std::vector<FileName> &files, const MKExpress::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     
-    MExpress::Stats stats;
+    MKExpress::Stats stats;
     stats.hist = r.hist();
     
     const auto contigF = files[0];
@@ -22,12 +22,12 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
         
         switch (o.soft)
         {
-            case MExpress::Velvet:
+            case MKExpress::Velvet:
             {
                 break;
             }
                 
-            case MExpress::RayMeta:
+            case MKExpress::RayMeta:
             {
                 std::map<ContigID, Base> c2l;
                 std::map<ContigID, SequinID> c2s;
@@ -61,8 +61,8 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
                 }
                 else
                 {
-                    ParserQuast::parseContigs(Reader(files[2]), [&](const ParserQuast::ContigData &x,
-                                                                    const ParserProgress &)
+                    ParserQuast::parseAlign(Reader(files[2]), [&](const ParserQuast::ContigData &x,
+                                                                  const ParserProgress &)
                     {
                         for (const auto &c : x.contigs)
                         {
@@ -229,7 +229,7 @@ MExpress::Stats MExpress::analyze(const std::vector<FileName> &files, const MExp
     return stats;
 }
 
-static void generateContigs(const FileName &file, const MExpress::Stats &stats, const MExpress::Options &o)
+static void generateContigs(const FileName &file, const MKExpress::Stats &stats, const MKExpress::Options &o)
 {
     o.info("Generating " + file);
     o.writer->open(file);
@@ -267,9 +267,9 @@ static void generateContigs(const FileName &file, const MExpress::Stats &stats, 
     o.writer->close();
 }
 
-void MExpress::report(const std::vector<FileName> &files, const MExpress::Options &o)
+void MKExpress::report(const std::vector<FileName> &files, const MKExpress::Options &o)
 {
-    const auto stats = MExpress::analyze(files, o);
+    const auto stats = MKExpress::analyze(files, o);
 
     /*
      * Generating MetaExpress_summary.stats

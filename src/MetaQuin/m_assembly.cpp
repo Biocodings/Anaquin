@@ -8,20 +8,60 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern Scripts PlotMAssembly();
 
-MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
+MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Options &o)
 {
+    // Eg: Contigs.fasta
+    const auto fasta = files[0];
+
+    // Eg: align.psl and alignments_Contigs.tsv
+    const auto align = files[1];
+    
     const auto &r = Standard::instance().r_meta;
 
     MAssembly::Stats stats;
 
-    o.analyze(file);
+    o.analyze(fasta);
 
-    switch (o.soft)
+    /*
+     * Constructing mapping involving contigs and sequins. However, how this is constructed is tool specific.
+     */
+    
+    switch (o.align)
     {
+        case Blat:
+        {
+            const auto x = MBlat::analyze(align);
+            
+            for (auto &i : x.aligns)
+            {
+                stats.c2s[i.first] = i.second->id();
+            }
+
+            for (auto &i : x.metas)
+            {
+                for (auto &j : i.second->contigs)
+                {
+                    stats.s2c[i.first].push_back(j.id);
+                    stats.add(i.first, 10, 20); // TODO: Fix this
+                }
+            }
+            
+            /*
+             * TODO: Calculating the sensitivity for each individual sequin
+             */
+            
+            //for (auto &i : x.s2c)
+            {
+                //stats.add(i.first, 10, 20);
+            }
+
+            break;
+        }
+
         case MetaQuast:
         {
-            ParserQuast::parseContigs(Reader(o.contigs), [&](const ParserQuast::ContigData &x,
-                                                             const ParserProgress &)
+            ParserQuast::parseAlign(Reader(align), [&](const ParserQuast::ContigData &x,
+                                                       const ParserProgress &)
             {
                 for (const auto &c : x.contigs)
                 {
@@ -36,13 +76,17 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
                 }
             });
 
-            ParserQuast::parseGenome(Reader(o.genome), [&](const ParserQuast::GenomeData &x,
-                                                           const ParserProgress &)
+            // Eg: genome_info.txt
+            const auto genome = files[2];
+            
+            ParserQuast::parseGenome(Reader(genome), [&](const ParserQuast::GenomeData &x,
+                                                         const ParserProgress &)
             {
                 const auto match = r.match(x.id);
 
                 if (match)
                 {
+                    // Build a linear model between input concentration and sensitivity
                     stats.add(match->id, match->concent(), static_cast<Proportion>(x.covered) / x.total);
                 }
             });
@@ -51,7 +95,14 @@ MAssembly::Stats MAssembly::analyze(const FileName &file, const Options &o)
         }
     }
     
-    stats.dnovo = DAsssembly::analyze(file, &stats);
+    assert(!stats.c2s.empty());
+    assert(!stats.s2c.empty());
+
+    stats.soft  = o.soft;
+    stats.align = o.align;
+    
+    // Calculate statistics such as N50 and proportion asssembled
+    stats.dnovo = DAsssembly::analyze(fasta, &stats);
 
     return stats;
 }
@@ -71,15 +122,14 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
                          "   Synthetic: %7% sequins\n"
                          "   Contigs: %5%\n\n"
                          "   ***\n"
-                         "   ***\n"
                          "   *** The following statistics are computed on the synthetic community\n"
                          "   ***\n\n"
-                         "   N20:      %8%\n"
-                         "   N50:      %9%\n"
-                         "   N80:      %10%\n"
-                         "   Min:      %11%\n"
-                         "   Mean:     %12%\n"
-                         "   Max:      %13%\n\n"
+                         "   N20:  %8%\n"
+                         "   N50:  %9%\n"
+                         "   N80:  %10%\n"
+                         "   Min:  %11%\n"
+                         "   Mean: %12%\n"
+                         "   Max:  %13%\n\n"
                          "   ***\n"
                          "   *** The following overlapping statistics are computed as proportion\n"
                          "   ***\n\n"
@@ -110,7 +160,7 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
             ).str();
 }
 
-static Scripts generateQuins(const MAssembly::Stats &stats)
+static Scripts generateMapping(const MAssembly::Stats &stats)
 {
     const auto &r = Standard::instance().r_meta;
 
@@ -120,7 +170,7 @@ static Scripts generateQuins(const MAssembly::Stats &stats)
     ss << ((boost::format(format) % "seq"
                                   % "input"
                                   % "contig"
-                                  % "covered"
+                                  % "sn"
                                   % "match"
                                   % "mismatch"
                                   % "tgap"
@@ -176,9 +226,9 @@ static Scripts generateContigs(const MAssembly::Stats &stats)
     return ss.str();
 }
 
-void MAssembly::report(const FileName &file, const Options &o)
+void MAssembly::report(const std::vector<FileName> &files, const Options &o)
 {
-    const auto stats = MAssembly::analyze(file, o);
+    const auto stats = MAssembly::analyze(files, o);
 
     o.info("Generating statistics");
     
@@ -201,6 +251,15 @@ void MAssembly::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
+     * Generating MetaAssembly_mapping.stats
+     */
+    
+    o.info("Generating MetaAssembly_mapping.stats");
+    o.writer->open("MetaAssembly_mapping.stats");
+    o.writer->write(generateMapping(stats));
+    o.writer->close();
+
+    /*
      * Generating MetaAssembly_contigs.stats
      */
 
@@ -209,15 +268,6 @@ void MAssembly::report(const FileName &file, const Options &o)
     o.writer->write(generateContigs(stats));
     o.writer->close();
 
-    /*
-     * Generating MetaAssembly_quins.stats
-     */
-
-    o.info("Generating MetaAssembly_quins.stats_");
-    o.writer->open("MetaAssembly_quins.stats_");
-    o.writer->write(generateQuins(stats));
-    o.writer->close();
-    
     /*
      * Generating MetaAssembly_assembly.R
      */

@@ -17,6 +17,6 @@ data <- data[!is.na(data$pval) & data$pval <= sign,]
 data$name <- paste(data$sequin, data$pos, sep='_')
 data$name <- paste(data$name, data$type, sep='_')
 
-data <- VarQuin(seqs=data$name, expected=log2(data$eFold), pval=data$pval, label=data$label, type=data$type)
+data <- VarQuin(seqs=data$name, input=log2(data$eFold), pval=data$pval, label=data$label, type=data$type)
 
 plotROC(data, type='SNP)

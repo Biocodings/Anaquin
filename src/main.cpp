@@ -32,7 +32,7 @@
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/m_viewer.hpp"
-#include "MetaQuin/m_express.hpp"
+#include "MetaQuin/m_kexpress.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
 
@@ -52,6 +52,7 @@
 
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_quast.hpp"
+#include "parsers/parser_blast.hpp"
 #include "parsers/parser_cufflink.hpp"
 
 #include "writers/pdf_writer.hpp"
@@ -83,7 +84,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_T_SUBSAMPLE 281
-#define TOOL_M_EXPRESS   282
+#define TOOL_M_KEXPRESS  282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
@@ -199,12 +200,12 @@ static std::map<Value, Tool> _tools =
     { "VarKExpress",    TOOL_V_KEXPRESS  },
     { "VarKAllele",     TOOL_V_KALLELE   },
 
-    { "MetaAlign",      TOOL_M_ALIGN     },
-    { "MetaAssembly",   TOOL_M_ASSEMBLY  },
-    { "MetaExpress",    TOOL_M_EXPRESS   },
-    { "MetaDiff",       TOOL_M_DIFF      },
-    { "MetaIGV",        TOOL_M_IGV       },
-    { "MetaCoverage",   TOOL_M_COVERAGE  },
+    { "MetaAlign",      TOOL_M_ALIGN    },
+    { "MetaAssembly",   TOOL_M_ASSEMBLY },
+    { "MetaKExpress",   TOOL_M_KEXPRESS },
+    { "MetaDiff",       TOOL_M_DIFF     },
+    { "MetaIGV",        TOOL_M_IGV      },
+    { "MetaCoverage",   TOOL_M_COVERAGE },
 
     { "StructDiscover", TOOL_S_DISCOVER },
     
@@ -255,8 +256,8 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_M_IGV,      { OPT_U_FILES } },
     { TOOL_M_ALIGN,    { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_SOFT } },
-    { TOOL_M_EXPRESS,  { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_MIXTURE, OPT_SOFT } },
+    { TOOL_M_KEXPRESS, { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES             } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
 
@@ -459,6 +460,20 @@ template <typename F> bool testFile(const FileName &x, F f)
     return true;
 }
 
+template <typename F> std::vector<FileName> sortInputs(const FileName &x, const FileName &y, F f)
+{
+    #define ORDER(a,b) std::vector<FileName> { a,b };
+    
+    if (testFile(x, f))
+    {
+        return ORDER(x, y);
+    }
+    else
+    {
+        return ORDER(y, x);
+    }
+}
+
 template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileName &x,
                                                                      const FileName &y,
                                                                      const FileName &z,
@@ -475,11 +490,11 @@ template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileN
         
         if (testFile(y, f2))
         {
-            return ORDER(x,y,z);
+            return ORDER(x, y, z);
         }
         else
         {
-            return ORDER(x,z,y);
+            return ORDER(x, z, y);
         }
     }
     else if (testFile(y, f1))
@@ -490,11 +505,11 @@ template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileN
         
         if (testFile(x, f2))
         {
-            return ORDER(y,x,z);
+            return ORDER(y, x, z);
         }
         else
         {
-            return ORDER(y,z,x);
+            return ORDER(y, z, x);
         }
     }
     else
@@ -505,11 +520,11 @@ template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileN
         
         if (testFile(x, f2))
         {
-            return ORDER(z,x,y);
+            return ORDER(z, x, y);
         }
         else
         {
-            return ORDER(z,y,x);
+            return ORDER(z, y, x);
         }
     }
 }
@@ -1690,7 +1705,7 @@ void parse(int argc, char ** argv)
         case TOOL_M_IGV:
         case TOOL_M_DIFF:
         case TOOL_M_ALIGN:
-        case TOOL_M_EXPRESS:
+        case TOOL_M_KEXPRESS:
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
         {
@@ -1701,7 +1716,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_M_ALIGN:
-                    case TOOL_M_EXPRESS:                        
+                    case TOOL_M_KEXPRESS:
                     case TOOL_M_ASSEMBLY:
                     case TOOL_M_COVERAGE:
                     {
@@ -1716,7 +1731,7 @@ void parse(int argc, char ** argv)
                 {
                     case TOOL_M_DIFF:
                     case TOOL_M_ALIGN:
-                    case TOOL_M_EXPRESS:
+                    case TOOL_M_KEXPRESS:
                     case TOOL_M_ASSEMBLY:
                     {
                         addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
@@ -1733,14 +1748,14 @@ void parse(int argc, char ** argv)
                 case TOOL_M_ALIGN:    { analyze_1<MAlign>(OPT_U_FILES);    break; }
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
                     
-                case TOOL_M_EXPRESS:
+                case TOOL_M_KEXPRESS:
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<Value, MExpress::Software> m =
+                        const static std::map<Value, MKExpress::Software> m =
                         {
-                            { "velvet",  MExpress::Velvet  },
-                            { "raymeta", MExpress::RayMeta },
+                            { "velvet",  MKExpress::Velvet  },
+                            { "raymeta", MKExpress::RayMeta },
                         };
                         
                         return parseEnum("soft", str, m);
@@ -1751,12 +1766,12 @@ void parse(int argc, char ** argv)
                     
                     const auto soft = parse(_p.opts.at(OPT_SOFT));
 
-                    MExpress::Options o;
+                    MKExpress::Options o;
                     
                     o.soft    = soft;
                     o.contigs = conts;
                     
-                    analyze_n<MExpress>(o);
+                    analyze_n<MKExpress>(o);
                     break;
                 }
 
@@ -1784,64 +1799,108 @@ void parse(int argc, char ** argv)
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<Value, MAssembly::Software> m =
+                        const static std::map<Value, MAssembly::Assembler> m =
                         {
-                            { "quast", MAssembly::MetaQuast },
+                            { "raymeta", MAssembly::RayMeta },
+                            { "velvet",  MAssembly::Velvet },
                         };
                         
                         return parseEnum("soft", str, m);
                     };
 
-                    const auto soft = parse(_p.opts.at(OPT_SOFT));
-                    
                     MAssembly::Options o;
                     
-                    o.soft = soft;
+                    /*
+                     * What software being used for de-novo assembly?
+                     */
                     
-                    switch (o.soft)
+                    o.soft = parse(_p.opts.at(OPT_SOFT));
+                    
+                    /*
+                     * Has BLAT being used for contigs alignment?
+                     */
+                    
+                    if (_p.inputs.size() == 2)
                     {
-                        case MAssembly::MetaQuast:
+                        o.align = MAssembly::Blat;
+                     
+                        const auto checkPSL = [&](const FileName &x)
                         {
-                            const auto checkGenome = [&](const FileName &x)
-                            {
-                                Counts n = 0;
-                                
-                                ParserQuast::parseGenome(Reader(x),
-                                                         [&](const ParserQuast::GenomeData &,
-                                                             const ParserProgress &)
-                                {
-                                    n++;
-                                });
-                                
-                                return n;
-                            };
+                            Counts n = 0;
                             
-                            const auto checkContigs = [&](const FileName &x)
-                            {
-                                Counts n = 0;
-                                
-                                ParserQuast::parseContigs(Reader(x),
-                                                          [&](const ParserQuast::ContigData &,
+                            ParserBlast::parse(Reader(x), [&](const ParserBlast::Data &,
                                                               const ParserProgress &)
-                                {
-                                    n++;
-                                });
-                                
-                                return n;
-                            };
+                            {
+                                n++;
+                            });
                             
-                            const auto sorted = sortInputs(_p.inputs[0],
-                                                           _p.inputs[1],
-                                                           _p.inputs[2],
-                                                           checkGenome,
-                                                           checkContigs);
-                            o.genome  = sorted[0];
-                            o.contigs = sorted[1];
-                            
-                            analyze<MAssembly>(sorted[2], o);
-                            break;
-                        }
+                            return n;
+                        };
+                        
+                        const auto sorted = sortInputs(_p.inputs[0],
+                                                       _p.inputs[1],
+                                                       checkPSL);
+                        
+                        _p.inputs[0] = sorted[0]; // Eg: Contigs.fasta
+                        _p.inputs[1] = sorted[1]; // Eg: align.psl
+                        
+                        analyze_n<MAssembly>(o);
                     }
+                    
+                    /*
+                     * Has MetaQuast being used for contigs alignment?
+                     */
+                    
+                    else if (_p.inputs.size() == 3)
+                    {
+                        o.align = MAssembly::MetaQuast;
+                        
+                        const auto checkGenome = [&](const FileName &x)
+                        {
+                            Counts n = 0;
+                            
+                            ParserQuast::parseGenome(Reader(x),
+                                                     [&](const ParserQuast::GenomeData &,
+                                                         const ParserProgress &)
+                            {
+                                n++;
+                            });
+                            
+                            return n;
+                        };
+                        
+                        const auto checkContigs = [&](const FileName &x)
+                        {
+                            Counts n = 0;
+                            
+                            ParserQuast::parseAlign(Reader(x),
+                                                    [&](const ParserQuast::ContigData &,
+                                                        const ParserProgress &)
+                            {
+                                n++;
+                            });
+
+                            return n;
+                        };
+                        
+                        const auto sorted = sortInputs(_p.inputs[0],
+                                                       _p.inputs[1],
+                                                       _p.inputs[2],
+                                                       checkGenome,
+                                                       checkContigs);
+                        
+                        _p.inputs[0] = sorted[2]; // Eg: Contigs.fasta
+                        _p.inputs[1] = sorted[1]; // Eg: alignments_Contigs.tsv
+                        _p.inputs[2] = sorted[0]; // Eg: genome_info.txt
+                        
+                        analyze_n<MAssembly>(o);
+                    }
+                    else
+                    {
+                        throw TooManyOptionsError("Too many options given. Please check the documentation and try again.");
+                    }
+
+                    break;
                 }
             }
 
