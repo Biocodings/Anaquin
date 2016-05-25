@@ -10,7 +10,20 @@ plotFold.TransQuin <- function(data, title, xlab, ylab, showStats)
     if (is.null(xlab))  { xlab  <- 'Expected log-fold (log2)'}
     if (is.null(ylab))  { ylab  <- 'Measured log-fold (log2)'}    
     
-    .plotExpress(data, title=title,
+    .plotScatter(data, title=title,
+                       showLOQ=FALSE,
+                       xlab=xlab,
+                       ylab=ylab,
+                       showStats=showStats)
+}
+
+plotFold.MetaQuin <- function(data, title, xlab, ylab, showStats)
+{
+    if (is.null(title)) { title <- 'MetaQuin Differential'  }
+    if (is.null(xlab))  { xlab  <- 'Expected log-fold (log2)'}
+    if (is.null(ylab))  { ylab  <- 'Measured log-fold (log2)'}    
+    
+    .plotScatter(data, title=title,
                        showLOQ=FALSE,
                        xlab=xlab,
                        ylab=ylab,
@@ -23,7 +36,7 @@ plotFold.FusQuin <- function(data, title, xlab, ylab, showStats)
     if (is.null(xlab))  { xlab  <- 'Expected log-fold (log2)'}
     if (is.null(ylab))  { ylab  <- 'Measured log-fold (log2)'}    
     
-    .plotExpress(data, title=title,
+    .plotScatter(data, title=title,
                  showLOQ=FALSE,
                  xlab=xlab,
                  ylab=ylab,
@@ -32,8 +45,9 @@ plotFold.FusQuin <- function(data, title, xlab, ylab, showStats)
 
 plotFold <- function(data, title=NULL, xlab=NULL, ylab=NULL, showStats='left')
 {
-    stopifnot (class(data) == 'TransQuin' || class(data) == 'FusQuin')
+    stopifnot (class(data) == 'TransQuin' || class(data) == 'FusQuin' | class(data) == 'MetaQuin')
     
     if (class(data) == 'TransQuin') { plotFold.TransQuin(data, title=title, xlab=xlab, ylab=ylab, showStats=showStats) }
     if (class(data) == 'FusQuin')   { plotFold.FusQuin(data, title=title, xlab=xlab, ylab=ylab, showStats=showStats)   }    
+    if (class(data) == 'MetaQuin')  { plotFold.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showStats=showStats)  }    
 }
