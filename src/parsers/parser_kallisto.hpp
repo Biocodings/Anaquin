@@ -30,7 +30,7 @@ namespace Anaquin
 
         static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
         {
-            protectParse("TSV (Kallisto)", [&]()
+            protectParse("Kallisto TSV format", [&]()
             {
                 Data d;
                 ParserProgress p;

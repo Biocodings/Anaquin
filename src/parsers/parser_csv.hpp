@@ -12,19 +12,16 @@ namespace Anaquin
     {
         typedef std::vector<std::string> Data;
 
-        // Callback for parsing a CSV file
-        typedef std::function<void (const ParserCSV::Data &, const ParserProgress &)> Callback;
-
-        static void parse(const Reader &r, Callback c, const std::string &delim = ",")
+        template <typename F> static void parse(const Reader &r, F f, const std::string &delim = ",")
         {
-            protectParse("CSV", [&]()
+            protectParse("CSV format", [&]()
             {
                 ParserProgress p;
                 std::vector<std::string> tokens;
                 
                 while (r.nextTokens(tokens, delim))
                 {
-                    c(tokens, p);
+                    f(tokens, p);
                     p.i++;
                 }
             });

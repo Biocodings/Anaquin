@@ -30,7 +30,7 @@ namespace Anaquin
         {
             throw std::runtime_error("Invalid file, expected " + msg + ". Please check and try again.");
         }
-    }    
+    }
 }
 
 #endif

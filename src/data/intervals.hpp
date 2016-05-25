@@ -41,7 +41,7 @@ namespace Anaquin
                 // Number of bases with zero coverage
                 Counts zeros = 0;
             
-                inline double covered() const { return static_cast<double>(nonZeros) / length; }
+                inline Proportion covered() const { return static_cast<double>(nonZeros) / length; }
             };
         
             Interval(const IntervalID &id, const Locus &l) : _id(id), _l(l)
@@ -55,7 +55,7 @@ namespace Anaquin
                 if (l.end < _covs.size())   { _covs[l.end].ends++;     }
                 else                        { _covs.back().ends++;     }
             };
-        
+
             inline Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr)
             {
                 const auto start = std::max(_l.start, l.start) - _l.start;

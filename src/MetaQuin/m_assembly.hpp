@@ -40,6 +40,11 @@ namespace Anaquin
                 return c2s.count(x) ? c2s.at(x) : "";
             }
             
+            inline Proportion covered() const
+            {
+                return static_cast<Proportion>(match) / (match + mismatch);
+            }
+            
             /*
              * Usually, they're not needed but we need them here to check for special cases.
              * Commented in findSeq().
@@ -47,6 +52,12 @@ namespace Anaquin
 
             Assembler soft;
             Alignment align;
+            
+            // Total mismatching bases
+            Base mismatch = 0;
+            
+            // Total matching bases
+            Base match = 0;
 
             std::map<SequinID, std::vector<ContigID>> s2c;
 
@@ -56,8 +67,8 @@ namespace Anaquin
             // Mapping from contigs to their length
             std::map<ContigID, Base> c2l;
             
-            // Mapping from contigs to number of bases aligned (part of the contig alignable)
-            std::map<ContigID, Base> c2c;
+            // Mapping from contigs to number of bases assembled
+            std::map<ContigID, Base> c2a;
             
             // Statistics for de-novo assembly
             DAsssembly::Stats<DAsssembly::Contig> dnovo;

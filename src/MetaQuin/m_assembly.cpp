@@ -25,36 +25,46 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     /*
      * Constructing mapping involving contigs and sequins. However, how this is constructed is tool specific.
      */
-    
+
     switch (o.align)
     {
         case Blat:
         {
             const auto x = MBlat::analyze(align);
             
-            for (auto &i : x.aligns)
-            {
-                stats.c2s[i.first] = i.second->id();
-            }
-
-            for (auto &i : x.metas)
-            {
-                for (auto &j : i.second->contigs)
-                {
-                    stats.s2c[i.first].push_back(j.id);
-                    stats.add(i.first, 10, 20); // TODO: Fix this
-                }
-            }
-            
             /*
-             * TODO: Calculating the sensitivity for each individual sequin
+             * Building mapping for contigs
              */
             
-            //for (auto &i : x.s2c)
+            stats.c2s = x.c2s;
+            stats.c2l = x.c2l;
+            stats.c2a = x.c2a;
+            
+            assert(!stats.c2s.empty());
+            assert(!stats.c2l.empty());
+            assert(!stats.c2a.empty());
+            
+            /*
+             * Building mapping for sequins
+             */
+            
+            for (auto &s : x.metas)
             {
-                //stats.add(i.first, 10, 20);
+                // Length of the sequin
+                const auto l = s.second->seq->l;
+                
+                // Required for detecting overlapping
+                Interval i(s.first, Locus(0, l.length()));
+                
+                for (auto &j : s.second->contigs)
+                {
+                    stats.s2c[s.first].push_back(j.id);
+                    i.add(Locus(j.l.start, j.l.end - 1));
+                }
+                
+                stats.add(s.first, r.match(s.first)->concent(), i.stats().covered());
             }
-
+            
             break;
         }
 
@@ -91,6 +101,9 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
                 }
             });
 
+            assert(stats.c2l.empty());
+            assert(stats.c2a.empty());
+
             break;
         }
     }
@@ -103,6 +116,34 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     
     // Calculate statistics such as N50 and proportion asssembled
     stats.dnovo = DAsssembly::analyze(fasta, &stats);
+
+    /*
+     * Calculating the proportion being assembled (not available for MetaQuast)
+     */
+    
+    for (const auto &seq : r.data())
+    {
+        if (stats.s2c.count(seq.first))
+        {
+            for (const auto &c : stats.s2c.at(seq.first))
+            {
+                switch (o.align)
+                {
+                    case MAssembly::Blat:
+                    {
+                        stats.match += stats.c2a.at(c);
+                        stats.mismatch += (stats.c2l.at(c) - stats.c2a.at(c));
+                        break;
+                    }
+                        
+                    case MAssembly::MetaQuast:
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     return stats;
 }
@@ -135,8 +176,7 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
                          "   ***\n\n"
                          "   Match:    %14%\n"
                          "   Mismatch: %15%\n"
-                         "   Gaps (sequins): %16%\n"
-                         "   Gaps (contigs): %17%\n";
+                         "   Covered:  %16%\n";
     
     const auto &dn = stats.dnovo;
     
@@ -153,10 +193,9 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
                                    % dn.min
                                    % dn.mean
                                    % dn.max
-                                   % "-" //stats.blat.overMatch()
-                                   % "-" //stats.blat.overRGaps()
-                                   % "-" //stats.blat.overQGaps()
-                                   % "-" //stats.blat.overMismatch())
+                                   % stats.match
+                                   % stats.mismatch
+                                   % stats.covered()
             ).str();
 }
 
@@ -183,7 +222,16 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                 {
                     case MAssembly::Blat:
                     {
-                        throw "Not Implementd";
+                        const auto total = stats.c2l.at(c);
+                        const auto align = stats.c2a.at(c);
+                        
+                        assert(total >= align);
+                        
+                        ss << ((boost::format(format) % seq.first
+                                                      % seq.second.concent()
+                                                      % c
+                                                      % align
+                                                      % (total - align)).str()) << std::endl;
                         break;
                     }
                         
@@ -198,9 +246,7 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                                                       % seq.second.concent()
                                                       % c
                                                       % "-"
-                                                      % "-").str());
-                        ss << std::endl;
-
+                                                      % "-").str()) << std::endl;
                         break;
                     }
                 }

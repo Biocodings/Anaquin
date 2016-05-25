@@ -50,9 +50,9 @@
 #include "FusQuin/f_discover.hpp"
 #include "FusQuin/f_coverage.hpp"
 
+#include "parsers/parser_blat.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_quast.hpp"
-#include "parsers/parser_blast.hpp"
 #include "parsers/parser_cufflink.hpp"
 
 #include "writers/pdf_writer.hpp"
@@ -462,15 +462,15 @@ template <typename F> bool testFile(const FileName &x, F f)
 
 template <typename F> std::vector<FileName> sortInputs(const FileName &x, const FileName &y, F f)
 {
-    #define ORDER(a,b) std::vector<FileName> { a,b };
+    #define ORDER2(a,b) std::vector<FileName> { a,b };
     
     if (testFile(x, f))
     {
-        return ORDER(x, y);
+        return ORDER2(x, y);
     }
     else
     {
-        return ORDER(y, x);
+        return ORDER2(y, x);
     }
 }
 
@@ -480,7 +480,7 @@ template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileN
                                                                      F1 f1,
                                                                      F2 f2)
 {
-    #define ORDER(a,b,c) std::vector<FileName> { a,b,c };
+    #define ORDER3(a,b,c) std::vector<FileName> { a,b,c };
 
     if (testFile(x, f1))
     {
@@ -490,11 +490,11 @@ template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileN
         
         if (testFile(y, f2))
         {
-            return ORDER(x, y, z);
+            return ORDER3(x, y, z);
         }
         else
         {
-            return ORDER(x, z, y);
+            return ORDER3(x, z, y);
         }
     }
     else if (testFile(y, f1))
@@ -505,11 +505,11 @@ template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileN
         
         if (testFile(x, f2))
         {
-            return ORDER(y, x, z);
+            return ORDER3(y, x, z);
         }
         else
         {
-            return ORDER(y, z, x);
+            return ORDER3(y, z, x);
         }
     }
     else
@@ -520,11 +520,11 @@ template <typename F1, typename F2> std::vector<FileName> sortInputs(const FileN
         
         if (testFile(x, f2))
         {
-            return ORDER(z, x, y);
+            return ORDER3(z, x, y);
         }
         else
         {
-            return ORDER(z, y, x);
+            return ORDER3(z, y, x);
         }
     }
 }
@@ -1828,8 +1828,8 @@ void parse(int argc, char ** argv)
                         {
                             Counts n = 0;
                             
-                            ParserBlast::parse(Reader(x), [&](const ParserBlast::Data &,
-                                                              const ParserProgress &)
+                            ParserBlat::parse(Reader(x), [&](const ParserBlat::Data &,
+                                                             const ParserProgress &)
                             {
                                 n++;
                             });
@@ -1841,8 +1841,8 @@ void parse(int argc, char ** argv)
                                                        _p.inputs[1],
                                                        checkPSL);
                         
-                        _p.inputs[0] = sorted[0]; // Eg: Contigs.fasta
-                        _p.inputs[1] = sorted[1]; // Eg: align.psl
+                        _p.inputs[0] = sorted[1]; // Eg: Contigs.fasta
+                        _p.inputs[1] = sorted[0]; // Eg: align.psl
                         
                         analyze_n<MAssembly>(o);
                     }

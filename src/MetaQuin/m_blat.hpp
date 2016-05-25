@@ -56,7 +56,7 @@ namespace Anaquin
     };
 
     /*
-     * Represents alignments for a particular sequin
+     * Represents contig alignments for a sequin
      */
 
     struct MetaAlignment
@@ -147,13 +147,17 @@ namespace Anaquin
             // For each contig listed in the alignment file
             std::map<ContigID, std::shared_ptr<MetaAlignment>> aligns;
 
+            /*
+             * Mapping for contigs
+             */
+            
             // Mapping from sequin to contig
-            std::map<SequinID, ContigID> s2c;
-            
+            std::map<ContigID, SequinID> c2s;
+
             // Mapping from contig to their aligned (target) length
-            std::map<ContigID, Base> c2tl;
+            std::map<ContigID, Base> c2a;
             
-            // Mapping from contig to their length (this is the size of the entire contig)
+            // Mapping from contig to their length (size of the entire contig)
             std::map<ContigID, Base> c2l;
         };
 

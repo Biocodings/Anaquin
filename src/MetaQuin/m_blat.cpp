@@ -1,7 +1,7 @@
 #include <numeric>
 #include <boost/format.hpp>
 #include "MetaQuin/m_blat.hpp"
-#include "parsers/parser_blast.hpp"
+#include "parsers/parser_blat.hpp"
 
 using namespace Anaquin;
 
@@ -27,7 +27,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
      * Create data-structure for the alignments
      */
     
-    ParserBlast::parse(file, [&](const ParserBlast::Data &l, const ParserProgress &)
+    ParserBlat::parse(file, [&](const ParserBlat::Data &l, const ParserProgress &)
     {
         // Eg: M2_G, M10_G
         const auto id = l.tName;
@@ -66,11 +66,15 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
              * TODO: What about a contig being mapped to the same sequin multiple times?
              */
             
+            /*
+             * Building mappings for contigs
+             */
+            
             // This is the size of the entire contig, regardless of whether they're aligned or not
             stats.c2l[contig.id]  = contig.qSize;
             
             // This is the size of the aligned contig (not the entire contig would be aligned)
-            stats.c2tl[contig.id] = contig.l.length() - 1;
+            stats.c2a[contig.id] = contig.l.length() - 1;
 
             assert(contig.l.length()-1 <= contig.qSize);
         }
@@ -176,6 +180,7 @@ MBlat::Stats MBlat::analyze(const FileName &file, const Options &o)
             // Create an alignment for each contig that aligns to the MetaQuin
             for (const auto &i : align->contigs)
             {
+                stats.c2s[i.id] = align->seq->id;                
                 stats.aligns[i.id] = align;
             }
         }

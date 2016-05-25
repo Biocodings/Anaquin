@@ -87,7 +87,7 @@ namespace Anaquin
 
         static void parseGenome(const Reader &r, std::function<void(const GenomeData &, const ParserProgress &)> f)
         {
-            protectParse("genome_info.txt", [&]()
+            protectParse("genome_info.txt format", [&]()
             {
                 GenomeData x;
                 ParserProgress p;
