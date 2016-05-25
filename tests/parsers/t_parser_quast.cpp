@@ -8,7 +8,7 @@ TEST_CASE("ParserQuast_TestContig")
 {
     std::vector<ParserQuast::ContigData> x;
     
-    ParserQuast::parseContigs(Reader("tests/data/alignments_Contigs.tsv"), [&](const ParserQuast::ContigData &d, const ParserProgress &)
+    ParserQuast::parseAlign(Reader("tests/data/alignments_Contigs.tsv"), [&](const ParserQuast::ContigData &d, const ParserProgress &)
     {
         x.push_back(d);
     });

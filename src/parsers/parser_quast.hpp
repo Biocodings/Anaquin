@@ -157,7 +157,11 @@ namespace Anaquin
                 std::vector<Tokens::Token> toks;
                 Tokens::split(x, "_", toks);
             
-                if (toks.size() == 4)
+                if (toks.size() <= 2)
+                {
+                    return x;
+                }
+                else if (toks.size() == 4)
                 {
                     return toks[1] + "_" + toks[2] + "_" + toks[3]; // TODO: ....
                 }
