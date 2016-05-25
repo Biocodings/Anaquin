@@ -9,25 +9,13 @@ namespace Anaquin
 {
     struct MAssembly
     {
-        enum Assembler
-        {
-            Velvet,
-            RayMeta,
-        };
-
-        enum Alignment
-        {
-            MetaQuast,
-            Blat,
-        };
-
         struct Stats : public LinearStats, public DAsssembly::DenoAssemblyImpl
         {
             inline SequinID findSeq(const ContigID &cID) const
             {
                 auto x = cID;
                 
-                if (soft == RayMeta && align == Blat)
+                if (assembler == MAssembler::RayMeta && aligner == MAligner::Blat)
                 {
                     /*
                      * BLAT doesn't do spacing. For example, "contig-0 52976 nucleotides"
@@ -47,11 +35,10 @@ namespace Anaquin
             
             /*
              * Usually, they're not needed but we need them here to check for special cases.
-             * Commented in findSeq().
              */
 
-            Assembler soft;
-            Alignment align;
+            MAligner aligner;
+            MAssembler assembler;
             
             // Total mismatching bases
             Base mismatch = 0;
@@ -78,8 +65,8 @@ namespace Anaquin
         {
             Options() {}
 
-            Assembler soft;
-            Alignment align;
+            MAligner aligner;
+            MAssembler assembler;
         };
 
         static Stats analyze(const std::vector<FileName> &, const Options &o = Options());

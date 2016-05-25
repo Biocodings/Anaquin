@@ -8,6 +8,18 @@
 
 namespace Anaquin
 {
+    enum class MAssembler
+    {
+        Velvet,
+        RayMeta,
+    };
+    
+    enum class MAligner
+    {
+        MetaQuast,
+        Blat,
+    };
+
     struct DAsssembly
     {
         template <typename T> struct Stats : public MappingStats

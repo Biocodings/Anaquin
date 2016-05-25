@@ -26,9 +26,9 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
      * Constructing mapping involving contigs and sequins. However, how this is constructed is tool specific.
      */
 
-    switch (o.align)
+    switch (o.aligner)
     {
-        case Blat:
+        case MAligner::Blat:
         {
             const auto x = MBlat::analyze(align);
             
@@ -68,7 +68,7 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
             break;
         }
 
-        case MetaQuast:
+        case MAligner::MetaQuast:
         {
             ParserQuast::parseAlign(Reader(align), [&](const ParserQuast::ContigData &x,
                                                        const ParserProgress &)
@@ -111,8 +111,8 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     assert(!stats.c2s.empty());
     assert(!stats.s2c.empty());
 
-    stats.soft  = o.soft;
-    stats.align = o.align;
+    stats.aligner = o.aligner;
+    stats.assembler = o.assembler;
     
     // Calculate statistics such as N50 and proportion asssembled
     stats.dnovo = DAsssembly::analyze(fasta, &stats);
@@ -127,16 +127,16 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
         {
             for (const auto &c : stats.s2c.at(seq.first))
             {
-                switch (o.align)
+                switch (o.aligner)
                 {
-                    case MAssembly::Blat:
+                    case MAligner::Blat:
                     {
                         stats.match += stats.c2a.at(c);
                         stats.mismatch += (stats.c2l.at(c) - stats.c2a.at(c));
                         break;
                     }
-                        
-                    case MAssembly::MetaQuast:
+
+                    case MAligner::MetaQuast:
                     {
                         break;
                     }
@@ -218,9 +218,9 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
         {
             for (const auto &c : stats.s2c.at(seq.first))
             {
-                switch (o.align)
+                switch (o.aligner)
                 {
-                    case MAssembly::Blat:
+                    case MAligner::Blat:
                     {
                         const auto total = stats.c2l.at(c);
                         const auto align = stats.c2a.at(c);
@@ -234,8 +234,8 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                                                       % (total - align)).str()) << std::endl;
                         break;
                     }
-                        
-                    case MAssembly::MetaQuast:
+
+                    case MAligner::MetaQuast:
                     {
                         /*
                          * The alignment input: "genome_info.txt" combines the sensitivity for all contigs aligned

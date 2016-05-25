@@ -10,7 +10,7 @@ plotKExpress.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
     xlab  <- ifelse(is.null(xlab),  'Input Concentration (log2 attomoles/ul)', xlab)
     ylab  <- ifelse(is.null(ylab),  'K-mer Coverage (log2)', ylab)
 
-    .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
+    .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
 }
 
 plotKExpress.VarQuin <- function(data, title, xlab, ylab, showLOQ)
@@ -19,7 +19,7 @@ plotKExpress.VarQuin <- function(data, title, xlab, ylab, showLOQ)
     xlab  <- ifelse(is.null(xlab),  'Input Concentration (log2 attomoles/ul)', xlab)
     ylab  <- ifelse(is.null(ylab),  'Gene Abundance FPKM (log2)', ylab)
     
-    .plotExpress(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
+    .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
 }
 
 plotKExpress <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)

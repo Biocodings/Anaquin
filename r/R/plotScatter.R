@@ -8,8 +8,12 @@
 {
     require(ggplot2)
 
-    data     <- data$seqs
-    data$x   <- data$expected
+    data <- data$seqs
+    
+    stopifnot(!is.null(data$input))
+    stopifnot(!is.null(data$measured))
+    
+    data$x   <- data$input
     data$y   <- data$measured
     data$grp <- as.factor(abs(data$x))
         
