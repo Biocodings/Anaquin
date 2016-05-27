@@ -8,7 +8,7 @@ plotRead.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     title <- ifelse(is.null(title), 'Metagenomics Detection', title)
     xlab  <- ifelse(is.null(xlab),  'Input Concentration (log2 attomoles/ul)', xlab)
-    ylab  <- ifelse(is.null(ylab),  'FPKM (log2)', ylab)
+    ylab  <- ifelse(is.null(ylab),  'Aligned Reads (log2 FPKM)', ylab)
     
     .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
 }
