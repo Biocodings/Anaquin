@@ -1,9 +1,7 @@
 #ifndef M_DIFF_HPP
 #define M_DIFF_HPP
 
-#include "MetaQuin/m_blat.hpp"
 #include "stats/analyzer.hpp"
-#include "MetaQuin/m_kexpress.hpp"
 
 namespace Anaquin
 {

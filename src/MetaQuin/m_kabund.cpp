@@ -1,17 +1,17 @@
 #include "parsers/parser_sam.hpp"
-#include "MetaQuin/m_kexpress.hpp"
+#include "MetaQuin/m_kabund.hpp"
 #include "parsers/parser_quast.hpp"
 
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotMExpress();
+extern Scripts PlotMKAbund();
 
-MKExpress::Stats MKExpress::analyze(const std::vector<FileName> &files, const MKExpress::Options &o)
+MKAbund::Stats MKAbund::analyze(const std::vector<FileName> &files, const MKAbund::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     
-    MKExpress::Stats stats;
+    MKAbund::Stats stats;
     stats.hist = r.hist();
     
     // Eg: Contigs.fasta
@@ -155,7 +155,7 @@ MKExpress::Stats MKExpress::analyze(const std::vector<FileName> &files, const MK
     return stats;
 }
 
-//static void generateContigs(const FileName &file, const MKExpress::Stats &stats, const MKExpress::Options &o)
+//static void generateContigs(const FileName &file, const MKAbund::Stats &stats, const MKAbund::Options &o)
 //{
 //    o.info("Generating " + file);
 //    o.writer->open(file);
@@ -193,16 +193,16 @@ MKExpress::Stats MKExpress::analyze(const std::vector<FileName> &files, const MK
 //    o.writer->close();
 //}
 
-void MKExpress::report(const std::vector<FileName> &files, const MKExpress::Options &o)
+void MKAbund::report(const std::vector<FileName> &files, const MKAbund::Options &o)
 {
-    const auto stats = MKExpress::analyze(files, o);
+    const auto stats = MKAbund::analyze(files, o);
 
     /*
-     * Generating MetaExpress_summary.stats
+     * Generating MetaKAbund_summary.stats
      */
     
-    o.generate("MetaExpress_summary.stats");
-    o.writer->open("MetaExpress_summary.stats");
+    o.generate("MetaKAbund_summary.stats");
+    o.writer->open("MetaKAbund_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
                                                 o.rGeno,
                                                 files[0],
@@ -213,26 +213,26 @@ void MKExpress::report(const std::vector<FileName> &files, const MKExpress::Opti
     o.writer->close();
     
     /*
-     * Generating MetaExpress_quins.stats
+     * Generating MetaKAbund_quins.stats
      */
     
-    o.generate("MetaExpress_quins.stats");
-    o.writer->open("MetaExpress_quins.stats");
+    o.generate("MetaKAbund_quins.stats");
+    o.writer->open("MetaKAbund_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
 
     /*
-     * Generating MetaExpress_abundance.R
+     * Generating MetaKAbund_abund.R
      */
     
-    o.generate("MetaExpress_abundance.R");
-    o.writer->open("MetaExpress_abundance.R");
-    o.writer->write(RWriter::createScript("MetaExpress_quins.stats", PlotMExpress()));
+    o.generate("MetaKAbund_abund.R");
+    o.writer->open("MetaKAbund_abund.R");
+    o.writer->write(RWriter::createScript("MetaKAbund_quins.stats", PlotMKAbund()));
     o.writer->close();
     
     /*
-     * Generating MetaExpress_contigs.stats
+     * Generating MetaKAbund_contigs.stats
      */
 
-    //generateContigs("MetaExpress_contigs.stats", stats, o);
+    //generateContigs("MetaKAbund_contigs.stats", stats, o);
 }

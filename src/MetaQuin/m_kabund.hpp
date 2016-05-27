@@ -1,11 +1,11 @@
-#ifndef M_KEXPRESS_HPP
-#define M_KEXPRESS_HPP
+#ifndef M_KABUND_HPP
+#define M_KABUND_HPP
 
 #include "MetaQuin/m_assembly.hpp"
 
 namespace Anaquin
 {
-    struct MKExpress
+    struct MKAbund
     {   
         struct Stats : public LinearStats, public MappingStats
         {

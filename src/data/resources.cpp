@@ -60,7 +60,7 @@
 #include "resources/plotMKMer.R"
 #include "resources/plotMFold.R"
 #include "resources/plotMReads.R"
-#include "resources/plotMExpress.R"
+#include "resources/plotMKAbund.R"
 #include "resources/plotMAssembly.R"
 
 #include "resources/MME023.v013.csv"
@@ -111,16 +111,6 @@ Scripts Manual()
 Scripts PlotFROC()
 {
     return ToString(src_r_plotFROC_R);
-}
-
-Scripts PlotMReads()
-{
-    return ToString(src_r_plotMReads_R);
-}
-
-Scripts PlotMAssembly()
-{
-    return ToString(src_r_plotMAssembly_R);
 }
 
 Scripts FusionDataMixA()
@@ -176,14 +166,24 @@ Scripts LadderDataMixAB()
  * Metagenomics Resources
  */
 
+Scripts PlotMReads()
+{
+ 	return ToString(src_r_plotMReads_R);
+}
+
+Scripts PlotMAssembly()
+{
+	return ToString(src_r_plotMAssembly_R);
+}
+
 Scripts PlotMKMer()
 {
     return ToString(src_r_plotMKMer_R);
 }
 
-Scripts PlotMExpress()
+Scripts PlotMKAbund()
 {
-    return ToString(src_r_plotMExpress_R);
+    return ToString(src_r_plotMKAbund_R);
 }
 
 Scripts PlotMFold()

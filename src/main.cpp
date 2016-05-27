@@ -33,7 +33,7 @@
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_align.hpp"
 #include "MetaQuin/m_viewer.hpp"
-#include "MetaQuin/m_kexpress.hpp"
+#include "MetaQuin/m_kabund.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
 
@@ -85,7 +85,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_T_SUBSAMPLE 281
-#define TOOL_M_KEXPRESS  282
+#define TOOL_M_KABUND  282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
@@ -205,7 +205,7 @@ static std::map<Value, Tool> _tools =
     { "MetaKmer",       TOOL_M_KMER     },
     { "MetaAlign",      TOOL_M_ALIGN    },
     { "MetaAssembly",   TOOL_M_ASSEMBLY },
-    { "MetaKExpress",   TOOL_M_KEXPRESS },
+    { "MetaKAbund",     TOOL_M_KABUND },
     { "MetaDiff",       TOOL_M_DIFF     },
     { "MetaIGV",        TOOL_M_IGV      },
     { "MetaCoverage",   TOOL_M_COVERAGE },
@@ -261,7 +261,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_M_KMER,     { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_M_ALIGN,    { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_MIXTURE, OPT_SOFT } },
-    { TOOL_M_KEXPRESS, { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
+    { TOOL_M_KABUND, { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES             } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
 
@@ -1710,7 +1710,7 @@ void parse(int argc, char ** argv)
         case TOOL_M_DIFF:
         case TOOL_M_KMER:
         case TOOL_M_ALIGN:
-        case TOOL_M_KEXPRESS:
+        case TOOL_M_KABUND:
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
         {
@@ -1721,7 +1721,7 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_M_ALIGN:
-                    case TOOL_M_KEXPRESS:
+                    case TOOL_M_KABUND:
                     case TOOL_M_ASSEMBLY:
                     case TOOL_M_COVERAGE:
                     {
@@ -1737,7 +1737,7 @@ void parse(int argc, char ** argv)
                     case TOOL_M_DIFF:
                     case TOOL_M_KMER:
                     case TOOL_M_ALIGN:
-                    case TOOL_M_KEXPRESS:
+                    case TOOL_M_KABUND:
                     case TOOL_M_ASSEMBLY:
                     {
                         addMix(std::bind(&Standard::addMMix, &s, std::placeholders::_1));
@@ -1754,7 +1754,7 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_M_ASSEMBLY:
-                case TOOL_M_KEXPRESS:
+                case TOOL_M_KABUND:
                 {
                     auto parse = [&](const std::string &str)
                     {
@@ -1857,14 +1857,14 @@ void parse(int argc, char ** argv)
                 case TOOL_M_ALIGN:    { analyze_1<MAlign>(OPT_U_FILES);    break; }
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
                     
-                case TOOL_M_KEXPRESS:
+                case TOOL_M_KABUND:
                 {
-                    MKExpress::Options o;
+                    MKAbund::Options o;
                     
                     o.aligner = aligner;
                     o.assembler = assembler;
                     
-                    analyze_n<MKExpress>(o);
+                    analyze_n<MKAbund>(o);
                     break;
                 }
 
