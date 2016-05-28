@@ -4,16 +4,16 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotRead.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
+plotReads.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     title <- ifelse(is.null(title), 'Metagenomics Detection', title)
     xlab  <- ifelse(is.null(xlab),  'Input Concentration (log2 attomoles/ul)', xlab)
-    ylab  <- ifelse(is.null(ylab),  'Aligned Reads (log2 FPKM)', ylab)
-    
+    ylab  <- ifelse(is.null(ylab),  'Alignment Reads (log2 FPKM)', ylab)
+
     .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
 }
 
-plotRead.TransQuin <- function(data, title, xlab, ylab, showLOQ)
+plotReads.TransQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     if (is.null(title)) { title <- 'TransQuin Alignment' }
     if (is.null(xlab))  { xlab  <- 'Input concentration (log2 attomol/ul)' }
@@ -22,13 +22,13 @@ plotRead.TransQuin <- function(data, title, xlab, ylab, showLOQ)
     .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ, limitLabel='LOA')
 }
 
-plotRead <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
+plotReads <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
 {
     stopifnot(class(data) == 'TransQuin' | class(data) == 'MetaQuin')
     
     # Data required for number of reads aligned for each sequin
     stopifnot(!is.null(data$seqs$measured))
-    
-    if (class(data) == 'TransQuin') { plotRead.TransQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }
-    if (class(data) == 'MetaQuin')  { plotRead.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }    
+
+    if (class(data) == 'TransQuin') { plotReads.TransQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }
+    if (class(data) == 'MetaQuin')  { plotReads.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }    
 }
