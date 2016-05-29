@@ -12,6 +12,7 @@ namespace Anaquin
     {
         Velvet,
         RayMeta,
+        Kallisto,
     };
     
     enum class MAligner

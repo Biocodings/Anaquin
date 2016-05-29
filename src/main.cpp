@@ -1760,8 +1760,9 @@ void parse(int argc, char ** argv)
                     {
                         const static std::map<Value, MSoftware> m =
                         {
-                            { "velvet",   MSoftware::Velvet  },
-                            { "raymeta",  MSoftware::RayMeta },
+                            { "velvet",   MSoftware::Velvet   },
+                            { "raymeta",  MSoftware::RayMeta  },
+                            { "kallisto", MSoftware::Kallisto },
                         };
 
                         return parseEnum("soft", str, m);
