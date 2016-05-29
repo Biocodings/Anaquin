@@ -1,11 +1,11 @@
-#ifndef M_ALIGN_HPP
-#define M_ALIGN_HPP
+#ifndef M_ABUND_HPP
+#define M_ABUND_HPP
 
 #include "MetaQuin/MetaQuin.hpp"
 
 namespace Anaquin
 {
-    struct MAlign
+    struct MAbund
     {
         struct Stats : public LinearStats, public AlignmentStats, public SequinStats
         {

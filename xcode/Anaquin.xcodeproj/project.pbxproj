@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4ACB52011CFAD33900738F99 /* m_kabund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4ACB51FF1CFAD33900738F99 /* m_kabund.cpp */; };
+		4ACB52041CFAD3D900738F99 /* m_kdiff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4ACB52021CFAD3D900738F99 /* m_kdiff.cpp */; };
 		EF0572711CADFE00004A5280 /* v_kallele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF05726F1CADFE00004A5280 /* v_kallele.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF09C4BB1CD865D2006CFD27 /* t_parser_quast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF09C4BA1CD865D2006CFD27 /* t_parser_quast.cpp */; };
 		EF0C67931C5F25070033168D /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67871C5F25070033168D /* v_align.cpp */; };
@@ -58,7 +60,6 @@
 		EF72782F1CACEC5E0012648F /* l_norm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278251CACEC5E0012648F /* l_norm.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF7278311CACEC5E0012648F /* l_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278291CACEC5E0012648F /* l_coverage.cpp */; };
 		EF7278321CACEC5E0012648F /* l_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72782B1CACEC5E0012648F /* l_diff.cpp */; };
-		EF7278441CACED620012648F /* m_kexpress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278351CACEC940012648F /* m_kexpress.cpp */; };
 		EF7278451CACED620012648F /* m_assembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278381CACEC940012648F /* m_assembly.cpp */; };
 		EF7278461CACED620012648F /* m_blat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72783A1CACEC940012648F /* m_blat.cpp */; };
 		EF7278471CACED620012648F /* m_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72783C1CACEC940012648F /* m_coverage.cpp */; };
@@ -74,7 +75,7 @@
 		EF7765C51CB4DDAD007C61C3 /* t_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF72784F1CAD06FD0012648F /* t_diff.cpp */; };
 		EF7765C61CB4DDB1007C61C3 /* t_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7278531CAD06FD0012648F /* t_viewer.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF7765C91CB4E2EB007C61C3 /* t_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF7765C71CB4E2EB007C61C3 /* t_express.cpp */; };
-		EF88FB731CF4225800C5E4C7 /* m_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF88FB711CF4225800C5E4C7 /* m_align.cpp */; };
+		EF88FB731CF4225800C5E4C7 /* m_abund.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF88FB711CF4225800C5E4C7 /* m_abund.cpp */; };
 		EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF98D6BB1C616B5D00697051 /* t_standard.cpp */; };
 		EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF9F70ED1B9C397900B8BD7B /* reference.cpp */; };
 		EFA9DE731BCB7D6100780182 /* coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFA9DE711BCB7D6100780182 /* coverage.cpp */; };
@@ -151,6 +152,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4ACB51FF1CFAD33900738F99 /* m_kabund.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_kabund.cpp; sourceTree = "<group>"; };
+		4ACB52001CFAD33900738F99 /* m_kabund.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_kabund.hpp; sourceTree = "<group>"; };
+		4ACB52021CFAD3D900738F99 /* m_kdiff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_kdiff.cpp; sourceTree = "<group>"; };
+		4ACB52031CFAD3D900738F99 /* m_kdiff.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_kdiff.hpp; sourceTree = "<group>"; };
 		7F7C70521AB4726E00C6EE36 /* Anaquin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anaquin; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF02A5231B7E0F8D00295799 /* compare.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = compare.hpp; path = ../src/data/compare.hpp; sourceTree = "<group>"; };
 		EF05726F1CADFE00004A5280 /* v_kallele.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_kallele.cpp; path = ../src/VarQuin/v_kallele.cpp; sourceTree = "<group>"; };
@@ -269,8 +274,6 @@
 		EF72782A1CACEC5E0012648F /* l_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = l_coverage.hpp; path = ../src/LadQuin/l_coverage.hpp; sourceTree = "<group>"; };
 		EF72782B1CACEC5E0012648F /* l_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = l_diff.cpp; path = ../src/LadQuin/l_diff.cpp; sourceTree = "<group>"; };
 		EF72782C1CACEC5E0012648F /* l_diff.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = l_diff.hpp; path = ../src/LadQuin/l_diff.hpp; sourceTree = "<group>"; };
-		EF7278351CACEC940012648F /* m_kexpress.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_kexpress.cpp; sourceTree = "<group>"; };
-		EF7278361CACEC940012648F /* m_kexpress.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_kexpress.hpp; sourceTree = "<group>"; };
 		EF7278371CACEC940012648F /* MetaQuin.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MetaQuin.hpp; sourceTree = "<group>"; };
 		EF7278381CACEC940012648F /* m_assembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = m_assembly.cpp; sourceTree = "<group>"; };
 		EF7278391CACEC940012648F /* m_assembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_assembly.hpp; sourceTree = "<group>"; };
@@ -300,8 +303,8 @@
 		EF7765C71CB4E2EB007C61C3 /* t_express.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_express.cpp; path = ../src/TransQuin/t_express.cpp; sourceTree = "<group>"; };
 		EF7765C81CB4E2EB007C61C3 /* t_express.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = t_express.hpp; path = ../src/TransQuin/t_express.hpp; sourceTree = "<group>"; };
 		EF7908AC1B81759100B7C8AF /* parser_feature.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_feature.hpp; path = ../src/parsers/parser_feature.hpp; sourceTree = "<group>"; };
-		EF88FB711CF4225800C5E4C7 /* m_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_align.cpp; sourceTree = "<group>"; };
-		EF88FB721CF4225800C5E4C7 /* m_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_align.hpp; sourceTree = "<group>"; };
+		EF88FB711CF4225800C5E4C7 /* m_abund.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = m_abund.cpp; sourceTree = "<group>"; };
+		EF88FB721CF4225800C5E4C7 /* m_abund.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = m_abund.hpp; sourceTree = "<group>"; };
 		EF88FB741CF4824A00C5E4C7 /* m_sample.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = m_sample.hpp; sourceTree = "<group>"; };
 		EF8DB9BA1CD8DC4B00648FA9 /* hist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = hist.hpp; path = ../src/data/hist.hpp; sourceTree = "<group>"; };
 		EF92BC3D1CA3A9000054E8C8 /* errors.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = errors.hpp; path = ../src/data/errors.hpp; sourceTree = "<group>"; };
@@ -696,8 +699,8 @@
 		EF7278341CACEC940012648F /* MetaQuin */ = {
 			isa = PBXGroup;
 			children = (
-				EF88FB711CF4225800C5E4C7 /* m_align.cpp */,
-				EF88FB721CF4225800C5E4C7 /* m_align.hpp */,
+				EF88FB711CF4225800C5E4C7 /* m_abund.cpp */,
+				EF88FB721CF4225800C5E4C7 /* m_abund.hpp */,
 				EF7278381CACEC940012648F /* m_assembly.cpp */,
 				EF7278391CACEC940012648F /* m_assembly.hpp */,
 				EF72783A1CACEC940012648F /* m_blat.cpp */,
@@ -708,8 +711,10 @@
 				EF72783F1CACEC940012648F /* m_diff.hpp */,
 				EF7278401CACEC940012648F /* m_histogram.cpp */,
 				EF7278411CACEC940012648F /* m_histogram.h */,
-				EF7278351CACEC940012648F /* m_kexpress.cpp */,
-				EF7278361CACEC940012648F /* m_kexpress.hpp */,
+				4ACB51FF1CFAD33900738F99 /* m_kabund.cpp */,
+				4ACB52001CFAD33900738F99 /* m_kabund.hpp */,
+				4ACB52021CFAD3D900738F99 /* m_kdiff.cpp */,
+				4ACB52031CFAD3D900738F99 /* m_kdiff.hpp */,
 				EF3AFD981CF5CFB40019B6D1 /* m_kmer.cpp */,
 				EF3AFD991CF5CFB40019B6D1 /* m_kmer.hpp */,
 				EF88FB741CF4824A00C5E4C7 /* m_sample.hpp */,
@@ -946,6 +951,7 @@
 				EFB108451C22D29E004DCBCF /* t_itree.cpp in Sources */,
 				EFE700A51C8FA9920086A246 /* H5Writer.cpp in Sources */,
 				EF7278201CACEC2F0012648F /* t_assembly.cpp in Sources */,
+				4ACB52011CFAD33900738F99 /* m_kabund.cpp in Sources */,
 				EF65DDC41C6C3EC6003EE08A /* f_discover.cpp in Sources */,
 				EFB3FF621B4A30DC0065CEA0 /* parser_top_fusion.cpp in Sources */,
 				EF7765C61CB4DDB1007C61C3 /* t_viewer.cpp in Sources */,
@@ -961,7 +967,6 @@
 				EF72F0ED1B6898940092DA34 /* t_parser_top_fusion.cpp in Sources */,
 				EFE700AB1C8FA9920086A246 /* MinCollector.cpp in Sources */,
 				EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */,
-				EF7278441CACED620012648F /* m_kexpress.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */,
 				EF7278471CACED620012648F /* m_coverage.cpp in Sources */,
@@ -969,7 +974,7 @@
 				EFF6644A1CE0A55C00A6F0D8 /* t_sample.cpp in Sources */,
 				EFDD6A991B0DD76200450029 /* md5.c in Sources */,
 				EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */,
-				EF88FB731CF4225800C5E4C7 /* m_align.cpp in Sources */,
+				EF88FB731CF4225800C5E4C7 /* m_abund.cpp in Sources */,
 				EF3860EC1AD3783A0062D246 /* parser_vcf.cpp in Sources */,
 				EFF4B1D21C53A3CA00DF6A0E /* stats.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
@@ -1061,6 +1066,7 @@
 				EFE700A81C8FA9920086A246 /* KmerIndex.cpp in Sources */,
 				EFE700A31C8FA9920086A246 /* common.cpp in Sources */,
 				EFE700A91C8FA9920086A246 /* KmerIterator.cpp in Sources */,
+				4ACB52041CFAD3D900738F99 /* m_kdiff.cpp in Sources */,
 				EF65DDC51C6C3EC6003EE08A /* f_normal.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1150,7 +1156,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					/Users/tedwong/Sources/QA/src/htslib,
+					"~/Sources/QA/src/htslib",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1161,21 +1167,21 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/boost/,
-					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
+					/usr/local/Cellar/eigen/3.2.8/include/eigen3,
 					/usr/include/catch/include/,
-					/Users/tedwong/Sources/SS,
 					../../src,
 					../src,
 					src,
-					/Users/tedwong/Sources/QA,
-					/Users/tedwong/Sources/QA/src/htslib,
-					/usr/local/Cellar/hdf5/1.8.14/include,
+					"~/Sources/QA",
+					"~/Sources/QA/src/htslib",
+					/usr/local/Cellar/hdf5/1.8.16_1/include,
+					"~/Sources/SS",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					/Users/tedwong/Sources/QA/src/kallisto,
-					/Users/tedwong/Sources/SS,
+					"~/Sources/QA/src/kallisto",
+					"~/Sources/SS",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -1192,27 +1198,27 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					/Users/tedwong/Sources/QA/src/htslib,
+					"~/Sources/QA/src/htslib",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/boost/,
-					/usr/local/Cellar/eigen/3.2.4/include/eigen3,
+					/usr/local/Cellar/eigen/3.2.8/include/eigen3,
 					/usr/include/catch/include/,
-					/Users/tedwong/Sources/SS,
 					../../src,
 					../src,
 					src,
-					/Users/tedwong/Sources/QA,
-					/Users/tedwong/Sources/QA/src/htslib,
-					/usr/local/Cellar/hdf5/1.8.14/include,
+					"~/Sources/QA",
+					"~/Sources/QA/src/htslib",
+					/usr/local/Cellar/hdf5/1.8.16_1/include,
+					"~/Sources/SS",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					/Users/tedwong/Sources/QA/src/kallisto,
-					/Users/tedwong/Sources/SS,
+					"~/Sources/QA/src/kallisto",
+					"~/Sources/SS",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",

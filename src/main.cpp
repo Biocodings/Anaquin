@@ -31,9 +31,9 @@
 
 #include "MetaQuin/m_kmer.hpp"
 #include "MetaQuin/m_diff.hpp"
-#include "MetaQuin/m_align.hpp"
-#include "MetaQuin/m_viewer.hpp"
+#include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_kabund.hpp"
+#include "MetaQuin/m_viewer.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "MetaQuin/m_coverage.hpp"
 
@@ -103,8 +103,8 @@ typedef std::set<Value> Range;
 #define TOOL_V_EXPRESS   297
 #define TOOL_V_KEXPRESS  298
 #define TOOL_T_KEXPRESS  299
-#define TOOL_M_ALIGN     300
-#define TOOL_M_KMER      301
+#define TOOL_M_ABUND     300
+#define TOOL_M_KDIFF     301
 #define TOOL_T_KDIFF     304
 #define TOOL_V_KALLELE   306
 #define TOOL_S_DISCOVER  307
@@ -202,11 +202,11 @@ static std::map<Value, Tool> _tools =
     { "VarKExpress",    TOOL_V_KEXPRESS  },
     { "VarKAllele",     TOOL_V_KALLELE   },
 
-    { "MetaKmer",       TOOL_M_KMER     },
-    { "MetaAlign",      TOOL_M_ALIGN    },
-    { "MetaAssembly",   TOOL_M_ASSEMBLY },
-    { "MetaKAbund",     TOOL_M_KABUND },
+    { "MetaAbund",      TOOL_M_ABUND    },
+    { "MetaKAbund",     TOOL_M_KABUND   },
     { "MetaDiff",       TOOL_M_DIFF     },
+    { "MetaKDiff",      TOOL_M_KDIFF    },
+    { "MetaAssembly",   TOOL_M_ASSEMBLY },
     { "MetaIGV",        TOOL_M_IGV      },
     { "MetaCoverage",   TOOL_M_COVERAGE },
 
@@ -258,12 +258,12 @@ static std::map<Tool, std::set<Option>> _required =
      */
 
     { TOOL_M_IGV,      { OPT_U_FILES } },
-    { TOOL_M_KMER,     { OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_M_ALIGN,    { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_MIXTURE, OPT_SOFT } },
-    { TOOL_M_KABUND, { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
-    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES             } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
+    { TOOL_M_KDIFF,    { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_M_ABUND,    { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_M_KABUND,   { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
+    { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_MIXTURE, OPT_SOFT } },
+    { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES } },
 
     /*
      * Fusion Analysis
@@ -1708,8 +1708,8 @@ void parse(int argc, char ** argv)
 
         case TOOL_M_IGV:
         case TOOL_M_DIFF:
-        case TOOL_M_KMER:
-        case TOOL_M_ALIGN:
+        case TOOL_M_KDIFF:
+        case TOOL_M_ABUND:
         case TOOL_M_KABUND:
         case TOOL_M_ASSEMBLY:
         case TOOL_M_COVERAGE:
@@ -1720,7 +1720,7 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
-                    case TOOL_M_ALIGN:
+                    case TOOL_M_ABUND:
                     case TOOL_M_KABUND:
                     case TOOL_M_ASSEMBLY:
                     case TOOL_M_COVERAGE:
@@ -1735,8 +1735,8 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_M_DIFF:
-                    case TOOL_M_KMER:
-                    case TOOL_M_ALIGN:
+                    case TOOL_M_KDIFF:
+                    case TOOL_M_ABUND:
                     case TOOL_M_KABUND:
                     case TOOL_M_ASSEMBLY:
                     {
@@ -1853,9 +1853,9 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_M_IGV:      { viewer<MViewer>();                 break; }
-                case TOOL_M_KMER:     { analyze_1<MKMer>(OPT_U_FILES);     break; }
-                case TOOL_M_ALIGN:    { analyze_1<MAlign>(OPT_U_FILES);    break; }
                 case TOOL_M_COVERAGE: { analyze_1<MCoverage>(OPT_U_FILES); break; }
+                    
+                case TOOL_M_ABUND:    { analyze_1<MAbund>(OPT_U_FILES);    break; }
                     
                 case TOOL_M_KABUND:
                 {
@@ -1890,6 +1890,28 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
+                case TOOL_M_KDIFF:
+                {
+                    auto parse = [&](const std::string &str)
+                    {
+                        const static std::map<Value, MDiff::Software> m =
+                        {
+                            { "bwa",    MDiff::Software::BWA },
+                            { "stamp",  MDiff::Software::STAMP },
+                            { "bowtie", MDiff::Software::Bowtie },
+                        };
+                        
+                        return parseEnum("soft", str, m);
+                    };
+                    
+                    MDiff::Options o;
+                    
+                    o.soft = parse(_p.opts.at(OPT_SOFT));
+                    
+                    analyze_n<MDiff>(o);
+                    break;
+                }
+                    
                 case TOOL_M_ASSEMBLY:
                 {
                     auto parse = [&](const std::string &str)

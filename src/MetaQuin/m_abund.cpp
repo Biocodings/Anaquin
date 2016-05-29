@@ -1,4 +1,4 @@
-#include "MetaQuin/m_align.hpp"
+#include "MetaQuin/m_abund.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -6,11 +6,11 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern Scripts PlotMReads();
 
-MAlign::Stats MAlign::analyze(const FileName &file, const MAlign::Options &o)
+MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     
-    MAlign::Stats stats;
+    MAbund::Stats stats;
     stats.hist = r.hist();
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &)
@@ -52,7 +52,7 @@ MAlign::Stats MAlign::analyze(const FileName &file, const MAlign::Options &o)
     return stats;
 }
 
-static void writeQuins(const FileName &file, const MAlign::Stats &stats, const MAlign::Options &o)
+static void writeQuins(const FileName &file, const MAbund::Stats &stats, const MAbund::Options &o)
 {
     const auto &r = Standard::instance().r_meta;
     const auto format = "%1%\t%2%\t%3%";
@@ -81,16 +81,16 @@ static void writeQuins(const FileName &file, const MAlign::Stats &stats, const M
     o.writer->close();
 }
 
-void MAlign::report(const FileName &file, const MAlign::Options &o)
+void MAbund::report(const FileName &file, const MAbund::Options &o)
 {
-    const auto stats = MAlign::analyze(file, o);
+    const auto stats = MAbund::analyze(file, o);
 
     /*
-     * Generating MetaAlign_summary.stats
+     * Generating MetaAbund_summary.stats
      */
 
-    o.generate("MetaAlign_summary.stats");
-    o.writer->open("MetaAlign_summary.stats");
+    o.generate("MetaAbund_summary.stats");
+    o.writer->open("MetaAbund_summary.stats");
     o.writer->write(StatsWriter::inflectSummary(o.rChrT,
                                                 o.rGeno,
                                                 file,
@@ -101,17 +101,17 @@ void MAlign::report(const FileName &file, const MAlign::Options &o)
     o.writer->close();
 
     /*
-     * Generating MetaAlign_quins.stats
+     * Generating MetaAbund_quins.stats
      */
     
-    writeQuins("MetaAlign_quins.stats", stats, o);
+    writeQuins("MetaAbund_quins.stats", stats, o);
     
     /*
-     * Generating MetaAlign_reads.R
+     * Generating MetaAbund_reads.R
      */
     
-    o.generate("MetaAlign_reads.R");
-    o.writer->open("MetaAlign_reads.R");
-    o.writer->write(RWriter::createScript("MetaAlign_quins.stats", PlotMReads()));
+    o.generate("MetaAbund_reads.R");
+    o.writer->open("MetaAbund_reads.R");
+    o.writer->write(RWriter::createScript("MetaAbund_summary.stats", PlotMReads()));
     o.writer->close();
 }

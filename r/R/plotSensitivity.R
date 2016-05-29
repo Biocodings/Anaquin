@@ -68,7 +68,7 @@
     {
         r <- min(data[data$y >= limit,]$input)
         p <- p + geom_vline(xintercept=c(r), linetype="dotted")
-        p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOA', r)), colour = "black", show.legend=FALSE)
+        p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOQ', r)), colour = "black", show.legend=FALSE)
         #data[data$x > loa & data$y == 0,]
     }
     
@@ -80,12 +80,12 @@
     print(p)
 }
 
-plotAssembly.TransQuin <- function(data, title, xlab, ylab, limit)
+plotSensitivity.TransQuin <- function(data, title, xlab, ylab, limit)
 {
     .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
 }
 
-plotAssembly.MetaQuin <- function(data, title, xlab, ylab, limit)
+plotSensitivity.MetaQuin <- function(data, title, xlab, ylab, limit)
 {
     .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
 }
@@ -95,15 +95,15 @@ plotSensitivity.FusQuin <- function(data, title, xlab, ylab, limit)
     .plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
 }
 
-plotAssembly <- function(data,
-                         title='Assembly Detection',
-                         xlab='Input Concentration (log2 attomole/ul)',
-                         ylab='Sensitivity',
-                         limit=0.98)
+plotSensitivity <- function(data,
+                            title='Assembly Detection',
+                            xlab='Input Concentration (log2 attomole/ul)',
+                            ylab='Sensitivity',
+                            limit=0.98)
 {
     stopifnot(class(data) == 'TransQuin' | class(data) == 'MetaQuin' | class(data) == 'FusQuin')
 
-    if (class(data) == 'FusQuin')   { plotAssembly.FusQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit)   } 
-    if (class(data) == 'MetaQuin')  { plotAssembly.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit)  } 
-    if (class(data) == 'TransQuin') { plotAssembly.TransQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit) } 
+    if (class(data) == 'FusQuin')   { plotSensitivity.FusQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit)   } 
+    if (class(data) == 'MetaQuin')  { plotSensitivity.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit)  } 
+    if (class(data) == 'TransQuin') { plotSensitivity.TransQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit) } 
 }

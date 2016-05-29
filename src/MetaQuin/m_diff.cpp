@@ -1,5 +1,5 @@
 #include "MetaQuin/m_diff.hpp"
-#include "MetaQuin/m_align.hpp"
+#include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_assembly.hpp"
 #include "parsers/parser_stamp.hpp"
 
@@ -25,8 +25,8 @@ MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o
         case Software::BWA:
         case Software::Bowtie:
         {
-            const auto statsA = MAlign::analyze(files[0]);
-            const auto statsB = MAlign::analyze(files[1]);
+            const auto statsA = MAbund::analyze(files[0]);
+            const auto statsB = MAbund::analyze(files[1]);
             
             const auto dataA = statsA.data(false);
             const auto dataB = statsB.data(false);
@@ -279,15 +279,6 @@ void MDiff::report(const std::vector<FileName> &files, const Options &o)
     o.writer->close();
     
     /*
-     * Generating MetaDiff_prob.R
-     */
-    
-    o.generate("MetaDiff_prob.R");
-    o.writer->open("MetaDiff_prob.R");
-    o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
-    o.writer->close();
-    
-    /*
      * Generating MetaDiff_fold.R
      */
     
@@ -295,4 +286,23 @@ void MDiff::report(const std::vector<FileName> &files, const Options &o)
     o.writer->open("MetaDiff_fold.R");
     o.writer->write(RWriter::createScript("MetaDiff_quins.stats", PlotMFold()));
     o.writer->close();
+    
+    switch (o.soft)
+    {
+        case Software::STAMP:
+        {
+            /*
+             * Generating MetaDiff_prob.R
+             */
+            
+            o.generate("MetaDiff_prob.R");
+            o.writer->open("MetaDiff_prob.R");
+            o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
+            o.writer->close();
+
+            break;
+        }
+            
+        default: { break; }
+    }
 }
