@@ -1,6 +1,7 @@
-#include "parsers/parser_sam.hpp"
 #include "MetaQuin/m_kabund.hpp"
+#include "parsers/parser_sam.hpp"
 #include "parsers/parser_quast.hpp"
+#include "parsers/parser_kallisto.hpp"
 
 using namespace Anaquin;
 
@@ -13,142 +14,184 @@ MKAbund::Stats MKAbund::analyze(const std::vector<FileName> &files, const MKAbun
     
     MKAbund::Stats stats;
     stats.hist = r.hist();
-    
-    // Eg: Contigs.fasta
-    const auto contigs = files[0];
-
-    // Eg: Contigs.tsv
-    const auto abund = files[1];
-    
-    // Eg: align.psl
-    const auto align = files[2];
-    
-    o.analyze(contigs);
-    
-    std::map<ContigID, Base> c2l;
-    std::map<ContigID, SequinID> c2s;
-    std::map<SequinID, std::vector<ContigID>> s2c;
-
-    switch (o.aligner)
-    {
-        case MAligner::Blat:
-        {
-            const auto x = MBlat::analyze(files[1]);
-            
-            c2l = x.c2l;
-            
-            for (auto &i : x.aligns)
-            {
-                c2s[i.first] = i.second->id();
-            }
-            
-            for (auto &i : x.metas)
-            {
-                for (auto &j : i.second->contigs)
-                {
-                    s2c[i.first].push_back(j.id);
-                }
-            }
-
-            break;
-        }
-            
-        case MAligner::MetaQuast:
-        {
-            ParserQuast::parseAlign(Reader(align), [&](const ParserQuast::ContigData &x,
-                                                       const ParserProgress &)
-            {
-                if (r.match(x.id))
-                {
-                    for (const auto &c : x.contigs)
-                    {
-                        // Contigs.fasta doesn't have "_"
-                        auto t = c;
-                        
-                        // Eg: contig-1056000000 2818 nucleotides
-                        boost::replace_all(t, "_", " ");
-                        
-                        std::vector<std::string> toks;
-                        Tokens::split(t, " ", toks);
-                        
-                        c2s[toks[0]] = x.id;
-                        c2l[toks[0]] = stod(toks[1]);
-                        s2c[x.id].push_back(toks[0]);
-                    }
-                }
-            });
-
-            break;
-        }
-    }
-    
-    assert(!c2s.empty());
-    assert(!c2l.empty());
-    assert(!s2c.empty());
-    
-    // Mapping from contigs to k-mer coverage
-    std::map<ContigID, Coverage> c2m;
-    
-    // Mapping from contigs to k-mer length
-    std::map<ContigID, Base> c2kl;
 
     switch (o.assembler)
     {
-        case MAssembler::Velvet:
+        case MAssembler::Kallsito:
         {
-            break;
-        }
-
-        case MAssembler::RayMeta:
-        {
-            ParserTSV::parse(Reader(abund), [&](const ParserTSV::TSV &x, const ParserProgress &)
+            ParserKallisto::parse(Reader(files[0]), [&](const ParserKallisto::Data &d, const ParserProgress &)
             {
-                c2m[x.id]  = x.kmer;
-                c2kl[x.id] = x.klen;
+                const auto m = r.match(d.id);
+                
+                if (m)
+                {
+                    // Expected abundance
+                    const auto known = m->mixes.at(Mix_1);
+                    
+                    // Measured abundance
+                    const auto measured = d.abund;
+                    
+                    if (measured)
+                    {
+                        stats.add(d.id, known, measured);
+                        stats.n_chrT++;
+                        //stats.hist.at(d.id)++;
+                    }
+                }
             });
             
-            assert(!c2m.empty());
+            break;
+        }
             
-            /*
-             * Quantifying k-mer abundance
-             */
+        default:
+        {
+            // Eg: Contigs.fasta
+            const auto contigs = files[0];
             
-            for (const auto &i : s2c)
+            // Eg: Contigs.tsv
+            const auto abund = files[1];
+            
+            // Eg: align.psl
+            const auto align = files[2];
+            
+            o.analyze(contigs);
+            
+            std::map<ContigID, Base> c2l;
+            std::map<ContigID, SequinID> c2s;
+            std::map<SequinID, std::vector<ContigID>> s2c;
+            
+            switch (o.aligner)
             {
-                const auto m = r.match(i.first);
-                
-                const auto expected = m->concent();
-                auto measured = 0.0;
-                
-                auto x = 0.0;
-                auto y = 0.0;
-                
-                for (const auto &j : i.second)
+                case MAligner::Blat:
                 {
-                    // K-mer length
-                    //const auto kl = c2kl.at(j);
+                    const auto x = MBlat::analyze(files[1]);
                     
-                    // Entire size of the contig (including bases that are not mapped)
-                    const auto l = c2l[j];
+                    c2l = x.c2l;
                     
-                    /*
-                     * How should we normalize the k-mer observations? Should we normalize by the k-mer length?
-                     * Should we normalize by the size of the contig?
-                     */
+                    for (auto &i : x.aligns)
+                    {
+                        c2s[i.first] = i.second->id();
+                    }
                     
-                    x += (double)c2m.at(j); // / kl;// / l;
-                    y += l; //j->l.length();
+                    for (auto &i : x.metas)
+                    {
+                        for (auto &j : i.second->contigs)
+                        {
+                            s2c[i.first].push_back(j.id);
+                        }
+                    }
+                    
+                    break;
                 }
-                
-                //measured = x / y;
-                measured = x;
-                
-                stats.add(i.first, expected, measured);
+                    
+                case MAligner::MetaQuast:
+                {
+                    ParserQuast::parseAlign(Reader(align), [&](const ParserQuast::ContigData &x,
+                                                               const ParserProgress &)
+                    {
+                        if (r.match(x.id))
+                        {
+                            for (const auto &c : x.contigs)
+                            {
+                                // Contigs.fasta doesn't have "_"
+                                auto t = c;
+                                
+                                // Eg: contig-1056000000 2818 nucleotides
+                                boost::replace_all(t, "_", " ");
+                                
+                                std::vector<std::string> toks;
+                                Tokens::split(t, " ", toks);
+                                
+                                c2s[toks[0]] = x.id;
+                                c2l[toks[0]] = stod(toks[1]);
+                                s2c[x.id].push_back(toks[0]);
+                            }
+                        }
+                    });
+                    
+                    break;
+                }
+                    
+                case MAligner::Kallisto: { break; }
             }
             
+            assert(!c2s.empty());
+            assert(!c2l.empty());
+            assert(!s2c.empty());
+            
+            // Mapping from contigs to k-mer coverage
+            std::map<ContigID, Coverage> c2m;
+            
+            // Mapping from contigs to k-mer length
+            std::map<ContigID, Base> c2kl;
+            
+            switch (o.assembler)
+            {
+                case MAssembler::Kallsito:
+                {
+                    break;
+                }
+                    
+                case MAssembler::Velvet:
+                {
+                    break;
+                }
+                    
+                case MAssembler::RayMeta:
+                {
+                    ParserTSV::parse(Reader(abund), [&](const ParserTSV::TSV &x, const ParserProgress &)
+                    {
+                        c2m[x.id]  = x.kmer;
+                        c2kl[x.id] = x.klen;
+                    });
+                    
+                    assert(!c2m.empty());
+                    
+                    /*
+                     * Quantifying k-mer abundance
+                     */
+                    
+                    for (const auto &i : s2c)
+                    {
+                        const auto m = r.match(i.first);
+                        
+                        const auto expected = m->concent();
+                        auto measured = 0.0;
+                        
+                        auto x = 0.0;
+                        auto y = 0.0;
+                        
+                        for (const auto &j : i.second)
+                        {
+                            // K-mer length
+                            //const auto kl = c2kl.at(j);
+                            
+                            // Entire size of the contig (including bases that are not mapped)
+                            const auto l = c2l[j];
+                            
+                            /*
+                             * How should we normalize the k-mer observations? Should we normalize by the k-mer length?
+                             * Should we normalize by the size of the contig?
+                             */
+                            
+                            x += (double)c2m.at(j); // / kl;// / l;
+                            y += l; //j->l.length();
+                        }
+                        
+                        //measured = x / y;
+                        measured = x;
+                        
+                        stats.add(i.first, expected, measured);
+                    }
+                    
+                    break;
+                }
+            }
+
             break;
         }
     }
+    
 
     stats.limit = r.absolute(stats.hist);
 
@@ -222,14 +265,14 @@ void MKAbund::report(const std::vector<FileName> &files, const MKAbund::Options 
     o.writer->close();
 
     /*
-     * Generating MetaKAbund_abund.R
+     * Generating MetaKAbund_kCounts.R
      */
     
-    o.generate("MetaKAbund_abund.R");
-    o.writer->open("MetaKAbund_abund.R");
+    o.generate("MetaKAbund_kCounts.R");
+    o.writer->open("MetaKAbund_kCounts.R");
     o.writer->write(RWriter::createScript("MetaKAbund_quins.stats", PlotMKAbund()));
     o.writer->close();
-    
+
     /*
      * Generating MetaKAbund_contigs.stats
      */

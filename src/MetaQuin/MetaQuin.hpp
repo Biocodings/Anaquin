@@ -12,12 +12,14 @@ namespace Anaquin
     {
         Velvet,
         RayMeta,
+        Kallsito
     };
     
     enum class MAligner
     {
         MetaQuast,
         Blat,
+        Kallisto,
     };
 
     struct DAsssembly

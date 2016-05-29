@@ -7,15 +7,12 @@ namespace Anaquin
 {
     struct MKAbund
     {   
-        struct Stats : public LinearStats, public MappingStats
+        struct Stats : public LinearStats, public MappingStats, public SequinStats
         {
             MBlat::Stats blat;
             
             // Statistics for the assembly
             DAsssembly::Stats<DAsssembly::Contig> assembly;
-            
-            // Distribution of the sequins
-            SequinHist hist;
         };
 
         struct Options : public AnalyzerOptions
