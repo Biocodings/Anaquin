@@ -8,11 +8,10 @@
 
 namespace Anaquin
 {
-    enum class MAssembler
+    enum class MSoftware
     {
         Velvet,
         RayMeta,
-        Kallsito
     };
     
     enum class MAligner

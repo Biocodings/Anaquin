@@ -15,7 +15,7 @@ namespace Anaquin
             {
                 auto x = cID;
                 
-                if (assembler == MAssembler::RayMeta && aligner == MAligner::Blat)
+                if (soft == MSoftware::RayMeta && aligner == MAligner::Blat)
                 {
                     /*
                      * BLAT doesn't do spacing. For example, "contig-0 52976 nucleotides"
@@ -38,7 +38,7 @@ namespace Anaquin
              */
 
             MAligner aligner;
-            MAssembler assembler;
+            MSoftware soft;
             
             // Total mismatching bases
             Base mismatch = 0;
@@ -66,7 +66,7 @@ namespace Anaquin
             Options() {}
 
             MAligner aligner;
-            MAssembler assembler;
+            MSoftware soft;
         };
 
         static Stats analyze(const std::vector<FileName> &, const Options &o = Options());

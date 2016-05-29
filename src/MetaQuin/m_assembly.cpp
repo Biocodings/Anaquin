@@ -111,8 +111,8 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
     assert(!stats.c2s.empty());
     assert(!stats.s2c.empty());
 
+    stats.soft = o.soft;
     stats.aligner = o.aligner;
-    stats.assembler = o.assembler;
     
     // Calculate statistics such as N50 and proportion asssembled
     stats.dnovo = DAsssembly::analyze(fasta, &stats);

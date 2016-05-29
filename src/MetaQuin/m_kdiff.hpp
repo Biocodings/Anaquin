@@ -42,7 +42,7 @@ namespace Anaquin
             Options() {}
             
             MAligner aligner;
-            MAssembler assembler;
+            MSoftware soft;
         };
 
         struct Stats : public LinearStats, public MappingStats

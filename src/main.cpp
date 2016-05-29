@@ -1749,7 +1749,7 @@ void parse(int argc, char ** argv)
             }
             
             MAligner aligner;
-            MAssembler assembler;
+            MSoftware soft;
             
             switch (_p.tool)
             {
@@ -1758,16 +1758,16 @@ void parse(int argc, char ** argv)
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<Value, MAssembler> m =
+                        const static std::map<Value, MSoftware> m =
                         {
-                            { "velvet",  MAssembler::Velvet  },
-                            { "raymeta", MAssembler::RayMeta },
+                            { "velvet",   MSoftware::Velvet  },
+                            { "raymeta",  MSoftware::RayMeta },
                         };
 
                         return parseEnum("soft", str, m);
                     };
                     
-                    assembler = parse(_p.opts.at(OPT_SOFT));
+                    soft = parse(_p.opts.at(OPT_SOFT));
 
                     /*
                      * Has BLAT being used for contigs alignment?
@@ -1859,10 +1859,22 @@ void parse(int argc, char ** argv)
                     
                 case TOOL_M_KABUND:
                 {
+                    auto parse = [&](const std::string &str)
+                    {
+                        const static std::map<Value, MKAbund::Software> m =
+                        {
+                            { "velvet",   MKAbund::Software::Velvet  },
+                            { "raymeta",  MKAbund::Software::RayMeta },
+                            { "kallisto", MKAbund::Software::Kallsito },
+                        };
+                        
+                        return parseEnum("soft", str, m);
+                    };
+                    
                     MKAbund::Options o;
                     
+                    o.soft = parse(_p.opts.at(OPT_SOFT));;
                     o.aligner = aligner;
-                    o.assembler = assembler;
                     
                     analyze_n<MKAbund>(o);
                     break;
@@ -1916,10 +1928,10 @@ void parse(int argc, char ** argv)
                 {
                     auto parse = [&](const std::string &str)
                     {
-                        const static std::map<Value, MAssembler> m =
+                        const static std::map<Value, MSoftware> m =
                         {
-                            { "raymeta", MAssembler::RayMeta },
-                            { "velvet",  MAssembler::Velvet },
+                            { "raymeta", MSoftware::RayMeta },
+                            { "velvet",  MSoftware::Velvet  },
                         };
                         
                         return parseEnum("soft", str, m);
@@ -1928,7 +1940,7 @@ void parse(int argc, char ** argv)
                     MAssembly::Options o;
                     
                     o.aligner = aligner;
-                    o.assembler = assembler;
+                    o.soft = soft;
 
                     analyze_n<MAssembly>(o);
                     break;

@@ -15,9 +15,9 @@ MKAbund::Stats MKAbund::analyze(const std::vector<FileName> &files, const MKAbun
     MKAbund::Stats stats;
     stats.hist = r.hist();
 
-    switch (o.assembler)
+    switch (o.soft)
     {
-        case MAssembler::Kallsito:
+        case Software::Kallsito:
         {
             ParserKallisto::parse(Reader(files[0]), [&](const ParserKallisto::Data &d, const ParserProgress &)
             {
@@ -125,19 +125,19 @@ MKAbund::Stats MKAbund::analyze(const std::vector<FileName> &files, const MKAbun
             // Mapping from contigs to k-mer length
             std::map<ContigID, Base> c2kl;
             
-            switch (o.assembler)
+            switch (o.soft)
             {
-                case MAssembler::Kallsito:
+                case Software::Kallsito:
                 {
                     break;
                 }
                     
-                case MAssembler::Velvet:
+                case Software::Velvet:
                 {
                     break;
                 }
                     
-                case MAssembler::RayMeta:
+                case Software::RayMeta:
                 {
                     ParserTSV::parse(Reader(abund), [&](const ParserTSV::TSV &x, const ParserProgress &)
                     {

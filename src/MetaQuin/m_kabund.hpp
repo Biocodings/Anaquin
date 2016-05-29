@@ -6,7 +6,14 @@
 namespace Anaquin
 {
     struct MKAbund
-    {   
+    {
+        enum class Software
+        {
+            Velvet,
+            RayMeta,
+            Kallsito
+        };
+        
         struct Stats : public LinearStats, public MappingStats, public SequinStats
         {
             MBlat::Stats blat;
@@ -21,7 +28,7 @@ namespace Anaquin
             Options() {}
 
             MAligner aligner;
-            MAssembler assembler;
+            Software soft;
         };
         
         static Stats analyze(const std::vector<FileName> &, const Options &o = Options());
