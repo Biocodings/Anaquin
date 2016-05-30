@@ -46,11 +46,11 @@ Bioinformatics
 ============
 
 <ul>
-<li>Gene expression</li>
-<li>Alternative Splicing</li>
-<li>De-novo assembly</li>
-<li>Variant analysis</li>
-<li>Fusion detection</li>
+<li>RNA-Seq</li>
+<li>Genome Variant</li>
+<li>Structural Variation</li>
+<li>Metagenomics</li>
+<li>Gene Fusion</li>
 </ul>
 
 Features
