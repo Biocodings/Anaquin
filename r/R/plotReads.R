@@ -30,5 +30,5 @@ plotReads <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)
     stopifnot(!is.null(data$seqs$measured))
 
     if (class(data) == 'TransQuin') { plotReads.TransQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }
-    if (class(data) == 'MetaQuin')  { plotReads.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ) }    
+    if (class(data) == 'MetaQuin')  { plotReads.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)  }    
 }

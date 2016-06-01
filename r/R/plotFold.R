@@ -32,7 +32,7 @@ plotFold.MetaQuin <- function(data, title, xlab, ylab, showStats)
 
 plotFold.FusQuin <- function(data, title, xlab, ylab, showStats)
 {
-    if (is.null(title)) { title <- 'VarQuin Differential'    }
+    if (is.null(title)) { title <- 'FusQuin Differential'    }
     if (is.null(xlab))  { xlab  <- 'Expected log-fold (log2)'}
     if (is.null(ylab))  { ylab  <- 'Measured log-fold (log2)'}    
     
