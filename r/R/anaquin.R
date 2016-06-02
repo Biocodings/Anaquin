@@ -126,7 +126,7 @@ VarQuin <- function(...)
     # annot    Annotation file name
     #
     
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'expected', 'measured', 'bedgr', 'annot')
+    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'input', 'measured', 'bedgr', 'annot')
     data <- .createData(x, keys)
     
     r <- list('seqs'=data, mix=.createMixture(x$mix))

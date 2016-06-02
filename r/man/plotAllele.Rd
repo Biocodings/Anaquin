@@ -2,7 +2,7 @@
 \alias{plotAllele}
 \title{Create allele plot}
 \description{
-Create allele plot where the x-axis is the expected allele frequency and the y-axis is the measured allele frequency.
+Create an allele plot where the x-axis is the expected allele frequency and the y-axis is the measured allele frequency.
 }
 \usage{
 \method{plotAllele}{default}(data, title=..., xlab=..., ylab=...)

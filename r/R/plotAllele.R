@@ -6,7 +6,7 @@
 
 plotAllele <- function(data, showLOQ=TRUE)
 {
-    .plotExpress(data, title='Allele frequency',
+    .plotScatter(data, title='Allele frequency',
                         xlab='Expected allele frequency (log2)',
                         ylab='Measured allele frequency (log2)',
                      showLOQ=showLOQ,

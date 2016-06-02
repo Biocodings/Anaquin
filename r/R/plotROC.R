@@ -5,13 +5,12 @@
 #
 
 .plotROC <- function(data,
-                     colLab='Ratio',
+                     guideTitle='Ratio',
                      title=NULL,
                      refRatio=NULL,
-                     shouldPseuoLog=TRUE,
-                     showAUC=FALSE,
                      showGuide=TRUE,
-                     color='black')
+                     color='black',
+                     ...)
 {
     require(ROCR)
     require(grid)
@@ -22,6 +21,8 @@
 
     stopifnot(!is.null(data$input))
 
+    showAUC <- FALSE
+    
     if (is.null(data$ratio))
     {
         data$ratio <- abs(round(data$input))
@@ -36,6 +37,8 @@
                        pval=data$pval,
                        ratio=data$ratio)
 
+    shouldPseuoLog <- TRUE
+    
     # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
     if (shouldPseuoLog)
     {
@@ -90,7 +93,8 @@
             }
             
             t <- t[with(t, order(score)),]
-
+            #t[t$label=='FP',]$score <- -1000
+            
             #print(paste(c('Number of TP for ratio ', ratio, ':', nrow(t[t$label=='TP',])), collapse=' '))
             #print(paste(c('Number of FP for ratio ', ratio, ':', nrow(t[t$label=='FP',])), collapse=' '))
 
@@ -121,26 +125,26 @@
             rocDat    <- rbind(rocDat, rocDatNew)
         }
     }
-
+    
     #rocDat[rocDat$ratio==12,]$ratio <- 4096
-    #rocDat[rocDat$ratio==11,]$ratio <- 2048
-    #rocDat[rocDat$ratio==10,]$ratio <- 1024
-    #rocDat[rocDat$ratio==9,]$ratio  <- 512
-    #rocDat[rocDat$ratio==8,]$ratio  <- 256
-    #rocDat[rocDat$ratio==7,]$ratio  <- 128
-    #rocDat[rocDat$ratio==6,]$ratio  <- 64
-    #rocDat[rocDat$ratio==5,]$ratio  <- 32
-    #rocDat[rocDat$ratio==4,]$ratio  <- 16
-    #rocDat[rocDat$ratio==3,]$ratio  <- 8
-    #rocDat[rocDat$ratio==2,]$ratio  <- 4
-    #rocDat[rocDat$ratio==1,]$ratio  <- 2
-    #rocDat[rocDat$ratio==0,]$ratio  <- 1
+    rocDat[rocDat$ratio==11,]$ratio <- 2048
+    rocDat[rocDat$ratio==10,]$ratio <- 1024
+    rocDat[rocDat$ratio==9,]$ratio  <- 512
+    rocDat[rocDat$ratio==8,]$ratio  <- 256
+    rocDat[rocDat$ratio==7,]$ratio  <- 128
+    rocDat[rocDat$ratio==6,]$ratio  <- 64
+    rocDat[rocDat$ratio==5,]$ratio  <- 32
+    rocDat[rocDat$ratio==4,]$ratio  <- 16
+    rocDat[rocDat$ratio==3,]$ratio  <- 8
+    rocDat[rocDat$ratio==2,]$ratio  <- 4
+    rocDat[rocDat$ratio==1,]$ratio  <- 2
+    rocDat[rocDat$ratio==0,]$ratio  <- 1
 
     rocDat$ratio = as.factor(rocDat$ratio)
     
-    p <- ggplot(data=rocDat, aes(x=FPR, y=TPR))              + 
-            geom_abline(intercept=0, slope=1, linetype=2)    +
-            labs(colour=colLab)                              +
+    p <- ggplot(data=rocDat, aes(x=FPR, y=TPR))           + 
+            geom_abline(intercept=0, slope=1, linetype=2) +
+            labs(colour=guideTitle)                       +
             theme_bw()
 
     if (!is.null(color))
@@ -172,9 +176,9 @@
     
     if (!showGuide | countGroups == 1)
     {
-        p <- p + guides(colour=FALSE)
+        #p <- p + guides(colour=FALSE)
     }
-    
+
     print(p)    
 }
 

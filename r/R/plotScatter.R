@@ -42,11 +42,11 @@
 
     if (showStats == 'right')
     {
-        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
+        #p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
     }
     else
     {
-        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
+        #p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
     }
     
     if (showLOQ)

@@ -17,7 +17,7 @@ plotKExpress.VarQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     title <- ifelse(is.null(title), 'VarQuin Detection', title)
     xlab  <- ifelse(is.null(xlab),  'Input Concentration (log2 attomoles/ul)', xlab)
-    ylab  <- ifelse(is.null(ylab),  'Gene Abundance FPKM (log2)', ylab)
+    ylab  <- ifelse(is.null(ylab),  'K-mer Counts (log2)', ylab)
     
     .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
 }
