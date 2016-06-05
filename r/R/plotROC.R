@@ -5,7 +5,7 @@
 #
 
 .plotROC <- function(data,
-                     guideTitle='Ratio',
+                     guideTitle='LFC',
                      title=NULL,
                      refRatio=NULL,
                      showGuide=TRUE,
@@ -127,18 +127,18 @@
     }
     
     #rocDat[rocDat$ratio==12,]$ratio <- 4096
-    rocDat[rocDat$ratio==11,]$ratio <- 2048
-    rocDat[rocDat$ratio==10,]$ratio <- 1024
-    rocDat[rocDat$ratio==9,]$ratio  <- 512
-    rocDat[rocDat$ratio==8,]$ratio  <- 256
-    rocDat[rocDat$ratio==7,]$ratio  <- 128
-    rocDat[rocDat$ratio==6,]$ratio  <- 64
-    rocDat[rocDat$ratio==5,]$ratio  <- 32
-    rocDat[rocDat$ratio==4,]$ratio  <- 16
-    rocDat[rocDat$ratio==3,]$ratio  <- 8
-    rocDat[rocDat$ratio==2,]$ratio  <- 4
-    rocDat[rocDat$ratio==1,]$ratio  <- 2
-    rocDat[rocDat$ratio==0,]$ratio  <- 1
+    #rocDat[rocDat$ratio==11,]$ratio <- 2048
+    #rocDat[rocDat$ratio==10,]$ratio <- 1024
+    #rocDat[rocDat$ratio==9,]$ratio  <- 512
+    #rocDat[rocDat$ratio==8,]$ratio  <- 256
+    #rocDat[rocDat$ratio==7,]$ratio  <- 128
+    #rocDat[rocDat$ratio==6,]$ratio  <- 64
+    #rocDat[rocDat$ratio==5,]$ratio  <- 32
+    #rocDat[rocDat$ratio==4,]$ratio  <- 16
+    #rocDat[rocDat$ratio==3,]$ratio  <- 8
+    #rocDat[rocDat$ratio==2,]$ratio  <- 4
+    #rocDat[rocDat$ratio==1,]$ratio  <- 2
+    #rocDat[rocDat$ratio==0,]$ratio  <- 1
 
     rocDat$ratio = as.factor(rocDat$ratio)
     

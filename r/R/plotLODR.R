@@ -409,5 +409,5 @@ plotLODR <- function(data,
                      shouldBand  = FALSE)
 {
     seqs <- data$seqs
-    .fitLODR(data.frame(measured=seqs$mean, pval=pval(data), ratio=abs(round(seqs$expected))), multiTest=FALSE)
+    .fitLODR(data.frame(measured=seqs$mean, pval=pval(data), ratio=abs(round(seqs$input))), multiTest=FALSE)
 }

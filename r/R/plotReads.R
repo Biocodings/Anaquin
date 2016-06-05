@@ -15,11 +15,11 @@ plotReads.MetaQuin <- function(data, title, xlab, ylab, showLOQ)
 
 plotReads.TransQuin <- function(data, title, xlab, ylab, showLOQ)
 {
-    if (is.null(title)) { title <- 'TransQuin Alignment' }
+    if (is.null(title)) { title <- 'RnaQuin Alignment' }
     if (is.null(xlab))  { xlab  <- 'Input concentration (log2 attomol/ul)' }
     if (is.null(ylab))  { ylab  <- 'Reads (log2)' }
 
-    .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ, limitLabel='LOA')
+    .plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ)
 }
 
 plotReads <- function(data, title=NULL, xlab=NULL, ylab=NULL, showLOQ=TRUE)

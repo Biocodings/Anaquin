@@ -21,10 +21,10 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
     data <- data$seqs
     data$label <- NA
 
-    stopifnot(!is.null(data$expected))
+    stopifnot(!is.null(data$input))
     
     # Expected log-fold
-    data$elfc <- data$expected #expectLF(data, lvl=lvl, ids=row.names(seqs))$logFC
+    data$elfc <- data$input #expectLF(data, lvl=lvl, ids=row.names(seqs))$logFC
     
     for (id in row.names(data))
     {

@@ -32,8 +32,8 @@
                                ylab(ylab) +
                            ggtitle(title) +
                 geom_point(aes(colour=grp), size=1.0, alpha=1.0) +
-                geom_smooth(method='lm', formula=y ~ x)        +
-                labs(colour='Ratio')                           +
+                geom_smooth(method='lm', formula=y ~ x)          +
+                labs(colour='Ratio')                             +
                 theme_bw()
     
     p <-p + guides(colour=FALSE)
@@ -42,11 +42,11 @@
 
     if (showStats == 'right')
     {
-        #p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
+        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
     }
     else
     {
-        #p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
+        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
     }
     
     if (showLOQ)
