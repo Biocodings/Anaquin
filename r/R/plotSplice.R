@@ -4,13 +4,11 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotSplice <- function(data,
-                         xname = 'Expected minor isoform fraction (log2)',
-                         yname = 'Measured minor isoform fraction (log2)')
+plotSplice <- function(data, title, xlab, ylab, threshold=20)
 {
     require(ggplot2)
 
-    stopifnot(class(data) == 'TransQuin')
+    stopifnot('RnaQuin' %in% class(data))
 
     samples <- data$seqs$measured
     row.names(samples) <- row.names(data$seqs)
@@ -46,7 +44,7 @@ plotSplice <- function(data,
     data <- data[!is.na(data$frac),]
 
     # Trying to work out the lower-expressed and higher-expressed genes/isoforms.
-    data$label <- ifelse(data$expected <= 20, 'Low', 'High')
+    data$label <- ifelse(data$expected <= threshold, 'Low', 'High')
 
     # It's be easier to work on the logarithm scale
     data$expected <- log2(data$expected)

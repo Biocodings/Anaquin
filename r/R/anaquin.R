@@ -55,15 +55,7 @@ TransQuin <- function(...)
 {
     x <- list(...)
     
-    #
-    # seqs      Unique sequin names
-    # input:    Expected abundance (attomol/ul etc) 
-    # measured: Measured abundance
-    # mean:     Replicate means
-    # pval:     Probability under the null hypothesis
-    # qval:     Adjusted probability under the null hypothesis
-    #
-    keys <- c('pval', 'qval', 'mean', 'expected', 'input', 'measured')
+    keys <- c('pval', 'mean', 'expected', 'input', 'measured')
 
     r <- list('seqs'=.createData(x, keys))
     
