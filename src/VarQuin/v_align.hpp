@@ -1,6 +1,7 @@
 #ifndef V_ALIGN_HPP
 #define V_ALIGN_HPP
 
+#include "data/types.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
@@ -48,21 +49,25 @@ namespace Anaquin
             struct Data
             {
                 Counts tp, fp;
-                
+
+                // FP alignments
+                std::vector<ReadID> afp;
+
                 // Number of bases covered
-                std::map<SequinID, Base> covered;
+                std::map<GeneID, Base> covered;
 
                 // Number of bases for each reference
-                std::map<SequinID, Base> length;
+                std::map<GeneID, Base> length;
                 
-                // Distribution for the sequins
+                // Distribution for the genes (eg: sequins)
                 Hist hist;
                 
                 /*
-                 * False-positive alignments. Alignments that are only aligned partial correctly.
+                 * Statistics for genes (eg: sequins)
                  */
                 
-                std::vector<ReadID> afp;
+                std::map<GeneID, Counts> gtp;
+                std::map<GeneID, Counts> gfp;
             };
 
             std::map<ChrID, Data> data;
@@ -70,6 +75,9 @@ namespace Anaquin
             /*
              * Sequin statistics
              */
+            
+            // Sequins to precision
+            std::map<SequinID, Proportion> s2p;
             
             // Sequins to sensitivity
             std::map<SequinID, Proportion> s2s;

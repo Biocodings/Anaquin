@@ -85,11 +85,17 @@ static void classifySynth(const Alignment &align, VAlign::Stats &stats, Interval
 
         inters.find(bID)->add(t);
         stats.data[ChrT].hist.at(bID)++;
+        stats.data[ChrT].gtp[bID]++;
     }
     else
     {
         stats.data[ChrT].fp++;
         stats.data[ChrT].afp.push_back(align.name);
+
+        if ((match = r.match(align.l, MatchRule::Overlap)))
+        {
+            stats.data[ChrT].gfp[baseID(match->id)]++;
+        }
     }
 }
 
@@ -242,12 +248,27 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
     assert(stats.s2s.size() == stats.s2l.size());
 
+    /*
+     * 4: Precision for each sequin
+     */
+    
+    for (const auto &i : stats.data.at(ChrT).hist)
+    {
+        #define FROM_MAP(x) x.count(i.first) ? x.at(i.first) : 0
+        
+        const auto tp = FROM_MAP(stats.data.at(ChrT).gtp);
+        const auto fp = FROM_MAP(stats.data.at(ChrT).gfp);
+
+        stats.s2p[i.first] = static_cast<Proportion>(tp) / (tp + fp);
+        assert(stats.s2p[i.first] >= 0 && stats.s2p[i.first] <= 1.0);
+    }
+
     return stats;
 }
 
 static void writeSummary(const FileName &file, const FileName &src, const VAlign::Stats &stats, const VAlign::Options &o)
 {
-    const auto &r = Standard::instance().r_var;
+    //const auto &r = Standard::instance().r_var;
     
     /*
      * -------VarAlign Summary Statistics
@@ -340,14 +361,13 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     for (const auto &i : stats.data.at(ChrT).hist)
     {
         assert(stats.s2s.at(i.first) == stats.sn(ChrT, i.first));
-        
         o.writer->write((boost::format(format) % i.first
                                                % stats.s2l.at(i.first)
                                                % stats.s2r.at(i.first)
                                                % stats.sn(ChrT, i.first)
-                                               % "-").str());
+                                               % stats.s2p.at(i.first)).str());
     }
-    
+
     o.writer->close();
 }
 
