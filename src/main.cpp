@@ -296,6 +296,8 @@ static std::map<Tool, std::set<Option>> _required =
 
 struct Parsing
 {
+    std::map<Tool, FileName> rFiles;
+    
     // Reference annotation file for synthetic
     FileName rAnnot;
 
@@ -330,6 +332,16 @@ struct Parsing
 
 // Wrap the variables so that it'll be easier to reset them
 static Parsing _p;
+
+FileName VCFRef()
+{
+    return _p.rFiles.at(OPT_R_VCF);
+}
+
+FileName BedRef()
+{
+    return _p.rFiles.at(OPT_R_BED);
+}
 
 struct InvalidOptionException : public std::exception
 {
@@ -402,12 +414,12 @@ static const struct option long_options[] =
     { "mix",     required_argument, 0, OPT_MIXTURE },
     { "meth",    required_argument, 0, OPT_METHOD  },
 
-    { "rgen",    required_argument, 0, OPT_R_GENO  },
-    { "rbed",    required_argument, 0, OPT_R_BED   },
-    { "rgtf",    required_argument, 0, OPT_R_GTF   },
-    { "rvcf",    required_argument, 0, OPT_R_VCF   },
-    { "rfus",    required_argument, 0, OPT_R_FUS   },
-    { "rind",    required_argument, 0, OPT_R_IND   },
+    { "rgen",    required_argument, 0, OPT_R_GENO },
+    { "rbed",    required_argument, 0, OPT_R_BED  },
+    { "rgtf",    required_argument, 0, OPT_R_GTF  },
+    { "rvcf",    required_argument, 0, OPT_R_VCF  },
+    { "rfus",    required_argument, 0, OPT_R_FUS  },
+    { "rind",    required_argument, 0, OPT_R_IND  },
 
     { "fuzzy",   required_argument, 0, OPT_FUZZY },
     
@@ -1123,7 +1135,7 @@ void parse(int argc, char ** argv)
             case OPT_R_BED:
             case OPT_R_GTF:
             {
-                checkFile(_p.opts[opt] = _p.rAnnot = val);
+                checkFile(_p.opts[opt] =  _p.rFiles[opt] = _p.rAnnot = val);
                 break;
             }
                 

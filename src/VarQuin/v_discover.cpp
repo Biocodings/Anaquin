@@ -302,11 +302,14 @@ static void writeQuery(const FileName &file, const VDiscover::Stats &stats, cons
 
 static void writeSummary(const FileName &file, const FileName &src, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
+    extern FileName VCFRef();
+    extern FileName BedRef();
+    
     const auto summary = "-------VarDiscover Output Results\n\n"
                          "-------VarDiscover Output\n\n"
-                         "Reference sequin regions: %1%\n"
+                         "Reference sequin regions:      %1%\n"
                          "Reference variant annotations: %2%\n"
-                         "User identified variants: %3%\n\n"
+                         "User identified variants:      %3%\n\n"
                          "-------Reference variant annotations\n\n"
                          "Synthetic: %4% SNPs\n"
                          "Synthetic: %5% indels\n"
@@ -349,9 +352,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "FDR Rate:    %36%\n";
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
-    o.writer->write((boost::format(summary) % "????"
-                                            % "????"
-                                            % "????"
+    o.writer->write((boost::format(summary) % BedRef()
+                                            % VCFRef()
+                                            % src
                                             % "????"
                                             % "????"
                                             % "????"
