@@ -48,7 +48,7 @@ namespace Anaquin
             {
                 _covs.resize(l.length());
             }
-        
+
             inline void add(const Locus &l)
             {
                 if (l.start < _covs.size()) { _covs[l.start].starts++; }

@@ -61,8 +61,6 @@ static VAlign::Stats init()
 
 static void classifySynth(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
 {
-    assert(Standard::isSynthetic(align.cID));
-
     const auto &r = Standard::instance().r_var;
     const SequinData * match;
 
@@ -118,19 +116,15 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_var;
 
     auto stats = init();
-    
     o.analyze(file);
 
     /*
-     * We'll need the intervals for measuring at the base level.
+     * We'll need the intervals for measuring the bases. Construcing an interval for each sequin.
+     * This enables us to calculate sensitivity.
      */
     
     Intervals<> inters;
     
-    /*
-     * Construcing an interval each sequin. This enables us to calculate sensitivity for each sequin.
-     */
-
     for (auto &i : r.data())
     {
         if (boost::algorithm::ends_with(i.first, "_V"))
@@ -206,9 +200,9 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     
     for (auto &i : stats.data)
     {
-        if (i.first == ChrT)
+        if (Standard::isSynthetic(i.first))
         {
-            f(stats.data[ChrT], inters);
+            f(stats.data[i.first], inters);
         }
         else
         {
@@ -217,7 +211,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     }
     
     /*
-     * Mapping from sequins to reads
+     * Calculating sequin statistics
+     */
+    
+    /*
+     * 1. Reads aligned to each sequin
      */
     
     for (const auto &i : stats.data.at(ChrT).hist)
@@ -225,6 +223,25 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         stats.s2r[i.first] = i.second;
     }
     
+    /*
+     * 2. Covered and length for each sequin
+     */
+
+    stats.s2l = stats.data.at(ChrT).length;
+    stats.s2c = stats.data.at(ChrT).covered;
+    assert(stats.s2l.size() == stats.s2c.size());
+    
+    /*
+     * 3. Sensitivity for each sequin
+     */
+    
+    for (const auto &i : stats.s2l)
+    {
+        stats.s2s[i.first] = static_cast<Proportion>(stats.s2c.at(i.first)) / stats.s2l.at(i.first);
+    }
+
+    assert(stats.s2s.size() == stats.s2l.size());
+
     return stats;
 }
 
@@ -313,15 +330,19 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     o.generate(file);
     o.writer->open(file);
     
-    const auto format = "%1%\t%2%\t%3%\t%4%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
     o.writer->write((boost::format(format) % "seq"
+                                           % "length"
                                            % "reads"
                                            % "sn"
                                            % "pc").str());
 
     for (const auto &i : stats.data.at(ChrT).hist)
     {
+        assert(stats.s2s.at(i.first) == stats.sn(ChrT, i.first));
+        
         o.writer->write((boost::format(format) % i.first
+                                               % stats.s2l.at(i.first)
                                                % stats.s2r.at(i.first)
                                                % stats.sn(ChrT, i.first)
                                                % "-").str());

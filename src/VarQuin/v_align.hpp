@@ -51,7 +51,7 @@ namespace Anaquin
                 
                 // Number of bases covered
                 std::map<SequinID, Base> covered;
-                
+
                 // Number of bases for each reference
                 std::map<SequinID, Base> length;
                 
@@ -65,14 +65,22 @@ namespace Anaquin
                 std::vector<ReadID> afp;
             };
 
-            /*
-             * Since each chromosome can be verified independently and similarly, we should be
-             * able to pool the data structure together.
-             */
-            
             std::map<ChrID, Data> data;
 
-            // Mapping from sequin genes to reads
+            /*
+             * Sequin statistics
+             */
+            
+            // Sequins to sensitivity
+            std::map<SequinID, Proportion> s2s;
+            
+            // Sequins to covered
+            std::map<SequinID, Base> s2c;
+            
+            // Sequins to length
+            std::map<SequinID, Base> s2l;
+            
+            // Sequins to reads
             std::map<SequinID, Coverage> s2r;
         };
 
