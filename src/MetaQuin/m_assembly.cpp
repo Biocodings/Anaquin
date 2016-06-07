@@ -181,10 +181,10 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
     const auto &dn = stats.dnovo;
     
     return (boost::format(summary) % file
-                                   % dn.n_chrT
-                                   % dn.n_geno
-                                   % (dn.n_chrT + dn.n_geno)
-                                   % dn.n_chrT
+                                   % dn.n_syn
+                                   % dn.n_gen
+                                   % (dn.n_syn + dn.n_gen)
+                                   % dn.n_syn
                                    % o.rAnnot
                                    % r.data().size()
                                    % dn.N20

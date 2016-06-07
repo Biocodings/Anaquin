@@ -89,10 +89,10 @@ Scripts StatsWriter::linearSummary(const FileName &file,
     const auto llm = stats.linear(true);
 
     return (boost::format(summary) % units
-                                   % mStats.n_chrT
-                                   % mStats.chrTProp()
-                                   % mStats.n_geno
-                                   % mStats.endoProp()
+                                   % mStats.n_syn
+                                   % mStats.synProp()
+                                   % mStats.n_gen
+                                   % mStats.genProp()
                                    % annot
                                    % mixture()           // 7
                                    % hist.size()         // 8
@@ -205,9 +205,9 @@ Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR
     }
 
     return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
-                                                         % STRING(stats.n_chrT)     // 2
+                                                         % STRING(stats.n_syn)     // 2
                                                          % STRING(stats.p_chrT)     // 3
-                                                         % STRING(stats.n_geno)     // 4
+                                                         % STRING(stats.n_gen)     // 4
                                                          % STRING(stats.p_endo)     // 5
                                                          % chrTR                    // 6
                                                          % stats.n_ref              // 7
@@ -302,10 +302,10 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 
-        r.n_chrT.add((unsigned)mStats[i].n_chrT);
-        r.n_geno.add((unsigned)mStats[i].n_geno);
-        r.p_chrT.add(mStats[i].chrTProp());
-        r.p_endo.add(mStats[i].endoProp());
+        r.n_syn.add((unsigned)mStats[i].n_syn);
+        r.n_gen.add((unsigned)mStats[i].n_gen);
+        r.p_chrT.add(mStats[i].synProp());
+        r.p_endo.add(mStats[i].genProp());
 
         r.n_ref = hist[i].size();
         r.n_det.add((unsigned)detect(hist[i]));

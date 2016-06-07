@@ -124,12 +124,12 @@ template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::
     }
     else if (t.cID == ChrT)
     {
-        stats.n_chrT++;
+        stats.n_syn++;
         classifyChrT(stats, t, o);
     }
     else
     {
-        stats.n_geno++;
+        stats.n_gen++;
         stats.elfs.push_back(NAN);
     }
 

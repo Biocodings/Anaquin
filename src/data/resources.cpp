@@ -77,7 +77,6 @@
 #include "resources/plotVAllele.R"
 #include "resources/plotVDensity.R"
 #include "resources/plotVExpress.R"
-#include "resources/plotVSubsample.R"
 #include "resources/plotVAlleleReads.R"
 
 #include "resources/AVA009.v032.vcf"
@@ -322,11 +321,6 @@ Scripts PlotVProb()
 Scripts PlotVDensity()
 {
     return ToString(src_r_plotVDensity_R);
-}
-
-Scripts PlotVSubsample()
-{
-    return ToString(src_r_plotVSubsample_R);
 }
 
 Scripts VarDataMixA()

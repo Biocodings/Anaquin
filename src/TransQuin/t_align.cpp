@@ -618,10 +618,10 @@ static void generateSummary(const FileName &file,
     o.writer->write((boost::format(replicateSummary())
                                           % src
                                           % stats.n_unmap
-                                          % stats.n_chrT
-                                          % (100.0 * stats.chrTProp())
-                                          % stats.n_geno
-                                          % (100.0 * stats.endoProp())
+                                          % stats.n_syn
+                                          % (100.0 * stats.synProp())
+                                          % stats.n_gen
+                                          % (100.0 * stats.genProp())
                                           % stats.dilution()                                                // 7
                                           % o.rAnnot                                                         // 8
                                           % BIND_R(TransRef::countExons, ChrT)                              // 9

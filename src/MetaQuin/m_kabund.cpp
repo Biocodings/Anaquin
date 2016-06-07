@@ -34,7 +34,7 @@ MKAbund::Stats MKAbund::analyze(const std::vector<FileName> &files, const MKAbun
                     if (measured)
                     {
                         stats.add(d.id, known, measured);
-                        stats.n_chrT++;
+                        stats.n_syn++;
                         //stats.hist.at(d.id)++;
                     }
                 }

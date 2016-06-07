@@ -3,15 +3,86 @@
 
 using namespace Anaquin;
 
+TEST_CASE("Interval_Test_5")
+{
+    /*
+     * Simulating a genome. Genome can be represented by multiple intervals. Thus, if
+     * we have four genes, we'll have four intervals. The representation allows flexibility
+     * and extensibility.
+     */
+    
+    std::map<ChrID, Intervals<>> i;
+    
+    i["chrIS_A"].add(Interval("Gene A", Locus(0, 999)));
+    i["chrIS_B"].add(Interval("Gene B", Locus(0, 999)));
+    i["chrIS_C"].add(Interval("Gene C", Locus(0, 999)));
+    i["chrIS_D"].add(Interval("Gene D", Locus(0, 999)));
+    
+    i["chrIS_A"].build();
+    i["chrIS_B"].build();
+    i["chrIS_C"].build();
+    i["chrIS_D"].build();
+    
+    REQUIRE(i["chrIS_A"].find("Gene A"));
+    REQUIRE(i["chrIS_B"].find("Gene B"));
+    REQUIRE(i["chrIS_C"].find("Gene C"));
+    REQUIRE(i["chrIS_D"].find("Gene D"));
+    
+    REQUIRE(!i["chrIS_A"].find("gene a"));
+    REQUIRE(!i["chrIS_B"].find("gene b"));
+    REQUIRE(!i["chrIS_C"].find("gene c"));
+    REQUIRE(!i["chrIS_D"].find("gene d"));
+    
+    REQUIRE(i["chrIS_A"].find("Gene A")->l().length() == 1000);
+    REQUIRE(i["chrIS_B"].find("Gene B")->l().length() == 1000);
+    REQUIRE(i["chrIS_C"].find("Gene C")->l().length() == 1000);
+    REQUIRE(i["chrIS_D"].find("Gene D")->l().length() == 1000);
+    
+    REQUIRE(i["chrIS_A"].contains(Locus(0, 20)));
+    REQUIRE(i["chrIS_B"].contains(Locus(0, 20)));
+    REQUIRE(i["chrIS_C"].contains(Locus(0, 20)));
+    REQUIRE(i["chrIS_D"].contains(Locus(0, 20)));
+    
+    REQUIRE(!i["chrIS_A"].contains(Locus(0, 1000)));
+    REQUIRE(!i["chrIS_B"].contains(Locus(0, 1000)));
+    REQUIRE(!i["chrIS_C"].contains(Locus(0, 1000)));
+    REQUIRE(!i["chrIS_D"].contains(Locus(0, 1000)));
+
+    REQUIRE(i["chrIS_A"].stats().covered() == 0);
+    REQUIRE(i["chrIS_B"].stats().covered() == 0);
+    REQUIRE(i["chrIS_C"].stats().covered() == 0);
+    REQUIRE(i["chrIS_D"].stats().covered() == 0);
+
+    i["chrIS_A"].find("Gene A")->add(Locus(5, 14));
+    i["chrIS_B"].find("Gene B")->add(Locus(5, 14));
+    i["chrIS_C"].find("Gene C")->add(Locus(5, 14));
+    i["chrIS_D"].find("Gene D")->add(Locus(5, 14));
+ 
+    REQUIRE(i["chrIS_A"].stats().covered() == 0.01);
+    REQUIRE(i["chrIS_B"].stats().covered() == 0.01);
+    REQUIRE(i["chrIS_C"].stats().covered() == 0.01);
+    REQUIRE(i["chrIS_D"].stats().covered() == 0.01);
+
+    i["chrIS_A"].find("Gene A")->add(Locus(0, 999));
+    i["chrIS_B"].find("Gene B")->add(Locus(0, 999));
+    i["chrIS_C"].find("Gene C")->add(Locus(0, 999));
+    i["chrIS_D"].find("Gene D")->add(Locus(0, 999));
+
+    REQUIRE(i["chrIS_A"].stats().covered() == 1.0);
+    REQUIRE(i["chrIS_B"].stats().covered() == 1.0);
+    REQUIRE(i["chrIS_C"].stats().covered() == 1.0);
+    REQUIRE(i["chrIS_D"].stats().covered() == 1.0);
+}
+
 TEST_CASE("Interval_Test_1")
 {
     /*
-     * (0,2) -> 0
-     * (3,5) -> 4
-     * (6,6) -> 0
-     * (7,7) -> 2
-     * (8,8) -> 1
-     * (9,9) -> 0
+     *  (0,2) -> 0
+     *  (3,5) -> 4
+     *  (6,6) -> 0
+     *  (7,7) -> 2
+     *  (8,8) -> 1
+     *  (9,9) -> 0
      *
      *  0,0,0,0,0,1,2,4,4,4
      */

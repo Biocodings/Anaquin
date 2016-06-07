@@ -21,11 +21,11 @@ FNormal::Stats FNormal::analyze(const FileName &file, const Options &o)
             {
                 const SequinData *match;
                 
-                if (c.id == ChrT) { stats.n_chrT++;
+                if (c.id == ChrT) { stats.n_syn++;
                 }
                 else
                 {
-                    stats.n_geno++;
+                    stats.n_gen++;
                 }
                 
                 if (c.id == ChrT && (match = r.findJunct(c.l)))

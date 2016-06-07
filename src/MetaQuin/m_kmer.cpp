@@ -44,7 +44,7 @@ MKMer::Stats MKMer::analyze(const FileName &file, const Options &o)
             {
                 stats.add(d.id, known, measured);
                 
-                stats.n_chrT++;
+                stats.n_syn++;
                 //stats.hist.at(d.id)++;
             }
         }

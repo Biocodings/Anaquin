@@ -268,8 +268,6 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
 static void writeSummary(const FileName &file, const FileName &src, const VAlign::Stats &stats, const VAlign::Options &o)
 {
-    //const auto &r = Standard::instance().r_var;
-    
     /*
      * -------VarAlign Summary Statistics
      *
@@ -301,6 +299,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
      *      Precision:   0.974143
      */
 
+    const auto sums2c = sum(stats.s2c);
+    const auto sums2l = sum(stats.s2l);
+    
     const auto summary = "-------VarAlign Summary Statistics\n\n"
                          "       User alignment file: %1%\n"
                          "       Reference annotation file: %2%\n\n"
@@ -322,25 +323,25 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       Total:       %16%\n"
                          "       Sensitivity: %17%\n"
                          "       Precision:   %18%";
-    
+
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src
                                             % o.rAnnot
                                             % stats.n_unmap
-                                            % stats.n_chrT
-                                            % (100 * stats.chrTProp())
-                                            % stats.n_geno
-                                            % (100 * stats.endoProp())
+                                            % stats.n_syn
+                                            % (100 * stats.synProp())
+                                            % stats.n_gen
+                                            % (100 * stats.genProp())
                                             % stats.dilution()
                                             % "????"
                                             % "????"
                                             % "????"
                                             % "????"
                                             % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????"
+                                            % sums2c
+                                            % (sums2l - sums2c)
+                                            % sums2l
                                             % stats.sn(ChrT)
                                             % stats.pc(ChrT)).str());
     o.writer->close();
@@ -379,12 +380,9 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
     const auto format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "reads" % "label").str());
 
-    for (const auto &i : stats.data)
+    for (const auto &j : stats.data.at(ChrT).afp)
     {
-        for (const auto &j : i.second.afp)
-        {
-            o.writer->write((boost::format(format) % j % "FP").str());
-        }
+        o.writer->write((boost::format(format) % j % "FP").str());
     }
 
     o.writer->close();

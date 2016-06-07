@@ -22,7 +22,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     {
         if (m.query.cID == ChrT)
         {
-            stats.n_chrT++;
+            stats.n_syn++;
             
             /*
              * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself remains unchanged.
@@ -62,7 +62,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         }
         else
         {
-            stats.n_geno++;
+            stats.n_gen++;
             stats.geno.push_back(m.query);
         }
     });

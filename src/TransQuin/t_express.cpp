@@ -14,11 +14,11 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
 {
     if (t.cID != ChrT)
     {
-        stats.n_geno++;
+        stats.n_gen++;
     }
     else
     {
-        stats.n_chrT++;
+        stats.n_syn++;
     }
     
     if (t.cID == ChrT)

@@ -400,8 +400,8 @@ namespace Anaquin
             o.writer->open(ri.summary());
             o.writer->write((boost::format(summary) % file
                                                     % before.cov.n_unmap
-                                                    % before.cov.n_chrT
-                                                    % before.cov.n_geno
+                                                    % before.cov.n_syn
+                                                    % before.cov.n_gen
                                                     % o.rAnnot
                                                     % ri.countSeqs()
                                                     % ri.countInters()

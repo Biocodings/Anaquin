@@ -25,12 +25,12 @@ TSample::Stats TSample::stats(const FileName &file, const Options &o)
             {
                 if (x.cID == ChrT)
                 {
-                    stats.n_chrT++;
+                    stats.n_syn++;
                     stats.chrT.push_back(x.abund);
                 }
                 else
                 {
-                    stats.n_geno++;
+                    stats.n_gen++;
                     stats.geno.push_back(x.abund);
                 }
             });
@@ -133,8 +133,8 @@ static void generateSummary(const FileName &file, const TSample::Stats &stats, c
     o.writer->open(file);
     o.writer->write((boost::format(summary) % file
                                             % "-"
-                                            % stats.n_chrT
-                                            % stats.n_geno
+                                            % stats.n_syn
+                                            % stats.n_gen
                                             % o.rAnnot
                                             % "??"
                                             % meth2Str()

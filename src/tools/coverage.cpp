@@ -137,8 +137,8 @@ void CoverageTool::summary(const CoverageTool::Stats &stats,
     o.writer->open(o.summary);
     o.writer->write((boost::format(summary) % stats.src
                                             % stats.n_unmap
-                                            % stats.n_chrT
-                                            % stats.n_geno
+                                            % stats.n_syn
+                                            % stats.n_gen
                                             % o.rAnnot                           // 5
                                             % o.refs                            // 6
                                             % o.length                          // 7

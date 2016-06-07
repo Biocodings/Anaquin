@@ -79,14 +79,14 @@ namespace Anaquin
                 
                 if (seqID.empty())
                 {
-                    stats.n_geno++;
+                    stats.n_gen++;
                     
                     // Don't bother if the contig isn't part of MetaQuins...
                     return;
                 }
                 else
                 {
-                    stats.n_chrT++;
+                    stats.n_syn++;
                 }
                 
                 // Size of the config

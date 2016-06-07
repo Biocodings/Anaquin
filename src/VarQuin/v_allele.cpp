@@ -84,7 +84,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                         matchv[bID] = d.abund;
                     }
                     
-                    stats.n_chrT++;
+                    stats.n_syn++;
                     stats.hist.at(m->id)++;
                 }
             });
@@ -120,7 +120,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
             {
                 if (m.query.cID == ChrT)
                 {
-                    stats.n_chrT++;
+                    stats.n_syn++;
                     
                     switch (m.query.type())
                     {
@@ -164,7 +164,7 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                 }
                 else
                 {
-                    stats.n_geno++;
+                    stats.n_gen++;
                 }
             });
 

@@ -45,7 +45,7 @@ LNorm::Stats LNorm::analyze(const FileName &file, const Options &o)
             seqIDs.insert(align.cID);
         }
 
-        stats.n_chrT++;
+        stats.n_syn++;
     });
 
     if (seqIDs.empty())

@@ -21,12 +21,12 @@ MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
             
             if (m)
             {
-                stats.n_chrT++;
+                stats.n_syn++;
                 stats.hist.at(m->id)++;
             }
             else
             {
-                stats.n_geno++;
+                stats.n_gen++;
             }
         }
         else
