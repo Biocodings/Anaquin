@@ -22,8 +22,8 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotFROC.R',
           'src/r/plotFNormal.R',
-	  'src/r/plotFFusion.R',
-	  'src/r/plotFFold.R',
+	      'src/r/plotFFusion.R',
+	      'src/r/plotFFold.R',
 
           'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',
@@ -75,7 +75,6 @@ data  = [ 'data/manual.txt',
           'src/r/plotVProb.R',
           'src/r/plotVAllele.R',
           'src/r/plotVDensity.R',
-          'src/r/plotVSubsample.R',
 	      'src/r/plotVExpress.R',
 	      'src/r/plotVReads.R',          
 
