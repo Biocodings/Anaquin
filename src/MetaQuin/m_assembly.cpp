@@ -185,7 +185,7 @@ static Scripts generateSummary(const FileName &file, const MAssembly::Stats &sta
                                    % dn.n_geno
                                    % (dn.n_chrT + dn.n_geno)
                                    % dn.n_chrT
-                                   % o.rChrT
+                                   % o.rAnnot
                                    % r.data().size()
                                    % dn.N20
                                    % dn.N50

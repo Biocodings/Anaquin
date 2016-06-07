@@ -157,11 +157,11 @@ static TAssembly::Stats init(const TAssembly::Options &o)
     TAssembly::Stats stats;
     
     stats.data[ChrT];
-    
-    if (!o.rGeno.empty())
-    {
-        stats.data[r.genoID()];
-    }
+
+    //if (!o.rGeno.empty())
+    //{
+    //    stats.data[r.genoID()];
+    //}
 
     return stats;
 }
@@ -171,7 +171,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_trans;
 
     // We'll need the annotation for comparison (endogenous is optional)
-    assert(!o.rChrT.empty());
+    //assert(!o.rAnnot.empty());
 
     auto stats = init(o);
 
@@ -245,7 +245,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
                  * Generate a new GTF solely for the sequin, which will be the reference.
                  */
                 
-                const auto tmp = grepGTF(o.rChrT, [&](const Feature &f)
+                const auto tmp = grepGTF(o.rAnnot, [&](const Feature &f)
                 {
                     return f.tID == i.first;
                 });
@@ -267,7 +267,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
     std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, TAssembly::Stats::Data> &p)
     {
-        compareGTF(p.first, p.first == ChrT ? o.rChrT : o.rGeno);
+        compareGTF(p.first, p.first == ChrT ? o.rAnnot : o.rAnnot); // TODO: Fix this!
         copyStats(p.first);
     });
     
@@ -351,12 +351,12 @@ static void generateSummary(const FileName &file, const TAssembly::Stats &stats,
                                                   % stats.eExons
                                                   % stats.cTrans
                                                   % stats.eTrans
-                                                  % o.rChrT
+                                                  % o.rAnnot
                                                   % r.countExons(ChrT)
                                                   % r.countIntrons(ChrT)
-                                                  % (o.rGeno.empty() ? "-" : o.rGeno)
-                                                  % (o.rGeno.empty() ? "-" : toString(r.countExons(genoID)))
-                                                  % (o.rGeno.empty() ? "-" : toString(r.countIntrons(genoID)))
+                                                  % (o.rAnnot.empty() ? "-" : o.rAnnot)
+                                                  % (o.rAnnot.empty() ? "-" : toString(r.countExons(genoID)))
+                                                  % (o.rAnnot.empty() ? "-" : toString(r.countIntrons(genoID)))
                                                   % S(data.eSN)          // 12
                                                   % S(data.eFSN)
                                                   % S(data.eSP)

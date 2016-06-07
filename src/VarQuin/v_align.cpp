@@ -169,8 +169,6 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     });
 
-    stats.limit = r.absoluteBase(stats.data[ChrT].hist);
-
     /*
      * Calculating interval statistics
      */
@@ -234,69 +232,89 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
 {
     const auto &r = Standard::instance().r_var;
     
-    const auto summary = "Summary for input: %1%\n\n"
-                         "   ***\n"
-                         "   *** Number of alignments aligned to the synthetic and genome\n"
-                         "   ***\n\n"
-                         "   Unmapped:  %2%\n"
-                         "   Synthetic: %3% (%4%%%)\n"
-                         "   Genome:    %5% (%6%%%)\n\n"
-                         "   Dilution:  %7%\n\n"
-                         "   ***\n"
-                         "   *** Reference annotation\n"
-                         "   ***\n\n"
-                         "   File: %8%\n\n"
-                         "   Synthetic: %9% sequins\n"
-                         "   Detected:  %10% sequins\n\n"
-                         "   Genome:    %11% genes\n"
-                         "   Detected:  - genes\n\n"
-                         "   ***                                      \n"
-                         "   *** Comparison with synthetic annotation \n"
-                         "   ***                                      \n"
-                         "   Sensitivity: %12%\n"
-                         "   Precision:   %13%\n\n"
-                         "   Detection limit: %14% (%15%)\n\n"
-                         "   ***                                    \n"
-                         "   *** Comparison with genomic annotation \n"
-                         "   ***                                    \n"
-                         "   Sensitivity: %16%\n"
-                         "   Precision:   %17%\n\n";
-    
-    const auto hasGeno = !r.genoID().empty();
+    /*
+     * -------VarAlign Summary Statistics
+     *
+     *      User alignment file: aligned.bam
+     *      Reference annotation file: reference.bed
+     *
+     * -------Alignments
+     *
+     *      Unmapped:  10408063
+     *      Synthetic: 1276 (1.51161e-05%)
+     *      Genome:    84411883 (0.999985%)
+     *
+     *      Dilution:  1.51161e-05
+     *
+     * -------Comparison of alignments to annotations (Synthetic)
+     *
+     *      *Region level
+     *      Covered:
+     *      Uncovered:
+     *      Total:
+     *      Sensitivity: 0.997483
+     *      Precision:   0.974143
+     *
+     *      *Nucleotide level
+     *      Covered:
+     *      Uncovered:
+     *      Total:
+     *      Sensitivity: 0.997483
+     *      Precision:   0.974143
+     */
 
+    const auto summary = "-------VarAlign Summary Statistics\n\n"
+                         "       User alignment file: %1%\n"
+                         "       Reference annotation file: %2%\n\n"
+                         "-------Alignments\n\n"
+                         "       Unmapped:  %3%\n"
+                         "       Synthetic: %4% (%5%)\n"
+                         "       Genome:    %6% (%7%)\n"
+                         "       Dilution:  %8%\n\n"
+                         "-------Comparison of alignments to annotation (Synthetic)\n\n"
+                         "       *Region level\n"
+                         "       Covered:     %9%\n"
+                         "       Uncovered:   %10%\n"
+                         "       Total:       %11%\n"
+                         "       Sensitivity: %12%\n"
+                         "       Precision:   %13%\n\n"
+                         "       *Nucleotide level\n"
+                         "       Covered:     %14%\n"
+                         "       Uncovered:   %15%\n"
+                         "       Total:       %16%\n"
+                         "       Sensitivity: %17%\n"
+                         "       Precision:   %18%";
+    
     o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(summary) % src
+                                            % o.rAnnot
                                             % stats.n_unmap
                                             % stats.n_chrT
                                             % (100 * stats.chrTProp())
                                             % stats.n_geno
                                             % (100 * stats.endoProp())
                                             % stats.dilution()
-                                            % o.rChrT
-                                            % stats.data.at(ChrT).hist.size()
-                                            % count(stats.data.at(ChrT).hist)
-                                            % (!hasGeno ? "-" : toString(r.countInters()))      // 11
-                                            % stats.sn(ChrT)                                    // 12
-                                            % stats.pc(ChrT)                                    // 13
-                                            % stats.limit.abund                                 // 14
-                                            % stats.limit.id                                    // 15
-                                            % (!hasGeno ? "-" : toString(stats.sn(r.genoID()))) // 16
-                                            % (!hasGeno ? "-" : toString(stats.pc(r.genoID()))) // 17
-                     ).str());
+                                            % "????"
+                                            % "????"
+                                            % "????"
+                                            % "????"
+                                            % "????"
+                                            % "????"
+                                            % "????"
+                                            % "????"
+                                            % stats.sn(ChrT)
+                                            % stats.pc(ChrT)).str());
     o.writer->close();
 }
 
 static void writeQuins(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
 {
-    const auto &r = Standard::instance().r_var;
-
     o.generate(file);
     o.writer->open(file);
     
     const auto format = "%1%\t%2%\t%3%\t%4%";
     o.writer->write((boost::format(format) % "seq"
-                                           % "input"
                                            % "reads"
                                            % "sn"
                                            % "pc").str());
@@ -304,7 +322,6 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     for (const auto &i : stats.data.at(ChrT).hist)
     {
         o.writer->write((boost::format(format) % i.first
-                                               % r.findGene(i.first)->concent()
                                                % stats.s2r.at(i.first)
                                                % stats.sn(ChrT, i.first)
                                                % "-").str());
@@ -319,7 +336,7 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
     o.writer->open(file);
     
     const auto format = "%1%\t%2%";
-    o.writer->write((boost::format(format) % "read" % "label").str());
+    o.writer->write((boost::format(format) % "reads" % "label").str());
 
     for (const auto &i : stats.data)
     {
@@ -355,7 +372,7 @@ void VAlign::report(const FileName &file, const Options &o)
      */
     
     writeQueries("VarAlign_queries.stats", stats, o);
-    
+
     /*
      * Generating VarAlign_report.pdf
      */

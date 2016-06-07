@@ -612,7 +612,7 @@ static void generateSummary(const FileName &file,
     #define BIND_E(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
     #define BIND_M(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
 
-    const auto hasGeno = !o.rGeno.empty();
+    const auto hasGeno = !o.rAnnot.empty();
     
     o.writer->open(file);
     o.writer->write((boost::format(replicateSummary())
@@ -623,11 +623,11 @@ static void generateSummary(const FileName &file,
                                           % stats.n_geno
                                           % (100.0 * stats.endoProp())
                                           % stats.dilution()                                                // 7
-                                          % o.rChrT                                                         // 8
+                                          % o.rAnnot                                                         // 8
                                           % BIND_R(TransRef::countExons, ChrT)                              // 9
                                           % BIND_R(TransRef::countIntrons, ChrT)                            // 10
                                           % BIND_R(TransRef::exonBase, ChrT)                                // 11
-                                          % (!hasGeno ? "-"  : o.rGeno)                                     // 12
+                                          % (!hasGeno ? "-"  : o.rAnnot)                                     // 12
                                           % (!hasGeno ? "-" : BIND_R(TransRef::countExons, __gID__))        // 13
                                           % (!hasGeno ? "-" : BIND_R(TransRef::countIntrons, __gID__))      // 14
                                           % (!hasGeno ? "-" : BIND_R(TransRef::exonBase, __gID__))          // 15

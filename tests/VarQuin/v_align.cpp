@@ -1,18 +1,23 @@
 #include <catch.hpp>
 #include "unit/test.hpp"
-#include "variant/v_align.hpp"
+#include "VarQuin/v_align.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("VAlign_GM_VARMXA")
+#define REGRESSION_TEST
+
+#ifdef REGRESSION_TEST
+
+TEST_CASE("VAlign_Test1")
 {
-//    Test::variant();
-//
+    Test::transA();
+
+    const auto r = VAlign::analyze("data/test/VarQuin/test1.bam");
+
+    REQUIRE(r.n_chrT  == 356332);
+    REQUIRE(r.n_geno  == 0);
+    REQUIRE(r.n_unmap == 2015);
     
-// ./anaquin -t VarAlign -m data/var/MVA011.v013.csv -rbed data/var/AVA017.v032.bed -ubam aligned.sam
-    
-//    const auto r = VAlign::analyze("tests/data/GM_VARMXA_CONA/aligned.sam");
-//
 //    REQUIRE(r.p.m.ac() == Approx(0.9463336876));
 //    REQUIRE(r.p.m.sn() == Approx(0.961663067));
 //    REQUIRE(r.p.m.nq == 1882);
@@ -21,3 +26,5 @@ TEST_CASE("VAlign_GM_VARMXA")
 //    REQUIRE(r.p.s.counts == 1781);
 //    REQUIRE(r.p.s.abund == Approx(20000));
 }
+
+#endif

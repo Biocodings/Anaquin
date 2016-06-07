@@ -92,7 +92,7 @@ static void writeSummary(const FileName &file, const FDiscover::Stats &stats, co
     o.writer->write((boost::format(summary) % file
                                             % stats.countDetect(ChrT)
                                             % stats.countDetect(Geno)
-                                            % o.rChrT
+                                            % o.rAnnot
                                             % r.countFusion()
                                             % o.fuzzy
                                             % stats.countTP(ChrT)

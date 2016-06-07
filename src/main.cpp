@@ -260,7 +260,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_M_IGV,      { OPT_U_FILES } },
     { TOOL_M_DIFF,     { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_KDIFF,    { OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_M_ABUND,    { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_M_ABUND,    { OPT_R_BED,   OPT_U_FILES } },
     { TOOL_M_KABUND,   { OPT_MIXTURE, OPT_U_FILES, OPT_SOFT } },
     { TOOL_M_ASSEMBLY, { OPT_R_BED,   OPT_U_FILES, OPT_MIXTURE, OPT_SOFT } },
     { TOOL_M_COVERAGE, { OPT_R_BED, OPT_U_FILES } },
@@ -278,12 +278,12 @@ static std::map<Tool, std::set<Option>> _required =
     /*
      * Variant Analysis
      */
-    
+
     { TOOL_V_IGV,       { OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
-    { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
+    { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
+    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_R_VCF, OPT_U_FILES   } },
-    { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_GENO,  OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_KEXPRESS,  { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_KALLELE,   { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
@@ -297,7 +297,7 @@ static std::map<Tool, std::set<Option>> _required =
 struct Parsing
 {
     // Reference annotation file for synthetic
-    FileName rChrT;
+    FileName rAnnot;
 
     // Reference annotation file for endogenous
     FileName rGeno;
@@ -730,8 +730,8 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info(date());
     o.info("Path: " + path);
 
-    o.rChrT = _p.rChrT;
-    o.rGeno = _p.rGeno;
+    o.rAnnot = _p.rAnnot;
+    //o.rGeno = _p.rGeno;
 
     std::clock_t begin = std::clock();
 
@@ -1123,7 +1123,7 @@ void parse(int argc, char ** argv)
             case OPT_R_BED:
             case OPT_R_GTF:
             {
-                checkFile(_p.opts[opt] = _p.rChrT = val);
+                checkFile(_p.opts[opt] = _p.rAnnot = val);
                 break;
             }
                 

@@ -246,8 +246,8 @@ void MKAbund::report(const std::vector<FileName> &files, const MKAbund::Options 
     
     o.generate("MetaKAbund_summary.stats");
     o.writer->open("MetaKAbund_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rGeno,
+    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+                                                o.rAnnot,
                                                 files[0],
                                                 stats.hist,
                                                 stats,

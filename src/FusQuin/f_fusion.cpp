@@ -53,7 +53,7 @@ void FFusion::report(const FileName &file, const Options &o)
      */
     
     o.writer->open("FusFusion_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats, stats.hist, "sequins"));
+    o.writer->write(StatsWriter::linearSummary(file, o.rAnnot, stats, stats, stats.hist, "sequins"));
     o.writer->close();
 
     /*

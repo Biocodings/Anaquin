@@ -179,16 +179,13 @@ namespace Anaquin
 
     // Forward delcaration. Any analyzer doesn't need it need not link against it.
     class Experiment;
-    
+
     struct AnalyzerOptions : public WriterOptions
     {
-        // Reference annotation for the synthetic
-        FileName rChrT;
-        
-        // Reference annotation for the endogenous
-        FileName rGeno;
+        // Reference annotation (eg: GTF, BED)
+        FileName rAnnot;
     };
-    
+
     struct IndexOptions : public AnalyzerOptions
     {
         FileName index;

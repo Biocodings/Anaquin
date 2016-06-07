@@ -61,7 +61,7 @@ void FDiff::report(const FileName &normal, const FileName &fusion, const Options
      */
     
     o.writer->open("FusDiff_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(normal + " & " + fusion, o.rChrT, stats, stats, stats.hist, "sequins"));
+    o.writer->write(StatsWriter::linearSummary(normal + " & " + fusion, o.rAnnot, stats, stats, stats.hist, "sequins"));
     o.writer->close();
     
     /*

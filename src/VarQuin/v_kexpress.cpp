@@ -69,8 +69,8 @@ void VKExpress::report(const FileName &file1, const FileName &file2, const Optio
 
     o.info("Generating VarKExpress_summary.stats");
     o.writer->open("VarKExpress_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rGeno,
+    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+                                                o.rAnnot,
                                                 (file1 + " & " + file2),
                                                 stats.hist,
                                                 stats,

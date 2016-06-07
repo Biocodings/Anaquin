@@ -10,9 +10,9 @@
 //    
 //    TAssembly::Options o;
 //
-//    o.rChrT = "data/TransQuin/ATR001.v032.gtf";
+//    o.rAnnot = "data/TransQuin/ATR001.v032.gtf";
 //
-//    const auto r = TAssembly::analyze(o.rChrT, o);
+//    const auto r = TAssembly::analyze(o.rAnnot, o);
 //
 //    REQUIRE(r.cExons == 1200);
 //    REQUIRE(r.eExons == 1200);

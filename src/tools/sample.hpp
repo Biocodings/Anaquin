@@ -402,7 +402,7 @@ namespace Anaquin
                                                     % before.cov.n_unmap
                                                     % before.cov.n_chrT
                                                     % before.cov.n_geno
-                                                    % o.rChrT
+                                                    % o.rAnnot
                                                     % ri.countSeqs()
                                                     % ri.countInters()
                                                     % meth2Str()

@@ -74,9 +74,6 @@ namespace Anaquin
 
             // Mapping from sequin genes to reads
             std::map<SequinID, Coverage> s2r;
-
-            // Absolute detection limit
-            Limit limit;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

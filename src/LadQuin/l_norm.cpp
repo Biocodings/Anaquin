@@ -252,7 +252,7 @@ void LNorm::report(const FileName &file, const Options &o)
 
     o.info("Generating LadNorm_summary.stats");
     o.writer->open("LadNorm_summary.stats");
-//    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
+//    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
 //                                                o.rGeno,
 //                                                file,
 //                                                stats.hist,

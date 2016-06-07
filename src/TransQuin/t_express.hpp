@@ -26,8 +26,8 @@ namespace Anaquin
                                                                                  const Units &units,
                                                                                  const Options &o)
         {
-            return StatsWriter::inflectSummary(o.rChrT,
-                                               o.rGeno,
+            return StatsWriter::inflectSummary(o.rAnnot,
+                                               o.rAnnot,
                                                std::vector<FileName>     { file  },
                                                std::vector<SequinHist>   { stats.hist },
                                                std::vector<MappingStats> { stats },
@@ -54,8 +54,8 @@ namespace Anaquin
                 sHists.push_back(stats[i].hist);
                 lStats.push_back(stats[i]);
             }
-            
-            return StatsWriter::inflectSummary(o.rChrT, o.rGeno, files, sHists, mStats, lStats, units);
+
+            return StatsWriter::inflectSummary(o.rAnnot, o.rAnnot, files, sHists, mStats, lStats, units);
         }
         
         template <typename Stats> static Scripts multipleCSV(const std::vector<Stats> &stats)

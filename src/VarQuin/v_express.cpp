@@ -49,8 +49,8 @@ void VExpress::report(const FileName &file, const Options &o)
     
     o.info("Generating VarExpress_summary.stats");
     o.writer->open("VarExpress_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rGeno,
+    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+                                                o.rAnnot,
                                                 file,
                                                 stats.hist,
                                                 stats,

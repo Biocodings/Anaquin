@@ -32,8 +32,7 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     
     CoverageTool::CoverageReportOptions x;
     
-    x.rChrT   = o.rChrT;
-    x.rGeno   = o.rGeno;
+    x.rAnnot  = o.rAnnot;
     x.writer  = o.writer;
     x.refs    = r.hist().size();
     x.length  = r.size();

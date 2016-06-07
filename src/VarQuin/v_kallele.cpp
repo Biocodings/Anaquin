@@ -24,13 +24,13 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
     o.info("Generating statistics");
     
     /*
-     * Generating summary statistics
+     * Generating VarKAllele_summary.stats
      */
 
     o.info("Generating VarKAllele_summary.stats");
     o.writer->open("VarKAllele_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rGeno,
+    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+                                                o.rAnnot,
                                                 (file1 + " & " + file2),
                                                 stats.hist,
                                                 stats,
@@ -39,7 +39,7 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
     o.writer->close();
 
     /*
-     * Generating CSV for all sequins
+     * Generating VarKAllele_quins.csv
      */
 
     o.info("Generating VarKAllele_quins.csv");
@@ -48,7 +48,7 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
     o.writer->close();
     
     /*
-     * Generating for allele vs allele
+     * Generating VarKAllele_allele.R
      */
 
     o.info("Generating VarKAllele_allele.R");

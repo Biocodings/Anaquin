@@ -7,7 +7,6 @@ using namespace Anaquin;
 TEST_CASE("TAlign_All_AllRepeats")
 {
     Test::transA();
-    
     std::vector<Alignment> aligns;
     
     /*

@@ -135,7 +135,7 @@ static void generateSummary(const FileName &file, const TSample::Stats &stats, c
                                             % "-"
                                             % stats.n_chrT
                                             % stats.n_geno
-                                            % o.rChrT
+                                            % o.rAnnot
                                             % "??"
                                             % meth2Str()
                                             % "??"

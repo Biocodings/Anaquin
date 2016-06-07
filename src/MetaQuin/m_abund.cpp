@@ -91,8 +91,8 @@ void MAbund::report(const FileName &file, const MAbund::Options &o)
 
     o.generate("MetaAbund_summary.stats");
     o.writer->open("MetaAbund_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rChrT,
-                                                o.rGeno,
+    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+                                                o.rAnnot,
                                                 file,
                                                 stats.hist,
                                                 stats,
@@ -105,13 +105,4 @@ void MAbund::report(const FileName &file, const MAbund::Options &o)
      */
     
     writeQuins("MetaAbund_quins.stats", stats, o);
-    
-    /*
-     * Generating MetaAbund_reads.R
-     */
-    
-    o.generate("MetaAbund_reads.R");
-    o.writer->open("MetaAbund_reads.R");
-    o.writer->write(RWriter::createScript("MetaAbund_summary.stats", PlotMReads()));
-    o.writer->close();
 }

@@ -256,7 +256,7 @@ void MDiff::report(const std::vector<FileName> &files, const Options &o)
     
     o.generate("MetaDiff_summary.stats");
     o.writer->open("MetaDiff_summary.stats");
-    o.writer->write(StatsWriter::linearSummary("????", o.rChrT, stats, stats, stats.hist, "sequins"));
+    o.writer->write(StatsWriter::linearSummary("????", o.rAnnot, stats, stats, stats.hist, "sequins"));
     o.writer->close();
 
     /*

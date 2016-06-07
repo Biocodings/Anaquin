@@ -139,7 +139,7 @@ void CoverageTool::summary(const CoverageTool::Stats &stats,
                                             % stats.n_unmap
                                             % stats.n_chrT
                                             % stats.n_geno
-                                            % o.rChrT                           // 5
+                                            % o.rAnnot                           // 5
                                             % o.refs                            // 6
                                             % o.length                          // 7
                                             % (o.rGeno.empty() ? "-" : o.rGeno) // 8

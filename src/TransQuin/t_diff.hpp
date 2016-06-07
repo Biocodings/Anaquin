@@ -124,7 +124,7 @@ namespace Anaquin
         {
             o.generate(file);
             o.writer->open(file);
-            o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats, stats.hist, units));
+            o.writer->write(StatsWriter::linearSummary(file, o.rAnnot, stats, stats, stats.hist, units));
             o.writer->close();
         }
 

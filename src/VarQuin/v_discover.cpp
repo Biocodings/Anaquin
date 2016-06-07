@@ -356,7 +356,7 @@ static void writeSummaryNP(const FileName &file, const FileName &src, const VDis
     o.writer->write((boost::format(summary) % src
                                             % stats.chrT.dTot()
                                             % stats.geno.size()
-                                            % o.rChrT
+                                            % o.rAnnot
                                             % r.countSNPs()
                                             % r.countIndels()
                                             % r.countVars()        // 7
@@ -445,7 +445,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     o.writer->write((boost::format(summary) % src
                                             % stats.chrT.dTot()
                                             % stats.geno.size()
-                                            % o.rChrT
+                                            % o.rAnnot
                                             % r.countSNPs()
                                             % r.countIndels()
                                             % r.countVars()           // 7

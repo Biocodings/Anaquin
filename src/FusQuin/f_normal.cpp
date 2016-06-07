@@ -64,7 +64,7 @@ void FNormal::report(const FileName &file, const Options &o)
     
     o.generate("FusNormal_summary.stats");
     o.writer->open("FusNormal_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file, o.rChrT, stats, stats, stats.hist, "sequins"));
+    o.writer->write(StatsWriter::linearSummary(file, o.rAnnot, stats, stats, stats.hist, "sequins"));
     o.writer->close();
 
     /*
