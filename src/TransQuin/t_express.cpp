@@ -202,7 +202,7 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     
     const auto units = m.at(o.metrs);
     const auto stats = analyze(files, o);
-    
+
     /*
      * 1. Generating summary statistics (single or multiple samples)
      */
@@ -220,13 +220,4 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     TExpress::generateRAbund("TransExpress_express.R", "TransExpress_quins.stats", stats, o);
-    
-    /*
-     * 4. Generating major plot (but only if we have isoforms...)
-     */
-
-    if (stats.size() >= 2 && o.metrs == TExpress::Metrics::Isoform)
-    {
-        TExpress::generateRSplice("TransExpress_splice.R", "TransExpress_quins.stats", o);
-    }
 }
