@@ -59,15 +59,17 @@ static VAlign::Stats init()
     return stats;
 }
 
-static void classifyChrT(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
+static void classifySynth(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
 {
+    assert(Standard::isSynthetic(align.cID));
+
     const auto &r = Standard::instance().r_var;
     const SequinData * match;
 
     if ((match = r.match(align.l, MatchRule::Contains)))
     {
         stats.data[ChrT].tp++;
-        
+
         const auto bID = baseID(match->id);
         
         /*
@@ -156,12 +158,12 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         if (!align.mapped)
         {
             return;
-        }        
-        else if (align.cID == ChrT)
-        {
-            classifyChrT(align, stats, inters);
         }
-        else if (r.isGenoID(align.cID))
+        else if (Standard::isSynthetic(align.cID))
+        {
+            classifySynth(align, stats, inters);
+        }
+        else
         {
             classifyGenome(align, stats, inters);
         }

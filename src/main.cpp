@@ -237,7 +237,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_T_COVERAGE,  { OPT_R_GTF, OPT_U_FILES                        } },
     { TOOL_T_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_T_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_ALIGN,     { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
+    { TOOL_T_ALIGN,     { OPT_R_GTF, OPT_U_FILES           } },
     { TOOL_T_EXPRESS,   { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_T_SUBSAMPLE, { OPT_MIXTURE, OPT_U_FILES } },
     
@@ -279,11 +279,11 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
     
-    { TOOL_V_IGV,       { OPT_U_FILES                                     } },
+    { TOOL_V_IGV,       { OPT_U_FILES } },
+    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES                        } },
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_R_VCF, OPT_U_FILES   } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_R_GENO,  OPT_U_FILES           } },
-    { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_MIXTURE, OPT_U_FILES           } },
     { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
     { TOOL_V_KEXPRESS,  { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_KALLELE,   { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
@@ -1591,17 +1591,22 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
+                    case TOOL_V_ALIGN:
+                    {
+                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
+                        break;
+                    }
+
                     case TOOL_V_SUBSAMPLE:
                     {
-                        applyRef(std::bind(&Standard::addStd,    &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVStd,    &s, std::placeholders::_1), OPT_R_BED);
                         applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_GENO);
                         break;
                     }
 
-                    case TOOL_V_ALIGN:
                     case TOOL_V_COVERAGE:
                     {
-                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1),    OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1),    OPT_R_BED);
                         applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_GENO);
                         break;
                     }
@@ -1609,14 +1614,14 @@ void parse(int argc, char ** argv)
                     case TOOL_V_ALLELE:
                     case TOOL_V_EXPRESS:
                     {
-                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1));
+                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1));
                         break;
                     }
 
                     case TOOL_V_DISCOVER:
                     {
-                        applyRef(std::bind(&Standard::addStd, &s, std::placeholders::_1), OPT_R_BED);
-                        applyRef(std::bind(&Standard::addVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
+                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
                         break;
                     }
 

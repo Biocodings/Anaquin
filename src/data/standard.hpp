@@ -50,17 +50,18 @@ namespace Anaquin
              * ---------------- Variant analysis ----------------
              */
 
+            // Add reference mixture for VarQuin
             void addVMix(const Reader &);
         
-            // Add known variants
-            void addVar(const Reader &);
+            // Add reference variants for VarQuin
+            void addVVar(const Reader &);
 
-            // Add standards to the reference
-            void addStd(const Reader &);
+            // Add reference standards for VarQuin
+            void addVStd(const Reader &);
 
             // Add intervals to the reference
             void addInters(const Reader &);
-        
+
             VarRef r_var;
         
             /*

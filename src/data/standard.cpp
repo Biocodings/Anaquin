@@ -103,47 +103,62 @@ bool Standard::isSynthetic(const ChrID &cID)
 
 void Standard::addInters(const Reader &r)
 {
-    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
-    {
-        r_var.addRInterval(f.cID, Interval(f.id, f.l));
-    });
+    assert(false);
+    
+//    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
+//    {
+//        if (!Standard::isSynthetic(f.cID))
+//        {
+//            r_var.addRInterval(f.cID, Interval(f.id, f.l));
+//        }
+//    });
 }
 
-void Standard::addStd(const Reader &r)
+void Standard::addVStd(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_var.addStand(f.id, f.l);
+        if (Standard::isSynthetic(f.cID))
+        {
+            r_var.addStand(f.id, f.l);
+        }
+        else
+        {
+            r_var.addRInterval(f.cID, Interval(f.id, f.l));
+        }
     });
 }
 
-void Standard::addVar(const Reader &r)
+void Standard::addVVar(const Reader &r)
 {
     std::vector<std::string> toks;
 
     ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
-        Variant v;
-        
-        /*
-         * Filtering out common errors in the reference variant file
-         */
-        
-        if (x.id.size() <= 1)
+        if (Standard::isSynthetic(x.cID))
         {
-            const auto format = "Invalid reference VCF variant file: %1%. Is this a VCF file? If this is a VCF file, please check the third column. It must list the sequin names. The name we have is [%2%]. Our latest reference file is available at www.sequin.xyz.";
+            Variant v;
             
-            throw std::runtime_error((boost::format(format) % r.src() % x.id).str());
+            /*
+             * Filtering out common errors in the reference variant file
+             */
+            
+            if (x.id.size() <= 1)
+            {
+                const auto format = "Invalid reference VCF variant file: %1%. Is this a VCF file? If this is a VCF file, please check the third column. It must list the sequin names. The name we have is [%2%]. Our latest reference file is available at www.sequin.xyz.";
+                
+                throw std::runtime_error((boost::format(format) % r.src() % x.id).str());
+            }
+            
+            // Eg: D_1_3_R
+            v.id  = x.id;
+            
+            v.l   = x.l;
+            v.alt = x.alt;
+            v.ref = x.ref;
+            
+            r_var.addVar(v);
         }
-        
-        // Eg: D_1_3_R
-        v.id  = x.id;
-
-        v.l   = x.l;
-        v.alt = x.alt;
-        v.ref = x.ref;
-
-        r_var.addVar(v);
     });
 }
 
@@ -156,7 +171,10 @@ void Standard::addMRef(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_meta.addStand(f.cID, f.l);
+        if (Standard::isSynthetic(f.cID))
+        {
+            r_meta.addStand(f.cID, f.l);
+        }
     });
 }
 
@@ -175,7 +193,10 @@ void Standard::addSStruct(const Anaquin::Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_str.addStruct(f.id);
+        if (Standard::isSynthetic(f.cID))
+        {
+            r_str.addStruct(f.id);
+        }
     });
 }
 
@@ -199,7 +220,10 @@ void Standard::addFStd(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_fus.addStand(f.id, f.l);
+        if (Standard::isSynthetic(f.cID))
+        {
+            r_fus.addStand(f.id, f.l);
+        }
     });
 }
 
@@ -207,7 +231,10 @@ void Standard::addFJunct(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
     {
-        r_fus.addJunct(f.id, f.l);
+        if (Standard::isSynthetic(f.cID))
+        {
+            r_fus.addJunct(f.id, f.l);
+        }
     });
 }
 
@@ -243,11 +270,14 @@ void Standard::addTRef(const Reader &r)
 {
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
-        switch (f.type)
+        if (Standard::isSynthetic(f.cID))
         {
-            case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
-            case Exon: { r_trans.addExon(f.cID, f.gID, f.tID, f.l); break; }
-            default:   { break; }
+            switch (f.type)
+            {
+                case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
+                case Exon: { r_trans.addExon(f.cID, f.gID, f.tID, f.l); break; }
+                default:   { break; }
+            }
         }
     });
 }
