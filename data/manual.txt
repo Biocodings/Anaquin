@@ -1,4 +1,4 @@
-Anaquin (Tools for sequin data analysis) - www.sequins.xyz
+Anaquin (Tools for sequin data analysis) - www.sequin.xyz
 
 Version: 1.1.1
 
@@ -19,52 +19,21 @@ Version: 1.1.1
 
        Usage: anaquin -t <tool> [options]
 
-       Transcriptome Analysis (TransQuin)
+       Transcriptome Analysis (RnaQuin)
        ----------------------------------
 	   
-       TransAlign
-       TransAssembly
-       TransPooled	   
-       TransExpress
-       TransKExpress
-       TransDiff
-       TransKDiff
-       TransReport
-       TransIGV
+       RnaAlign
+       RnaAssembly
+       RnaExpression
+       RnaFoldChange
+       RnaIGV
 	   
        Variant Analysis (VarQuin)
        --------------------------
 	   
        VarAlign
+       VarSubsample
        VarDiscover
        VarAllele
-       VarKAllele
-       VarKExpress
-       VarExpress
-       VarReport
-       VarSubsample
+       VarFrequency
        VarIGV
-
-       Fusion Analysis (FusQuin)
-       -------------------------
-	   
-       FusDiscover
-       FusExpress
-       FusCoverage
-	   FusDiff
-       FusIGV
-	   
-       Metageonomic Analysis (MetaQuin)
-       --------------------------------
-	   
-       MetaAssembly
-       MetaExpress
-       MetaDiff
-       MetaCoverage
-       MetaReport
-       MetaIGV
-	   
-       Ladder Analysis (LadQuin)
-       ----------------------------
-	   
-       LadderExpress
