@@ -1157,6 +1157,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"~/Sources/QA/src/htslib",
+					/Applications,
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1166,9 +1167,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/boost/,
-					/usr/local/Cellar/eigen/3.2.8/include/eigen,
-					/usr/include/catch/include/,
+					/usr/local/Cellar/eigen/3.2.8/include/eigen3,
+					/Applications/catch/include,
 					../../src,
 					../src,
 					src,
@@ -1176,6 +1176,8 @@
 					"~/Sources/QA/src/htslib",
 					/usr/local/Cellar/hdf5/1.8.16_1/include,
 					"~/Sources/SS",
+					/Applications,
+					/Applications/boost_1_61_0,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1199,13 +1201,13 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"~/Sources/QA/src/htslib",
+					/Applications,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/usr/include/boost/,
-					/usr/local/Cellar/eigen/3.2.8/include/eigen,
-					/usr/include/catch/include/,
+					/usr/local/Cellar/eigen/3.2.8/include/eigen3,
+					/Applications/catch/include,
 					../../src,
 					../src,
 					src,
@@ -1213,6 +1215,8 @@
 					"~/Sources/QA/src/htslib",
 					/usr/local/Cellar/hdf5/1.8.16_1/include,
 					"~/Sources/SS",
+					/Applications,
+					/Applications/boost_1_61_0,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
