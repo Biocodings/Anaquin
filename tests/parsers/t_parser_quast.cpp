@@ -48,8 +48,8 @@ TEST_CASE("ParserQuast_TestGenome")
     REQUIRE(x.size() == 63);
 }
 
-TEST_CASE("ParserQuast_InvalidGenome")
-{
-    REQUIRE_THROWS(ParserQuast::parseGenome(Reader("tests/data/DESeq2.csv"),
-                    [&](const ParserQuast::GenomeData &d, const ParserProgress &) {}));
-}
+//TEST_CASE("ParserQuast_Invalid")
+//{
+//    REQUIRE_THROWS(ParserQuast::parseGenome(Reader("tests/data/DESeq2.csv"),
+//                    [&](const ParserQuast::GenomeData &d, const ParserProgress &) {}));
+//}
