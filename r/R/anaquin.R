@@ -51,158 +51,22 @@
     return (NULL)
 }
 
-TransQuin <- function(...)
+Anaquin <- function(...)
 {
     x <- list(...)
-    
+
     keys <- c('pval', 'mean', 'expected', 'input', 'measured')
 
     r <- list('seqs'=.createData(x, keys))
-    
-    if (is.null(r$seqs))
-    {
-        r$mix <- loadTransMix(.createMixture(x$mix))
-        
-        if (!is.null(r$mix))
-        {
-            # This is differential AB...
-            if (ncol(r$mix$isoforms) == 6)
-            {
-                r$seqs <- data.frame(row.names=row.names(r$mix$isoforms), expected=r$mix$isoforms$fold)
-            }
-        }
-        else
-        {
-            stop('No sequin found. Please check and try again.') 
-        }
-    }
-
     stopifnot(!is.null(r$seqs))
     
-    class(r) <- 'TransQuin'
-    return (r)
-}
-
-MetaQuin <- function(...)
-{
-    x <- list(...)
-    
-    keys <- c('mix', 'seqs', 'input', 'expected', 'measured')
-    data <- .createData(x, keys)
-
-    r <- list('seqs'=data, mix=.createMixture(x$mix))
-    
-    if (!is.null(x[['bedgr']])) { r$bedgr <- x$bedgr }
-    if (!is.null(x[['annot']])) { r$annot <- x$annot }
-    
-    stopifnot(!is.null(r$seqs))
-    
-    class(r) <- 'MetaQuin'
-    return (r)
-}
-
-VarQuin <- function(...)
-{
-    x <- list(...)
-    
-    #
-    # seqs     Unique sequin names
-    # label    Sequin classification
-    # rRead    Number of reads supporting the reference allele
-    # vRead    Number of reads supporting the alternative allele
-    # type     Variant type
-    # ratio    Input fold-change
-    # input    Input concentration (eg: allele frequency)
-    # measured Measured expression (eg: allele frequency)
-    # bedgr    Bedgraph file name
-    # annot    Annotation file name
-    #
-    
-    keys <- c('label', 'pval', 'rRead', 'vRead', 'type', 'ratio', 'input', 'measured', 'bedgr', 'annot')
-    data <- .createData(x, keys)
-    
-    r <- list('seqs'=data, mix=.createMixture(x$mix))
-    
-    if (!is.null(x[['bedgr']])) { r$bedgr <- x$bedgr }
-    if (!is.null(x[['annot']])) { r$annot <- x$annot }
-
-    # TODO: This should be activated, but won't work for VarCoverage_density.R (we should read the sequins from the file directly)
-    #stopifnot(!is.null(r$seqs))
-    
-    class(r) <- 'VarQuin'
-    return (r)
-}
-
-FusQuin <- function(...)
-{
-    x <- list(...)
-    
-    #
-    # seqs      Unique sequin names
-    # input:    expected abundance (attomol/ul etc) 
-    # measured: measured abundance
-    # label:    sequin classification
-    #
-
-    keys <- c('input', 'measured', 'label')
-    r <- list('seqs'=.createData(x, keys))
-    
-    if (is.null(r$seqs))
-    {
-        r$mix <- loadFusMix(.createMixture(x$mix))
-        
-        if (is.null(r$mix))
-        {
-            stop('No mixture found. Please check and try again.') 
-        }
-    }
-
-    stopifnot(!is.null(r$seqs))
-    
-    class(r) <- 'FusQuin'
-    return (r)
-}
-
-StructQuin <- function(...)
-{
-    x <- list(...)
-    
-    keys <- c()
-    data <- .createData(x, keys)
-    
-    r <- list('seqs'=data, mix=.createMixture(x$mix))
-    
-    stopifnot(!is.null(r$seqs))
-    
-    class(r) <- 'StructQuin'
-    return (r)    
-}
-
-LadQuin <- function(...)
-{
-    x <- list(...)
-    
-    #
-    # seqs     Unique sequin names
-    # input    Input abundance (eg: attomol/ul)
-    # measured Measured abundance
-    # mix      Mixture details
-    #
-    
-    keys <- c('label', 'input', 'measured')
-    data <- .createData(x, keys)
-    
-    r <- list('seqs'=data, mix=.createMixture(x$mix))
-
-    stopifnot(!is.null(r$seqs))
-
-    class(r) <- 'LadQuin'
+    class(r) <- 'Anaquin'
     return (r)
 }
 
 ########################################################
 #                                                      #
-#                TransQuin functions                   #
+#                  RnaQuin functions                   #
 #                                                      #
 ########################################################
 
