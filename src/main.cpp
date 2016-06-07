@@ -283,11 +283,11 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
-    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_SOFT, OPT_R_VCF, OPT_U_FILES   } },
-    { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_V_KEXPRESS,  { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_KALLELE,   { OPT_SOFT,    OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED, OPT_SOFT, OPT_U_FILES, OPT_MIXTURE } },
+    { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_R_VCF,   OPT_U_FILES   } },
+    { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED,  OPT_U_FILES, OPT_MIXTURE } },
 };
 
 /*
@@ -1665,21 +1665,8 @@ void parse(int argc, char ** argv)
                     
                 case TOOL_V_ALLELE:
                 {
-                    auto parse = [&](const std::string &str)
-                    {
-                        const static std::map<Value, VAllele::Software> m =
-                        {
-                            { "gatk"   ,  VAllele::Software::GATK     },
-                            { "VarScan",  VAllele::Software::VarScan  },
-                            { "VarScan2", VAllele::Software::VarScan  },
-                            { "kallisto", VAllele::Software::Kallisto  },
-                        };
-                        
-                        return parseEnum("soft", str, m);
-                    };
-
                     VAllele::Options o;
-                    o.soft = parse(_p.opts.at(OPT_SOFT));
+                    o.input = VAllele::Input::VCF; // TODO: Fix this
 
                     analyze_1<VAllele>(OPT_U_FILES, o);
                     break;
@@ -1687,20 +1674,8 @@ void parse(int argc, char ** argv)
 
                 case TOOL_V_DISCOVER:
                 {
-                    auto parse = [&](const std::string &str)
-                    {
-                        const static std::map<Value, VDiscover::Software> m =
-                        {
-                            { "gatk"   ,  VDiscover::Software::GATK     },
-                            { "VarScan",  VDiscover::Software::VarScan  },
-                            { "VarScan2", VDiscover::Software::VarScan  },
-                        };
-                        
-                        return parseEnum("soft", str, m);
-                    };
-
                     VDiscover::Options o;
-                    o.soft = parse(_p.opts.at(OPT_SOFT));
+                    o.input = VDiscover::Input::VCF; // TODO: Fix this
 
                     analyze_1<VDiscover>(OPT_U_FILES, o);
                     break;

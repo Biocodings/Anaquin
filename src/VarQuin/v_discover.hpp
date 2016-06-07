@@ -9,17 +9,17 @@ namespace Anaquin
 {
     struct VDiscover
     {
-        enum class Software
+        enum class Input
         {
-            GATK,
-            VarScan,
+            VCF,
+            Text,
         };
         
         struct Options : public AnalyzerOptions
         {
             Options() {}
             
-            Software soft;
+            Input input;
             
             // Significance level
             Probability sign = 0.1;

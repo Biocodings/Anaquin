@@ -565,11 +565,23 @@ namespace Anaquin
             // Returns number of known variants
             Counts countVars() const;
 
-            // Returns number of known SNPs
-            Counts countSNPs() const;
+            // Count SNPs for a chromosome
+            Counts countSNP(const ChrID &) const;
         
-            // Returns number of known indels
-            Counts countIndels() const;
+            // Counts indels for the synthetic chromosomes
+            Counts countSNPSync() const;
+        
+            // Counts indels for the genome
+            Counts countSNPGeno() const;
+        
+            // Counts indels for a chromosome
+            Counts countIndel(const ChrID &) const;
+        
+            // Counts indels for the synthetic chromosomes
+            Counts countIndelSync() const;
+        
+            // Counts indels for the genome
+            Counts countIndelGeno() const;
 
             // Returns number of sequins
             Counts countSeqs() const;

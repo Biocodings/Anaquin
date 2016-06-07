@@ -88,6 +88,8 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
 
 bool Standard::isSynthetic(const ChrID &cID)
 {
+    assert(!cID.empty());
+    
     const std::set<ChrID> sIDs = { "chrT", "chrIS", };
 
     for (const auto sID : sIDs)
@@ -135,30 +137,31 @@ void Standard::addVVar(const Reader &r)
 
     ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
-        if (Standard::isSynthetic(x.cID))
+        Variant v;
+        
+        /*
+         * Filtering out common errors in the reference variant file
+         */
+        
+        if (x.id.size() <= 1)
         {
-            Variant v;
+            const auto format = "Invalid reference VCF variant file: %1%. Is this a VCF file? If this is a VCF file, please check the third column. It must list the sequin names. The name we have is [%2%]. Our latest reference file is available at www.sequin.xyz.";
             
-            /*
-             * Filtering out common errors in the reference variant file
-             */
-            
-            if (x.id.size() <= 1)
-            {
-                const auto format = "Invalid reference VCF variant file: %1%. Is this a VCF file? If this is a VCF file, please check the third column. It must list the sequin names. The name we have is [%2%]. Our latest reference file is available at www.sequin.xyz.";
-                
-                throw std::runtime_error((boost::format(format) % r.src() % x.id).str());
-            }
-            
-            // Eg: D_1_3_R
-            v.id  = x.id;
-            
-            v.l   = x.l;
-            v.alt = x.alt;
-            v.ref = x.ref;
-            
-            r_var.addVar(v);
+            throw std::runtime_error((boost::format(format) % r.src() % x.id).str());
         }
+        
+        // Eg: D_1_3_R
+        v.id  = x.id;
+        
+        // Eg: chrIS
+        v.cID = x.cID;
+        
+        v.l   = x.l;
+        v.alt = x.alt;
+        v.ref = x.ref;
+
+        // This'll add variants for both synthetic and genome
+        r_var.addVar(v);
     });
 }
 

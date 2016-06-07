@@ -63,7 +63,7 @@ namespace Anaquin
             void addInters(const Reader &);
 
             VarRef r_var;
-        
+
             /*
              * ---------------- Ladder analysis ----------------
              */

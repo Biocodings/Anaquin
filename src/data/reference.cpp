@@ -929,7 +929,7 @@ struct VarRef::VarRefImpl
     std::map<SequinID, Locus> stands;
 
     // Variants (SNPs + indels)
-    std::set<Variant> vars;
+    std::map<ChrID, std::set<Variant>> vars;
 
     /*
      * Data structure for bases (eg: D1_1)
@@ -968,7 +968,8 @@ Fold VarRef::matchFold(const SequinID &id) const
 
 void VarRef::addVar(const Variant &v)
 {
-    _impl->vars.insert(v);
+    assert(!v.cID.empty());
+    _impl->vars[v.cID].insert(v);
 }
 
 void VarRef::addRInterval(const ChrID &id, const Interval &i)
@@ -1001,20 +1002,80 @@ Counts VarRef::countSeqs() const
     return data().size();
 }
 
-Counts VarRef::countIndels() const
+Counts VarRef::countIndel(const ChrID &cID) const
 {
-    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variant &v)
+    return std::count_if(_impl->vars.at(cID).begin(), _impl->vars.at(cID).end(), [&](const Variant &v)
     {
         return v.type() == Insertion || v.type() == Deletion;
     });
 }
 
-Counts VarRef::countSNPs() const
+Counts VarRef::countIndelSync() const
 {
-    return std::count_if(_impl->vars.begin(), _impl->vars.end(), [&](const Variant &v)
+    Counts n = 0;
+    
+    for (const auto &i : _impl->vars)
+    {
+        if (Standard::isSynthetic(i.first))
+        {
+            n += countIndel(i.first);
+        }
+    }
+    
+    return n;
+}
+
+Counts VarRef::countIndelGeno() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->vars)
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            n += countIndel(i.first);
+        }
+    }
+    
+    return n;
+}
+    
+Counts VarRef::countSNP(const ChrID &cID) const
+{
+    return std::count_if(_impl->vars.at(cID).begin(), _impl->vars.at(cID).end(), [&](const Variant &v)
     {
         return v.type() == SNP;
     });
+}
+
+Counts VarRef::countSNPSync() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->vars)
+    {
+        if (Standard::isSynthetic(i.first))
+        {
+            n += countSNP(i.first);
+        }
+    }
+    
+    return n;
+}
+
+Counts VarRef::countSNPGeno() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->vars)
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            n += countSNP(i.first);
+        }
+    }
+    
+    return n;
 }
 
 Counts VarRef::countVars() const
@@ -1174,7 +1235,7 @@ HashHist VarRef::varHist() const
 {
     HashHist hist;
     
-    for (const auto &i : _impl->vars)
+    for (const auto &i : _impl->vars.at(ChrT))
     {
         hist[var2hash(i.id, i.type(), i.l)];
     }
@@ -1203,7 +1264,7 @@ Interval * VarRef::findGeno(const Locus &l) const
 
 const Variant * VarRef::hashVar(long key) const
 {
-    for (const auto &i : _impl->vars)
+    for (const auto &i : _impl->vars.at(ChrT))
     {
         if (var2hash(i.id, i.type(), i.l) == key)
         {
@@ -1228,7 +1289,7 @@ const Variant * VarRef::findVar(const SequinID &id) const
         x = x + "_R";
     }
 
-    for (const auto &i : _impl->vars)
+    for (const auto &i : _impl->vars.at(ChrT))
     {
         if (i.id == x)
         {
@@ -1250,7 +1311,7 @@ const Variant * VarRef::findVar(const Locus &l, MatchRule match) const
     {
         case Exact:
         {
-            for (const auto &i : _impl->vars)
+            for (const auto &i : _impl->vars.at(ChrT))
             {
                 if (i.l.start == l.start)
                 {

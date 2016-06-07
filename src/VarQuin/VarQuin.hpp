@@ -91,7 +91,7 @@ namespace Anaquin
      * Common framework for parsing and matching called variants
      */
 
-    template <typename F, typename Soft> void parseVariants(const FileName &file, Soft soft, F f)
+    template <typename F, typename Input> void parseVariants(const FileName &file, Input input, F f)
     {
         const auto &r = Standard::instance().r_var;
 
@@ -129,9 +129,9 @@ namespace Anaquin
             return m;
         };
 
-        switch (soft)
+        switch (input)
         {
-            case Soft::GATK:
+            case Input::VCF:
             {
                 ParserVCF::parse(file, [&](const ParserVCF::Data &d, const ParserProgress &)
                 {
@@ -141,7 +141,7 @@ namespace Anaquin
                 break;
             }
 
-            case Soft::VarScan:
+            case Input::Text:
             {
                 ParserVarScan::parse(file, [&](const ParserVarScan::Data &d, const ParserProgress &)
                 {

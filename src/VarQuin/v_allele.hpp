@@ -8,16 +8,16 @@ namespace Anaquin
 {
     struct VAllele
     {
-        enum class Software
+        enum class Input
         {
-            GATK,
-            VarScan,
-            Kallisto
+            VCF,
+            Text,
+            //Kallisto
         };
         
         struct Options : public AnalyzerOptions
         {
-            Software soft;
+            Input input;
         };
 
         struct Stats : public MappingStats, public SequinStats, public VariantStats
