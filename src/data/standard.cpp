@@ -86,6 +86,21 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     }
 }
 
+bool Standard::isSynthetic(const ChrID &cID)
+{
+    const std::set<ChrID> sIDs = { "chrT", "chrIS", };
+
+    for (const auto sID : sIDs)
+    {
+        if (boost::iequals(sID, cID))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Standard::addInters(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)

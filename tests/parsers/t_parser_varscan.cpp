@@ -13,5 +13,5 @@ TEST_CASE("ParserVarScan_Test")
         x.push_back(d);
     });
     
-    REQUIRE(x.size() == 1457);
+    REQUIRE(x.size() == 1443);
 }

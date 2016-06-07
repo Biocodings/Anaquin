@@ -28,6 +28,13 @@ namespace Anaquin
             static constexpr const char * chrT = "chrT";
 
             /*
+             * ---------------- General analysis ----------------
+             */
+
+            // Whether the given chromosome is a synthetic chromosome
+            static bool isSynthetic(const ChrID &cID);
+
+            /*
              * ---------------- Transcriptome analysis ----------------
              */
 

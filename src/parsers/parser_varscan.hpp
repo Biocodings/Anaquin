@@ -1,6 +1,7 @@
 #ifndef PARSER_VARSCAN_HPP
 #define PARSER_VARSCAN_HPP
 
+#include <iostream>
 #include "data/tokens.hpp"
 #include "data/variant.hpp"
 #include "parsers/parser.hpp"
@@ -62,7 +63,16 @@ namespace Anaquin
                 d.readR = stod(toks[Reads1]);
                 d.readV = stod(toks[Reads2]);
                 
-                // Why it's shown as a variant if no variant supporting reads?
+                /*
+                 * Eg:
+                 *
+                 *   chrT  631340  A  A  3976  0
+                 *
+                 * In the example, the sixth column is the reads for the variant allele.
+                 *
+                 * Why it's shown as a variant if no variant supporting the variant allele?
+                 */
+                
                 if (!d.readV)
                 {
                     continue;
