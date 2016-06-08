@@ -87,7 +87,7 @@ LinearModel LinearStats::linear(bool shouldLog) const
         lm.c     = m.coeffs[0].est;
         lm.m     = m.coeffs[1].est;
         lm.R2    = m.r2;
-        lm.ar2   = m.ar2;
+        lm.aR2   = m.ar2;
         lm.SST   = m.total.ss;
         lm.SSM   = m.model.ss;
         lm.SSE   = m.error.ss;
@@ -103,7 +103,7 @@ LinearModel LinearStats::linear(bool shouldLog) const
         lm.c     = NAN;
         lm.m     = NAN;
         lm.R2    = NAN;
-        lm.ar2   = NAN;
+        lm.aR2   = NAN;
         lm.SST   = NAN;
         lm.SSM   = NAN;
         lm.SSE   = NAN;

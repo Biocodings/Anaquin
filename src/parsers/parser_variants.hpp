@@ -1,5 +1,5 @@
-#ifndef PARSER_VARSCAN_HPP
-#define PARSER_VARSCAN_HPP
+#ifndef PARSER_VARIANT_HPP
+#define PARSER_VARIANT_HPP
 
 #include <iostream>
 #include "data/tokens.hpp"
@@ -9,29 +9,19 @@
 
 namespace Anaquin
 {
-    struct ParserVarScan
+    struct ParserVariant
     {
         enum Field
         {
             Chrom,
             Position,
             Ref,
-            Cons,
+            Allele,
             Reads1,
             Reads2,
-            VarFreq,
-            Strands1,
-            Strands2,
             Qual1,
-            Qual2,       // 10
+            Qual2,
             Pvalue,
-            MapQual1,
-            MapQual2,
-            Reads1Plus,
-            Reads1Minus,
-            Reads2Plus,
-            Reads2Minus,
-            VarFrequency    // 18
         };
 
         typedef CalledVariant Data;
@@ -60,12 +50,12 @@ namespace Anaquin
                 // Always start and end at the same position
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
-                d.allF  = stod(toks[VarFreq]);
                 d.qualR = stod(toks[Qual1]);
                 d.qualV = stod(toks[Qual2]);
                 d.readR = stod(toks[Reads1]);
                 d.readV = stod(toks[Reads2]);
-                
+                d.allF  = static_cast<Proportion>(d.readV) / (d.readR + d.readV);
+
                 /*
                  * Eg:
                  *
@@ -81,41 +71,8 @@ namespace Anaquin
                     continue;
                 }
                 
-                if (toks[Cons][0] == '*')
-                {
-                    /*
-                     * Eg:
-                     *
-                     *     chrT	8288872	C	* /-CCTG	2443	367	13.05%	2	2	29	19	1.8024382198605343E-112	1	1	1228	1215	186	181	-CCTG
-                     *
-                     */
-
-                    // Eg: C*/-CCTG
-                    d.ref = toks[Ref] + toks[Cons];
-
-                    // Eg: C/-CCTG
-                    boost::replace_all(d.ref, "*", "");
-                    
-                    // Eg: C-CCTG
-                    boost::replace_all(d.ref, "/", "");
-                    
-                    // Eg: CCCTG
-                    boost::replace_all(d.ref, "-", "");
-                    
-                    // Eg: -CCTG
-                    auto tmp = toks[VarFrequency];
-                    
-                    // Eg: CCTG
-                    boost::replace_all(tmp, "-", "");
-                    
-                    // Eg: C
-                    boost::replace_all(d.alt = d.ref, tmp, "");
-                }
-                else
-                {
-                    d.ref = toks[Ref];
-                    d.alt = toks[VarFrequency];
-                }
+                d.ref = toks[Ref];
+                d.alt = toks[Allele];
                 
                 try
                 {

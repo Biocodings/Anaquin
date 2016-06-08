@@ -74,15 +74,21 @@ namespace Anaquin
         Sequence ref, alt;
         
         // Allelle frequency
-        Proportion af;
+        Proportion allF = NAN;
         
-        // Number of reads for the reference
+        // Number of reads of the reference
         Counts readR = 0;
         
-        // Number of reads for the variant
+        // Number of reads of the variant
         Counts readV = 0;
         
-        // Optional, not always provided.
+        // Base quality of the reference (not always provided)
+        int qualR = NAN;
+        
+        // Base quality of the variant (not always provided)
+        int qualV = NAN;
+
+        // P-value (not always provided)
         Probability p = NAN;
     };
     

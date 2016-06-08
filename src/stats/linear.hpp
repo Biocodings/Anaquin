@@ -112,7 +112,7 @@ namespace Anaquin
         double r;
         
         // Adjusted R2
-        double ar2;
+        double aR2;
         
         double F, p;
         

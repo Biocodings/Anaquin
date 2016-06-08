@@ -583,6 +583,8 @@ namespace Anaquin
             // Counts indels for the genome
             Counts countIndGeno() const;
 
+            inline Counts countSync() const { return countSNPSync() + countIndSync(); }
+
             // Returns number of sequins
             Counts countSeqs() const;
 

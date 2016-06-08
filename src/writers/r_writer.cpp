@@ -7,13 +7,28 @@ using namespace Anaquin;
 extern Path __output__;
 
 // Defined in resources.cpp
-extern Scripts PlotTROC();
-
-// Defined in resources.cpp
-extern Scripts PlotTMA();
+extern Scripts PlotScatter();
 
 // Defined in main.cpp
 extern FileName mixture();
+
+Scripts RWriter::createScatter(const FileName    &file,
+                               const std::string &title,
+                               const std::string &xlab,
+                               const std::string &ylab,
+                               const std::string &expected,
+                               const std::string &measured)
+{
+    return (boost::format(PlotScatter()) % date()
+                                         % __full_command__
+                                         % __output__
+                                         % file
+                                         % title
+                                         % xlab
+                                         % ylab
+                                         % expected
+                                         % measured).str();
+}
 
 Scripts RWriter::createScript(const FileName &file, const Scripts &script)
 {

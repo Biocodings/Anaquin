@@ -3,12 +3,6 @@
 
 using namespace Anaquin;
 
-// Defined in resources.cpp
-extern Scripts PlotVAllele();
-
-// Defined in resources.cpp
-extern Scripts PlotVAlleleReads();
-
 static void writeCSV(const FileName &file, const VFreq::Stats &stats, const VFreq::Options &o)
 {
     o.writer->open(file);
@@ -30,12 +24,12 @@ static void writeCSV(const FileName &file, const VFreq::Stats &stats, const VFre
         }
     };
 
-    o.writer->write((boost::format(format) % "seq"
-                                           % "input"
-                                           % "measured"
-                                           % "rreads"
-                                           % "vreads"
-                                           % "type").str());
+    o.writer->write((boost::format(format) % "Seq"
+                                           % "Expected"
+                                           % "Measured"
+                                           % "ReadsR"
+                                           % "ReadsV"
+                                           % "Type").str());
     
     f(stats.snp, "SNP");
     f(stats.ind, "Indel");
@@ -176,12 +170,14 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
 
 static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, const VFreq::Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+
     extern FileName VCFRef();
     extern FileName MixRef();
 
     const auto lm = stats.vars.linear(true);
 
-    const auto summary = "-------VarFrequency Output\n"
+    const auto summary = "-------VarFrequency Output\n\n"
                          "Reference variant annotations: %1%\n"
                          "User identified variants: %2%\n"
                          "Sequin mixture file: %3%\n\n"
@@ -205,22 +201,23 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
     return ((boost::format(summary) % file
                                     % VCFRef()
                                     % MixRef()
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????"
-                                    % "????").str());
+                                    % r.countSNPSync()
+                                    % r.countIndSync()
+                                    % r.countSync()
+                                    % "????" // 7
+                                    % stats.vars.limit.abund // 8
+                                    % stats.vars.limit.id    // 9
+                                    % lm.r // 10
+                                    % lm.m
+                                    % lm.R2
+                                    % lm.F
+                                    % lm.p
+                                    % lm.SSM
+                                    % lm.SSM_D
+                                    % lm.SSE
+                                    % lm.SSE_D
+                                    % lm.SST
+                                    % lm.SST_D).str());
 }
 
 void VFreq::report(const FileName &file, const Options &o)
@@ -235,7 +232,7 @@ void VFreq::report(const FileName &file, const Options &o)
 
     o.info("Generating VarFrequency_summary.stats");
     o.writer->open("VarFrequency_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file, o.rAnnot, stats.vars, stats, stats.hist, "variants"));
+    o.writer->write(generateSummary(file, stats, o));
     o.writer->close();
 
     /*
@@ -243,42 +240,30 @@ void VFreq::report(const FileName &file, const Options &o)
      */
 
     o.info("Generating VarFrequency_quins.csv");
-
-    switch (o.input)
-    {
-//        case VAllele::Input::Kallisto:
-//        {
-//            o.writer->open("VarFrequency_quins.csv");
-//            o.writer->write(StatsWriter::writeCSV(stats.all));
-//            o.writer->close();
-//            break;
-//        }
-
-        default:
-        {
-            writeCSV("VarFrequency_quins.csv", stats, o);
-
-            /*
-             * Generating VarFrequency_reads.R
-             */
-            
-            o.info("Generating VarFrequency_reads.R");
-            o.writer->open("VarFrequency_reads.R");
-            o.writer->write(RWriter::createScript("VarFrequency_quins.csv", PlotVAlleleReads()));
-            o.writer->close();
-            
-            break;
-        }
-    }
-
+    writeCSV("VarFrequency_quins.csv", stats, o);
+    
     /*
-     * Generating VarFrequency_freq.R
+     * Generating VarFrequency_allele.R
      */
     
-    o.info("Generating VarFrequency_freq.R");
-    o.writer->open("VarFrequency_freq.R");
-    o.writer->write(RWriter::createScript("VarFrequency_quins.csv", PlotVAllele()));
+    o.info("Generating VarFrequency_allele.R");
+    o.writer->open("VarFrequency_allele.R");
+    o.writer->write(RWriter::createScatter("VarFrequency_quins.csv",
+                                           "Allele Frequency",
+                                           "Expected allele frequency (log2)",
+                                           "Measured allele frequency (log2)",
+                                           "Expected",
+                                           "Measured"));
     o.writer->close();
+    
+    /*
+     * Generating VarFrequency_reads.R
+     */
+    
+    //o.info("Generating VarFrequency_reads.R");
+    //o.writer->open("VarFrequency_reads.R");
+    //o.writer->write(RWriter::createScript("VarFrequency_quins.csv", PlotScatter()));
+    //o.writer->close();
     
     /*
      * Generating VarFrequency_report.pdf

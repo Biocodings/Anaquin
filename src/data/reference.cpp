@@ -1085,7 +1085,7 @@ void VarRef::validate()
      * Rules:
      *
      *   1: Annotation (eg: VarDiscover)
-     *   2: Annotation & mixture (eg: VarAlign)
+     *   2: Mixture (eg: VarAlign)
      *   3: Variants & mixture (eg: VarFrequency)
      */
     

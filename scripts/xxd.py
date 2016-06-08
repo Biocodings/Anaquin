@@ -71,12 +71,10 @@ data  = [ 'data/manual.txt',
 
           'src/r/plotVROC.R',
           'src/r/plotVROC2.R',          
-          'src/r/plotVAlleleReads.R',
           'src/r/plotVProb.R',
-          'src/r/plotVAllele.R',
+	      'src/r/plotScatter.R',          
           'src/r/plotVDensity.R',
 	      'src/r/plotVExpress.R',
-	      'src/r/plotVReads.R',          
 
           'data/VarQuin/AVA017.v032.bed',
           'data/VarQuin/AVA009.v032.vcf',

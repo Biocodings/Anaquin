@@ -3,7 +3,7 @@
 
 #include "data/standard.hpp"
 #include "parsers/parser_vcf.hpp"
-#include "parsers/parser_varscan.hpp"
+#include "parsers/parser_variants.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
 // Defined in main.cpp
@@ -143,15 +143,13 @@ namespace Anaquin
 
             case Input::Text:
             {
-                ParserVarScan::parse(file, [&](const ParserVarScan::Data &d, const ParserProgress &)
+                ParserVariant::parse(file, [&](const ParserVariant::Data &d, const ParserProgress &)
                 {
                     f(match(d));
                 });
 
                 break;
             }
-                
-            default : { break; }
         }
     }
 }

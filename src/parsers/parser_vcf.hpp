@@ -88,7 +88,7 @@ namespace Anaquin
                         Tokens::split(info, "=", t);
                         assert(t.size() == 2);
                         
-                        if (t[0] == "AF") { d.af = stof(t[1]); }
+                        if (t[0] == "AF") { d.allF = stof(t[1]); }
                     }
                 }
                 

@@ -19,6 +19,7 @@
 #include "TransQuin/t_coverage.hpp"
 
 #include "VarQuin/v_freq.hpp"
+#include "VarQuin/v_vscan.hpp"
 #include "VarQuin/v_align.hpp"
 #include "VarQuin/v_viewer.hpp"
 #include "VarQuin/v_report.hpp"
@@ -81,8 +82,9 @@ typedef std::set<Value> Range;
 #define TOOL_T_COVERAGE  273
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
+#define TOOL_V_VSCAN     276
 #define TOOL_V_IGV       277
-#define TOOL_V_FREQ    278
+#define TOOL_V_FREQ      278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_T_SUBSAMPLE 281
@@ -194,6 +196,7 @@ static std::map<Value, Tool> _tools =
     { "TransCoverage",  TOOL_T_COVERAGE  },
     { "TransSubsample", TOOL_T_SUBSAMPLE },
 
+    { "VarVarscan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
     { "VarIGV",         TOOL_V_IGV       },
@@ -284,6 +287,7 @@ static std::map<Tool, std::set<Option>> _required =
 
     { TOOL_V_FORWARD,   { OPT_U_FILES } },
     { TOOL_V_IGV,       { OPT_U_FILES } },
+    { TOOL_V_VSCAN,     { OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
@@ -1106,7 +1110,11 @@ void parse(int argc, char ** argv)
                 break;
             }
 
-            case OPT_MIXTURE: { checkFile(_p.opts[opt] = val); break; }
+            case OPT_MIXTURE:
+            {
+                checkFile(_p.opts[opt] = _p.rFiles[opt] = val);
+                break;
+            }
 
             case OPT_R_IND:
             case OPT_R_FUS:
@@ -1114,7 +1122,7 @@ void parse(int argc, char ** argv)
             case OPT_R_BED:
             case OPT_R_GTF:
             {
-                checkFile(_p.opts[opt] =  _p.rFiles[opt] = _p.rAnnot = val);
+                checkFile(_p.opts[opt] = _p.rFiles[opt] = _p.rAnnot = val);
                 break;
             }
                 
@@ -1554,6 +1562,7 @@ void parse(int argc, char ** argv)
         }
 
         case TOOL_V_IGV:
+        case TOOL_V_VSCAN:
         case TOOL_V_ALIGN:
         case TOOL_V_FREQ:
         case TOOL_V_EXPRESS:
@@ -1576,7 +1585,9 @@ void parse(int argc, char ** argv)
             
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            if (_p.tool != TOOL_V_IGV && _p.tool != TOOL_V_FORWARD)
+            if (_p.tool != TOOL_V_IGV     &&
+                _p.tool != TOOL_V_FORWARD &&
+                _p.tool != TOOL_V_VSCAN)
             {
                 switch (_p.tool)
                 {
@@ -1591,6 +1602,7 @@ void parse(int argc, char ** argv)
                     case TOOL_V_FREQ:
                     case TOOL_V_EXPRESS:
                     {
+                        addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1));
                         break;
                     }
@@ -1609,9 +1621,29 @@ void parse(int argc, char ** argv)
                 Standard::instance().r_var.finalize();
             }
 
+            const auto checkVCF = [&](const FileName &x)
+            {
+                Counts n = 0;
+                
+                try
+                {
+                    ParserVCF::parse(Reader(x), [&](const ParserVCF::Data &, const ParserProgress &)
+                    {
+                        n++;
+                    });
+                }
+                catch (...)
+                {
+                    n = 0;
+                }
+                
+                return n;
+            };
+
             switch (_p.tool)
             {
                 case TOOL_V_IGV:      { viewer<VViewer>();                 break; }
+                case TOOL_V_VSCAN:    { analyze_1<VVScan>(OPT_U_FILES);    break; }
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_FORWARD:  { analyze_1<VForward>(OPT_U_FILES);  break; }
                 case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_U_FILES); break; }
@@ -1644,7 +1676,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_FREQ:
                 {
                     VFreq::Options o;
-                    o.input = VFreq::Input::VCF; // TODO: Fix this
+                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VFreq::Input::VCF : VFreq::Input::Text;
 
                     analyze_1<VFreq>(OPT_U_FILES, o);
                     break;

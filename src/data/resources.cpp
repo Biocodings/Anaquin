@@ -10,6 +10,8 @@
 #include "resources/manual.txt"
 #include "resources/reports.py"
 
+#include "resources/plotScatter.R"
+
 /*
  * Fusion Resources
  */
@@ -73,11 +75,8 @@
 #include "resources/plotVROC.R"
 #include "resources/plotVROC2.R"
 #include "resources/plotVProb.R"
-#include "resources/plotVReads.R"
-#include "resources/plotVAllele.R"
 #include "resources/plotVDensity.R"
 #include "resources/plotVExpress.R"
-#include "resources/plotVAlleleReads.R"
 
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
@@ -101,6 +100,11 @@ Scripts ViewerScript()
 Scripts Manual()
 {
     return ToString(data_manual_txt);
+}
+
+Scripts PlotScatter()
+{
+    return ToString(src_r_plotScatter_R);
 }
 
 /*
@@ -283,24 +287,14 @@ Scripts TransDataMixAB()
  * Variant Resources
  */
 
-Scripts PlotVReads()
+Scripts PlotVProb()
 {
-    return ToString(src_r_plotVReads_R);
+    return ToString(src_r_plotVProb_R);
 }
 
 Scripts PlotVExpress()
 {
     return ToString(src_r_plotVExpress_R);
-}
-
-Scripts PlotVAlleleReads()
-{
-    return ToString(src_r_plotVAlleleReads_R);
-}
-
-Scripts PlotVAllele()
-{
-    return ToString(src_r_plotVAllele_R);
 }
 
 Scripts PlotVROC()
@@ -311,11 +305,6 @@ Scripts PlotVROC()
 Scripts PlotVROC2()
 {
     return ToString(src_r_plotVROC2_R);
-}
-
-Scripts PlotVProb()
-{
-    return ToString(src_r_plotVProb_R);
 }
 
 Scripts PlotVDensity()
