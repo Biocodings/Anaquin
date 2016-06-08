@@ -11,7 +11,7 @@ TEST_CASE("SReals_Summary")
     x.add(2.00);
     x.add(3.00);
     
-    REQUIRE(STRING(x) == "2 ± 1");
+    REQUIRE(STRING(x) == "2.00 ± 1.00");
 }
 
 TEST_CASE("SStrings_Summary")
