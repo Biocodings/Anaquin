@@ -73,6 +73,40 @@ namespace Anaquin
             std::map<ChrID, Data> data;
 
             /*
+             * Genomic statistics
+             */
+            
+            // Genes to covered
+            std::map<GeneID, Base> g2c;
+            
+            // Genes to length
+            std::map<GeneID, Base> g2l;
+
+            // Total covered by all genes
+            Base gc = 0;
+            
+            // Total length by all genes
+            Base gl = 0;
+            
+            // Number of TP for genomic genes
+            Counts gtp = 0;
+            
+            // Number of FP for genomic genes
+            Counts gfp = 0;
+            
+            // Overall sensitivity for all genes
+            inline Proportion gsn() const
+            {
+                return static_cast<Proportion>(gc) / (gc + gl);
+            }
+            
+            // Overall precision for all genes
+            inline Proportion gpc() const
+            {
+                return static_cast<Proportion>(gtp) / (gtp + gfp);
+            }
+
+            /*
              * Sequin statistics
              */
             

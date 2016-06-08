@@ -1,4 +1,4 @@
-#include "VarQuin/v_allele.hpp"
+#include "VarQuin/v_freq.hpp"
 #include "parsers/parser_kallisto.hpp"
 
 using namespace Anaquin;
@@ -9,7 +9,7 @@ extern Scripts PlotVAllele();
 // Defined in resources.cpp
 extern Scripts PlotVAlleleReads();
 
-static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VAllele::Options &o)
+static void writeCSV(const FileName &file, const VFreq::Stats &stats, const VFreq::Options &o)
 {
     o.writer->open(file);
 
@@ -43,11 +43,11 @@ static void writeCSV(const FileName &file, const VAllele::Stats &stats, const VA
     o.writer->close();
 }
 
-VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
+VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
 
-    VAllele::Stats stats;
+    VFreq::Stats stats;
     
     // Initialize the distribution for each sequin
     stats.hist = r.hist();
@@ -133,12 +133,9 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                     {
                         stats.hist.at(m.match->id)++;
                         
-                        // Expected allele frequency
-                        const auto known = r.matchAlleleFreq(baseID(m.match->id));
-                        
-                        // Measured coverage is the number of base calls aligned and used in variant calling
+                        const auto expected = r.matchAlleleFreq(baseID(m.match->id));
                         const auto measured = m.query.alleleFreq();
-                        
+
                         /*
                          * Plotting the relative allele frequency that is established by differences
                          * in the concentration of reference and variant DNA standards.
@@ -149,15 +146,15 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
                                                                            % m.match->ref
                                                                            % m.match->l.start
                                                                            % m.match->alt).str();
-                        stats.all.add(id, known, measured);
-                        
+                        stats.vars.add(id, expected, measured);
+
                         switch (m.query.type())
                         {
-                            case Mutation::SNP:       { stats.snp.add(id, known, measured); break; }
+                            case Mutation::SNP:       { stats.snp.add(id, expected, measured); break; }
                             case Mutation::Deletion:
-                            case Mutation::Insertion: { stats.ind.add(id, known, measured); break; }
+                            case Mutation::Insertion: { stats.ind.add(id, expected, measured); break; }
                         }
-                        
+
                         stats.readR[id] = m.query.readR;
                         stats.readV[id] = m.query.readV;
                     }
@@ -172,40 +169,86 @@ VAllele::Stats VAllele::analyze(const FileName &file, const Options &o)
         }
     }
 
-    stats.all.limit = r.absolute(stats.hist);
-    
+    stats.vars.limit = r.absolute(stats.hist);
+
     return stats;
 }
 
-void VAllele::report(const FileName &file, const Options &o)
+static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, const VFreq::Options &o)
+{
+    extern FileName VCFRef();
+    extern FileName MixRef();
+
+    const auto lm = stats.vars.linear(true);
+
+    const auto summary = "-------VarFrequency Output\n"
+                         "Reference variant annotations: %1%\n"
+                         "User identified variants: %2%\n"
+                         "Sequin mixture file: %3%\n\n"
+                         "-------Reference variant annotations\n\n"
+                         "Synthetic: %4% SNPs\n"
+                         "Synthetic: %5% indels\n"
+                         "Synthetic: %6% variants\n\n"
+                         "-------User Variant Identification\n\n"
+                         "Synthetic: %7%\n"
+                         "Detection Sensitivity: %8% (attomol/ul) (%9%)\n\n"
+                         "-------Overall linear regression (log2 scale)\n\n"
+                         "Correlation: %10%\n"
+                         "Slope:       %11%\n"
+                         "R2:          %12%\n"
+                         "F-statistic: %13%\n"
+                         "P-value:     %14%\n"
+                         "SSM:         %15%, DF: %16%\n"
+                         "SSE:         %17%, DF: %18%\n"
+                         "SST:         %19%, DF: %20%\n";
+    
+    return ((boost::format(summary) % file
+                                    % VCFRef()
+                                    % MixRef()
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????"
+                                    % "????").str());
+}
+
+void VFreq::report(const FileName &file, const Options &o)
 {
     const auto &stats = analyze(file, o);
     
-    o.info("Detected: " + std::to_string(stats.n_snp) + " SNPs");
-    o.info("Detected: " + std::to_string(stats.n_ind) + " indels");
-
     o.info("Generating statistics");
 
     /*
-     * Generating summary statistics
+     * Generating VarFrequency_summary.stats
      */
 
-    o.info("Generating VarAllele_summary.stats");
-    o.writer->open("VarAllele_summary.stats");
-    o.writer->write(StatsWriter::linearSummary(file, o.rAnnot, stats.all, stats, stats.hist, "variants"));
+    o.info("Generating VarFrequency_summary.stats");
+    o.writer->open("VarFrequency_summary.stats");
+    o.writer->write(StatsWriter::linearSummary(file, o.rAnnot, stats.vars, stats, stats.hist, "variants"));
     o.writer->close();
 
     /*
-     * Generating detailed statistics
+     * Generating VarFrequency_quins.csv
      */
 
-    o.info("Generating VarAllele_quins.csv");
-    
+    o.info("Generating VarFrequency_quins.csv");
+
     switch (o.input)
     {
 //        case VAllele::Input::Kallisto:
 //        {
-//            o.writer->open("VarAllele_quins.csv");
+//            o.writer->open("VarFrequency_quins.csv");
 //            o.writer->write(StatsWriter::writeCSV(stats.all));
 //            o.writer->close();
 //            break;
@@ -213,15 +256,15 @@ void VAllele::report(const FileName &file, const Options &o)
 
         default:
         {
-            writeCSV("VarAllele_quins.csv", stats, o);
+            writeCSV("VarFrequency_quins.csv", stats, o);
 
             /*
-             * Generating for allele vs reads
+             * Generating VarFrequency_reads.R
              */
             
-            o.info("Generating VarAllele_reads.R");
-            o.writer->open("VarAllele_reads.R");
-            o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAlleleReads()));
+            o.info("Generating VarFrequency_reads.R");
+            o.writer->open("VarFrequency_reads.R");
+            o.writer->write(RWriter::createScript("VarFrequency_quins.csv", PlotVAlleleReads()));
             o.writer->close();
             
             break;
@@ -229,22 +272,22 @@ void VAllele::report(const FileName &file, const Options &o)
     }
 
     /*
-     * Generating for allele vs allele
+     * Generating VarFrequency_freq.R
      */
     
-    o.info("Generating VarAllele_allele.R");
-    o.writer->open("VarAllele_allele.R");
-    o.writer->write(RWriter::createScript("VarAllele_quins.csv", PlotVAllele()));
+    o.info("Generating VarFrequency_freq.R");
+    o.writer->open("VarFrequency_freq.R");
+    o.writer->write(RWriter::createScript("VarFrequency_quins.csv", PlotVAllele()));
     o.writer->close();
     
     /*
-     * Generating a report
+     * Generating VarFrequency_report.pdf
      */
     
-    o.report->open("VAllele_report.pdf");
-    o.report->addTitle("VAllele_report");
-    o.report->addFile("VarAllele_summary.stats");
-    o.report->addFile("VarAllele_quins.csv");
-    o.report->addFile("VarAllele_allele.R");
-    o.report->addFile("VarAllele_reads.R");
+    o.report->open("VarFrequency_report.pdf");
+    o.report->addTitle("VarFrequency_report");
+    o.report->addFile("VarFrequency_summary.stats");
+    o.report->addFile("VarFrequency_quins.csv");
+    o.report->addFile("VarFrequency_allele.R");
+    o.report->addFile("VarFrequency_reads.R");
 }

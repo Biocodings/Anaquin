@@ -1090,7 +1090,7 @@ void VarRef::validate()
      *
      *   1: Annotation (eg: VarDiscover)
      *   2: Annotation & mixture (eg: VarAlign)
-     *   3: Variants & mixture (eg: VarAllele)
+     *   3: Variants & mixture (eg: VarFrequency)
      */
     
     // Rule: 2 and 3

@@ -18,8 +18,8 @@
 #include "TransQuin/t_assembly.hpp"
 #include "TransQuin/t_coverage.hpp"
 
+#include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_align.hpp"
-#include "VarQuin/v_allele.hpp"
 #include "VarQuin/v_viewer.hpp"
 #include "VarQuin/v_report.hpp"
 #include "VarQuin/v_sample.hpp"
@@ -82,7 +82,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_IGV       277
-#define TOOL_V_ALLELE    278
+#define TOOL_V_FREQ    278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_T_SUBSAMPLE 281
@@ -197,7 +197,7 @@ static std::map<Value, Tool> _tools =
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
     { "VarIGV",         TOOL_V_IGV       },
-    { "VarAllele",      TOOL_V_ALLELE    },
+    { "VarFrequency",      TOOL_V_FREQ    },
     { "VarCoverage",    TOOL_V_COVERAGE  },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarExpress",     TOOL_V_EXPRESS   },
@@ -288,7 +288,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_R_VCF,   OPT_U_FILES   } },
-    { TOOL_V_ALLELE,    { OPT_R_VCF,   OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_V_FREQ,      { OPT_R_VCF,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED,  OPT_U_FILES, OPT_MIXTURE } },
@@ -336,6 +336,11 @@ struct Parsing
 
 // Wrap the variables so that it'll be easier to reset them
 static Parsing _p;
+
+FileName MixRef()
+{
+    return _p.rFiles.at(OPT_MIXTURE);
+}
 
 FileName VCFRef()
 {
@@ -1006,6 +1011,7 @@ void parse(int argc, char ** argv)
         { "VarAlign",    TOOL_V_ALIGN    },
         { "VarForward",  TOOL_V_FORWARD  },
         { "VarDiscover", TOOL_V_DISCOVER },
+        { "VarFreq",     TOOL_V_FREQ     },
     };
 
     if (!tools.count(argv[1]))
@@ -1559,7 +1565,7 @@ void parse(int argc, char ** argv)
 
         case TOOL_V_IGV:
         case TOOL_V_ALIGN:
-        case TOOL_V_ALLELE:
+        case TOOL_V_FREQ:
         case TOOL_V_EXPRESS:
         case TOOL_V_FORWARD:
         case TOOL_V_KALLELE:
@@ -1585,26 +1591,14 @@ void parse(int argc, char ** argv)
                 switch (_p.tool)
                 {
                     case TOOL_V_ALIGN:
+                    case TOOL_V_COVERAGE:
+                    case TOOL_V_SUBSAMPLE:
                     {
                         applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
                         break;
                     }
 
-                    case TOOL_V_SUBSAMPLE:
-                    {
-                        applyRef(std::bind(&Standard::addVStd,    &s, std::placeholders::_1), OPT_R_BED);
-                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_GENO);
-                        break;
-                    }
-
-                    case TOOL_V_COVERAGE:
-                    {
-                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1),    OPT_R_BED);
-                        applyRef(std::bind(&Standard::addInters, &s, std::placeholders::_1), OPT_R_GENO);
-                        break;
-                    }
-
-                    case TOOL_V_ALLELE:
+                    case TOOL_V_FREQ:
                     case TOOL_V_EXPRESS:
                     {
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1));
@@ -1657,12 +1651,12 @@ void parse(int argc, char ** argv)
                     break;
                 }
                     
-                case TOOL_V_ALLELE:
+                case TOOL_V_FREQ:
                 {
-                    VAllele::Options o;
-                    o.input = VAllele::Input::VCF; // TODO: Fix this
+                    VFreq::Options o;
+                    o.input = VFreq::Input::VCF; // TODO: Fix this
 
-                    analyze_1<VAllele>(OPT_U_FILES, o);
+                    analyze_1<VFreq>(OPT_U_FILES, o);
                     break;
                 }
 

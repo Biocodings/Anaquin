@@ -12,7 +12,7 @@ VKAllele::Stats VKAllele::analyze(const FileName &file1, const FileName &file2, 
     // Run quantification in Kallisto
     const auto abundFile = Pachter::externalQuant(o.index, file1, file2);
 
-    VKAllele::Stats stats = VAllele::analyze(abundFile);
+    VKAllele::Stats stats = VFreq::analyze(abundFile);
     
     return stats;
 }
@@ -34,7 +34,7 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
                                                 (file1 + " & " + file2),
                                                 stats.hist,
                                                 stats,
-                                                stats.all,
+                                                stats.vars,
                                                 "sequins"));
     o.writer->close();
 
@@ -44,7 +44,7 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
 
     o.info("Generating VarKAllele_quins.csv");
     o.writer->open("VarKAllele_quins.csv");
-    o.writer->write(StatsWriter::writeCSV(stats.all, "input", "measured"));
+    o.writer->write(StatsWriter::writeCSV(stats.vars, "input", "measured"));
     o.writer->close();
     
     /*

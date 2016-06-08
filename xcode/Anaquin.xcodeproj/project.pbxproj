@@ -12,7 +12,7 @@
 		EF0572711CADFE00004A5280 /* v_kallele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF05726F1CADFE00004A5280 /* v_kallele.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EF09C4BB1CD865D2006CFD27 /* t_parser_quast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF09C4BA1CD865D2006CFD27 /* t_parser_quast.cpp */; };
 		EF0C67931C5F25070033168D /* v_align.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67871C5F25070033168D /* v_align.cpp */; };
-		EF0C67941C5F25070033168D /* v_allele.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67891C5F25070033168D /* v_allele.cpp */; };
+		EF0C67941C5F25070033168D /* v_freq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C67891C5F25070033168D /* v_freq.cpp */; };
 		EF0C67951C5F25070033168D /* v_coverage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C678B1C5F25070033168D /* v_coverage.cpp */; };
 		EF0C67961C5F25070033168D /* v_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0C678D1C5F25070033168D /* v_discover.cpp */; };
 		EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF17D29C1BCF246700F503F7 /* t_intervals.cpp */; };
@@ -170,8 +170,8 @@
 		EF09C4BA1CD865D2006CFD27 /* t_parser_quast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = t_parser_quast.cpp; path = ../tests/parsers/t_parser_quast.cpp; sourceTree = "<group>"; };
 		EF0C67871C5F25070033168D /* v_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_align.cpp; path = ../src/VARQuin/v_align.cpp; sourceTree = "<group>"; };
 		EF0C67881C5F25070033168D /* v_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_align.hpp; path = ../src/VARQuin/v_align.hpp; sourceTree = "<group>"; };
-		EF0C67891C5F25070033168D /* v_allele.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_allele.cpp; path = ../src/VARQuin/v_allele.cpp; sourceTree = "<group>"; };
-		EF0C678A1C5F25070033168D /* v_allele.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_allele.hpp; path = ../src/VARQuin/v_allele.hpp; sourceTree = "<group>"; };
+		EF0C67891C5F25070033168D /* v_freq.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_freq.cpp; path = ../src/VARQuin/v_freq.cpp; sourceTree = "<group>"; };
+		EF0C678A1C5F25070033168D /* v_freq.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_freq.hpp; path = ../src/VARQuin/v_freq.hpp; sourceTree = "<group>"; };
 		EF0C678B1C5F25070033168D /* v_coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_coverage.cpp; path = ../src/VARQuin/v_coverage.cpp; sourceTree = "<group>"; };
 		EF0C678C1C5F25070033168D /* v_coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = v_coverage.hpp; path = ../src/VARQuin/v_coverage.hpp; sourceTree = "<group>"; };
 		EF0C678D1C5F25070033168D /* v_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_discover.cpp; path = ../src/VARQuin/v_discover.cpp; sourceTree = "<group>"; };
@@ -493,8 +493,8 @@
 			children = (
 				EF0C67871C5F25070033168D /* v_align.cpp */,
 				EF0C67881C5F25070033168D /* v_align.hpp */,
-				EF0C67891C5F25070033168D /* v_allele.cpp */,
-				EF0C678A1C5F25070033168D /* v_allele.hpp */,
+				EF0C67891C5F25070033168D /* v_freq.cpp */,
+				EF0C678A1C5F25070033168D /* v_freq.hpp */,
 				EF0C678B1C5F25070033168D /* v_coverage.cpp */,
 				EF0C678C1C5F25070033168D /* v_coverage.hpp */,
 				EF0C678D1C5F25070033168D /* v_discover.cpp */,
@@ -972,7 +972,7 @@
 				EF9ED3931D07BE9D00CE7F2B /* r_diff.cpp in Sources */,
 				EF17D29D1BCF246700F503F7 /* t_intervals.cpp in Sources */,
 				EFF5DE171C4B8AF8001C3496 /* linear.cpp in Sources */,
-				EF0C67941C5F25070033168D /* v_allele.cpp in Sources */,
+				EF0C67941C5F25070033168D /* v_freq.cpp in Sources */,
 				EF6D05F31BD3E6040048044F /* sample.cpp in Sources */,
 				EF7278211CACEC2F0012648F /* t_coverage.cpp in Sources */,
 				EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */,

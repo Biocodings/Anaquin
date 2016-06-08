@@ -15,6 +15,9 @@
 
 using namespace Anaquin;
 
+// Static definition
+std::set<ChrID> Standard::genoIDs;
+
 enum MixtureFormat
 {
     ID_Length_Mix, // Eg: MG_33  10  60.23529412
@@ -84,6 +87,18 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
     {
         throw std::runtime_error("[Error]: No sequin is found in the mixture file. Please check and try again.");
     }
+}
+
+void Standard::addGenomic(const ChrID &cID)
+{
+    assert(!cID.empty());
+    Standard::genoIDs.insert(cID);
+}
+
+bool Standard::isGenomic(const ChrID &cID)
+{
+    assert(!cID.empty());
+    return Standard::genoIDs.count(cID);
 }
 
 bool Standard::isSynthetic(const ChrID &cID)

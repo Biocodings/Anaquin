@@ -25,15 +25,22 @@ namespace Anaquin
                 return s;
             }
 
-            static constexpr const char * chrT = "chrT";
-
+            // Reference genomic chromosomes
+            static std::set<ChrID> genoIDs;
+        
             /*
              * ---------------- General analysis ----------------
              */
 
-            // Whether the given chromosome is a synthetic chromosome
-            static bool isSynthetic(const ChrID &cID);
+            // Whether the chromosome is synthetic
+            static bool isSynthetic(const ChrID &);
 
+            // Whether the chromosome is genomic
+            static bool isGenomic(const ChrID &);
+        
+            // Add genomic chromosome, which can be checked by isGenomic()
+            static void addGenomic(const ChrID &);
+        
             /*
              * ---------------- Transcriptome analysis ----------------
              */
@@ -106,7 +113,7 @@ namespace Anaquin
             void addMMix(const Reader &);
 
             MetaRef r_meta;
-
+        
         private:
             Standard() {}
             Standard(Standard const&) = delete;

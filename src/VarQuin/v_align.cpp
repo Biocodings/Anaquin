@@ -108,12 +108,20 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
         return r.findGeno(align.cID, align.l);
     }))
     {
+        const auto gID = __match__.cMatch->id();
+        
         stats.data[align.cID].tp++;
-        stats.data[align.cID].hist.at(__match__.cMatch->id())++;
+        stats.data[align.cID].hist.at(gID)++;
+        stats.data[align.cID].gtp[gID]++;
     }
     else
     {
         stats.data[align.cID].fp++;
+
+        if (__match__.oMatch)
+        {
+            stats.data[ChrT].gfp[__match__.cMatch->id()]++;
+        }
     }
 }
 
@@ -212,7 +220,43 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     }
     
     /*
-     * Calculating sequin statistics
+     * -------------------- Calculating genomic statistics --------------------
+     */
+    
+    /*
+     * 1. Covered and length for each sequin
+     */
+
+    for (const auto &i : stats.data)
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            stats.s2c[i.first] = 0;
+            stats.s2l[i.first] = 0;
+            
+            for (const auto &j : i.second.covered)
+            {
+                stats.s2c[i.first] += j.second;
+            }
+            
+            for (const auto &j : i.second.length)
+            {
+                stats.s2l[i.first] += j.second;
+            }
+
+            assert(stats.s2l[i.first] >= stats.s2c[i.first]);
+            
+            stats.gtp += i.second.tp;
+            stats.gfp += i.second.fp;            
+        }
+    }
+    
+    stats.gc = sum(stats.s2c);
+    stats.gl = sum(stats.s2l);
+    assert(stats.gl >= stats.gl);
+    
+    /*
+     * -------------------- Calculating sequin statistics --------------------
      */
     
     /*
@@ -329,11 +373,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % stats.n_gen
                                             % (100 * stats.genProp())
                                             % stats.dilution()
-                                            % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????"
+                                            % stats.gc
+                                            % (stats.gl - stats.gc)
+                                            % stats.gl
+                                            % stats.gsn()
+                                            % stats.gpc()
                                             % sums2c
                                             % (sums2l - sums2c)
                                             % sums2l

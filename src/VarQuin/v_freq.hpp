@@ -1,12 +1,12 @@
-#ifndef V_ALLELE_HPP
-#define V_ALLELE_HPP
+#ifndef V_FREQUENCY_HPP
+#define V_FREQUENCY_HPP
 
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
-    struct VAllele
+    struct VFreq
     {
         enum class Input
         {
@@ -23,7 +23,7 @@ namespace Anaquin
         struct Stats : public MappingStats, public SequinStats, public VariantStats
         {
             // Statistics for all variants
-            LinearStats all;
+            LinearStats vars;
             
             /*
              * Not available for Kallisto
@@ -35,10 +35,10 @@ namespace Anaquin
             // Statistics for indels
             LinearStats ind;
             
-            // Abundance for reference allele
+            // Reads for reference allele
             std::map<SequinID, Counts> readR;
             
-            // Abundance for variant allele
+            // Reads for variant allele
             std::map<SequinID, Counts> readV;            
         };
 

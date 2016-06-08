@@ -3,14 +3,14 @@
 
 #include "stats/analyzer.hpp"
 #include "VarQuin/VarQuin.hpp"
-#include "VarQuin/v_allele.hpp"
+#include "VarQuin/v_freq.hpp"
 
 namespace Anaquin
 {
     struct VKAllele
     {
         typedef IndexOptions Options;
-        typedef VAllele::Stats Stats;
+        typedef VFreq::Stats Stats;
 
         static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
         static void report(const FileName &, const FileName &, const Options &o = Options());

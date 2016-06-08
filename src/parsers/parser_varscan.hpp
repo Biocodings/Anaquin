@@ -31,7 +31,7 @@ namespace Anaquin
             Reads1Minus,
             Reads2Plus,
             Reads2Minus,
-            VarAllele    // 18
+            VarFrequency    // 18
         };
 
         typedef CalledVariant Data;
@@ -100,7 +100,7 @@ namespace Anaquin
                     boost::replace_all(d.ref, "-", "");
                     
                     // Eg: -CCTG
-                    auto tmp = toks[VarAllele];
+                    auto tmp = toks[VarFrequency];
                     
                     // Eg: CCTG
                     boost::replace_all(tmp, "-", "");
@@ -111,7 +111,7 @@ namespace Anaquin
                 else
                 {
                     d.ref = toks[Ref];
-                    d.alt = toks[VarAllele];
+                    d.alt = toks[VarFrequency];
                 }
                 
                 try
