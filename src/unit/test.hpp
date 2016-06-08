@@ -30,7 +30,8 @@ namespace Anaquin
         /*
          * Variant analayis
          */
-        
+
+        static void VarQuinBed();
         static void variantA();
         static void variantF();
 

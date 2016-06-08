@@ -4,14 +4,13 @@
 
 using namespace Anaquin;
 
-#define REGRESSION_TEST
+//#define REGRESSION_TEST
 
 #ifdef REGRESSION_TEST
 
 TEST_CASE("VAlign_Test1")
 {
-    Test::transA();
-
+    Test::VarQuinBed();
     const auto r = VAlign::analyze("data/test/VarQuin/test1.bam");
 
     REQUIRE(r.n_syn  == 356332);

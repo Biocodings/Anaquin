@@ -46,7 +46,7 @@ namespace Anaquin
 
             // Whether the header has been written
             bool _header;
-        
+
             // File pointer
             samFile *_fp;
     };

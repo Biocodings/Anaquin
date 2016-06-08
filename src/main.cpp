@@ -25,6 +25,7 @@
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_express.hpp"
 #include "VarQuin/v_kallele.hpp"
+#include "VarQuin/v_forward.hpp"
 #include "VarQuin/v_discover.hpp"
 #include "VarQuin/v_coverage.hpp"
 #include "VarQuin/v_kexpress.hpp"
@@ -85,7 +86,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
 #define TOOL_T_SUBSAMPLE 281
-#define TOOL_M_KABUND  282
+#define TOOL_M_KABUND    282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
 #define TOOL_M_IGV       285
@@ -108,6 +109,7 @@ typedef std::set<Value> Range;
 #define TOOL_T_KDIFF     304
 #define TOOL_V_KALLELE   306
 #define TOOL_S_DISCOVER  307
+#define TOOL_V_FORWARD   308
 
 /*
  * Options specified in the command line
@@ -201,6 +203,7 @@ static std::map<Value, Tool> _tools =
     { "VarExpress",     TOOL_V_EXPRESS   },
     { "VarKExpress",    TOOL_V_KEXPRESS  },
     { "VarKAllele",     TOOL_V_KALLELE   },
+    { "VarForward",     TOOL_V_FORWARD   },
 
     { "MetaAbund",      TOOL_M_ABUND    },
     { "MetaKAbund",     TOOL_M_KABUND   },
@@ -279,6 +282,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
 
+    { TOOL_V_FORWARD,   { OPT_U_FILES } },
     { TOOL_V_IGV,       { OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
@@ -743,7 +747,6 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.info("Path: " + path);
 
     o.rAnnot = _p.rAnnot;
-    //o.rGeno = _p.rGeno;
 
     std::clock_t begin = std::clock();
 
@@ -998,10 +1001,13 @@ void parse(int argc, char ** argv)
 
     std::map<std::string, Tool> tools =
     {
-        { "VarAlign", TOOL_V_ALIGN },
+        { "Test",        TOOL_TEST       },
+        { "Version",     TOOL_VERSION    },
+        { "VarAlign",    TOOL_V_ALIGN    },
+        { "VarForward",  TOOL_V_FORWARD  },
         { "VarDiscover", TOOL_V_DISCOVER },
     };
-    
+
     if (!tools.count(argv[1]))
     {
         throw InvalidToolError(argv[1]);
@@ -1010,17 +1016,7 @@ void parse(int argc, char ** argv)
     _p.tool = tools[argv[1]];
     assert(_p.tool);
 
-    const auto argc_ = argc - 1;
-    const auto argv_ = new char *[argc_];
-
-    strcpy(argv_[0] = new char(strlen(argv[0]) + 1), argv[0]);
-
-    for (auto i = 2; i < argc; i++)
-    {
-        strcpy(argv_[i-1] = new char[strlen(argv[i]) + 1], argv[i]);
-    }
-    
-    while ((next = getopt_long_only(argc_, argv_, short_options, long_options, &index)) != -1)
+    while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
     {
         if (next == ':')
         {
@@ -1565,6 +1561,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_ALIGN:
         case TOOL_V_ALLELE:
         case TOOL_V_EXPRESS:
+        case TOOL_V_FORWARD:
         case TOOL_V_KALLELE:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
@@ -1583,7 +1580,7 @@ void parse(int argc, char ** argv)
             
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            if (_p.tool != TOOL_V_IGV)
+            if (_p.tool != TOOL_V_IGV && _p.tool != TOOL_V_FORWARD)
             {
                 switch (_p.tool)
                 {
@@ -1630,9 +1627,10 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_V_IGV:       { viewer<VViewer>();                 break; }
-                case TOOL_V_ALIGN:     { analyze_1<VAlign>(OPT_U_FILES);    break; }
-                case TOOL_V_COVERAGE:  { analyze_1<VCoverage>(OPT_U_FILES); break; }
+                case TOOL_V_IGV:      { viewer<VViewer>();                 break; }
+                case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES);    break; }
+                case TOOL_V_FORWARD:  { analyze_1<VForward>(OPT_U_FILES);  break; }
+                case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_V_KALLELE:
                 {

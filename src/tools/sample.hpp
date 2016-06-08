@@ -188,7 +188,7 @@ namespace Anaquin
             });
             
             assert(stats.chrT.mean && stats.endo.mean);
-            
+
             o.info("Calculating coverage for " + ChrT + " and " + genoID);
             
             /*

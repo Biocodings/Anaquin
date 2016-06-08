@@ -24,8 +24,9 @@ namespace Anaquin
             // Internal data representation
             void *header;
         };
-        
-        typedef std::function<void (const Alignment &, const Info &)> Functor;
+
+        typedef Alignment Data;
+        typedef std::function<void (Data &, const Info &)> Functor;
 
         static void parse(const FileName &file, Functor);
     };

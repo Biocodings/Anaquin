@@ -143,12 +143,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
-        if (align.spliced)
-        {
-            o.warn("Splice read: " + align.name + " detected");
-            return;
-        }
-        else if (!align.i && !(info.p.i % 1000000))
+        if (!align.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }

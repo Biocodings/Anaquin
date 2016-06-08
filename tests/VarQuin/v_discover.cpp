@@ -1,15 +1,21 @@
 #include <catch.hpp>
 #include "unit/test.hpp"
-#include "variant/v_discover.hpp"
+#include "VarQuin/v_discover.hpp"
 
 using namespace Anaquin;
 
-TEST_CASE("VarDiscover_V_1000")
-{
-    Test::variantA();
-    
-    const auto r = VDiscover::report("tests/data/V_1000/VARMXA.approx100xCov.Hg19_with_chrT.given_alleles.SNPs.vcf");
+#define REGRESSION_TEST
 
-    REQUIRE(r.m.ac() == Approx(1.0));
-    REQUIRE(r.m.sn() == Approx(0.5415019763));
+#ifdef REGRESSION_TEST
+
+TEST_CASE("VDiscover_Test1")
+{
+//    Test::variantA();
+//    const auto r = VDiscover::analyze("data/test/VarQuin/variants.vcf");
+//
+//    REQUIRE(r.chrT.dSNP() == 100);
+//    REQUIRE(r.chrT.dInd() == 100);
+//    REQUIRE(r.chrT.dTot() == 100);
 }
+
+#endif

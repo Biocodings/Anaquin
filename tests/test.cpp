@@ -90,6 +90,13 @@ void Test::transAB()
     Standard::instance().r_trans.finalize();
 }
 
+void Test::VarQuinBed()
+{
+    Test::clear();
+    Standard::instance().addVStd(Reader(VarDataBed(),  DataMode::String));
+    Standard::instance().r_var.finalize();
+}
+
 void Test::variantA()
 {
     Test::clear();

@@ -1,4 +1,5 @@
 #include <htslib/sam.h>
+#include "tools/samtools.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -15,12 +16,11 @@ void ParserSAM::parse(const FileName &file, Functor x)
     auto t = bam_init1();
     auto h = sam_hdr_read(f);
 
-    Alignment align;
     Info info;
-    
+    Data align;
+
     while (sam_read1(f, h, t) >= 0)
     {
-        info.p.i++;
         info.length = h->target_len[t->core.tid];
 
         align.i      = 0;
@@ -34,8 +34,17 @@ void ParserSAM::parse(const FileName &file, Functor x)
             continue;
         }
 
-        align.cID    = std::string(h->target_name[t->core.tid]);
-        align.name   = bam_get_qname(t);
+        align.name  = bam_get_qname(t);
+        align.flag  = t->core.flag;
+        align.cID   = std::string(h->target_name[t->core.tid]);
+        align.mapq  = t->core.qual;
+        align.seq   = bam2seq(t);
+        align.qual  = bam2qual(t);
+        align.rnext = bam2rnext(h, t);
+        align.pnext = t->core.mpos;
+        align.tlen  = t->core.isize;
+        align.cigar = bam2cigar(t);
+
         align.mapped = !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)
@@ -97,6 +106,8 @@ void ParserSAM::parse(const FileName &file, Functor x)
         {
             x(align, info);
         }
+        
+        info.p.i++;
     }
 
     sam_close(f);
