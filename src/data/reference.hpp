@@ -578,10 +578,10 @@ namespace Anaquin
             Counts countIndel(const ChrID &) const;
         
             // Counts indels for the synthetic chromosomes
-            Counts countIndelSync() const;
+            Counts countIndSync() const;
         
             // Counts indels for the genome
-            Counts countIndelGeno() const;
+            Counts countIndGeno() const;
 
             // Returns number of sequins
             Counts countSeqs() const;

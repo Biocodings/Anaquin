@@ -144,9 +144,8 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     
     stats.chrT.m_snp.nq() = stats.chrT.dSNP();
     stats.chrT.m_snp.nr() = r.countSNPSync();
-
     stats.chrT.m_ind.nq() = stats.chrT.dInd();
-    stats.chrT.m_ind.nr() = r.countIndelSync();
+    stats.chrT.m_ind.nr() = r.countIndSync();
 
     stats.chrT.m.nq() = stats.chrT.m_snp.nq() + stats.chrT.m_ind.nq();
     stats.chrT.m.nr() = stats.chrT.m_snp.nr() + stats.chrT.m_ind.nr();
@@ -351,15 +350,15 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       False Negative: %26% indels\n"
                          "       False Negative: %27% variants\n\n"
                          "-------Diagnostic Performance\n\n"
-                         "*Variants\n"
+                         "       *Variants\n"
                          "       Sensitivity: %28%\n"
                          "       Precision:   %29%\n"
                          "       FDR Rate:    %30%\n\n"
-                         "*SNVs\n"
+                         "       *SNVs\n"
                          "       Sensitivity: %31%\n"
                          "       Precision:   %32%\n"
                          "       FDR Rate:    %33%\n\n"
-                         "*Indels\n"
+                         "       *Indels\n"
                          "       Sensitivity: %34%\n"
                          "       Precision:   %35%\n"
                          "       FDR Rate:    %36%\n";
@@ -369,38 +368,38 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % VCFRef()
                                             % src
                                             % r.countSNPSync()
+                                            % r.countIndSync()
+                                            % (r.countSNPSync() + r.countIndSync())
                                             % r.countSNPGeno()
-                                            % (r.countSNPGeno() + r.countSNPGeno())
-                                            % r.countIndelSync()
-                                            % r.countIndelGeno()
-                                            % (r.countIndelSync() + r.countIndelGeno())
-                                            % "????" // 10
-                                            % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????" // 15
-                                            % "????" // 16
-                                            % "????" // 17
-                                            % "????" // 18
-                                            % "????" // 19
-                                            % "????" // 20
-                                            % "????" // 21
-                                            % "????" // 22
-                                            % "????" // 23
-                                            % "????" // 24
-                                            % "????" // 25
-                                            % "????" // 26
-                                            % "????" // 27
-                                            % "????" // 28
-                                            % "????" // 29
-                                            % "????" // 30
-                                            % "????" // 31
-                                            % "????" // 32
-                                            % "????" // 33
-                                            % "????" // 34
-                                            % "????" // 35
-                                            % "????" // 36
+                                            % r.countIndGeno()
+                                            % (r.countSNPGeno() + r.countIndGeno())
+                                            % stats.chrT.dSNP()
+                                            % stats.chrT.dInd()
+                                            % stats.chrT.dTot()
+                                            % stats.countSNPGeno()
+                                            % stats.countIndGeno()
+                                            % stats.countVarGeno()
+                                            % stats.chrT.dSNP()
+                                            % stats.chrT.dInd()
+                                            % stats.chrT.dTot()
+                                            % stats.chrT.tpSNP()
+                                            % stats.chrT.tpInd()
+                                            % stats.chrT.tpTot()
+                                            % stats.chrT.fpSNP()
+                                            % stats.chrT.fpInd()
+                                            % stats.chrT.fpTot()
+                                            % stats.chrT.fnSNP()
+                                            % stats.chrT.fnInd()
+                                            % stats.chrT.fnTot()
+                                            % stats.chrT.m.sn()
+                                            % stats.chrT.m.pc()
+                                            % stats.chrT.m.fdr()
+                                            % stats.chrT.m_snp.sn()
+                                            % stats.chrT.m_snp.pc()
+                                            % stats.chrT.m_snp.fdr()
+                                            % stats.chrT.m_ind.sn()
+                                            % stats.chrT.m_ind.pc()
+                                            % stats.chrT.m_snp.fdr()
                      ).str());
     
 //    o.writer->write((boost::format(summary) % src

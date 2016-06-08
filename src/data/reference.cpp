@@ -1010,7 +1010,7 @@ Counts VarRef::countIndel(const ChrID &cID) const
     });
 }
 
-Counts VarRef::countIndelSync() const
+Counts VarRef::countIndSync() const
 {
     Counts n = 0;
     
@@ -1025,7 +1025,7 @@ Counts VarRef::countIndelSync() const
     return n;
 }
 
-Counts VarRef::countIndelGeno() const
+Counts VarRef::countIndGeno() const
 {
     Counts n = 0;
     
