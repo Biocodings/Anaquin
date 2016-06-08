@@ -118,19 +118,6 @@ bool Standard::isSynthetic(const ChrID &cID)
     return false;
 }
 
-void Standard::addInters(const Reader &r)
-{
-    assert(false);
-    
-//    ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
-//    {
-//        if (!Standard::isSynthetic(f.cID))
-//        {
-//            r_var.addRInterval(f.cID, Interval(f.id, f.l));
-//        }
-//    });
-}
-
 void Standard::addVStd(const Reader &r)
 {
     ParserBed::parse(r, [&](const ParserBed::Data &f, const ParserProgress &)
@@ -141,7 +128,7 @@ void Standard::addVStd(const Reader &r)
         }
         else
         {
-            r_var.addRInterval(f.cID, Interval(f.id, f.l));
+            r_var.addGInterval(f.cID, Interval(f.id, f.l));
         }
     });
 }

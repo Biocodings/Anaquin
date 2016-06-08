@@ -66,9 +66,6 @@ namespace Anaquin
             // Add reference standards for VarQuin
             void addVStd(const Reader &);
 
-            // Add intervals to the reference
-            void addInters(const Reader &);
-
             VarRef r_var;
 
             /*

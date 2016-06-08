@@ -547,7 +547,7 @@ namespace Anaquin
             void addStand(const SequinID &, const Locus &);
 
             // Add a reference interval (eg: chr21)
-            void addRInterval(const ChrID &, const Interval &);
+            void addGInterval(const ChrID &, const Interval &);
 
             /*
              * Query functions

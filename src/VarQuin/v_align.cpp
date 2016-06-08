@@ -50,7 +50,7 @@ static VAlign::Stats init()
 
     VAlign::Stats stats;
     stats.data[ChrT].hist = r.baseHist();
-    
+
     if (!r.genoID().empty())
     {
         stats.data[r.genoID()].hist = r.genomeHist();
@@ -103,24 +103,27 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
 {
     const auto &r = Standard::instance().r_var;
 
-    if (matchT(align, __match__, [&](const Locus &l, MatchRule rule)
+    if (Standard::isGenomic(align.cID))
     {
-        return r.findGeno(align.cID, align.l);
-    }))
-    {
-        const auto gID = __match__.cMatch->id();
-        
-        stats.data[align.cID].tp++;
-        stats.data[align.cID].hist.at(gID)++;
-        stats.data[align.cID].gtp[gID]++;
-    }
-    else
-    {
-        stats.data[align.cID].fp++;
-
-        if (__match__.oMatch)
+        if (matchT(align, __match__, [&](const Locus &l, MatchRule rule)
+                   {
+                       return r.findGeno(align.cID, align.l);
+                   }))
         {
-            stats.data[ChrT].gfp[__match__.cMatch->id()]++;
+            const auto gID = __match__.cMatch->id();
+            
+            stats.data[align.cID].tp++;
+            stats.data[align.cID].hist.at(gID)++;
+            stats.data[align.cID].gtp[gID]++;
+        }
+        else
+        {
+            stats.data[align.cID].fp++;
+            
+            if (__match__.oMatch)
+            {
+                stats.data[ChrT].gfp[__match__.cMatch->id()]++;
+            }
         }
     }
 }
@@ -151,7 +154,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
-        if (!align.i && !(info.p.i % 1000000))
+        if (align.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
@@ -429,6 +432,8 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
 
 void VAlign::report(const FileName &file, const Options &o)
 {
+    o.info("Genome: [" + Standard::instance().r_var.genoID() + "]");
+    
     const auto stats = analyze(file, o);
 
     o.info("Generating statistics");

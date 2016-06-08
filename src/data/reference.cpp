@@ -919,10 +919,10 @@ struct VarRef::VarRefImpl
     ChrID genoID;
     
     // Genomic intervals (eg: chr21)
-    Intervals<> inters;
+    std::map<ChrID, Intervals<>> genome;
 
     /*
-     * Data structure for the standards
+     * Data structure for synthetic
      */
     
     // VarQuin standards
@@ -930,10 +930,6 @@ struct VarRef::VarRefImpl
 
     // Variants (SNPs + indels)
     std::map<ChrID, std::set<Variant>> vars;
-
-    /*
-     * Data structure for bases (eg: D1_1)
-     */
 
     // Mixture for bases
     std::map<SequinID, Base> baseMix;
@@ -972,15 +968,15 @@ void VarRef::addVar(const Variant &v)
     _impl->vars[v.cID].insert(v);
 }
 
-void VarRef::addRInterval(const ChrID &id, const Interval &i)
+void VarRef::addGInterval(const ChrID &cID, const Interval &i)
 {
-    if (!_impl->genoID.empty() && _impl->genoID != id)
+    if (!_impl->genoID.empty() && _impl->genoID != cID)
     {
         throw std::runtime_error("Multi chromosomes is not supported. Only a single chromosome can be used.");
     }
 
-    _impl->genoID = id;
-    _impl->inters.add(i);
+    _impl->genome[cID].add(i);
+    Standard::addGenomic(_impl->genoID = cID);
 }
 
 void VarRef::addStand(const SequinID &id, const Locus &l)
@@ -994,7 +990,7 @@ void VarRef::addStand(const SequinID &id, const Locus &l)
 
 Counts VarRef::countInters() const
 {
-    return _impl->inters.size();
+    return _impl->genome[genoID()].size();
 }
 
 Counts VarRef::countSeqs() const
@@ -1162,12 +1158,12 @@ void VarRef::validate()
     }
 
     /*
-     * Constructing the genomic intervals (eg: chr21)
+     * Constructing the genome (eg: chr21)
      */
 
-    if (_impl->inters.size())
+    if (_impl->genome[genoID()].size())
     {
-        _impl->inters.build();
+        _impl->genome[genoID()].build();
     }
 
     /*
@@ -1223,7 +1219,7 @@ SequinHist VarRef::baseHist() const
 
 const Intervals<> VarRef::genoInters() const
 {
-    return _impl->inters;    
+    return _impl->genome.at(genoID());
 }
 
 ChrID VarRef::genoID() const
@@ -1248,7 +1244,7 @@ GenomeHist VarRef::genomeHist() const
 {
     GenomeHist hist;
     
-    for (const auto &i : _impl->inters.data())
+    for (const auto &i : _impl->genome.at(genoID()).data())
     {
         hist[i.second.id()];
     }
@@ -1259,7 +1255,7 @@ GenomeHist VarRef::genomeHist() const
 
 Interval * VarRef::findGeno(const Locus &l) const
 {
-    return _impl->inters.contains(l);
+    return _impl->genome.at(genoID()).contains(l);
 }
 
 const Variant * VarRef::hashVar(long key) const
