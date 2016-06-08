@@ -4,15 +4,6 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotAllele <- function(data, showLOQ=TRUE)
-{
-    .plotScatter(data, title='Allele frequency',
-                        xlab='Expected allele frequency (log2)',
-                        ylab='Measured allele frequency (log2)',
-                     showLOQ=showLOQ,
-                   showStats='left')
-}
-
 plotAlleleReads <- function(data,
                             alpha = 1.0,
                             title = 'Allele Frequency vs Read count',

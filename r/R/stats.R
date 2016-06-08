@@ -114,13 +114,13 @@ showLOQ <- function(x, y, showDetails=FALSE)
     # Fit the model again
     fit <- plm(which.min(r$sums)+1)
     
-    stopifnot(summary(fit$lModel)$r.squared == b$lR2)    
-    stopifnot(summary(fit$rModel)$r.squared == b$rR2)
-    stopifnot(summary(fit$lModel)$coefficients[1,1] == b$lInter)
-    stopifnot(summary(fit$rModel)$coefficients[1,1] == b$rInter)    
-    stopifnot(summary(fit$lModel)$coefficients[2,1] == b$lSlope)
-    stopifnot(summary(fit$rModel)$coefficients[2,1] == b$rSlope)    
-
+    stopifnot(all.equal(summary(fit$lModel)$r.squared, b$lR2))    
+    stopifnot(all.equal(summary(fit$rModel)$r.squared, b$rR2))
+    stopifnot(all.equal(summary(fit$lModel)$coefficients[1,1], b$lInter))    
+    stopifnot(all.equal(summary(fit$rModel)$coefficients[1,1], b$rInter))    
+    stopifnot(all.equal(summary(fit$lModel)$coefficients[2,1], b$lSlope))    
+    stopifnot(all.equal(summary(fit$rModel)$coefficients[2,1], b$rSlope))    
+    
     data <- data.frame(x=x, y=y)
 
     #p <- ggplot(data=data, aes(x=x, y=y)) +
