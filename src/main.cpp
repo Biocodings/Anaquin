@@ -882,8 +882,35 @@ template <typename T> T parseCSoft(const Value &str, const std::string &key)
     return parseEnum(key, str, m);
 }
 
+static void checkInputs(int argc, char ** argv)
+{
+    /*
+     * Detect for weird inputs, such as "–" (invalid ASCII)
+     */
+    
+    for (auto i = 0; i < argc; i++)
+    {
+        if (argv[i])
+        {
+            const auto str = std::string(argv[i]);
+            
+            if (str.size() >= 2)
+            {
+                const int key = (int) str[0];
+                
+                if (key == -30) // –
+                {
+                    throw std::runtime_error("Invalid " + std::string(argv[i]) + ". Please note '–' is NOT the character '-' that you see on your keyboard. The given option is therefore invalid, please type the character manually.");
+                }
+            }
+        }
+    }
+}
+
 void parse(int argc, char ** argv)
 {
+    checkInputs(argc, argv);
+
     auto &tool = _p.tool;
     
     _p = Parsing();
@@ -969,32 +996,31 @@ void parse(int argc, char ** argv)
 
     unsigned n = 0;
 
-    /*
-     * Detect for weird inputs, such as "–" (invalid ASCII)
-     */
-
-    for (auto i = 0; i < argc; i++)
+    std::map<std::string, Tool> tools =
     {
-        if (argv[i])
-        {
-            const auto str = std::string(argv[i]);
-            
-            if (str.size() >= 2)
-            {
-                const int key = (int) str[0];
-                
-                if (key == -30) // –
-                {
-                    throw std::runtime_error("Invalid " + std::string(argv[i]) + ". Please note '–' is NOT the character '-' that you see on your keyboard. The given option is therefore invalid, please type the character manually.");
-                }
-            }
-        }
+        { "VarAlign", TOOL_V_ALIGN },
+        { "VarDiscover", TOOL_V_DISCOVER },
+    };
+    
+    if (!tools.count(argv[1]))
+    {
+        throw InvalidToolError(argv[1]);
     }
 
-    // Prevent error message to stderr
-    //opterr = 0;
+    _p.tool = tools[argv[1]];
+    assert(_p.tool);
+
+    const auto argc_ = argc - 1;
+    const auto argv_ = new char *[argc_];
+
+    strcpy(argv_[0] = new char(strlen(argv[0]) + 1), argv[0]);
+
+    for (auto i = 2; i < argc; i++)
+    {
+        strcpy(argv_[i-1] = new char[strlen(argv[i]) + 1], argv[i]);
+    }
     
-    while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
+    while ((next = getopt_long_only(argc_, argv_, short_options, long_options, &index)) != -1)
     {
         if (next == ':')
         {
@@ -1015,29 +1041,14 @@ void parse(int argc, char ** argv)
         vals.push_back(hasValue ? std::string(optarg) : "");
     }
 
-    /*
-     * Here, we move the command option to the front. Therefore, we also check
-     * if we've at least specified the command.
-     */
-    
-    // Find the index for the tool
-    auto iter = std::find(opts.begin(), opts.end(), OPT_TOOL);
-
-    if (iter == opts.end() && (iter  = std::find(opts.begin(), opts.end(), OPT_VERSION))  == opts.end())
+    if (_p.tool == OPT_VERSION)
     {
-        throw MissingOptionError("-t");
+        if (argc != 2)
+        {
+            throw TooManyOptionsError("Too many options given for -v");
+        }
     }
-
-    // This is the index that we'll need to swap
-    const auto i = std::distance(opts.begin(), iter);
-
-    std::swap(opts[0], opts[i]);
-    std::swap(vals[0], vals[i]);
-
-    /*
-     * Now, the first option is also the tool option.
-     */
-
+    
     for (auto i = 0; i < opts.size(); i++)
     {
         auto opt = opts[i];
@@ -1045,30 +1056,6 @@ void parse(int argc, char ** argv)
 
         switch (opt)
         {
-            case OPT_VERSION:
-            {
-                _p.tool = TOOL_VERSION;
-
-                if (argc != 2)
-                {
-                    throw TooManyOptionsError("Too many options given for -v");
-                }
-
-                break;
-            }
-
-            case OPT_TOOL:
-            {
-                if (!_tools.count(val))
-                {
-                    throw InvalidToolError(val);
-                }
-
-                // We'll work with it's internal representation
-                _p.tool = _tools.at(val);
-                break;
-            }
-            
             case OPT_REPORT:
             {
                 if (val == "pdf")
@@ -1156,9 +1143,6 @@ void parse(int argc, char ** argv)
 
     __anaquin__ = argv[0];
     __output__  = _p.path = checkPath(_p.path);
-
-    // Exception should've already been thrown if tool is not specified
-    assert(_p.tool);
 
     auto &s = Standard::instance();
     
@@ -1634,13 +1618,13 @@ void parse(int argc, char ** argv)
                     {
                         applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
+                        addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         break;
                     }
 
                     default: { break; }
                 }
 
-                addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                 Standard::instance().r_var.finalize();
             }
 
