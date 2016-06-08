@@ -181,7 +181,7 @@ std::string date()
 
 static std::map<Value, Tool> _tools =
 {
-    { "test",           TOOL_TEST        },
+    { "Test",           TOOL_TEST        },
 
     { "TransAlign",     TOOL_T_ALIGN     },
     { "TransAssembly",  TOOL_T_ASSEMBLY  },
@@ -197,7 +197,7 @@ static std::map<Value, Tool> _tools =
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
     { "VarIGV",         TOOL_V_IGV       },
-    { "VarFrequency",      TOOL_V_FREQ    },
+    { "VarFrequency",   TOOL_V_FREQ      },
     { "VarCoverage",    TOOL_V_COVERAGE  },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarExpress",     TOOL_V_EXPRESS   },
@@ -1004,22 +1004,12 @@ void parse(int argc, char ** argv)
 
     unsigned n = 0;
 
-    std::map<std::string, Tool> tools =
-    {
-        { "Test",        TOOL_TEST       },
-        { "Version",     TOOL_VERSION    },
-        { "VarAlign",    TOOL_V_ALIGN    },
-        { "VarForward",  TOOL_V_FORWARD  },
-        { "VarDiscover", TOOL_V_DISCOVER },
-        { "VarFreq",     TOOL_V_FREQ     },
-    };
-
-    if (!tools.count(argv[1]))
+    if (!_tools.count(argv[1]))
     {
         throw InvalidToolError(argv[1]);
     }
 
-    _p.tool = tools[argv[1]];
+    _p.tool = _tools[argv[1]];
     assert(_p.tool);
 
     while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
