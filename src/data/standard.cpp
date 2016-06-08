@@ -138,17 +138,17 @@ void Standard::addVVar(const Reader &r)
     ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &)
     {
         Variant v;
-        
-        /*
-         * Filtering out common errors in the reference variant file
-         */
-        
-        if (x.id.size() <= 1)
-        {
-            const auto format = "Invalid reference VCF variant file: %1%. Is this a VCF file? If this is a VCF file, please check the third column. It must list the sequin names. The name we have is [%2%]. Our latest reference file is available at www.sequin.xyz.";
-            
-            throw std::runtime_error((boost::format(format) % r.src() % x.id).str());
-        }
+
+//        /*
+//         * Filtering out common errors in the reference variant file
+//         */
+//        
+//        if (x.id.size() <= 1)
+//        {
+//            const auto format = "Invalid reference VCF variant file: %1%. Is this a VCF file? If this is a VCF file, please check the third column. It must list the sequin names. The name we have is [%2%]. Our latest reference file is available at www.sequin.xyz.";
+//
+//            throw std::runtime_error((boost::format(format) % r.src() % x.id).str());
+//        }
         
         // Eg: D_1_3_R
         v.id  = x.id;
@@ -160,7 +160,6 @@ void Standard::addVVar(const Reader &r)
         v.alt = x.alt;
         v.ref = x.ref;
 
-        // This'll add variants for both synthetic and genome
         r_var.addVar(v);
     });
 }

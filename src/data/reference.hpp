@@ -540,13 +540,13 @@ namespace Anaquin
              * Modifier functions
              */
         
-            // Adds a known variant
+            // Add a known variant (synthetic and genomic/user)
             void addVar(const Variant &);
-
-            // Adds a sequin in the standards
+        
+            // Add a sequin in the standards
             void addStand(const SequinID &, const Locus &);
 
-            // Adds a reference interval (eg: chr21)
+            // Add a reference interval (eg: chr21)
             void addRInterval(const ChrID &, const Interval &);
 
             /*

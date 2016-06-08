@@ -53,7 +53,7 @@ namespace Anaquin
             // Add reference mixture for VarQuin
             void addVMix(const Reader &);
         
-            // Add reference variants for VarQuin
+            // Add reference variants for VarQuin (synthetic and genomic/user)
             void addVVar(const Reader &);
 
             // Add reference standards for VarQuin

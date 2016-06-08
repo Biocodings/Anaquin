@@ -45,6 +45,18 @@ namespace Anaquin
         });
     }
 
+    template <typename T, typename F> Counts count(const T &t, F f)
+    {
+        Counts n = 0;
+        
+        for (auto &i : t)
+        {
+            n += f(i);
+        }
+        
+        return n;
+    }
+
     struct Analyzer
     {
         // Empty Implementation

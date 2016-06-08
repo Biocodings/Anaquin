@@ -20,7 +20,9 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 
     parseVariants(file, o.input, [&](const VariantMatch &m)
     {
-        if (m.query.cID == ChrT)
+        const auto &cID = m.query.cID;
+
+        if (cID == ChrT)
         {
             stats.n_syn++;
             
@@ -63,7 +65,16 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         else
         {
             stats.n_gen++;
-            stats.geno.push_back(m.query);
+            stats.geno[cID].vars.push_back(m.query);
+
+            if (m.query.type() == Mutation::SNP)
+            {
+                stats.geno[cID].snp++;
+            }
+            else
+            {
+                stats.geno[cID].ind++;
+            }
         }
     });
 
@@ -176,7 +187,7 @@ static void writeQuins(const FileName &file,
         
         if (i.second)
         {
-            auto f = [&](const std::vector<VDiscover::Stats::ChrTData> &x, const std::string &label)
+            auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
             {
                 for (const auto &j : x)
                 {
@@ -226,40 +237,40 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-static void writeQueryNP(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
-{
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-    
-    o.writer->open(file);
-    o.writer->write((boost::format(format) % "seq"
-                                           % "pos"
-                                           % "label"
-                                           % "ref"
-                                           % "var"
-                                           % "eFold"
-                                           % "eAllele"
-                                           % "type").str());
-    
-    auto f = [&](const std::vector<VDiscover::Stats::ChrTData> &x, const std::string &label)
-    {
-        for (const auto &i : x)
-        {
-            o.writer->write((boost::format(format) % (i.seq ? i.seq->id : "-")
-                                                   % i.query.l.start
-                                                   % label
-                                                   % i.query.readR
-                                                   % i.query.readV
-                                                   % i.eFold
-                                                   % i.eAllFreq
-                                                   % type2str(i.query.type())).str());
-        }
-    };
-    
-    f(stats.chrT.tps, "TP");
-    f(stats.chrT.fps, "FP");
-    
-    o.writer->close();
-}
+//static void writeQueryNP(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
+//{
+//    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+//    
+//    o.writer->open(file);
+//    o.writer->write((boost::format(format) % "seq"
+//                                           % "pos"
+//                                           % "label"
+//                                           % "ref"
+//                                           % "var"
+//                                           % "eFold"
+//                                           % "eAllele"
+//                                           % "type").str());
+//    
+//    auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
+//    {
+//        for (const auto &i : x)
+//        {
+//            o.writer->write((boost::format(format) % (i.seq ? i.seq->id : "-")
+//                                                   % i.query.l.start
+//                                                   % label
+//                                                   % i.query.readR
+//                                                   % i.query.readV
+//                                                   % i.eFold
+//                                                   % i.eAllFreq
+//                                                   % type2str(i.query.type())).str());
+//        }
+//    };
+//    
+//    f(stats.chrT.tps, "TP");
+//    f(stats.chrT.fps, "FP");
+//    
+//    o.writer->close();
+//}
 
 static void writeQuery(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
@@ -276,7 +287,7 @@ static void writeQuery(const FileName &file, const VDiscover::Stats &stats, cons
                                            % "pval"
                                            % "type").str());
 
-    auto f = [&](const std::vector<VDiscover::Stats::ChrTData> &x, const std::string &label)
+    auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
     {
         for (const auto &i : x)
         {
@@ -302,6 +313,8 @@ static void writeQuery(const FileName &file, const VDiscover::Stats &stats, cons
 
 static void writeSummary(const FileName &file, const FileName &src, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+
     extern FileName VCFRef();
     extern FileName BedRef();
     
@@ -355,12 +368,12 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     o.writer->write((boost::format(summary) % BedRef()
                                             % VCFRef()
                                             % src
-                                            % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????"
-                                            % "????"
+                                            % r.countSNPSync()
+                                            % r.countSNPGeno()
+                                            % (r.countSNPGeno() + r.countSNPGeno())
+                                            % r.countIndelSync()
+                                            % r.countIndelGeno()
+                                            % (r.countIndelSync() + r.countIndelGeno())
                                             % "????" // 10
                                             % "????"
                                             % "????"

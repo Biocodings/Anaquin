@@ -14,7 +14,7 @@ namespace Anaquin
             VCF,
             Text,
         };
-        
+
         struct Options : public AnalyzerOptions
         {
             Options() {}
@@ -27,13 +27,11 @@ namespace Anaquin
 
         struct Stats : public MappingStats, public VariantStats
         {
-            typedef VariantMatch ChrTData;
-            
-            struct ChrTStats
+            struct SyncData
             {
-                inline Counts count(const std::vector<ChrTData> &data, Mutation type) const
+                inline Counts count(const std::vector<VariantMatch> &data, Mutation type) const
                 {
-                    return std::count_if(data.begin(), data.end(), [&](const ChrTData &d)
+                    return std::count_if(data.begin(), data.end(), [&](const VariantMatch &d)
                     {
                         return (d.query.type() == type) ? 1 : 0;
                     });
@@ -63,21 +61,56 @@ namespace Anaquin
                 inline Counts dSNP() const { return tpSNP() + fpSNP() + tnSNP() + fnSNP(); }
                 inline Counts dInd() const { return tpInd() + fpInd() + tnInd() + fnInd(); }
                 
-                std::vector<ChrTData> fps, tps, tns, fns;
+                std::vector<VariantMatch> fps, tps, tns, fns;
 
                 // Performance metrics
                 Confusion m, m_snp, m_ind;
             };
+            
+            inline Counts countSNPGeno() const
+            {
+                return count(geno, [&](const std::pair<ChrID, GenomeData> &x)
+                {
+                    return x.second.snp;
+                });
+            }
+            
+            inline Counts countIndGeno() const
+            {
+                return count(geno, [&](const std::pair<ChrID, GenomeData> &x)
+                {
+                    return x.second.ind;
+                });
+            }
+            
+            inline Counts countVarGeno() const { return countSNPGeno() + countIndGeno(); }
 
-            typedef std::vector<CalledVariant> GenomeStats;
+            struct GenomeData
+            {
+                // Number of indels
+                Counts ind;
+                
+                // Number of SNPs
+                Counts snp;
+                
+                std::vector<CalledVariant> vars;
+            };
+
+            /*
+             * Genomic statistics
+             */
+            
+            // Statistics for genomic variants
+            std::map<ChrID, GenomeData> geno;
+            
+            /*
+             * Sequin statistics
+             */
             
             // Statistics for synthetic variants
-            ChrTStats chrT;
+            SyncData chrT;
 
-            // Statistics for genomic variants
-            GenomeStats geno;
-            
-            // Distribution for variants
+            // Distribution for the sequins
             HashHist hist;            
         };
 
