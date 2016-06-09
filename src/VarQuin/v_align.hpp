@@ -94,13 +94,13 @@ namespace Anaquin
             // Number of FP for genomic genes
             Counts gfp = 0;
             
-            // Overall sensitivity for all genes
+            // Overall sensitivity for all genomic genes
             inline Proportion gsn() const
             {
                 return static_cast<Proportion>(gc) / (gc + gl);
             }
             
-            // Overall precision for all genes
+            // Overall precision for all genomic genes
             inline Proportion gpc() const
             {
                 return static_cast<Proportion>(gtp) / (gtp + gfp);

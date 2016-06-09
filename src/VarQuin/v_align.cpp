@@ -118,11 +118,17 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
         }
         else
         {
-            stats.data[align.cID].fp++;
+            /*
+             * Here, we know we have the reference chromosome. But what happens if it's outside
+             * the regions? It can be TP because it could align to a gene outside the regions.
+             * It could also be FP because it might fail to align correctly. We simply don't have
+             * the information. Thus, it's only FP if it aligns at least partially with our regions.
+             */
             
             if (__match__.oMatch)
             {
                 std::cout << "Hello" << std::endl;
+                stats.data[align.cID].fp++;
                 stats.data[align.cID].gfp[__match__.cMatch->id()]++;
             }
         }
