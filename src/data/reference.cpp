@@ -944,12 +944,7 @@ Locus VarRef::matchStand(const SequinID &id) const
 
 Proportion VarRef::matchAlleleFreq(const SequinID &id) const
 {
-    auto id_ = id;
-    
-    // Just in case, for example, D_1_1_V
-    boost::replace_all(id_, "_V", "_R");
-
-    const auto &p = _impl->data.at(Mix_1).at(id_);
+    const auto &p = _impl->data.at(Mix_1).at(baseID(id));
     const auto &r = p.r;
     const auto &v = p.v;
 

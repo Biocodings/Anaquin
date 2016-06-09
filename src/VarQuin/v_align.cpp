@@ -111,8 +111,6 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
         }))
         {
             const auto gID = __match__.cMatch->id();
-            
-                std::cout << "Hello1" << std::endl;
             stats.data[align.cID].tp++;
             stats.data[align.cID].hist.at(gID)++;
             stats.data[align.cID].gtp[gID]++;
@@ -372,11 +370,11 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     o.writer->open(file);
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    o.writer->write((boost::format(format) % "seq"
-                                           % "length"
-                                           % "reads"
-                                           % "sn"
-                                           % "pc").str());
+    o.writer->write((boost::format(format) % "Seq"
+                                           % "Length"
+                                           % "Reads"
+                                           % "Sn"
+                                           % "Pc").str());
 
     for (const auto &i : stats.data.at(ChrT).hist)
     {

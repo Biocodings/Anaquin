@@ -170,15 +170,15 @@ static void writeQuins(const FileName &file,
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
     o.writer->open("VarDiscover_quins.stats");
-    o.writer->write((boost::format(format) % "seq"
-                                           % "pos"
-                                           % "label"
-                                           % "ref"
-                                           % "var"
-                                           % "eFold"
-                                           % "eAllele"
-                                           % "pval"
-                                           % "type").str());
+    o.writer->write((boost::format(format) % "Seq"
+                                           % "Pos"
+                                           % "Label"
+                                           % "Pval"
+                                           % "ReadsR"
+                                           % "ReadsV"
+                                           % "EFreq"
+                                           % "MFreq"
+                                           % "Type").str());
 
     for (const auto &i : stats.hist)
     {
@@ -195,11 +195,11 @@ static void writeQuins(const FileName &file,
                         o.writer->write((boost::format(format) % j.seq->id
                                                                % j.query.l.start
                                                                % label
+                                                               % (isnan(j.query.p) ? "-" : p2str(j.query.p))
                                                                % j.query.readR
                                                                % j.query.readV
-                                                               % j.eFold
                                                                % j.eAllFreq
-                                                               % (isnan(j.query.p) ? "-" : p2str(j.query.p))
+                                                               % j.query.alleleFreq()
                                                                % type2str(j.query.type())).str());
                         return true;
                     }
@@ -227,7 +227,7 @@ static void writeQuins(const FileName &file,
                                                    % "NA"
                                                    % "NA"
                                                    % "NA"
-                                                   % "NA"
+                                                   % r.matchAlleleFreq(m->id)
                                                    % "NA"
                                                    % type2str(m->type())).str());
         }
