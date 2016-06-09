@@ -252,9 +252,6 @@ namespace Anaquin
             assert(prop >= 0 && prop <= 1.0);
             assert(!src.empty() && !dst.empty());
             
-            assert(false);
-            std::cout << "sadksda" << std::endl;
-            
             /*
              * Subsampling alignments. It's expected that coverage would roughly match between
              * the genome and synthetic chromosome.
