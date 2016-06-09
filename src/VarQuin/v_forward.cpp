@@ -13,15 +13,19 @@
 using namespace Anaquin;
 
 VForward::Stats VForward::analyze(const FileName &file,
-                                  const FileName &output,
-                                  const Writer &writer,
+                                  const FileName &output1,
+                                  const FileName &output2,
                                   const Options &o)
 {
-    assert(!output.empty());
+    assert(!output1.empty());
+    assert(!output2.empty());
 
-    std::ofstream out;
-    //const auto &r = Standard::instance().r_var;
-
+    // Used for genomic alignments
+    std::ofstream out1;
+    
+    // Used for synthetic alignments
+    std::ofstream out2;
+    
     ParserSAM::parse(file, [&](ParserSAM::Data &data, const ParserSAM::Info &info)
     {
         if (!data.i && !(info.p.i % 1000000))
@@ -35,15 +39,27 @@ VForward::Stats VForward::analyze(const FileName &file,
         
         if (!info.p.i && !data.i)
         {
-            auto f = sam_open(output.c_str(), "w");
+            auto f = sam_open(output1.c_str(), "w");
             sam_hdr_write(f, reinterpret_cast<bam_hdr_t *>(info.header));
             sam_close(f);
-            out.open(output, std::ios_base::app);
+
+            f = sam_open(output2.c_str(), "w");
+            sam_hdr_write(f, reinterpret_cast<bam_hdr_t *>(info.header));
+            sam_close(f);
+            
+            out1.open(output1, std::ios_base::app);
+            out2.open(output2, std::ios_base::app);
         }
 
-        // Reverse the alignment
-        reverse(data, info);
+        const auto isSyn = Standard::isSynthetic(data.cID);
         
+        // Only reverse if it's synthetic (mirror image)
+        if (isSyn)
+        {
+            reverse(data, info);
+            replace(data.cID, "rev", "r");
+        }
+
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
         const auto str = (boost::format(format) % data.name
                                                 % data.flag
@@ -56,35 +72,27 @@ VForward::Stats VForward::analyze(const FileName &file,
                                                 % data.tlen
                                                 % data.seq
                                                 % data.qual).str();
-        out << str << std::endl;
+        if (isSyn)
+        {
+            out2 << str << std::endl;
+        }
+        else
+        {
+            out1 << str << std::endl;
+        }
     });
 
-    if (out.is_open())
-    {
-        out.close();
-    }
+    if (out1.is_open()) { out1.close(); }
+    if (out1.is_open()) { out1.close(); }
 
     return VForward::Stats();
 }
 
-struct FFileWriter : public VForward::Writer
-{
-    inline void write(void *data, void *header) const
-    {
-        const auto *b = reinterpret_cast<bam1_t *>(data);
-        const auto *h = reinterpret_cast<bam_hdr_t *>(header);
-        writer.write(h, b);
-    }
-
-    mutable WriterSAM writer;
-};
-
 void VForward::report(const FileName &file, const Options &o)
 {
-    FFileWriter f;
-    f.writer.open(o.work + "/VarForward_forward.sam");
-
-    const auto &stats = analyze(file, o.work + "/VarForward_forward.sam", f);
+    const auto &stats = analyze(file,
+                                o.work + "/VarForward_genome.sam",
+                                o.work + "/VarForward_sequins.sam");
     
     /*
      * Generating VarForward_summary.stats

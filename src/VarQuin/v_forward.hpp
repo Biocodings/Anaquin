@@ -20,14 +20,9 @@ namespace Anaquin
             // Empty Implementation
         };
         
-        struct Writer
-        {
-            virtual void write(void *data, void *header) const = 0;
-        };
-
         static Stats analyze(const FileName &,
                              const FileName &,
-                             const Writer &writer,
+                             const FileName &,
                              const Options &o = Options());
 
         static void report(const FileName &, const Options &o = Options());

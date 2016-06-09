@@ -9,6 +9,7 @@
 #include "writers/r_writer.hpp"
 #include "writers/pdf_writer.hpp"
 #include "writers/mock_writer.hpp"
+#include <boost/algorithm/string/replace.hpp>
 
 namespace Anaquin
 {
@@ -44,7 +45,7 @@ namespace Anaquin
             return c + p.second;
         });
     }
-
+    
     template <typename T, typename F> Counts count(const T &t, F f)
     {
         Counts n = 0;
@@ -56,7 +57,12 @@ namespace Anaquin
         
         return n;
     }
-
+    
+    inline void replace(std::string &s, const std::string &src, const std::string &dst)
+    {
+        boost::replace_all(s, src, dst);
+    }
+    
     struct Analyzer
     {
         // Empty Implementation

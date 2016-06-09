@@ -107,12 +107,19 @@ bool Standard::isSynthetic(const ChrID &cID)
     
     const std::set<ChrID> sIDs = { "chrT", "chrIS", };
 
-    for (const auto sID : sIDs)
+    // Can we match by exact?
+    if (sIDs.count(cID))
     {
-        if (boost::iequals(sID, cID))
-        {
-            return true;
-        }
+        return true;
+    }
+
+    /*
+     * Eg: chrev10
+     */
+
+    else if (cID.find("rev") != std::string::npos)
+    {
+        return true;
     }
 
     return false;
