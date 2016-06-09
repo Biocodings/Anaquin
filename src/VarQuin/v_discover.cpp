@@ -352,16 +352,19 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "-------Diagnostic Performance\n\n"
                          "       *Variants\n"
                          "       Sensitivity: %28%\n"
-                         "       Precision:   %29%\n"
-                         "       FDR Rate:    %30%\n\n"
+                         "       Specificity: %29%\n"
+                         "       Precision:   %30%\n"
+                         "       FDR Rate:    %31%\n\n"
                          "       *SNVs\n"
-                         "       Sensitivity: %31%\n"
-                         "       Precision:   %32%\n"
-                         "       FDR Rate:    %33%\n\n"
+                         "       Sensitivity: %32%\n"
+                         "       Specificity: %33%\n"
+                         "       Precision:   %34%\n"
+                         "       FDR Rate:    %35%\n\n"
                          "       *Indels\n"
-                         "       Sensitivity: %34%\n"
-                         "       Precision:   %35%\n"
-                         "       FDR Rate:    %36%\n";
+                         "       Sensitivity: %36%\n"
+                         "       Specificity: %37%\n"
+                         "       Precision:   %38%\n"
+                         "       FDR Rate:    %39%\n";
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % BedRef()
@@ -391,13 +394,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.chrT.fnSNP()
                                             % stats.chrT.fnInd()
                                             % stats.chrT.fnTot()
-                                            % stats.chrT.m.sn()
+                                            % stats.chrT.m.sn()      // 28
+                                            % stats.chrT.m.sp()      // 29
                                             % stats.chrT.m.pc()
                                             % stats.chrT.m.fdr()
-                                            % stats.chrT.m_snp.sn()
+                                            % stats.chrT.m_snp.sn()  // 32
+                                            % stats.chrT.m_snp.sp()  // 33
                                             % stats.chrT.m_snp.pc()
                                             % stats.chrT.m_snp.fdr()
-                                            % stats.chrT.m_ind.sn()
+                                            % stats.chrT.m_ind.sn()  // 36
+                                            % stats.chrT.m_ind.sp()  // 37
                                             % stats.chrT.m_ind.pc()
                                             % stats.chrT.m_snp.fdr()
                      ).str());

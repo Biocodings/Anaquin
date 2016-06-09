@@ -198,7 +198,7 @@ static std::map<Value, Tool> _tools =
     { "RnaCoverage",    TOOL_T_COVERAGE  },
     { "RnaSubsample",   TOOL_T_SUBSAMPLE },
 
-    { "VarVarscan",     TOOL_V_VSCAN     },
+    { "VarVarScan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
     { "VarDiscover",    TOOL_V_DISCOVER  },
     { "VarIGV",         TOOL_V_IGV       },
@@ -1694,7 +1694,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_DISCOVER:
                 {
                     VDiscover::Options o;
-                    o.input = VDiscover::Input::VCF; // TODO: Fix this
+                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VDiscover::Input::VCF : VDiscover::Input::Text;
 
                     analyze_1<VDiscover>(OPT_U_FILES, o);
                     break;

@@ -1253,6 +1253,26 @@ GenomeHist VarRef::genomeHist() const
     return hist;
 }
 
+Interval * VarRef::findGeno(const ChrID &cID, const Locus &l, MatchRule rule) const
+{
+    assert(!Standard::isSynthetic(cID));
+    
+    if (!_impl->genome.count(cID))
+    {
+        return nullptr;
+    }
+    
+    switch (rule)
+    {
+        case MatchRule::Contains: { return _impl->genome.at(cID).contains(l); }
+        case MatchRule::Overlap:  { return _impl->genome.at(cID).overlap(l);  }
+        case MatchRule::Exact:
+        {
+            throw "Not Implemented";
+        }
+    }
+}
+
 Interval * VarRef::findGeno(const Locus &l) const
 {
     return _impl->genome.at(genoID()).contains(l);

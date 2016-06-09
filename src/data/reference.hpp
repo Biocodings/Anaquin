@@ -608,6 +608,8 @@ namespace Anaquin
             const Variant *findVar(const SequinID &) const;
             const Variant *findVar(const Locus &, MatchRule = Exact) const;
 
+            Interval *findGeno(const ChrID &, const Locus &, MatchRule) const;
+        
             Interval *findGeno(const Locus &) const;
             Interval *findGeno(const ChrID &cID, const Locus &l) const
             {
