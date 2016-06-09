@@ -49,7 +49,7 @@ void FFusion::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Generating summary statistics
+     * Generating FusFusion_summary.stats
      */
     
     o.writer->open("FusFusion_summary.stats");
@@ -57,20 +57,20 @@ void FFusion::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating CSV for all fusions
+     * Generating FusFusion_quins.stats
      */
     
-    o.info("Generating FusFusion_sequins.stats");
-    o.writer->open("FusFusion_sequins.stats");
+    o.info("Generating FusFusion_quins.stats");
+    o.writer->open("FusFusion_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
     /*
-     * Generating expression plot
+     * Generating FusFusion_express.R
      */
     
     o.info("Generating FusFusion_express.R");
     o.writer->open("FusFusion_express.R");
-    o.writer->write(RWriter::createScript("FusFusion_sequins.stats", PlotFFusion()));
+    o.writer->write(RWriter::createScript("FusFusion_quins.stats", PlotFFusion()));
     o.writer->close();
 }

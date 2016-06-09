@@ -38,12 +38,14 @@ TEST_CASE("HT_Test2")
     
     std::vector<std::string> r1;
     std::vector<std::string> r2;
+    std::vector<std::vector<int>> r3;
     
     while (sam_read1(f, h, t) >= 0)
     {
+        r3.push_back(bam2delta(t));
         r1.push_back(bam2cigar(t));
         r2.push_back(bam2rcigar(t));
-        
+
         if (i++ == 24)
         {
             // No need to test all alignments in the file
@@ -60,4 +62,9 @@ TEST_CASE("HT_Test2")
     REQUIRE(r2[1]  == "61M");
     REQUIRE(r2[2]  == "40M");
     REQUIRE(r2[24] == "80M3D44M");
+    
+    REQUIRE(r3[24].size() == 3);
+    REQUIRE(r3[24][0] == 0);
+    REQUIRE(r3[24][1] == 3);
+    REQUIRE(r3[24][2] == 0);
 }

@@ -20,9 +20,6 @@ namespace Anaquin
         // Mapping quality
         int mapq;
         
-        // Reference sequence NAME
-        std::string rname;
-        
         // Cigar string
         std::string cigar;
         

@@ -7,13 +7,13 @@ using namespace Anaquin;
 TEST_CASE("isSynthetic_T1")
 {
     REQUIRE(Standard::isSynthetic("chrT"));
-    REQUIRE(Standard::isSynthetic("ChrT"));
-    REQUIRE(Standard::isSynthetic("CHRT"));
-    REQUIRE(Standard::isSynthetic("chrt"));
     REQUIRE(Standard::isSynthetic("chrIS"));
-    REQUIRE(Standard::isSynthetic("Chris"));
-    REQUIRE(Standard::isSynthetic("CHRis"));
-    REQUIRE(Standard::isSynthetic("chris"));
+    REQUIRE(!Standard::isSynthetic("chris"));
+    REQUIRE(!Standard::isSynthetic("CHRT"));
+    REQUIRE(!Standard::isSynthetic("chrt"));
+    REQUIRE(!Standard::isSynthetic("Chris"));
+    REQUIRE(!Standard::isSynthetic("CHRis"));
+    REQUIRE(!Standard::isSynthetic("ChrT"));
 }
 
 TEST_CASE("isSynthetic_T2")

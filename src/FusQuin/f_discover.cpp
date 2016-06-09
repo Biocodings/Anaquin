@@ -170,25 +170,25 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating summary statistics
+     * Generating FusDiscover_summary.stats
      */
 
     writeSummary("FusDiscover_summary.stats", stats, o);
 
     /*
-     * Generating sequin statistics
+     * Generating FusDiscover_quins.stats
      */
     
-    writeQuins("FusDiscover_sequins.stats", stats, o);
+    writeQuins("FusDiscover_quins.stats", stats, o);
     
     /*
-     * Generating statistics for the query
+     * Generating FusDiscover_queries.stats
      */
     
-    writeQuery("FusDiscover_query.stats", ChrT, stats, o);
+    writeQuery("FusDiscover_queries.stats", ChrT, stats, o);
     
     /*
-     * Generating ROC plot
+     * Generating FusDiscover_ROC.R
      */
     
     o.writer->open("FusDiscover_ROC.R");
@@ -197,13 +197,13 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
     o.report->addFile("FusDiscover_ROC.R", "FusDiscover_ROC.R");
     
     /*
-     * Generating a PDF report
+     * Generating FusDiscover_report.pdf
      */
 
     o.report->open("FusDiscover_report.pdf");
     o.report->addTitle("FusDiscover_report");
     o.report->addFile("FusDiscover_summary.stats");
-    o.report->addFile("FusDiscover_sequins.stats");
+    o.report->addFile("FusDiscover_quins.stats");
     o.report->addFile("FusDiscover_query.stats");
     o.report->addFile("FusDiscover_ROC.R");
 }

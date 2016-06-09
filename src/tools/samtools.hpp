@@ -81,7 +81,47 @@ namespace Anaquin
         
         return __buf__.str();
     }
+
+    inline std::vector<int> bam2delta(bam1_t *x)
+    {
+        std::vector<int> d;
+        const auto t = bam_get_cigar(x);
+        
+        for (int i = x->core.n_cigar - 1; i >= 0; i--)
+        {
+            const auto val = bam_cigar_oplen(t[i]);
+            
+            switch (bam_cigar_op(t[i]))
+            {
+                case BAM_CPAD:
+                case BAM_CDIFF:
+                case BAM_CEQUAL:
+                case BAM_CMATCH:
+                case BAM_CSOFT_CLIP:  { d.push_back(0);    break; }
+                case BAM_CINS:        { d.push_back(-val); break; }
+                case BAM_CDEL:        { d.push_back(val);  break; }
+                case BAM_CREF_SKIP:   { d.push_back(-val); break; }
+                case BAM_CHARD_CLIP:  { d.push_back(val);  break; }
+            }
+        }
+        
+        return d;
+    }
     
+    inline Base reversePos(const Locus &l, ParserSAM::Data &x, const ParserSAM::Info &i)
+    {
+        // Length of the chromosome
+        const auto clen = i.length;
+
+        // Length of the sequence
+        const auto slen = x.seq.size();
+        
+        // Insertion, deletion etc
+        const auto delta = sum(bam2delta(reinterpret_cast<bam1_t *>(i.data)));
+        
+        return clen - (l.start + slen + delta);
+    }
+
     inline CigarStr bam2rcigar(bam1_t *x)
     {
         CLEAR_HTSLIB();
@@ -96,6 +136,7 @@ namespace Anaquin
         return __buf__.str();
     }
 
+    // Reverse an alignment
     inline void reverse(ParserSAM::Data &x, const ParserSAM::Info &i)
     {
         /*
@@ -109,22 +150,29 @@ namespace Anaquin
          */
 
         const auto b = reinterpret_cast<bam1_t *>(i.data);
- 
-        // Length of the chromosome
-        const auto clen = i.length;
+
+        x.cigar = bam2rcigar(b);
+
+        std::reverse(x.seq.begin(),  x.seq.end());
+        std::reverse(x.qual.begin(), x.qual.end());
+        
+        if ("55M1D70M" == bam2cigar(b))
+        {
+            std::cout << x.name << std::endl;
+        }
+        
+        // The left-most position in the forward strand
+        const auto rstart = reversePos(x.l, x, i);
+        
+        // The right-most positiion in the forward strand
+        const auto rend = rstart + x.l.length() - 1;
 
         const auto t = x.l;
         
         // New position on the forward strand
-        x.l = Locus(clen - x.l.start, clen - x.l.start + x.l.length() - 1);
+        x.l = Locus(rstart, rend);
         
         assert(t.length() == x.l.length());
-        
-        x.cigar = bam2rcigar(b);
-        x.pnext = clen - x.pnext;
-        
-        std::reverse(x.seq.begin(),  x.seq.end());
-        std::reverse(x.qual.begin(), x.qual.end());
     }
 }
 

@@ -57,7 +57,7 @@ void FDiff::report(const FileName &normal, const FileName &fusion, const Options
     o.info("Generating statistics");
     
     /*
-     * Generating summary statistics
+     * Generating FusDiff_summary.stats
      */
     
     o.writer->open("FusDiff_summary.stats");
@@ -65,20 +65,20 @@ void FDiff::report(const FileName &normal, const FileName &fusion, const Options
     o.writer->close();
     
     /*
-     * Generating CSV for all ratios
+     * Generating FusDiff_quins.stats
      */
     
-    o.info("Generating FusDiff_sequins.stats");
-    o.writer->open("FusDiff_sequins.stats");
+    o.info("Generating FusDiff_quins.stats");
+    o.writer->open("FusDiff_quins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
     /*
-     * Generating folding plot
+     * Generating FusDiff_fold.R
      */
     
     o.info("Generating FusDiff_fold.R");
     o.writer->open("FusDiff_fold.R");
-    o.writer->write(RWriter::createScript("FusDiff_sequins.stats", PlotFFold()));
+    o.writer->write(RWriter::createScript("FusDiff_quins.stats", PlotFFold()));
     o.writer->close();
 }

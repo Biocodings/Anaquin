@@ -20,11 +20,14 @@ VForward::Stats VForward::analyze(const FileName &file,
     assert(!output1.empty());
     assert(!output2.empty());
 
-    // Used for genomic alignments
-    std::ofstream out1;
+    typedef std::string AlignmentID;
     
-    // Used for synthetic alignments
-    std::ofstream out2;
+    /*
+     * Attempt 1: Build up the position for next mates
+     */
+    
+    // Mapping for PNEXT from reverse strand to forward strand
+    std::map<Base, Base> r2f;
     
     ParserSAM::parse(file, [&](ParserSAM::Data &data, const ParserSAM::Info &info)
     {
@@ -32,10 +35,38 @@ VForward::Stats VForward::analyze(const FileName &file,
         {
             o.wait(std::to_string(info.p.i));
         }
-        
-        /*
-         * Reuse the code for generating headers
-         */
+
+        if (Standard::isSynthetic(data.cID))
+        {
+            const auto t = data.l;
+            
+            reverse(data, info);
+            replace(data.cID, "rev", "r");
+
+            // The two strands can't make it equal
+            assert(t.start != data.l.start);
+            
+            // Now save it for the next attempt
+            r2f[t.start] = data.l.start;
+        }
+    });
+
+    // Used for genomic alignments
+    std::ofstream out1;
+    
+    // Used for synthetic alignments
+    std::ofstream out2;
+
+    /*
+     * Attempt 2: Repeat but we now have positions for the next mates
+     */
+    
+    ParserSAM::parse(file, [&](ParserSAM::Data &data, const ParserSAM::Info &info)
+    {
+        if (!data.i && !(info.p.i % 1000000))
+        {
+            o.wait(std::to_string(info.p.i));
+        }
         
         if (!info.p.i && !data.i)
         {
@@ -50,14 +81,16 @@ VForward::Stats VForward::analyze(const FileName &file,
             out1.open(output1, std::ios_base::app);
             out2.open(output2, std::ios_base::app);
         }
-
-        const auto isSyn = Standard::isSynthetic(data.cID);
         
-        // Only reverse if it's synthetic (mirror image)
-        if (isSyn)
+        const auto isSync = Standard::isSynthetic(data.cID);
+
+        if (isSync)
         {
             reverse(data, info);
             replace(data.cID, "rev", "r");
+
+            // This is the key, we now know the position of the next mate (TODO: Fix this!)
+            //data.pnext = r2f.at(data.pnext + 1);
         }
 
         const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
@@ -72,7 +105,7 @@ VForward::Stats VForward::analyze(const FileName &file,
                                                 % data.tlen
                                                 % data.seq
                                                 % data.qual).str();
-        if (isSyn)
+        if (isSync)
         {
             out2 << str << std::endl;
         }

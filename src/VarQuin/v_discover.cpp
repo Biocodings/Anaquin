@@ -169,7 +169,7 @@ static void writeQuins(const FileName &file,
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
-    o.writer->open("VarDiscover_sequins.stats");
+    o.writer->open("VarDiscover_quins.stats");
     o.writer->write((boost::format(format) % "seq"
                                            % "pos"
                                            % "label"
@@ -541,10 +541,10 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
 
     /*
-     * Generating VarDiscover_sequins.stats
+     * Generating VarDiscover_quins.stats
      */
     
-    writeQuins("VarDiscover_sequins.stats", stats, o);
+    writeQuins("VarDiscover_quins.stats", stats, o);
 
     /*
      * Generating VarDiscover_summary.stats
@@ -583,7 +583,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.report->open("VarDiscover_report.pdf");
     o.report->addTitle("VarDiscover");
     o.report->addFile("VarDiscover_summary.stats");
-    o.report->addFile("VarDiscover_sequins.stats");
+    o.report->addFile("VarDiscover_quins.stats");
     o.report->addFile("VarDiscover_queries.stats");
     o.report->addFile("VarDiscover_ROC.R");
     o.report->addFile("VarDiscover_LOD.R");

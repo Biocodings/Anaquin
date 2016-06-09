@@ -73,6 +73,7 @@ typedef std::set<Value> Range;
 
 #define TOOL_VERSION     'v'
 #define TOOL_TEST        264
+#define TOOL_HELP        265
 #define TOOL_T_ALIGN     266
 #define TOOL_T_ASSEMBLY  267
 #define TOOL_T_EXPRESS   268
@@ -184,6 +185,7 @@ std::string date()
 static std::map<Value, Tool> _tools =
 {
     { "Test",           TOOL_TEST        },
+    { "Help",           TOOL_HELP        },
 
     { "TransAlign",     TOOL_T_ALIGN     },
     { "TransAssembly",  TOOL_T_ASSEMBLY  },
@@ -1008,43 +1010,50 @@ void parse(int argc, char ** argv)
 
     unsigned n = 0;
 
-    if (!_tools.count(argv[1]))
+    if (!_tools.count(argv[1]) && strcmp(argv[1], "-v"))
     {
         throw InvalidToolError(argv[1]);
     }
-
-    _p.tool = _tools[argv[1]];
-    assert(_p.tool);
-
-    while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
+    else if (!strcmp(argv[1], "-v"))
     {
-        if (next == ':')
-        {
-            throw NoValueError(argv[n+1]);
-        }
-        else if (next < OPT_TOOL)
-        {
-            throw InvalidOptionException(argv[n+1]);
-        }
-
-        opts.push_back(next);
-
-        // Whether this option has an value
-        const auto hasValue = optarg;
+        _p.tool = TOOL_VERSION;
         
-        n += hasValue ? 2 : 1;
-        
-        vals.push_back(hasValue ? std::string(optarg) : "");
-    }
-
-    if (_p.tool == OPT_VERSION)
-    {
         if (argc != 2)
         {
             throw TooManyOptionsError("Too many options given for -v");
         }
     }
+    else
+    {
+        _p.tool = _tools[argv[1]];
+    }
     
+    assert(_p.tool);
+
+    if (_p.tool != TOOL_VERSION)
+    {
+        while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
+        {
+            if (next == ':')
+            {
+                throw NoValueError(argv[n+1]);
+            }
+            else if (next < OPT_TOOL)
+            {
+                throw InvalidOptionException(argv[n+1]);
+            }
+            
+            opts.push_back(next);
+            
+            // Whether this option has an value
+            const auto hasValue = optarg;
+            
+            n += hasValue ? 2 : 1;
+            
+            vals.push_back(hasValue ? std::string(optarg) : "");
+        }
+    }
+
     for (auto i = 0; i < opts.size(); i++)
     {
         auto opt = opts[i];

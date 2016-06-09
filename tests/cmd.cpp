@@ -11,13 +11,12 @@ TEST_CASE("Anaquin_Version")
     REQUIRE(r.output == "v1.1.1\n");
 }
 
-TEST_CASE("Anaquin_InvalidMixture")
-{
-    const auto r = Test::test("-t VarFrequency -soft gatk -rvcf data/VarQuinAVA009.v032.vcf -m variant.vcf -ufiles variant.vcf");
-    
-}
+//TEST_CASE("Anaquin_InvalidMixture")
+//{
+//    const auto r = Test::test("VarFrequency -soft gatk -rvcf data/VarQuinAVA009.v032.vcf -m variant.vcf -ufiles variant.vcf");
+//}
 
-TEST_CASE("Anaquin_EmptyMixture")
-{
-    
-}
+//TEST_CASE("Anaquin_EmptyMixture")
+//{
+//    
+//}

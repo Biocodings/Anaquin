@@ -104,7 +104,7 @@
             perf  <- performance(preds, 'tpr', 'fpr')
             auc   <- performance(preds, 'auc')
 
-            AUC   <- round(unlist(auc@y.values), 4)
+            AUC <- round(unlist(auc@y.values), 4)
             
             if (countGroups == 1)
             {
