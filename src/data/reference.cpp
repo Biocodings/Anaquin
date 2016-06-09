@@ -1286,6 +1286,11 @@ const Variant * VarRef::hashVar(long key) const
     return nullptr;
 }
 
+Counts VarRef::countIntervals(const ChrID &cID) const
+{
+    return _impl->genome.at(cID).size();
+}
+
 const Variant * VarRef::findVar(const SequinID &id) const
 {
     // Eg: D_1_1

@@ -4,10 +4,11 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef T_DIFF_HPP
-#define T_DIFF_HPP
+#ifndef R_DIFF_HPP
+#define R_DIFF_HPP
 
 #include "data/dtest.hpp"
+#include <boost/format.hpp>
 #include "stats/analyzer.hpp"
 
 // Defined in resources.cpp
@@ -21,6 +22,9 @@ extern Anaquin::Scripts PlotTROC();
 
 // Defined in resources.cpp
 extern Anaquin::Scripts PlotTMA();
+
+extern Anaquin::FileName MixRef();
+extern Anaquin::FileName GTFRef();
 
 namespace Anaquin
 {
@@ -122,9 +126,49 @@ namespace Anaquin
                                                                                 const Options &o,
                                                                                 const Units &units)
         {
+            const auto lm = stats.linear(true);
+            const auto summary = "-------RnaFoldChange Output\n\n"
+                                 "Reference mixture file: %1%\n"
+                                 "User fold-change file:  %2%\n\n"
+                                 "-------User Transcript Annotations\n\n"
+                                 "Annotation file: %3%\n"
+                                 "Synthetic: %4%\n"
+                                 "Genome:    %5%\n\n"
+                                 "-------Genes Expressed\n\n"
+                                 "Synthetic: %6%\n"
+                                 "Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+                                 "Genome:    %9% ± %10%\n\n"
+                                 "-------Linear regression (log2 scale)\n\n"
+                                 "Correlation: %11%\n"
+                                 "Slope:       %12%\n"
+                                 "R2:          %13%\n"
+                                 "F-statistic: %14%\n"
+                                 "P-value:     %15%\n"
+                                 "SSM:         %16%, DF: %17%\n"
+                                 "SSE:         %18%, DF: %19%\n"
+                                 "SST:         %20%, DF: %21%\n";
             o.generate(file);
             o.writer->open(file);
-            o.writer->write(StatsWriter::linearSummary(file, o.rAnnot, stats, stats, stats.hist, units));
+            o.writer->write((boost::format(summary) % MixRef()
+                                                    % file
+                                                    % GTFRef()
+                                                    % "????"
+                                                    % "????"
+                                                    % "????"
+                                                    % "????"
+                                                    % "????"
+                                                    % "????"
+                                                    % lm.r
+                                                    % lm.m
+                                                    % lm.R2
+                                                    % lm.F
+                                                    % lm.p
+                                                    % lm.SSM
+                                                    % lm.SSM_D
+                                                    % lm.SSE
+                                                    % lm.SSE_D
+                                                    % lm.SST
+                                                    % lm.SST_D).str());
             o.writer->close();
         }
 
@@ -158,9 +202,6 @@ namespace Anaquin
             Metrics metrs = Metrics::Gene;
 
             Software dSoft;
-            
-            // Optional. Required for MA plot.
-            Counting cSoft = Counting::None;
         };
 
         struct Stats : public LinearStats, public MappingStats, public SequinStats

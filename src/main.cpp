@@ -343,6 +343,11 @@ struct Parsing
 // Wrap the variables so that it'll be easier to reset them
 static Parsing _p;
 
+FileName GTFRef()
+{
+    return _p.rFiles.at(OPT_R_GTF);
+}
+
 FileName MixRef()
 {
     return _p.rFiles.at(OPT_MIXTURE);
@@ -1395,16 +1400,6 @@ void parse(int argc, char ** argv)
                         o.metrs = TDiff::Metrics::Isoform;
                     }
                     
-                    /*
-                     * Optional count tables (eg: HTSeqCount)
-                     */
-                    
-                    if (_p.opts.count(OPT_C_FILES))
-                    {
-                        o.cSoft  = parseCSoft<TDiff::Counting>(_p.opts[OPT_C_SOFT], "csoft");
-                        o.counts = _p.oInputs;
-                    }
-
                     analyze_1<TDiff>(OPT_U_FILES, o);
                     break;
                 }

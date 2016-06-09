@@ -1,5 +1,11 @@
-#ifndef T_REPLICATE_HPP
-#define T_REPLICATE_HPP
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
+#ifndef R_EXPRESS_HPP
+#define R_EXPRESS_HPP
 
 #include "stats/analyzer.hpp"
 #include "parsers/parser_cufflink.hpp"
@@ -12,6 +18,8 @@ extern Anaquin::Scripts PlotTMultiple();
 
 // Defined in resources.cpp
 extern Anaquin::Scripts PlotTMinor();
+
+extern Anaquin::FileName MixRef();
 
 namespace Anaquin
 {
@@ -213,16 +221,82 @@ namespace Anaquin
             o.info("Generating " + summary);
             o.writer->open(summary);
             
-            if (stats.size() == 1)
-            {
-                o.writer->write(singleSummary(stats[0], files[0], units, o));
-            }
-            else
-            {
-                o.writer->write(multipleSummary(files, stats, units, o));
-            }
-            
+            const auto format = "-------RnaExpression Output\n\n"
+                                "Summary for input: %1%\n\n"
+                                "*Arithmetic average and standard deviation are shown\n\n"
+                                "-------User Transcript Annotations\n\n"
+                                "Annotation file: %2%\n"
+                                "Synthetic: %3%\n"
+                                "Genome:    %4%\n\n"
+                                "Mixture file: %5%\n\n"
+                                "-------Genes Expressed\n\n"
+                                "       Synthetic: %6%\n"
+                                "   Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+                                "Genome: %9%\n\n"
+                                "-------Limit of Quantification (LOQ)\n"
+                                "       *Estimated by piecewise segmented regression\n\n"
+                                "Break: %10% (%11%)\n\n"
+                                "*Below LOQ\n"
+                                "Intercept:   %12%\n"
+                                "Slope:       %13%\n"
+                                "Correlation: %14%\n"
+                                "R2:          %15%\n\n"
+                                "*Above LOQ\n"
+                                "Intercept:   %16%\n"
+                                "Slope:       %17%\n"
+                                "Correlation: %18%\n"
+                                "R2:          %19%\n\n"
+                                "-------Linear regression (log2 scale)\n\n"
+                                "Correlation: %20%\n"
+                                "Slope:       %21%\n"
+                                "R2:          %22%\n"
+                                "F-statistic: %23%\n"
+                                "P-value:     %24%\n"
+                                "SSM:         %25%, DF: %26%\n"
+                                "SSE:         %27%, DF: %28%\n"
+                                "SST:         %29%, DF: %30%\n";
+        
+            o.writer->write((boost::format(format) % "????"
+                                                   % "????"
+                                                   % "????"   // 3
+                                                   % "????"   // 4
+                                                   % MixRef() // 5
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????" // 10
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????" // 15
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????" // 20
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????" // 25
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????"
+                                                   % "????" // 30
+                             ).str());
             o.writer->close();
+            
+//            if (stats.size() == 1)
+//            {
+//                o.writer->write(singleSummary(stats[0], files[0], units, o));
+//            }
+//            else
+//            {
+//                o.writer->write(multipleSummary(files, stats, units, o));
+//            }
         }
         
         static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)

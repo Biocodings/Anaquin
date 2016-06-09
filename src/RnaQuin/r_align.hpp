@@ -1,5 +1,11 @@
-#ifndef T_ALIGN_HPP
-#define T_ALIGN_HPP
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
+#ifndef R_ALIGN_HPP
+#define R_ALIGN_HPP
 
 #include "stats/analyzer.hpp"
 #include "data/alignment.hpp"

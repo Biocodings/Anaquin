@@ -529,6 +529,76 @@ template <typename F> std::string check(const TAlign::Stats &stats, F f, const C
 
 static Scripts replicateSummary()
 {
+//    "-------RnaAlign Summary Statistics\n"
+//    "       Input alignment file: %1%\n"
+//    "       Reference annotation file: %2%\n\n"
+//    "-------Number of alignments mapped to the Synthetic and Genome\n\n"
+//    "       Synthetic: %3%\n"
+//    "       Genome:    %4%\n"
+//    "       Dilution:  %5%\n"
+//    "       Unmapped:  %6%\n"
+//    
+//    -------Reference annotation (Synthetic)
+//   	
+//Synthetic: 1192  exons
+//Synthetic: 1028 introns
+//Synthetic: 150986 bases
+//    
+//    -------Reference annotation (Genome)
+//    
+//Genome: 8390 exons
+//Genome: 6997 introns
+//Genome: 1387605 bases
+//    
+//    -------Alignments
+//    
+//    Non-spliced (Synthetic):   85431894
+//    Spliced (Synthetic):       31395715
+//    Total (Synthetic):XXXXXXX
+//    
+//    Non-spliced (Genome):      947347
+//    Spliced (Genome):          128885
+//    Total (Genome):XXXXXXX
+//    
+//    -------Comparison of alignments to annotations (Synthetic)
+//    
+//    *Exon level
+//Sensitivity: 0.997483
+//Precision:   0.974143
+//    
+//    *Intron level
+//Sensitivity: 0.993191
+//Precision:   0.858802
+//    
+//    *Base level
+//Sensitivity: 0.693474
+//Precision:   0.930525
+//    
+//    *Undetected
+//Exon:   0.002517
+//Intron: 0.006809
+//Gene:   0.025641
+//    
+//    -------Comparison of alignments to annotations (Genome)
+//    
+//    *Exon level
+//Sensitivity: 0.479738
+//Precision:   0.206732
+//    
+//    *Intron level
+//Sensitivity: 0.415893
+//Precision:   0.528820
+//    
+//    *Base level
+//Sensitivity: 0.189009
+//Precision:   0.391564
+//    
+//    *Undetected
+//Exon:   0.520262
+//Intron: 0.584107
+//Gene:   0.810443
+    
+    
     return "Summary for input: %1%\n\n"
            "   ***\n"
            "   *** Number of alignments mapped to the synthetic and genome\n"

@@ -4,8 +4,8 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef T_KDIFF_HPP
-#define T_KDIFF_HPP
+#ifndef R_KDIFF_HPP
+#define R_KDIFF_HPP
 
 #include "stats/analyzer.hpp"
 #include "RnaQuin/r_diff.hpp"

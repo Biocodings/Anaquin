@@ -1,5 +1,5 @@
-#ifndef T_SAMPLE_HPP
-#define T_SAMPLE_HPP
+#ifndef R_SAMPLE_HPP
+#define R_SAMPLE_HPP
 
 #include "stats/analyzer.hpp"
 

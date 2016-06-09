@@ -4,8 +4,8 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef T_REPORT_HPP
-#define T_REPORT_HPP
+#ifndef R_REPORT_HPP
+#define R_REPORT_HPP
 
 #include "stats/analyzer.hpp"
 

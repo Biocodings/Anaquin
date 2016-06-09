@@ -146,6 +146,9 @@ namespace Anaquin
         {
             const auto genoID = impl.genoID();
             
+            // The selected regions must have intervals...
+            assert(Standard::instance().r_var.countIntervals(genoID));
+            
             o.info("Genome: " + genoID);
             o.analyze(file);
             
@@ -249,6 +252,9 @@ namespace Anaquin
             assert(prop >= 0 && prop <= 1.0);
             assert(!src.empty() && !dst.empty());
             
+            assert(false);
+            std::cout << "sadksda" << std::endl;
+            
             /*
              * Subsampling alignments. It's expected that coverage would roughly match between
              * the genome and synthetic chromosome.
@@ -272,7 +278,7 @@ namespace Anaquin
             
             ParserSAM::parse(src, [&](const Alignment &align, const ParserSAM::Info &info)
             {
-                if (!align.i && !(info.p.i % 1000000))
+                if (!align.i && info.p.i && !(info.p.i % 1000000))
                 {
                     o.wait(std::to_string(info.p.i));
                 }
@@ -361,55 +367,37 @@ namespace Anaquin
              * Generating summary statistics
              */
             
-            const auto summary = "Summary for input: %1%\n\n"
-                                 "   ***\n"
-                                 "   *** Proportion of alignments mapped to the synthetic and genome\n"
-                                 "   ***\n\n"
-                                 "   Unmapped:  %2% aligns\n"
-                                 "   Synthetic: %3% aligns\n"
-                                 "   Genome:    %4% aligns\n\n"
-                                 "   ***\n"
-                                 "   *** Reference annotation\n"
-                                 "   ***\n\n"
-                                 "   File: %5%\n\n"
-                                 "   Synehtic: %6% sequins\n\n"
-                                 "   Genome:   %7% intervals\n\n"
-                                 "   ***                                                      \n"
-                                 "   *** How the coverage is calculated? Possibilities:       \n"
-                                 "   ***                                                      \n"
-                                 "   ***    - Mean                                            \n"
-                                 "   ***    - Quartile                                        \n"
-                                 "   ***    - Median                                          \n"
-                                 "   ***    - Maximum                                         \n"
-                                 "   ***                                                      \n"
-                                 "   *** Please refer to the online documentation for details \n"
-                                 "   ***                                                      \n\n"
-                                 "   Method: %8%\n\n"
-                                 "   ***                               \n"
-                                 "   *** Statistics before subsampling \n"
-                                 "   ***                               \n\n"
-                                 "   Coverage (Synthetic): %9%\n"
-                                 "   Coverage (Genome):    %10%\n\n"
-                                 "   ***                              \n"
-                                 "   *** Statistics after subsampling \n"
-                                 "   ***                              \n\n"
-                                 "   Coverage (Synthetic): %11%\n"
-                                 "   Coverage (Genome):    %12%\n";
+            const auto summary = "VarSubsample Output Results\n\n"
+                                 "-------VarSubsample Output\n\n"
+                                 "       Reference sequin regions: %1%\n"
+                                 "       User generated alignment: %2%\n\n"
+                                 "-------Reference regions\n\n"
+                                 "       Genomic regions:   %3%\n"
+                                 "       Synthetic regions: %4%\n\n"
+                                 "-------User alignments\n\n"
+                                 "       Unmapped:  %5%\n"
+                                 "       Synthetic: %6%\n\n"
+                                 "       Genome:    %7%\n\n"
+                                 "       Method: %8%\n\n"
+                                 "-------Before subsampling\n\n"
+                                 "       Genome coverage:    %9%\n"
+                                 "       Synthetic coverage: %10%\n\n"
+                                 "-------After subsampling\n\n"
+                                 "       Genome coverage:    %11%\n"
+                                 "       Synthetic coverage: %12%\n\n";
             
             o.generate(ri.summary());
             o.writer->open(ri.summary());
-            o.writer->write((boost::format(summary) % file
+            o.writer->write((boost::format(summary) % o.rAnnot
+                                                    % file
+                                                    % ri.countInters()
+                                                    % ri.countSeqs()
                                                     % before.cov.n_unmap
                                                     % before.cov.n_syn
                                                     % before.cov.n_gen
-                                                    % o.rAnnot
-                                                    % ri.countSeqs()
-                                                    % ri.countInters()
                                                     % meth2Str()
-                                                    //% sums(before.cov.hist)
                                                     % before.chrTC
                                                     % before.endoC
-                                                    //% sums(after.cov.hist)
                                                     % after.chrTC
                                                     % after.endoC).str());
             o.writer->close();

@@ -599,6 +599,8 @@ namespace Anaquin
         
             HashHist varHist() const;
         
+            Counts countIntervals(const ChrID &) const;
+        
             /*
              * Finding functions
              */

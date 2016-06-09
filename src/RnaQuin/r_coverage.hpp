@@ -1,5 +1,11 @@
-#ifndef T_COVERAGE_HPP
-#define T_COVERAGE_HPP
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
+#ifndef R_COVERAGE_HPP
+#define R_COVERAGE_HPP
 
 #include "tools/coverage.hpp"
 #include "stats/analyzer.hpp"

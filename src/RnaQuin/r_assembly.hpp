@@ -1,5 +1,11 @@
-#ifndef T_ASSEMBLY_HPP
-#define T_ASSEMBLY_HPP
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
+#ifndef R_ASSEMBLY_HPP
+#define R_ASSEMBLY_HPP
 
 #include "stats/analyzer.hpp"
 
