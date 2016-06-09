@@ -193,7 +193,7 @@ Scripts StatsWriter::inflectSummary()
            "   SSE:         %25%, DF: %26%\n"
            "   SST:         %27%, DF: %28%\n\n"
            "   ***\n"
-           "   *** Overall linear regression (log2 scale)\n"
+           "   *** Linear regression (log2 scale)\n"
            "   ***\n\n"
            "   Correlation: %29%\n"
            "   Slope:       %30%\n"
