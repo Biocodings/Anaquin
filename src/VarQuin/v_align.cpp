@@ -345,8 +345,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     const auto sums2l = sum(stats.s2l);
     
     const auto summary = "-------VarAlign Summary Statistics\n\n"
-                         "       User alignment file: %1%\n"
-                         "       Reference annotation file: %2%\n\n"
+                         "       Reference annotation file: %1%\n\n"
+                         "       User alignment file: %2%\n"
                          "-------Alignments\n\n"
                          "       Unmapped:  %3%\n"
                          "       Synthetic: %4% (%5%)\n"
@@ -368,8 +368,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % src
-                                            % o.rAnnot
+    o.writer->write((boost::format(summary) % o.rAnnot
+                                            % src
                                             % stats.n_unmap
                                             % stats.n_syn
                                             % (100 * stats.synProp())
