@@ -344,8 +344,8 @@ static void generateSummary(const FileName &file, const TAssembly::Stats &stats,
     
     const auto genoID = r.genoID();
     
-    o.generate("TransAssembly_summary.stats");
-    o.writer->open("TransAssembly_summary.stats");
+    o.generate("RnaAssembly_summary.stats");
+    o.writer->open("RnaAssembly_summary.stats");
     o.writer->write((boost::format(chrTSummary()) % file
                                                   % stats.cExons
                                                   % stats.eExons
@@ -431,33 +431,33 @@ void TAssembly::report(const FileName &file, const Options &o)
     const auto stats = TAssembly::analyze(file, o);
 
     /*
-     * Generating TransAssembly_summary.stats
+     * Generating RnaAssembly_summary.stats
      */
     
     generateSummary(file, stats, o);
     
     /*
-     * Generating TransAssembly_quins.stats
+     * Generating RnaAssembly_quins.stats
      */
 
-    generateQuins("TransAssembly_quins.stats", stats, o);
+    generateQuins("RnaAssembly_quins.stats", stats, o);
     
     /*
-     * Generating TransAssembly_assembly.R
+     * Generating RnaAssembly_assembly.R
      */
     
-    o.generate("TransAssembly_assembly.R");
-    o.writer->open("TransAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("TransAssembly_quins.stats", PlotTAssembly()));
+    o.generate("RnaAssembly_assembly.R");
+    o.writer->open("RnaAssembly_assembly.R");
+    o.writer->write(RWriter::createScript("RnaAssembly_quins.stats", PlotTAssembly()));
     o.writer->close();
     
     /*
      * Generating a PDF report
      */
     
-    o.report->open("TransAssembly_report.pdf");
-    o.report->addTitle("TransAssembly");
-    o.report->addFile("TransAssembly_summary.stats");
-    o.report->addFile("TransAssembly_quins.stats");
-    o.report->addFile("TransAssembly_assembly.R");
+    o.report->open("RnaAssembly_report.pdf");
+    o.report->addTitle("RnaAssembly");
+    o.report->addFile("RnaAssembly_summary.stats");
+    o.report->addFile("RnaAssembly_quins.stats");
+    o.report->addFile("RnaAssembly_assembly.R");
 }

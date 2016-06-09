@@ -88,32 +88,32 @@ void TKDiff::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Generating TransKDiff_summary.stats
+     * Generating RnaKDiff_summary.stats
      */
     
-    TDiff::generateSummary("TransKDiff_summary.stats", stats, o, units);
+    TDiff::generateSummary("RnaKDiff_summary.stats", stats, o, units);
     
     /*
-     * Generating TransKDiff_quins.csv
+     * Generating RnaKDiff_quins.csv
      */
     
-    TDiff::generateCSV("TransKDiff_quins.csv", stats, o);
+    TDiff::generateCSV("RnaKDiff_quins.csv", stats, o);
     
     /*
-     * Generating TransKDiff_fold.R
+     * Generating RnaKDiff_fold.R
      */
     
-    TDiff::generateFoldR("TransKDiff_fold.R", "TransKDiff_quins.csv", o);
+    TDiff::generateFoldR("RnaKDiff_fold.R", "RnaKDiff_quins.csv", o);
     
     /*
-     * Generating TransKDiff_ROC.R
+     * Generating RnaKDiff_ROC.R
      */
     
-    TDiff::generateROC("TransKDiff_ROC.R", "TransKDiff_quins.csv", o);
+    TDiff::generateROC("RnaKDiff_ROC.R", "RnaKDiff_quins.csv", o);
     
     /*
-     * Generating TransKDiff_LODR.R
+     * Generating RnaKDiff_LODR.R
      */
     
-    TDiff::generateLODR("TransKDiff_LODR.R", "TransKDiff_quins.stats", o);
+    TDiff::generateLODR("RnaKDiff_LODR.R", "RnaKDiff_quins.stats", o);
 }

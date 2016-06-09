@@ -207,17 +207,17 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * 1. Generating summary statistics (single or multiple samples)
      */
     
-    TExpress::generateSummary("TransExpress_summary.stats", files, stats, o, units);
+    TExpress::generateSummary("RnaExpress_summary.stats", files, stats, o, units);
     
     /*
      * 2. Generating detailed statistics
      */
     
-    TExpress::generateCSV("TransExpress_quins.stats", stats, o);
+    TExpress::generateCSV("RnaExpress_quins.stats", stats, o);
     
     /*
      * 3. Generating abundance vs abundance (single or multiple samples)
      */
     
-    TExpress::generateRAbund("TransExpress_express.R", "TransExpress_quins.stats", stats, o);
+    TExpress::generateRAbund("RnaExpress_express.R", "RnaExpress_quins.stats", stats, o);
 }

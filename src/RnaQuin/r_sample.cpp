@@ -152,19 +152,19 @@ void TSample::report(const FileName &file, const Options &o)
     const auto stats = TSample::stats(file, o);
     
     /*
-     * Generating TransSubsample_summary.stats
+     * Generating RnaSubsample_summary.stats
      */
     
-    generateSummary("TransSubsample_summary.stats", stats, o);
+    generateSummary("RnaSubsample_summary.stats", stats, o);
     
     /*
-     * Generating TransSubsample_sampled.sam
+     * Generating RnaSubsample_sampled.sam
      */
     
-    o.generate("TransSubsample_sampled.sam");
+    o.generate("RnaSubsample_sampled.sam");
     
     WriterSAM writer;
-    writer.open(o.work + "/TransSubsample_sampled.sam");
+    writer.open(o.work + "/RnaSubsample_sampled.sam");
 
     SamplingTool sampler(1 - stats.prop);
 

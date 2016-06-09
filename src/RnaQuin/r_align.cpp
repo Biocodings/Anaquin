@@ -737,35 +737,35 @@ void TAlign::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     /*
-     * Generating TransAlign_summary.stats
+     * Generating RnaAlign_summary.stats
      */
     
-    o.analyze("TransAlign_summary.stats");
-    generateSummary("TransAlign_summary.stats", file, stats, o);
+    o.analyze("RnaAlign_summary.stats");
+    generateSummary("RnaAlign_summary.stats", file, stats, o);
 
     /*
-     * Generating TransAlign_quins.stats
+     * Generating RnaAlign_quins.stats
      */
     
-    o.analyze("TransAlign_quins.stats");
-    writeQuins("TransAlign_quins.stats", file, stats, o);
+    o.analyze("RnaAlign_quins.stats");
+    writeQuins("RnaAlign_quins.stats", file, stats, o);
 
     /*
-     * Generating TransAlign_reads.R
+     * Generating RnaAlign_reads.R
      */
     
-    o.generate("TransAlign_reads.R");
-    o.writer->open("TransAlign_reads.R");
-    o.writer->write(RWriter::createScript("TransAlign_quins.stats", PlotTReads()));
+    o.generate("RnaAlign_reads.R");
+    o.writer->open("RnaAlign_reads.R");
+    o.writer->write(RWriter::createScript("RnaAlign_quins.stats", PlotTReads()));
     o.writer->close();
 
     /*
-     * Generating TransAlign_report.pdf
+     * Generating RnaAlign_report.pdf
      */
     
-    o.report->open("TransAlign_report.pdf");
-    o.report->addTitle("TransAlign");
-    o.report->addFile("TransAlign_summary.stats");
-    o.report->addFile("TransAlign_quins.stats");
-    o.report->addFile("TransAlign_reads.R");
+    o.report->open("RnaAlign_report.pdf");
+    o.report->addTitle("RnaAlign");
+    o.report->addFile("RnaAlign_summary.stats");
+    o.report->addFile("RnaAlign_quins.stats");
+    o.report->addFile("RnaAlign_reads.R");
 }

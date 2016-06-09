@@ -154,7 +154,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
-        if (align.i && !(info.p.i % 1000000))
+        if (!align.i && info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
@@ -300,9 +300,10 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         
         const auto tp = FROM_MAP(stats.data.at(ChrT).gtp);
         const auto fp = FROM_MAP(stats.data.at(ChrT).gfp);
-
-        stats.s2p[i.first] = static_cast<Proportion>(tp) / (tp + fp);
-        assert(stats.s2p[i.first] >= 0 && stats.s2p[i.first] <= 1.0);
+        const auto pc = (tp + fp) ? static_cast<Proportion>(tp) / (tp + fp) : NAN;
+        
+        assert(pc == NAN || (stats.s2p[i.first] >= 0 && stats.s2p[i.first] <= 1.0));
+        stats.s2p[i.first] = pc;
     }
 
     return stats;
@@ -310,43 +311,12 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
 static void writeSummary(const FileName &file, const FileName &src, const VAlign::Stats &stats, const VAlign::Options &o)
 {
-    /*
-     * -------VarAlign Summary Statistics
-     *
-     *      User alignment file: aligned.bam
-     *      Reference annotation file: reference.bed
-     *
-     * -------Alignments
-     *
-     *      Unmapped:  10408063
-     *      Synthetic: 1276 (1.51161e-05%)
-     *      Genome:    84411883 (0.999985%)
-     *
-     *      Dilution:  1.51161e-05
-     *
-     * -------Comparison of alignments to annotations (Synthetic)
-     *
-     *      *Region level
-     *      Covered:
-     *      Uncovered:
-     *      Total:
-     *      Sensitivity: 0.997483
-     *      Precision:   0.974143
-     *
-     *      *Nucleotide level
-     *      Covered:
-     *      Uncovered:
-     *      Total:
-     *      Sensitivity: 0.997483
-     *      Precision:   0.974143
-     */
-
     const auto sums2c = sum(stats.s2c);
     const auto sums2l = sum(stats.s2l);
     
     const auto summary = "-------VarAlign Summary Statistics\n\n"
-                         "       Reference annotation file: %1%\n\n"
-                         "       User alignment file: %2%\n"
+                         "       Reference annotation file: %1%\n"
+                         "       User alignment file: %2%\n\n"
                          "-------Alignments\n\n"
                          "       Unmapped:  %3%\n"
                          "       Synthetic: %4% (%5%)\n"

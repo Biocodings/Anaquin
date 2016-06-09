@@ -263,25 +263,25 @@ void TDiff::report(const FileName &file, const Options &o)
      * Generating summary statistics
      */
 
-    TDiff::generateSummary("TransDiff_summary.stats", stats, o, units);
+    TDiff::generateSummary("RnaDiff_summary.stats", stats, o, units);
 
     /*
      * Generating differential results
      */
 
-    TDiff::generateCSV("TransDiff_quins.stats", stats, o);
+    TDiff::generateCSV("RnaDiff_quins.stats", stats, o);
     
     /*
      * Generating log-fold plot
      */
     
-    TDiff::generateFoldR("TransDiff_fold.R", "TransDiff_quins.stats", o);
+    TDiff::generateFoldR("RnaDiff_fold.R", "RnaDiff_quins.stats", o);
 
     /*
      * Generating ROC plot
      */
     
-    TDiff::generateROC("TransDiff_ROC.R", "TransDiff_quins.stats", o);
+    TDiff::generateROC("RnaDiff_ROC.R", "RnaDiff_quins.stats", o);
     
     /*
      * Generating LODR plot
@@ -289,7 +289,7 @@ void TDiff::report(const FileName &file, const Options &o)
     
     if (o.dSoft != Software::edgeR)
     {
-        TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.stats", o);
+        TDiff::generateLODR("RnaDiff_LODR.R", "RnaDiff_quins.stats", o);
     }
 
     /*
@@ -298,6 +298,6 @@ void TDiff::report(const FileName &file, const Options &o)
     
     if (!o.counts.empty())
     {
-        TDiff::generateMA("TransDiff_MA.R", "TransDiff_counts.stats", o);
+        TDiff::generateMA("RnaDiff_MA.R", "RnaDiff_counts.stats", o);
     }
 }

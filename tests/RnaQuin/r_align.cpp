@@ -346,7 +346,7 @@
 //    REQUIRE(r.data.at(ChrT).unknowns.size() == 100);
 //    
 //    /*
-//     * There're 76 genes, remember TransAlign does everything at the gene level to avoid
+//     * There're 76 genes, remember RnaAlign does everything at the gene level to avoid
 //     * the complications due to alternative splicing.
 //     */
 //    

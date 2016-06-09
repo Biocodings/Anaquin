@@ -187,16 +187,16 @@ static std::map<Value, Tool> _tools =
     { "Test",           TOOL_TEST        },
     { "Help",           TOOL_HELP        },
 
-    { "TransAlign",     TOOL_T_ALIGN     },
-    { "TransAssembly",  TOOL_T_ASSEMBLY  },
-    { "TransExpress",   TOOL_T_EXPRESS   },
-    { "TransKExpress",  TOOL_T_KEXPRESS  },
-    { "TransDiff",      TOOL_T_DIFF      },
-    { "TransKDiff",     TOOL_T_KDIFF     },
-    { "TransNorm",      TOOL_T_NORM      },
-    { "TransIGV",       TOOL_T_IGV       },
-    { "TransCoverage",  TOOL_T_COVERAGE  },
-    { "TransSubsample", TOOL_T_SUBSAMPLE },
+    { "RnaAlign",       TOOL_T_ALIGN     },
+    { "RnaAssembly",    TOOL_T_ASSEMBLY  },
+    { "RnaExpress",     TOOL_T_EXPRESS   },
+    { "RnaKExpress",    TOOL_T_KEXPRESS  },
+    { "RnaDiff",        TOOL_T_DIFF      },
+    { "RnaKDiff",       TOOL_T_KDIFF     },
+    { "RnaNorm",        TOOL_T_NORM      },
+    { "RnaIGV",         TOOL_T_IGV       },
+    { "RnaCoverage",    TOOL_T_COVERAGE  },
+    { "RnaSubsample",   TOOL_T_SUBSAMPLE },
 
     { "VarVarscan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
@@ -1009,7 +1009,7 @@ void parse(int argc, char ** argv)
     std::vector<Value>  vals;
 
     unsigned n = 0;
-
+    std::cout << argv[1] << std::endl;
     if (!_tools.count(argv[1]) && strcmp(argv[1], "-v"))
     {
         throw InvalidToolError(argv[1]);

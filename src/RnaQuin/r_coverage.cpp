@@ -28,7 +28,7 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
      * Generating summary statistics
      */
     
-    o.info("Generating TransCoverage_summary.stats");
+    o.info("Generating RnaCoverage_summary.stats");
     
     CoverageTool::CoverageReportOptions x;
     
@@ -36,7 +36,7 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     x.writer  = o.writer;
     x.refs    = r.hist().size();
     x.length  = r.size();
-    x.summary = "TransCoverage_summary.stats";
+    x.summary = "RnaCoverage_summary.stats";
     
     CoverageTool::summary(stats, x, [&](const ChrID &id, Base i, Base j, Coverage)
     {
@@ -59,9 +59,9 @@ void TCoverage::report(const FileName &file, const TCoverage::Options &o)
     CoverageTool::CoverageBedGraphOptions y;
     
     y.writer = o.writer;
-    y.file   = "TransCoverage_chrT.bedgraph";
+    y.file   = "RnaCoverage_chrT.bedgraph";
 
-    o.info("Generating TransCoverage_chrT.bedgraph");
+    o.info("Generating RnaCoverage_chrT.bedgraph");
     
     CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
     {
