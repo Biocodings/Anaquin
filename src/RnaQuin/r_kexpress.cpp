@@ -5,7 +5,7 @@
  */
 
 #include "data/pachter.hpp"
-#include "TransQuin/t_kexpress.hpp"
+#include "RnaQuin/r_kexpress.hpp"
 
 using namespace Anaquin;
 

@@ -274,11 +274,11 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
     o.writer->close();
     
     /*
-     * Generating MetaAssembly_quins.stats
+     * Generating MetaAssembly_sequins.stats
      */
     
-    o.info("Generating MetaAssembly_quins.stats");
-    o.writer->open("MetaAssembly_quins.stats");
+    o.info("Generating MetaAssembly_sequins.stats");
+    o.writer->open("MetaAssembly_sequins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
 
@@ -297,6 +297,6 @@ void MAssembly::report(const std::vector<FileName> &files, const Options &o)
 
     o.info("Generating MetaAssembly_assembly.R");
     o.writer->open("MetaAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("MetaAssembly_quins.stats", PlotMAssembly()));
+    o.writer->write(RWriter::createScript("MetaAssembly_sequins.stats", PlotMAssembly()));
     o.writer->close();
 }

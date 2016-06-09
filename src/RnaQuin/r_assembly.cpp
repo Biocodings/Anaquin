@@ -2,7 +2,7 @@
 #include "data/path.hpp"
 #include "data/compare.hpp"
 #include "parsers/parser_gtf.hpp"
-#include "TransQuin/t_assembly.hpp"
+#include "RnaQuin/r_assembly.hpp"
 
 #define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
 
@@ -437,10 +437,10 @@ void TAssembly::report(const FileName &file, const Options &o)
     generateSummary(file, stats, o);
     
     /*
-     * Generating TransAssembly_quins.stats
+     * Generating TransAssembly_sequins.stats
      */
 
-    generateQuins("TransAssembly_quins.stats", stats, o);
+    generateQuins("TransAssembly_sequins.stats", stats, o);
     
     /*
      * Generating TransAssembly_assembly.R
@@ -448,7 +448,7 @@ void TAssembly::report(const FileName &file, const Options &o)
     
     o.generate("TransAssembly_assembly.R");
     o.writer->open("TransAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("TransAssembly_quins.stats", PlotTAssembly()));
+    o.writer->write(RWriter::createScript("TransAssembly_sequins.stats", PlotTAssembly()));
     o.writer->close();
     
     /*
@@ -458,6 +458,6 @@ void TAssembly::report(const FileName &file, const Options &o)
     o.report->open("TransAssembly_report.pdf");
     o.report->addTitle("TransAssembly");
     o.report->addFile("TransAssembly_summary.stats");
-    o.report->addFile("TransAssembly_quins.stats");
+    o.report->addFile("TransAssembly_sequins.stats");
     o.report->addFile("TransAssembly_assembly.R");
 }

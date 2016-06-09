@@ -1,4 +1,4 @@
-#include "TransQuin/t_align.hpp"
+#include "RnaQuin/r_align.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -744,11 +744,11 @@ void TAlign::report(const FileName &file, const Options &o)
     generateSummary("TransAlign_summary.stats", file, stats, o);
 
     /*
-     * Generating TransAlign_quins.stats
+     * Generating TransAlign_sequins.stats
      */
     
-    o.analyze("TransAlign_quins.stats");
-    writeQuins("TransAlign_quins.stats", file, stats, o);
+    o.analyze("TransAlign_sequins.stats");
+    writeQuins("TransAlign_sequins.stats", file, stats, o);
 
     /*
      * Generating TransAlign_reads.R
@@ -756,7 +756,7 @@ void TAlign::report(const FileName &file, const Options &o)
     
     o.generate("TransAlign_reads.R");
     o.writer->open("TransAlign_reads.R");
-    o.writer->write(RWriter::createScript("TransAlign_quins.stats", PlotTReads()));
+    o.writer->write(RWriter::createScript("TransAlign_sequins.stats", PlotTReads()));
     o.writer->close();
 
     /*
@@ -766,6 +766,6 @@ void TAlign::report(const FileName &file, const Options &o)
     o.report->open("TransAlign_report.pdf");
     o.report->addTitle("TransAlign");
     o.report->addFile("TransAlign_summary.stats");
-    o.report->addFile("TransAlign_quins.stats");
+    o.report->addFile("TransAlign_sequins.stats");
     o.report->addFile("TransAlign_reads.R");
 }

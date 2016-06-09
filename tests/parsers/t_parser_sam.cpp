@@ -11,7 +11,7 @@
 //     * Cigar: 388598 - 29M58378N64M33114N8M
 //     */
 //
-//    ParserSAM::parse("tests/data/TransQuin/introns.sam", [&](const Alignment &align, const ParserProgress &)
+//    ParserSAM::parse("tests/data/RnaQuin/introns.sam", [&](const Alignment &align, const ParserProgress &)
 //    {
 //        aligns.push_back(align);
 //    });

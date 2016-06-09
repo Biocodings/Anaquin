@@ -1,6 +1,6 @@
 #include "tools/sample.hpp"
 #include <ss/maths/stats.hpp>
-#include "TransQuin/t_sample.hpp"
+#include "RnaQuin/r_sample.hpp"
 #include "writers/writer_sam.hpp"
 #include "parsers/parser_cufflink.hpp"
 

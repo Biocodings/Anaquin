@@ -265,8 +265,8 @@ void LNorm::report(const FileName &file, const Options &o)
      * Generating CSV for the abundance
      */
 
-    o.info("Generating LadNorm_quins.stats");
-    writeCSV("LadNorm_quins.stats", stats, o);
+    o.info("Generating LadNorm_sequins.stats");
+    writeCSV("LadNorm_sequins.stats", stats, o);
 
     /*
      * Generating expression vs expression
@@ -274,6 +274,6 @@ void LNorm::report(const FileName &file, const Options &o)
 
     o.info("Generating LadNorm_norm.R");
     o.writer->open("LadNorm_norm.R");
-    o.writer->write(RWriter::createScript("LadNorm_quins.stats", PlotLNorm()));
+    o.writer->write(RWriter::createScript("LadNorm_sequins.stats", PlotLNorm()));
     o.writer->close();
 }

@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "TransQuin/t_viewer.hpp"
+#include "RnaQuin/r_viewer.hpp"
 
 using namespace Anaquin;
 

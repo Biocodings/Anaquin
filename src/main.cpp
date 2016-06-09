@@ -7,16 +7,16 @@
 #include <strings.h>
 #include <execinfo.h>
 
-#include "TransQuin/t_diff.hpp"
-#include "TransQuin/t_kdiff.hpp"
-#include "TransQuin/t_align.hpp"
-#include "TransQuin/t_viewer.hpp"
-#include "TransQuin/t_report.hpp"
-#include "TransQuin/t_sample.hpp"
-#include "TransQuin/t_express.hpp"
-#include "TransQuin/t_kexpress.hpp"
-#include "TransQuin/t_assembly.hpp"
-#include "TransQuin/t_coverage.hpp"
+#include "RnaQuin/r_diff.hpp"
+#include "RnaQuin/r_kdiff.hpp"
+#include "RnaQuin/r_align.hpp"
+#include "RnaQuin/r_viewer.hpp"
+#include "RnaQuin/r_report.hpp"
+#include "RnaQuin/r_sample.hpp"
+#include "RnaQuin/r_express.hpp"
+#include "RnaQuin/r_kexpress.hpp"
+#include "RnaQuin/r_assembly.hpp"
+#include "RnaQuin/r_coverage.hpp"
 
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"

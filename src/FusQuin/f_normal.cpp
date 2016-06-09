@@ -68,11 +68,11 @@ void FNormal::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating FusNormal_quins.stats
+     * Generating FusNormal_sequins.stats
      */
     
-    o.generate("FusNormal_quins.stats");
-    o.writer->open("FusNormal_quins.stats");
+    o.generate("FusNormal_sequins.stats");
+    o.writer->open("FusNormal_sequins.stats");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
@@ -82,6 +82,6 @@ void FNormal::report(const FileName &file, const Options &o)
     
     o.generate("FusNormal_express.R");
     o.writer->open("FusNormal_express.R");
-    o.writer->write(RWriter::createScript("FusNormal_quins.stats", PlotFNormal()));
+    o.writer->write(RWriter::createScript("FusNormal_sequins.stats", PlotFNormal()));
     o.writer->close();
 }

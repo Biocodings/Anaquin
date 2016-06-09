@@ -1,4 +1,4 @@
-#include "TransQuin/t_coverage.hpp"
+#include "RnaQuin/r_coverage.hpp"
 
 using namespace Anaquin;
 

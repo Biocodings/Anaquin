@@ -4,7 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
  */
 
-#include "TransQuin/t_diff.hpp"
+#include "RnaQuin/r_diff.hpp"
 #include "parsers/parser_edgeR.hpp"
 #include "parsers/parser_sleuth.hpp"
 #include "parsers/parser_DESeq2.hpp"
@@ -269,19 +269,19 @@ void TDiff::report(const FileName &file, const Options &o)
      * Generating differential results
      */
 
-    TDiff::generateCSV("TransDiff_quins.stats", stats, o);
+    TDiff::generateCSV("TransDiff_sequins.stats", stats, o);
     
     /*
      * Generating log-fold plot
      */
     
-    TDiff::generateFoldR("TransDiff_fold.R", "TransDiff_quins.stats", o);
+    TDiff::generateFoldR("TransDiff_fold.R", "TransDiff_sequins.stats", o);
 
     /*
      * Generating ROC plot
      */
     
-    TDiff::generateROC("TransDiff_ROC.R", "TransDiff_quins.stats", o);
+    TDiff::generateROC("TransDiff_ROC.R", "TransDiff_sequins.stats", o);
     
     /*
      * Generating LODR plot
@@ -289,7 +289,7 @@ void TDiff::report(const FileName &file, const Options &o)
     
     if (o.dSoft != Software::edgeR)
     {
-        TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_quins.stats", o);
+        TDiff::generateLODR("TransDiff_LODR.R", "TransDiff_sequins.stats", o);
     }
 
     /*

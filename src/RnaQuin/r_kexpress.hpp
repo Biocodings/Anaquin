@@ -4,11 +4,11 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef T_KEXPRESS_HPP
-#define T_KEXPRESS_HPP
+#ifndef R_KEXPRESS_HPP
+#define R_KEXPRESS_HPP
 
 #include "stats/analyzer.hpp"
-#include "TransQuin/t_express.hpp"
+#include "RnaQuin/r_express.hpp"
 
 namespace Anaquin
 {

@@ -7,7 +7,7 @@
 #include <thread>
 #include "data/pachter.hpp"
 #include "data/experiment.hpp"
-#include "TransQuin/t_kdiff.hpp"
+#include "RnaQuin/r_kdiff.hpp"
 
 using namespace Anaquin;
 
@@ -115,5 +115,5 @@ void TKDiff::report(const FileName &file, const Options &o)
      * Generating TransKDiff_LODR.R
      */
     
-    TDiff::generateLODR("TransKDiff_LODR.R", "TransKDiff_quins.stats", o);
+    TDiff::generateLODR("TransKDiff_LODR.R", "TransKDiff_sequins.stats", o);
 }

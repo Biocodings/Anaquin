@@ -8,7 +8,7 @@
 #define T_KDIFF_HPP
 
 #include "stats/analyzer.hpp"
-#include "TransQuin/t_diff.hpp"
+#include "RnaQuin/r_diff.hpp"
 
 namespace Anaquin
 {

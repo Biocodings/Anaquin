@@ -179,7 +179,7 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
      * Generating sequin statistics
      */
     
-    writeQuins("FusDiscover_quins.stats", stats, o);
+    writeQuins("FusDiscover_sequins.stats", stats, o);
     
     /*
      * Generating statistics for the query
@@ -203,7 +203,7 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
     o.report->open("FusDiscover_report.pdf");
     o.report->addTitle("FusDiscover_report");
     o.report->addFile("FusDiscover_summary.stats");
-    o.report->addFile("FusDiscover_quins.stats");
+    o.report->addFile("FusDiscover_sequins.stats");
     o.report->addFile("FusDiscover_query.stats");
     o.report->addFile("FusDiscover_ROC.R");
 }
