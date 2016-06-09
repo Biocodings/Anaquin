@@ -106,9 +106,9 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
     if (Standard::isGenomic(align.cID))
     {
         if (matchT(align, __match__, [&](const Locus &l, MatchRule rule)
-                   {
-                       return r.findGeno(align.cID, align.l);
-                   }))
+        {
+            return r.findGeno(align.cID, align.l);
+        }))
         {
             const auto gID = __match__.cMatch->id();
             
@@ -122,7 +122,8 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
             
             if (__match__.oMatch)
             {
-                stats.data[ChrT].gfp[__match__.cMatch->id()]++;
+                std::cout << "Hello" << std::endl;
+                stats.data[align.cID].gfp[__match__.cMatch->id()]++;
             }
         }
     }
