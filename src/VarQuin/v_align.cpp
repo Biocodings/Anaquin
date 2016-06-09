@@ -112,6 +112,7 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
         {
             const auto gID = __match__.cMatch->id();
             
+                std::cout << "Hello1" << std::endl;
             stats.data[align.cID].tp++;
             stats.data[align.cID].hist.at(gID)++;
             stats.data[align.cID].gtp[gID]++;
@@ -127,7 +128,7 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
             
             if (__match__.oMatch)
             {
-                std::cout << "Hello" << std::endl;
+                std::cout << "Hello2" << std::endl;
                 stats.data[align.cID].fp++;
                 stats.data[align.cID].gfp[__match__.cMatch->id()]++;
             }
