@@ -119,7 +119,7 @@ namespace Anaquin
         // Insertion, deletion etc
         const auto delta = sum(bam2delta(reinterpret_cast<bam1_t *>(i.data)));
         
-        return clen - (l.start + slen + delta);
+        return clen - (l.start + slen + delta) + 2;
     }
 
     inline CigarStr bam2rcigar(bam1_t *x)
@@ -155,11 +155,6 @@ namespace Anaquin
 
         std::reverse(x.seq.begin(),  x.seq.end());
         std::reverse(x.qual.begin(), x.qual.end());
-        
-        if ("55M1D70M" == bam2cigar(b))
-        {
-            std::cout << x.name << std::endl;
-        }
         
         // The left-most position in the forward strand
         const auto rstart = reversePos(x.l, x, i);
