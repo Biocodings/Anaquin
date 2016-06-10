@@ -68,9 +68,9 @@ data  = [ 'data/manual.txt',
 
           # ---------- Variant ----------
 
+	  'src/r/plotVLOD.R',
           'src/r/plotVROC1.R',
           'src/r/plotVROC2.R',          
-          'src/r/plotVProb.R',
           'src/r/plotVDensity.R',
 
           'data/VarQuin/AVA017.v032.bed',
