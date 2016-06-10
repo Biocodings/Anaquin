@@ -67,7 +67,7 @@ namespace Anaquin
 //                }
 //                else
 //                {
-//                    return Results(EndoChrT);
+//                    return Results(genoChrT);
 //                }
 //            }
 //

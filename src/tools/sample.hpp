@@ -55,17 +55,17 @@ namespace Anaquin
             CoverageTool::Stats cov;
             
             // Calculated coverage for chrT
-            Coverage chrTC;
+            Coverage syncC;
             
             // Calculated coverage for the query (eg: chr21)
-            Coverage endoC;
+            Coverage genoC;
             
             /*
              * Fraction required to subsample in chrT. This works because chrT is a short
              * chromosome and almost certianly will have the highest coverage.
              */
             
-            inline Proportion sample() const { return endoC / chrTC; }
+            inline Proportion sample() const { return genoC / syncC; }
         };
         
         /*
@@ -224,39 +224,36 @@ namespace Anaquin
             {
                 case ArithAverage:
                 {
-                    stats.chrTC = stats.sync.mean;
-                    stats.endoC = stats.geno.mean;
+                    stats.syncC = stats.sync.mean;
+                    stats.genoC = stats.geno.mean;
                     break;
                 }
                     
                 case Maximum:
                 {
-                    stats.chrTC = stats.sync.max;
-                    stats.endoC = stats.geno.max;
+                    stats.syncC = stats.sync.max;
+                    stats.genoC = stats.geno.max;
                     break;
                 }
                     
                 case Median:
                 {
-                    stats.chrTC = stats.sync.p50;
-                    stats.endoC = stats.geno.p50;
+                    stats.syncC = stats.sync.p50;
+                    stats.genoC = stats.geno.p50;
                     break;
                 }
                     
                 case Percentile75:
                 {
-                    stats.chrTC = stats.sync.p75;
-                    stats.endoC = stats.geno.p75;
+                    stats.syncC = stats.sync.p75;
+                    stats.genoC = stats.geno.p75;
                     break;
                 }
             }
 
-            assert(stats.chrTC && stats.endoC);
+            assert(stats.syncC && stats.genoC);
             
-            std::cout << stats.chrTC << std::endl;
-            std::cout << stats.endoC << std::endl;
-            
-            if (stats.endoC >= stats.chrTC)
+            if (stats.genoC > stats.syncC)
             {
                 throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
             }
@@ -421,10 +418,10 @@ namespace Anaquin
                                                     % before.cov.n_gen
                                                     % before.cov.n_syn
                                                     % meth2Str()
-                                                    % before.chrTC
-                                                    % before.endoC
-                                                    % after.chrTC
-                                                    % after.endoC).str());
+                                                    % before.syncC
+                                                    % before.genoC
+                                                    % after.syncC
+                                                    % after.genoC).str());
             o.writer->close();
         }
     };
