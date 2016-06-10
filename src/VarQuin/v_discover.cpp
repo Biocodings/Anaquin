@@ -3,7 +3,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotVProb();
+extern Scripts PlotVLOD();
 
 // Defined in resources.cpp
 extern Scripts PlotVROC1(); // Somatic (eg: VarScan)
@@ -424,7 +424,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.generate("VarDiscover_LOD.R");
     o.writer->open("VarDiscover_LOD.R");
-    o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
+    o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVLOD()));
     o.writer->close();
     
     /*

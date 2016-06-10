@@ -69,9 +69,9 @@
  * Variant Resources
  */
 
+#include "resources/plotVLOD.R"
 #include "resources/plotVROC1.R"
 #include "resources/plotVROC2.R"
-#include "resources/plotVProb.R"
 #include "resources/plotVDensity.R"
 
 #include "resources/AVA009.v032.vcf"
@@ -268,9 +268,9 @@ Scripts TransDataMixAB()
  * Variant Resources
  */
 
-Scripts PlotVProb()
+Scripts PlotVLOD()
 {
-    return ToString(src_r_plotVProb_R);
+    return ToString(src_r_plotVLOD_R);
 }
 
 Scripts PlotVROC1()

@@ -9,7 +9,7 @@ using namespace Anaquin;
 extern Scripts PlotMFold();
 
 // Defined in resources.cpp // TODO:...
-extern Scripts PlotVProb();
+extern Scripts PlotVLOD();
 
 MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o)
 {
@@ -297,7 +297,7 @@ void MDiff::report(const std::vector<FileName> &files, const Options &o)
             
             o.generate("MetaDiff_prob.R");
             o.writer->open("MetaDiff_prob.R");
-            o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVProb()));
+            o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVLOD()));
             o.writer->close();
 
             break;

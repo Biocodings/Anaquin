@@ -13,7 +13,6 @@
     p <- p + theme(legend.title = element_text(face="bold"))
     p <- p + theme(legend.key = element_blank())
 
-    
     #
     # Calculating the aspect ratio to make the plot a square.
     #

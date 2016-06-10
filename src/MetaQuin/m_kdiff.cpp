@@ -9,7 +9,7 @@ using namespace Anaquin;
 extern Scripts PlotMFold();
 
 // Defined in resources.cpp // TODO:...
-extern Scripts PlotVProb();
+extern Scripts PlotVLOD();
 
 MKDiff::Stats MKDiff::analyze(const std::vector<FileName> &files, const Options &o)
 {
