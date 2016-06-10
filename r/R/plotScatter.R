@@ -34,23 +34,22 @@ plotScatter <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='',
     data$y    <- if (isMulti) rowMeans(data$y)     else data$y
     data$ymax <- if (isMulti) data$y + data$sd     else NULL
     data$ymin <- if (isMulti) data$y - data$sd     else NULL
-    
+
     p <- ggplot(data=data, aes(x=x, y=y)) +
                                xlab(xlab) +
                                ylab(ylab) +
                            ggtitle(title) +
-                geom_point(aes(colour=grp), size=1.0, alpha=1.0) +
+                geom_point(aes(colour=grp), size=2.0, alpha=0.5) +
                 geom_smooth(method='lm', formula=y ~ x)          +
                 labs(colour='Ratio')                             +
                 theme_bw()
     
     p <-p + guides(colour=FALSE)
-
-    y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 1.0)
+    y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 0.5)
 
     if (showStats == 'right')
     {
-        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
+        p <- p + annotate("text", label=lm2str(data), x=max(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
     }
     else
     {
@@ -69,14 +68,12 @@ plotScatter <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='',
         p <- p + scale_x_continuous(breaks=xBreaks)
     }
     
-    p <- p + theme(axis.title.x=element_text(face='bold', size=12))
-    p <- p + theme(axis.title.y=element_text(face='bold', size=12))
-
     if (!is.null(data$sd))
     {
         p <- p + geom_errorbar(aes(ymax=ymax, ymin=ymin), size=0.3, alpha=0.7)
     }
-
+    
+    p <- .transformPlot(p)
     print(p)
 }
 

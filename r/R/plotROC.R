@@ -4,34 +4,32 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotROC <- function(data,
-                     guideTitle='LFC',
-                     title=NULL,
-                     refRatio=NULL,
-                     showGuide=TRUE,
-                     color='black',
-                     ...)
+plotROC <- function(data,
+                    legTitle='LFC',
+                    title=NULL,
+                    refRatio=NULL,
+                    showGuide=TRUE,
+                    color='black',
+                    ...)
 {
     require(ROCR)
     require(grid)
     require(ggplot2)
-    require(gridExtra)
+    #require(gridExtra)
     
     data <- data$seqs
 
-    stopifnot(!is.null(data$input))
-
+    stopifnot(!is.null(data$pval))
+    stopifnot(!is.null(data$label))
+    stopifnot(!is.null(data$expected))
+    
     showAUC <- FALSE
     
     if (is.null(data$ratio))
     {
-        data$ratio <- abs(round(data$input))
+        data$ratio <- abs(round(data$expected))
     }
 
-    stopifnot(!is.null(data$pval))
-    stopifnot(!is.null(data$ratio))
-    stopifnot(!is.null(data$label))
-    
     data <- data[, order(names(data))]
     data <- data.frame(label=data$label,
                        pval=data$pval,
@@ -126,40 +124,16 @@
         }
     }
     
-    #rocDat[rocDat$ratio==12,]$ratio <- 4096
-    #rocDat[rocDat$ratio==11,]$ratio <- 2048
-    #rocDat[rocDat$ratio==10,]$ratio <- 1024
-    #rocDat[rocDat$ratio==9,]$ratio  <- 512
-    #rocDat[rocDat$ratio==8,]$ratio  <- 256
-    #rocDat[rocDat$ratio==7,]$ratio  <- 128
-    #rocDat[rocDat$ratio==6,]$ratio  <- 64
-    #rocDat[rocDat$ratio==5,]$ratio  <- 32
-    #rocDat[rocDat$ratio==4,]$ratio  <- 16
-    #rocDat[rocDat$ratio==3,]$ratio  <- 8
-    #rocDat[rocDat$ratio==2,]$ratio  <- 4
-    #rocDat[rocDat$ratio==1,]$ratio  <- 2
-    #rocDat[rocDat$ratio==0,]$ratio  <- 1
-
     rocDat$ratio = as.factor(rocDat$ratio)
     
     p <- ggplot(data=rocDat, aes(x=FPR, y=TPR))           + 
             geom_abline(intercept=0, slope=1, linetype=2) +
-            labs(colour=guideTitle)                       +
+            labs(colour=legTitle)                         +
             theme_bw()
 
-    if (!is.null(color))
-    {
-        p <- p + geom_path(size=1, aes(colour=color), colour=color, alpha=0.7)
-        p <- p + geom_point(size=1, aes(colour=color), colour=color, alpha=0.7)
-    }
-    else
-    {
-        p <- p + geom_path(size=1, aes(colour=ratio), alpha=0.7)
-        p <- p + geom_point(size=1, aes(colour=ratio), alpha=0.7)
-    }    
+    p <- p + geom_path(size=1, aes(colour=ratio), alpha=0.7)
+    p <- p + geom_point(size=1, aes(colour=ratio), alpha=0.7)
 
-    #p <- p + scale_colour_manual(values='blue')
-    
     if (!is.null(title))
     {
         p <- p + ggtitle(title)
@@ -179,42 +153,20 @@
         #p <- p + guides(colour=FALSE)
     }
 
-    print(p)    
+    p <- .transformPlot(p)        
+    print(p)
 }
 
-plotROC.FusQuin <- function(data, title, color, type)
-{
-    if (is.null(title)) { title <- 'FusQuin Detection' }
-    
-    data$seqs$pval <- (max(data$seqs$measured) + 1) - data$seqs$measured
-    .plotROC(data, title=title, color=color, refRatio=0, showGuide=FALSE)
-}
+#plotROC.FusQuin <- function(data, title, color, type)
+#{
+#    if (is.null(title)) { title <- 'FusQuin Detection' }
+#    
+#    data$seqs$pval <- (max(data$seqs$measured) + 1) - data$seqs$measured
+#    .plotROC(data, title=title, color=color, refRatio=0, showGuide=FALSE)
+#}
 
-plotROC.VarQuin <- function(data, title, color, type)
-{
-    if (type == 'SNP' | type == 'Indel')
-    {
-        data$seqs <- data$seq[data$seqs$type == type,]
-    }
-
-    .plotROC(data, title=title, color=color, showGuide=FALSE)
-}
-
-plotROC.TransQuin <- function(data, title, color, type)
-{
-    data$seqs <- TransDiff_(data)
-    .plotROC(data, title=title, color=color, refRatio=0)
-}
-
-plotROC <- function(data, title=NULL, color=NULL, type=NULL)
-{
-    stopifnot (class(data) == 'TransQuin' |
-               class(data) == 'VarQuin'   |
-               class(data) == 'FusQuin'   |
-               class(data) == 'MetaQuin')
-    
-    if (class(data) == 'VarQuin')   { plotROC.VarQuin(data=data, title=title, colo=color, type=type)    }
-    if (class(data) == 'FusQuin')   { plotROC.FusQuin(data=data, title=title, colo=color, type=type)    }
-    if (class(data) == 'MetaQuin')  { plotROC.MetaQuin(data=data, title=title, color=color, type=type)  }    
-    if (class(data) == 'TransQuin') { plotROC.TransQuin(data=data, title=title, color=color, type=type) }
-}
+#plotROC.TransQuin <- function(data, title, color, type)
+#{
+#    data$seqs <- TransDiff_(data)
+#    .plotROC(data, title=title, color=color, refRatio=0)
+#}

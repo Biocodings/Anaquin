@@ -55,7 +55,7 @@ Anaquin <- function(...)
 {
     x <- list(...)
 
-    keys <- c('pval', 'mean', 'expected', 'input', 'measured')
+    keys <- c('pval', 'mean', 'expected', 'input', 'measured', 'label')
 
     r <- list('seqs'=.createData(x, keys))
     stopifnot(!is.null(r$seqs))
