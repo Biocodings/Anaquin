@@ -81,7 +81,7 @@ void ParserSAM::parse(const FileName &file, Functor x)
                 const auto ol = bam_cigar_oplen(cigar[align.i]);
 
                 // 1-based leftmost coordinate is assumed
-                align.l = Locus(n + 1, n + ol);
+                align.l = Locus(n+1, n+ol);
 
                 // We'll need it for the next operation
                 n += ol;
