@@ -18,12 +18,15 @@ data  = [ 'data/manual.txt',
           'scripts/reports.py',
           'scripts/sleuth.R',
 
+	  'src/r/plotScatter.R',
+	  'src/r/plotSensitivity.R',
+
           # ------- Fusion -------
 
           'src/r/plotFROC.R',
           'src/r/plotFNormal.R',
-	      'src/r/plotFFusion.R',
-	      'src/r/plotFFold.R',
+	  'src/r/plotFFusion.R',
+	  'src/r/plotFFold.R',
 
           'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',
@@ -40,14 +43,10 @@ data  = [ 'data/manual.txt',
           # ---------- Transcriptome ----------
 
           'src/r/plotTMA.R',
-    	  'src/r/plotTFold.R',
           'src/r/plotTMinor.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
           'src/r/plotTMultiple.R',
-          'src/r/plotTExpress.R',
-          'src/r/plotTAssembly.R',
-	  'src/r/plotTReads.R',
 
           'data/TransQuin/ATR001.v032.gtf',
           'data/TransQuin/MTR002.v013.csv',
@@ -69,12 +68,10 @@ data  = [ 'data/manual.txt',
 
           # ---------- Variant ----------
 
-          'src/r/plotVROC.R',
+          'src/r/plotVROC1.R',
           'src/r/plotVROC2.R',          
           'src/r/plotVProb.R',
-	      'src/r/plotScatter.R',          
           'src/r/plotVDensity.R',
-	      'src/r/plotVExpress.R',
 
           'data/VarQuin/AVA017.v032.bed',
           'data/VarQuin/AVA009.v032.vcf',
