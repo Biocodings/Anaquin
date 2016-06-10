@@ -112,7 +112,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
         {
             parseVariants(file, o.input, [&](const VariantMatch &m)
             {
-                if (m.query.cID == ChrT)
+                if (Standard::isSynthetic(m.query.cID))
                 {
                     stats.n_syn++;
                     
@@ -204,10 +204,10 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                                     % r.countSNPSync()
                                     % r.countIndSync()
                                     % r.countSync()
-                                    % "????" // 7
+                                    % stats.n_syn
                                     % stats.vars.limit.abund // 8
                                     % stats.vars.limit.id    // 9
-                                    % lm.r // 10
+                                    % lm.r                   // 10
                                     % lm.m
                                     % lm.R2
                                     % lm.F
