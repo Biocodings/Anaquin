@@ -6,10 +6,10 @@ using namespace Anaquin;
 extern Scripts PlotVProb();
 
 // Defined in resources.cpp
-extern Scripts PlotVROC();
+extern Scripts PlotVROC1(); // Somatic (eg: VarScan)
 
 // Defined in resources.cpp
-extern Scripts PlotVROC2();
+extern Scripts PlotVROC2(); // Germline (eg: GATK)
 
 VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
@@ -167,7 +167,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Stats &stats,
                        const VDiscover::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
 
     o.writer->open("VarDiscover_quins.csv");
     o.writer->write((boost::format(format) % "Seq"
@@ -176,6 +176,7 @@ static void writeQuins(const FileName &file,
                                            % "Pval"
                                            % "ReadsR"
                                            % "ReadsV"
+                                           % "EFold"
                                            % "EFreq"
                                            % "MFreq"
                                            % "Type").str());
@@ -198,6 +199,7 @@ static void writeQuins(const FileName &file,
                                                                % (isnan(j.query.p) ? "-" : p2str(j.query.p))
                                                                % j.query.readR
                                                                % j.query.readV
+                                                               % j.eFold
                                                                % j.eAllFreq
                                                                % j.query.alleleFreq()
                                                                % type2str(j.query.type())).str());
@@ -227,7 +229,8 @@ static void writeQuins(const FileName &file,
                                                    % "NA"
                                                    % "NA"
                                                    % "NA"
-                                                   % r.matchAlleleFreq(m->id)
+                                                   % r.findAFold(m->id)
+                                                   % r.findAFreq(m->id)
                                                    % "NA"
                                                    % type2str(m->type())).str());
         }
@@ -236,55 +239,20 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-//static void writeQueryNP(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
-//{
-//    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
-//    
-//    o.writer->open(file);
-//    o.writer->write((boost::format(format) % "seq"
-//                                           % "pos"
-//                                           % "label"
-//                                           % "ref"
-//                                           % "var"
-//                                           % "eFold"
-//                                           % "eAllele"
-//                                           % "type").str());
-//    
-//    auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
-//    {
-//        for (const auto &i : x)
-//        {
-//            o.writer->write((boost::format(format) % (i.seq ? i.seq->id : "-")
-//                                                   % i.query.l.start
-//                                                   % label
-//                                                   % i.query.readR
-//                                                   % i.query.readV
-//                                                   % i.eFold
-//                                                   % i.eAllFreq
-//                                                   % type2str(i.query.type())).str());
-//        }
-//    };
-//    
-//    f(stats.chrT.tps, "TP");
-//    f(stats.chrT.fps, "FP");
-//    
-//    o.writer->close();
-//}
-
-static void writeQuery(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
+static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "seq"
-                                           % "pos"
-                                           % "label"
-                                           % "ref"
-                                           % "var"
-                                           % "eFold"
-                                           % "eAllele"
-                                           % "pval"
-                                           % "type").str());
+    o.writer->write((boost::format(format) % "Seq"
+                                           % "Pos"
+                                           % "Label"
+                                           % "Ref"
+                                           % "Var"
+                                           % "EFold"
+                                           % "EAllele"
+                                           % "Pval"
+                                           % "Type").str());
 
     auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
     {
@@ -407,131 +375,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.chrT.m_ind.pc()
                                             % stats.chrT.m_snp.fdr()
                      ).str());
-    
-//    o.writer->write((boost::format(summary) % src
-//                                            % stats.chrT.dTot()
-//                                            % stats.geno.size()
-//                                            % o.rAnnot
-//                                            % r.countSNPs()
-//                                            % r.countIndels()
-//                                            % r.countVars()        // 7
-//                                            % stats.chrT.dSNP()    // 8
-//                                            % stats.chrT.dInd()
-//                                            % stats.chrT.dTot()
-//                                            % stats.chrT.tpSNP()
-//                                            % stats.chrT.tpInd()
-//                                            % stats.chrT.tpTot()
-//                                            % stats.chrT.fpSNP()
-//                                            % stats.chrT.fpInd()
-//                                            % stats.chrT.fpTot()     // 16
-//                                            % stats.chrT.m.sn()      // 17
-//                                            % stats.chrT.m.pc()      // 18
-//                                            % stats.chrT.m.fdr()     // 19
-//                                            % stats.chrT.m_snp.sn()  // 20
-//                                            % stats.chrT.m_snp.pc()  // 21
-//                                            % stats.chrT.m_snp.fdr() // 22
-//                                            % stats.chrT.m_ind.sn()  // 23
-//                                            % stats.chrT.m_ind.pc()  // 24
-//                                            % stats.chrT.m_snp.fdr() // 25
-//                                            % stats.chrT.fnSNP()     // 26
-//                                            % stats.chrT.fnInd()     // 27
-//                                            % stats.chrT.fnTot()     // 28
-//                     ).str());
     o.writer->close();
 }
-
-//static void writeSummary(const FileName &file, const FileName &src, const VDiscover::Stats &stats, const VDiscover::Options &o)
-//{
-//    const auto &r = Standard::instance().r_var;
-//    
-//    const auto summary = "Summary for input: %1%\n\n"
-//                         "   ***\n"
-//                         "   *** Number of variants called in the synthetic and genome\n"
-//                         "   ***\n\n"
-//                         "   Synthetic: %2% variants\n"
-//                         "   Genome:    %3% variants\n\n"
-//                         "   ***\n"
-//                         "   *** Reference annotation (Synthetic)\n"
-//                         "   ***\n\n"
-//                         "   File: %4%\n\n"
-//                         "   Synthetic: %5% SNPs\n"
-//                         "   Synthetic: %6% indels\n"
-//                         "   Synthetic: %7% variants\n\n"
-//                         "   ***                                         \n"
-//                         "   *** Statistics for the synthetic chromosome \n"
-//                         "   ***                                         \n\n"
-//                         "   Detected: %8% SNPs\n"
-//                         "   Detected: %9% indels\n"
-//                         "   Detected: %10% variants\n\n"
-//                         "   Significance: %11%\n\n"
-//                         "   Significant: %12% SNPs\n"
-//                         "   Significant: %13% indels\n"
-//                         "   Significant: %14% variants\n\n"
-//                         "   True Positive:  %15% SNPS\n"
-//                         "   True Positive:  %16% indels\n"
-//                         "   True Positive:  %17% variants\n\n"
-//                         "   False Positive: %18% SNPS\n"
-//                         "   False Positive: %19% indels\n"
-//                         "   False Positive: %20% variants\n\n"
-//                         "   False Negative: %30% SNPS\n"
-//                         "   False Negative: %31% indels\n"
-//                         "   False Negative: %32% variants\n\n"
-//                         "   ***\n"
-//                         "   *** Performance metrics (Overall)\n"
-//                         "   ***\n\n"
-//                         "   Sensitivity: %21$.2f\n"
-//                         "   Specificity: %22$.2f\n"
-//                         "   Precision:   %23$.2f\n\n"
-//                         "   ***\n"
-//                         "   *** Performance metrics (SNP)\n"
-//                         "   ***\n\n"
-//                         "   Sensitivity: %24$.2f\n"
-//                         "   Specificity: %25$.2f\n"
-//                         "   Precision:   %26$.2f\n\n"
-//                         "   ***\n"
-//                         "   *** Performance metrics (Indel)\n"
-//                         "   ***\n\n"
-//                         "   Sensitivity: %27$.2f\n"
-//                         "   Specificity: %28$.2f\n"
-//                         "   Precision:   %29$.2f\n\n";
-//
-//    o.generate(file);
-//    o.writer->open("VarDiscover_summary.stats");
-//    o.writer->write((boost::format(summary) % src
-//                                            % stats.chrT.dTot()
-//                                            % stats.geno.size()
-//                                            % o.rAnnot
-//                                            % r.countSNPs()
-//                                            % r.countIndels()
-//                                            % r.countVars()           // 7
-//                                            % stats.chrT.dSNP()
-//                                            % stats.chrT.dInd()
-//                                            % stats.chrT.dTot()
-//                                            % o.sign                  // 11
-//                                            % stats.chrT.sSNP()
-//                                            % stats.chrT.sInd()
-//                                            % stats.chrT.sTot()
-//                                            % stats.chrT.tpSNP()
-//                                            % stats.chrT.tpInd()
-//                                            % stats.chrT.tpTot()
-//                                            % stats.chrT.fpSNP()
-//                                            % stats.chrT.fpInd()
-//                                            % stats.chrT.fpTot()
-//                                            % stats.chrT.m.sn()               // 21
-//                                            % toString(stats.chrT.m.sp())     // 22
-//                                            % stats.chrT.m.pc()               // 23
-//                                            % stats.chrT.m_snp.sn()           // 24
-//                                            % toString(stats.chrT.m_snp.sp()) // 25
-//                                            % stats.chrT.m_snp.pc()           // 26
-//                                            % stats.chrT.m_ind.sn()           // 27
-//                                            % toString(stats.chrT.m_ind.sp()) // 28
-//                                            % stats.chrT.m_ind.pc()           // 29
-//                                            % stats.chrT.fnSNP()              // 30
-//                                            % stats.chrT.fnInd()              // 31
-//                                            % stats.chrT.fnTot()              // 32
-//                     ).str());
-//    o.writer->close();
-//}
 
 void VDiscover::report(const FileName &file, const Options &o)
 {
@@ -562,7 +407,7 @@ void VDiscover::report(const FileName &file, const Options &o)
      * Generating VarDiscover_queries.stats
      */
     
-    writeQuery("VarDiscover_queries.stats", stats, o);
+    writeQueries("VarDiscover_queries.stats", stats, o);
     
     /*
      * Generating VarDiscover_ROC.R
@@ -570,7 +415,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.generate("VarDiscover_ROC.R");
     o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVROC()));
+    o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVROC1()));
     o.writer->close();
     
     /*

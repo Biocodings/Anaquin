@@ -11,7 +11,7 @@
 #include "parsers/parser_cufflink.hpp"
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotTExpress();
+extern Anaquin::Scripts PlotScatter();
 
 // Defined in resources.cpp
 extern Anaquin::Scripts PlotTMultiple();
@@ -175,7 +175,7 @@ namespace Anaquin
             
             if (stats.size() == 1)
             {
-                o.writer->write(RWriter::createScript(csv, PlotTExpress()));
+                o.writer->write(RWriter::createScript(csv, PlotScatter()));
             }
             else
             {

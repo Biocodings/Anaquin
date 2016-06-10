@@ -211,7 +211,7 @@ namespace Anaquin
             {
                 _inters.insert(typename std::map<typename T::IntervalID, T>::value_type(i.id(), i));
             }
-        
+
             inline void build()
             {
                 std::vector<Interval_<T *>> loci;

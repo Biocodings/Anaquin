@@ -620,17 +620,11 @@ namespace Anaquin
         
             const Base *findGene(const SequinID &, Mixture mix = Mix_1) const;
 
-            /*
-             * Matching functions
-             */
-        
-            Locus matchStand(const SequinID &) const;
-
-            // Returns the expected fold-change
-            Fold matchFold(const SequinID &) const;
+            // Returns the expected allele fold-change
+            Fold findAFold(const SequinID &) const;
 
             // Returns the expected allele frequency
-            Proportion matchAlleleFreq(const SequinID &) const;
+            Proportion findAFreq(const SequinID &) const;
 
         protected:
 

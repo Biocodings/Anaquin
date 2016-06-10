@@ -4,7 +4,7 @@
 using namespace Anaquin;
 
 // Defined in resources.cpp
-extern Scripts PlotVExpress();
+extern Scripts PlotScatter();
 
 VExpress::Stats VExpress::analyze(const FileName &file, const Options &o)
 {
@@ -73,6 +73,6 @@ void VExpress::report(const FileName &file, const Options &o)
     
     o.info("Generating VarExpress_express.R");
     o.writer->open("VarExpress_express.R");
-    o.writer->write(RWriter::createScript("VarExpress_quins.csv", PlotVExpress()));
+    o.writer->write(RWriter::createScript("VarExpress_quins.csv", PlotScatter()));
     o.writer->close();
 }

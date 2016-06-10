@@ -12,7 +12,7 @@ using namespace Anaquin;
 Compare __cmp__;
 
 // Defined in resources.cpp
-extern Scripts PlotTAssembly();
+extern Scripts PlotSensitivity();
 
 // Defined for cuffcompare
 extern int cuffcompare_main(const char *ref, const char *query);
@@ -558,7 +558,7 @@ void TAssembly::report(const FileName &file, const Options &o)
     
     o.generate("RnaAssembly_assembly.R");
     o.writer->open("RnaAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("RnaAssembly_quins.csv", PlotTAssembly()));
+    o.writer->write(RWriter::createScript("RnaAssembly_quins.csv", PlotSensitivity()));
     o.writer->close();
     
     /*

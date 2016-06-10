@@ -15,15 +15,10 @@ namespace Anaquin
     {
         typedef AnalyzerOptions Options;
         
-        struct Stats : public MappingStats, public SequinStats
-        {
-            // Empty Implementation
-        };
-        
-        static Stats analyze(const FileName &,
-                             const FileName &,
-                             const FileName &,
-                             const Options &o = Options());
+        static void analyze(const FileName &,
+                            const FileName &,
+                            const FileName &,
+                            const Options &o = Options());
 
         static void report(const FileName &, const Options &o = Options());
     };

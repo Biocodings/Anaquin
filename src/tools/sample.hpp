@@ -46,10 +46,10 @@ namespace Anaquin
         struct Stats
         {
             // Coverage statistics for chrT
-            Interval::Stats chrT;
+            Interval::Stats sync;
             
             // Coverage statistics for endogenous (eg: chr21)
-            Interval::Stats endo;
+            Interval::Stats geno;
             
             // Raw coverage
             CoverageTool::Stats cov;
@@ -91,15 +91,15 @@ namespace Anaquin
             return c;
         }
         
-        static bool checkAlign(const ChrID &genoID, const ChrID &id, const Locus &l)
+        static bool checkAlign(const ChrID &genoID, const ChrID &cID, const Locus &l)
         {
             const auto &r = Standard::instance().r_var;
             
-            if (id == ChrT)
+            if (Standard::isSynthetic(cID))
             {
                 return r.match(l, MatchRule::Contains);
             }
-            else if (id == genoID)
+            else if (Standard::isGenomic(cID))
             {
                 return r.findGeno(genoID, l);
             }
@@ -154,6 +154,10 @@ namespace Anaquin
             
             Stats stats;
             
+            /*
+             * Collecting alignment statistics for all alignments to the synthetic and genome
+             */
+            
             stats.cov = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &p)
             {
                 if (!align.i && !(p.i % 1000000))
@@ -173,24 +177,41 @@ namespace Anaquin
                 throw std::runtime_error("Failed to find any alignment for: " + genoID);
             }
             
-            o.info(toString(sums(stats.cov.hist)) + " alignments in total");
-            o.info(toString(stats.cov.hist.at(ChrT)) + " alignments to chrT");
-            o.info(toString(stats.cov.hist.at(genoID)) + " alignments to " + genoID);
-            o.info(toString(stats.cov.inters.size()) + " intervals generated");
+            // There should be at least a chromosome for synthetic and genome
+            assert(stats.cov.inters.size() >= 2);
+
+            // Number of alignments to the synthetic
+            const auto n_sync = stats.cov.hist.at(ChrT);
             
-            o.info("Generating statistics for: " + ChrT);
-            stats.chrT = stats.cov.inters.find(ChrT)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
+            // Number of alignments to the genome
+            const auto n_geno = stats.cov.hist.at(genoID);
+
+            o.info(toString(n_sync) + " alignments to synthetic");
+            o.info(toString(n_geno) + " alignments to genome");
+            o.info(toString(n_sync + n_geno) + " alignments in total");
+            o.info(toString(stats.cov.inters.size()) + " intervals generated");
+
+            /*
+             * Filter out to the synthetic regions
+             */
+            
+            o.info("Generating statistics for synthetic");
+            stats.sync = stats.cov.inters.find(ChrT)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
             {
                 return impl.shouldSynthetic(id, Locus(i,j));
             });
             
-            o.info("Generating statistics for: " + genoID);
-            stats.endo = stats.cov.inters.find(genoID)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
+            /*
+             * Filter out to the genomic regions
+             */
+            
+            o.info("Generating statistics for genome");
+            stats.geno = stats.cov.inters.find(genoID)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
             {
                 return impl.shouldGenomic(id, Locus(i,j));
             });
             
-            assert(stats.chrT.mean && stats.endo.mean);
+            assert(stats.sync.mean && stats.geno.mean);
 
             o.info("Calculating coverage for " + ChrT + " and " + genoID);
             
@@ -203,33 +224,33 @@ namespace Anaquin
             {
                 case ArithAverage:
                 {
-                    stats.chrTC = stats.chrT.mean;
-                    stats.endoC = stats.endo.mean;
+                    stats.chrTC = stats.sync.mean;
+                    stats.endoC = stats.geno.mean;
                     break;
                 }
                     
                 case Maximum:
                 {
-                    stats.chrTC = stats.chrT.max;
-                    stats.endoC = stats.endo.max;
+                    stats.chrTC = stats.sync.max;
+                    stats.endoC = stats.geno.max;
                     break;
                 }
                     
                 case Median:
                 {
-                    stats.chrTC = stats.chrT.p50;
-                    stats.endoC = stats.endo.p50;
+                    stats.chrTC = stats.sync.p50;
+                    stats.endoC = stats.geno.p50;
                     break;
                 }
                     
                 case Percentile75:
                 {
-                    stats.chrTC = stats.chrT.p75;
-                    stats.endoC = stats.endo.p75;
+                    stats.chrTC = stats.sync.p75;
+                    stats.endoC = stats.geno.p75;
                     break;
                 }
             }
-            
+
             assert(stats.chrTC && stats.endoC);
             
             std::cout << stats.chrTC << std::endl;

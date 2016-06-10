@@ -5,7 +5,7 @@ using namespace Anaquin;
 using namespace std::placeholders;
 
 // Defined in resources.cpp
-extern Scripts PlotTReads();
+extern Scripts PlotScatter();
 
 // Internal implementation
 typedef std::function<void (TAlign::Stats &)> Functor;
@@ -825,7 +825,7 @@ void TAlign::report(const FileName &file, const Options &o)
     
     o.generate("RnaAlign_reads.R");
     o.writer->open("RnaAlign_reads.R");
-    o.writer->write(RWriter::createScript("RnaAlign_quins.csv", PlotTReads()));
+    o.writer->write(RWriter::createScript("RnaAlign_quins.csv", PlotScatter()));
     o.writer->close();
 
     /*

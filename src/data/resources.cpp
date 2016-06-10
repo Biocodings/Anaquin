@@ -11,6 +11,7 @@
 #include "resources/reports.py"
 
 #include "resources/plotScatter.R"
+#include "resources/plotSensitivity.R"
 
 /*
  * Fusion Resources
@@ -42,11 +43,7 @@
 #include "resources/plotTMA.R"
 #include "resources/plotTROC.R"
 #include "resources/plotTLODR.R"
-#include "resources/plotTFold.R"
-#include "resources/plotTReads.R"
 #include "resources/plotTMinor.R"
-#include "resources/plotTExpress.R"
-#include "resources/plotTAssembly.R"
 #include "resources/plotTMultiple.R"
 
 #include "resources/ATR001.v032.gtf"
@@ -72,11 +69,10 @@
  * Variant Resources
  */
 
-#include "resources/plotVROC.R"
+#include "resources/plotVROC1.R"
 #include "resources/plotVROC2.R"
 #include "resources/plotVProb.R"
 #include "resources/plotVDensity.R"
-#include "resources/plotVExpress.R"
 
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
@@ -105,6 +101,11 @@ Scripts Manual()
 Scripts PlotScatter()
 {
     return ToString(src_r_plotScatter_R);
+}
+
+Scripts PlotSensitivity()
+{
+    return ToString(src_r_plotSensitivity_R);
 }
 
 /*
@@ -213,21 +214,6 @@ Scripts SleuthR()
     return ToString(scripts_sleuth_R);
 }
 
-Scripts PlotTReads()
-{
-    return ToString(src_r_plotTReads_R);
-}
-
-Scripts PlotTAssembly()
-{
-    return ToString(src_r_plotTAssembly_R);
-}
-
-Scripts PlotTFold()
-{
-    return ToString(src_r_plotTFold_R);
-}
-
 Scripts PlotTMultiple()
 {
     return ToString(src_r_plotTMultiple_R);
@@ -241,11 +227,6 @@ Scripts PlotTMinor()
 Scripts PlotTMA()
 {
     return ToString(src_r_plotTMA_R);
-}
-
-Scripts PlotTExpress()
-{
-    return ToString(src_r_plotTExpress_R);
 }
 
 Scripts PlotTROC()
@@ -292,14 +273,9 @@ Scripts PlotVProb()
     return ToString(src_r_plotVProb_R);
 }
 
-Scripts PlotVExpress()
+Scripts PlotVROC1()
 {
-    return ToString(src_r_plotVExpress_R);
-}
-
-Scripts PlotVROC()
-{
-    return ToString(src_r_plotVROC_R);
+    return ToString(src_r_plotVROC1_R);
 }
 
 Scripts PlotVROC2()

@@ -91,7 +91,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
 //                    const auto var = matchv[id];
 //                    
 //                    // Expected abundance
-//                    const auto known = r.matchAlleleFreq(id);
+//                    const auto known = r.findAFreq(id);
 //                    
 //                    // Measured abundance
 //                    const auto measured = var / (ref + var);
@@ -127,7 +127,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
                     {
                         stats.hist.at(m.match->id)++;
                         
-                        const auto expected = r.matchAlleleFreq(baseID(m.match->id));
+                        const auto expected = r.findAFreq(baseID(m.match->id));
                         const auto measured = m.query.alleleFreq();
 
                         /*

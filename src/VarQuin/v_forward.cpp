@@ -12,10 +12,10 @@
 
 using namespace Anaquin;
 
-VForward::Stats VForward::analyze(const FileName &file,
-                                  const FileName &output1,
-                                  const FileName &output2,
-                                  const Options &o)
+void VForward::analyze(const FileName &file,
+                       const FileName &output1,
+                       const FileName &output2,
+                       const Options &o)
 {
     assert(!output1.empty());
     assert(!output2.empty());
@@ -125,17 +125,9 @@ VForward::Stats VForward::analyze(const FileName &file,
 
     if (out1.is_open()) { out1.close(); }
     if (out2.is_open()) { out2.close(); }
-
-    return VForward::Stats();
 }
 
 void VForward::report(const FileName &file, const Options &o)
 {
-    const auto &stats = analyze(file,
-                                o.work + "/VarForward_genome.sam",
-                                o.work + "/VarForward_sequins.sam");
-    
-    /*
-     * Generating VarForward_summary.stats
-     */    
+    analyze(file, o.work + "/VarForward_genome.sam", o.work + "/VarForward_sequins.sam");
 }

@@ -715,7 +715,6 @@ template <typename Reference> void applyRef(Reference ref, Option opt)
     
     if (!_p.opts[opt].empty())
     {
-        std::cout << _p.opts[opt] << std::endl;
         ref(Reader(_p.opts[opt]));
     }
 }
@@ -1014,7 +1013,7 @@ void parse(int argc, char ** argv)
     std::vector<Value>  vals;
 
     unsigned n = 0;
-    std::cout << argv[1] << std::endl;
+
     if (!_tools.count(argv[1]) && strcmp(argv[1], "-v"))
     {
         throw InvalidToolError(argv[1]);

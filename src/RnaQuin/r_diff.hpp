@@ -12,7 +12,7 @@
 #include "stats/analyzer.hpp"
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotTFold();
+extern Anaquin::Scripts PlotScatter();
 
 // Defined in resources.cpp
 extern Anaquin::Scripts PlotTLODR();
@@ -107,7 +107,7 @@ namespace Anaquin
         {
             o.generate(file);
             o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotTFold()));
+            o.writer->write(RWriter::createScript(csv, PlotScatter()));
             o.writer->close();
         }
 
