@@ -15,8 +15,7 @@ plotROC <- function(data,
     require(ROCR)
     require(grid)
     require(ggplot2)
-    #require(gridExtra)
-    
+
     data <- data$seqs
 
     stopifnot(!is.null(data$pval))
@@ -30,6 +29,8 @@ plotROC <- function(data,
         data$ratio <- abs(round(data$expected))
     }
 
+    data <- data[!is.na(data$pval),]
+    data <- data[data$label=='TP' | data$label=='FP',]
     data <- data[, order(names(data))]
     data <- data.frame(label=data$label,
                        pval=data$pval,
@@ -56,6 +57,8 @@ plotROC <- function(data,
     
     # How many groups we have got?
     countGroups <- length(unique(ratios))
+    
+    print('ROC Diagnostics: AUC')
     
     for (ratio in unique(ratios))
     {
@@ -110,7 +113,7 @@ plotROC <- function(data,
             }
             else
             {
-                print(paste(c('AUC for ', ratio, ': ', AUC), collapse=''))
+                print(paste(c(ratio, ': ', AUC), collapse=''))
             }
 
             aucDatNew <- data.frame(Ratio=ratio, AUC=round(AUC, digits=3))
