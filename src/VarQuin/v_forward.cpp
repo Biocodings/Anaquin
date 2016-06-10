@@ -31,12 +31,12 @@ VForward::Stats VForward::analyze(const FileName &file,
     
     ParserSAM::parse(file, [&](ParserSAM::Data &data, const ParserSAM::Info &info)
     {
-        if (!data.i && !(info.p.i % 1000000))
+        if (!data.i && info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
 
-        if (Standard::isSynthetic(data.cID))
+        if (!data.i && Standard::isSynthetic(data.cID))
         {
             const auto t = data.l;
             
@@ -81,11 +81,19 @@ VForward::Stats VForward::analyze(const FileName &file,
             out1.open(output1, std::ios_base::app);
             out2.open(output2, std::ios_base::app);
         }
+
+        // Only if this is the first block
+        if (data.i)
+        {
+            return;
+        }
         
         const auto isSync = Standard::isSynthetic(data.cID);
 
         if (isSync)
         {
+            //std::cout << data.cID << std::endl;
+            
             reverse(data, info);
             replace(data.cID, "rev", "r");
 
@@ -116,7 +124,7 @@ VForward::Stats VForward::analyze(const FileName &file,
     });
 
     if (out1.is_open()) { out1.close(); }
-    if (out1.is_open()) { out1.close(); }
+    if (out2.is_open()) { out2.close(); }
 
     return VForward::Stats();
 }

@@ -263,9 +263,9 @@ void MDiff::report(const std::vector<FileName> &files, const Options &o)
      * Generating MetaDiff_quins.stats
      */
     
-    o.generate("MetaDiff_quins.stats");
-    //writeCSV("MetaDiff_quins.stats", stats, o);
-    o.writer->open("MetaDiff_quins.stats");
+    o.generate("MetaDiff_quins.csv");
+    //writeCSV("MetaDiff_quins.csv", stats, o);
+    o.writer->open("MetaDiff_quins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
 
@@ -284,7 +284,7 @@ void MDiff::report(const std::vector<FileName> &files, const Options &o)
     
     o.generate("MetaDiff_fold.R");
     o.writer->open("MetaDiff_fold.R");
-    o.writer->write(RWriter::createScript("MetaDiff_quins.stats", PlotMFold()));
+    o.writer->write(RWriter::createScript("MetaDiff_quins.csv", PlotMFold()));
     o.writer->close();
     
     switch (o.soft)

@@ -104,5 +104,5 @@ void MAbund::report(const FileName &file, const MAbund::Options &o)
      * Generating MetaAbund_quins.stats
      */
     
-    writeQuins("MetaAbund_quins.stats", stats, o);
+    writeQuins("MetaAbund_quins.csv", stats, o);
 }

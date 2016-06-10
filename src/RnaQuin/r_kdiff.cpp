@@ -115,5 +115,5 @@ void TKDiff::report(const FileName &file, const Options &o)
      * Generating RnaKDiff_LODR.R
      */
     
-    TDiff::generateLODR("RnaKDiff_LODR.R", "RnaKDiff_quins.stats", o);
+    TDiff::generateLODR("RnaKDiff_LODR.R", "RnaKDiff_quins.csv", o);
 }

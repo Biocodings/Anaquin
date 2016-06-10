@@ -269,19 +269,19 @@ void TDiff::report(const FileName &file, const Options &o)
      * Generating differential results
      */
 
-    TDiff::generateCSV("RnaDiff_quins.stats", stats, o);
+    TDiff::generateCSV("RnaDiff_quins.csv", stats, o);
     
     /*
      * Generating log-fold plot
      */
     
-    TDiff::generateFoldR("RnaDiff_fold.R", "RnaDiff_quins.stats", o);
+    TDiff::generateFoldR("RnaDiff_fold.R", "RnaDiff_quins.csv", o);
 
     /*
      * Generating ROC plot
      */
     
-    TDiff::generateROC("RnaDiff_ROC.R", "RnaDiff_quins.stats", o);
+    TDiff::generateROC("RnaDiff_ROC.R", "RnaDiff_quins.csv", o);
     
     /*
      * Generating LODR plot
@@ -289,7 +289,7 @@ void TDiff::report(const FileName &file, const Options &o)
     
     if (o.dSoft != Software::edgeR)
     {
-        TDiff::generateLODR("RnaDiff_LODR.R", "RnaDiff_quins.stats", o);
+        TDiff::generateLODR("RnaDiff_LODR.R", "RnaDiff_quins.csv", o);
     }
 
     /*

@@ -26,7 +26,7 @@ static void writeCSV(const FileName &file, const VFreq::Stats &stats, const VFre
 
     o.writer->write((boost::format(format) % "Seq"
                                            % "Expected"
-                                           % "Measured"
+                                           % "Observed"
                                            % "ReadsR"
                                            % "ReadsV"
                                            % "Type").str());
@@ -253,7 +253,7 @@ void VFreq::report(const FileName &file, const Options &o)
                                            "Expected allele frequency (log2)",
                                            "Measured allele frequency (log2)",
                                            "Expected",
-                                           "Measured"));
+                                           "Observed"));
     o.writer->close();
     
     /*

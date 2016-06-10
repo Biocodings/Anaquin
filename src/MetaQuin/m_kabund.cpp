@@ -259,8 +259,8 @@ void MKAbund::report(const std::vector<FileName> &files, const MKAbund::Options 
      * Generating MetaKAbund_quins.stats
      */
     
-    o.generate("MetaKAbund_quins.stats");
-    o.writer->open("MetaKAbund_quins.stats");
+    o.generate("MetaKAbund_quins.csv");
+    o.writer->open("MetaKAbund_quins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
 
@@ -270,7 +270,7 @@ void MKAbund::report(const std::vector<FileName> &files, const MKAbund::Options 
     
     o.generate("MetaKAbund_kCounts.R");
     o.writer->open("MetaKAbund_kCounts.R");
-    o.writer->write(RWriter::createScript("MetaKAbund_quins.stats", PlotMKAbund()));
+    o.writer->write(RWriter::createScript("MetaKAbund_quins.csv", PlotMKAbund()));
     o.writer->close();
 
     /*

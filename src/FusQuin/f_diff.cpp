@@ -68,8 +68,8 @@ void FDiff::report(const FileName &normal, const FileName &fusion, const Options
      * Generating FusDiff_quins.stats
      */
     
-    o.info("Generating FusDiff_quins.stats");
-    o.writer->open("FusDiff_quins.stats");
+    o.info("Generating FusDiff_quins.csv");
+    o.writer->open("FusDiff_quins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
@@ -79,6 +79,6 @@ void FDiff::report(const FileName &normal, const FileName &fusion, const Options
     
     o.info("Generating FusDiff_fold.R");
     o.writer->open("FusDiff_fold.R");
-    o.writer->write(RWriter::createScript("FusDiff_quins.stats", PlotFFold()));
+    o.writer->write(RWriter::createScript("FusDiff_quins.csv", PlotFFold()));
     o.writer->close();
 }

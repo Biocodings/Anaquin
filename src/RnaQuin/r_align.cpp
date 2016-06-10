@@ -746,9 +746,8 @@ static void writeQuins(const FileName &file,
     const auto &data = stats.data.at(ChrT);
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "seq"
-                                           % "input"
-                                           % "reads"
+    o.writer->write((boost::format(format) % "Seq"
+                                           % "Reads"
                                            % "sn_exon"
                                            % "pc_exon"
                                            % "sn_intron"
@@ -817,8 +816,8 @@ void TAlign::report(const FileName &file, const Options &o)
      * Generating RnaAlign_quins.stats
      */
     
-    o.analyze("RnaAlign_quins.stats");
-    writeQuins("RnaAlign_quins.stats", file, stats, o);
+    o.analyze("RnaAlign_quins.csv");
+    writeQuins("RnaAlign_quins.csv", file, stats, o);
 
     /*
      * Generating RnaAlign_reads.R
@@ -826,7 +825,7 @@ void TAlign::report(const FileName &file, const Options &o)
     
     o.generate("RnaAlign_reads.R");
     o.writer->open("RnaAlign_reads.R");
-    o.writer->write(RWriter::createScript("RnaAlign_quins.stats", PlotTReads()));
+    o.writer->write(RWriter::createScript("RnaAlign_quins.csv", PlotTReads()));
     o.writer->close();
 
     /*
@@ -836,6 +835,6 @@ void TAlign::report(const FileName &file, const Options &o)
     o.report->open("RnaAlign_report.pdf");
     o.report->addTitle("RnaAlign");
     o.report->addFile("RnaAlign_summary.stats");
-    o.report->addFile("RnaAlign_quins.stats");
+    o.report->addFile("RnaAlign_quins.csv");
     o.report->addFile("RnaAlign_reads.R");
 }

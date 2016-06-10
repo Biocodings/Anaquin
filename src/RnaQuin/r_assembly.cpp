@@ -321,9 +321,9 @@ static void generateQuins(const FileName &file, const TAssembly::Stats &stats, c
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "seq"
-                                           % "input"
-                                           % "sn").str());
+    o.writer->write((boost::format(format) % "Seq"
+                                           % "Expected"
+                                           % "Measured").str());
 
     for (const auto &i : stats.tSPs)
     {
@@ -550,7 +550,7 @@ void TAssembly::report(const FileName &file, const Options &o)
      * Generating RnaAssembly_quins.stats
      */
 
-    generateQuins("RnaAssembly_quins.stats", stats, o);
+    generateQuins("RnaAssembly_quins.csv", stats, o);
     
     /*
      * Generating RnaAssembly_assembly.R
@@ -558,7 +558,7 @@ void TAssembly::report(const FileName &file, const Options &o)
     
     o.generate("RnaAssembly_assembly.R");
     o.writer->open("RnaAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("RnaAssembly_quins.stats", PlotTAssembly()));
+    o.writer->write(RWriter::createScript("RnaAssembly_quins.csv", PlotTAssembly()));
     o.writer->close();
     
     /*
@@ -568,6 +568,6 @@ void TAssembly::report(const FileName &file, const Options &o)
     o.report->open("RnaAssembly_report.pdf");
     o.report->addTitle("RnaAssembly");
     o.report->addFile("RnaAssembly_summary.stats");
-    o.report->addFile("RnaAssembly_quins.stats");
+    o.report->addFile("RnaAssembly_quins.csv");
     o.report->addFile("RnaAssembly_assembly.R");
 }

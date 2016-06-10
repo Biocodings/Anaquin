@@ -232,6 +232,9 @@ namespace Anaquin
             
             assert(stats.chrTC && stats.endoC);
             
+            std::cout << stats.chrTC << std::endl;
+            std::cout << stats.endoC << std::endl;
+            
             if (stats.endoC >= stats.chrTC)
             {
                 throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
@@ -369,13 +372,17 @@ namespace Anaquin
                                  "       Reference sequin regions: %1%\n"
                                  "       User generated alignment: %2%\n\n"
                                  "-------Reference regions\n\n"
-                                 "       Genomic regions:   %3%\n"
+                                 "       Genome regions:   %3%\n"
                                  "       Synthetic regions: %4%\n\n"
-                                 "-------User alignments\n\n"
+                                 "       Method: %8%\n\n"            
+                                 "-------User alignments (before subsampling)\n\n"
                                  "       Unmapped:  %5%\n"
-                                 "       Synthetic: %6%\n\n"
-                                 "       Genome:    %7%\n\n"
-                                 "       Method: %8%\n\n"
+                                 "       Genome:    %6%\n\n"
+                                 "       Synthetic: %7%\n\n"
+                                 "-------User alignments (after subsampling)\n\n"
+                                 "       Unmapped:  %5%\n"
+                                 "       Genome:    %6%\n\n"
+                                 "       Synthetic: %7%\n\n"
                                  "-------Before subsampling\n\n"
                                  "       Genome coverage:    %9%\n"
                                  "       Synthetic coverage: %10%\n\n"
@@ -390,8 +397,8 @@ namespace Anaquin
                                                     % ri.countInters()
                                                     % ri.countSeqs()
                                                     % before.cov.n_unmap
-                                                    % before.cov.n_syn
                                                     % before.cov.n_gen
+                                                    % before.cov.n_syn
                                                     % meth2Str()
                                                     % before.chrTC
                                                     % before.endoC

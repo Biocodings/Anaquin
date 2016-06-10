@@ -60,8 +60,8 @@ void FFusion::report(const FileName &file, const Options &o)
      * Generating FusFusion_quins.stats
      */
     
-    o.info("Generating FusFusion_quins.stats");
-    o.writer->open("FusFusion_quins.stats");
+    o.info("Generating FusFusion_quins.csv");
+    o.writer->open("FusFusion_quins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
@@ -71,6 +71,6 @@ void FFusion::report(const FileName &file, const Options &o)
     
     o.info("Generating FusFusion_express.R");
     o.writer->open("FusFusion_express.R");
-    o.writer->write(RWriter::createScript("FusFusion_quins.stats", PlotFFusion()));
+    o.writer->write(RWriter::createScript("FusFusion_quins.csv", PlotFFusion()));
     o.writer->close();
 }

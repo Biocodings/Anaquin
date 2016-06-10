@@ -179,7 +179,7 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
      * Generating FusDiscover_quins.stats
      */
     
-    writeQuins("FusDiscover_quins.stats", stats, o);
+    writeQuins("FusDiscover_quins.csv", stats, o);
     
     /*
      * Generating FusDiscover_queries.stats
@@ -203,7 +203,7 @@ void FDiscover::report(const FileName &file, const FDiscover::Options &o)
     o.report->open("FusDiscover_report.pdf");
     o.report->addTitle("FusDiscover_report");
     o.report->addFile("FusDiscover_summary.stats");
-    o.report->addFile("FusDiscover_quins.stats");
+    o.report->addFile("FusDiscover_quins.csv");
     o.report->addFile("FusDiscover_query.stats");
     o.report->addFile("FusDiscover_ROC.R");
 }

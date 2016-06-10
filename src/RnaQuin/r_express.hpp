@@ -77,11 +77,11 @@ namespace Anaquin
             std::map<SequinID, Concent> expect;
             
             std::stringstream ss;
-            ss << "seq\tinput";
+            ss << "Seq\tExpected";
             
             for (auto i = 0; i < stats.size(); i++)
             {
-                ss << ((boost::format("\tA%1%") % (i+1)).str());
+                ss << ((boost::format("\tObserved%1%") % (i+1)).str());
                 
                 for (const auto &j : stats[i])
                 {
@@ -231,8 +231,8 @@ namespace Anaquin
                                 "Mixture file: %5%\n\n"
                                 "-------Genes Expressed\n\n"
                                 "       Synthetic: %6%\n"
-                                "   Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-                                "Genome: %9%\n\n"
+                                "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+                                "       Genome: %9%\n\n"
                                 "-------Limit of Quantification (LOQ)\n"
                                 "       *Estimated by piecewise segmented regression\n\n"
                                 "Break: %10% (%11%)\n\n"

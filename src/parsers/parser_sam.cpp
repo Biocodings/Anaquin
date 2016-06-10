@@ -34,17 +34,16 @@ void ParserSAM::parse(const FileName &file, Functor x)
             continue;
         }
 
-        align.name  = bam_get_qname(t);
-        align.flag  = t->core.flag;
-        align.cID   = std::string(h->target_name[t->core.tid]);
-        align.mapq  = t->core.qual;
-        align.seq   = bam2seq(t);
-        align.qual  = bam2qual(t);
-        align.rnext = bam2rnext(h, t);
-        align.pnext = t->core.mpos;
-        align.tlen  = t->core.isize;
-        align.cigar = bam2cigar(t);
-
+        align.name   = bam_get_qname(t);
+        align.flag   = t->core.flag;
+        align.cID    = std::string(h->target_name[t->core.tid]);
+        align.mapq   = t->core.qual;
+        align.seq    = bam2seq(t);
+        align.qual   = bam2qual(t);
+        align.rnext  = bam2rnext(h, t);
+        align.pnext  = t->core.mpos;
+        align.tlen   = t->core.isize;
+        align.cigar  = bam2cigar(t);
         align.mapped = !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)
@@ -57,7 +56,7 @@ void ParserSAM::parse(const FileName &file, Functor x)
             align.spliced = false;
 
             /*
-             * Check if this is a spliced alignment. A spliced alignment is an alignment that has bases skipped.
+             * Check if this is an indel alignment, an alignment that has some bases.
              */
             
             info.spliced = false;
