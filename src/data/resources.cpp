@@ -12,6 +12,7 @@
 
 #include "resources/plotScatter.R"
 #include "resources/plotSensitivity.R"
+#include "resources/plotMultScatter.R"
 
 /*
  * Fusion Resources
@@ -44,7 +45,6 @@
 #include "resources/plotTROC.R"
 #include "resources/plotTLODR.R"
 #include "resources/plotTMinor.R"
-#include "resources/plotTMultiple.R"
 
 #include "resources/ATR001.v032.gtf"
 #include "resources/MTR002.v013.csv"
@@ -101,6 +101,11 @@ Scripts Manual()
 Scripts PlotScatter()
 {
     return ToString(src_r_plotScatter_R);
+}
+
+Scripts plotMultScatter()
+{
+    return ToString(src_r_plotMultScatter_R);
 }
 
 Scripts PlotSensitivity()
@@ -212,11 +217,6 @@ Scripts MetaDataBed()
 Scripts SleuthR()
 {
     return ToString(scripts_sleuth_R);
-}
-
-Scripts PlotTMultiple()
-{
-    return ToString(src_r_plotTMultiple_R);
 }
 
 Scripts PlotTMinor()

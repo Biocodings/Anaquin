@@ -19,14 +19,15 @@ data  = [ 'data/manual.txt',
           'scripts/sleuth.R',
 
           'src/r/plotScatter.R',
-          'src/r/plotSensitivity.R',
+          'src/r/plotMultScatter.R',
+	  'src/r/plotSensitivity.R',
 
           # ------- Fusion -------
 
           'src/r/plotFROC.R',
           'src/r/plotFNormal.R',
-	      'src/r/plotFFusion.R',
-	      'src/r/plotFFold.R',
+	  'src/r/plotFFusion.R',
+	  'src/r/plotFFold.R',
 
           'data/FusQuin/AFU004.v032.bed',
           'data/FusQuin/AFU005.v032.bed',
@@ -46,7 +47,6 @@ data  = [ 'data/manual.txt',
           'src/r/plotTMinor.R',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
-          'src/r/plotTMultiple.R',
 
           'data/TransQuin/ATR001.v032.gtf',
           'data/TransQuin/MTR002.v013.csv',

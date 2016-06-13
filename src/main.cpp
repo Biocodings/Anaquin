@@ -19,6 +19,7 @@
 #include "RnaQuin/r_assembly.hpp"
 #include "RnaQuin/r_coverage.hpp"
 #include "RnaQuin/r_cuffdiff.hpp"
+#include "RnaQuin/r_cufflink.hpp"
 
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"
@@ -79,6 +80,7 @@ typedef std::set<Value> Range;
 #define TOOL_R_ALIGN     266
 #define TOOL_R_ASSEMBLY  267
 #define TOOL_R_EXPRESS   268
+#define TOOL_R_CUFFLINK  269
 #define TOOL_R_DIFF      270
 #define TOOL_T_NORM      271
 #define TOOL_R_IGV       272
@@ -203,6 +205,7 @@ static std::map<Value, Tool> _tools =
     { "RnaSubsample",   TOOL_R_SUBSAMPLE },
     { "RnaCuffdiff",    TOOL_R_CUFFDIFF  },
     { "RnaDESeq2",      TOOL_R_DESEQ2    },
+    { "RnaCufflink",    TOOL_R_CUFFLINK  },
 
     { "VarVarScan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
@@ -256,6 +259,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_COVERAGE,  { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_CUFFLINK,  { OPT_U_FILES } },
     
     /*
      * Ladder Analysis
@@ -1212,11 +1216,12 @@ void parse(int argc, char ** argv)
         case TOOL_R_ASSEMBLY:
         case TOOL_R_COVERAGE:
         case TOOL_R_CUFFDIFF:
+        case TOOL_R_CUFFLINK:
         case TOOL_R_SUBSAMPLE:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
-            if (_p.tool != TOOL_R_IGV)
+            if (_p.tool != TOOL_R_IGV && _p.tool != TOOL_R_CUFFLINK)
             {
                 switch (_p.tool)
                 {
@@ -1268,6 +1273,7 @@ void parse(int argc, char ** argv)
                 case TOOL_R_ASSEMBLY:  { analyze_1<RAssembly>(OPT_U_FILES); break; }
                 case TOOL_R_SUBSAMPLE: { analyze_1<RSample>(OPT_U_FILES);   break; }
                 case TOOL_R_CUFFDIFF:  { analyze_1<RCuffdiff>(OPT_U_FILES); break; }
+                case TOOL_R_CUFFLINK : { analyze_1<RCufflink>(OPT_U_FILES); break; }
                     
                 case TOOL_R_KDIFF:
                 {
@@ -1323,32 +1329,19 @@ void parse(int argc, char ** argv)
                         return gs > is;
                     };
                     
-                    auto parseSoft = [&](const std::string &key, const std::string &str)
-                    {
-                        const static std::map<Value, TExpress::Software> m =
-                        {
-                            { "kallisto",  TExpress::Software::Kallisto  },
-                            { "cufflink",  TExpress::Software::Cufflinks },
-                            { "stringtie", TExpress::Software::StringTie },
-                        };
-                        
-                        return parseEnum(key, str, m);
-                    };
-                    
                     TExpress::Options o;
                     
-                    o.soft  = parseSoft("soft", _p.opts.at(OPT_SOFT));
-                    o.metrs = TExpress::Metrics::Gene;
+                    o.metrs = TExpress::Metrics::Gene; // TODO: ????
                     
-                    if (o.soft == TExpress::Software::Cufflinks)
-                    {
-                        o.metrs = checkCufflink(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
-                    }
-                    
-                    if (o.soft == TExpress::Software::Kallisto)
-                    {
-                        o.metrs = TExpress::Metrics::Isoform;
-                    }
+//                    if (o.soft == TExpress::Software::Cufflinks)
+//                    {
+//                        o.metrs = checkCufflink(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
+//                    }
+
+//                    if (o.soft == TExpress::Software::Kallisto)
+//                    {
+//                        o.metrs = TExpress::Metrics::Isoform;
+//                    }
 
                     analyze_n<TExpress>(o);
                     break;

@@ -14,7 +14,7 @@ TKExpress::Stats TKExpress::analyze(const FileName &file1, const FileName &file2
     TExpress::Options o_;
     
     o_.metrs = TExpress::Metrics::Isoform;
-    o_.soft  = TExpress::Software::Kallisto;
+    //o_.soft  = TExpress::Software::Kallisto;
 
     // Run quantification in Kallisto
     return TExpress::analyze(Pachter::externalQuant(o.index, file1, file2), o_);
@@ -28,25 +28,25 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
     const auto stats = std::vector<TKExpress::Stats> { TKExpress::analyze(file1, file2, o) };
     
     /*
-     * 1. Generating summary statistics (single or multiple samples)
+     * Generating RnaKExpress_summary.stats
      */
     
-    TExpress::generateSummary("RnaKExpress_summary.stats", files, stats, o, units);
+    //TExpress::generateSummary("RnaKExpress_summary.stats", files, stats, o, units);
     
     /*
-     * 2. Generating detailed statistics
+     * Generating RnaKExpress_quins.csv
      */
     
     TExpress::generateCSV("RnaKExpress_quins.csv", stats, o);
     
     /*
-     * 3. Generating abundance vs abundance (single or multiple samples)
+     * Generating RnaKExpress_express.R
      */
     
-    TExpress::generateRAbund("RnaKExpress_express.R", "RnaKExpress_quins.csv", stats, o);
+    //TExpress::generateRAbund("RnaKExpress_express.R", "RnaKExpress_quins.csv", stats, o);
     
     /*
-     * 4. Generating major plot (but only if we have the isoforms...)
+     * Generating RnaKExpress_splice.R
      */
     
     if (stats.size() >= 2)

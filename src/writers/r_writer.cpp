@@ -32,6 +32,26 @@ Scripts RWriter::createScatterNoLog(const FileName    &file,
                                           % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
+Scripts RWriter::createMultiScatterNeedLog(const FileName    &file,
+                                           const std::string &title,
+                                           const std::string &xlab,
+                                           const std::string &ylab,
+                                           const std::string &expected,
+                                           const std::string &measured,
+                                           bool showLOQ)
+{
+    return (boost::format(PlotScatter()) % date()
+                                         % __full_command__
+                                         % __output__
+                                         % file
+                                         % title
+                                         % xlab
+                                         % ylab
+                                         % ("log2(data$" + expected + ")")
+                                         % ("log2(data$" + measured + ")")
+                                         % (showLOQ ? "TRUE" : "FALSE")).str();
+}
+
 Scripts RWriter::createScatterNeedLog(const FileName    &file,
                                       const std::string &title,
                                       const std::string &xlab,
@@ -310,6 +330,76 @@ Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
                           std::vector<MappingStats> { mStats },
                           std::vector<LinearStats>  { stats  },
                           units);
+}
+
+SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
+                                    const FileName                  &endoR,
+                                    const std::vector<FileName>     &files,
+                                    const std::vector<SequinHist>   &hist,
+                                    const std::vector<MappingStats> &mStats,
+                                    const std::vector<LinearStats>  &lstats)
+{
+    SInflectStats r;
+    
+    for (auto i = 0; i < lstats.size(); i++)
+    {
+        r.files.add(files[i]);
+        
+        // Linear regression without logarithm
+        const auto n_lm = lstats[i].linear(false);
+        
+        // Linear regression with logarithm
+        const auto l_lm = lstats[i].linear(true);
+        
+        // Calcluate the inflection point with logarithm
+        const auto inf = lstats[i].limitQuant(true);
+        
+        // Remember the break-point is on the log2-scale, we'll need to convert it back
+        const auto b = pow(2, inf.b);
+        
+        r.n_syn.add((unsigned)mStats[i].n_syn);
+        r.n_gen.add((unsigned)mStats[i].n_gen);
+        r.p_chrT.add(mStats[i].synProp());
+        r.p_endo.add(mStats[i].genProp());
+        
+        r.n_ref = hist[i].size();
+        r.n_det.add((unsigned)detect(hist[i]));
+        
+        r.b.add((unsigned)b);
+        r.bID.add(inf.id);
+        r.lInt.add(inf.lInt);
+        r.rInt.add(inf.rInt);
+        r.lSl.add(inf.lSl);
+        r.rSl.add(inf.rSl);
+        r.lR2.add(inf.lR2);
+        r.rR2.add(inf.rR2);
+        
+        r.nLog.p.add(n_lm.p);
+        r.nLog.r.add(n_lm.r);
+        r.nLog.F.add(n_lm.F);
+        r.nLog.sl.add(n_lm.m);
+        r.nLog.R2.add(n_lm.R2);
+        r.nLog.SSM.add(n_lm.SSM);
+        r.nLog.SSE.add(n_lm.SSE);
+        r.nLog.SST.add(n_lm.SST);
+        r.nLog.SSM_D.add(n_lm.SSM_D);
+        r.nLog.SSE_D.add(n_lm.SSE_D);
+        r.nLog.SST_D.add(n_lm.SST_D);
+        
+        r.wLog.p.add(l_lm.p);
+        r.wLog.r.add(l_lm.r);
+        r.wLog.F.add(l_lm.F);
+        r.wLog.sl.add(l_lm.m);
+        r.wLog.R2.add(l_lm.R2);
+        r.wLog.SSM.add(l_lm.SSM);
+        r.wLog.SSE.add(l_lm.SSE);
+        r.wLog.SST.add(l_lm.SST);
+        r.wLog.SSM_D.add(l_lm.SSM_D);
+        r.wLog.SSE_D.add(l_lm.SSE_D);
+        r.wLog.SST_D.add(l_lm.SST_D);
+    }
+    
+    return r;
 }
 
 Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,

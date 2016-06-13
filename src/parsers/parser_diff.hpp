@@ -1,5 +1,5 @@
-#ifndef PARSER_A_DIFF_HPP
-#define PARSER_A_DIFF_HPP
+#ifndef PARSER_DIFF_HPP
+#define PARSER_DIFF_HPP
 
 #include "data/types.hpp"
 #include "data/tokens.hpp"
@@ -7,7 +7,7 @@
 
 namespace Anaquin
 {
-    struct ParserADiff
+    struct ParserDiff
     {
         typedef enum
         {

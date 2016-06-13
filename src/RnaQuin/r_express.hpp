@@ -11,15 +11,13 @@
 #include "parsers/parser_cufflink.hpp"
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotScatter();
-
-// Defined in resources.cpp
-extern Anaquin::Scripts PlotTMultiple();
-
-// Defined in resources.cpp
 extern Anaquin::Scripts PlotTMinor();
 
+// Defined in resources.cpp
 extern Anaquin::FileName MixRef();
+
+// Defined in resources.cpp
+extern Anaquin::FileName GTFRef();
 
 namespace Anaquin
 {
@@ -136,9 +134,6 @@ namespace Anaquin
             
             // Gene or isoform?
             Metrics metrs;
-            
-            // What software generated the files?
-            Software soft;
         };
         
         struct Stats : public LinearStats, public MappingStats, public SequinStats
@@ -173,13 +168,25 @@ namespace Anaquin
             o.info("Generating " + output);
             o.writer->open(output);
             
+            const auto title = o.metrs == Metrics::Gene ? "Gene Expression" : "Isoform Expression";
+            
             if (stats.size() == 1)
             {
-                o.writer->write(RWriter::createScript(csv, PlotScatter()));
+                o.writer->write(RWriter::createScatterNeedLog(csv,
+                                                              title,
+                                                              "Expected Expression (log2)",
+                                                              "Measured Expression (log2)",
+                                                              "Expected",
+                                                              "Measured", false));
             }
             else
             {
-                o.writer->write(RWriter::createScript(csv, PlotTMultiple()));
+                o.writer->write(RWriter::createMultiScatterNeedLog(csv,
+                                                                   title,
+                                                                   "Expected Expression (log2)",
+                                                                   "Measured Expression (log2)",
+                                                                   "Expected",
+                                                                   "Measured", false));
             }
             
             o.writer->close();
@@ -218,74 +225,95 @@ namespace Anaquin
                                                                                 const Options  &o,
                                                                                 const Units &units)
         {
+            const auto &r = Standard::instance().r_trans;
+            
             o.info("Generating " + summary);
             o.writer->open(summary);
             
+            std::vector<SequinHist>   hists;
+            std::vector<LinearStats>  lStats;
+            std::vector<MappingStats> mStats;
+            
+            for (auto i = 0; i < files.size(); i++)
+            {
+                mStats.push_back(stats[i]);
+                lStats.push_back(stats[i]);
+                hists.push_back(stats[i].hist);
+            }
+            
+            const auto title = o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed";
+
+            const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, hists, mStats, lStats);
+
+            const auto n_syn = toString(r.countGenesSyn()) + " " + units;
+            const auto n_gen = toString(r.countGenesGen()) + " " + units;
+
             const auto format = "-------RnaExpression Output\n\n"
                                 "Summary for input: %1%\n\n"
-                                "*Arithmetic average and standard deviation are shown\n\n"
+                                "       *Arithmetic average and standard deviation are shown\n\n"
                                 "-------User Transcript Annotations\n\n"
-                                "Annotation file: %2%\n"
-                                "Synthetic: %3%\n"
-                                "Genome:    %4%\n\n"
-                                "Mixture file: %5%\n\n"
-                                "-------Genes Expressed\n\n"
-                                "       Synthetic: %6%\n"
-                                "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-                                "       Genome: %9%\n\n"
+                                "       Annotation file: %2%\n"
+                                "       Synthetic: %3%\n"
+                                "       Genome:    %4%\n\n"
+                                "       Mixture file: %5%\n\n"
+                                "-------%6%\n\n"
+                                "       Synthetic: %7%\n"
+                                "       Detection Sensitivity: %8% (attomol/ul) (%9%)\n\n"
+                                "       Genome: %10%\n\n"
                                 "-------Limit of Quantification (LOQ)\n"
                                 "       *Estimated by piecewise segmented regression\n\n"
-                                "Break: %10% (%11%)\n\n"
-                                "*Below LOQ\n"
-                                "Intercept:   %12%\n"
-                                "Slope:       %13%\n"
-                                "Correlation: %14%\n"
-                                "R2:          %15%\n\n"
-                                "*Above LOQ\n"
-                                "Intercept:   %16%\n"
-                                "Slope:       %17%\n"
-                                "Correlation: %18%\n"
-                                "R2:          %19%\n\n"
+                                "       Break: %11% (%12%)\n\n"
+                                "       *Below LOQ\n"
+                                "       Intercept:   %13%\n"
+                                "       Slope:       %14%\n"
+                                "       Correlation: %15%\n"
+                                "       R2:          %16%\n\n"
+                                "       *Above LOQ\n"
+                                "       Intercept:   %17%\n"
+                                "       Slope:       %18%\n"
+                                "       Correlation: %19%\n"
+                                "       R2:          %20%\n\n"
                                 "-------Linear regression (log2 scale)\n\n"
-                                "Correlation: %20%\n"
-                                "Slope:       %21%\n"
-                                "R2:          %22%\n"
-                                "F-statistic: %23%\n"
-                                "P-value:     %24%\n"
-                                "SSM:         %25%, DF: %26%\n"
-                                "SSE:         %27%, DF: %28%\n"
-                                "SST:         %29%, DF: %30%\n";
-        
-            o.writer->write((boost::format(format) % "????"
-                                                   % "????"
-                                                   % "????"   // 3
-                                                   % "????"   // 4
+                                "       Correlation: %21%\n"
+                                "       Slope:       %22%\n"
+                                "       R2:          %23%\n"
+                                "       F-statistic: %24%\n"
+                                "       P-value:     %25%\n"
+                                "       SSM:         %26%, DF: %27%\n"
+                                "       SSE:         %28%, DF: %29%\n"
+                                "       SST:         %30%, DF: %31%\n";
+
+            o.writer->write((boost::format(format) % STRING(ms.files)
+                                                   % GTFRef()
+                                                   % n_syn    // 3
+                                                   % n_gen    // 4
                                                    % MixRef() // 5
+                                                   % title    // 6
+                                                   % STRING(ms.n_syn)
                                                    % "????"
                                                    % "????"
+                                                   % STRING(ms.n_gen)
+                                                   % STRING(ms.b) // 11
+                                                   % STRING(ms.bID)
+                                                   % STRING(ms.lInt)
+                                                   % STRING(ms.lSl)
                                                    % "????"
+                                                   % STRING(ms.lR2) // 16
+                                                   % STRING(ms.rInt)
+                                                   % STRING(ms.rSl)
                                                    % "????"
-                                                   % "????" // 10
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????" // 15
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????" // 20
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????" // 25
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????"
-                                                   % "????" // 30
+                                                   % STRING(ms.rR2)
+                                                   % STRING(ms.wLog.r) // 21
+                                                   % STRING(ms.wLog.sl)
+                                                   % STRING(ms.wLog.R2)
+                                                   % STRING(ms.wLog.F)
+                                                   % STRING(ms.wLog.p)
+                                                   % STRING(ms.wLog.SSM) // 26
+                                                   % STRING(ms.wLog.SSM_D)
+                                                   % STRING(ms.wLog.SSE)
+                                                   % STRING(ms.wLog.SSE_D)
+                                                   % STRING(ms.wLog.SST)
+                                                   % STRING(ms.wLog.SST_D) // 31
                              ).str());
             o.writer->close();
             

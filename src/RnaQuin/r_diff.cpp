@@ -5,7 +5,7 @@
  */
 
 #include "RnaQuin/r_diff.hpp"
-#include "parsers/parser_adiff.hpp"
+#include "parsers/parser_diff.hpp"
 
 using namespace Anaquin;
 
@@ -183,7 +183,7 @@ RDiff::Stats RDiff::analyze(const FileName &file, const Options &o)
 {
     return calculate(o, [&](RDiff::Stats &stats)
     {
-        ParserADiff::parse(file, [&](const ParserADiff::Data &x, const ParserProgress &)
+        ParserDiff::parse(file, [&](const ParserDiff::Data &x, const ParserProgress &)
         {
             update(stats, x, o);
         });

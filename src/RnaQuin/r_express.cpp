@@ -1,28 +1,17 @@
 #include <stdexcept>
 #include "writers/r_writer.hpp"
 #include "RnaQuin/r_express.hpp"
-#include "parsers/parser_cufflink.hpp"
-#include "parsers/parser_kallisto.hpp"
-#include "parsers/parser_stringtie.hpp"
+#include "parsers/parser_express.hpp"
 
 using namespace Anaquin;
 
 typedef TExpress::Metrics  Metrics;
-typedef TExpress::Software Software;
 
-template <typename T> void update(TExpress::Stats &stats, const T &t, const TExpress::Options &o)
+template <typename T> void update(TExpress::Stats &stats, const T &x, const TExpress::Options &o)
 {
-    if (t.cID != ChrT)
-    {
-        stats.n_gen++;
-    }
-    else
+    if (Standard::isSynthetic(x.cID))
     {
         stats.n_syn++;
-    }
-    
-    if (t.cID == ChrT)
-    {
         const auto &r = Standard::instance().r_trans;
         
         switch (o.metrs)
@@ -32,25 +21,25 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                 const TransData *m = nullptr;
                 
                 // Try to match by name if possible
-                m = r.match(t.id);
+                m = r.match(x.id);
                 
                 if (!m)
                 {
                     // Try to match by locus (de-novo assembly)
-                    m = r.match(t.l, Overlap);
+                    m = r.match(x.l, Overlap);
                 }
                 
                 if (!m)
                 {
-                    o.logWarn((boost::format("%1% not found. Unknown isoform.") % t.id).str());
+                    o.logWarn((boost::format("%1% not found. Unknown isoform.") % x.id).str());
                 }
                 else
                 {
                     stats.hist.at(m->id)++;
                     
-                    if (t.abund)
+                    if (x.abund)
                     {
-                        stats.add(t.id, m->concent(Mix_1), t.abund);
+                        stats.add(x.id, m->concent(Mix_1), x.abund);
                     }
                 }
                 
@@ -62,31 +51,35 @@ template <typename T> void update(TExpress::Stats &stats, const T &t, const TExp
                 const TransRef::GeneData *m = nullptr;
                 
                 // Try to match by name if possible
-                m = r.findGene(t.cID, t.id);
+                m = r.findGene(x.cID, x.id);
                 
                 if (!m)
                 {
                     // Try to match by locus (de-novo assembly)
-                    m = r.findGene(t.cID, t.l, Contains);
+                    m = r.findGene(x.cID, x.l, Contains);
                 }
                 
                 if (m)
                 {
                     stats.hist.at(m->id)++;
                     
-                    if (t.abund)
+                    if (x.abund)
                     {
-                        stats.add(t.id, m->concent(Mix_1), t.abund);
+                        stats.add(x.id, m->concent(Mix_1), x.abund);
                     }
                 }
                 else
                 {
-                    o.logWarn((boost::format("%1% not found. Unknown gene.") % t.id).str());
+//                    o.logWarn((boost::format("%1% not found.") % x.id).str());
                 }
                 
                 break;
             }
         }
+    }
+    else
+    {
+        stats.n_gen++;
     }
 }
 
@@ -124,71 +117,10 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     
     return calculate(o, [&](TExpress::Stats &stats)
     {
-        switch (o.soft)
+        ParserExpress::parse(file, [&](const ParserExpress::Data &x, const ParserProgress &)
         {
-            case Software::Kallisto:
-            {
-                struct TempData : public ParserKallisto::Data
-                {
-                    ChrID cID = ChrT;
-
-                    // Dummy locus, it'll never be matched
-                    Locus l;
-                };
-                
-                ParserKallisto::parse(file, [&](const ParserKallisto::Data &data, const ParserProgress &)
-                {
-                    TempData tmp;
-                    
-                    tmp.id = data.id;
-                    tmp.abund = data.abund;
-                    
-                    update(stats, tmp, o);
-                });
-
-                break;
-            }
-
-            case Software::Cufflinks:
-            {
-                ParserCufflink::parse(file, [&](const ParserCufflink::Data &data, const ParserProgress &)
-                {
-                    /*
-                     * update() doesn't recognize the tID field. We'll need to replace it.
-                     */
-                    
-                    auto tmp = data;
-                    
-                    if (o.metrs == Metrics::Isoform)
-                    {
-                        tmp.id = tmp.tID;
-                    }
-                    
-                    update(stats, tmp, o);
-                });
-                
-                break;
-            }
-                
-            case Software::StringTie:
-            {
-                switch (o.metrs)
-                {
-                    case Metrics::Gene:
-                    case Metrics::Isoform:
-                    {
-                        ParserStringTie::parseCTab(file, [&](const ParserStringTie::Data &data, const ParserProgress &)
-                        {
-                            update(stats, data, o);
-                        });
-                        
-                        break;
-                    }
-                }
-                
-                break;
-            }
-        }
+            update(stats, x, o);
+        });
     });
 }
 
@@ -204,19 +136,19 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
     const auto stats = analyze(files, o);
 
     /*
-     * 1. Generating summary statistics (single or multiple samples)
+     * Generating RnaExpress_summary.stats
      */
     
     TExpress::generateSummary("RnaExpress_summary.stats", files, stats, o, units);
     
     /*
-     * 2. Generating detailed statistics
+     * Generating RnaExpress_quins.csv
      */
     
     TExpress::generateCSV("RnaExpress_quins.csv", stats, o);
     
     /*
-     * 3. Generating abundance vs abundance (single or multiple samples)
+     * Generating RnaExpress_express.R
      */
     
     TExpress::generateRAbund("RnaExpress_express.R", "RnaExpress_quins.csv", stats, o);

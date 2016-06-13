@@ -28,9 +28,18 @@ namespace Anaquin
     
     struct StatsWriter
     {
+        typedef std::map<std::string, Counts> Hist;
+
+        static SInflectStats multiInfect(const FileName                  &,
+                                         const FileName                  &,
+                                         const std::vector<FileName>     &,
+                                         const std::vector<Hist>         &,
+                                         const std::vector<MappingStats> &,
+                                         const std::vector<LinearStats>  &);
+        
         static Scripts writeCSV(const LinearStats &stats,
-                                const Label &xLabel = "input",
-                                const Label &yLabel = "measured",
+                                const Label &xLabel = "Expected",
+                                const Label &yLabel = "Measured",
                                 bool shouldLog = false)
         {
             const auto d = stats.data(false);
@@ -66,8 +75,6 @@ namespace Anaquin
          * -------------------- Linear Statistics (with inflection) --------------------
          */
 
-        typedef std::map<std::string, Counts> Hist;
-        
         static Scripts inflectSummary();
         
         static Scripts inflectSummary(const FileName &,
@@ -201,6 +208,14 @@ namespace Anaquin
     
     struct RWriter
     {
+        static Scripts createMultiScatterNeedLog(const FileName  &,
+                                                 const std::string &,
+                                                 const std::string &,
+                                                 const std::string &,
+                                                 const std::string &,
+                                                 const std::string &,
+                                                 bool showLOQ);
+
         static Scripts createScatterNeedLog(const FileName  &,
                                             const std::string &,
                                             const std::string &,
