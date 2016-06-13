@@ -6,9 +6,7 @@
 
 pval <- function(data)
 {
-    stopifnot(class(data) == 'TransQuin' |
-                  class(data) == 'VarQuin'   |
-                  class(data) == 'LadQuin')
+    stopifnot(class(data) == 'Anaquin')
     
     if (is.null(data$seqs$pval)) 
     {

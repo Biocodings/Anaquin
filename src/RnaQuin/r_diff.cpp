@@ -219,7 +219,7 @@ void RDiff::report(const FileName &file, const Options &o)
     RDiff::generateCSV("RnaDiff_quins.csv", stats, o);
     
     /*
-     * Generating log-fold plot
+     * Generating RnaDiff_fold.R
      */
     
     o.generate("RnaDiff_fold.R");
@@ -233,7 +233,7 @@ void RDiff::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating ROC plot
+     * Generating RnaDiff_ROC.R
      */
     
     o.generate("RnaDiff_ROC.R");
@@ -242,7 +242,7 @@ void RDiff::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating LODR plot
+     * Generating RnaDiff_LODR.R
      */
     
     if (shouldLODR)

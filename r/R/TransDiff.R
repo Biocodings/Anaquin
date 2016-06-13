@@ -14,17 +14,15 @@
 #
 TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
 {
-    stopifnot(class(data) == 'TransQuin')
-
     print(paste('Probability threshold:', qCutoff))
 
     data <- data$seqs
     data$label <- NA
 
-    stopifnot(!is.null(data$input))
+    stopifnot(!is.null(data$expected))
     
     # Expected log-fold
-    data$elfc <- data$input #expectLF(data, lvl=lvl, ids=row.names(seqs))$logFC
+    data$elfc <- data$expected #expectLF(data, lvl=lvl, ids=row.names(seqs))$logFC
     
     for (id in row.names(data))
     {
