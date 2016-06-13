@@ -777,6 +777,12 @@ namespace Anaquin
             // Return number of introns
             Counts countIntrons(const ChrID &) const;
 
+            // Number of genes for the synthetic chromosome
+            Counts countGenesSyn() const;
+        
+            // Number of genes for the genome
+            Counts countGenesGen() const;
+
             std::vector<GeneID> geneIDs(const ChrID &) const;
 
             const GeneData   *findGene  (const ChrID &, const GeneID &)           const;

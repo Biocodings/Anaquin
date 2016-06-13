@@ -290,6 +290,10 @@ void Standard::addTRef(const Reader &r)
                 default:   { break; }
             }
         }
+        else
+        {
+            
+        }
     });
 }
 

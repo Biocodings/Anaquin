@@ -531,7 +531,7 @@ struct TransRef::TransRefImpl
         raw.rawMapper[iID] = gID;
     }
 
-    // Eg: chr21...
+    // Eg: chr21... (TODO: ...)
     ChrID refChrID;
     
     RawData cRaw;
@@ -553,6 +553,36 @@ ChrID TransRef::genoID() const
 Base TransRef::exonBase(const ChrID &cID) const
 {
     return _impl->data[cID].exonBase;
+}
+
+Counts TransRef::countGenesSyn() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->data)
+    {
+        if (Standard::isSynthetic(i.first))
+        {
+            n += geneIDs(i.first).size();
+        }
+    }
+
+    return n;
+}
+
+Counts TransRef::countGenesGen() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->data)
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            n += geneIDs(i.first).size();
+        }
+    }
+    
+    return n;
 }
 
 std::vector<GeneID> TransRef::geneIDs(const ChrID &cID) const

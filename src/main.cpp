@@ -1230,7 +1230,7 @@ void parse(int argc, char ** argv)
                     case TOOL_R_DIFF:
                     case TOOL_R_KDIFF:
                     {
-                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
+                        addRef(std::bind(&Standard::addTRef,  &s, std::placeholders::_1));
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
                     }

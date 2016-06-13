@@ -126,6 +126,8 @@ namespace Anaquin
                                                                                 const Options &o,
                                                                                 const Units &units)
         {
+            const auto &r = Standard::instance().r_trans;
+
             const auto lm = stats.linear(true);
             const auto summary = "-------RnaFoldChange Output\n\n"
                                  "Reference mixture file: %1%\n"
@@ -137,29 +139,28 @@ namespace Anaquin
                                  "-------Genes Expressed\n\n"
                                  "Synthetic: %6%\n"
                                  "Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-                                 "Genome:    %9% ± %10%\n\n"
+                                 "Genome:    %9%\n\n"
                                  "-------Linear regression (log2 scale)\n\n"
-                                 "Correlation: %11%\n"
-                                 "Slope:       %12%\n"
-                                 "R2:          %13%\n"
-                                 "F-statistic: %14%\n"
-                                 "P-value:     %15%\n"
-                                 "SSM:         %16%, DF: %17%\n"
-                                 "SSE:         %18%, DF: %19%\n"
-                                 "SST:         %20%, DF: %21%\n";
+                                 "Correlation: %10%\n"
+                                 "Slope:       %11%\n"
+                                 "R2:          %12%\n"
+                                 "F-statistic: %13%\n"
+                                 "P-value:     %14%\n"
+                                 "SSM:         %15%, DF: %16%\n"
+                                 "SSE:         %17%, DF: %18%\n"
+                                 "SST:         %19%, DF: %20%\n";
             o.generate(file);
             o.writer->open(file);
             o.writer->write((boost::format(summary) % MixRef()
                                                     % file
                                                     % GTFRef()
-                                                    % "????"
-                                                    % "????"
-                                                    % "????"
-                                                    % "????"
-                                                    % "????"
-                                                    % "????"
-                                                    % "????"
-                                                    % lm.r     // 10
+                                                    % r.countGenesSyn()
+                                                    % r.countGenesGen()
+                                                    % stats.n_syn
+                                                    % stats.limit.abund
+                                                    % stats.limit.id
+                                                    % stats.n_gen
+                                                    % lm.r
                                                     % lm.m
                                                     % lm.R2
                                                     % lm.F
