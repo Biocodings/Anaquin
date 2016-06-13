@@ -189,8 +189,8 @@ MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o
     return stats;
 }
 
-static void writeCSV(const FileName &file, const MDiff::Stats &stats, const MDiff::Options &o)
-{
+//static void writeCSV(const FileName &file, const MDiff::Stats &stats, const MDiff::Options &o)
+//{
 //    const auto format = "%1%\t%2%\t%3%";
 //    
 //    /*
@@ -210,8 +210,7 @@ static void writeCSV(const FileName &file, const MDiff::Stats &stats, const MDif
 //    }
 //    
 //    o.writer->close();
-}
-
+//}
 
 static Scripts writeQuery(const MDiff::Stats &stats, const MDiff::Options &o)
 {

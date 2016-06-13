@@ -1,5 +1,5 @@
-#ifndef PARSER_CDIFFS_HPP
-#define PARSER_CDIFFS_HPP
+#ifndef PARSER_CDIFF_HPP
+#define PARSER_CDIFF_HPP
 
 #include "data/dtest.hpp"
 #include "data/reader.hpp"

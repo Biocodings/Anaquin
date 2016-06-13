@@ -8,10 +8,10 @@ using namespace std::placeholders;
 extern Scripts PlotScatter();
 
 // Internal implementation
-typedef std::function<void (TAlign::Stats &)> Functor;
+typedef std::function<void (RAlign::Stats &)> Functor;
 
-typedef TAlign::Stats::AlignMetrics   AlignMetrics;
-typedef TAlign::Stats::MissingMetrics MissingMetrics;
+typedef RAlign::Stats::AlignMetrics   AlignMetrics;
+typedef RAlign::Stats::MissingMetrics MissingMetrics;
 
 // Defined for convenience
 static ChrID __gID__;
@@ -89,11 +89,11 @@ template <typename T> void initT(const ChrID &cID, T &t)
     assert(!t.iContains.empty() && !t.iOverlaps.empty());
 }
 
-static TAlign::Stats init()
+static RAlign::Stats init()
 {
     const auto &r = Standard::instance().r_trans;
 
-    TAlign::Stats stats;
+    RAlign::Stats stats;
 
     initT(ChrT, stats.data[ChrT]);
 
@@ -111,8 +111,8 @@ template <typename T> const T * matchT(const Alignment &align,
                                        Intervals<T> &inters,
                                        std::map<std::string, Counts> &contains,
                                        std::map<std::string, Counts> &overlaps,
-                                       TAlign::FPStats *lFPS = nullptr,
-                                       TAlign::FPStats *rFPS = nullptr)
+                                       RAlign::FPStats *lFPS = nullptr,
+                                       RAlign::FPStats *rFPS = nullptr)
 {
     std::vector<T *> oMatches, cMatches;
 
@@ -161,16 +161,16 @@ template <typename T> const T * matchT(const Alignment &align,
 
 template <typename T> void collect(const ChrID &cID,
                                    T &t,
-                                   const TAlign::FPStats &lFPS,
-                                   const TAlign::FPStats &rFPS,
-                                   const TAlign::Options &o)
+                                   const RAlign::FPStats &lFPS,
+                                   const RAlign::FPStats &rFPS,
+                                   const RAlign::Options &o)
 {
     /*
      * Calculating alignment statistics
      */
     
-    auto aligns = [](std::map<GeneID, TAlign::MergedConfusion> &gene,
-                     TAlign::MergedConfusion &over,
+    auto aligns = [](std::map<GeneID, RAlign::MergedConfusion> &gene,
+                     RAlign::MergedConfusion &over,
                      SequinHist &hist,
                      Counts unknowns,
                      const BinCounts &contains,
@@ -223,8 +223,8 @@ template <typename T> void collect(const ChrID &cID,
     
     o.info("Calculating statistics for sequins");
     
-    auto genes = [](std::map<GeneID, TAlign::MergedConfusion> &gene,
-                    TAlign::MergedConfusion &over,
+    auto genes = [](std::map<GeneID, RAlign::MergedConfusion> &gene,
+                    RAlign::MergedConfusion &over,
                     const std::map<std::string, Counts> &contains,
                     const std::map<std::string, Counts> &overlaps,
                     const std::map<std::string, std::string> &m)
@@ -376,7 +376,7 @@ template <typename T> void collect(const ChrID &cID,
     }
 }
 
-TAlign::Stats calculate(const TAlign::Options &o, Functor cal)
+RAlign::Stats calculate(const RAlign::Options &o, Functor cal)
 {
     auto stats = init();
     
@@ -432,10 +432,10 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
     return match;
 }
 
-static bool matchAlign(TAlign::Stats::Data &t,
+static bool matchAlign(RAlign::Stats::Data &t,
                       const Alignment &align,
                       const ParserSAM::Info &info,
-                      const TAlign::Options &o)
+                      const RAlign::Options &o)
 {
     #define REPORT_STATUS() if (!align.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
     REPORT_STATUS();
@@ -449,9 +449,9 @@ static bool matchAlign(TAlign::Stats::Data &t,
     return false;
 }
 
-TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Options &o)
+RAlign::Stats RAlign::analyze(const std::vector<Alignment> &aligns, const Options &o)
 {
-    return calculate(o, [&](TAlign::Stats &stats)
+    return calculate(o, [&](RAlign::Stats &stats)
     {
         ParserSAM::Info info;
         
@@ -475,11 +475,11 @@ TAlign::Stats TAlign::analyze(const std::vector<Alignment> &aligns, const Option
     });
 }
 
-TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
+RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    return calculate(o, [&](TAlign::Stats &stats)
+    return calculate(o, [&](RAlign::Stats &stats)
     {
         ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
         {
@@ -522,7 +522,7 @@ TAlign::Stats TAlign::analyze(const FileName &file, const Options &o)
     });
 }
 
-template <typename F> std::string check(const TAlign::Stats &stats, F f, const ChrID &cID)
+template <typename F> std::string check(const RAlign::Stats &stats, F f, const ChrID &cID)
 {
     return stats.data.count(cID) ? std::to_string(f(cID)) : "-";
 }
@@ -670,10 +670,10 @@ static Scripts replicateSummary()
 
 static void generateSummary(const FileName &file,
                             const FileName &src,
-                            const TAlign::Stats &stats,
-                            const TAlign::Options &o)
+                            const RAlign::Stats &stats,
+                            const RAlign::Options &o)
 {
-    typedef TAlign::Stats Stats;
+    typedef RAlign::Stats Stats;
 
     const auto &r = Standard::instance().r_trans;
 
@@ -737,8 +737,8 @@ static void generateSummary(const FileName &file,
 
 static void writeQuins(const FileName &file,
                        const FileName &src,
-                       const TAlign::Stats &stats,
-                       const TAlign::Options &o)
+                       const RAlign::Stats &stats,
+                       const RAlign::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
@@ -799,9 +799,9 @@ static void writeQuins(const FileName &file,
     o.writer->close();
 }
 
-void TAlign::report(const FileName &file, const Options &o)
+void RAlign::report(const FileName &file, const Options &o)
 {
-    const auto stats = TAlign::analyze(file, o);
+    const auto stats = RAlign::analyze(file, o);
     
     o.info("Generating statistics");
     

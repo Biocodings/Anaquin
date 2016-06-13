@@ -5,7 +5,7 @@
 
 namespace Anaquin
 {
-    struct TSample
+    struct RSample
     {
         enum class Software
         {

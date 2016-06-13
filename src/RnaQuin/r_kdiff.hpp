@@ -15,7 +15,7 @@ namespace Anaquin
     struct TKDiff : public Analyzer
     {
         typedef IndexOptions Options;
-        typedef TDiff::Stats Stats;
+        typedef RDiff::Stats Stats;
         
         static Stats analyze(const std::vector<FileName> &,
                              const std::vector<FileName> &,

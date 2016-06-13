@@ -150,11 +150,11 @@ static Scripts genoSummary()
            "   Novel introns: %28%/%29% (%30%)\n\n";
 }
 
-static TAssembly::Stats init(const TAssembly::Options &o)
+static RAssembly::Stats init(const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
-    TAssembly::Stats stats;
+    RAssembly::Stats stats;
     
     stats.data[ChrT];
 
@@ -166,7 +166,7 @@ static TAssembly::Stats init(const TAssembly::Options &o)
     return stats;
 }
 
-TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
+RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
 
@@ -265,7 +265,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
 
     o.info("Analyzing transcripts");
 
-    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, TAssembly::Stats::Data> &p)
+    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, RAssembly::Stats::Data> &p)
     {
         compareGTF(p.first, p.first == ChrT ? o.rAnnot : o.rAnnot); // TODO: Fix this!
         copyStats(p.first);
@@ -314,7 +314,7 @@ TAssembly::Stats TAssembly::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static void generateQuins(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
+static void generateQuins(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto format = "%1%\t%2%\t%3%";
@@ -335,7 +335,7 @@ static void generateQuins(const FileName &file, const TAssembly::Stats &stats, c
     o.writer->close();
 }
 
-static void generateSummary(const FileName &file, const TAssembly::Stats &stats, const TAssembly::Options &o)
+static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
     const auto data = stats.data.at(ChrT);
@@ -536,9 +536,9 @@ static void generateSummary(const FileName &file, const TAssembly::Stats &stats,
 //    }
 }
 
-void TAssembly::report(const FileName &file, const Options &o)
+void RAssembly::report(const FileName &file, const Options &o)
 {
-    const auto stats = TAssembly::analyze(file, o);
+    const auto stats = RAssembly::analyze(file, o);
 
     /*
      * Generating RnaAssembly_summary.stats

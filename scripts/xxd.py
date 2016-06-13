@@ -18,8 +18,8 @@ data  = [ 'data/manual.txt',
           'scripts/reports.py',
           'scripts/sleuth.R',
 
-	  'src/r/plotScatter.R',
-	  'src/r/plotSensitivity.R',
+          'src/r/plotScatter.R',
+          'src/r/plotSensitivity.R',
 
           # ------- Fusion -------
 
@@ -68,7 +68,7 @@ data  = [ 'data/manual.txt',
 
           # ---------- Variant ----------
 
-	  'src/r/plotVLOD.R',
+   	      'src/r/plotVLOD.R',
           'src/r/plotVROC1.R',
           'src/r/plotVROC2.R',          
           'src/r/plotVDensity.R',

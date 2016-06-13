@@ -201,13 +201,22 @@ namespace Anaquin
     
     struct RWriter
     {
-        static Scripts createScatter(const FileName    &,
-                                     const std::string &,
-                                     const std::string &,
-                                     const std::string &,
-                                     const std::string &,
-                                     const std::string &);
+        static Scripts createScatterNeedLog(const FileName  &,
+                                            const std::string &,
+                                            const std::string &,
+                                            const std::string &,
+                                            const std::string &,
+                                            const std::string &,
+                                            bool showLOQ);
 
+        static Scripts createScatterNoLog(const FileName    &,
+                                          const std::string &,
+                                          const std::string &,
+                                          const std::string &,
+                                          const std::string &,
+                                          const std::string &,
+                                          bool showLOQ);
+        
         static Scripts createScript(const FileName &, const Scripts &);
         static Scripts createScript(const FileName &, const Scripts &, const std::string &);
     };

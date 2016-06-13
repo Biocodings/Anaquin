@@ -5,18 +5,15 @@
  */
 
 #include "RnaQuin/r_diff.hpp"
-#include "parsers/parser_edgeR.hpp"
-#include "parsers/parser_sleuth.hpp"
-#include "parsers/parser_DESeq2.hpp"
-#include "parsers/parser_cdiff.hpp"
-#include "parsers/parser_HTSeqCount.hpp"
+#include "parsers/parser_adiff.hpp"
 
 using namespace Anaquin;
 
-typedef TDiff::Metrics  Metrics;
-typedef TDiff::Software Software;
+extern Scripts PlotTROC();
 
-std::vector<std::string> TDiff::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
+typedef RDiff::Metrics Metrics;
+
+std::vector<std::string> RDiff::classify(const std::vector<double> &qs, const std::vector<double> &folds, double qCut, double foldCut)
 {
     assert(qs.size() == folds.size());
     
@@ -40,7 +37,7 @@ std::vector<std::string> TDiff::classify(const std::vector<double> &qs, const st
     return r;
 }
 
-template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const TDiff::Options &o)
+template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const RDiff::Options &o)
 {
     assert(t.cID == ChrT);
     
@@ -114,18 +111,14 @@ template <typename T> void classifyChrT(TDiff::Stats &stats, const T &t, const T
     stats.elfs.push_back(log2(known));
 }
 
-template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::Options &o)
+template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::Options &o)
 {
     typedef DiffTest::Status Status;
     
-    if (t.status != Status::Tested)
-    {
-        return;
-    }
-    else if (t.cID == ChrT)
+    if (Standard::isSynthetic(x.cID))
     {
         stats.n_syn++;
-        classifyChrT(stats, t, o);
+        classifyChrT(stats, x, o);
     }
     else
     {
@@ -134,34 +127,23 @@ template <typename T> void update(TDiff::Stats &stats, const T &t, const TDiff::
     }
 
     /*
-     * The expected log-fold is done in the classifer because it can only happen with synthetic
+     * The expected fold-change is done in the classifer because it can only happen with synthetic
      */
 
-    stats.ids.push_back(t.id);
-    
-    if (t.status == Status::Tested)
-    {
-        stats.ps.push_back(t.p);
-        stats.qs.push_back(t.q);
-        stats.mlfs.push_back(t.logF);
-        stats.ses.push_back(t.logFSE);
-        stats.means.push_back(t.baseMean);
-    }
-    else
-    {
-        stats.ps.push_back(NAN);
-        stats.qs.push_back(NAN);
-        stats.mlfs.push_back(NAN);
-        stats.ses.push_back(NAN);
-        stats.means.push_back(NAN);
-    }
+    stats.ids.push_back(x.id);
+
+    stats.ps.push_back(x.p);
+    stats.qs.push_back(x.q);
+    stats.mlfs.push_back(x.logF);
+    stats.ses.push_back(x.logFSE);
+    stats.means.push_back(x.mean);
 }
 
-template <typename Functor> TDiff::Stats calculate(const TDiff::Options &o, Functor f)
+template <typename Functor> RDiff::Stats calculate(const RDiff::Options &o, Functor f)
 {
     const auto &r = Standard::instance().r_trans;
 
-    TDiff::Stats stats;
+    RDiff::Stats stats;
 
     switch (o.metrs)
     {
@@ -186,67 +168,29 @@ template <typename Functor> TDiff::Stats calculate(const TDiff::Options &o, Func
     return stats;
 }
 
-TDiff::Stats TDiff::analyze(const std::vector<DiffTest> &tests, const Options &o)
+RDiff::Stats RDiff::analyze(const std::vector<DiffTest> &tests, const Options &o)
 {
-    return calculate(o, [&](TDiff::Stats &stats)
+    return calculate(o, [&](RDiff::Stats &stats)
     {
         for (auto &test : tests)
         {
-            update(stats, test, o);
+            //update(stats, test, o);
         }
     });
 }
 
-TDiff::Stats TDiff::analyze(const FileName &file, const Options &o)
+RDiff::Stats RDiff::analyze(const FileName &file, const Options &o)
 {
-    return calculate(o, [&](TDiff::Stats &stats)
+    return calculate(o, [&](RDiff::Stats &stats)
     {
-        switch (o.dSoft)
+        ParserADiff::parse(file, [&](const ParserADiff::Data &x, const ParserProgress &)
         {
-            case Software::Sleuth:
-            {
-                ParserSleuth::parse(file, [&](const ParserSleuth::Data &data, const ParserProgress &)
-                {
-                    update(stats, data, o);
-                });
-
-                break;
-            }
-                
-            case Software::DESeq2:
-            {
-                ParserDESeq2::parse(file, [&](const DiffTest &t, const ParserProgress &)
-                {
-                    update(stats, t, o);
-                });
-
-                break;                
-            }
-
-            case Software::edgeR:
-            {
-                ParserEdgeR::parse(file, [&](const DiffTest &t, const ParserProgress &)
-                {
-                    update(stats, t, o);
-                });
-
-                break;
-            }
-
-            case Software::Cuffdiff:
-            {
-                ParserCDiff::parse(file, [&](const ParserCDiff::Data &data, const ParserProgress &)
-                {
-                    update(stats, data, o);
-                });
-
-                break;
-            }
-        }
+            update(stats, x, o);
+        });
     });
 }
 
-void TDiff::report(const FileName &file, const Options &o)
+void RDiff::report(const FileName &file, const Options &o)
 {
     const auto m = std::map<Metrics, std::string>
     {
@@ -254,50 +198,64 @@ void TDiff::report(const FileName &file, const Options &o)
         { Metrics::Isoform, "isoforms" },
     };
 
-    const auto stats = TDiff::analyze(file, o);
+    const auto stats = RDiff::analyze(file, o);
     const auto units = m.at(o.metrs);
     
     o.info("Generating statistics");
+    
+    // Eg: DESeq2
+    const auto shouldLODR = true;
     
     /*
      * Generating summary statistics
      */
 
-    TDiff::generateSummary("RnaDiff_summary.stats", stats, o, units);
+    RDiff::generateSummary("RnaDiff_summary.stats", stats, o, units);
 
     /*
      * Generating differential results
      */
 
-    TDiff::generateCSV("RnaDiff_quins.csv", stats, o);
+    RDiff::generateCSV("RnaDiff_quins.csv", stats, o);
     
     /*
      * Generating log-fold plot
      */
     
-    TDiff::generateFoldR("RnaDiff_fold.R", "RnaDiff_quins.csv", o);
+    o.generate("RnaDiff_fold.R");
+    o.writer->open("RnaDiff_fold.R");
+    o.writer->write(RWriter::createScatterNoLog("RnaDiff_quins.csv",
+                                                "Fold Change",
+                                                "Expected fold change (log2)",
+                                                "Measured fold change (log2)",
+                                                "Expected",
+                                                "Measured", false));
+    o.writer->close();
 
     /*
      * Generating ROC plot
      */
     
-    TDiff::generateROC("RnaDiff_ROC.R", "RnaDiff_quins.csv", o);
-    
+    o.generate("RnaDiff_ROC.R");
+    o.writer->open("RnaDiff_ROC.R");
+    o.writer->write(RWriter::createScript("RnaDiff_quins.csv", PlotTROC()));
+    o.writer->close();
+
     /*
      * Generating LODR plot
      */
     
-    if (o.dSoft != Software::edgeR)
+    if (shouldLODR)
     {
-        TDiff::generateLODR("RnaDiff_LODR.R", "RnaDiff_quins.csv", o);
+        RDiff::generateLODR("RnaDiff_LODR.R", "RnaDiff_quins.csv", o);
     }
 
     /*
      * Generating MA plot
      */
     
-    if (!o.counts.empty())
-    {
-        TDiff::generateMA("RnaDiff_MA.R", "RnaDiff_counts.stats", o);
-    }
+    //if (!o.counts.empty())
+    //{
+    //    RDiff::generateMA("RnaDiff_MA.R", "RnaDiff_counts.stats", o);
+    //}
 }

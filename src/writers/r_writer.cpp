@@ -12,12 +12,33 @@ extern Scripts PlotScatter();
 // Defined in main.cpp
 extern FileName mixture();
 
-Scripts RWriter::createScatter(const FileName    &file,
-                               const std::string &title,
-                               const std::string &xlab,
-                               const std::string &ylab,
-                               const std::string &expected,
-                               const std::string &measured)
+Scripts RWriter::createScatterNoLog(const FileName    &file,
+                                    const std::string &title,
+                                    const std::string &xlab,
+                                    const std::string &ylab,
+                                    const std::string &expected,
+                                    const std::string &measured,
+                                    bool showLOQ)
+{
+    return (boost::format(PlotScatter()) % date()
+                                          % __full_command__
+                                          % __output__
+                                          % file
+                                          % title
+                                          % xlab
+                                          % ylab
+                                          % ("data$" + expected)
+                                          % ("data$" + measured)
+                                          % (showLOQ ? "TRUE" : "FALSE")).str();
+}
+
+Scripts RWriter::createScatterNeedLog(const FileName    &file,
+                                      const std::string &title,
+                                      const std::string &xlab,
+                                      const std::string &ylab,
+                                      const std::string &expected,
+                                      const std::string &measured,
+                                      bool showLOQ)
 {
     return (boost::format(PlotScatter()) % date()
                                          % __full_command__
@@ -26,8 +47,9 @@ Scripts RWriter::createScatter(const FileName    &file,
                                          % title
                                          % xlab
                                          % ylab
-                                         % expected
-                                         % measured).str();
+                                         % ("log2(data$" + expected + ")")
+                                         % ("log2(data$" + measured + ")")
+                                         % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
 Scripts RWriter::createScript(const FileName &file, const Scripts &script)

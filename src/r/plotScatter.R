@@ -13,9 +13,9 @@ title <- '%5%'
 xlab  <- '%6%'
 ylab  <- '%7%'
 
-expected <- log2(data$%8%)
-measured <- log2(data$%9%)
+expected <- %8%
+measured <- %9%
 
 data <- Anaquin(seqs=row.names(data), expected=expected, measured=measured)
 
-plotScatter(data, title=title, xlab=xlab, ylab=ylab)
+plotScatter(data, title=title, xlab=xlab, ylab=ylab, showLOQ=%10%)

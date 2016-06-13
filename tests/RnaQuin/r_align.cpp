@@ -27,7 +27,7 @@
 //        aligns.push_back(align);
 //    }
 //    
-//    const auto r  = TAlign::analyze(aligns);
+//    const auto r  = RAlign::analyze(aligns);
 //    const auto se = r.data.at(ChrT).eInters.stats();
 //    const auto si = r.data.at(ChrT).iInters.stats();
 //    
@@ -40,22 +40,22 @@
 //    REQUIRE(se.covered() == Approx(0.0000458388));
 //    REQUIRE(si.covered() == 0.0);
 //    
-//    REQUIRE(r.missing(ChrT, TAlign::Stats::MissingMetrics::MissingExon).i   == 1188);
-//    REQUIRE(r.missing(ChrT, TAlign::Stats::MissingMetrics::MissingExon).n   == 1190);
-//    REQUIRE(r.missing(ChrT, TAlign::Stats::MissingMetrics::MissingGene).i   == 76);
-//    REQUIRE(r.missing(ChrT, TAlign::Stats::MissingMetrics::MissingGene).n   == 76);
-//    REQUIRE(r.missing(ChrT, TAlign::Stats::MissingMetrics::MissingIntron).i == 1028);
-//    REQUIRE(r.missing(ChrT, TAlign::Stats::MissingMetrics::MissingIntron).n == 1028);
+//    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingExon).i   == 1188);
+//    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingExon).n   == 1190);
+//    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingGene).i   == 76);
+//    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingGene).n   == 76);
+//    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingIntron).i == 1028);
+//    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingIntron).n == 1028);
 //    
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0000504226));
-//    REQUIRE(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignBase) == 1.0);
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0000504226));
+//    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == 1.0);
 //    REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
 //    REQUIRE(r.data.at(ChrT).overB.m.nq() == 10);
 //    REQUIRE(r.data.at(ChrT).overB.m.tp() == 10);
 //    REQUIRE(r.data.at(ChrT).overB.m.fp() == 0);
 //    REQUIRE(r.data.at(ChrT).overB.m.fn() == 218146);
 //    
-//    REQUIRE(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignExon) == 1.0);
+//    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 1.0);
 //    REQUIRE(r.data.at(ChrT).overE.aTP   == 200);
 //    REQUIRE(r.data.at(ChrT).overE.aFP   == 0);
 //    REQUIRE(r.data.at(ChrT).overE.aNQ() == 200);
@@ -63,7 +63,7 @@
 //    REQUIRE(r.data.at(ChrT).overE.lNR   == 1190);
 //    REQUIRE(r.data.at(ChrT).overE.lFN() == 1188);
 //    
-//    REQUIRE(isnan(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignIntron)));
+//    REQUIRE(isnan(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignIntron)));
 //    REQUIRE(r.data.at(ChrT).overI.aTP   == 0);
 //    REQUIRE(r.data.at(ChrT).overI.aFP   == 0);
 //    REQUIRE(r.data.at(ChrT).overI.aNQ() == 0);
@@ -71,8 +71,8 @@
 //    REQUIRE(r.data.at(ChrT).overI.lNR   == 1028);
 //    REQUIRE(r.data.at(ChrT).overI.lFN() == 1028);
 //    
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignExon)   == Approx(0.0016806723));
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignIntron) == 0);
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignExon)   == Approx(0.0016806723));
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignIntron) == 0);
 //    
 //    for (auto &i : r.data.at(ChrT).histE)
 //    {
@@ -191,7 +191,7 @@
 //        aligns.push_back(align);
 //    }
 //    
-//    const auto r = TAlign::analyze(aligns);
+//    const auto r = RAlign::analyze(aligns);
 //    
 //    REQUIRE(r.data.at(ChrT).unknowns.size() == 0);
 //    
@@ -226,12 +226,12 @@
 //    REQUIRE(se.covered() == Approx(0.0012972368));
 //    REQUIRE(si.covered() == 0.0);
 //    
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignExon) == Approx(0.0016806723));
-//    REQUIRE(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignExon) == 1.0);
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignIntron) == 0);
-//    REQUIRE(isnan(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignIntron)));
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0012972368));
-//    REQUIRE(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignBase) == Approx(1.0));
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == Approx(0.0016806723));
+//    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 1.0);
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignIntron) == 0);
+//    REQUIRE(isnan(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignIntron)));
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0012972368));
+//    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == Approx(1.0));
 //
 //    REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
 //    REQUIRE(r.data.at(ChrT).overB.m.tp() == mapped);
@@ -341,7 +341,7 @@
 //        aligns.push_back(align);
 //    }
 //    
-//    const auto r = TAlign::analyze(aligns);
+//    const auto r = RAlign::analyze(aligns);
 //    
 //    REQUIRE(r.data.at(ChrT).unknowns.size() == 100);
 //    
@@ -354,10 +354,10 @@
 //    REQUIRE(r.data.at(ChrT).histE.size() == 76);
 //    REQUIRE(r.data.at(ChrT).histI.size() == 76);
 //    
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignExon) == 0);
-//    REQUIRE(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignExon) == 0);
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignIntron) == 0);
-//    REQUIRE(isnan(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignIntron)));
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 0);
+//    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 0);
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignIntron) == 0);
+//    REQUIRE(isnan(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignIntron)));
 //    
 //    REQUIRE(r.data.at(ChrT).overB.m.sn() == 0);
 //    REQUIRE(isnan(r.data.at(ChrT).overB.m.pc()));
@@ -381,8 +381,8 @@
 //    REQUIRE(r.data.at(ChrT).overI.lNR   == 1028);
 //    REQUIRE(r.data.at(ChrT).overI.lFN() == 1028);
 //
-//    REQUIRE(r.sn(ChrT, TAlign::Stats::AlignMetrics::AlignBase) == 0);
-//    REQUIRE(r.pc(ChrT, TAlign::Stats::AlignMetrics::AlignExon) == 0);
+//    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == 0);
+//    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 0);
 //    REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
 //    REQUIRE(r.data.at(ChrT).overB.m.nq() == 0);
 //    REQUIRE(r.data.at(ChrT).overB.m.tp() == 0);

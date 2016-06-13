@@ -61,7 +61,7 @@ namespace Anaquin
         const GenericID id;
     };
 
-    class TAlign : public Analyzer
+    class RAlign : public Analyzer
     {
         public:
 
@@ -257,7 +257,7 @@ namespace Anaquin
 
             static std::vector<Stats> analyze(const std::vector<std::vector<Alignment>> &aligns, const Options &o = Options())
             {
-                std::vector<TAlign::Stats> stats;
+                std::vector<RAlign::Stats> stats;
                 
                 for (const auto &align : aligns)
                 {

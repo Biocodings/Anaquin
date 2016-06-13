@@ -12,7 +12,7 @@
 
 namespace Anaquin
 {
-    struct TCoverage
+    struct RCoverage
     {
         typedef AnalyzerOptions Options;        
         typedef CoverageTool::Stats Stats;

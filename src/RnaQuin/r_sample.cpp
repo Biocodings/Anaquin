@@ -6,9 +6,9 @@
 
 using namespace Anaquin;
 
-TSample::Stats TSample::stats(const FileName &file, const Options &o)
+RSample::Stats RSample::stats(const FileName &file, const Options &o)
 {
-    TSample::Stats stats;
+    RSample::Stats stats;
     
     o.info(file);
     
@@ -81,7 +81,7 @@ TSample::Stats TSample::stats(const FileName &file, const Options &o)
     return stats;
 }
 
-static void generateSummary(const FileName &file, const TSample::Stats &stats, const TSample::Options &o)
+static void generateSummary(const FileName &file, const RSample::Stats &stats, const RSample::Options &o)
 {
     o.generate(file);
     
@@ -89,12 +89,12 @@ static void generateSummary(const FileName &file, const TSample::Stats &stats, c
     {
         switch (o.meth)
         {
-            case TSample::Method::_1:  { return "1%";  }
-            case TSample::Method::_5:  { return "5%";  }
-            case TSample::Method::_10: { return "10%"; }
-            case TSample::Method::_15: { return "15%"; }
-            case TSample::Method::_20: { return "20%"; }
-            case TSample::Method::_50: { return "50%"; }
+            case RSample::Method::_1:  { return "1%";  }
+            case RSample::Method::_5:  { return "5%";  }
+            case RSample::Method::_10: { return "10%"; }
+            case RSample::Method::_15: { return "15%"; }
+            case RSample::Method::_20: { return "20%"; }
+            case RSample::Method::_50: { return "50%"; }
         }
     };
     
@@ -147,9 +147,9 @@ static void generateSummary(const FileName &file, const TSample::Stats &stats, c
     o.writer->close();
 }
 
-void TSample::report(const FileName &file, const Options &o)
+void RSample::report(const FileName &file, const Options &o)
 {
-    const auto stats = TSample::stats(file, o);
+    const auto stats = RSample::stats(file, o);
     
     /*
      * Generating RnaSubsample_summary.stats

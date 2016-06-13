@@ -11,7 +11,7 @@
 
 namespace Anaquin
 {
-    struct TAssembly : Analyzer
+    struct RAssembly : Analyzer
     {
         typedef FuzzyOptions Options;
         

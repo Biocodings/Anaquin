@@ -8,12 +8,12 @@
 //{
 //    Test::transAB();
 //
-//    TDiff::Options o;
+//    RDiff::Options o;
 //    
-//    o.metrs = TDiff::Metrics::Gene;
-//    o.dSoft = TDiff::Software::DESeq2;
+//    o.metrs = RDiff::Metrics::Gene;
+//    o.dSoft = RDiff::Software::DESeq2;
 //
-//    const auto r = TDiff::analyze("tests/data/DESeq2.csv", o);
+//    const auto r = RDiff::analyze("tests/data/DESeq2.csv", o);
 //
 //    REQUIRE(r.size() == 2);
 //
@@ -44,7 +44,7 @@
 //    const auto qvals = std::vector<double> { 0.01, 0.02, 0.98, 0.99 };
 //    const auto folds = std::vector<double> { 1.00, 4.00, 1.00, 4.00 };
 //
-//    const auto r = TDiff::classify(qvals, folds, 0.05, 1.00);
+//    const auto r = RDiff::classify(qvals, folds, 0.05, 1.00);
 //    
 //    REQUIRE(r.size() == 4);
 //
@@ -85,12 +85,12 @@
 //        tests.push_back(test);
 //    }
 //    
-//    TDiff::Options o;
+//    RDiff::Options o;
 //    
-//    o.metrs = TDiff::Metrics::Gene;
-//    o.dSoft = TDiff::Software::Cuffdiff;
+//    o.metrs = RDiff::Metrics::Gene;
+//    o.dSoft = RDiff::Software::Cuffdiff;
 //    
-//    const auto r = TDiff::analyze(tests, o);
+//    const auto r = RDiff::analyze(tests, o);
 //    const auto stats = r.linear();
 //    
 //    REQUIRE(stats.r  == 1.0);
@@ -129,10 +129,10 @@
 //        tests.push_back(test);
 //    }
 //    
-//    TDiff::Options o;
-//    o.metrs = TDiff::Metrics::Gene;
+//    RDiff::Options o;
+//    o.metrs = RDiff::Metrics::Gene;
 //    
-//    const auto r = TDiff::analyze(tests, o);
+//    const auto r = RDiff::analyze(tests, o);
 //    const auto stats = r.linear();
 //    
 //    REQUIRE(stats.r  == 1.0);
@@ -166,10 +166,10 @@
 //        tests.push_back(test);
 //    }
 //    
-//    TDiff::Options o;
-//    o.metrs = TDiff::Metrics::Gene;
+//    RDiff::Options o;
+//    o.metrs = RDiff::Metrics::Gene;
 //    
-//    const auto r = TDiff::analyze(tests, o);
+//    const auto r = RDiff::analyze(tests, o);
 //    const auto stats = r.linear();
 //    
 //    REQUIRE(isnan(stats.r));

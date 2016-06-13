@@ -19,9 +19,11 @@ namespace Anaquin
             Stat,
             PValue,
             QValue
-        } DESeq2Field;
+        } Field;
         
-        static void parse(const FileName &file, std::function<void (const DiffTest &, const ParserProgress &)> f)
+        typedef DiffTest Data;
+
+        template <typename F> static void parse(const FileName &file, F f)
         {
             Reader r(file);
             ParserProgress p;
@@ -36,11 +38,11 @@ namespace Anaquin
             {
                 Tokens::split(line, ",", toks);
 
-                DiffTest t;
+                Data t;
 
                 if (p.i)
                 {
-                    t.id = toks[DESeq2Field::Name];
+                    t.id = toks[Field::Name];
                     
                     /*
                      * DESeq2 wouldn't give the chromosome name, only the name of the gene would be given.
@@ -62,9 +64,9 @@ namespace Anaquin
                      *     ENSG00000000003.14,0,NA,NA,NA,NA,NA
                      */
                     
-                    if (toks[DESeq2Field::PValue]   == "NA" ||
-                        toks[DESeq2Field::QValue]   == "NA" ||
-                        toks[DESeq2Field::Log2Fold] == "NA")
+                    if (toks[Field::PValue]   == "NA" ||
+                        toks[Field::QValue]   == "NA" ||
+                        toks[Field::Log2Fold] == "NA")
                     {
                         t.status = DiffTest::Status::NotTested;
                     }
@@ -73,19 +75,19 @@ namespace Anaquin
                         t.status = DiffTest::Status::Tested;
 
                         // Normalized average counts
-                        t.baseMean = stod(toks[DESeq2Field::BaseMean]);
+                        t.baseMean = stod(toks[Field::BaseMean]);
                         
                         // Measured log-fold change
-                        t.logF = stod(toks[DESeq2Field::Log2Fold]);
+                        t.logF = stod(toks[Field::Log2Fold]);
 
                         // Standard error for the log-fold change
-                        t.logFSE = stod(toks[DESeq2Field::Log2FoldSE]);
+                        t.logFSE = stod(toks[Field::Log2FoldSE]);
                         
                         // Probability under the null hypothesis
-                        t.p = stold(toks[DESeq2Field::PValue]);
+                        t.p = stold(toks[Field::PValue]);
                         
                         // Probability adjusted for multi-testing
-                        t.q = stold(toks[DESeq2Field::QValue]);                        
+                        t.q = stold(toks[Field::QValue]);                        
                     }
 
                     f(t, p);

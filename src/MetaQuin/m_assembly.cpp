@@ -106,6 +106,8 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
 
             break;
         }
+            
+        default : { throw "Not Implemented"; }
     }
     
     assert(!stats.c2s.empty());

@@ -9,8 +9,8 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.name=1, sep='\t')
-data <- data[!is.na(data$expected),]
-data <- TransQuin(seqs=row.names(data), mean=data$mean, input=data$input, measured=data$measured, pval=data$pval)
+data <- data[!is.na(data$Expected),]
+data <- Anaquin(seqs=row.names(data), mean=data$Mean, input=data$Expected, measured=data$Measured, pval=data$Pval)
 
 # Choose your FDR rate
 chosenFDR <- 0.1

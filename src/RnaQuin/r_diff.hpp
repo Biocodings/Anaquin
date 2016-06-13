@@ -30,7 +30,7 @@ namespace Anaquin
 {
     class CountTable;
     
-    struct TDiff : public Analyzer
+    struct RDiff : public Analyzer
     {
         template <typename Stats, typename Options> static Scripts writeCSV(const Stats &stats, const Options &o)
         {
@@ -117,7 +117,7 @@ namespace Anaquin
         {
             o.generate(file);
             o.writer->open(file);
-            o.writer->write(TDiff::writeCSV(stats, o));
+            o.writer->write(RDiff::writeCSV(stats, o));
             o.writer->close();
         }
         
@@ -158,7 +158,8 @@ namespace Anaquin
                                                     % "????"
                                                     % "????"
                                                     % "????"
-                                                    % lm.r
+                                                    % "????"
+                                                    % lm.r     // 10
                                                     % lm.m
                                                     % lm.R2
                                                     % lm.F
@@ -195,13 +196,7 @@ namespace Anaquin
         struct Options : public DoubleMixtureOptions
         {
             Options() {}
-
-            // Files for the count table
-            std::vector<FileName> counts;
-            
             Metrics metrs = Metrics::Gene;
-
-            Software dSoft;
         };
 
         struct Stats : public LinearStats, public MappingStats, public SequinStats
@@ -211,7 +206,7 @@ namespace Anaquin
             
             // Probability under the null hypothesis
             std::vector<Probability> ps, qs;
-            
+
             // Expected log-fold ratios
             std::vector<Concent> elfs;
 
@@ -229,7 +224,7 @@ namespace Anaquin
             std::vector<double> ses;
             
             // Average counts for each condition if provided
-            std::vector<std::map<std::string, Counts>> avgs;
+            //std::vector<std::map<std::string, Counts>> avgs;
         };
 
         /*

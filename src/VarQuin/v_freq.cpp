@@ -248,12 +248,12 @@ void VFreq::report(const FileName &file, const Options &o)
     
     o.info("Generating VarFrequency_allele.R");
     o.writer->open("VarFrequency_allele.R");
-    o.writer->write(RWriter::createScatter("VarFrequency_quins.csv",
-                                           "Allele Frequency",
-                                           "Expected allele frequency (log2)",
-                                           "Measured allele frequency (log2)",
-                                           "Expected",
-                                           "Observed"));
+    o.writer->write(RWriter::createScatterNeedLog("VarFrequency_quins.csv",
+                                                  "Allele Frequency",
+                                                  "Expected allele frequency (log2)",
+                                                  "Measured allele frequency (log2)",
+                                                  "Expected",
+                                                  "Observed", true));
     o.writer->close();
     
     /*

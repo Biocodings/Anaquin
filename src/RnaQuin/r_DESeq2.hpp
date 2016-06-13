@@ -1,11 +1,11 @@
-#ifndef R_CUFFDIFF_HPP
-#define R_CUFFDIFF_HPP
+#ifndef R_DESEQ2_HPP
+#define R_DESEQ2_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct RCuffdiff
+    struct RDESeq2
     {
         typedef AnalyzerOptions Options;
 

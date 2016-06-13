@@ -82,8 +82,8 @@ MKDiff::Stats MKDiff::analyze(const std::vector<FileName> &files, const Options 
     return stats;
 }
 
-static void writeCSV(const FileName &file, const MKDiff::Stats &stats, const MKDiff::Options &o)
-{
+//static void writeCSV(const FileName &file, const MKDiff::Stats &stats, const MKDiff::Options &o)
+//{
 //    const auto format = "%1%\t%2%\t%3%";
 //    
 //    /*
@@ -103,8 +103,7 @@ static void writeCSV(const FileName &file, const MKDiff::Stats &stats, const MKD
 //    }
 //    
 //    o.writer->close();
-}
-
+//}
 
 static Scripts writeQuery(const MKDiff::Stats &stats, const MKDiff::Options &o)
 {

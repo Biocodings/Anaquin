@@ -13,10 +13,12 @@
 #include "RnaQuin/r_viewer.hpp"
 #include "RnaQuin/r_report.hpp"
 #include "RnaQuin/r_sample.hpp"
+#include "RnaQuin/r_DESeq2.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_kexpress.hpp"
 #include "RnaQuin/r_assembly.hpp"
 #include "RnaQuin/r_coverage.hpp"
+#include "RnaQuin/r_cuffdiff.hpp"
 
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"
@@ -74,13 +76,13 @@ typedef std::set<Value> Range;
 #define TOOL_VERSION     'v'
 #define TOOL_TEST        264
 #define TOOL_HELP        265
-#define TOOL_T_ALIGN     266
-#define TOOL_T_ASSEMBLY  267
-#define TOOL_T_EXPRESS   268
-#define TOOL_T_DIFF      270
+#define TOOL_R_ALIGN     266
+#define TOOL_R_ASSEMBLY  267
+#define TOOL_R_EXPRESS   268
+#define TOOL_R_DIFF      270
 #define TOOL_T_NORM      271
-#define TOOL_T_IGV       272
-#define TOOL_T_COVERAGE  273
+#define TOOL_R_IGV       272
+#define TOOL_R_COVERAGE  273
 #define TOOL_V_ALIGN     274
 #define TOOL_V_DISCOVER  275
 #define TOOL_V_VSCAN     276
@@ -88,7 +90,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_FREQ      278
 #define TOOL_V_COVERAGE  279
 #define TOOL_V_SUBSAMPLE 280
-#define TOOL_T_SUBSAMPLE 281
+#define TOOL_R_SUBSAMPLE 281
 #define TOOL_M_KABUND    282
 #define TOOL_M_ASSEMBLY  283
 #define TOOL_M_DIFF      284
@@ -106,13 +108,15 @@ typedef std::set<Value> Range;
 #define TOOL_L_COPY      296
 #define TOOL_V_EXPRESS   297
 #define TOOL_V_KEXPRESS  298
-#define TOOL_T_KEXPRESS  299
+#define TOOL_R_KEXPRESS  299
 #define TOOL_M_ABUND     300
 #define TOOL_M_KDIFF     301
-#define TOOL_T_KDIFF     304
-#define TOOL_V_KALLELE   306
-#define TOOL_S_DISCOVER  307
-#define TOOL_V_FORWARD   308
+#define TOOL_R_KDIFF     302
+#define TOOL_V_KALLELE   303
+#define TOOL_S_DISCOVER  304
+#define TOOL_V_FORWARD   305
+#define TOOL_R_CUFFDIFF  306
+#define TOOL_R_DESEQ2    307
 
 /*
  * Options specified in the command line
@@ -187,16 +191,18 @@ static std::map<Value, Tool> _tools =
     { "Test",           TOOL_TEST        },
     { "Help",           TOOL_HELP        },
 
-    { "RnaAlign",       TOOL_T_ALIGN     },
-    { "RnaAssembly",    TOOL_T_ASSEMBLY  },
-    { "RnaExpress",     TOOL_T_EXPRESS   },
-    { "RnaKExpress",    TOOL_T_KEXPRESS  },
-    { "RnaDiff",        TOOL_T_DIFF      },
-    { "RnaKDiff",       TOOL_T_KDIFF     },
+    { "RnaAlign",       TOOL_R_ALIGN     },
+    { "RnaAssembly",    TOOL_R_ASSEMBLY  },
+    { "RnaExpression",  TOOL_R_EXPRESS   },
+    { "RnaKExpress",    TOOL_R_KEXPRESS  },
+    { "RnaFoldChange",  TOOL_R_DIFF      },
+    { "RnaKDiff",       TOOL_R_KDIFF     },
     { "RnaNorm",        TOOL_T_NORM      },
-    { "RnaIGV",         TOOL_T_IGV       },
-    { "RnaCoverage",    TOOL_T_COVERAGE  },
-    { "RnaSubsample",   TOOL_T_SUBSAMPLE },
+    { "RnaIGV",         TOOL_R_IGV       },
+    { "RnaCoverage",    TOOL_R_COVERAGE  },
+    { "RnaSubsample",   TOOL_R_SUBSAMPLE },
+    { "RnaCuffdiff",    TOOL_R_CUFFDIFF  },
+    { "RnaDESeq2",      TOOL_R_DESEQ2    },
 
     { "VarVarScan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
@@ -239,15 +245,17 @@ static std::map<Tool, std::set<Option>> _required =
      * Transcriptome Analysis
      */
     
-    { TOOL_T_IGV,       { OPT_U_FILES                                   } },
-    { TOOL_T_DIFF,      { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_T_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_COVERAGE,  { OPT_R_GTF, OPT_U_FILES                        } },
-    { TOOL_T_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES           } },
-    { TOOL_T_ALIGN,     { OPT_R_GTF, OPT_U_FILES           } },
-    { TOOL_T_EXPRESS,   { OPT_R_GTF, OPT_MIXTURE, OPT_SOFT, OPT_U_FILES } },
-    { TOOL_T_SUBSAMPLE, { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_IGV,       { OPT_U_FILES } },
+    { TOOL_R_SUBSAMPLE, { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_EXPRESS,   { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_DIFF,      { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_COVERAGE,  { OPT_R_GTF, OPT_U_FILES } },
     
     /*
      * Ladder Analysis
@@ -1193,32 +1201,40 @@ void parse(int argc, char ** argv)
         case TOOL_VERSION: { printVersion();                break; }
         case TOOL_TEST:    { Catch::Session().run(1, argv); break; }
 
-        case TOOL_T_IGV:
+        case TOOL_R_IGV:
         case TOOL_T_NORM:
-        case TOOL_T_DIFF:
-        case TOOL_T_KDIFF:
-        case TOOL_T_ALIGN:
-        case TOOL_T_EXPRESS:
-        case TOOL_T_KEXPRESS:
-        case TOOL_T_ASSEMBLY:
-        case TOOL_T_COVERAGE:
-        case TOOL_T_SUBSAMPLE:
+        case TOOL_R_DIFF:
+        case TOOL_R_KDIFF:
+        case TOOL_R_ALIGN:
+        case TOOL_R_DESEQ2:
+        case TOOL_R_EXPRESS:
+        case TOOL_R_KEXPRESS:
+        case TOOL_R_ASSEMBLY:
+        case TOOL_R_COVERAGE:
+        case TOOL_R_CUFFDIFF:
+        case TOOL_R_SUBSAMPLE:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
-            if (_p.tool != TOOL_T_IGV)
+            if (_p.tool != TOOL_R_IGV)
             {
-                addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
-                
                 switch (_p.tool)
                 {
-                    case TOOL_T_DIFF:
-                    case TOOL_T_KDIFF:
+                    case TOOL_R_DESEQ2:
+                    case TOOL_R_CUFFDIFF:
                     {
+                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
+                        break;
+                    }
+
+                    case TOOL_R_DIFF:
+                    case TOOL_R_KDIFF:
+                    {
+                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
                     }
-                        
+
 //                    case TOOL_T_REPORT:
 //                    {
 //                        if (_p.inputs.size() == 2)
@@ -1235,6 +1251,7 @@ void parse(int argc, char ** argv)
 
                     default:
                     {
+                        addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
                         addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
                         break;
                     }
@@ -1245,12 +1262,14 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
-                case TOOL_T_ALIGN:     { analyze_1<TAlign>(OPT_U_FILES);    break; }
-                case TOOL_T_COVERAGE:  { analyze_1<TCoverage>(OPT_U_FILES); break; }
-                case TOOL_T_ASSEMBLY:  { analyze_1<TAssembly>(OPT_U_FILES); break; }
-                case TOOL_T_SUBSAMPLE: { analyze_1<TSample>(OPT_U_FILES);   break; }
-
-                case TOOL_T_KDIFF:
+                case TOOL_R_ALIGN:     { analyze_1<RAlign>(OPT_U_FILES);    break; }
+                case TOOL_R_DESEQ2:    { analyze_1<RDESeq2>(OPT_U_FILES);   break; }
+                case TOOL_R_COVERAGE:  { analyze_1<RCoverage>(OPT_U_FILES); break; }
+                case TOOL_R_ASSEMBLY:  { analyze_1<RAssembly>(OPT_U_FILES); break; }
+                case TOOL_R_SUBSAMPLE: { analyze_1<RSample>(OPT_U_FILES);   break; }
+                case TOOL_R_CUFFDIFF:  { analyze_1<RCuffdiff>(OPT_U_FILES); break; }
+                    
+                case TOOL_R_KDIFF:
                 {
                     TKDiff::Options o;
                     o.index = _p.opts[OPT_R_IND];
@@ -1259,7 +1278,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_T_KEXPRESS:
+                case TOOL_R_KEXPRESS:
                 {
                     TKExpress::Options o;
                     o.index = _p.opts[OPT_R_IND];
@@ -1268,7 +1287,7 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_T_EXPRESS:
+                case TOOL_R_EXPRESS:
                 {
                     auto checkCufflink = [&](const FileName &file)
                     {
@@ -1335,75 +1354,27 @@ void parse(int argc, char ** argv)
                     break;
                 }
 
-                case TOOL_T_DIFF:
+                case TOOL_R_DIFF:
                 {
-                    auto parseSoft = [&](const std::string &str)
-                    {
-                        const static std::map<Value, TDiff::Software> m =
-                        {
-                            { "sleuth",   TDiff::Software::Sleuth   },
-                            { "edgeR",    TDiff::Software::edgeR    },
-                            { "deseq2",   TDiff::Software::DESeq2   },
-                            { "cuffdiff", TDiff::Software::Cuffdiff },
-                        };
-                        
-                        return parseEnum("soft", str, m);
-                    };
-                    
-                    auto checkCuffdiff = [&](const FileName &file)
-                    {
-                        const auto &r = Standard::instance().r_trans;
-                        
-                        Counts gs = 0;
-                        Counts is = 0;
-                        
-                        ParserCDiff::parse(file, [&](const ParserCDiff::Data &data, const ParserProgress &p)
-                        {
-                            if (data.cID == ChrT)
-                            {
-                                try
-                                {
-                                    if (r.match(data.id))
-                                    {
-                                        is++;
-                                        
-                                        // Important, if there's match for isoform, don't match for it's gene
-                                        return;
-                                    }
-                                }
-                                catch (...) {}
-                                
-                                try
-                                {
-                                    if (r.findGene(data.cID, data.id)) { gs++; }
-                                }
-                                catch (...) {}
-                            }
-                        });
-                        
-                        return gs > is;
-                    };
-                    
-                    TDiff::Options o;
+                    RDiff::Options o;
 
-                    o.dSoft = parseSoft(_p.opts[OPT_SOFT]);
-                    o.metrs = TDiff::Metrics::Gene;
+                    o.metrs = RDiff::Metrics::Gene;
                     
-                    if (o.dSoft == TDiff::Software::Cuffdiff && !checkCuffdiff(_p.inputs[0]))
-                    {
-                        o.metrs = TDiff::Metrics::Isoform;
-                    }
+//                    if (o.dSoft == RDiff::Software::Cuffdiff && !checkCuffdiff(_p.inputs[0]))
+//                    {
+//                        o.metrs = RDiff::Metrics::Isoform;
+//                    }
+//                    
+//                    if (o.dSoft == RDiff::Software::Sleuth)
+//                    {
+//                        o.metrs = RDiff::Metrics::Isoform;
+//                    }
                     
-                    if (o.dSoft == TDiff::Software::Sleuth)
-                    {
-                        o.metrs = TDiff::Metrics::Isoform;
-                    }
-                    
-                    analyze_1<TDiff>(OPT_U_FILES, o);
+                    analyze_1<RDiff>(OPT_U_FILES, o);
                     break;
                 }
 
-                case TOOL_T_IGV: { viewer<TViewer>(); break; }
+                case TOOL_R_IGV: { viewer<TViewer>(); break; }
             }
 
             break;

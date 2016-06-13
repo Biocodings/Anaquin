@@ -68,12 +68,12 @@ TKDiff::Stats TKDiff::analyze(const std::vector<FileName> &a1,
      * We've run Kallisto for all the samples. Next, we'll need to give them to sleuth.
      */
 
-    TDiff::Options o_;
+    RDiff::Options o_;
     
-    o_.metrs = TDiff::Metrics::Isoform;
-    o_.dSoft = TDiff::Software::Sleuth;
+    o_.metrs = RDiff::Metrics::Isoform;
+    //o_.dSoft = RDiff::Software::Sleuth;
 
-    return TDiff::analyze(__sleuth__ = Pachter::sleuth(outputs, names, facts), o_);
+    return RDiff::analyze(__sleuth__ = Pachter::sleuth(outputs, names, facts), o_);
 }
 
 void TKDiff::report(const FileName &file, const Options &o)
@@ -91,29 +91,29 @@ void TKDiff::report(const FileName &file, const Options &o)
      * Generating RnaKDiff_summary.stats
      */
     
-    TDiff::generateSummary("RnaKDiff_summary.stats", stats, o, units);
+    RDiff::generateSummary("RnaKDiff_summary.stats", stats, o, units);
     
     /*
      * Generating RnaKDiff_quins.csv
      */
     
-    TDiff::generateCSV("RnaKDiff_quins.csv", stats, o);
+    RDiff::generateCSV("RnaKDiff_quins.csv", stats, o);
     
     /*
      * Generating RnaKDiff_fold.R
      */
     
-    TDiff::generateFoldR("RnaKDiff_fold.R", "RnaKDiff_quins.csv", o);
+    RDiff::generateFoldR("RnaKDiff_fold.R", "RnaKDiff_quins.csv", o);
     
     /*
      * Generating RnaKDiff_ROC.R
      */
     
-    TDiff::generateROC("RnaKDiff_ROC.R", "RnaKDiff_quins.csv", o);
+    RDiff::generateROC("RnaKDiff_ROC.R", "RnaKDiff_quins.csv", o);
     
     /*
      * Generating RnaKDiff_LODR.R
      */
     
-    TDiff::generateLODR("RnaKDiff_LODR.R", "RnaKDiff_quins.csv", o);
+    RDiff::generateLODR("RnaKDiff_LODR.R", "RnaKDiff_quins.csv", o);
 }

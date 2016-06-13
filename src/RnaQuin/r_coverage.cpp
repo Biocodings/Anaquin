@@ -2,7 +2,7 @@
 
 using namespace Anaquin;
 
-TCoverage::Stats TCoverage::stats(const FileName &file, const Options &o)
+RCoverage::Stats RCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
@@ -19,10 +19,10 @@ TCoverage::Stats TCoverage::stats(const FileName &file, const Options &o)
     });
 }
 
-void TCoverage::report(const FileName &file, const TCoverage::Options &o)
+void RCoverage::report(const FileName &file, const RCoverage::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-    const auto stats = TCoverage::stats(file, o);
+    const auto stats = RCoverage::stats(file, o);
 
     /*
      * Generating summary statistics

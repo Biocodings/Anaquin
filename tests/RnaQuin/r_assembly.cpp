@@ -8,11 +8,11 @@
 //{
 //    Test::transA();
 //    
-//    TAssembly::Options o;
+//    RAssembly::Options o;
 //
 //    o.rAnnot = "data/TransQuin/ATR001.v032.gtf";
 //
-//    const auto r = TAssembly::analyze(o.rAnnot, o);
+//    const auto r = RAssembly::analyze(o.rAnnot, o);
 //
 //    REQUIRE(r.cExons == 1200);
 //    REQUIRE(r.eExons == 1200);
