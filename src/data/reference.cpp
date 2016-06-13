@@ -555,7 +555,67 @@ Base TransRef::exonBase(const ChrID &cID) const
     return _impl->data[cID].exonBase;
 }
 
-Counts TransRef::countGenesSyn() const
+Counts TransRef::countExonSyn() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->data)
+    {
+        if (Standard::isSynthetic(i.first))
+        {
+            n += countExons(i.first);
+        }
+    }
+    
+    return n;
+}
+
+Counts TransRef::countExonGen() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->data)
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            n += countExons(i.first);
+        }
+    }
+    
+    return n;
+}
+
+Counts TransRef::countIntrSyn() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->data)
+    {
+        if (Standard::isSynthetic(i.first))
+        {
+            n += countIntrons(i.first);
+        }
+    }
+    
+    return n;
+}
+
+Counts TransRef::countIntrGen() const
+{
+    Counts n = 0;
+    
+    for (const auto &i : _impl->data)
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            n += countIntrons(i.first);
+        }
+    }
+    
+    return n;
+}
+
+Counts TransRef::countGeneSyn() const
 {
     Counts n = 0;
     
@@ -570,7 +630,7 @@ Counts TransRef::countGenesSyn() const
     return n;
 }
 
-Counts TransRef::countGenesGen() const
+Counts TransRef::countGeneGen() const
 {
     Counts n = 0;
     

@@ -9,6 +9,14 @@
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
-data <- TransQuin(seqs=row.names(data), input=log2(data$input), measured=data$sn)
- 
-plotAssembly(data)  
+
+# Default LOQ limit is 98%
+limit <- 0.98
+
+title <- '%5%'
+xlab  <- '%6%'
+ylab  <- '%7%'
+
+data <- Anaquin(seqs=row.names(data), expected=%8%, measured=%9%)
+
+plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, limit=limit, showLOQ=%10%)

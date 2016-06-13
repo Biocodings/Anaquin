@@ -463,9 +463,9 @@ RAlign::Stats RAlign::analyze(const std::vector<Alignment> &aligns, const Option
             {
                 return;
             }
-            else if (align.cID == ChrT)
+            else if (Standard::isSynthetic(align.cID))
             {
-                matchAlign(stats.data.at(ChrT), align, info, o);
+                matchAlign(stats.data.at(align.cID), align, info, o);
             }
             else
             {

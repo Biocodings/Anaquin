@@ -23,47 +23,6 @@ namespace Anaquin
 {
     struct TExpress : public Analyzer
     {
-        /*
-         * Generate summary statistics for a single sample
-         */
-        
-        template <typename Stats, typename Options> static Scripts singleSummary(const Stats &stats,
-                                                                                 const FileName &file,
-                                                                                 const Units &units,
-                                                                                 const Options &o)
-        {
-            return StatsWriter::inflectSummary(o.rAnnot,
-                                               o.rAnnot,
-                                               std::vector<FileName>     { file  },
-                                               std::vector<SequinHist>   { stats.hist },
-                                               std::vector<MappingStats> { stats },
-                                               std::vector<LinearStats>  { stats },
-                                               units);
-        }
-        
-        /*
-         * Generate summary statistics for multiple samples
-         */
-        
-        template <typename Stats, typename Options> static Scripts multipleSummary(const std::vector<FileName> &files,
-                                                                                   const std::vector<Stats>    &stats,
-                                                                                   const Units &units,
-                                                                                   const Options &o)
-        {
-            std::vector<SequinHist>   sHists;
-            std::vector<LinearStats>  lStats;
-            std::vector<MappingStats> mStats;
-            
-            for (auto i = 0; i < files.size(); i++)
-            {
-                mStats.push_back(stats[i]);
-                sHists.push_back(stats[i].hist);
-                lStats.push_back(stats[i]);
-            }
-
-            return StatsWriter::inflectSummary(o.rAnnot, o.rAnnot, files, sHists, mStats, lStats, units);
-        }
-        
         template <typename Stats> static Scripts multipleCSV(const std::vector<Stats> &stats)
         {
             std::set<SequinID> seqs;
@@ -121,13 +80,6 @@ namespace Anaquin
             Isoform
         };
         
-        enum class Software
-        {
-            Kallisto,
-            Cufflinks,
-            StringTie,
-        };
-        
         struct Options : public AnalyzerOptions
         {
             Options() {}
@@ -144,7 +96,7 @@ namespace Anaquin
         static Stats analyze(const FileName &, const Options &o);
 
         /*
-         * 4. Generating major plot (but only if we have the isoforms...)
+         * Generating major plot (but only if we have the isoforms...)
          */
 
         template <typename Options> static void generateRSplice(const FileName &output,
@@ -245,8 +197,8 @@ namespace Anaquin
 
             const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, hists, mStats, lStats);
 
-            const auto n_syn = toString(r.countGenesSyn()) + " " + units;
-            const auto n_gen = toString(r.countGenesGen()) + " " + units;
+            const auto n_syn = toString(r.countGeneSyn()) + " " + units;
+            const auto n_gen = toString(r.countGeneGen()) + " " + units;
 
             const auto format = "-------RnaExpression Output\n\n"
                                 "Summary for input: %1%\n\n"

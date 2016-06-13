@@ -69,17 +69,15 @@ namespace Anaquin
             // Sensitivity for each sequin
             std::map<SequinID, Proportion> tSPs;
 
-            // Number of exons assembled for chrT
-            Counts cExons = 0;
+            Counts sExons   = 0;
+            Counts sIntrons = 0;
+            Counts sTrans   = 0;
+            Counts sGenes   = 0;
 
-            // Number of transcripts assembled for chrT
-            Counts cTrans = 0;
-
-            // Number of exons assembled for endogenous
-            Counts eExons = 0;
-            
-            // Number of transcripts assembled for endogenous
-            Counts eTrans = 0;
+            Counts gExons   = 0;
+            Counts gIntrons = 0;
+            Counts gTrans   = 0;
+            Counts gGenes   = 0;
         };
 
         // Analyze for a single sample

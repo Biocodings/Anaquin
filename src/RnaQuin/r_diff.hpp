@@ -154,8 +154,8 @@ namespace Anaquin
             o.writer->write((boost::format(summary) % MixRef()
                                                     % file
                                                     % GTFRef()
-                                                    % r.countGenesSyn()
-                                                    % r.countGenesGen()
+                                                    % r.countGeneSyn()
+                                                    % r.countGeneGen()
                                                     % stats.n_syn
                                                     % stats.limit.abund
                                                     % stats.limit.id

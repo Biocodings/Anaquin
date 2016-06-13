@@ -14,6 +14,9 @@ Compare __cmp__;
 // Defined in resources.cpp
 extern Scripts PlotSensitivity();
 
+// Defined in resources.cpp
+extern FileName GTFRef();
+
 // Defined for cuffcompare
 extern int cuffcompare_main(const char *ref, const char *query);
 
@@ -281,30 +284,12 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
         {
             case Exon:
             {
-                if (f.cID == ChrT)
-                {
-                    stats.cExons++;
-                }
-                else
-                {
-                    stats.eExons++;
-                }
-                
-                break;
+                if (Standard::isSynthetic(f.cID)) { stats.sExons++; } else { stats.gExons++; } break;
             }
 
             case Transcript:
             {
-                if (f.cID == ChrT)
-                {
-                    stats.cTrans++;
-                }
-                else
-                {
-                    stats.eTrans++;
-                }
-                
-                break;
+                if (Standard::isSynthetic(f.cID)) { stats.sTrans++; } else { stats.gTrans++; } break;
             }
 
             default: { break; }
@@ -338,202 +323,129 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
 static void generateSummary(const FileName &file, const RAssembly::Stats &stats, const RAssembly::Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-    const auto data = stats.data.at(ChrT);
+
+    const auto hasGeno = !r.genoID().empty();
+    
+    const auto sData = stats.data.at(ChrT);
+    const auto gData = hasGeno ? stats.data.at(r.genoID()) : RAssembly::Stats::Data();
 
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
     
     const auto genoID = r.genoID();
     
     const auto format = "-------RnaAssembly Summary Statistics\n\n"
-                        "User assembly file: %1%\n"
-                        "Reference annotation file: %2%\n\n"
+                        "       User assembly file: %1%\n"
+                        "       Reference annotation file: %2%\n\n"
                         "-------User Gene Assemblies (Synthetic)\n\n"
-                        "Synthetic: %3% exons\n"
-                        "Synthetic: %4% introns\n"
-                        "Synthetic: %5% isoforms\n"
-                        "Synthetic: %6% genes\n\n"
+                        "       Synthetic: %3% exons\n"
+                        "       Synthetic: %4% introns\n"
+                        "       Synthetic: %5% isoforms\n"
+                        "       Synthetic: %6% genes\n\n"
                         "-------User Gene Assemblies (Genome)\n\n"
-                        "Genome: %7% exons\n"
-                        "Genome: %8% introns\n"
-                        "Genome: %9% isoforms\n"
-                        "Genome: %10% genes\n\n"
+                        "       Genome: %7% exons\n"
+                        "       Genome: %8% introns\n"
+                        "       Genome: %9% isoforms\n"
+                        "       Genome: %10% genes\n\n"
                         "-------Reference Gene Annotations (Synthetic)\n\n"
-                        "Synthetic: %11% exons\n"
-                        "Synthetic: %12% introns\n"
-                        "Synthetic: %13% isoforms\n"
-                        "Synthetic: %14% genes\n\n"
+                        "       Synthetic: %11% exons\n"
+                        "       Synthetic: %12% introns\n"
+                        "       Synthetic: %13% isoforms\n"
+                        "       Synthetic: %14% genes\n\n"
                         "-------Reference Gene Annotations (Genome)\n\n"
-                        "Genome: %15% exons\n"
-                        "Genome: %16% introns\n"
-                        "Genome: %17% isoforms\n"
-                        "Genome: %18% genes\n\n"
+                        "       Genome: %15% exons\n"
+                        "       Genome: %16% introns\n"
+                        "       Genome: %17% isoforms\n"
+                        "       Genome: %18% genes\n\n"
                         "-------Comparison of assembly to annotations (Synthetic)\n\n"
-                        "*Exon level\n"
-                        "Sensitivity: %19%\n"
-                        "Specificity: %20%\n\n"
-                        "*Intron\n"
-                        "Sensitivity: %21%\n"
-                        "Specificity: %22%\n\n"
-                        "*Base level\n"
-                        "Sensitivity: %23%\n"
-                        "Specificity: %24%\n\n"
-                        "*Intron Chain\n"
-                        "Sensitivity: %25%\n"
-                        "Specificity: %26%\n\n"
-                        "*Transcript level\n"
-                        "Sensitivity: %27%\n"
-                        "Specificity: %28%\n\n"
-                        "Missing exons: %29%\n"
-                        "Missing introns: %30%\n\n"
-                        "Novel exons:  %31%\n"
-                        "Novel introns: %32%\n\n"
+                        "       *Exon level\n"
+                        "       Sensitivity: %19%\n"
+                        "       Specificity: %20%\n\n"
+                        "       *Intron\n"
+                        "       Sensitivity: %21%\n"
+                        "       Specificity: %22%\n\n"
+                        "       *Base level\n"
+                        "       Sensitivity: %23%\n"
+                        "       Specificity: %24%\n\n"
+                        "       *Intron Chain\n"
+                        "       Sensitivity: %25%\n"
+                        "       Specificity: %26%\n\n"
+                        "       *Transcript level\n"
+                        "       Sensitivity: %27%\n"
+                        "       Specificity: %28%\n\n"
+                        "       Missing exons: %29%\n"
+                        "       Missing introns: %30%\n\n"
+                        "       Novel exons:  %31%\n"
+                        "       Novel introns: %32%\n\n"
                         "-------Comparison of assembly to annotations (Genome)\n\n"
-                        "*Exon level\n"
-                        "Sensitivity: %33%\n"
-                        "Specificity: %34%\n\n"
-                        "*Intron\n"
-                        "Sensitivity: %35%\n"
-                        "Specificity: %36%\n\n"
-                        "*Base level\n"
-                        "Sensitivity: %37%\n"
-                        "Specificity: %38%\n\n"
-                        "*Intron Chain\n"
-                        "Sensitivity: %39%\n"
-                        "Specificity: %40%\n\n"
-                        "*Transcript level\n"
-                        "Sensitivity: %41%\n"
-                        "Specificity: %42%\n\n"
-                        "Missing exons: %43%\n"
-                        "Missing introns: %44%\n\n"
-                        "Novel exons:  %45%\n"
-                        "Novel introns: %46%";
+                        "       *Exon level\n"
+                        "       Sensitivity: %33%\n"
+                        "       Specificity: %34%\n\n"
+                        "       *Intron\n"
+                        "       Sensitivity: %35%\n"
+                        "       Specificity: %36%\n\n"
+                        "       *Base level\n"
+                        "       Sensitivity: %37%\n"
+                        "       Specificity: %38%\n\n"
+                        "       *Intron Chain\n"
+                        "       Sensitivity: %39%\n"
+                        "       Specificity: %40%\n\n"
+                        "       *Transcript level\n"
+                        "       Sensitivity: %41%\n"
+                        "       Specificity: %42%\n\n"
+                        "       Missing exons: %43%\n"
+                        "       Missing introns: %44%\n\n"
+                        "       Novel exons:  %45%\n"
+                        "       Novel introns: %46%";
     
     o.generate("RnaAssembly_summary.stats");
     o.writer->open("RnaAssembly_summary.stats");
-    o.writer->write((boost::format(format) % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????" // 10
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????" // 20
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????" // 30
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????" // 40
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????"
-                                           % "????" // 45
-                                           % "????").str());
+    o.writer->write((boost::format(format) % file
+                                           % GTFRef()
+                                           % stats.sExons
+                                           % stats.sIntrons
+                                           % stats.sTrans
+                                           % stats.sGenes
+                                           % stats.gExons
+                                           % stats.gIntrons
+                                           % stats.gTrans
+                                           % stats.gGenes     // 10
+                                           % r.countExonSyn() // 11
+                                           % r.countIntrSyn() // 12
+                                           % "????" // 13
+                                           % "????" // 14
+                                           % r.countExonSyn() // 15
+                                           % r.countIntrSyn() // 16
+                                           % "????" // 17
+                                           % "????" // 18
+                                           % S(sData.eSN) // 19
+                                           % S(sData.eSP) // 20
+                                           % S(sData.iSN)
+                                           % S(sData.iSP)
+                                           % S(sData.bSN)
+                                           % S(sData.bSP)
+                                           % S(sData.cSN)
+                                           % S(sData.cSP)
+                                           % S(sData.tSN)
+                                           % S(sData.tSP)
+                                           % sData.mExonN   // 29
+                                           % sData.mIntronN // 30
+                                           % sData.nExonN   // 31
+                                           % sData.nIntronN // 32
+                                           % (hasGeno ? S(gData.eSN)      : "-") // 33
+                                           % (hasGeno ? S(gData.eSP)      : "-") // 34
+                                           % (hasGeno ? S(gData.iSN)      : "-") // 35
+                                           % (hasGeno ? S(gData.iSP)      : "_") // 36
+                                           % (hasGeno ? S(gData.bSN)      : "-") // 37
+                                           % (hasGeno ? S(gData.bSP)      : "-") // 38
+                                           % (hasGeno ? S(gData.cSN)      : "-") // 39
+                                           % (hasGeno ? S(gData.cSP)      : "-") // 40
+                                           % (hasGeno ? S(gData.tSN)      : "-") // 41
+                                           % (hasGeno ? S(gData.tSN)      : "-") // 42
+                                           % (hasGeno ? S(gData.mExonN)   : "-") // 43
+                                           % (hasGeno ? S(gData.mIntronN) : "-") // 44
+                                           % (hasGeno ? S(gData.nExonN)   : "-") // 45
+                                           % (hasGeno ? S(gData.nIntronN) : "-")).str());
     o.writer->close();
-    
-//    o.writer->write((boost::format(chrTSummary()) % file
-//                                                  % stats.cExons
-//                                                  % stats.eExons
-//                                                  % stats.cTrans
-//                                                  % stats.eTrans
-//                                                  % o.rAnnot
-//                                                  % r.countExons(ChrT)
-//                                                  % r.countIntrons(ChrT)
-//                                                  % (o.rAnnot.empty() ? "-" : o.rAnnot)
-//                                                  % (o.rAnnot.empty() ? "-" : toString(r.countExons(genoID)))
-//                                                  % (o.rAnnot.empty() ? "-" : toString(r.countIntrons(genoID)))
-//                                                  % S(data.eSN)          // 12
-//                                                  % S(data.eFSN)
-//                                                  % S(data.eSP)
-//                                                  % S(data.eFSP)
-//                                                  % S(data.iSN)          // 16
-//                                                  % S(data.iFSN)
-//                                                  % S(data.iSP)
-//                                                  % S(data.iFSP)
-//                                                  % S(data.bSN)          // 20
-//                                                  % S(data.bSP)
-//                                                  % S(data.cSN)          // 22
-//                                                  % S(data.cFSN)
-//                                                  % S(data.cSP)
-//                                                  % S(data.cFSP)
-//                                                  % S(data.tSN)
-//                                                  % S(data.tFSN)
-//                                                  % S(data.tSP)
-//                                                  % S(data.tFSP)         // 29
-//                                                  % data.mExonN          // 31
-//                                                  % data.mExonR
-//                                                  % S(data.mExonP)
-//                                                  % data.mIntronN
-//                                                  % data.mIntronR        // 34
-//                                                  % S(data.mIntronP)
-//                                                  % data.nExonN
-//                                                  % data.nExonR
-//                                                  % S(data.nExonP)
-//                                                  % data.nIntronN
-//                                                  % data.nIntronR        // 40
-//                                                  % S(data.nIntronP)).str());
-//    if (!r.genoID().empty())
-//    {
-//        const auto &data = stats.data.at(r.genoID());
-//
-//        o.writer->write((boost::format(genoSummary()) % S(data.eSN)        // 1
-//                                                      % S(data.eFSN)
-//                                                      % S(data.eSP)
-//                                                      % S(data.eFSP)
-//                                                      % S(data.iSN)        // 5
-//                                                      % S(data.iFSN)
-//                                                      % S(data.iSP)
-//                                                      % S(data.iFSP)
-//                                                      % S(data.bSN)        // 9
-//                                                      % S(data.bSP)
-//                                                      % S(data.cSN)        // 11
-//                                                      % S(data.cFSN)
-//                                                      % S(data.cSP)
-//                                                      % S(data.cFSP)
-//                                                      % S(data.tSN)
-//                                                      % S(data.tFSN)
-//                                                      % S(data.tSP)
-//                                                      % S(data.tFSP)       // 18
-//                                                      % data.mExonN        // 19
-//                                                      % data.mExonR
-//                                                      % S(data.mExonP)
-//                                                      % data.mIntronN
-//                                                      % data.mIntronR      // 23
-//                                                      % S(data.mIntronP)
-//                                                      % data.nExonN
-//                                                      % data.nExonR
-//                                                      % S(data.nExonP)
-//                                                      % data.nIntronN
-//                                                      % data.nIntronR      // 29
-//                                                      % S(data.nIntronP)).str());
-//    }
 }
 
 void RAssembly::report(const FileName &file, const Options &o)
@@ -558,11 +470,17 @@ void RAssembly::report(const FileName &file, const Options &o)
     
     o.generate("RnaAssembly_assembly.R");
     o.writer->open("RnaAssembly_assembly.R");
-    o.writer->write(RWriter::createScript("RnaAssembly_quins.csv", PlotSensitivity()));
+    o.writer->write(RWriter::createSensitivity("RnaAssembly_quins.csv",
+                                               "Assembly Detection",
+                                               "Input Concentration (log2)",
+                                               "Sensitivity",
+                                               "Expected",
+                                               "Measured",
+                                               true));
     o.writer->close();
     
     /*
-     * Generating a PDF report
+     * Generating RnaAssembly_report.pdf
      */
     
     o.report->open("RnaAssembly_report.pdf");

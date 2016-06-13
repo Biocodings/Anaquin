@@ -4,18 +4,18 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotSigmoid <- function(data, limit, title='', xlab='', ylab='', showLimit=TRUE, showGuide=FALSE)
+.plotSigmoid <- function(data, limit, title='', xlab='', ylab='', showLOQ=TRUE, showGuide=FALSE)
 {
     require(ggplot2)
     require(reshape2)
 
     data <- data$seqs
 
-    stopifnot(!is.null(data$input))
+    stopifnot(!is.null(data$expected))
     stopifnot(!is.null(data$measured))    
     
     data$f   <- NA
-    data$x   <- data$input
+    data$x   <- data$expected
     data$y   <- data$measured
     data$grp <- as.factor(round(abs(data$x)))
     
@@ -44,7 +44,7 @@
             data$f <- sigmoid(params,data$x)
         }, error = function(e)
         {
-            showLimit <<- FALSE
+            showLOQ <<- FALSE
             #warning(e)
         })
     
@@ -64,46 +64,25 @@
     p <- p + theme(axis.title.x=element_text(face='bold', size=12))
     p <- p + theme(axis.title.y=element_text(face='bold', size=12))
     
-    if (showLimit)
+    if (showLOQ)
     {
-        r <- min(data[data$y >= limit,]$input)
-        p <- p + geom_vline(xintercept=c(r), linetype="dotted")
-        p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOQ', r)), colour = "black", show.legend=FALSE)
-        #data[data$x > loa & data$y == 0,]
+        r <- min(data[data$y >= limit,]$expected)
+        #f <- as.numeric(as.character(format(round(as.numeric(as.character(r)), 2), nsmall=2)))
+        p <- p + geom_vline(xintercept=c(as.factor(r)), linetype="dotted")
+        p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOQ',r)), colour="black", show.legend=FALSE)
     }
-    
+
     if (!showGuide)
     {
         p <- p + guides(colour=FALSE)
     }
     
+    p <- .transformPlot(p)    
     print(p)
 }
 
-plotSensitivity.TransQuin <- function(data, title, xlab, ylab, limit)
+plotSensitivity <- function(data, title, xlab, ylab, showLOQ=TRUE, limit=0.98)
 {
-    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
-}
-
-plotSensitivity.MetaQuin <- function(data, title, xlab, ylab, limit)
-{
-    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
-}
-
-plotSensitivity.FusQuin <- function(data, title, xlab, ylab, limit)
-{
-    .plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, limit=limit)
-}
-
-plotSensitivity <- function(data,
-                            title='Assembly Detection',
-                            xlab='Input Concentration (log2 attomole/ul)',
-                            ylab='Sensitivity',
-                            limit=0.98)
-{
-    stopifnot(class(data) == 'TransQuin' | class(data) == 'MetaQuin' | class(data) == 'FusQuin')
-
-    if (class(data) == 'FusQuin')   { plotSensitivity.FusQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit)   } 
-    if (class(data) == 'MetaQuin')  { plotSensitivity.MetaQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit)  } 
-    if (class(data) == 'TransQuin') { plotSensitivity.TransQuin(data, title=title, xlab=xlab, ylab=ylab, limit=limit) } 
+    stopifnot(class(data) == 'Anaquin')
+    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ, limit=limit)    
 }

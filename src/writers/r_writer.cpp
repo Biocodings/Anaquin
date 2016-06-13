@@ -9,8 +9,31 @@ extern Path __output__;
 // Defined in resources.cpp
 extern Scripts PlotScatter();
 
+// Defined in resources.cpp
+extern Scripts PlotSensitivity();
+
 // Defined in main.cpp
 extern FileName mixture();
+
+Scripts RWriter::createSensitivity(const FileName    &file,
+                                   const std::string &title,
+                                   const std::string &xlab,
+                                   const std::string &ylab,
+                                   const std::string &expected,
+                                   const std::string &measured,
+                                   bool showLOQ)
+{
+    return (boost::format(PlotSensitivity()) % date()
+                                             % __full_command__
+                                             % __output__
+                                             % file
+                                             % title
+                                             % xlab
+                                             % ylab
+                                             % ("log2(data$" + expected + ")")
+                                             % ("data$" + measured)
+                                             % (showLOQ ? "TRUE" : "FALSE")).str();
+}
 
 Scripts RWriter::createScatterNoLog(const FileName    &file,
                                     const std::string &title,

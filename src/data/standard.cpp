@@ -281,18 +281,12 @@ void Standard::addTRef(const Reader &r)
 {
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
-        if (Standard::isSynthetic(f.cID))
+        // Handles both synthetic and genome
+        switch (f.type)
         {
-            switch (f.type)
-            {
-                case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
-                case Exon: { r_trans.addExon(f.cID, f.gID, f.tID, f.l); break; }
-                default:   { break; }
-            }
-        }
-        else
-        {
-            
+            case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
+            case Exon: { r_trans.addExon(f.cID, f.gID, f.tID, f.l); break; }
+            default:   { break; }
         }
     });
 }

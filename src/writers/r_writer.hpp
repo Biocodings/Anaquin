@@ -208,6 +208,14 @@ namespace Anaquin
     
     struct RWriter
     {
+        static Scripts createSensitivity(const FileName    &,
+                                         const std::string &,
+                                         const std::string &,
+                                         const std::string &,
+                                         const std::string &,
+                                         const std::string &,
+                                         bool showLOQ);
+        
         static Scripts createMultiScatterNeedLog(const FileName  &,
                                                  const std::string &,
                                                  const std::string &,
