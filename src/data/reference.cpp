@@ -1,36 +1,10 @@
 #include "data/tokens.hpp"
-#include <boost/format.hpp>
+#include "tools/gtf_data.hpp"
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
-
-template <typename T> SequinHist createHist(const T& t)
-{
-    SequinHist hist;
-    
-    for (const auto &i : t)
-    {
-        hist[i.first] = 0;
-    }
-    
-    assert(!hist.empty());
-    return hist;
-}
-
-template <typename T> SequinHist createHist(const std::set<T> & t)
-{
-    SequinHist hist;
-    
-    for (const auto &i : t)
-    {
-        hist[i] = 0;
-    }
-    
-    assert(!hist.empty());
-    return hist;
-}
 
 template <typename Key, typename Value> std::set<Key> getKeys(const std::map<Key, Value> &m)
 {
@@ -541,6 +515,9 @@ struct TransRef::TransRefImpl
      */
 
     std::map<ChrID, Data> data;
+
+    // Includes synthetic and genome
+    GTFData gData;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
@@ -557,92 +534,42 @@ Base TransRef::exonBase(const ChrID &cID) const
 
 Counts TransRef::countExonSyn() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->data)
-    {
-        if (Standard::isSynthetic(i.first))
-        {
-            n += countExons(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->gData.countExonSyn();
 }
 
 Counts TransRef::countExonGen() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->data)
-    {
-        if (!Standard::isSynthetic(i.first))
-        {
-            n += countExons(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->gData.countExonsGen();
 }
 
 Counts TransRef::countIntrSyn() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->data)
-    {
-        if (Standard::isSynthetic(i.first))
-        {
-            n += countIntrons(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->gData.countIntrSyn();
 }
 
 Counts TransRef::countIntrGen() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->data)
-    {
-        if (!Standard::isSynthetic(i.first))
-        {
-            n += countIntrons(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->gData.countIntrGen();
 }
 
 Counts TransRef::countGeneSyn() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->data)
-    {
-        if (Standard::isSynthetic(i.first))
-        {
-            n += geneIDs(i.first).size();
-        }
-    }
-
-    return n;
+    return _impl->gData.countGeneSyn();
 }
 
 Counts TransRef::countGeneGen() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->data)
-    {
-        if (!Standard::isSynthetic(i.first))
-        {
-            n += geneIDs(i.first).size();
-        }
-    }
-    
-    return n;
+    return _impl->gData.countGeneGen();
+}
+
+Counts TransRef::countTransSyn() const
+{
+    return _impl->gData.countTransSyn();
+}
+
+Counts TransRef::countTransGen() const
+{
+    return _impl->gData.countTransGen();
 }
 
 std::vector<GeneID> TransRef::geneIDs(const ChrID &cID) const
@@ -665,15 +592,14 @@ Limit TransRef::absoluteGene(const SequinHist &hist) const
     });
 }
 
-void TransRef::addGene(const ChrID &cID, const GeneID &gID, const Locus &l)
+void TransRef::readRef(const Reader &r)
 {
-    // Synthetic is not supported for now...
-    assert(cID != ChrT);
-    
-    if (cID != ChrT)
-    {
-        _impl->data[cID]._genes[gID] = l;
-    }
+    _impl->gData = gtfData(r);
+}
+
+std::map<ChrID, Hist> TransRef::histGene() const
+{
+    return _impl->gData.histGene();
 }
 
 void TransRef::addExon(const ChrID &cID, const GeneID &gID, const IsoformID &iID, const Locus &l)

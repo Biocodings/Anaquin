@@ -1,7 +1,8 @@
-#ifndef SUMMARY_HPP
-#define SUMMARY_HPP
+#ifndef GTF_DATA_HPP
+#define GTF_DATA_HPP
 
-#include <fstream>
+#include "data/hist.hpp"
+#include "tools/gtf_data.hpp"
 #include "parsers/parser_gtf.hpp"
 
 namespace Anaquin
@@ -81,13 +82,30 @@ namespace Anaquin
         Counts intrs = 0;
     };
     
-    struct Data : public std::map<ChrID, ChrData>
+    struct GTFData : public std::map<ChrID, ChrData>
     {
-        inline Counts countGenes() const
+        inline Hist histGene(const ChrID &cID) const
+        {
+            return createHist(at(cID).g2d);
+        }
+
+        inline std::map<ChrID, Hist> histGene() const
+        {
+            std::map<ChrID, Hist> r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = histGene(i.first);
+            }
+
+            return r;
+        }
+        
+        inline Counts countGene() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return countGenes(cID);
+                return countGene(cID);
             });
         }
         
@@ -99,23 +117,23 @@ namespace Anaquin
             });
         }
         
-        inline Counts countExons() const
+        inline Counts countExon() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return countExons(cID);
+                return countExon(cID);
             });
         }
         
-        inline Counts countIntrs() const
+        inline Counts countIntr() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return countIntrs(cID);
+                return countIntr(cID);
             });
         }
         
-        inline Counts countGenes(const ChrID &cID) const
+        inline Counts countGene(const ChrID &cID) const
         {
             return at(cID).g2d.size();
         }
@@ -125,21 +143,21 @@ namespace Anaquin
             return at(cID).t2d.size();
         }
         
-        inline Counts countExons(const ChrID &cID) const
+        inline Counts countExon(const ChrID &cID) const
         {
             return at(cID).exons;
         }
         
-        inline Counts countIntrs(const ChrID &cID) const
+        inline Counts countIntr(const ChrID &cID) const
         {
             return at(cID).intrs;
         }
         
-        inline Counts countGenesSyn() const
+        inline Counts countGeneSyn() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countGenes(cID) : 0;
+                return Standard::isSynthetic(cID) ? countGene(cID) : 0;
             });
         }
         
@@ -151,25 +169,25 @@ namespace Anaquin
             });
         }
         
-        inline Counts countExonsSyn() const
+        inline Counts countExonSyn() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countExons(cID) : 0;
+                return Standard::isSynthetic(cID) ? countExon(cID) : 0;
             });
         }
         
-        inline Counts countIntrsSyn() const
+        inline Counts countIntrSyn() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
-                return Standard::isSynthetic(cID) ? countIntrs(cID) : 0;
+                return Standard::isSynthetic(cID) ? countIntr(cID) : 0;
             });
         }
         
-        inline Counts countGenesGen() const
+        inline Counts countGeneGen() const
         {
-            return countGenes() - countGenesSyn();
+            return countGene() - countGeneSyn();
         }
         
         inline Counts countTransGen() const
@@ -179,19 +197,19 @@ namespace Anaquin
         
         inline Counts countExonsGen() const
         {
-            return countExons() - countExonsSyn();
+            return countExon() - countExonSyn();
         }
         
-        inline Counts countIntrsGen() const
+        inline Counts countIntrGen() const
         {
-            return countIntrs() - countIntrsSyn();
+            return countIntr() - countIntrSyn();
         }
     };
-    
-    static Data summaryGTF(const Reader &r)
-    {
-        Data c2d;
 
+    inline GTFData gtfData(const Reader &r)
+    {
+        GTFData c2d;
+        
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
             switch (x.type)
@@ -230,12 +248,12 @@ namespace Anaquin
                     d.gID = x.gID;
                     d.tID = x.tID;
                     
-                    c2d[x.gID].exons++;
-                    c2d[x.gID].t2e[d.tID].insert(d);
+                    c2d[x.cID].exons++;
+                    c2d[x.cID].t2e[d.tID].insert(d);
                     break;
                 }
                     
-                    // Eg: CDS
+                // Eg: CDS
                 default: { break; }
             }
         });
@@ -271,7 +289,7 @@ namespace Anaquin
                     d.cID = x.cID;
                     d.l   = Locus(x.l.end+1, y.l.start-1);
                     
-                    c2d[x.gID].intrs++;
+                    c2d[x.cID].intrs++;
                     i.second.t2i[d.tID].insert(d);
                 }
             }

@@ -75,14 +75,14 @@ static FileName createFilters(const FileName &file, const ChrID &cID)
 
 static RAssembly::Stats init(const RAssembly::Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+
     RAssembly::Stats stats;
 
-    stats.data[ChrT];
-
-    //if (!o.rGeno.empty())
-    //{
-    //    stats.data[r.genoID()];
-    //}
+    for (const auto &i : r.histGene())
+    {
+        stats.data[i.first];
+    }
 
     return stats;
 }
@@ -326,29 +326,29 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                                            % stats.gExons
                                            % stats.gIntrons
                                            % stats.gTrans
-                                           % stats.gGenes     // 10
-                                           % r.countExonSyn() // 11
-                                           % r.countIntrSyn() // 12
-                                           % "????" // 13
-                                           % "????" // 14
-                                           % r.countExonSyn() // 15
-                                           % r.countIntrSyn() // 16
-                                           % "????" // 17
-                                           % "????" // 18
-                                           % S(sData.eSN) // 19
-                                           % S(sData.eSP) // 20
-                                           % S(sData.iSN)
-                                           % S(sData.iSP)
-                                           % S(sData.bSN)
-                                           % S(sData.bSP)
-                                           % S(sData.cSN)
-                                           % S(sData.cSP)
-                                           % S(sData.tSN)
-                                           % S(sData.tSP)
-                                           % sData.mExonN   // 29
-                                           % sData.mIntronN // 30
-                                           % sData.nExonN   // 31
-                                           % sData.nIntronN // 32
+                                           % stats.gGenes      // 10
+                                           % r.countExonSyn()  // 11
+                                           % r.countIntrSyn()  // 12
+                                           % r.countTransSyn() // 13
+                                           % r.countGeneSyn()  // 14
+                                           % r.countExonSyn()  // 15
+                                           % r.countIntrSyn()  // 16
+                                           % r.countTransSyn() // 17
+                                           % r.countGeneSyn()  // 18
+                                           % S(sData.eSN)      // 19
+                                           % S(sData.eSP)      // 20
+                                           % S(sData.iSN)      // 21
+                                           % S(sData.iSP)      // 22
+                                           % S(sData.bSN)      // 23
+                                           % S(sData.bSP)      // 24
+                                           % S(sData.cSN)      // 25
+                                           % S(sData.cSP)      // 26
+                                           % S(sData.tSN)      // 27
+                                           % S(sData.tSP)      // 28
+                                           % sData.mExonN      // 29
+                                           % sData.mIntronN    // 30
+                                           % sData.nExonN      // 31
+                                           % sData.nIntronN    // 32
                                            % (hasGeno ? S(gData.eSN)      : "-") // 33
                                            % (hasGeno ? S(gData.eSP)      : "-") // 34
                                            % (hasGeno ? S(gData.iSN)      : "-") // 35

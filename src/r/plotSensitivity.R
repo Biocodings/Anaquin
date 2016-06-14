@@ -10,7 +10,7 @@ library(Anaquin)
 
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
-# Default LOQ limit is 98%
+# Specify the LOQ threshold
 limit <- 0.98
 
 title <- '%5%'

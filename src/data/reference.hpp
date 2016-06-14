@@ -120,9 +120,9 @@ namespace Anaquin
              * Histogram for distribution
              */
 
-            template <typename T> SequinHist hist(const T &data) const
+            template <typename T> Hist hist(const T &data) const
             {
-                SequinHist hist;
+                Hist hist;
             
                 for (const auto &i : data)
                 {
@@ -638,6 +638,8 @@ namespace Anaquin
             std::shared_ptr<VarRefImpl> _impl;
     };
     
+    class Reader;
+    
     /*
      * -------------------- Transcriptome Analysis --------------------
      */
@@ -748,6 +750,11 @@ namespace Anaquin
             };
 
             TransRef();
+        
+            void readRef(const Reader &);
+
+            // Returns histogram for genes for all chromosomes (synthetic + genome)
+            std::map<ChrID, Hist> histGene() const;
 
             ChrID genoID() const;
         
@@ -759,7 +766,6 @@ namespace Anaquin
             // Intervals for reference introns
             Intervals<IntronInterval> intronInters(const ChrID &) const;
         
-            void addGene(const ChrID &, const GeneID    &, const Locus &);
             void addExon(const ChrID &, const GeneID &, const IsoformID &, const Locus &);
 
             // Absolute detection limit at the gene level
@@ -786,6 +792,9 @@ namespace Anaquin
             Counts countGeneSyn() const;
             Counts countGeneGen() const;
 
+            Counts countTransSyn() const;
+            Counts countTransGen() const;
+        
             std::vector<GeneID> geneIDs(const ChrID &) const;
 
             const GeneData   *findGene  (const ChrID &, const GeneID &)           const;

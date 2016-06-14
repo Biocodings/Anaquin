@@ -280,6 +280,12 @@ void Standard::addFRef(const Reader &r)
 
 void Standard::addTRef(const Reader &r)
 {
+    r_trans.readRef(r);
+
+    /*
+     * TODO: Remove this...?
+     */
+    
     ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
     {
         // Handles both synthetic and genome

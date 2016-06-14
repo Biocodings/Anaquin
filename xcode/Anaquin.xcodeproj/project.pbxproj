@@ -143,7 +143,7 @@
 		EFFC30D21D090A2000814E0F /* r_express.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30CD1D090A2000814E0F /* r_express.cpp */; };
 		EFFC30D31D090A2000814E0F /* r_viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30CE1D090A2000814E0F /* r_viewer.cpp */; };
 		EFFC30D61D090A3E00814E0F /* r_cuffdiff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFC30D41D090A3E00814E0F /* r_cuffdiff.cpp */; };
-		EFFD3B591D0F6D42002FEC35 /* summary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFD3B581D0F6D42002FEC35 /* summary.cpp */; };
+		EFFD3B591D0F6D42002FEC35 /* gtf_data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFD3B581D0F6D42002FEC35 /* gtf_data.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -427,8 +427,8 @@
 		EFFC30CE1D090A2000814E0F /* r_viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_viewer.cpp; path = ../tests/RnaQuin/r_viewer.cpp; sourceTree = "<group>"; };
 		EFFC30D41D090A3E00814E0F /* r_cuffdiff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_cuffdiff.cpp; path = ../src/RnaQuin/r_cuffdiff.cpp; sourceTree = "<group>"; };
 		EFFC30D51D090A3E00814E0F /* r_cuffdiff.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_cuffdiff.hpp; path = ../src/RnaQuin/r_cuffdiff.hpp; sourceTree = "<group>"; };
-		EFFD3B571D0F6D21002FEC35 /* summary.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = summary.hpp; path = ../src/tools/summary.hpp; sourceTree = "<group>"; };
-		EFFD3B581D0F6D42002FEC35 /* summary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = summary.cpp; path = ../tests/tools/summary.cpp; sourceTree = "<group>"; };
+		EFFD3B571D0F6D21002FEC35 /* gtf_data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = gtf_data.hpp; path = ../src/tools/gtf_data.hpp; sourceTree = "<group>"; };
+		EFFD3B581D0F6D42002FEC35 /* gtf_data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gtf_data.cpp; path = ../tests/tools/gtf_data.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -683,7 +683,7 @@
 			children = (
 				EF9ED39E1D07EBE700CE7F2B /* samtools.cpp */,
 				EF6D05F21BD3E6040048044F /* sample.cpp */,
-				EFFD3B581D0F6D42002FEC35 /* summary.cpp */,
+				EFFD3B581D0F6D42002FEC35 /* gtf_data.cpp */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -785,9 +785,9 @@
 			children = (
 				EFA9DE711BCB7D6100780182 /* coverage.cpp */,
 				EFA9DE721BCB7D6100780182 /* coverage.hpp */,
+				EFFD3B571D0F6D21002FEC35 /* gtf_data.hpp */,
 				EF2E58731CDCE452009A35D4 /* sample.hpp */,
 				EF9ED39D1D07DC9E00CE7F2B /* samtools.hpp */,
-				EFFD3B571D0F6D21002FEC35 /* summary.hpp */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -1032,7 +1032,7 @@
 				EFFC30C71D08F7AA00814E0F /* r_kexpress.cpp in Sources */,
 				EF7278451CACED620012648F /* m_assembly.cpp in Sources */,
 				EF9ED3971D07BEC900CE7F2B /* v_discover.cpp in Sources */,
-				EFFD3B591D0F6D42002FEC35 /* summary.cpp in Sources */,
+				EFFD3B591D0F6D42002FEC35 /* gtf_data.cpp in Sources */,
 				EF0C67931C5F25070033168D /* v_align.cpp in Sources */,
 				EFDD6A981B0DD76200450029 /* kstring.c in Sources */,
 				EF2615741B5FF9AD00BE8037 /* GFaSeqGet.cpp in Sources */,
