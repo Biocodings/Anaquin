@@ -188,10 +188,10 @@ namespace Anaquin
         }
     };
     
-    Data c2d;
-    
     static Data summaryGTF(const Reader &r)
     {
+        Data c2d;
+
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
             switch (x.type)
@@ -245,9 +245,6 @@ namespace Anaquin
          * need to compute introns.
          */
         
-        std::ofstream myfile;
-        myfile.open ("/Users/tedwong/Sources/QA/myIntrons.txt");
-        
         for (auto &i : c2d)
         {
             for (const auto &j : i.second.t2e)
@@ -274,23 +271,11 @@ namespace Anaquin
                     d.cID = x.cID;
                     d.l   = Locus(x.l.end+1, y.l.start-1);
                     
-                    if (d.cID != ChrT)
-                    {
-                        if (x.l.end == 42313493)
-                        {
-                            std::cout << sorted.size() << std::endl;
-                            std::cout << x.tID << std::endl;
-                        }
-                    }
-                    
                     c2d[x.gID].intrs++;
                     i.second.t2i[d.tID].insert(d);
                 }
             }
         }
-        
-        myfile.close();
-
         
         return c2d;
     }
