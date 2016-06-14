@@ -137,7 +137,7 @@ namespace Anaquin
                     Counts n_spliced = 0;
                     
                     // Number of non-spliced alignments
-                    Counts n_nspliced = 0;
+                    Counts n_normal = 0;
 
                     MergedConfusion overE, overI;
                     
@@ -173,9 +173,39 @@ namespace Anaquin
                 // Number of reads mapped to each sequin gene (eg: R1_1)
                 std::map<SequinID, Counts> s2r;
 
-                /*
-                 * Accessor functions
-                 */
+                inline Counts countSpliceSyn() const
+                {
+                    return count(data, [&](const ChrID &cID, const Data &x)
+                    {
+                        return Standard::isSynthetic(cID) ? x.n_spliced : 0;
+                    });
+                }
+
+                inline Counts countSpliceGen() const
+                {
+                    return count(data, [&](const ChrID &cID, const Data &x)
+                    {
+                        return !Standard::isSynthetic(cID) ? x.n_spliced : 0;
+                    });
+                }
+                
+                inline Counts countNormalSyn() const
+                {
+                    return count(data, [&](const ChrID &cID, const Data &x)
+                    {
+                        return Standard::isSynthetic(cID) ? x.n_normal : 0;
+                    });
+                }
+                
+                inline Counts countNormalGen() const
+                {
+                    return count(data, [&](const ChrID &cID, const Data &x)
+                    {
+                        return !Standard::isSynthetic(cID) ? x.n_normal : 0;
+                    });
+                }
+                
+                
 
                 inline Limit limit(AlignMetrics m) const
                 {

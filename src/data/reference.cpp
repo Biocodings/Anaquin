@@ -533,6 +533,16 @@ Base TransRef::exonBase(const ChrID &cID) const
     return _impl->data[cID].exonBase;
 }
 
+Counts TransRef::countLenSyn() const
+{
+    return _impl->gData.countLenSyn();
+}
+
+Counts TransRef::countLenGen() const
+{
+    return _impl->gData.countLenGen();
+}
+
 Counts TransRef::countExonSyn() const
 {
     return _impl->gData.countExonSyn();
@@ -595,7 +605,13 @@ Limit TransRef::absoluteGene(const SequinHist &hist) const
 
 void TransRef::readRef(const Reader &r)
 {
-    _impl->gData = gtfData(r);
+    for (const auto &i : (_impl->gData = gtfData(r)))
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            Standard::addGenomic(i.first);
+        }
+    }
 }
 
 std::map<ChrID, Hist> TransRef::histGene() const

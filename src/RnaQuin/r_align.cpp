@@ -7,6 +7,9 @@ using namespace std::placeholders;
 // Defined in resources.cpp
 extern Scripts PlotScatter();
 
+// Defined in resources.cpp
+extern FileName GTFRef();
+
 // Internal implementation
 typedef std::function<void (RAlign::Stats &)> Functor;
 
@@ -25,7 +28,7 @@ template <typename T> void initT(const ChrID &cID, T &t)
      */
     
     // Initalize the distributions
-    t.overB.hist = t.histE = t.histI = r.geneHist(cID);
+    t.overB.hist = t.histE = t.histI = r.histGene()[cID];
     
     assert(!t.histE.empty());
     assert(!t.histI.empty());
@@ -140,6 +143,10 @@ template <typename T> const T * matchT(const Alignment &align,
     }
     
     auto matches = !cMatches.empty() ? &cMatches : &oMatches;
+    
+    /*
+     * TODO: We need to consider if it's even in the region of interest
+     */
     
     if (!matches->empty())
     {
@@ -436,7 +443,7 @@ static bool matchAlign(RAlign::Stats::Data &t,
                       const ParserSAM::Info &info,
                       const RAlign::Options &o)
 {
-    #define REPORT_STATUS() if (!align.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
+    #define REPORT_STATUS() if (!align.i && info.p.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
     REPORT_STATUS();
     
     if (!matchAlign(t, align))
@@ -486,7 +493,7 @@ static bool classifyGen(RAlign::Stats::Data &x,
                         const ParserSAM::Info &info,
                         const RAlign::Options &o)
 {
-    return Standard::isGenomic(align.cID) ? matchAlign(x, align, info, o) : false;
+    return matchAlign(x, align, info, o);
 }
 
 RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
@@ -520,7 +527,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
                 }
                 else
                 {
-                    stats.data[align.cID].n_nspliced++;
+                    stats.data[align.cID].n_normal++;
                 }
             }
         });
@@ -584,76 +591,7 @@ static Scripts summary()
            "       *Undetected\n"
            "        Exon:   %34%\n"
            "        Intron: %35%\n"
-           "        Gene:   %36%\n";
-    
-    
-//    return "Summary for input: %1%\n\n"
-//           "   ***\n"
-//           "   *** Number of alignments mapped to the synthetic and genome\n"
-//           "   ***\n\n"
-//           "   Unmapped:  %2%\n"
-//           "   Synthetic: %3% (%4%%%)\n"
-//           "   Genome:    %5% (%6%%%)\n"
-//           "   Dilution:  %7%\n\n"
-//           "   ***\n"
-//           "   *** Reference annotation (Synthetic)\n"
-//           "   ***\n\n"
-//           "   File: %8%\n\n"
-//           "   Synthetic: %9% exons\n"
-//           "   Synthetic: %10% introns\n"
-//           "   Synthetic: %11% bases\n\n"
-//           "   ***\n"
-//           "   *** Reference annotation (Genome)\n"
-//           "   ***\n\n"
-//           "   File: %12%\n\n"
-//           "   Genome: %13% exons\n"
-//           "   Genome: %14% introns\n"
-//           "   Genome: %15% bases\n\n"
-//           "   ***\n"
-//           "   *** Alignments\n"
-//           "   ***\n\n"
-//           "   Non-spliced (Synthetic): %16%\n"
-//           "   Spliced (Synthetic):     %17%\n\n"
-//           "   Non-spliced (Genome):    %19%\n"
-//           "   Spliced (Genome):        %20%\n\n"
-//           "   ***\n"
-//           "   *** The following statistics are computed at the exon, intron and base level.\n"
-//           "   ***\n\n"
-//           "   ***                                     \n"
-//           "   *** Comparison with synthetic annotation\n"
-//           "   ***                                     \n\n"
-//           "   -------------------- Exon level --------------------\n\n"
-//           "   Sensitivity: %22%\n"
-//           "   Precision:   %23%\n"
-//           "   Detection Limit: %24% (attomol/ul) (%25%)\n\n"
-//           "   -------------------- Intron level --------------------\n\n"
-//           "   Sensitivity: %26%\n"
-//           "   Precision:   %27%\n"
-//           "   Detection Limit: %28% (attomol/ul) (%29%)\n\n"
-//           "   -------------------- Base level --------------------\n\n"
-//           "   Sensitivity: %30%\n"
-//           "   Precision:   %31%\n"
-//           "   Detection Limit: %32% (attomol/ul) (%33%)\n\n"
-//           "   -------------------- Undetected --------------------\n\n"
-//           "   Exon:   %34%\n"
-//           "   Intron: %35%\n"
-//           "   Gene:   %36%\n\n"
-//           "   ***                                   \n"
-//           "   *** Comparison with genomic annotation\n"
-//           "   ***                                   \n\n"
-//           "   -------------------- Exon level --------------------\n\n"
-//           "   Sensitivity: %37%\n"
-//           "   Precision:   %38%\n\n"
-//           "   -------------------- Intron level --------------------\n\n"
-//           "   Sensitivity: %39%\n"
-//           "   Precision:   %40%\n\n"
-//           "   -------------------- Base level --------------------\n\n"
-//           "   Sensitivity: %41%\n"
-//           "   Precision:   %42%\n\n"
-//           "   -------------------- Undetected --------------------\n\n"
-//           "   Exon:   %43%\n"
-//           "   Intron: %44%\n"
-//           "   Gene:   %45%\n\n";
+           "        Gene:   %36%\n";    
 }
 
 static void generateSummary(const FileName &file,
@@ -673,90 +611,42 @@ static void generateSummary(const FileName &file,
     const auto hasGeno = stats.data.size() > 1;
     
     o.writer->open(file);
-    o.writer->write((boost::format(summary()) % "" // 1
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % "" // 10
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % "" // 20
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % ""
-                                              % "" // 30
-                                              % "" // 31
-                                              % "" // 32
-                                              % "" // 33
-                                              % "" // 34
-                                              % "" // 35
-                                              % "").str());
-    
-//    o.writer->write((boost::format(summary())
-//                                          % src
-//                                          % stats.n_unmap
-//                                          % stats.n_syn
-//                                          % (100.0 * stats.synProp())
-//                                          % stats.n_gen
-//                                          % (100.0 * stats.genProp())
-//                                          % stats.dilution()                                                // 7
-//                                          % o.rAnnot                                                         // 8
-//                                          % BIND_R(TransRef::countExons, ChrT)                              // 9
-//                                          % BIND_R(TransRef::countIntrons, ChrT)                            // 10
-//                                          % BIND_R(TransRef::exonBase, ChrT)                                // 11
-//                                          % (!hasGeno ? "-"  : o.rAnnot)                                     // 12
-//                                          % (!hasGeno ? "-" : BIND_R(TransRef::countExons, __gID__))        // 13
-//                                          % (!hasGeno ? "-" : BIND_R(TransRef::countIntrons, __gID__))      // 14
-//                                          % (!hasGeno ? "-" : BIND_R(TransRef::exonBase, __gID__))          // 15
-//                                          % BIND_Q(Stats::countNSpliced, ChrT)                              // 16
-//                                          % BIND_Q(Stats::countSpliced,  ChrT)                              // 17
-//                                          % "" //BIND_Q(Stats::countQBases,   ChrT)                              // 18
-//                                          % BIND_Q(Stats::countNSpliced, __gID__)                           // 19
-//                                          % BIND_Q(Stats::countSpliced,  __gID__)                           // 20
-//                                          % "" //BIND_Q(Stats::countQBases,   __gID__)                           // 21
-//                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, ChrT)                // 22
-//                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, ChrT)                // 23
-//                                          % stats.limit(AlignMetrics::AlignExon).abund                      // 24
-//                                          % stats.limit(AlignMetrics::AlignExon).id                         // 25
-//                                          % BIND_E(Stats::sn, AlignMetrics::AlignIntron, ChrT)              // 26
-//                                          % BIND_E(Stats::pc, AlignMetrics::AlignIntron, ChrT)              // 27
-//                                          % stats.limit(AlignMetrics::AlignIntron).abund                    // 28
-//                                          % stats.limit(AlignMetrics::AlignIntron).id                       // 29
-//                                          % BIND_E(Stats::sn, AlignMetrics::AlignBase, ChrT)                // 30
-//                                          % BIND_E(Stats::pc, AlignMetrics::AlignBase, ChrT)                // 31
-//                                          % stats.limit(AlignMetrics::AlignBase).abund                      // 32
-//                                          % stats.limit(AlignMetrics::AlignBase).id                         // 33
-//                                          % BIND_M(Stats::missProp, MissingMetrics::MissingExon, ChrT)      // 34
-//                                          % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, ChrT)    // 35
-//                                          % BIND_M(Stats::missProp, MissingMetrics::MissingGene, ChrT)      // 36
-//                                          % BIND_E(Stats::sn, AlignMetrics::AlignExon, __gID__)             // 37
-//                                          % BIND_E(Stats::pc, AlignMetrics::AlignExon, __gID__)             // 38
-//                                          % BIND_E(Stats::sn, AlignMetrics::AlignIntron, __gID__)           // 39
-//                                          % BIND_E(Stats::pc, AlignMetrics::AlignIntron, __gID__)           // 40
-//                                          % BIND_E(Stats::sn, AlignMetrics::AlignBase, __gID__)             // 41
-//                                          % BIND_E(Stats::pc, AlignMetrics::AlignBase, __gID__)             // 42
-//                                          % BIND_M(Stats::missProp, MissingMetrics::MissingExon, __gID__)   // 43
-//                                          % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, __gID__) // 44
-//                                          % BIND_M(Stats::missProp, MissingMetrics::MissingGene, __gID__)   // 45
-//                     ).str());
+    o.writer->write((boost::format(summary()) % file             // 1
+                                              % GTFRef()         // 2
+                                              % stats.n_syn      // 3
+                                              % stats.n_gen      // 4
+                                              % stats.dilution() // 5
+                                              % stats.n_unmap    // 6
+                                              % r.countExonSyn() // 7
+                                              % r.countIntrSyn() // 8
+                                              % r.countLenSyn()  // 9
+                                              % r.countExonGen() // 10
+                                              % r.countIntrGen() // 11
+                                              % r.countLenGen()  // 12
+                                              % stats.countSpliceSyn()
+                                              % stats.countNormalSyn()
+                                              % (stats.countSpliceSyn() + stats.countNormalSyn())
+                                              % (hasGeno ? toString(stats.countSpliceGen()) : "-")
+                                              % (hasGeno ? toString(stats.countNormalGen()) : "-")
+                                              % (hasGeno ? toString(stats.countSpliceGen() + stats.countNormalGen()) : "-")
+                                              % BIND_E(Stats::sn, AlignMetrics::AlignExon,   ChrT) // 19
+                                              % BIND_E(Stats::pc, AlignMetrics::AlignExon,   ChrT) // 20
+                                              % BIND_E(Stats::sn, AlignMetrics::AlignIntron, ChrT) // 21
+                                              % BIND_E(Stats::pc, AlignMetrics::AlignIntron, ChrT) // 22
+                                              % BIND_E(Stats::sn, AlignMetrics::AlignBase,   ChrT) // 23
+                                              % BIND_E(Stats::pc, AlignMetrics::AlignBase,   ChrT) // 24
+                                              % BIND_M(Stats::missProp, MissingMetrics::MissingExon,   ChrT) // 25
+                                              % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, ChrT) // 26
+                                              % BIND_M(Stats::missProp, MissingMetrics::MissingGene,   ChrT) // 27
+                                              % BIND_E(Stats::sn, AlignMetrics::AlignExon, __gID__)
+                                              % BIND_E(Stats::pc, AlignMetrics::AlignExon, __gID__)
+                                              % BIND_E(Stats::sn, AlignMetrics::AlignIntron, __gID__) // 30
+                                              % BIND_E(Stats::pc, AlignMetrics::AlignIntron, __gID__) // 31
+                                              % BIND_E(Stats::sn, AlignMetrics::AlignBase, __gID__) // 32
+                                              % BIND_E(Stats::pc, AlignMetrics::AlignBase, __gID__) // 33
+                                              % BIND_M(Stats::missProp, MissingMetrics::MissingExon, __gID__) // 34
+                                              % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, __gID__) // 35
+                                              % BIND_M(Stats::missProp, MissingMetrics::MissingGene, __gID__)).str());
     o.writer->close();
 }
 

@@ -783,6 +783,9 @@ namespace Anaquin
             // Return number of introns
             Counts countIntrons(const ChrID &) const;
 
+            Base countLenSyn() const;
+            Base countLenGen() const;
+
             Counts countExonSyn() const;
             Counts countExonGen() const;
         

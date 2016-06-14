@@ -2,6 +2,7 @@
 #define GTF_DATA_HPP
 
 #include "data/hist.hpp"
+#include "data/intervals.hpp"
 #include "tools/gtf_data.hpp"
 #include "parsers/parser_gtf.hpp"
 
@@ -203,6 +204,41 @@ namespace Anaquin
         inline Counts countIntrGen() const
         {
             return countIntr() - countIntrSyn();
+        }
+
+        inline Intervals<> intervals(const ChrID &cID) const
+        {
+            Intervals<> r;
+            
+            for (const auto &i : at(cID).g2d)
+            {
+                r.add(Interval(i.first, i.second.l));
+            }
+
+            return r;
+        }
+        
+        // Returns total length of all genes for a chromosome
+        inline Base countLen(const ChrID &cID) const
+        {
+            // Assuming the genes are non-overlapping
+            return intervals(cID).stats().sums;
+        }
+        
+        inline Base countLenSyn() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            {
+                return Standard::isSynthetic(cID) ? countLen(cID) : 0;
+            });
+        }
+        
+        inline Base countLenGen() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            {
+                return !Standard::isSynthetic(cID) ? countLen(cID) : 0;
+            });
         }
     };
 
