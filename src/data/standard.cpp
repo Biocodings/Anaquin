@@ -286,7 +286,7 @@ void Standard::addTRef(const Reader &r)
      * TODO: Remove this...?
      */
     
-    ParserGTF::parse(r, [&](const Feature &f, const std::string &, const ParserProgress &)
+    ParserGTF::parse(Reader(r), [&](const Feature &f, const std::string &, const ParserProgress &)
     {
         // Handles both synthetic and genome
         switch (f.type)

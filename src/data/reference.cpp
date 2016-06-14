@@ -494,6 +494,7 @@ struct TransRef::TransRefImpl
             throw "Multiple chromosomes in the genome not supported";
         }
         
+        // TODO: Fix this!!!!
         if (cID != ChrT)
         {
             refChrID = cID;

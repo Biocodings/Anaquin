@@ -134,10 +134,10 @@ namespace Anaquin
                      */
                     
                     // Number of spliced alignments
-                    Counts spliced = 0;
+                    Counts n_spliced = 0;
                     
                     // Number of non-spliced alignments
-                    Counts nspliced = 0;
+                    Counts n_nspliced = 0;
 
                     MergedConfusion overE, overI;
                     

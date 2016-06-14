@@ -33,6 +33,12 @@ namespace Anaquin
     inline std::string bam2rnext(bam_hdr_t *h, bam1_t *b)
     {
         const auto cID = std::string(h->target_name[b->core.tid]);
+        
+        if (b->core.mtid == -1)
+        {
+            return "";
+        }
+
         const auto rID = std::string(h->target_name[b->core.mtid]);
         
         if (rID == cID)

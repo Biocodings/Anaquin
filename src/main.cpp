@@ -1225,6 +1225,7 @@ void parse(int argc, char ** argv)
             {
                 switch (_p.tool)
                 {
+                    case TOOL_R_ALIGN:
                     case TOOL_R_DESEQ2:
                     case TOOL_R_CUFFDIFF:
                     {
