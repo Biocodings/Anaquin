@@ -241,27 +241,27 @@ Scripts PlotTLODR()
 
 Scripts TransStandGTF()
 {
-    return ToString(data_TransQuin_ATR001_v032_gtf);
+    return ToString(data_RnaQuin_ATR001_v032_gtf);
 }
 
 Scripts TransDataMixA()
 {
-    return ToString(data_TransQuin_MTR002_v013_csv);
+    return ToString(data_RnaQuin_MTR002_v013_csv);
 }
 
 Scripts TransDataMixB()
 {
-    return ToString(data_TransQuin_MTR003_v013_csv);
+    return ToString(data_RnaQuin_MTR003_v013_csv);
 }
 
 Scripts TransDataMixF()
 {
-    return ToString(data_TransQuin_MTR005_v013_csv);
+    return ToString(data_RnaQuin_MTR005_v013_csv);
 }
 
 Scripts TransDataMixAB()
 {
-    return ToString(data_TransQuin_MTR004_v013_csv);
+    return ToString(data_RnaQuin_MTR004_v013_csv);
 }
 
 /*
