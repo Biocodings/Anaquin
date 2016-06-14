@@ -222,7 +222,7 @@ namespace Anaquin
         inline Base countLen(const ChrID &cID) const
         {
             // Assuming the genes are non-overlapping
-            return intervals(cID).stats().sums;
+            return intervals(cID).stats().length;
         }
         
         inline Base countLenSyn() const
