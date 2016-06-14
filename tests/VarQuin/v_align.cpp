@@ -11,7 +11,7 @@ using namespace Anaquin;
 TEST_CASE("VAlign_Test1")
 {
     Test::VarQuinBed();
-    const auto r = VAlign::analyze("data/test/VarQuin/test1.bam");
+    const auto r = VAlign::analyze("data/tests/VarQuin/test1.bam");
 
     REQUIRE(r.n_syn  == 356332);
     REQUIRE(r.n_gen  == 0);

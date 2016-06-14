@@ -6,7 +6,7 @@ using namespace Anaquin;
 
 //TEST_CASE("HT_Reverse")
 //{
-//    ParserSAM::parse("data/test/VarQuin/test1.bam", [&](ParserSAM::Data &x, const ParserSAM::Info &i)
+//    ParserSAM::parse("data/tests/VarQuin/test1.bam", [&](ParserSAM::Data &x, const ParserSAM::Info &i)
 //    {
 //        if (i.p.i == 0)
 //        {
@@ -30,7 +30,7 @@ using namespace Anaquin;
 
 TEST_CASE("HT_Test2")
 {
-    auto f = sam_open("data/test/VarQuin/test1.bam", "r");
+    auto f = sam_open("data/tests/VarQuin/test1.bam", "r");
     auto t = bam_init1();
     auto h = sam_hdr_read(f);
     

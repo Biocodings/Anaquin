@@ -1,6 +1,7 @@
 #ifndef SUMMARY_HPP
 #define SUMMARY_HPP
 
+#include <fstream>
 #include "parsers/parser_gtf.hpp"
 
 namespace Anaquin
@@ -240,9 +241,12 @@ namespace Anaquin
         });
         
         /*
-         * The information we have is sufficient for answering exons, transcripts and genes. We just
+         * The information we have is sufficient for exons, transcripts and genes. We just
          * need to compute introns.
          */
+        
+        std::ofstream myfile;
+        myfile.open ("/Users/tedwong/Sources/QA/myIntrons.txt");
         
         for (auto &i : c2d)
         {
@@ -270,11 +274,23 @@ namespace Anaquin
                     d.cID = x.cID;
                     d.l   = Locus(x.l.end+1, y.l.start-1);
                     
+                    if (d.cID != ChrT)
+                    {
+                        if (x.l.end == 42313493)
+                        {
+                            std::cout << sorted.size() << std::endl;
+                            std::cout << x.tID << std::endl;
+                        }
+                    }
+                    
                     c2d[x.gID].intrs++;
                     i.second.t2i[d.tID].insert(d);
                 }
             }
         }
+        
+        myfile.close();
+
         
         return c2d;
     }

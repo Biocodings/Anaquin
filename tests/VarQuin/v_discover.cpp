@@ -11,7 +11,7 @@ using namespace Anaquin;
 TEST_CASE("VDiscover_Test1")
 {
 //    Test::variantA();
-//    const auto r = VDiscover::analyze("data/test/VarQuin/variants.vcf");
+//    const auto r = VDiscover::analyze("data/tests/VarQuin/variants.vcf");
 //
 //    REQUIRE(r.chrT.dSNP() == 100);
 //    REQUIRE(r.chrT.dInd() == 100);
