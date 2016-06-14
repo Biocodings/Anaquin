@@ -64,6 +64,7 @@ namespace Anaquin
                 unsigned nExonN, nExonR, nIntronN, nIntronR;
             };
             
+            // Synthetic or genome
             std::map<ChrID, Data> data;
             
             // Sensitivity for each sequin

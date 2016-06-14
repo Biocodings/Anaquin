@@ -47,31 +47,48 @@ template <typename F> inline FileName grepGTF(const FileName &file, F f)
     return tmp;
 }
 
-static FileName createFilters(const FileName &file, const ChrID &cID)
+// Create a tempatory file for a condition (synthetic or genome)
+template <typename F> FileName createGTF(const FileName &file, F f)
 {
     Line line;
 
     const auto tmp = tmpFile();
     std::ofstream out(tmp);
 
-    auto f = [&](const FileName &file, std::ofstream &out)
+    auto x = [&](const FileName &file, std::ofstream &out)
     {
-        ParserGTF::parse(file, [&](const Feature &f, const std::string &l, const ParserProgress &)
+        ParserGTF::parse(file, [&](const Feature &i, const std::string &l, const ParserProgress &)
         {
-            if (cID == f.cID)
+            if (f(i.cID))
             {
                 out << l << std::endl;
             }
         });
     };
     
-    // Generate a filtered query
-    f(file, out);
-
+    x(file, out);
     out.close();
     
+    std::cout << tmp << std::endl;
     return tmp;
 }
+
+static FileName createGTFSyn(const FileName &file)
+{
+    return createGTF(file, [&](const ChrID &cID)
+    {
+        return Standard::isSynthetic(cID);
+    });
+}
+
+static FileName createGTFGen(const FileName &file)
+{
+    return createGTF(file, [&](const ChrID &cID)
+    {
+        return !Standard::isSynthetic(cID);
+    });
+}
+
 
 static RAssembly::Stats init(const RAssembly::Options &o)
 {
@@ -90,9 +107,6 @@ static RAssembly::Stats init(const RAssembly::Options &o)
 RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_trans;
-
-    // We'll need the annotation for comparison (endogenous is optional)
-    //assert(!o.rAnnot.empty());
 
     auto stats = init(o);
 
@@ -140,24 +154,22 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
         stats.data[cID].nIntronP  = __cmp__.novelIntronsP / 100.0;
     };
     
-    auto compareGTF = [&](const ChrID &cID, const FileName &ref)
+    auto compareGTF = [&](const ChrID &cID, const FileName &ref, const FileName &qry)
     {
-        // Generate a new GTF for the chromosome
-        const auto qry = createFilters(file, cID);
-
         o.logInfo("Reference: " + ref);
         o.logInfo("Query: " + qry);
 
         #define CUFFCOMPARE(x, y) { if (cuffcompare_main(x.c_str(), y.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
 
-        if (cID == ChrT)
+        // Only required for sensitivity at individual sequins...
+        if (Standard::isSynthetic(cID))
         {
             /*
              * Calculating sensitivty for each sequin. Unfortunately, there is no simpler way
-             * than cuffcompare. Cuffcompare doesn't show sensitivity for each isoform,
+             * than Cuffcompare. Cuffcompare doesn't show sensitivity for each isoforms,
              * thus we'll need to generate a GTF file for each sequin.
              */
-            
+
             const auto hist = r.hist();
             
             for (const auto &i : hist)
@@ -166,7 +178,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
                  * Generate a new GTF solely for the sequin, which will be the reference.
                  */
                 
-                const auto tmp = grepGTF(o.rAnnot, [&](const Feature &f)
+                const auto tmp = grepGTF(ref, [&](const Feature &f)
                 {
                     return f.tID == i.first;
                 });
@@ -186,14 +198,25 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 
     o.info("Analyzing transcripts");
 
-    std::for_each(stats.data.begin(), stats.data.end(), [&](const std::pair<ChrID, RAssembly::Stats::Data> &p)
-    {
-        compareGTF(p.first, p.first == ChrT ? o.rAnnot : o.rAnnot); // TODO: Fix this!
-        copyStats(p.first);
-    });
+    /*
+     * Comparing for the synthetic chromosome
+     */
+    
+    compareGTF(ChrT, createGTFSyn(GTFRef()), createGTFSyn(file));
+    copyStats(ChrT);
     
     /*
-     * Counting exons and transcripts
+     * Comparing for the genome
+     */
+    
+    if (stats.data.size() > 1)
+    {
+        compareGTF(Geno, createGTFGen(GTFRef()), createGTFGen(file));
+        copyStats(Geno);
+    }
+
+    /*
+     * Counting exons and transcripts (simply for reporting)
      */
     
     ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
@@ -242,14 +265,12 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
 {
     const auto &r = Standard::instance().r_trans;
 
-    const auto hasGeno = !r.genoID().empty();
+    const auto hasGeno = stats.data.size() > 1;
     
     const auto sData = stats.data.at(ChrT);
-    const auto gData = hasGeno ? stats.data.at(r.genoID()) : RAssembly::Stats::Data();
+    const auto gData = hasGeno ? stats.data.at(Geno) : RAssembly::Stats::Data();
 
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
-    
-    const auto genoID = r.genoID();
     
     const auto format = "-------RnaAssembly Summary Statistics\n\n"
                         "       User assembly file: %1%\n"

@@ -172,10 +172,10 @@ RDiff::Stats RDiff::analyze(const std::vector<DiffTest> &tests, const Options &o
 {
     return calculate(o, [&](RDiff::Stats &stats)
     {
-        for (auto &test : tests)
-        {
+        //for (auto &test : tests)
+        //{
             //update(stats, test, o);
-        }
+        //}
     });
 }
 
