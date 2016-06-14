@@ -46,50 +46,54 @@ namespace Anaquin
             
             ParserProgress p;
             
-            std::vector<std::string> tokens;
-            std::vector<std::string> options;
-            std::vector<std::string> nameValue;
+            std::vector<std::string> opts;
+            std::vector<std::string> toks;
+            std::vector<std::string> nameVal;
             
             while (r.nextLine(line))
             {
                 p.i++;
-                boost::split(tokens, line, boost::is_any_of("\t"));
+                boost::split(toks, line, boost::is_any_of("\t"));
                 
                 // Empty line? Unknown feature such as mRNA?
-                if (tokens.size() == 1 || !mapper.count(tokens[2]))
+                if (toks.size() == 1 || !mapper.count(toks[2]))
                 {
                     continue;
                 }
                 
-                x.cID  = tokens[0];
-                x.l    = Locus(stoi(tokens[3]), stoi(tokens[4]));
-                x.type = mapper[tokens[2]];
+                x.cID  = toks[0];
+                x.l    = Locus(stoi(toks[3]), stoi(toks[4]));
+                x.type = mapper[toks[2]];
                 
                 /*
                  * Eg: "gene_id "R_5_3"; transcript_id "R_5_3_R";"
                  */
                 
-                boost::split(options, tokens[8], boost::is_any_of(";"));
+                boost::split(opts, toks[8], boost::is_any_of(";"));
                 
-                for (auto option : options)
+                for (auto option : opts)
                 {
                     if (!option.empty())
                     {
                         boost::trim(option);
-                        boost::split(nameValue, option, boost::is_any_of(" "));
+                        boost::split(nameVal, option, boost::is_any_of(" "));
                         
-                        if (nameValue.size() == 2)
+                        if (nameVal.size() == 2)
                         {
-                            // Make sure that silly characters are removed
-                            nameValue[1].erase(std::remove(nameValue[1].begin(), nameValue[1].end(), '\"'), nameValue[1].end());
+                            // Make sure the silly characters are removed
+                            nameVal[1].erase(std::remove(nameVal[1].begin(), nameVal[1].end(), '\"'), nameVal[1].end());
                             
-                            if (nameValue[0] == "gene_id")
+                            if (nameVal[0] == "gene_id")
                             {
-                                x.gID = nameValue[1];
+                                x.gID = nameVal[1];
                             }
-                            else if (nameValue[0] == "nearest_ref" || nameValue[0] == "transcript_id")
+                            else if (nameVal[0] == "transcript_id")
                             {
-                                x.tID = nameValue[1];
+                                x.tID = nameVal[1];
+                            }
+                            else if (nameVal[0] == "FPKM")
+                            {
+                                x.fpkm = stod(nameVal[1]);
                             }
                         }
                     }
