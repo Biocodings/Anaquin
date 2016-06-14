@@ -48,11 +48,11 @@ data  = [ 'data/manual.txt',
           'src/r/plotTROC.R',
           'src/r/plotTLODR.R',          
 
-          'data/TransQuin/ATR001.v032.gtf',
-          'data/TransQuin/MTR002.v013.csv',
-          'data/TransQuin/MTR003.v013.csv',
-          'data/TransQuin/MTR004.v013.csv',          
-          'data/TransQuin/MTR005.v013.csv',
+          'data/RnaQuin/ATR001.v032.gtf',
+          'data/RnaQuin/MTR002.v013.csv',
+          'data/RnaQuin/MTR003.v013.csv',
+          'data/RnaQuin/MTR004.v013.csv',          
+          'data/RnaQuin/MTR005.v013.csv',
 
           # ---------- META ----------
 
