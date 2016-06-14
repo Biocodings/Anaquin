@@ -11,7 +11,11 @@ namespace Anaquin
 {
     struct ParserGTF
     {
-        typedef Feature Data;
+        struct Data : public Feature
+        {
+            // Available only for Cufflink
+            double fpkm = NAN;
+        };
 
         template <typename F> static void parse(const Reader &r, F f)
         {

@@ -73,7 +73,6 @@ template <typename F> FileName createGTF(const FileName &file, F f)
     x(file, out);
     out.close();
     
-    std::cout << tmp << std::endl;
     return tmp;
 }
 
@@ -190,8 +189,6 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
                 
                 // Compare only the sequin against the reference
                 CUFFCOMPARE(tmp, qry);
-                
-                std::cout << i.first << " " << __cmp__.b_sn << std::endl;
                 
                 stats.tSPs[i.first] = __cmp__.b_sn;
             }
@@ -316,9 +313,9 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                         "       *Transcript level\n"
                         "       Sensitivity: %27%\n"
                         "       Specificity: %28%\n\n"
-                        "       Missing exons: %29%\n"
+                        "       Missing exons:   %29%\n"
                         "       Missing introns: %30%\n\n"
-                        "       Novel exons:  %31%\n"
+                        "       Novel exons:   %31%\n"
                         "       Novel introns: %32%\n\n"
                         "-------Comparison of assembly to annotations (Genome)\n\n"
                         "       *Exon level\n"
@@ -334,11 +331,11 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                         "       Sensitivity: %39%\n"
                         "       Specificity: %40%\n\n"
                         "       *Transcript level\n"
-                        "       Sensitivity: %41%\n"
-                        "       Specificity: %42%\n\n"
-                        "       Missing exons: %43%\n"
+                        "       Sensitivity:     %41%\n"
+                        "       Specificity:     %42%\n\n"
+                        "       Missing exons:   %43%\n"
                         "       Missing introns: %44%\n\n"
-                        "       Novel exons:  %45%\n"
+                        "       Novel exons:   %45%\n"
                         "       Novel introns: %46%";
     
     o.generate("RnaAssembly_summary.stats");
