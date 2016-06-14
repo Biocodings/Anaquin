@@ -11,7 +11,8 @@
 #include "parsers/parser_fa.hpp"
 #include "parsers/parser_csv.hpp"
 #include "parsers/parser_vcf.hpp"
-#include "parsers/parser_feature.hpp"
+#include "parsers/parser_bed.hpp"
+#include "parsers/parser_gtf.hpp"
 
 using namespace Anaquin;
 
@@ -284,7 +285,7 @@ void Standard::addTRef(const Reader &r)
         // Handles both synthetic and genome
         switch (f.type)
         {
-            case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
+            //case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
             case Exon: { r_trans.addExon(f.cID, f.gID, f.tID, f.l); break; }
             default:   { break; }
         }

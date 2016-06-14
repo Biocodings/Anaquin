@@ -37,7 +37,7 @@ namespace Anaquin
         GeneID gID;
 
         // Empty if the information is unavailable
-        TranscriptID tID;
+        TransID tID;
     };
 }
 

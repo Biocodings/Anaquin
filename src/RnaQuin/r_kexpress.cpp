@@ -22,7 +22,7 @@ TKExpress::Stats TKExpress::analyze(const FileName &file1, const FileName &file2
 
 void TKExpress::report(const FileName &file1, const FileName &file2, const Options &o)
 {
-    const auto units = "isoforms";
+    //const auto units = "isoforms";
     
     const auto files = std::vector<FileName> { file1, file2 };
     const auto stats = std::vector<TKExpress::Stats> { TKExpress::analyze(file1, file2, o) };

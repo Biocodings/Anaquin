@@ -69,20 +69,20 @@ namespace Anaquin
             
             inline Counts countSNPGeno() const
             {
-                return count(geno, [&](const std::pair<ChrID, GenomeData> &x)
+                return count(geno, [&](const ChrID &cID, const GenomeData &x)
                 {
-                    return x.second.snp;
+                    return x.snp;
                 });
             }
             
             inline Counts countIndGeno() const
             {
-                return count(geno, [&](const std::pair<ChrID, GenomeData> &x)
+                return count(geno, [&](const ChrID &cID, const GenomeData &x)
                 {
-                    return x.second.ind;
+                    return x.ind;
                 });
             }
-            
+
             inline Counts countVarGeno() const { return countSNPGeno() + countIndGeno(); }
 
             struct GenomeData

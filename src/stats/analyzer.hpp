@@ -38,6 +38,18 @@ namespace Anaquin
         });
     }
     
+    template <typename X, typename F> Counts count(const X &x, F f)
+    {
+        Counts n = 0;
+        
+        for (const auto &i : x)
+        {
+            n += f(i.first, i.second);
+        }
+        
+        return n;
+    }
+
     template <typename T> Counts sum(const std::vector<T> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const T &p)
@@ -52,18 +64,6 @@ namespace Anaquin
         {
             return c + p.second;
         });
-    }
-    
-    template <typename T, typename F> Counts count(const T &t, F f)
-    {
-        Counts n = 0;
-        
-        for (auto &i : t)
-        {
-            n += f(i);
-        }
-        
-        return n;
     }
     
     inline void replace(std::string &s, const std::string &src, const std::string &dst)

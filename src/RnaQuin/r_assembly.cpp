@@ -73,92 +73,10 @@ static FileName createFilters(const FileName &file, const ChrID &cID)
     return tmp;
 }
 
-static Scripts chrTSummary()
-{
-    return "Summary for input: %1%\n\n"
-           "   ***\n"
-           "   *** Proportion of assembly mapped to the synthetic and genome\n"
-           "   ***\n\n"
-           "   Exons (Synthetic):       %2% exons\n"
-           "   Exons (Genome):          %3% exons\n\n"
-           "   Transcripts (Synthetic): %4% transcripts\n"
-           "   Transcripts (Genome):    %5% transcripts\n\n"
-           "   ***\n"
-           "   *** Reference annotation (Synthetic)\n"
-           "   ***\n\n"
-           "   File: %6%\n\n"
-           "   Synthetic: %7% exons\n"
-           "   Synthetic: %8% introns\n\n"
-           "   ***\n"
-           "   *** Reference annotation (Genome)\n"
-           "   ***\n\n"
-           "   File: %9%\n\n"
-           "   Genome: %10% exons\n"
-           "   Genome: %11% introns\n\n"
-           "   ***                                                      \n"
-           "   ***    Comparison of assembly to synthetic annotation    \n"
-           "   ***                                                      \n\n"
-           "   ***\n"
-           "   *** The following statistics are computed for exact and fuzzy.\n"
-           "   *** The fuzzy level is 10 nucleotides.\n"
-           "   ***\n\n"
-           "   -------------------- Exon level --------------------\n\n"
-           "   Sensitivity: %12% (%13%)\n"
-           "   Specificity: %14% (%15%)\n\n"
-           "   -------------------- Intron level --------------------\n\n"
-           "   Sensitivity: %16% (%17%)\n"
-           "   Specificity: %18% (%19%)\n\n"
-           "   -------------------- Base level --------------------\n\n"
-           "   Sensitivity: %20%\n"
-           "   Specificity: %21%\n\n"
-           "   -------------------- Intron Chain level --------------------\n\n"
-           "   Sensitivity: %22% (%23%)\n"
-           "   Specificity: %24% (%25%)\n\n"
-           "   -------------------- Transcript level --------------------\n\n"
-           "   Sensitivity: %26% (%27%)\n"
-           "   Specificity: %28% (%29%)\n\n"
-           "   Missing exons:   %30%/%31% (%32%)\n"
-           "   Missing introns: %33%/%34% (%35%)\n\n"
-           "   Novel exons:     %36%/%37% (%38%)\n"
-           "   Novel introns:   %39%/%40% (%41%)\n\n";
-}
-
-static Scripts genoSummary()
-{
-    return "   ***                                                         \n"
-           "   ***      Comparison of assembly to genomic annotation       \n"
-           "   ***                                                         \n\n"
-           "   ***\n"
-           "   *** The following statistics are computed for exact and fuzzy.\n"
-           "   *** The fuzzy level is 10 nucleotides.\n"
-           "   ***\n\n"
-           "   -------------------- Exon level --------------------\n\n"
-           "   Sensitivity: %1% (%2%)\n"
-           "   Specificity: %3% (%4%)\n\n"
-           "   -------------------- Intron level --------------------\n\n"
-           "   Sensitivity: %5% (%6%)\n"
-           "   Specificity: %7% (%8%)\n\n"
-           "   -------------------- Base level --------------------\n\n"
-           "   Sensitivity: %9%\n"
-           "   Specificity: %10%\n\n"
-           "   -------------------- Intron Chain level --------------------\n\n"
-           "   Sensitivity: %11% (%12%)\n"
-           "   Specificity: %13% (%14%)\n\n"
-           "   -------------------- Transcript level --------------------\n\n"
-           "   Sensitivity: %15% (%16%)\n"
-           "   Specificity: %17% (%18%)\n\n"
-           "   Missing exons:   %19%/%20% (%21%)\n"
-           "   Missing introns: %22%/%23% (%24%)\n\n"
-           "   Novel exons:   %25%/%26% (%27%)\n"
-           "   Novel introns: %28%/%29% (%30%)\n\n";
-}
-
 static RAssembly::Stats init(const RAssembly::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
-
     RAssembly::Stats stats;
-    
+
     stats.data[ChrT];
 
     //if (!o.rGeno.empty())

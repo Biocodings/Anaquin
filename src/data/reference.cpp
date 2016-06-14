@@ -678,7 +678,7 @@ void TransRef::addGene(const ChrID &cID, const GeneID &gID, const Locus &l)
 
 void TransRef::addExon(const ChrID &cID, const GeneID &gID, const IsoformID &iID, const Locus &l)
 {
-    if (cID == ChrT)
+    if (Standard::isSynthetic(cID))
     {
         _impl->addRef(cID, iID, gID, l, _impl->cRaw);
     }
@@ -984,8 +984,33 @@ void TransRef::validate()
     {
         createTrans(i.first, _impl->data[i.first]);
     }
-    
-    //assert(_impl->data.count(ChrT));
+
+//    const auto format = "chrT\t.\ttranscript\t%1%\t%2%\t.\t+\t.\tgene_id \"%3%\"; transcript_id \"%4%\"; gene_type \"synthetic\"; transcript_type \"synthetic\";";
+//    
+//    //for (const auto &i : _impl->_data[ChrT].genes)
+//    for (const auto &i : _data)
+//    {
+//        std::cout << (boost::format(format)
+//                      % i.second.l.start
+//                      % i.second.l.end
+//                      % i.second.gID
+//                      % i.second.id
+//                      
+//                      ).str() << std::endl;
+//    }
+//
+//    const auto gformat = "chrT\t.\tgene\t%1%\t%2%\t.\t+\t.\tgene_id \"%3%\"; gene_type \"synthetic\";";
+//    
+//    for (const auto &i : _impl->data[ChrT].genes)
+//    {
+//        std::cout << (boost::format(gformat)
+//                      % i.second.l().start
+//                      % i.second.l().end
+//                      % i.second.id
+//                      ).str() << std::endl;
+//    }
+//    
+//    //assert(_impl->data.count(ChrT));
 }
 
 /*
