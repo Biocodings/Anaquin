@@ -59,7 +59,11 @@ template <typename F> FileName createGTF(const FileName &file, F f)
     {
         ParserGTF::parse(file, [&](const Feature &i, const std::string &l, const ParserProgress &)
         {
-            if (f(i.cID))
+            /*
+             * TODO: Do we need to filter by i.type? If we don't, the sensitivity looks weird...
+             */
+
+            if (f(i.cID) && i.type != RNAFeature::Transcript && i.type != RNAFeature::Gene)
             {
                 out << l << std::endl;
             }
@@ -88,7 +92,6 @@ static FileName createGTFGen(const FileName &file)
         return !Standard::isSynthetic(cID);
     });
 }
-
 
 static RAssembly::Stats init(const RAssembly::Options &o)
 {
@@ -187,6 +190,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
                 
                 // Compare only the sequin against the reference
                 CUFFCOMPARE(tmp, qry);
+                
+                std::cout << i.first << " " << __cmp__.b_sn << std::endl;
                 
                 stats.tSPs[i.first] = __cmp__.b_sn;
             }
