@@ -224,6 +224,14 @@ namespace Anaquin
                                                  const std::string &,
                                                  bool showLOQ);
 
+        static Scripts createFold(const FileName  &,
+                                  const std::string &,
+                                  const std::string &,
+                                  const std::string &,
+                                  const std::string &,
+                                  const std::string &,
+                                  bool shouldLog);
+        
         static Scripts createScatterNeedLog(const FileName  &,
                                             const std::string &,
                                             const std::string &,
