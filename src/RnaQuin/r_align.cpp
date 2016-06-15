@@ -111,6 +111,11 @@ template <typename T> const T * matchT(const Alignment &align,
 {
     std::vector<T *> oMatches, cMatches;
 
+    if (align.l.start == 2554775)
+    {
+        oMatches = oMatches;
+    }
+    
     /*
      * Quite likely there'll be multiple matches. Note that it's impossible to distinguish the
      * individuals due to alternative splicing. Thus, we simply increment all the possible matches.
@@ -140,9 +145,12 @@ template <typename T> const T * matchT(const Alignment &align,
     if (!matches->empty())
     {
         Base lp, rp;
-        
-        // Anything that fails to being mapped is counted as FP
-        (*matches)[0]->map(align.l, &lp, &rp);
+
+        for (long i = ((*matches).size()-1); i >= 0; i--)
+        {
+            // Anything that fails to being mapped is counted as FP
+            (*matches)[i]->map(align.l, &lp, &rp);
+        }
 
         if (lFPS && rFPS)
         {
@@ -424,12 +432,17 @@ RAlign::Stats calculate(const RAlign::Options &o, Functor cal)
                                                         {
                                                             if (!depth)
                                                             {
-                                                                std::cout << "NO" << i << "-" << j << std::endl;
+                                                                if (id == "chrT_R2_7_R2_7_2_2554764_2554890")
+                                                                {
+                                                                    std::cout << id << " NO " << i << "-" << j << std::endl;
+                                                                    
+                                                                }
+                                                                
+                                                                std::cout << id << " NO " << i << "-" << j << std::endl;
                                                             }
                                                             else
                                                             {
-                                                                std::cout << "YES" << i << "-" << j << std::endl;
-                                                                
+                                                                //std::cout << id << " YES " << i << "-" << j << std::endl;
                                                             }
                                                         });
             }
