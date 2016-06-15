@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotScatter <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='', ylab='', limitLabel='LOQ', xBreaks=NULL)
+plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', limitLabel='LOQ', xBreaks=NULL)
 {
     require(ggplot2)
 
@@ -39,27 +39,21 @@ plotScatter <- function(data, showStats='left', showLOQ=TRUE, title='', xlab='',
                                xlab(xlab) +
                                ylab(ylab) +
                            ggtitle(title) +
-                geom_point(aes(colour=grp), size=2.0, alpha=0.5) +
-                geom_smooth(method='lm', formula=y ~ x)          +
-                labs(colour='Ratio')                             +
+                     labs(colour='Ratio') +
+                     geom_point(aes(colour=grp), size=2.0, alpha=0.5) +
+                geom_smooth(method='lm', formula=y~x, linetype='11', color='black', size=0.5)  +
                 theme_bw()
-    
+
     p <-p + guides(colour=FALSE)
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 0.5)
 
-    if (showStats == 'right')
-    {
-        p <- p + annotate("text", label=lm2str(data), x=max(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=1)
-    }
-    else
-    {
-        p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
-    }
-    
+    # Position the regression model to the left
+    p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
+
     if (showLOQ)
     {
         loq <- showLOQ(data$x, data$y)
-        p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype="dotted")
+        p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
         p <- p + geom_label(aes(x=loq$breaks$k, y=0, label=paste(limitLabel, signif(loq$breaks$k, 3))), colour = "black", show.legend=FALSE)
     }
 
