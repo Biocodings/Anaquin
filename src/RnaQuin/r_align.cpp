@@ -419,9 +419,9 @@ RAlign::Stats calculate(const RAlign::Options &o, Functor cal)
              * Mapping from sequins to reads
              */
             
-            for (const auto &i : stats.data.at(i.first).histE)
+            for (const auto &j : i.second.histE)
             {
-                stats.s2r[i.first] = i.second;
+                stats.s2r[j.first] = j.second;
             }
 
             assert(!stats.s2r.empty());
