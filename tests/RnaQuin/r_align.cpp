@@ -4,6 +4,9 @@
 
 using namespace Anaquin;
 
+typedef RAlign::Stats::AlignMetrics   AlignMetric;
+typedef RAlign::Stats::MissingMetrics MissMetrics;
+
 TEST_CASE("RAlign_All_AllRepeats")
 {
     Test::transA();
@@ -40,15 +43,15 @@ TEST_CASE("RAlign_All_AllRepeats")
     REQUIRE(se.covered() == Approx(0.0000458388));
     REQUIRE(si.covered() == 0.0);
     
-    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingExon).i   == 1188);
-    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingExon).n   == 1190);
-    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingGene).i   == 76);
-    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingGene).n   == 76);
-    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingIntron).i == 1028);
-    REQUIRE(r.missing(ChrT, RAlign::Stats::MissingMetrics::MissingIntron).n == 1028);
+    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingExon).i   == 1188);
+    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingExon).n   == 1190);
+    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingGene).i   == 76);
+    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingGene).n   == 76);
+    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingIntron).i == 1028);
+    REQUIRE(r.countMiss(ChrT, MissMetrics::MissingIntron).n == 1028);
     
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0000504226));
-    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == 1.0);
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignBase) == Approx(0.0000504226));
+    REQUIRE(r.pc(ChrT, AlignMetric::AlignBase) == 1.0);
     REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
     REQUIRE(r.data.at(ChrT).overB.m.nq() == 10);
     REQUIRE(r.data.at(ChrT).overB.m.tp() == 10);
@@ -63,7 +66,7 @@ TEST_CASE("RAlign_All_AllRepeats")
     REQUIRE(r.data.at(ChrT).overE.lNR   == 1190);
     REQUIRE(r.data.at(ChrT).overE.lFN() == 1188);
     
-    REQUIRE(isnan(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignIntron)));
+    REQUIRE(isnan(r.pc(ChrT, AlignMetric::AlignIntron)));
     REQUIRE(r.data.at(ChrT).overI.aTP   == 0);
     REQUIRE(r.data.at(ChrT).overI.aFP   == 0);
     REQUIRE(r.data.at(ChrT).overI.aNQ() == 0);
@@ -71,8 +74,8 @@ TEST_CASE("RAlign_All_AllRepeats")
     REQUIRE(r.data.at(ChrT).overI.lNR   == 1028);
     REQUIRE(r.data.at(ChrT).overI.lFN() == 1028);
     
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignExon)   == Approx(0.0016806723));
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignIntron) == 0);
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignExon)   == Approx(0.0016806723));
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignIntron) == 0);
     
     for (auto &i : r.data.at(ChrT).histE)
     {
@@ -226,12 +229,12 @@ TEST_CASE("RAlign_R2_33_1")
     REQUIRE(se.covered() == Approx(0.0012972368));
     REQUIRE(si.covered() == 0.0);
     
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == Approx(0.0016806723));
-    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 1.0);
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignIntron) == 0);
-    REQUIRE(isnan(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignIntron)));
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == Approx(0.0012972368));
-    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == Approx(1.0));
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignExon) == Approx(0.0016806723));
+    REQUIRE(r.pc(ChrT, AlignMetric::AlignExon) == 1.0);
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignIntron) == 0);
+    REQUIRE(isnan(r.pc(ChrT, AlignMetric::AlignIntron)));
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignBase) == Approx(0.0012972368));
+    REQUIRE(r.pc(ChrT, AlignMetric::AlignBase) == Approx(1.0));
 
     REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
     REQUIRE(r.data.at(ChrT).overB.m.tp() == mapped);
@@ -354,10 +357,10 @@ TEST_CASE("RAlign_All_FalsePositives")
     REQUIRE(r.data.at(ChrT).histE.size() == 76);
     REQUIRE(r.data.at(ChrT).histI.size() == 76);
     
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 0);
-    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 0);
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignIntron) == 0);
-    REQUIRE(isnan(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignIntron)));
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignExon) == 0);
+    REQUIRE(r.pc(ChrT, AlignMetric::AlignExon) == 0);
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignIntron) == 0);
+    REQUIRE(isnan(r.pc(ChrT, AlignMetric::AlignIntron)));
     
     REQUIRE(r.data.at(ChrT).overB.m.sn() == 0);
     REQUIRE(isnan(r.data.at(ChrT).overB.m.pc()));
@@ -381,8 +384,8 @@ TEST_CASE("RAlign_All_FalsePositives")
     REQUIRE(r.data.at(ChrT).overI.lNR   == 1028);
     REQUIRE(r.data.at(ChrT).overI.lFN() == 1028);
 
-    REQUIRE(r.sn(ChrT, RAlign::Stats::AlignMetrics::AlignBase) == 0);
-    REQUIRE(r.pc(ChrT, RAlign::Stats::AlignMetrics::AlignExon) == 0);
+    REQUIRE(r.sn(ChrT, AlignMetric::AlignBase) == 0);
+    REQUIRE(r.pc(ChrT, AlignMetric::AlignExon) == 0);
     REQUIRE(r.data.at(ChrT).overB.m.nr() == 218156);
     REQUIRE(r.data.at(ChrT).overB.m.nq() == 0);
     REQUIRE(r.data.at(ChrT).overB.m.tp() == 0);

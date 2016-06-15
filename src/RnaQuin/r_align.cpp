@@ -428,6 +428,17 @@ RAlign::Stats calculate(const RAlign::Options &o, Functor cal)
         }
         else
         {
+            const auto ems = stats.countMiss(i.first, MissingMetrics::MissingExon);
+            const auto ims = stats.countMiss(i.first, MissingMetrics::MissingIntron);
+            const auto gms = stats.countMiss(i.first, MissingMetrics::MissingGene);
+
+            stats.g_ems.i += ems.i;
+            stats.g_ems.n += ems.n;
+            stats.g_ims.i += ims.i;
+            stats.g_ims.n += ims.n;
+            stats.g_gms.i += gms.i;
+            stats.g_gms.n += gms.n;
+            
             g_em.aTP += i.second.overE.aTP;
             g_em.aFP += i.second.overE.aFP;
             g_em.lTP += i.second.overE.lTP;
@@ -681,9 +692,9 @@ static void generateSummary(const FileName &file,
                                               % CHECK(stats.g_ipc) // 31
                                               % CHECK(stats.g_bsn) // 32
                                               % CHECK(stats.g_bpc) // 33
-                                              % "-" //BIND_M(Stats::missProp, MissingMetrics::MissingExon, __gID__) // 34
-                                              % "-" //BIND_M(Stats::missProp, MissingMetrics::MissingIntron, __gID__) // 35
-                                              % "-" //BIND_M(Stats::missProp, MissingMetrics::MissingGene, __gID__)
+                                              % CHECK(stats.g_ems.percent()) // 34
+                                              % CHECK(stats.g_ims.percent()) // 35
+                                              % CHECK(stats.g_gms.percent()) // 36
                      ).str());
     o.writer->close();
 }

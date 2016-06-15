@@ -27,6 +27,7 @@ namespace Anaquin
 
     struct CountProp
     {
+        CountProp() {}
         CountProp(Counts i, Counts n) : i(i), n(n) {}
         
         inline operator std::string() const
@@ -41,10 +42,10 @@ namespace Anaquin
         }
         
         // Relevant number of counts
-        Counts i;
+        Counts i = 0;
         
         // Total number of counts
-        Counts n;
+        Counts n = 0;
     };
 
     /*
@@ -202,7 +203,7 @@ namespace Anaquin
                     });
                 }
                 
-                inline CountProp missing(const ChrID &cID, MissingMetrics m) const
+                inline CountProp countMiss(const ChrID &cID, MissingMetrics m) const
                 {
                     switch (m)
                     {
@@ -225,7 +226,7 @@ namespace Anaquin
 
                 inline double missProp(const ChrID &cID, MissingMetrics m) const
                 {
-                    return missing(cID, m).percent();
+                    return countMiss(cID, m).percent();
                 }
                 
                 // Overall sensitivity
@@ -271,7 +272,9 @@ namespace Anaquin
                 /*
                  * Genomic Statistics
                  */
-              
+                
+                CountProp g_ems, g_ims, g_gms;
+
                 Proportion g_esn = NAN;
                 Proportion g_epc = NAN;
                 Proportion g_isn = NAN;
