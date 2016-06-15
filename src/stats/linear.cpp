@@ -45,6 +45,8 @@ LOQModel LinearStats::limitQuant(bool shouldLog) const
     // The break we're looking for
     l.b = r.b;
     
+    l.lr   = r.lr;
+    l.rr   = r.rr;
     l.lR2  = r.blR2();
     l.rR2  = r.brR2();
     l.lSl  = r.blSl();

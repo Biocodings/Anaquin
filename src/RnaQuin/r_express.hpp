@@ -80,10 +80,18 @@ namespace Anaquin
             Isoform
         };
         
+        enum class Inputs
+        {
+            GTF,
+            Text
+        };
+        
         struct Options : public AnalyzerOptions
         {
             Options() {}
             
+            Inputs inputs;
+
             // Gene or isoform?
             Metrics metrs;
         };
@@ -112,10 +120,10 @@ namespace Anaquin
          * Generate an R-script for expected abundance against measured abundance
          */
         
-        template <typename Options> static void generateRAbund(const FileName &output,
-                                                               const FileName &csv,
-                                                               const std::vector<Stats> &stats,
-                                                               const Options &o)
+        template <typename Options> static void generateR(const FileName &output,
+                                                          const FileName &csv,
+                                                          const std::vector<Stats> &stats,
+                                                          const Options &o)
         {
             o.info("Generating " + output);
             o.writer->open(output);
@@ -124,21 +132,19 @@ namespace Anaquin
             
             if (stats.size() == 1)
             {
-                o.writer->write(RWriter::createScatterNeedLog(csv,
-                                                              title,
+                o.writer->write(RWriter::createScatterNeedLog(csv, title,
                                                               "Expected Expression (log2)",
                                                               "Measured Expression (log2)",
                                                               "Expected",
-                                                              "Measured", false));
+                                                              "Measured", true));
             }
             else
             {
-                o.writer->write(RWriter::createMultiScatterNeedLog(csv,
-                                                                   title,
-                                                                   "Expected Expression (log2)",
-                                                                   "Measured Expression (log2)",
-                                                                   "Expected",
-                                                                   "Measured", false));
+                o.writer->write(RWriter::createMultiScatter(csv, title,
+                                                            "Expected Expression (log2)",
+                                                            "Measured Expression (log2)",
+                                                            "Expected",
+                                                            "Measured", true, true));
             }
             
             o.writer->close();
@@ -186,11 +192,19 @@ namespace Anaquin
             std::vector<LinearStats>  lStats;
             std::vector<MappingStats> mStats;
             
+            // Detection limit for the replicates
+            Limit limit;
+
             for (auto i = 0; i < files.size(); i++)
             {
                 mStats.push_back(stats[i]);
                 lStats.push_back(stats[i]);
                 hists.push_back(stats[i].hist);
+
+                if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
+                {
+                    limit = stats[i].limit;
+                }
             }
             
             const auto title = o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed";
@@ -201,7 +215,7 @@ namespace Anaquin
             const auto n_gen = toString(r.countGeneGen()) + " " + units;
 
             const auto format = "-------RnaExpression Output\n\n"
-                                "Summary for input: %1%\n\n"
+                                "       Summary for input: %1%\n\n"
                                 "       *Arithmetic average and standard deviation are shown\n\n"
                                 "-------User Transcript Annotations\n\n"
                                 "       Annotation file: %2%\n"
@@ -242,18 +256,18 @@ namespace Anaquin
                                                    % MixRef() // 5
                                                    % title    // 6
                                                    % STRING(ms.n_syn)
-                                                   % "????"
-                                                   % "????"
+                                                   % limit.abund
+                                                   % limit.id
                                                    % STRING(ms.n_gen)
-                                                   % STRING(ms.b) // 11
-                                                   % STRING(ms.bID)
+                                                   % STRING(ms.b)   // 11
+                                                   % STRING(ms.bID) // 12
                                                    % STRING(ms.lInt)
                                                    % STRING(ms.lSl)
-                                                   % "????"
+                                                   % STRING(ms.lr)
                                                    % STRING(ms.lR2) // 16
                                                    % STRING(ms.rInt)
                                                    % STRING(ms.rSl)
-                                                   % "????"
+                                                   % STRING(ms.rr)
                                                    % STRING(ms.rR2)
                                                    % STRING(ms.wLog.r) // 21
                                                    % STRING(ms.wLog.sl)

@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include "writers/r_writer.hpp"
 #include "RnaQuin/r_express.hpp"
+#include "parsers/parser_gtf.hpp"
 #include "parsers/parser_express.hpp"
 
 using namespace Anaquin;
@@ -29,18 +30,18 @@ template <typename T> void update(TExpress::Stats &stats, const T &x, const TExp
                     m = r.match(x.l, Overlap);
                 }
                 
-                if (!m)
-                {
-                    o.logWarn((boost::format("%1% not found. Unknown isoform.") % x.id).str());
-                }
-                else
+                if (m)
                 {
                     stats.hist.at(m->id)++;
                     
                     if (x.abund)
                     {
-                        stats.add(x.id, m->concent(Mix_1), x.abund);
+                        stats.add(m->id, m->concent(Mix_1), x.abund);
                     }
+                }
+                else
+                {
+                    o.logWarn((boost::format("%1% not found. Unknown isoform.") % x.id).str());
                 }
                 
                 break;
@@ -65,12 +66,12 @@ template <typename T> void update(TExpress::Stats &stats, const T &x, const TExp
                     
                     if (x.abund)
                     {
-                        stats.add(x.id, m->concent(Mix_1), x.abund);
+                        stats.add(m->id, m->concent(Mix_1), x.abund);
                     }
                 }
                 else
                 {
-//                    o.logWarn((boost::format("%1% not found.") % x.id).str());
+                    o.logWarn((boost::format("%1% not found.") % x.id).str());
                 }
                 
                 break;
@@ -95,6 +96,8 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
         case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
     }
     
+    assert(!stats.hist.empty());
+    
     f(stats);
     
     if (stats.empty())
@@ -117,10 +120,35 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     
     return calculate(o, [&](TExpress::Stats &stats)
     {
-        ParserExpress::parse(file, [&](const ParserExpress::Data &x, const ParserProgress &)
+        switch (o.inputs)
         {
-            update(stats, x, o);
-        });
+            case Inputs::Text:
+            {
+                ParserExpress::parse(file, [&](const ParserExpress::Data &x, const ParserProgress &)
+                {
+                    update(stats, x, o);
+                });
+                
+                break;
+            }
+                
+            case Inputs::GTF:
+            {
+                ParserExpress::Data t;
+                
+                ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
+                {
+                    t.l     = x.l;
+                    t.cID   = x.cID;
+                    t.id    = o.metrs == Metrics::Gene ? x.gID : x.tID;
+                    t.abund = x.fpkm;
+
+                    update(stats, t, o);
+                });
+
+                break;
+            }
+        }
     });
 }
 
@@ -151,5 +179,5 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpress_express.R
      */
     
-    TExpress::generateRAbund("RnaExpress_express.R", "RnaExpress_quins.csv", stats, o);
+    TExpress::generateR("RnaExpress_express.R", "RnaExpress_quins.csv", stats, o);
 }

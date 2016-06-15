@@ -35,6 +35,8 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     data$ymax <- if (isMulti) data$y + data$sd     else NULL
     data$ymin <- if (isMulti) data$y - data$sd     else NULL
 
+    data <- data[!is.na(data$y),]
+    
     p <- ggplot(data=data, aes(x=x, y=y)) +
                                xlab(xlab) +
                                ylab(ylab) +
@@ -48,7 +50,10 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     y_off <- ifelse(max(data$y) - min(data$y) <= 10, 0.5, 0.5)
 
     # Position the regression model to the left
-    p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
+    p <- p + annotate("text",
+                      label=lm2str(data),
+                      x=min(data$x),
+                      y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
 
     if (showIntercept)
     {

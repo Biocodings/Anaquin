@@ -23,7 +23,7 @@ namespace Anaquin
 
             // Eg: genes or isoforms
             std::string id;
-            
+
             // Position of the gene/isoform
             Locus l;
             

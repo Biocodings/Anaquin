@@ -54,7 +54,7 @@ namespace Anaquin
         // Optimal break-point
         SReals b;
         
-        // Sequins for the break-points
+        // Sequin for the break-point
         SStrings bID;
         
         // Regression intercepts
@@ -65,6 +65,9 @@ namespace Anaquin
         
         // Regression R2
         SReals lR2, rR2;
+        
+        // Pearson's correlation
+        SReals lr, rr;
         
         // Linear regression without logarithm
         SLinearStats nLog;
@@ -77,6 +80,9 @@ namespace Anaquin
     {
         // Name of the sequin
         std::string id;
+        
+        // Pearson's correlation
+        double lr, rr;
         
         // Coefficient of determination before and after the break-point
         double lR2, rR2;

@@ -43,7 +43,7 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * Generating RnaKExpress_express.R
      */
     
-    //TExpress::generateRAbund("RnaKExpress_express.R", "RnaKExpress_quins.csv", stats, o);
+    //TExpress::generateR("RnaKExpress_express.R", "RnaKExpress_quins.csv", stats, o);
     
     /*
      * Generating RnaKExpress_splice.R

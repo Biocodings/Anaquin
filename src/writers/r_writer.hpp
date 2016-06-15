@@ -216,15 +216,16 @@ namespace Anaquin
                                          const std::string &,
                                          bool showLOQ);
         
-        static Scripts createMultiScatterNeedLog(const FileName  &,
-                                                 const std::string &,
-                                                 const std::string &,
-                                                 const std::string &,
-                                                 const std::string &,
-                                                 const std::string &,
-                                                 bool showLOQ);
+        static Scripts createMultiScatter(const FileName  &,
+                                          const std::string &,
+                                          const std::string &,
+                                          const std::string &,
+                                          const std::string &,
+                                          const std::string &,
+                                          bool showLOQ,
+                                          bool shouldLog);
 
-        static Scripts createFold(const FileName  &,
+        static Scripts createFold(const FileName    &,
                                   const std::string &,
                                   const std::string &,
                                   const std::string &,

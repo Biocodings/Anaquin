@@ -56,6 +56,7 @@
 #include "FusQuin/f_discover.hpp"
 #include "FusQuin/f_coverage.hpp"
 
+#include "parsers/parser_gtf.hpp"
 #include "parsers/parser_blat.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_quast.hpp"
@@ -1332,18 +1333,24 @@ void parse(int argc, char ** argv)
                     
                     TExpress::Options o;
                     
-                    o.metrs = TExpress::Metrics::Gene; // TODO: ????
+                    o.inputs = ParserGTF::check(Reader(_p.inputs[0])) ? TExpress::Inputs::GTF :
+                                                                        TExpress::Inputs::Text;
+
+                    switch (o.inputs)
+                    {
+                        case TExpress::Inputs::GTF:
+                        {
+                            o.metrs = TExpress::Metrics::Gene;
+                            break;
+                        }
+
+                        case TExpress::Inputs::Text:
+                        {
+                            o.metrs = TExpress::Metrics::Gene;
+                            break;
+                        }
+                    }
                     
-//                    if (o.soft == TExpress::Software::Cufflinks)
-//                    {
-//                        o.metrs = checkCufflink(_p.inputs[0]) ? TExpress::Metrics::Gene : TExpress::Metrics::Isoform;
-//                    }
-
-//                    if (o.soft == TExpress::Software::Kallisto)
-//                    {
-//                        o.metrs = TExpress::Metrics::Isoform;
-//                    }
-
                     analyze_n<TExpress>(o);
                     break;
                 }

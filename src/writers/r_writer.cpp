@@ -81,14 +81,18 @@ Scripts RWriter::createScatterNoLog(const FileName    &file,
                                           % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
-Scripts RWriter::createMultiScatterNeedLog(const FileName    &file,
-                                           const std::string &title,
-                                           const std::string &xlab,
-                                           const std::string &ylab,
-                                           const std::string &expected,
-                                           const std::string &measured,
-                                           bool showLOQ)
+Scripts RWriter::createMultiScatter(const FileName    &file,
+                                    const std::string &title,
+                                    const std::string &xlab,
+                                    const std::string &ylab,
+                                    const std::string &expected,
+                                    const std::string &measured,
+                                    bool showLOQ,
+                                    bool shouldLog)
 {
+    const auto exp = shouldLog ? ("log2(data$" + expected + ")") : ("data$" + expected);
+    const auto obs = shouldLog ? ("log2(data[,2:ncol(data)])") : ("data[,2:ncol(data)]");
+    
     return (boost::format(PlotScatter()) % date()
                                          % __full_command__
                                          % __output__
@@ -96,8 +100,8 @@ Scripts RWriter::createMultiScatterNeedLog(const FileName    &file,
                                          % title
                                          % xlab
                                          % ylab
-                                         % ("log2(data$" + expected + ")")
-                                         % ("log2(data$" + measured + ")")
+                                         % exp
+                                         % obs
                                          % (showLOQ ? "TRUE" : "FALSE")).str();
 }
 
@@ -382,11 +386,11 @@ Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
 }
 
 SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
-                                    const FileName                  &endoR,
-                                    const std::vector<FileName>     &files,
-                                    const std::vector<SequinHist>   &hist,
-                                    const std::vector<MappingStats> &mStats,
-                                    const std::vector<LinearStats>  &lstats)
+                                       const FileName                  &endoR,
+                                       const std::vector<FileName>     &files,
+                                       const std::vector<SequinHist>   &hist,
+                                       const std::vector<MappingStats> &mStats,
+                                       const std::vector<LinearStats>  &lstats)
 {
     SInflectStats r;
     
@@ -415,6 +419,8 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
         r.n_det.add((unsigned)detect(hist[i]));
         
         r.b.add((unsigned)b);
+        r.lr.add(inf.lr);
+        r.rr.add(inf.rr);
         r.bID.add(inf.id);
         r.lInt.add(inf.lInt);
         r.rInt.add(inf.rInt);
