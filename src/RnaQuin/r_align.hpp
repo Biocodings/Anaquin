@@ -144,7 +144,7 @@ namespace Anaquin
                     // Overall performance at the base level
                     Performance overB;
                     
-                    SequinHist histE, histI;
+                    Hist histE, histI;
                     
                     /*
                      * Individual statistics for each gene (due to alternative splicing)
@@ -170,9 +170,6 @@ namespace Anaquin
 
                 std::map<ChrID, Data> data;
                 
-                // Number of reads mapped to each sequin gene (eg: R1_1)
-                std::map<SequinID, Counts> s2r;
-
                 inline Counts countSpliceSyn() const
                 {
                     return count(data, [&](const ChrID &cID, const Data &x)
@@ -205,28 +202,6 @@ namespace Anaquin
                     });
                 }
                 
-                
-
-                inline Limit limit(AlignMetrics m) const
-                {
-                    const auto h = (m == AlignMetrics::AlignExon)   ? &data.at(ChrT).histE :
-                                   (m == AlignMetrics::AlignIntron) ? &data.at(ChrT).histI :
-                                                                      &data.at(ChrT).overB.hist;
-                    return Standard::instance().r_trans.absoluteGene(*h);
-                }
-                
-                // Number of non-spliced alignments
-                inline Counts countNSpliced(const ChrID &cID) const { return data.at(cID).overE.aNQ(); }
-                
-                // Number of spliced alignments
-                inline Counts countSpliced(const ChrID &cID) const { return data.at(cID).overI.aNQ(); }
-
-                // Proportion of bases covered
-                inline Proportion countQBases(const ChrID &cID) const
-                {
-                    return CountProp(data.at(cID).overB.m.nq(), data.at(cID).overB.m.nr()).percent();
-                }
-
                 inline CountProp missing(const ChrID &cID, MissingMetrics m) const
                 {
                     switch (m)
@@ -265,13 +240,13 @@ namespace Anaquin
                 }
                 
                 // Sensitivity at the gene level
-                inline double sn(const ChrID &cID, const GeneID &id) const
+                inline Proportion sn(const ChrID &cID, const GeneID &id) const
                 {
                     return data.at(cID).geneE.at(id).sn();
                 }
 
                 // Overall precision
-                inline double pc(const ChrID &cID, AlignMetrics m) const
+                inline Proportion pc(const ChrID &cID, AlignMetrics m) const
                 {
                     switch (m)
                     {
@@ -280,6 +255,29 @@ namespace Anaquin
                         case AlignMetrics::AlignIntron: { return data.at(cID).overI.pc();   }
                     }
                 }
+                
+                /*
+                 * Synthetic Statistics
+                 */
+                
+                Proportion s_esn, s_epc;
+                Proportion s_isn, s_ipc;
+                Proportion s_bsn, s_bpc;
+                Proportion s_ems, s_ims, s_gms;
+                
+                // Number of reads mapped to each sequin gene (eg: R1_1)
+                std::map<SequinID, Counts> s2r;
+                
+                /*
+                 * Genomic Statistics
+                 */
+              
+                Proportion g_esn = NAN;
+                Proportion g_epc = NAN;
+                Proportion g_isn = NAN;
+                Proportion g_ipc = NAN;
+                Proportion g_bsn = NAN;
+                Proportion g_bpc = NAN;
             };
 
             static Stats analyze(const FileName &, const Options &o = Options());

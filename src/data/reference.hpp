@@ -756,8 +756,6 @@ namespace Anaquin
             // Returns histogram for genes for all chromosomes (synthetic + genome)
             std::map<ChrID, Hist> histGene() const;
 
-            ChrID genoID() const;
-        
             SequinHist geneHist(const ChrID &) const;
 
             // Intervals for reference exons
@@ -798,8 +796,6 @@ namespace Anaquin
             Counts countTransSyn() const;
             Counts countTransGen() const;
         
-            std::vector<GeneID> geneIDs(const ChrID &) const;
-
             const GeneData   *findGene  (const ChrID &, const GeneID &)           const;
             const GeneData   *findGene  (const ChrID &, const Locus &, MatchRule) const;
             const ExonData   *findExon  (const ChrID &, const Locus &, MatchRule) const;

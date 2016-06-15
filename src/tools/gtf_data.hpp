@@ -206,7 +206,7 @@ namespace Anaquin
             return countIntr() - countIntrSyn();
         }
 
-        inline Intervals<> intervals(const ChrID &cID) const
+        inline Intervals<> gIntervals(const ChrID &cID) const
         {
             Intervals<> r;
             
@@ -214,15 +214,44 @@ namespace Anaquin
             {
                 r.add(Interval(i.first, i.second.l));
             }
+            
+            r.build();
+            return r;
+        }
+        
+        inline std::map<ChrID, Intervals<>> gIntervals() const
+        {
+            std::map<ChrID, Intervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = gIntervals(i.first);
+            }
 
             return r;
         }
         
+//        inline Intervals<> exonIntervals(const ChrID &cID) const
+//        {
+//            Intervals<> r;
+//            
+//            for (const auto &i : at(cID).t2e)
+//            {
+//                for (const auto &j : i.second)
+//                {
+//                    r.add(Interval(i.first, j.l));
+//                }
+//            }
+//            
+//            r.build();
+//            return r;
+//        }
+
         // Returns total length of all genes for a chromosome
         inline Base countLen(const ChrID &cID) const
         {
             // Assuming the genes are non-overlapping
-            return intervals(cID).stats().length;
+            return gIntervals(cID).stats().length;
         }
         
         inline Base countLenSyn() const

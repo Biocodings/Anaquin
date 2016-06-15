@@ -238,7 +238,7 @@ namespace Anaquin
                 return _inters.count(id) ? &(_inters.at(id)) : nullptr;
             }
         
-            inline T * contains(const Locus &l, std::vector<T *> *r = nullptr)
+            inline T * contains(const Locus &l, std::vector<T *> *r = nullptr) const
             {
                 auto v = _tree->findContains(l.start, l.end);
 
@@ -253,7 +253,7 @@ namespace Anaquin
                 return v.empty() ? nullptr : v.front().value;
             }
         
-            inline T * overlap(const Locus &l, std::vector<T *> *r = nullptr)
+            inline T * overlap(const Locus &l, std::vector<T *> *r = nullptr) const
             {
                 auto v = _tree->findOverlapping(l.start, l.end);
             

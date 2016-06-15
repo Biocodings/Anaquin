@@ -33,9 +33,9 @@ TEST_CASE("RAlign_All_AllRepeats")
     
     REQUIRE(r.data.at(ChrT).unknowns.size() == 0);
     
-    REQUIRE(r.data.at(ChrT).overB.hist.size() == 76);
-    REQUIRE(r.data.at(ChrT).histE.size() == 76);
-    REQUIRE(r.data.at(ChrT).histI.size() == 76);
+    REQUIRE(r.data.at(ChrT).overB.hist.size() == 78);
+    REQUIRE(r.data.at(ChrT).histE.size() == 78);
+    REQUIRE(r.data.at(ChrT).histI.size() == 78);
     
     REQUIRE(se.covered() == Approx(0.0000458388));
     REQUIRE(si.covered() == 0.0);

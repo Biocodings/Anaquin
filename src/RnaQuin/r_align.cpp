@@ -13,20 +13,13 @@ extern FileName GTFRef();
 // Internal implementation
 typedef std::function<void (RAlign::Stats &)> Functor;
 
-typedef RAlign::Stats::AlignMetrics   AlignMetrics;
+typedef RAlign::Stats::AlignMetrics   Metrics;
 typedef RAlign::Stats::MissingMetrics MissingMetrics;
-
-// Defined for convenience
-static ChrID __gID__;
 
 template <typename T> void initT(const ChrID &cID, T &t)
 {
     const auto &r = Standard::instance().r_trans;
 
-    /*
-     * Create the structure and initalize the genes, it's different depends on the context
-     */
-    
     // Initalize the distributions
     t.overB.hist = t.histE = t.histI = r.histGene()[cID];
     
@@ -104,8 +97,6 @@ static RAlign::Stats init()
     }
 
     assert(!stats.data.empty());
-    assert(stats.data.count(ChrT));
-    
     return stats;
 }
 
@@ -119,7 +110,7 @@ template <typename T> const T * matchT(const Alignment &align,
     std::vector<T *> oMatches, cMatches;
 
     /*
-     * It's quite likely there'll be more than a match. Note that it's impossible to distinguish the
+     * Quite likely there'll be multiple matches. Note that it's impossible to distinguish the
      * individuals due to alternative splicing. Thus, we simply increment all the possible matches.
      * Consequently, it's not possible to detect anything at the isoform level.
      */
@@ -144,10 +135,6 @@ template <typename T> const T * matchT(const Alignment &align,
     
     auto matches = !cMatches.empty() ? &cMatches : &oMatches;
     
-    /*
-     * TODO: We need to consider if it's even in the region of interest
-     */
-    
     if (!matches->empty())
     {
         Base lp, rp;
@@ -160,6 +147,13 @@ template <typename T> const T * matchT(const Alignment &align,
             lFPS->at((*matches)[0]->gID) = std::max(lFPS->at((*matches)[0]->gID), lp);
             rFPS->at((*matches)[0]->gID) = std::max(rFPS->at((*matches)[0]->gID), rp);
         }
+    }
+    else
+    {
+        /*
+         * What to do for no matches? The read is outside of the reference regions and thus
+         * we wouldn't have information to deduce whether this is a TP or FP. We should ignore it.
+         */
     }
     
     return !cMatches.empty() ? cMatches[0] : nullptr;
@@ -178,7 +172,7 @@ template <typename T> void collect(const ChrID &cID,
     auto aligns = [](std::map<GeneID, RAlign::MergedConfusion> &gene,
                      RAlign::MergedConfusion &over,
                      SequinHist &hist,
-                     Counts unknowns,
+                     Counts n_overlaps,
                      const BinCounts &contains,
                      const BinCounts &overlaps,
                      const std::map<BinID, GeneID> &m)
@@ -204,7 +198,7 @@ template <typename T> void collect(const ChrID &cID,
             over.aFP += i.second;
         }
         
-        over.aFP += unknowns;
+        over.aFP += n_overlaps;
     };
     
     aligns(t.geneE,
@@ -224,7 +218,7 @@ template <typename T> void collect(const ChrID &cID,
            t.intronToGene);
     
     /*
-     * 2. Calculating statistics for each sequin (at the gene level due to alternative splicing)
+     * Calculating statistics for each sequin (at the gene level due to alternative splicing)
      */
     
     o.info("Calculating statistics for sequins");
@@ -280,7 +274,7 @@ template <typename T> void collect(const ChrID &cID,
           t.intronToGene);
 
     /*
-     * 3. Calculating metrics at the base level.
+     * Calculating statistics at the base level
      */
     
     o.info("Calculating base statistics");
@@ -333,7 +327,7 @@ template <typename T> void collect(const ChrID &cID,
      */
 
     o.info("Calculating missing statistics");
-    
+
     auto missing = [&](std::set<Missing> &misses, const BinCounts &bins)
     {
         for (const auto &bin : bins)
@@ -344,12 +338,12 @@ template <typename T> void collect(const ChrID &cID,
             }
         }
     };
-    
-    // An exon is missing if no alignment aligns to it
-    missing(t.missE, t.eContains);
-    
-    // An intron is missing if no alignment aligns to it
+
+    // An intron is missing if nothing aligns to it
     missing(t.missI, t.iContains);
+
+    // An exon is missing if nothing aligns to it
+    missing(t.missE, t.eContains);
     
     /*
      * A gene is considered missing if not all it's exons have alignment
@@ -357,27 +351,24 @@ template <typename T> void collect(const ChrID &cID,
      *   TODO: Need to improve the performance...
      */
     
-//    if (cID == ChrT)
+    for (const auto &gene : t.histE)
     {
-        for (const auto &gene : t.histE)
+        bool missing = false;
+        
+        for (const auto &bin : t.eContains)
         {
-            bool missing = false;
-            
-            for (const auto &bin : t.eContains)
+            if (gene.first == t.exonToGene.at(bin.first))
             {
-                if (gene.first == t.exonToGene.at(bin.first))
+                if ((missing = (bin.second == 0)))
                 {
-                    if ((missing = (bin.second == 0)))
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
-            
-            if (missing)
-            {
-                t.missG.insert(Missing(gene.first));
-            }
+        }
+        
+        if (missing)
+        {
+            t.missG.insert(Missing(gene.first));
         }
     }
 }
@@ -401,16 +392,71 @@ RAlign::Stats calculate(const RAlign::Options &o, Functor cal)
     }
 
     /*
-     * Mapping from sequins to reads
+     * Collecting statistics for synthetic and genome
      */
 
-    for (const auto &i : stats.data.at(ChrT).histE)
+    // Aggregating over all genomic chromosomes
+    RAlign::MergedConfusion g_em, g_im;
+    
+    // Aggregating over all genomic chromosomes
+    Confusion g_bm;
+    
+    for (auto &i : stats.data)
     {
-        stats.s2r[i.first] = i.second;
+        if (Standard::isSynthetic(i.first))
+        {
+            stats.s_esn = stats.sn(i.first, Metrics::AlignExon);
+            stats.s_epc = stats.pc(i.first, Metrics::AlignExon);
+            stats.s_isn = stats.sn(i.first, Metrics::AlignIntron);
+            stats.s_ipc = stats.pc(i.first, Metrics::AlignIntron);
+            stats.s_bsn = stats.sn(i.first, Metrics::AlignBase);
+            stats.s_bpc = stats.pc(i.first, Metrics::AlignBase);
+            stats.s_ems = stats.missProp(ChrT, MissingMetrics::MissingExon);
+            stats.s_ims = stats.missProp(ChrT, MissingMetrics::MissingIntron);
+            stats.s_gms = stats.missProp(ChrT, MissingMetrics::MissingGene);
+            
+            /*
+             * Mapping from sequins to reads
+             */
+            
+            for (const auto &i : stats.data.at(i.first).histE)
+            {
+                stats.s2r[i.first] = i.second;
+            }
+
+            assert(!stats.s2r.empty());
+        }
+        else
+        {
+            g_em.aTP += i.second.overE.aTP;
+            g_em.aFP += i.second.overE.aFP;
+            g_em.lTP += i.second.overE.lTP;
+            g_em.lNR += i.second.overE.lNR;
+
+            g_im.aTP += i.second.overI.aTP;
+            g_im.aFP += i.second.overI.aFP;
+            g_im.lTP += i.second.overI.lTP;
+            g_im.lNR += i.second.overI.lNR;
+            
+            g_bm.nr() += i.second.overB.m.nr();
+            g_bm.nq() += i.second.overB.m.nq();
+            g_bm.tp() += i.second.overB.m.tp();
+            g_bm.fp() += i.second.overB.m.fp();
+            g_bm.tn() += i.second.overB.m.tn();
+            g_bm.fn() += i.second.overB.m.fn();
+        }
     }
     
-    assert(!stats.s2r.empty());
-    
+    if (stats.data.size() > 1)
+    {
+        stats.g_esn = g_em.sn();
+        stats.g_epc = g_em.pc();
+        stats.g_isn = g_im.sn();
+        stats.g_ipc = g_im.pc();
+        stats.g_bsn = g_bm.sn();
+        stats.g_bpc = g_bm.pc();
+    }
+
     return stats;
 }
 
@@ -438,20 +484,17 @@ template <typename T> const Interval * matchAlign(T &t, const Alignment &align)
     return match;
 }
 
-static bool matchAlign(RAlign::Stats::Data &t,
-                      const Alignment &align,
-                      const ParserSAM::Info &info,
-                      const RAlign::Options &o)
+static void matchAlign(RAlign::Stats::Data &t,
+                       const Alignment &align,
+                       const ParserSAM::Info &info,
+                       const RAlign::Options &o)
 {
-    #define REPORT_STATUS() if (!align.i && info.p.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
-    REPORT_STATUS();
-    
+    if (!align.i && info.p.i && !(info.p.i % 1000000)) { o.wait(std::to_string(info.p.i)); }
+
     if (!matchAlign(t, align))
     {
         t.unknowns.push_back(UnknownAlignment(align.name, align.l));
     }
-    
-    return true;
 }
 
 RAlign::Stats RAlign::analyze(const std::vector<Alignment> &aligns, const Options &o)
@@ -474,26 +517,26 @@ RAlign::Stats RAlign::analyze(const std::vector<Alignment> &aligns, const Option
             }
             else
             {
-                matchAlign(stats.data.at(__gID__), align, info, o);
+                matchAlign(stats.data.at(align.cID), align, info, o);
             }
         }
     });
 }
 
-static bool classifySyn(RAlign::Stats::Data &x,
+static void classifySyn(RAlign::Stats::Data &x,
                         const Alignment &align,
                         const ParserSAM::Info &info,
                         const RAlign::Options &o)
 {
-    return matchAlign(x, align, info, o);
+    matchAlign(x, align, info, o);
 }
 
-static bool classifyGen(RAlign::Stats::Data &x,
+static void classifyGen(RAlign::Stats::Data &x,
                         const Alignment &align,
                         const ParserSAM::Info &info,
                         const RAlign::Options &o)
 {
-    return matchAlign(x, align, info, o);
+    matchAlign(x, align, info, o);
 }
 
 RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
@@ -547,7 +590,7 @@ static Scripts summary()
            "-------Number of alignments mapped to the Synthetic and Genome\n\n"
            "       Synthetic: %3%\n"
            "       Genome:    %4%\n"
-           "       Dilution:  %5%\n"
+           "       Dilution:  %5$.2f\n"
            "       Unmapped:  %6%\n\n"
            "-------Reference annotation (Synthetic)\n\n"
            "       Synthetic: %7% exons\n"
@@ -599,16 +642,10 @@ static void generateSummary(const FileName &file,
                             const RAlign::Stats &stats,
                             const RAlign::Options &o)
 {
-    typedef RAlign::Stats Stats;
-
     const auto &r = Standard::instance().r_trans;
-
-    #define BIND_R(x,y)   check(stats, std::bind(&x, &r, _1), y)
-    #define BIND_Q(x,y)   check(stats, std::bind(&x, &stats, _1), y)
-    #define BIND_E(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::AlignMetrics) const>(&x), &stats, _1, y), z)
-    #define BIND_M(x,y,z) check(stats, std::bind(static_cast<double (Stats::*)(const ChrID &, enum Stats::MissingMetrics) const>(&x), &stats, _1, y), z)
-
     const auto hasGeno = stats.data.size() > 1;
+    
+    #define CHECK(x) (hasGeno ? toString(x) : "-")
     
     o.writer->open(file);
     o.writer->write((boost::format(summary()) % file             // 1
@@ -620,33 +657,34 @@ static void generateSummary(const FileName &file,
                                               % r.countExonSyn() // 7
                                               % r.countIntrSyn() // 8
                                               % r.countLenSyn()  // 9
-                                              % r.countExonGen() // 10
-                                              % r.countIntrGen() // 11
-                                              % r.countLenGen()  // 12
-                                              % stats.countSpliceSyn()
-                                              % stats.countNormalSyn()
+                                              % CHECK(r.countExonGen()) // 10
+                                              % CHECK(r.countIntrGen()) // 11
+                                              % CHECK(r.countLenGen())  // 12
+                                              % stats.countSpliceSyn()  // 13
+                                              % stats.countNormalSyn()  // 14
                                               % (stats.countSpliceSyn() + stats.countNormalSyn())
-                                              % (hasGeno ? toString(stats.countSpliceGen()) : "-")
-                                              % (hasGeno ? toString(stats.countNormalGen()) : "-")
-                                              % (hasGeno ? toString(stats.countSpliceGen() + stats.countNormalGen()) : "-")
-                                              % BIND_E(Stats::sn, AlignMetrics::AlignExon,   ChrT) // 19
-                                              % BIND_E(Stats::pc, AlignMetrics::AlignExon,   ChrT) // 20
-                                              % BIND_E(Stats::sn, AlignMetrics::AlignIntron, ChrT) // 21
-                                              % BIND_E(Stats::pc, AlignMetrics::AlignIntron, ChrT) // 22
-                                              % BIND_E(Stats::sn, AlignMetrics::AlignBase,   ChrT) // 23
-                                              % BIND_E(Stats::pc, AlignMetrics::AlignBase,   ChrT) // 24
-                                              % BIND_M(Stats::missProp, MissingMetrics::MissingExon,   ChrT) // 25
-                                              % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, ChrT) // 26
-                                              % BIND_M(Stats::missProp, MissingMetrics::MissingGene,   ChrT) // 27
-                                              % BIND_E(Stats::sn, AlignMetrics::AlignExon, __gID__)
-                                              % BIND_E(Stats::pc, AlignMetrics::AlignExon, __gID__)
-                                              % BIND_E(Stats::sn, AlignMetrics::AlignIntron, __gID__) // 30
-                                              % BIND_E(Stats::pc, AlignMetrics::AlignIntron, __gID__) // 31
-                                              % BIND_E(Stats::sn, AlignMetrics::AlignBase, __gID__) // 32
-                                              % BIND_E(Stats::pc, AlignMetrics::AlignBase, __gID__) // 33
-                                              % BIND_M(Stats::missProp, MissingMetrics::MissingExon, __gID__) // 34
-                                              % BIND_M(Stats::missProp, MissingMetrics::MissingIntron, __gID__) // 35
-                                              % BIND_M(Stats::missProp, MissingMetrics::MissingGene, __gID__)).str());
+                                              % CHECK(stats.countSpliceGen())
+                                              % CHECK(stats.countNormalGen())
+                                              % CHECK(stats.countSpliceGen() + stats.countNormalGen())
+                                              % stats.s_esn        // 19
+                                              % stats.s_epc        // 20
+                                              % stats.s_isn        // 21
+                                              % stats.s_ipc        // 22
+                                              % stats.s_bsn        // 23
+                                              % stats.s_bpc        // 24
+                                              % stats.s_ems        // 25
+                                              % stats.s_ims        // 26
+                                              % stats.s_gms        // 27
+                                              % CHECK(stats.g_esn) // 28
+                                              % CHECK(stats.g_epc) // 29
+                                              % CHECK(stats.g_isn) // 30
+                                              % CHECK(stats.g_ipc) // 31
+                                              % CHECK(stats.g_bsn) // 32
+                                              % CHECK(stats.g_bpc) // 33
+                                              % "-" //BIND_M(Stats::missProp, MissingMetrics::MissingExon, __gID__) // 34
+                                              % "-" //BIND_M(Stats::missProp, MissingMetrics::MissingIntron, __gID__) // 35
+                                              % "-" //BIND_M(Stats::missProp, MissingMetrics::MissingGene, __gID__)
+                     ).str());
     o.writer->close();
 }
 

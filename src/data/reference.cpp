@@ -482,51 +482,28 @@ struct TransRef::TransRefImpl
         std::vector<ExonData>   mergedExons;
         std::vector<ExonData>   sortedExons;
         std::vector<IntronData> sortedIntrons;
-
-        // Only valid for synthetic
-        std::map<GeneID, SequinData *> gene2Seqs;
     };
     
     void addRef(const ChrID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
     {
-        if (cID != ChrT && !refChrID.empty() && cID != refChrID)
-        {
-            throw "Multiple chromosomes in the genome not supported";
-        }
-        
-        // TODO: Fix this!!!!
-        if (cID != ChrT)
-        {
-            refChrID = cID;
-        }
-        
         const auto exon = ExonData(cID, iID, gID, l);
 
         raw.exonsByTrans[iID].push_back(exon);
         raw.rawMapper[iID] = gID;
     }
 
-    // Eg: chr21... (TODO: ...)
-    ChrID refChrID;
-    
     RawData cRaw;
-
-    /*
-     * Validated data and resources
-     */
 
     std::map<ChrID, Data> data;
 
     // Includes synthetic and genome
     GTFData gData;
+    
+    // Intervals for the genes
+    std::map<ChrID, Intervals<>> gInters;
 };
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
-
-ChrID TransRef::genoID() const
-{
-    return _impl->refChrID;
-}
 
 Base TransRef::exonBase(const ChrID &cID) const
 {
@@ -583,18 +560,6 @@ Counts TransRef::countTransGen() const
     return _impl->gData.countTransGen();
 }
 
-std::vector<GeneID> TransRef::geneIDs(const ChrID &cID) const
-{
-    std::vector<GeneID> gIDs;
-
-    for (const auto &i : _impl->data.at(cID).genes)
-    {
-        gIDs.push_back(i.first);
-    }
-
-    return gIDs;
-}
-
 Limit TransRef::absoluteGene(const SequinHist &hist) const
 {
     return Reference<TransData, DefaultStats>::absolute(hist, [&](const GeneID &id)
@@ -612,6 +577,8 @@ void TransRef::readRef(const Reader &r)
             Standard::addGenomic(i.first);
         }
     }
+
+    _impl->gInters = _impl->gData.gIntervals();
 }
 
 std::map<ChrID, Hist> TransRef::histGene() const
@@ -653,6 +620,8 @@ const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gI
 
 template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)
 {
+    assert(x.size());
+    
     for (const auto &i : x)
     {
         if ((m == Exact && i.second.l() == l) || (m == Contains && i.second.l().contains(l)))
@@ -702,6 +671,8 @@ Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChrID &cID) const
     }
     
     inters.build();
+    assert(inters.size());
+    
     return inters;
 }
 
@@ -715,6 +686,8 @@ Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChrID &cID) con
     }
 
     inters.build();
+    assert(inters.size());
+
     return inters;
 }
 
@@ -796,14 +769,6 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     }
 
     assert(!_data.empty());
-    
-    // Only a single reference chromosome is supported
-    assert(_impl->refChrID.size() <= 1);
-    
-    if (!_impl->data.empty())
-    {
-        _impl->refChrID = (*_impl->data.begin()).first;
-    }
 }
 
 template <typename T> void createTrans(const ChrID &cID, T &t)
@@ -912,8 +877,6 @@ void TransRef::validate()
                 return true;
             });
     
-            _impl->data[ChrT].gene2Seqs[_data[i.first].gID] = &_data[i.first];
-
             _impl->data[ChrT].genes[_data[i.first].gID].id = _data[i.first].gID;         // TODO: ...
             _impl->data[ChrT].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]); // TODO: ...
         }
