@@ -124,7 +124,7 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
         {
             case Inputs::Text:
             {
-                ParserExpress::parse(file, [&](const ParserExpress::Data &x, const ParserProgress &)
+                ParserExpress::parse(Reader(file), [&](const ParserExpress::Data &x, const ParserProgress &)
                 {
                     update(stats, x, o);
                 });

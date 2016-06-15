@@ -1,6 +1,7 @@
 #ifndef PARSER_EXPRESS_HPP
 #define PARSER_EXPRESS_HPP
 
+#include <fstream>
 #include "data/types.hpp"
 #include "data/tokens.hpp"
 
@@ -31,9 +32,8 @@ namespace Anaquin
             double abund;
         };
 
-        template <typename F> static void parse(const FileName &file, F f)
+        template <typename F> static void parse(const Reader &r, F f)
         {
-            Reader r(file);
             ParserProgress p;
             std::vector<Tokens::Token> toks;
             std::string line;
@@ -56,6 +56,18 @@ namespace Anaquin
 
                 p.i++;
             }
+        }
+        
+        static bool isIsoform(const Reader &r)
+        {
+            std::vector<Tokens::Token> toks;
+            
+            if (r.nextTokens(toks, "\t"))
+            {
+                return toks[1] == "IsoID";
+            }
+            
+            return true;
         }
     };
 }

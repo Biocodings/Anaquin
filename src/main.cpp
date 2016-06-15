@@ -60,6 +60,7 @@
 #include "parsers/parser_blat.hpp"
 #include "parsers/parser_cdiff.hpp"
 #include "parsers/parser_quast.hpp"
+#include "parsers/parser_express.hpp"
 #include "parsers/parser_cufflink.hpp"
 
 #include "writers/pdf_writer.hpp"
@@ -1346,11 +1347,13 @@ void parse(int argc, char ** argv)
 
                         case TExpress::Inputs::Text:
                         {
-                            o.metrs = TExpress::Metrics::Gene;
+                            o.metrs = ParserExpress::isIsoform(Reader(_p.inputs[0]))
+                                                               ? TExpress::Metrics::Isoform
+                                                               : TExpress::Metrics::Gene;
                             break;
                         }
                     }
-                    
+
                     analyze_n<TExpress>(o);
                     break;
                 }
