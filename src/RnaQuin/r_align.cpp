@@ -526,7 +526,7 @@ RAlign::Stats RAlign::analyze(const std::vector<Alignment> &aligns, const Option
             {
                 matchAlign(stats.data.at(align.cID), align, info, o);
             }
-            else
+            else if (Standard::isGenomic(align.cID))
             {
                 matchAlign(stats.data.at(align.cID), align, info, o);
             }
