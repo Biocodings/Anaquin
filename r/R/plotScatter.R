@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', limitLabel='LOQ', xBreaks=NULL)
+plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab='', ylab='', xBreaks=NULL)
 {
     require(ggplot2)
 
@@ -50,11 +50,17 @@ plotScatter <- function(data, showLOQ=TRUE, title='', xlab='', ylab='', limitLab
     # Position the regression model to the left
     p <- p + annotate("text", label=lm2str(data), x=min(data$x), y=max(data$y)-y_off, size=4, colour='black', parse=TRUE, hjust=0)
 
+    if (showIntercept)
+    {
+        p <- p + geom_vline(xintercept=c(0), linetype='solid', size=0.1)
+        p <- p + geom_hline(yintercept=c(0), linetype='solid', size=0.1)
+    }
+
     if (showLOQ)
     {
         loq <- showLOQ(data$x, data$y)
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
-        p <- p + geom_label(aes(x=loq$breaks$k, y=0, label=paste(limitLabel, signif(loq$breaks$k, 3))), colour = "black", show.legend=FALSE)
+        p <- p + geom_label(aes(x=loq$breaks$k, y=0, label=paste('LOQ', signif(loq$breaks$k, 3))), colour = "black", show.legend=FALSE)
     }
 
     if (!is.null(xBreaks))

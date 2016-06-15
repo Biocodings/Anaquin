@@ -10,6 +10,7 @@
 #include "resources/manual.txt"
 #include "resources/reports.py"
 
+#include "resources/plotFold.R"
 #include "resources/plotScatter.R"
 #include "resources/plotSensitivity.R"
 #include "resources/plotMultScatter.R"
@@ -101,6 +102,11 @@ Scripts Manual()
 Scripts PlotScatter()
 {
     return ToString(src_r_plotScatter_R);
+}
+
+Scripts PlotFold()
+{
+    return ToString(src_r_plotFold_R);
 }
 
 Scripts plotMultScatter()

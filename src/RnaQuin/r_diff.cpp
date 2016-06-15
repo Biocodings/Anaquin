@@ -224,12 +224,12 @@ void RDiff::report(const FileName &file, const Options &o)
     
     o.generate("RnaDiff_fold.R");
     o.writer->open("RnaDiff_fold.R");
-    o.writer->write(RWriter::createScatterNoLog("RnaDiff_quins.csv",
-                                                "Fold Change",
-                                                "Expected fold change (log2)",
-                                                "Measured fold change (log2)",
-                                                "Expected",
-                                                "Measured", false));
+    o.writer->write(RWriter::createFold("RnaDiff_quins.csv",
+                                        "Fold Change",
+                                        "Expected fold change (log2)",
+                                        "Measured fold change (log2)",
+                                        "Expected",
+                                        "Measured", false));
     o.writer->close();
 
     /*

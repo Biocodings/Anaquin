@@ -12,9 +12,6 @@
 #include "stats/analyzer.hpp"
 
 // Defined in resources.cpp
-extern Anaquin::Scripts PlotScatter();
-
-// Defined in resources.cpp
 extern Anaquin::Scripts PlotTLODR();
 
 // Defined in resources.cpp
@@ -91,26 +88,6 @@ namespace Anaquin
             o.generate(file);
             o.writer->open(file);
             o.writer->write(RWriter::createScript(csv, PlotTLODR()));
-            o.writer->close();
-        }
-
-        template <typename Options> static void generateROC(const FileName &file,
-                                                            const FileName &csv,
-                                                            const Options &o)
-        {
-            o.info("Generating " + file);
-            o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotTROC()));
-            o.writer->close();
-        }
-        
-        template <typename Options> static void generateFoldR(const FileName &file,
-                                                              const FileName &csv,
-                                                              const Options &o)
-        {
-            o.generate(file);
-            o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotScatter()));
             o.writer->close();
         }
 

@@ -103,13 +103,13 @@ void TKDiff::report(const FileName &file, const Options &o)
      * Generating RnaKDiff_fold.R
      */
     
-    RDiff::generateFoldR("RnaKDiff_fold.R", "RnaKDiff_quins.csv", o);
+    //RDiff::generateFoldR("RnaKDiff_fold.R", "RnaKDiff_quins.csv", o);
     
     /*
      * Generating RnaKDiff_ROC.R
      */
     
-    RDiff::generateROC("RnaKDiff_ROC.R", "RnaKDiff_quins.csv", o);
+    //RDiff::generateROC("RnaKDiff_ROC.R", "RnaKDiff_quins.csv", o);
     
     /*
      * Generating RnaKDiff_LODR.R
