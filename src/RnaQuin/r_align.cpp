@@ -96,6 +96,8 @@ static RAlign::Stats init()
         initT(i.first, stats.data[i.first]);
     }
 
+    std::cout << stats.data.size() << std::endl;
+    
     assert(!stats.data.empty());
     return stats;
 }
