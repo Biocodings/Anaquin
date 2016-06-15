@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotSigmoid <- function(data, limit, title='', xlab='', ylab='', showLOQ=TRUE, showGuide=FALSE)
+.plotSigmoid <- function(data, threshold, title='', xlab='', ylab='', showLOQ=TRUE, showGuide=FALSE)
 {
     require(ggplot2)
     require(reshape2)
@@ -66,9 +66,10 @@
     
     if (showLOQ)
     {
-        r <- min(data[data$y >= limit,]$expected)
+        r <- round(min(data[data$y >= threshold,]$expected),2)
         #f <- as.numeric(as.character(format(round(as.numeric(as.character(r)), 2), nsmall=2)))
-        p <- p + geom_vline(xintercept=c(as.factor(r)), linetype="dotted")
+        #p <- p + geom_vline(xintercept=c(as.factor(r)), linetype="dotted")
+        p <- p + geom_vline(xintercept=r, linetype="dotted")
         p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOQ',r)), colour="black", show.legend=FALSE)
     }
 
@@ -81,8 +82,8 @@
     print(p)
 }
 
-plotSensitivity <- function(data, title, xlab, ylab, showLOQ=TRUE, limit=0.98)
+plotSensitivity <- function(data, title, xlab, ylab, showLOQ=TRUE, threshold=0.98)
 {
     stopifnot(class(data) == 'Anaquin')
-    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ, limit=limit)    
+    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ, threshold=threshold)    
 }

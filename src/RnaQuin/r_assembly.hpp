@@ -70,15 +70,15 @@ namespace Anaquin
             // Sensitivity for each sequin
             std::map<SequinID, Proportion> tSPs;
 
-            Counts sExons   = 0;
-            Counts sIntrons = 0;
-            Counts sTrans   = 0;
-            Counts sGenes   = 0;
+            Counts sExons = 0;
+            Counts sIntrs = 0;
+            Counts sTrans = 0;
+            Counts sGenes = 0;
 
-            Counts gExons   = 0;
-            Counts gIntrons = 0;
-            Counts gTrans   = 0;
-            Counts gGenes   = 0;
+            Counts gExons = 0;
+            Counts gIntrs = 0;
+            Counts gTrans = 0;
+            Counts gGenes = 0;
         };
 
         // Analyze for a single sample

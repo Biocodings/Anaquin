@@ -11,7 +11,7 @@ library(Anaquin)
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
 # Specify the LOQ threshold
-limit <- 0.98
+threshold <- 0.98
 
 title <- '%5%'
 xlab  <- '%6%'
@@ -19,4 +19,4 @@ ylab  <- '%7%'
 
 data <- Anaquin(seqs=row.names(data), expected=%8%, measured=%9%)
 
-plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, limit=limit, showLOQ=%10%)
+plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOQ=%10%)

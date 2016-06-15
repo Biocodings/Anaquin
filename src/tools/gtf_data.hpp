@@ -196,7 +196,7 @@ namespace Anaquin
             return countTrans() - countTransSyn();
         }
         
-        inline Counts countExonsGen() const
+        inline Counts countExonGen() const
         {
             return countExon() - countExonSyn();
         }

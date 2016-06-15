@@ -527,7 +527,7 @@ Counts TransRef::countExonSyn() const
 
 Counts TransRef::countExonGen() const
 {
-    return _impl->gData.countExonsGen();
+    return _impl->gData.countExonGen();
 }
 
 Counts TransRef::countIntrSyn() const

@@ -1,6 +1,7 @@
 #include <fstream>
 #include "data/path.hpp"
 #include "data/compare.hpp"
+#include "tools/gtf_data.hpp"
 #include "parsers/parser_gtf.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
@@ -218,27 +219,18 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     }
 
     /*
-     * Counting exons and transcripts (simply for reporting)
+     * Counting exons, introns and transcripts
      */
     
-    ParserGTF::parse(file, [&](const Feature &f, const std::string &, const ParserProgress &p)
-    {
-        switch (f.type)
-        {
-            case Exon:
-            {
-                if (Standard::isSynthetic(f.cID)) { stats.sExons++; } else { stats.gExons++; } break;
-            }
+    const auto gs = gtfData(Reader(file));
 
-            case Transcript:
-            {
-                if (Standard::isSynthetic(f.cID)) { stats.sTrans++; } else { stats.gTrans++; } break;
-            }
+    stats.sExons = gs.countExonSyn();
+    stats.sIntrs = gs.countIntrSyn();
+    stats.sTrans = gs.countTransSyn();
+    stats.gExons = gs.countExonGen();
+    stats.gIntrs = gs.countIntrGen();
+    stats.gTrans = gs.countTransGen();
 
-            default: { break; }
-        }
-    });
-    
     return stats;
 }
 
@@ -331,8 +323,8 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                         "       Sensitivity: %39%\n"
                         "       Specificity: %40%\n\n"
                         "       *Transcript level\n"
-                        "       Sensitivity:     %41%\n"
-                        "       Specificity:     %42%\n\n"
+                        "       Sensitivity: %41%\n"
+                        "       Specificity: %42%\n\n"
                         "       Missing exons:   %43%\n"
                         "       Missing introns: %44%\n\n"
                         "       Novel exons:   %45%\n"
@@ -342,13 +334,13 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
     o.writer->open("RnaAssembly_summary.stats");
     o.writer->write((boost::format(format) % file
                                            % GTFRef()
-                                           % stats.sExons
-                                           % stats.sIntrons
-                                           % stats.sTrans
-                                           % stats.sGenes
-                                           % stats.gExons
-                                           % stats.gIntrons
-                                           % stats.gTrans
+                                           % stats.sExons      // 3
+                                           % stats.sIntrs      // 4
+                                           % stats.sTrans      // 5
+                                           % stats.sGenes      // 6
+                                           % stats.gExons      // 7
+                                           % stats.gIntrs      // 8
+                                           % stats.gTrans      // 9
                                            % stats.gGenes      // 10
                                            % r.countExonSyn()  // 11
                                            % r.countIntrSyn()  // 12
@@ -391,6 +383,9 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
 
 void RAssembly::report(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+    std::cout << r.countIntrSyn() << std::endl;
+    
     const auto stats = RAssembly::analyze(file, o);
 
     /*
