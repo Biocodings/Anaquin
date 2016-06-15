@@ -409,6 +409,34 @@ RAlign::Stats calculate(const RAlign::Options &o, Functor cal)
             stats.s_epc = stats.pc(i.first, Metrics::AlignExon);
             stats.s_isn = stats.sn(i.first, Metrics::AlignIntron);
             stats.s_ipc = stats.pc(i.first, Metrics::AlignIntron);
+            
+            
+            
+            
+            std::cout << stats.data.at(i.first).eInters.size() << std::endl;
+            std::cout << stats.data.at(i.first).eInters.stats().covered() << std::endl;
+            
+            for (const auto &x : stats.data.at(i.first).eInters.data())
+            {
+                x.second.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
+                                                        {
+                                                            if (!depth)
+                                                            {
+                                                                std::cout << "NO" << i << "-" << j << std::endl;
+                                                            }
+                                                            else
+                                                            {
+                                                                std::cout << "YES" << i << "-" << j << std::endl;
+                                                                
+                                                            }
+                                                        });
+            }
+
+            
+            
+
+            
+            
             stats.s_bsn = stats.sn(i.first, Metrics::AlignBase);
             stats.s_bpc = stats.pc(i.first, Metrics::AlignBase);
             stats.s_ems = stats.missProp(ChrT, MissingMetrics::MissingExon);
@@ -620,18 +648,18 @@ static Scripts summary()
            "       Total (Genome):          %18%\n\n"
            "-------Comparison of alignments to annotations (Synthetic)\n\n"
            "       *Exon level\n"
-           "        Sensitivity: %19%\n"
-           "        Precision:   %20%\n\n"
+           "        Sensitivity: %19$.2f\n"
+           "        Precision:   %20$.2f\n\n"
            "       *Intron level\n"
-           "        Sensitivity: %21%\n"
-           "        Precision:   %22%\n\n"
+           "        Sensitivity: %21$.2f\n"
+           "        Precision:   %22$.2f\n\n"
            "       *Base level\n\n"
-           "        Sensitivity: %23%\n"
-           "        Precision:   %24%\n\n"
+           "        Sensitivity: %23$.2f\n"
+           "        Precision:   %24$.2f\n\n"
            "       *Undetected\n"
-           "        Exon:   %25%\n"
-           "        Intron: %26%\n"
-           "        Gene:   %27%\n\n"
+           "        Exon:   %25$.4f\n"
+           "        Intron: %26$.4f\n"
+           "        Gene:   %27$.4f\n\n"
            "-------Comparison of alignments to annotations (Genome)\n\n"
            "       *Exon level\n"
            "        Sensitivity: %28%\n"
@@ -643,9 +671,9 @@ static Scripts summary()
            "        Sensitivity: %32%\n"
            "        Precision:   %33%\n\n"
            "       *Undetected\n"
-           "        Exon:   %34%\n"
-           "        Intron: %35%\n"
-           "        Gene:   %36%\n";    
+           "        Exon:   %34$.4f\n"
+           "        Intron: %35$.4f\n"
+           "        Gene:   %36$.4f\n";
 }
 
 static void generateSummary(const FileName &file,
