@@ -23,6 +23,9 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     stopifnot(!is.null(data$x))
     stopifnot(!is.null(data$y))
     
+    data <- data[!is.na(data$expected),]
+    #data <- data[!is.nan(data$Expected),]
+
     data$grp <- as.factor(abs(data$x))
         
     stopifnot(length(data$x) > 0)
