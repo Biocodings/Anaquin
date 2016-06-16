@@ -13,4 +13,6 @@ data <- data[!is.na(data$Expected),]
 data <- Anaquin(seqs=row.names(data), expected=data$Expected, measured=data$Measured, pval=data$Pval, qval=data$Qval)
 data$seqs <- TransDiff_(data)
 
-plotROC(data, refRatio=0)
+title <- 'ROC Plot'
+
+plotROC(data, title=title, refRatio=0)

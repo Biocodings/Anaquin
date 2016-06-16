@@ -34,5 +34,5 @@ void RCufflink::analyze(const FileName &src, const FileName &output, const RCuff
 
 void RCufflink::report(const FileName &file, const Options &o)
 {
-    RCufflink::analyze(file, "RCufflink_converted.txt", o);
+    RCufflink::analyze(file, "RnaCufflink_converted.txt", o);
 }
