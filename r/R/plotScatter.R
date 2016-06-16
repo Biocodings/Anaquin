@@ -85,6 +85,11 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     print(p)
 }
 
+plotFold <- function(data, showIntercept=FALSE, title='', xlab='', ylab='', xBreaks=NULL)
+{
+    plotScatter(data, showIntercept=showIntercept, showLOQ=FALSE, title=title, xlab=xlab, ylab=ylab, xBreaks=xBreaks)
+}
+
 plotExpress.TransQuin <- function(data, title, xlab, ylab, showLOQ)
 {
     # TODO: Fix this
