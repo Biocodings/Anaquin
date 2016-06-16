@@ -30,6 +30,11 @@ namespace Anaquin
         return isnan(x) ? "NA" : toString(x, 310);
     }
     
+    inline double s2d(const std::string &x)
+    {
+        return (x == "NA" || x == "-") ? NAN : stod(x);
+    }
+    
     template <typename T> Counts count(const std::map<T, Counts> &x)
     {
         return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)

@@ -52,19 +52,22 @@ namespace Anaquin
             
             for (auto j = 0; j < ids.size(); j++)
             {
-                if (isnan(ps[j]))
+                if (Standard::isSynthetic(stats.cIDs[j]))
                 {
-                    ss << (boost::format("%1%\tNA\tNA\tNA\tNA\n") % ids[j]).str();
-                }
-                else
-                {
-                    ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % ids[j]
-                                                                                 % n2str(means[j])
-                                                                                 % n2str(elfs[j])
-                                                                                 % n2str(mlfs[j])
-                                                                                 % n2str(ses[j])
-                                                                                 % p2str(ps[j])
-                                                                                 % p2str(qs[j])).str());
+                    if (isnan(ps[j]))
+                    {
+                        ss << (boost::format("%1%\tNA\tNA\tNA\tNA\n") % ids[j]).str();
+                    }
+                    else
+                    {
+                        ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % ids[j]
+                                                                                     % n2str(means[j])
+                                                                                     % n2str(elfs[j])
+                                                                                     % n2str(mlfs[j])
+                                                                                     % n2str(ses[j])
+                                                                                     % p2str(ps[j])
+                                                                                     % p2str(qs[j])).str());
+                    }
                 }
             }
             
@@ -110,25 +113,25 @@ namespace Anaquin
 
             const auto lm = stats.linear(true);
             const auto summary = "-------RnaFoldChange Output\n\n"
-                                 "Reference mixture file: %1%\n"
-                                 "User fold-change file:  %2%\n\n"
+                                 "       Reference mixture file: %1%\n"
+                                 "       User fold-change file:  %2%\n\n"
                                  "-------User Transcript Annotations\n\n"
-                                 "Annotation file: %3%\n"
-                                 "Synthetic: %4%\n"
-                                 "Genome:    %5%\n\n"
+                                 "       Annotation file: %3%\n"
+                                 "       Synthetic: %4%\n"
+                                 "       Genome:    %5%\n\n"
                                  "-------Genes Expressed\n\n"
-                                 "Synthetic: %6%\n"
-                                 "Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-                                 "Genome:    %9%\n\n"
+                                 "       Synthetic: %6%\n"
+                                 "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
+                                 "       Genome:    %9%\n\n"
                                  "-------Linear regression (log2 scale)\n\n"
-                                 "Correlation: %10%\n"
-                                 "Slope:       %11%\n"
-                                 "R2:          %12%\n"
-                                 "F-statistic: %13%\n"
-                                 "P-value:     %14%\n"
-                                 "SSM:         %15%, DF: %16%\n"
-                                 "SSE:         %17%, DF: %18%\n"
-                                 "SST:         %19%, DF: %20%\n";
+                                 "       Correlation: %10%\n"
+                                 "       Slope:       %11%\n"
+                                 "       R2:          %12%\n"
+                                 "       F-statistic: %13%\n"
+                                 "       P-value:     %14%\n"
+                                 "       SSM:         %15%, DF: %16%\n"
+                                 "       SSE:         %17%, DF: %18%\n"
+                                 "       SST:         %19%, DF: %20%\n";
             o.generate(file);
             o.writer->open(file);
             o.writer->write((boost::format(summary) % MixRef()
@@ -191,6 +194,8 @@ namespace Anaquin
             // Expected log-fold ratios
             std::vector<Concent> elfs;
 
+            std::vector<ChrID> cIDs;
+            
             // Measured log-fold ratios
             std::vector<Concent> mlfs;
 

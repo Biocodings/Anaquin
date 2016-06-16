@@ -134,6 +134,7 @@ template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::
 
     stats.ps.push_back(x.p);
     stats.qs.push_back(x.q);
+    stats.cIDs.push_back(x.cID);
     stats.mlfs.push_back(x.logF);
     stats.ses.push_back(x.logFSE);
     stats.means.push_back(x.mean);
@@ -207,24 +208,24 @@ void RDiff::report(const FileName &file, const Options &o)
     const auto shouldLODR = true;
     
     /*
-     * Generating summary statistics
+     * Generating RnaFoldChange_summary.stats
      */
 
-    RDiff::generateSummary("RnaDiff_summary.stats", stats, o, units);
+    RDiff::generateSummary("RnaFoldChange_summary.stats", stats, o, units);
 
     /*
-     * Generating differential results
+     * Generating RnaFoldChange_quins.csv
      */
 
-    RDiff::generateCSV("RnaDiff_quins.csv", stats, o);
+    RDiff::generateCSV("RnaFoldChange_quins.csv", stats, o);
     
     /*
-     * Generating RnaDiff_fold.R
+     * Generating RnaFoldChange_fold.R
      */
     
-    o.generate("RnaDiff_fold.R");
-    o.writer->open("RnaDiff_fold.R");
-    o.writer->write(RWriter::createFold("RnaDiff_quins.csv",
+    o.generate("RnaFoldChange_fold.R");
+    o.writer->open("RnaFoldChange_fold.R");
+    o.writer->write(RWriter::createFold("RnaFoldChange_quins.csv",
                                         "Fold Change",
                                         "Expected fold change (log2)",
                                         "Measured fold change (log2)",
@@ -233,21 +234,21 @@ void RDiff::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating RnaDiff_ROC.R
+     * Generating RnaFoldChange_ROC.R
      */
     
-    o.generate("RnaDiff_ROC.R");
-    o.writer->open("RnaDiff_ROC.R");
-    o.writer->write(RWriter::createScript("RnaDiff_quins.csv", PlotTROC()));
+    o.generate("RnaFoldChange_ROC.R");
+    o.writer->open("RnaFoldChange_ROC.R");
+    o.writer->write(RWriter::createScript("RnaFoldChange_quins.csv", PlotTROC()));
     o.writer->close();
 
     /*
-     * Generating RnaDiff_LODR.R
+     * Generating RnaFoldChange_LODR.R
      */
     
     if (shouldLODR)
     {
-        RDiff::generateLODR("RnaDiff_LODR.R", "RnaDiff_quins.csv", o);
+        RDiff::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_quins.csv", o);
     }
 
     /*
@@ -256,6 +257,6 @@ void RDiff::report(const FileName &file, const Options &o)
     
     //if (!o.counts.empty())
     //{
-    //    RDiff::generateMA("RnaDiff_MA.R", "RnaDiff_counts.stats", o);
+    //    RDiff::generateMA("RnaFoldChange_MA.R", "RnaFoldChange_counts.stats", o);
     //}
 }

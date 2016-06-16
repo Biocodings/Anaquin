@@ -63,12 +63,13 @@ namespace Anaquin
                 {
                     x.cID    = toks[Field::ChrID];
                     x.id     = toks[Field::Name];
-                    x.p      = stold(toks[Field::PValue]);
-                    x.q      = stold(toks[Field::QValue]);
-                    x.mean   = stod(toks[Field::Mean]);
-                    x.logF   = stod(toks[Field::Log2Fold]);
-                    x.logFSE = stod(toks[Field::Log2FoldSE]);
+                    x.p      = s2d(toks[Field::PValue]);
+                    x.q      = s2d(toks[Field::QValue]);
+                    x.mean   = s2d(toks[Field::Mean]);
+                    x.logF   = s2d(toks[Field::Log2Fold]);
+                    x.logFSE = s2d(toks[Field::Log2FoldSE]);
 
+                    toString("");
                     f(x, p);
                 }
 

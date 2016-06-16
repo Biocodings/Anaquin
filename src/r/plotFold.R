@@ -18,4 +18,4 @@ measured <- %9%
 
 data <- Anaquin(seqs=row.names(data), expected=expected, measured=measured)
 
-plotScatter(data, title=title, xlab=xlab, ylab=ylab, showIntercept=%10%)
+plotFold(data, title=title, xlab=xlab, ylab=ylab, showIntercept=%10%)

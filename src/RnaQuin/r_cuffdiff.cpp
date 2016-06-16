@@ -9,20 +9,24 @@ void RCuffdiff::analyze(const FileName &src, const FileName &output, const RCuff
     FileWriter out(o.work);
     out.open(output);
     
-    /*
-     * Format: Gene_ID  Fold_Change  QValue
-     */
-
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    out.write((boost::format(format) % "ChrID" % "GeneID" % "FoldChange" % "FoldSE" % "PValue").str());
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%";
+    out.write((boost::format(format) % "ChrID"
+                                     % "GeneID"
+                                     % "FoldChange"
+                                     % "FoldSE"
+                                     % "PValue"
+                                     % "QValue"
+                                     % "Average").str());
     
     ParserCDiff::parse(src, [&](const ParserCDiff::Data &x, const ParserProgress &)
     {
         out.write((boost::format(format) % x.cID
                                          % x.id
                                          % x.logF
-                                         % x.logFSE
-                                         % x.q).str());
+                                         % "-"
+                                         % x.p
+                                         % x.q
+                                         % "-").str());
     });
     
     out.close();
@@ -30,5 +34,5 @@ void RCuffdiff::analyze(const FileName &src, const FileName &output, const RCuff
 
 void RCuffdiff::report(const FileName &file, const Options &o)
 {
-    RCuffdiff::analyze(file, "RCuffdiff_converted.txt", o);
+    RCuffdiff::analyze(file, "RnaCuffdiff_converted.txt", o);
 }

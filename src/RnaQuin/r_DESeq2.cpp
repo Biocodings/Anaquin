@@ -38,5 +38,5 @@ void RDESeq2::analyze(const FileName &src, const FileName &output, const RDESeq2
 
 void RDESeq2::report(const FileName &file, const Options &o)
 {
-    RDESeq2::analyze(file, "RDESeq2_converted.txt", o);
+    RDESeq2::analyze(file, "RnaDESeq2_converted.txt", o);
 }
