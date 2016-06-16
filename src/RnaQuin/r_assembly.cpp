@@ -332,8 +332,8 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
     
     o.generate("RnaAssembly_summary.stats");
     o.writer->open("RnaAssembly_summary.stats");
-    o.writer->write((boost::format(format) % file
-                                           % GTFRef()
+    o.writer->write((boost::format(format) % file              // 1
+                                           % GTFRef()          // 2
                                            % stats.sExons      // 3
                                            % stats.sIntrs      // 4
                                            % stats.sTrans      // 5
@@ -383,9 +383,6 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
 
 void RAssembly::report(const FileName &file, const Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
-    std::cout << r.countIntrSyn() << std::endl;
-    
     const auto stats = RAssembly::analyze(file, o);
 
     /*
@@ -401,11 +398,11 @@ void RAssembly::report(const FileName &file, const Options &o)
     generateQuins("RnaAssembly_quins.csv", stats, o);
     
     /*
-     * Generating RnaAssembly_assembly.R
+     * Generating RnaAssembly_sensitivity.R
      */
     
-    o.generate("RnaAssembly_assembly.R");
-    o.writer->open("RnaAssembly_assembly.R");
+    o.generate("RnaAssembly_sensitivity.R");
+    o.writer->open("RnaAssembly_sensitivity.R");
     o.writer->write(RWriter::createSensitivity("RnaAssembly_quins.csv",
                                                "Assembly Detection",
                                                "Input Concentration (log2)",
@@ -423,5 +420,5 @@ void RAssembly::report(const FileName &file, const Options &o)
     o.report->addTitle("RnaAssembly");
     o.report->addFile("RnaAssembly_summary.stats");
     o.report->addFile("RnaAssembly_quins.csv");
-    o.report->addFile("RnaAssembly_assembly.R");
+    o.report->addFile("RnaAssembly_sensitivity.R");
 }
