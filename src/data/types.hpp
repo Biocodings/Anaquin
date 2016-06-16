@@ -43,6 +43,7 @@ namespace Anaquin
     typedef std::string Units;
     typedef std::string Scripts;
     typedef std::string FileName;
+    typedef std::string ReadName;
     typedef std::string AxisLabel;
     
     typedef long long Base;

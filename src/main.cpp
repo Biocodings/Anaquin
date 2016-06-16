@@ -23,6 +23,7 @@
 #include "RnaQuin/r_cufflink.hpp"
 #include "RnaQuin/r_kallisto.hpp"
 
+#include "VarQuin/v_seq.hpp"
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"
 #include "VarQuin/v_align.hpp"
@@ -126,6 +127,7 @@ typedef std::set<Value> Range;
 #define TOOL_R_DESEQ2    307
 #define TOOL_R_KALLISTO  308
 #define TOOL_R_SLEUTH    309
+#define TOOL_V_SEQUENCE  310
 
 /*
  * Options specified in the command line
@@ -227,6 +229,7 @@ static std::map<Value, Tool> _tools =
     { "VarKExpress",    TOOL_V_KEXPRESS  },
     { "VarKAllele",     TOOL_V_KALLELE   },
     { "VarForward",     TOOL_V_FORWARD   },
+    { "VarSequence",    TOOL_V_SEQUENCE  },
 
     { "MetaAbund",      TOOL_M_ABUND    },
     { "MetaKAbund",     TOOL_M_KABUND   },
@@ -313,6 +316,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_FORWARD,   { OPT_U_FILES } },
     { TOOL_V_IGV,       { OPT_U_FILES } },
     { TOOL_V_VSCAN,     { OPT_U_FILES } },
+    { TOOL_V_SEQUENCE,  { OPT_U_FILES } },
     { TOOL_V_ALIGN,     { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_COVERAGE,  { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
@@ -1555,6 +1559,7 @@ void parse(int argc, char ** argv)
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
         case TOOL_V_KEXPRESS:
+        case TOOL_V_SEQUENCE:
         case TOOL_V_SUBSAMPLE:
         {
             auto parseExpress = [&](const std::string &str)
@@ -1569,8 +1574,9 @@ void parse(int argc, char ** argv)
             
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
-            if (_p.tool != TOOL_V_IGV     &&
-                _p.tool != TOOL_V_FORWARD &&
+            if (_p.tool != TOOL_V_IGV      &&
+                _p.tool != TOOL_V_FORWARD  &&
+                _p.tool != TOOL_V_SEQUENCE &&
                 _p.tool != TOOL_V_VSCAN)
             {
                 switch (_p.tool)
@@ -1631,6 +1637,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES);    break; }
                 case TOOL_V_FORWARD:  { analyze_1<VForward>(OPT_U_FILES);  break; }
                 case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_U_FILES); break; }
+                case TOOL_V_SEQUENCE: { analyze_n<VSeq>();                 break; }
 
                 case TOOL_V_KALLELE:
                 {
@@ -1639,7 +1646,7 @@ void parse(int argc, char ** argv)
                     analyze_2<VKAllele>(o);
                     break;
                 }
-                    
+
                 case TOOL_V_KEXPRESS:
                 {
                     VKExpress::Options o;
