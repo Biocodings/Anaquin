@@ -76,6 +76,18 @@ namespace Anaquin
                 p.i++;
             }
         }
+        
+        static bool isIsoform(const Reader &r)
+        {
+            std::vector<Tokens::Token> toks;
+            
+            if (r.nextTokens(toks, "\t"))
+            {
+                return toks[1] == "IsoID";
+            }
+            
+            return true;
+        }
     };
 }
 
