@@ -35,8 +35,8 @@ namespace Anaquin
         template <typename F> static void parse(const Reader &r, F f)
         {
             ParserProgress p;
-            std::vector<Tokens::Token> toks;
             std::string line;
+            std::vector<Tokens::Token> toks;
             
             while (r.nextLine(line))
             {
@@ -45,11 +45,19 @@ namespace Anaquin
 
                 if (p.i)
                 {
-                    x.cID     = toks[Field::ChrID];
-                    x.id      = toks[Field::Name];
-                    x.l.start = stold(toks[Field::Start]);
-                    x.l.end   = stold(toks[Field::End]);
-                    x.abund   = stod(toks[Field::Abund]);
+                    x.id    = toks[Field::Name];
+                    x.cID   = toks[Field::ChrID];
+                    x.abund = stod(toks[Field::Abund]);
+                    
+                    if (toks[Field::Start] != "-" && toks[Field::End] != "-")
+                    {
+                        x.l.end   = stold(toks[Field::End]);
+                        x.l.start = stold(toks[Field::Start]);
+                    }
+                    else
+                    {
+                        x.l = Locus(0, 0);
+                    }
 
                     f(x, p);
                 }

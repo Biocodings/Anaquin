@@ -20,6 +20,7 @@
 #include "RnaQuin/r_coverage.hpp"
 #include "RnaQuin/r_cuffdiff.hpp"
 #include "RnaQuin/r_cufflink.hpp"
+#include "RnaQuin/r_kallisto.hpp"
 
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"
@@ -121,6 +122,7 @@ typedef std::set<Value> Range;
 #define TOOL_V_FORWARD   305
 #define TOOL_R_CUFFDIFF  306
 #define TOOL_R_DESEQ2    307
+#define TOOL_R_KALLISTO  308
 
 /*
  * Options specified in the command line
@@ -208,6 +210,7 @@ static std::map<Value, Tool> _tools =
     { "RnaCuffdiff",    TOOL_R_CUFFDIFF  },
     { "RnaDESeq2",      TOOL_R_DESEQ2    },
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
+    { "RnaKallisto",    TOOL_R_KALLISTO  },
 
     { "VarVarScan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
@@ -261,7 +264,8 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_COVERAGE,  { OPT_R_GTF, OPT_U_FILES } },
-    { TOOL_R_CUFFLINK,  { OPT_U_FILES } },
+    { TOOL_R_KALLISTO,  { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
     
     /*
      * Ladder Analysis
@@ -1026,8 +1030,6 @@ void parse(int argc, char ** argv)
     std::vector<Option> opts;
     std::vector<Value>  vals;
 
-    unsigned n = 0;
-
     if (!_tools.count(argv[1]) && strcmp(argv[1], "-v"))
     {
         throw InvalidToolError(argv[1]);
@@ -1048,17 +1050,19 @@ void parse(int argc, char ** argv)
     
     assert(_p.tool);
 
+    unsigned n = 2;
+
     if (_p.tool != TOOL_VERSION)
     {
         while ((next = getopt_long_only(argc, argv, short_options, long_options, &index)) != -1)
         {
             if (next == ':')
             {
-                throw NoValueError(argv[n+1]);
+                throw NoValueError(argv[n]);
             }
             else if (next < OPT_TOOL)
             {
-                throw InvalidOptionException(argv[n+1]);
+                throw InvalidOptionException(argv[n]);
             }
             
             opts.push_back(next);
@@ -1219,16 +1223,18 @@ void parse(int argc, char ** argv)
         case TOOL_R_COVERAGE:
         case TOOL_R_CUFFDIFF:
         case TOOL_R_CUFFLINK:
+        case TOOL_R_KALLISTO:
         case TOOL_R_SUBSAMPLE:
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
-            if (_p.tool != TOOL_R_IGV && _p.tool != TOOL_R_CUFFLINK)
+            if (_p.tool != TOOL_R_IGV)
             {
                 switch (_p.tool)
                 {
                     case TOOL_R_ALIGN:
                     case TOOL_R_DESEQ2:
+                    case TOOL_R_KALLISTO:
                     case TOOL_R_CUFFDIFF:
                     {
                         addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
@@ -1276,7 +1282,8 @@ void parse(int argc, char ** argv)
                 case TOOL_R_ASSEMBLY:  { analyze_1<RAssembly>(OPT_U_FILES); break; }
                 case TOOL_R_SUBSAMPLE: { analyze_1<RSample>(OPT_U_FILES);   break; }
                 case TOOL_R_CUFFDIFF:  { analyze_1<RCuffdiff>(OPT_U_FILES); break; }
-                case TOOL_R_CUFFLINK : { analyze_1<RCufflink>(OPT_U_FILES); break; }
+                case TOOL_R_CUFFLINK:  { analyze_1<RCufflink>(OPT_U_FILES); break; }
+                case TOOL_R_KALLISTO:  { analyze_1<RKallisto>(OPT_U_FILES); break; }
                     
                 case TOOL_R_KDIFF:
                 {

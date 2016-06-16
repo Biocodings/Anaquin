@@ -151,7 +151,7 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
     }
 }
 
-TransDiff.DESeq2 <- function(data, r, p=0.1, logFC=0)
+RnaFoldChange.DESeq2 <- function(data, r, p=0.1, logFC=0)
 {
     require(DESeq2)
 
@@ -166,7 +166,7 @@ TransDiff.DESeq2 <- function(data, r, p=0.1, logFC=0)
     .TransDiff(data, r, rownames(r), p, logFC)
 }
 
-TransDiff.edgeR <- function(data, r, p=0.1, logFC=0)
+RnaFoldChange.edgeR <- function(data, r, p=0.1, logFC=0)
 {
     require(edgeR)
     
@@ -180,10 +180,10 @@ TransDiff.edgeR <- function(data, r, p=0.1, logFC=0)
     .TransDiff(data, r, rownames(r), p, logFC)    
 }
 
-TransDiff <- function(data, r)
+RnaFoldChange <- function(data, r)
 {
     stopifnot(class(r) == 'DESeqResults' || class(r) == 'DGEExact')
     
-    if (class(r) == 'DESeqResults') { TransDiff.DESeq2(data, r) }
-    if (class(r) == 'DGEExact')     { TransDiff.edgeR(data, r)  }
+    if (class(r) == 'DESeqResults') { RnaFoldChange.DESeq2(data, r) }
+    if (class(r) == 'DGEExact')     { RnaFoldChange.edgeR(data, r)  }
 }
