@@ -12,6 +12,8 @@ Anaquin is a C++/R bioinformatics framework for sequins, providing qualitative a
 <li>StruQuin
 </ul>
 
+The software is currently under alpha development and testing.
+
 The project was started in 2015 by <a href='https://www.google.com.au/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0CB4QFjAAahUKEwiWt5b-7p3IAhWEjJQKHcxhDMg&url=http%3A%2F%2Fwww.garvan.org.au%2F&usg=AFQjCNF03pFvjJsIYqEbmxMV3SBTC5PJxg&sig2=jxHlEHfy_CNSJ4cZyVfvVQ'>Garvan Institute of Medical Research</a>. See <a href='www.sequin.xyz'>www.sequin.xyz</a> for further details. In particular, the <a href='www.sequin.xyz/about/introduction/'>introduction page</a> should be helpful.
 
 The project is maintained by <b>Ted Wong</b>, bioinformatics software engineer at Garvan Institute.
