@@ -63,7 +63,7 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
     else
     {
         stats.n_gen++;
-        
+
         // We'll need the information to estimate the numbers below and above the LOQ
         stats.gData[x.id].abund = x.abund;
     }

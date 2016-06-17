@@ -773,6 +773,8 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
 
 template <typename T> void createTrans(const ChrID &cID, T &t)
 {
+    std::cout << "Analyzing: " << cID << std::endl;
+
     /*
      * Generate the appropriate structure for analysis
      *
