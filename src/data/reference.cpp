@@ -473,13 +473,9 @@ struct TransRef::TransRefImpl
 
     struct Data
     {
-        // Number of bases for all the reference exons
-        Base exonBase;
-        
         std::map<GeneID, Locus> _genes;
         std::map<GeneID, GeneData> genes;
         
-        std::vector<ExonData>   mergedExons;
         std::vector<ExonData>   sortedExons;
         std::vector<IntronData> sortedIntrons;
     };
@@ -798,11 +794,6 @@ template <typename T> void createTrans(const ChrID &cID, T &t)
     });
 
     //assert(!t.sortedIntrons.empty()); No two exons => no intron?
-    
-    // Count number of non-overlapping bases for all exons
-    t.exonBase = countLocus(t.mergedExons = Locus::merge<TransRef::ExonData, TransRef::ExonData>(t.sortedExons));
-
-    assert(t.exonBase);
 }
 
 void TransRef::validate()
@@ -862,33 +853,6 @@ void TransRef::validate()
     {
         createTrans(i.first, _impl->data[i.first]);
     }
-
-//    const auto format = "chrT\t.\ttranscript\t%1%\t%2%\t.\t+\t.\tgene_id \"%3%\"; transcript_id \"%4%\"; gene_type \"synthetic\"; transcript_type \"synthetic\";";
-//    
-//    //for (const auto &i : _impl->_data[ChrT].genes)
-//    for (const auto &i : _data)
-//    {
-//        std::cout << (boost::format(format)
-//                      % i.second.l.start
-//                      % i.second.l.end
-//                      % i.second.gID
-//                      % i.second.id
-//                      
-//                      ).str() << std::endl;
-//    }
-//
-//    const auto gformat = "chrT\t.\tgene\t%1%\t%2%\t.\t+\t.\tgene_id \"%3%\"; gene_type \"synthetic\";";
-//    
-//    for (const auto &i : _impl->data[ChrT].genes)
-//    {
-//        std::cout << (boost::format(gformat)
-//                      % i.second.l().start
-//                      % i.second.l().end
-//                      % i.second.id
-//                      ).str() << std::endl;
-//    }
-//    
-//    //assert(_impl->data.count(ChrT));
 }
 
 /*
