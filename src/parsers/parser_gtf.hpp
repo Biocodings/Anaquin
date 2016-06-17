@@ -52,6 +52,8 @@ namespace Anaquin
             
             while (r.nextLine(line))
             {
+                std::cout << line << std::endl;
+                
                 p.i++;
                 boost::split(toks, line, boost::is_any_of("\t"));
                 
