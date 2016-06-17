@@ -1237,7 +1237,7 @@ void parse(int argc, char ** argv)
 
             if (_p.tool == TOOL_R_GENOME)
             {
-                __hack__ = true;
+                //__hack__ = true;
             }
             
             if (_p.tool != TOOL_R_IGV)

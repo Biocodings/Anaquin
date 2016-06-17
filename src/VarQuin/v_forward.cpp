@@ -64,7 +64,10 @@ void VForward::analyze(const FileName &f1,
         fg.close();
     };
 
+    o.info("Generating first mates");
     f(f1, o.work + "/VarSeq_sequins_1.fq", o.work + "/VarSeq_genome_1.fq");
+
+    o.info("Generating second mates");
     f(f2, o.work + "/VarSeq_sequins_2.fq", o.work + "/VarSeq_genome_2.fq");
 }
 
