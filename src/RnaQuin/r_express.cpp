@@ -46,7 +46,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &x, const TExp
                 
                 break;
             }
-                
+
             case Metrics::Gene:
             {
                 const TransRef::GeneData *m = nullptr;

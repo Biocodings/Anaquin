@@ -227,9 +227,11 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     stats.sExons = gs.countExonSyn();
     stats.sIntrs = gs.countIntrSyn();
     stats.sTrans = gs.countTransSyn();
+    stats.sGenes = gs.countGeneSyn();
     stats.gExons = gs.countExonGen();
     stats.gIntrs = gs.countIntrGen();
     stats.gTrans = gs.countTransGen();
+    stats.gGenes = gs.countGeneGen();
 
     return stats;
 }
@@ -346,10 +348,10 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                                            % r.countIntrSyn()  // 12
                                            % r.countTransSyn() // 13
                                            % r.countGeneSyn()  // 14
-                                           % r.countExonSyn()  // 15
-                                           % r.countIntrSyn()  // 16
-                                           % r.countTransSyn() // 17
-                                           % r.countGeneSyn()  // 18
+                                           % r.countExonGen()  // 15
+                                           % r.countIntrGen()  // 16
+                                           % r.countTransGen() // 17
+                                           % r.countGeneGen()  // 18
                                            % S(sData.eSN)      // 19
                                            % S(sData.eSP)      // 20
                                            % S(sData.iSN)      // 21
