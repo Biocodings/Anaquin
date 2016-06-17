@@ -15,6 +15,7 @@
 #include "RnaQuin/r_sample.hpp"
 #include "RnaQuin/r_DESeq2.hpp"
 #include "RnaQuin/r_sleuth.hpp"
+#include "RnaQuin/r_genome.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "RnaQuin/r_kexpress.hpp"
 #include "RnaQuin/r_assembly.hpp"
@@ -128,6 +129,7 @@ typedef std::set<Value> Range;
 #define TOOL_R_KALLISTO  308
 #define TOOL_R_SLEUTH    309
 #define TOOL_V_SEQUENCE  310
+#define TOOL_R_GENOME    311
 
 /*
  * Options specified in the command line
@@ -162,6 +164,8 @@ typedef std::set<Value> Range;
 
 using namespace Anaquin;
 
+// Shared with other modules
+bool __hack__ = false;
 
 // Shared with other modules
 std::string __full_command__;
@@ -217,6 +221,7 @@ static std::map<Value, Tool> _tools =
     { "RnaCufflink",    TOOL_R_CUFFLINK  },
     { "RnaKallisto",    TOOL_R_KALLISTO  },
     { "RnaSleuth",      TOOL_R_SLEUTH    },
+    { "RnaGenome",      TOOL_R_GENOME    },
 
     { "VarVarScan",     TOOL_V_VSCAN     },
     { "VarAlign",       TOOL_V_ALIGN     },
@@ -274,6 +279,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_KALLISTO,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_SLEUTH,    { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_GENOME,    { OPT_R_GTF, OPT_U_FILES } },
     
     /*
      * Ladder Analysis
@@ -663,15 +669,6 @@ template <typename Mixture> void addMix(Mixture mix)
 
 template <typename Reference> void addRef(const ChrID &cID, Reference ref, const FileName &file)
 {
-    if (cID == ChrT)
-    {
-        std::cout << "[INFO]: Found synthetic reference"  << std::endl;
-    }
-    else
-    {
-        std::cout << "[INFO]: Found genome reference" << std::endl;
-    }
-
     std::cout << "[INFO]: Reference: " << file << std::endl;
     ref(Reader(file));
 }
@@ -1227,6 +1224,7 @@ void parse(int argc, char ** argv)
         case TOOL_R_ALIGN:
         case TOOL_R_SLEUTH:
         case TOOL_R_DESEQ2:
+        case TOOL_R_GENOME:
         case TOOL_R_EXPRESS:
         case TOOL_R_KEXPRESS:
         case TOOL_R_ASSEMBLY:
@@ -1238,6 +1236,11 @@ void parse(int argc, char ** argv)
         {
             std::cout << "[INFO]: Transcriptome Analysis" << std::endl;
 
+            if (_p.tool == TOOL_R_GENOME)
+            {
+                __hack__ = true;
+            }
+            
             if (_p.tool != TOOL_R_IGV)
             {
                 switch (_p.tool)
@@ -1245,6 +1248,7 @@ void parse(int argc, char ** argv)
                     case TOOL_R_ALIGN:
                     case TOOL_R_DESEQ2:
                     case TOOL_R_SLEUTH:
+                    case TOOL_R_GENOME:
                     case TOOL_R_KALLISTO:
                     case TOOL_R_CUFFDIFF:
                     {
@@ -1287,6 +1291,7 @@ void parse(int argc, char ** argv)
 
             switch (_p.tool)
             {
+                case TOOL_R_GENOME:    { analyze_1<RGenome>(OPT_U_FILES);   break; }
                 case TOOL_R_SLEUTH:    { analyze_1<RSleuth>(OPT_U_FILES);   break; }
                 case TOOL_R_ALIGN:     { analyze_1<RAlign>(OPT_U_FILES);    break; }
                 case TOOL_R_DESEQ2:    { analyze_1<RDESeq2>(OPT_U_FILES);   break; }
