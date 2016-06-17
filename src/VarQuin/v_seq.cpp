@@ -21,7 +21,7 @@ void VSeq::analyze(const FileName &f1,
 
     ParserSAM::parse(align, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
-        if (!x.i && !(info.p.i % 1000000))
+        if (!x.i && info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
@@ -32,10 +32,12 @@ void VSeq::analyze(const FileName &f1,
         }
     });
     
-    auto f = [&](const FileName &f, const FileName &output)
+    auto f = [&](const FileName &f, const FileName &syn, const FileName &gen)
     {
-        std::ofstream out;
-        out.open(output, std::ios_base::app);
+        std::ofstream fs, fg;
+
+        fs.open(syn, std::ios_base::app);
+        fg.open(gen, std::ios_base::app);
         
         ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
         {
@@ -43,19 +45,27 @@ void VSeq::analyze(const FileName &f1,
             {
                 std::reverse(x.seq.begin(),  x.seq.end());
                 std::reverse(x.qual.begin(), x.qual.end());
+                
+                fs << x.name << " " << x.info << std::endl;
+                fs << x.seq  << std::endl;
+                fs << x.opt  << std::endl;
+                fs << x.qual << std::endl;
             }
-
-            out << x.name << " " << x.info << std::endl;
-            out << x.seq  << std::endl;
-            out << x.opt  << std::endl;
-            out << x.qual << std::endl;
+            else
+            {
+                fg << x.name << " " << x.info << std::endl;
+                fg << x.seq  << std::endl;
+                fg << x.opt  << std::endl;
+                fg << x.qual << std::endl;
+            }
         });
         
-        out.close();
+        fs.close();
+        fg.close();
     };
 
-    f(f1, o.work + "/VarSeq_1.fq");
-    f(f2, o.work + "/VarSeq_2.fq");
+    f(f1, o.work + "/VarSeq_sequins_1.fq", o.work + "/VarSeq_genome_1.fq");
+    f(f2, o.work + "/VarSeq_sequins_2.fq", o.work + "/VarSeq_genome_2.fq");
 }
 
 void VSeq::report(const std::vector<FileName> &files, const Options &o)
