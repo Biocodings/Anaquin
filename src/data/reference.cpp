@@ -796,8 +796,8 @@ template <typename T> void createTrans(const ChrID &cID, T &t)
     {
         return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
     });
-    
-    //assert(!t.sortedIntrons.empty()); No exon => no intron?
+
+    //assert(!t.sortedIntrons.empty()); No two exons => no intron?
     
     // Count number of non-overlapping bases for all exons
     t.exonBase = countLocus(t.mergedExons = Locus::merge<TransRef::ExonData, TransRef::ExonData>(t.sortedExons));

@@ -3,7 +3,6 @@
 
 #include <memory>
 #include "data/reader.hpp"
-#include "data/feature.hpp"
 #include "data/reference.hpp"
 
 namespace Anaquin

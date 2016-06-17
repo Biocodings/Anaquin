@@ -32,7 +32,7 @@ template <typename F> inline FileName grepGTF(const FileName &file, F f)
     
     auto parse = [&](const FileName &file, std::ofstream &out)
     {
-        ParserGTF::parse(file, [&](const Feature &x, const std::string &l, const ParserProgress &)
+        ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &l, const ParserProgress &)
         {
             if (f(x))
             {
@@ -58,7 +58,7 @@ template <typename F> FileName createGTF(const FileName &file, F f)
 
     auto x = [&](const FileName &file, std::ofstream &out)
     {
-        ParserGTF::parse(file, [&](const Feature &i, const std::string &l, const ParserProgress &)
+        ParserGTF::parse(file, [&](const ParserGTF::Data &i, const std::string &l, const ParserProgress &)
         {
             /*
              * TODO: Do we need to filter by i.type? If we don't, the sensitivity looks weird...
@@ -181,7 +181,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
                  * Generate a new GTF solely for the sequin, which will be the reference.
                  */
                 
-                const auto tmp = grepGTF(ref, [&](const Feature &f)
+                const auto tmp = grepGTF(ref, [&](const ParserGTF::Data &f)
                 {
                     return f.tID == i.first;
                 });

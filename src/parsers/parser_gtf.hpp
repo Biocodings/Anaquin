@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
-#include "data/feature.hpp"
 #include "stats/analyzer.hpp"
 
 extern bool __hack__;
@@ -13,12 +12,43 @@ namespace Anaquin
 {
     struct ParserGTF
     {
-        struct Data : public Feature
+        struct Data
         {
+            inline bool overlap(const Locus &l) const
+            {
+                return this->l.overlap(l);
+            }
+            
+            operator Locus() const { return l; }
+            
+            void operator=(const Data &f)
+            {
+                l    = f.l;
+                type = f.type;
+                tID  = f.tID;
+                gID  = f.gID;
+            }
+            
+            ChrID cID;
+            
+            // Forward or reverse strand?
+            Strand strand;
+            
+            // The location of the feature relative to the chromosome
+            Locus l;
+            
+            RNAFeature type;
+            
+            // Empty if the information is unavailable
+            GeneID gID;
+            
+            // Empty if the information is unavailable
+            TransID tID;
+            
             // Available only for Cufflink
             double fpkm = NAN;
         };
-
+        
         template <typename F> static void parse(const Reader &r, F f)
         {
             std::map<std::string, RNAFeature> mapper =
