@@ -769,18 +769,6 @@ namespace Anaquin
             // Absolute detection limit at the gene level
             Limit absoluteGene(const SequinHist &) const;
 
-            // Number of non-overlapping bases in all exons
-            Base exonBase(const ChrID &) const;
-
-            // Number of merged exons
-            Counts countMerged(const ChrID &) const;
-        
-            // Number of unmerged exons
-            Counts countExons(const ChrID &) const;
-        
-            // Return number of introns
-            Counts countIntrons(const ChrID &) const;
-
             Base countLenSyn() const;
             Base countLenGen() const;
 
@@ -798,8 +786,6 @@ namespace Anaquin
         
             const GeneData   *findGene  (const ChrID &, const GeneID &)           const;
             const GeneData   *findGene  (const ChrID &, const Locus &, MatchRule) const;
-            const ExonData   *findExon  (const ChrID &, const Locus &, MatchRule) const;
-            const IntronData *findIntron(const ChrID &, const Locus &, MatchRule) const;
 
         protected:
         

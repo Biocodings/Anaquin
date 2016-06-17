@@ -47,8 +47,8 @@ void RCoverage::report(const FileName &file, const RCoverage::Options &o)
      * Generating detailed CSV for the sequins
      */
     
-    o.info("Generating VarCoverage_quins.csv");
-    o.writer->open("VarCoverage_quins.csv");
+    o.info("Generating RnaCoverage_quins.csv");
+    o.writer->open("RnaCoverage_quins.csv");
     o.writer->write(CoverageTool::writeCSV(stats, x));
     o.writer->close();
 
@@ -65,6 +65,6 @@ void RCoverage::report(const FileName &file, const RCoverage::Options &o)
     
     CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
     {
-        return r.findExon(ChrT, Locus(i, j), MatchRule::Contains);
+        return nullptr; // TODO: r.findExon(ChrT, Locus(i, j), MatchRule::Contains);
     });
 }

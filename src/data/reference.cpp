@@ -505,11 +505,6 @@ struct TransRef::TransRefImpl
 
 TransRef::TransRef() : _impl(new TransRefImpl()) {}
 
-Base TransRef::exonBase(const ChrID &cID) const
-{
-    return _impl->data[cID].exonBase;
-}
-
 Counts TransRef::countLenSyn() const
 {
     return _impl->gData.countLenSyn();
@@ -598,21 +593,6 @@ void TransRef::addExon(const ChrID &cID, const GeneID &gID, const IsoformID &iID
     }
 }
 
-Counts TransRef::countExons(const ChrID &cID) const
-{
-    return _impl->data.at(cID).sortedExons.size();
-}
-
-Counts TransRef::countMerged(const ChrID &cID) const
-{
-    return _impl->data.at(cID).mergedExons.size();
-}
-
-Counts TransRef::countIntrons(const ChrID &cID) const
-{
-    return _impl->data.at(cID).sortedIntrons.size();
-}
-
 const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
 {
     return _impl->data.at(cID).genes.count(gID) ? &(_impl->data.at(cID).genes.at(gID)) : nullptr;
@@ -649,16 +629,6 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
 const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const Locus &l, MatchRule m) const
 {
     return findMap(_impl->data.at(cID).genes, l, m);
-}
-
-const TransRef::ExonData * TransRef::findExon(const ChrID &cID, const Locus &l, MatchRule m) const
-{
-    return findList(_impl->data.at(cID).sortedExons, l, m);
-}
-
-const TransRef::IntronData * TransRef::findIntron(const ChrID &cID, const Locus &l, MatchRule m) const
-{
-    return findList(_impl->data.at(cID).sortedIntrons, l, m);
 }
 
 Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChrID &cID) const
@@ -785,14 +755,14 @@ template <typename T> void createTrans(const ChrID &cID, T &t)
 
     assert(!t.sortedExons.empty());
 
-    // 1. Sort the exons
+    // Sort the exons
     std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const TransRef::ExonData &x, const TransRef::ExonData &y)
     {
         return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
     });
     
     /*
-     * 2. Generate a list of sorted introns, only possible once the exons are sorted.
+     * Generate a list of sorted introns, only possible once the exons are sorted.
      */
     
     std::map<SequinID, std::vector<const TransRef::ExonData *>> sorted;
@@ -829,7 +799,7 @@ template <typename T> void createTrans(const ChrID &cID, T &t)
     
     assert(!t.sortedIntrons.empty());
     
-    // 3. Count number of non-overlapping bases for all exons
+    // Count number of non-overlapping bases for all exons
     t.exonBase = countLocus(t.mergedExons = Locus::merge<TransRef::ExonData, TransRef::ExonData>(t.sortedExons));
 
     assert(t.exonBase);
