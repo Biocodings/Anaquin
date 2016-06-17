@@ -222,8 +222,11 @@ namespace Anaquin
                 {
                     loci.push_back(LOCUS_TO_TINTERVAL(i.second));
                 }
-            
-                assert(!loci.empty());
+                
+                if (loci.empty())
+                {
+                    throw "No interval was built. loci.empty().";
+                }
             
                 _tree = std::shared_ptr<IntervalTree<T *>>(new IntervalTree<T *> { loci });
             }

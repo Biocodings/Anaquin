@@ -19,16 +19,7 @@ template <typename T> void update(TExpress::Stats &stats, const T &x, const TExp
         {
             case Metrics::Isoform:
             {
-                const TransData *m = nullptr;
-                
-                // Try to match by name if possible
-                m = r.match(x.id);
-                
-                if (!m)
-                {
-                    // Try to match by locus (de-novo assembly)
-                    m = r.match(x.l, Overlap);
-                }
+                const auto m = r.match(x.id);
                 
                 if (m)
                 {
@@ -49,17 +40,8 @@ template <typename T> void update(TExpress::Stats &stats, const T &x, const TExp
 
             case Metrics::Gene:
             {
-                const TransRef::GeneData *m = nullptr;
-                
-                // Try to match by name if possible
-                m = r.findGene(x.cID, x.id);
-                
-                if (!m)
-                {
-                    // Try to match by locus (de-novo assembly)
-                    m = r.findGene(x.cID, x.l, Contains);
-                }
-                
+                const auto m = r.findGene(x.cID, x.id);
+
                 if (m)
                 {
                     stats.hist.at(m->id)++;

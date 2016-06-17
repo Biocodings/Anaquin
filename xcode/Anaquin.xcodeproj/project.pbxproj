@@ -114,21 +114,6 @@
 		EFDD6ADB1B0DDB8700450029 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADA1B0DDB8700450029 /* files.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFDD6ADD1B0DE65D00450029 /* vcf.c in Sources */ = {isa = PBXBuildFile; fileRef = EFDD6ADC1B0DE65D00450029 /* vcf.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFE086331CD315A9006A9F96 /* f_fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE086311CD315A9006A9F96 /* f_fusion.cpp */; };
-		EFE700A21C8FA9920086A246 /* Bootstrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700811C8FA9920086A246 /* Bootstrap.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700A31C8FA9920086A246 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700841C8FA9920086A246 /* common.cpp */; };
-		EFE700A41C8FA9920086A246 /* h5utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700871C8FA9920086A246 /* h5utils.cpp */; };
-		EFE700A51C8FA9920086A246 /* H5Writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700891C8FA9920086A246 /* H5Writer.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700A61C8FA9920086A246 /* hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7008B1C8FA9920086A246 /* hash.cpp */; };
-		EFE700A71C8FA9920086A246 /* Kmer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7008E1C8FA9920086A246 /* Kmer.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700A81C8FA9920086A246 /* KmerIndex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700911C8FA9920086A246 /* KmerIndex.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700A91C8FA9920086A246 /* KmerIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700931C8FA9920086A246 /* KmerIterator.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700AA1C8FA9920086A246 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700961C8FA9920086A246 /* main.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700AB1C8FA9920086A246 /* MinCollector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700971C8FA9920086A246 /* MinCollector.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700AC1C8FA9920086A246 /* PlaintextWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009A1C8FA9920086A246 /* PlaintextWriter.cpp */; };
-		EFE700AD1C8FA9920086A246 /* ProcessReads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009C1C8FA9920086A246 /* ProcessReads.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700AE1C8FA9920086A246 /* PseudoBam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE7009E1C8FA9920086A246 /* PseudoBam.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE700A01C8FA9920086A246 /* weights.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		EFE700B31C8FAF620086A246 /* libhdf5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE700B21C8FAF620086A246 /* libhdf5.a */; };
 		EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFE8168E1B5370600004D9BF /* cmd.cpp */; };
 		EFECC1721CDA04B400D579B5 /* s_discover.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFECC1701CDA04B400D579B5 /* s_discover.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		EFF4B1D21C53A3CA00DF6A0E /* stats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */; };
@@ -373,40 +358,6 @@
 		EFDD6ADC1B0DE65D00450029 /* vcf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vcf.c; path = ../src/htslib/vcf.c; sourceTree = "<group>"; };
 		EFE086311CD315A9006A9F96 /* f_fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = f_fusion.cpp; path = ../src/FusQuin/f_fusion.cpp; sourceTree = "<group>"; };
 		EFE086321CD315A9006A9F96 /* f_fusion.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = f_fusion.hpp; path = ../src/FusQuin/f_fusion.hpp; sourceTree = "<group>"; };
-		EFE700811C8FA9920086A246 /* Bootstrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Bootstrap.cpp; path = ../src/kallisto/src/Bootstrap.cpp; sourceTree = "<group>"; };
-		EFE700821C8FA9920086A246 /* Bootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bootstrap.h; path = ../src/kallisto/src/Bootstrap.h; sourceTree = "<group>"; };
-		EFE700831C8FA9920086A246 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = ../src/kallisto/src/CMakeLists.txt; sourceTree = "<group>"; };
-		EFE700841C8FA9920086A246 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cpp; path = ../src/kallisto/src/common.cpp; sourceTree = "<group>"; };
-		EFE700851C8FA9920086A246 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../src/kallisto/src/common.h; sourceTree = "<group>"; };
-		EFE700861C8FA9920086A246 /* EMAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EMAlgorithm.h; path = ../src/kallisto/src/EMAlgorithm.h; sourceTree = "<group>"; };
-		EFE700871C8FA9920086A246 /* h5utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = h5utils.cpp; path = ../src/kallisto/src/h5utils.cpp; sourceTree = "<group>"; };
-		EFE700881C8FA9920086A246 /* h5utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = h5utils.h; path = ../src/kallisto/src/h5utils.h; sourceTree = "<group>"; };
-		EFE700891C8FA9920086A246 /* H5Writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = H5Writer.cpp; path = ../src/kallisto/src/H5Writer.cpp; sourceTree = "<group>"; };
-		EFE7008A1C8FA9920086A246 /* H5Writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = H5Writer.h; path = ../src/kallisto/src/H5Writer.h; sourceTree = "<group>"; };
-		EFE7008B1C8FA9920086A246 /* hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = hash.cpp; path = ../src/kallisto/src/hash.cpp; sourceTree = "<group>"; };
-		EFE7008C1C8FA9920086A246 /* hash.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = hash.hpp; path = ../src/kallisto/src/hash.hpp; sourceTree = "<group>"; };
-		EFE7008D1C8FA9920086A246 /* Inspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Inspect.h; path = ../src/kallisto/src/Inspect.h; sourceTree = "<group>"; };
-		EFE7008E1C8FA9920086A246 /* Kmer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Kmer.cpp; path = ../src/kallisto/src/Kmer.cpp; sourceTree = "<group>"; };
-		EFE7008F1C8FA9920086A246 /* Kmer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Kmer.hpp; path = ../src/kallisto/src/Kmer.hpp; sourceTree = "<group>"; };
-		EFE700901C8FA9920086A246 /* KmerHashTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KmerHashTable.h; path = ../src/kallisto/src/KmerHashTable.h; sourceTree = "<group>"; };
-		EFE700911C8FA9920086A246 /* KmerIndex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KmerIndex.cpp; path = ../src/kallisto/src/KmerIndex.cpp; sourceTree = "<group>"; };
-		EFE700921C8FA9920086A246 /* KmerIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KmerIndex.h; path = ../src/kallisto/src/KmerIndex.h; sourceTree = "<group>"; };
-		EFE700931C8FA9920086A246 /* KmerIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KmerIterator.cpp; path = ../src/kallisto/src/KmerIterator.cpp; sourceTree = "<group>"; };
-		EFE700941C8FA9920086A246 /* KmerIterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = KmerIterator.hpp; path = ../src/kallisto/src/KmerIterator.hpp; sourceTree = "<group>"; };
-		EFE700951C8FA9920086A246 /* kseq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kseq.h; path = ../src/kallisto/src/kseq.h; sourceTree = "<group>"; };
-		EFE700961C8FA9920086A246 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/kallisto/src/main.cpp; sourceTree = "<group>"; };
-		EFE700971C8FA9920086A246 /* MinCollector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinCollector.cpp; path = ../src/kallisto/src/MinCollector.cpp; sourceTree = "<group>"; };
-		EFE700981C8FA9920086A246 /* MinCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinCollector.h; path = ../src/kallisto/src/MinCollector.h; sourceTree = "<group>"; };
-		EFE700991C8FA9920086A246 /* Multinomial.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Multinomial.hpp; path = ../src/kallisto/src/Multinomial.hpp; sourceTree = "<group>"; };
-		EFE7009A1C8FA9920086A246 /* PlaintextWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PlaintextWriter.cpp; path = ../src/kallisto/src/PlaintextWriter.cpp; sourceTree = "<group>"; };
-		EFE7009B1C8FA9920086A246 /* PlaintextWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlaintextWriter.h; path = ../src/kallisto/src/PlaintextWriter.h; sourceTree = "<group>"; };
-		EFE7009C1C8FA9920086A246 /* ProcessReads.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProcessReads.cpp; path = ../src/kallisto/src/ProcessReads.cpp; sourceTree = "<group>"; };
-		EFE7009D1C8FA9920086A246 /* ProcessReads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProcessReads.h; path = ../src/kallisto/src/ProcessReads.h; sourceTree = "<group>"; };
-		EFE7009E1C8FA9920086A246 /* PseudoBam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PseudoBam.cpp; path = ../src/kallisto/src/PseudoBam.cpp; sourceTree = "<group>"; };
-		EFE7009F1C8FA9920086A246 /* PseudoBam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PseudoBam.h; path = ../src/kallisto/src/PseudoBam.h; sourceTree = "<group>"; };
-		EFE700A01C8FA9920086A246 /* weights.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = weights.cpp; path = ../src/kallisto/src/weights.cpp; sourceTree = "<group>"; };
-		EFE700A11C8FA9920086A246 /* weights.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = weights.h; path = ../src/kallisto/src/weights.h; sourceTree = "<group>"; };
-		EFE700B21C8FAF620086A246 /* libhdf5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libhdf5.a; path = ../src/kallisto/libhdf5.a; sourceTree = "<group>"; };
 		EFE8168E1B5370600004D9BF /* cmd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd.cpp; sourceTree = "<group>"; };
 		EFE9A01E1AD3B11F00557829 /* writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = writer.hpp; path = ../src/writers/writer.hpp; sourceTree = "<group>"; };
 		EFECC1701CDA04B400D579B5 /* s_discover.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = s_discover.cpp; path = ../src/StructQuin/s_discover.cpp; sourceTree = "<group>"; };
@@ -449,7 +400,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFE700B31C8FAF620086A246 /* libhdf5.a in Frameworks */,
 				EFDC34FB1CDB203E00519F8A /* libnmaths.a in Frameworks */,
 				EFDD6A711B0DD60500450029 /* libz.dylib in Frameworks */,
 			);
@@ -547,7 +497,6 @@
 		EF150F4D1AD505D50004E613 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-				EFE700B21C8FAF620086A246 /* libhdf5.a */,
 				EFDD6A701B0DD60500450029 /* libz.dylib */,
 				EFDC34FA1CDB203E00519F8A /* libnmaths.a */,
 			);
@@ -788,7 +737,6 @@
 			children = (
 				EF2615691B5FF96400BE8037 /* Cufflinks */,
 				EFDD6A731B0DD73900450029 /* Htslib */,
-				EFE700801C8FA8F80086A246 /* Kallisto */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -868,46 +816,6 @@
 				EFDD6AC71B0DD76C00450029 /* zfio.c */,
 			);
 			name = cram;
-			sourceTree = "<group>";
-		};
-		EFE700801C8FA8F80086A246 /* Kallisto */ = {
-			isa = PBXGroup;
-			children = (
-				EFE700811C8FA9920086A246 /* Bootstrap.cpp */,
-				EFE700821C8FA9920086A246 /* Bootstrap.h */,
-				EFE700831C8FA9920086A246 /* CMakeLists.txt */,
-				EFE700841C8FA9920086A246 /* common.cpp */,
-				EFE700851C8FA9920086A246 /* common.h */,
-				EFE700861C8FA9920086A246 /* EMAlgorithm.h */,
-				EFE700871C8FA9920086A246 /* h5utils.cpp */,
-				EFE700881C8FA9920086A246 /* h5utils.h */,
-				EFE7008A1C8FA9920086A246 /* H5Writer.h */,
-				EFE7008B1C8FA9920086A246 /* hash.cpp */,
-				EFE7008C1C8FA9920086A246 /* hash.hpp */,
-				EFE700891C8FA9920086A246 /* H5Writer.cpp */,
-				EFE7008D1C8FA9920086A246 /* Inspect.h */,
-				EFE7008E1C8FA9920086A246 /* Kmer.cpp */,
-				EFE7008F1C8FA9920086A246 /* Kmer.hpp */,
-				EFE700901C8FA9920086A246 /* KmerHashTable.h */,
-				EFE700911C8FA9920086A246 /* KmerIndex.cpp */,
-				EFE700921C8FA9920086A246 /* KmerIndex.h */,
-				EFE700931C8FA9920086A246 /* KmerIterator.cpp */,
-				EFE700941C8FA9920086A246 /* KmerIterator.hpp */,
-				EFE700951C8FA9920086A246 /* kseq.h */,
-				EFE700961C8FA9920086A246 /* main.cpp */,
-				EFE700971C8FA9920086A246 /* MinCollector.cpp */,
-				EFE700981C8FA9920086A246 /* MinCollector.h */,
-				EFE700991C8FA9920086A246 /* Multinomial.hpp */,
-				EFE7009A1C8FA9920086A246 /* PlaintextWriter.cpp */,
-				EFE7009B1C8FA9920086A246 /* PlaintextWriter.h */,
-				EFE7009C1C8FA9920086A246 /* ProcessReads.cpp */,
-				EFE7009D1C8FA9920086A246 /* ProcessReads.h */,
-				EFE7009E1C8FA9920086A246 /* PseudoBam.cpp */,
-				EFE7009F1C8FA9920086A246 /* PseudoBam.h */,
-				EFE700A01C8FA9920086A246 /* weights.cpp */,
-				EFE700A11C8FA9920086A246 /* weights.h */,
-			);
-			name = Kallisto;
 			sourceTree = "<group>";
 		};
 		EFE9A01D1AD3B10900557829 /* Writers */ = {
@@ -1017,7 +925,6 @@
 				EF6D05F31BD3E6040048044F /* sample.cpp in Sources */,
 				EF9F70EE1B9C397900B8BD7B /* reference.cpp in Sources */,
 				EFB108451C22D29E004DCBCF /* t_itree.cpp in Sources */,
-				EFE700A51C8FA9920086A246 /* H5Writer.cpp in Sources */,
 				EF9ED39A1D07CF8900CE7F2B /* v_forward.cpp in Sources */,
 				4ACB52011CFAD33900738F99 /* m_kabund.cpp in Sources */,
 				EF65DDC41C6C3EC6003EE08A /* f_discover.cpp in Sources */,
@@ -1030,7 +937,6 @@
 				EFDD6AD41B0DD76C00450029 /* rANS_static.c in Sources */,
 				EF9ED39C1D07D10700CE7F2B /* v_sample.cpp in Sources */,
 				EF72F0ED1B6898940092DA34 /* t_parser_top_fusion.cpp in Sources */,
-				EFE700AB1C8FA9920086A246 /* MinCollector.cpp in Sources */,
 				EF1DE0B41B21EC6D00DEC381 /* reader.cpp in Sources */,
 				EFDD6A941B0DD76200450029 /* hts.c in Sources */,
 				EF1DE0B51B21EC6D00DEC381 /* resources.cpp in Sources */,
@@ -1038,7 +944,6 @@
 				EFDD6AA21B0DD76200450029 /* vcfutils.c in Sources */,
 				EFFC30D61D090A3E00814E0F /* r_cuffdiff.cpp in Sources */,
 				EFDD6A991B0DD76200450029 /* md5.c in Sources */,
-				EFE700AF1C8FA9920086A246 /* weights.cpp in Sources */,
 				EF88FB731CF4225800C5E4C7 /* m_abund.cpp in Sources */,
 				EFF4B1D21C53A3CA00DF6A0E /* stats.cpp in Sources */,
 				EF2290571AC0E58000CE76BF /* main.cpp in Sources */,
@@ -1061,7 +966,6 @@
 				EFDD6A981B0DD76200450029 /* kstring.c in Sources */,
 				EF2615741B5FF9AD00BE8037 /* GFaSeqGet.cpp in Sources */,
 				EFDD6A781B0DD75B00450029 /* bgzf.c in Sources */,
-				EFE700AA1C8FA9920086A246 /* main.cpp in Sources */,
 				EFAA9B561D0EDD3400AA210E /* r_cufflink.cpp in Sources */,
 				EF26157C1B5FF9DC00BE8037 /* gff.cpp in Sources */,
 				EF0C67961C5F25070033168D /* v_discover.cpp in Sources */,
@@ -1087,13 +991,11 @@
 				EF708C1D1C4C3DDF00039DE4 /* t_parser_HTSeq.cpp in Sources */,
 				EFFC30C31D08F7AA00814E0F /* r_coverage.cpp in Sources */,
 				EF2615771B5FF9C500BE8037 /* gtf_tracking.cpp in Sources */,
-				EFE700A41C8FA9920086A246 /* h5utils.cpp in Sources */,
 				EF06A67B1D08464A000D9B17 /* v_vscan.cpp in Sources */,
 				EF2615711B5FF99F00BE8037 /* GBase.cpp in Sources */,
 				EF7278461CACED620012648F /* m_blat.cpp in Sources */,
 				EFDD6ACC1B0DD76C00450029 /* cram_index.c in Sources */,
 				EFDD6AD51B0DD76C00450029 /* sam_header.c in Sources */,
-				EFE700AC1C8FA9920086A246 /* PlaintextWriter.cpp in Sources */,
 				EFDD6AD11B0DD76C00450029 /* mFILE.c in Sources */,
 				EF98D6BC1C616B5D00697051 /* t_standard.cpp in Sources */,
 				EFFC30D11D090A2000814E0F /* r_diff.cpp in Sources */,
@@ -1101,9 +1003,7 @@
 				EFDD6AD81B0DD76C00450029 /* vlen.c in Sources */,
 				EF2615751B5FF9AD00BE8037 /* GFastaIndex.cpp in Sources */,
 				EF147F7C1D13EA2000BE4790 /* r_genome.cpp in Sources */,
-				EFE700A21C8FA9920086A246 /* Bootstrap.cpp in Sources */,
 				EF0572711CADFE00004A5280 /* v_kallele.cpp in Sources */,
-				EFE700A61C8FA9920086A246 /* hash.cpp in Sources */,
 				EFFC30CF1D090A2000814E0F /* r_align.cpp in Sources */,
 				EFAA9B521D0EA95300AA210E /* r_DESeq2.cpp in Sources */,
 				EF09C4BB1CD865D2006CFD27 /* t_parser_quast.cpp in Sources */,
@@ -1117,11 +1017,9 @@
 				EF3302BE1C8E8498007A73A2 /* t_parser_kallisto.cpp in Sources */,
 				EFDD6A921B0DD76200450029 /* hfile_net.c in Sources */,
 				EFFC30D21D090A2000814E0F /* r_express.cpp in Sources */,
-				EFE700AD1C8FA9920086A246 /* ProcessReads.cpp in Sources */,
 				EF26156C1B5FF98A00BE8037 /* gdna.cpp in Sources */,
 				EFFC30C41D08F7AA00814E0F /* r_diff.cpp in Sources */,
 				EFD6292B1C4CAE2400FDF262 /* r_writer.cpp in Sources */,
-				EFE700AE1C8FA9920086A246 /* PseudoBam.cpp in Sources */,
 				EF2615811B5FF9F500BE8037 /* cuffcompare.cpp in Sources */,
 				EF26157D1B5FF9DC00BE8037 /* gffread.cpp in Sources */,
 				EF72782F1CACEC5E0012648F /* l_norm.cpp in Sources */,
@@ -1135,15 +1033,11 @@
 				EF0C67951C5F25070033168D /* v_coverage.cpp in Sources */,
 				EFDD6A931B0DD76200450029 /* hfile.c in Sources */,
 				EF7278121CACD9400012648F /* v_kexpress.cpp in Sources */,
-				EFE700A71C8FA9920086A246 /* Kmer.cpp in Sources */,
 				EFDD6ADB1B0DDB8700450029 /* files.c in Sources */,
 				EFDD6AD71B0DD76C00450029 /* thread_pool.c in Sources */,
 				EFE086331CD315A9006A9F96 /* f_fusion.cpp in Sources */,
 				EFFC30C61D08F7AA00814E0F /* r_kdiff.cpp in Sources */,
 				EFE8168F1B5370600004D9BF /* cmd.cpp in Sources */,
-				EFE700A81C8FA9920086A246 /* KmerIndex.cpp in Sources */,
-				EFE700A31C8FA9920086A246 /* common.cpp in Sources */,
-				EFE700A91C8FA9920086A246 /* KmerIterator.cpp in Sources */,
 				EFFC30C11D08F7AA00814E0F /* r_align.cpp in Sources */,
 				4ACB52041CFAD3D900738F99 /* m_kdiff.cpp in Sources */,
 				EF65DDC51C6C3EC6003EE08A /* f_normal.cpp in Sources */,
@@ -1253,7 +1147,6 @@
 					src,
 					"~/Sources/QA",
 					"~/Sources/QA/src/htslib",
-					/usr/local/Cellar/hdf5/1.8.16_1/include,
 					"~/Sources/SS",
 					/Applications,
 					/Applications/boost_1_61_0,
@@ -1292,7 +1185,6 @@
 					src,
 					"~/Sources/QA",
 					"~/Sources/QA/src/htslib",
-					/usr/local/Cellar/hdf5/1.8.16_1/include,
 					"~/Sources/SS",
 					/Applications,
 					/Applications/boost_1_61_0,
