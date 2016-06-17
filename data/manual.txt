@@ -6,7 +6,7 @@ Version: 1.1.1
 
   General options
  
-       -t <tool>
+       <tool>
             Execute a data analysis tool.
 
        -v
@@ -14,10 +14,13 @@ Version: 1.1.1
 
        -o <directory> = output
             All output files will be saved in the directory. The default is "output".
+			
+	   -h help usage
+	   		Display help usage information.
 
   Analysis tools
 
-       Usage: anaquin -t <tool> [options]
+       Usage: anaquin <tool> [options]
 
        Transcriptome Analysis (RnaQuin)
        ----------------------------------
@@ -26,7 +29,6 @@ Version: 1.1.1
        RnaAssembly
        RnaExpression
        RnaFoldChange
-       RnaIGV
 	   
        Variant Analysis (VarQuin)
        --------------------------
@@ -34,6 +36,4 @@ Version: 1.1.1
        VarAlign
        VarSubsample
        VarDiscover
-       VarAllele
        VarFrequency
-       VarIGV

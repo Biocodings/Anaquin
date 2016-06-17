@@ -4,130 +4,71 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#include "tools/samtools.hpp"
+#include <fstream>
+#include <algorithm>
 #include "VarQuin/v_forward.hpp"
+#include "parsers/parser_fq.hpp"
 #include "parsers/parser_sam.hpp"
-#include "writers/writer_sam.hpp"
-#include "writers/file_writer.hpp"
 
 using namespace Anaquin;
 
-void VForward::analyze(const FileName &file,
-                       const FileName &output1,
-                       const FileName &output2,
+void VForward::analyze(const FileName &f1,
+                       const FileName &f2,
+                       const FileName &align,
                        const Options &o)
-{
-    assert(!output1.empty());
-    assert(!output2.empty());
+{    
+    std::set<ReadName> names;
 
-    typedef std::string AlignmentID;
-    
-    /*
-     * Attempt 1: Build up the position for next mates
-     */
-    
-    // Mapping for PNEXT from reverse strand to forward strand
-    std::map<Base, Base> r2f;
-    
-    ParserSAM::parse(file, [&](ParserSAM::Data &data, const ParserSAM::Info &info)
+    ParserSAM::parse(align, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
-        if (!data.i && info.p.i && !(info.p.i % 1000000))
-        {
-            o.wait(std::to_string(info.p.i));
-        }
-
-        if (!data.i && Standard::isSynthetic(data.cID))
-        {
-            const auto t = data.l;
-            
-            reverse(data, info);
-            replace(data.cID, "rev", "r");
-
-            // The two strands can't make it equal
-            assert(t.start != data.l.start);
-            
-            // Now save it for the next attempt
-            r2f[t.start] = data.l.start;
-        }
-    });
-
-    // Used for genomic alignments
-    std::ofstream out1;
-    
-    // Used for synthetic alignments
-    std::ofstream out2;
-
-    /*
-     * Attempt 2: Repeat but we now have positions for the next mates
-     */
-    
-    ParserSAM::parse(file, [&](ParserSAM::Data &data, const ParserSAM::Info &info)
-    {
-        if (!data.i && !(info.p.i % 1000000))
+        if (!x.i && info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
         
-        if (!info.p.i && !data.i)
+        if (Standard::isSynthetic(x.cID))
         {
-            auto f = sam_open(output1.c_str(), "w");
-            sam_hdr_write(f, reinterpret_cast<bam_hdr_t *>(info.header));
-            sam_close(f);
-
-            f = sam_open(output2.c_str(), "w");
-            sam_hdr_write(f, reinterpret_cast<bam_hdr_t *>(info.header));
-            sam_close(f);
-            
-            out1.open(output1, std::ios_base::app);
-            out2.open(output2, std::ios_base::app);
-        }
-
-        // Only if this is the first block
-        if (data.i)
-        {
-            return;
-        }
-        
-        const auto isSync = Standard::isSynthetic(data.cID);
-
-        if (isSync)
-        {
-            //std::cout << data.cID << std::endl;
-            
-            reverse(data, info);
-            replace(data.cID, "rev", "r");
-
-            // This is the key, we now know the position of the next mate (TODO: Fix this!)
-            //data.pnext = r2f.at(data.pnext + 1);
-        }
-
-        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
-        const auto str = (boost::format(format) % data.name
-                                                % data.flag
-                                                % data.cID
-                                                % data.l.start
-                                                % data.mapq
-                                                % data.cigar
-                                                % data.rnext
-                                                % data.pnext
-                                                % data.tlen
-                                                % data.seq
-                                                % data.qual).str();
-        if (isSync)
-        {
-            out2 << str << std::endl;
-        }
-        else
-        {
-            out1 << str << std::endl;
+            names.insert("@" + x.name);
         }
     });
+    
+    auto f = [&](const FileName &f, const FileName &syn, const FileName &gen)
+    {
+        std::ofstream fs, fg;
 
-    if (out1.is_open()) { out1.close(); }
-    if (out2.is_open()) { out2.close(); }
+        fs.open(syn, std::ios_base::app);
+        fg.open(gen, std::ios_base::app);
+        
+        ParserFQ::parse(Reader(f), [&](ParserFQ::Data &x, const ParserProgress &)
+        {
+            if (names.count(x.name))
+            {
+                std::reverse(x.seq.begin(),  x.seq.end());
+                std::reverse(x.qual.begin(), x.qual.end());
+                
+                fs << x.name << " " << x.info << std::endl;
+                fs << x.seq  << std::endl;
+                fs << x.opt  << std::endl;
+                fs << x.qual << std::endl;
+            }
+            else
+            {
+                fg << x.name << " " << x.info << std::endl;
+                fg << x.seq  << std::endl;
+                fg << x.opt  << std::endl;
+                fg << x.qual << std::endl;
+            }
+        });
+        
+        fs.close();
+        fg.close();
+    };
+
+    f(f1, o.work + "/VarSeq_sequins_1.fq", o.work + "/VarSeq_genome_1.fq");
+    f(f2, o.work + "/VarSeq_sequins_2.fq", o.work + "/VarSeq_genome_2.fq");
 }
 
-void VForward::report(const FileName &file, const Options &o)
+void VForward::report(const std::vector<FileName> &files, const Options &o)
 {
-    analyze(file, o.work + "/VarForward_genome.sam", o.work + "/VarForward_sequins.sam");
+    analyze(files[0], files[1], files[2], o);
 }

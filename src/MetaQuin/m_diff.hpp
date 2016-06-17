@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
 #ifndef M_DIFF_HPP
 #define M_DIFF_HPP
 

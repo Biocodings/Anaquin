@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
 #include "FusQuin/f_diff.hpp"
 #include "FusQuin/FUSQuin.hpp"
 #include "FusQuin/f_discover.hpp"

@@ -56,7 +56,7 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
         {
             if (stats.hist.count(t.id))
             {
-                const auto *match = r.findGene(t.cID, id);
+                const auto match = r.findGene(t.cID, id);
                 
                 if (match)
                 {
@@ -85,7 +85,7 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
         {
             if (stats.hist.count(id))
             {
-                const auto *match = r.match(id);
+                const auto match = r.match(id);
                 
                 if (match)
                 {

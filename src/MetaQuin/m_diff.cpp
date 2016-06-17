@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_assembly.hpp"

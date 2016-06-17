@@ -6,9 +6,9 @@
 
 using namespace Anaquin;
 
-typedef TExpress::Metrics  Metrics;
+typedef RExpress::Metrics  Metrics;
 
-template <typename T> void update(TExpress::Stats &stats, const T &x, const TExpress::Options &o)
+template <typename T> void update(RExpress::Stats &stats, const T &x, const RExpress::Options &o)
 {
     if (Standard::isSynthetic(x.cID))
     {
@@ -63,12 +63,15 @@ template <typename T> void update(TExpress::Stats &stats, const T &x, const TExp
     else
     {
         stats.n_gen++;
+        
+        // We'll need the information to estimate the numbers below and above the LOQ
+        stats.gData[x.id].abund = x.abund;
     }
 }
 
-template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o, Functor f)
+template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o, Functor f)
 {
-    TExpress::Stats stats;
+    RExpress::Stats stats;
     
     const auto &r = Standard::instance().r_trans;
     
@@ -96,11 +99,11 @@ template <typename Functor> TExpress::Stats calculate(const TExpress::Options &o
     return stats;
 }
 
-TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
+RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
 {
     o.info("Parsing: " + file);
     
-    return calculate(o, [&](TExpress::Stats &stats)
+    return calculate(o, [&](RExpress::Stats &stats)
     {
         switch (o.inputs)
         {
@@ -134,12 +137,12 @@ TExpress::Stats TExpress::analyze(const FileName &file, const Options &o)
     });
 }
 
-void TExpress::report(const std::vector<FileName> &files, const Options &o)
+void RExpress::report(const std::vector<FileName> &files, const Options &o)
 {
-    const auto m = std::map<TExpress::Metrics, std::string>
+    const auto m = std::map<RExpress::Metrics, std::string>
     {
-        { TExpress::Metrics::Gene,    "genes"    },
-        { TExpress::Metrics::Isoform, "isoforms" },
+        { RExpress::Metrics::Gene,    "genes"    },
+        { RExpress::Metrics::Isoform, "isoforms" },
     };
     
     const auto units = m.at(o.metrs);
@@ -149,17 +152,17 @@ void TExpress::report(const std::vector<FileName> &files, const Options &o)
      * Generating RnaExpress_summary.stats
      */
     
-    TExpress::generateSummary("RnaExpress_summary.stats", files, stats, o, units);
+    RExpress::generateSummary("RnaExpress_summary.stats", files, stats, o, units);
     
     /*
      * Generating RnaExpress_quins.csv
      */
     
-    TExpress::generateCSV("RnaExpress_quins.csv", stats, o);
+    RExpress::generateCSV("RnaExpress_quins.csv", stats, o);
     
     /*
      * Generating RnaExpress_express.R
      */
     
-    TExpress::generateR("RnaExpress_express.R", "RnaExpress_quins.csv", stats, o);
+    RExpress::generateR("RnaExpress_express.R", "RnaExpress_quins.csv", stats, o);
 }

@@ -79,7 +79,12 @@ namespace Anaquin
         // Genes to introns
         std::map<TransID, std::set<IntronData_>> t2i;
         
+        // Non-unique exons
         Counts exons = 0;
+        
+        // Unique exons
+        Counts uexons = 0;
+        
         Counts intrs = 0;
     };
     
@@ -125,6 +130,14 @@ namespace Anaquin
                 return countExon(cID);
             });
         }
+
+        inline Counts countUExon() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            {
+                return countUExon(cID);
+            });
+        }
         
         inline Counts countIntr() const
         {
@@ -148,7 +161,12 @@ namespace Anaquin
         {
             return at(cID).exons;
         }
-        
+
+        inline Counts countUExon(const ChrID &cID) const
+        {
+            return at(cID).uexons;
+        }
+
         inline Counts countIntr(const ChrID &cID) const
         {
             return at(cID).intrs;
@@ -178,6 +196,14 @@ namespace Anaquin
             });
         }
         
+        inline Counts countUExonSyn() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            {
+                return Standard::isSynthetic(cID) ? countUExon(cID) : 0;
+            });
+        }
+
         inline Counts countIntrSyn() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
@@ -199,6 +225,11 @@ namespace Anaquin
         inline Counts countExonGen() const
         {
             return countExon() - countExonSyn();
+        }
+        
+        inline Counts countUExonGen() const
+        {
+            return countUExon() - countUExonSyn();
         }
         
         inline Counts countIntrGen() const
@@ -275,6 +306,9 @@ namespace Anaquin
     {
         GTFData c2d;
         
+        // Position for exons (used for determining unique exons)
+        std::map<ChrID, std::map<Locus, Counts>> el;
+
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
             switch (x.type)
@@ -312,6 +346,8 @@ namespace Anaquin
                     d.cID = x.cID;
                     d.gID = x.gID;
                     d.tID = x.tID;
+                    
+                    el[x.cID][d.l]++;
                     
                     c2d[x.cID].exons++;
                     c2d[x.cID].t2e[d.tID].insert(d);
@@ -352,7 +388,9 @@ namespace Anaquin
                     d.gID = x.gID;
                     d.tID = x.tID;
                     d.cID = x.cID;
-                    d.l   = Locus(x.l.end+1, y.l.start-1);
+                    
+                    // Intron simply spans between exons
+                    d.l = Locus(x.l.end+1, y.l.start-1);
                     
                     c2d[x.cID].intrs++;
                     i.second.t2i[d.tID].insert(d);
@@ -360,6 +398,15 @@ namespace Anaquin
             }
         }
         
+        /*
+         * Calculating number of unique exons
+         */
+
+        for (auto &i : el)
+        {
+            c2d.at(i.first).uexons = i.second.size();
+        }
+
         return c2d;
     }
 }

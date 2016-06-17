@@ -21,7 +21,7 @@ extern Anaquin::FileName GTFRef();
 
 namespace Anaquin
 {
-    struct TExpress : public Analyzer
+    struct RExpress : public Analyzer
     {
         template <typename Stats> static Scripts multipleCSV(const std::vector<Stats> &stats)
         {
@@ -96,9 +96,15 @@ namespace Anaquin
             Metrics metrs;
         };
         
+        struct GenData
+        {
+            // Eg: FPKM
+            double abund = NAN;
+        };
+        
         struct Stats : public LinearStats, public MappingStats, public SequinStats
         {
-            // Empty Implementation
+            std::map<GenoID, GenData> gData;
         };
 
         static Stats analyze(const FileName &, const Options &o);
@@ -167,7 +173,7 @@ namespace Anaquin
             }
             else
             {
-                o.writer->write(TExpress::multipleCSV(stats));
+                o.writer->write(RExpress::multipleCSV(stats));
             }
             
             o.writer->close();
@@ -214,6 +220,38 @@ namespace Anaquin
             const auto n_syn = toString(r.countGeneSyn()) + " " + units;
             const auto n_gen = toString(r.countGeneGen()) + " " + units;
 
+            // Breakpoint estimated by piecewise regression
+            const auto b = ms.b.mean();
+
+            // Number of genomic features above the breakpoint
+            SReals n_above;
+
+            // Number of genomic features below the breakpoint
+            SReals n_below;
+            
+            for (const auto &i : stats)
+            {
+                Counts above = 0;
+                Counts below = 0;
+
+                for (const auto &j : i.gData)
+                {
+                    assert(!isnan(j.second.abund));
+                    
+                    if (j.second.abund >= b)
+                    {
+                        above++;
+                    }
+                    else
+                    {
+                        below++;
+                    }
+                }
+                
+                n_above.add(above);
+                n_below.add(below);
+            }
+
             const auto format = "-------RnaExpression Output\n\n"
                                 "       Summary for input: %1%\n\n"
                                 "       *Arithmetic average and standard deviation are shown\n\n"
@@ -233,21 +271,23 @@ namespace Anaquin
                                 "       Intercept:   %13%\n"
                                 "       Slope:       %14%\n"
                                 "       Correlation: %15%\n"
-                                "       R2:          %16%\n\n"
+                                "       R2:          %16%\n"
+                                "       Genome:      %17%\n\n"
                                 "       *Above LOQ\n"
-                                "       Intercept:   %17%\n"
-                                "       Slope:       %18%\n"
-                                "       Correlation: %19%\n"
-                                "       R2:          %20%\n\n"
+                                "       Intercept:   %18%\n"
+                                "       Slope:       %19%\n"
+                                "       Correlation: %20%\n"
+                                "       R2:          %21%\n"
+                                "       Genome:      %22%\n\n"
                                 "-------Linear regression (log2 scale)\n\n"
-                                "       Correlation: %21%\n"
-                                "       Slope:       %22%\n"
-                                "       R2:          %23%\n"
-                                "       F-statistic: %24%\n"
-                                "       P-value:     %25%\n"
-                                "       SSM:         %26%, DF: %27%\n"
-                                "       SSE:         %28%, DF: %29%\n"
-                                "       SST:         %30%, DF: %31%\n";
+                                "       Correlation: %23%\n"
+                                "       Slope:       %24%\n"
+                                "       R2:          %25%\n"
+                                "       F-statistic: %26%\n"
+                                "       P-value:     %27%\n"
+                                "       SSM:         %28%, DF: %29%\n"
+                                "       SSE:         %30%, DF: %31%\n"
+                                "       SST:         %32%, DF: %33%\n";
 
             o.writer->write((boost::format(format) % STRING(ms.files)
                                                    % GTFRef()
@@ -259,43 +299,36 @@ namespace Anaquin
                                                    % limit.abund
                                                    % limit.id
                                                    % STRING(ms.n_gen)
-                                                   % STRING(ms.b)   // 11
-                                                   % STRING(ms.bID) // 12
-                                                   % STRING(ms.lInt)
-                                                   % STRING(ms.lSl)
-                                                   % STRING(ms.lr)
-                                                   % STRING(ms.lR2) // 16
-                                                   % STRING(ms.rInt)
-                                                   % STRING(ms.rSl)
-                                                   % STRING(ms.rr)
-                                                   % STRING(ms.rR2)
-                                                   % STRING(ms.wLog.r) // 21
-                                                   % STRING(ms.wLog.sl)
-                                                   % STRING(ms.wLog.R2)
-                                                   % STRING(ms.wLog.F)
-                                                   % STRING(ms.wLog.p)
-                                                   % STRING(ms.wLog.SSM) // 26
-                                                   % STRING(ms.wLog.SSM_D)
-                                                   % STRING(ms.wLog.SSE)
-                                                   % STRING(ms.wLog.SSE_D)
-                                                   % STRING(ms.wLog.SST)
-                                                   % STRING(ms.wLog.SST_D) // 31
+                                                   % STRING(ms.b)          // 11
+                                                   % STRING(ms.bID)        // 12
+                                                   % STRING(ms.lInt)       // 13
+                                                   % STRING(ms.lSl)        // 14
+                                                   % STRING(ms.lr)         // 15
+                                                   % STRING(ms.lR2)        // 16
+                                                   % STRING(n_below)       // 17
+                                                   % STRING(ms.rInt)       // 18
+                                                   % STRING(ms.rSl)        // 19
+                                                   % STRING(ms.rr)         // 20
+                                                   % STRING(ms.rR2)        // 21
+                                                   % STRING(n_above)       // 22
+                                                   % STRING(ms.wLog.r)     // 23
+                                                   % STRING(ms.wLog.sl)    // 24
+                                                   % STRING(ms.wLog.R2)    // 25
+                                                   % STRING(ms.wLog.F)     // 26
+                                                   % STRING(ms.wLog.p)     // 27
+                                                   % STRING(ms.wLog.SSM)   // 28
+                                                   % STRING(ms.wLog.SSM_D) // 29
+                                                   % STRING(ms.wLog.SSE)   // 30
+                                                   % STRING(ms.wLog.SSE_D) // 31
+                                                   % STRING(ms.wLog.SST)   // 32
+                                                   % STRING(ms.wLog.SST_D) // 33
                              ).str());
             o.writer->close();
-            
-//            if (stats.size() == 1)
-//            {
-//                o.writer->write(singleSummary(stats[0], files[0], units, o));
-//            }
-//            else
-//            {
-//                o.writer->write(multipleSummary(files, stats, units, o));
-//            }
         }
         
         static std::vector<Stats> analyze(const std::vector<FileName> &files, const Options &o)
         {
-            std::vector<TExpress::Stats> stats;
+            std::vector<RExpress::Stats> stats;
             
             for (const auto &file : files)
             {

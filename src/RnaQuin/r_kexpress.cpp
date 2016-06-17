@@ -11,13 +11,13 @@ using namespace Anaquin;
 
 TKExpress::Stats TKExpress::analyze(const FileName &file1, const FileName &file2, const Options &o)
 {
-    TExpress::Options o_;
+    RExpress::Options o_;
     
-    o_.metrs = TExpress::Metrics::Isoform;
+    o_.metrs = RExpress::Metrics::Isoform;
     //o_.soft  = TExpress::Software::Kallisto;
 
     // Run quantification in Kallisto
-    return TExpress::analyze(Pachter::externalQuant(o.index, file1, file2), o_);
+    return RExpress::analyze(Pachter::externalQuant(o.index, file1, file2), o_);
 }
 
 void TKExpress::report(const FileName &file1, const FileName &file2, const Options &o)
@@ -37,7 +37,7 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * Generating RnaKExpress_quins.csv
      */
     
-    TExpress::generateCSV("RnaKExpress_quins.csv", stats, o);
+    RExpress::generateCSV("RnaKExpress_quins.csv", stats, o);
     
     /*
      * Generating RnaKExpress_express.R
@@ -51,6 +51,6 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
     
     if (stats.size() >= 2)
     {
-        TExpress::generateRSplice("RnaKExpress_splice.R", "RnaKExpress_quins.csv", o);
+        RExpress::generateRSplice("RnaKExpress_splice.R", "RnaKExpress_quins.csv", o);
     }
 }

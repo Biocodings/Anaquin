@@ -24,7 +24,6 @@
 #include "RnaQuin/r_cufflink.hpp"
 #include "RnaQuin/r_kallisto.hpp"
 
-#include "VarQuin/v_seq.hpp"
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"
 #include "VarQuin/v_align.hpp"
@@ -270,9 +269,9 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_EXPRESS,   { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_DIFF,      { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
+    { TOOL_R_DIFF,      { OPT_MIXTURE, OPT_U_FILES } },
+    { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_CUFFDIFF,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_ALIGN,     { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_COVERAGE,  { OPT_R_GTF, OPT_U_FILES } },
@@ -280,7 +279,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_CUFFLINK,  { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_SLEUTH,    { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_GENOME,    { OPT_R_GTF, OPT_U_FILES } },
-    
+
     /*
      * Ladder Analysis
      */
@@ -1259,8 +1258,13 @@ void parse(int argc, char ** argv)
                     case TOOL_R_DIFF:
                     case TOOL_R_KDIFF:
                     {
-                        addRef(std::bind(&Standard::addTRef,  &s, std::placeholders::_1));
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
+                        break;
+                    }
+                        
+                    case TOOL_R_EXPRESS:
+                    {
+                        addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
                         break;
                     }
 
@@ -1322,63 +1326,28 @@ void parse(int argc, char ** argv)
 
                 case TOOL_R_EXPRESS:
                 {
-                    auto checkCufflink = [&](const FileName &file)
-                    {
-                        const auto &r = Standard::instance().r_trans;
-                        
-                        Counts gs = 0;
-                        Counts is = 0;
-                        
-                        ParserCufflink::parse(file, [&](const ParserCufflink::Data &data, const ParserProgress &p)
-                        {
-                            if (data.cID == ChrT)
-                            {
-                                try
-                                {
-                                    if (r.match(data.tID))
-                                    {
-                                        is++;
-                                        
-                                        // Important, if there's match for isoform, don't match for it's gene
-                                        return;
-                                    }
-                                }
-                                catch (...) {}
-                                
-                                try
-                                {
-                                    if (r.findGene(data.cID, data.id)) { gs++; }
-                                }
-                                catch (...) {}
-                            }
-                        });
-                        
-                        return gs > is;
-                    };
-                    
-                    TExpress::Options o;
-                    
-                    o.inputs = ParserGTF::check(Reader(_p.inputs[0])) ? TExpress::Inputs::GTF :
-                                                                        TExpress::Inputs::Text;
+                    RExpress::Options o;
+                    o.inputs = ParserGTF::check(Reader(_p.inputs[0])) ? RExpress::Inputs::GTF :
+                                                                        RExpress::Inputs::Text;
 
                     switch (o.inputs)
                     {
-                        case TExpress::Inputs::GTF:
+                        case RExpress::Inputs::GTF:
                         {
-                            o.metrs = TExpress::Metrics::Gene;
+                            o.metrs = RExpress::Metrics::Gene;
                             break;
                         }
 
-                        case TExpress::Inputs::Text:
+                        case RExpress::Inputs::Text:
                         {
                             o.metrs = ParserExpress::isIsoform(Reader(_p.inputs[0]))
-                                                               ? TExpress::Metrics::Isoform
-                                                               : TExpress::Metrics::Gene;
+                                                               ? RExpress::Metrics::Isoform
+                                                               : RExpress::Metrics::Gene;
                             break;
                         }
                     }
 
-                    analyze_n<TExpress>(o);
+                    analyze_n<RExpress>(o);
                     break;
                 }
 
@@ -1640,9 +1609,8 @@ void parse(int argc, char ** argv)
                 case TOOL_V_IGV:      { viewer<VViewer>();                 break; }
                 case TOOL_V_VSCAN:    { analyze_1<VVScan>(OPT_U_FILES);    break; }
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES);    break; }
-                case TOOL_V_FORWARD:  { analyze_1<VForward>(OPT_U_FILES);  break; }
+                case TOOL_V_FORWARD:  { analyze_n<VForward>();             break; }
                 case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_U_FILES); break; }
-                case TOOL_V_SEQUENCE: { analyze_n<VSeq>();                 break; }
 
                 case TOOL_V_KALLELE:
                 {

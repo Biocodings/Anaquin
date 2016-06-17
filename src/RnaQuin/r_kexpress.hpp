@@ -15,7 +15,7 @@ namespace Anaquin
     struct TKExpress : public Analyzer
     {
         typedef IndexOptions Options;
-        typedef TExpress::Stats Stats;
+        typedef RExpress::Stats Stats;
 
         static Stats analyze(const FileName &, const FileName &, const Options &o = Options());
         static void report(const FileName &, const FileName &, const Options &o = Options());

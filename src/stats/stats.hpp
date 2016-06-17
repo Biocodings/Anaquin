@@ -55,6 +55,8 @@ namespace Anaquin
     
     struct SReals : public SSamples<double>
     {
+        inline double mean() const { return SS::mean(SSamples<double>::_data); }
+        
         virtual operator std::string() const
         {
             const auto &data = SSamples<double>::_data;

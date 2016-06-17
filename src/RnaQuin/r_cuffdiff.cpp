@@ -1,3 +1,9 @@
+/*
+ * Copyright (C) 2016 - Garvan Institute of Medical Research
+ *
+ *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
+ */
+
 #include "RnaQuin/r_cuffdiff.hpp"
 #include "writers/file_writer.hpp"
 #include "parsers/parser_cdiff.hpp"
