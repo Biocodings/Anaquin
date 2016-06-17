@@ -65,10 +65,10 @@ void VForward::analyze(const FileName &f1,
     };
 
     o.info("Generating first mates");
-    f(f1, o.work + "/VarSeq_sequins_1.fq", o.work + "/VarSeq_genome_1.fq");
+    f(f1, o.work + "/VarForward_sequins_1.fq", o.work + "/VarForward_genome_1.fq");
 
     o.info("Generating second mates");
-    f(f2, o.work + "/VarSeq_sequins_2.fq", o.work + "/VarSeq_genome_2.fq");
+    f(f2, o.work + "/VarForward_sequins_2.fq", o.work + "/VarForward_genome_2.fq");
 }
 
 void VForward::report(const std::vector<FileName> &files, const Options &o)
