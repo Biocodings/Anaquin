@@ -84,12 +84,22 @@ namespace Anaquin
         
         // Unique exons
         Counts uexons = 0;
-        
+
+        // Non-unique introns
         Counts intrs = 0;
+        
+        // Unique introns
+        Counts uintrs = 0;
     };
     
     struct GTFData : public std::map<ChrID, ChrData>
     {
+        // Position for exons (used for determining unique exons)
+        std::map<ChrID, std::map<Locus, Counts>> el;
+        
+        // Position for introns (usd for determining unique introns)
+        std::map<ChrID, std::map<Locus, Counts>> il;
+
         inline Hist histGene(const ChrID &cID) const
         {
             return createHist(at(cID).g2d);
@@ -138,6 +148,14 @@ namespace Anaquin
                 return countUExon(cID);
             });
         }
+
+        inline Counts countUIntr() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            {
+                return countUIntr(cID);
+            });
+        }
         
         inline Counts countIntr() const
         {
@@ -165,6 +183,11 @@ namespace Anaquin
         inline Counts countUExon(const ChrID &cID) const
         {
             return at(cID).uexons;
+        }
+        
+        inline Counts countUIntr(const ChrID &cID) const
+        {
+            return at(cID).uintrs;
         }
 
         inline Counts countIntr(const ChrID &cID) const
@@ -203,6 +226,14 @@ namespace Anaquin
                 return Standard::isSynthetic(cID) ? countUExon(cID) : 0;
             });
         }
+        
+        inline Counts countUIntrSyn() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
+            {
+                return Standard::isSynthetic(cID) ? countUIntr(cID) : 0;
+            });
+        }
 
         inline Counts countIntrSyn() const
         {
@@ -230,6 +261,11 @@ namespace Anaquin
         inline Counts countUExonGen() const
         {
             return countUExon() - countUExonSyn();
+        }
+
+        inline Counts countUIntrGen() const
+        {
+            return countUIntr() - countUIntrSyn();
         }
         
         inline Counts countIntrGen() const
@@ -306,9 +342,6 @@ namespace Anaquin
     {
         GTFData c2d;
         
-        // Position for exons (used for determining unique exons)
-        std::map<ChrID, std::map<Locus, Counts>> el;
-
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
             switch (x.type)
@@ -347,7 +380,7 @@ namespace Anaquin
                     d.gID = x.gID;
                     d.tID = x.tID;
                     
-                    el[x.cID][d.l]++;
+                    c2d.el[x.cID][d.l]++;
                     
                     c2d[x.cID].exons++;
                     c2d[x.cID].t2e[d.tID].insert(d);
@@ -366,6 +399,7 @@ namespace Anaquin
         
         for (auto &i : c2d)
         {
+            // For each transcript...
             for (const auto &j : i.second.t2e)
             {
                 // Sorted exons
@@ -377,7 +411,7 @@ namespace Anaquin
                 /*
                  * Generate a list of sorted introns, only possible once the exons are sorted.
                  */
-                
+
                 for (auto j = 1; j < sorted.size(); j++)
                 {
                     const auto &x = sorted[j-1];
@@ -392,6 +426,7 @@ namespace Anaquin
                     // Intron simply spans between exons
                     d.l = Locus(x.l.end+1, y.l.start-1);
                     
+                    c2d.il[x.cID][d.l]++;
                     c2d[x.cID].intrs++;
                     i.second.t2i[d.tID].insert(d);
                 }
@@ -402,9 +437,18 @@ namespace Anaquin
          * Calculating number of unique exons
          */
 
-        for (auto &i : el)
+        for (auto &i : c2d.el)
         {
             c2d.at(i.first).uexons = i.second.size();
+        }
+
+        /*
+         * Calculating number of unique introns
+         */
+        
+        for (auto &i : c2d.il)
+        {
+            c2d.at(i.first).uintrs = i.second.size();
         }
 
         return c2d;

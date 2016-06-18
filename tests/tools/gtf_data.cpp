@@ -24,6 +24,11 @@ TEST_CASE("GTF_Summary_1")
     REQUIRE(r.countUExonSyn() == 869);
     REQUIRE(r.countIntr()     == 1028);
     REQUIRE(r.countIntrSyn()  == 1028);
+    REQUIRE(r.countUIntr()    == 754);
+    REQUIRE(r.countUIntrSyn() == 754);
+
+    REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
+    REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
 }
 
 TEST_CASE("GTF_Summary_2")
