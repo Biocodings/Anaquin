@@ -58,11 +58,11 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     });
 
     /*
-     * Generating VarCoverage_quins.csv
+     * Generating VarCoverage_sequins.csv
      */
 
-    o.generate("VarCoverage_quins.csv");
-    o.writer->open("VarCoverage_quins.csv");
+    o.generate("VarCoverage_sequins.csv");
+    o.writer->open("VarCoverage_sequins.csv");
     o.writer->write(CoverageTool::writeCSV(stats, x));
     o.writer->close();
 

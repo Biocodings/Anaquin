@@ -47,8 +47,8 @@ void RCoverage::report(const FileName &file, const RCoverage::Options &o)
      * Generating detailed CSV for the sequins
      */
     
-    o.info("Generating RnaCoverage_quins.csv");
-    o.writer->open("RnaCoverage_quins.csv");
+    o.info("Generating RnaCoverage_sequins.csv");
+    o.writer->open("RnaCoverage_sequins.csv");
     o.writer->write(CoverageTool::writeCSV(stats, x));
     o.writer->close();
 

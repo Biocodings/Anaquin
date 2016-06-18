@@ -94,26 +94,26 @@ void TKDiff::report(const FileName &file, const Options &o)
     RDiff::generateSummary("RnaKDiff_summary.stats", stats, o, units);
     
     /*
-     * Generating RnaKDiff_quins.csv
+     * Generating RnaKDiff_sequins.csv
      */
     
-    RDiff::generateCSV("RnaKDiff_quins.csv", stats, o);
+    RDiff::generateCSV("RnaKDiff_sequins.csv", stats, o);
     
     /*
      * Generating RnaKDiff_fold.R
      */
     
-    //RDiff::generateFoldR("RnaKDiff_fold.R", "RnaKDiff_quins.csv", o);
+    //RDiff::generateFoldR("RnaKDiff_fold.R", "RnaKDiff_sequins.csv", o);
     
     /*
      * Generating RnaKDiff_ROC.R
      */
     
-    //RDiff::generateROC("RnaKDiff_ROC.R", "RnaKDiff_quins.csv", o);
+    //RDiff::generateROC("RnaKDiff_ROC.R", "RnaKDiff_sequins.csv", o);
     
     /*
      * Generating RnaKDiff_LODR.R
      */
     
-    RDiff::generateLODR("RnaKDiff_LODR.R", "RnaKDiff_quins.csv", o);
+    RDiff::generateLODR("RnaKDiff_LODR.R", "RnaKDiff_sequins.csv", o);
 }

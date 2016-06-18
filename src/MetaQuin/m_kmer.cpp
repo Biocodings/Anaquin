@@ -75,11 +75,11 @@ void MKMer::report(const FileName &file, const Options &o)
     o.writer->close();
     
     /*
-     * Generating MetaKmer_quins.csv
+     * Generating MetaKmer_sequins.csv
      */
     
-    o.info("Generating MetaKmer_quins.csv");
-    o.writer->open("MetaKmer_quins.csv");
+    o.info("Generating MetaKmer_sequins.csv");
+    o.writer->open("MetaKmer_sequins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
@@ -89,6 +89,6 @@ void MKMer::report(const FileName &file, const Options &o)
     
     o.info("Generating MetaKmer_abund.R");
     o.writer->open("MetaKmer_abund.R");
-    o.writer->write(RWriter::createScript("MetaKmer_quins.csv", PlotMKMer()));
+    o.writer->write(RWriter::createScript("MetaKmer_sequins.csv", PlotMKMer()));
     o.writer->close();
 }

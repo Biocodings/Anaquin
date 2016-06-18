@@ -39,11 +39,11 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
     o.writer->close();
 
     /*
-     * Generating VarKAllele_quins.csv
+     * Generating VarKAllele_sequins.csv
      */
 
-    o.info("Generating VarKAllele_quins.csv");
-    o.writer->open("VarKAllele_quins.csv");
+    o.info("Generating VarKAllele_sequins.csv");
+    o.writer->open("VarKAllele_sequins.csv");
     o.writer->write(StatsWriter::writeCSV(stats.vars, "input", "measured"));
     o.writer->close();
     
@@ -53,6 +53,6 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
 
     o.info("Generating VarKAllele_allele.R");
     o.writer->open("VarKAllele_allele.R");
-    o.writer->write(RWriter::createScript("VarKAllele_quins.csv", PlotScatter()));
+    o.writer->write(RWriter::createScript("VarKAllele_sequins.csv", PlotScatter()));
     o.writer->close();
 }

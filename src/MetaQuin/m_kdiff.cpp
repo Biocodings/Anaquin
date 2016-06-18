@@ -161,9 +161,9 @@ void MKDiff::report(const std::vector<FileName> &files, const Options &o)
      * Generating MetaKDiff_quins.stats
      */
     
-    o.generate("MetaKDiff_quins.csv");
-    //writeCSV("MetaKDiff_quins.csv", stats, o);
-    o.writer->open("MetaKDiff_quins.csv");
+    o.generate("MetaKDiff_sequins.csv");
+    //writeCSV("MetaKDiff_sequins.csv", stats, o);
+    o.writer->open("MetaKDiff_sequins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
 
@@ -182,6 +182,6 @@ void MKDiff::report(const std::vector<FileName> &files, const Options &o)
     
     o.generate("MetaDiff_fold.R");
     o.writer->open("MetaDiff_fold.R");
-    o.writer->write(RWriter::createScript("MetaDiff_quins.csv", PlotMFold()));
+    o.writer->write(RWriter::createScript("MetaDiff_sequins.csv", PlotMFold()));
     o.writer->close();
 }

@@ -423,7 +423,7 @@ void VAlign::report(const FileName &file, const Options &o)
      * Generating VarAlign_quins.stats
      */
     
-    writeQuins("VarAlign_quins.csv", stats, o);
+    writeQuins("VarAlign_sequins.csv", stats, o);
 
     /*
      * Generating VarAlign_queries.stats
@@ -438,6 +438,6 @@ void VAlign::report(const FileName &file, const Options &o)
     o.report->open("VarAlign_report.pdf");
     o.report->addTitle("VarAlign");
     o.report->addFile("VarAlign_summary.stats");
-    o.report->addFile("VarAlign_quins.csv");
+    o.report->addFile("VarAlign_sequins.csv");
     o.report->addFile("VarAlign_queries.stats");
 }

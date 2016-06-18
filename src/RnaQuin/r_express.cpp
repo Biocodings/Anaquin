@@ -155,14 +155,14 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     RExpress::generateSummary("RnaExpress_summary.stats", files, stats, o, units);
     
     /*
-     * Generating RnaExpress_quins.csv
+     * Generating RnaExpress_sequins.csv
      */
     
-    RExpress::generateCSV("RnaExpress_quins.csv", stats, o);
+    RExpress::generateCSV("RnaExpress_sequins.csv", stats, o);
     
     /*
      * Generating RnaExpress_express.R
      */
     
-    RExpress::generateR("RnaExpress_express.R", "RnaExpress_quins.csv", stats, o);
+    RExpress::generateR("RnaExpress_express.R", "RnaExpress_sequins.csv", stats, o);
 }

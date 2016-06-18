@@ -236,11 +236,11 @@ void VFreq::report(const FileName &file, const Options &o)
     o.writer->close();
 
     /*
-     * Generating VarFrequency_quins.csv
+     * Generating VarFrequency_sequins.csv
      */
 
-    o.info("Generating VarFrequency_quins.csv");
-    writeCSV("VarFrequency_quins.csv", stats, o);
+    o.info("Generating VarFrequency_sequins.csv");
+    writeCSV("VarFrequency_sequins.csv", stats, o);
     
     /*
      * Generating VarFrequency_allele.R
@@ -248,7 +248,7 @@ void VFreq::report(const FileName &file, const Options &o)
     
     o.info("Generating VarFrequency_allele.R");
     o.writer->open("VarFrequency_allele.R");
-    o.writer->write(RWriter::createScatterNeedLog("VarFrequency_quins.csv",
+    o.writer->write(RWriter::createScatterNeedLog("VarFrequency_sequins.csv",
                                                   "Allele Frequency",
                                                   "Expected allele frequency (log2)",
                                                   "Measured allele frequency (log2)",
@@ -262,7 +262,7 @@ void VFreq::report(const FileName &file, const Options &o)
     
     //o.info("Generating VarFrequency_reads.R");
     //o.writer->open("VarFrequency_reads.R");
-    //o.writer->write(RWriter::createScript("VarFrequency_quins.csv", PlotScatter()));
+    //o.writer->write(RWriter::createScript("VarFrequency_sequins.csv", PlotScatter()));
     //o.writer->close();
     
     /*
@@ -272,7 +272,7 @@ void VFreq::report(const FileName &file, const Options &o)
     o.report->open("VarFrequency_report.pdf");
     o.report->addTitle("VarFrequency_report");
     o.report->addFile("VarFrequency_summary.stats");
-    o.report->addFile("VarFrequency_quins.csv");
+    o.report->addFile("VarFrequency_sequins.csv");
     o.report->addFile("VarFrequency_allele.R");
     o.report->addFile("VarFrequency_reads.R");
 }

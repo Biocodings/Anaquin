@@ -233,7 +233,7 @@ void MBlat::report(const FileName &file, const Options &o)
     }
 
     {
-        o.writer->open("MetaPSL_quins.csv");
+        o.writer->open("MetaPSL_sequins.csv");
         
         const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%";
         

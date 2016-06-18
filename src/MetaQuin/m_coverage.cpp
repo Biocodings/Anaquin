@@ -62,7 +62,7 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
 
     const std::string format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
-    o.writer->open("MetaCoverage_quins.csv");
+    o.writer->open("MetaCoverage_sequins.csv");
     o.writer->write((boost::format(format) % "ID"
                                            % "Length"
                                            % "Min"

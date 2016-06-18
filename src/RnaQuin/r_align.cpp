@@ -819,8 +819,8 @@ void RAlign::report(const FileName &file, const Options &o)
      * Generating RnaAlign_quins.stats
      */
     
-    o.analyze("RnaAlign_quins.csv");
-    writeQuins("RnaAlign_quins.csv", file, stats, o);
+    o.analyze("RnaAlign_sequins.csv");
+    writeQuins("RnaAlign_sequins.csv", file, stats, o);
 
     /*
      * Generating RnaAlign_report.pdf
@@ -829,5 +829,5 @@ void RAlign::report(const FileName &file, const Options &o)
     o.report->open("RnaAlign_report.pdf");
     o.report->addTitle("RnaAlign");
     o.report->addFile("RnaAlign_summary.stats");
-    o.report->addFile("RnaAlign_quins.csv");
+    o.report->addFile("RnaAlign_sequins.csv");
 }

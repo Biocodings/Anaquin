@@ -82,8 +82,8 @@ void VKExpress::report(const FileName &file1, const FileName &file2, const Optio
      * Generating CSV for all sequins
      */
     
-    o.info("Generating VarKExpress_quins.csv");
-    o.writer->open("VarKExpress_quins.csv");
+    o.info("Generating VarKExpress_sequins.csv");
+    o.writer->open("VarKExpress_sequins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
 
@@ -93,6 +93,6 @@ void VKExpress::report(const FileName &file1, const FileName &file2, const Optio
 
     o.info("Generating VarKExpress_express.R");
     o.writer->open("VarKExpress_express.R");
-    o.writer->write(RWriter::createScript("VarKExpress_quins.csv", PlotScatter()));
+    o.writer->write(RWriter::createScript("VarKExpress_sequins.csv", PlotScatter()));
     o.writer->close();
 }

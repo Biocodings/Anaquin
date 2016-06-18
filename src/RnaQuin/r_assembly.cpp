@@ -397,7 +397,7 @@ void RAssembly::report(const FileName &file, const Options &o)
      * Generating RnaAssembly_quins.stats
      */
 
-    generateQuins("RnaAssembly_quins.csv", stats, o);
+    generateQuins("RnaAssembly_sequins.csv", stats, o);
     
     /*
      * Generating RnaAssembly_sensitivity.R
@@ -405,7 +405,7 @@ void RAssembly::report(const FileName &file, const Options &o)
     
     o.generate("RnaAssembly_sensitivity.R");
     o.writer->open("RnaAssembly_sensitivity.R");
-    o.writer->write(RWriter::createSensitivity("RnaAssembly_quins.csv",
+    o.writer->write(RWriter::createSensitivity("RnaAssembly_sequins.csv",
                                                "Assembly Detection",
                                                "Input Concentration (log2)",
                                                "Sensitivity",
@@ -421,6 +421,6 @@ void RAssembly::report(const FileName &file, const Options &o)
     o.report->open("RnaAssembly_report.pdf");
     o.report->addTitle("RnaAssembly");
     o.report->addFile("RnaAssembly_summary.stats");
-    o.report->addFile("RnaAssembly_quins.csv");
+    o.report->addFile("RnaAssembly_sequins.csv");
     o.report->addFile("RnaAssembly_sensitivity.R");
 }

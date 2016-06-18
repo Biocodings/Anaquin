@@ -34,16 +34,16 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
     //TExpress::generateSummary("RnaKExpress_summary.stats", files, stats, o, units);
     
     /*
-     * Generating RnaKExpress_quins.csv
+     * Generating RnaKExpress_sequins.csv
      */
     
-    RExpress::generateCSV("RnaKExpress_quins.csv", stats, o);
+    RExpress::generateCSV("RnaKExpress_sequins.csv", stats, o);
     
     /*
      * Generating RnaKExpress_express.R
      */
     
-    //TExpress::generateR("RnaKExpress_express.R", "RnaKExpress_quins.csv", stats, o);
+    //TExpress::generateR("RnaKExpress_express.R", "RnaKExpress_sequins.csv", stats, o);
     
     /*
      * Generating RnaKExpress_splice.R
@@ -51,6 +51,6 @@ void TKExpress::report(const FileName &file1, const FileName &file2, const Optio
     
     if (stats.size() >= 2)
     {
-        RExpress::generateRSplice("RnaKExpress_splice.R", "RnaKExpress_quins.csv", o);
+        RExpress::generateRSplice("RnaKExpress_splice.R", "RnaKExpress_sequins.csv", o);
     }
 }

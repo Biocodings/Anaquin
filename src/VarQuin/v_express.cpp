@@ -62,8 +62,8 @@ void VExpress::report(const FileName &file, const Options &o)
      * 2. Generating CSV for all sequins
      */
     
-    o.info("Generating VarExpress_quins.csv");
-    o.writer->open("VarExpress_quins.csv");
+    o.info("Generating VarExpress_sequins.csv");
+    o.writer->open("VarExpress_sequins.csv");
     o.writer->write(StatsWriter::writeCSV(stats));
     o.writer->close();
     
@@ -73,6 +73,6 @@ void VExpress::report(const FileName &file, const Options &o)
     
     o.info("Generating VarExpress_express.R");
     o.writer->open("VarExpress_express.R");
-    o.writer->write(RWriter::createScript("VarExpress_quins.csv", PlotScatter()));
+    o.writer->write(RWriter::createScript("VarExpress_sequins.csv", PlotScatter()));
     o.writer->close();
 }
