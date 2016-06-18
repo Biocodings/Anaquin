@@ -37,7 +37,6 @@ LinearStats::Data LinearStats::data(bool shouldLog) const
 LOQModel LinearStats::limitQuant(bool shouldLog) const
 {
     const auto d = data(shouldLog);
-    
     const auto r = SS::segmentPieceWise(d.x, d.y);
 
     LOQModel l;

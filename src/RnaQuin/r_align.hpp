@@ -124,11 +124,11 @@ namespace Anaquin
                     BinCounts eContains, eOverlaps;
                     BinCounts iContains, iOverlaps;
                     
-                    // Intervals for exons in TransQuin
-                    Intervals<TransRef::ExonInterval> eInters;
+                    // Intervals for exons
+                    Intervals<> eInters;
                     
-                    // Intervals for introns in TransQuin
-                    Intervals<TransRef::IntronInterval> iInters;
+                    // Intervals for introns
+                    Intervals<> iInters;
                     
                     /*
                      * Overall statistics

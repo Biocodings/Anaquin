@@ -86,7 +86,7 @@ namespace Anaquin
                             stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
                         }
                         
-                        stats.hist.at(match->id)++;
+                        //stats.hist.at(match->id)++;
                         stats.inters.find(align.cID)->add(align.l);
                     }
                 }

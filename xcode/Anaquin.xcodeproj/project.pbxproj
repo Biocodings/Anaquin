@@ -362,6 +362,8 @@
 		EFF4B1D11C53A3CA00DF6A0E /* stats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stats.cpp; path = ../tests/stats/stats.cpp; sourceTree = "<group>"; };
 		EFF5DE161C4B8AF8001C3496 /* linear.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = linear.cpp; path = ../src/stats/linear.cpp; sourceTree = "<group>"; };
 		EFFAAE051CBCB16E00EE2DCB /* path.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = path.hpp; path = ../src/data/path.hpp; sourceTree = "<group>"; };
+		EFFC0E761D15A051004E1038 /* RnaQuin.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = RnaQuin.hpp; path = ../src/RnaQuin/RnaQuin.hpp; sourceTree = "<group>"; };
+		EFFC0E771D15B641004E1038 /* bed_data.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = bed_data.hpp; path = ../src/tools/bed_data.hpp; sourceTree = "<group>"; };
 		EFFC30AF1D08F7AA00814E0F /* r_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_align.cpp; path = ../src/RnaQuin/r_align.cpp; sourceTree = "<group>"; };
 		EFFC30B01D08F7AA00814E0F /* r_align.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = r_align.hpp; path = ../src/RnaQuin/r_align.hpp; sourceTree = "<group>"; };
 		EFFC30B11D08F7AA00814E0F /* r_assembly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_assembly.cpp; path = ../src/RnaQuin/r_assembly.cpp; sourceTree = "<group>"; };
@@ -679,6 +681,7 @@
 				EF8F26251D12992A00E9A441 /* r_sleuth.cpp */,
 				EF8F26261D12992A00E9A441 /* r_sleuth.hpp */,
 				EFFC30C01D08F7AA00814E0F /* r_viewer.hpp */,
+				EFFC0E761D15A051004E1038 /* RnaQuin.hpp */,
 			);
 			name = RnaQuin;
 			sourceTree = "<group>";
@@ -746,6 +749,7 @@
 		EFA9DE701BCB7D5A00780182 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				EFFC0E771D15B641004E1038 /* bed_data.hpp */,
 				EFA9DE711BCB7D6100780182 /* coverage.cpp */,
 				EFA9DE721BCB7D6100780182 /* coverage.hpp */,
 				EFFD3B571D0F6D21002FEC35 /* gtf_data.hpp */,

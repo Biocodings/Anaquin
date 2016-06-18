@@ -70,7 +70,7 @@ namespace Anaquin
         SReals lr, rr;
         
         // Linear regression without logarithm
-        SLinearStats nLog;
+        //SLinearStats nLog;
         
         // Linear regression with logarithm
         SLinearStats wLog;

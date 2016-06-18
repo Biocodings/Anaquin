@@ -44,11 +44,14 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
 
                 if (m)
                 {
-                    stats.hist.at(m->id)++;
+                    stats.hist.at(x.id)++;
                     
-                    if (x.abund)
+                    if (!isnan(x.abund) && x.abund)
                     {
-                        stats.add(m->id, m->concent(Mix_1), x.abund);
+                        const auto expected = r.concent(x.id);
+                        const auto measured = x.abund;
+                        
+                        stats.add(x.id, expected, measured);
                     }
                 }
                 else

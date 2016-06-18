@@ -64,6 +64,7 @@ static void classifySynth(const Alignment &align, VAlign::Stats &stats, Interval
     const auto &r = Standard::instance().r_var;
     const SequinData * match;
 
+    // Does the read aligned within a gene (or a region)?
     if ((match = r.match(align.l, MatchRule::Contains)))
     {
         stats.data[ChrT].tp++;
@@ -105,6 +106,7 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
 
     if (Standard::isGenomic(align.cID))
     {
+        // Does the read aligned within a gene (or a region)?
         if (matchT(align, __match__, [&](const Locus &l, MatchRule rule)
         {
             return r.findGeno(align.cID, align.l, rule);

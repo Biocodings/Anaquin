@@ -200,6 +200,7 @@ namespace Anaquin
                     if (counts)
                     {
                         const auto &id = i->first;
+                       /*
                         const auto seq = f(id);
 
                         // Hard to believe a sequin in the histogram is undefined
@@ -211,6 +212,7 @@ namespace Anaquin
                             s.counts = counts;
                             s.abund  = seq->concent(mix);
                         }
+                        */
                     }
                 }
             
@@ -653,102 +655,6 @@ namespace Anaquin
     {
         public:
 
-            struct ExonInterval : public Interval
-            {
-                ExonInterval(const GeneID    &gID,
-                             const IsoformID &iID,
-                             const IntervalID &id,
-                             const Locus &l) : Interval(id, l), gID(gID), iID(iID) {}
-
-                const GeneID    gID;
-                const IsoformID iID;
-            };
-        
-            typedef ExonInterval IntronInterval;
-        
-            struct GeneData : public Matched
-            {
-                GeneID id;
-
-                inline GeneID name() const
-                {
-                    return id;
-                }
-                
-                inline Locus l() const
-                {
-                    Base end   = std::numeric_limits<Base>::min();
-                    Base start = std::numeric_limits<Base>::max();
-                
-                    for (const auto &i : seqs)
-                    {
-                        end   = std::max(end, i->l.end);
-                        start = std::min(start, i->l.start);
-                    }
-
-                    return Locus(start, end);
-                }
-
-                // Calculate the abundance for the gene (summing up all the isoforms)
-                inline Concent concent(Mixture m) const
-                {
-                    Concent n = 0;
-                
-                    for (const auto &i : seqs)
-                    {
-                        n += (*i).concent(m);
-                    }
-                
-                    return n;
-                }
-    
-                // Each sequin comprises an isoform
-                std::vector<SequinData *> seqs;
-            };
-
-            struct ExonData
-            {
-                ExonData(const ChrID  &cID,
-                         const IsoformID &iID,
-                         const GeneID    &gID,
-                         const Locus &l)
-                                : cID(cID), iID(iID), gID(gID), l(l) {}
-
-                operator const Locus &() const { return l; }
-
-                inline bool operator<(const  ExonData &x) const { return l < x.l;  }
-                inline bool operator==(const ExonData &x) const { return l == x.l; }
-                inline bool operator!=(const Locus &l)    const { return !operator==(l); }
-                inline bool operator==(const Locus &l)    const
-                {
-                    return this->l.start == l.start && this->l.end == l.end;
-                }
-            
-                inline void operator+=(const ExonData &x)
-                {
-                    l.start = std::min(l.start, x.l.start);
-                    l.end   = std::max(l.end, x.l.end);
-                }
-            
-                Locus     l;
-                GeneID    gID;
-                ChrID  cID;
-                IsoformID iID;
-            };
-
-            struct IntronData
-            {
-                operator const Locus &() const { return l; }
-            
-                inline bool operator<(const ExonData &x)  const { return l < x.l;  }
-                inline bool operator==(const ExonData &x) const { return l == x.l; }
-            
-                Locus     l;
-                GeneID    gID;
-                ChrID  cID;
-                IsoformID iID;
-            };
-
             TransRef();
         
             void readRef(const Reader &);
@@ -759,13 +665,11 @@ namespace Anaquin
             SequinHist geneHist(const ChrID &) const;
 
             // Intervals for reference exons
-            Intervals<ExonInterval> exonInters(const ChrID &) const;
+            Intervals<> exonInters(const ChrID &) const;
         
             // Intervals for reference introns
-            Intervals<IntronInterval> intronInters(const ChrID &) const;
+            Intervals<> intronInters(const ChrID &) const;
         
-            void addExon(const ChrID &, const GeneID &, const IsoformID &, const Locus &);
-
             // Absolute detection limit at the gene level
             Limit absoluteGene(const SequinHist &) const;
 
@@ -784,8 +688,11 @@ namespace Anaquin
             Counts countTransSyn() const;
             Counts countTransGen() const;
         
-            const GeneData   *findGene  (const ChrID &, const GeneID &)           const;
-            const GeneData   *findGene  (const ChrID &, const Locus &, MatchRule) const;
+            // Concentration at the gene level
+            Concent concent(const GeneID &, Mixture m = Mix_1) const;
+        
+            const GeneData *findGene(const ChrID &, const GeneID &)           const;
+            const Interval *findGene(const ChrID &, const Locus &, MatchRule) const;
 
         protected:
         

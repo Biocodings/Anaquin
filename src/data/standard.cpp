@@ -281,21 +281,6 @@ void Standard::addFRef(const Reader &r)
 void Standard::addTRef(const Reader &r)
 {
     r_trans.readRef(r);
-
-    /*
-     * TODO: Remove this...????
-     */
-    
-    ParserGTF::parse(Reader(r), [&](const ParserGTF::Data &f, const std::string &, const ParserProgress &)
-    {
-        // Handles both synthetic and genome
-        switch (f.type)
-        {
-            //case Gene: { r_trans.addGene(f.cID, f.gID, f.l);        break; }
-            case Exon: { r_trans.addExon(f.cID, f.gID, f.tID, f.l); break; }
-            default:   { break; }
-        }
-    });
 }
 
 void Standard::addTMix(const Reader &r)

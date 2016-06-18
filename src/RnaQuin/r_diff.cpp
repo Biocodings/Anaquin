@@ -41,8 +41,7 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
 {
     assert(t.cID == ChrT);
     
-    const auto &id = t.id;
-    const auto &r  = Standard::instance().r_trans;
+    const auto &r = Standard::instance().r_trans;
 
     // Known fold change
     Fold known = NAN;
@@ -56,14 +55,17 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
         {
             if (stats.hist.count(t.id))
             {
-                const auto match = r.findGene(t.cID, id);
+                const auto match = r.findGene(t.cID, t.id);
                 
                 if (match)
                 {
-                    stats.hist.at(id)++;
+                    stats.hist.at(t.id)++;
+
+                    const auto exp_1 = r.concent(t.id, Mix_1);
+                    const auto exp_2 = r.concent(t.id, Mix_2);
 
                     // Calculate the known fold-change between B and A
-                    known = match->concent(Mix_2) / match->concent(Mix_1);
+                    known = exp_2 / exp_1;
                     
                     // This is not on the log scale, so it can't be zero...
                     assert(known);
@@ -75,7 +77,7 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
                     measured = std::pow(2, measured);
                 }
 
-                stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                stats.add(t.id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
 
             break;
@@ -83,13 +85,13 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
 
         case Metrics::Isoform:
         {
-            if (stats.hist.count(id))
+            if (stats.hist.count(t.id))
             {
-                const auto match = r.match(id);
+                const auto match = r.match(t.id);
                 
                 if (match)
                 {
-                    stats.hist.at(id)++;
+                    stats.hist.at(t.id)++;
 
                     // Known fold-change between the two mixtures
                     known = match->concent(Mix_2) / match->concent(Mix_1);
@@ -101,7 +103,7 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
                     measured = std::pow(2, measured);
                 }
                 
-                stats.add(id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                stats.add(t.id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
             }
 
             break;

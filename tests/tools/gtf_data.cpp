@@ -126,21 +126,12 @@ TEST_CASE("GTF_GenCode")
     REQUIRE(r.countIntrSyn()  == 0);
     REQUIRE(r.countUIntrSyn() == 0);
     
-    std::cout << r.countGene() << std::endl;
-    std::cout << r.countTrans() << std::endl;
-    std::cout << r.countGeneGen() << std::endl;
-    std::cout << r.countTransGen() << std::endl;
-    std::cout << r.countExonGen() << std::endl;
-    std::cout << r.countUExonGen() << std::endl;
-    std::cout << r.countIntrGen() << std::endl;
-    std::cout << r.countUIntrGen() << std::endl;
-    
-    REQUIRE(r.countGene()  == 60554);
-    REQUIRE(r.countTrans() == 199169);
+    REQUIRE(r.countGene()     == 60554);
+    REQUIRE(r.countTrans()    == 199169);
     REQUIRE(r.countGeneGen()  == 60554);
     REQUIRE(r.countTransGen() == 199169);
     REQUIRE(r.countExonGen()  == 1177311);
-    REQUIRE(r.countUExonGen() == 1177311);
-    REQUIRE(r.countIntrGen()  == 1028);
-    REQUIRE(r.countUIntrGen() == 754);
+    REQUIRE(r.countUExonGen() == 570957);
+    REQUIRE(r.countIntrGen()  == 976685);
+    REQUIRE(r.countUIntrGen() == 347410);
 }

@@ -314,49 +314,51 @@ Scripts StatsWriter::inflectSummary(const FileName &chrTR, const FileName &endoR
         intro = intro_1;
     }
 
-    return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
-                                                         % STRING(stats.n_syn)     // 2
-                                                         % STRING(stats.p_chrT)     // 3
-                                                         % STRING(stats.n_gen)     // 4
-                                                         % STRING(stats.p_endo)     // 5
-                                                         % chrTR                    // 6
-                                                         % stats.n_ref              // 7
-                                                         % STRING(stats.units)      // 8
-                                                         % STRING(stats.n_det)      // 9
-                                                         % STRING(stats.b)          // 10
-                                                         % STRING(stats.bID)        // 11
-                                                         % STRING(stats.lInt)       // 12
-                                                         % STRING(stats.lSl)        // 13
-                                                         % STRING(stats.lR2)        // 14
-                                                         % STRING(stats.rInt)       // 15
-                                                         % STRING(stats.rSl)        // 16
-                                                         % STRING(stats.rR2)        // 17
-                                                         % STRING(stats.nLog.r)     // 18
-                                                         % STRING(stats.nLog.sl)    // 19
-                                                         % STRING(stats.nLog.R2)    // 20
-                                                         % STRING(stats.nLog.F)     // 21
-                                                         % STRING(stats.nLog.p)     // 22
-                                                         % STRING(stats.nLog.SSM)   // 23
-                                                         % STRING(stats.nLog.SSM_D) // 24
-                                                         % STRING(stats.nLog.SSE)   // 25
-                                                         % STRING(stats.nLog.SSE_D) // 26
-                                                         % STRING(stats.nLog.SST)   // 27
-                                                         % STRING(stats.nLog.SST_D) // 28
-                                                         % STRING(stats.wLog.r)
-                                                         % STRING(stats.wLog.sl)
-                                                         % STRING(stats.wLog.R2)
-                                                         % STRING(stats.wLog.F)
-                                                         % STRING(stats.wLog.p)
-                                                         % STRING(stats.wLog.SSM)
-                                                         % STRING(stats.wLog.SSM_D)
-                                                         % STRING(stats.wLog.SSE)
-                                                         % STRING(stats.wLog.SSE_D)
-                                                         % STRING(stats.wLog.SST)
-                                                         % STRING(stats.wLog.SST_D)
-                                                         % units                     // 40
-                                                         % intro
-                                                         % mixture()
-            ).str();
+    throw "Not Implemented";
+    
+//    return (boost::format(StatsWriter::inflectSummary()) % STRING(stats.files)      // 1
+//                                                         % STRING(stats.n_syn)     // 2
+//                                                         % STRING(stats.p_chrT)     // 3
+//                                                         % STRING(stats.n_gen)     // 4
+//                                                         % STRING(stats.p_endo)     // 5
+//                                                         % chrTR                    // 6
+//                                                         % stats.n_ref              // 7
+//                                                         % STRING(stats.units)      // 8
+//                                                         % STRING(stats.n_det)      // 9
+//                                                         % STRING(stats.b)          // 10
+//                                                         % STRING(stats.bID)        // 11
+//                                                         % STRING(stats.lInt)       // 12
+//                                                         % STRING(stats.lSl)        // 13
+//                                                         % STRING(stats.lR2)        // 14
+//                                                         % STRING(stats.rInt)       // 15
+//                                                         % STRING(stats.rSl)        // 16
+//                                                         % STRING(stats.rR2)        // 17
+//                                                         % STRING(stats.nLog.r)     // 18
+//                                                         % STRING(stats.nLog.sl)    // 19
+//                                                         % STRING(stats.nLog.R2)    // 20
+//                                                         % STRING(stats.nLog.F)     // 21
+//                                                         % STRING(stats.nLog.p)     // 22
+//                                                         % STRING(stats.nLog.SSM)   // 23
+//                                                         % STRING(stats.nLog.SSM_D) // 24
+//                                                         % STRING(stats.nLog.SSE)   // 25
+//                                                         % STRING(stats.nLog.SSE_D) // 26
+//                                                         % STRING(stats.nLog.SST)   // 27
+//                                                         % STRING(stats.nLog.SST_D) // 28
+//                                                         % STRING(stats.wLog.r)
+//                                                         % STRING(stats.wLog.sl)
+//                                                         % STRING(stats.wLog.R2)
+//                                                         % STRING(stats.wLog.F)
+//                                                         % STRING(stats.wLog.p)
+//                                                         % STRING(stats.wLog.SSM)
+//                                                         % STRING(stats.wLog.SSM_D)
+//                                                         % STRING(stats.wLog.SSE)
+//                                                         % STRING(stats.wLog.SSE_D)
+//                                                         % STRING(stats.wLog.SST)
+//                                                         % STRING(stats.wLog.SST_D)
+//                                                         % units                     // 40
+//                                                         % intro
+//                                                         % mixture()
+//            ).str();
 };
 
 Scripts StatsWriter::inflectSummary(const FileName    &ref,
@@ -398,9 +400,6 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
     {
         r.files.add(files[i]);
         
-        // Linear regression without logarithm
-        const auto n_lm = lstats[i].linear(false);
-        
         // Linear regression with logarithm
         const auto l_lm = lstats[i].linear(true);
         
@@ -429,17 +428,17 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
         r.lR2.add(inf.lR2);
         r.rR2.add(inf.rR2);
         
-        r.nLog.p.add(n_lm.p);
-        r.nLog.r.add(n_lm.r);
-        r.nLog.F.add(n_lm.F);
-        r.nLog.sl.add(n_lm.m);
-        r.nLog.R2.add(n_lm.R2);
-        r.nLog.SSM.add(n_lm.SSM);
-        r.nLog.SSE.add(n_lm.SSE);
-        r.nLog.SST.add(n_lm.SST);
-        r.nLog.SSM_D.add(n_lm.SSM_D);
-        r.nLog.SSE_D.add(n_lm.SSE_D);
-        r.nLog.SST_D.add(n_lm.SST_D);
+//        r.nLog.p.add(n_lm.p);
+//        r.nLog.r.add(n_lm.r);
+//        r.nLog.F.add(n_lm.F);
+//        r.nLog.sl.add(n_lm.m);
+//        r.nLog.R2.add(n_lm.R2);
+//        r.nLog.SSM.add(n_lm.SSM);
+//        r.nLog.SSE.add(n_lm.SSE);
+//        r.nLog.SST.add(n_lm.SST);
+//        r.nLog.SSM_D.add(n_lm.SSM_D);
+//        r.nLog.SSE_D.add(n_lm.SSE_D);
+//        r.nLog.SST_D.add(n_lm.SST_D);
         
         r.wLog.p.add(l_lm.p);
         r.wLog.r.add(l_lm.r);
@@ -473,7 +472,7 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.files.add(files[i]);
 
         // Linear regression without logarithm
-        const auto n_lm = lstats[i].linear(false);
+        //const auto n_lm = lstats[i].linear(false);
         
         // Linear regression with logarithm
         const auto l_lm = lstats[i].linear(true);
@@ -501,17 +500,17 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.lR2.add(inf.lR2);
         r.rR2.add(inf.rR2);
 
-        r.nLog.p.add(n_lm.p);
-        r.nLog.r.add(n_lm.r);
-        r.nLog.F.add(n_lm.F);
-        r.nLog.sl.add(n_lm.m);
-        r.nLog.R2.add(n_lm.R2);
-        r.nLog.SSM.add(n_lm.SSM);
-        r.nLog.SSE.add(n_lm.SSE);
-        r.nLog.SST.add(n_lm.SST);
-        r.nLog.SSM_D.add(n_lm.SSM_D);
-        r.nLog.SSE_D.add(n_lm.SSE_D);
-        r.nLog.SST_D.add(n_lm.SST_D);
+//        r.nLog.p.add(n_lm.p);
+//        r.nLog.r.add(n_lm.r);
+//        r.nLog.F.add(n_lm.F);
+//        r.nLog.sl.add(n_lm.m);
+//        r.nLog.R2.add(n_lm.R2);
+//        r.nLog.SSM.add(n_lm.SSM);
+//        r.nLog.SSE.add(n_lm.SSE);
+//        r.nLog.SST.add(n_lm.SST);
+//        r.nLog.SSM_D.add(n_lm.SSM_D);
+//        r.nLog.SSE_D.add(n_lm.SSE_D);
+//        r.nLog.SST_D.add(n_lm.SST_D);
 
         r.wLog.p.add(l_lm.p);
         r.wLog.r.add(l_lm.r);

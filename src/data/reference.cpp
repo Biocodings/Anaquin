@@ -2,6 +2,7 @@
 #include "tools/gtf_data.hpp"
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
+#include "RnaQuin/RnaQuin.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 using namespace Anaquin;
@@ -456,42 +457,6 @@ template <typename Iter> Base countLocus(const Iter &iter)
 
 struct TransRef::TransRefImpl
 {
-    static BinID createBinID(const GeneID &cID, const GeneID &gID, const IsoformID &iID, const Locus &l)
-    {
-        return (boost::format("%1%_%2%_%3%_%4%_%5%") % cID
-                                                     % gID
-                                                     % iID
-                                                     % l.start
-                                                     % l.end).str();
-    }
-
-    struct RawData
-    {
-        std::map<SequinID, GeneID>                rawMapper;
-        std::map<SequinID, std::vector<ExonData>> exonsByTrans;
-    };
-
-    struct Data
-    {
-        std::map<GeneID, Locus> _genes;
-        std::map<GeneID, GeneData> genes;
-        
-        std::vector<ExonData>   sortedExons;
-        std::vector<IntronData> sortedIntrons;
-    };
-    
-    void addRef(const ChrID &cID, const IsoformID &iID, const GeneID &gID, const Locus &l, RawData &raw)
-    {
-        const auto exon = ExonData(cID, iID, gID, l);
-
-        raw.exonsByTrans[iID].push_back(exon);
-        raw.rawMapper[iID] = gID;
-    }
-
-    RawData cRaw;
-
-    std::map<ChrID, Data> data;
-
     // Includes synthetic and genome
     GTFData gData;
     
@@ -577,36 +542,40 @@ std::map<ChrID, Hist> TransRef::histGene() const
     return _impl->gData.histGene();
 }
 
-void TransRef::addExon(const ChrID &cID, const GeneID &gID, const IsoformID &iID, const Locus &l)
+Concent TransRef::concent(const GeneID &gID, Mixture m) const
 {
-    if (Standard::isSynthetic(cID))
+    for (const auto &i : _impl->gData)
     {
-        _impl->addRef(cID, iID, gID, l, _impl->cRaw);
-    }
-    else
-    {
-        _impl->data[cID].sortedExons.push_back(ExonData(cID, iID, gID, l));
-    }
-}
-
-const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
-{
-    return _impl->data.at(cID).genes.count(gID) ? &(_impl->data.at(cID).genes.at(gID)) : nullptr;
-}
-
-template <typename Iter> const typename Iter::mapped_type *findMap(const Iter &x, const Locus &l, MatchRule m)
-{
-    assert(x.size());
-    
-    for (const auto &i : x)
-    {
-        if ((m == Exact && i.second.l() == l) || (m == Contains && i.second.l().contains(l)))
+        if (Standard::isSynthetic(i.first))
         {
-            return &i.second;
+            Concent r = 0;
+            
+            assert(!i.second.t2g.empty());
+            
+            for (const auto &j : i.second.t2g)
+            {
+                if (j.second == gID)
+                {
+                    r += match(j.first)->mixes.at(m);
+                }
+            }
+            
+            if (!r)
+            {
+                throw "Failed to find gene [" + gID + "] for mixture";
+            }
+            
+            return r;
         }
     }
     
-    return nullptr;
+    throw "Failed to find gene [" + gID + "] for mixture";
+}
+
+const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
+{
+    assert(!_impl->gData.at(cID).g2d.empty());
+    return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
 }
 
 template <typename Iter> const typename Iter::value_type *findList(const Iter &x, const Locus &l, MatchRule m)
@@ -622,51 +591,34 @@ template <typename Iter> const typename Iter::value_type *findList(const Iter &x
     return nullptr;
 }
 
-const TransRef::GeneData * TransRef::findGene(const ChrID &cID, const Locus &l, MatchRule m) const
+const Interval * TransRef::findGene(const ChrID &cID, const Locus &l, MatchRule m) const
 {
-    return findMap(_impl->data.at(cID).genes, l, m);
+    assert(!_impl->gInters.empty());
+
+    switch (m)
+    {
+        case MatchRule::Exact:    { return _impl->gInters.at(cID).exact(l);    }
+        case MatchRule::Overlap:  { return _impl->gInters.at(cID).overlap(l);  }
+        case MatchRule::Contains: { return _impl->gInters.at(cID).contains(l); }
+    }
 }
 
-Intervals<TransRef::ExonInterval> TransRef::exonInters(const ChrID &cID) const
+Intervals<> TransRef::exonInters(const ChrID &cID) const
 {
-    Intervals<ExonInterval> inters;
-    
-    for (const auto &i : _impl->data.at(cID).sortedExons)
-    {
-        inters.add(ExonInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
-    }
-    
-    inters.build();
-    assert(inters.size());
-    
-    return inters;
+    return _impl->gData.eIntervals(cID);
 }
 
-Intervals<TransRef::IntronInterval> TransRef::intronInters(const ChrID &cID) const
+Intervals<> TransRef::intronInters(const ChrID &cID) const
 {
-    Intervals<IntronInterval> inters;
-    
-    for (const auto &i : _impl->data.at(cID).sortedIntrons)
-    {
-        inters.add(IntronInterval(i.gID, i.iID, TransRefImpl::createBinID(i.cID, i.gID, i.iID, i.l), i.l));
-    }
-
-    inters.build();
-    assert(inters.size());
-
-    return inters;
+    return _impl->gData.iIntervals(cID);
 }
 
 SequinHist TransRef::geneHist(const ChrID &cID) const
 {
-    if (cID == ChrT)
-    {
-        return createHist(_impl->data.at(cID).genes);
-    }
-    else
-    {
-        return createHist(_impl->data.at(cID)._genes);
-    }
+    assert(_impl->gData.count(cID));
+    assert(!_impl->gData[cID].g2d.empty());
+
+    return createHist(_impl->gData[cID].g2d);
 }
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
@@ -705,7 +657,7 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
         auto data = TransData();
         
         data.id  = id;
-        data.gID = !_impl->cRaw.rawMapper.empty() ? _impl->cRaw.rawMapper.at(data.id) : "";
+        //data.gID = !_impl->cRaw.rawMapper.empty() ? _impl->cRaw.rawMapper.at(data.id) : "";
 
         // Add a new entry for the validated sequin
         _data[id] = data;
@@ -737,68 +689,9 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     assert(!_data.empty());
 }
 
-template <typename T> void createTrans(const ChrID &cID, T &t)
-{
-    std::cout << "[INFO]: Analyzing: " << cID << std::endl;
-
-    /*
-     * Generate the appropriate structure for analysis
-     *
-     *   1. Sort the exons
-     *   2. Use the sorted exons to generate sorted introns
-     *   3. Count the number of non-overlapping bases for the exons
-     */
-
-    assert(!t.sortedExons.empty());
-
-    // Sort the exons
-    std::sort(t.sortedExons.begin(), t.sortedExons.end(), [](const TransRef::ExonData &x, const TransRef::ExonData &y)
-    {
-        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-    });
-    
-    /*
-     * Generate a list of sorted introns, only possible once the exons are sorted.
-     */
-    
-    std::map<SequinID, std::vector<const TransRef::ExonData *>> sorted;
-    
-    for (const auto &i : t.sortedExons)
-    {
-        sorted[i.iID].push_back(&i);
-    }
-    
-    for (const auto &i : sorted)
-    {
-        for (auto j = 1; j < i.second.size(); j++)
-        {
-            const auto &x = i.second[j-1];
-            const auto &y = i.second[j];
-            
-            TransRef::IntronData d;
-            
-            d.gID = x->gID;
-            d.iID = x->iID;
-            d.cID = x->cID;
-            d.l   = Locus(x->l.end + 1, y->l.start - 1);
-            
-            t.sortedIntrons.push_back(d);
-        }
-    }
-    
-    // Sort the introns
-    std::sort(t.sortedIntrons.begin(), t.sortedIntrons.end(), [](const TransRef::IntronData &x,
-                                                                 const TransRef::IntronData &y)
-    {
-        return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end);
-    });
-
-    //assert(!t.sortedIntrons.empty()); No two exons => no intron?
-}
-
 void TransRef::validate()
 {
-    const auto iIDs = getKeys(_impl->cRaw.exonsByTrans);
+    const auto iIDs = _impl->gData.count(ChrT) ? getKeys(_impl->gData.at(ChrT).t2d) : std::set<SequinID>();
     
     /*
      * Building rules:
@@ -822,36 +715,29 @@ void TransRef::validate()
     }
 
     /*
-     * This is only for the synthetic chromosome. Add the validated exons and construct the structures
-     * for the genes.
+     * Always prefer reference annotation be given. However, if this is not provided, we'll need to
+     * work out the RNA structure ourself. Coordinates are not required.
      */
-    
-    for (const auto &i : _impl->cRaw.exonsByTrans)
-    {
-        if (_data.count(i.first))
-        {
-            for (const auto &j : i.second)
-            {
-                _impl->data[ChrT].sortedExons.push_back(j);
-            }
-            
-            _data[i.first].l = Locus::expand(i.second, [&](const ExonData &f)
-            {
-                return true;
-            });
-    
-            _impl->data[ChrT].genes[_data[i.first].gID].id = _data[i.first].gID;         // TODO: ...
-            _impl->data[ChrT].genes[_data[i.first].gID].seqs.push_back(&_data[i.first]); // TODO: ...
-        }
-    }
 
-    /*
-     * Create structure for each chromosome
-     */
-    
-    for (const auto &i : _impl->data)
+    if (_impl->gData.empty())
     {
-        createTrans(i.first, _impl->data[i.first]);
+        for (const auto &i : _rawMIDs)
+        {
+            TransData_ t;
+            
+            t.cID = ChrT;
+            t.tID = i;
+            t.gID = RnaQuin::t2g(i);
+
+            GeneData g;
+            
+            g.cID = ChrT;
+            g.gID = t.gID;
+            
+            _impl->gData[ChrT].g2d[t.gID] = g;
+            _impl->gData[ChrT].t2d[t.tID] = t;            
+            _impl->gData[ChrT].t2g[t.tID] = t.gID;
+        }
     }
 }
 

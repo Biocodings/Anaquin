@@ -40,7 +40,7 @@ namespace Anaquin
              */
             
             std::stringstream ss;
-            ss << "Seq\tMean\tExpected\tMeasured\tSe\tPval\tQval\n";
+            ss << "ID\tMean\tExpected\tMeasured\tSe\tPval\tQval\n";
             
             const auto &ps    = stats.ps;
             const auto &qs    = stats.qs;

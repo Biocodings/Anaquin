@@ -56,7 +56,7 @@ template <typename T> void initT(const ChrID &cID, T &t)
     {
         t.eContains[i.first];
         t.eOverlaps[i.first];
-        t.exonToGene[i.second.id()] = i.second.gID;
+        // TODO: t.exonToGene[i.second.id()] = i.second.gID;
     }
 
     /*
@@ -67,7 +67,7 @@ template <typename T> void initT(const ChrID &cID, T &t)
     {
         t.iContains[i.first];
         t.iOverlaps[i.first];
-        t.intronToGene[i.second.id()] = i.second.gID;
+        // TODO: t.intronToGene[i.second.id()] = i.second.gID;
     }
     
     /*
@@ -152,8 +152,12 @@ template <typename T> const T * matchT(const Alignment &align,
 
         if (lFPS && rFPS)
         {
-            lFPS->at((*matches)[0]->gID) = std::max(lFPS->at((*matches)[0]->gID), lp);
-            rFPS->at((*matches)[0]->gID) = std::max(rFPS->at((*matches)[0]->gID), rp);
+            /*
+             * TODO: ...
+             */
+
+            //lFPS->at((*matches)[0]->gID) = std::max(lFPS->at((*matches)[0]->gID), lp);
+            //rFPS->at((*matches)[0]->gID) = std::max(rFPS->at((*matches)[0]->gID), rp);
         }
     }
     else
@@ -289,42 +293,43 @@ template <typename T> void collect(const ChrID &cID,
     
     for (const auto &i : t.eInters.data())
     {
-        auto &m  = t.geneB.at(i.second.gID);
-        auto &in = i.second;
-        
-        const auto &gID = i.second.gID;
-        
-        // Update the FP at the gene level
-        m.fp() = lFPS.at(gID) + rFPS.at(gID);
-        
-        // Update the overall FP
-        t.overB.m.fp() += m.fp();
-        
-        Base covered = 0;
-        
-        in.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
-        {
-            if (depth)
-            {
-                // Update the sequin performance
-                covered += j - i;
-                
-                // Update the overall performance
-                t.overB.m.tp() += j - i;
-                
-                // Update the distribution
-                t.overB.hist.at(gID)++;
-            }
-        });
-
-        m.tp() += covered;
-        m.nr() += in.l().length();
-        m.nq()  = m.tp() + m.fp();
-        
-        assert(m.nr() >= m.tp());
-        
-        t.overB.m.nr() += in.l().length();
-        t.overB.m.nq()  = t.overB.m.tp() + t.overB.m.fp();
+//        //auto &m  = t.geneB.at(i.second.gID);
+//        auto &m  = t.geneB.at(i.second.gID);
+//        auto &in = i.second;
+//        
+//        const auto &gID = i.second.gID;
+//        
+//        // Update the FP at the gene level
+//        m.fp() = lFPS.at(gID) + rFPS.at(gID);
+//        
+//        // Update the overall FP
+//        t.overB.m.fp() += m.fp();
+//        
+//        Base covered = 0;
+//        
+//        in.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
+//        {
+//            if (depth)
+//            {
+//                // Update the sequin performance
+//                covered += j - i;
+//                
+//                // Update the overall performance
+//                t.overB.m.tp() += j - i;
+//                
+//                // Update the distribution
+//                t.overB.hist.at(gID)++;
+//            }
+//        });
+//
+//        m.tp() += covered;
+//        m.nr() += in.l().length();
+//        m.nq()  = m.tp() + m.fp();
+//        
+//        assert(m.nr() >= m.tp());
+//        
+//        t.overB.m.nr() += in.l().length();
+//        t.overB.m.nq()  = t.overB.m.tp() + t.overB.m.fp();
     }
     
     o.logInfo("Base (TP): " + std::to_string(t.overB.m.tp()));
@@ -639,11 +644,10 @@ static Scripts summary()
     return "-------RnaAlign Summary Statistics\n"
            "       Input alignment file: %1%\n"
            "       Reference annotation file: %2%\n\n"
-           "-------Number of alignments mapped to the Synthetic and Genome\n\n"
+           "-------Number of alignments mapped to the synthetic chromosome and human genome\n\n"
            "       Synthetic: %3%\n"
            "       Genome:    %4%\n"
-           "       Dilution:  %5$.2f\n"
-           "       Unmapped:  %6%\n\n"
+           "       Dilution:  %5$.2f\n\n"
            "-------Reference annotation (Synthetic)\n\n"
            "       Synthetic: %7% exons\n"
            "       Synthetic: %8% introns\n"
@@ -652,28 +656,25 @@ static Scripts summary()
            "       Genome: %10% exons\n"
            "       Genome: %11% introns\n"
            "       Genome: %12% bases\n\n"
-           "-------Alignments\n\n"
-           "       Non-spliced (Synthetic): %13%\n"
-           "       Spliced (Synthetic):     %14%\n"
-           "       Total (Synthetic):       %15%\n\n"
-           "       Non-spliced (Genome):    %16%\n"
-           "       Spliced (Genome):        %17%\n"
-           "       Total (Genome):          %18%\n\n"
-           "-------Comparison of alignments to annotations (Synthetic)\n\n"
+           "-------Alignments (Synthetic)\n\n"
+           "       Non-spliced: %13%\n"
+           "       Spliced:     %14%\n"
+           "       Total:       %15%\n\n"
+           "-------Alignments (Genome)\n\n"
+           "       Non-spliced: %16%\n"
+           "       Spliced:     %17%\n"
+           "       Total:       %18%\n\n"
+           "-------Comparison of alignments to reference annotation (Synthetic)\n\n"
            "       *Exon level\n"
            "        Sensitivity: %19$.2f\n"
            "        Precision:   %20$.2f\n\n"
            "       *Intron level\n"
            "        Sensitivity: %21$.2f\n"
            "        Precision:   %22$.2f\n\n"
-           "       *Base level\n\n"
+           "       *Base level\n"
            "        Sensitivity: %23$.2f\n"
            "        Precision:   %24$.2f\n\n"
-           "       *Undetected\n"
-           "        Exon:   %25$.4f\n"
-           "        Intron: %26$.4f\n"
-           "        Gene:   %27$.4f\n\n"
-           "-------Comparison of alignments to annotations (Genome)\n\n"
+           "-------Comparison of alignments to reference annotation (Genome)\n\n"
            "       *Exon level\n"
            "        Sensitivity: %28%\n"
            "        Precision:   %29%\n\n"
@@ -682,11 +683,7 @@ static Scripts summary()
            "        Precision:   %31%\n\n"
            "       *Base level\n"
            "        Sensitivity: %32%\n"
-           "        Precision:   %33%\n\n"
-           "       *Undetected\n"
-           "        Exon:   %34$.4f\n"
-           "        Intron: %35$.4f\n"
-           "        Gene:   %36$.4f\n";
+           "        Precision:   %33%\n\n";
 }
 
 static void generateSummary(const FileName &file,
@@ -700,7 +697,7 @@ static void generateSummary(const FileName &file,
     #define CHECK(x) (hasGeno ? toString(x) : "-")
     
     o.writer->open(file);
-    o.writer->write((boost::format(summary()) % file             // 1
+    o.writer->write((boost::format(summary()) % src              // 1
                                               % GTFRef()         // 2
                                               % stats.n_syn      // 3
                                               % stats.n_gen      // 4

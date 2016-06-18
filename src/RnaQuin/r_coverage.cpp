@@ -15,7 +15,8 @@ RCoverage::Stats RCoverage::stats(const FileName &file, const Options &o)
             return r.findGene(ChrT, align.l, MatchRule::Contains);
         }
 
-        return (const TransRef::GeneData *) nullptr;
+        throw "Not Implemented";
+        //return (const TransRef::GeneData *) nullptr;
     });
 }
 

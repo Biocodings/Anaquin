@@ -4,24 +4,23 @@
 #include <fstream>
 #include "data/hist.hpp"
 #include "data/intervals.hpp"
-#include "tools/gtf_data.hpp"
 #include "parsers/parser_gtf.hpp"
 
 namespace Anaquin
 {
-    struct ExonData_
+    struct ExonData
     {
         operator const Locus &() const { return l; }
         
-        inline bool operator<(const  ExonData_ &x) const { return l < x.l;  }
-        inline bool operator==(const ExonData_ &x) const { return l == x.l; }
+        inline bool operator<(const  ExonData &x) const { return l < x.l;  }
+        inline bool operator==(const ExonData &x) const { return l == x.l; }
         inline bool operator!=(const Locus &l)    const { return !operator==(l); }
         inline bool operator==(const Locus &l)    const
         {
             return this->l.start == l.start && this->l.end == l.end;
         }
         
-        inline void operator+=(const ExonData_ &x)
+        inline void operator+=(const ExonData &x)
         {
             l.start = std::min(l.start, x.l.start);
             l.end   = std::max(l.end, x.l.end);
@@ -39,32 +38,7 @@ namespace Anaquin
         Locus l;
     };
     
-    typedef ExonData_ IntronData_;
-    
-    struct TransData_
-    {
-        // Eg: chr1
-        ChrID cID;
-        
-        // Eg: ENSG00000223972.5
-        GeneID gID;
-        
-        // Eg: ENST00000456328.2
-        TransID tID;
-        
-        Locus l;
-    };
-    
-    struct GeneData
-    {
-        // Eg: chr1
-        ChrID cID;
-        
-        // Eg: ENSG00000223972.5
-        GeneID gID;
-        
-        Locus l;
-    };
+    typedef ExonData IntronData;
     
     struct ChrData
     {
@@ -75,16 +49,19 @@ namespace Anaquin
         std::map<GeneID, GeneData> g2d;
         
         // Genes to non-unique exons
-        std::map<TransID, std::set<ExonData_>> t2e;
+        std::map<TransID, std::set<ExonData>> t2e;
         
         // Genes to non-unique introns
-        std::map<TransID, std::set<IntronData_>> t2i;
+        std::map<TransID, std::set<IntronData>> t2i;
 
         // Genes to unique exons
-        std::map<TransID, std::set<ExonData_>> t2ue;
+        std::map<TransID, std::set<ExonData>> t2ue;
         
         // Genes to unique introns
-        std::map<TransID, std::set<IntronData_>> t2ui;
+        std::map<TransID, std::set<IntronData>> t2ui;
+        
+        // Transcripts to genes
+        std::map<TransID, GeneID> t2g;
         
         // Non-unique exons
         Counts exons = 0;
@@ -408,6 +385,7 @@ namespace Anaquin
                     d.gID = x.gID;
                     d.tID = x.tID;
                     
+                    c2d[x.cID].t2g[d.tID] = d.gID;
                     c2d[x.cID].t2d[d.tID] = d;
                     break;
                 }
@@ -426,7 +404,7 @@ namespace Anaquin
                     
                 case Exon:
                 {
-                    ExonData_ d;
+                    ExonData d;
                     
                     d.l   = x.l;
                     d.cID = x.cID;
@@ -456,7 +434,7 @@ namespace Anaquin
             for (const auto &j : i.second.t2e)
             {
                 // Sorted exons
-                auto sorted = std::vector<ExonData_>();
+                auto sorted = std::vector<ExonData>();
                 
                 // Convert to a sorted vector
                 std::copy(j.second.begin(), j.second.end(), std::back_inserter(sorted));
@@ -470,7 +448,7 @@ namespace Anaquin
                     const auto &x = sorted[j-1];
                     const auto &y = sorted[j];
                     
-                    IntronData_ d;
+                    IntronData d;
                     
                     d.gID = x.gID;
                     d.tID = x.tID;

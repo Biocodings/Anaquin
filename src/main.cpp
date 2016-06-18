@@ -1268,20 +1268,6 @@ void parse(int argc, char ** argv)
                         break;
                     }
 
-//                    case TOOL_T_REPORT:
-//                    {
-//                        if (_p.inputs.size() == 2)
-//                        {
-//                            addMix(std::bind(&Standard::addTMix, &s, std::placeholders::_1));
-//                        }
-//                        else
-//                        {
-//                            addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
-//                        }
-//                        
-//                        break;
-//                    }
-
                     default:
                     {
                         addRef(std::bind(&Standard::addTRef, &s, std::placeholders::_1));
@@ -1327,8 +1313,11 @@ void parse(int argc, char ** argv)
                 case TOOL_R_EXPRESS:
                 {
                     RExpress::Options o;
-                    o.inputs = ParserGTF::check(Reader(_p.inputs[0])) ? RExpress::Inputs::GTF :
-                                                                        RExpress::Inputs::Text;
+                    
+                    // Is this a GTF by extension?
+                    const auto isGTF = _p.inputs[0].find(".gtf") != std::string::npos;
+                    
+                    o.inputs = isGTF ? RExpress::Inputs::GTF : RExpress::Inputs::Text;
 
                     switch (o.inputs)
                     {
