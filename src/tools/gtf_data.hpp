@@ -1,6 +1,7 @@
 #ifndef GTF_DATA_HPP
 #define GTF_DATA_HPP
 
+#include <fstream>
 #include "data/hist.hpp"
 #include "data/intervals.hpp"
 #include "tools/gtf_data.hpp"
@@ -73,11 +74,17 @@ namespace Anaquin
         // Genes to Data
         std::map<GeneID, GeneData> g2d;
         
-        // Genes to exons
+        // Genes to non-unique exons
         std::map<TransID, std::set<ExonData_>> t2e;
         
-        // Genes to introns
+        // Genes to non-unique introns
         std::map<TransID, std::set<IntronData_>> t2i;
+
+        // Genes to unique exons
+        std::map<TransID, std::set<ExonData_>> t2ue;
+        
+        // Genes to unique introns
+        std::map<TransID, std::set<IntronData_>> t2ui;
         
         // Non-unique exons
         Counts exons = 0;
@@ -298,22 +305,68 @@ namespace Anaquin
             return r;
         }
         
-//        inline Intervals<> exonIntervals(const ChrID &cID) const
-//        {
-//            Intervals<> r;
-//            
-//            for (const auto &i : at(cID).t2e)
-//            {
-//                for (const auto &j : i.second)
-//                {
-//                    r.add(Interval(i.first, j.l));
-//                }
-//            }
-//            
-//            r.build();
-//            return r;
-//        }
+        // Intervals for non-unique exons
+        inline Intervals<> eIntervals(const ChrID &cID) const
+        {
+            Intervals<> r;
+            
+            for (const auto &i : at(cID).t2e)
+            {
+                for (const auto &j : i.second)
+                {
+                    // Each interval is an non-unique exon
+                    r.add(Interval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
+                }
+            }
 
+            r.build();
+            return r;
+        }
+
+        // Intervals for non-unique exons        
+        inline std::map<ChrID, Intervals<>> eIntervals() const
+        {
+            std::map<ChrID, Intervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = eIntervals(i.first);
+            }
+            
+            return r;
+        }
+
+        // Intervals for non-unique introns
+        inline Intervals<> iIntervals(const ChrID &cID) const
+        {
+            Intervals<> r;
+            
+            for (const auto &i : at(cID).t2i)
+            {
+                for (const auto &j : i.second)
+                {
+                    // Each interval is an non-unique intron
+                    r.add(Interval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
+                }
+            }
+            
+            r.build();
+            return r;
+        }
+        
+        // Intervals for non-unique introns
+        inline std::map<ChrID, Intervals<>> iIntervals() const
+        {
+            std::map<ChrID, Intervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = iIntervals(i.first);
+            }
+            
+            return r;
+        }
+        
         // Returns total length of all genes for a chromosome
         inline Base countLen(const ChrID &cID) const
         {
@@ -425,10 +478,15 @@ namespace Anaquin
                     
                     // Intron simply spans between exons
                     d.l = Locus(x.l.end+1, y.l.start-1);
+
+                    #define MIN_INTRON_LEN 20
                     
-                    c2d.il[x.cID][d.l]++;
-                    c2d[x.cID].intrs++;
-                    i.second.t2i[d.tID].insert(d);
+                    if (Standard::isSynthetic(i.first) || d.l.length() > MIN_INTRON_LEN)
+                    {
+                        c2d.il[x.cID][d.l]++;
+                        c2d[x.cID].intrs++;
+                        i.second.t2i[d.tID].insert(d);
+                    }
                 }
             }
         }
@@ -448,6 +506,18 @@ namespace Anaquin
         
         for (auto &i : c2d.il)
         {
+//            if (i.first == "chr21")
+//            {
+//                std::ofstream out("/Users/tedwong/Sources/QA/data/RnaQuin/myChr21.txt");
+//                
+//                for (auto &j : i.second)
+//                {//chr21   5012686 5014385
+//                    out << "chr21\t" << j.first.start-2 << "\t" << j.first.end << std::endl;
+//                }
+//                
+//                out.close();
+//            }
+            
             c2d.at(i.first).uintrs = i.second.size();
         }
 

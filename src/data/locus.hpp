@@ -43,6 +43,22 @@ namespace Anaquin
             return l;
         };
 
+        template <typename T> static bool exact(const std::vector<T> &ls)
+        {
+            for (auto i = 0; i < ls.size(); i++)
+            {
+                for (auto j = i + 1; j < ls.size(); j++)
+                {
+                    if (static_cast<Locus>(ls[i]) == (static_cast<Locus>(ls[j])))
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+
         template <typename T> static bool overlap(const std::vector<T> &ls)
         {
             for (auto i = 0; i < ls.size(); i++)

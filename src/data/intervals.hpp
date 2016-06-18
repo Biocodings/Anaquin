@@ -179,8 +179,8 @@ namespace Anaquin
                 }
             }
         
-            inline Locus l()       const { return _l;  }
-            inline IntervalID id() const { return _id; }
+            inline const Locus &l()       const { return _l;  }
+            inline const IntervalID &id() const { return _id; }
         
             inline IntervalID name() const override { return id(); }
         
@@ -240,6 +240,28 @@ namespace Anaquin
             {
                 return _inters.count(id) ? &(_inters.at(id)) : nullptr;
             }
+
+            inline T * exact(const Locus &l, std::vector<T *> *r = nullptr) const
+            {
+                auto v = _tree->findContains(l.start, l.end);
+
+                T *t = nullptr;
+    
+                for (const auto &i : v)
+                {
+                    if (i.value->l() == l)
+                    {
+                        t = i.value;
+                        
+                        if (r)
+                        {
+                            r->push_back(t);
+                        }
+                    }
+                }
+            
+                return t;
+            }
         
             inline T * contains(const Locus &l, std::vector<T *> *r = nullptr) const
             {
@@ -249,6 +271,8 @@ namespace Anaquin
                 {
                     for (const auto &i : v)
                     {
+                        if (i.value)
+                        
                         r->push_back(i.value);
                     }
                 }
