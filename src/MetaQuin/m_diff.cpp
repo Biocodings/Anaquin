@@ -188,7 +188,7 @@ MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o
 //    //stats.n_gen = (dStats_1.n + dStats_2.n) - stats.n_syn;
 //    
 //    // Calculating the absolute detection limit
-//    //stats.limit = r.absolute(stats.hist);
+//    //stats.limit = r.detectLimit(stats.hist);
 //    
 //    o.info((boost::format("Detected %1% sequin pairs in estimating differential") % stats.size()).str());
 

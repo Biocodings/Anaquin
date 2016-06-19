@@ -160,14 +160,10 @@ namespace Anaquin
                     }
                 }
             }
-        
-            /*
-             * Calculate the absolute detection limits. The limit is defined as the detected sequin with the least abundance.
-             */
 
-            inline Limit absolute(const SequinHist &hist) const
+            inline Limit detectLimit(const SequinHist &hist) const
             {
-                return absolute(hist, [&](const SequinID &id)
+                return detectLimit(hist, [&](const SequinID &id)
                 {
                     return this->match(id);
                 });
@@ -177,53 +173,47 @@ namespace Anaquin
 
             virtual void validate() = 0;
 
-            /*
-             * Provides a common mechanism to calculate absolute limit of quantification from a histogram of distribution
-             */
-
-            template <typename F> Limit absolute(const std::map<std::string, Counts> &h, F f, Mixture mix = Mix_1) const
+            template <typename F> Limit detectLimit(const SequinHist &h, F f, Mixture mix = Mix_1) const
             {
-                Limit s;
-            
-                // The lowest count must be zero because it can't be negative
-                s.counts = std::numeric_limits<unsigned>::max();
-            
-                for (auto i = h.begin(); i != h.end(); i++)
-                {
-                    const auto counts = i->second;
+                throw "Not Implemented";
                 
-                    /*
-                     * Is this sequin detectable? If it's detectable, what about the concentration?
-                     * By definition, detection limit is defined as the smallest abundance while still detected.
-                     */
-                
-                    if (counts)
-                    {
-                        const auto &id = i->first;
-                       /*
-                        const auto seq = f(id);
-
-                        // Hard to believe a sequin in the histogram is undefined
-                        assert(seq);
-
-                        if (counts < s.counts || (counts == s.counts && seq->concent(mix) < s.abund))
-                        {
-                            s.id     = id;
-                            s.counts = counts;
-                            s.abund  = seq->concent(mix);
-                        }
-                        */
-                    }
-                }
-            
-                if (s.counts == std::numeric_limits<unsigned>::max())
-                {
-                    s.counts = 0;
-                }
-            
-                return s;
+//                Limit s;
+//                s.counts = std::numeric_limits<unsigned>::max();
+//            
+//                for (auto i = h.begin(); i != h.end(); i++)
+//                {
+//                    const auto counts = i->second;
+//                
+//                    /*
+//                     * Is this sequin detected? If it's detected, what about its expected abundance?
+//                     * Detection limit is defined as the least abundance while still being detected.
+//                     */
+//                
+//                    if (counts)
+//                    {
+//                        const auto &id = i->first;
+//                        const auto seq = f(id);
+//                    
+//                        // Hard to believe a sequin in the histogram is undefined
+//                        assert(seq);
+//
+//                        if (counts < s.counts || (counts == s.counts && seq->concent(mix) < s.abund))
+//                        {
+//                            s.id     = id;
+//                            s.counts = counts;
+//                            s.abund  = seq->concent(mix);
+//                        }
+//                    }
+//                }
+//            
+//                if (s.counts == std::numeric_limits<unsigned>::max())
+//                {
+//                    s.counts = 0;
+//                }
+//            
+//                return s;
             }
-        
+
             struct MixtureData
             {
                 MixtureData(const SequinID &id, Base length, Concent abund)
@@ -669,9 +659,9 @@ namespace Anaquin
         
             // Intervals for reference introns
             Intervals<> intronInters(const ChrID &) const;
-        
-            // Absolute detection limit at the gene level
-            Limit absoluteGene(const SequinHist &) const;
+
+            // Detection limit at the gene level
+            Limit geneLimit(const SequinHist &) const;
 
             Base countLenSyn() const;
             Base countLenGen() const;

@@ -183,7 +183,7 @@ LNorm::Stats LNorm::analyze(const FileName &file, const Options &o)
     stats.s_joined = r.limitJoin(stats.h_joined);
 
     o.info("Calculating detection limit (unjoined level)");
-    stats.absolute = r.absolute(stats.hist);
+    stats.absolute = r.detectLimit(stats.hist);
 
   	return stats;
 }

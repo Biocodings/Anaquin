@@ -163,7 +163,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
         }
     }
 
-    stats.vars.limit = r.absolute(stats.hist);
+    stats.vars.limit = r.detectLimit(stats.hist);
 
     return stats;
 }

@@ -13,6 +13,7 @@ namespace Anaquin
     typedef double FPKM;
     typedef double Concent;
     typedef double Coverage;
+    typedef double Measured;
 
     // Number of lines in a file (most likely a large file)
     typedef long long Lines;

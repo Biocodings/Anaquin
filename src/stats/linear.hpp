@@ -69,9 +69,6 @@ namespace Anaquin
         // Pearson's correlation
         SReals lr, rr;
         
-        // Linear regression without logarithm
-        //SLinearStats nLog;
-        
         // Linear regression with logarithm
         SLinearStats wLog;
     };

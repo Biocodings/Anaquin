@@ -103,7 +103,7 @@ LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
 
 Limit LadderRef::limitJoin(const JoinHist &h) const
 {
-    return Reference<SequinData, DefaultStats>::absolute(h, [&](const JoinID &id)
+    return Reference<SequinData, DefaultStats>::detectLimit(h, [&](const JoinID &id)
     {
         return &(_impl->joined.at(id));
     });
@@ -516,12 +516,15 @@ Counts TransRef::countTransGen() const
     return _impl->gData.countTransGen();
 }
 
-Limit TransRef::absoluteGene(const SequinHist &hist) const
+Limit TransRef::geneLimit(const SequinHist &hist) const
 {
-    return Reference<TransData, DefaultStats>::absolute(hist, [&](const GeneID &id)
+    throw "Not Implemented";
+/*
+    return Reference<TransData, DefaultStats>::detectLimit(hist, [&](const GeneID &id)
     {
         return findGene(ChrT, id);
     });
+*/
 }
 
 void TransRef::readRef(const Reader &r)
@@ -1037,7 +1040,7 @@ const VarRef::Base * VarRef::findGene(const SequinID &id, Mixture mix) const
 
 Limit VarRef::absoluteBase(const SequinHist &hist, Mixture mix) const
 {
-    return Reference<SequinData, DefaultStats>::absolute(hist, [&](const SequinID &id)
+    return Reference<SequinData, DefaultStats>::detectLimit(hist, [&](const SequinID &id)
     {
         return findGene(id);
     }, mix);

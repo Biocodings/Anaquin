@@ -163,8 +163,8 @@ template <typename Functor> RDiff::Stats calculate(const RDiff::Options &o, Func
 
     switch (o.metrs)
     {
-        case Metrics::Gene:    { stats.limit = r.absoluteGene(stats.hist); break; }
-        case Metrics::Isoform: { stats.limit = r.absolute(stats.hist);     break; }
+        case Metrics::Gene:    { stats.limit = r.geneLimit(stats.hist);   break; }
+        case Metrics::Isoform: { stats.limit = r.detectLimit(stats.hist); break; }
         default: { break; }
     }
 

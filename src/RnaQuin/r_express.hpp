@@ -269,7 +269,7 @@ namespace Anaquin
                                 "       Genome: %9%\n\n"
                                 "-------Limit of Quantification (LOQ)\n"
                                 "       *Estimated by piecewise segmented regression\n\n"
-                                "       Break: %10% (%11%) attomol/ul\n\n"
+                                "       Break: %10% attomol/ul (%11%)\n\n"
                                 "       *Below LOQ\n"
                                 "       Intercept:   %12%\n"
                                 "       Slope:       %13%\n"

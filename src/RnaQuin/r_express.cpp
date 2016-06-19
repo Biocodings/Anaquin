@@ -1,12 +1,11 @@
 #include <stdexcept>
-#include "writers/r_writer.hpp"
 #include "RnaQuin/r_express.hpp"
 #include "parsers/parser_gtf.hpp"
 #include "parsers/parser_express.hpp"
 
 using namespace Anaquin;
 
-typedef RExpress::Metrics  Metrics;
+typedef RExpress::Metrics Metrics;
 
 template <typename T> void update(RExpress::Stats &stats, const T &x, const RExpress::Options &o)
 {
@@ -15,6 +14,10 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
         stats.n_syn++;
         const auto &r = Standard::instance().r_trans;
         
+        SequinID id;
+        Concent  exp = NAN;
+        Measured obs = NAN;
+
         switch (o.metrs)
         {
             case Metrics::Isoform:
@@ -24,15 +27,17 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
                 if (m)
                 {
                     stats.hist.at(m->id)++;
-                    
-                    if (x.abund)
+
+                    if (!isnan(x.abund) && x.abund)
                     {
-                        stats.add(m->id, m->concent(Mix_1), x.abund);
+                        id  = m->id;
+                        exp = m->concent(Mix_1);
+                        obs = x.abund;
                     }
                 }
                 else
                 {
-                    o.logWarn((boost::format("%1% not found. Unknown isoform.") % x.id).str());
+                    o.logWarn((boost::format("%1% not found. Unknown sequin.") % x.id).str());
                 }
                 
                 break;
@@ -48,18 +53,28 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
                     
                     if (!isnan(x.abund) && x.abund)
                     {
-                        const auto expected = r.concent(x.id);
-                        const auto measured = x.abund;
-                        
-                        stats.add(x.id, expected, measured);
+                        id  = x.id;
+                        exp = r.concent(x.id);
+                        obs = x.abund;
                     }
                 }
                 else
                 {
-                    o.logWarn((boost::format("%1% not found.") % x.id).str());
+                    o.logWarn((boost::format("%1% not found. Unknown sequin gene.") % x.id).str());
                 }
                 
                 break;
+            }
+        }
+        
+        if (!id.empty())
+        {
+            stats.add(id, exp, obs);
+            
+            if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+            {
+                stats.limit.id = id;
+                stats.limit.abund = exp;
             }
         }
     }
@@ -93,12 +108,6 @@ template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o
         throw std::runtime_error("Failed to find anything for the synthetic chromosome");
     }
     
-    switch (o.metrs)
-    {
-        case Metrics::Isoform: { stats.limit = r.absolute(stats.hist);     break; }
-        case Metrics::Gene:    { stats.limit = r.absoluteGene(stats.hist); break; }
-    }
-    
     return stats;
 }
 
@@ -126,12 +135,32 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
                 
                 ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
                 {
-                    t.l     = x.l;
-                    t.cID   = x.cID;
-                    t.id    = o.metrs == Metrics::Gene ? x.gID : x.tID;
-                    t.abund = x.fpkm;
-
-                    update(stats, t, o);
+                    bool matched = false;
+                    
+                    switch (o.metrs)
+                    {
+                        case Metrics::Isoform:
+                        {
+                            matched = x.type == RNAFeature::Transcript;
+                            break;
+                        }
+                            
+                        case Metrics::Gene:
+                        {
+                            matched = x.type == RNAFeature::Gene;
+                            break;
+                        }
+                    }
+                    
+                    if (matched)
+                    {
+                        t.l     = x.l;
+                        t.cID   = x.cID;
+                        t.id    = o.metrs == Metrics::Gene ? x.gID : x.tID;
+                        t.abund = x.fpkm;
+                        
+                        update(stats, t, o);                        
+                    }
                 });
 
                 break;
@@ -152,20 +181,20 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
     const auto stats = analyze(files, o);
 
     /*
-     * Generating RnaExpress_summary.stats
+     * Generating RnaExpression_summary.stats
      */
     
-    RExpress::generateSummary("RnaExpress_summary.stats", files, stats, o, units);
+    RExpress::generateSummary("RnaExpression_summary.stats", files, stats, o, units);
     
     /*
-     * Generating RnaExpress_sequins.csv
+     * Generating RnaExpression_sequins.csv
      */
     
-    RExpress::generateCSV("RnaExpress_sequins.csv", stats, o);
+    RExpress::generateCSV("RnaExpression_sequins.csv", stats, o);
     
     /*
-     * Generating RnaExpress_express.R
+     * Generating RnaExpression_sequins.csv
      */
     
-    RExpress::generateR("RnaExpress_express.R", "RnaExpress_sequins.csv", stats, o);
+    RExpress::generateR("RnaExpression_express.R", "RnaExpression_sequins.csv", stats, o);
 }

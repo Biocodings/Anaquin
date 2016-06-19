@@ -417,7 +417,7 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
         r.n_ref = hist[i].size();
         r.n_det.add((unsigned)detect(hist[i]));
         
-        r.b.add((unsigned)b);
+        r.b.add(b);
         r.lr.add(inf.lr);
         r.rr.add(inf.rr);
         r.bID.add(inf.id);
@@ -427,19 +427,7 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
         r.rSl.add(inf.rSl);
         r.lR2.add(inf.lR2);
         r.rR2.add(inf.rR2);
-        
-//        r.nLog.p.add(n_lm.p);
-//        r.nLog.r.add(n_lm.r);
-//        r.nLog.F.add(n_lm.F);
-//        r.nLog.sl.add(n_lm.m);
-//        r.nLog.R2.add(n_lm.R2);
-//        r.nLog.SSM.add(n_lm.SSM);
-//        r.nLog.SSE.add(n_lm.SSE);
-//        r.nLog.SST.add(n_lm.SST);
-//        r.nLog.SSM_D.add(n_lm.SSM_D);
-//        r.nLog.SSE_D.add(n_lm.SSE_D);
-//        r.nLog.SST_D.add(n_lm.SST_D);
-        
+
         r.wLog.p.add(l_lm.p);
         r.wLog.r.add(l_lm.r);
         r.wLog.F.add(l_lm.F);
@@ -471,15 +459,14 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
     {
         r.files.add(files[i]);
 
-        // Linear regression without logarithm
-        //const auto n_lm = lstats[i].linear(false);
-        
         // Linear regression with logarithm
         const auto l_lm = lstats[i].linear(true);
 
         // Calcluate the inflection point with logarithm
         const auto inf = lstats[i].limitQuant(true);
 
+        std::cout << inf.b << std::endl;
+        
         // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 
@@ -499,18 +486,6 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.rSl.add(inf.rSl);
         r.lR2.add(inf.lR2);
         r.rR2.add(inf.rR2);
-
-//        r.nLog.p.add(n_lm.p);
-//        r.nLog.r.add(n_lm.r);
-//        r.nLog.F.add(n_lm.F);
-//        r.nLog.sl.add(n_lm.m);
-//        r.nLog.R2.add(n_lm.R2);
-//        r.nLog.SSM.add(n_lm.SSM);
-//        r.nLog.SSE.add(n_lm.SSE);
-//        r.nLog.SST.add(n_lm.SST);
-//        r.nLog.SSM_D.add(n_lm.SSM_D);
-//        r.nLog.SSE_D.add(n_lm.SSE_D);
-//        r.nLog.SST_D.add(n_lm.SST_D);
 
         r.wLog.p.add(l_lm.p);
         r.wLog.r.add(l_lm.r);

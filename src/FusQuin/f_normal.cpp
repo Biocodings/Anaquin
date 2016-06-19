@@ -47,7 +47,7 @@ FNormal::Stats FNormal::analyze(const FileName &file, const Options &o)
         }
     }
 
-    stats.limit = r.absolute(stats.hist);
+    stats.limit = r.detectLimit(stats.hist);
 
     return stats;
 }

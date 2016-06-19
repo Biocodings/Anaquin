@@ -12,7 +12,6 @@ namespace Anaquin
         {
             VCF,
             Text,
-            //Kallisto
         };
         
         struct Options : public AnalyzerOptions
