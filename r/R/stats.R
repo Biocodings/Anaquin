@@ -36,7 +36,9 @@ showLOQ <- function(x, y, showDetails=FALSE)
                     lInter=rep(NA,length(x)),
                     rR2=rep(NA,length(x)),
                     rSlope=rep(NA,length(x)),                    
-                    rInter=rep(NA,length(x)))
+                    rInter=rep(NA,length(x)),
+                    lr=rep(NA,length(x)),
+                    rr=rep(NA,length(x)))
 
     plm <- function(i)
     {
@@ -57,14 +59,18 @@ showLOQ <- function(x, y, showDetails=FALSE)
         m1 <- lm(y~x, data=d1)
         m2 <- lm(y~x, data=d2)
         
-        return (list(breaks=d[i,]$x, 'lModel'=m1, 'rModel'=m2))
+        return (list(breaks=d[i,]$x, 'lModel'=m1, 'rModel'=m2, 'lr'=cor(d1$x,d1$y), 'rr'=cor(d2$x,d2$y)))
     }
 
     lapply(2:(nrow(d)-3), function(i)
     {
+        options(warn=-1)
+        
         # Fit two piecewise linear models
         fit <- plm(i)
         
+        options(warn=0)
+
         # Where this breakpoint occurs
         r$k[i] <<- fit$breaks
 
@@ -74,9 +80,11 @@ showLOQ <- function(x, y, showDetails=FALSE)
         sm1 <- summary(m1)
         sm2 <- summary(m2)
         
+        r$lr[i]  <<- fit$lr
+        r$rr[i]  <<- fit$rr
         r$lR2[i] <<- sm1$r.squared
         r$rR2[i] <<- sm2$r.squared
-        
+
         if (r$lR2[i] != 0)
         {
             r$lInter[i] <<- sm1$coefficients[1,1]
@@ -114,7 +122,7 @@ showLOQ <- function(x, y, showDetails=FALSE)
     # Fit the model again
     fit <- plm(which.min(r$sums)+1)
     
-    stopifnot(all.equal(summary(fit$lModel)$r.squared, b$lR2))    
+    stopifnot(all.equal(summary(fit$lModel)$r.squared, b$lR2))  
     stopifnot(all.equal(summary(fit$rModel)$r.squared, b$rR2))
     stopifnot(all.equal(summary(fit$lModel)$coefficients[1,1], b$lInter))    
     stopifnot(all.equal(summary(fit$rModel)$coefficients[1,1], b$rInter))    
