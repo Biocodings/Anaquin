@@ -13,10 +13,6 @@ namespace Anaquin
     {
         typedef CalledVariant Data;
 
-        /*
-         * Refer to http://samtools.github.io/hts-specs/VCFv4.1.pdf for more details
-         */
-        
         enum Field
         {
             CHROM,
@@ -33,14 +29,6 @@ namespace Anaquin
 
         static void parse(const Reader &r, std::function<void (const Data &, const ParserProgress &)> f)
         {
-            const std::map<std::string, Genotype> allele =
-            {
-                { "0/0", HomozygousR },
-                { "1/1", HomozygousA },
-                { "0/1", Heterzygous },
-                { "1/2", Heterzygous },
-            };
-
             std::string line;
             
             Data d;
@@ -68,6 +56,7 @@ namespace Anaquin
                 // Eg: D_1_3_R
                 d.id = fields[Field::ID];
                 
+                // VCF has 1-based position
                 d.l.start = d.l.end = stod(fields[Field::POS]);
                 
                 // Reference allele
@@ -85,8 +74,12 @@ namespace Anaquin
                     
                     for (const auto &info : infos)
                     {
+                        /*
+                         * Eg: AA=.;DP=124
+                         *     AA=g;DP=132;HM2
+                         */
+                        
                         Tokens::split(info, "=", t);
-                        assert(t.size() == 2);
                         
                         if (t[0] == "AF") { d.allF = stof(t[1]); }
                     }

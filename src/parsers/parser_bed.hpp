@@ -48,8 +48,14 @@ namespace Anaquin
                     // Name of the chromosome
                     d.cID = tokens[0];
                     
-                    // Position of the feature in standard chromosomal coordinates
-                    d.l = Locus(stod(tokens[1]) + 1, stod(tokens[2]));
+                    /*
+                     * https://genome.ucsc.edu/FAQ/FAQformat.html#format1
+                     *
+                     * The starting position requires to increment because BED position is a 0-based.
+                     * The end position requies no increment because it is "not included in the display".
+                     */
+                    
+                    d.l = Locus(stod(tokens[1])+1, stod(tokens[2]));
                     
                     if (tokens.size() >= 6)
                     {
