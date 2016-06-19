@@ -58,8 +58,10 @@ static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
             //stats.data[align.cID].gfp[m->name()]++;
             stats.data[align.cID].afp.push_back(align.name);
         }
-        else
+        else if (Standard::isSynthetic(align.cID))
         {
+            stats.data[align.cID].fp++;
+
             /*
              * The read is not aligned within the reference regions. We don't know whether this is
              * a TP or FP.
