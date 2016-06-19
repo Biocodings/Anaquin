@@ -228,7 +228,7 @@ namespace Anaquin
             SReals n_above;
 
             // Number of genomic features below the breakpoint
-            SReals n_below;
+            SCounts n_below;
             
             for (const auto &i : stats)
             {

@@ -804,6 +804,11 @@ std::map<ChrID, Hist> VarRef::hist() const
     return _impl->bData.hist();
 }
 
+std::map<ChrID, Intervals<>> VarRef::inters() const
+{
+    return _impl->bData.gInters();
+}
+
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
     const auto &p = _impl->data.at(Mix_1).at(baseID(id));
@@ -867,6 +872,26 @@ Counts VarRef::countSNPGen() const
 Counts VarRef::countVar() const
 {
     return _impl->vData.countVar();
+}
+
+Base VarRef::countBaseSyn() const
+{
+    return _impl->bData.countBaseSyn();
+}
+
+Base VarRef::countBaseGen() const
+{
+    return _impl->bData.countBaseGen();
+}
+
+Counts VarRef::countGeneSyn() const
+{
+    return _impl->bData.countGeneSyn();
+}
+
+Counts VarRef::countGeneGen() const
+{
+    return _impl->bData.countGeneGen();
 }
 
 void VarRef::validate()
@@ -967,15 +992,8 @@ void VarRef::validate()
 
 const VarRef::Base * VarRef::findGene(const SequinID &id, Mixture mix) const
 {
-    return _impl->baseMix.count(id) ? &(_impl->baseMix.at(id)) : nullptr;
-}
-
-Limit VarRef::absoluteBase(const SequinHist &hist, Mixture mix) const
-{
-    return Reference<SequinData, DefaultStats>::detectLimit(hist, [&](const SequinID &id)
-    {
-        return findGene(id);
-    }, mix);
+    throw "Not Implemented";
+    //return _impl->baseMix.count(id) ? &(_impl->baseMix.at(id)) : nullptr;
 }
 
 std::map<ChrID, Intervals<>> VarRef::intersGen() const

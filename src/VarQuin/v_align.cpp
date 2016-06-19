@@ -4,159 +4,74 @@
 
 using namespace Anaquin;
 
-template <typename T> struct AlignmentMatch
-{
-    inline bool contains() const { return !cMatch; }
-    inline bool overlaps() const { return !oMatch; }
-
-    T * oMatch = nullptr;
-    T * cMatch = nullptr;
-
-    // Number of bases to the left of the reference (overlaps == true)
-    Base lGaps = 0;
-
-    // Number of bases to the right of the reference (overlaps == true)
-    Base rGaps = 0;
-};
-
-static AlignmentMatch<Interval> __match__;
-
-template <typename T, typename F> const AlignmentMatch<T> * matchT(const Alignment &align, AlignmentMatch<T> &match, F f)
-{
-    match = AlignmentMatch<T>();
-    
-    if ((match.cMatch = f(align.l, MatchRule::Contains)))
-    {
-        match.oMatch = match.cMatch;
-    }
-    else if ((match.oMatch = f(align.l, MatchRule::Overlap)))
-    {
-        // Empty Implementation
-    }
-
-    auto x = __match__.cMatch ? __match__.cMatch : __match__.oMatch;
-    
-    if (x)
-    {
-        x->map(align.l, &match.lGaps, &match.rGaps);
-    }
-
-    return match.cMatch ? &match : nullptr;
-}
-
 static VAlign::Stats init()
 {
     const auto &r = Standard::instance().r_var;
 
     VAlign::Stats stats;
-    //stats.data[ChrT].hist = r.baseHist();
+    
+    stats.hist   = r.hist();
+    stats.inters = r.inters();
+    
+    assert(!stats.hist.empty());
+    assert(!stats.inters.empty());
 
     return stats;
 }
 
-static void classifySynth(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
+static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
 {
-    const auto &r = Standard::instance().r_var;
-    const SequinData * match;
-
-    // Does the read aligned within a gene (or a region)?
-    if ((match = r.match(align.l, MatchRule::Contains)))
+    Base lGaps, rGaps;
+    
+    auto f = [&](Interval *m)
     {
-        stats.data[ChrT].tp++;
+        m->map(align.l, &lGaps, &rGaps);
 
-        const auto bID = baseID(match->id);
-        
-        /*
-         * It's important to map the position relative to the beginning of the sequin, as interval
-         * has been designed for chromosome and thus starts from position 0.
-         */
-        
-        const auto l = inters.find(bID);
+        stats.data[align.cID].lGaps[m->name()] += lGaps;
+        stats.data[align.cID].lGaps[m->name()] += rGaps;
+        stats.data[align.cID].align[m->name()] += (align.l.length() - lGaps - rGaps);
+    };
+    
+    // Does the read aligned within a gene (or a region)?
+    const auto m = stats.inters.at(align.cID).contains(align.l);
 
-        assert(l);
-        assert(l->l() == match->l);
+    if (m)
+    {
+        f(m);
+        assert(lGaps == 0 && rGaps == 0);
 
-        const auto t = Locus(align.l.start - l->l().start, align.l.end - l->l().start);
-        assert(t.length() <= l->l().length());
-
-        inters.find(bID)->add(t);
-        stats.data[ChrT].hist.at(bID)++;
-        stats.data[ChrT].gtp[bID]++;
+        stats.data[align.cID].tp++;
+        //stats.data[align.cID].gtp[m->name()]++;
+        stats.hist.at(align.cID).at(m->name())++;
     }
     else
     {
-        stats.data[ChrT].fp++;
-        stats.data[ChrT].afp.push_back(align.name);
+        // Can we at least match by overlapping?
+        const auto m = stats.inters[align.cID].overlap(align.l);
 
-        if ((match = r.match(align.l, MatchRule::Overlap)))
+        if (m)
         {
-            stats.data[ChrT].gfp[baseID(match->id)]++;
-        }
-    }
-}
+            f(m);
+            assert(lGaps != 0 || rGaps != 0);
 
-static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Intervals<> &inters)
-{
-    const auto &r = Standard::instance().r_var;
-
-    /*
-     * Don't bother if we don't even have the chromosome defined in the reference
-     */
-    
-    if (Standard::isGenomic(align.cID))
-    {
-        // Does the read aligned within a gene (or a region)?
-        if (matchT(align, __match__, [&](const Locus &l, MatchRule rule)
-        {
-            return r.findGeno(align.cID, align.l, rule);
-        }))
-        {
-            const auto gID = __match__.cMatch->id();
-            stats.data[align.cID].tp++;
-            stats.data[align.cID].hist.at(gID)++;
-            stats.data[align.cID].gtp[gID]++;
+            stats.data[align.cID].fp++;
+            //stats.data[align.cID].gfp[m->name()]++;
+            stats.data[align.cID].afp.push_back(align.name);
         }
         else
         {
             /*
-             * Here, we know we have the reference chromosome. But what happens if it's outside
-             * the regions? It can be TP because it could align to a gene outside the regions.
-             * It could also be FP because it might fail to align correctly. We simply don't have
-             * the information. Thus, it's only FP if it aligns at least partially with our regions.
+             * The read is not aligned within the reference regions. We don't know whether this is
+             * a TP or FP.
              */
-            
-            if (__match__.oMatch)
-            {
-                stats.data[align.cID].fp++;
-                stats.data[align.cID].gfp[__match__.oMatch->id()]++;
-            }
         }
     }
 }
 
 VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 {
-    const auto &r = Standard::instance().r_var;
-
     auto stats = init();
     o.analyze(file);
-
-    /*
-     * We'll need the intervals for measuring the bases. Construcing an interval for each sequin.
-     * This enables us to calculate sensitivity.
-     */
-    
-    Intervals<> inters;
-    
-    for (auto &i : r.data())
-    {
-        if (boost::algorithm::ends_with(i.first, "_V"))
-        {
-            continue;
-        }
-        
-        inters.add(Interval(baseID(i.first), i.second.l));
-    }
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
@@ -173,153 +88,109 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
         else if (Standard::isSynthetic(align.cID))
         {
-            classifySynth(align, stats, inters);
+            classifyAlign(stats, align);
         }
-        else
+        else if (Standard::isGenomic(align.cID))
         {
-            classifyGenome(align, stats, inters);
+            classifyAlign(stats, align);
         }
     });
 
     /*
-     * Calculating interval statistics
+     * -------------------- Calculating statistics --------------------
      */
 
-    o.info("Calculating interval statistics");
+    auto stp = 0;
+    auto sfp = 0;
+    auto gtp = 0;
+    auto gfp = 0;
 
-    auto f = [&](Stats::Data &data, const Intervals<> &inters)
+    for (const auto &i : stats.hist)
     {
-        Base totCov = 0;
-        Base totLen = 0;
-
-        for (const auto &i: inters.data())
+        for (const auto &j : i.second)
         {
-            Base covered = 0;
+            const auto &cID = i.first;
+            const auto &gID = j.first;
             
-            i.second.bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
+            // Reads aligned to the gene
+            stats.g2r[gID] = j.second;
+
+            const auto isSyn = Standard::isSynthetic(cID);
+            
+            const auto m = stats.inters.at(cID).find(gID);
+            assert(m);
+            
+            // Statistics for the gene
+            const auto ms = m->stats();
+            
+            if (isSyn)
             {
-                if (depth)
-                {
-                    covered += j - i;
-                }
-            });
-            
-            data.covered[i.first] = covered;
-            data.length [i.first] = i.second.l().length();
+                stats.s2l[gID] = ms.length;
+                stats.s2c[gID] = ms.covered();
 
-            totCov += covered;
-            totLen += i.second.l().length();
-            
-            assert(totCov <= totLen);
-        }
-        
-        assert(totLen == inters.length());
-    };
-    
-    for (auto &i : stats.data)
-    {
-        if (Standard::isSynthetic(i.first))
-        {
-            // TODO f(stats.data[i.first], inters);
-        }
-        else
-        {
-            // TODO f(stats.data[i.first], r.genoInters());
-        }
-    }
-    
-    /*
-     * -------------------- Calculating genomic statistics --------------------
-     */
-    
-    /*
-     * 1. Covered and length for each sequin
-     */
-
-    for (const auto &i : stats.data)
-    {
-        if (!Standard::isSynthetic(i.first))
-        {
-            stats.s2c[i.first] = 0;
-            stats.s2l[i.first] = 0;
-            
-            for (const auto &j : i.second.covered)
-            {
-                stats.s2c[i.first] += j.second;
+                // Sensitivty for the gene
+                stats.g2s[gID] = static_cast<Proportion>(stats.s2c.at(gID)) / stats.s2l.at(gID);
             }
-            
-            for (const auto &j : i.second.length)
+            else
             {
-                stats.s2l[i.first] += j.second;
+                stats.g2l[gID] = ms.length;
+                stats.g2c[gID] = ms.covered();
+
+                // Sensitivty for the gene
+                stats.g2s[gID] = static_cast<Proportion>(stats.g2c.at(gID)) / stats.g2l.at(gID);
             }
 
-            assert(stats.s2l[i.first] >= stats.s2c[i.first]);
+            // TP at the base level
+            const auto btp = stats.data.at(i.first).align.at(gID);
             
-            stats.gtp += i.second.tp;
-            stats.gfp += i.second.fp;            
+            // FP at the base level
+            const auto bfp = (stats.data.at(i.first).lGaps.count(gID) ? stats.data.at(i.first).lGaps.at(gID) : 0)
+                                    +
+                             (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
+            
+            // Precison at the base level
+            const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
+            
+            if (Standard::isSynthetic(cID))
+            {
+                stp += btp;
+                sfp += bfp;
+            }
+            else
+            {
+                gtp += btp;
+                gfp += bfp;
+            }
+
+            stats.g2p[gID] = bpc;
         }
     }
-    
-    stats.gc = sum(stats.s2c);
-    stats.gl = sum(stats.s2l);
-    assert(stats.gl >= stats.gl);
-    
-    /*
-     * -------------------- Calculating sequin statistics --------------------
-     */
-    
-    /*
-     * 1. Reads aligned to each sequin
-     */
-    
-    for (const auto &i : stats.data.at(ChrT).hist)
-    {
-        stats.s2r[i.first] = i.second;
-    }
-    
-    /*
-     * 2. Covered and length for each sequin
-     */
 
-    stats.s2l = stats.data.at(ChrT).length;
-    stats.s2c = stats.data.at(ChrT).covered;
+    assert(!stats.g2r.empty());
+    assert(!stats.g2s.empty());
+    assert(!stats.s2l.empty());
+    assert(!stats.s2c.empty());
+
     assert(stats.s2l.size() == stats.s2c.size());
-    
-    /*
-     * 3. Sensitivity for each sequin
-     */
-    
-    for (const auto &i : stats.s2l)
-    {
-        stats.s2s[i.first] = static_cast<Proportion>(stats.s2c.at(i.first)) / stats.s2l.at(i.first);
-    }
+    assert(stats.g2r.size() == stats.g2s.size());
 
-    assert(stats.s2s.size() == stats.s2l.size());
-
-    /*
-     * 4: Precision for each sequin
-     */
-    
-    for (const auto &i : stats.data.at(ChrT).hist)
-    {
-        #define FROM_MAP(x) x.count(i.first) ? x.at(i.first) : 0
-        
-        const auto tp = FROM_MAP(stats.data.at(ChrT).gtp);
-        const auto fp = FROM_MAP(stats.data.at(ChrT).gfp);
-        const auto pc = (tp + fp) ? static_cast<Proportion>(tp) / (tp + fp) : NAN;
-        
-        assert(pc == NAN || (stats.s2p[i.first] >= 0 && stats.s2p[i.first] <= 1.0));
-        stats.s2p[i.first] = pc;
-    }
+    stats.spc = static_cast<Proportion>(stp) / (stp + sfp);
+    stats.gpc = static_cast<Proportion>(gtp) / (gtp + gfp);
+    stats.ssn = static_cast<Proportion>(sum(stats.s2c)) / sum(stats.s2l);
+    stats.gsn = static_cast<Proportion>(sum(stats.g2c)) / sum(stats.g2l);
 
     return stats;
 }
 
 static void writeSummary(const FileName &file, const FileName &src, const VAlign::Stats &stats, const VAlign::Options &o)
 {
+    extern FileName BedRef();
+
+    const auto &r = Standard::instance().r_var;
+
     const auto sums2c = sum(stats.s2c);
     const auto sums2l = sum(stats.s2l);
-    
+
     const auto summary = "-------VarAlign Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
                          "       User alignment file: %2%\n\n"
@@ -327,41 +198,75 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       Unmapped:  %3%\n"
                          "       Synthetic: %4% (%5%)\n"
                          "       Genome:    %6% (%7%)\n"
-                         "       Dilution:  %8%\n\n"
+                         "       Dilution:  %8%\n\n"    
+                         "-------Reference annotation (Synthetic)\n\n"
+                         "       Synthetic: %9% genes\n"
+                         "       Synthetic: %10% bases\n\n"
+                         "-------Reference annotation (Genome)\n\n"
+                         "       Genome: %11% genes\n"
+                         "       Genome: %12% bases\n\n"
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
                          "       *Region level\n"
-                         "       Covered:     %9%\n"
-                         "       Uncovered:   %10%\n"
-                         "       Total:       %11%\n"
-                         "       Sensitivity: %12%\n"
-                         "       Precision:   %13%\n\n"
+                         "       Covered:     %13%\n"
+                         "       Uncovered:   %14%\n"
+                         "       Total:       %15%\n"
+                         "       Sensitivity: %16%\n"
+                         "       Precision:   %17%\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %14%\n"
-                         "       Uncovered:   %15%\n"
-                         "       Total:       %16%\n"
-                         "       Sensitivity: %17%\n"
-                         "       Precision:   %18%";
+                         "       Covered:     %18%\n"
+                         "       Uncovered:   %19%\n"
+                         "       Total:       %20%\n"
+                         "       Sensitivity: %21%\n"
+                         "       Precision:   %22%\n\n"
+                         "-------Comparison of alignments to annotation (Genome)\n\n"
+                         "       *Region level\n"
+                         "       Covered:     %23%\n"
+                         "       Uncovered:   %24%\n"
+                         "       Total:       %25%\n"
+                         "       Sensitivity: %26%\n"
+                         "       Precision:   %27%\n\n"
+                         "       *Nucleotide level\n"
+                         "       Covered:     %28%\n"
+                         "       Uncovered:   %29%\n"
+                         "       Total:       %30%\n"
+                         "       Sensitivity: %31%\n"
+                         "       Precision:   %32%";
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(summary) % o.rAnnot
-                                            % src
-                                            % stats.n_unmap
-                                            % stats.n_syn
-                                            % (100 * stats.synProp())
-                                            % stats.n_gen
-                                            % (100 * stats.genProp())
-                                            % stats.dilution()
-                                            % stats.gc
-                                            % (stats.gl - stats.gc)
-                                            % stats.gl
-                                            % stats.gsn()
-                                            % stats.gpc()
-                                            % sums2c
-                                            % (sums2l - sums2c)
-                                            % sums2l
-                                            % stats.sn(ChrT)
-                                            % stats.pc(ChrT)).str());
+    o.writer->write((boost::format(summary) % BedRef()                // 1
+                                            % src                     // 2
+                                            % stats.n_unmap           // 3
+                                            % stats.n_syn             // 4
+                                            % (100 * stats.synProp()) // 5
+                                            % stats.n_gen             // 6
+                                            % (100 * stats.genProp()) // 7
+                                            % stats.dilution()        // 8
+                                            % r.countGeneSyn()        // 9
+                                            % r.countBaseSyn()        // 10
+                                            % r.countGeneGen()        // 11
+                                            % r.countBaseGen()        // 12
+                                            % "????"                  // 13
+                                            % "????"                  // 14
+                                            % "????"                  // 15
+                                            % "????"                  // 16
+                                            % "????"                  // 17
+                                            % sums2c                  // 18
+                                            % (sums2l - sums2c)       // 19
+                                            % sums2l                  // 20
+                                            % stats.ssn               // 21
+                                            % stats.spc               // 22
+                                            % ""                      // 23
+                                            % ""                      // 24
+                                            % ""                      // 25
+                                            % ""                      // 26
+                                            % ""                      // 27
+                                            % ""                      // 28
+                                            % ""                      // 29
+                                            % ""                      // 30
+                                            % stats.gsn               // 31
+                                            % stats.gpc               // 32
+                     ).str());
     o.writer->close();
 }
 
@@ -371,20 +276,19 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
     o.writer->open(file);
     
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    o.writer->write((boost::format(format) % "Seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "Length"
                                            % "Reads"
                                            % "Sn"
                                            % "Pc").str());
 
-    for (const auto &i : stats.data.at(ChrT).hist)
+    for (const auto &i : stats.hist.at(ChrT))
     {
-        assert(stats.s2s.at(i.first) == stats.sn(ChrT, i.first));
         o.writer->write((boost::format(format) % i.first
                                                % stats.s2l.at(i.first)
-                                               % stats.s2r.at(i.first)
-                                               % stats.sn(ChrT, i.first)
-                                               % stats.s2p.at(i.first)).str());
+                                               % stats.g2r.at(i.first)
+                                               % stats.g2s.at(i.first)
+                                               % stats.g2p.at(i.first)).str());
     }
 
     o.writer->close();

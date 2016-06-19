@@ -5,6 +5,7 @@
 #include "data/standard.hpp"
 #include "data/intervals.hpp"
 #include "stats/analyzer.hpp"
+#include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_bed.hpp"
 
 namespace Anaquin
@@ -21,6 +22,40 @@ namespace Anaquin
         inline Counts countGene(const ChrID &cID) const
         {
             return at(cID).g2d.size();
+        }
+        
+        inline Counts countBase(const ChrID &cID) const
+        {
+            Base b = 0;
+            
+            for (const auto &i : at(cID).g2d)
+            {
+                b += i.second.l.length();
+            }
+
+            assert(b);
+            return b;
+        }
+
+        inline Counts countBaseSyn() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
+            {
+                return Standard::isSynthetic(cID) ? countBase(cID) : 0;
+            });
+        }
+
+        inline Counts countBase() const
+        {
+            return ::Anaquin::count(*this, [&](const ChrID &cID, const BedChrData &x)
+            {
+                return countBase(cID);
+            });
+        }
+        
+        inline Counts countBaseGen() const
+        {
+            return countBase() - countBaseSyn();
         }
         
         inline Counts countGene() const
@@ -108,7 +143,21 @@ namespace Anaquin
         
         ParserBed::parse(r, [&](const ParserBed::Data &x, const ParserProgress &)
         {
-            c2d[x.cID].g2d[x.name] = x;
+            if (Standard::isSynthetic(x.cID))
+            {
+                const auto bID = baseID(x.name);
+                
+                if (c2d[x.cID].g2d.count(bID))
+                {
+                    return;
+                }
+
+                c2d[x.cID].g2d[bID] = x;
+            }
+            else
+            {
+                c2d[x.cID].g2d[x.name] = x;
+            }
         });
 
         return c2d;

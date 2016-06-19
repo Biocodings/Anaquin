@@ -203,7 +203,7 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                                     % MixRef()               // 3
                                     % r.countSNPSyn()        // 4
                                     % r.countIndSyn()        // 5
-                                    % r.countSync()          // 6
+                                    % r.countVarSync()       // 6
                                     % stats.n_syn            // 7
                                     % stats.vars.limit.abund // 8
                                     % stats.vars.limit.id    // 9

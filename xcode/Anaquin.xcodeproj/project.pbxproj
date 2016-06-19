@@ -1160,7 +1160,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"~/Sources/QA/src/kallisto",
 					"~/Sources/SS",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
@@ -1198,7 +1197,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
-					"~/Sources/QA/src/kallisto",
 					"~/Sources/SS",
 				);
 				OTHER_CPLUSPLUSFLAGS = (

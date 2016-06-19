@@ -537,8 +537,11 @@ namespace Anaquin
         
             std::map<ChrID, Intervals<>> intersGen() const;
         
-            // Absolute detection limit at the base level
-            Limit absoluteBase(const SequinHist &, Mixture mix = Mix_1) const;
+            Anaquin::Base countBaseSyn() const;
+            Anaquin::Base countBaseGen() const;
+
+            Counts countGeneSyn() const;
+            Counts countGeneGen() const;
 
             // Returns number of known variants
             Counts countVar() const;
@@ -561,7 +564,8 @@ namespace Anaquin
             // Counts indels for the genome
             Counts countIndGen() const;
 
-            inline Counts countSync() const { return countSNPSyn() + countIndSyn(); }
+            // Counts variants for the synthetic chromosome
+            inline Counts countVarSync() const { return countSNPSyn() + countIndSyn(); }
 
             // Returns number of sequins
             Counts countSeqs() const;
@@ -571,6 +575,9 @@ namespace Anaquin
 
             // Histogram for all reference chromosomes
             std::map<ChrID, Hist> hist() const;
+
+            // Intervals for all reference chromosomes
+            std::map<ChrID, Intervals<>> inters() const;
         
             Counts countIntervals(const ChrID &) const;
         
