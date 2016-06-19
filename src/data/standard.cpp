@@ -132,11 +132,11 @@ void Standard::addVStd(const Reader &r)
     {
         if (Standard::isSynthetic(f.cID))
         {
-            r_var.addStand(f.id, f.l);
+            r_var.addStand(f.name, f.l);
         }
         else
         {
-            r_var.addGInterval(f.cID, Interval(f.id, f.l));
+            r_var.addGInterval(f.cID, Interval(f.name, f.l));
         }
     });
 }
@@ -207,7 +207,7 @@ void Standard::addSStruct(const Anaquin::Reader &r)
     {
         if (Standard::isSynthetic(f.cID))
         {
-            r_str.addStruct(f.id);
+            r_str.addStruct(f.name);
         }
     });
 }
@@ -234,7 +234,7 @@ void Standard::addFStd(const Reader &r)
     {
         if (Standard::isSynthetic(f.cID))
         {
-            r_fus.addStand(f.id, f.l);
+            r_fus.addStand(f.name, f.l);
         }
     });
 }
@@ -245,7 +245,7 @@ void Standard::addFJunct(const Reader &r)
     {
         if (Standard::isSynthetic(f.cID))
         {
-            r_fus.addJunct(f.id, f.l);
+            r_fus.addJunct(f.name, f.l);
         }
     });
 }

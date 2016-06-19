@@ -6,14 +6,14 @@ extern std::string PlotTROC();
 
 using namespace Anaquin;
 
-TEST_CASE("LinearInflection_Summary")
-{
-    const auto r1 = StatsWriter::inflectSummary();
-    const auto r2 = StatsWriter::inflectSummary("chrT.gtf", "endo.gtf", SInflectStats(), "genes");
-
-    REQUIRE(!r1.empty());
-    REQUIRE(!r2.empty());
-}
+//TEST_CASE("LinearInflection_Summary")
+//{
+//    const auto r1 = StatsWriter::inflectSummary();
+//    const auto r2 = StatsWriter::inflectSummary("chrT.gtf", "endo.gtf", SInflectStats(), "genes");
+//
+//    REQUIRE(!r1.empty());
+//    REQUIRE(!r2.empty());
+//}
 
 //TEST_CASE("R_ROC_Plot")
 //{

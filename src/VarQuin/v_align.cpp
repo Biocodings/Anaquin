@@ -104,6 +104,10 @@ static void classifyGenome(const Alignment &align, VAlign::Stats &stats, Interva
 {
     const auto &r = Standard::instance().r_var;
 
+    /*
+     * Don't bother if we don't even have the chromosome defined in the reference
+     */
+    
     if (Standard::isGenomic(align.cID))
     {
         // Does the read aligned within a gene (or a region)?

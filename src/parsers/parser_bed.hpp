@@ -15,7 +15,7 @@ namespace Anaquin
     {
         struct Data
         {
-            operator const std::string &() const { return id; }
+            operator const std::string &() const { return name; }
             
             ChrID cID;
             
@@ -25,7 +25,7 @@ namespace Anaquin
             Locus l;
 
             // Eg: chr1_10482481_10483779
-            std::string id;
+            std::string name;
         };
 
         static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
@@ -60,7 +60,7 @@ namespace Anaquin
                     if (tokens.size() >= 4)
                     {
                         // Name of the BED line (eg: gene)
-                        d.id = tokens[3];
+                        d.name = tokens[3];
                     }
                     
                     f(d, p);

@@ -824,22 +824,6 @@ template <typename Report> void report_1(typename Report::Options o = typename R
     }, o);
 }
 
-//template <typename Report> void report_2(typename Report::Options o = typename Report::Options())
-//{
-//    if (_p.inputs.size() != 2)
-//    {
-//        throw NotDoubleInputError();
-//    }
-//    
-//    o.mix = mixture();
-//    o.index = _p.opts[OPT_R_IND];
-//
-//    return startAnalysis<Report>([&](const typename Report::Options &o)
-//    {
-//        Report::generate(_p.inputs[0], _p.inputs[1], o);
-//    }, o);
-//}
-
 template <typename Viewer> void viewer(typename Viewer::Options o = typename Viewer::Options())
 {
     // Where the session files are generated
@@ -1323,7 +1307,7 @@ void parse(int argc, char ** argv)
                     {
                         case RExpress::Inputs::GTF:
                         {
-                            o.metrs = RExpress::Metrics::Gene;
+                            o.metrs = RExpress::Metrics::Isoform;
                             break;
                         }
 

@@ -115,23 +115,23 @@ TEST_CASE("GTF_Merged")
  *  gunzip gz
  */
 
-TEST_CASE("GTF_GenCode")
-{
-    const auto r = gtfData(Reader("tests/data/gencode.v24.annotation.gtf"));
-    
-    REQUIRE(r.countGeneSyn()  == 0);
-    REQUIRE(r.countTransSyn() == 0);
-    REQUIRE(r.countExonSyn()  == 0);
-    REQUIRE(r.countUExonSyn() == 0);
-    REQUIRE(r.countIntrSyn()  == 0);
-    REQUIRE(r.countUIntrSyn() == 0);
-    
-    REQUIRE(r.countGene()     == 60554);
-    REQUIRE(r.countTrans()    == 199169);
-    REQUIRE(r.countGeneGen()  == 60554);
-    REQUIRE(r.countTransGen() == 199169);
-    REQUIRE(r.countExonGen()  == 1177311);
-    REQUIRE(r.countUExonGen() == 570957);
-    REQUIRE(r.countIntrGen()  == 976685);
-    REQUIRE(r.countUIntrGen() == 347410);
-}
+//TEST_CASE("GTF_GenCode")
+//{
+//    const auto r = gtfData(Reader("tests/data/gencode.v24.annotation.gtf"));
+//    
+//    REQUIRE(r.countGeneSyn()  == 0);
+//    REQUIRE(r.countTransSyn() == 0);
+//    REQUIRE(r.countExonSyn()  == 0);
+//    REQUIRE(r.countUExonSyn() == 0);
+//    REQUIRE(r.countIntrSyn()  == 0);
+//    REQUIRE(r.countUIntrSyn() == 0);
+//    
+//    REQUIRE(r.countGene()     == 60554);
+//    REQUIRE(r.countTrans()    == 199169);
+//    REQUIRE(r.countGeneGen()  == 60554);
+//    REQUIRE(r.countTransGen() == 199169);
+//    REQUIRE(r.countExonGen()  == 1177311);
+//    REQUIRE(r.countUExonGen() == 570957);
+//    REQUIRE(r.countIntrGen()  == 976685);
+//    REQUIRE(r.countUIntrGen() == 347410);
+//}
