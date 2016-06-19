@@ -1,5 +1,7 @@
 #include "data/tokens.hpp"
+#include "tools/bed_data.hpp"
 #include "tools/gtf_data.hpp"
+#include "tools/vcf_data.hpp"
 #include "data/reference.hpp"
 #include "VarQuin/VarQuin.hpp"
 #include "RnaQuin/RnaQuin.hpp"
@@ -759,29 +761,48 @@ struct VarRef::VarRefImpl
     std::map<Mixture, std::map<SequinID, VariantPair>> data;
 
     /*
-     * Data structure for the genome
-     */
-    
-    ChrID genoID;
-    
-    // Genomic intervals (eg: chr21)
-    std::map<ChrID, Intervals<>> genome;
-
-    /*
      * Data structure for synthetic
      */
     
-    // VarQuin standards
-    std::map<SequinID, Locus> stands;
-
-    // Variants (SNPs + indels)
-    std::map<ChrID, std::set<Variant>> vars;
-
     // Mixture for bases
     std::map<SequinID, Base> baseMix;
+
+    VCFData vData;
+    BedData bData;
+    
+    std::map<ChrID, Intervals<>> gInters;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
+
+void VarRef::readBRef(const Reader &r)
+{
+    for (const auto &i : (_impl->bData = bedData(r)))
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            Standard::addGenomic(i.first);
+        }
+    }
+
+    _impl->gInters = _impl->bData.gInters();
+}
+
+void VarRef::readVRef(const Reader &r)
+{
+    for (const auto &i : (_impl->vData = vcfData(r)))
+    {
+        if (!Standard::isSynthetic(i.first))
+        {
+            Standard::addGenomic(i.first);
+        }
+    }
+}
+
+std::map<ChrID, Hist> VarRef::hist() const
+{
+    return _impl->bData.hist();
+}
 
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
@@ -803,35 +824,9 @@ Fold VarRef::findAFold(const SequinID &id) const
     return round(p.r->abund / p.v->abund);
 }
 
-void VarRef::addVar(const Variant &v)
-{
-    assert(!v.cID.empty());
-    _impl->vars[v.cID].insert(v);
-}
-
-void VarRef::addGInterval(const ChrID &cID, const Interval &i)
-{
-    if (!_impl->genoID.empty() && _impl->genoID != cID)
-    {
-        throw std::runtime_error("Multi chromosomes is not supported. Only a single chromosome can be used.");
-    }
-
-    _impl->genome[cID].add(i);
-    Standard::addGenomic(_impl->genoID = cID);
-}
-
-void VarRef::addStand(const SequinID &id, const Locus &l)
-{
-    assert(l.length());
-    assert(!_impl->stands.count(id));
-
-    // We're only interested in the position of the sequin
-    _impl->stands[id] = l;
-}
-
 Counts VarRef::countInters() const
 {
-    return _impl->genome[genoID()].size();
+    throw "Not Implemented";
 }
 
 Counts VarRef::countSeqs() const
@@ -839,85 +834,39 @@ Counts VarRef::countSeqs() const
     return data().size();
 }
 
-Counts VarRef::countIndel(const ChrID &cID) const
+Counts VarRef::countInd(const ChrID &cID) const
 {
-    return std::count_if(_impl->vars.at(cID).begin(), _impl->vars.at(cID).end(), [&](const Variant &v)
-    {
-        return v.type() == Insertion || v.type() == Deletion;
-    });
+    return _impl->vData.countInd(cID);
 }
 
-Counts VarRef::countIndSync() const
+Counts VarRef::countIndSyn() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->vars)
-    {
-        if (Standard::isSynthetic(i.first))
-        {
-            n += countIndel(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->vData.countIndSyn();
 }
 
-Counts VarRef::countIndGeno() const
+Counts VarRef::countIndGen() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->vars)
-    {
-        if (!Standard::isSynthetic(i.first))
-        {
-            n += countIndel(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->vData.countIndGen();
 }
     
 Counts VarRef::countSNP(const ChrID &cID) const
 {
-    return std::count_if(_impl->vars.at(cID).begin(), _impl->vars.at(cID).end(), [&](const Variant &v)
-    {
-        return v.type() == SNP;
-    });
+    return _impl->vData.countSNP(cID);
 }
 
-Counts VarRef::countSNPSync() const
+Counts VarRef::countSNPSyn() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->vars)
-    {
-        if (Standard::isSynthetic(i.first))
-        {
-            n += countSNP(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->vData.countSNPSyn();
 }
 
-Counts VarRef::countSNPGeno() const
+Counts VarRef::countSNPGen() const
 {
-    Counts n = 0;
-    
-    for (const auto &i : _impl->vars)
-    {
-        if (!Standard::isSynthetic(i.first))
-        {
-            n += countSNP(i.first);
-        }
-    }
-    
-    return n;
+    return _impl->vData.countSNPGen();
 }
 
-Counts VarRef::countVars() const
+Counts VarRef::countVar() const
 {
-    return _impl->vars.size();
+    return _impl->vData.countVar();
 }
 
 void VarRef::validate()
@@ -925,7 +874,7 @@ void VarRef::validate()
     /*
      * Rules:
      *
-     *   1: Annotation (eg: VarDiscover)
+     *   1: Annotation (eg: VarAlign and VarDiscover)
      *   2: Mixture (eg: VarAlign)
      *   3: Variants & mixture (eg: VarFrequency)
      */
@@ -937,17 +886,18 @@ void VarRef::validate()
     }
     
     // Rule: 1
-    else if (!_impl->stands.empty())
+    else if (!_impl->bData[ChrT].g2d.empty())
     {
         std::set<SequinID> ids;
         
-        for (const auto &i : _impl->stands)
+        for (const auto &i : _impl->bData[ChrT].g2d)
         {
             ids.insert(i.first);
         }
 
         merge(ids);
     }
+
     else
     {
         throw std::runtime_error("Failed to validate for VarQuin");
@@ -990,24 +940,6 @@ void VarRef::validate()
     }
     
     /*
-     * Constructing for the standards
-     */
-    
-    for (const auto &i : _impl->stands)
-    {
-        _data.at(i.first).l = i.second;
-    }
-
-    /*
-     * Constructing the genome (eg: chr21)
-     */
-
-    if (_impl->genome[genoID()].size())
-    {
-        _impl->genome[genoID()].build();
-    }
-
-    /*
      * Building the input concentration for the sequins
      */
     
@@ -1046,163 +978,131 @@ Limit VarRef::absoluteBase(const SequinHist &hist, Mixture mix) const
     }, mix);
 }
 
-SequinHist VarRef::baseHist() const
+std::map<ChrID, Intervals<>> VarRef::intersGen() const
 {
-    SequinHist hist;
-    
-    for (const auto &i : _data)
-    {
-        hist[baseID(i.first)];
-    }
-    
-    return hist;
-}
-
-const Intervals<> VarRef::genoInters() const
-{
-    return _impl->genome.at(genoID());
-}
-
-ChrID VarRef::genoID() const
-{
-    return _impl->genoID;
-}
-
-HashHist VarRef::varHist() const
-{
-    HashHist hist;
-    
-    for (const auto &i : _impl->vars.at(ChrT))
-    {
-        hist[var2hash(i.id, i.type(), i.l)];
-    }
-    
-    assert(!hist.empty());
-    return hist;
-}
-
-GenomeHist VarRef::genomeHist() const
-{
-    GenomeHist hist;
-    
-    for (const auto &i : _impl->genome.at(genoID()).data())
-    {
-        hist[i.second.id()];
-    }
-
-    assert(!hist.empty());
-    return hist;
+    return _impl->bData.gIntersGen();
 }
 
 Interval * VarRef::findGeno(const ChrID &cID, const Locus &l, MatchRule rule) const
 {
-    assert(!Standard::isSynthetic(cID));
+    throw "NOT IMPLEMENTED";
     
-    if (!_impl->genome.count(cID))
-    {
-        return nullptr;
-    }
-    
-    switch (rule)
-    {
-        case MatchRule::Contains: { return _impl->genome.at(cID).contains(l); }
-        case MatchRule::Overlap:  { return _impl->genome.at(cID).overlap(l);  }
-        case MatchRule::Exact:
-        {
-            throw "Not Implemented";
-        }
-    }
+//    assert(!Standard::isSynthetic(cID));
+//    
+//    if (!_impl->genome.count(cID))
+//    {
+//        return nullptr;
+//    }
+//    
+//    switch (rule)
+//    {
+//        case MatchRule::Contains: { return _impl->genome.at(cID).contains(l); }
+//        case MatchRule::Overlap:  { return _impl->genome.at(cID).overlap(l);  }
+//        case MatchRule::Exact:
+//        {
+//            throw "Not Implemented";
+//        }
+//    }
 }
 
 Interval * VarRef::findGeno(const Locus &l) const
 {
-    return _impl->genome.at(genoID()).contains(l);
+    throw "NOT IMPLEMENTED";
+//    return _impl->genome.at(genoID()).contains(l);
 }
 
 const Variant * VarRef::hashVar(long key) const
 {
-    for (const auto &i : _impl->vars.at(ChrT))
-    {
-        if (var2hash(i.id, i.type(), i.l) == key)
-        {
-            return &i;
-        }
-    }
+    throw "Not Implemented";
+
     
-    return nullptr;
+//    for (const auto &i : _impl->vars.at(ChrT))
+//    {
+//        if (var2hash(i.id, i.type(), i.l) == key)
+//        {
+//            return &i;
+//        }
+//    }
+//    
+//    return nullptr;
 }
 
 Counts VarRef::countIntervals(const ChrID &cID) const
 {
-    return _impl->genome.at(cID).size();
+    throw "Not Implemented";
+//    return _impl->genome.at(cID).size();
 }
 
 const Variant * VarRef::findVar(const SequinID &id) const
 {
-    // Eg: D_1_1
-    auto x = id;
+    throw "Not Implemented";
     
-    if (boost::algorithm::ends_with(x, "_V"))
-    {
-        x = x.substr(0, x.length() - 2) + "_R";
-    }
-    else if (!boost::algorithm::ends_with(x, "_R"))
-    {
-        x = x + "_R";
-    }
-
-    for (const auto &i : _impl->vars.at(ChrT))
-    {
-        if (i.id == x)
-        {
-            return &i;
-        }
-    }
+//    // Eg: D_1_1
+//    auto x = id;
+//    
+//    if (boost::algorithm::ends_with(x, "_V"))
+//    {
+//        x = x.substr(0, x.length() - 2) + "_R";
+//    }
+//    else if (!boost::algorithm::ends_with(x, "_R"))
+//    {
+//        x = x + "_R";
+//    }
+//
+//    for (const auto &i : _impl->vars.at(ChrT))
+//    {
+//        if (i.id == x)
+//        {
+//            return &i;
+//        }
+//    }
     
     return nullptr;
 }
 
 const Variant * VarRef::findVar(const Locus &l, MatchRule match) const
 {
-    if (match != Exact && match != Contains)
-    {
-        throw std::runtime_error("Only Exact and Contains are supported");
-    }
-
-    switch (match)
-    {
-        case Exact:
-        {
-            for (const auto &i : _impl->vars.at(ChrT))
-            {
-                if (i.l.start == l.start)
-                {
-                    return &i;
-                }
-            }
-
-            break;
-        }
-            
-        case Contains:
-        {
-            typedef std::pair<SequinID, Locus> StandardPair;
-            
-            const auto iter = std::find_if(_impl->stands.begin(), _impl->stands.end(), [&](const StandardPair &p)
-            {
-                return p.second.contains(l);
-            });
-            
-            if (iter != _impl->stands.end())
-            {
-                return findVar(iter->first);
-            }
-
-            break;
-        }
-
-        default : { break; }
-    }
+    throw "Not Implemented";
+    
+//    if (match != Exact && match != Contains)
+//    {
+//        throw std::runtime_error("Only Exact and Contains are supported");
+//    }
+//
+//    switch (match)
+//    {
+//        case Exact:
+//        {
+//            for (const auto &i : _impl->vars.at(ChrT))
+//            {
+//                if (i.l.start == l.start)
+//                {
+//                    return &i;
+//                }
+//            }
+//
+//            break;
+//        }
+//            
+//        case Contains:
+//        {
+//            typedef std::pair<SequinID, Locus> StandardPair;
+//            
+//            const auto iter = std::find_if(_impl->stands.begin(), _impl->stands.end(), [&](const StandardPair &p)
+//            {
+//                return p.second.contains(l);
+//            });
+//            
+//            if (iter != _impl->stands.end())
+//            {
+//                return findVar(iter->first);
+//            }
+//
+//            break;
+//        }
+//
+//        default : { break; }
+//    }
     
     return nullptr;
 }

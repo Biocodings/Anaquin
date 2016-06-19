@@ -24,7 +24,7 @@ VKExpress::Stats VKExpress::analyze(const FileName &file1, const FileName &file2
     VKExpress::Stats stats;
     
     // Initialize the distribution for each sequin
-    stats.hist = r.hist();
+    //stats.hist = r.hist();
     
     stats.n_gen = NAN;
 

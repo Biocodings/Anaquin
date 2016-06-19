@@ -49,12 +49,7 @@ static VAlign::Stats init()
     const auto &r = Standard::instance().r_var;
 
     VAlign::Stats stats;
-    stats.data[ChrT].hist = r.baseHist();
-
-    if (!r.genoID().empty())
-    {
-        stats.data[r.genoID()].hist = r.genomeHist();
-    }
+    //stats.data[ChrT].hist = r.baseHist();
 
     return stats;
 }
@@ -225,11 +220,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     {
         if (Standard::isSynthetic(i.first))
         {
-            f(stats.data[i.first], inters);
+            // TODO f(stats.data[i.first], inters);
         }
         else
         {
-            f(stats.data[i.first], r.genoInters());
+            // TODO f(stats.data[i.first], r.genoInters());
         }
     }
     
@@ -413,8 +408,6 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
 
 void VAlign::report(const FileName &file, const Options &o)
 {
-    o.info("Genome: [" + Standard::instance().r_var.genoID() + "]");
-    
     const auto stats = analyze(file, o);
 
     o.info("Generating statistics");

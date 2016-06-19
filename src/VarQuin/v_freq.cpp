@@ -44,7 +44,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
     VFreq::Stats stats;
     
     // Initialize the distribution for each sequin
-    stats.hist = r.hist();
+    //stats.hist = r.hist();
 
     switch (o.input)
     {
@@ -198,13 +198,13 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                          "SSE:         %17%, DF: %18%\n"
                          "SST:         %19%, DF: %20%\n";
     
-    return ((boost::format(summary) % file
-                                    % VCFRef()
-                                    % MixRef()
-                                    % r.countSNPSync()
-                                    % r.countIndSync()
-                                    % r.countSync()
-                                    % stats.n_syn
+    return ((boost::format(summary) % file                   // 1
+                                    % VCFRef()               // 2
+                                    % MixRef()               // 3
+                                    % r.countSNPSyn()        // 4
+                                    % r.countIndSyn()        // 5
+                                    % r.countSync()          // 6
+                                    % stats.n_syn            // 7
                                     % stats.vars.limit.abund // 8
                                     % stats.vars.limit.id    // 9
                                     % lm.r                   // 10

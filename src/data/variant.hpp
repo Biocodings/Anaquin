@@ -47,11 +47,6 @@ namespace Anaquin
             }
         }
 
-        inline Base diff() const
-        {
-            return labs((Base)ref.size() - (Base)alt.size());
-        }
-
         inline Proportion alleleFreq() const
         {
             return static_cast<Proportion>(readV) / (readR + readV);

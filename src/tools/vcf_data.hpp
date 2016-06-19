@@ -14,12 +14,17 @@ namespace Anaquin
         std::map<Base, Variant> s2d;
         std::map<Base, Variant> i2d;
     };
-    
+
     struct VCFData : public std::map<ChrID, VCFChrData>
     {
         inline Counts countSNP(const ChrID &cID) const
         {
             return at(cID).s2d.size();
+        }
+        
+        inline Counts countVar() const
+        {
+            return countSNP() + countInd();
         }
         
         inline Counts countSNP() const

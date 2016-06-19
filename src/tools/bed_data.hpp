@@ -43,6 +43,21 @@ namespace Anaquin
         {
             return countGene() - countGeneSyn();
         }
+
+        inline std::map<ChrID, Hist> hist() const
+        {
+            std::map<ChrID, Hist> r;
+            
+            for (const auto &i : *this)
+            {
+                for (const auto &j :i.second.g2d)
+                {
+                    r[i.first][j.first];
+                }
+            }
+
+            return r;
+        }
         
         inline Intervals<> gIntervals(const ChrID &cID) const
         {
@@ -57,13 +72,30 @@ namespace Anaquin
             return r;
         }
 
-        inline std::map<ChrID, Intervals<>> gIntervals() const
+        // Intervals for the genes
+        inline std::map<ChrID, Intervals<>> gInters() const
         {
             std::map<ChrID, Intervals<>> r;
             
             for (const auto &i : *this)
             {
                 r[i.first] = gIntervals(i.first);
+            }
+            
+            return r;
+        }
+        
+        // Genomic intervals for the genes
+        inline std::map<ChrID, Intervals<>> gIntersGen() const
+        {
+            std::map<ChrID, Intervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                if (!Standard::isSynthetic(i.first))
+                {
+                    r[i.first] = gIntervals(i.first);
+                }
             }
             
             return r;

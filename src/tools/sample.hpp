@@ -109,9 +109,6 @@ namespace Anaquin
         
         struct StatsImpl
         {
-            // Returns the chromosome for the genomic region
-            virtual ChrID genoID() const = 0;
-
             // Whether the genomic region should be selected
             virtual bool shouldGenomic(const ChrID &, const Locus &) const = 0;
 
@@ -144,12 +141,12 @@ namespace Anaquin
                                                        const Options &o,
                                                        const StatsImpl &impl)
         {
-            const auto genoID = impl.genoID();
+            const auto genoID = "????"; //impl.genoID();
             
             // The selected regions must have intervals...
             assert(Standard::instance().r_var.countIntervals(genoID));
             
-            o.info("Genome: " + genoID);
+            //o.info("Genome: " + genoID);
             o.analyze(file);
             
             Stats stats;
@@ -174,7 +171,7 @@ namespace Anaquin
             }
             else if (!stats.cov.hist.count(genoID))
             {
-                throw std::runtime_error("Failed to find any alignment for: " + genoID);
+                throw std::runtime_error("Failed to find any alignment for the genome");
             }
             
             // There should be at least a chromosome for synthetic and genome
@@ -325,7 +322,7 @@ namespace Anaquin
                                                        const StatsImpl &si,
                                                        const ReportImpl &ri)
         {
-            const auto genoID = si.genoID();
+            const auto genoID = "????"; //si.genoID();
             
             auto meth2Str = [&]()
             {

@@ -14,22 +14,24 @@ VCoverage::Stats VCoverage::analyze(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    const auto &r = Standard::instance().r_var;
-
-    return CoverageTool::stats_(file, r.baseHist(), [&](const Alignment &align, const ParserProgress &)
-    {
-        if (align.cID == ChrT)
-        {
-            const auto m = r.match(align.l, MatchRule::Contains);
-            
-            if (m)
-            {
-                return r.findGene(baseID(m->id));
-            }
-        }
-
-        return (const VarRef::Base *) nullptr;
-    });
+    throw "Not Implemented";
+    
+//    const auto &r = Standard::instance().r_var;
+//
+//    return CoverageTool::stats_(file, r.baseHist(), [&](const Alignment &align, const ParserProgress &)
+//    {
+//        if (align.cID == ChrT)
+//        {
+//            const auto m = r.match(align.l, MatchRule::Contains);
+//            
+//            if (m)
+//            {
+//                return r.findGene(baseID(m->id));
+//            }
+//        }
+//
+//        return (const VarRef::Base *) nullptr;
+//    });
 }
 
 void VCoverage::report(const FileName &file, const VCoverage::Options &o)

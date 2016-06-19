@@ -528,54 +528,40 @@ namespace Anaquin
 
             VarRef();
 
-            /*
-             * Modifier functions
-             */
-        
-            // Add a known variant (synthetic and genomic/user)
-            void addVar(const Variant &);
-        
-            // Add a sequin in the standards
-            void addStand(const SequinID &, const Locus &);
-
-            // Add a reference interval (eg: chr21)
-            void addGInterval(const ChrID &, const Interval &);
+            void readBRef(const Reader &);
+            void readVRef(const Reader &);
 
             /*
              * Query functions
              */
         
-            ChrID genoID() const;
-
-            bool isGenoID(const ChrID &cID) const { return cID == genoID(); }
-
-            const Intervals<> genoInters() const;
+            std::map<ChrID, Intervals<>> intersGen() const;
         
             // Absolute detection limit at the base level
             Limit absoluteBase(const SequinHist &, Mixture mix = Mix_1) const;
 
             // Returns number of known variants
-            Counts countVars() const;
+            Counts countVar() const;
 
             // Count SNPs for a chromosome
             Counts countSNP(const ChrID &) const;
         
             // Counts indels for the synthetic chromosomes
-            Counts countSNPSync() const;
+            Counts countSNPSyn() const;
         
             // Counts indels for the genome
-            Counts countSNPGeno() const;
+            Counts countSNPGen() const;
         
             // Counts indels for a chromosome
-            Counts countIndel(const ChrID &) const;
+            Counts countInd(const ChrID &) const;
         
             // Counts indels for the synthetic chromosomes
-            Counts countIndSync() const;
+            Counts countIndSyn() const;
         
             // Counts indels for the genome
-            Counts countIndGeno() const;
+            Counts countIndGen() const;
 
-            inline Counts countSync() const { return countSNPSync() + countIndSync(); }
+            inline Counts countSync() const { return countSNPSyn() + countIndSyn(); }
 
             // Returns number of sequins
             Counts countSeqs() const;
@@ -583,13 +569,8 @@ namespace Anaquin
             // Returns number of genomic intervals
             Counts countInters() const;
 
-            // Eg: D_1_11, D_1_12
-            SequinHist baseHist() const;
-
-            // Eg: chr21 intervals
-            GenomeHist genomeHist() const;
-        
-            HashHist varHist() const;
+            // Histogram for all reference chromosomes
+            std::map<ChrID, Hist> hist() const;
         
             Counts countIntervals(const ChrID &) const;
         
@@ -607,7 +588,8 @@ namespace Anaquin
             Interval *findGeno(const Locus &) const;
             Interval *findGeno(const ChrID &cID, const Locus &l) const
             {
-                return isGenoID(cID) ? findGeno(l) : nullptr;
+                throw "Not Implemented";
+                //return isGenoID(cID) ? findGeno(l) : nullptr;
             }
         
             const Base *findGene(const SequinID &, Mixture mix = Mix_1) const;
@@ -646,7 +628,7 @@ namespace Anaquin
         public:
 
             TransRef();
-        
+
             void readRef(const Reader &);
 
             // Returns histogram for genes for all chromosomes (synthetic + genome)

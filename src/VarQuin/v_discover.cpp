@@ -16,7 +16,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_var;
 
     VDiscover::Stats stats;
-    stats.hist = r.varHist();
+    //stats.hist = r.varHist();
 
     parseVariants(file, o.input, [&](const VariantMatch &m)
     {
@@ -143,9 +143,9 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     }
     
     stats.chrT.m_snp.nq() = stats.chrT.dSNP();
-    stats.chrT.m_snp.nr() = r.countSNPSync();
+    stats.chrT.m_snp.nr() = r.countSNPSyn();
     stats.chrT.m_ind.nq() = stats.chrT.dInd();
-    stats.chrT.m_ind.nr() = r.countIndSync();
+    stats.chrT.m_ind.nr() = r.countIndSyn();
 
     stats.chrT.m.nq() = stats.chrT.m_snp.nq() + stats.chrT.m_ind.nq();
     stats.chrT.m.nr() = stats.chrT.m_snp.nr() + stats.chrT.m_ind.nr();
@@ -338,12 +338,12 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     o.writer->write((boost::format(summary) % BedRef()
                                             % VCFRef()
                                             % src
-                                            % r.countSNPSync()
-                                            % r.countIndSync()
-                                            % (r.countSNPSync() + r.countIndSync())
-                                            % r.countSNPGeno()
-                                            % r.countIndGeno()
-                                            % (r.countSNPGeno() + r.countIndGeno())
+                                            % r.countSNPSyn()
+                                            % r.countIndSyn()
+                                            % (r.countSNPSyn() + r.countIndSyn())
+                                            % r.countSNPGen()
+                                            % r.countIndGen()
+                                            % (r.countSNPGen() + r.countIndGen())
                                             % stats.chrT.dSNP()
                                             % stats.chrT.dInd()
                                             % stats.chrT.dTot()

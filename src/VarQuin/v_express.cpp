@@ -13,7 +13,7 @@ VExpress::Stats VExpress::analyze(const FileName &file, const Options &o)
     VExpress::Stats stats;
     
     // Initialize the distribution for each sequin
-    stats.hist = r.hist();
+    //stats.hist = r.hist();
 
     stats.n_gen = NAN;
 

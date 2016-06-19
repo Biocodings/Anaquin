@@ -13,11 +13,6 @@ namespace Anaquin
         {
             #define REF Standard::instance().r_var
 
-            inline ChrID genoID() const
-            {
-                return REF.genoID();
-            }
-            
             inline bool shouldGenomic(const ChrID &id, const Locus &l) const
             {
                 return static_cast<bool>(REF.findGeno(id, l));
