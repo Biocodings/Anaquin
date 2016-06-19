@@ -104,6 +104,7 @@ namespace Anaquin
         
         struct Stats : public LinearStats, public MappingStats, public SequinStats
         {
+            // Data for the genome
             std::map<GenoID, GenData> gData;
         };
 
@@ -215,10 +216,6 @@ namespace Anaquin
             
             const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
 
-            /*
-             * TODO: Need to do it in the log scale!
-             */
-            
             const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, hists, mStats, lStats);
 
             const auto n_syn = toString(r.countGeneSyn()) + " " + units;
