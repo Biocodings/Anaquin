@@ -11,7 +11,7 @@ TEST_CASE("BED_Synthetic")
     REQUIRE(r.countGeneSyn() == 72);
     REQUIRE(r.countGeneGen() == 0);
     
-    const auto i = r.gIntervals();
+    const auto i = r.gInters();
     
     REQUIRE(i.at(ChrT).exact(Locus(373692, 374677)));
     REQUIRE(i.at(ChrT).contains(Locus(373692, 374677)));
