@@ -12,21 +12,6 @@ namespace Anaquin
         struct SampleImpl : public Subsampler::StatsImpl
         {
             #define REF Standard::instance().r_var
-
-            inline ChrID genoID() const
-            {
-                return REF.genoID();
-            }
-            
-//            inline bool shouldGenomic(const ChrID &id, const Locus &l) const
-//            {
-//                return static_cast<bool>(REF.findGeno(id, l));
-//            }
-//
-//            inline bool shouldSynthetic(const ChrID &id, const Locus &l) const
-//            {
-//                return static_cast<bool>(REF.match(l, MatchRule::Contains));
-//            }
         };
         
         struct ReportImpl : public Subsampler::ReportImpl
@@ -50,24 +35,13 @@ namespace Anaquin
             {
                 return "MetaSubsample_sampled.sam";
             }
-            
-            virtual Counts countSeqs() const
-            {
-                return REF.countSeqs();
-            }
-            
-            virtual Counts countInters() const
-            {
-                return REF.countInters();
-            }
         };
         
         struct Options : public AnalyzerOptions
         {
             Options() {}
 
-            // How coverage is calculated. The default method follows Ira Deveson's 2016 paper.
-            Subsampler::CoverageMethod method = Subsampler::CoverageMethod::Median;
+            Subsampler::CoverageMethod method = Subsampler::CoverageMethod::ArithAverage;
         };
 
         typedef Subsampler::Stats Stats;

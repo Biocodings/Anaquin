@@ -3,26 +3,51 @@
 
 using namespace Anaquin;
 
+CoverageTool::Stats CoverageTool::stats__(const FileName &file, std::map<ChrID, Intervals<>> &inters)
+{
+    CoverageTool::Stats stats;
+ 
+    stats.src = file;
+    
+    ParserSAM::parse(file, [&](const Alignment &x, const ParserSAM::Info &info)
+    {
+        stats.update(x);
+
+        if (x.mapped && inters.count(x.cID))
+        {
+            const auto m = inters[x.cID].contains(x.l);
+            
+            if (m)
+            {
+                m->map(x.l);
+                stats.hist[x.cID]++;
+            }
+        }
+    });
+
+    return stats;
+}
+
 CoverageTool::Stats CoverageTool::stats(const FileName &file, AlignFunctor f)
 {
     CoverageTool::Stats stats;
 
     stats.src  = file;
     
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
+    ParserSAM::parse(file, [&](const Alignment &x, const ParserSAM::Info &info)
     {
-        stats.update(align);
+        stats.update(x);
 
-        if (align.mapped && f(align, info.p))
+        if (x.mapped && f(x, info.p))
         {
-            if (!stats.inters.find(align.cID))
+            if (!stats.inters.find(x.cID))
             {
-                // Add a new interval for the chromosome
-                stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
+                // Add a new interval for the chromosome (giving the length of the chromosome)
+                stats.inters.add(Interval(x.cID, Locus(0, info.length-1)));
             }
-            
-            stats.hist[align.cID]++;
-            stats.inters.find(align.cID)->add(align.l);
+
+            stats.hist[x.cID]++;
+            stats.inters.find(x.cID)->add(x.l);
         }
     });
 

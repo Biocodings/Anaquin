@@ -121,7 +121,7 @@ namespace Anaquin
                     {
                         i += p.second;
                     
-                        // Have we reached our limit?
+                        // Have we reached our percentile?
                         if (i >= n)
                         {
                             return p.first;
@@ -132,9 +132,9 @@ namespace Anaquin
                 };
             
                 stats.mean = stats.sums / stats.length;
-                stats.p25  = percent(0.25 * stats.length);
-                stats.p50  = percent(0.50 * stats.length);
-                stats.p75  = percent(0.75 * stats.length);
+                stats.p25  = percent(0.25 * stats.sums);
+                stats.p50  = percent(0.50 * stats.sums);
+                stats.p75  = percent(0.75 * stats.sums);
             
                 return stats;
             }
@@ -340,6 +340,61 @@ namespace Anaquin
             std::shared_ptr<IntervalTree<T *>> _tree;
         
             IntervalData _inters;
+    };
+
+    struct ID2Intervals : std::map<Interval::IntervalID, Intervals<>>
+    {
+        inline void add(const Interval::IntervalID &id, const Intervals<> &i)
+        {
+            (*this)[id] = i;
+        }
+        
+        inline Interval::Stats stats() const
+        {
+            Interval::Stats stats;
+            
+            for (const auto &i : *this)
+            {
+                const auto s = i.second.stats();
+                
+                stats.sums     += s.sums;
+                stats.length   += s.length;
+                stats.nonZeros += s.nonZeros;
+                stats.zeros    += s.zeros;
+                stats.min       = std::min(stats.min, s.min);
+                stats.max       = std::max(stats.max, s.max);
+                
+                for (const auto &j : s.hist)
+                {
+                    stats.hist[j.first] += j.second;
+                }
+            }
+            
+            auto percent = [&](Counts n)
+            {
+                Counts i = 0;
+                
+                for (const auto &p : stats.hist)
+                {
+                    i += p.second;
+                    
+                    // Have we reached our percentile?
+                    if (i >= n)
+                    {
+                        return p.first;
+                    }
+                }
+                
+                return stats.max;
+            };
+            
+            stats.mean = stats.sums / stats.length;
+            stats.p25  = percent(0.25 * stats.length);
+            stats.p50  = percent(0.50 * stats.length);
+            stats.p75  = percent(0.75 * stats.length);
+
+            return stats;
+        }
     };
 }
 

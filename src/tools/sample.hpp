@@ -46,10 +46,10 @@ namespace Anaquin
         struct Stats
         {
             // Coverage statistics for synthetic
-            Intervals<> syn;
+            ID2Intervals syn;
             
             // Coverage statistics for genome
-            Intervals<> gen;
+            ID2Intervals gen;
             
             // Raw coverage
             CoverageTool::Stats cov;
@@ -125,39 +125,16 @@ namespace Anaquin
             
             assert(inters.size() >= 2);
             
-            // Does the read aligned within a region?
-            auto inside = [&](const Alignment &x)
-            {
-                if (!inters.count(x.cID))
-                {
-                    return false;
-                }
-                
-                // Does the read aligned within the reference regions?
-                return (bool)inters[x.cID].contains(x.l);
-            };
-            
-            /*
-             * Collecting statistics for all alignments to the synthetic and genome
-             */
-            
-            stats.cov = CoverageTool::stats(file, [&](const Alignment &x, const ParserProgress &p)
-            {
-                if (!x.i && p.i && !(p.i % 1000000))
-                {
-                    o.wait(std::to_string(p.i));
-                }
-                
-                return inside(x);
-            });
-            
+            // Collect statistics for all reads mapped to the selected regions
+            const auto rr = CoverageTool::stats__(file, inters);
+
             // Number of alignments to the synthetic
             Counts n_syn = 0;
             
             // Number of alignments to the genome
             Counts n_gen = 0;
             
-            for (const auto &i : stats.cov.hist)
+            for (const auto &i : rr.hist)
             {
                 if (Standard::isSynthetic(i.first))
                 {
@@ -178,90 +155,75 @@ namespace Anaquin
                 throw std::runtime_error("Failed to find any alignment for the genome");
             }
             
-            // There should be at least synthetic and genome
-            assert(stats.cov.inters.size() >= 2);
-
             o.info(toString(n_syn) + " alignments to synthetic");
             o.info(toString(n_gen) + " alignments to genome");
             o.info(toString(n_syn + n_gen) + " alignments in total");
             o.info(toString(stats.cov.inters.size()) + " intervals generated");
 
             /*
-             * Filter out to the genomic regions
+             * Calculate statistics for both synthetic and genome
              */
             
-            o.info("Generating statistics for genome");
-
-            for (const auto &i : stats.cov.inters.data())
+            for (const auto &i : inters)
             {
                 const auto &cID = i.first;
                 
                 if (Standard::isSynthetic(cID))
                 {
-                    const auto inter = stats.cov.inters.find(i.first)->stats
-                            ([&](const ChrID &id, Base i, Base j, Coverage cov)
-                    {
-                         return inters[cID].contains(Locus(i,j));
-                    });
-                    
-                    //stats.syn.add(inter);
+                    stats.syn.add(cID, i.second);
                 }
-                
-                if (Standard::isGenomic(cID))
+                else if (Standard::isGenomic(cID))
                 {
-                    const auto inter = stats.cov.inters.find(i.first)->stats
-                            ([&](const ChrID &id, Base i, Base j, Coverage cov)
-                    {
-                            return inters[cID].contains(Locus(i,j));
-                    });
-
-                    //stats.gen.add(inter);
+                    stats.gen.add(cID, i.second);
                 }
             }
-            
-            const auto sstats = stats.syn.stats();
-            const auto gstats = stats.gen.stats();
 
-            assert(sstats.mean && gstats.mean);
+            assert(!stats.syn.empty());
+            assert(!stats.gen.empty());
+            
+            const auto ss = stats.syn.stats();
+            const auto gs = stats.gen.stats();
+
+            assert(ss.mean && gs.mean);
 
             o.info("Calculating coverage for the synthetic and genome");
             
             /*
-             * Now we have the data, we'll need to compare the coverage and determine what fraction that
-             * the synthetic chromosome needs to be subsampled.
+             * Now we have the data, we'll need to compare the coverage and determine the fraction that
+             * the synthetic genome needs to be sampled.
              */
             
             switch (o.method)
             {
                 case ArithAverage:
                 {
-                    stats.synC = sstats.mean;
-                    stats.genC = gstats.mean;
+                    stats.synC = ss.mean;
+                    stats.genC = gs.mean;
                     break;
                 }
-                    
+
                 case Maximum:
                 {
-                    stats.synC = sstats.max;
-                    stats.genC = gstats.max;
+                    stats.synC = ss.max;
+                    stats.genC = gs.max;
                     break;
                 }
-                    
+
                 case Median:
                 {
-                    stats.synC = sstats.p50;
-                    stats.genC = gstats.p50;
+                    stats.synC = ss.p50;
+                    stats.genC = gs.p50;
                     break;
                 }
-                    
+
                 case Percentile75:
                 {
-                    stats.synC = sstats.p75;
-                    stats.genC = gstats.p75;
+                    stats.synC = ss.p75;
+                    stats.genC = gs.p75;
                     break;
                 }
             }
-
+            
             assert(stats.synC && stats.genC);
             
             if (stats.genC > stats.synC)
@@ -317,11 +279,8 @@ namespace Anaquin
                 
                 if (!align.i)
                 {
-                    /*
-                     * This is the key, randomly write the reads with certain probability
-                     */
-                    
-                    if (align.cID != ChrT || sampler.select(bam_get_qname(b)))
+                    // This is the key, randomly write the reads with certain probability
+                    if (!Standard::isSynthetic(align.cID) || sampler.select(bam_get_qname(b)))
                     {
                         writer.write(h, b);
                     }

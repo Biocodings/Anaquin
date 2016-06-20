@@ -62,6 +62,8 @@ namespace Anaquin
         // Analyze a BAM file sorted by position
         static Stats stats(const FileName &, AlignFunctor);
 
+        static Stats stats__(const FileName &, std::map<ChrID, Intervals<>> &);
+
         // Analyze a BAM file sorted by position
         template <typename F> static Stats stats_(const FileName &file, const Hist &hist, F f)
         {
