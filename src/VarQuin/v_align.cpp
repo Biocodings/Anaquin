@@ -82,6 +82,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             o.wait(std::to_string(info.p.i));
         }
         
+        if (align.spliced)
+        {
+            o.warn("Spliced alignment detected");
+        }
+
         stats.update(align);
         
         if (!align.mapped)
@@ -113,7 +118,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         {
             const auto &cID = i.first;
             const auto &gID = j.first;
-            
+         
             // Reads aligned to the gene
             stats.g2r[gID] = j.second;
 
@@ -122,13 +127,13 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             const auto m = stats.inters.at(cID).find(gID);
             assert(m);
             
-            // Statistics for the gene
+            // Statistics for the gene (created by the interval)
             const auto ms = m->stats();
-            
+
             if (isSyn)
             {
                 stats.s2l[gID] = ms.length;
-                stats.s2c[gID] = ms.covered();
+                stats.s2c[gID] = ms.nonZeros;
 
                 // Sensitivty for the gene
                 stats.g2s[gID] = static_cast<Proportion>(stats.s2c.at(gID)) / stats.s2l.at(gID);
@@ -141,9 +146,12 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
                 // Sensitivty for the gene
                 stats.g2s[gID] = static_cast<Proportion>(stats.g2c.at(gID)) / stats.g2l.at(gID);
             }
+            
+            assert(stats.s2c[gID] <= stats.s2l[gID]);
+            assert(stats.g2c[gID] <= stats.g2l[gID]);
 
             // TP at the base level
-            const auto btp = stats.data.at(i.first).align.at(gID);
+            const auto btp = stats.data.at(cID).align.count(gID) ? stats.data.at(cID).align.at(gID) : 0;
             
             // FP at the base level (requires overlapping)
             const auto bfp = (stats.data.at(i.first).lGaps.count(gID) ? stats.data.at(i.first).lGaps.at(gID) : 0)
@@ -152,6 +160,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             
             // Precison at the base level
             const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
+
+            assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
             
             if (Standard::isSynthetic(cID))
             {
@@ -177,10 +187,17 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     assert(stats.g2r.size() == stats.g2s.size());
 
     stats.spc = static_cast<Proportion>(stp) / (stp + sfp);
-    stats.gpc = static_cast<Proportion>(gtp) / (gtp + gfp);
     stats.ssn = static_cast<Proportion>(sum(stats.s2c)) / sum(stats.s2l);
+
+    stats.gpc = static_cast<Proportion>(gtp) / (gtp + gfp);
     stats.gsn = static_cast<Proportion>(sum(stats.g2c)) / sum(stats.g2l);
 
+    assert(stats.spc >= 1.0 && stats.spc <= 1.0);
+    assert(isnan(stats.gpc) || (stats.gpc >= 1.0 && stats.gpc <= 1.0));
+
+    assert(stats.ssn >= 0.0 && stats.ssn <= 1.0);
+    assert(isnan(stats.gsn) || (stats.gsn >= 1.0 && stats.gsn <= 1.0));
+    
     return stats;
 }
 
@@ -213,31 +230,19 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       Genome: %11% genes\n"
                          "       Genome: %12% bases\n\n"
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
-                         "       *Region level\n"
-                         "       Covered:     %13%\n"
-                         "       Uncovered:   %14%\n"
-                         "       Total:       %15%\n"
-                         "       Sensitivity: %16%\n"
-                         "       Precision:   %17%\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %18%\n"
-                         "       Uncovered:   %19%\n"
-                         "       Total:       %20%\n"
-                         "       Sensitivity: %21%\n"
-                         "       Precision:   %22%\n\n"
+                         "       Covered:     %13$.2f\n"
+                         "       Uncovered:   %14$.2f\n"
+                         "       Total:       %15$.2f\n"
+                         "       Sensitivity: %16$.2f\n"
+                         "       Precision:   %17$.2f\n\n"
                          "-------Comparison of alignments to annotation (Genome)\n\n"
-                         "       *Region level\n"
-                         "       Covered:     %23%\n"
-                         "       Uncovered:   %24%\n"
-                         "       Total:       %25%\n"
-                         "       Sensitivity: %26%\n"
-                         "       Precision:   %27%\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %28%\n"
-                         "       Uncovered:   %29%\n"
-                         "       Total:       %30%\n"
-                         "       Sensitivity: %31%\n"
-                         "       Precision:   %32%";
+                         "       Covered:     %18$.2f\n"
+                         "       Uncovered:   %19$.2f\n"
+                         "       Total:       %20$.2f\n"
+                         "       Sensitivity: %21$.2f\n"
+                         "       Precision:   %22$.2f";
 
     o.generate(file);
     o.writer->open(file);
@@ -253,26 +258,16 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % r.countBaseSyn()        // 10
                                             % r.countGeneGen()        // 11
                                             % r.countBaseGen()        // 12
-                                            % "????"                  // 13
-                                            % "????"                  // 14
-                                            % "????"                  // 15
-                                            % "????"                  // 16
-                                            % "????"                  // 17
-                                            % sums2c                  // 18
-                                            % (sums2l - sums2c)       // 19
-                                            % sums2l                  // 20
-                                            % stats.ssn               // 21
-                                            % stats.spc               // 22
-                                            % ""                      // 23
-                                            % ""                      // 24
-                                            % ""                      // 25
-                                            % ""                      // 26
-                                            % ""                      // 27
-                                            % sumg2c                  // 28
-                                            % (sumg2l - sumg2c)       // 29
-                                            % sumg2l                  // 30
-                                            % stats.gsn               // 31
-                                            % stats.gpc               // 32
+                                            % sums2c                  // 13
+                                            % (sums2l - sums2c)       // 14
+                                            % sums2l                  // 15
+                                            % stats.ssn               // 16
+                                            % stats.spc               // 17
+                                            % sumg2c                  // 18
+                                            % (sumg2l - sumg2c)       // 19
+                                            % sumg2l                  // 20
+                                            % stats.gsn               // 21
+                                            % stats.gpc               // 22
                      ).str());
     o.writer->close();
 }

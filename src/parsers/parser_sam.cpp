@@ -107,6 +107,11 @@ void ParserSAM::parse(const FileName &file, Functor x)
         }
         
         info.p.i++;
+        
+        if (info.p.i >= 10000)
+        {
+            break;
+        }
     }
 
     sam_close(f);

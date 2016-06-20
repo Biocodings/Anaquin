@@ -35,7 +35,6 @@
 #include "VarQuin/v_forward.hpp"
 #include "VarQuin/v_discover.hpp"
 #include "VarQuin/v_coverage.hpp"
-#include "VarQuin/v_kexpress.hpp"
 
 #include "MetaQuin/m_kmer.hpp"
 #include "MetaQuin/m_diff.hpp"
@@ -115,7 +114,6 @@ typedef std::set<Value> Range;
 #define TOOL_F_DIFF      295
 #define TOOL_L_COPY      296
 #define TOOL_V_EXPRESS   297
-#define TOOL_V_KEXPRESS  298
 #define TOOL_R_KEXPRESS  299
 #define TOOL_M_ABUND     300
 #define TOOL_M_KDIFF     301
@@ -230,7 +228,6 @@ static std::map<Value, Tool> _tools =
     { "VarCoverage",    TOOL_V_COVERAGE  },
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarExpress",     TOOL_V_EXPRESS   },
-    { "VarKExpress",    TOOL_V_KEXPRESS  },
     { "VarKAllele",     TOOL_V_KALLELE   },
     { "VarForward",     TOOL_V_FORWARD   },
     { "VarSequence",    TOOL_V_SEQUENCE  },
@@ -327,7 +324,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_SUBSAMPLE, { OPT_R_BED,   OPT_U_FILES  } },
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_R_VCF,   OPT_U_FILES   } },
     { TOOL_V_FREQ,      { OPT_R_VCF,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_KEXPRESS,  { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED,  OPT_U_FILES, OPT_MIXTURE } },
 };
@@ -1505,7 +1501,6 @@ void parse(int argc, char ** argv)
         case TOOL_V_KALLELE:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
-        case TOOL_V_KEXPRESS:
         case TOOL_V_SEQUENCE:
         case TOOL_V_SUBSAMPLE:
         {
@@ -1590,14 +1585,6 @@ void parse(int argc, char ** argv)
                     VKAllele::Options o;
                     o.index = _p.opts[OPT_R_IND];
                     analyze_2<VKAllele>(o);
-                    break;
-                }
-
-                case TOOL_V_KEXPRESS:
-                {
-                    VKExpress::Options o;
-                    o.index = _p.opts[OPT_R_IND];
-                    analyze_2<VKExpress>(o);
                     break;
                 }
 
