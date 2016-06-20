@@ -32,11 +32,14 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             
             const auto p = isnan(m.query.p) ? 0.0 : m.query.p;
             
+            // Only matching if the position and alleles agree
+            const auto matched = m.match && m.ref && m.alt;
+            
             /*
              * Matched by position? reference allele? alternative allele?
              */
             
-            if (m.match && m.ref && m.alt)
+            if (matched)
             {
                 const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
                 stats.hist.at(cID).at(key)++;
@@ -52,7 +55,12 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             }
             else
             {
-                if (!m.seq || p <= o.sign)
+                /*
+                 * Variant not found in the reference. This is a FP unless it can be filtered by
+                 * the p-value.
+                 */
+
+                if (p <= o.sign)
                 {
                     stats.chrT.fps.push_back(m);
                 }
@@ -169,6 +177,7 @@ static void writeQuins(const FileName &file,
 {
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
 
+    o.generate(file);
     o.writer->open("VarDiscover_sequins.csv");
     o.writer->write((boost::format(format) % "ID"
                                            % "Pos"
@@ -192,14 +201,14 @@ static void writeQuins(const FileName &file,
             // For all the variants...
             for (const auto &j : i.second)
             {
-                const auto key = j.first;
+                auto key = j.first;
                 
-                // Detected the variant
+                // Detected the variant?
                 if (j.second)
                 {
-                    const auto m = r.findVar(cID, j.first);
+                    const auto m = r.findVar(cID, key);
                     assert(m);
-
+                    
                     /*
                      * Now we need to know the label for this reference variant
                      */
@@ -208,10 +217,10 @@ static void writeQuins(const FileName &file,
                     {
                         for (const auto &k : x)
                         {
-                            if (key == m->key())
+                            if (k.match && key == k.match->key())
                             {
                                 o.writer->write((boost::format(format) % m->id
-                                                                       % k.query.l.start
+                                                                       % m->l.start
                                                                        % label
                                                                        % (isnan(k.query.p) ? "-" : p2str(k.query.p))
                                                                        % k.query.readR
@@ -279,7 +288,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
     {
         for (const auto &i : x)
         {
-            o.writer->write((boost::format(format) % (i.seq ? i.seq->id : "-")
+            o.writer->write((boost::format(format) % (i.match ? i.match->id : "-")
                                                    % i.query.l.start
                                                    % label
                                                    % i.query.readR

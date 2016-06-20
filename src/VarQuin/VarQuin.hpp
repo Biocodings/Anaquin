@@ -21,7 +21,7 @@ namespace Anaquin
     };
     
     /*
-     * This class represents variant matching to the synthetic chromosome.
+     * This class represents variant matching to the synthetic chromosome
      */
     
     struct VariantMatch
@@ -31,9 +31,6 @@ namespace Anaquin
         // Matched by position?
         const Variant *match = nullptr;
         
-        // Matched by sequin region?
-        const Variant *seq = nullptr;
-
         /*
          * Defined only if seq is defined.
          */
@@ -100,7 +97,6 @@ namespace Anaquin
         auto match = [&](const CalledVariant &query)
         {
             m.query = query;
-            m.seq   = nullptr;
             m.match = nullptr;
 
             if (Standard::isSynthetic(query.cID))
@@ -110,15 +106,14 @@ namespace Anaquin
 
                 if (m.match)
                 {
-                    m.seq = m.match;
                     m.ref = m.match->ref == query.ref;
                     m.alt = m.match->alt == query.alt;
                 }
                 
-                if (m.seq && !mixture().empty())
+                if (m.match && !mixture().empty())
                 {
-                    m.eFold    = r.findAFold(baseID(m.seq->id));
-                    m.eAllFreq = r.findAFreq(baseID(m.seq->id));
+                    m.eFold    = r.findAFold(baseID(m.match->id));
+                    m.eAllFreq = r.findAFreq(baseID(m.match->id));
                 }
             }
 
