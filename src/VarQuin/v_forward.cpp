@@ -49,6 +49,15 @@ void VForward::analyze(const FileName &f1,
         {
             if (names.count(x.name))
             {
+                if (x.name.find("/1") != std::string::npos)
+                {
+                    boost::replace_all(x.name, "/1", "/2");
+                }
+                else
+                {
+                    boost::replace_all(x.name, "/2", "/1");
+                }
+                
                 std::reverse(x.seq.begin(),  x.seq.end());
                 std::reverse(x.qual.begin(), x.qual.end());
                 
