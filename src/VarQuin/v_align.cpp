@@ -173,6 +173,9 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
                 gtp += btp;
                 gfp += bfp;
             }
+            
+            assert(stp >= 0);
+            assert(sfp >= 0);
 
             stats.g2p[gID] = bpc;
         }
