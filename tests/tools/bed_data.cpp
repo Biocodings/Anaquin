@@ -7,8 +7,8 @@ TEST_CASE("BED_Synthetic")
 {
     const auto r = bedData(Reader("data/VarQuin/AVA017.v032.bed"));
     
-    REQUIRE(r.countGene()    == 72);
-    REQUIRE(r.countGeneSyn() == 72);
+    REQUIRE(r.countGene()    == 36);
+    REQUIRE(r.countGeneSyn() == 36);
     REQUIRE(r.countGeneGen() == 0);
     
     const auto i = r.gInters();

@@ -38,6 +38,8 @@ namespace Anaquin
     typedef std::string GenericID;
     typedef std::string FeatureID;
     typedef std::string SampleName;
+    
+    typedef std::string Sequence;
 
     typedef std::string Path;
     typedef std::string Label;

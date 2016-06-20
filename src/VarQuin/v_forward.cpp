@@ -49,17 +49,20 @@ void VForward::analyze(const FileName &f1,
         {
             if (names.count(x.name))
             {
-                if (x.name.find("/1") != std::string::npos)
-                {
-                    boost::replace_all(x.name, "/1", "/2");
-                }
-                else
-                {
-                    boost::replace_all(x.name, "/2", "/1");
-                }
+//                if (x.name.find("/1") != std::string::npos)
+//                {
+//                    boost::replace_all(x.name, "/1", "/2");
+//                }
+//                else
+//                {
+//                    boost::replace_all(x.name, "/2", "/1");
+//                }
                 
-                std::reverse(x.seq.begin(),  x.seq.end());
-                std::reverse(x.qual.begin(), x.qual.end());
+                // DNA complement of the sequence
+                complement(x.seq);
+                
+                //std::reverse(x.seq.begin(),  x.seq.end());
+                //std::reverse(x.qual.begin(), x.qual.end());
                 
                 fs << x.name << " " << x.info << std::endl;
                 fs << x.seq  << std::endl;
@@ -80,10 +83,10 @@ void VForward::analyze(const FileName &f1,
     };
 
     o.info("Generating first mates");
-    f(f1, o.work + "/VarForward_sequins_2.fq", o.work + "/VarForward_genome_1.fq");
+    f(f1, o.work + "/VarForward_sequins_1.fq", o.work + "/VarForward_genome_1.fq");
 
     o.info("Generating second mates");
-    f(f2, o.work + "/VarForward_sequins_1.fq", o.work + "/VarForward_genome_2.fq");
+    f(f2, o.work + "/VarForward_sequins_2.fq", o.work + "/VarForward_genome_2.fq");
 }
 
 void VForward::report(const std::vector<FileName> &files, const Options &o)
