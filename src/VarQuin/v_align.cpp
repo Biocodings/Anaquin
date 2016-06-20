@@ -27,9 +27,15 @@ static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
     {
         m->map(align.l, &lGaps, &rGaps);
 
+        const auto covered = (align.l.length() - lGaps - rGaps);
+        
         stats.data[align.cID].lGaps[m->name()] += lGaps;
         stats.data[align.cID].lGaps[m->name()] += rGaps;
-        stats.data[align.cID].align[m->name()] += (align.l.length() - lGaps - rGaps);
+        stats.data[align.cID].align[m->name()] += covered;
+        
+        assert(covered >= 0);
+        assert(align.l.length() > lGaps);
+        assert(align.l.length() > rGaps);
     };
     
     // Does the read aligned within a gene (or a region)?
