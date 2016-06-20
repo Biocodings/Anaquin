@@ -238,7 +238,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     const auto sumg2l = sum(stats.g2l);
     
     assert(sums2l >= sums2c);
-    assert(sumg2c >= sumg2l);
+    assert(sumg2l >= sumg2c);
 
     const auto summary = "-------VarAlign Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
