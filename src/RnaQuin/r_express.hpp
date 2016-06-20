@@ -219,7 +219,6 @@ namespace Anaquin
             const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, hists, mStats, lStats);
 
             const auto n_syn = toString(r.countGeneSyn()) + " " + units;
-            const auto n_gen = toString(r.countGeneGen()) + " " + units;
 
             // Breakpoint estimated by piecewise regression
             const auto b = ms.b.mean();
@@ -258,69 +257,67 @@ namespace Anaquin
                                 "       *Arithmetic average and standard deviation are shown\n\n"
                                 "-------User Transcript Annotations\n\n"
                                 "       Synthetic: %2%\n"
-                                "       Genome:    %3%\n\n"
-                                "       Mixture file: %4%\n\n"
-                                "-------%5%\n\n"
-                                "       Synthetic: %6%\n"
-                                "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
-                                "       Genome: %9%\n\n"
+                                "       Mixture file: %3%\n\n"
+                                "-------%4%\n\n"
+                                "       Synthetic: %5%\n"
+                                "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
+                                "       Genome: %8%\n\n"
                                 "-------Limit of Quantification (LOQ)\n"
                                 "       *Estimated by piecewise segmented regression\n\n"
-                                "       Break: %10% attomol/ul (%11%)\n\n"
+                                "       Break: %9% attomol/ul (%10%)\n\n"
                                 "       *Below LOQ\n"
-                                "       Intercept:   %12%\n"
-                                "       Slope:       %13%\n"
-                                "       Correlation: %14%\n"
-                                "       R2:          %15%\n"
-                                "       Genome:      %16%\n\n"
+                                "       Intercept:   %11%\n"
+                                "       Slope:       %12%\n"
+                                "       Correlation: %13%\n"
+                                "       R2:          %14%\n"
+                                "       Genome:      %15%\n\n"
                                 "       *Above LOQ\n"
-                                "       Intercept:   %17%\n"
-                                "       Slope:       %18%\n"
-                                "       Correlation: %19%\n"
-                                "       R2:          %20%\n"
-                                "       Genome:      %21%\n\n"
+                                "       Intercept:   %16%\n"
+                                "       Slope:       %17%\n"
+                                "       Correlation: %18%\n"
+                                "       R2:          %19%\n"
+                                "       Genome:      %20%\n\n"
                                 "-------Linear regression (log2 scale)\n\n"
-                                "       Correlation: %22%\n"
-                                "       Slope:       %23%\n"
-                                "       R2:          %24%\n"
-                                "       F-statistic: %25%\n"
-                                "       P-value:     %26%\n"
-                                "       SSM:         %27%, DF: %28%\n"
-                                "       SSE:         %29%, DF: %30%\n"
-                                "       SST:         %31%, DF: %32%\n";
+                                "       Correlation: %21%\n"
+                                "       Slope:       %22%\n"
+                                "       R2:          %23%\n"
+                                "       F-statistic: %24%\n"
+                                "       P-value:     %25%\n"
+                                "       SSM:         %26%, DF: %27%\n"
+                                "       SSE:         %28%, DF: %29%\n"
+                                "       SST:         %30%, DF: %31%\n";
 
             o.writer->write((boost::format(format) % STRING(ms.files)      // 1
                                                    % n_syn                 // 2
-                                                   % n_gen                 // 3
-                                                   % MixRef()              // 4
-                                                   % title                 // 5
-                                                   % STRING(ms.n_syn)      // 6
-                                                   % limit.abund           // 7
-                                                   % limit.id              // 8
-                                                   % STRING(ms.n_gen)      // 9
-                                                   % STRING(ms.b)          // 10
-                                                   % STRING(ms.bID)        // 11
-                                                   % STRING(ms.lInt)       // 12
-                                                   % STRING(ms.lSl)        // 13
-                                                   % STRING(ms.lr)         // 14
-                                                   % STRING(ms.lR2)        // 15
-                                                   % STRING(n_below)       // 16
-                                                   % STRING(ms.rInt)       // 17
-                                                   % STRING(ms.rSl)        // 18
-                                                   % STRING(ms.rr)         // 19
-                                                   % STRING(ms.rR2)        // 20
-                                                   % STRING(n_above)       // 21
-                                                   % STRING(ms.wLog.r)     // 22
-                                                   % STRING(ms.wLog.sl)    // 23
-                                                   % STRING(ms.wLog.R2)    // 24
-                                                   % STRING(ms.wLog.F)     // 25
-                                                   % STRING(ms.wLog.p)     // 26
-                                                   % STRING(ms.wLog.SSM)   // 27
-                                                   % STRING(ms.wLog.SSM_D) // 28
-                                                   % STRING(ms.wLog.SSE)   // 29
-                                                   % STRING(ms.wLog.SSE_D) // 30
-                                                   % STRING(ms.wLog.SST)   // 31
-                                                   % STRING(ms.wLog.SST_D) // 32
+                                                   % MixRef()              // 3
+                                                   % title                 // 4
+                                                   % STRING(ms.n_syn)      // 5
+                                                   % limit.abund           // 6
+                                                   % limit.id              // 7
+                                                   % STRING(ms.n_gen)      // 8
+                                                   % STRING(ms.b)          // 9
+                                                   % STRING(ms.bID)        // 10
+                                                   % STRING(ms.lInt)       // 11
+                                                   % STRING(ms.lSl)        // 12
+                                                   % STRING(ms.lr)         // 13
+                                                   % STRING(ms.lR2)        // 14
+                                                   % STRING(n_below)       // 15
+                                                   % STRING(ms.rInt)       // 16
+                                                   % STRING(ms.rSl)        // 17
+                                                   % STRING(ms.rr)         // 18
+                                                   % STRING(ms.rR2)        // 19
+                                                   % STRING(n_above)       // 20
+                                                   % STRING(ms.wLog.r)     // 21
+                                                   % STRING(ms.wLog.sl)    // 22
+                                                   % STRING(ms.wLog.R2)    // 23
+                                                   % STRING(ms.wLog.F)     // 24
+                                                   % STRING(ms.wLog.p)     // 25
+                                                   % STRING(ms.wLog.SSM)   // 26
+                                                   % STRING(ms.wLog.SSM_D) // 27
+                                                   % STRING(ms.wLog.SSE)   // 28
+                                                   % STRING(ms.wLog.SSE_D) // 29
+                                                   % STRING(ms.wLog.SST)   // 30
+                                                   % STRING(ms.wLog.SST_D) // 31
                              ).str());
             o.writer->close();
         }
