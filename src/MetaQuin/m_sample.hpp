@@ -18,15 +18,15 @@ namespace Anaquin
                 return REF.genoID();
             }
             
-            inline bool shouldGenomic(const ChrID &id, const Locus &l) const
-            {
-                return static_cast<bool>(REF.findGeno(id, l));
-            }
-
-            inline bool shouldSynthetic(const ChrID &id, const Locus &l) const
-            {
-                return static_cast<bool>(REF.match(l, MatchRule::Contains));
-            }
+//            inline bool shouldGenomic(const ChrID &id, const Locus &l) const
+//            {
+//                return static_cast<bool>(REF.findGeno(id, l));
+//            }
+//
+//            inline bool shouldSynthetic(const ChrID &id, const Locus &l) const
+//            {
+//                return static_cast<bool>(REF.match(l, MatchRule::Contains));
+//            }
         };
         
         struct ReportImpl : public Subsampler::ReportImpl

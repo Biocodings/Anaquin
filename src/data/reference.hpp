@@ -508,35 +508,11 @@ namespace Anaquin
     {
         public:
 
-            struct Base : public Matched
-            {
-                // Eg: D_1_1 and D_2_2
-                SequinID id;
-                
-                inline SequinID name() const override
-                {
-                    return id;
-                }
-
-                inline Concent concent(Mixture mix = Mix_1) const
-                {
-                    return total.at(mix);
-                }
-                
-                std::map<Mixture, Concent> total;
-            };
-
             VarRef();
 
             void readBRef(const Reader &);
             void readVRef(const Reader &);
 
-            /*
-             * Query functions
-             */
-        
-            std::map<ChrID, Intervals<>> intersGen() const;
-        
             Anaquin::Base countBaseSyn() const;
             Anaquin::Base countBaseGen() const;
 
@@ -567,34 +543,17 @@ namespace Anaquin
             // Counts variants for the synthetic chromosome
             inline Counts countVarSync() const { return countSNPSyn() + countIndSyn(); }
 
-            // Returns number of sequins
-            Counts countSeqs() const;
-
-            // Returns number of genomic intervals
-            Counts countInters() const;
-
             // Histogram for all reference chromosomes
             std::map<ChrID, Hist> hist() const;
 
             // Intervals for all reference chromosomes
             std::map<ChrID, Intervals<>> inters() const;
         
-            Counts countIntervals(const ChrID &) const;
-        
             std::map<ChrID, std::map<long, Counts>> vHist() const;
 
             const Variant *findVar(const ChrID &, long key) const;
             const Variant *findVar(const ChrID &, const Locus &) const;
 
-            Interval *findGeno(const ChrID &, const Locus &, MatchRule) const;
-        
-            Interval *findGeno(const Locus &) const;
-            Interval *findGeno(const ChrID &cID, const Locus &l) const
-            {
-                throw "Not Implemented";
-                //return isGenoID(cID) ? findGeno(l) : nullptr;
-            }
-        
             // Returns the expected allele fold-change
             Fold findAFold(const SequinID &) const;
 

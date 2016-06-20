@@ -11,17 +11,7 @@ namespace Anaquin
     {
         struct SampleImpl : public Subsampler::StatsImpl
         {
-            #define REF Standard::instance().r_var
-
-            inline bool shouldGenomic(const ChrID &id, const Locus &l) const
-            {
-                return static_cast<bool>(REF.findGeno(id, l));
-            }
-
-            inline bool shouldSynthetic(const ChrID &id, const Locus &l) const
-            {
-                return static_cast<bool>(REF.match(l, MatchRule::Contains));
-            }
+            #define REF Standard::instance().r_var            
         };
         
         struct ReportImpl : public Subsampler::ReportImpl
@@ -44,16 +34,6 @@ namespace Anaquin
             virtual FileName sampled() const
             {
                 return "VarSubsample_sampled.sam";
-            }
-            
-            virtual Counts countSeqs() const
-            {
-                return REF.countSeqs();
-            }
-            
-            virtual Counts countInters() const
-            {
-                return REF.countInters();
             }
         };
         

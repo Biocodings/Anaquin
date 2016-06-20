@@ -822,16 +822,6 @@ Fold VarRef::findAFold(const SequinID &id) const
     return round(p.r->abund / p.v->abund);
 }
 
-Counts VarRef::countInters() const
-{
-    throw "Not Implemented";
-}
-
-Counts VarRef::countSeqs() const
-{
-    return data().size();
-}
-
 Counts VarRef::countInd(const ChrID &cID) const
 {
     return _impl->vData.countInd(cID);
@@ -963,51 +953,12 @@ const Variant * VarRef::findVar(const ChrID &cID, const Locus &l) const
     return _impl->vData.findVar(cID, l);
 }
 
-std::map<ChrID, Intervals<>> VarRef::intersGen() const
-{
-    return _impl->bData.gIntersGen();
-}
-
 std::map<ChrID, std::map<long, Counts>> VarRef::vHist() const
 {
     return _impl->vData.hist();
 }
 
-Interval * VarRef::findGeno(const ChrID &cID, const Locus &l, MatchRule rule) const
-{
-    throw "NOT IMPLEMENTED";
-    
-//    assert(!Standard::isSynthetic(cID));
-//    
-//    if (!_impl->genome.count(cID))
-//    {
-//        return nullptr;
-//    }
-//    
-//    switch (rule)
-//    {
-//        case MatchRule::Contains: { return _impl->genome.at(cID).contains(l); }
-//        case MatchRule::Overlap:  { return _impl->genome.at(cID).overlap(l);  }
-//        case MatchRule::Exact:
-//        {
-//            throw "Not Implemented";
-//        }
-//    }
-}
-
-Interval * VarRef::findGeno(const Locus &l) const
-{
-    throw "NOT IMPLEMENTED";
-//    return _impl->genome.at(genoID()).contains(l);
-}
-
 const Variant * VarRef::findVar(const ChrID &cID, long key) const
 {
     return _impl->vData.findVar(cID, key);
-}
-
-Counts VarRef::countIntervals(const ChrID &cID) const
-{
-    throw "Not Implemented";
-//    return _impl->genome.at(cID).size();
 }

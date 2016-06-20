@@ -45,27 +45,27 @@ namespace Anaquin
 
         struct Stats
         {
-            // Coverage statistics for chrT
-            Interval::Stats sync;
+            // Coverage statistics for synthetic
+            Intervals<> syn;
             
-            // Coverage statistics for endogenous (eg: chr21)
-            Interval::Stats geno;
+            // Coverage statistics for genome
+            Intervals<> gen;
             
             // Raw coverage
             CoverageTool::Stats cov;
             
-            // Calculated coverage for chrT
-            Coverage syncC;
+            // Calculated coverage for synthetic
+            Coverage synC;
             
             // Calculated coverage for the query (eg: chr21)
-            Coverage genoC;
+            Coverage genC;
             
             /*
              * Fraction required to subsample in chrT. This works because chrT is a short
              * chromosome and almost certianly will have the highest coverage.
              */
             
-            inline Proportion sample() const { return genoC / syncC; }
+            inline Proportion sample() const { return genC / synC; }
         };
         
         /*
@@ -91,29 +91,8 @@ namespace Anaquin
             return c;
         }
         
-        static bool checkAlign(const ChrID &genoID, const ChrID &cID, const Locus &l)
-        {
-            const auto &r = Standard::instance().r_var;
-            
-            if (Standard::isSynthetic(cID))
-            {
-                return r.match(l, MatchRule::Contains);
-            }
-            else if (Standard::isGenomic(cID))
-            {
-                return r.findGeno(genoID, l);
-            }
-            
-            return false;
-        }
-        
         struct StatsImpl
         {
-            // Whether the genomic region should be selected
-            virtual bool shouldGenomic(const ChrID &, const Locus &) const = 0;
-
-            // Whether the synthetic region should be selected
-            virtual bool shouldSynthetic(const ChrID &, const Locus &) const = 0;
         };
         
         struct ReportImpl
@@ -129,90 +108,123 @@ namespace Anaquin
           
             // File name for the subsampled alignment
             virtual FileName sampled() const = 0;
-            
-            // Number of synthetic sequins
-            virtual Counts countSeqs() const = 0;
-            
-            // Number of genomic intervals
-            virtual Counts countInters() const = 0;
         };
 
         template <typename Options> static Stats stats(const FileName &file,
                                                        const Options &o,
                                                        const StatsImpl &impl)
         {
-           
+            const auto &r = Standard::instance().r_var;
             
-            const auto genoID = "????"; //impl.genoID();
-            
-            // The selected regions must have intervals...
-            assert(Standard::instance().r_var.countIntervals(genoID));
-            
-            //o.info("Genome: " + genoID);
             o.analyze(file);
             
             Stats stats;
             
+            // Intervals for synthetic and genome
+            auto inters = r.inters();
+            
+            assert(inters.size() >= 2);
+            
+            // Does the read aligned within a region?
+            auto inside = [&](const Alignment &x)
+            {
+                if (!inters.count(x.cID))
+                {
+                    return false;
+                }
+                
+                // Does the read aligned within the reference regions?
+                return (bool)inters[x.cID].contains(x.l);
+            };
+            
             /*
-             * Collecting alignment statistics for all alignments to the synthetic and genome
+             * Collecting statistics for all alignments to the synthetic and genome
              */
             
-            stats.cov = CoverageTool::stats(file, [&](const Alignment &align, const ParserProgress &p)
+            stats.cov = CoverageTool::stats(file, [&](const Alignment &x, const ParserProgress &p)
             {
-                if (!align.i && !(p.i % 1000000))
+                if (!x.i && p.i && !(p.i % 1000000))
                 {
                     o.wait(std::to_string(p.i));
                 }
                 
-                return checkAlign(genoID, align.cID, align.l);
+                return inside(x);
             });
             
-            if (!stats.cov.hist.count(ChrT))
+            // Number of alignments to the synthetic
+            Counts n_syn = 0;
+            
+            // Number of alignments to the genome
+            Counts n_gen = 0;
+            
+            for (const auto &i : stats.cov.hist)
             {
-                throw std::runtime_error("Failed to find any alignment for " + ChrT);
+                if (Standard::isSynthetic(i.first))
+                {
+                    n_syn += i.second;
+                }
+                else if (Standard::isGenomic(i.first))
+                {
+                    n_gen += i.second;
+                }
             }
-            else if (!stats.cov.hist.count(genoID))
+            
+            if (!n_syn)
+            {
+                throw std::runtime_error("Failed to find any alignment for synthetic");
+            }
+            else if (!n_gen)
             {
                 throw std::runtime_error("Failed to find any alignment for the genome");
             }
             
-            // There should be at least a chromosome for synthetic and genome
+            // There should be at least synthetic and genome
             assert(stats.cov.inters.size() >= 2);
 
-            // Number of alignments to the synthetic
-            const auto n_sync = stats.cov.hist.at(ChrT);
-            
-            // Number of alignments to the genome
-            const auto n_geno = stats.cov.hist.at(genoID);
-
-            o.info(toString(n_sync) + " alignments to synthetic");
-            o.info(toString(n_geno) + " alignments to genome");
-            o.info(toString(n_sync + n_geno) + " alignments in total");
+            o.info(toString(n_syn) + " alignments to synthetic");
+            o.info(toString(n_gen) + " alignments to genome");
+            o.info(toString(n_syn + n_gen) + " alignments in total");
             o.info(toString(stats.cov.inters.size()) + " intervals generated");
 
-            /*
-             * Filter out to the synthetic regions
-             */
-            
-            o.info("Generating statistics for synthetic");
-            stats.sync = stats.cov.inters.find(ChrT)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
-            {
-                return impl.shouldSynthetic(id, Locus(i,j));
-            });
-            
             /*
              * Filter out to the genomic regions
              */
             
             o.info("Generating statistics for genome");
-            stats.geno = stats.cov.inters.find(genoID)->stats([&](const ChrID &id, Base i, Base j, Coverage cov)
-            {
-                return impl.shouldGenomic(id, Locus(i,j));
-            });
-            
-            assert(stats.sync.mean && stats.geno.mean);
 
-            o.info("Calculating coverage for " + ChrT + " and " + genoID);
+            for (const auto &i : stats.cov.inters.data())
+            {
+                const auto &cID = i.first;
+                
+                if (Standard::isSynthetic(cID))
+                {
+                    const auto inter = stats.cov.inters.find(i.first)->stats
+                            ([&](const ChrID &id, Base i, Base j, Coverage cov)
+                    {
+                         return inters[cID].contains(Locus(i,j));
+                    });
+                    
+                    //stats.syn.add(inter);
+                }
+                
+                if (Standard::isGenomic(cID))
+                {
+                    const auto inter = stats.cov.inters.find(i.first)->stats
+                            ([&](const ChrID &id, Base i, Base j, Coverage cov)
+                    {
+                            return inters[cID].contains(Locus(i,j));
+                    });
+
+                    //stats.gen.add(inter);
+                }
+            }
+            
+            const auto sstats = stats.syn.stats();
+            const auto gstats = stats.gen.stats();
+
+            assert(sstats.mean && gstats.mean);
+
+            o.info("Calculating coverage for the synthetic and genome");
             
             /*
              * Now we have the data, we'll need to compare the coverage and determine what fraction that
@@ -223,36 +235,36 @@ namespace Anaquin
             {
                 case ArithAverage:
                 {
-                    stats.syncC = stats.sync.mean;
-                    stats.genoC = stats.geno.mean;
+                    stats.synC = sstats.mean;
+                    stats.genC = gstats.mean;
                     break;
                 }
                     
                 case Maximum:
                 {
-                    stats.syncC = stats.sync.max;
-                    stats.genoC = stats.geno.max;
+                    stats.synC = sstats.max;
+                    stats.genC = gstats.max;
                     break;
                 }
                     
                 case Median:
                 {
-                    stats.syncC = stats.sync.p50;
-                    stats.genoC = stats.geno.p50;
+                    stats.synC = sstats.p50;
+                    stats.genC = gstats.p50;
                     break;
                 }
                     
                 case Percentile75:
                 {
-                    stats.syncC = stats.sync.p75;
-                    stats.genoC = stats.geno.p75;
+                    stats.synC = sstats.p75;
+                    stats.genC = gstats.p75;
                     break;
                 }
             }
 
-            assert(stats.syncC && stats.genoC);
+            assert(stats.synC && stats.genC);
             
-            if (stats.genoC > stats.syncC)
+            if (stats.genC > stats.synC)
             {
                 throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
             }
@@ -324,7 +336,7 @@ namespace Anaquin
                                                        const StatsImpl &si,
                                                        const ReportImpl &ri)
         {
-            const auto genoID = "????"; //si.genoID();
+            const auto &r = Standard::instance().r_var;
             
             auto meth2Str = [&]()
             {
@@ -352,6 +364,21 @@ namespace Anaquin
 
             o.info("Proportion (after): " + toString(after.sample()));
 
+            // Intervals for synthetic and genome
+            auto inters = r.inters();
+            
+            // Does the read aligned within a region?
+            auto inside = [&](const ChrID &cID, const Locus &l)
+            {
+                if (!inters.count(cID))
+                {
+                    return false;
+                }
+                
+                // Does the read aligned within the reference regions?
+                return (bool)inters[cID].contains(l);
+            };
+
             /*
              * Generating bedgraph before subsampling
              */
@@ -361,9 +388,9 @@ namespace Anaquin
             pre.writer = o.writer;
             pre.file   = ri.beforeBG();
             
-            CoverageTool::bedGraph(before.cov, pre, [&](const ChrID &id, Base i, Base j, Coverage)
+            CoverageTool::bedGraph(before.cov, pre, [&](const ChrID &cID, Base i, Base j, Coverage)
             {
-                return checkAlign(genoID, id, Locus(i, j));
+                return inside(cID, Locus(i, j));
             });
             
             /*
@@ -375,9 +402,9 @@ namespace Anaquin
             post.writer = o.writer;
             post.file   = ri.afterBG();
             
-            CoverageTool::bedGraph(after.cov, post, [&](const ChrID &id, Base i, Base j, Coverage)
+            CoverageTool::bedGraph(after.cov, post, [&](const ChrID &cID, Base i, Base j, Coverage)
             {
-                return checkAlign(genoID, id, Locus(i, j));
+                return inside(cID, Locus(i, j));
             });
             
             /*
@@ -411,16 +438,16 @@ namespace Anaquin
             o.writer->open(ri.summary());
             o.writer->write((boost::format(summary) % o.rAnnot
                                                     % file
-                                                    % ri.countInters()
-                                                    % ri.countSeqs()
+                                                    % "????" //ri.countInters()
+                                                    % "????" //ri.countSeqs()
                                                     % before.cov.n_unmap
                                                     % before.cov.n_gen
                                                     % before.cov.n_syn
                                                     % meth2Str()
-                                                    % before.syncC
-                                                    % before.genoC
-                                                    % after.syncC
-                                                    % after.genoC).str());
+                                                    % before.synC
+                                                    % before.genC
+                                                    % after.synC
+                                                    % after.genC).str());
             o.writer->close();
         }
     };
