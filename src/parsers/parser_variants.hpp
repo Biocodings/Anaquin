@@ -52,8 +52,10 @@ namespace Anaquin
 
                 d.qualR = stod(toks[Qual1]);
                 d.qualV = stod(toks[Qual2]);
+                
                 d.readR = stod(toks[Reads1]);
                 d.readV = stod(toks[Reads2]);
+                d.cov   = d.readR + d.readV;
                 d.allF  = static_cast<Proportion>(d.readV) / (d.readR + d.readV);
 
                 /*
@@ -65,7 +67,7 @@ namespace Anaquin
                  *
                  * Why it's shown as a variant if no variant supporting the variant allele?
                  */
-                
+
                 if (!d.readV)
                 {
                     continue;

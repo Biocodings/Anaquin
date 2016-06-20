@@ -15,16 +15,16 @@ namespace Anaquin
 
         enum Field
         {
-            CHROM,
-            POS,
+            Chrom,
+            Pos,
             ID,
-            REF,
-            ALT,
-            QUAL,
-            FILTER,
-            INFO,
-            FORMAT,
-            FORMAT_DATA,
+            Ref,
+            Alt,
+            Qual,
+            Filter,
+            Info,
+            Format,
+            FormatData
         };
 
         static void parse(const Reader &r, std::function<void (const Data &, const ParserProgress &)> f)
@@ -51,16 +51,16 @@ namespace Anaquin
                 Tokens::split(line, "\t", fields);
                 
                 // Eg: chrT
-                d.cID = fields[Field::CHROM];
+                d.cID = fields[Field::Chrom];
                 
                 // Eg: D_1_3_R
                 d.id = fields[Field::ID];
                 
                 // VCF has 1-based position
-                d.l.start = d.l.end = stod(fields[Field::POS]);
+                d.l.start = d.l.end = stod(fields[Field::Pos]);
                 
                 // Reference allele
-                d.ref = fields[Field::REF];
+                d.ref = fields[Field::Ref];
                 
                 /*
                  * Additional information
@@ -68,9 +68,9 @@ namespace Anaquin
                  *    AF: allele frequency for each ALT allele in the same order as listed
                  */
                 
-                if (fields[Field::INFO] != ".")
+                if (fields[Field::Info] != ".")
                 {
-                    Tokens::split(fields[Field::INFO], ";", infos);
+                    Tokens::split(fields[Field::Info], ";", infos);
                     
                     for (const auto &info : infos)
                     {
@@ -81,52 +81,52 @@ namespace Anaquin
                         
                         Tokens::split(info, "=", t);
                         
+                        // Measured allele frequency
                         if (t[0] == "AF") { d.allF = stof(t[1]); }
                     }
                 }
                 
-                Tokens::split(fields[Field::FORMAT], ":", formats);
+                Tokens::split(fields[Field::Format], ":", formats);
                 assert(std::find(formats.begin(), formats.end(), "GT") != formats.end());
                 
                 /*
-                 * Comma separated list of alternate non-reference alleles called on at least one of the samples
+                 * Anaquin doesn't really support multi-alleles (because VarQuin design doesn't have it).
                  */
                 
                 std::vector<Sequence> alts;
-                Tokens::split(fields[Field::ALT], ",", alts);
+                Tokens::split(fields[Field::Alt], ",", alts);
+                
+                // Simply ignore any other allele
+                d.alt = alts[0];
 
-                for (auto i = 0; i < alts.size(); i++)
+                // Eg: 1/2:0,11,5:16:99:694,166,119,378,0,331
+                Tokens::split(fields[Field::FormatData], ":", t);
+
+                // Check all the format data...
+                for (auto j = 0; j < t.size(); j++)
                 {
-                    d.alt = alts[i];
-
-                    Tokens::split(fields[Field::FORMAT_DATA + i], ":", t);
-                    assert(t.size() == formats.size());
-                    
-                    for (auto j = 0; j < t.size(); j++)
+                    if (formats[j] == "AD")
                     {
-                        if (formats[j] == "AD")
+                        std::vector<std::string> toks;
+                        Tokens::split(t[j], ",", toks);
+                        
+                        if (toks.size() == 1)
                         {
-                            std::vector<std::string> toks;
-                            
-                            // Eg: 143,16 or 143
-                            Tokens::split(t[j], ",", toks);
-                            
-                            assert(toks.size() == 1 || toks.size() == 2);
-                            
-                            if (toks.size() == 2)
-                            {
-                                d.readR = stod(toks[0]);
-                                d.readV = stod(toks[1]);
-                            }
-                            else
-                            {
-                                d.readR = stod(toks[0]);
-                                d.readV = stod(toks[0]);
-                            }
+                            d.readR = stod(toks[0]);
+                            d.readV = stod(toks[0]);
+                        }
+                        else
+                        {
+                            d.readR = stod(toks[0]);
+                            d.readV = stod(toks[1]);
                         }
                     }
+                    else if (formats[j] == "DP")
+                    {
+                        d.cov = stod(t[j]);
+                    }
                 }
-                
+
                 if (d.alt == ".")
                 {
                     continue;

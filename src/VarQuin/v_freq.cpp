@@ -48,66 +48,6 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
 
     switch (o.input)
     {
-//        case Input::Kallisto:
-//        {
-//            /*
-//             * The implementation differs to a variant caller. Typically, we'd estimate by
-//             * the number of reads supporting the reference and alternative allele. Obviously,
-//             * we don't have the alleles here. We should model by pooling the reference and
-//             * variant sequins.
-//             */
-//            
-//            std::set<SequinID> ids;
-//            std::map<SequinID, Coverage> matchr, matchv;
-//
-//            ParserKallisto::parse(Reader(file), [&](const ParserKallisto::Data &d, const ParserProgress &)
-//            {
-//                const auto m = r.match(d.id);
-//                
-//                if (m)
-//                {
-//                    const auto bID = baseID(d.id);
-//                    ids.insert(bID);
-//                    
-//                    if (isRefID(d.id))
-//                    {
-//                        matchr[bID] = d.abund;
-//                    }
-//                    else
-//                    {
-//                        matchv[bID] = d.abund;
-//                    }
-//                    
-//                    stats.n_syn++;
-//                    stats.hist.at(m->id)++;
-//                }
-//            });
-//            
-//            for (const auto &id : ids)
-//            {
-//                if (matchr.count(id) && matchv.count(id))
-//                {
-//                    const auto ref = matchr[id];
-//                    const auto var = matchv[id];
-//                    
-//                    // Expected abundance
-//                    const auto known = r.findAFreq(id);
-//                    
-//                    // Measured abundance
-//                    const auto measured = var / (ref + var);
-//                    
-//                    stats.all.add(id, known, measured);
-//                }
-//            }
-//            
-//            assert(stats.snp.empty());
-//            assert(stats.ind.empty());
-//            assert(stats.readR.empty());
-//            assert(stats.readV.empty());
-//            
-//            break;
-//        }
-
         default:
         {
             parseVariants(file, o.input, [&](const VariantMatch &m)
@@ -148,7 +88,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
                             case Mutation::Deletion:
                             case Mutation::Insertion: { stats.ind.add(id, expected, measured); break; }
                         }
-
+                        
                         stats.readR[id] = m.query.readR;
                         stats.readV[id] = m.query.readV;
                     }

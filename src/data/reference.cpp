@@ -760,13 +760,6 @@ struct VarRef::VarRefImpl
     // Mixture data
     std::map<Mixture, std::map<SequinID, VariantPair>> data;
 
-    /*
-     * Data structure for synthetic
-     */
-    
-    // Mixture for bases
-    std::map<SequinID, Base> baseMix;
-
     VCFData vData;
     BedData bData;
     
@@ -963,37 +956,6 @@ void VarRef::validate()
             }
         }
     }
-    
-    /*
-     * Building the input concentration for the sequins
-     */
-    
-    if (_mixes.empty())
-    {
-        for (const auto &i : _data)
-        {
-            _impl->baseMix[baseID(i.first)].id = baseID(i.first);
-        }
-    }
-    else
-    {
-        for (const auto &i : _mixes)
-        {
-            for (const auto &j : _mixes.at(i.first))
-            {
-                _impl->baseMix[baseID(j.id)].id = baseID(j.id);
-                _impl->baseMix[baseID(j.id)].total[i.first] += j.abund;
-            }
-        }
-    }
-    
-    assert(!_impl->baseMix.empty());
-}
-
-const VarRef::Base * VarRef::findGene(const SequinID &id, Mixture mix) const
-{
-    throw "Not Implemented";
-    //return _impl->baseMix.count(id) ? &(_impl->baseMix.at(id)) : nullptr;
 }
 
 const Variant * VarRef::findVar(const ChrID &cID, const Locus &l) const

@@ -71,12 +71,6 @@ namespace Anaquin
         // Allelle frequency
         Proportion allF = NAN;
         
-        // Number of reads of the reference
-        Counts readR = 0;
-        
-        // Number of reads of the variant
-        Counts readV = 0;
-        
         // Base quality of the reference (not always provided)
         int qualR = NAN;
         
@@ -85,6 +79,15 @@ namespace Anaquin
 
         // P-value (not always provided)
         Probability p = NAN;
+        
+        // Eg: AD for VCF and REF for VarScan
+        Counts readR;
+        
+        // Eg: AD for VCF and ALT for VarScan
+        Counts readV;
+        
+        // Total coverage (eg: DP for VCF and REF+ALT for VarScan)
+        Counts cov = NAN;
     };
     
     typedef Variant CalledVariant;

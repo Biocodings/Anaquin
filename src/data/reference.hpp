@@ -595,8 +595,6 @@ namespace Anaquin
                 //return isGenoID(cID) ? findGeno(l) : nullptr;
             }
         
-            const Base *findGene(const SequinID &, Mixture mix = Mix_1) const;
-
             // Returns the expected allele fold-change
             Fold findAFold(const SequinID &) const;
 

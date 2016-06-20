@@ -63,20 +63,14 @@ namespace Anaquin
                 d.allF  = stod(toks[VarFreq]);
                 d.qualR = stod(toks[Qual1]);
                 d.qualV = stod(toks[Qual2]);
-                d.readR = stod(toks[Reads1]);
-                d.readV = stod(toks[Reads2]);
                 
-                /*
-                 * Eg:
-                 *
-                 *   chrT  631340  A  A  3976  0
-                 *
-                 * In the example, the sixth column is the reads for the variant allele.
-                 *
-                 * Why it's shown as a variant if no variant supporting the variant allele?
-                 */
+                const auto readR = stod(toks[Reads1]);
+                const auto readV = stod(toks[Reads2]);
                 
-                if (!d.readV)
+                d.readR = readR;
+                d.readV = readV;
+                
+                if (!readV)
                 {
                     continue;
                 }
