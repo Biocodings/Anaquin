@@ -25,17 +25,23 @@ void VForward::analyze(const FileName &f1,
         {
             o.wait(std::to_string(info.p.i));
         }
-        
+
         if (Standard::isSynthetic(x.cID))
         {
-            names.insert("@" + x.name);
+            /*
+             * Eg: @GV_IDEL_011863_R-1400/1
+             * Eg: @GV_IDEL_011863_R-1400/2
+             */
+            
+            names.insert("@" + x.name + "/1");
+            names.insert("@" + x.name + "/2");
         }
     });
     
     auto f = [&](const FileName &f, const FileName &syn, const FileName &gen)
     {
         std::ofstream fs, fg;
-
+ 
         fs.open(syn, std::ios_base::app);
         fg.open(gen, std::ios_base::app);
         

@@ -29,7 +29,7 @@ namespace Anaquin
 
                 Tokens::split(x.name, " ", toks);
                 x.name = toks[0];
-                
+
                 // TODO:...
                 if (toks.size() > 1)
                 {
