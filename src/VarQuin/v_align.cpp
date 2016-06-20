@@ -218,10 +218,10 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     stats.gsn = static_cast<Proportion>(sum(stats.g2c)) / sum(stats.g2l);
 
     assert(stats.spc >= 0.0 && stats.spc <= 1.0);
-    assert(isnan(stats.gpc) || (stats.gpc >= 1.0 && stats.gpc <= 1.0));
+    assert(isnan(stats.gpc) || (stats.gpc >= 0.0 && stats.gpc <= 1.0));
 
     assert(stats.ssn >= 0.0 && stats.ssn <= 1.0);
-    assert(isnan(stats.gsn) || (stats.gsn >= 1.0 && stats.gsn <= 1.0));
+    assert(isnan(stats.gsn) || (stats.gsn >= 0.0 && stats.gsn <= 1.0));
     
     return stats;
 }

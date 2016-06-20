@@ -31,7 +31,7 @@ namespace Anaquin
     
     static std::string concat(const std::vector<std::string> &x, const std::string &join = "\'")
     {
-        return (join + boost::algorithm::join(x, join + "," + join) + join);
+        return (join + boost::algorithm::join(x, join + ", " + join) + join);
     }
 
     #define STRING(x) static_cast<std::string>(x)

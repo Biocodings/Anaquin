@@ -255,7 +255,7 @@ namespace Anaquin
             const auto format = "-------RnaExpression Output\n"
                                 "       Summary for input: %1%\n"
                                 "       *Arithmetic average and standard deviation are shown\n\n"
-                                "-------User Transcript Annotations\n\n"
+                                "-------Reference Transcript Annotations\n\n"
                                 "       Synthetic: %2%\n"
                                 "       Mixture file: %3%\n\n"
                                 "-------%4%\n\n"
