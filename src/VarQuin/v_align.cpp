@@ -164,6 +164,9 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
                                        +
                              (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
             
+            assert(btp >= 0);
+            assert(btp >= 0);
+            
             // Precison at the base level
             const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
 
