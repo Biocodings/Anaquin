@@ -113,10 +113,10 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
      * -------------------- Calculating statistics --------------------
      */
 
-    long long stp = 0;
-    long long sfp = 0;
-    long long gtp = 0;
-    long long gfp = 0;
+    Base stp = 0;
+    Base sfp = 0;
+    Base gtp = 0;
+    Base gfp = 0;
 
     for (const auto &i : stats.hist)
     {
