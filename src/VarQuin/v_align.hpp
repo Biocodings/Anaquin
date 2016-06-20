@@ -58,6 +58,9 @@ namespace Anaquin
                 std::map<GeneID, Base> rGaps;
                 std::map<GeneID, Base> align;
 
+                // Positions that have no alignment
+                std::set<Locus> gaps;
+                
 //                /*
 //                 * Statistics for genes (eg: sequins)
 //                 */

@@ -78,6 +78,8 @@ static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
 
 VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+    
     auto stats = init();
     o.analyze(file);
 
@@ -125,16 +127,27 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             const auto &cID = i.first;
             const auto &gID = j.first;
          
-            // Reads aligned to the gene
+            // Reads aligned to the region
             stats.g2r[gID] = j.second;
 
             const auto isSyn = Standard::isSynthetic(cID);
             
             const auto m = stats.inters.at(cID).find(gID);
             assert(m);
-            
+
             // Statistics for the gene (created by the interval)
             const auto ms = m->stats();
+
+            m->bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
+            {
+                const auto m = r.inters().at(cID).find(gID);
+                assert(m);
+                
+                if (!depth)
+                {
+                    stats.data.at(cID).gaps.insert(Locus(m->l().start+i-1, m->l().start+i+j-1));
+                }
+            });
 
             if (isSyn)
             {
@@ -234,7 +247,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       Unmapped:  %3%\n"
                          "       Synthetic: %4% (%5%)\n"
                          "       Genome:    %6% (%7%)\n"
-                         "       Dilution:  %8%\n\n"    
+                         "       Dilution:  %8$.2f\n\n"
                          "-------Reference annotation (Synthetic)\n\n"
                          "       Synthetic: %9% genes\n"
                          "       Synthetic: %10% bases\n\n"
@@ -246,15 +259,15 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       Covered:     %13$.2f\n"
                          "       Uncovered:   %14$.2f\n"
                          "       Total:       %15$.2f\n"
-                         "       Sensitivity: %16$.2f\n"
-                         "       Precision:   %17$.2f\n\n"
+                         "       Sensitivity: %16$.4f\n"
+                         "       Precision:   %17$.4f\n\n"
                          "-------Comparison of alignments to annotation (Genome)\n\n"
                          "       *Nucleotide level\n"
                          "       Covered:     %18$.2f\n"
                          "       Uncovered:   %19$.2f\n"
                          "       Total:       %20$.2f\n"
-                         "       Sensitivity: %21$.2f\n"
-                         "       Precision:   %22$.2f";
+                         "       Sensitivity: %21$.4f\n"
+                         "       Precision:   %22$.4f";
 
     o.generate(file);
     o.writer->open(file);
@@ -330,6 +343,26 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
     o.writer->close();
 }
 
+static void writeGaps(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
+{
+    o.writer->open(file);
+    
+    const auto format = "%1%\t%2%\t%3%\t%4%";
+    
+    for (const auto &i : stats.data)
+    {
+        for (const auto &j : i.second.gaps)
+        {
+            o.writer->write((boost::format(format) % i.first
+                                                   % j.start
+                                                   % j.end
+                                                   % "-").str());
+        }
+    }
+
+    o.writer->close();
+}
+
 void VAlign::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
@@ -354,6 +387,12 @@ void VAlign::report(const FileName &file, const Options &o)
     
     writeQueries("VarAlign_queries.stats", stats, o);
 
+    /*
+     * Generating VarAlign_gaps.bed
+     */
+    
+    writeGaps("VarAlign_gaps.bed", stats, o);
+    
     /*
      * Generating VarAlign_report.pdf
      */
