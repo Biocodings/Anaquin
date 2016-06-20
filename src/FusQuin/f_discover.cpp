@@ -108,7 +108,7 @@ static void writeQuery(const FileName &file, const ChrID &cID, const FDiscover::
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
 
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "label"
                                            % "chr1"
                                            % "chr2"
@@ -151,7 +151,7 @@ static void writeQuins(const FileName &file, const FDiscover::Stats &stats, cons
     
     const auto format = "%1%\t%2%";
     
-    o.writer->write((boost::format(format) % "seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "reads").str());
 
     for (const auto &i : stats.data.at(ChrT).hist)

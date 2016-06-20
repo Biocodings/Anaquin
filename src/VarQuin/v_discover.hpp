@@ -67,6 +67,9 @@ namespace Anaquin
                 Confusion m, m_snp, m_ind;
             };
             
+            // Distribution for the variants
+            std::map<ChrID, HashHist> hist;
+
             inline Counts countSNPGeno() const
             {
                 return count(geno, [&](const ChrID &cID, const GenomeData &x)
@@ -109,9 +112,6 @@ namespace Anaquin
             
             // Statistics for synthetic variants
             SyncData chrT;
-
-            // Distribution for the sequins
-            HashHist hist;            
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

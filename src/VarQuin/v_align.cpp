@@ -145,9 +145,9 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             // TP at the base level
             const auto btp = stats.data.at(i.first).align.at(gID);
             
-            // FP at the base level
+            // FP at the base level (requires overlapping)
             const auto bfp = (stats.data.at(i.first).lGaps.count(gID) ? stats.data.at(i.first).lGaps.at(gID) : 0)
-                                    +
+                                       +
                              (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
             
             // Precison at the base level
@@ -192,6 +192,11 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
 
     const auto sums2c = sum(stats.s2c);
     const auto sums2l = sum(stats.s2l);
+    const auto sumg2c = sum(stats.g2c);
+    const auto sumg2l = sum(stats.g2l);
+    
+    assert(sums2l >= sums2c);
+    assert(sumg2c >= sumg2l);
 
     const auto summary = "-------VarAlign Summary Statistics\n\n"
                          "       Reference annotation file: %1%\n"
@@ -263,9 +268,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % ""                      // 25
                                             % ""                      // 26
                                             % ""                      // 27
-                                            % ""                      // 28
-                                            % ""                      // 29
-                                            % ""                      // 30
+                                            % sumg2c                  // 28
+                                            % (sumg2l - sumg2c)       // 29
+                                            % sumg2l                  // 30
                                             % stats.gsn               // 31
                                             % stats.gpc               // 32
                      ).str());
@@ -284,13 +289,19 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
                                            % "Sn"
                                            % "Pc").str());
 
-    for (const auto &i : stats.hist.at(ChrT))
+    for (const auto &i : stats.hist)
     {
-        o.writer->write((boost::format(format) % i.first
-                                               % stats.s2l.at(i.first)
-                                               % stats.g2r.at(i.first)
-                                               % stats.g2s.at(i.first)
-                                               % stats.g2p.at(i.first)).str());
+        if (Standard::isSynthetic(i.first))
+        {
+            for (const auto &j : i.second)
+            {
+                o.writer->write((boost::format(format) % j.first
+                                                       % stats.s2l.at(j.first)
+                                                       % stats.g2r.at(j.first)
+                                                       % stats.g2s.at(j.first)
+                                                       % stats.g2p.at(j.first)).str());
+            }
+        }
     }
 
     o.writer->close();
@@ -302,7 +313,7 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
     o.writer->open(file);
     
     const auto format = "%1%\t%2%";
-    o.writer->write((boost::format(format) % "reads" % "label").str());
+    o.writer->write((boost::format(format) % "Reads" % "Label").str());
 
     for (const auto &j : stats.data.at(ChrT).afp)
     {

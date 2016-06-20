@@ -204,7 +204,7 @@ MDiff::Stats MDiff::analyze(const std::vector<FileName> &files, const Options &o
 //     */
 //    
 //    o.writer->open(file);
-//    o.writer->write((boost::format(format) % "seq"
+//    o.writer->write((boost::format(format) % "ID"
 //                                           % "input"
 //                                           % "measured").str());
 //    

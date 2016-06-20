@@ -16,13 +16,13 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     const auto &r = Standard::instance().r_var;
 
     VDiscover::Stats stats;
-    //stats.hist = r.varHist();
+    stats.hist = r.vHist();
 
     parseVariants(file, o.input, [&](const VariantMatch &m)
     {
         const auto &cID = m.query.cID;
 
-        if (cID == ChrT)
+        if (Standard::isSynthetic(cID))
         {
             stats.n_syn++;
             
@@ -39,8 +39,8 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             if (m.match && m.ref && m.alt)
             {
                 const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
-                stats.hist.at(key)++;
-                
+                stats.hist.at(cID).at(key)++;
+
                 if (p <= o.sign)
                 {
                     stats.chrT.tps.push_back(m);
@@ -170,7 +170,7 @@ static void writeQuins(const FileName &file,
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
 
     o.writer->open("VarDiscover_sequins.csv");
-    o.writer->write((boost::format(format) % "Seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "Pos"
                                            % "Label"
                                            % "Pval"
@@ -181,58 +181,79 @@ static void writeQuins(const FileName &file,
                                            % "MFreq"
                                            % "Type").str());
 
+    const auto &r = Standard::instance().r_var;
+    
     for (const auto &i : stats.hist)
     {
-        const auto &r = Standard::instance().r_var;
+        const auto cID = i.first;
         
-        if (i.second)
+        if (Standard::isSynthetic(cID))
         {
-            auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
+            // For all the variants...
+            for (const auto &j : i.second)
             {
-                for (const auto &j : x)
+                const auto key = j.first;
+                
+                // Detected the variant
+                if (j.second)
                 {
-                    if (i.first == j.seq->key())
+                    const auto m = r.findVar(cID, j.first);
+                    assert(m);
+
+                    /*
+                     * Now we need to know the label for this reference variant
+                     */
+                    
+                    auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
                     {
-                        o.writer->write((boost::format(format) % j.seq->id
-                                                               % j.query.l.start
-                                                               % label
-                                                               % (isnan(j.query.p) ? "-" : p2str(j.query.p))
-                                                               % j.query.readR
-                                                               % j.query.readV
-                                                               % j.eFold
-                                                               % j.eAllFreq
-                                                               % j.query.alleleFreq()
-                                                               % type2str(j.query.type())).str());
-                        return true;
+                        for (const auto &k : x)
+                        {
+                            if (key == m->key())
+                            {
+                                o.writer->write((boost::format(format) % m->id
+                                                                       % k.query.l.start
+                                                                       % label
+                                                                       % (isnan(k.query.p) ? "-" : p2str(k.query.p))
+                                                                       % k.query.readR
+                                                                       % k.query.readV
+                                                                       % k.eFold
+                                                                       % k.eAllFreq
+                                                                       % k.query.alleleFreq()
+                                                                       % type2str(m->type())).str());
+                                return true;
+                            }
+                        }
+                        
+                        return false;
+                    };
+                    
+                    if (!f(stats.chrT.tps, "TP") &&
+                        !f(stats.chrT.fps, "FP") &&
+                        !f(stats.chrT.tns, "TN") &&
+                        !f(stats.chrT.fns, "FN"))
+                    {
+                        throw std::runtime_error("Failed to find hash key in writeQuins()");
                     }
                 }
                 
-                return false;
-            };
-            
-            if (!f(stats.chrT.tps, "TP") &&
-                !f(stats.chrT.fps, "FP") &&
-                !f(stats.chrT.tns, "TN") &&
-                !f(stats.chrT.fns, "FN"))
-            {
-                throw std::runtime_error("Failed to find hash key in writeQuins()");
+                // Failed to detect the variant
+                else
+                {
+                    const auto m = r.findVar(i.first, j.first);
+                    assert(m);
+                    
+                    o.writer->write((boost::format(format) % m->id
+                                                           % m->l.start
+                                                           % "FN"
+                                                           % "NA"
+                                                           % "NA"
+                                                           % "NA"
+                                                           % r.findAFold(m->id)
+                                                           % r.findAFreq(m->id)
+                                                           % "NA"
+                                                           % type2str(m->type())).str());
+                }
             }
-        }
-        else
-        {
-            const auto m = r.hashVar(i.first);
-            assert(m);
-            
-            o.writer->write((boost::format(format) % m->id
-                                                   % m->l.start
-                                                   % "FN"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % "NA"
-                                                   % r.findAFold(m->id)
-                                                   % r.findAFreq(m->id)
-                                                   % "NA"
-                                                   % type2str(m->type())).str());
         }
     }
     
@@ -244,7 +265,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "Pos"
                                            % "Label"
                                            % "Ref"
@@ -360,20 +381,20 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.chrT.fpInd()
                                             % stats.chrT.fpTot()
                                             % stats.chrT.fnSNP()
-                                            % stats.chrT.fnInd()
-                                            % stats.chrT.fnTot()
+                                            % stats.chrT.fnInd()     // 26
+                                            % stats.chrT.fnTot()     // 27
                                             % stats.chrT.m.sn()      // 28
                                             % stats.chrT.m.sp()      // 29
-                                            % stats.chrT.m.pc()
-                                            % stats.chrT.m.fdr()
+                                            % stats.chrT.m.pc()      // 30
+                                            % stats.chrT.m.fdr()     // 31
                                             % stats.chrT.m_snp.sn()  // 32
                                             % stats.chrT.m_snp.sp()  // 33
-                                            % stats.chrT.m_snp.pc()
-                                            % stats.chrT.m_snp.fdr()
+                                            % stats.chrT.m_snp.pc()  // 34
+                                            % stats.chrT.m_snp.fdr() // 35
                                             % stats.chrT.m_ind.sn()  // 36
                                             % stats.chrT.m_ind.sp()  // 37
-                                            % stats.chrT.m_ind.pc()
-                                            % stats.chrT.m_snp.fdr()
+                                            % stats.chrT.m_ind.pc()  // 38
+                                            % stats.chrT.m_snp.fdr() // 39
                      ).str());
     o.writer->close();
 }

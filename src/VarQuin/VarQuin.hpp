@@ -103,20 +103,16 @@ namespace Anaquin
             m.seq   = nullptr;
             m.match = nullptr;
 
-            if (query.cID == ChrT)
+            if (Standard::isSynthetic(query.cID))
             {
                 // Can we match by position?
-                m.match = r.findVar(query.l, Exact);
+                m.match = r.findVar(query.cID, query.l);
 
                 if (m.match)
                 {
                     m.seq = m.match;
                     m.ref = m.match->ref == query.ref;
                     m.alt = m.match->alt == query.alt;
-                }
-                else
-                {
-                    m.seq = r.findVar(query.l, Contains);
                 }
                 
                 if (m.seq && !mixture().empty())

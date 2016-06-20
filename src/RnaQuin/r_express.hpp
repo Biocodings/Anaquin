@@ -225,7 +225,7 @@ namespace Anaquin
             const auto b = ms.b.mean();
 
             // Number of genomic features above the breakpoint
-            SReals n_above;
+            SCounts n_above;
 
             // Number of genomic features below the breakpoint
             SCounts n_below;
@@ -248,9 +248,9 @@ namespace Anaquin
                         below++;
                     }
                 }
-                
-                n_above.add(above);
-                n_below.add(below);
+
+                n_above.add((Counts)above);
+                n_below.add((Counts)below);
             }
 
             const auto format = "-------RnaExpression Output\n"

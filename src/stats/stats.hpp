@@ -4,6 +4,7 @@
 #include <vector>
 #include <iomanip>
 #include <sstream>
+#include "data/types.hpp"
 #include <boost/format.hpp>
 #include <ss/maths/stats.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -97,11 +98,11 @@ namespace Anaquin
         // Emtpy Implementation
     };
     
-    struct SCounts : public SSamples<unsigned>
+    struct SCounts : public SSamples<Counts>
     {
         virtual operator std::string() const
         {
-            const auto &data = SSamples<unsigned>::_data;
+            const auto &data = SSamples<Counts>::_data;
             
             if (data.size() == 0)
             {

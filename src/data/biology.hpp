@@ -25,13 +25,6 @@ namespace Anaquin
         Insertion,
         Deletion
     };
-
-    enum Genotype
-    {
-        Heterzygous,
-        HomozygousR,
-        HomozygousA,
-    };
 }
 
 #endif

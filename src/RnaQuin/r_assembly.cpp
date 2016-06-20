@@ -243,7 +243,7 @@ static void generateQuins(const FileName &file, const RAssembly::Stats &stats, c
 
     o.generate(file);
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "Expected"
                                            % "Measured").str());
 

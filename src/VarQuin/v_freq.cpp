@@ -24,7 +24,7 @@ static void writeCSV(const FileName &file, const VFreq::Stats &stats, const VFre
         }
     };
 
-    o.writer->write((boost::format(format) % "Seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "Expected"
                                            % "Observed"
                                            % "ReadsR"

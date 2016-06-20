@@ -208,7 +208,7 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
 
     std::stringstream ss;
-    ss << ((boost::format(format) % "seq"
+    ss << ((boost::format(format) % "ID"
                                   % "input"
                                   % "contig"
                                   % "match"

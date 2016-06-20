@@ -996,9 +996,19 @@ const VarRef::Base * VarRef::findGene(const SequinID &id, Mixture mix) const
     //return _impl->baseMix.count(id) ? &(_impl->baseMix.at(id)) : nullptr;
 }
 
+const Variant * VarRef::findVar(const ChrID &cID, const Locus &l) const
+{
+    return _impl->vData.findVar(cID, l);
+}
+
 std::map<ChrID, Intervals<>> VarRef::intersGen() const
 {
     return _impl->bData.gIntersGen();
+}
+
+std::map<ChrID, std::map<long, Counts>> VarRef::vHist() const
+{
+    return _impl->vData.hist();
 }
 
 Interval * VarRef::findGeno(const ChrID &cID, const Locus &l, MatchRule rule) const
@@ -1029,98 +1039,13 @@ Interval * VarRef::findGeno(const Locus &l) const
 //    return _impl->genome.at(genoID()).contains(l);
 }
 
-const Variant * VarRef::hashVar(long key) const
+const Variant * VarRef::findVar(const ChrID &cID, long key) const
 {
-    throw "Not Implemented";
-
-    
-//    for (const auto &i : _impl->vars.at(ChrT))
-//    {
-//        if (var2hash(i.id, i.type(), i.l) == key)
-//        {
-//            return &i;
-//        }
-//    }
-//    
-//    return nullptr;
+    return _impl->vData.findVar(cID, key);
 }
 
 Counts VarRef::countIntervals(const ChrID &cID) const
 {
     throw "Not Implemented";
 //    return _impl->genome.at(cID).size();
-}
-
-const Variant * VarRef::findVar(const SequinID &id) const
-{
-    throw "Not Implemented";
-    
-//    // Eg: D_1_1
-//    auto x = id;
-//    
-//    if (boost::algorithm::ends_with(x, "_V"))
-//    {
-//        x = x.substr(0, x.length() - 2) + "_R";
-//    }
-//    else if (!boost::algorithm::ends_with(x, "_R"))
-//    {
-//        x = x + "_R";
-//    }
-//
-//    for (const auto &i : _impl->vars.at(ChrT))
-//    {
-//        if (i.id == x)
-//        {
-//            return &i;
-//        }
-//    }
-    
-    return nullptr;
-}
-
-const Variant * VarRef::findVar(const Locus &l, MatchRule match) const
-{
-    throw "Not Implemented";
-    
-//    if (match != Exact && match != Contains)
-//    {
-//        throw std::runtime_error("Only Exact and Contains are supported");
-//    }
-//
-//    switch (match)
-//    {
-//        case Exact:
-//        {
-//            for (const auto &i : _impl->vars.at(ChrT))
-//            {
-//                if (i.l.start == l.start)
-//                {
-//                    return &i;
-//                }
-//            }
-//
-//            break;
-//        }
-//            
-//        case Contains:
-//        {
-//            typedef std::pair<SequinID, Locus> StandardPair;
-//            
-//            const auto iter = std::find_if(_impl->stands.begin(), _impl->stands.end(), [&](const StandardPair &p)
-//            {
-//                return p.second.contains(l);
-//            });
-//            
-//            if (iter != _impl->stands.end())
-//            {
-//                return findVar(iter->first);
-//            }
-//
-//            break;
-//        }
-//
-//        default : { break; }
-//    }
-    
-    return nullptr;
 }

@@ -748,7 +748,7 @@ static void writeQuins(const FileName &file,
     const auto &data = stats.data.at(ChrT);
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Seq"
+    o.writer->write((boost::format(format) % "ID"
                                            % "Reads"
                                            % "Sn_exon"
                                            % "Pc_exon"

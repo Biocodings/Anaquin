@@ -581,14 +581,10 @@ namespace Anaquin
         
             Counts countIntervals(const ChrID &) const;
         
-            /*
-             * Finding functions
-             */
-        
-            const Variant *hashVar(long key) const;
-        
-            const Variant *findVar(const SequinID &) const;
-            const Variant *findVar(const Locus &, MatchRule = Exact) const;
+            std::map<ChrID, std::map<long, Counts>> vHist() const;
+
+            const Variant *findVar(const ChrID &, long key) const;
+            const Variant *findVar(const ChrID &, const Locus &) const;
 
             Interval *findGeno(const ChrID &, const Locus &, MatchRule) const;
         

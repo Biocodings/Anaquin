@@ -60,7 +60,7 @@ static void writeQuins(const FileName &file, const MAbund::Stats &stats, const M
     o.generate(file);
 
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "seq" % "input" % "reads").str());
+    o.writer->write((boost::format(format) % "ID" % "input" % "reads").str());
     
     const auto total = sum(stats.hist);
     
