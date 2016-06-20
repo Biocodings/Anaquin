@@ -113,10 +113,10 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
      * -------------------- Calculating statistics --------------------
      */
 
-    auto stp = 0;
-    auto sfp = 0;
-    auto gtp = 0;
-    auto gfp = 0;
+    long long stp = 0;
+    long long sfp = 0;
+    long long gtp = 0;
+    long long gfp = 0;
 
     for (const auto &i : stats.hist)
     {
@@ -164,8 +164,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
                                        +
                              (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
             
-            assert(btp >= 0);
-            assert(btp >= 0);
+            assert(!isnan(btp) && btp >= 0);
+            assert(!isnan(bfp) && bfp >= 0);
             
             // Precison at the base level
             const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
