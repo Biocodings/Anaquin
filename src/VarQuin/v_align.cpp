@@ -160,7 +160,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             else
             {
                 stats.g2l[gID] = ms.length;
-                stats.g2c[gID] = ms.covered();
+                stats.g2c[gID] = ms.nonZeros;
 
                 // Sensitivty for the gene
                 stats.g2s[gID] = static_cast<Proportion>(stats.g2c.at(gID)) / stats.g2l.at(gID);
