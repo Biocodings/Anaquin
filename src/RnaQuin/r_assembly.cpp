@@ -29,7 +29,8 @@ template <typename F> inline FileName grepGTF(const FileName &file, F f)
     {
         ParserGTF::parse(file, [&](const ParserGTF::Data &x, const std::string &l, const ParserProgress &)
         {
-            if (f(x))
+            if (f(x) && (x.type != RNAFeature::Gene) && (x.type != RNAFeature::Transcript))
+            //if (f(x))
             {
                 out << l << std::endl;
             }
@@ -195,10 +196,10 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     o.info("Analyzing transcripts");
 
     /*
-     * Comparing for the synthetic chromosome
+     * Comparing for the synthetic
      */
 
-    o.info("Generating files");    
+    o.info("Generating for the synthetic");
     compareGTF(ChrT, createGTFSyn(GTFRef()), createGTFSyn(file));
     copyStats(ChrT);
     
@@ -208,7 +209,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     if (stats.data.size() > 1)
     {
-        o.info("Generating files");
+        o.info("Generating for the genome");
         compareGTF(Geno, createGTFGen(GTFRef()), createGTFGen(file));
         copyStats(Geno);
     }
