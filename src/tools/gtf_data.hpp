@@ -74,6 +74,8 @@ namespace Anaquin
         
         // Unique introns
         Counts uintrs = 0;
+        
+        std::set<GeneID> gIDs;
     };
     
     struct GTFData : public std::map<ChrID, ChrData>
@@ -151,7 +153,7 @@ namespace Anaquin
         
         inline Counts countGene(const ChrID &cID) const
         {
-            return at(cID).g2d.size();
+            return at(cID).gIDs.size();
         }
         
         inline Counts countTrans(const ChrID &cID) const
@@ -384,7 +386,8 @@ namespace Anaquin
                     d.cID = x.cID;
                     d.gID = x.gID;
                     d.tID = x.tID;
-                    
+
+                    c2d[x.cID].gIDs.insert(x.gID);
                     c2d[x.cID].t2g[d.tID] = d.gID;
                     c2d[x.cID].t2d[d.tID] = d;
                     break;
