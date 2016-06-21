@@ -89,6 +89,10 @@ TEST_CASE("Interval_Test_1")
     
     Interval i("Test", Locus(0, 9));
 
+    const auto r1 = i.stats();
+
+    REQUIRE(r1.length == 10);
+    
     i.add(Locus(3, 5));
     i.add(Locus(3, 5));
     i.add(Locus(3, 5));
@@ -97,17 +101,17 @@ TEST_CASE("Interval_Test_1")
     i.add(Locus(7, 7));
     i.add(Locus(8, 8));
 
-    const auto r = i.stats();
+    const auto r2 = i.stats();
     
-    REQUIRE(r.min      == 0);
-    REQUIRE(r.max      == 4);
-    REQUIRE(r.length   == 10);
-    REQUIRE(r.zeros    == 5);
-    REQUIRE(r.nonZeros == 5);
-    REQUIRE(r.sums     == 15);
-    REQUIRE(r.p25      == 0);
-    REQUIRE(r.p50      == 0);
-    REQUIRE(r.p75      == 2);
+    REQUIRE(r2.min      == 0);
+    REQUIRE(r2.max      == 4);
+    REQUIRE(r2.length   == 10);
+    REQUIRE(r2.zeros    == 5);
+    REQUIRE(r2.nonZeros == 5);
+    REQUIRE(r2.sums     == 15);
+    REQUIRE(r2.p25      == 0);
+    REQUIRE(r2.p50      == 0);
+    REQUIRE(r2.p75      == 2);
 }
 
 TEST_CASE("Interval_Test_2")
