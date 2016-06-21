@@ -121,6 +121,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     Base sfp = 0;
     Base gtp = 0;
     Base gfp = 0;
+    
+    o.info("Analyzing " + toString(stats.hist.size()) + " chromsomes");
 
     for (const auto &i : stats.hist)
     {
