@@ -147,16 +147,16 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             // Statistics for the gene (created by the interval)
             const auto ms = m->stats();
 
-            m->bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
-            {
-                const auto m = r.inters().at(cID).find(gID);
-                assert(m);
-                
-                if (!depth)
-                {
-                    stats.data.at(cID).gaps.insert(Locus(m->l().start+i-1, m->l().start+i+j-1));
-                }
-            });
+//            m->bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
+//            {
+//                const auto m = r.inters().at(cID).find(gID);
+//                assert(m);
+//                
+//                if (!depth)
+//                {
+//                    stats.data.at(cID).gaps.insert(Locus(m->l().start+i-1, m->l().start+i+j-1));
+//                }
+//            });
 
             if (isSyn)
             {
