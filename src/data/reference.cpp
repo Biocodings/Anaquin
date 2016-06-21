@@ -478,24 +478,24 @@ Counts TransRef::countLenGen() const
     return _impl->gData.countLenGen();
 }
 
-Counts TransRef::countExonSyn() const
+Counts TransRef::countUExonSyn() const
 {
-    return _impl->gData.countExonSyn();
+    return _impl->gData.countUExonSyn();
 }
 
-Counts TransRef::countExonGen() const
+Counts TransRef::countUExonGen() const
 {
-    return _impl->gData.countExonGen();
+    return _impl->gData.countUExonGen();
 }
 
-Counts TransRef::countIntrSyn() const
+Counts TransRef::countUIntrSyn() const
 {
-    return _impl->gData.countIntrSyn();
+    return _impl->gData.countUIntrSyn();
 }
 
-Counts TransRef::countIntrGen() const
+Counts TransRef::countUIntrGen() const
 {
-    return _impl->gData.countIntrGen();
+    return _impl->gData.countUIntrGen();
 }
 
 Counts TransRef::countGeneSyn() const

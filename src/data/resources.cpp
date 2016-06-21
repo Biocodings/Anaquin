@@ -2,12 +2,25 @@
 #include <algorithm>
 
 /*
+ * Manuals
+ */
+
+#include "resources/manual.txt"
+#include "resources/RnaAlign.txt"
+#include "resources/RnaAssembly.txt"
+#include "resources/RnaExpression.txt"
+#include "resources/RnaFoldChange.txt"
+#include "resources/VarAlign.txt"
+#include "resources/VarDiscover.txt"
+#include "resources/VarSubsample.txt"
+#include "resources/VarFrequency.txt"
+
+/*
  * Scripts
  */
 
 #include "resources/sleuth.R"
 #include "resources/viewer.py"
-#include "resources/manual.txt"
 #include "resources/reports.py"
 
 #include "resources/plotFold.R"
@@ -117,6 +130,50 @@ Scripts plotMultScatter()
 Scripts PlotSensitivity()
 {
     return ToString(src_r_plotSensitivity_R);
+}
+
+/*
+ * Manuals
+ */
+
+Scripts RnaAlign()
+{
+    return ToString(data_manuals_RnaAlign_txt);
+}
+
+Scripts RnaAssembly()
+{
+    return ToString(data_manuals_RnaAssembly_txt);
+}
+
+Scripts RnaExpression()
+{
+    return ToString(data_manuals_RnaExpression_txt);
+}
+
+Scripts RnaFoldChange()
+{
+    return ToString(data_manuals_RnaFoldChange_txt);
+}
+
+Scripts VarAlign()
+{
+    return ToString(data_manuals_VarAlign_txt);
+}
+
+Scripts VarSubsample()
+{
+    return ToString(data_manuals_VarSubsample_txt);
+}
+
+Scripts VarDiscover()
+{
+    return ToString(data_manuals_VarDiscover_txt);
+}
+
+Scripts VarFrequency()
+{
+    return ToString(data_manuals_VarFrequency_txt);
 }
 
 /*

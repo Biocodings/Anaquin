@@ -6,7 +6,7 @@
 namespace Anaquin
 {
     /*
-     * This class represents a data-wrapper for cuffcompare
+     * This class represents a data-wrapper for Cuffcompare
      */
 
     struct Compare
@@ -29,11 +29,11 @@ namespace Anaquin
         // Metrics at the transcript level
         double t_sp, t_sn, t_fsp, t_fsn;
 
-        double missedExonsN,   missedExonsR,   missedExonsP;
-        double missedIntronsN, missedIntronsR, missedIntronsP;
-
         double novelExonsP, novelIntronsP;
-        unsigned novelExonsN, novelExonsR, novelIntronsN, novelIntronsR;
+        double missedExonsP, missedIntronsP;
+
+        unsigned novelExonsN,  novelExonsR,    novelIntronsN, novelIntronsR;
+        unsigned missedExonsR, missedIntronsR, missedExonsN,  missedIntronsN;
     };
 }
 

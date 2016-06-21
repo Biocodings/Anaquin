@@ -614,11 +614,11 @@ namespace Anaquin
             Base countLenSyn() const;
             Base countLenGen() const;
 
-            Counts countExonSyn() const;
-            Counts countExonGen() const;
+            Counts countUExonSyn() const;
+            Counts countUExonGen() const;
         
-            Counts countIntrSyn() const;
-            Counts countIntrGen() const;
+            Counts countUIntrSyn() const;
+            Counts countUIntrGen() const;
 
             Counts countGeneSyn() const;
             Counts countGeneGen() const;
