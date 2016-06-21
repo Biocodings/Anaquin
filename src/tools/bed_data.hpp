@@ -2,6 +2,7 @@
 #define BED_DATA_HPP
 
 #include "data/hist.hpp"
+#include "data/merged.hpp"
 #include "data/standard.hpp"
 #include "data/intervals.hpp"
 #include "stats/analyzer.hpp"
@@ -151,6 +152,68 @@ namespace Anaquin
             
             return r;
         }
+        
+        
+        
+        
+        
+        
+        inline MergedIntervals<> minters(const ChrID &cID) const
+        {
+            MergedIntervals<> r;
+            
+            for (const auto &i : at(cID).g2d)
+            {
+                r.add(MergedInterval(i.first, i.second.l));
+            }
+            
+            r.build();
+            return r;
+        }
+        
+        inline std::map<ChrID, MergedIntervals<>> minters() const
+        {
+            std::map<ChrID, MergedIntervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = minters(i.first);
+            }
+            
+            return r;
+        }
+        
+        inline std::map<ChrID, MergedIntervals<>> mintersGen() const
+        {
+            std::map<ChrID, MergedIntervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                if (Standard::isGenomic(i.first))
+                {
+                    r[i.first] = minters(i.first);
+                }
+            }
+            
+            return r;
+        }
+        
+        inline std::map<ChrID, MergedIntervals<>> mintersSyn() const
+        {
+            std::map<ChrID, MergedIntervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                if (Standard::isSynthetic(i.first))
+                {
+                    r[i.first] = minters(i.first);
+                }
+            }
+            
+            return r;
+        }
+        
+        
     };
     
     inline BedData bedData(const Reader &r)
