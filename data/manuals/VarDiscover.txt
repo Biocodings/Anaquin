@@ -1,0 +1,83 @@
+VarQuin Analysis                     Anaquin Manual                    
+
+NAME
+	 VarDiscover -- Assesses the identification of variants from alignments to the in-silico chromosome.
+
+DESCRIPTION
+	VarDiscover can be used for analyzing the identification of variants on the in-silico chromosome, and provides several useful statistics
+	to describe the identification of variants, including:
+
+	  Sensitivity - the fraction of annotated synthetic variants that are identified within the library. For example, if only 7, of 10 known variants
+	  				are detected, the sensitivity will equal 0.7. 
+					 
+	  Precision   – the fraction of correctly identified (or true positive) variants. This provides a measure of identification accuracy. For example,
+	  				if 10 variants are identified, but 4 do not exist (and were mistakenly identified from sequencing errors) we would have a precision of 0.6.
+
+	  Specificity – the fraction of correctly identified (or true negative) variants. This provides a measure of statistical power, typically by the p-value.
+	  				For example, if 10 variants are statistically rejected, but 5 are true-positive, we would have a specificity of 0.5.
+
+	VarDiscover can also be used to assess the diagnostic performance for variant identification with receiver operating characteristic (ROC) curves and area
+	under the curve (AUC).
+
+BIOINFORMATICS SOFTWARE
+	VarDiscover takes the standard VCF file that is provided by popular variant identification software, such as GATK. VarDiscover also supports output files
+	by other softwares by conversion.
+
+INPUTS
+	Reference coordinate annotation file in BED format
+	Reference variant file in VCF format
+	Reference VarQuin mixture file in CSV format
+	Generated variant file in VCF or text format
+
+	Details on the text format can be found in the user manual on www.sequin.xyz.
+
+USAGE EXAMPLE
+	 anaquin –t VarDiscover –rbed reference.bed –rvcf reference.vcf –m mixture.csv –ufiles variants.vcf
+
+TOOL OPTIONS
+	 Required:
+	 	-rbed        Reference coordinate annotation file in BED format
+		-rvcf        Reference variant annotation file in VCF format
+		-m			 Reference VarQuin mixture file in CSV format
+		-ufiles      Generated variants in VCF format
+
+	 Optional:
+		-o = output	 Directory in which the output files are written to
+
+OUTPUTS
+	 VarDiscover_summary.stats - gives the summary statistics. Field definitions:
+
+	 	Reference sequin regions		Reference annotation file in BED format 
+		Reference variant annotations   Reference variant file in VCF format
+		User identified variants		User generated variant file in VCF or text format
+		Synthetic					    Number of variants (SNV/indel/both) in the synthetic annotation
+		Genome							Number of variants (SNV/indel/both) in the genomic annotation
+		Detected						Number of variants (SNV/indel/both) detected in the synthetic annotation
+		True Positive					Number of true-positives for variants (SNV/indel/both)
+		False Positive					Number of false-positives for variants (SNV/indel/both)
+		True Negative					Number of true-negatives for variants (SNV/indel/both)
+		False Negative					Number of false-negatives for variants (SNV/indel/both)
+		Sensitivity						TP / (TP+FN)
+		Specificity						TN / (FP+TN)
+		Precision						TP / (TP+FP)
+		FDR Rate						FP / (TP+FP)
+
+	 VarDiscover_sequins.csv - gives detailed statistics for each sequin. Field definitions:
+	    ID						        Name of the sequin
+		Pos								Position of the variant
+		Label							Whether it’s true-positive (TP), false-positive (TP), true-negative (TN) or false-negative (FN)
+		Pval							P-value probability 
+		ReadR							Number of reads supporting the reference allele
+		ReadV							Number of reads supporting the variant allele
+		Depth							Depth coverage. For example, the DP field in VCF file
+		EFrac							Expected allele fraction
+		EFreq							Expected allele frequency
+		MFreq							Measured allele frequency
+		Type							Whether this is an SNP or an Indel
+
+	VarDiscover_ROC.R – R-script that plots a ROC curve and report AUC statistics. See Appendix B.1 for further details and example.
+
+	VarDiscover_LOD.R - generates a limit-of-detection (LOD) plot in R. Only generated if p-values are given.
+
+EXAMPLE OUTPUT
+
