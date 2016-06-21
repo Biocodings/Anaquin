@@ -134,7 +134,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             const auto &cID = i.first;
             const auto &gID = j.first;
 
-            o.info("Analyzing: " + gID + " for " + cID + ". " + toString(k) + "/" + toString(n));
+            o.info("Analyzing: " + gID + " for " + cID + ". " + toString(k++) + "/" + toString(n));
 
             // Reads aligned to the region
             stats.g2r[gID] = j.second;
@@ -281,26 +281,25 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
     o.writer->open(file);
     o.writer->write((boost::format(summary) % BedRef()                // 1
                                             % src                     // 2
-                                            % stats.n_unmap           // 3
-                                            % stats.n_syn             // 4
-                                            % (100 * stats.synProp()) // 5
-                                            % stats.n_gen             // 6
-                                            % (100 * stats.genProp()) // 7
-                                            % stats.dilution()        // 8
-                                            % r.countGeneSyn()        // 9
-                                            % r.countBaseSyn()        // 10
-                                            % r.countGeneGen()        // 11
-                                            % r.countBaseGen()        // 12
-                                            % sums2c                  // 13
-                                            % (sums2l - sums2c)       // 14
-                                            % sums2l                  // 15
-                                            % stats.ssn               // 16
-                                            % stats.spc               // 17
-                                            % sumg2c                  // 18
-                                            % (sumg2l - sumg2c)       // 19
-                                            % sumg2l                  // 20
-                                            % stats.gsn               // 21
-                                            % stats.gpc               // 22
+                                            % stats.n_syn             // 3
+                                            % (100 * stats.synProp()) // 4
+                                            % stats.n_gen             // 5
+                                            % (100 * stats.genProp()) // 6
+                                            % stats.dilution()        // 7
+                                            % r.countGeneSyn()        // 8
+                                            % r.countBaseSyn()        // 9
+                                            % r.countGeneGen()        // 10
+                                            % r.countBaseGen()        // 11
+                                            % sums2c                  // 12
+                                            % (sums2l - sums2c)       // 13
+                                            % sums2l                  // 14
+                                            % stats.ssn               // 15
+                                            % stats.spc               // 16
+                                            % sumg2c                  // 17
+                                            % (sumg2l - sumg2c)       // 18
+                                            % sumg2l                  // 19
+                                            % stats.gsn               // 20
+                                            % stats.gpc               // 21
                      ).str());
     o.writer->close();
 }
