@@ -334,21 +334,19 @@ namespace Anaquin
                                  "-------Reference regions\n\n"
                                  "       Synthetic regions: %3%\n"
                                  "       Genomic regions:   %4%\n\n"
-                                 "       Method: %8%\n\n"            
+                                 "       Method: %5%\n\n"
                                  "-------User alignments (before subsampling)\n\n"
-                                 "       Unmapped:  %5%\n"
                                  "       Genome:    %6%\n\n"
                                  "       Synthetic: %7%\n\n"
                                  "-------User alignments (after subsampling)\n\n"
-                                 "       Unmapped:  %5%\n"
-                                 "       Genome:    %6%\n\n"
-                                 "       Synthetic: %7%\n\n"
+                                 "       Genome:    %8%\n\n"
+                                 "       Synthetic: %9\n\n"
                                  "-------Before subsampling\n\n"
-                                 "       Genome coverage:    %9%\n"
-                                 "       Synthetic coverage: %10%\n\n"
+                                 "       Genome coverage:    %10%\n"
+                                 "       Synthetic coverage: %11%\n\n"
                                  "-------After subsampling\n\n"
-                                 "       Genome coverage:    %11%\n"
-                                 "       Synthetic coverage: %12%\n\n";
+                                 "       Genome coverage:    %12%\n"
+                                 "       Synthetic coverage: %13%\n\n";
 
             o.generate("VarSubsample_summary.stats");
             o.writer->open("VarSubsample_summary.stats");
@@ -356,10 +354,11 @@ namespace Anaquin
                                                     % file
                                                     % r.sInters().size()
                                                     % r.gInters().size()
-                                                    % before.cov.n_unmap
-                                                    % before.cov.n_gen
-                                                    % before.cov.n_syn
                                                     % meth2Str()
+                                                    % before.n_gen
+                                                    % before.n_syn
+                                                    % after.n_gen
+                                                    % after.n_syn
                                                     % before.synC
                                                     % before.genC
                                                     % after.synC
