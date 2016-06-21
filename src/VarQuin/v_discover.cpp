@@ -354,7 +354,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       Genome: %6% SNPs\n"
                          "       Genome: %7% indels\n"
                          "       Genome: %8% variants\n\n"
-                         "-------User variant annotations\n\n"
+                         "-------User identified variants\n\n"
                          "       Synthetic: %9% SNPs\n"
                          "       Synthetic: %10% indels\n"
                          "       Synthetic: %11% variants\n\n"
@@ -362,34 +362,57 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       Genome: %13% indels\n"
                          "       Genome: %14% variants\n\n"
                          "-------Identification of synthetic variants\n\n"
-                         "       Detected: %15% SNPs\n"
-                         "       Detected: %16% indels\n"
-                         "       Detected: %17% variants\n\n"
-                         "       True Positive:  %18% SNPS\n"
-                         "       True Positive:  %19% indels\n"
-                         "       True Positive:  %20% variants\n\n"
-                         "       False Positive: %21% SNPs\n"
-                         "       False Positive: %22% indels\n"
-                         "       False Positive: %23% variants\n\n"
-                         "       False Negative: %24% SNPs\n"
-                         "       False Negative: %25% indels\n"
-                         "       False Negative: %26% variants\n\n"
+                         "       True Positive:  %15% SNPS\n"
+                         "       True Positive:  %16% indels\n"
+                         "       True Positive:  %17% variants\n\n"
+                         "       False Positive: %18% SNPs\n"
+                         "       False Positive: %19% indels\n"
+                         "       False Positive: %20% variants\n\n"
+                         "       False Negative: %21% SNPs\n"
+                         "       False Negative: %22% indels\n"
+                         "       False Negative: %23% variants\n\n"
                          "-------Diagnostic Performance (Synthetc)\n\n"
                          "       *Variants\n"
-                         "       Sensitivity: %27%\n"
-                         "       Specificity: %28%\n"
-                         "       Precision:   %29%\n"
-                         "       FDR Rate:    %30%\n\n"
+                         "       Sensitivity: %24%\n"
+                         "       Specificity: %25%\n"
+                         "       Precision:   %26%\n"
+                         "       FDR Rate:    %27%\n\n"
                          "       *SNVs\n"
-                         "       Sensitivity: %31%\n"
-                         "       Specificity: %32%\n"
-                         "       Precision:   %33%\n"
-                         "       FDR Rate:    %34%\n\n"
+                         "       Sensitivity: %28%\n"
+                         "       Specificity: %29%\n"
+                         "       Precision:   %30%\n"
+                         "       FDR Rate:    %31%\n\n"
                          "       *Indels\n"
-                         "       Sensitivity: %35%\n"
-                         "       Specificity: %36%\n"
-                         "       Precision:   %37%\n"
-                         "       FDR Rate:    %38%\n";
+                         "       Sensitivity: %32%\n"
+                         "       Specificity: %33%\n"
+                         "       Precision:   %34%\n"
+                         "       FDR Rate:    %35%\n\n"
+                         "-------Identification of genomic variants\n\n"
+                         "       True Positive:  %36% SNPS\n"
+                         "       True Positive:  %37% indels\n"
+                         "       True Positive:  %38% variants\n\n"
+                         "       False Positive: %39% SNPs\n"
+                         "       False Positive: %40% indels\n"
+                         "       False Positive: %41% variants\n\n"
+                         "       False Negative: %42% SNPs\n"
+                         "       False Negative: %43% indels\n"
+                         "       False Negative: %44% variants\n\n"
+                         "-------Diagnostic Performance (Genome)\n\n"
+                         "       *Variants\n"
+                         "       Sensitivity: %45%\n"
+                         "       Specificity: %46%\n"
+                         "       Precision:   %47%\n"
+                         "       FDR Rate:    %48%\n\n"
+                         "       *SNVs\n"
+                         "       Sensitivity: %49%\n"
+                         "       Specificity: %50%\n"
+                         "       Precision:   %51%\n"
+                         "       FDR Rate:    %52%\n\n"
+                         "       *Indels\n"
+                         "       Sensitivity: %53%\n"
+                         "       Specificity: %54%\n"
+                         "       Precision:   %55%\n"
+                         "       FDR Rate:    %56%\n";
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % VCFRef()
@@ -400,36 +423,60 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % r.countSNPGen()
                                             % r.countIndGen()
                                             % (r.countSNPGen() + r.countIndGen())
+
                                             % stats.vData.countSNPSyn()
-                                            % stats.vData.countIndSyn()
-                                            % stats.vData.countVarSyn()
-                                            % stats.vData.countSNPGen()
-                                            % stats.vData.countIndGen()
-                                            % stats.vData.countVarGen()
-                                            % stats.data.at(ChrT).dSNP()
-                                            % stats.data.at(ChrT).dInd()
-                                            % stats.data.at(ChrT).dTot()
-                                            % stats.data.at(ChrT).tpSNP()
-                                            % stats.data.at(ChrT).tpInd()
-                                            % stats.data.at(ChrT).tpTot()
-                                            % stats.data.at(ChrT).fpSNP()
-                                            % stats.data.at(ChrT).fpInd()
-                                            % stats.data.at(ChrT).fpTot()
-                                            % stats.data.at(ChrT).fnSNP()
-                                            % stats.data.at(ChrT).fnInd()     // 26
-                                            % stats.data.at(ChrT).fnTot()     // 27
-                                            % stats.data.at(ChrT).m.sn()      // 28
-                                            % stats.data.at(ChrT).m.sp()      // 29
-                                            % stats.data.at(ChrT).m.pc()      // 30
-                                            % stats.data.at(ChrT).m.fdr()     // 31
-                                            % stats.data.at(ChrT).m_snp.sn()  // 32
-                                            % stats.data.at(ChrT).m_snp.sp()  // 33
-                                            % stats.data.at(ChrT).m_snp.pc()  // 34
-                                            % stats.data.at(ChrT).m_snp.fdr() // 35
-                                            % stats.data.at(ChrT).m_ind.sn()  // 36
-                                            % stats.data.at(ChrT).m_ind.sp()  // 37
-                                            % stats.data.at(ChrT).m_ind.pc()  // 38
-                                            % stats.data.at(ChrT).m_snp.fdr() // 39
+                                            % stats.vData.countIndSyn() // 10
+                                            % stats.vData.countVarSyn() // 11
+                                            % stats.vData.countSNPGen() // 12
+                                            % stats.vData.countIndGen() // 13
+                                            % stats.vData.countVarGen() // 14
+                                            % stats.countSNP_TP_Syn()     // 15
+                                            % stats.countInd_TP_Syn()     // 16
+                                            % stats.countVar_TP_Syn()     // 17
+                                            % stats.countSNP_FP_Syn() // 18
+                                            % stats.countInd_FP_Syn() // 19
+                                            % stats.countVar_FP_Syn() // 20
+                                            % stats.countSNP_FN_Syn()     // 21
+                                            % stats.countInd_FN_Syn()     // 22
+                                            % stats.countVar_FN_Syn()     // 23
+                     // 0.893773
+                                            % stats.countVarSN_Syn()//stats.data.at(ChrT).m.sn() //      // 24
+                                            % stats.countVarSP_Syn()      // 25
+                                            % stats.countVarPC_Syn()      // 26
+                                            % (1-stats.countVarPC_Syn())     // 27
+                                            % stats.countSNPSN_Syn()  // 28
+                                            % stats.countSNPSP_Syn()  // 29
+                                            % stats.countSNPPC_Syn()  // 30
+                                            % (1-stats.countSNPPC_Syn()) // 31
+                                            % stats.countIndSN_Syn()  // 32
+                                            % stats.countIndSP_Syn()  // 33
+                                            % stats.countIndPC_Syn()  // 34
+                                            % (1-stats.countIndPC_Syn()) // 35
+
+                     % stats.countSNP_TP_Gen()     // 36
+                     % stats.countInd_TP_Gen()     // 37
+                     % stats.countVar_TP_Gen()     // 38
+                     % stats.countSNP_FP_Gen() // 39
+                     % stats.countInd_FP_Gen() // 40
+                     % stats.countVar_FP_Gen() // 41
+                     % stats.countSNP_FN_Gen()     // 42
+                     % stats.countInd_FN_Gen()     // 43
+                     % stats.countVar_FN_Gen()     // 44
+                    
+                     % stats.countVarSN_Gen() // 45
+                     % stats.countVarSP_Gen() // 46
+                     % stats.countVarPC_Gen() // 47
+                     % (1-stats.countVarPC_Gen()) // 48
+                     % stats.countSNPSN_Gen() // 49
+                     % stats.countSNPSP_Gen() // 50
+                     % stats.countSNPPC_Gen() // 51
+                     % (1-stats.countSNPPC_Gen()) // 52
+                     % stats.countIndSN_Gen() // 53
+                     % stats.countIndSP_Gen() // 54
+                     % stats.countIndPC_Gen() // 55
+                     % (1-stats.countIndPC_Gen()) // 56
+                     
+                     
                      ).str());
     o.writer->close();
 }
