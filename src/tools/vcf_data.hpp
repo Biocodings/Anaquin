@@ -50,9 +50,14 @@ namespace Anaquin
 
         inline const Variant * findVar(const ChrID &cID, VarKey key)
         {
-            for (const auto &i : *this)
+            if (!count(cID))
             {
-                for (const auto &j : i.second.s2d)
+                return nullptr;
+            }
+            
+            //for (const auto &i : this->at(cID))
+            {
+                for (const auto &j : this->at(cID).s2d)
                 {
                     if (key == var2hash(j.second.id, j.second.type(), j.second.l))
                     {
@@ -60,7 +65,7 @@ namespace Anaquin
                     }
                 }
                 
-                for (const auto &j : i.second.i2d)
+                for (const auto &j : this->at(cID).i2d)
                 {
                     if (key == var2hash(j.second.id, j.second.type(), j.second.l))
                     {
