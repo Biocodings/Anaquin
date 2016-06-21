@@ -70,7 +70,7 @@
         #f <- as.numeric(as.character(format(round(as.numeric(as.character(r)), 2), nsmall=2)))
         #p <- p + geom_vline(xintercept=c(as.factor(r)), linetype="dotted")
         p <- p + geom_vline(xintercept=r, linetype="dotted")
-        p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOQ',r)), colour="black", show.legend=FALSE)
+        p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOA',r)), colour="black", show.legend=FALSE)
     }
 
     if (!showGuide)
