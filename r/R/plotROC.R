@@ -18,9 +18,13 @@ plotROC <- function(data,
 
     data <- data$seqs
 
-    stopifnot(!is.null(data$pval))
+    stopifnot(!is.null(data$score))
     stopifnot(!is.null(data$label))
-    stopifnot(!is.null(data$expected))
+    
+    if (is.null(data$expected))
+    {
+        data$expected <- 1
+    }
     
     showAUC <- FALSE
     
@@ -29,27 +33,27 @@ plotROC <- function(data,
         data$ratio <- abs(round(data$expected))
     }
 
-    data <- data[!is.na(data$pval),]
+    #data <- data[!is.na(data$pval),]
     data <- data[data$label=='TP' | data$label=='FP',]
     data <- data[, order(names(data))]
     data <- data.frame(label=data$label,
-                       pval=data$pval,
+                       score=data$score,
                        ratio=data$ratio)
 
-    shouldPseuoLog <- TRUE
+    #shouldPseuoLog <- TRUE
     
     # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
-    if (shouldPseuoLog)
-    {
-        data$pval <- log2(data$pval + 0.00001)
-    }
-    else
-    {
-        data$pval <- log2(data$pval)
-    }
+    #if (shouldPseuoLog)
+    #{
+        #data$pval <- log2(data$pval + 0.00001)
+    #}
+    #else
+    #{
+        #data$pval <- log2(data$pval)
+    #}
 
     # Turn the probabilities into ranking classifer
-    data$score <- 1-data$pval
+    #data$score <- 1-data$pval
 
     rocDat <- NULL
     aucDat <- NULL
@@ -134,9 +138,9 @@ plotROC <- function(data,
             labs(colour=legTitle)                         +
             theme_bw()
 
-    p <- p + geom_path(size=1, aes(colour=ratio), alpha=0.7)
-    p <- p + geom_point(size=1, aes(colour=ratio), alpha=0.7)
-
+    #p <- p + geom_point(size=1, aes(colour=ratio), alpha=0.7)
+    p <- p + geom_path(size=1, aes(colour=ratio), alpha=1.0)
+    
     if (!is.null(title))
     {
         p <- p + ggtitle(title)
@@ -153,7 +157,7 @@ plotROC <- function(data,
     
     if (!showGuide | countGroups == 1)
     {
-        #p <- p + guides(colour=FALSE)
+        p <- p + guides(colour=FALSE)
     }
 
     p <- .transformPlot(p)        
