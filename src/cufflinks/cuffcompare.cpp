@@ -172,7 +172,7 @@ void show_usage() {
   GMessage("%s\n", USAGE);
   }
 
-// Defined in t_express.cpp
+// Defined in r_assembly.cpp
 extern Anaquin::Compare __cmp__;
 
 int cuffcompare_main(const char *ref, const char *query) {
