@@ -52,15 +52,18 @@ CC = g++
 CC_FLAGS = -std=c++11
 
 EXEC         = anaquin
-SOURCES      = $(wildcard src/kallisto/src/*.cpp src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/TransQuin/*.cpp src/VarQuin/*.cpp src/MetaQuin/*.cpp src/LadQuin/*.cpp src/FusQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
+SOURCES      = $(wildcard src/*.cpp src/tools/*.cpp src/analyzers/*.cpp src/RnaQuin/*.cpp src/VarQuin/*.cpp src/MetaQuin/*.cpp src/LadQuin/*.cpp src/FusQuin/*.cpp src/data/*.cpp src/parsers/*.cpp src/writers/*.cpp src/stats/*.cpp src/cufflinks/*.cpp)
 OBJECTS      = $(SOURCES:.cpp=.o)
 SOURCES_TEST = $(wildcard tests/dna/*.cpp tests/parsers/*.cpp tests/TransQuin/*.cpp tests/MetaQuin/*.cpp tests/*.cpp)
 OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
 SOURCES_LIB  = $(wildcard src/htslib/*.c src/htslib/cram/*.c)
 OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 
+#anaquin.a: $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
+#	ar rcs $@ $^
+
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(HDF5L) -lhdf5 -lbfd -lz -ldl -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -L $(HDF5L) -lhdf5 -lnmaths -lbfd -lz -ldl -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
