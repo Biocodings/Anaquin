@@ -2,18 +2,15 @@
 #define V_FREQUENCY_HPP
 
 #include "stats/analyzer.hpp"
+#include "tools/vcf_data.hpp"
 #include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
     struct VFreq
     {
-        enum class Input
-        {
-            VCF,
-            Text,
-        };
-        
+        typedef VarInput Input;
+
         struct Options : public AnalyzerOptions
         {
             Input input;

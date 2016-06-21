@@ -1630,7 +1630,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_FREQ:
                 {
                     VFreq::Options o;
-                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VFreq::Input::VCF : VFreq::Input::Text;
+                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VFreq::Input::VCFInput : VFreq::Input::TxtInput;
 
                     analyze_1<VFreq>(OPT_U_FILES, o);
                     break;
@@ -1639,7 +1639,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_DISCOVER:
                 {
                     VDiscover::Options o;
-                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VDiscover::Input::VCF : VDiscover::Input::Text;
+                    o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VDiscover::Input::VCFInput : VDiscover::Input::TxtInput;
 
                     analyze_1<VDiscover>(OPT_U_FILES, o);
                     break;

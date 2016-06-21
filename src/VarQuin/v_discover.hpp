@@ -3,22 +3,19 @@
 
 #include <vector>
 #include "stats/analyzer.hpp"
+#include "tools/vcf_data.hpp"
 #include "VarQuin/VarQuin.hpp"
 
 namespace Anaquin
 {
     struct VDiscover
     {
-        enum class Input
-        {
-            VCF,
-            Text,
-        };
-
+        typedef VarInput Input;
+        
         struct Options : public AnalyzerOptions
         {
             Options() {}
-            
+
             Input input;
             
             // Significance level
@@ -27,7 +24,7 @@ namespace Anaquin
 
         struct Stats : public MappingStats, public VariantStats
         {
-            struct SyncData
+            struct Data
             {
                 inline Counts count(const std::vector<VariantMatch> &data, Mutation type) const
                 {
@@ -63,55 +60,18 @@ namespace Anaquin
                 
                 std::vector<VariantMatch> fps, tps, tns, fns;
 
+                std::map<long, VariantMatch *> fns_, tps_;
+                
                 // Performance metrics
                 Confusion m, m_snp, m_ind;
             };
             
+            VCFData vData;
+            
             // Distribution for the variants
             std::map<ChrID, HashHist> hist;
 
-            inline Counts countSNPGeno() const
-            {
-                return count(geno, [&](const ChrID &cID, const GenomeData &x)
-                {
-                    return x.snp;
-                });
-            }
-            
-            inline Counts countIndGeno() const
-            {
-                return count(geno, [&](const ChrID &cID, const GenomeData &x)
-                {
-                    return x.ind;
-                });
-            }
-
-            inline Counts countVarGeno() const { return countSNPGeno() + countIndGeno(); }
-
-            struct GenomeData
-            {
-                // Number of indels
-                Counts ind;
-                
-                // Number of SNPs
-                Counts snp;
-                
-                std::vector<CalledVariant> vars;
-            };
-
-            /*
-             * Genomic statistics
-             */
-            
-            // Statistics for genomic variants
-            std::map<ChrID, GenomeData> geno;
-            
-            /*
-             * Sequin statistics
-             */
-            
-            // Statistics for synthetic variants
-            SyncData chrT;
+            std::map<ChrID, Data> data;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());

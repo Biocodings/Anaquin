@@ -6,6 +6,7 @@
 #include "data/intervals.hpp"
 #include "stats/analyzer.hpp"
 #include "parsers/parser_vcf.hpp"
+#include "parsers/parser_variants.hpp"
 
 namespace Anaquin
 {
@@ -141,33 +142,81 @@ namespace Anaquin
         {
             return countInd() - countIndSyn();
         }
+        
+        inline Counts countVarGen() const
+        {
+            return countSNPGen() + countIndGen();
+        }
+        
+        inline Counts countVarSyn() const
+        {
+            return countSNPSyn() + countIndSyn();
+        }
+    };
+
+    enum class VarInput
+    {
+        VCFInput,
+        TxtInput,
     };
     
-    inline VCFData vcfData(const Reader &r)
+    inline VCFData vcfData(const Reader &r, VarInput input = VarInput::VCFInput)
     {
         VCFData c2d;
         
-        ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &)
+        switch (input)
         {
-            switch (x.type())
+            case VarInput::VCFInput:
             {
-                case Mutation::SNP:
+                ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &)
                 {
-                    c2d[x.cID].s2d[x.l.start] = x;
-                    break;
-                }
+                    switch (x.type())
+                    {
+                        case Mutation::SNP:
+                        {
+                            c2d[x.cID].s2d[x.l.start] = x;
+                            break;
+                        }
+                            
+                        case Mutation::Deletion:
+                        case Mutation::Insertion:
+                        {
+                            c2d[x.cID].i2d[x.l.start] = x;
+                            break;
+                        }
+                    }
+                });
 
-                case Mutation::Deletion:
-                case Mutation::Insertion:
-                {
-                    c2d[x.cID].i2d[x.l.start] = x;
-                    break;
-                }
+                break;
             }
-        });
+
+            case VarInput::TxtInput:
+            {
+                ParserVariant::parse(r, [&](const ParserVariant::Data &x, const ParserProgress &)
+                {
+                    switch (x.type())
+                    {
+                        case Mutation::SNP:
+                        {
+                            c2d[x.cID].s2d[x.l.start] = x;
+                            break;
+                        }
+                            
+                        case Mutation::Deletion:
+                        case Mutation::Insertion:
+                        {
+                            c2d[x.cID].i2d[x.l.start] = x;
+                            break;
+                        }
+                    }
+                });
+                
+                break;
+            }
+        }
 
         return c2d;
-    }    
+    }
 }
 
 #endif

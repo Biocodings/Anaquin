@@ -99,7 +99,9 @@ namespace Anaquin
             m.query = query;
             m.match = nullptr;
 
-            if (Standard::isSynthetic(query.cID))
+            const auto isSyn = Standard::isSynthetic(query.cID);
+            
+            if (isSyn || Standard::isGenomic(query.cID))
             {
                 // Can we match by position?
                 m.match = r.findVar(query.cID, query.l);
@@ -110,7 +112,7 @@ namespace Anaquin
                     m.alt = m.match->alt == query.alt;
                 }
                 
-                if (m.match && !mixture().empty())
+                if (isSyn && m.match && !mixture().empty())
                 {
                     m.eFold    = r.findAFold(baseID(m.match->id));
                     m.eAllFreq = r.findAFreq(baseID(m.match->id));
@@ -122,7 +124,7 @@ namespace Anaquin
 
         switch (input)
         {
-            case Input::VCF:
+            case Input::VCFInput:
             {
                 ParserVCF::parse(file, [&](const ParserVCF::Data &d, const ParserProgress &)
                 {
@@ -132,7 +134,7 @@ namespace Anaquin
                 break;
             }
 
-            case Input::Text:
+            case Input::TxtInput:
             {
                 ParserVariant::parse(file, [&](const ParserVariant::Data &d, const ParserProgress &)
                 {
