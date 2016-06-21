@@ -336,12 +336,12 @@ Scripts PlotVLOD()
     return ToString(src_r_plotVLOD_R);
 }
 
-Scripts PlotVROC1()
+Scripts PlotSomaticROC()
 {
     return ToString(src_r_plotVROC1_R);
 }
 
-Scripts PlotVROC2()
+Scripts PlotGermlineROC()
 {
     return ToString(src_r_plotVROC2_R);
 }

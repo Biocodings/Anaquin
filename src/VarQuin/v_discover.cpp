@@ -6,10 +6,13 @@ using namespace Anaquin;
 extern Scripts PlotVLOD();
 
 // Defined in resources.cpp
-extern Scripts PlotVROC1(); // Somatic (eg: VarScan)
+extern Scripts PlotSomaticROC();
 
 // Defined in resources.cpp
-extern Scripts PlotVROC2(); // Germline (eg: GATK)
+extern Scripts PlotGermlineROC();
+
+// Defined in standard.cpp
+extern bool IsFlatMix();
 
 VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
@@ -175,7 +178,7 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Stats &stats,
                        const VDiscover::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
 
     o.generate(file);
     o.writer->open("VarDiscover_sequins.csv");
@@ -183,8 +186,9 @@ static void writeQuins(const FileName &file,
                                            % "Pos"
                                            % "Label"
                                            % "Pval"
-                                           % "ReadsR"
-                                           % "ReadsV"
+                                           % "ReadR"
+                                           % "ReadV"
+                                           % "Depth"
                                            % "EFold"
                                            % "EFreq"
                                            % "MFreq"
@@ -225,6 +229,7 @@ static void writeQuins(const FileName &file,
                                                                        % (isnan(k.query.p) ? "-" : p2str(k.query.p))
                                                                        % k.query.readR
                                                                        % k.query.readV
+                                                                       % k.query.cov
                                                                        % k.eFold
                                                                        % k.eAllFreq
                                                                        % k.query.alleleFreq()
@@ -257,6 +262,7 @@ static void writeQuins(const FileName &file,
                                                            % "NA"
                                                            % "NA"
                                                            % "NA"
+                                                           % "NA"
                                                            % r.findAFold(m->id)
                                                            % r.findAFreq(m->id)
                                                            % "NA"
@@ -271,7 +277,7 @@ static void writeQuins(const FileName &file,
 
 static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
     
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
@@ -279,6 +285,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                            % "Label"
                                            % "Ref"
                                            % "Var"
+                                           % "Depth"
                                            % "EFold"
                                            % "EAllele"
                                            % "Pval"
@@ -293,6 +300,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                    % label
                                                    % i.query.readR
                                                    % i.query.readV
+                                                   % i.query.cov
                                                    % i.eFold
                                                    % i.eAllFreq
                                                    % (isnan(i.query.p) ? "-" : p2str(i.query.p))
@@ -443,7 +451,16 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.generate("VarDiscover_ROC.R");
     o.writer->open("VarDiscover_ROC.R");
-    o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVROC1()));
+    
+    if (IsFlatMix())
+    {
+        o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotGermlineROC()));
+    }
+    else
+    {
+        o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotSomaticROC()));
+    }
+    
     o.writer->close();
     
     /*

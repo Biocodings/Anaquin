@@ -6,6 +6,10 @@
 #    %2%
 #
 
+#
+# Plot ROC curve for somatic variants
+#
+
 library(Anaquin)
 
 data <- read.csv('%3%/%4%', sep='\t')

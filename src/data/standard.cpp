@@ -42,6 +42,13 @@ static unsigned countColumns(const Reader &r)
     return static_cast<unsigned>(n);
 }
 
+static std::set<Concent> cons;
+
+bool IsFlatMix()
+{
+    return cons.size() == 1;
+}
+
 template <typename Reference> void readMixture(const Reader &r, Reference &ref, Mixture m, MixtureFormat format, unsigned column=2)
 {
     auto f = [&](const std::string &delim)
@@ -60,20 +67,24 @@ template <typename Reference> void readMixture(const Reader &r, Reference &ref, 
                     return;
                 }
                 
+                const auto con = stof(d[column]);
+                
                 switch (format)
                 {
                     case ID_Length_Mix:
                     {
                         succceed = true;
-                        ref.add(d[0], stoi(d[1]), stof(d[column]), m); break;
+                        ref.add(d[0], stoi(d[1]), con, m); break;
                     }
 
                     case ID_Mix:
                     {
                         succceed = true;
-                        ref.add(d[0], 0.0, stof(d[column]), m); break;
+                        ref.add(d[0], 0.0, con, m); break;
                     }
                 }
+                
+                cons.insert(con);
             }, delim);
 
             return succceed;

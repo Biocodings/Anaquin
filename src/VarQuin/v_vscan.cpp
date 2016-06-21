@@ -13,13 +13,14 @@ VVScan::Stats VVScan::analyze(const FileName &file,
     
     VVScan::Stats stats;
 
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%";
-    out.write((boost::format(format) % "Chrom"
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
+    out.write((boost::format(format) % "ChrID"
                                      % "Position"
                                      % "Ref"
-                                     % "Allele"
-                                     % "ReadsR"
-                                     % "ReadsV"
+                                     % "Alt"
+                                     % "ReadR"
+                                     % "ReadV"
+                                     % "Depth"
                                      % "QualR"
                                      % "QualV"
                                      % "Pvalue").str());
@@ -41,6 +42,7 @@ VVScan::Stats VVScan::analyze(const FileName &file,
                                          % x.alt
                                          % x.readR
                                          % x.readV
+                                         % x.cov
                                          % x.qualR
                                          % x.qualV
                                          % x.p).str());

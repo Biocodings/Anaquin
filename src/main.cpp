@@ -1570,17 +1570,10 @@ void parse(int argc, char ** argv)
 
                     case TOOL_V_FREQ:
                     case TOOL_V_EXPRESS:
+                    case TOOL_V_DISCOVER:
                     {
                         addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1));
-                        break;
-                    }
-
-                    case TOOL_V_DISCOVER:
-                    {
-                        applyRef(std::bind(&Standard::addVStd, &s, std::placeholders::_1), OPT_R_BED);
-                        applyRef(std::bind(&Standard::addVVar, &s, std::placeholders::_1), OPT_R_VCF);
-                        addMix(std::bind(&Standard::addVMix, &s, std::placeholders::_1));
                         break;
                     }
 
