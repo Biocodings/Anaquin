@@ -763,7 +763,7 @@ struct VarRef::VarRefImpl
     VCFData vData;
     BedData bData;
     
-    std::map<ChrID, Intervals<>> gInters;
+    //std::map<ChrID, Intervals<>> gInters;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
@@ -778,7 +778,7 @@ void VarRef::readBRef(const Reader &r)
         }
     }
 
-    _impl->gInters = _impl->bData.inters();
+    //_impl->gInters = _impl->bData.inters();
 }
 
 void VarRef::readVRef(const Reader &r)
@@ -800,6 +800,11 @@ std::map<ChrID, Hist> VarRef::hist() const
 C2Intervals VarRef::inters() const  { return _impl->bData.inters();    }
 C2Intervals VarRef::sInters() const { return _impl->bData.intersSyn(); }
 C2Intervals VarRef::gInters() const { return _impl->bData.intersGen(); }
+
+MC2Intervals VarRef::minters() const  { return _impl->bData.minters();    }
+MC2Intervals VarRef::msInters() const { return _impl->bData.mintersSyn(); }
+MC2Intervals VarRef::mgInters() const { return _impl->bData.mintersGen(); }
+
 
 Proportion VarRef::findAFreq(const SequinID &id) const
 {

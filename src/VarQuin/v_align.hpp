@@ -75,7 +75,9 @@ namespace Anaquin
             std::map<ChrID, Hist> hist;
             
             // Intervals for all chromosomes
-            std::map<ChrID, Intervals<>> inters;
+//            std::map<ChrID, Intervals<>> inters;
+            
+            std::map<ChrID, MergedIntervals<>> inters;
             
             /*
              * Genomic statistics

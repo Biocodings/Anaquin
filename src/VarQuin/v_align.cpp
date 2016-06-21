@@ -11,7 +11,9 @@ static VAlign::Stats init()
     VAlign::Stats stats;
     
     stats.hist   = r.hist();
-    stats.inters = r.inters();
+    stats.inters = r.minters();
+
+    std::cout << "[INFO]: " << stats.inters.size() << " chromosomes in the reference" << std::endl;
     
     assert(!stats.hist.empty());
     assert(!stats.inters.empty());
@@ -21,12 +23,19 @@ static VAlign::Stats init()
 
 static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
 {
-    Base lGaps, rGaps;
+    Base lGaps = 0, rGaps = 0;
     
-    auto f = [&](Interval *m)
+    bool isContained = false;
+    
+    auto f = [&](MergedInterval *m)
     {
         m->map(align.l, &lGaps, &rGaps);
 
+        if (isContained)
+        {
+            lGaps = rGaps = 0;
+        }
+        
         const auto covered = (align.l.length() - lGaps - rGaps);
         
         stats.data[align.cID].lGaps[m->name()] += lGaps;
@@ -43,6 +52,8 @@ static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
 
     if (m)
     {
+        isContained = true;
+        
         f(m);
         assert(lGaps == 0 && rGaps == 0);
 
@@ -78,8 +89,6 @@ static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
 
 VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 {
-    const auto &r = Standard::instance().r_var;
-    
     auto stats = init();
     o.analyze(file);
 
@@ -158,6 +167,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 //                }
 //            });
 
+            assert(ms.length);
+            
             if (isSyn)
             {
                 stats.s2l[gID] = ms.length;
@@ -168,6 +179,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             }
             else
             {
+                std::cout << ms.nonZeros << std::endl;
+                
                 stats.g2l[gID] = ms.length;
                 stats.g2c[gID] = ms.nonZeros;
 
@@ -178,37 +191,44 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             assert(stats.s2c[gID] <= stats.s2l[gID]);
             assert(stats.g2c[gID] <= stats.g2l[gID]);
 
-            // TP at the base level
-            const auto btp = stats.data.at(cID).align.count(gID) ? stats.data.at(cID).align.at(gID) : 0;
-            
-            // FP at the base level (requires overlapping)
-            const auto bfp = (stats.data.at(i.first).lGaps.count(gID) ? stats.data.at(i.first).lGaps.at(gID) : 0)
-                                       +
-                             (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
-            
-            assert(!isnan(btp) && btp >= 0);
-            assert(!isnan(bfp) && bfp >= 0);
-            
-            // Precison at the base level
-            const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
-
-            assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
-            
-            if (Standard::isSynthetic(cID))
+            if (!stats.data.count(cID))
             {
-                stp += btp;
-                sfp += bfp;
+                o.warn("No alignments found for " + cID);
             }
             else
             {
-                gtp += btp;
-                gfp += bfp;
+                // TP at the base level
+                const auto btp = stats.data.at(cID).align.count(gID) ? stats.data.at(cID).align.at(gID) : 0;
+                
+                // FP at the base level (requires overlapping)
+                const auto bfp = (stats.data.at(i.first).lGaps.count(gID) ? stats.data.at(i.first).lGaps.at(gID) : 0)
+                +
+                (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
+                
+                assert(!isnan(btp) && btp >= 0);
+                assert(!isnan(bfp) && bfp >= 0);
+                
+                // Precison at the base level
+                const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
+                
+                assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
+                
+                if (Standard::isSynthetic(cID))
+                {
+                    stp += btp;
+                    sfp += bfp;
+                }
+                else
+                {
+                    gtp += btp;
+                    gfp += bfp;
+                }
+                
+                stats.g2p[gID] = bpc;
             }
             
             assert(stp >= 0);
             assert(sfp >= 0);
-
-            stats.g2p[gID] = bpc;
         }
     }
 
