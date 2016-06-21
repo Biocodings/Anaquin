@@ -39,33 +39,33 @@ void RCoverage::report(const FileName &file, const RCoverage::Options &o)
     x.length  = r.size();
     x.summary = "RnaCoverage_summary.stats";
     
-    CoverageTool::summary(stats, x, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        return r.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::summary(stats, x, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        return r.match(Locus(i, j), MatchRule::Contains);
+//    });
     
     /*
-     * Generating detailed CSV for the sequins
+     * Generating RnaCoverage_sequins.csv
      */
     
     o.info("Generating RnaCoverage_sequins.csv");
     o.writer->open("RnaCoverage_sequins.csv");
-    o.writer->write(CoverageTool::writeCSV(stats, x));
+    //o.writer->write(CoverageTool::writeCSV(stats, x));
     o.writer->close();
 
     /*
-     * Generating bedgraph for the standards
+     * Generating RnaCoverage_sequins.bedgraph
      */
     
     CoverageTool::CoverageBedGraphOptions y;
     
     y.writer = o.writer;
-    y.file   = "RnaCoverage_chrT.bedgraph";
+    y.file   = "RnaCoverage_sequins.bedgraph";
 
-    o.info("Generating RnaCoverage_chrT.bedgraph");
+    o.info("Generating RnaCoverage_sequins.bedgraph");
     
-    CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        return nullptr; // TODO: r.findExon(ChrT, Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        return nullptr; // TODO: r.findExon(ChrT, Locus(i, j), MatchRule::Contains);
+//    });
 }

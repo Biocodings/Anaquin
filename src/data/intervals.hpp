@@ -90,7 +90,7 @@ namespace Anaquin
             template <typename F> Stats stats(F f) const
             {
                 Stats stats;
-            
+
                 bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
                 {
                     // Should this be counted? For example, aligning to sequins?
@@ -294,7 +294,18 @@ namespace Anaquin
             
                 return v.empty() ? nullptr : v.front().value;
             }
-        
+
+            template <typename F> void bedGraph(F f) const
+            {
+                for (const auto &i : _inters)
+                {
+                    i.second.bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
+                    {
+                        f(id, i, j, cov);
+                    });
+                }
+            }
+
             typename T::Stats stats() const
             {
                 Interval::Stats stats;
@@ -342,11 +353,24 @@ namespace Anaquin
             IntervalData _inters;
     };
 
+    typedef std::map<ChrID, Intervals<>> C2Intervals;
+
     struct ID2Intervals : std::map<Interval::IntervalID, Intervals<>>
     {
         inline void add(const Interval::IntervalID &id, const Intervals<> &i)
         {
             (*this)[id] = i;
+        }
+        
+        template <typename F> void bedGraph(F f) const
+        {
+            for (const auto &i : (*this))
+            {
+                i.second.bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
+                {
+                    f(id, i, j, cov);
+                });
+            }
         }
         
         inline Interval::Stats stats() const

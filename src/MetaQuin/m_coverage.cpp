@@ -37,11 +37,11 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     to.refs     = r.hist().size();
     to.length   = r.size();
     
-    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        // Filter to the regions in the standards
+//        return r.match(Locus(i, j), MatchRule::Contains);
+//    });
     
     /*
      * 2. Generating bedgraph for the community
@@ -50,11 +50,11 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
     bo.writer = o.writer;
     bo.file   = "MetaCoverage_coverage.bedgraph";
 
-    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        // Filter to the regions in the standards
+//        return r.match(Locus(i, j), MatchRule::Contains);
+//    });
 
     /*
      * 3. Generating detailed statistics for each MetaQuin

@@ -54,10 +54,10 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
     x.length  = r.size();
     x.summary = "VarCoverage_summary.stats";
     
-    CoverageTool::summary(stats, x, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        return r.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::summary(stats, x, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        return r.match(Locus(i, j), MatchRule::Contains);
+//    });
 
     /*
      * Generating VarCoverage_sequins.csv
@@ -65,7 +65,7 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
 
     o.generate("VarCoverage_sequins.csv");
     o.writer->open("VarCoverage_sequins.csv");
-    o.writer->write(CoverageTool::writeCSV(stats, x));
+    //o.writer->write(CoverageTool::writeCSV(stats, x));
     o.writer->close();
 
     /*
@@ -79,10 +79,10 @@ void VCoverage::report(const FileName &file, const VCoverage::Options &o)
 
     o.generate("VarCoverage_quins.bedgraph");
 
-    CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        return r.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::bedGraph(stats, y, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        return r.match(Locus(i, j), MatchRule::Contains);
+//    });
 
     /*
      * Generating VarCoverage_density.R

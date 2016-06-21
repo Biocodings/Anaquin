@@ -546,8 +546,14 @@ namespace Anaquin
             // Histogram for all reference chromosomes
             std::map<ChrID, Hist> hist() const;
 
-            // Intervals for all reference chromosomes
-            std::map<ChrID, Intervals<>> inters() const;
+            // Intervals for all regions
+            C2Intervals inters() const;
+        
+            // Intervals for synthetic regions
+            C2Intervals sInters() const;
+        
+            // Intervals for genomic regions
+            C2Intervals gInters() const;
         
             std::map<ChrID, std::map<long, Counts>> vHist() const;
 

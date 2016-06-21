@@ -6,6 +6,8 @@
 #include "parsers/parser_sam.hpp"
 #include "writers/writer_sam.hpp"
 
+extern Anaquin::FileName BedRef();
+
 namespace Anaquin
 {
     class SamplingTool
@@ -45,10 +47,10 @@ namespace Anaquin
 
         struct Stats
         {
-            // Coverage statistics for synthetic
+            // Intervals for synthetic
             ID2Intervals syn;
             
-            // Coverage statistics for genome
+            // Intervals for genome
             ID2Intervals gen;
             
             // Raw coverage
@@ -91,28 +93,7 @@ namespace Anaquin
             return c;
         }
         
-        struct StatsImpl
-        {
-        };
-        
-        struct ReportImpl
-        {
-            // File name for the summary statistics
-            virtual FileName summary() const = 0;
-            
-            // File name for the bedgraph before subsampling
-            virtual FileName beforeBG() const = 0;
-            
-            // File Name for the bedgraph after subsampling
-            virtual FileName afterBG() const = 0;
-          
-            // File name for the subsampled alignment
-            virtual FileName sampled() const = 0;
-        };
-
-        template <typename Options> static Stats stats(const FileName &file,
-                                                       const Options &o,
-                                                       const StatsImpl &impl)
+        template <typename Options> static Stats stats(const FileName &file, const Options &o)
         {
             const auto &r = Standard::instance().r_var;
             
@@ -125,7 +106,7 @@ namespace Anaquin
             
             assert(inters.size() >= 2);
             
-            // Collect statistics for all reads mapped to the selected regions
+            // Statistics for all reads mapped to the selected regions
             const auto rr = CoverageTool::stats__(file, inters);
 
             // Number of alignments to the synthetic
@@ -290,10 +271,7 @@ namespace Anaquin
             writer.close();
         }
         
-        template <typename Options> static void report(const FileName &file,
-                                                       const Options &o,
-                                                       const StatsImpl &si,
-                                                       const ReportImpl &ri)
+        template <typename Options> static void report(const FileName &file, const Options &o)
         {
             const auto &r = Standard::instance().r_var;
             
@@ -310,64 +288,43 @@ namespace Anaquin
             
             o.info(meth2Str());
             
-            const auto sampled = ri.sampled();
+            const auto sampled = "VarSubsample_sampled.sam";
             
             // Statistics before alignment
-            const auto before = Subsampler::stats(file, o, si);
+            const auto before = Subsampler::stats(file, o);
             
-            // Subsample the alignment
+            // Subsample the alignments
             Subsampler::sample(file, o.work + "/" + sampled, before.sample(), o);
             
             // Statistics after alignment
-            const auto after = Subsampler::stats(o.work + "/" + sampled, o, si);
+            const auto after = Subsampler::stats(o.work + "/" + sampled, o);
 
             o.info("Proportion (after): " + toString(after.sample()));
 
-            // Intervals for synthetic and genome
-            auto inters = r.inters();
-            
-            // Does the read aligned within a region?
-            auto inside = [&](const ChrID &cID, const Locus &l)
-            {
-                if (!inters.count(cID))
-                {
-                    return false;
-                }
-                
-                // Does the read aligned within the reference regions?
-                return (bool)inters[cID].contains(l);
-            };
-
             /*
-             * Generating bedgraph before subsampling
+             * Generating bedgraph before subsampling (only synthetic)
              */
             
             auto pre = CoverageTool::CoverageBedGraphOptions();
             
             pre.writer = o.writer;
-            pre.file   = ri.beforeBG();
+            pre.file   = "VarSubsample_before.bedgraph";
             
-            CoverageTool::bedGraph(before.cov, pre, [&](const ChrID &cID, Base i, Base j, Coverage)
-            {
-                return inside(cID, Locus(i, j));
-            });
-            
+            CoverageTool::bedGraph(before.syn, pre);
+
             /*
-             * Generating statistics after subsampling
+             * Generating bedgraph after subsampling (only synthetic)
              */
             
             auto post = CoverageTool::CoverageBedGraphOptions();
             
             post.writer = o.writer;
-            post.file   = ri.afterBG();
+            post.file   = "VarSubsample_after.bedgraph";
             
-            CoverageTool::bedGraph(after.cov, post, [&](const ChrID &cID, Base i, Base j, Coverage)
-            {
-                return inside(cID, Locus(i, j));
-            });
-            
+            CoverageTool::bedGraph(after.syn, pre);
+
             /*
-             * Generating summary statistics
+             * Generating VarSubsample_summary.stats
              */
             
             const auto summary = "VarSubsample Output Results\n\n"
@@ -375,8 +332,8 @@ namespace Anaquin
                                  "       Reference sequin regions: %1%\n"
                                  "       User generated alignment: %2%\n\n"
                                  "-------Reference regions\n\n"
-                                 "       Genome regions:   %3%\n"
-                                 "       Synthetic regions: %4%\n\n"
+                                 "       Synthetic regions: %3%\n"
+                                 "       Genomic regions:   %4%\n\n"
                                  "       Method: %8%\n\n"            
                                  "-------User alignments (before subsampling)\n\n"
                                  "       Unmapped:  %5%\n"
@@ -392,13 +349,13 @@ namespace Anaquin
                                  "-------After subsampling\n\n"
                                  "       Genome coverage:    %11%\n"
                                  "       Synthetic coverage: %12%\n\n";
-            
-            o.generate(ri.summary());
-            o.writer->open(ri.summary());
-            o.writer->write((boost::format(summary) % o.rAnnot
+
+            o.generate("VarSubsample_summary.stats");
+            o.writer->open("VarSubsample_summary.stats");
+            o.writer->write((boost::format(summary) % BedRef()
                                                     % file
-                                                    % "????" //ri.countInters()
-                                                    % "????" //ri.countSeqs()
+                                                    % r.sInters().size()
+                                                    % r.gInters().size()
                                                     % before.cov.n_unmap
                                                     % before.cov.n_gen
                                                     % before.cov.n_syn

@@ -33,11 +33,11 @@ void LCoverage::report(const FileName &file, const LCoverage::Options &o)
     bo.writer = o.writer;
     bo.file   = "LadderCoverage_chrT.bedgraph";
 
-    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.r_lad.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        // Filter to the regions in the standards
+//        return r.r_lad.match(Locus(i, j), MatchRule::Contains);
+//    });
 
     /*
      * Generating summary statistics
@@ -50,9 +50,9 @@ void LCoverage::report(const FileName &file, const LCoverage::Options &o)
     to.refs     = r.r_lad.hist().size();
     to.length   = r.r_lad.size();
 
-    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.r_lad.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        // Filter to the regions in the standards
+//        return r.r_lad.match(Locus(i, j), MatchRule::Contains);
+//    });
 }

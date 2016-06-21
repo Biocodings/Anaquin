@@ -94,7 +94,7 @@ namespace Anaquin
             return r;
         }
         
-        inline Intervals<> gIntervals(const ChrID &cID) const
+        inline Intervals<> inters(const ChrID &cID) const
         {
             Intervals<> r;
             
@@ -108,28 +108,44 @@ namespace Anaquin
         }
 
         // Intervals for the genes
-        inline std::map<ChrID, Intervals<>> gInters() const
+        inline std::map<ChrID, Intervals<>> inters() const
         {
             std::map<ChrID, Intervals<>> r;
             
             for (const auto &i : *this)
             {
-                r[i.first] = gIntervals(i.first);
+                r[i.first] = inters(i.first);
             }
             
             return r;
         }
         
-        // Genomic intervals for the genes
-        inline std::map<ChrID, Intervals<>> gIntersGen() const
+        // Genomic regions mapped by chromosomes
+        inline std::map<ChrID, Intervals<>> intersGen() const
         {
             std::map<ChrID, Intervals<>> r;
             
             for (const auto &i : *this)
             {
-                if (!Standard::isSynthetic(i.first))
+                if (Standard::isGenomic(i.first))
                 {
-                    r[i.first] = gIntervals(i.first);
+                    r[i.first] = inters(i.first);
+                }
+            }
+            
+            return r;
+        }
+        
+        // Synthetic regions mapped by chromosomes
+        inline std::map<ChrID, Intervals<>> intersSyn() const
+        {
+            std::map<ChrID, Intervals<>> r;
+            
+            for (const auto &i : *this)
+            {
+                if (Standard::isSynthetic(i.first))
+                {
+                    r[i.first] = inters(i.first);
                 }
             }
             

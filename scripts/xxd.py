@@ -13,7 +13,21 @@ os.system('rm -rf src/resources/*')
 def xxd(src, dst):
     os.system('xxd -i ' + src + ' ' + ' ' + dst)
 
-data  = [ 'data/manual.txt',    
+data  = [ 'data/manual.txt',
+          'data/manuals/RnaAlign.txt',
+          'data/manuals/RnaAssembly.txt',
+          'data/manuals/RnaExpression.txt',
+          'data/manuals/RnaFoldChange.txt',
+          'data/manuals/RnaSubsample.txt',
+          'data/manuals/RnaCuffdiff.txt',
+          'data/manuals/RnaDESeq2.txt',
+          
+          'data/manuals/VarAlign.txt',
+          'data/manuals/VarSubsample.txt',
+          'data/manuals/VarDiscover.txt',
+          'data/manuals/VarFrequency.txt',
+          'data/manuals/VarVarScan.txt',
+
           'scripts/viewer.py',
           'scripts/reports.py',
           'scripts/sleuth.R',

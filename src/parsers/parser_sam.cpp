@@ -39,6 +39,8 @@ void ParserSAM::parse(const FileName &file, Functor x)
         align.cID    = std::string(h->target_name[t->core.tid]);
         align.mapq   = t->core.qual;
         align.seq    = bam2seq(t);
+        
+        std::cout << "[OK]" << align.i << std::endl;
         align.qual   = bam2qual(t);
         align.rnext  = bam2rnext(h, t);
         align.pnext  = t->core.mpos;

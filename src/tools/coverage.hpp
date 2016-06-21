@@ -1,7 +1,6 @@
 #ifndef COVERAGE_TOOL_HPP
 #define COVERAGE_TOOL_HPP
 
-#include "parsers/parser.hpp"
 #include "stats/analyzer.hpp"
 #include "data/intervals.hpp"
 #include "parsers/parser_sam.hpp"
@@ -16,20 +15,15 @@ namespace Anaquin
 
             Intervals<> inters;
         };
-        
-        struct Mapping
-        {
-            GenericID id;
-            
-            // Where the mapping occurs
-            Locus l;
-        };
 
+        struct Stats__ : public AlignmentStats, public SequinStats
+        {
+            //FileName src;
+            Intervals<> inters;
+        };
+        
         // Whether to proceed with the alignment
         typedef std::function<bool (const Alignment &, const ParserProgress &)> AlignFunctor;
-
-        // Whether to proceed with the coverage
-        typedef std::function<bool (const ChrID &, Base, Base, Coverage)> CoverageFunctor;
 
         struct CoverageReportOptions
         {
@@ -97,16 +91,7 @@ namespace Anaquin
             return stats;
         }
 
-        // Analyze a list of mappings assume sorted
-        static Stats stats(const std::vector<Mapping> &, const std::map<GenericID, Base> &);
-        
-        // Generate a bedgraph for the coverage
-        static void bedGraph(const Stats &, const CoverageBedGraphOptions &, CoverageFunctor);
-
-        // Generate summary statistics for the coverage
-        static void summary(const Stats &, const CoverageReportOptions &, CoverageFunctor);
-
-        static Scripts writeCSV(const Stats &, const CoverageReportOptions &);
+        static void bedGraph(const ID2Intervals &, const CoverageBedGraphOptions &);
     };
 }
 

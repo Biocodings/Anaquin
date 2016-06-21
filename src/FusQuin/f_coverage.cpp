@@ -29,7 +29,7 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
     o.info("Generating statistics");
     
     /*
-     * 1. Generating summary statistics
+     * Generating summary statistics
      */
     
     o.info("Generating FusCoverage_summary.stats");
@@ -41,14 +41,14 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
     to.refs     = r.hist().size();
     to.length   = r.size();
     
-    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::summary(stats, to, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        // Filter to the regions in the standards
+//        return r.match(Locus(i, j), MatchRule::Contains);
+//    });
     
     /*
-     * 2. Generating bedgraph for the standards
+     * Generating bedgraph for the standards
      */
     
     o.info("Generating FusCoverage_coverage.bedgraph");
@@ -56,9 +56,9 @@ void FCoverage::report(const FileName &file, const FCoverage::Options &o)
     bo.writer = o.writer;
     bo.file   = "FusCoverage_coverage.bedgraph";
 
-    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
-    {
-        // Filter to the regions in the standards
-        return r.match(Locus(i, j), MatchRule::Contains);
-    });
+//    CoverageTool::bedGraph(stats, bo, [&](const ChrID &id, Base i, Base j, Coverage)
+//    {
+//        // Filter to the regions in the standards
+//        return r.match(Locus(i, j), MatchRule::Contains);
+//    });
 }

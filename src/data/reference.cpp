@@ -778,7 +778,7 @@ void VarRef::readBRef(const Reader &r)
         }
     }
 
-    _impl->gInters = _impl->bData.gInters();
+    _impl->gInters = _impl->bData.inters();
 }
 
 void VarRef::readVRef(const Reader &r)
@@ -797,10 +797,9 @@ std::map<ChrID, Hist> VarRef::hist() const
     return _impl->bData.hist();
 }
 
-std::map<ChrID, Intervals<>> VarRef::inters() const
-{
-    return _impl->bData.gInters();
-}
+C2Intervals VarRef::inters() const  { return _impl->bData.inters();    }
+C2Intervals VarRef::sInters() const { return _impl->bData.intersSyn(); }
+C2Intervals VarRef::gInters() const { return _impl->bData.intersGen(); }
 
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
