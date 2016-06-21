@@ -101,7 +101,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         
         if (align.spliced)
         {
-            o.warn("Spliced alignment detected");
+            o.warn("Spliced alignments detected");
         }
 
         stats.update(align);
@@ -179,8 +179,6 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             }
             else
             {
-                std::cout << ms.nonZeros << std::endl;
-                
                 stats.g2l[gID] = ms.length;
                 stats.g2c[gID] = ms.nonZeros;
 

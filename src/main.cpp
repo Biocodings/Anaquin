@@ -325,7 +325,7 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_V_EXPRESS,   { OPT_MIXTURE, OPT_R_VCF,   OPT_U_FILES   } },
     { TOOL_V_FREQ,      { OPT_R_VCF,   OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_V_KALLELE,   { OPT_R_IND,   OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_R_BED,  OPT_U_FILES, OPT_MIXTURE } },
+    { TOOL_V_DISCOVER,  { OPT_R_VCF,   OPT_U_FILES, OPT_MIXTURE } },
 };
 
 /*

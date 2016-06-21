@@ -7,7 +7,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 // Defined in main.cpp
-extern std::string mixture();
+extern Anaquin::Scripts mixture();
 
 namespace Anaquin
 {
