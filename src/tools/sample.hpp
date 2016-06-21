@@ -355,10 +355,10 @@ namespace Anaquin
                                                     % r.sInters().size()
                                                     % r.gInters().size()
                                                     % meth2Str()
-                                                    % before.n_gen
-                                                    % before.n_syn
-                                                    % after.n_gen
-                                                    % after.n_syn
+                                                    //% before.n_gen
+                                                    //% before.n_syn
+                                                    //% after.n_gen
+                                                    //% after.n_syn
                                                     % before.synC
                                                     % before.genC
                                                     % after.synC
