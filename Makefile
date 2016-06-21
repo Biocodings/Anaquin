@@ -36,14 +36,8 @@ SS = ../SS
 # Library for SAM/BAM
 HLIB = src/htslib
 
-# Include for data model 
-HDF5 = /usr/include/hdf5/1.8.14/include
-
 # Library for random generator
 KLIB = /usr/include
-
-# Library for data model
-HDF5L = /usr/local/Cellar/hdf5/1.8.14/lib
 
 # Where the header are stored
 INCLUDE = src
@@ -63,7 +57,7 @@ OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 #	ar rcs $@ $^
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -L $(HDF5L) -lhdf5 -lnmaths -lbfd -lz -ldl -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -lnmaths -lbfd -lz -ldl -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
