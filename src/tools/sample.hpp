@@ -62,6 +62,9 @@ namespace Anaquin
             // Calculated coverage for the query (eg: chr21)
             Coverage genC;
             
+            Counts n_syn = 0;
+            Counts n_gen = 0;
+
             /*
              * Fraction required to subsample in chrT. This works because chrT is a short
              * chromosome and almost certianly will have the highest coverage.
@@ -109,37 +112,30 @@ namespace Anaquin
             // Statistics for all reads mapped to the selected regions
             const auto rr = CoverageTool::stats__(file, inters);
 
-            // Number of alignments to the synthetic
-            Counts n_syn = 0;
-            
-            // Number of alignments to the genome
-            Counts n_gen = 0;
-            
             for (const auto &i : rr.hist)
             {
                 if (Standard::isSynthetic(i.first))
                 {
-                    n_syn += i.second;
+                    stats.n_syn += i.second;
                 }
                 else if (Standard::isGenomic(i.first))
                 {
-                    n_gen += i.second;
+                    stats.n_gen += i.second;
                 }
             }
             
-            if (!n_syn)
+            if (!stats.n_syn)
             {
                 throw std::runtime_error("Failed to find any alignment for synthetic");
             }
-            else if (!n_gen)
+            else if (!stats.n_gen)
             {
                 throw std::runtime_error("Failed to find any alignment for the genome");
             }
             
-            o.info(toString(n_syn) + " alignments to synthetic");
-            o.info(toString(n_gen) + " alignments to genome");
-            o.info(toString(n_syn + n_gen) + " alignments in total");
-            o.info(toString(stats.cov.inters.size()) + " intervals generated");
+            o.info(toString(stats.n_syn) + " alignments to synthetic");
+            o.info(toString(stats.n_gen) + " alignments to genome");
+            o.info(toString(stats.n_syn + stats.n_gen) + " alignments in total");
 
             /*
              * Calculate statistics for both synthetic and genome
@@ -161,6 +157,9 @@ namespace Anaquin
 
             assert(!stats.syn.empty());
             assert(!stats.gen.empty());
+            
+            o.info(toString(stats.syn.size()) + " synthetic regions");
+            o.info(toString(stats.gen.size()) + " genomic regions");
             
             const auto ss = stats.syn.stats();
             const auto gs = stats.gen.stats();
@@ -232,7 +231,7 @@ namespace Anaquin
              * the genome and synthetic chromosome.
              */
             
-            o.info("Sampling the alignment");
+            o.info("Sampling the alignments");
             
             WriterSAM writer;
             writer.open(dst);
@@ -299,6 +298,9 @@ namespace Anaquin
             // Statistics after alignment
             const auto after = Subsampler::stats(o.work + "/" + sampled, o);
 
+            assert(before.syn.countInters() == after.syn.countInters());
+            assert(before.gen.countInters() == after.gen.countInters());
+            
             o.info("Proportion (after): " + toString(after.sample()));
 
             /*
@@ -336,11 +338,11 @@ namespace Anaquin
                                  "       Genomic regions:   %4%\n\n"
                                  "       Method: %5%\n\n"
                                  "-------User alignments (before subsampling)\n\n"
-                                 "       Genome:    %6%\n\n"
+                                 "       Genome:    %6%\n"
                                  "       Synthetic: %7%\n\n"
                                  "-------User alignments (after subsampling)\n\n"
-                                 "       Genome:    %8%\n\n"
-                                 "       Synthetic: %9\n\n"
+                                 "       Genome:    %8%\n"
+                                 "       Synthetic: %9%\n\n"
                                  "-------Before subsampling\n\n"
                                  "       Genome coverage:    %10%\n"
                                  "       Synthetic coverage: %11%\n\n"
@@ -352,13 +354,13 @@ namespace Anaquin
             o.writer->open("VarSubsample_summary.stats");
             o.writer->write((boost::format(summary) % BedRef()
                                                     % file
-                                                    % r.sInters().size()
-                                                    % r.gInters().size()
+                                                    % before.syn.countInters()
+                                                    % before.gen.countInters()
                                                     % meth2Str()
-                                                    //% before.n_gen
-                                                    //% before.n_syn
-                                                    //% after.n_gen
-                                                    //% after.n_syn
+                                                    % before.n_gen
+                                                    % before.n_syn
+                                                    % after.n_gen
+                                                    % after.n_syn
                                                     % before.synC
                                                     % before.genC
                                                     % after.synC

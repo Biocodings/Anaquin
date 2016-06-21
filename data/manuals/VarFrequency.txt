@@ -1,32 +1,38 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarAlign -- Measures the read alignment from sequins to the in silico chromosome.
+	 VarFrequency -- Assess quantitative analysis of variant allele frequencies.
 
 DESCRIPTION
-	 VarAlign calculates several useful statistics from an alignment file.
+	 VarFrequency can be used to analyse the measured synthetic variant allele frequency. Comparing the measured allele frequency
+	 (typically expressed as a fraction), relative to the known frequency for synthetic variants enables an assessment of sensitivity and quantitative accuracy.
 
-	   Dilution – the fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
+	 Specifically, VarFrequency builds a linear model relating the measured allele frequency (dependent variable) to the input concentration (independent variable)
+	 defined by a mixture. Singular Value Decomposition (SVD) is used to estimate the regression parameters, including:
 
-       Sensitivity - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would
-	                 have a sensitivity of 0.5. Please note that terminal flanking regions (up to 200nt) should be trimmed to omit edge effects from sequencing.
-
-       Precision –- The fraction annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments.
-	   				For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a specificity of 0.5.
+	   Correlation      – indicates the accuracy for measuring allele frequency across a range of input concentrations. 
+       Sensitivity      - indicates the quantitative linearity of allele frequency measures.
+       Coefficient (R2) – indicates the amount of variation that can be accounted for by the linear model.
 
 BIOINFORMATICS SOFTWARE
-	 Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
+	 VarFrequency take the standard VCF file that is provided by popular variant identification software, such as GATK. Please note that VarFrequency requires a
+	 quantitative measurement of allele frequency, such as provided by the AF flag in the VCF file format. VarFrequency also supports custom text output format.
 
 INPUTS
-	 Reference annotation file in BED format
-	 Generated alignment file in SAM/BAM format
-	 
+	 Reference variant file in VCF format
+	 Reference VarQuin mixture file in CSV format	 
+	 Generated variant file in VCF or text format
+
 USAGE EXAMPLE
-	 anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+	Example of VCF input:
+	anaquin VarFrequency –m mixture.csv –rvcf reference.vcf –ufiles variants.vcf
+
+	Example of VarScan input:
+	anaquin VarFrequency –m mixture.csv –rvcf reference.vcf –ufiles variants.txt
 
 TOOL OPTIONS
 	 Required:
-	 	-rbed        Reference VarQuin annotation file in BED format
+	 	-m           Reference VarQuin mixture file in CSV format
 		-ufiles      Generated alignment files in SAM/BAM format
 
 	 Optional:
@@ -35,23 +41,27 @@ TOOL OPTIONS
 OUTPUTS
 	 VarAlign_summary.stats - gives the summary statistics. Field definitions:
 
-	 	Reference annotation file	Reference annotation file in BED format 
-		User alignment file         User generated sample alignments in SAM/BAM format
-		Synthetic				    Number of alignments mapped to the in-silico genome
-		Genome					    Number of alignments mapped to the human genome
-		Dilution					Proportion of alignments mapped to the in-silico chromosome
-		Covered						Number of nucleotide bases with alignments
-		Uncovered					Number of nucleotide bases without alignments
-		Total						Covered + Uncovered
-		Sensitivity					Sensitivity of the alignments for the in-silico genome and the human genome
-		Precision					Precision of the alignments for the in-silico genome and the human genome
+	 	Reference variant annotation	Reference variant annotation file in VCF format 
+		User identified variants        User generated variant file in VCF or text format
+		Sequin mixture file			    Reference VarQuin mixture file in CSV format
+		Reference synthetic			    Number of variants (SNP, Indel or both) in the variant annotation file
+		Detection sensitivity			Sensitivity for detecting low frequency variants
+		Correlation						Pearson’s correlation of the linear model
+		Slope							Regression slope of the linear model
+		R2								Coefficient determination of the linear model
+		F-statistic						Test statistic of the linear model
+		P-value							P-value of the linear model
+		SSM								Sum of squares of the model
+		SSE								Sum of squares of residuals
+		SST								Sum of squares of the total variation
 
 	 VarAlign_sequins.csv - gives detailed statistics for each sequin. Field definitions:
-	    ID						    Name of the sequin
-		Length						Length of the sequin
-		Reads						Number of reads aligned
-		Sn							Base-level sensitivity of alignments 
-		Pc							Base-level precision of alignments
+	    ID						    	Name of the sequin
+		Expected						Expected allele frequency
+		Observed						Observed allele frequency
+		Sn								Number of reads supporting the reference allele 
+		Pc								Number of reads supporting the variant allele
+		Type							Type of the variant (SNP or Indel)
 
 EXAMPLE OUTPUT
 

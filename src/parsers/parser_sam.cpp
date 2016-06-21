@@ -40,7 +40,7 @@ void ParserSAM::parse(const FileName &file, Functor x)
         align.mapq   = t->core.qual;
         align.seq    = bam2seq(t);
         
-        std::cout << align.name << std::endl;
+        //std::cout << align.name << std::endl;
 
         align.qual   = bam2qual(t);
         align.rnext  = bam2rnext(h, t);

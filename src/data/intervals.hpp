@@ -372,6 +372,18 @@ namespace Anaquin
                 });
             }
         }
+
+        inline Counts countInters() const
+        {
+            Counts n = 0;
+            
+            for (const auto &i : *this)
+            {
+                n += i.second.size();
+            }
+            
+            return n;
+        }
         
         inline Interval::Stats stats() const
         {
