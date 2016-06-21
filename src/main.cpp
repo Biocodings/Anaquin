@@ -524,6 +524,32 @@ template <typename F> bool testFile(const FileName &x, F f)
     return true;
 }
 
+static Scripts manual(Tool tool)
+{
+    extern Scripts RnaAlign();
+    extern Scripts RnaAssembly();
+    extern Scripts RnaExpression();
+    extern Scripts RnaFoldChange();
+    extern Scripts VarAlign();
+    extern Scripts VarSubsample();
+    extern Scripts VarDiscover();
+    extern Scripts VarFrequency();
+    
+    switch (tool)
+    {
+        case TOOL_R_ALIGN:     { return RnaAlign();      }
+        case TOOL_R_ASSEMBLY:  { return RnaAssembly();   }
+        case TOOL_R_EXPRESS:   { return RnaExpression(); }
+        case TOOL_R_DIFF:      { return RnaFoldChange(); }
+        case TOOL_V_ALIGN:     { return VarAlign();      }
+        case TOOL_V_SUBSAMPLE: { return VarSubsample();  }
+        case TOOL_V_DISCOVER:  { return VarDiscover();   }
+        case TOOL_V_FREQ:      { return VarFrequency();  }
+    }
+
+    throw "Manual not found";
+}
+
 template <typename F> std::vector<FileName> sortInputs(const FileName &x, const FileName &y, F f)
 {
     #define ORDER2(a,b) std::vector<FileName> { a,b };
@@ -1031,6 +1057,17 @@ void parse(int argc, char ** argv)
     else
     {
         _p.tool = _tools[argv[1]];
+    }
+    
+    if (argc >= 3 && !strcmp(argv[2], "-h"))
+    {
+        if (argc != 3)
+        {
+            throw "Too many arguments for -h. Usage: anaquin <tool> -h";
+        }
+        
+        std::cout << manual(_p.tool) << std::endl;
+        return;
     }
     
     assert(_p.tool);

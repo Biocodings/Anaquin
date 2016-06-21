@@ -3,6 +3,13 @@
 
 using namespace Anaquin;
 
+TEST_CASE("GTF_Sampled")
+{
+    const auto r = gtfData(Reader("data/tests/RnaQuin/sampled.gtf"));
+
+    REQUIRE(r.countGene() == 598);
+}
+
 TEST_CASE("GTF_Synthetic")
 {
     const auto r = gtfData(Reader("data/RnaQuin/ATR001.v032.gtf"));

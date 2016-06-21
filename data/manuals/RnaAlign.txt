@@ -22,7 +22,7 @@ INPUTS
 	 Generated alignment file in SAM/BAM format
 	 
 USAGE EXAMPLE
-	 anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+	 anaquin RnaAlign –rbed reference.bed –ufiles aligned.bam
 
 TOOL OPTIONS
 	 Required:
@@ -54,4 +54,3 @@ OUTPUTS
 		Pc							Base-level precision of alignments
 
 EXAMPLE OUTPUT
-

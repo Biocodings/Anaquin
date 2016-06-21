@@ -22,5 +22,5 @@ TEST_CASE("SStrings_Summary")
     x.add("2");
     x.add("3");
     
-    REQUIRE(STRING(x) == "1,2,3");
+    REQUIRE(STRING(x) == "1, 2, 3");
 }

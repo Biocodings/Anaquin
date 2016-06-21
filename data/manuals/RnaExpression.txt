@@ -1,57 +1,78 @@
-VarQuin Analysis                     Anaquin Manual                    
+RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarAlign -- Measures the read alignment from sequins to the in silico chromosome.
+	 RnaExpression - Quantitative analysis of sequin expression.
 
 DESCRIPTION
-	 VarAlign calculates several useful statistics from an alignment file.
+	 RnaExpression can be used for analyzing the gene or isoform expression of RNA sequins within a library. Comparing the measured expression (typically in FPKM)
+	 relative to the known input concentrations provides an indication of the quantitative accuracy for measuring gene expression.
 
-	   Dilution – the fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
+	 Specifically, RnaExpression builds a linear model regressing the measured expression (dependent variable) with the input concentration (independent variable;
+	 defined by the mixture). Singular Value Decomposition (SVD) is used to estimate the regression parameters, including:
 
-       Sensitivity - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would
-	                 have a sensitivity of 0.5. Please note that terminal flanking regions (up to 200nt) should be trimmed to omit edge effects from sequencing.
+	   Correlation      – provides a measure of quantitative accuracy across a range of input concentrations. 
 
-       Precision –- The fraction annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments.
-	   				For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a specificity of 0.5.
+       Slope            - indicates the quantitative linearity for gene expression measures.
+
+       Coefficient (R2) – indicates the amount of variation that can be accounted for by the linear model.
+	   
+	 RnaExpression can accept both single replicate or multiple replicate libraries. If multiple libraries are provided, RnaExpression will report statistics with
+	 standard deviation indicated.  
 
 BIOINFORMATICS SOFTWARE
-	 Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
+	 RnaExpression is compatible with many popular gene expression tools, including: Cufflinks, StringTie and Kallisto. In addition, RnaExpression can be used in R
+	 and is compatible with edgeR, DESeq2. Users of alternative software may need to modify their results to conform with file formats produced by these popular
+	 software tools, before provision to the tool.
 
 INPUTS
-	 Reference annotation file in BED format
-	 Generated alignment file in SAM/BAM format
+	 Reference RnaQuin mixgture file in CSV format
+	 Generated expression file in GTF format or text format
+	 
+	 Details about the text format can be found in on our user guide.
 	 
 USAGE EXAMPLE
-	 anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+	 For single replicate:
+	 anaquin RnaExpression –m mixture.csv –ufiles genes.gtf
+
+	 For multiple replicates:
+	 anaquin RnaExpression –m mixture.csv –ufiles A1.gtf –ufiles A2.gtf –ufiles A3.gtf
 
 TOOL OPTIONS
 	 Required:
-	 	-rbed        Reference VarQuin annotation file in BED format
+	 	-m           Reference VarQuin mixture file in CSV format
 		-ufiles      Generated alignment files in SAM/BAM format
 
 	 Optional:
 		-o = output	 Directory in which the output files are written to
 
 OUTPUTS
-	 VarAlign_summary.stats - gives the summary statistics. Field definitions:
+	 RnaExpression_summary.stats - provides global summary statistics determined from all sequins. Field definitions:
 
-	 	Reference annotation file	Reference annotation file in BED format 
-		User alignment file         User generated sample alignments in SAM/BAM format
-		Synthetic				    Number of alignments mapped to the in-silico genome
-		Genome					    Number of alignments mapped to the human genome
-		Dilution					Proportion of alignments mapped to the in-silico chromosome
-		Covered						Number of nucleotide bases with alignments
-		Uncovered					Number of nucleotide bases without alignments
-		Total						Covered + Uncovered
-		Sensitivity					Sensitivity of the alignments for the in-silico genome and the human genome
-		Precision					Precision of the alignments for the in-silico genome and the human genome
+	 	Input							User generated expression file in GTF format or text format 
+		Reference Transcript         	Number of genes/isoforms on the in-silico chromosome in the reference annotation
+		Mixture file					Reference RnaQuin mixture file in CSV format
+		Synthetic				    	Number of genes/isoforms on the in-silico chromosome in the generated expression file
+		Detection Sensitivity			Sequin with the lowest input that are detected
+		Genome					    	Number of genes/isoforms on the human genome in the generated expression file
+		LOQ Break						Breakpoint estimated by piecewise segmentation
+		LOQ Intercept					Intercept before and after the breakpoint
+		LOQ Slope						Slope before and after the breakpoint
+		LOQ Correlation					Correlation before and after the breakpoint
+		LOQ R2							Coefficient of determination before and after the breakpoint
+		LOQ Genome						Number of genes/isoforms in the human genome expressed below/above the LOQ
+		Correlation						Pearson’s correlation of the linear model
+		Slope							Regression slope of the linear model
+		R2								Coefficient of determination of the linear model
+		F-statistic						Test statistic of the linear model
+		P-value							P-value probability
+		SSM								Sum of squares of the linear model
+		SSE								Sum of squares of residuals
+		SST								Sum of squares of the total variation
 
 	 VarAlign_sequins.csv - gives detailed statistics for each sequin. Field definitions:
-	    ID						    Name of the sequin
-		Length						Length of the sequin
-		Reads						Number of reads aligned
-		Sn							Base-level sensitivity of alignments 
-		Pc							Base-level precision of alignments
+	    ID						  	    Name of the sequin
+		Expected						Input concentration in attomol/ul
+		Measured						Measured expression (eg: FPKM)
 
 EXAMPLE OUTPUT
 

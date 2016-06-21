@@ -1,57 +1,75 @@
-VarQuin Analysis                     Anaquin Manual                    
+RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarAlign -- Measures the read alignment from sequins to the in silico chromosome.
+	 RnaFoldChange - Assess fold-changes in gene expression between multiple samples
 
 DESCRIPTION
-	 VarAlign calculates several useful statistics from an alignment file.
+	 RnaFoldChange can be used to analyse the differential expression of sequins between different mixtures that have been alternately spiked-in to multiple samples.
 
-	   Dilution – the fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
+	 The differential expression of sequins is emulated by modulating the relative concentration of sequins between alternative mixtures (such as between Mixture A and B)
+	 and provides a known reference scale of differential expression between samples. This scale can be used to assess the measurement of fold-changes in gene expression 
+	 between RNA-Seq libraries, and estimate diagnostic power and confidence limits.
 
-       Sensitivity - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would
-	                 have a sensitivity of 0.5. Please note that terminal flanking regions (up to 200nt) should be trimmed to omit edge effects from sequencing.
+	 Specifically, RnaFoldChange builds a linear model regressing the measured log-fold (dependent variable; provided by third party tool such as Cufflinks) to the input 
+	 concentration (independent variable) defined by a mixture. Singular Value Decomposition (SVD) is used to estimate the regression parameters. 
 
-       Precision –- The fraction annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments.
-	   				For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a specificity of 0.5.
+	 RnaFoldChange can also be used to assess the diagnostic performance for detecting sequin fold-change between mixtures with receiver operating characteristic (ROC)
+	 curves, area under the curve (AUC) statistics and limit of detection of ratio (LODR) estimates.
 
 BIOINFORMATICS SOFTWARE
-	 Short-read aligner that generates a SAM/BAM alignment file, including popular examples such as BWA and Bowtie.
+	RnaFoldChange is compatible with many popular gene expression tools, including: Cuffcompare. In addition, RnaFoldChange can be used in R and is compatible with
+	edgeR, DESeq2. Users of alternative software may need to modify their results to conform with file formats produced by these popular software tools, before provision
+	to RnaExpression.
 
 INPUTS
-	 Reference annotation file in BED format
-	 Generated alignment file in SAM/BAM format
+	 Reference RnaQuin mixture in CSV format (must have two columns, for input concentration defined for mixture A and B respectively)
+	 Generated differential analysis file in text format
 	 
 USAGE EXAMPLE
-	 anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+	 anaquin RnaFoldChange –rgtf reference.gtf –m mixture.csv –ufiles diff.txt
+
+ADDITIONAL INFORMATION
+	For additional information on the use of ROC / LODR plots to assess differential gene expression, please refer to:
+
+	‘Assessing technical performance in differential gene expression experiments with external spike-in RNA control ratio mixtures.’ Munro et al., Nature Communications.
+	2014 Sep 25;5:5125.
 
 TOOL OPTIONS
 	 Required:
-	 	-rbed        Reference VarQuin annotation file in BED format
-		-ufiles      Generated alignment files in SAM/BAM format
+	 	-m        	 Reference RnaQuin mixture file in CSV format
+		-ufiles      User generated differential analysis file
 
 	 Optional:
 		-o = output	 Directory in which the output files are written to
 
 OUTPUTS
-	 VarAlign_summary.stats - gives the summary statistics. Field definitions:
+	 RnaFoldChange_summary.stats - gives the summary statistics. Field definitions:
 
 	 	Reference annotation file	Reference annotation file in BED format 
 		User alignment file         User generated sample alignments in SAM/BAM format
 		Synthetic				    Number of alignments mapped to the in-silico genome
 		Genome					    Number of alignments mapped to the human genome
-		Dilution					Proportion of alignments mapped to the in-silico chromosome
-		Covered						Number of nucleotide bases with alignments
-		Uncovered					Number of nucleotide bases without alignments
-		Total						Covered + Uncovered
-		Sensitivity					Sensitivity of the alignments for the in-silico genome and the human genome
-		Precision					Precision of the alignments for the in-silico genome and the human genome
+		Detection Sensitivity		Sequin with the lowest input that are detected		
+		Correlation					Pearson’s correlation of the linear model
+		Slope						Regression slope of the linear model
+		R2							Coefficient of determination of the linear model
+		F-statistic					Test statistic of the linear model
+		P-value						P-value probability
+		SSM							Sum of squares of the linear model
+		SSE							Sum of squares of residuals
+		SST							Sum of squares of the total variation
 
-	 VarAlign_sequins.csv - gives detailed statistics for each sequin. Field definitions:
+	 RnaFoldChange_sequins.csv - gives detailed statistics for each sequin. Field definitions:
 	    ID						    Name of the sequin
 		Length						Length of the sequin
-		Reads						Number of reads aligned
-		Sn							Base-level sensitivity of alignments 
-		Pc							Base-level precision of alignments
+		Expected					Expected fold-change
+		Measured					Measured fold-change
+		SD							Standard deviation of the measurement
+
+	 RnaFoldChange_fold.R - R script for building a linear model between measured log-folds (dependent variable) and expected log-folds (independent variable).
+
+	 RnaFoldChange_ROC.R - R script for building the ROC curve (including AUC statistics) for each sequin group.
+
+	 RnaFoldChange_LODR.R - R script for building the limit-of-detection-ratio (LODR) curves for the sequin groups.
 
 EXAMPLE OUTPUT
-

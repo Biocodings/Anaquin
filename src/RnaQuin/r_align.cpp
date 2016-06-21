@@ -641,7 +641,7 @@ template <typename F> std::string check(const RAlign::Stats &stats, F f, const C
 
 static Scripts summary()
 {
-    return "-------RnaAlign Summary Statistics\n"
+    return "-------RnaAlign Summary Statistics\n\n"
            "       Input alignment file: %1%\n"
            "       Reference annotation file: %2%\n\n"
            "-------Number of alignments mapped to the synthetic chromosome and human genome\n\n"
@@ -697,20 +697,20 @@ static void generateSummary(const FileName &file,
     #define CHECK(x) (hasGeno ? toString(x) : "-")
     
     o.writer->open(file);
-    o.writer->write((boost::format(summary()) % src              // 1
-                                              % GTFRef()         // 2
-                                              % stats.n_syn      // 3
-                                              % stats.n_gen      // 4
-                                              % stats.dilution() // 5
-                                              % stats.n_unmap    // 6
-                                              % r.countExonSyn() // 7
-                                              % r.countIntrSyn() // 8
-                                              % r.countLenSyn()  // 9
-                                              % CHECK(r.countExonGen()) // 10
-                                              % CHECK(r.countIntrGen()) // 11
-                                              % CHECK(r.countLenGen())  // 12
-                                              % stats.countSpliceSyn()  // 13
-                                              % stats.countNormalSyn()  // 14
+    o.writer->write((boost::format(summary()) % src                      // 1
+                                              % GTFRef()                 // 2
+                                              % stats.n_syn              // 3
+                                              % stats.n_gen              // 4
+                                              % stats.dilution()         // 5
+                                              % stats.n_unmap            // 6
+                                              % r.countUExonSyn()        // 7
+                                              % r.countUIntrSyn()        // 8
+                                              % r.countLenSyn()          // 9
+                                              % CHECK(r.countUExonGen()) // 10
+                                              % CHECK(r.countUIntrGen()) // 11
+                                              % CHECK(r.countLenGen())   // 12
+                                              % stats.countSpliceSyn()   // 13
+                                              % stats.countNormalSyn()   // 14
                                               % (stats.countSpliceSyn() + stats.countNormalSyn())
                                               % CHECK(stats.countSpliceGen())
                                               % CHECK(stats.countNormalGen())

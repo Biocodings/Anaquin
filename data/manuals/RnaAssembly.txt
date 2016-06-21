@@ -1,10 +1,10 @@
-VarQuin Analysis                     Anaquin Manual                    
+RnaQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarAlign -- Measures the read alignment from sequins to the in silico chromosome.
+	 RnaAssembly -- Measures the read alignment from sequins to the in silico chromosome.
 
 DESCRIPTION
-	 VarAlign calculates several useful statistics from an alignment file.
+	 RnaAssembly calculates several useful statistics from an alignment file.
 
 	   Dilution – the fraction of reads that align to the in silico chromosome relative to the accompanying reference genome. 
 
@@ -22,7 +22,7 @@ INPUTS
 	 Generated alignment file in SAM/BAM format
 	 
 USAGE EXAMPLE
-	 anaquin –t VarAlign –rbed reference.bed –ufiles aligned.bam
+	 anaquin RnaAssembly –rbed reference.bed –ufiles aligned.bam
 
 TOOL OPTIONS
 	 Required:
@@ -54,4 +54,3 @@ OUTPUTS
 		Pc							Base-level precision of alignments
 
 EXAMPLE OUTPUT
-

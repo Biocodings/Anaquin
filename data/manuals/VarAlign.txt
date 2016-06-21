@@ -1,7 +1,7 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarAlign -- Measures the read alignment from sequins to the in silico chromosome.
+	 VarAlign - Measures the read alignment from sequins to the in silico chromosome.
 
 DESCRIPTION
 	 VarAlign calculates several useful statistics from an alignment file.
@@ -11,7 +11,7 @@ DESCRIPTION
        Sensitivity - the fraction of annotated regions covered by alignments. For example, a sequin of length 1000nt, of which 500nt have reads aligned, would
 	                 have a sensitivity of 0.5. Please note that terminal flanking regions (up to 200nt) should be trimmed to omit edge effects from sequencing.
 
-       Precision –- The fraction annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments.
+       Precision – The fraction annotated regions that are covered by alignments, relative to total regions of alignments. This indicates the accuracy of alignments.
 	   				For example, if 1000nt of alignments overlap with only 500nt annotated regions, this will have a specificity of 0.5.
 
 BIOINFORMATICS SOFTWARE
@@ -54,4 +54,3 @@ OUTPUTS
 		Pc							Base-level precision of alignments
 
 EXAMPLE OUTPUT
-

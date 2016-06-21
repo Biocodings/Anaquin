@@ -1,7 +1,8 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarFrequency -- Assess quantitative analysis of variant allele frequencies.
+	 VarFrequency -
+	  Assess quantitative analysis of variant allele frequencies.
 
 DESCRIPTION
 	 VarFrequency can be used to analyse the measured synthetic variant allele frequency. Comparing the measured allele frequency
@@ -39,7 +40,7 @@ TOOL OPTIONS
 		-o = output	 Directory in which the output files are written to
 
 OUTPUTS
-	 VarAlign_summary.stats - gives the summary statistics. Field definitions:
+	 VarFrequency_summary.stats - gives the summary statistics. Field definitions:
 
 	 	Reference variant annotation	Reference variant annotation file in VCF format 
 		User identified variants        User generated variant file in VCF or text format
@@ -55,7 +56,9 @@ OUTPUTS
 		SSE								Sum of squares of residuals
 		SST								Sum of squares of the total variation
 
-	 VarAlign_sequins.csv - gives detailed statistics for each sequin. Field definitions:
+	 VarFrequency
+	 
+	 _sequins.csv - gives detailed statistics for each sequin. Field definitions:
 	    ID						    	Name of the sequin
 		Expected						Expected allele frequency
 		Observed						Observed allele frequency
@@ -64,4 +67,3 @@ OUTPUTS
 		Type							Type of the variant (SNP or Indel)
 
 EXAMPLE OUTPUT
-

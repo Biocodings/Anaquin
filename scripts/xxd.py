@@ -21,7 +21,7 @@ data  = [ 'data/manual.txt',
           'data/manuals/RnaSubsample.txt',
           'data/manuals/RnaCuffdiff.txt',
           'data/manuals/RnaDESeq2.txt',
-          
+
           'data/manuals/VarAlign.txt',
           'data/manuals/VarSubsample.txt',
           'data/manuals/VarDiscover.txt',
@@ -74,7 +74,7 @@ data  = [ 'data/manual.txt',
           'src/r/plotMFold.R',
           'src/r/plotMKMer.R',
           'src/r/plotMReads.R',
-	  'src/r/plotMKAbund.R',
+          'src/r/plotMKAbund.R',
           'src/r/plotMAssembly.R',
 
           'data/MetaQuin/AME013.v032.fa',
@@ -107,4 +107,3 @@ for i in range(0,len(r)):
                 data = f.read()
                 if ('0x0a, 0x0a\n' in data):
                     raise Exception('Error: ' + path)
-

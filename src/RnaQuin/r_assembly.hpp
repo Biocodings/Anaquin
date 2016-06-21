@@ -53,15 +53,19 @@ namespace Anaquin
                  * Missing statistics
                  */
                 
-                double mExonN,   mExonR,   mExonP;
-                double mIntronN, mIntronR, mIntronP;
+                Counts mExonN, mExonR;
+                Counts mIntronN, mIntronR;
+
+                Proportion mExonP, mIntronP;
                 
                 /*
                  * Novel statistics
                  */
                 
-                double   nExonP, nIntronP;
-                unsigned nExonN, nExonR, nIntronN, nIntronR;
+                Counts nExonN, nExonR;
+                Counts nIntronN, nIntronR;
+
+                Proportion   nExonP, nIntronP;
             };
             
             // Synthetic or genome

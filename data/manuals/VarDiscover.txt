@@ -1,7 +1,7 @@
 VarQuin Analysis                     Anaquin Manual                    
 
 NAME
-	 VarDiscover -- Assesses the identification of variants from alignments to the in-silico chromosome.
+	 VarDiscover - Assesses the identification of variants from alignments to the in-silico chromosome.
 
 DESCRIPTION
 	VarDiscover can be used for analyzing the identification of variants on the in-silico chromosome, and provides several useful statistics
@@ -80,4 +80,3 @@ OUTPUTS
 	VarDiscover_LOD.R - generates a limit-of-detection (LOD) plot in R. Only generated if p-values are given.
 
 EXAMPLE OUTPUT
-

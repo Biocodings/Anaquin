@@ -5,20 +5,15 @@
 #include "parsers/parser_gtf.hpp"
 #include "RnaQuin/r_assembly.hpp"
 
-#define CHECK_AND_SORT(t) { assert(!t.empty()); std::sort(t.begin(), t.end(), [](const Feature& x, const Feature& y) { return (x.l.start < y.l.start) || (x.l.start == y.l.start && x.l.end < y.l.end); }); }
-
 using namespace Anaquin;
 
 // Defined for cuffcompare
 Compare __cmp__;
 
 // Defined in resources.cpp
-extern Scripts PlotSensitivity();
-
-// Defined in resources.cpp
 extern FileName GTFRef();
 
-// Defined for cuffcompare
+// Defined for Cuffcompare
 extern int cuffcompare_main(const char *ref, const char *query);
 
 template <typename F> inline FileName grepGTF(const FileName &file, F f)
@@ -60,11 +55,7 @@ template <typename F> FileName createGTF(const FileName &file, F f)
     {
         ParserGTF::parse(file, [&](const ParserGTF::Data &i, const std::string &l, const ParserProgress &)
         {
-            /*
-             * TODO: Do we need to filter by i.type? If we don't, the sensitivity looks weird...
-             */
-
-            if (f(i.cID) && i.type != RNAFeature::Transcript && i.type != RNAFeature::Gene)
+            if (f(i.cID))
             {
                 out << l << std::endl;
             }
@@ -159,9 +150,9 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     auto compareGTF = [&](const ChrID &cID, const FileName &ref, const FileName &qry)
     {
-        o.logInfo("Reference: " + ref);
-        o.logInfo("Query: " + qry);
-
+        o.info("Reference: " + ref);
+        o.info("Query: " + qry);
+        
         #define CUFFCOMPARE(x, y) { if (cuffcompare_main(x.c_str(), y.c_str())) { throw std::runtime_error("Failed to analyze " + file + ". Please check the file and try again."); } }
 
         // Only required for sensitivity at individual sequins...
@@ -197,6 +188,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
 
         // Compare everything about the chromosome against the reference
         CUFFCOMPARE(ref, qry);
+
+        o.info("Compare complated");
     };
 
     o.info("Analyzing transcripts");
@@ -204,7 +197,8 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     /*
      * Comparing for the synthetic chromosome
      */
-    
+
+    o.info("Generating files");    
     compareGTF(ChrT, createGTFSyn(GTFRef()), createGTFSyn(file));
     copyStats(ChrT);
     
@@ -214,6 +208,7 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     if (stats.data.size() > 1)
     {
+        o.info("Generating files");
         compareGTF(Geno, createGTFGen(GTFRef()), createGTFGen(file));
         copyStats(Geno);
     }
@@ -261,32 +256,33 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
 {
     const auto &r = Standard::instance().r_trans;
 
-    const auto hasGeno = stats.data.size() > 1;
+    const auto hasGen = stats.data.size() > 1;
     
     const auto sData = stats.data.at(ChrT);
-    const auto gData = hasGeno ? stats.data.at(Geno) : RAssembly::Stats::Data();
+    const auto gData = hasGen ? stats.data.at(Geno) : RAssembly::Stats::Data();
 
+    #define C(x) (std::to_string(x))
     #define S(x) (x == 1.0 ? "1.00" : std::to_string(x))
     
     const auto format = "-------RnaAssembly Summary Statistics\n\n"
                         "       User assembly file: %1%\n"
                         "       Reference annotation file: %2%\n\n"
-                        "-------User Gene Assemblies (Synthetic)\n\n"
+                        "-------Reference Gene Annotations (Synthetic)\n\n"
                         "       Synthetic: %3% exons\n"
                         "       Synthetic: %4% introns\n"
                         "       Synthetic: %5% isoforms\n"
                         "       Synthetic: %6% genes\n\n"
-                        "-------User Gene Assemblies (Genome)\n\n"
+                        "-------Reference Gene Annotations (Genome)\n\n"
                         "       Genome: %7% exons\n"
                         "       Genome: %8% introns\n"
                         "       Genome: %9% isoforms\n"
                         "       Genome: %10% genes\n\n"
-                        "-------Reference Gene Annotations (Synthetic)\n\n"
+                        "-------User Gene Assemblies (Synthetic)\n\n"
                         "       Synthetic: %11% exons\n"
                         "       Synthetic: %12% introns\n"
                         "       Synthetic: %13% isoforms\n"
                         "       Synthetic: %14% genes\n\n"
-                        "-------Reference Gene Annotations (Genome)\n\n"
+                        "-------User Gene Assemblies (Genome)\n\n"
                         "       Genome: %15% exons\n"
                         "       Genome: %16% introns\n"
                         "       Genome: %17% isoforms\n"
@@ -336,22 +332,22 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
     o.writer->open("RnaAssembly_summary.stats");
     o.writer->write((boost::format(format) % file              // 1
                                            % GTFRef()          // 2
-                                           % stats.sExons      // 3
-                                           % stats.sIntrs      // 4
-                                           % stats.sTrans      // 5
-                                           % stats.sGenes      // 6
-                                           % stats.gExons      // 7
-                                           % stats.gIntrs      // 8
-                                           % stats.gTrans      // 9
-                                           % stats.gGenes      // 10
-                                           % r.countExonSyn()  // 11
-                                           % r.countIntrSyn()  // 12
-                                           % r.countTransSyn() // 13
-                                           % r.countGeneSyn()  // 14
-                                           % r.countExonGen()  // 15
-                                           % r.countIntrGen()  // 16
-                                           % r.countTransGen() // 17
-                                           % r.countGeneGen()  // 18
+                                           % r.countUExonSyn() // 3
+                                           % r.countUIntrSyn() // 4
+                                           % r.countTransSyn() // 5
+                                           % r.countGeneSyn()  // 6
+                                           % r.countUExonGen() // 7
+                                           % r.countUIntrGen() // 8
+                                           % r.countTransGen() // 9
+                                           % r.countGeneGen()  // 10
+                                           % stats.sExons      // 11
+                                           % stats.sIntrs      // 12
+                                           % stats.sTrans      // 13
+                                           % stats.sGenes      // 14
+                                           % stats.gExons      // 15
+                                           % stats.gIntrs      // 16
+                                           % stats.gTrans      // 17
+                                           % stats.gGenes      // 18
                                            % S(sData.eSN)      // 19
                                            % S(sData.eSP)      // 20
                                            % S(sData.iSN)      // 21
@@ -366,20 +362,20 @@ static void generateSummary(const FileName &file, const RAssembly::Stats &stats,
                                            % sData.mIntronN    // 30
                                            % sData.nExonN      // 31
                                            % sData.nIntronN    // 32
-                                           % (hasGeno ? S(gData.eSN)      : "-") // 33
-                                           % (hasGeno ? S(gData.eSP)      : "-") // 34
-                                           % (hasGeno ? S(gData.iSN)      : "-") // 35
-                                           % (hasGeno ? S(gData.iSP)      : "_") // 36
-                                           % (hasGeno ? S(gData.bSN)      : "-") // 37
-                                           % (hasGeno ? S(gData.bSP)      : "-") // 38
-                                           % (hasGeno ? S(gData.cSN)      : "-") // 39
-                                           % (hasGeno ? S(gData.cSP)      : "-") // 40
-                                           % (hasGeno ? S(gData.tSN)      : "-") // 41
-                                           % (hasGeno ? S(gData.tSN)      : "-") // 42
-                                           % (hasGeno ? S(gData.mExonN)   : "-") // 43
-                                           % (hasGeno ? S(gData.mIntronN) : "-") // 44
-                                           % (hasGeno ? S(gData.nExonN)   : "-") // 45
-                                           % (hasGeno ? S(gData.nIntronN) : "-")).str());
+                                           % (hasGen ? S(gData.eSN)      : "-") // 33
+                                           % (hasGen ? S(gData.eSP)      : "-") // 34
+                                           % (hasGen ? S(gData.iSN)      : "-") // 35
+                                           % (hasGen ? S(gData.iSP)      : "_") // 36
+                                           % (hasGen ? S(gData.bSN)      : "-") // 37
+                                           % (hasGen ? S(gData.bSP)      : "-") // 38
+                                           % (hasGen ? S(gData.cSN)      : "-") // 39
+                                           % (hasGen ? S(gData.cSP)      : "-") // 40
+                                           % (hasGen ? S(gData.tSN)      : "-") // 41
+                                           % (hasGen ? S(gData.tSN)      : "-") // 42
+                                           % (hasGen ? C(gData.mExonN)   : "-") // 43
+                                           % (hasGen ? C(gData.mIntronN) : "-") // 44
+                                           % (hasGen ? C(gData.nExonN)   : "-") // 45
+                                           % (hasGen ? C(gData.nIntronN) : "-")).str());
     o.writer->close();
 }
 
@@ -400,11 +396,11 @@ void RAssembly::report(const FileName &file, const Options &o)
     generateQuins("RnaAssembly_sequins.csv", stats, o);
     
     /*
-     * Generating RnaAssembly_sensitivity.R
+     * Generating RnaAssembly_assembly.R
      */
     
-    o.generate("RnaAssembly_sensitivity.R");
-    o.writer->open("RnaAssembly_sensitivity.R");
+    o.generate("RnaAssembly_assembly.R");
+    o.writer->open("RnaAssembly_assembly.R");
     o.writer->write(RWriter::createSensitivity("RnaAssembly_sequins.csv",
                                                "Assembly Detection",
                                                "Input Concentration (log2)",
@@ -422,5 +418,5 @@ void RAssembly::report(const FileName &file, const Options &o)
     o.report->addTitle("RnaAssembly");
     o.report->addFile("RnaAssembly_summary.stats");
     o.report->addFile("RnaAssembly_sequins.csv");
-    o.report->addFile("RnaAssembly_sensitivity.R");
+    o.report->addFile("RnaAssembly_assembly.R");
 }

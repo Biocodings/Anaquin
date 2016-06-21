@@ -111,6 +111,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     });
 
+    o.info("Alignments analyzed. Generating statistics.");
+    
     /*
      * -------------------- Calculating statistics --------------------
      */
