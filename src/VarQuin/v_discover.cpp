@@ -58,7 +58,8 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 if (p <= o.sign)
                 {
                     stats.data[cID].tps.push_back(m);
-                    stats.data[cID].tps_[key] = &stats.data[cID].tps.back();
+                    stats.data[cID].tps_[key] = stats.data[cID].tps.back();
+                    std::cout << m.query.p << std::endl;
                 }
                 else
                 {
@@ -212,22 +213,22 @@ static void writeQuins(const FileName &file,
                  * Now we need to know the label for this reference variant
                  */
                 
-                auto f = [&](const std::map<long, VariantMatch *> &x, const std::string &label)
+                auto f = [&](const std::map<long, VariantMatch> &x, const std::string &label)
                 {
                     if (x.count(key))
                     {
-                        const auto t = x.at(key);
+                        const auto &t = x.at(key);
                         
                         o.writer->write((boost::format(format) % m->id
                                                                % m->l.start
                                                                % label
-                                                               % (isnan(t->query.p) ? "-" : p2str(t->query.p))
-                                                               % t->query.readR
-                                                               % t->query.readV
-                                                               % t->query.depth
-                                                               % t->eFold
-                                                               % t->eAllFreq
-                                                               % t->query.alleleFreq()
+                                                               % (isnan(t.query.p) ? "-" : p2str(t.query.p))
+                                                               % t.query.readR
+                                                               % t.query.readV
+                                                               % t.query.depth
+                                                               % t.eFold
+                                                               % t.eAllFreq
+                                                               % t.query.alleleFreq()
                                                                % type2str(m->type())).str());
                         return true;
                     }

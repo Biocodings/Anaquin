@@ -56,7 +56,8 @@ namespace Anaquin
                 
                 std::vector<VariantMatch> fps, tps;
 
-                std::map<long, VariantMatch *> fns_, tps_;
+                //std::map<long, VariantMatch *> fns_, tps_;
+                std::map<long, VariantMatch> fns_, tps_;
                 
                 // Performance metrics
                 Confusion m, m_snp, m_ind;
