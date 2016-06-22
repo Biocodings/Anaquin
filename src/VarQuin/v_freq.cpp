@@ -201,7 +201,7 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                          "      Genome: %7% SNPs\n"
                          "      Genome: %8% indels\n"
                          "      Genome: %9% variants\n\n"
-                         "-------User Variant Identification\n\n"
+                         "-------User variant identification\n\n"
                          "      Synthetic: %10% SNPs\n"
                          "      Synthetic: %11% indels\n"
                          "      Synthetic: %12% variants\n\n"
