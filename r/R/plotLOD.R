@@ -272,6 +272,9 @@ plotLOD <- function(data, ...,
     data$ratio <- data$expected
     #data$ratio <- revalue(data$expected, c('0'='FP'))
 
+    p <- min(data[data$pval != 0,]$pval)
+    data[data$pval == 0,]$pval <- p
+        
     # Can we plot zero probability? Probably not.    
     data <- data[data$pval != 0,]
     
@@ -283,7 +286,7 @@ plotLOD <- function(data, ...,
               xLabels=xLabels,
               yBreaks=yBreaks,
               yLabels=yLabels,
-              p_size=1.0)
+              p_size=2.0)
 }
 
 .plotLODR <- function(data, ...)
@@ -305,7 +308,7 @@ plotLOD <- function(data, ...,
     
     if (is.null(x$p_size)) { x$p_size <- 3 }
     
-    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=x$p_size) + theme_bw()
+    p <- ggplot(data, aes(x=measured, y=pval, colour=ratio)) + geom_point(size=x$p_size, alpha=0.5) + theme_bw()
     
     if (is.null(x$xBreaks))
     {
