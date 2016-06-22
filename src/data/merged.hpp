@@ -28,56 +28,6 @@ namespace Anaquin
                 _id = id;
             }
 
-            inline void add(const Locus &l)
-            {
-                bool p1 = true;
-                bool p2 = false;
-                
-                // Pointing to the matching
-                Locus *m = nullptr;
-                
-                for (auto it = _data.begin(); it != _data.cend();)
-                {
-                    auto &j = it->second;
-                    
-                    if (p1)
-                    {
-                        if (j.overlap(l))
-                        {
-                            j.start = std::min(j.start, l.start);
-                            j.end   = std::max(j.end,   l.end);
-                            
-                            // So that we can access it in the later iterations
-                            m = &j;
-                            
-                            // Switch to the next phase
-                            p2 = true;
-                        }
-                    }
-                    else if (p2)
-                    {
-                        if (!j.overlap(l))
-                        {
-                            return;
-                        }
-                        
-                        m->start = std::min(m->start, j.start);
-                        m->end   = std::max(m->end,   j.end);
-                        
-                        // Remove the overlapping entry
-                        _data.erase(it++);
-                    }
-                    else
-                    {
-                        throw "Invalid phase";
-                    }
-                    
-                    ++it;
-                }
-
-                _data[l.start] = l;
-            };
-
             inline Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr)
             {
                 bool added = true;
@@ -195,17 +145,12 @@ namespace Anaquin
                 });
             }
         
-            template <typename T> void bedGraph(T t) const
-            {
-                throw "Not Implemented";
-            }
-        
             inline const Locus &l()       const { return _l;  }
             inline const IntervalID &id() const { return _id; }
         
             inline IntervalID name() const override { return id(); }
         
-        inline std::size_t size() { return _data.size(); }
+            inline std::size_t size() { return _data.size(); }
         
         private:
         
@@ -310,17 +255,6 @@ namespace Anaquin
                 return v.empty() ? nullptr : v.front().value;
             }
 
-            template <typename F> void bedGraph(F f) const
-            {
-                for (const auto &i : _inters)
-                {
-                    i.second.bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
-                    {
-                        f(id, i, j, cov);
-                    });
-                }
-            }
-
             typename T::Stats stats() const
             {
                 MergedInterval::Stats stats;
@@ -366,17 +300,6 @@ namespace Anaquin
             (*this)[id] = i;
         }
         
-        template <typename F> void bedGraph(F f) const
-        {
-            for (const auto &i : (*this))
-            {
-                i.second.bedGraph([&](const ChrID &id, Base i, Base j, Coverage cov)
-                {
-                    f(id, i, j, cov);
-                });
-            }
-        }
-
         inline Counts countInters() const
         {
             Counts n = 0;
