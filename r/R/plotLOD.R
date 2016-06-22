@@ -238,7 +238,7 @@ pval <- function(data)
     arrowDat$ratio <- as.factor(arrowDat$ratio)
     
     x <- data.frame(measured=data$measured, pval=data$pval, ratio=as.factor(data$ratio))
-    
+
     .plotLODR(data=x,
               lineDat=lineDat,
               shouldBand=TRUE,

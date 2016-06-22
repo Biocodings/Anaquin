@@ -85,13 +85,13 @@ plotROC <- function(data,
                 # No TP... Add a TP...
                 if (unique(t$label) == 'FP')
                 {
-                    x <- data.frame(label='TP', pval=0, ratio=ratio, score=0)
+                    x <- data.frame(label='TP', score=0, ratio=ratio)
                 }
             
                 # No FP... Add a FP...
                 else
                 {
-                    x <- data.frame(label='FP', pval=0, ratio=ratio, score=0)                    
+                    x <- data.frame(label='FP', score=0, ratio=ratio)                    
                 }
                 
                 t  <- rbind(t, x)
