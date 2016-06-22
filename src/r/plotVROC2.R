@@ -26,6 +26,6 @@ score <- data$Depth
 data$name <- paste(data$ID, data$Pos, sep='_')
 data$name <- paste(data$name, data$Type, sep='_')
 
-data <- Anaquin(seqs=data$name, score=score, label=data$Label)
+data <- Anaquin(seqs=data$name, expected=1, score=score, label=data$Label)
 
 plotROC(data, title=title)  

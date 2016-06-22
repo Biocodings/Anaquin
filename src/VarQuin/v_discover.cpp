@@ -41,7 +41,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
              * remains unchanged.
              */
             
-            const auto p = isnan(m.query.p) ? 0.0 : m.query.p;
+            const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
             
             // Only matching if the position and alleles agree
             const auto matched = m.match && m.ref && m.alt;
@@ -62,8 +62,10 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 }
                 else
                 {
-                    stats.data[cID].fns.push_back(m);
-                    stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
+                    throw "Not Implemented";
+                    
+                    //stats.data[cID].fns.push_back(m);
+                    //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
                 }
             }
             else
@@ -80,8 +82,9 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 }
                 else
                 {
+                    throw "?????";
                     //stats.data[cID].tns_.insert(key);
-                    stats.data[cID].tns.push_back(m);
+                    //stats.data[cID].tns.push_back(m);
                 }
             }
         };
@@ -102,6 +105,8 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
         }
     });
 
+    o.info("Collecting statistics");
+    
     for (const auto &i : stats.data)
     {
         auto &x = stats.data[i.first];
@@ -130,30 +135,18 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             }
         }
         
-        for (const auto &j : i.second.tns)
-        {
-            i.second.m.tn()++;
-            
-            switch (j.query.type())
-            {
-                case Mutation::SNP:       { x.m_snp.tn()++; break; }
-                case Mutation::Deletion:
-                case Mutation::Insertion: { x.m_ind.tn()++; break; }
-            }
-        }
+//        for (const auto &j : i.second.tns)
+//        {
+//            i.second.m.tn()++;
+//            
+//            switch (j.query.type())
+//            {
+//                case Mutation::SNP:       { x.m_snp.tn()++; break; }
+//                case Mutation::Deletion:
+//                case Mutation::Insertion: { x.m_ind.tn()++; break; }
+//            }
+//        }
         
-        for (const auto &j : i.second.fns)
-        {
-            i.second.m.fn()++;
-            
-            switch (j.query.type())
-            {
-                case Mutation::SNP:       { x.m_snp.fn()++; break; }
-                case Mutation::Deletion:
-                case Mutation::Insertion: { x.m_ind.fn()++; break; }
-            }
-        }
-
         x.m_snp.nq() = x.dSNP();
         x.m_snp.nr() = r.countSNP(i.first);
         x.m_ind.nq() = x.dInd();
@@ -161,6 +154,14 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 
         x.m.nq() = x.m_snp.nq() + x.m_ind.nq();
         x.m.nr() = x.m_snp.nr() + x.m_ind.nr();
+
+        x.m.fn()     = x.m.nr()     - x.m.tp();
+        x.m_snp.fn() = x.m_snp.nr() - x.m_snp.tp();
+        x.m_ind.fn() = x.m_ind.nr() - x.m_ind.tp();
+
+        assert(x.m.nr() >= x.m.fn());
+        assert(x.m_snp.nr() >= x.m_snp.fn());
+        assert(x.m_ind.nr() >= x.m_ind.fn());
     }
     
     return stats;
@@ -180,6 +181,8 @@ static void writeQuins(const FileName &file,
                        const VDiscover::Stats &stats,
                        const VDiscover::Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
 
     o.generate(file);
@@ -195,9 +198,6 @@ static void writeQuins(const FileName &file,
                                            % "EFreq"
                                            % "MFreq"
                                            % "Type").str());
-
-    const auto &r = Standard::instance().r_var;
-    
     for (const auto &i : stats.hist)
     {
         if (!Standard::isSynthetic(i.first))
@@ -207,87 +207,75 @@ static void writeQuins(const FileName &file,
         
         std::cout << i.second.size() << std::endl;
         
-//        for (const auto &j : i.second)
+        const auto cID = i.first;
+        
+        int p = 0;
+        
+        // Search all query variants...
+        for (const auto &j : i.second)
         {
-            const auto cID = i.first;
+            std::cout << p++ << std::endl;
             
-//            if (Standard::isSynthetic(cID))
+            auto key = j.first;
+            
+            // Detected the sequin?
+            if (j.second)
             {
-                int p = 0;
+                const auto m = r.findVar(cID, key);
+                assert(m);
                 
-                // Search all query variants...
-                for (const auto &j : i.second)
+                /*
+                 * Now we need to know the label for this reference variant
+                 */
+                
+                auto f = [&](const std::map<long, VariantMatch *> &x, const std::string &label)
                 {
-                    std::cout << p++ << std::endl;
-                    
-                    auto key = j.first;
-                    
-                    // Detected the sequin?
-                    if (j.second)
+                    if (x.count(key))
                     {
-                        const auto m = r.findVar(cID, key);
-                        assert(m);
-                        
-                        /*
-                         * Now we need to know the label for this reference variant
-                         */
-                        
-                        auto f = [&](const std::map<long, VariantMatch *> &x, const std::string &label)
-                        {
-//                            for (const auto &k : x)
-                            {
-                                if (x.count(key)/* k.match && key == k.match->key() */)
-                                {
-                                    const auto t = x.at(key);
-                                    
-                                    o.writer->write((boost::format(format)
-                                                     % m->id
-                                                     % m->l.start
-                                                     % label
-                                                     % (isnan(t->query.p) ? "-" : p2str(t->query.p))
-                                                     % t->query.readR
-                                                     % t->query.readV
-                                                     % t->query.cov
-                                                     % t->eFold
-                                                     % t->eAllFreq
-                                                     % t->query.alleleFreq()
-                                                     % type2str(m->type())).str());
-                                    return true;
-                                }
-                            }
-                            
-                            return false;
-                        };
-                        
-                        if (!f(stats.data.at(ChrT).tps_, "TP") &&
-                            //!f(stats.data.at(ChrT).fps, "FP") &&
-                            //!f(stats.data.at(ChrT).tns, "TN") &&
-                            !f(stats.data.at(ChrT).fns_, "FN")
-                            )
-                        {
-                            throw std::runtime_error("Failed to find hash key in writeQuins()");
-                        }
-                    }
-                    
-                    // Failed to detect the variant
-                    else
-                    {
-                        const auto m = r.findVar(i.first, j.first);
-                        assert(m);
+                        const auto t = x.at(key);
                         
                         o.writer->write((boost::format(format) % m->id
-                                         % m->l.start
-                                         % "FN"
-                                         % "NA"
-                                         % "NA"
-                                         % "NA"
-                                         % "NA"
-                                         % r.findAFold(m->id)
-                                         % r.findAFreq(m->id)
-                                         % "NA"
-                                         % type2str(m->type())).str());
+                                                               % m->l.start
+                                                               % label
+                                                               % (isnan(t->query.p) ? "-" : p2str(t->query.p))
+                                                               % t->query.readR
+                                                               % t->query.readV
+                                                               % t->query.cov
+                                                               % t->eFold
+                                                               % t->eAllFreq
+                                                               % t->query.alleleFreq()
+                                                               % type2str(m->type())).str());
+                        return true;
                     }
+                    
+                    return false;
+                };
+
+                if (!f(stats.data.at(i.first).tps_, "TP") &&
+                    !f(stats.data.at(i.first).fns_, "FN")
+                    )
+                {
+                    throw std::runtime_error("Failed to find hash key in writeQuins()");
                 }
+            }
+            
+            // Failed to detect the variant
+            else
+            {
+                const auto m = r.findVar(i.first, j.first);
+                assert(m);
+                
+                o.writer->write((boost::format(format) % m->id
+                                                       % m->l.start
+                                                       % "FN"
+                                                       % "NA"
+                                                       % "NA"
+                                                       % "NA"
+                                                       % "NA"
+                                                       % r.findAFold(m->id)
+                                                       % r.findAFreq(m->id)
+                                                       % "NA"
+                                                       % type2str(m->type())).str());
             }
         }
     }
@@ -328,10 +316,14 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
         }
     };
 
-    f(stats.data.at(ChrT).tps, "TP");
-    f(stats.data.at(ChrT).fps, "FP");
-    f(stats.data.at(ChrT).tns, "TN");
-    f(stats.data.at(ChrT).fns, "FN");
+    for (const auto &i : stats.data)
+    {
+        if (Standard::isSynthetic(i.first))
+        {
+            f(i.second.tps, "TP");
+            f(i.second.fps, "FP");
+        }
+    }
 
     o.writer->close();
 }
@@ -374,45 +366,39 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "-------Diagnostic Performance (Synthetc)\n\n"
                          "       *Variants\n"
                          "       Sensitivity: %24%\n"
-                         "       Specificity: %25%\n"
-                         "       Precision:   %26%\n"
-                         "       FDR Rate:    %27%\n\n"
+                         "       Precision:   %25%\n"
+                         "       FDR Rate:    %26%\n\n"
                          "       *SNVs\n"
-                         "       Sensitivity: %28%\n"
-                         "       Specificity: %29%\n"
-                         "       Precision:   %30%\n"
-                         "       FDR Rate:    %31%\n\n"
+                         "       Sensitivity: %27%\n"
+                         "       Precision:   %28%\n"
+                         "       FDR Rate:    %29%\n\n"
                          "       *Indels\n"
-                         "       Sensitivity: %32%\n"
-                         "       Specificity: %33%\n"
-                         "       Precision:   %34%\n"
-                         "       FDR Rate:    %35%\n\n"
+                         "       Sensitivity: %30%\n"
+                         "       Precision:   %31%\n"
+                         "       FDR Rate:    %32%\n\n"
                          "-------Identification of genomic variants\n\n"
-                         "       True Positive:  %36% SNPS\n"
-                         "       True Positive:  %37% indels\n"
-                         "       True Positive:  %38% variants\n\n"
-                         "       False Positive: %39% SNPs\n"
-                         "       False Positive: %40% indels\n"
-                         "       False Positive: %41% variants\n\n"
-                         "       False Negative: %42% SNPs\n"
-                         "       False Negative: %43% indels\n"
-                         "       False Negative: %44% variants\n\n"
+                         "       True Positive:  %33% SNPS\n"
+                         "       True Positive:  %34% indels\n"
+                         "       True Positive:  %35% variants\n\n"
+                         "       False Positive: %36% SNPs\n"
+                         "       False Positive: %37% indels\n"
+                         "       False Positive: %38% variants\n\n"
+                         "       False Negative: %39% SNPs\n"
+                         "       False Negative: %40% indels\n"
+                         "       False Negative: %41% variants\n\n"
                          "-------Diagnostic Performance (Genome)\n\n"
                          "       *Variants\n"
-                         "       Sensitivity: %45%\n"
-                         "       Specificity: %46%\n"
-                         "       Precision:   %47%\n"
-                         "       FDR Rate:    %48%\n\n"
+                         "       Sensitivity: %42%\n"
+                         "       Precision:   %43%\n"
+                         "       FDR Rate:    %44%\n\n"
                          "       *SNVs\n"
-                         "       Sensitivity: %49%\n"
-                         "       Specificity: %50%\n"
-                         "       Precision:   %51%\n"
-                         "       FDR Rate:    %52%\n\n"
+                         "       Sensitivity: %45%\n"
+                         "       Precision:   %46%\n"
+                         "       FDR Rate:    %47%\n\n"
                          "       *Indels\n"
-                         "       Sensitivity: %53%\n"
-                         "       Specificity: %54%\n"
-                         "       Precision:   %55%\n"
-                         "       FDR Rate:    %56%\n";
+                         "       Sensitivity: %48%\n"
+                         "       Precision:   %49%\n"
+                         "       FDR Rate:    %50%\n";
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % VCFRef()
@@ -423,60 +409,48 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % r.countSNPGen()
                                             % r.countIndGen()
                                             % (r.countSNPGen() + r.countIndGen())
-
                                             % stats.vData.countSNPSyn()
-                                            % stats.vData.countIndSyn() // 10
-                                            % stats.vData.countVarSyn() // 11
-                                            % stats.vData.countSNPGen() // 12
-                                            % stats.vData.countIndGen() // 13
-                                            % stats.vData.countVarGen() // 14
-                                            % stats.countSNP_TP_Syn()     // 15
-                                            % stats.countInd_TP_Syn()     // 16
-                                            % stats.countVar_TP_Syn()     // 17
-                                            % stats.countSNP_FP_Syn() // 18
-                                            % stats.countInd_FP_Syn() // 19
-                                            % stats.countVar_FP_Syn() // 20
-                                            % stats.countSNP_FN_Syn()     // 21
-                                            % stats.countInd_FN_Syn()     // 22
-                                            % stats.countVar_FN_Syn()     // 23
-                     // 0.893773
-                                            % stats.countVarSN_Syn()//stats.data.at(ChrT).m.sn() //      // 24
-                                            % stats.countVarSP_Syn()      // 25
-                                            % stats.countVarPC_Syn()      // 26
-                                            % (1-stats.countVarPC_Syn())     // 27
-                                            % stats.countSNPSN_Syn()  // 28
-                                            % stats.countSNPSP_Syn()  // 29
-                                            % stats.countSNPPC_Syn()  // 30
-                                            % (1-stats.countSNPPC_Syn()) // 31
-                                            % stats.countIndSN_Syn()  // 32
-                                            % stats.countIndSP_Syn()  // 33
-                                            % stats.countIndPC_Syn()  // 34
-                                            % (1-stats.countIndPC_Syn()) // 35
-
-                     % stats.countSNP_TP_Gen()     // 36
-                     % stats.countInd_TP_Gen()     // 37
-                     % stats.countVar_TP_Gen()     // 38
-                     % stats.countSNP_FP_Gen() // 39
-                     % stats.countInd_FP_Gen() // 40
-                     % stats.countVar_FP_Gen() // 41
-                     % stats.countSNP_FN_Gen()     // 42
-                     % stats.countInd_FN_Gen()     // 43
-                     % stats.countVar_FN_Gen()     // 44
-                    
-                     % stats.countVarSN_Gen() // 45
-                     % stats.countVarSP_Gen() // 46
-                     % stats.countVarPC_Gen() // 47
-                     % (1-stats.countVarPC_Gen()) // 48
-                     % stats.countSNPSN_Gen() // 49
-                     % stats.countSNPSP_Gen() // 50
-                     % stats.countSNPPC_Gen() // 51
-                     % (1-stats.countSNPPC_Gen()) // 52
-                     % stats.countIndSN_Gen() // 53
-                     % stats.countIndSP_Gen() // 54
-                     % stats.countIndPC_Gen() // 55
-                     % (1-stats.countIndPC_Gen()) // 56
-                     
-                     
+                                            % stats.vData.countIndSyn()  // 10
+                                            % stats.vData.countVarSyn()  // 11
+                                            % stats.vData.countSNPGen()  // 12
+                                            % stats.vData.countIndGen()  // 13
+                                            % stats.vData.countVarGen()  // 14
+                                            % stats.countSNP_TP_Syn()    // 15
+                                            % stats.countInd_TP_Syn()    // 16
+                                            % stats.countVar_TP_Syn()    // 17
+                                            % stats.countSNP_FP_Syn()    // 18
+                                            % stats.countInd_FP_Syn()    // 19
+                                            % stats.countVar_FP_Syn()    // 20
+                                            % stats.countSNP_FN_Syn()    // 21
+                                            % stats.countInd_FN_Syn()    // 22
+                                            % stats.countVar_FN_Syn()    // 23
+                                            % stats.countVarSN_Syn()     // 24
+                                            % stats.countVarPC_Syn()     // 25
+                                            % (1-stats.countVarPC_Syn()) // 26
+                                            % stats.countSNPSN_Syn()     // 27
+                                            % stats.countSNPPC_Syn()     // 28
+                                            % (1-stats.countSNPPC_Syn()) // 29
+                                            % stats.countIndSN_Syn()     // 30
+                                            % stats.countIndPC_Syn()     // 31
+                                            % (1-stats.countIndPC_Syn()) // 32
+                                            % stats.countSNP_TP_Gen()    // 33
+                                            % stats.countInd_TP_Gen()    // 34
+                                            % stats.countVar_TP_Gen()    // 35
+                                            % stats.countSNP_FP_Gen()    // 36
+                                            % stats.countInd_FP_Gen()    // 37
+                                            % stats.countVar_FP_Gen()    // 38
+                                            % stats.countSNP_FN_Gen()    // 39
+                                            % stats.countInd_FN_Gen()    // 40
+                                            % stats.countVar_FN_Gen()    // 41
+                                            % stats.countVarSN_Gen()     // 42
+                                            % stats.countVarPC_Gen()     // 43
+                                            % (1-stats.countVarPC_Gen()) // 44
+                                            % stats.countSNPSN_Gen()     // 45
+                                            % stats.countSNPPC_Gen()     // 46
+                                            % (1-stats.countSNPPC_Gen()) // 47
+                                            % stats.countIndSN_Gen()     // 48
+                                            % stats.countIndPC_Gen()     // 49
+                                            % (1-stats.countIndPC_Gen()) // 50
                      ).str());
     o.writer->close();
 }
@@ -485,12 +459,10 @@ void VDiscover::report(const FileName &file, const Options &o)
 {
     const auto stats = analyze(file, o);
 
-    o.logInfo("Significance: " + std::to_string(o.sign));
-    
-    o.logInfo("TP: " + std::to_string(stats.data.at(ChrT).tps.size()));
-    o.logInfo("FP: " + std::to_string(stats.data.at(ChrT).fps.size()));
-    o.logInfo("TN: " + std::to_string(stats.data.at(ChrT).tns.size()));
-    o.logInfo("FN: " + std::to_string(stats.data.at(ChrT).fns.size()));
+    o.info("TP: " + std::to_string(stats.countVar_TP_Syn()));
+    o.info("FP: " + std::to_string(stats.countVar_FP_Syn()));
+    //o.info("TN: " + std::to_string(stats.countVar_TN_Syn()));
+    o.info("FN: " + std::to_string(stats.countVar_FN_Syn()));
 
     o.info("Generating statistics");
 
