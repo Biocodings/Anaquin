@@ -4,9 +4,7 @@
 
 using namespace Anaquin;
 
-VVScan::Stats VVScan::analyze(const FileName &file,
-                              const FileName &output,
-                              const Options &o)
+VVScan::Stats VVScan::analyze(const FileName &file, const FileName &output, const Options &o)
 {
     FileWriter out(o.work);
     out.open(output);
@@ -25,7 +23,7 @@ VVScan::Stats VVScan::analyze(const FileName &file,
                                      % "QualV"
                                      % "Pvalue").str());
     
-    o.generate(file);
+    o.generate(output);
     
     ParserVarScan::parse(Reader(file), [&](const ParserVarScan::Data &x, const ParserProgress &)
     {

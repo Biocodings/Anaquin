@@ -31,7 +31,7 @@ namespace Anaquin
             Reads1Minus,
             Reads2Plus,
             Reads2Minus,
-            VarFrequency    // 18
+            VarAllele    // 18
         };
 
         typedef CalledVariant Data;
@@ -76,41 +76,51 @@ namespace Anaquin
                     continue;
                 }
                 
-                if (toks[Cons][0] == '*')
+                /*
+                 * Is this an insertion?
+                 */
+                
+                const auto isInsert = toks[Cons].find("*/+") != std::string::npos;
+                const auto isDelete = toks[Cons].find("*/-") != std::string::npos;
+
+                auto clean = [&](const std::string &s)
+                {
+                    auto x = s;
+                    
+                    boost::replace_all(x, "*", "");
+                    boost::replace_all(x, "/", "");
+                    boost::replace_all(x, "-", "");
+                    boost::replace_all(x, "+", "");
+                    
+                    return x;
+                };
+                
+                if (isInsert)
                 {
                     /*
-                     * Eg:
-                     *
-                     *     chrT	8288872	C	* /-CCTG	2443	367	13.05%	2	2	29	19	1.8024382198605343E-112	1	1	1228	1215	186	181	-CCTG
-                     *
+                     * Eg: A * /+CT	+CT
                      */
-
-                    // Eg: C*/-CCTG
-                    d.ref = toks[Ref] + toks[Cons];
-
-                    // Eg: C/-CCTG
-                    boost::replace_all(d.ref, "*", "");
                     
-                    // Eg: C-CCTG
-                    boost::replace_all(d.ref, "/", "");
+                    d.ref = clean(toks[Ref]);
+                    d.alt = clean(toks[Ref] + toks[VarAllele]);
+                }
+                else if (isDelete)
+                {
+                    /*
+                     * Eg: G * /-CTTCCTCTTTC CTTCCTCTTTC
+                     */
                     
-                    // Eg: CCCTG
-                    boost::replace_all(d.ref, "-", "");
-                    
-                    // Eg: -CCTG
-                    auto tmp = toks[VarFrequency];
-                    
-                    // Eg: CCTG
-                    boost::replace_all(tmp, "-", "");
-                    
-                    // Eg: C
-                    boost::replace_all(d.alt = d.ref, tmp, "");
+                    d.ref = clean(toks[Ref] + toks[VarAllele]);
+                    d.alt = clean(toks[Ref]);
                 }
                 else
                 {
-                    d.ref = toks[Ref];
-                    d.alt = toks[VarFrequency];
+                    d.ref = clean(toks[Ref]);
+                    d.alt = clean(toks[VarAllele]);
                 }
+                
+                assert(d.ref.find('+') == std::string::npos);
+                assert(d.alt.find('+') == std::string::npos);
                 
                 try
                 {
@@ -120,6 +130,8 @@ namespace Anaquin
                 {
                     d.p = 0.0;
                 }
+                
+                assert(d.p >= 0 && d.p <= 1.0);
 
                 f(d, p);
             }

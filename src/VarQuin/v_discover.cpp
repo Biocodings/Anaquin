@@ -202,8 +202,6 @@ static void writeQuins(const FileName &file,
         // Search all query variants...
         for (const auto &j : i.second)
         {
-            std::cout << p++ << std::endl;
-            
             auto key = j.first;
             
             // Detected the sequin?
@@ -221,8 +219,6 @@ static void writeQuins(const FileName &file,
                     if (x.count(key))
                     {
                         const auto t = x.at(key);
-                        
-                        std::cout << t->query.p << std::endl;
                         
                         o.writer->write((boost::format(format) % m->id
                                                                % m->l.start
@@ -291,14 +287,17 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
     {
         for (const auto &i : x)
         {
+            const auto eFold = (label == "FP" ? NAN : i.eFold);
+            const auto eAlFq = (label == "FP" ? NAN : i.eAllFreq);
+            
             o.writer->write((boost::format(format) % (i.match ? i.match->id : "-")
                                                    % i.query.l.start
                                                    % label
                                                    % i.query.readR
                                                    % i.query.readV
                                                    % i.query.depth
-                                                   % i.eFold
-                                                   % i.eAllFreq
+                                                   % eFold
+                                                   % eAlFq
                                                    % (isnan(i.query.p) ? "-" : p2str(i.query.p))
                                                    % type2str(i.query.type())).str());
         }

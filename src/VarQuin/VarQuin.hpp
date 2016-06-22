@@ -110,7 +110,7 @@ namespace Anaquin
             m.match = nullptr;
 
             const auto isSyn = Standard::isSynthetic(query.cID);
-            
+
             if (isSyn || Standard::isGenomic(query.cID))
             {
                 // Can we match by position?
