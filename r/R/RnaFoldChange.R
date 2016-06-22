@@ -130,7 +130,7 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
 
     x  <- x[!is.na(x$pval),]
     x  <- x[!is.nan(x$pval),]
-    td <- TransQuin(seqs=row.names(x), expected=x$expect, measured=x$measured, pval=x$pval, qval=x$qval)
+    td <- Anaquin(seqs=row.names(x), expected=x$expect, measured=x$measured, pval=x$pval, qval=x$qval)
 
     if (haveMean)
     {
@@ -139,11 +139,11 @@ TransDiff_ <- function(data, qCutoff=0.1, logFC=0)
 
     plotExpress(td,
                 showLOQ=FALSE,
-                title='TransQuin Differential',
+                title='RnaQuin Differential',
                 xlab='Expected log-fold (log2)',
                 ylab='Measured log-fold (log2)')
 
-    plotROC(td, title='TransQuin Differential')
+    plotROC(td, title='RnaQuin Differential')
     
     if (haveMean)
     {
@@ -155,7 +155,7 @@ RnaFoldChange.DESeq2 <- function(data, r, p=0.1, logFC=0)
 {
     require(DESeq2)
 
-    stopifnot(class(data) == 'TransQuin')
+    stopifnot(class(data) == 'Anaquin')
     
     r <- data.frame(mean=r$baseMean,
                     lfc=r$log2FoldChange,
@@ -170,7 +170,7 @@ RnaFoldChange.edgeR <- function(data, r, p=0.1, logFC=0)
 {
     require(edgeR)
     
-    stopifnot(class(data) == 'TransQuin')
+    stopifnot(class(data) == 'Anaquin')
     
     r <- data.frame(lfc=r$table$logFC,
                     pval=r$table$PValue,
