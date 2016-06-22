@@ -139,7 +139,7 @@ plotROC <- function(data,
             theme_bw()
 
     #p <- p + geom_point(size=1, aes(colour=ratio), alpha=0.7)
-    p <- p + geom_path(size=1, aes(colour=ratio), alpha=1.0)
+    p <- p + geom_path(size=1, aes(colour=ratio), alpha=0.5)
     
     if (!is.null(title))
     {
