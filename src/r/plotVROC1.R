@@ -12,6 +12,7 @@
 
 library(Anaquin)
 
+# Load the input variant file
 data <- read.csv('%3%/%4%', sep='\t')
 
 # Change to 'Indel' or delete the line for all variants
@@ -23,7 +24,9 @@ title <- 'ROC Plot'
 # Change this for another legend title
 legTitle <- 'Allele Freq.'
 
-# Create Anaquin dataset
-data <- Anaquin(seqs=paste(data$Seq, data$Pos, sep='_'), expected=data$EFold, pval=data$Pval, label=data$Label, type=data$Type)
+data$name <- paste(data$ID, data$Pos, sep='_')
+data$name <- paste(data$name, data$Type, sep='_')
+
+data <- Anaquin(seqs=data$name, expected=data$EFold, score=1-data$Pval, label=data$Label)
 
 plotROC(data, title=title, legTitle=legTitle)

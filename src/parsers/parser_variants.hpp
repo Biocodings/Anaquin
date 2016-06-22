@@ -16,11 +16,12 @@ namespace Anaquin
             Chrom,
             Position,
             Ref,
-            Allele,
-            Reads1,
-            Reads2,
-            Qual1,
-            Qual2,
+            Alt,
+            ReadR,
+            ReadV,
+            Depth,
+            QualR,
+            QualV,
             Pvalue,
         };
 
@@ -50,12 +51,13 @@ namespace Anaquin
                 // Always start and end at the same position
                 d.l = Locus(stod(toks[Position]), stod(toks[Position]));
 
-                d.qualR = stod(toks[Qual1]);
-                d.qualV = stod(toks[Qual2]);
+                d.qualR = stod(toks[QualR]);
+                d.qualV = stod(toks[QualV]);
                 
-                d.readR = stod(toks[Reads1]);
-                d.readV = stod(toks[Reads2]);
+                d.readR = stod(toks[ReadR]);
+                d.readV = stod(toks[ReadV]);
                 d.depth = d.readR + d.readV;
+
                 d.allF  = static_cast<Proportion>(d.readV) / (d.readR + d.readV);
 
                 /*
@@ -74,11 +76,11 @@ namespace Anaquin
                 }
                 
                 d.ref = toks[Ref];
-                d.alt = toks[Allele];
+                d.alt = toks[Alt];
                 
                 try
                 {
-                    d.p = stod(toks[Pvalue]);
+                    d.p = stold(toks[Pvalue]);
                 }
                 catch (...)
                 {

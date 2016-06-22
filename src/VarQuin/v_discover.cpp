@@ -222,6 +222,8 @@ static void writeQuins(const FileName &file,
                     {
                         const auto t = x.at(key);
                         
+                        std::cout << t->query.p << std::endl;
+                        
                         o.writer->write((boost::format(format) % m->id
                                                                % m->l.start
                                                                % label

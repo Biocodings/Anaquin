@@ -69,6 +69,7 @@ namespace Anaquin
                 
                 d.readR = readR;
                 d.readV = readV;
+                d.depth = d.readR + d.readV;
                 
                 if (!readV)
                 {
@@ -113,7 +114,7 @@ namespace Anaquin
                 
                 try
                 {
-                    d.p = stod(toks[Pvalue]);
+                    d.p = stold(toks[Pvalue]);
                 }
                 catch (...)
                 {

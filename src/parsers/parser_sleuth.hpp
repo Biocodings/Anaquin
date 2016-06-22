@@ -63,10 +63,10 @@ namespace Anaquin
                         t.logFSE = stod(toks[Field::SE_B]);
                         
                         // Probability under the null hypothesis
-                        t.p = stod(toks[Field::PValue]);
+                        t.p = stold(toks[Field::PValue]);
                         
                         // Probability controlled for multi-testing
-                        t.q = stod(toks[Field::QValue]);
+                        t.q = stold(toks[Field::QValue]);
                     }
 
                     f(t, p);

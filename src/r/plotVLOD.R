@@ -10,6 +10,9 @@ library(Anaquin)
 
 data <- read.csv('%3%/%4%', sep='\t')
 
+# False-positives have no probabilites
+data <- data[data$Label != 'FP',]
+
 # Change to 'Indel' or delete the line for all variants
 data <- data[data$Type=='SNP',]
 
@@ -27,4 +30,4 @@ ylab='P-value (log10)'
 
 data <- Anaquin(seqs=paste(data$Seq, data$Pos, sep='_'), expected=as.factor(data$EFold), pval=data$Pval, measured=data$EAllele)
 
-plotLOD(data, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)
+plotLOD(data, title=title, xlab=xlab, ylab=ylab, legTitle=legTitle)  
