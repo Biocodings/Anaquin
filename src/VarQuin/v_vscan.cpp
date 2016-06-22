@@ -44,7 +44,7 @@ VVScan::Stats VVScan::analyze(const FileName &file,
                                          % x.alt
                                          % x.readR
                                          % x.readV
-                                         % x.cov
+                                         % x.depth
                                          % x.qualR
                                          % x.qualV
                                          % x.p).str());

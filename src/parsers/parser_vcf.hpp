@@ -123,7 +123,7 @@ namespace Anaquin
                     }
                     else if (formats[j] == "DP")
                     {
-                        d.cov = stod(t[j]);
+                        d.depth = stod(t[j]);
                     }
                 }
 

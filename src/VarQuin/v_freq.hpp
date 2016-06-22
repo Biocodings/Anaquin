@@ -37,11 +37,9 @@ namespace Anaquin
             // Statistics for indels
             LinearStats ind;
             
-            // Reads for reference allele
-            std::map<SequinID, Counts> readR;
-            
-            // Reads for variant allele
-            std::map<SequinID, Counts> readV;
+            std::map<long, Counts> readR;
+            std::map<long, Counts> readV;
+            std::map<long, Counts> depth;
             
             // Distribution for the variants
             std::map<ChrID, HashHist> hist;

@@ -3,36 +3,64 @@
 
 using namespace Anaquin;
 
-static void writeCSV(const FileName &file, const VFreq::Stats &stats, const VFreq::Options &o)
+static void writeQuins(const FileName &file, const VFreq::Stats &stats, const VFreq::Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    const auto x = stats.vars.data(false);
+
     o.writer->open(file);
-
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
-
-    auto f = [&](const LinearStats &l, const Label &label)
-    {
-        const auto data = l.data(false);
-
-        for (auto i = 0; i < data.ids.size(); i++)
-        {
-            o.writer->write((boost::format(format) % data.ids[i]
-                                                   % data.x[i]
-                                                   % data.y[i]
-                                                   % stats.readR.at(data.ids[i])
-                                                   % stats.readV.at(data.ids[i])
-                                                   % label).str());
-        }
-    };
-
     o.writer->write((boost::format(format) % "ID"
+                                           % "Position"
                                            % "Expected"
                                            % "Observed"
                                            % "ReadR"
                                            % "ReadV"
+                                           % "Depth"
                                            % "Type").str());
     
-    f(stats.snp, "SNP");
-    f(stats.ind, "Indel");
+    for (const auto &i : stats.hist)
+    {
+        const auto &cID = i.first;
+        
+        if (Standard::isSynthetic(cID))
+        {
+            for (const auto &j : i.second)
+            {
+                const auto m = r.findVar(cID, j.first);
+                assert(m);
+
+                const auto &key = toString(j.first);
+                
+                const auto type  = type2str(m->type());
+                const auto uname = (m->id + "_" + toString(m->l.start) + "_" + type);
+                
+                if (x.id2x.count(key))
+                {
+                    o.writer->write((boost::format(format) % uname
+                                                           % m->l.start
+                                                           % x.id2x.at(key)
+                                                           % x.id2y.at(key)
+                                                           % stats.readR.at(j.first)
+                                                           % stats.readV.at(j.first)
+                                                           % stats.depth.at(j.first)
+                                                           % type).str());
+                }
+                else
+                {
+                    continue;
+                    o.writer->write((boost::format(format) % uname
+                                                           % m->l.start
+                                                           % "NA"
+                                                           % "NA"
+                                                           % "NA"
+                                                           % "NA"
+                                                           % "NA"
+                                                           % type).str());
+                }
+            }
+        }
+    }
 
     o.writer->close();
 }
@@ -66,7 +94,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
             
             if (matched)
             {
-                const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
+                auto key = m.match->key(); //var2hash(m.match->id, m.match->type(), m.match->l);
                 stats.hist.at(cID).at(key)++;
                 //stats.hist.at(m.match->id)++;
                 
@@ -77,16 +105,10 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
                     const auto exp = r.findAFreq(baseID(m.match->id));
                     const auto obs = m.query.alleleFreq();
                  
-                    /*
-                     * Plotting the relative allele frequency that is established by differences
-                     * in the concentration of reference and variant DNA standards.
-                     */
+                    // Eg: 2821292107
+                    const auto id = toString(key);
                     
-                    // Eg: D_1_12_R_373892_G/A
-                    const auto id = (boost::format("%1%_%2%_%3%_%4%:") % m.match->id
-                                                                       % m.match->ref
-                                                                       % m.match->l.start
-                                                                       % m.match->alt).str();
+                    // Add for all variants
                     stats.vars.add(id, exp, obs);
                     
                     switch (m.query.type())
@@ -96,12 +118,13 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
                         case Mutation::Insertion: { stats.ind.add(id, exp, obs); break; }
                     }
                     
-                    stats.readR[id] = m.query.readR;
-                    stats.readV[id] = m.query.readV;
+                    stats.readR[key] = m.query.readR;
+                    stats.readV[key] = m.query.readV;
+                    stats.depth[key] = m.query.depth;
                     
                     if (isnan(stats.vars.limit.abund) || exp < stats.vars.limit.abund)
                     {
-                        stats.vars.limit.id = id;
+                        stats.vars.limit.id = m.match->id;
                         stats.vars.limit.abund = exp;
                     }
                 }
@@ -159,6 +182,9 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
             }
         }
     }
+
+    const auto mm = r.findVar(ChrT, stol(ms.id));
+    assert(mm);
     
     const auto hasGen = n_below || n_above;
 
@@ -226,7 +252,7 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                                     % G(stats.vData.countIndGen()) // 16
                                     % G(stats.vData.countVarGen()) // 17
                                     % ms.b                         // 18
-                                    % ms.id                        // 19
+                                    % mm->id                       // 19
                                     % ms.lInt                      // 20
                                     % ms.lSl                       // 21
                                     % ms.lr                        // 22
@@ -270,7 +296,7 @@ void VFreq::report(const FileName &file, const Options &o)
      */
 
     o.info("Generating VarFrequency_sequins.csv");
-    writeCSV("VarFrequency_sequins.csv", stats, o);
+    writeQuins("VarFrequency_sequins.csv", stats, o);
     
     /*
      * Generating VarFrequency_allele.R

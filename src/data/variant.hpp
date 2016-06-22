@@ -86,8 +86,8 @@ namespace Anaquin
         // Eg: AD for VCF and ALT for VarScan
         Counts readV;
         
-        // Total coverage (eg: DP for VCF and REF+ALT for VarScan)
-        Counts cov = NAN;
+        // Depth coverage (eg: DP for VCF and REF+ALT for VarScan)
+        Counts depth = NAN;
     };
     
     typedef Variant CalledVariant;

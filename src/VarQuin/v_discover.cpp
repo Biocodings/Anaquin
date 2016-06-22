@@ -167,16 +167,6 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     return stats;
 }
 
-static std::string type2str(Mutation type)
-{
-    switch (type)
-    {
-        case Mutation::SNP:       { return "SNP"; }
-        case Mutation::Deletion:
-        case Mutation::Insertion: { return "Indel"; }
-    }
-}
-
 static void writeQuins(const FileName &file,
                        const VDiscover::Stats &stats,
                        const VDiscover::Options &o)
@@ -204,8 +194,6 @@ static void writeQuins(const FileName &file,
         {
             continue;
         }
-        
-        std::cout << i.second.size() << std::endl;
         
         const auto cID = i.first;
         
@@ -240,7 +228,7 @@ static void writeQuins(const FileName &file,
                                                                % (isnan(t->query.p) ? "-" : p2str(t->query.p))
                                                                % t->query.readR
                                                                % t->query.readV
-                                                               % t->query.cov
+                                                               % t->query.depth
                                                                % t->eFold
                                                                % t->eAllFreq
                                                                % t->query.alleleFreq()
@@ -251,9 +239,7 @@ static void writeQuins(const FileName &file,
                     return false;
                 };
 
-                if (!f(stats.data.at(i.first).tps_, "TP") &&
-                    !f(stats.data.at(i.first).fns_, "FN")
-                    )
+                if (!f(stats.data.at(i.first).tps_, "TP") && !f(stats.data.at(i.first).fns_, "FN"))
                 {
                     throw std::runtime_error("Failed to find hash key in writeQuins()");
                 }
@@ -308,7 +294,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                    % label
                                                    % i.query.readR
                                                    % i.query.readV
-                                                   % i.query.cov
+                                                   % i.query.depth
                                                    % i.eFold
                                                    % i.eAllFreq
                                                    % (isnan(i.query.p) ? "-" : p2str(i.query.p))

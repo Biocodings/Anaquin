@@ -49,6 +49,16 @@ namespace Anaquin
         bool ref;
     };
 
+    inline std::string type2str(Mutation type)
+    {
+        switch (type)
+        {
+            case Mutation::SNP:       { return "SNP"; }
+            case Mutation::Deletion:
+            case Mutation::Insertion: { return "Indel"; }
+        }
+    }
+
     inline bool isRefID(const SequinID &id)
     {
         if (boost::algorithm::ends_with(id, "_R"))
