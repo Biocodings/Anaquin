@@ -542,8 +542,8 @@ namespace Anaquin
             // Counts indels for the genome
             Counts countIndGen() const;
 
-            // Counts variants for the synthetic chromosome
-            inline Counts countVarSync() const { return countSNPSyn() + countIndSyn(); }
+            inline Counts countVarSyn() const { return countSNPSyn() + countIndSyn(); }
+            inline Counts countVarGen() const { return countSNPGen() + countIndGen(); }
 
             // Histogram for all reference chromosomes
             std::map<ChrID, Hist> hist() const;

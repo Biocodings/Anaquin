@@ -29,13 +29,13 @@ void VKAllele::report(const FileName &file1, const FileName &file2, const Option
 
     o.info("Generating VarKAllele_summary.stats");
     o.writer->open("VarKAllele_summary.stats");
-    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
-                                                o.rAnnot,
-                                                (file1 + " & " + file2),
-                                                stats.hist,
-                                                stats,
-                                                stats.vars,
-                                                "sequins"));
+//    o.writer->write(StatsWriter::inflectSummary(o.rAnnot,
+//                                                o.rAnnot,
+//                                                (file1 + " & " + file2),
+//                                                stats.hist,
+//                                                stats,
+//                                                stats.vars,
+//                                                "sequins"));
     o.writer->close();
 
     /*

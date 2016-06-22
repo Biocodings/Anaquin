@@ -66,17 +66,17 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
 
     if (showLOQ)
     {
+        # Fit piecewise segmentation
         loq <- showLOQ(data$x, data$y)
 
         print(loq$breaks)
         
-        
         # We can assume the break-point is on the log2-scale. Let's convert it back.
-        loq$breaks$k <- 2^loq$breaks$k
+        label <- 2^loq$breaks$k
         
         x <- paste('LOQ:', signif(loq$breaks$k, 3))
         x <- paste(x, 'attomol/ul')
-        
+
         p <- p + geom_vline(xintercept=c(loq$breaks$k), linetype='33', size=0.6)
         p <- p + geom_label(aes(x=loq$breaks$k, y=0), label=x, colour='black', show.legend=FALSE)
     }

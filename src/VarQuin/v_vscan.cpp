@@ -25,6 +25,8 @@ VVScan::Stats VVScan::analyze(const FileName &file,
                                      % "QualV"
                                      % "Pvalue").str());
     
+    o.generate(file);
+    
     ParserVarScan::parse(Reader(file), [&](const ParserVarScan::Data &x, const ParserProgress &)
     {
         if (Standard::isSynthetic(x.cID))
@@ -55,5 +57,5 @@ VVScan::Stats VVScan::analyze(const FileName &file,
 
 void VVScan::report(const FileName &file, const Options &o)
 {
-    analyze(file, "VarQuin_variants.txt", o);
+    analyze(file, "VarVarScan_variants.txt", o);
 }

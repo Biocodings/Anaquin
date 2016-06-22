@@ -262,7 +262,7 @@ namespace Anaquin
                                 "       Synthetic: %5%\n"
                                 "       Detection Sensitivity: %6% (attomol/ul) (%7%)\n\n"
                                 "       Genome: %8%\n\n"
-                                "-------Limit of Quantification (LOQ)\n"
+                                "-------Limit of Quantification (LOQ)\n\n"
                                 "       *Estimated by piecewise segmented regression\n\n"
                                 "       Break: %9% attomol/ul (%10%)\n\n"
                                 "       *Below LOQ\n"

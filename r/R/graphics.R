@@ -30,8 +30,8 @@
     #p <- p + coord_fixed(ratio=1/1.176585)
     p <- p + coord_fixed(ratio=xrange/yrange)
  
-    ggsave('/Users/tedwong/Desktop/ABCD.pdf')
-    ggsave('/Users/tedwong/Desktop/ABCD.png')    
+    #ggsave('/Users/tedwong/Desktop/ABCD.pdf')
+    #ggsave('/Users/tedwong/Desktop/ABCD.png')    
     
     return (p)    
 }

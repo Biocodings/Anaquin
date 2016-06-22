@@ -363,19 +363,19 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       False Negative: %21% SNPs\n"
                          "       False Negative: %22% indels\n"
                          "       False Negative: %23% variants\n\n"
-                         "-------Diagnostic Performance (Synthetc)\n\n"
+                         "-------Diagnostic Performance (Synthetic)\n\n"
                          "       *Variants\n"
-                         "       Sensitivity: %24%\n"
-                         "       Precision:   %25%\n"
-                         "       FDR Rate:    %26%\n\n"
+                         "       Sensitivity: %24$.4f\n"
+                         "       Precision:   %25$.4f\n"
+                         "       FDR Rate:    %26$.4f\n\n"
                          "       *SNVs\n"
-                         "       Sensitivity: %27%\n"
-                         "       Precision:   %28%\n"
-                         "       FDR Rate:    %29%\n\n"
+                         "       Sensitivity: %27$.4f\n"
+                         "       Precision:   %28$.4f\n"
+                         "       FDR Rate:    %29$.4f\n\n"
                          "       *Indels\n"
-                         "       Sensitivity: %30%\n"
-                         "       Precision:   %31%\n"
-                         "       FDR Rate:    %32%\n\n"
+                         "       Sensitivity: %30$.4f\n"
+                         "       Precision:   %31$.4f\n"
+                         "       FDR Rate:    %32$.4f\n\n"
                          "-------Identification of genomic variants\n\n"
                          "       True Positive:  %33% SNPS\n"
                          "       True Positive:  %34% indels\n"
@@ -461,7 +461,6 @@ void VDiscover::report(const FileName &file, const Options &o)
 
     o.info("TP: " + std::to_string(stats.countVar_TP_Syn()));
     o.info("FP: " + std::to_string(stats.countVar_FP_Syn()));
-    //o.info("TN: " + std::to_string(stats.countVar_TN_Syn()));
     o.info("FN: " + std::to_string(stats.countVar_FN_Syn()));
 
     o.info("Generating statistics");

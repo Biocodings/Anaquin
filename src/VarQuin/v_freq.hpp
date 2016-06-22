@@ -16,11 +16,21 @@ namespace Anaquin
             Input input;
         };
 
-        struct Stats : public MappingStats, public SequinStats, public VariantStats
+        struct Stats : public MappingStats, public SequinStats
         {
             // Statistics for all variants
             LinearStats vars;
             
+            struct Data
+            {
+                // Measured minor allele frequency
+                Proportion af;
+            };
+            
+            std::map<ChrID, Data> data;
+            
+            VCFData vData;
+
             /*
              * Not available for Kallisto
              */
@@ -35,7 +45,10 @@ namespace Anaquin
             std::map<SequinID, Counts> readR;
             
             // Reads for variant allele
-            std::map<SequinID, Counts> readV;            
+            std::map<SequinID, Counts> readV;
+            
+            // Distribution for the variants
+            std::map<ChrID, HashHist> hist;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());
