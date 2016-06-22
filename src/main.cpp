@@ -8,7 +8,6 @@
 #include <execinfo.h>
 
 #include "RnaQuin/r_diff.hpp"
-#include "RnaQuin/r_kdiff.hpp"
 #include "RnaQuin/r_align.hpp"
 #include "RnaQuin/r_viewer.hpp"
 #include "RnaQuin/r_report.hpp"
@@ -117,7 +116,6 @@ typedef std::set<Value> Range;
 #define TOOL_R_KEXPRESS  299
 #define TOOL_M_ABUND     300
 #define TOOL_M_KDIFF     301
-#define TOOL_R_KDIFF     302
 #define TOOL_V_KALLELE   303
 #define TOOL_S_DISCOVER  304
 #define TOOL_V_FORWARD   305
@@ -208,7 +206,6 @@ static std::map<Value, Tool> _tools =
     { "RnaExpression",  TOOL_R_EXPRESS   },
     { "RnaKExpress",    TOOL_R_KEXPRESS  },
     { "RnaFoldChange",  TOOL_R_DIFF      },
-    { "RnaKDiff",       TOOL_R_KDIFF     },
     { "RnaNorm",        TOOL_T_NORM      },
     { "RnaIGV",         TOOL_R_IGV       },
     { "RnaCoverage",    TOOL_R_COVERAGE  },
@@ -265,7 +262,6 @@ static std::map<Tool, std::set<Option>> _required =
     { TOOL_R_SUBSAMPLE, { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_ASSEMBLY,  { OPT_R_GTF, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_KEXPRESS,  { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
-    { TOOL_R_KDIFF,     { OPT_R_IND, OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_DESEQ2,    { OPT_R_GTF, OPT_U_FILES } },
     { TOOL_R_DIFF,      { OPT_MIXTURE, OPT_U_FILES } },
     { TOOL_R_EXPRESS,   { OPT_MIXTURE, OPT_U_FILES } },
@@ -1236,7 +1232,6 @@ void parse(int argc, char ** argv)
         case TOOL_R_IGV:
         case TOOL_T_NORM:
         case TOOL_R_DIFF:
-        case TOOL_R_KDIFF:
         case TOOL_R_ALIGN:
         case TOOL_R_SLEUTH:
         case TOOL_R_DESEQ2:
@@ -1273,7 +1268,6 @@ void parse(int argc, char ** argv)
                     }
 
                     case TOOL_R_DIFF:
-                    case TOOL_R_KDIFF:
                     {
                         addMix(std::bind(&Standard::addTDMix, &s, std::placeholders::_1));
                         break;
@@ -1308,15 +1302,6 @@ void parse(int argc, char ** argv)
                 case TOOL_R_CUFFDIFF:  { analyze_1<RCuffdiff>(OPT_U_FILES); break; }
                 case TOOL_R_CUFFLINK:  { analyze_1<RCufflink>(OPT_U_FILES); break; }
                 case TOOL_R_KALLISTO:  { analyze_1<RKallisto>(OPT_U_FILES); break; }
-                    
-                case TOOL_R_KDIFF:
-                {
-                    TKDiff::Options o;
-                    o.index = _p.opts[OPT_R_IND];
-                    analyze_1<TKDiff>(OPT_U_FILES, o);
-
-                    break;
-                }
 
                 case TOOL_R_KEXPRESS:
                 {
