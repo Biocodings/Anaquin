@@ -334,7 +334,7 @@ namespace Anaquin
             
             const auto summary = "VarSubsample Output Results\n\n"
                                  "-------VarSubsample Output\n\n"
-                                 "       Reference sequin regions: %1%\n"
+                                 "       Reference regions: %1%\n"
                                  "       User generated alignment: %2%\n\n"
                                  "-------Reference regions\n\n"
                                  "       Synthetic regions: %3%\n"
@@ -351,7 +351,7 @@ namespace Anaquin
                                  "       Synthetic coverage: %11%\n\n"
                                  "-------After subsampling\n\n"
                                  "       Genome coverage:    %12%\n"
-                                 "       Synthetic coverage: %13%\n\n";
+                                 "       Synthetic coverage: %13%\n";
 
             o.generate("VarSubsample_summary.stats");
             o.writer->open("VarSubsample_summary.stats");
