@@ -59,12 +59,10 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 {
                     stats.data[cID].tps.push_back(m);
                     stats.data[cID].tps_[key] = stats.data[cID].tps.back();
-                    std::cout << m.query.p << std::endl;
                 }
                 else
                 {
                     throw "Not Implemented";
-                    
                     //stats.data[cID].fns.push_back(m);
                     //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
                 }
