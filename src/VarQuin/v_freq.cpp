@@ -48,7 +48,6 @@ static void writeQuins(const FileName &file, const VFreq::Stats &stats, const VF
                 }
                 else
                 {
-                    continue;
                     o.writer->write((boost::format(format) % uname
                                                            % m->l.start
                                                            % "NA"
