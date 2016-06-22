@@ -320,6 +320,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     extern FileName VCFRef();
     extern FileName BedRef();
     
+    const auto hasGen = stats.data.size() > 1;
+    
+    #define G(x) (hasGen ? "-" : toString(x))
+    
     const auto summary = "-------VarDiscover Output Results\n\n"
                          "-------VarDiscover Output\n\n"
                          "       Reference variant annotations: %1%\n"
@@ -370,8 +374,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       False Positive: %38% variants\n\n"
                          "       False Negative: %39% SNPs\n"
                          "       False Negative: %40% indels\n"
-                         "       False Negative: %41% variants\n";
-/*
+                         "       False Negative: %41% variants\n"
                          "-------Diagnostic Performance (Genome)\n\n"
                          "       *Variants\n"
                          "       Sensitivity: %42%\n"
@@ -385,7 +388,6 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       Sensitivity: %48%\n"
                          "       Precision:   %49%\n"
                          "       FDR Rate:    %50%\n";
-*/
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % VCFRef()
@@ -420,26 +422,24 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.countIndSN_Syn()     // 30
                                             % stats.countIndPC_Syn()     // 31
                                             % (1-stats.countIndPC_Syn()) // 32
-                                            % stats.countSNP_TP_Gen()    // 33
-                                            % stats.countInd_TP_Gen()    // 34
-                                            % stats.countVar_TP_Gen()    // 35
-                                            % stats.countSNP_FP_Gen()    // 36
-                                            % stats.countInd_FP_Gen()    // 37
-                                            % stats.countVar_FP_Gen()    // 38
-                                            % stats.countSNP_FN_Gen()    // 39
-                                            % stats.countInd_FN_Gen()    // 40
-                                            % stats.countVar_FN_Gen()    // 41
-    /*
-                                            % stats.countVarSN_Gen()     // 42
-                                            % stats.countVarPC_Gen()     // 43
-                                            % (1-stats.countVarPC_Gen()) // 44
-                                            % stats.countSNPSN_Gen()     // 45
-                                            % stats.countSNPPC_Gen()     // 46
-                                            % (1-stats.countSNPPC_Gen()) // 47
-                                            % stats.countIndSN_Gen()     // 48
-                                            % stats.countIndPC_Gen()     // 49
-                                            % (1-stats.countIndPC_Gen()) // 50
-     */
+                                            % G(stats.countSNP_TP_Gen())    // 33
+                                            % G(stats.countInd_TP_Gen())    // 34
+                                            % G(stats.countVar_TP_Gen())    // 35
+                                            % G(stats.countSNP_FP_Gen())    // 36
+                                            % G(stats.countInd_FP_Gen())    // 37
+                                            % G(stats.countVar_FP_Gen())    // 38
+                                            % G(stats.countSNP_FN_Gen())    // 39
+                                            % G(stats.countInd_FN_Gen())    // 40
+                                            % G(stats.countVar_FN_Gen())    // 41
+                                            % G(stats.countVarSN_Gen())     // 42
+                                            % G(stats.countVarPC_Gen())     // 43
+                                            % G((1-stats.countVarPC_Gen())) // 44
+                                            % G(stats.countSNPSN_Gen())     // 45
+                                            % G(stats.countSNPPC_Gen())     // 46
+                                            % G((1-stats.countSNPPC_Gen())) // 47
+                                            % G(stats.countIndSN_Gen())     // 48
+                                            % G(stats.countIndPC_Gen())     // 49
+                                            % G((1-stats.countIndPC_Gen())) // 50
                      ).str());
     o.writer->close();
 }
