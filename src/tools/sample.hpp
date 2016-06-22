@@ -270,8 +270,6 @@ namespace Anaquin
         
         template <typename Options> static void report(const FileName &file, const Options &o)
         {
-            const auto &r = Standard::instance().r_var;
-            
             auto meth2Str = [&]()
             {
                 switch (o.method)
