@@ -208,12 +208,7 @@ namespace Anaquin
             
             o.info("Synthetic coverage: " + toString(stats.synC));
             o.info("Genomic coverage: " + toString(stats.genC));
-            
-            if (stats.genC > stats.synC)
-            {
-                throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
-            }
-            
+
             return stats;
         }
 
@@ -295,6 +290,11 @@ namespace Anaquin
             // Statistics before alignment
             const auto before = Subsampler::stats(file, o);
             
+            if (before.genC > before.synC)
+            {
+                throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
+            }
+
             // Subsample the alignments
             Subsampler::sample(file, o.work + "/" + sampled, before.sample(), o);
             
