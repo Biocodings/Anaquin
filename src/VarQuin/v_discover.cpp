@@ -197,8 +197,6 @@ static void writeQuins(const FileName &file,
         
         const auto cID = i.first;
         
-        int p = 0;
-        
         // Search all query variants...
         for (const auto &j : i.second)
         {
@@ -372,7 +370,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       False Positive: %38% variants\n\n"
                          "       False Negative: %39% SNPs\n"
                          "       False Negative: %40% indels\n"
-                         "       False Negative: %41% variants\n\n"
+                         "       False Negative: %41% variants\n";
+/*
                          "-------Diagnostic Performance (Genome)\n\n"
                          "       *Variants\n"
                          "       Sensitivity: %42%\n"
@@ -386,6 +385,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "       Sensitivity: %48%\n"
                          "       Precision:   %49%\n"
                          "       FDR Rate:    %50%\n";
+*/
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % VCFRef()
@@ -429,6 +429,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.countSNP_FN_Gen()    // 39
                                             % stats.countInd_FN_Gen()    // 40
                                             % stats.countVar_FN_Gen()    // 41
+    /*
                                             % stats.countVarSN_Gen()     // 42
                                             % stats.countVarPC_Gen()     // 43
                                             % (1-stats.countVarPC_Gen()) // 44
@@ -438,6 +439,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.countIndSN_Gen()     // 48
                                             % stats.countIndPC_Gen()     // 49
                                             % (1-stats.countIndPC_Gen()) // 50
+     */
                      ).str());
     o.writer->close();
 }

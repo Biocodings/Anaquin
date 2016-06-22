@@ -1,6 +1,6 @@
 # Makefile for Anaquin, a statistical library for spike-in sequins.
 #
-#    Copyright (C) 2015- Garvan Institute of Medical Research
+#    Copyright (C) 2016- Garvan Institute of Medical Research
 #
 #    Author: Ted Wong <t.wong@garvan.org.au>
 #
@@ -25,10 +25,10 @@
 BOOST = /usr/include/boost
 
 # Required for unit-testing
-CATCH = /usr/include/catch/include
+CATCH = /Applications/catch/include
 
 # Linear-algebra library
-EIGEN = /usr/include/eigen
+EIGEN = /usr/local/Cellar/eigen/3.2.8/include/eigen3
 
 # Statistics library
 SS = ../SS
@@ -36,8 +36,11 @@ SS = ../SS
 # Library for SAM/BAM
 HLIB = src/htslib
 
+# Include for data model 
+HDF5 = /usr/local/Cellar/hdf5/1.8.16_1/include
+
 # Library for random generator
-KLIB = /usr/include
+KLIB = /Applications
 
 # Where the header are stored
 INCLUDE = src
@@ -57,7 +60,7 @@ OBJECTS_LIB  = $(SOURCES_LIB:.c=.o)
 #	ar rcs $@ $^
 
 $(EXEC): $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB)
-	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -lnmaths -lbfd -lz -ldl -o $(EXEC)
+	$(CC) $(OBJECTS) $(OBJECTS_TEST) $(OBJECTS_LIB) -g -L $(SS) -lnmaths -lhdf5 -lz -ldl -o $(EXEC)
 
 %.o: %.c
 	gcc -c -I $(HLIB) -I $(INCLUDE) -I $(SS) -I $(EIGEN) -I ${BOOST} -I ${CATCH} -I ${KLIB} $< -o $@
