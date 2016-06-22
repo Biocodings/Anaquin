@@ -74,8 +74,8 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
                 
                 if (Standard::isSynthetic(cID))
                 {
-                    const auto expected = r.findAFreq(baseID(m.match->id));
-                    const auto measured = m.query.alleleFreq();
+                    const auto exp = r.findAFreq(baseID(m.match->id));
+                    const auto obs = m.query.alleleFreq();
                  
                     /*
                      * Plotting the relative allele frequency that is established by differences
@@ -87,17 +87,23 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
                                                                        % m.match->ref
                                                                        % m.match->l.start
                                                                        % m.match->alt).str();
-                    stats.vars.add(id, expected, measured);
+                    stats.vars.add(id, exp, obs);
                     
                     switch (m.query.type())
                     {
-                        case Mutation::SNP:       { stats.snp.add(id, expected, measured); break; }
+                        case Mutation::SNP:       { stats.snp.add(id, exp, obs); break; }
                         case Mutation::Deletion:
-                        case Mutation::Insertion: { stats.ind.add(id, expected, measured); break; }
+                        case Mutation::Insertion: { stats.ind.add(id, exp, obs); break; }
                     }
                     
                     stats.readR[id] = m.query.readR;
                     stats.readV[id] = m.query.readV;
+                    
+                    if (isnan(stats.vars.limit.abund) || exp < stats.vars.limit.abund)
+                    {
+                        stats.vars.limit.id = id;
+                        stats.vars.limit.abund = exp;
+                    }
                 }
             }
         };
@@ -118,8 +124,6 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
         }
     });
 
-    //stats.vars.limit = r.detectLimit(stats.hist);
-
     return stats;
 }
 
@@ -134,8 +138,6 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
     
     // Calcluate the inflection point with logarithm
     auto ms = stats.vars.limitQuant(true);
-    
-    std::cout << ms.b << std::endl;
     
     // Remember the break-point is on the log2-scale, we'll need to convert it back
     ms.b = pow(2, ms.b);
@@ -160,6 +162,8 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
     
     const auto hasGen = n_below || n_above;
 
+    #define G(x) (hasGen ? toString(x) : "-")
+
     const auto summary = "-------VarFrequency Output\n\n"
                          "      Reference variant annotations: %1%\n"
                          "      User identified variants: %2%\n"
@@ -168,9 +172,9 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                          "      Synthetic: %4% SNPs\n"
                          "      Synthetic: %5% indels\n"
                          "      Synthetic: %6% variants\n\n"
-                         "      Genome:    %7% SNPs\n"
-                         "      Genome:    %8% indels\n"
-                         "      Genome:    %9% variants\n\n"
+                         "      Genome: %7% SNPs\n"
+                         "      Genome: %8% indels\n"
+                         "      Genome: %9% variants\n\n"
                          "-------User Variant Identification\n\n"
                          "      Synthetic: %10% SNPs\n"
                          "      Synthetic: %11% indels\n"
@@ -179,7 +183,7 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                          "      Genome: %15% SNPs\n"
                          "      Genome: %16% indels\n"
                          "      Genome: %17% variants\n\n"
-                         "-------Limit of Quantification (LOQ)\n\n"
+                         "-------Limit of Quantification (LOQ)\n"
                          "      *Estimated by piecewise segmented regression\n\n"
                          "       Break: %18% attomol/ul (%19%)\n\n"
                          "      *Below LOQ\n"
@@ -204,45 +208,45 @@ static Scripts generateSummary(const FileName &file, const VFreq::Stats &stats, 
                          "      SSE:         %37%, DF: %38%\n"
                          "      SST:         %39%, DF: %40%\n";
     
-    return ((boost::format(summary) % file                   // 1
-                                    % VCFRef()               // 2
-                                    % MixRef()               // 3
-                                    % r.countSNPSyn()        // 4
-                                    % r.countIndSyn()        // 5
-                                    % r.countVarSyn()        // 6
-                                    % r.countSNPGen()        // 7
-                                    % r.countIndGen()        // 8
-                                    % r.countVarGen()       // 9
-                                    % stats.vData.countSNPSyn()  // 10
-                                    % stats.vData.countIndSyn()  // 11
-                                    % stats.vData.countVarSyn()  // 12
-                                    % stats.vars.limit.abund // 13
-                                    % stats.vars.limit.id    // 14
-                                    % stats.vData.countSNPGen()  // 15
-                                    % stats.vData.countIndGen()  // 16
-                                    % stats.vData.countVarGen()  // 17             
-             % ms.b          // 18
-             % ms.id        // 19
-             % ms.lInt       // 20
-             % ms.lSl        // 21
-             % ms.lr         // 22
-             % ms.lR2        // 23
-             % n_above       // 24
-             % ms.rInt       // 25
-             % ms.rSl        // 26
-             % ms.rr         // 27
-             % ms.rR2        // 28
-             % n_below       // 29
-                                    % lm.r                   // 30
-                                    % lm.m
-                                    % lm.R2
-                                    % lm.F
-                                    % lm.p    // 34
-                                    % lm.SSM  // 35
-                                    % lm.SSM_D
-                                    % lm.SSE
-                                    % lm.SSE_D
-                                    % lm.SST
+    return ((boost::format(summary) % file                         // 1
+                                    % VCFRef()                     // 2
+                                    % MixRef()                     // 3
+                                    % r.countSNPSyn()              // 4
+                                    % r.countIndSyn()              // 5
+                                    % r.countVarSyn()              // 6
+                                    % r.countSNPGen()              // 7
+                                    % r.countIndGen()              // 8
+                                    % r.countVarGen()              // 9
+                                    % stats.vData.countSNPSyn()    // 10
+                                    % stats.vData.countIndSyn()    // 11
+                                    % stats.vData.countVarSyn()    // 12
+                                    % stats.vars.limit.abund       // 13
+                                    % stats.vars.limit.id          // 14
+                                    % G(stats.vData.countSNPGen()) // 15
+                                    % G(stats.vData.countIndGen()) // 16
+                                    % G(stats.vData.countVarGen()) // 17
+                                    % ms.b                         // 18
+                                    % ms.id                        // 19
+                                    % ms.lInt                      // 20
+                                    % ms.lSl                       // 21
+                                    % ms.lr                        // 22
+                                    % ms.lR2                       // 23
+                                    % n_above                      // 24
+                                    % ms.rInt                      // 25
+                                    % ms.rSl                       // 26
+                                    % ms.rr                        // 27
+                                    % ms.rR2                       // 28
+                                    % n_below                      // 29
+                                    % lm.r                         // 30
+                                    % lm.m                         // 31
+                                    % lm.R2                        // 32
+                                    % lm.F                         // 33
+                                    % lm.p                         // 34
+                                    % lm.SSM                       // 35
+                                    % lm.SSM_D                     // 36
+                                    % lm.SSE                       // 37
+                                    % lm.SSE_D                     // 38
+                                    % lm.SST                       // 39
                                     % lm.SST_D).str());
 }
 

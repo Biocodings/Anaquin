@@ -16,11 +16,8 @@ namespace Anaquin
             Input input;
         };
 
-        struct Stats : public MappingStats, public SequinStats
+        struct Stats : public MappingStats
         {
-            // Statistics for all variants
-            LinearStats vars;
-            
             struct Data
             {
                 // Measured minor allele frequency
@@ -31,10 +28,9 @@ namespace Anaquin
             
             VCFData vData;
 
-            /*
-             * Not available for Kallisto
-             */
-            
+            // Statistics for all variants
+            LinearStats vars;
+
             // Statistics for SNPs
             LinearStats snp;
             
