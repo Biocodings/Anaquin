@@ -206,6 +206,9 @@ namespace Anaquin
             
             assert(stats.synC && stats.genC);
             
+            o.info("Synthetic coverage: " + toString(stats.synC));
+            o.info("Genomic coverage: " + toString(stats.genC));
+            
             if (stats.genC > stats.synC)
             {
                 throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
