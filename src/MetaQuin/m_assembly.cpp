@@ -142,6 +142,11 @@ MAssembly::Stats MAssembly::analyze(const std::vector<FileName> &files, const Op
                     {
                         break;
                     }
+                        
+                    case MAligner::Kallisto:
+                    {
+                        throw "Not Implemented";
+                    }
                 }
             }
         }
