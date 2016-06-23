@@ -74,7 +74,7 @@
         label <- paste(label, 'attomol/ul')
 
         p <- p + geom_vline(xintercept=r, linetype='33')
-        p <- p + geom_label(aes(x=min(data$x), y=max(data$y)), label=label, colour='black', vjust='top', hjust='left', show.legend=FALSE)
+        p <- p + geom_label(aes(x=min(data$x), y=max(data$y)-0.1), label=label, colour='black', vjust='top', hjust='left', show.legend=FALSE)
     }
 
     if (!showGuide)
