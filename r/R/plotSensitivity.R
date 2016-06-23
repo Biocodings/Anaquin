@@ -4,7 +4,7 @@
 #  Ted Wong, Bioinformatic Software Engineer at Garvan Institute
 #
 
-.plotSigmoid <- function(data, threshold, title='', xlab='', ylab='', showLOQ=TRUE, showGuide=FALSE)
+.plotSigmoid <- function(data, title='', xlab='', ylab='', threshold=0.70, showLOA=TRUE, showGuide=FALSE)
 {
     require(ggplot2)
     require(reshape2)
@@ -23,30 +23,29 @@
     stopifnot(length(data$x) == length((data$y)) || length(data$x) == nrow((data$y)))
     
     result = tryCatch(
-        {
-            sigmoid = function(params, x) {
-                params[1] / (1 + exp(-params[2] * (x - params[3])))
-            }
-            
-            #
-            # Fit a sigmoid curve to the data, which is equivalent to logistic regression.
-            #
-            
-            perf <- min(data[data$y >= 1.00,]$expected)
-            
-            t <- data
-            t <- t[t$x <= perf | t$y > 0,]
-            x <- t$x
-            y <- t$y
-            
-            fitmodel <- nls(y~a/(1 + exp(-b * (x-c))), start=list(a=1,b=1,c=0))
-            params=coef(fitmodel)
-            data$f <- sigmoid(params,data$x)
-        }, error = function(e)
-        {
-            showLOQ <<- FALSE
-            #warning(e)
-        })
+    {
+        sigmoid = function(params, x) {
+            params[1] / (1 + exp(-params[2] * (x - params[3])))
+        }
+        
+        #
+        # Fit a sigmoid curve to the data, which is equivalent to logistic regression.
+        #
+        
+        perf <- min(data[data$y >= 1.00,]$expected)
+        
+        t <- data
+        t <- t[t$x <= perf | t$y > 0,]
+        x <- t$x
+        y <- t$y
+        
+        fitmodel <- nls(y~a/(1 + exp(-b * (x-c))), start=list(a=1,b=1,c=0))
+        params=coef(fitmodel)
+        
+        data$f <- sigmoid(params, data$x)
+    }, error = function(e) {
+        showLOA <<- FALSE
+    })
 
     p <- ggplot(data=data, aes(x)) +
                         xlab(xlab) +
@@ -63,18 +62,25 @@
     p <- p + theme(axis.title.x=element_text(face='bold', size=12))
     p <- p + theme(axis.title.y=element_text(face='bold', size=12))
     
-    if (showLOQ)
+    if (showLOA)
     {
-        r <- round(min(data[data$y >= threshold,]$expected),2)
+        t <- data[data$f >= threshold,]
         
-        # We can assume the break-point is on the log2-scale. Let's convert it back.
-        label <- 2^r
+        if (nrow(t) == 0)
+        {
+            warning(paste(c('Failed to estimate LOA. The maximum sensitivity is: ', max(data$f))))
+        }
+        else
+        {
+            r <- round(min(t$expected),2)
 
-        label <- paste('LOA:', signif(label, 3))
-        label <- paste(label, 'attomol/ul')
-
-        p <- p + geom_vline(xintercept=r, linetype='33')
-        p <- p + geom_label(aes(x=min(data$x), y=max(data$y)-0.1), label=label, colour='black', vjust='top', hjust='left', show.legend=FALSE)
+            label <- 2^r
+            label <- paste('LOA:', signif(label, 3))
+            label <- paste(label, 'attomol/ul')
+            
+            p <- p + geom_vline(xintercept=r, linetype='33')
+            p <- p + geom_label(aes(x=min(data$x), y=max(data$y)-0.1), label=label, colour='black', vjust='top', hjust='left', show.legend=FALSE)
+        }
     }
 
     if (!showGuide)
@@ -86,8 +92,8 @@
     print(p)
 }
 
-plotSensitivity <- function(data, title, xlab, ylab, showLOQ=TRUE, threshold=0.98)
+plotSensitivity <- function(data, title, xlab, ylab, showLOA=TRUE, threshold=0.98)
 {
     stopifnot(class(data) == 'Anaquin')
-    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, showLOQ=showLOQ, threshold=threshold)    
+    .plotSigmoid(data, title=title, xlab=xlab, ylab=ylab, showLOA=showLOA, threshold=threshold)    
 }
