@@ -53,7 +53,7 @@
                         ylab(ylab) +
                     ggtitle(title) +
                         theme_bw()
-    p <- p + geom_point(aes(y=y, colour=grp), alpha=1.0)
+    p <- p + geom_point(aes(y=y, colour=grp), size=2.0, alpha=0.5)
     
     if (!is.na(data$f))
     {
