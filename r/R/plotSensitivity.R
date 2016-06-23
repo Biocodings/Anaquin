@@ -47,13 +47,12 @@
             showLOQ <<- FALSE
             #warning(e)
         })
-    
+
     p <- ggplot(data=data, aes(x)) +
                         xlab(xlab) +
                         ylab(ylab) +
                     ggtitle(title) +
                         theme_bw()
-    
     p <- p + geom_point(aes(y=y, colour=grp), alpha=1.0)
     
     if (!is.na(data$f))
@@ -67,10 +66,15 @@
     if (showLOQ)
     {
         r <- round(min(data[data$y >= threshold,]$expected),2)
-        #f <- as.numeric(as.character(format(round(as.numeric(as.character(r)), 2), nsmall=2)))
-        #p <- p + geom_vline(xintercept=c(as.factor(r)), linetype="dotted")
-        p <- p + geom_vline(xintercept=r, linetype="dotted")
-        p <- p + geom_label(aes(x=r, y=0.30, label=paste('LOA',r)), colour="black", show.legend=FALSE)
+        
+        # We can assume the break-point is on the log2-scale. Let's convert it back.
+        label <- 2^r
+
+        label <- paste('LOA:', signif(label, 3))
+        label <- paste(label, 'attomol/ul')
+
+        p <- p + geom_vline(xintercept=r, linetype='33')
+        p <- p + geom_label(aes(x=min(data$x), y=max(data$y)), label=label, colour='black', vjust='top', hjust='left', show.legend=FALSE)
     }
 
     if (!showGuide)
