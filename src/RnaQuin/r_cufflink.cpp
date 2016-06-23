@@ -9,24 +9,75 @@ void RCufflink::analyze(const FileName &src, const FileName &output, const RCuff
     FileWriter out(o.work);
     out.open(output);
     
+    const auto &r = Standard::instance().r_trans;
+
+    Counts n_iso = 0;
+    Counts n_gen = 0;
+    
+    o.generate(output);
+    
+    ParserCufflink::parse(src, [&](const ParserCufflink::Data &x, const ParserProgress &)
+    {
+        if (Standard::isSynthetic(x.cID))
+        {
+            // Is this a reference isoform?
+            if (r.match(x.tID))
+            {
+                n_iso++;
+            }
+            else if (r.findGene(x.cID, x.tID))
+            {
+                n_gen++;
+            }
+        }
+    });
+
+    // Are we parsing genes.fpkm_tracking?
+    const auto isGene = n_gen > n_iso;
+    
     /*
      * Format: ChrID  Gene_ID  Start  End  Abund
      */
 
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%";
-    out.write((boost::format(format) % "ChrID"
-                                     % "GeneID"
-                                     % "Start"
-                                     % "End"
-                                     % "Abund").str());
+    
+    if (isGene)
+    {
+        o.info("Gene Expression");
+        out.write((boost::format(format) % "ChrID"
+                                         % "GeneID"
+                                         % "Start"
+                                         % "End"
+                                         % "Abund").str());
+    }
+    else
+    {
+        o.info("Isoform Expression");
+        out.write((boost::format(format) % "ChrID"
+                                         % "IsoID"
+                                         % "Start"
+                                         % "End"
+                                         % "Abund").str());
+    }
 
     ParserCufflink::parse(src, [&](const ParserCufflink::Data &x, const ParserProgress &)
     {
-        out.write((boost::format(format) % x.cID
-                                         % x.id
-                                         % x.l.start
-                                         % x.l.end
-                                         % x.abund).str());
+        if (isGene)
+        {
+            out.write((boost::format(format) % x.cID
+                                             % x.tID
+                                             % x.l.start
+                                             % x.l.end
+                                             % x.abund).str());
+        }
+        else
+        {
+            out.write((boost::format(format) % x.cID
+                                             % x.tID
+                                             % x.l.start
+                                             % x.l.end
+                                             % x.abund).str());
+        }
     });
 
     out.close();
