@@ -381,7 +381,7 @@ Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
     return inflectSummary(chrTR,
                           endoR,
                           std::vector<FileName>     { file   },
-                          std::vector<Hist>         { hist   },
+                          //std::vector<Hist>         { hist   },
                           std::vector<MappingStats> { mStats },
                           std::vector<LinearStats>  { stats  },
                           units);
@@ -390,7 +390,7 @@ Scripts StatsWriter::inflectSummary(const FileName     &chrTR,
 SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
                                        const FileName                  &endoR,
                                        const std::vector<FileName>     &files,
-                                       const std::vector<SequinHist>   &hist,
+                                       //const std::vector<SequinHist>   &hist,
                                        const std::vector<MappingStats> &mStats,
                                        const std::vector<LinearStats>  &lstats)
 {
@@ -414,8 +414,8 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
         r.p_chrT.add(mStats[i].synProp());
         r.p_endo.add(mStats[i].genProp());
         
-        r.n_ref = hist[i].size();
-        r.n_det.add((unsigned)detect(hist[i]));
+        //r.n_ref = hist[i].size();
+        //r.n_det.add((unsigned)detect(hist[i]));
         
         r.b.add(b);
         r.lr.add(inf.lr);
@@ -447,7 +447,7 @@ SInflectStats StatsWriter::multiInfect(const FileName                  &chrTR,
 Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
                                     const FileName                  &endoR,
                                     const std::vector<FileName>     &files,
-                                    const std::vector<SequinHist>   &hist,
+                                    //const std::vector<SequinHist>   &hist,
                                     const std::vector<MappingStats> &mStats,
                                     const std::vector<LinearStats>  &lstats,
                                     const Units &units)
@@ -475,8 +475,8 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         r.p_chrT.add(mStats[i].synProp());
         r.p_endo.add(mStats[i].genProp());
 
-        r.n_ref = hist[i].size();
-        r.n_det.add((unsigned)detect(hist[i]));
+        //r.n_ref = hist[i].size();
+        //r.n_det.add((unsigned)detect(hist[i]));
 
         r.b.add((unsigned)b);
         r.bID.add(inf.id);

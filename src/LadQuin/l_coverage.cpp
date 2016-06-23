@@ -4,19 +4,21 @@ using namespace Anaquin;
 
 LCoverage::Stats LCoverage::stats(const FileName &file, const Options &o)
 {
-    o.analyze(file);
-    
-    const auto &r = Standard::instance().r_lad;
+    //    const auto &r = Standard::instance().r_lad;
 
-    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
-    {
-        if (align.cID == ChrT)
-        {
-            return r.match(align.l, MatchRule::Contains);
-        }
-        
-        return (const SequinData *) nullptr;
-    });
+    o.analyze(file);
+
+    throw "Not Implemented";
+    
+//    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
+//    {
+//        if (align.cID == ChrT)
+//        {
+//            return r.match(align.l, MatchRule::Contains);
+//        }
+//        
+//        return (const SequinData *) nullptr;
+//    });
 }
 
 void LCoverage::report(const FileName &file, const LCoverage::Options &o)

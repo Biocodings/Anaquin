@@ -117,7 +117,7 @@ bool Standard::isSynthetic(const ChrID &cID)
 {
     assert(!cID.empty());
     
-    const std::set<ChrID> sIDs = { "chrT", "chrIS", };
+    const std::set<ChrID> sIDs = { "chrT", "chrIS" };
 
     // Can we match by exact?
     if (sIDs.count(cID))

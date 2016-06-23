@@ -33,7 +33,7 @@ namespace Anaquin
         static SInflectStats multiInfect(const FileName                  &,
                                          const FileName                  &,
                                          const std::vector<FileName>     &,
-                                         const std::vector<Hist>         &,
+                                         //const std::vector<Hist>         &,
                                          const std::vector<MappingStats> &,
                                          const std::vector<LinearStats>  &);
         
@@ -85,7 +85,7 @@ namespace Anaquin
         static Scripts inflectSummary(const FileName &,
                                       const FileName &,
                                       const std::vector<FileName>     &,
-                                      const std::vector<Hist>         &,
+                                      //const std::vector<Hist>         &,
                                       const std::vector<MappingStats> &,
                                       const std::vector<LinearStats>  &,
                                       const Units &);

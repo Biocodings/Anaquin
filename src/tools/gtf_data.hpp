@@ -86,6 +86,23 @@ namespace Anaquin
         // Position for introns (usd for determining unique introns)
         std::map<ChrID, std::map<Locus, Counts>> il;
 
+        inline Hist histIsof(const ChrID &cID) const
+        {
+            return createHist(at(cID).t2d);
+        }
+
+        inline std::map<ChrID, Hist> histIsof() const
+        {
+            std::map<ChrID, Hist> r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = histIsof(i.first);
+            }
+            
+            return r;
+        }
+
         inline Hist histGene(const ChrID &cID) const
         {
             return createHist(at(cID).g2d);

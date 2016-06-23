@@ -4,19 +4,22 @@ using namespace Anaquin;
 
 MCoverage::Stats MCoverage::analyze(const FileName &file, const Options &o)
 {
-    o.analyze(file);
-    const auto &r = Standard::instance().r_meta;
+    //    const auto &r = Standard::instance().r_meta;
 
-    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
-    {
-        if (align.cID == ChrT)
-        {
-            return r.match(align.l, MatchRule::Contains);
-        }
-        
-        return (const SequinData *) nullptr;
-        //return r.match(align.cID) && r.match(align.cID)->l.contains(align.l);
-    });
+    o.analyze(file);
+    
+    throw "Not Implemented";
+
+//    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
+//    {
+//        if (align.cID == ChrT)
+//        {
+//            return r.match(align.l, MatchRule::Contains);
+//        }
+//        
+//        return (const SequinData *) nullptr;
+//        //return r.match(align.cID) && r.match(align.cID)->l.contains(align.l);
+//    });
 }
 
 void MCoverage::report(const FileName &file, const MCoverage::Options &o)
@@ -73,22 +76,22 @@ void MCoverage::report(const FileName &file, const MCoverage::Options &o)
                                            % "P75"
                                            % "Covered").str());
 
-    const auto inters = r.inters();
-    
-    for (const auto &i : inters.data())
-    {
-        const auto &stats = i.second.stats();
-        
-        o.writer->write((boost::format(format) % i.first
-                                               % stats.length
-                                               % stats.min
-                                               % stats.max
-                                               % stats.mean
-                                               % stats.p25
-                                               % stats.p50
-                                               % stats.p75
-                                               % stats.covered()).str());
-    }
-    
-    o.writer->close();
+//    const auto inters = r.inters();
+//    
+//    for (const auto &i : inters.data())
+//    {
+//        const auto &stats = i.second.stats();
+//        
+//        o.writer->write((boost::format(format) % i.first
+//                                               % stats.length
+//                                               % stats.min
+//                                               % stats.max
+//                                               % stats.mean
+//                                               % stats.p25
+//                                               % stats.p50
+//                                               % stats.p75
+//                                               % stats.covered()).str());
+//    }
+//    
+//    o.writer->close();
 }

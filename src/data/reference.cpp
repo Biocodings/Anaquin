@@ -518,17 +518,6 @@ Counts TransRef::countTransGen() const
     return _impl->gData.countTransGen();
 }
 
-Limit TransRef::geneLimit(const SequinHist &hist) const
-{
-    throw "Not Implemented";
-/*
-    return Reference<TransData, DefaultStats>::detectLimit(hist, [&](const GeneID &id)
-    {
-        return findGene(ChrT, id);
-    });
-*/
-}
-
 void TransRef::readRef(const Reader &r)
 {
     for (const auto &i : (_impl->gData = gtfData(r)))
@@ -545,6 +534,11 @@ void TransRef::readRef(const Reader &r)
 std::map<ChrID, Hist> TransRef::histGene() const
 {
     return _impl->gData.histGene();
+}
+
+std::map<ChrID, Hist> TransRef::histIsof() const
+{
+    return _impl->gData.histIsof();
 }
 
 Concent TransRef::concent(const GeneID &gID, Mixture m) const
@@ -618,13 +612,13 @@ Intervals<> TransRef::intronInters(const ChrID &cID) const
     return _impl->gData.iIntervals(cID);
 }
 
-SequinHist TransRef::geneHist(const ChrID &cID) const
-{
-    assert(_impl->gData.count(cID));
-    assert(!_impl->gData[cID].g2d.empty());
-
-    return createHist(_impl->gData[cID].g2d);
-}
+//SequinHist TransRef::geneHist(const ChrID &cID) const
+//{
+//    assert(_impl->gData.count(cID));
+//    assert(!_impl->gData[cID].g2d.empty());
+//
+//    return createHist(_impl->gData[cID].g2d);
+//}
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
 {

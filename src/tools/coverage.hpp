@@ -1,7 +1,6 @@
 #ifndef COVERAGE_TOOL_HPP
 #define COVERAGE_TOOL_HPP
 
-#include "stats/analyzer.hpp"
 #include "data/intervals.hpp"
 #include "parsers/parser_sam.hpp"
 
@@ -15,15 +14,6 @@ namespace Anaquin
 
             Intervals<> inters;
         };
-
-        struct Stats__ : public AlignmentStats, public SequinStats
-        {
-            //FileName src;
-            Intervals<> inters;
-        };
-        
-        // Whether to proceed with the alignment
-        typedef std::function<bool (const Alignment &, const ParserProgress &)> AlignFunctor;
 
         struct CoverageReportOptions
         {
@@ -53,43 +43,7 @@ namespace Anaquin
             std::shared_ptr<Writer> writer;
         };
         
-        // Analyze a BAM file sorted by position
-        static Stats stats(const FileName &, AlignFunctor);
-
         static Stats stats__(const FileName &, std::map<ChrID, Intervals<>> &);
-
-        // Analyze a BAM file sorted by position
-        template <typename F> static Stats stats_(const FileName &file, const Hist &hist, F f)
-        {
-            CoverageTool::Stats stats;
-            
-            stats.src  = file;
-            stats.hist = hist;
-            
-            ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
-            {
-                stats.update(align);
-                
-                if (align.mapped)
-                {
-                    const auto match = f(align, info.p);
-                    
-                    if (match)
-                    {
-                        if (!stats.inters.find(align.cID))
-                        {
-                            // Add a new interval for the chromosome
-                            stats.inters.add(Interval(align.cID, Locus(0, info.length-1)));
-                        }
-                        
-                        //stats.hist.at(match->id)++;
-                        stats.inters.find(align.cID)->add(align.l);
-                    }
-                }
-            });
-            
-            return stats;
-        }
 
         static void bedGraph(const ID2Intervals &, const CoverageBedGraphOptions &);
     };

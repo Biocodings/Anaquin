@@ -8,15 +8,17 @@ FCoverage::Stats FCoverage::stats(const FileName &file, const Options &o)
     
     const auto &r = Standard::instance().r_fus;
     
-    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
-    {
-        if (align.cID == ChrT)
-        {
-            return r.match(align.l, MatchRule::Contains);
-        }
+    throw "Not Implemented";
 
-        return (const SequinData *) nullptr;
-    });
+//    return CoverageTool::stats_(file, r.hist(), [&](const Alignment &align, const ParserProgress &)
+//    {
+//        if (align.cID == ChrT)
+//        {
+//            return r.match(align.l, MatchRule::Contains);
+//        }
+//
+//        return (const SequinData *) nullptr;
+//    });
 }
 
 void FCoverage::report(const FileName &file, const FCoverage::Options &o)

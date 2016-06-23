@@ -26,7 +26,7 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
                 
                 if (m)
                 {
-                    stats.hist.at(m->id)++;
+                    stats.hist.at(x.cID).at(m->id)++;
 
                     if (!isnan(x.abund) && x.abund)
                     {
@@ -49,7 +49,7 @@ template <typename T> void update(RExpress::Stats &stats, const T &x, const RExp
 
                 if (m)
                 {
-                    stats.hist.at(x.id)++;
+                    stats.hist.at(x.cID).at(x.id)++;
                     
                     if (!isnan(x.abund) && x.abund)
                     {
@@ -95,8 +95,8 @@ template <typename Functor> RExpress::Stats calculate(const RExpress::Options &o
     
     switch (o.metrs)
     {
-        case Metrics::Isoform: { stats.hist = r.hist();         break; }
-        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
+        case Metrics::Isoform: { stats.hist = r.histIsof(); break; }
+        case Metrics::Gene:    { stats.hist = r.histGene(); break; }
     }
     
     assert(!stats.hist.empty());

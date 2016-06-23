@@ -37,47 +37,40 @@ std::vector<std::string> RDiff::classify(const std::vector<double> &qs, const st
     return r;
 }
 
-template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const RDiff::Options &o)
+template <typename T> void classifySyn(RDiff::Stats &stats, const T &t, const RDiff::Options &o)
 {
-    assert(t.cID == ChrT);
-    
     const auto &r = Standard::instance().r_trans;
 
-    // Known fold change
-    Fold known = NAN;
+    assert(Standard::isSynthetic(t.cID));
     
-    // It's NAN if the sequin defined in reference but not in mixture
-    Fold measured = NAN;
+    SequinID id;
+    
+    Fold exp = NAN;
+    Fold obs = NAN;
 
     switch (o.metrs)
     {
         case Metrics::Gene:
         {
-            if (stats.hist.count(t.id))
+            const auto match = r.findGene(t.cID, t.id);
+            
+            if (match)
             {
-                const auto match = r.findGene(t.cID, t.id);
+                stats.hist.at(t.cID).at(t.id)++;
                 
-                if (match)
-                {
-                    stats.hist.at(t.id)++;
-
-                    const auto exp_1 = r.concent(t.id, Mix_1);
-                    const auto exp_2 = r.concent(t.id, Mix_2);
-
-                    // Calculate the known fold-change between B and A
-                    known = exp_2 / exp_1;
-                    
-                    // This is not on the log scale, so it can't be zero...
-                    assert(known);
-
-                    // Measured fold-change between the two mixtures
-                    measured = t.logF;
-                    
-                    // Turn it back to the original scale
-                    measured = std::pow(2, measured);
-                }
-
-                stats.add(t.id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                const auto exp_1 = r.concent(t.id, Mix_1);
+                const auto exp_2 = r.concent(t.id, Mix_2);
+                
+                id = t.id;
+                
+                // Calculate the known fold-change between B and A
+                exp = exp_2 / exp_1;
+                
+                // Measured fold-change between the two mixtures
+                obs = t.logF;
+                
+                // Turn it back to the original scale
+                obs = std::pow(2, obs);
             }
 
             break;
@@ -85,32 +78,47 @@ template <typename T> void classifyChrT(RDiff::Stats &stats, const T &t, const R
 
         case Metrics::Isoform:
         {
-            if (stats.hist.count(t.id))
+            const auto match = r.match(t.id);
+            
+            if (match)
             {
-                const auto match = r.match(t.id);
+                stats.hist.at(t.cID).at(t.id)++;
                 
-                if (match)
-                {
-                    stats.hist.at(t.id)++;
-
-                    // Known fold-change between the two mixtures
-                    known = match->concent(Mix_2) / match->concent(Mix_1);
-                    
-                    // Measured fold-change between the two mixtures
-                    measured = t.logF;
-                    
-                    // Turn it back to the original scale
-                    measured = std::pow(2, measured);
-                }
+                id = t.id;
                 
-                stats.add(t.id, !isnan(known) ? known : NAN, !isnan(measured) ? measured : NAN);
+                // Known fold-change between the two mixtures
+                exp = match->concent(Mix_2) / match->concent(Mix_1);
+                
+                // Measured fold-change between the two mixtures
+                obs = t.logF;
+                
+                // Turn it back to the original scale
+                obs = std::pow(2, obs);
             }
-
+            
             break;
         }
     }
     
-    stats.elfs.push_back(log2(known));
+    if (!id.empty())
+    {
+        // This is not on the log scale, so it can't be non-positive
+        assert(exp > 0);
+
+        stats.add(id, !isnan(exp) ? exp : NAN, !isnan(obs) ? obs : NAN);
+        
+        if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+        {
+            stats.limit.id = id;
+            stats.limit.abund = exp;
+        }
+        
+        stats.elfs.push_back(log2(exp));
+    }
+    else
+    {
+        o.warn(t.id + " not found");
+    }
 }
 
 template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::Options &o)
@@ -120,7 +128,7 @@ template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::
     if (Standard::isSynthetic(x.cID))
     {
         stats.n_syn++;
-        classifyChrT(stats, x, o);
+        classifySyn(stats, x, o);
     }
     else
     {
@@ -132,10 +140,9 @@ template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::
      * The expected fold-change is done in the classifer because it can only happen with synthetic
      */
 
-    stats.ids.push_back(x.id);
-
     stats.ps.push_back(x.p);
     stats.qs.push_back(x.q);
+    stats.ids.push_back(x.id);
     stats.cIDs.push_back(x.cID);
     stats.mlfs.push_back(x.logF);
     stats.ses.push_back(x.logFSE);
@@ -150,8 +157,8 @@ template <typename Functor> RDiff::Stats calculate(const RDiff::Options &o, Func
 
     switch (o.metrs)
     {
-        case Metrics::Gene:    { stats.hist = r.geneHist(ChrT); break; }
-        case Metrics::Isoform: { stats.hist = r.hist();         break; }
+        case Metrics::Gene:    { stats.hist = r.histGene(); break; }
+        case Metrics::Isoform: { stats.hist = r.histIsof(); break; }
     }
 
     assert(!stats.hist.empty());
@@ -159,27 +166,7 @@ template <typename Functor> RDiff::Stats calculate(const RDiff::Options &o, Func
     o.info("Parsing input files");
     f(stats);
     
-    o.info("Calculating detection limit");
-
-    switch (o.metrs)
-    {
-        case Metrics::Gene:    { stats.limit = r.geneLimit(stats.hist);   break; }
-        case Metrics::Isoform: { stats.limit = r.detectLimit(stats.hist); break; }
-        default: { break; }
-    }
-
     return stats;
-}
-
-RDiff::Stats RDiff::analyze(const std::vector<DiffTest> &tests, const Options &o)
-{
-    return calculate(o, [&](RDiff::Stats &stats)
-    {
-        //for (auto &test : tests)
-        //{
-            //update(stats, test, o);
-        //}
-    });
 }
 
 RDiff::Stats RDiff::analyze(const FileName &file, const Options &o)
@@ -207,7 +194,7 @@ void RDiff::report(const FileName &file, const Options &o)
     o.info("Generating statistics");
     
     // Eg: DESeq2
-    const auto shouldLODR = true;
+    const auto shouldLOD = true;
     
     /*
      * Generating RnaFoldChange_summary.stats
@@ -248,7 +235,7 @@ void RDiff::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_LODR.R
      */
     
-    if (shouldLODR)
+    if (shouldLOD)
     {
         RDiff::generateLODR("RnaFoldChange_LODR.R", "RnaFoldChange_sequins.csv", o);
     }

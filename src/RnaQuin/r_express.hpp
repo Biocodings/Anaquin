@@ -96,14 +96,14 @@ namespace Anaquin
             Metrics metrs;
         };
         
-        struct GenData
+        struct Stats : public LinearStats, public MappingStats, public AnalyzerStats
         {
-            // Eg: FPKM
-            double abund = NAN;
-        };
-        
-        struct Stats : public LinearStats, public MappingStats, public SequinStats
-        {
+            struct GenData
+            {
+                // Eg: FPKM
+                double abund = NAN;
+            };
+
             // Data for the genome
             std::map<GenoID, GenData> gData;
         };
@@ -206,7 +206,7 @@ namespace Anaquin
             {
                 mStats.push_back(stats[i]);
                 lStats.push_back(stats[i]);
-                hists.push_back(stats[i].hist);
+                //hists.push_back(stats[i].hist);
 
                 if (isnan(limit.abund) || stats[i].limit.abund < limit.abund)
                 {
@@ -216,7 +216,7 @@ namespace Anaquin
             
             const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
 
-            const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files, hists, mStats, lStats);
+            const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files /*, hists*/, mStats, lStats);
 
             const auto n_syn = toString(r.countGeneSyn()) + " " + units;
 

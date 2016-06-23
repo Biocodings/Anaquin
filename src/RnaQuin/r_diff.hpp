@@ -74,15 +74,15 @@ namespace Anaquin
             return ss.str();
         }
         
-        template <typename Options> static void generateMA(const FileName &file,
-                                                           const FileName &csv,
-                                                           const Options &o)
-        {
-            o.generate(file);
-            o.writer->open(file);
-            o.writer->write(RWriter::createScript(csv, PlotTMA()));
-            o.writer->close();
-        }
+//        template <typename Options> static void generateMA(const FileName &file,
+//                                                           const FileName &csv,
+//                                                           const Options &o)
+//        {
+//            o.generate(file);
+//            o.writer->open(file);
+//            o.writer->write(RWriter::createScript(csv, PlotTMA()));
+//            o.writer->close();
+//        }
         
         template <typename Options> static void generateLODR(const FileName &file,
                                                              const FileName &csv,
@@ -156,20 +156,6 @@ namespace Anaquin
                                                     % lm.SST_D).str());
             o.writer->close();
         }
-
-        enum class Counting
-        {
-            None,
-            HTSeqCount,
-        };
-        
-        enum class Software
-        {
-            edgeR,
-            DESeq2,
-            Sleuth,
-            Cuffdiff,
-        };
         
         enum class Metrics
         {
@@ -180,10 +166,10 @@ namespace Anaquin
         struct Options : public DoubleMixtureOptions
         {
             Options() {}
-            Metrics metrs = Metrics::Gene;
+            Metrics metrs;
         };
 
-        struct Stats : public LinearStats, public MappingStats, public SequinStats
+        struct Stats : public LinearStats, public MappingStats, public AnalyzerStats
         {
             // Detected features (genes or isoforms)
             std::vector<FeatureID> ids;
@@ -224,9 +210,7 @@ namespace Anaquin
                                                  double foldCut);
 
         static Stats analyze(const FileName &, const Options &o);
-        static Stats analyze(const std::vector<DiffTest> &, const Options &o);
-
-        static void report(const FileName &, const Options &o = Options());
+        static void  report (const FileName &, const Options &o = Options());
     };
 }
 

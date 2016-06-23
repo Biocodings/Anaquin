@@ -89,6 +89,11 @@ namespace Anaquin
         Hist hist;
     };
 
+    struct AnalyzerStats
+    {
+        std::map<ChrID, Hist> hist;
+    };
+    
     struct MappingStats
     {
         inline Proportion genProp() const

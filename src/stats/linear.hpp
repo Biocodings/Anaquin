@@ -43,13 +43,13 @@ namespace Anaquin
         SProps p_chrT, p_endo;
         
         // Eg: 56 sequins
-        Counts n_ref;
+        //Counts n_ref;
         
         // Eg: sequins
         Units units;
         
         // Eg: Detected 46 sequins
-        SCounts n_det;
+        //SCounts n_det;
         
         // Optimal break-point
         SReals b;

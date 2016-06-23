@@ -256,6 +256,11 @@ static Scripts writeContigs(const MAssembly::Stats &stats, const MAssembly::Opti
                                                       % "-").str()) << std::endl;
                         break;
                     }
+                        
+                    case MAligner::Kallisto:
+                    {
+                        throw "Not Implemented";
+                    }
                 }
                 
             }

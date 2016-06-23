@@ -66,18 +66,6 @@ namespace Anaquin
     {
         public:
 
-            inline Intervals<> inters() const
-            {
-                Intervals<> inters;
-
-                for (const auto &i : _data)
-                {
-                    inters.add(Interval(i.first, i.second.l));
-                }
-                
-                return inters;
-            }
-
             // Add a sequin defined in a mixture file
             inline void add(const SequinID &id, Base length, Concent c, Mixture m)
             {
@@ -85,18 +73,6 @@ namespace Anaquin
                 _rawMIDs.insert(id);
             }
 
-            inline std::vector<SequinID> seqIDs() const
-            {
-                std::vector<SequinID> x;
-                
-                for (const auto &i : _data)
-                {
-                    x.push_back(i.first);
-                }
-                
-                return x;
-            }
-        
             // Return all validated sequins
             inline const std::map<SequinID, Data> &data() const { return _data; }
 
@@ -552,9 +528,9 @@ namespace Anaquin
             C2Intervals sInters() const;
             C2Intervals gInters() const;
 
-        MC2Intervals minters() const;
-        MC2Intervals msInters() const;
-        MC2Intervals mgInters() const;
+            MC2Intervals minters() const;
+            MC2Intervals msInters() const;
+            MC2Intervals mgInters() const;
         
             std::map<ChrID, std::map<long, Counts>> vHist() const;
 
@@ -598,19 +574,14 @@ namespace Anaquin
 
             void readRef(const Reader &);
 
-            // Returns histogram for genes for all chromosomes (synthetic + genome)
             std::map<ChrID, Hist> histGene() const;
-
-            SequinHist geneHist(const ChrID &) const;
+            std::map<ChrID, Hist> histIsof() const;
 
             // Intervals for reference exons
             Intervals<> exonInters(const ChrID &) const;
         
             // Intervals for reference introns
             Intervals<> intronInters(const ChrID &) const;
-
-            // Detection limit at the gene level
-            Limit geneLimit(const SequinHist &) const;
 
             Base countLenSyn() const;
             Base countLenGen() const;
