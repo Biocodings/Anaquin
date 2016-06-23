@@ -73,6 +73,8 @@ namespace Anaquin
                 _rawMIDs.insert(id);
             }
 
+            inline Counts countSeqs() const { return _data.size(); }
+        
             // Return all validated sequins
             inline const std::map<SequinID, Data> &data() const { return _data; }
 
@@ -586,6 +588,9 @@ namespace Anaquin
             Base countLenSyn() const;
             Base countLenGen() const;
 
+            // Number of sequin genes from mixture
+            Counts countGeneSeqs() const;
+        
             Counts countUExonSyn() const;
             Counts countUExonGen() const;
         

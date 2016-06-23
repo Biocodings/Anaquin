@@ -541,6 +541,18 @@ std::map<ChrID, Hist> TransRef::histIsof() const
     return _impl->gData.histIsof();
 }
 
+Counts TransRef::countGeneSeqs() const
+{
+    std::set<GeneID> gIDs;
+    
+    for (const auto &i : _data)
+    {
+        gIDs.insert(RnaQuin::t2g(i.first));
+    }
+    
+    return gIDs.size();
+}
+
 Concent TransRef::concent(const GeneID &gID, Mixture m) const
 {
     for (const auto &i : _impl->gData)

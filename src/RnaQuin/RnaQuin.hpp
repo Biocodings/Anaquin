@@ -11,7 +11,7 @@ namespace Anaquin
         // Eg: R1_1_1 to R1_1
         static SequinID t2g(const SequinID &id)
         {
-            return id.substr(0, id.size() - 2);
+            return id.substr(0, id.size()-2);
         }
     };
 }

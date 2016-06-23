@@ -251,8 +251,8 @@ namespace Anaquin
                 n_below.add((Counts)below);
             }
             
-            const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSyn() : r.countTransSyn();
-            //const auto n_gen = metrs == Metrics::Gene ? r.countGeneGen() : r.countTransGen();
+            // No reference coordinate annotation given here
+            const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
 
             const auto format = "-------RnaExpression Output\n"
                                 "       Summary for input: %1%\n"
