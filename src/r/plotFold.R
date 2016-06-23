@@ -16,6 +16,7 @@ ylab  <- '%7%'
 expected <- %8%
 measured <- %9%
 
+# Create Anaquin data set
 data <- Anaquin(seqs=row.names(data), expected=expected, measured=measured)
 
 plotFold(data, title=title, xlab=xlab, ylab=ylab, showIntercept=%10%)
