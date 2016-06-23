@@ -8,15 +8,17 @@
 
 library(Anaquin)
 
+# Load the assembled sequins
 data <- read.csv('%3%/%4%', row.names=1, sep='\t')
 
-# Specify the LOQ threshold
-threshold <- 0.98
+# Specify the sensitivity threshold
+threshold <- 0.70
 
 title <- '%5%'
 xlab  <- '%6%'
 ylab  <- '%7%'
 
+# Create Anaquin data set
 data <- Anaquin(seqs=row.names(data), expected=%8%, measured=%9%)
 
-plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOQ=%10%)
+plotSensitivity(data, title=title, xlab=xlab, ylab=ylab, threshold=threshold, showLOA=%10%)
