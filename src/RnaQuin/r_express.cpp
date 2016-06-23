@@ -169,6 +169,10 @@ RExpress::Stats RExpress::analyze(const FileName &file, const Options &o)
     });
 }
 
+static void writeQueries(const FileName &output, const std::vector<RExpress::Stats> &stats, const RExpress::Options &o)
+{
+}
+
 void RExpress::report(const std::vector<FileName> &files, const Options &o)
 {
     const auto m = std::map<RExpress::Metrics, std::string>
@@ -177,8 +181,19 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
         { RExpress::Metrics::Isoform, "isoforms" },
     };
     
+    switch (o.metrs)
+    {
+        case Metrics::Gene:    { o.info("Gene Expresssion");   break; }
+        case Metrics::Isoform: { o.info("Isoform Expression"); break; }
+    }
+    
     const auto units = m.at(o.metrs);
     const auto stats = analyze(files, o);
+
+    for (const auto &i : stats)
+    {
+        o.info("Genome: " + toString(i.gData.size()));
+    }
 
     /*
      * Generating RnaExpression_summary.stats
@@ -191,6 +206,12 @@ void RExpress::report(const std::vector<FileName> &files, const Options &o)
      */
     
     RExpress::generateCSV("RnaExpression_sequins.csv", stats, o);
+
+    /*
+     * Generating RnaExpression_queries.csv
+     */
+    
+    writeQueries("RnaExpression_queries.csv", stats, o);
     
     /*
      * Generating RnaExpression_sequins.csv

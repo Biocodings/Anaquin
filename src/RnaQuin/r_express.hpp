@@ -229,6 +229,7 @@ namespace Anaquin
             // Number of genomic features below the breakpoint
             SCounts n_below;
             
+            // Counting all replicates
             for (const auto &i : stats)
             {
                 Counts above = 0;
@@ -251,7 +252,7 @@ namespace Anaquin
                 n_above.add((Counts)above);
                 n_below.add((Counts)below);
             }
-
+            
             const auto format = "-------RnaExpression Output\n"
                                 "       Summary for input: %1%\n"
                                 "       *Arithmetic average and standard deviation are shown\n\n"
