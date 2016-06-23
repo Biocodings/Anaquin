@@ -69,8 +69,6 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
         # Fit piecewise segmentation
         loq <- showLOQ(data$x, data$y)
 
-        print(loq$breaks)
-        
         # We can assume the break-point is on the log2-scale. Let's convert it back.
         label <- 2^loq$breaks$k
         
