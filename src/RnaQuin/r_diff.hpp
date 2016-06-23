@@ -32,58 +32,34 @@ namespace Anaquin
     
     struct RDiff : public Analyzer
     {
-        template <typename Stats, typename Options> static Scripts writeCSV(const Stats &stats, const Options &o)
+        template <typename Stats, typename Options> static Scripts generateQuins(const Stats &stats, const Options &o)
         {
-            /*
-             * Generating a file for differential analysis. The file should give the relevant data
-             * for MA and LODR plot.
-             */
-            
             std::stringstream ss;
             ss << "ID\tMean\tExpected\tMeasured\tSe\tPval\tQval\n";
             
-            const auto &ps    = stats.ps;
-            const auto &qs    = stats.qs;
-            const auto &ids   = stats.ids;
-            const auto &elfs  = stats.elfs;
-            const auto &mlfs  = stats.mlfs;
-            const auto &ses   = stats.ses;
-            const auto &means = stats.means;
-            
-            for (auto j = 0; j < ids.size(); j++)
+            for (const auto &i : stats.data)
             {
-                if (Standard::isSynthetic(stats.cIDs[j]))
+                const auto &x = i.second;
+                
+                if (isnan(x.p))
                 {
-                    if (isnan(ps[j]))
-                    {
-                        ss << (boost::format("%1%\tNA\tNA\tNA\tNA\n") % ids[j]).str();
-                    }
-                    else
-                    {
-                        ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % ids[j]
-                                                                                     % n2str(means[j])
-                                                                                     % n2str(elfs[j])
-                                                                                     % n2str(mlfs[j])
-                                                                                     % n2str(ses[j])
-                                                                                     % p2str(ps[j])
-                                                                                     % p2str(qs[j])).str());
-                    }
+                    ss << (boost::format("%1%\tNA\tNA\tNA\tNA\n") % i.first).str();
+                }
+                else
+                {
+                    ss << ((boost::format("%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\n") % i.first
+                                                                                 % n2str(x.mean)
+                                                                                 % n2str(x.exp)
+                                                                                 % n2str(x.obs)
+                                                                                 % n2str(x.se)
+                                                                                 % p2str(x.q)
+                                                                                 % p2str(x.p)).str());
                 }
             }
-            
+
             return ss.str();
         }
-        
-//        template <typename Options> static void generateMA(const FileName &file,
-//                                                           const FileName &csv,
-//                                                           const Options &o)
-//        {
-//            o.generate(file);
-//            o.writer->open(file);
-//            o.writer->write(RWriter::createScript(csv, PlotTMA()));
-//            o.writer->close();
-//        }
-        
+
         template <typename Options> static void generateLODR(const FileName &file,
                                                              const FileName &csv,
                                                              const Options &o)
@@ -100,26 +76,30 @@ namespace Anaquin
         {
             o.generate(file);
             o.writer->open(file);
-            o.writer->write(RDiff::writeCSV(stats, o));
+            o.writer->write(RDiff::generateQuins(stats, o));
             o.writer->close();
         }
         
         template <typename Stats, typename Options> static void generateSummary(const FileName &file,
+                                                                                const FileName &src,
                                                                                 const Stats &stats,
                                                                                 const Options &o,
                                                                                 const Units &units)
         {
             const auto &r = Standard::instance().r_trans;
+            const auto lm = stats.linear(false);
 
-            const auto lm = stats.linear(true);
+            // No reference coordinate annotation given here
+            const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSeqs() : r.countSeqs();
+
+            const auto title = (o.metrs == Metrics::Gene ? "Genes Expressed" : "Isoform Expressed");
+
             const auto summary = "-------RnaFoldChange Output\n\n"
-                                 "       Reference mixture file: %1%\n"
-                                 "       User fold-change file:  %2%\n\n"
-                                 "-------User Transcript Annotations\n\n"
-                                 "       Annotation file: %3%\n"
-                                 "       Synthetic: %4%\n"
-                                 "       Genome:    %5%\n\n"
-                                 "-------Genes Expressed\n\n"
+                                 "       Summary for input: %1%\n\n"
+                                 "-------Reference Annotations\n\n"
+                                 "       Synthetic: %2% %3%\n"
+                                 "       Mixture file: %4%\n\n"
+                                 "-------%5%\n\n"
                                  "       Synthetic: %6%\n"
                                  "       Detection Sensitivity: %7% (attomol/ul) (%8%)\n\n"
                                  "       Genome:    %9%\n\n"
@@ -134,11 +114,11 @@ namespace Anaquin
                                  "       SST:         %19%, DF: %20%\n";
             o.generate(file);
             o.writer->open(file);
-            o.writer->write((boost::format(summary) % MixRef()
-                                                    % file
-                                                    % GTFRef()
-                                                    % r.countGeneSyn()
-                                                    % r.countGeneGen()
+            o.writer->write((boost::format(summary) % src
+                                                    % n_syn
+                                                    % units
+                                                    % MixRef()
+                                                    % title
                                                     % stats.n_syn
                                                     % stats.limit.abund
                                                     % stats.limit.id
@@ -171,20 +151,25 @@ namespace Anaquin
 
         struct Stats : public LinearStats, public MappingStats, public AnalyzerStats
         {
-            // Detected features (genes or isoforms)
-            std::vector<FeatureID> ids;
+            struct Data
+            {
+                // Expcted log-fold ratio
+                Concent exp;
+                
+                // Measured log-fold ratio
+                Concent obs;
+                
+                // Standard deviation
+                double se;
+                
+                // Base mean
+                double mean;
+                
+                Probability p, q;
+            };
             
-            // Probability under the null hypothesis
-            std::vector<Probability> ps, qs;
-
-            // Expected log-fold ratios
-            std::vector<Concent> elfs;
-
-            std::vector<ChrID> cIDs;
+            std::map<SequinID, Data> data;
             
-            // Measured log-fold ratios
-            std::vector<Concent> mlfs;
-
             /*
              * Optional inputs
              */

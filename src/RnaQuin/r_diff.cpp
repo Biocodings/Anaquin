@@ -41,13 +41,27 @@ template <typename T> void classifySyn(RDiff::Stats &stats, const T &t, const RD
 {
     const auto &r = Standard::instance().r_trans;
 
-    assert(Standard::isSynthetic(t.cID));
-    
-    SequinID id;
-    
-    Fold exp = NAN;
-    Fold obs = NAN;
+    auto f = [&](const SequinID &id, Concent exp)
+    {
+        stats.data[id].p    = t.p;
+        stats.data[id].q    = t.q;
+        stats.data[id].exp  = exp;
+        stats.data[id].obs  = t.logF;
+        stats.data[id].se   = t.logFSE;
+        stats.data[id].mean = t.mean;
+        
+        if (!isnan(exp) && !isnan(t.logF))
+        {
+            if (isnan(stats.limit.abund) || exp < stats.limit.abund)
+            {
+                stats.limit.id = id;
+                stats.limit.abund = exp;
+            }
 
+            stats.add(id, exp, t.logF);
+        }
+    };
+    
     switch (o.metrs)
     {
         case Metrics::Gene:
@@ -61,16 +75,11 @@ template <typename T> void classifySyn(RDiff::Stats &stats, const T &t, const RD
                 const auto exp_1 = r.concent(t.id, Mix_1);
                 const auto exp_2 = r.concent(t.id, Mix_2);
                 
-                id = t.id;
-                
-                // Calculate the known fold-change between B and A
-                exp = exp_2 / exp_1;
-                
-                // Measured fold-change between the two mixtures
-                obs = t.logF;
-                
-                // Turn it back to the original scale
-                obs = std::pow(2, obs);
+                f(t.id, log2(exp_2 / exp_1));
+            }
+            else
+            {
+                o.warn(t.id + " not found");
             }
 
             break;
@@ -84,40 +93,18 @@ template <typename T> void classifySyn(RDiff::Stats &stats, const T &t, const RD
             {
                 stats.hist.at(t.cID).at(t.id)++;
                 
-                id = t.id;
+                const auto e1 = match->concent(Mix_1);
+                const auto e2 = match->concent(Mix_2);
                 
-                // Known fold-change between the two mixtures
-                exp = match->concent(Mix_2) / match->concent(Mix_1);
-                
-                // Measured fold-change between the two mixtures
-                obs = t.logF;
-                
-                // Turn it back to the original scale
-                obs = std::pow(2, obs);
+                f(t.id, log2(e2 / e1));
+            }
+            else
+            {
+                o.warn(t.id + " not found");
             }
             
             break;
         }
-    }
-    
-    if (!id.empty())
-    {
-        // This is not on the log scale, so it can't be non-positive
-        assert(exp > 0);
-
-        stats.add(id, !isnan(exp) ? exp : NAN, !isnan(obs) ? obs : NAN);
-        
-        if (isnan(stats.limit.abund) || exp < stats.limit.abund)
-        {
-            stats.limit.id = id;
-            stats.limit.abund = exp;
-        }
-        
-        stats.elfs.push_back(log2(exp));
-    }
-    else
-    {
-        o.warn(t.id + " not found");
     }
 }
 
@@ -133,20 +120,7 @@ template <typename T> void update(RDiff::Stats &stats, const T &x, const RDiff::
     else
     {
         stats.n_gen++;
-        stats.elfs.push_back(NAN);
     }
-
-    /*
-     * The expected fold-change is done in the classifer because it can only happen with synthetic
-     */
-
-    stats.ps.push_back(x.p);
-    stats.qs.push_back(x.q);
-    stats.ids.push_back(x.id);
-    stats.cIDs.push_back(x.cID);
-    stats.mlfs.push_back(x.logF);
-    stats.ses.push_back(x.logFSE);
-    stats.means.push_back(x.mean);
 }
 
 template <typename Functor> RDiff::Stats calculate(const RDiff::Options &o, Functor f)
@@ -188,6 +162,12 @@ void RDiff::report(const FileName &file, const Options &o)
         { Metrics::Isoform, "isoforms" },
     };
 
+    switch (o.metrs)
+    {
+        case Metrics::Gene:    { o.info("Gene Differential");    break; }
+        case Metrics::Isoform: { o.info("Isoform Differential"); break; }
+    }
+    
     const auto stats = RDiff::analyze(file, o);
     const auto units = m.at(o.metrs);
     
@@ -200,7 +180,7 @@ void RDiff::report(const FileName &file, const Options &o)
      * Generating RnaFoldChange_summary.stats
      */
 
-    RDiff::generateSummary("RnaFoldChange_summary.stats", stats, o, units);
+    RDiff::generateSummary("RnaFoldChange_summary.stats", file, stats, o, units);
 
     /*
      * Generating RnaFoldChange_sequins.csv
