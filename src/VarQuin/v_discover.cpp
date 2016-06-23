@@ -367,26 +367,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                          "-------Identification of genomic variants\n\n"
                          "       True Positive:  %33% SNPS\n"
                          "       True Positive:  %34% indels\n"
-                         "       True Positive:  %35% variants\n\n"
-                         "       False Positive: %36% SNPs\n"
-                         "       False Positive: %37% indels\n"
-                         "       False Positive: %38% variants\n\n"
-                         "       False Negative: %39% SNPs\n"
-                         "       False Negative: %40% indels\n"
-                         "       False Negative: %41% variants\n"
-                         "-------Diagnostic Performance (Genome)\n\n"
-                         "       *Variants\n"
-                         "       Sensitivity: %42%\n"
-                         "       Precision:   %43%\n"
-                         "       FDR Rate:    %44%\n\n"
-                         "       *SNVs\n"
-                         "       Sensitivity: %45%\n"
-                         "       Precision:   %46%\n"
-                         "       FDR Rate:    %47%\n\n"
-                         "       *Indels\n"
-                         "       Sensitivity: %48%\n"
-                         "       Precision:   %49%\n"
-                         "       FDR Rate:    %50%\n";
+                         "       True Positive:  %35% variants\n";
     o.generate(file);
     o.writer->open("VarDiscover_summary.stats");
     o.writer->write((boost::format(summary) % VCFRef()
@@ -397,7 +378,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % r.countSNPGen()
                                             % r.countIndGen()
                                             % (r.countSNPGen() + r.countIndGen())
-                                            % stats.vData.countSNPSyn()
+                                            % stats.vData.countSNPSyn()  // 9
                                             % stats.vData.countIndSyn()  // 10
                                             % stats.vData.countVarSyn()  // 11
                                             % stats.vData.countSNPGen()  // 12
@@ -421,24 +402,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
                                             % stats.countIndSN_Syn()     // 30
                                             % stats.countIndPC_Syn()     // 31
                                             % (1-stats.countIndPC_Syn()) // 32
-                                            % G(stats.countSNP_TP_Gen())    // 33
-                                            % G(stats.countInd_TP_Gen())    // 34
-                                            % G(stats.countVar_TP_Gen())    // 35
-                                            % G(stats.countSNP_FP_Gen())    // 36
-                                            % G(stats.countInd_FP_Gen())    // 37
-                                            % G(stats.countVar_FP_Gen())    // 38
-                                            % G(stats.countSNP_FN_Gen())    // 39
-                                            % G(stats.countInd_FN_Gen())    // 40
-                                            % G(stats.countVar_FN_Gen())    // 41
-                                            % G(stats.countVarSN_Gen())     // 42
-                                            % G(stats.countVarPC_Gen())     // 43
-                                            % G((1-stats.countVarPC_Gen())) // 44
-                                            % G(stats.countSNPSN_Gen())     // 45
-                                            % G(stats.countSNPPC_Gen())     // 46
-                                            % G((1-stats.countSNPPC_Gen())) // 47
-                                            % G(stats.countIndSN_Gen())     // 48
-                                            % G(stats.countIndPC_Gen())     // 49
-                                            % G((1-stats.countIndPC_Gen())) // 50
+                                            % G(stats.countSNP_TP_Gen()) // 33
+                                            % G(stats.countInd_TP_Gen()) // 34
+                                            % G(stats.countVar_TP_Gen()) // 35
                      ).str());
     o.writer->close();
 }
