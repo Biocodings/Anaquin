@@ -218,8 +218,6 @@ namespace Anaquin
 
             const auto ms = StatsWriter::multiInfect(o.rAnnot, o.rAnnot, files /*, hists*/, mStats, lStats);
 
-            const auto n_syn = toString(r.countGeneSyn()) + " " + units;
-
             // Breakpoint estimated by piecewise regression
             const auto b = ms.b.mean();
 
@@ -253,6 +251,9 @@ namespace Anaquin
                 n_below.add((Counts)below);
             }
             
+            const auto n_syn = o.metrs == Metrics::Gene ? r.countGeneSyn() : r.countTransSyn();
+            //const auto n_gen = metrs == Metrics::Gene ? r.countGeneGen() : r.countTransGen();
+
             const auto format = "-------RnaExpression Output\n"
                                 "       Summary for input: %1%\n"
                                 "       *Arithmetic average and standard deviation are shown\n\n"
