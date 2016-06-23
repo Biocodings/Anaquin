@@ -24,19 +24,38 @@ plotScatter <- function(data, showIntercept=FALSE, showLOQ=TRUE, title='', xlab=
     stopifnot(!is.null(data$y))
     
     data <- data[!is.na(data$expected),]
-    #data <- data[!is.nan(data$Expected),]
-
     data$grp <- as.factor(abs(data$x))
         
     stopifnot(length(data$x) > 0)
     stopifnot(length(data$x) == length((data$y)) || length(data$x) == nrow((data$y)))
     
-    isMulti <- is(data$y, 'data.frame')
+    isMultiDF <- is(data$y, 'data.frame')
+    isMultiSD <- sum(data$sd) > 0
+    isMulti   <- isMultiDF | isMultiSD
     
-    data$sd   <- if (isMulti) apply(data$y, 1, sd) else NULL
-    data$y    <- if (isMulti) rowMeans(data$y)     else data$y
-    data$ymax <- if (isMulti) data$y + data$sd     else NULL
-    data$ymin <- if (isMulti) data$y - data$sd     else NULL
+    data$ymax <- NULL
+    data$ymin <- NULL
+
+    if (isMultiDF)
+    {
+        data$sd <- apply(data$y, 1, sd)
+        data$y  <- rowMeans(data$y)
+    }
+    
+    if (isMulti)
+    {
+        data$ymax <- data$y + data$sd
+        data$ymin <- data$y - data$sd        
+    }
+    else
+    {
+        data$sd <- NULL
+    }
+    
+    #data$sd   <- if (isMulti) apply(data$y, 1, sd) else NULL
+    #data$y    <- if (isMulti) rowMeans(data$y)     else data$y
+    #data$ymax <- if (isMulti) data$y + data$sd     else NULL
+    #data$ymin <- if (isMulti) data$y - data$sd     else NULL
 
     data <- data[!is.na(data$y),]
     
