@@ -2,8 +2,7 @@
 #define VARIANT_HPP
 
 #include <cmath>
-#include <data/locus.hpp>
-#include <data/biology.hpp>
+#include "data/data.hpp"
 #include <boost/format.hpp>
 
 namespace Anaquin

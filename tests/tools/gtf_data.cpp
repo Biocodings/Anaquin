@@ -25,23 +25,19 @@ TEST_CASE("GTF_Synthetic")
     REQUIRE(r.countGeneSyn()  == 78);
     REQUIRE(r.countTrans()    == 164);
     REQUIRE(r.countTransSyn() == 164);
-    REQUIRE(r.countExon()     == 1192);
-    REQUIRE(r.countExonSyn()  == 1192);
     REQUIRE(r.countUExon()    == 869);
     REQUIRE(r.countUExonSyn() == 869);
-    REQUIRE(r.countIntr()     == 1028);
-    REQUIRE(r.countIntrSyn()  == 1028);
     REQUIRE(r.countUIntr()    == 754);
     REQUIRE(r.countUIntrSyn() == 754);
 
     REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
     REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
 
-    REQUIRE(r.eIntervals().size() == 1);
-    REQUIRE(r.iIntervals().size() == 1);
+    REQUIRE(r.ueInters().size() == 1);
+    REQUIRE(r.uiInters().size() == 1);
 
-    const auto eIntrs = r.eIntervals(ChrT);
-    const auto iIntrs = r.iIntervals(ChrT);
+    const auto eIntrs = r.ueInters(ChrT);
+    const auto iIntrs = r.uiInters(ChrT);
 
     REQUIRE(eIntrs.size() == 1192);
     REQUIRE(iIntrs.size() == 1028);
@@ -65,9 +61,7 @@ TEST_CASE("GTF_Merged")
 
     REQUIRE(r.countGeneSyn()  == 78);
     REQUIRE(r.countTransSyn() == 164);
-    REQUIRE(r.countExonSyn()  == 1192);
     REQUIRE(r.countUExonSyn() == 869);
-    REQUIRE(r.countIntrSyn()  == 1028);
     REQUIRE(r.countUIntrSyn() == 754);
 
     /*
@@ -78,8 +72,6 @@ TEST_CASE("GTF_Merged")
     
     REQUIRE(r.countGeneGen()  == 881);
     REQUIRE(r.countTransGen() == 2449);
-    REQUIRE(r.countExonGen()  == 14011);
-    REQUIRE(r.countIntrGen()  == 11553);
     REQUIRE(r.countUIntrGen() == 4213);
     REQUIRE(r.countUExonGen() == 6540);
     
@@ -91,31 +83,17 @@ TEST_CASE("GTF_Merged")
     REQUIRE(!i.contains(Locus(6955480, 6955485)));
     REQUIRE(!i.overlap(Locus(6955480, 6955485)));
 
-    REQUIRE(r.eIntervals().size() == 2);
-    REQUIRE(r.eIntervals(ChrT).size() == 1192);
-    REQUIRE(r.eIntervals("chr21").size() == 14011);
+    REQUIRE(r.ueInters().size() == 2);
+    REQUIRE(r.ueInters(ChrT).size() == 1192);
+    REQUIRE(r.ueInters("chr21").size() == 14011);
 
-    REQUIRE(r.iIntervals().size() == 2);
-    REQUIRE(r.iIntervals(ChrT).size() == 1028);
-    REQUIRE(r.iIntervals("chr21").size() == 11553);
+    REQUIRE(r.uiInters().size() == 2);
+    REQUIRE(r.uiInters(ChrT).size() == 1028);
+    REQUIRE(r.uiInters("chr21").size() == 11553);
 
     REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
     REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
 }
-
-//TEST_CASE("GTF_Summary_2")
-//{
-//    const auto r = gtfData(Reader("data/tests/RnaQuin/combined.gtf"));
-//    
-//    REQUIRE(r.countGene()     == 958);
-//    REQUIRE(r.countGeneSyn()  == 78);
-//    REQUIRE(r.countTrans()    == 2599);
-//    REQUIRE(r.countTransSyn() == 164);
-//    REQUIRE(r.countExon()     == 15110);
-//    REQUIRE(r.countExonSyn()  == 1192);
-//    REQUIRE(r.countIntr()     == 12511);
-//    REQUIRE(r.countIntrSyn()  == 1028);
-//}
 
 /*
  *  wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_24/gencode.v24.annotation.gtf.gz

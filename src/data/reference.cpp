@@ -614,23 +614,15 @@ const Interval * TransRef::findGene(const ChrID &cID, const Locus &l, MatchRule 
     }
 }
 
-Intervals<> TransRef::exonInters(const ChrID &cID) const
+MC2Intervals TransRef::ueInters() const
 {
-    return _impl->gData.eIntervals(cID);
+    return _impl->gData.ueInters();
 }
 
-Intervals<> TransRef::intronInters(const ChrID &cID) const
+MC2Intervals TransRef::uiInters() const
 {
-    return _impl->gData.iIntervals(cID);
+    return _impl->gData.uiInters();
 }
-
-//SequinHist TransRef::geneHist(const ChrID &cID) const
-//{
-//    assert(_impl->gData.count(cID));
-//    assert(!_impl->gData[cID].g2d.empty());
-//
-//    return createHist(_impl->gData[cID].g2d);
-//}
 
 void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &aIDs)
 {

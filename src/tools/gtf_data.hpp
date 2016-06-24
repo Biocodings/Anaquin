@@ -1,7 +1,6 @@
 #ifndef GTF_DATA_HPP
 #define GTF_DATA_HPP
 
-#include <fstream>
 #include "data/hist.hpp"
 #include "data/intervals.hpp"
 #include "parsers/parser_gtf.hpp"
@@ -48,30 +47,21 @@ namespace Anaquin
         // Genes to Data
         std::map<GeneID, GeneData> g2d;
         
-        // Genes to non-unique exons
+        // Transcripts to non-unique exons
         std::map<TransID, std::set<ExonData>> t2e;
         
-        // Genes to non-unique introns
-        std::map<TransID, std::set<IntronData>> t2i;
-
-        // Genes to unique exons
+        // Transcripts to unique exons
         std::map<TransID, std::set<ExonData>> t2ue;
         
-        // Genes to unique introns
+        // Transcripts to unique introns
         std::map<TransID, std::set<IntronData>> t2ui;
         
         // Transcripts to genes
         std::map<TransID, GeneID> t2g;
         
-        // Non-unique exons
-        Counts exons = 0;
-        
         // Unique exons
         Counts uexons = 0;
 
-        // Non-unique introns
-        Counts intrs = 0;
-        
         // Unique introns
         Counts uintrs = 0;
         
@@ -136,14 +126,6 @@ namespace Anaquin
             });
         }
         
-        inline Counts countExon() const
-        {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
-            {
-                return countExon(cID);
-            });
-        }
-
         inline Counts countUExon() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
@@ -160,14 +142,6 @@ namespace Anaquin
             });
         }
         
-        inline Counts countIntr() const
-        {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
-            {
-                return countIntr(cID);
-            });
-        }
-        
         inline Counts countGene(const ChrID &cID) const
         {
             return at(cID).gIDs.size();
@@ -178,11 +152,6 @@ namespace Anaquin
             return at(cID).t2d.size();
         }
         
-        inline Counts countExon(const ChrID &cID) const
-        {
-            return at(cID).exons;
-        }
-
         inline Counts countUExon(const ChrID &cID) const
         {
             return at(cID).uexons;
@@ -193,11 +162,6 @@ namespace Anaquin
             return at(cID).uintrs;
         }
 
-        inline Counts countIntr(const ChrID &cID) const
-        {
-            return at(cID).intrs;
-        }
-        
         inline Counts countGeneSyn() const
         {
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
@@ -211,14 +175,6 @@ namespace Anaquin
             return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
             {
                 return Standard::isSynthetic(cID) ? countTrans(cID) : 0;
-            });
-        }
-        
-        inline Counts countExonSyn() const
-        {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
-            {
-                return Standard::isSynthetic(cID) ? countExon(cID) : 0;
             });
         }
         
@@ -238,14 +194,6 @@ namespace Anaquin
             });
         }
 
-        inline Counts countIntrSyn() const
-        {
-            return ::Anaquin::count(*this, [&](const ChrID &cID, const ChrData &x)
-            {
-                return Standard::isSynthetic(cID) ? countIntr(cID) : 0;
-            });
-        }
-        
         inline Counts countGeneGen() const
         {
             return countGene() - countGeneSyn();
@@ -254,11 +202,6 @@ namespace Anaquin
         inline Counts countTransGen() const
         {
             return countTrans() - countTransSyn();
-        }
-        
-        inline Counts countExonGen() const
-        {
-            return countExon() - countExonSyn();
         }
         
         inline Counts countUExonGen() const
@@ -271,11 +214,6 @@ namespace Anaquin
             return countUIntr() - countUIntrSyn();
         }
         
-        inline Counts countIntrGen() const
-        {
-            return countIntr() - countIntrSyn();
-        }
-
         inline Intervals<> gIntervals(const ChrID &cID) const
         {
             Intervals<> r;
@@ -301,17 +239,17 @@ namespace Anaquin
             return r;
         }
         
-        // Intervals for non-unique exons
-        inline Intervals<> eIntervals(const ChrID &cID) const
+        // Intervals for unique exons
+        inline MergedIntervals<> ueInters(const ChrID &cID) const
         {
-            Intervals<> r;
+            MergedIntervals<> r;
             
-            for (const auto &i : at(cID).t2e)
+            for (const auto &i : at(cID).t2ue)
             {
                 for (const auto &j : i.second)
                 {
                     // Each interval is an non-unique exon
-                    r.add(Interval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
+                    r.add(MergedInterval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
                 }
             }
 
@@ -319,30 +257,29 @@ namespace Anaquin
             return r;
         }
 
-        // Intervals for non-unique exons        
-        inline std::map<ChrID, Intervals<>> eIntervals() const
+        // Intervals for unique exons
+        inline MC2Intervals ueInters() const
         {
-            std::map<ChrID, Intervals<>> r;
+            MC2Intervals r;
             
             for (const auto &i : *this)
             {
-                r[i.first] = eIntervals(i.first);
+                r[i.first] = ueInters(i.first);
             }
             
             return r;
         }
 
-        // Intervals for non-unique introns
-        inline Intervals<> iIntervals(const ChrID &cID) const
+        // Intervals for unique introns
+        inline MergedIntervals<> uiInters(const ChrID &cID) const
         {
-            Intervals<> r;
+            MergedIntervals<> r;
             
-            for (const auto &i : at(cID).t2i)
+            for (const auto &i : at(cID).t2ui)
             {
                 for (const auto &j : i.second)
                 {
-                    // Each interval is an non-unique intron
-                    r.add(Interval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
+                    r.add(MergedInterval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
                 }
             }
             
@@ -350,14 +287,14 @@ namespace Anaquin
             return r;
         }
         
-        // Intervals for non-unique introns
-        inline std::map<ChrID, Intervals<>> iIntervals() const
+        // Intervals for unique introns
+        inline MC2Intervals uiInters() const
         {
-            std::map<ChrID, Intervals<>> r;
+            MC2Intervals r;
             
             for (const auto &i : *this)
             {
-                r[i.first] = iIntervals(i.first);
+                r[i.first] = uiInters(i.first);
             }
             
             return r;
@@ -432,8 +369,6 @@ namespace Anaquin
                     d.tID = x.tID;
                     
                     c2d.el[x.cID][d.l]++;
-                    
-                    c2d[x.cID].exons++;
                     c2d[x.cID].t2e[d.tID].insert(d);
                     break;
                 }
@@ -448,6 +383,7 @@ namespace Anaquin
          * need to compute introns.
          */
         
+        // For each chromosome...
         for (auto &i : c2d)
         {
             // For each transcript...
@@ -460,7 +396,7 @@ namespace Anaquin
                 std::copy(j.second.begin(), j.second.end(), std::back_inserter(sorted));
                 
                 /*
-                 * Generate a list of sorted introns, only possible once the exons are sorted.
+                 * Generate a list of introns, only possible once the exons are sorted.
                  */
 
                 for (auto j = 1; j < sorted.size(); j++)
@@ -482,8 +418,6 @@ namespace Anaquin
                     if (Standard::isSynthetic(i.first) || d.l.length() > MIN_INTRON_LEN)
                     {
                         c2d.il[x.cID][d.l]++;
-                        c2d[x.cID].intrs++;
-                        i.second.t2i[d.tID].insert(d);
                     }
                 }
             }
@@ -504,18 +438,6 @@ namespace Anaquin
         
         for (auto &i : c2d.il)
         {
-//            if (i.first == "chr21")
-//            {
-//                std::ofstream out("/Users/tedwong/Sources/QA/data/RnaQuin/myChr21.txt");
-//                
-//                for (auto &j : i.second)
-//                {//chr21   5012686 5014385
-//                    out << "chr21\t" << j.first.start-2 << "\t" << j.first.end << std::endl;
-//                }
-//                
-//                out.close();
-//            }
-            
             c2d.at(i.first).uintrs = i.second.size();
         }
 

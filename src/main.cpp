@@ -23,6 +23,7 @@
 #include "RnaQuin/r_cufflink.hpp"
 #include "RnaQuin/r_kallisto.hpp"
 
+#include "VarQuin/v_flip.hpp"
 #include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_vscan.hpp"
 #include "VarQuin/v_align.hpp"
@@ -31,7 +32,6 @@
 #include "VarQuin/v_sample.hpp"
 #include "VarQuin/v_express.hpp"
 #include "VarQuin/v_kallele.hpp"
-#include "VarQuin/v_forward.hpp"
 #include "VarQuin/v_discover.hpp"
 #include "VarQuin/v_coverage.hpp"
 
@@ -118,7 +118,7 @@ typedef std::set<Value> Range;
 #define TOOL_M_KDIFF     301
 #define TOOL_V_KALLELE   303
 #define TOOL_S_DISCOVER  304
-#define TOOL_V_FORWARD   305
+#define TOOL_V_FLIP      305
 #define TOOL_R_CUFFDIFF  306
 #define TOOL_R_DESEQ2    307
 #define TOOL_R_KALLISTO  308
@@ -226,7 +226,7 @@ static std::map<Value, Tool> _tools =
     { "VarSubsample",   TOOL_V_SUBSAMPLE },
     { "VarExpress",     TOOL_V_EXPRESS   },
     { "VarKAllele",     TOOL_V_KALLELE   },
-    { "VarForward",     TOOL_V_FORWARD   },
+    { "VarFlip",        TOOL_V_FLIP   },
     { "VarSequence",    TOOL_V_SEQUENCE  },
 
     { "MetaAbund",      TOOL_M_ABUND    },
@@ -311,7 +311,7 @@ static std::map<Tool, std::set<Option>> _required =
      * Variant Analysis
      */
 
-    { TOOL_V_FORWARD,   { OPT_U_FILES } },
+    { TOOL_V_FLIP,      { OPT_U_FILES } },
     { TOOL_V_IGV,       { OPT_U_FILES } },
     { TOOL_V_VSCAN,     { OPT_U_FILES } },
     { TOOL_V_SEQUENCE,  { OPT_U_FILES } },
@@ -1515,11 +1515,11 @@ void parse(int argc, char ** argv)
         }
 
         case TOOL_V_IGV:
+        case TOOL_V_FLIP:
+        case TOOL_V_FREQ:
         case TOOL_V_VSCAN:
         case TOOL_V_ALIGN:
-        case TOOL_V_FREQ:
         case TOOL_V_EXPRESS:
-        case TOOL_V_FORWARD:
         case TOOL_V_KALLELE:
         case TOOL_V_DISCOVER:
         case TOOL_V_COVERAGE:
@@ -1539,7 +1539,7 @@ void parse(int argc, char ** argv)
             std::cout << "[INFO]: Variant Analysis" << std::endl;
 
             if (_p.tool != TOOL_V_IGV      &&
-                _p.tool != TOOL_V_FORWARD  &&
+                _p.tool != TOOL_V_FLIP     &&
                 _p.tool != TOOL_V_SEQUENCE &&
                 _p.tool != TOOL_V_VSCAN)
             {
@@ -1590,9 +1590,9 @@ void parse(int argc, char ** argv)
             switch (_p.tool)
             {
                 case TOOL_V_IGV:      { viewer<VViewer>();                 break; }
+                case TOOL_V_FLIP:     { analyze_n<VFlip>();                break; }
                 case TOOL_V_VSCAN:    { analyze_1<VVScan>(OPT_U_FILES);    break; }
                 case TOOL_V_ALIGN:    { analyze_1<VAlign>(OPT_U_FILES);    break; }
-                case TOOL_V_FORWARD:  { analyze_n<VForward>();             break; }
                 case TOOL_V_COVERAGE: { analyze_1<VCoverage>(OPT_U_FILES); break; }
 
                 case TOOL_V_KALLELE:

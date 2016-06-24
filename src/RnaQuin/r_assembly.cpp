@@ -220,12 +220,12 @@ RAssembly::Stats RAssembly::analyze(const FileName &file, const Options &o)
     
     const auto gs = gtfData(Reader(file));
 
-    stats.sExons = gs.countExonSyn();
-    stats.sIntrs = gs.countIntrSyn();
+    stats.sExons = gs.countUExonSyn();
+    stats.sIntrs = gs.countUIntrSyn();
     stats.sTrans = gs.countTransSyn();
     stats.sGenes = gs.countGeneSyn();
-    stats.gExons = gs.countExonGen();
-    stats.gIntrs = gs.countIntrGen();
+    stats.gExons = gs.countUExonGen();
+    stats.gIntrs = gs.countUIntrGen();
     stats.gTrans = gs.countTransGen();
     stats.gGenes = gs.countGeneGen();
 

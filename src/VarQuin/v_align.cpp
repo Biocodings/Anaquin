@@ -1,5 +1,4 @@
 #include "VarQuin/v_align.hpp"
-//#include "VarQuin/VarQuin.hpp"
 #include "parsers/parser_sam.hpp"
 
 using namespace Anaquin;
@@ -200,8 +199,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
                 
                 // FP at the base level (requires overlapping)
                 const auto bfp = (stats.data.at(i.first).lGaps.count(gID) ? stats.data.at(i.first).lGaps.at(gID) : 0)
-                +
-                (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
+                                                +
+                                 (stats.data.at(i.first).rGaps.count(gID) ? stats.data.at(i.first).rGaps.at(gID) : 0);
                 
                 assert(!isnan(btp) && btp >= 0);
                 assert(!isnan(bfp) && bfp >= 0);

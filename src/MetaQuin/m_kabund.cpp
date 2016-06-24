@@ -1,3 +1,4 @@
+#include "data/standard.hpp"
 #include "MetaQuin/m_kabund.hpp"
 #include "parsers/parser_sam.hpp"
 #include "parsers/parser_quast.hpp"

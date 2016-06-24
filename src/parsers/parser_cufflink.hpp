@@ -2,12 +2,13 @@
 #define PARSER_CUFFLINK_HPP
 
 #include "stats/analyzer.hpp"
+#include "parsers/parser.hpp"
 
 namespace Anaquin
 {
     struct ParserCufflink
     {
-        enum TrackingStatus
+        enum class TrackingStatus
         {
             OK,
             HIData,

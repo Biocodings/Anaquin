@@ -3,6 +3,7 @@
 
 #include "data/alignment.hpp"
 #include "stats/analyzer.hpp"
+#include "parsers/parser.hpp"
 
 namespace Anaquin
 {
@@ -25,10 +26,24 @@ namespace Anaquin
             void *header;
         };
 
-        typedef Alignment Data;
-        typedef std::function<void (Data &, const Info &)> Functor;
+        class Data : public Alignment
+        {
+            friend class ParserSAM;
+            
+            public:
+            
+                bool nextCigar(Locus &l, bool &spliced) const;
 
-        static void parse(const FileName &file, Functor);
+            private:
+            
+                mutable int _i, _n;
+            
+                void *data;
+                void *header;
+        };
+        
+        typedef std::function<void (Data &, const Info &)> Functor;
+        static void parse(const FileName &, Functor);
     };
 }
 

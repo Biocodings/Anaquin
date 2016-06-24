@@ -4,14 +4,14 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
-#ifndef V_FORWARD_HPP
-#define V_FORWARD_HPP
+#ifndef V_FLIP_HPP
+#define V_FLIP_HPP
 
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
 {
-    struct VForward
+    struct VFlip
     {
         typedef AnalyzerOptions Options;
         

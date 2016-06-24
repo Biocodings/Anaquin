@@ -6,6 +6,33 @@
 
 namespace Anaquin
 {
+    enum Mixture
+    {
+        Mix_1,
+        Mix_2,
+    };
+
+    enum Strand
+    {
+        Forward,
+        Backward,
+    };
+
+    enum RNAFeature
+    {
+        Exon,
+        Gene,
+        Intron,
+        Transcript,
+    };
+    
+    enum Mutation
+    {
+        SNP,
+        Insertion,
+        Deletion
+    };
+
     struct TransData_
     {
         // Eg: chr1

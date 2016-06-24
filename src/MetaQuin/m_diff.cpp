@@ -4,6 +4,7 @@
  *  Ted Wong, Bioinformatic Software Engineer at Garvan Institute.
  */
 
+#include "data/standard.hpp"
 #include "MetaQuin/m_diff.hpp"
 #include "MetaQuin/m_abund.hpp"
 #include "MetaQuin/m_assembly.hpp"

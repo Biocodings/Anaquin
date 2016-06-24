@@ -1,3 +1,4 @@
+#include "data/standard.hpp"
 #include "MetaQuin/m_coverage.hpp"
 
 using namespace Anaquin;

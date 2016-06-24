@@ -2,31 +2,9 @@
 #define BIOLOGY_HPP
 
 #include <map>
-#include "data/types.hpp"
 
 namespace Anaquin
 {
-    enum Strand
-    {
-        Forward,
-        Backward,
-    };
-
-    enum RNAFeature
-    {
-        Exon,
-        Gene,
-        Intron,
-        Transcript,
-    };
-    
-    enum Mutation
-    {
-        SNP,
-        Insertion,
-        Deletion
-    };
-    
     template <typename T> void complement(T &s)
     {
         std::map<char, char> m = { { 'A', 'T' },

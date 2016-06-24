@@ -1,8 +1,6 @@
 #ifndef PARSER_BED_HPP
 #define PARSER_BED_HPP
 
-#include <functional>
-#include "data/types.hpp"
 #include "data/locus.hpp"
 #include "data/reader.hpp"
 #include "data/biology.hpp"
@@ -28,7 +26,7 @@ namespace Anaquin
             std::string name;
         };
 
-        static void parse(const Reader &r, std::function<void(const Data &, const ParserProgress &)> f)
+        template <typename F> static void parse(const Reader &r, F f)
         {
             protectParse("BED", [&]()
             {

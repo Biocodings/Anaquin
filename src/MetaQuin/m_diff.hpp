@@ -62,7 +62,7 @@ namespace Anaquin
             Limit limit;
             
             // Distribution of the sequins
-            SequinHist hist;
+            Hist hist;
             
             std::set<SequinID> miss;
             

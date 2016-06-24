@@ -2,6 +2,7 @@
 #define SAMPLE_HPP
 
 #include <klib/khash.h>
+#include "data/standard.hpp"
 #include "tools/coverage.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/writer_sam.hpp"

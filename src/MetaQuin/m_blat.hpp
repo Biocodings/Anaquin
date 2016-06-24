@@ -1,7 +1,8 @@
-#ifndef M_PSL_HPP
-#define M_PSL_HPP
+#ifndef M_BLAT_HPP
+#define M_BLAT_HPP
 
 #include "stats/analyzer.hpp"
+#include "data/reference.hpp"
 
 namespace Anaquin
 {

@@ -1,6 +1,7 @@
 #ifndef STANDARD_HPP
 #define STANDARD_HPP
 
+#include <set>
 #include <memory>
 #include "data/reader.hpp"
 #include "data/reference.hpp"

@@ -2,6 +2,7 @@
 #define REFERENCE_HPP
 
 #include <set>
+#include "data/reader.hpp"
 #include "data/merged.hpp"
 
 #include "data/data.hpp"
@@ -12,12 +13,6 @@
 
 namespace Anaquin
 {
-    enum Mixture
-    {
-        Mix_1,
-        Mix_2,
-    };
-
     struct DefaultStats
     {
         // Empty Implementation
@@ -579,11 +574,8 @@ namespace Anaquin
             std::map<ChrID, Hist> histGene() const;
             std::map<ChrID, Hist> histIsof() const;
 
-            // Intervals for reference exons
-            Intervals<> exonInters(const ChrID &) const;
-        
-            // Intervals for reference introns
-            Intervals<> intronInters(const ChrID &) const;
+            MC2Intervals ueInters() const;
+            MC2Intervals uiInters() const;
 
             Base countLenSyn() const;
             Base countLenGen() const;

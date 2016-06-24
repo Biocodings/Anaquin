@@ -21,8 +21,8 @@ void ParserCufflink::parse(const FileName &file, std::function<void (const Parse
 
     static const std::map<std::string, TrackingStatus> mapper =
     {
-        { "OK", OK },
-        { "HIDATA", HIData }
+        { "OK", TrackingStatus::OK },
+        { "HIDATA", TrackingStatus::HIData }
     };
 
     ParserCufflink::Data t;

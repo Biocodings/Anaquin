@@ -1,3 +1,4 @@
+#include "data/standard.hpp"
 #include "RnaQuin/r_kallisto.hpp"
 #include "writers/file_writer.hpp"
 #include "parsers/parser_kallisto.hpp"
