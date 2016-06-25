@@ -40,7 +40,6 @@ Dependencies
 <li> <a href='http://eigen.tuxfamily.org'>Eigen</a>
 <li> <a href='https://github.com/philsquared/Catch'>Catch</a>
 <li> <a href='https://github.com/attractivechaos/klib'>Klib</a>
-<li> <a href='https://www.hdfgroup.org/HDF5'>HDF5</a>
 </ul>
 
 The source code requires a C++11 compiler to build.
