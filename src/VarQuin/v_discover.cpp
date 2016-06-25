@@ -134,18 +134,6 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
             }
         }
         
-//        for (const auto &j : i.second.tns)
-//        {
-//            i.second.m.tn()++;
-//            
-//            switch (j.query.type())
-//            {
-//                case Mutation::SNP:       { x.m_snp.tn()++; break; }
-//                case Mutation::Deletion:
-//                case Mutation::Insertion: { x.m_ind.tn()++; break; }
-//            }
-//        }
-        
         x.m_snp.nq() = x.dSNP();
         x.m_snp.nr() = r.countSNP(i.first);
         x.m_ind.nq() = x.dInd();
