@@ -111,7 +111,7 @@ namespace Anaquin
             assert(inters.size() >= 2);
             
             // Statistics for all reads mapped to the selected regions
-            const auto rr = CoverageTool::stats__(file, inters);
+            const auto rr = CoverageTool::stats(file, inters);
 
             for (const auto &i : rr.hist)
             {
