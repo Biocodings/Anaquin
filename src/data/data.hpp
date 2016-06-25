@@ -33,7 +33,7 @@ namespace Anaquin
         Deletion
     };
 
-    struct TransData_
+    struct TransData
     {
         // Eg: chr1
         ChrID cID;

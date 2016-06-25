@@ -3,7 +3,7 @@
 
 using namespace Anaquin;
 
-CoverageTool::Stats CoverageTool::stats__(const FileName &file, std::map<ChrID, Intervals<>> &inters)
+CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, Intervals<>> &inters)
 {
     CoverageTool::Stats stats;
  

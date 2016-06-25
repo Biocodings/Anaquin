@@ -6,7 +6,7 @@ RCoverage::Stats RCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    const auto &r = Standard::instance().r_trans;
+//    const auto &r = Standard::instance().r_trans;
     
 //    return CoverageTool::stats_(file, r.geneHist(ChrT), [&](const Alignment &align, const ParserProgress &)
 //    {

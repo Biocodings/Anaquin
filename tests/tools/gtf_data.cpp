@@ -6,7 +6,6 @@ using namespace Anaquin;
 TEST_CASE("GTF_Sampled")
 {
     const auto r = gtfData(Reader("data/tests/RnaQuin/sampled.gtf"));
-
     REQUIRE(r.countGene() == 598);
 }
 
@@ -30,8 +29,8 @@ TEST_CASE("GTF_Synthetic")
     REQUIRE(r.countUIntr()    == 754);
     REQUIRE(r.countUIntrSyn() == 754);
 
-    REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
-    REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
+    //REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
+    //REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
 
     REQUIRE(r.ueInters().size() == 1);
     REQUIRE(r.uiInters().size() == 1);
@@ -91,32 +90,36 @@ TEST_CASE("GTF_Merged")
     REQUIRE(r.uiInters(ChrT).size() == 1028);
     REQUIRE(r.uiInters("chr21").size() == 11553);
 
-    REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
-    REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
+    //REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
+    //REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
 }
+
+#ifdef GENCODE_TEST
 
 /*
  *  wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_24/gencode.v24.annotation.gtf.gz
  *  gunzip gz
  */
 
-//TEST_CASE("GTF_GenCode")
-//{
-//    const auto r = gtfData(Reader("tests/data/gencode.v24.annotation.gtf"));
-//    
-//    REQUIRE(r.countGeneSyn()  == 0);
-//    REQUIRE(r.countTransSyn() == 0);
-//    REQUIRE(r.countExonSyn()  == 0);
-//    REQUIRE(r.countUExonSyn() == 0);
-//    REQUIRE(r.countIntrSyn()  == 0);
-//    REQUIRE(r.countUIntrSyn() == 0);
-//    
-//    REQUIRE(r.countGene()     == 60554);
-//    REQUIRE(r.countTrans()    == 199169);
-//    REQUIRE(r.countGeneGen()  == 60554);
-//    REQUIRE(r.countTransGen() == 199169);
-//    REQUIRE(r.countExonGen()  == 1177311);
-//    REQUIRE(r.countUExonGen() == 570957);
-//    REQUIRE(r.countIntrGen()  == 976685);
-//    REQUIRE(r.countUIntrGen() == 347410);
-//}
+TEST_CASE("GTF_GenCode")
+{
+    const auto r = gtfData(Reader("tests/data/gencode.v24.annotation.gtf"));
+    
+    REQUIRE(r.countGeneSyn()  == 0);
+    REQUIRE(r.countTransSyn() == 0);
+    REQUIRE(r.countExonSyn()  == 0);
+    REQUIRE(r.countUExonSyn() == 0);
+    REQUIRE(r.countIntrSyn()  == 0);
+    REQUIRE(r.countUIntrSyn() == 0);
+    
+    REQUIRE(r.countGene()     == 60554);
+    REQUIRE(r.countTrans()    == 199169);
+    REQUIRE(r.countGeneGen()  == 60554);
+    REQUIRE(r.countTransGen() == 199169);
+    REQUIRE(r.countExonGen()  == 1177311);
+    REQUIRE(r.countUExonGen() == 570957);
+    REQUIRE(r.countIntrGen()  == 976685);
+    REQUIRE(r.countUIntrGen() == 347410);
+}
+
+#endif

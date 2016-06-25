@@ -43,7 +43,7 @@ namespace Anaquin
             std::shared_ptr<Writer> writer;
         };
         
-        static Stats stats__(const FileName &, std::map<ChrID, Intervals<>> &);
+        static Stats stats(const FileName &, std::map<ChrID, Intervals<>> &);
 
         static void bedGraph(const ID2Intervals &, const CoverageBedGraphOptions &);
     };

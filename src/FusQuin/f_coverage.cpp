@@ -6,7 +6,7 @@ FCoverage::Stats FCoverage::stats(const FileName &file, const Options &o)
 {
     o.analyze(file);
     
-    const auto &r = Standard::instance().r_fus;
+//    const auto &r = Standard::instance().r_fus;
     
     throw "Not Implemented";
 

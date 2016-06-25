@@ -22,7 +22,14 @@ static RAlign::Stats init()
 
     for (const auto &i : stats.eInters)
     {
-        stats.data[i.first];
+        const auto &cID = i.first;
+        
+        stats.data[cID];
+        stats.data[cID].eLvl.nr() = r.countUExon(cID);
+        stats.data[cID].iLvl.sn.nr() = r.countUIntr(cID);
+        
+        assert(stats.data[cID].eLvl.nr());
+        assert(stats.data[cID].eLvl.nr() == 1 || stats.data[cID].iLvl.sn.nr());
     }
 
     assert(!stats.data.empty());
@@ -47,42 +54,54 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
 
         const auto bs  = i.second.stats();
         const auto btp = bs.nonZeros;
-        const auto bfp = x.bLvl.fp;
-        const auto bfn = bs.length;
+        //const auto bfp = x.bLvl.fp();
+        const auto bfn = bs.length - bs.nonZeros;
         
         if (Standard::isSynthetic(cID))
         {
             stats.sbm.tp() += btp;
-            stats.sbm.fp() += bfp;
+            //stats.sbm.fp() += bfp;
             stats.sbm.fn() += bfn;
             stats.sam.tp() += x.aLvl.m.tp();
             stats.sam.fp() += x.aLvl.m.fp();
-            stats.sim.tp() += x.iLvl.tp();
-            stats.sim.fp() += x.iLvl.fp();
+
             stats.sem.tp() += x.eLvl.tp();
+            stats.sem.fn() += (r.countUExon(cID) - x.eLvl.tp());
+
+            stats.simpc += x.iLvl.pc;
+            stats.simsn.tp() += x.iLvl.sn.tp();
+            stats.simsn.fn() += (r.countUIntr(cID) - x.iLvl.sn.tp());
+
+            stats.sn += x.aLvl.normal;
+            stats.ss += x.aLvl.spliced;
         }
         else
         {
             stats.gbm.tp() += btp;
-            stats.gbm.fp() += bfp;
+            //stats.gbm.fp() += bfp;
             stats.gbm.fn() += bfn;
             stats.gam.tp() += x.aLvl.m.tp();
             stats.gam.fp() += x.aLvl.m.fp();
-            stats.gim.tp() += x.iLvl.tp();
-            stats.gim.fp() += x.iLvl.fp();
+
             stats.gem.tp() += x.eLvl.tp();
+            stats.gem.fn() += (r.countUExon(cID) - x.eLvl.tp());
+
+            stats.gimpc += x.iLvl.pc;
+            stats.gimsn.tp() += x.iLvl.sn.tp();
+            stats.gimsn.fn() += (r.countUIntr(cID) - x.iLvl.sn.tp());
+            
+            stats.gn += x.aLvl.normal;
+            stats.gs += x.aLvl.spliced;
         }
     }
     
     stats.sem.fn() = r.countUExonSyn();
     stats.gem.fn() = r.countUExonGen();
-    stats.sim.fn() = r.countUIntrSyn();
-    stats.gim.fn() = r.countUIntrGen();
 
     return stats;
 }
 
-static void match(RAlign::Stats &stats, const ParserSAM::Data &align)
+static void match(RAlign::Stats &stats, ParserSAM::Data &align)
 {
     Locus l;
     bool spliced;
@@ -104,12 +123,19 @@ static void match(RAlign::Stats &stats, const ParserSAM::Data &align)
             
             if (match)
             {
-                x.iLvl.tp()++;
+                // Is this is the first alignment to the intron?
+                if (!match->stats().nonZeros)
+                {
+                    x.iLvl.pc.tp()++;
+                    x.iLvl.sn.tp()++;
+                }
+                
+                match->map(l);
             }
             else
             {
                 isTP = false;
-                x.iLvl.fp()++;
+                x.iLvl.pc.fp()++;
             }
         }
         else
@@ -119,14 +145,14 @@ static void match(RAlign::Stats &stats, const ParserSAM::Data &align)
             
             if (match)
             {
-                // This is the first alignment to the exon (we're only interested in the sensitivty)
+                // Is this the first alignment to the exon?
                 if (!match->stats().nonZeros)
                 {
                     x.eLvl.tp()++;
                 }
                 
-                const auto fp = match->map(l);
-                assert(!fp);
+                match->map(l);
+                //x.bLvl.tp() += l.length();
             }
             else
             {
@@ -137,15 +163,22 @@ static void match(RAlign::Stats &stats, const ParserSAM::Data &align)
                 
                 if (match)
                 {
-                    x.bLvl.fp += match->map(l);
+                    match->map(l);
                 }
             }
         }
     }
-    
+
     if (isTP)
     {
         x.aLvl.m.tp()++;
+        
+        const auto &r = Standard::instance().r_trans;
+        
+        // By definition, our last block must be an alignment to an exon
+        const auto &gID = r.findGene(align.cID, l, MatchRule::Overlap)->id();
+        
+        x.g2r[gID]++;
     }
     else
     {
@@ -159,7 +192,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
     
     return calculate(o, [&](RAlign::Stats &stats)
     {
-        ParserSAM::parse(file, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+        ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
         {
             stats.update(x);
 
@@ -202,24 +235,22 @@ static Scripts summary()
            "       Total:       %18%\n\n"
            "-------Comparison of alignments to reference annotation (Synthetic)\n\n"
            "       *Exon level\n"
-           "        Sensitivity: %19$.2f\n"
-           "        Precision:   %20$.2f\n\n"
+           "        Sensitivity: %19$.2f\n\n"
            "       *Intron level\n"
-           "        Sensitivity: %21$.2f\n"
-           "        Precision:   %22$.2f\n\n"
+           "        Sensitivity: %20$.2f\n"
+           "        Precision:   %21$.2f\n\n"
            "       *Base level\n"
-           "        Sensitivity: %23$.2f\n"
-           "        Precision:   %24$.2f\n\n"
+           "        Sensitivity: %22$.2f\n"
+           "        Precision:   %23$.2f\n\n"
            "-------Comparison of alignments to reference annotation (Genome)\n\n"
            "       *Exon level\n"
-           "        Sensitivity: %28%\n"
-           "        Precision:   %29%\n\n"
+           "        Sensitivity: %24$.2f\n\n"
            "       *Intron level\n"
-           "        Sensitivity: %30%\n"
-           "        Precision:   %31%\n\n"
+           "        Sensitivity: %25$.2f\n"
+           "        Precision:   %26$.2f\n\n"
            "       *Base level\n"
-           "        Sensitivity: %32%\n"
-           "        Precision:   %33%\n\n";
+           "        Sensitivity: %27$.2f\n"
+           "        Precision:   %28$.2f\n\n";
 }
 
 static void generateSummary(const FileName &file,
@@ -245,27 +276,22 @@ static void generateSummary(const FileName &file,
                                               % CHECK(r.countUExonGen()) // 10
                                               % CHECK(r.countUIntrGen()) // 11
                                               % CHECK(r.countLenGen())   // 12
-                                              % ""//stats.countSpliceSyn()   // 13
-                                              % ""//stats.countNormalSyn()   // 14
-                                              % ""//(stats.countSpliceSyn() + stats.countNormalSyn())
-                                              % ""//CHECK(stats.countSpliceGen())
-                                              % ""//CHECK(stats.countNormalGen())
-                                              % ""//CHECK(stats.countSpliceGen() + stats.countNormalGen())
-                                              % ""//stats.s_esn        // 19
-                                              % ""//stats.s_epc        // 20
-                                              % ""//stats.s_isn        // 21
-                                              % ""//stats.s_ipc        // 22
-                                              % ""//stats.s_bsn        // 23
-                                              % ""//stats.s_bpc        // 24
-                                              % ""//stats.s_ems        // 25
-                                              % ""//stats.s_ims        // 26
-                                              % ""//stats.s_gms        // 27
-                                              % ""//CHECK(stats.g_esn) // 28
-                                              % ""//CHECK(stats.g_epc) // 29
-                                              % ""//CHECK(stats.g_isn) // 30
-                                              % ""//CHECK(stats.g_ipc) // 31
-                                              % ""//CHECK(stats.g_bsn) // 32
-                                              % ""//CHECK(stats.g_bpc) // 33
+                                              % stats.sn                 // 13
+                                              % stats.ss                 // 14
+                                              % (stats.sn + stats.ss)    // 15
+                                              % stats.gn                 // 16
+                                              % stats.gs                 // 17
+                                              % (stats.gn + stats.gs)    // 18
+                                              % stats.sem.sn()           // 19
+                                              % stats.simsn.sn()         // 20
+                                              % stats.simpc.pc()         // 21
+                                              % stats.sbm.sn()           // 22
+                                              % ""                       // 23
+                                              % stats.gem.sn()           // 24
+                                              % stats.gimsn.sn()         // 25
+                                              % stats.gimpc.pc()         // 26
+                                              % stats.gbm.sn()           // 27
+                                              % ""                       // 28
                      ).str());
     o.writer->close();
 }
@@ -275,58 +301,38 @@ static void writeQuins(const FileName &file,
                        const RAlign::Stats &stats,
                        const RAlign::Options &o)
 {
-    const auto &r = Standard::instance().r_trans;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%";
 
-    const auto &data = stats.data.at(ChrT);
-    
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
                                            % "Reads"
                                            % "Sn_exon"
                                            % "Sn_intron"
                                            % "Pc_intron"
-                                           % "Sn_base"
-                                           % "Pc_base").str());
+                                           % "Sn_base").str());
 
-//    for (const auto &i : data.overB.hist)
-//    {
-//        // Eg: R1_1
-//        const auto &id = i.first;
-//        
-//        const auto &mb = data.geneB.at(id);
-//        const auto &me = data.geneE.at(id);
-//        const auto &mi = data.geneI.at(id);
-//
-//        const auto m = r.findGene(ChrT, id);
-//        const auto reads = stats.s2r.at(id);
-//        
-//        assert(m);
-//        
-//        // Not all sequins have an intron...
-//        if (mi.lNR)
-//        {
-//            o.writer->write((boost::format(format) % id
-//                                                   % reads
-//                                                   % me.sn()
-//                                                   % me.pc()
-//                                                   % mi.sn()
-//                                                   % mi.pc()
-//                                                   % mb.sn()
-//                                                   % mb.pc()).str());
-//        }
-//        else
-//        {
-//            o.writer->write((boost::format(format) % id
-//                                                   % reads
-//                                                   % me.sn()
-//                                                   % me.pc()
-//                                                   % "--"
-//                                                   % "--"
-//                                                   % mb.sn()
-//                                                   % mb.pc()).str());
-//        }
-//    }
+    for (const auto &i : stats.data)
+    {
+        if (Standard::isSynthetic(i.first))
+        {
+            const auto &data = i.second;
+            
+            // Eg: R1_1
+            const auto &id = i.first;
+            
+            // Number of reads aligned
+            const auto reads = data.g2r.count(id) ? data.g2r.at(id) : 0;
+            
+            stats.eInters.at(i.first).find(id)->id();
+            
+            o.writer->write((boost::format(format) % id
+                                                   % reads
+                                                   % data.eLvl.sn()
+                                                   % data.iLvl.sn.sn()
+                                                   % data.iLvl.pc.pc()
+                                                   % data.bLvl.sn()).str());
+        }
+    }
 
     o.writer->close();
 }

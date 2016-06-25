@@ -558,12 +558,12 @@ namespace Anaquin
      * -------------------- Transcriptome Analysis --------------------
      */
     
-    struct TransData : public SequinData
+    struct TransData_ : public SequinData
     {
         GeneID gID;
     };
 
-    class TransRef : public Reference<TransData, DefaultStats>
+    class TransRef : public Reference<TransData_, DefaultStats>
     {
         public:
 
@@ -582,10 +582,12 @@ namespace Anaquin
 
             // Number of sequin genes from mixture
             Counts countGeneSeqs() const;
-        
+
+            Counts countUExon(const ChrID &) const;
             Counts countUExonSyn() const;
             Counts countUExonGen() const;
-        
+
+            Counts countUIntr(const ChrID &) const;
             Counts countUIntrSyn() const;
             Counts countUIntrGen() const;
 

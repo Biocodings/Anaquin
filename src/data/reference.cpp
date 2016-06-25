@@ -478,6 +478,11 @@ Counts TransRef::countLenGen() const
     return _impl->gData.countLenGen();
 }
 
+Counts TransRef::countUExon(const ChrID &cID) const
+{
+    return _impl->gData.countUExon(cID);
+}
+
 Counts TransRef::countUExonSyn() const
 {
     return _impl->gData.countUExonSyn();
@@ -486,6 +491,11 @@ Counts TransRef::countUExonSyn() const
 Counts TransRef::countUExonGen() const
 {
     return _impl->gData.countUExonGen();
+}
+
+Counts TransRef::countUIntr(const ChrID &cID) const
+{
+    return _impl->gData.countUIntr(cID);
 }
 
 Counts TransRef::countUIntrSyn() const
@@ -657,10 +667,9 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     
     std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
     {
-        auto data = TransData();
+        auto data = TransData_();
         
         data.id  = id;
-        //data.gID = !_impl->cRaw.rawMapper.empty() ? _impl->cRaw.rawMapper.at(data.id) : "";
 
         // Add a new entry for the validated sequin
         _data[id] = data;
@@ -726,7 +735,7 @@ void TransRef::validate()
     {
         for (const auto &i : _rawMIDs)
         {
-            TransData_ t;
+            TransData t;
             
             t.cID = ChrT;
             t.tID = i;

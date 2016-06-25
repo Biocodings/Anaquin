@@ -73,30 +73,7 @@ namespace Anaquin
             
             inline Proportion sample() const { return genC / synC; }
         };
-        
-        /*
-         * Histogram manipulations and operations
-         */
-        
-        template <typename T> static Counts sums(const std::map<T, Counts> &m)
-        {
-            Counts c = 0;
-            
-            for (const auto &i : m)
-            {
-                if (i.second == 0)
-                {
-                    c++;
-                }
-                else
-                {
-                    c += i.second;
-                }
-            }
-            
-            return c;
-        }
-        
+
         template <typename Options> static Stats stats(const FileName &file, const Options &o)
         {
             const auto &r = Standard::instance().r_var;

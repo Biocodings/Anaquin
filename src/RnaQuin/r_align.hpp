@@ -44,13 +44,17 @@ namespace Anaquin
                         Confusion m;
                     };
                     
-                    struct BaseLevel
+                    struct IntronLevel
                     {
-                        Base fp = 0;
+                        // For calculating sensitivity
+                        Confusion sn;
+                        
+                        // For calculating precision
+                        Confusion pc;
                     };
                     
+                    typedef Confusion BaseLevel;
                     typedef Confusion ExonLevel;
-                    typedef Confusion IntronLevel;
 
                     BaseLevel   bLvl;
                     ExonLevel   eLvl;
@@ -59,6 +63,8 @@ namespace Anaquin
 
                     std::map<ExonID, Counts> e2r;
                     std::map<IntronID, Counts> i2r;
+                    
+                    std::map<GeneID, Counts> g2r;
 
                     // Alignments that have no mapping
                     //std::vector<UnknownAlignment> unknowns;
@@ -69,11 +75,21 @@ namespace Anaquin
                 MC2Intervals eInters;
                 MC2Intervals iInters;
 
-                // Synthetic Statistics
-                Confusion sbm, sam, sim, sem;
+                /*
+                 * Synthetic statistics
+                 */
+
+                Counts sn = 0;
+                Counts ss = 0;
+                Confusion sbm, sam, simsn, simpc, sem;
                 
-                // Genomic Statistics
-                Confusion gbm, gam, gim, gem;
+                /*
+                 * Genomic statistics
+                 */
+
+                Counts gn = 0;
+                Counts gs = 0;
+                Confusion gbm, gam, gimsn, gimpc, gem;
             };
 
             static Stats analyze(const FileName &, const Options &o = Options());

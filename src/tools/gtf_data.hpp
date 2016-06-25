@@ -42,13 +42,10 @@ namespace Anaquin
     struct ChrData
     {
         // Transcripts to Data
-        std::map<TransID, TransData_> t2d;
+        std::map<TransID, TransData> t2d;
         
         // Genes to Data
         std::map<GeneID, GeneData> g2d;
-        
-        // Transcripts to non-unique exons
-        std::map<TransID, std::set<ExonData>> t2e;
         
         // Transcripts to unique exons
         std::map<TransID, std::set<ExonData>> t2ue;
@@ -70,12 +67,6 @@ namespace Anaquin
     
     struct GTFData : public std::map<ChrID, ChrData>
     {
-        // Position for exons (used for determining unique exons)
-        std::map<ChrID, std::map<Locus, Counts>> el;
-        
-        // Position for introns (usd for determining unique introns)
-        std::map<ChrID, std::map<Locus, Counts>> il;
-
         inline Hist histIsof(const ChrID &cID) const
         {
             return createHist(at(cID).t2d);
@@ -328,48 +319,58 @@ namespace Anaquin
     {
         GTFData c2d;
         
+        // Used for unique exons
+        std::set<Locus> m_exons;
+        
+        // Used for unique introns
+        std::set<Locus> m_intrs;
+        
+        ExonData ed;
+        GeneData gd;
+        TransData td;
+        IntronData id;
+        
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
             switch (x.type)
             {
                 case Transcript:
                 {
-                    TransData_ d;
-                    
-                    d.l   = x.l;
-                    d.cID = x.cID;
-                    d.gID = x.gID;
-                    d.tID = x.tID;
+                    td.l   = x.l;
+                    td.cID = x.cID;
+                    td.gID = x.gID;
+                    td.tID = x.tID;
 
-                    c2d[x.cID].gIDs.insert(x.gID);
-                    c2d[x.cID].t2g[d.tID] = d.gID;
-                    c2d[x.cID].t2d[d.tID] = d;
+                    c2d[x.cID].gIDs.insert(td.gID);
+                    c2d[x.cID].t2g[td.tID] = td.gID;
+                    c2d[x.cID].t2d[td.tID] = td;
                     break;
                 }
-                    
+
                 case Gene:
                 {
-                    GeneData d;
+                    gd.l   = x.l;
+                    gd.cID = x.cID;
+                    gd.gID = x.gID;
                     
-                    d.l   = x.l;
-                    d.cID = x.cID;
-                    d.gID = x.gID;
-                    
-                    c2d[x.cID].g2d[d.gID] = d;
+                    c2d[x.cID].g2d[gd.gID] = gd;
                     break;
                 }
-                    
+
                 case Exon:
                 {
-                    ExonData d;
+                    if (!m_exons.count(x.l))
+                    {
+                        ed.l   = x.l;
+                        ed.cID = x.cID;
+                        ed.gID = x.gID;
+                        ed.tID = x.tID;
+
+                        c2d[x.cID].uexons++;
+                        m_exons.insert(x.l);
+                        c2d[x.cID].t2ue[ed.tID].insert(ed);
+                    }
                     
-                    d.l   = x.l;
-                    d.cID = x.cID;
-                    d.gID = x.gID;
-                    d.tID = x.tID;
-                    
-                    c2d.el[x.cID][d.l]++;
-                    c2d[x.cID].t2e[d.tID].insert(d);
                     break;
                 }
                     
@@ -387,16 +388,16 @@ namespace Anaquin
         for (auto &i : c2d)
         {
             // For each transcript...
-            for (const auto &j : i.second.t2e)
+            for (const auto &j : i.second.t2ue)
             {
                 // Sorted exons
                 auto sorted = std::vector<ExonData>();
                 
-                // Convert to a sorted vector
+                // Sort the exons
                 std::copy(j.second.begin(), j.second.end(), std::back_inserter(sorted));
                 
                 /*
-                 * Generate a list of introns, only possible once the exons are sorted.
+                 * Generating introns, only possible once the exons are sorted.
                  */
 
                 for (auto j = 1; j < sorted.size(); j++)
@@ -404,41 +405,26 @@ namespace Anaquin
                     const auto &x = sorted[j-1];
                     const auto &y = sorted[j];
                     
-                    IntronData d;
+                    id.gID = x.gID;
+                    id.tID = x.tID;
+                    id.cID = x.cID;
                     
-                    d.gID = x.gID;
-                    d.tID = x.tID;
-                    d.cID = x.cID;
-                    
-                    // Intron simply spans between exons
-                    d.l = Locus(x.l.end+1, y.l.start-1);
+                    // Intron spans between exons
+                    id.l = Locus(x.l.end+1, y.l.start-1);
 
                     #define MIN_INTRON_LEN 20
                     
-                    if (Standard::isSynthetic(i.first) || d.l.length() > MIN_INTRON_LEN)
+                    if (Standard::isSynthetic(i.first) || id.l.length() > MIN_INTRON_LEN)
                     {
-                        c2d.il[x.cID][d.l]++;
+                        if (!m_intrs.count(id.l))
+                        {
+                            c2d[x.cID].uintrs++;
+                            m_intrs.insert(id.l);
+                            c2d[x.cID].t2ui[id.tID].insert(id);
+                        }
                     }
                 }
             }
-        }
-        
-        /*
-         * Calculating number of unique exons
-         */
-
-        for (auto &i : c2d.el)
-        {
-            c2d.at(i.first).uexons = i.second.size();
-        }
-
-        /*
-         * Calculating number of unique introns
-         */
-        
-        for (auto &i : c2d.il)
-        {
-            c2d.at(i.first).uintrs = i.second.size();
         }
 
         return c2d;

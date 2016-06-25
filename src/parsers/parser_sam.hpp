@@ -32,14 +32,14 @@ namespace Anaquin
             
             public:
             
-                bool nextCigar(Locus &l, bool &spliced) const;
+                bool nextCigar(Locus &l, bool &spliced);
 
             private:
             
                 mutable int _i, _n;
             
                 void *data;
-                void *header;
+                void *head;
         };
         
         typedef std::function<void (Data &, const Info &)> Functor;

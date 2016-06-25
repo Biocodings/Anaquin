@@ -4,26 +4,31 @@
 
 using namespace Anaquin;
 
-bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced) const
+bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
 {
-    assert(header && data);
+    assert(head && data);
     
     auto t = static_cast<bam1_t *>(data);
 
-    //auto n = data->core.pos;
     const auto cig = bam_get_cigar(t);
 
-    for (; _i < t->core.n_cigar; _i++)
+    for (; _i < t->core.n_cigar;)
     {
-        const auto op = bam_cigar_op(cig[i]);
-        const auto ol = bam_cigar_oplen(cig[i]);
+        const auto op = bam_cigar_op(cig[_i]);
+        const auto ol = bam_cigar_oplen(cig[_i]);
         
         // 1-based leftmost coordinate is assumed
-        l = Locus(_n+1, _n+ol);
+        l.start = _n+1;
+        
+        // 1-based leftmost coordinate is assumed
+        l.end = _n+ol;
         
         // We'll need it for the next operation
         _n += ol;
         
+        // Important to increment before returning
+        _i++;
+
         if (op == BAM_CINS || op == BAM_CDEL)
         {
             continue;
@@ -40,10 +45,10 @@ bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced) const
         {
             spliced = false;
         }
-        
+
         return true;
     }
-    
+
     return false;
 }
 
@@ -77,6 +82,8 @@ void ParserSAM::parse(const FileName &file, Functor x)
             continue;
         }
 
+        align.data   = t;
+        align.head   = h;
         align.name   = bam_get_qname(t);
         align.flag   = t->core.flag;
         align.cID    = std::string(h->target_name[t->core.tid]);
@@ -92,11 +99,6 @@ void ParserSAM::parse(const FileName &file, Functor x)
         if (align.mapped)
         {
             const auto cigar = bam_get_cigar(t);
-
-            auto n = t->core.pos;
-            
-            // It's true only if we have a BAM_CREF_SKIP operation
-            align.spliced = false;
 
             /*
              * Check if this is an indel alignment, an alignment that has some bases.
@@ -117,37 +119,6 @@ void ParserSAM::parse(const FileName &file, Functor x)
             align._n = t->core.pos;
 
             x(align, info);
-            
-//            /*
-//             * What to do with something like "528084 50 79M10250N22M"? We'd split it into blocks.
-//             */
-//
-//            for (; align.i < t->core.n_cigar; align.i++)
-//            {
-//                const auto op = bam_cigar_op(cigar[align.i]);
-//                const auto ol = bam_cigar_oplen(cigar[align.i]);
-//
-//                // 1-based leftmost coordinate is assumed
-//                align.l = Locus(n+1, n+ol);
-//
-//                // We'll need it for the next operation
-//                n += ol;
-//                
-//                if (op == BAM_CINS || op == BAM_CDEL)
-//                {
-//                    continue;
-//                }
-//                else if (op == BAM_CMATCH)
-//                {
-//                    align.spliced = false;
-//                }
-//                else if (op == BAM_CREF_SKIP)
-//                {
-//                    align.spliced = true;
-//                }
-//
-//                x(align, info);
-//            }
         }
         else
         {
