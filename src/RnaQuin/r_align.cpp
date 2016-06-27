@@ -197,7 +197,6 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
             {
                 // We'll use it to calculate the sensitivty at the intron level
                 match->map(l);
-                a++;
 
                 writeIntron(l, match->gID(), "TP");
             }
@@ -205,7 +204,6 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
             {
                 x.iLvl.fp.insert(l);
                 isTP = false;
-                b++;
 
                 writeIntron(l, "", "FP");
             }
