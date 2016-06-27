@@ -322,7 +322,7 @@ namespace Anaquin
                 });
             }
         
-        private:
+        //private:
         
             std::shared_ptr<IntervalTree<T *>> _tree;
         

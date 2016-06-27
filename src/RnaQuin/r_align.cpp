@@ -460,6 +460,9 @@ static void writeQuins(const FileName &file,
                        const RAlign::Stats &stats,
                        const RAlign::Options &o)
 {
+    const auto &r = Standard::instance().r_trans;
+
+    const auto h2g = r.histGene();
     const auto format = "%1%\t%2%\t%3%\t%4%";
 
     o.writer->open(file);
@@ -474,7 +477,11 @@ static void writeQuins(const FileName &file,
         
         if (Standard::isSynthetic(cID))
         {
-            std::map<GeneID, Confusion> m;
+            std::map<GeneID, Confusion> bm, im;
+            
+            /*
+             * Calculating intron statistics for genes
+             */
             
             for (const auto &j : stats.iInters.at(cID).data())
             {
@@ -487,15 +494,31 @@ static void writeQuins(const FileName &file,
                 
                 if (!is.nonZeros)
                 {
-                    m[gID].tp()++;
+                    im[gID].fn()++;
                 }
                 else
                 {
-                    m[gID].fn()++;
+                    im[gID].tp()++;
                 }
             }
             
-            for (const auto &j : m)
+            /*
+             * Calculating base statistics for genes
+             */
+            
+            for (const auto &j : stats.eInters.at(cID).data())
+            {
+                const auto &gID = j.second.gID();
+                
+                // Statistics for the bases within the gene
+                const auto bs = j.second.stats();
+
+                bm[gID].tp() += bs.nonZeros;
+                bm[gID].fn() += bs.length - bs.nonZeros;
+            }
+            
+            // For every gene in the reference
+            for (const auto &j : h2g.at(cID))
             {
                 const auto &data = i.second;
                 
@@ -505,10 +528,13 @@ static void writeQuins(const FileName &file,
                 // Number of reads aligned
                 const auto reads = data.g2r.count(gID) ? data.g2r.at(gID) : 0;
 
+                // Check for genes without an intron (eg: single exon)
+                const auto isn = im.count(gID) ? toString(im.at(gID).sn()) : "-";
+                
                 o.writer->write((boost::format(format) % gID
                                                        % reads
-                                                       % m.at(gID).sn()
-                                                       % "").str());
+                                                       % isn
+                                                       % bm.at(gID).sn()).str());
             }
         }
     }

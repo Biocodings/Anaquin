@@ -114,6 +114,7 @@ namespace Anaquin
         return d;
     }
     
+#ifdef REVERSE_ALIGNMENT
     inline Base reversePos(const Locus &l, ParserSAM::Data &x, const ParserSAM::Info &i)
     {
         // Length of the chromosome
@@ -127,6 +128,7 @@ namespace Anaquin
         
         return clen - (l.start + slen + delta) + 2;
     }
+#endif
 
     inline CigarStr bam2rcigar(bam1_t *x)
     {
@@ -142,6 +144,8 @@ namespace Anaquin
         return __buf__.str();
     }
 
+#ifdef REVERSE_ALIGNMENT
+    
     // Reverse an alignment
     inline void reverse(ParserSAM::Data &x, const ParserSAM::Info &i)
     {
@@ -175,6 +179,8 @@ namespace Anaquin
         
         assert(t.length() == x.l.length());
     }
+    
+#endif
 }
 
 #endif

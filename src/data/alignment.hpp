@@ -17,26 +17,28 @@ namespace Anaquin
         // Bitwise FLAG
         int flag;
         
-        // Mapping quality
-        int mapq;
-        
         // Cigar string
         std::string cigar;
         
+        // Signed observed template length
+        Base tlen;
+        
+#ifdef REVERSE_ALIGNMENT
         // Reference sequence name of the primary alignment
         std::string rnext;
         
         // Position of the primary alignment of the NEXT read in the template
         Base pnext;
-        
-        // Signed observed template length
-        Base tlen;
+
+        // Mapping quality
+        int mapq;
         
         // Segment sequence
         std::string seq;
         
         // ASCII of base QUALity plus 33
-        std::string qual;
+        std::string qual;        
+#endif
         
         // Location of the alignment
         Locus l;
