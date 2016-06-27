@@ -238,10 +238,13 @@ namespace Anaquin
             
             for (const auto &i : at(cID).t2ue)
             {
+                const auto &tID = i.first;
+                const auto &gID = at(cID).t2g.at(tID);
+                
                 for (const auto &j : i.second)
                 {
-                    // Each interval is an non-unique exon
-                    r.add(MergedInterval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
+                    r.add(MergedInterval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end),
+                                         j.l, gID, tID));
                 }
             }
 
@@ -262,6 +265,49 @@ namespace Anaquin
             return r;
         }
 
+        /*
+         * Returns non-overlapping intervals for a chromosome. Each interval represents a set of merged
+         * overlapping unique exons.
+         */
+        
+        inline MergedIntervals<> mergedExons(const ChrID &cID) const
+        {
+            MergedIntervals<> r;
+            
+            for (const auto &i : at(cID).t2ue)
+            {
+                const auto &tID = i.first;
+                const auto &gID = at(cID).t2g.at(tID);
+
+                for (auto &j : i.second)
+                {
+                    r.merge(MergedInterval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end),
+                                           j.l,
+                                           gID,
+                                           tID));
+                }
+            }
+
+            r.build();
+            return r;
+        }
+        
+        /*
+         * Returns non-overlapping exon intervals for all chromosomes.
+         */
+
+        inline MC2Intervals mergedExons() const
+        {
+            MC2Intervals r;
+            
+            for (const auto &i : *this)
+            {
+                r[i.first] = mergedExons(i.first);
+            }
+            
+            return r;
+        }
+        
         // Intervals for unique introns
         inline MergedIntervals<> uiInters(const ChrID &cID) const
         {
@@ -269,9 +315,13 @@ namespace Anaquin
             
             for (const auto &i : at(cID).t2ui)
             {
+                const auto &tID = i.first;
+                const auto &gID = at(cID).t2g.at(tID);
+
                 for (const auto &j : i.second)
                 {
-                    r.add(MergedInterval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end), j.l));
+                    r.add(MergedInterval(i.first + "-" + toString(j.l.start) + "-" + toString(j.l.end),
+                                         j.l, gID, tID));
                 }
             }
             

@@ -22,11 +22,13 @@ namespace Anaquin
             
                 inline Proportion covered() const { return static_cast<double>(nonZeros) / length; }
             };
-        
-            MergedInterval(const IntervalID &id, const Locus &l) : _id(id), _l(l)
-            {
-                _id = id;
-            }
+
+            MergedInterval(const IntervalID &id, const Locus &l) : _id(id), _l(l) {}
+            MergedInterval(const IntervalID &id,
+                           const Locus      &l,
+                           const GeneID     &gID,
+                           const TransID    &tID) :
+                        _id(id), _tID(tID), _gID(gID), _l(l) {}
 
             inline Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr)
             {
@@ -37,7 +39,7 @@ namespace Anaquin
                 // Pointing to the matching
                 Locus *m = nullptr;
 
-                Base left = 0;
+                Base left  = 0;
                 Base right = 0;
                 
                 for (auto it = _data.begin(); it != _data.cend();)
@@ -53,19 +55,11 @@ namespace Anaquin
                             left  = ((l.start < j.start) ? j.start -  l.start : 0);
                             right = ((l.end   > j.end)   ?  l.end  - j.end   : 0);
                             
-                            if (right > 10)
-                            {
-                                right = right;
-                            }
-                            
-
                             j.start = std::min(j.start, l.start);
                             j.end   = std::max(j.end,   l.end);
-                            
                             j.start = std::max(j.start, _l.start);
                             j.end   = std::min(j.end,   _l.end);
-                            
-                            
+
                             // So that we can access it in the later iterations
                             m = &j;
 
@@ -85,7 +79,6 @@ namespace Anaquin
                         
                         m->start = std::min(m->start, j.start);
                         m->end   = std::max(m->end,   j.end);
-                        
                         m->start = std::max(m->start, _l.start);
                         m->end   = std::min(m->end,   _l.end);
                         
@@ -144,19 +137,27 @@ namespace Anaquin
                     return true;
                 });
             }
-        
+
+            inline void merge(const Locus &l) { _l.merge(l); }
+
             inline const Locus &l()       const { return _l;  }
             inline const IntervalID &id() const { return _id; }
+
+            inline const std::string &gID() const { return _gID; }
+            inline const std::string &tID() const { return _tID; }
         
             inline IntervalID name() const override { return id(); }
         
             inline std::size_t size() { return _data.size(); }
         
-        private:
+        //private:
         
             Locus _l;
 
             std::map<Base, Locus> _data;
+        
+            GeneID  _gID;
+            TransID _tID;
         
             IntervalID _id;
     };
@@ -165,6 +166,15 @@ namespace Anaquin
     {
         public:
         
+            struct Stats : public T::Stats
+            {
+                // Total number of intervals
+                Counts n = 0;
+                
+                // Number of intervals with full coverage
+                Counts f = 0;
+            };
+        
             typedef std::map<typename T::IntervalID, T> IntervalData;
 
             inline void add(const T &i)
@@ -172,6 +182,25 @@ namespace Anaquin
                 _inters.insert(typename std::map<typename T::IntervalID, T>::value_type(i.id(), i));
             }
 
+            /*
+             * Merge the new interval with the first existing overlapping interval. New interval is
+             * added if no overlapping found.
+             */
+        
+            inline void merge(const T &i)
+            {
+                for (auto &j : _inters)
+                {
+                    if (j.second.l().overlap(i.l()))
+                    {
+                        j.second.merge(i.l());
+                        return;
+                    }
+                }
+
+                add(i);
+            }
+        
             inline void build()
             {
                 std::vector<Interval_<T *>> loci;
@@ -255,18 +284,27 @@ namespace Anaquin
                 return v.empty() ? nullptr : v.front().value;
             }
 
-            typename T::Stats stats() const
+            typename MergedIntervals::Stats stats() const
             {
-                MergedInterval::Stats stats;
+                MergedIntervals::Stats stats;
             
                 for (const auto &i : _inters)
                 {
                     const auto s = i.second.stats();
                 
+                    stats.n++;
                     stats.length   += s.length;
                     stats.nonZeros += s.nonZeros;
+                    
+                    assert(s.length >= s.nonZeros);
+                    
+                    if (s.length == s.nonZeros)
+                    {
+                        stats.f++;
+                    }
                 }
-            
+
+                assert(stats.n >= stats.f);
                 return stats;
             }
         

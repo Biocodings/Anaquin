@@ -580,6 +580,9 @@ namespace Anaquin
             Base countLenSyn() const;
             Base countLenGen() const;
 
+            MC2Intervals mergedExons() const;
+            MergedIntervals<> mergedExons(const ChrID &cID) const;
+
             // Number of sequin genes from mixture
             Counts countGeneSeqs() const;
 

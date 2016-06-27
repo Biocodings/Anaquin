@@ -24,57 +24,6 @@ namespace Anaquin
             }
         }
 
-        template <typename Iter, typename F> static Locus expand(const Iter &iter, F f)
-        {
-            Locus l;
-            
-            l.end   = std::numeric_limits<Base>::min();
-            l.start = std::numeric_limits<Base>::max();
-
-            for (const auto &i : iter)
-            {
-                if (f(i))
-                {
-                    l.end   = std::max(l.end, i.l.end);
-                    l.start = std::min(l.start, i.l.start);
-                }
-            }
-
-            return l;
-        };
-
-        template <typename T> static bool exact(const std::vector<T> &ls)
-        {
-            for (auto i = 0; i < ls.size(); i++)
-            {
-                for (auto j = i + 1; j < ls.size(); j++)
-                {
-                    if (static_cast<Locus>(ls[i]) == (static_cast<Locus>(ls[j])))
-                    {
-                        return true;
-                    }
-                }
-            }
-            
-            return false;
-        }
-
-        template <typename T> static bool overlap(const std::vector<T> &ls)
-        {
-            for (auto i = 0; i < ls.size(); i++)
-            {
-                for (auto j = i + 1; j < ls.size(); j++)
-                {
-                    if (static_cast<Locus>(ls[i]).overlap(static_cast<Locus>(ls[j])))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
         /*
          * Merge a list of objects according to their locs. The type of the object must be
          * castable to Locus.
@@ -125,6 +74,12 @@ namespace Anaquin
             }
 
             return merged;
+        }
+
+        void merge(const Locus &l)
+        {
+            end   = std::max(end, l.end);
+            start = std::min(start, l.start);
         }
         
         inline Base length() const { return (end - start + 1); }

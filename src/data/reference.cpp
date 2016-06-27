@@ -624,6 +624,16 @@ const Interval * TransRef::findGene(const ChrID &cID, const Locus &l, MatchRule 
     }
 }
 
+MergedIntervals<> TransRef::mergedExons(const ChrID &cID) const
+{
+    return _impl->gData.mergedExons(cID);
+}
+
+MC2Intervals TransRef::mergedExons() const
+{
+    return _impl->gData.mergedExons();
+}
+
 MC2Intervals TransRef::ueInters() const
 {
     return _impl->gData.ueInters();

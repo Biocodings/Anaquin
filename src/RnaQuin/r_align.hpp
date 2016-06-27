@@ -46,14 +46,19 @@ namespace Anaquin
                     
                     struct IntronLevel
                     {
-                        // For calculating sensitivity
-                        Confusion sn;
-                        
-                        // For calculating precision
-                        Confusion pc;
+                        // Unique introns considered FP
+                        std::set<Locus> fp;
+
+                        // Confusion for unique introns
+                        Confusion m;
                     };
                     
-                    typedef Confusion BaseLevel;
+                    struct BaseLevel
+                    {
+                        // Used for FP aligning outside the reference region
+                        std::shared_ptr<MergedInterval> fp;
+                    };
+                    
                     typedef Confusion ExonLevel;
 
                     BaseLevel   bLvl;
@@ -65,7 +70,8 @@ namespace Anaquin
                     std::map<IntronID, Counts> i2r;
                     
                     std::map<GeneID, Counts> g2r;
-
+                    std::map<GeneID, Confusion> g2i;
+                    
                     // Alignments that have no mapping
                     //std::vector<UnknownAlignment> unknowns;
                 };
@@ -81,7 +87,7 @@ namespace Anaquin
 
                 Counts sn = 0;
                 Counts ss = 0;
-                Confusion sbm, sam, simsn, simpc, sem;
+                Confusion sbm, sam, sim, sem;
                 
                 /*
                  * Genomic statistics
@@ -89,7 +95,7 @@ namespace Anaquin
 
                 Counts gn = 0;
                 Counts gs = 0;
-                Confusion gbm, gam, gimsn, gimpc, gem;
+                Confusion gbm, gam, gim, gem;
             };
 
             static Stats analyze(const FileName &, const Options &o = Options());

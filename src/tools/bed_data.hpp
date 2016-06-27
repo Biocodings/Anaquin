@@ -152,12 +152,7 @@ namespace Anaquin
             
             return r;
         }
-        
-        
-        
-        
-        
-        
+
         inline MergedIntervals<> minters(const ChrID &cID) const
         {
             MergedIntervals<> r;

@@ -3,12 +3,6 @@
 
 using namespace Anaquin;
 
-TEST_CASE("GTF_Sampled")
-{
-    const auto r = gtfData(Reader("data/tests/RnaQuin/sampled.gtf"));
-    REQUIRE(r.countGene() == 598);
-}
-
 TEST_CASE("GTF_Synthetic")
 {
     const auto r = gtfData(Reader("data/RnaQuin/ATR001.v032.gtf"));
@@ -38,8 +32,8 @@ TEST_CASE("GTF_Synthetic")
     const auto eIntrs = r.ueInters(ChrT);
     const auto iIntrs = r.uiInters(ChrT);
 
-    REQUIRE(eIntrs.size() == 1192);
-    REQUIRE(iIntrs.size() == 1028);
+    REQUIRE(eIntrs.size() == 869); // 1192 for non-unique
+    REQUIRE(iIntrs.size() == 754); // 1028 for non-unique
 
     REQUIRE(eIntrs.contains(Locus(3014253, 3014390)));
     REQUIRE(eIntrs.contains(Locus(3014255, 3014390)));
@@ -83,15 +77,21 @@ TEST_CASE("GTF_Merged")
     REQUIRE(!i.overlap(Locus(6955480, 6955485)));
 
     REQUIRE(r.ueInters().size() == 2);
-    REQUIRE(r.ueInters(ChrT).size() == 1192);
-    REQUIRE(r.ueInters("chr21").size() == 14011);
+    REQUIRE(r.ueInters(ChrT).size() == 869);     // 1192 for non-unique
+    REQUIRE(r.ueInters("chr21").size() == 6540); // 14011 for non-unique
 
     REQUIRE(r.uiInters().size() == 2);
-    REQUIRE(r.uiInters(ChrT).size() == 1028);
-    REQUIRE(r.uiInters("chr21").size() == 11553);
+    REQUIRE(r.uiInters(ChrT).size() == 754);     // 1028 for non-unique
+    REQUIRE(r.uiInters("chr21").size() == 4213); // 11553 for non-unique
 
     //REQUIRE(r.il.at(ChrT).at(Locus(6955730, 6960383)) == 1);
     //REQUIRE(r.il.at(ChrT).at(Locus(2227518, 2235700)) == 3);
+}
+
+TEST_CASE("GTF_Sampled")
+{
+    const auto r = gtfData(Reader("data/tests/RnaQuin/sampled.gtf"));
+    REQUIRE(r.countGene() == 598);
 }
 
 #ifdef GENCODE_TEST

@@ -115,9 +115,23 @@ void ParserSAM::parse(const FileName &file, Functor x)
                 }
             }
 
+            if (t->core.n_cigar == 1)
+            {
+                assert(!info.spliced);
+            }
+            
             align._i = 0;
             align._n = t->core.pos;
 
+            const auto cig = bam_get_cigar(t);
+            const auto ol  = bam_cigar_oplen(cig[0]);
+            
+            // 1-based leftmost coordinate is assumed
+            align.l.start = t->core.pos+1;
+            
+            // 1-based leftmost coordinate is assumed
+            align.l.end = t->core.pos+ol;
+            
             x(align, info);
         }
         else
