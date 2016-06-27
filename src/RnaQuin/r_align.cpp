@@ -173,9 +173,6 @@ RAlign::Stats calculate(const RAlign::Options &o, std::function<void (RAlign::St
     return stats;
 }
 
-int a = 0;
-int b = 0;
-
 static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::Data &align)
 {
     static Locus l;
@@ -357,8 +354,6 @@ static void generateSummary(const FileName &file,
                             const RAlign::Stats &stats,
                             const RAlign::Options &o)
 {
-    std::cout << a << "   " << b << std::endl;
-    
     const auto &r = Standard::instance().r_trans;
     const auto hasGeno = stats.data.size() > 1;
     
