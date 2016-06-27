@@ -48,6 +48,7 @@ namespace Anaquin
         std::map<GeneID, GeneData> g2d;
         
         // Transcripts to unique exons
+        std::map<TransID, std::set<ExonData>> t2e;
         std::map<TransID, std::set<ExonData>> t2ue;
         
         // Transcripts to unique introns
@@ -329,7 +330,7 @@ namespace Anaquin
         GeneData gd;
         TransData td;
         IntronData id;
-        
+
         ParserGTF::parse(r, [&](const ParserGTF::Data &x, const std::string &, const ParserProgress &)
         {
             switch (x.type)
@@ -359,13 +360,15 @@ namespace Anaquin
 
                 case Exon:
                 {
+                    ed.l   = x.l;
+                    ed.cID = x.cID;
+                    ed.gID = x.gID;
+                    ed.tID = x.tID;
+
+                    c2d[x.cID].t2e[ed.tID].insert(ed);
+
                     if (!m_exons.count(x.l))
                     {
-                        ed.l   = x.l;
-                        ed.cID = x.cID;
-                        ed.gID = x.gID;
-                        ed.tID = x.tID;
-
                         c2d[x.cID].uexons++;
                         m_exons.insert(x.l);
                         c2d[x.cID].t2ue[ed.tID].insert(ed);
@@ -388,7 +391,7 @@ namespace Anaquin
         for (auto &i : c2d)
         {
             // For each transcript...
-            for (const auto &j : i.second.t2ue)
+            for (const auto &j : i.second.t2e)
             {
                 // Sorted exons
                 auto sorted = std::vector<ExonData>();
