@@ -287,15 +287,13 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       Covered:     %12$.2f\n"
                          "       Uncovered:   %13$.2f\n"
                          "       Total:       %14$.2f\n"
-                         "       Sensitivity: %15$.4f\n"
-                         "       Precision:   %16$.4f\n\n"
+                         "       Sensitivity: %15$.4f\n\n"
                          "-------Comparison of alignments to annotation (Genome)\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %17$.2f\n"
-                         "       Uncovered:   %18$.2f\n"
-                         "       Total:       %19$.2f\n"
-                         "       Sensitivity: %20$.4f\n"
-                         "       Precision:   %21$.4f";
+                         "       Covered:     %16$.2f\n"
+                         "       Uncovered:   %17$.2f\n"
+                         "       Total:       %18$.2f\n"
+                         "       Sensitivity: %19$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
@@ -314,12 +312,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % (sums2l - sums2c)       // 13
                                             % sums2l                  // 14
                                             % stats.ssn               // 15
-                                            % stats.spc               // 16
-                                            % sumg2c                  // 17
-                                            % (sumg2l - sumg2c)       // 18
-                                            % sumg2l                  // 19
-                                            % stats.gsn               // 20
-                                            % stats.gpc               // 21
+                                            % sumg2c                  // 16
+                                            % (sumg2l - sumg2c)       // 17
+                                            % sumg2l                  // 18
+                                            % stats.gsn               // 19
                      ).str());
     o.writer->close();
 }
