@@ -134,15 +134,15 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
     for (const auto &i : stats.hist)
     {
-        auto k = 0;
-        const auto n = i.second.size();
+        //auto k = 0;
+        //const auto n = i.second.size();
         
         for (const auto &j : i.second)
         {
             const auto &cID = i.first;
             const auto &gID = j.first;
 
-            o.info("Analyzing: " + gID + " for " + cID + ". " + toString(k++) + "/" + toString(n));
+            //o.info("Analyzing: " + gID + " for " + cID + ". " + toString(k++) + "/" + toString(n));
 
             // Reads aligned to the region
             stats.g2r[gID] = j.second;
