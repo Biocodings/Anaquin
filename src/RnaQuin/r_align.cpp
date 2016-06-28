@@ -183,7 +183,10 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
     if (info.spliced) { x.aLvl.spliced++; }
     else              { x.aLvl.normal++;  }
     
+    // This'll be set to false whenever there is a mismatch
     bool isTP = true;
+    
+    GeneID gID = "";
     
     // Check all cigar blocks...
     while (align.nextCigar(l, spliced))
@@ -218,6 +221,8 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                 // We'll need it for calculating sensitivity at the base level
                 match->map(l);
                 
+                gID = match->gID();
+
                 writeBase(l, "TP");
             }
             else
@@ -252,9 +257,10 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                     // The entire locus is outside of the reference region
                     x.bLvl.fp->map(l);
                     
-                    writeBase(l, "FP");
+                    writeBase(l, "FPO");
                 }
                 
+                // The alignment is overlapping, thus it's a FP
                 isTP = false;
             }
         }
@@ -263,12 +269,8 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
     if (isTP)
     {
         x.aLvl.m.tp()++;
-        
-        const auto &r = Standard::instance().r_trans;
-        
-        // The last cigar must be an exon and we just need the name of the gene
-        const auto &gID = r.findGene(align.cID, l, MatchRule::Overlap)->id();
-        
+
+        assert(!gID.empty());
         x.g2r[gID]++;
     }
     else
