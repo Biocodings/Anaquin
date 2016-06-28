@@ -85,19 +85,19 @@ void ParserSAM::parse(const FileName &file, Functor x)
         align.data   = t;
         align.head   = h;
         align.name   = bam_get_qname(t);
-        align.flag   = t->core.flag;
         align.cID    = std::string(h->target_name[t->core.tid]);
 
 #ifdef REVERSE_ALIGNMENT
+        align.flag   = t->core.flag;
         align.mapq   = t->core.qual;
         align.seq    = bam2seq(t);
         align.qual   = bam2qual(t);
         align.rnext  = bam2rnext(h, t);
         align.pnext  = t->core.mpos;
+        align.cigar  = bam2cigar(t);
+        align.tlen   = t->core.isize;
 #endif
 
-        align.tlen   = t->core.isize;
-        align.cigar  = bam2cigar(t);
         align.mapped = !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)
