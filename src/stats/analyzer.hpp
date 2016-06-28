@@ -126,12 +126,9 @@ namespace Anaquin
 
         template <typename T, typename F> void update(const T &t, F f)
         {
-            if (!t.i)
-            {
-                if      (!t.mapped) { n_unmap++; }
-                else if (!f(t))     { n_syn++;  }
-                else                { n_gen++;  }
-            }
+            if      (!t.mapped) { n_unmap++; }
+            else if (!f(t))     { n_syn++;  }
+            else                { n_gen++;  }
         }
 
         template <typename T> void update(const T &t)
