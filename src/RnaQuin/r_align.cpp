@@ -430,10 +430,10 @@ static void writeIQuins(const FileName &file,
                         const RAlign::Stats &stats,
                         const RAlign::Options &o)
 {
-    const auto format = "%1%\t%2%";
+    const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Position" % "Label").str());
+    o.writer->write((boost::format(format) % "ChrID" % "Position" % "Label").str());
     
     for (const auto &i : stats.data)
     {
@@ -446,13 +446,19 @@ static void writeIQuins(const FileName &file,
                 auto is = j.second.stats();
                 assert(is.nonZeros == 0 || is.nonZeros == is.length);
                 
+                const auto pos = (toString(j.second.l().start) + "-" + toString(j.second.l().end));
+                
                 if (is.nonZeros)
                 {
-                    o.writer->write(toString(j.second.l().start) + "-" + toString(j.second.l().end) + "\tTP");
+                    o.writer->write((boost::format(format) % cID
+                                                           % pos
+                                                           % "TP").str());
                 }
                 else
                 {
-                    o.writer->write(toString(j.second.l().start) + "-" + toString(j.second.l().end) + "\tFN");
+                    o.writer->write((boost::format(format) % cID
+                                                           % pos
+                                                           % "FN").str());
                 }
             }
         }
