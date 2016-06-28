@@ -20,7 +20,7 @@ static VAlign::Stats init()
     return stats;
 }
 
-static void classifyAlign(VAlign::Stats &stats, const Alignment &align)
+static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
 {
     Base lGaps = 0, rGaps = 0;
     
@@ -91,16 +91,17 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     auto stats = init();
     o.analyze(file);
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
+    ParserSAM::parse(file, [&](const ParserSAM::Data &align, const ParserSAM::Info &info)
     {
         if (!align.i && info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
         
-        if (align.spliced)
+        // Intron? Probably a mistake.
+        if (info.skip)
         {
-            o.warn("Spliced alignment: " + align.name);
+            o.warn("Skipped alignment: " + align.name);
         }
 
         stats.update(align);
