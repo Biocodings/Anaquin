@@ -30,7 +30,7 @@ LNorm::Stats LNorm::analyze(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
     {
-        if (!align.i && !(info.p.i % 1000000))
+        if (info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
@@ -38,7 +38,7 @@ LNorm::Stats LNorm::analyze(const FileName &file, const Options &o)
         {
             return;
         }
-        else if (!align.i)
+        else
         {
             stats.data.obsTotal++;
             stats.data.measured[align.cID]++;
