@@ -537,8 +537,6 @@ void TransRef::readRef(const Reader &r)
             Standard::addGenomic(i.first);
         }
     }
-
-    _impl->gInters = _impl->gData.gIntervals();
 }
 
 std::map<ChrID, Hist> TransRef::histGene() const
@@ -713,54 +711,68 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
 
 void TransRef::validate()
 {
-    const auto iIDs = _impl->gData.count(ChrT) ? getKeys(_impl->gData.at(ChrT).t2d) : std::set<SequinID>();
+    assert(!_impl->gData.empty());
     
-    /*
-     * Building rules:
-     *
-     *   1: Only annoation
-     *   2: Only mixture
-     *   3: Annotation and mixture
-     */
-
-    if (_rawMIDs.empty())
+    for (const auto &i : _impl->gData)
     {
-        merge(iIDs, iIDs);         // Rule 1
-    }
-    else if (!iIDs.empty())
-    {
-        merge(_rawMIDs, iIDs);     // Rule 3
-    }
-    else
-    {
-        merge(_rawMIDs, _rawMIDs); // Rule 2
-    }
-
-    /*
-     * Always prefer reference annotation be given. However, if this is not provided, we'll need to
-     * work out the RNA structure ourself. Coordinates are not required.
-     */
-
-    if (_impl->gData.empty())
-    {
-        for (const auto &i : _rawMIDs)
+        const auto &cID = i.first;
+        
+        if (Standard::isSynthetic(cID))
         {
-            TransData t;
+            const auto iIDs = _impl->gData.count(cID) ? getKeys(_impl->gData.at(cID).t2d) : std::set<SequinID>();
             
-            t.cID = ChrT;
-            t.tID = i;
-            t.gID = RnaQuin::t2g(i);
-
-            GeneData g;
+            /*
+             * Building rules:
+             *
+             *   1: Only annoation
+             *   2: Only mixture
+             *   3: Annotation and mixture
+             */
             
-            g.cID = ChrT;
-            g.gID = t.gID;
+            if (_rawMIDs.empty())
+            {
+                merge(iIDs, iIDs);         // Rule 1
+            }
+            else if (!iIDs.empty())
+            {
+                merge(_rawMIDs, iIDs);     // Rule 3
+            }
+            else
+            {
+                merge(_rawMIDs, _rawMIDs); // Rule 2
+            }
             
-            _impl->gData[ChrT].g2d[t.gID] = g;
-            _impl->gData[ChrT].t2d[t.tID] = t;            
-            _impl->gData[ChrT].t2g[t.tID] = t.gID;
+            /*
+             * Always prefer reference annotation be given. However, if this is not provided, we'll need to
+             * work out the RNA structure ourself. Coordinates are not required.
+             */
+            
+            if (_impl->gData.empty())
+            {
+                for (const auto &i : _rawMIDs)
+                {
+                    TransData t;
+                    
+                    t.cID = ChrT;
+                    t.tID = i;
+                    t.gID = RnaQuin::t2g(i);
+                    
+                    GeneData g;
+                    
+                    g.cID = ChrT;
+                    g.gID = t.gID;
+                    
+                    _impl->gData[ChrT].g2d[t.gID] = g;
+                    _impl->gData[ChrT].t2d[t.tID] = t;            
+                    _impl->gData[ChrT].t2g[t.tID] = t.gID;
+                }
+            }
+            
+            return;
         }
     }
+    
+    throw "Failed to detect synthetic chromosomes. Please check and try again.";
 }
 
 /*
@@ -794,8 +806,6 @@ void VarRef::readBRef(const Reader &r)
             Standard::addGenomic(i.first);
         }
     }
-
-    //_impl->gInters = _impl->bData.inters();
 }
 
 void VarRef::readVRef(const Reader &r)
