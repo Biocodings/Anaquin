@@ -300,7 +300,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             
             stats.update(x);
 
-            if (!x.mapped)
+            if (!x.mapped || info.ins || info.del)
             {
                 return;
             }

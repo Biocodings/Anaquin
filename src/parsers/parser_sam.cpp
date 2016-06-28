@@ -107,6 +107,21 @@ void ParserSAM::parse(const FileName &file, Functor x)
             // Is this a multi alignment?
             info.multi = t->core.n_cigar > 1;
             
+            info.ins  = false;
+            info.del  = false;
+            info.skip = false;
+            
+            for (auto i = 0; i < t->core.n_cigar; i++)
+            {
+                switch (bam_cigar_op(cigar[i]))
+                {
+                    case BAM_CINS:      { info.ins  = true; break; }
+                    case BAM_CDEL:      { info.del  = true; break; }
+                    case BAM_CREF_SKIP: { info.skip = true; break; }
+                    default: { break; }
+                }
+            }
+
             align._i = 0;
             align._n = t->core.pos;
 

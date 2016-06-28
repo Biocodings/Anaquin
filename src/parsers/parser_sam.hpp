@@ -16,6 +16,15 @@ namespace Anaquin
             // Whether this is a multi-alignment
             bool multi;
             
+            // Whether there is insertion
+            bool ins;
+            
+            // Whether there is deletion
+            bool del;
+            
+            // Whether there is skipped region
+            bool skip;
+            
             // Size of the chromosome of the alignment
             Base length;
             
