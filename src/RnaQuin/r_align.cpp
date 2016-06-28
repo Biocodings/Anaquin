@@ -1,10 +1,8 @@
-#include <fstream>
 #include "RnaQuin/r_align.hpp"
 #include "parsers/parser_sam.hpp"
 #include "writers/file_writer.hpp"
 
 using namespace Anaquin;
-using namespace std::placeholders;
 
 // Defined in resources.cpp
 extern FileName GTFRef();
