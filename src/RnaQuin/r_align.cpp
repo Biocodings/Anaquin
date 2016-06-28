@@ -401,10 +401,10 @@ static void writeBQuins(const FileName &file,
                         const RAlign::Stats &stats,
                         const RAlign::Options &o)
 {
-    const auto format = "%1%\t%2%";
+    const auto format = "%1%\t%2%\t%3%";
     
     o.writer->open(file);
-    o.writer->write((boost::format(format) % "Position" % "Label").str());
+    o.writer->write((boost::format(format) % "ChrID" % "Position" % "Label").str());
     
     for (const auto &i : stats.data)
     {
@@ -416,7 +416,11 @@ static void writeBQuins(const FileName &file,
             {
                 for (const auto &k : j.second._data)
                 {
-                    o.writer->write(toString(k.second.start) + "-" + toString(k.second.end) + "\tTP");
+                    const auto pos = (toString(k.second.start) + "-" + toString(k.second.end));
+                    
+                    o.writer->write((boost::format(format) % cID
+                                                           % pos
+                                                           % "TP").str());
                 }
             }
         }
