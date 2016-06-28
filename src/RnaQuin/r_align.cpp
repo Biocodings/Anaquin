@@ -53,7 +53,6 @@ static RAlign::Stats init()
         stats.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>(mi);
         
         assert(stats.data[cID].eLvl.nr());
-        assert(stats.data[cID].eLvl.nr() == 1 || stats.data[cID].iLvl.m.nr());
     }
 
     assert(!stats.data.empty());
