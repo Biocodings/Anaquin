@@ -180,8 +180,14 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
 
     auto &x = stats.data.at(align.cID);
 
-    if (info.spliced) { x.aLvl.spliced++; }
-    else              { x.aLvl.normal++;  }
+    if (info.multi)
+    {
+        x.aLvl.spliced++;
+    }
+    else
+    {
+        x.aLvl.normal++;
+    }
     
     // This'll be set to false whenever there is a mismatch
     bool isTP = true;
@@ -297,7 +303,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             if (!x.mapped)
             {
                 return;
-            }            
+            }
             else if (Standard::isSynthetic(x.cID) || Standard::isGenomic(x.cID))
             {
                 match(stats, info, x);
@@ -332,23 +338,19 @@ static Scripts summary()
            "       Spliced:     %17%\n"
            "       Total:       %18%\n\n"
            "-------Comparison of alignments to reference annotation (Synthetic)\n\n"
-           "       *Exon level\n"
-           "        Sensitivity: %19$.2f\n\n"
            "       *Intron level\n"
-           "        Sensitivity: %20$.2f\n"
-           "        Precision:   %21$.2f\n\n"
+           "        Sensitivity: %19$.2f\n"
+           "        Precision:   %20$.2f\n\n"
            "       *Base level\n"
-           "        Sensitivity: %22$.2f\n"
-           "        Precision:   %23$.2f\n\n"
+           "        Sensitivity: %21$.2f\n"
+           "        Precision:   %22$.2f\n\n"
            "-------Comparison of alignments to reference annotation (Genome)\n\n"
-           "       *Exon level\n"
-           "        Sensitivity: %24$.2f\n\n"
            "       *Intron level\n"
-           "        Sensitivity: %25$.2f\n"
-           "        Precision:   %26$.2f\n\n"
+           "        Sensitivity: %23$.2f\n"
+           "        Precision:   %24$.2f\n\n"
            "       *Base level\n"
-           "        Sensitivity: %27$.2f\n"
-           "        Precision:   %28$.2f\n\n";
+           "        Sensitivity: %25$.2f\n"
+           "        Precision:   %26$.2f\n\n";
 }
 
 static void generateSummary(const FileName &file,
@@ -380,16 +382,14 @@ static void generateSummary(const FileName &file,
                                               % G(stats.gn)            // 16
                                               % G(stats.gs)            // 17
                                               % G(stats.gn + stats.gs) // 18
-                                              % "-" //stats.sem.sn()         // 19
-                                              % stats.sim.sn()         // 20
-                                              % stats.sim.pc()         // 21
-                                              % stats.sbm.sn()         // 22
-                                              % ""                     // 23
-                                              % "-" //stats.gem.sn()         // 24
-                                              % stats.gim.sn()         // 25
-                                              % stats.gim.pc()         // 26
-                                              % stats.gbm.sn()         // 27
-                                              % ""                     // 28
+                                              % stats.sim.sn()         // 19
+                                              % stats.sim.pc()         // 20
+                                              % stats.sbm.sn()         // 21
+                                              % stats.sbm.pc()         // 22
+                                              % stats.gim.sn()         // 23
+                                              % stats.gim.pc()         // 24
+                                              % stats.gbm.sn()         // 25
+                                              % stats.gbm.pc()         // 26
                      ).str());
     o.writer->close();
 }

@@ -104,25 +104,8 @@ void ParserSAM::parse(const FileName &file, Functor x)
         {
             const auto cigar = bam_get_cigar(t);
 
-            /*
-             * Check if this is an indel alignment, an alignment that has some bases.
-             */
-            
-            info.spliced = false;
-            
-            for (auto i = 0; i < t->core.n_cigar; i++)
-            {
-                switch (bam_cigar_op(cigar[i]))
-                {
-                    case BAM_CREF_SKIP: { info.spliced = true; break; }
-                    default: { break; }
-                }
-            }
-
-            if (t->core.n_cigar == 1)
-            {
-                assert(!info.spliced);
-            }
+            // Is this a multi alignment?
+            info.multi = t->core.n_cigar > 1;
             
             align._i = 0;
             align._n = t->core.pos;
