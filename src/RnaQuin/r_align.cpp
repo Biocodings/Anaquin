@@ -180,13 +180,18 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
 
     auto &x = stats.data.at(align.cID);
 
-    if (info.multi)
+    if (info.skip)
     {
         x.aLvl.spliced++;
     }
     else
     {
         x.aLvl.normal++;
+    }
+    
+    if (info.ins || info.del)
+    {
+        return;
     }
     
     // This'll be set to false whenever there is a mismatch
@@ -300,7 +305,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
             
             stats.update(x);
 
-            if (!x.mapped || info.ins || info.del)
+            if (!x.mapped)
             {
                 return;
             }
