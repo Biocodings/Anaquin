@@ -325,7 +325,11 @@ namespace Anaquin
                 }
             }
             
-            r.build();
+            if (r.size())
+            {
+                r.build();
+            }
+            
             return r;
         }
         
@@ -336,6 +340,7 @@ namespace Anaquin
             
             for (const auto &i : *this)
             {
+                std::cout << i.first << std::endl;
                 r[i.first] = uiInters(i.first);
             }
             
