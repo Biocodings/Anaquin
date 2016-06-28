@@ -139,26 +139,6 @@ namespace Anaquin
                 f(x, line, p);
             }            
         }
-        
-        // Whether this is a GTF file
-        static bool check(const Reader &r)
-        {
-            Counts n = 0;
-            
-            try
-            {
-                ParserGTF::parse(r, [&](const ParserGTF::Data &, const std::string &, const ParserProgress &)
-                {
-                    n++;
-                });
-            }
-            catch (...)
-            {
-                n = 0;
-            }
-            
-            return n;
-        }
     };
 }
 
