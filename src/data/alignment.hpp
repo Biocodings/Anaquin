@@ -43,8 +43,6 @@ namespace Anaquin
         // Location of the alignment
         Locus l;
 
-        unsigned i;
-        
         // If this field is false, no assumption can be made to other fields
         bool mapped;
 
