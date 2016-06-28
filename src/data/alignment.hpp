@@ -14,16 +14,16 @@ namespace Anaquin
         // Eg: B7_591:6:155:12:674
         std::string name;
 
-        // Bitwise FLAG
-        int flag;
-        
-        // Cigar string
-        std::string cigar;
-        
+#ifdef REVERSE_ALIGNMENT
         // Signed observed template length
         Base tlen;
         
-#ifdef REVERSE_ALIGNMENT
+        // Cigar string
+        std::string cigar;
+
+        // Bitwise FLAG
+        int flag;
+
         // Reference sequence name of the primary alignment
         std::string rnext;
         
