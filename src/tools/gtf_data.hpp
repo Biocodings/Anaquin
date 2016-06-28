@@ -324,7 +324,8 @@ namespace Anaquin
                                          j.l, gID, tID));
                 }
             }
-            
+
+            // Eg: chrM doesn't have any intron...
             if (r.size())
             {
                 r.build();
@@ -340,7 +341,6 @@ namespace Anaquin
             
             for (const auto &i : *this)
             {
-                std::cout << i.first << std::endl;
                 r[i.first] = uiInters(i.first);
             }
             
