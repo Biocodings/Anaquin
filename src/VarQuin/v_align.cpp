@@ -45,7 +45,7 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
         assert(align.l.length() > lGaps);
         assert(align.l.length() > rGaps);
     };
-    
+
     // Does the read aligned within a gene (or a region)?
     const auto m = stats.inters.at(align.cID).contains(align.l);
 
@@ -58,7 +58,7 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
 
         stats.data[align.cID].tp++;
         //stats.data[align.cID].gtp[m->name()]++;
-        stats.hist.at(align.cID).at(m->name())++;
+        //stats.hist.at(align.cID).at(m->name())++;
     }
     else
     {
@@ -93,7 +93,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
     ParserSAM::parse(file, [&](const ParserSAM::Data &align, const ParserSAM::Info &info)
     {
-        if (!align.i && info.p.i && !(info.p.i % 1000000))
+        if (info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
@@ -133,11 +133,13 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     
     o.info("Analyzing " + toString(stats.hist.size()) + " chromsomes");
 
+    // For each chromosome...
     for (const auto &i : stats.hist)
     {
         //auto k = 0;
         //const auto n = i.second.size();
         
+        // For each region... (whole chromosome for the whole genome sequencing)
         for (const auto &j : i.second)
         {
             const auto &cID = i.first;
@@ -334,8 +336,10 @@ static void writeQuins(const FileName &file, const VAlign::Stats &stats, const V
                                            % "Sn"
                                            % "Pc").str());
 
+    // For each chromosome...
     for (const auto &i : stats.hist)
     {
+        // Only the synthetic chromosome...
         if (Standard::isSynthetic(i.first))
         {
             for (const auto &j : i.second)

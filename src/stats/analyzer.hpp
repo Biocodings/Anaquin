@@ -57,17 +57,17 @@ namespace Anaquin
         return n;
     }
 
-    template <typename T> Counts sum(const std::vector<T> &x)
+    template <typename T1, typename T2> T2 sum(const std::vector<T1> &x)
     {
-        return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const T &p)
+        return std::accumulate(std::begin(x), std::end(x), T2(), [](T2 c, const T1 &p)
         {
             return c + p;
         });
     }
     
-    template <typename T> Counts sum(const std::map<T, Counts> &x)
+    template <typename T1, typename T2> T2 sum(const std::map<T1, T2> &x)
     {
-        return std::accumulate(std::begin(x), std::end(x), 0, [](Counts c, const std::pair<T, Counts>& p)
+        return std::accumulate(std::begin(x), std::end(x), T2(), [](T2 c, const std::pair<T1, T2>& p)
         {
             return c + p.second;
         });

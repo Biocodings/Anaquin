@@ -225,7 +225,7 @@ namespace Anaquin
             
             ParserSAM::parse(src, [&](const Alignment &align, const ParserSAM::Info &info)
             {
-                if (!align.i && info.p.i && !(info.p.i % 1000000))
+                if (info.p.i && !(info.p.i % 1000000))
                 {
                     o.wait(std::to_string(info.p.i));
                 }
@@ -233,13 +233,10 @@ namespace Anaquin
                 const auto *b = reinterpret_cast<bam1_t *>(info.data);
                 const auto *h = reinterpret_cast<bam_hdr_t *>(info.header);
                 
-                if (!align.i)
+                // This is the key, randomly write the reads with certain probability
+                if (!Standard::isSynthetic(align.cID) || sampler.select(bam_get_qname(b)))
                 {
-                    // This is the key, randomly write the reads with certain probability
-                    if (!Standard::isSynthetic(align.cID) || sampler.select(bam_get_qname(b)))
-                    {
-                        writer.write(h, b);
-                    }
+                    writer.write(h, b);
                 }
             });
             

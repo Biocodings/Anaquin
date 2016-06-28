@@ -91,7 +91,7 @@ namespace Anaquin
                     r[i.first][j.first];
                 }
             }
-
+            
             return r;
         }
         
@@ -159,10 +159,31 @@ namespace Anaquin
             
             for (const auto &i : at(cID).g2d)
             {
-                r.add(MergedInterval(i.first, i.second.l));
+                #define BIN_SIZE 10000
+                
+                if (false && i.second.l.length() >= BIN_SIZE)
+                {
+                    Locus l;
+                    
+                    l.start = 1;
+                    l.end = BIN_SIZE;
+                    
+                    while (l.end < i.second.l.length())
+                    {
+                        r.add(MergedInterval(toString(i.first) + "_" + toString(l.start), l));
+                        
+                        l.start = l.end + 1;
+                        l.end = l.start + BIN_SIZE;
+                    }
+                }
+                else
+                {
+                    r.add(MergedInterval(i.first, i.second.l));
+                }
             }
             
             r.build();
+            
             return r;
         }
         

@@ -2,6 +2,7 @@
 #define MERGED_HPP
 
 #include <map>
+#include <cmath>
 #include <numeric>
 #include "data/data.hpp"
 #include "data/itree.hpp"
@@ -30,90 +31,9 @@ namespace Anaquin
                            const TransID    &tID) :
                         _id(id), _tID(tID), _gID(gID), _l(l) {}
 
-            inline Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr)
-            {
-                bool added = true;
-                bool p1 = true;
-                bool p2 = false;
-                
-                // Pointing to the matching
-                Locus *m = nullptr;
+        void sanityCheck(const Locus &l);
 
-                Base left  = 0;
-                Base right = 0;
-                
-                for (auto it = _data.begin(); it != _data.cend();)
-                {
-                    auto &j = it->second;
-                    
-                    if (p1)
-                    {
-                        if (j.overlap(l))
-                        {
-                            added = false;
-                            
-                            left  = ((l.start < j.start) ? j.start -  l.start : 0);
-                            right = ((l.end   > j.end)   ?  l.end  - j.end   : 0);
-                            
-                            j.start = std::min(j.start, l.start);
-                            j.end   = std::max(j.end,   l.end);
-                            j.start = std::max(j.start, _l.start);
-                            j.end   = std::min(j.end,   _l.end);
-
-                            // So that we can access it in the later iterations
-                            m = &j;
-
-                            if (lp) { *lp = left;  }
-                            if (rp) { *rp = right; }
-                            
-                            p1 = false;
-                            p2 = true;
-                        }
-                    }
-                    else if (p2)
-                    {
-                        if (!j.overlap(l))
-                        {
-                            return (left + right);
-                        }
-                        
-                        m->start = std::min(m->start, j.start);
-                        m->end   = std::max(m->end,   j.end);
-                        m->start = std::max(m->start, _l.start);
-                        m->end   = std::min(m->end,   _l.end);
-                        
-                        // Remove the overlapping entry
-                        _data.erase(it++);
-                        
-                        continue;
-                    }
-                    else
-                    {
-                        throw "Invalid phase";
-                    }
-                    
-                    ++it;
-                }
-                
-                if (added)
-                {
-                    auto start = l.start;
-                    auto end = l.end;
-                    
-                    start = std::max(start, _l.start);
-                    end   = std::min(end,   _l.end);
-                    
-                    _data[start] = Locus(start, end);
-                    
-                    left  = ((l.start < _l.start) ? _l.start -  l.start : 0);
-                    right = ((l.end   > _l.end)   ?  l.end  - _l.end   : 0);
-                }
-                
-                if (lp) { *lp = left;  }
-                if (rp) { *rp = right; }
-                
-                return left + right;
-            }
+        Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr);
         
             template <typename F> Stats stats(F f) const
             {
@@ -151,6 +71,12 @@ namespace Anaquin
             inline std::size_t size() { return _data.size(); }
         
         //private:
+        
+            // The first base of the mini-region
+            Base _x = NAN;
+        
+            // The last base of the mini-region
+            Base _y = NAN;
         
             Locus _l;
 

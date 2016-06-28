@@ -299,7 +299,7 @@ RAlign::Stats RAlign::analyze(const FileName &file, const Options &o)
     {
         ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
         {
-            if (!x.i && info.p.i && !(info.p.i % 1000000))
+            if (info.p.i && !(info.p.i % 1000000))
             {
                 o.wait(std::to_string(info.p.i));
             }

@@ -71,8 +71,8 @@ void ParserSAM::parse(const FileName &file, Functor x)
     {
         info.length = h->target_len[t->core.tid];
 
-        align.i      = 0;
         align.mapped = false;
+        
         info.data    = t;
         info.header  = h;
 
@@ -84,9 +84,11 @@ void ParserSAM::parse(const FileName &file, Functor x)
 
         align.data   = t;
         align.head   = h;
-        align.name   = bam_get_qname(t);
         align.cID    = std::string(h->target_name[t->core.tid]);
 
+        // Uncomment if needed
+        //align.name = bam_get_qname(t);
+        
 #ifdef REVERSE_ALIGNMENT
         align.flag   = t->core.flag;
         align.mapq   = t->core.qual;
