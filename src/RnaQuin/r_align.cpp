@@ -186,9 +186,10 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
     }
     else
     {
+        // Indels (ins+del) are also counted as "normal"
         x.aLvl.normal++;
     }
-    
+
     if (info.ins || info.del)
     {
         return;
@@ -336,26 +337,24 @@ static Scripts summary()
            "       Genome: %12% bases\n\n"
            "-------Alignments (Synthetic)\n\n"
            "       Non-spliced: %13%\n"
-           "       Spliced:     %14%\n"
-           "       Total:       %15%\n\n"
+           "       Spliced:     %14%\n\n"
            "-------Alignments (Genome)\n\n"
-           "       Non-spliced: %16%\n"
-           "       Spliced:     %17%\n"
-           "       Total:       %18%\n\n"
+           "       Non-spliced: %15%\n"
+           "       Spliced:     %16%\n\n"
            "-------Comparison of alignments to reference annotation (Synthetic)\n\n"
            "       *Intron level\n"
+           "        Sensitivity: %17$.2f\n"
+           "        Precision:   %18$.2f\n\n"
+           "       *Base level\n"
            "        Sensitivity: %19$.2f\n"
            "        Precision:   %20$.2f\n\n"
-           "       *Base level\n"
-           "        Sensitivity: %21$.2f\n"
-           "        Precision:   %22$.2f\n\n"
            "-------Comparison of alignments to reference annotation (Genome)\n\n"
            "       *Intron level\n"
-           "        Sensitivity: %23$.2f\n"
-           "        Precision:   %24$.2f\n\n"
+           "        Sensitivity: %21$.2f\n"
+           "        Precision:   %22$.2f\n\n"
            "       *Base level\n"
-           "        Sensitivity: %25$.2f\n"
-           "        Precision:   %26$.2f\n\n";
+           "        Sensitivity: %23$.2f\n"
+           "        Precision:   %24$.2f\n\n";
 }
 
 static void generateSummary(const FileName &file,
@@ -369,32 +368,30 @@ static void generateSummary(const FileName &file,
     #define G(x) (hasGeno ? toString(x) : "-")
     
     o.writer->open(file);
-    o.writer->write((boost::format(summary()) % src                    // 1
-                                              % GTFRef()               // 2
-                                              % stats.n_syn            // 3
-                                              % stats.n_gen            // 4
-                                              % stats.dilution()       // 5
-                                              % stats.n_unmap          // 6
-                                              % r.countUExonSyn()      // 7
-                                              % r.countUIntrSyn()      // 8
-                                              % r.countLenSyn()        // 9
-                                              % G(r.countUExonGen())   // 10
-                                              % G(r.countUIntrGen())   // 11
-                                              % G(r.countLenGen())     // 12
-                                              % stats.sn               // 13
-                                              % stats.ss               // 14
-                                              % (stats.sn + stats.ss)  // 15
-                                              % G(stats.gn)            // 16
-                                              % G(stats.gs)            // 17
-                                              % G(stats.gn + stats.gs) // 18
-                                              % stats.sim.sn()         // 19
-                                              % stats.sim.pc()         // 20
-                                              % stats.sbm.sn()         // 21
-                                              % stats.sbm.pc()         // 22
-                                              % stats.gim.sn()         // 23
-                                              % stats.gim.pc()         // 24
-                                              % stats.gbm.sn()         // 25
-                                              % stats.gbm.pc()         // 26
+    o.writer->write((boost::format(summary()) % src                  // 1
+                                              % GTFRef()             // 2
+                                              % stats.n_syn          // 3
+                                              % stats.n_gen          // 4
+                                              % stats.dilution()     // 5
+                                              % stats.n_unmap        // 6
+                                              % r.countUExonSyn()    // 7
+                                              % r.countUIntrSyn()    // 8
+                                              % r.countLenSyn()      // 9
+                                              % G(r.countUExonGen()) // 10
+                                              % G(r.countUIntrGen()) // 11
+                                              % G(r.countLenGen())   // 12
+                                              % stats.sn             // 13
+                                              % stats.ss             // 14
+                                              % G(stats.gn)          // 15
+                                              % G(stats.gs)          // 16
+                                              % stats.sim.sn()       // 17
+                                              % stats.sim.pc()       // 18
+                                              % stats.sbm.sn()       // 19
+                                              % stats.sbm.pc()       // 20
+                                              % stats.gim.sn()       // 21
+                                              % stats.gim.pc()       // 22
+                                              % stats.gbm.sn()       // 23
+                                              % stats.gbm.pc()       // 24
                      ).str());
     o.writer->close();
 }
