@@ -410,7 +410,7 @@ static void writeBQuins(const FileName &file,
     {
         const auto &cID = i.first;
         
-        if (Standard::isSynthetic(cID))
+        //if (Standard::isSynthetic(cID))
         {
             for (const auto &j : stats.eInters.at(cID).data())
             {
@@ -443,7 +443,7 @@ static void writeIQuins(const FileName &file,
     {
         const auto &cID = i.first;
         
-        if (Standard::isSynthetic(cID))
+        //if (Standard::isSynthetic(cID))
         {
             for (const auto &j : stats.iInters.at(cID).data())
             {
