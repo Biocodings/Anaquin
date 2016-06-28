@@ -465,8 +465,6 @@ Scripts StatsWriter::inflectSummary(const FileName                  &chrTR,
         // Calcluate the inflection point with logarithm
         const auto inf = lstats[i].limitQuant(true);
 
-        std::cout << inf.b << std::endl;
-        
         // Remember the break-point is on the log2-scale, we'll need to convert it back
         const auto b = pow(2, inf.b);
 
