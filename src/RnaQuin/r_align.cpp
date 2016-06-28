@@ -255,9 +255,6 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                     writeBase(l, "FP");
                 }
                 
-                
-                
-                
                 isTP = false;
             }
         }
