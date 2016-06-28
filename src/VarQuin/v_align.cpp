@@ -100,7 +100,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         
         if (align.spliced)
         {
-            o.warn("Spliced alignments detected");
+            o.warn("Spliced alignment: " + align.name);
         }
 
         stats.update(align);
