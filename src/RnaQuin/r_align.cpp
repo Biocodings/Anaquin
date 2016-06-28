@@ -37,7 +37,10 @@ static RAlign::Stats init()
     {
         const auto &cID = i.first;
         
+        // Number of unique reference exons
         stats.data[cID].eLvl.nr() = r.countUExon(cID);
+        
+        // Number of unique reference introns
         stats.data[cID].iLvl.m.nr() = r.countUIntr(cID);
 
         /*
