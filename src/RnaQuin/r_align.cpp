@@ -12,14 +12,14 @@ extern FileName GTFRef();
 std::ofstream __iWriter__;
 std::ofstream __bWriter__;
 
-static void writeIntron(const Locus &l, const GeneID &gID, const Label &label)
+static void writeIntron(const ChrID &cID, const Locus &l, const GeneID &gID, const Label &label)
 {
-    __iWriter__ << l.start << "\t" << l.end << "\t" << gID << "\t" << label << "\n";
+    __iWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << gID << "\t" << label << "\n";
 }
 
-static void writeBase(const Locus &l, const Label &label)
+static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
 {
-    __bWriter__ << l.start << "\t" << l.end << "\t" << label << "\n";
+    __bWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << label << "\n";
 }
 
 static RAlign::Stats init()
@@ -207,14 +207,14 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                 // We'll use it to calculate the sensitivty at the intron level
                 match->map(l);
 
-                writeIntron(l, match->gID(), "TP");
+                writeIntron(align.cID, l, match->gID(), "TP");
             }
             else
             {
                 x.iLvl.fp.insert(l);
                 isTP = false;
 
-                writeIntron(l, "", "FP");
+                writeIntron(align.cID, l, "", "FP");
             }
         }
         else
@@ -229,7 +229,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                 
                 gID = match->gID();
 
-                writeBase(l, "TP");
+                writeBase(align.cID, l, "TP");
             }
             else
             {
@@ -246,7 +246,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                         const auto gap = Locus(l.start, match->l().start-1);
                         
                         x.bLvl.fp->map(gap);
-                        writeBase(gap, "FP");
+                        writeBase(align.cID, gap, "FP");
                     }
                     
                     // Gap to the right?
@@ -255,7 +255,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                         const auto gap = Locus(match->l().end+1, l.end);
                         
                         x.bLvl.fp->map(gap);
-                        writeBase(gap, "FP");
+                        writeBase(align.cID, gap, "FP");
                     }
                 }
                 else
@@ -263,7 +263,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
                     // The entire locus is outside of the reference region
                     x.bLvl.fp->map(l);
                     
-                    writeBase(l, "FPO");
+                    writeBase(align.cID, l, "FPO");
                 }
                 
                 // The alignment is overlapping, thus it's a FP
