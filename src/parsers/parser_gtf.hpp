@@ -99,9 +99,11 @@ namespace Anaquin
                 }
                 
                 x.cID  = toks[0];
-                x.l    = Locus(stoi(toks[3]), stoi(toks[4]));
                 x.type = mapper[toks[2]];
-                
+
+                x.l.start = stoi(toks[3]);
+                x.l.end   = stoi(toks[4]);
+
                 /*
                  * Eg: "gene_id "R_5_3"; transcript_id "R_5_3_R";"
                  */
