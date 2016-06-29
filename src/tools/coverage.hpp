@@ -11,8 +11,6 @@ namespace Anaquin
         struct Stats : public AlignmentStats, public SequinStats
         {
             FileName src;
-
-            Intervals<> inters;
         };
 
         struct CoverageReportOptions

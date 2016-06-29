@@ -138,9 +138,9 @@ namespace Anaquin
         }
         
         // Synthetic regions mapped by chromosomes
-        inline std::map<ChrID, Intervals<>> intersSyn() const
+        inline ID2Intervals intersSyn() const
         {
-            std::map<ChrID, Intervals<>> r;
+            ID2Intervals r;
             
             for (const auto &i : *this)
             {

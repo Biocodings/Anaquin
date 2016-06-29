@@ -672,6 +672,30 @@ bam_hdr_t *sam_hdr_read(htsFile *fp)
     }
 }
 
+int sam_hdr_print(htsFile *fp, const bam_hdr_t *h)
+{
+    //fp->format.category = sequence_data;
+    //fp->format.format = sam;
+    char *p;
+    
+    printf("%s", h->text);
+    //hputs(h->text, fp->fp.hfile);
+    
+//    p = strstr(h->text, "@SQ\t"); // FIXME: we need a loop to make sure "@SQ\t" does not match something unwanted!!!
+//    if (p == 0) {
+//        int i;
+//        for (i = 0; i < h->n_targets; ++i) {
+//            fp->line.l = 0;
+//            kputsn("@SQ\tSN:", 7, &fp->line); kputs(h->target_name[i], &fp->line);
+//            kputsn("\tLN:", 4, &fp->line); kputw(h->target_len[i], &fp->line); kputc('\n', &fp->line);
+//            if ( hwrite(fp->fp.hfile, fp->line.s, fp->line.l) != fp->line.l ) return -1;
+//        }
+//    }
+    //if ( hflush(fp->fp.hfile) != 0 ) return -1;
+
+    return 0;
+}
+
 int sam_hdr_write(htsFile *fp, const bam_hdr_t *h)
 {
     switch (fp->format.format) {

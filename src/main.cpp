@@ -6,6 +6,7 @@
 #include <getopt.h>
 #include <strings.h>
 #include <execinfo.h>
+#include <sys/stat.h>
 
 #include "RnaQuin/r_diff.hpp"
 #include "RnaQuin/r_align.hpp"
@@ -456,7 +457,7 @@ static const struct option long_options[] =
 
     { "m",       required_argument, 0, OPT_MIXTURE },
     { "mix",     required_argument, 0, OPT_MIXTURE },
-    { "meth",    required_argument, 0, OPT_METHOD  },
+    { "method",  required_argument, 0, OPT_METHOD  },
 
     { "rgen",    required_argument, 0, OPT_R_GENO },
     { "rbed",    required_argument, 0, OPT_R_BED  },
@@ -792,8 +793,10 @@ template <typename Analyzer, typename F> void startAnalysis(F f, typename Analyz
     o.logger->open("anaquin.log");
 #endif
 
+    system(("mkdir -p " + path).c_str());
+    
+    o.work   = path;
     o.report = std::shared_ptr<PDFWriter>(new PDFWriter());
-    o.work = path;
     
     auto t  = std::time(nullptr);
     auto tm = *std::localtime(&t);

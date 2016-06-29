@@ -40,10 +40,9 @@ namespace Anaquin
     {
         enum CoverageMethod
         {
-            ArithAverage,
-            Maximum,
+            Mean,
             Median,
-            Percentile75,
+            ReadCount,
         };
 
         struct Stats
@@ -154,17 +153,10 @@ namespace Anaquin
             
             switch (o.method)
             {
-                case ArithAverage:
+                case Mean:
                 {
                     stats.synC = ss.mean;
                     stats.genC = gs.mean;
-                    break;
-                }
-
-                case Maximum:
-                {
-                    stats.synC = ss.max;
-                    stats.genC = gs.max;
                     break;
                 }
 
@@ -175,10 +167,10 @@ namespace Anaquin
                     break;
                 }
 
-                case Percentile75:
+                case ReadCount:
                 {
-                    stats.synC = ss.p75;
-                    stats.genC = gs.p75;
+                    stats.synC = stats.n_syn;
+                    stats.genC = stats.n_gen;
                     break;
                 }
             }
@@ -191,17 +183,35 @@ namespace Anaquin
             return stats;
         }
 
-        /*
-         * Perform subsampling to a proportion of synthetic alignments
-         */
-
-        template <typename Options> static void sample(const FileName &src,
-                                                       const FileName &dst,
-                                                       Proportion prop,
-                                                       const Options &o)
+        template <typename Stats, typename Options> static Coverage meth2cov(const Stats &stats, const Options &o)
+        {
+            switch (o.method)
+            {
+                case Mean:      { return stats.mean; }
+                case Median:    { return stats.p50;  }
+                case ReadCount: { throw "????"; }
+            }
+        }
+        
+        struct SampleStats
+        {
+            // Sequence coverage after subsampling
+            Coverage cov;
+            
+            // Number of reads after subsampling
+            Counts reads = 0;
+        };
+        
+        template <typename Options> static SampleStats sample(const FileName &src,
+                                                              const FileName &dst,
+                                                              Proportion prop,
+                                                              ID2Intervals &inters,
+                                                              const Options &o)
         {
             assert(prop >= 0 && prop <= 1.0);
             assert(!src.empty() && !dst.empty());
+         
+            o.info("Subsampling: " + toString(prop));
             
             /*
              * Subsampling alignments. It's expected that coverage would roughly match between
@@ -210,38 +220,60 @@ namespace Anaquin
             
             o.info("Sampling the alignments");
             
-            WriterSAM writer;
-            writer.open(dst);
+            WriterSAM writ;
+            writ.openTerm();
             
             if (prop == 0.0)
             {
-                o.warn("Sampling fraction is zero. This could be an error in the inputs.");
+                o.warn("Sampling proportion is zero. This could be an error in the inputs.");
             }
             else if (prop == 1.0)
             {
-                o.warn("Sampling fraction is one. This could be an error in the inputs.");
+                o.warn("Sampling proportion is one. This could be an error in the inputs.");
             }
             
-            SamplingTool sampler(1 - prop);
+            SamplingTool sampler(1.0 - prop);
             
-            ParserSAM::parse(src, [&](const Alignment &align, const ParserSAM::Info &info)
+            SampleStats r;
+            
+            ParserSAM::parse(src, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
             {
                 if (info.p.i && !(info.p.i % 1000000))
                 {
                     o.wait(std::to_string(info.p.i));
                 }
                 
-                const auto *b = reinterpret_cast<bam1_t *>(info.data);
-                const auto *h = reinterpret_cast<bam_hdr_t *>(info.header);
+                const auto isGen = !Standard::isSynthetic(x.cID);
                 
                 // This is the key, randomly write the reads with certain probability
-                if (!Standard::isSynthetic(align.cID) || sampler.select(bam_get_qname(b)))
+                if (isGen || sampler.select(x.name))
                 {
-                    writer.write(h, b);
+                    if (x.mapped && !isGen)
+                    {
+                        const auto m = inters.at(x.cID).contains(x.l);
+                        
+                        if (m)
+                        {
+                            m->map(x.l);
+                        }
+                    }
+
+                    if (!isGen)
+                    {
+                        r.reads++;
+                    }
+                    
+                    // Print the SAM line
+                    writ.write(x);
                 }
-            });
+            }, true);
+
+            writ.close();
+
+            // Calculate the coverage after subsampling
+            r.cov = meth2cov(inters.stats(), o);
             
-            writer.close();
+            return r;
         }
         
         template <typename Options> static void report(const FileName &file, const Options &o)
@@ -250,10 +282,9 @@ namespace Anaquin
             {
                 switch (o.method)
                 {
-                    case Percentile75: { return "75th";    }
-                    case ArithAverage: { return "Mean";    }
-                    case Maximum:      { return "Maximum"; }
-                    case Median:       { return "Median";  }
+                    case Mean:      { return "Mean";   }
+                    case Median:    { return "Median"; }
+                    case ReadCount: { return "Reads";  }
                 }
             };
             
@@ -261,7 +292,7 @@ namespace Anaquin
             
             const auto sampled = "VarSubsample_sampled.sam";
             
-            // Statistics before alignment
+            // Statistics before sampling
             const auto before = Subsampler::stats(file, o);
             
             if (before.genC > before.synC)
@@ -269,16 +300,19 @@ namespace Anaquin
                 throw std::runtime_error("Coverage for the genome is higher than the synthetic chromosome. Unexpected because the genome should be much wider.");
             }
 
-            // Subsample the alignments
-            Subsampler::sample(file, o.work + "/" + sampled, before.sample(), o);
+            // Genomic coverage remains unchanged
+            const auto g_after = before.genC;
             
-            // Statistics after alignment
-            const auto after = Subsampler::stats(o.work + "/" + sampled, o);
+            const auto &r = Standard::instance().r_var;
 
-            assert(before.syn.countInters() == after.syn.countInters());
-            assert(before.gen.countInters() == after.gen.countInters());
+            // Reference regions for synthetic chromosomes
+            auto inters = r.dIntersSyn();
             
-            o.info("Proportion (after): " + toString(after.sample()));
+            // Subsample the alignments
+            const auto samp = Subsampler::sample(file, o.work + "/" + sampled, before.sample(), inters, o);
+            
+            o.info("Coverage (after): " + toString(samp.cov));
+            o.info("Coverage (after): " + toString(g_after));
 
             /*
              * Generating bedgraph before subsampling (only synthetic)
@@ -300,7 +334,7 @@ namespace Anaquin
             post.writer = o.writer;
             post.file   = "VarSubsample_after.bedgraph";
             
-            CoverageTool::bedGraph(after.syn, pre);
+            CoverageTool::bedGraph(inters, pre);
 
             /*
              * Generating VarSubsample_summary.stats
@@ -315,17 +349,17 @@ namespace Anaquin
                                  "       Genomic regions:   %4%\n\n"
                                  "       Method: %5%\n\n"
                                  "-------User alignments (before subsampling)\n\n"
-                                 "       Genome:    %6%\n"
-                                 "       Synthetic: %7%\n\n"
+                                 "       Synthetic: %6%\n"
+                                 "       Genome:    %7%\n\n"
                                  "-------User alignments (after subsampling)\n\n"
-                                 "       Genome:    %8%\n"
-                                 "       Synthetic: %9%\n\n"
+                                 "       Synthetic: %8%\n"
+                                 "       Genome:    %9%\n\n"
                                  "-------Before subsampling\n\n"
-                                 "       Genome coverage:    %10%\n"
-                                 "       Synthetic coverage: %11%\n\n"
+                                 "       Synthetic coverage: %10%\n"
+                                 "       Genome coverage:    %11%\n\n"
                                  "-------After subsampling\n\n"
-                                 "       Genome coverage:    %12%\n"
-                                 "       Synthetic coverage: %13%\n";
+                                 "       Synthetic coverage: %12%\n"
+                                 "       Genome coverage:    %13%\n";
 
             o.generate("VarSubsample_summary.stats");
             o.writer->open("VarSubsample_summary.stats");
@@ -334,14 +368,14 @@ namespace Anaquin
                                                     % before.syn.countInters()
                                                     % before.gen.countInters()
                                                     % meth2Str()
-                                                    % before.n_gen
                                                     % before.n_syn
-                                                    % after.n_gen
-                                                    % after.n_syn
+                                                    % before.n_gen
+                                                    % samp.reads
+                                                    % before.n_gen
+                                                    % before.genC
                                                     % before.synC
                                                     % before.genC
-                                                    % after.synC
-                                                    % after.genC).str());
+                                                    % samp.cov).str());
             o.writer->close();
         }
     };

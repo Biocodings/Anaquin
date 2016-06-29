@@ -798,14 +798,13 @@ std::map<ChrID, Hist> VarRef::hist() const
     return _impl->bData.hist();
 }
 
-C2Intervals VarRef::dInters() const   { return _impl->bData.inters();     }
-C2Intervals VarRef::sInters() const   { return _impl->bData.intersSyn();  }
-C2Intervals VarRef::gInters() const   { return _impl->bData.intersGen();  }
+C2Intervals VarRef::dInters()    const { return _impl->bData.inters();     }
+ID2Intervals VarRef::dIntersSyn() const { return _impl->bData.intersSyn();  }
+C2Intervals VarRef::dIntersGen() const { return _impl->bData.intersGen();  }
 
 MC2Intervals VarRef::mInters()  const { return _impl->bData.minters();    }
 MC2Intervals VarRef::msInters() const { return _impl->bData.mintersSyn(); }
 MC2Intervals VarRef::mgInters() const { return _impl->bData.mintersGen(); }
-
 
 Proportion VarRef::findAFreq(const SequinID &id) const
 {

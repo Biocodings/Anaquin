@@ -42,11 +42,13 @@ namespace Anaquin
 
     inline FileName tmpFile()
     {
-        static std::mutex mtx;
-        
+        static std::mutex mtx;        
         mtx.lock();
         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         auto f = std::string(tmpnam(NULL));
+#pragma clang diagnostic pop
 
         // Avoid filename crashing...
         f = f + random(3) + random(3);

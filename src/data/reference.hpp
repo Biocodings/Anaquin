@@ -471,9 +471,9 @@ namespace Anaquin
             // Histogram for all reference chromosomes
             std::map<ChrID, Hist> hist() const;
 
-            C2Intervals dInters() const;
-            C2Intervals sInters() const;
-            C2Intervals gInters() const;
+            C2Intervals dInters()    const;
+            ID2Intervals dIntersSyn() const;
+            C2Intervals dIntersGen() const;
 
             MC2Intervals mInters() const;
             MC2Intervals msInters() const;

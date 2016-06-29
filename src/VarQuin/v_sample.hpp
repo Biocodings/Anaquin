@@ -12,7 +12,7 @@ namespace Anaquin
         {
             Options() {}
 
-            Subsampler::CoverageMethod method = Subsampler::CoverageMethod::ArithAverage;
+            Subsampler::CoverageMethod method = Subsampler::CoverageMethod::Mean;
         };
 
         typedef Subsampler::Stats Stats;

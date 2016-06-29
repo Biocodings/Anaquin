@@ -28,11 +28,8 @@ namespace Anaquin
             // Size of the chromosome of the alignment
             Base length;
             
-            // Internal data representation
-            void *data;
-            
-            // Internal data representation
-            void *header;
+            void *b;
+            void *h;
         };
 
         class Data : public Alignment
@@ -43,16 +40,19 @@ namespace Anaquin
             
                 bool nextCigar(Locus &l, bool &spliced);
 
+                inline void *b() const { return _b; }
+                inline void *h() const { return _h; }
+
             private:
             
                 mutable int _i, _n;
-            
-                void *data;
-                void *head;
+
+                void *_b;
+                void *_h;
         };
         
         typedef std::function<void (Data &, const Info &)> Functor;
-        static void parse(const FileName &, Functor);
+        static void parse(const FileName &, Functor, bool details = false);
     };
 }
 

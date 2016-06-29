@@ -6,9 +6,9 @@ using namespace Anaquin;
 
 bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
 {
-    assert(head && data);
+    assert(_h && _b);
     
-    auto t = static_cast<bam1_t *>(data);
+    auto t = static_cast<bam1_t *>(_b);
 
     const auto cig = bam_get_cigar(t);
 
@@ -52,7 +52,7 @@ bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
     return false;
 }
 
-void ParserSAM::parse(const FileName &file, Functor x)
+void ParserSAM::parse(const FileName &file, Functor x, bool details)
 {
     auto f = sam_open(file.c_str(), "r");
     
@@ -73,8 +73,8 @@ void ParserSAM::parse(const FileName &file, Functor x)
 
         align.mapped = false;
         
-        info.data    = t;
-        info.header  = h;
+        info.b = t;
+        info.h = h;
 
         if (t->core.tid < 0)
         {
@@ -82,24 +82,23 @@ void ParserSAM::parse(const FileName &file, Functor x)
             continue;
         }
 
-        align.data   = t;
-        align.head   = h;
-        align.cID    = std::string(h->target_name[t->core.tid]);
+        align._b  = t;
+        align._h  = h;
+        align.cID = std::string(h->target_name[t->core.tid]);
 
-        // Uncomment if needed
-        //align.name = bam_get_qname(t);
+        if (details)
+        {
+            align.name  = bam_get_qname(t);
+            align.flag  = t->core.flag;
+            align.mapq  = t->core.qual;
+            align.seq   = bam2seq(t);
+            align.qual  = bam2qual(t);
+            align.rnext = bam2rnext(h, t);
+            align.pnext = t->core.mpos;
+            align.cigar = bam2cigar(t);
+            align.tlen  = t->core.isize;
+        }
         
-#ifdef REVERSE_ALIGNMENT
-        align.flag   = t->core.flag;
-        align.mapq   = t->core.qual;
-        align.seq    = bam2seq(t);
-        align.qual   = bam2qual(t);
-        align.rnext  = bam2rnext(h, t);
-        align.pnext  = t->core.mpos;
-        align.cigar  = bam2cigar(t);
-        align.tlen   = t->core.isize;
-#endif
-
         align.mapped = !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)

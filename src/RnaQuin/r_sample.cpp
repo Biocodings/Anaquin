@@ -168,23 +168,22 @@ void RSample::report(const FileName &file, const Options &o)
 
     SamplingTool sampler(1 - stats.prop);
 
-    ParserSAM::parse(file, [&](const Alignment &align, const ParserSAM::Info &info)
+    ParserSAM::parse(file, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (!info.p.i && !(info.p.i % 1000000))
         {
             o.wait(std::to_string(info.p.i));
         }
-        
-        const auto *b = reinterpret_cast<bam1_t *>(info.data);
-        const auto *h = reinterpret_cast<bam_hdr_t *>(info.header);
+
+        const auto *b = reinterpret_cast<bam1_t *>(info.b);
         
         /*
          * This is the key, randomly write the reads with certain probability
          */
         
-        if (align.cID != ChrT || sampler.select(bam_get_qname(b)))
+        if (Standard::isSynthetic(x.cID) || sampler.select(bam_get_qname(b)))
         {
-            writer.write(h, b);
+            writer.write(x);
         }
     });
     

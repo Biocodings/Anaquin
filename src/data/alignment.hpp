@@ -11,10 +11,22 @@ namespace Anaquin
 
         ChrID cID;
 
+        // Location of the alignment
+        Locus l;
+        
+        // If this field is false, no assumption can be made to other fields
+        bool mapped;
+        
+        // Only valid if the alignment is spliced
+        Base skipped;
+
+        /*
+         * Optional fields
+         */
+        
         // Eg: B7_591:6:155:12:674
         std::string name;
 
-#ifdef REVERSE_ALIGNMENT
         // Signed observed template length
         Base tlen;
         
@@ -38,16 +50,6 @@ namespace Anaquin
         
         // ASCII of base QUALity plus 33
         std::string qual;        
-#endif
-        
-        // Location of the alignment
-        Locus l;
-
-        // If this field is false, no assumption can be made to other fields
-        bool mapped;
-
-        // Only valid if the alignment is spliced
-        Base skipped;
     };
 }
 

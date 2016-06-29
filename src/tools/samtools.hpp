@@ -30,6 +30,23 @@ namespace Anaquin
         { BAM_CDIFF,      'X', },
     };
 
+    inline void bam2print(const ParserSAM::Data &x)
+    {
+        const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
+        const auto str = (boost::format(format) % x.name
+                                                % x.flag
+                                                % x.cID
+                                                % x.l.start
+                                                % x.mapq
+                                                % x.cigar
+                                                % x.rnext
+                                                % x.pnext
+                                                % x.tlen
+                                                % x.seq
+                                                % x.qual).str();        
+        std::cout << str << std::endl;
+    }
+    
     inline std::string bam2rnext(bam_hdr_t *h, bam1_t *b)
     {
         const auto cID = std::string(h->target_name[b->core.tid]);

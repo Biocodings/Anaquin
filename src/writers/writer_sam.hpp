@@ -2,6 +2,7 @@
 #define WRITER_SAM_HPP
 
 #include <htslib/sam.h>
+#include "tools/samtools.hpp"
 #include "writers/writer.hpp"
 
 namespace Anaquin
@@ -10,11 +11,28 @@ namespace Anaquin
     {
         public:
 
-            inline void close() override { sam_close(_fp); }
+            inline void close() override
+            {
+                if (!_term)
+                {
+                    sam_close(_fp);
+                }
+            }
 
+            inline void openTerm()
+            {
+                _term = true;
+            }
+        
             inline void open(const FileName &file) override
             {
+                _term = false;
                 _fp = sam_open(file.c_str(), "w");
+                
+                if (!_fp)
+                {
+                    throw std::runtime_error("Failed to open " + file);
+                }
             }
 
             inline void write(const std::string &, bool) override
@@ -22,23 +40,36 @@ namespace Anaquin
                 throw std::runtime_error("Not implemented");
             }
 
-            inline void write(const bam_hdr_t *header, const bam1_t *read)
+            inline void write(const ParserSAM::Data &x)
             {
-                if (!toTerminal)
+                const auto *b = reinterpret_cast<bam1_t *>(x.b());
+                const auto *h = reinterpret_cast<bam_hdr_t *>(x.h());
+                
+                if (_term)
                 {
-                    if (!_header)
+                    if (!_fp)
                     {
-                        sam_hdr_write(_fp, header);
+                        throw std::runtime_error("Failed to initialize the file pointer");
                     }
                     
-                    if (sam_write1(_fp, header, read) == -1)
+                    if (!_header)
                     {
-                        throw std::runtime_error("Failed to write");
+                        sam_hdr_print(_fp, h);
                     }
+                    
+                    bam2print(x);
                 }
                 else
                 {
+                    if (!_header)
+                    {
+                        sam_hdr_write(_fp, h);
+                    }
                     
+                    if (sam_write1(_fp, h, b) == -1)
+                    {
+                        throw std::runtime_error("Failed to write in write()");
+                    }
                 }
 
                 _header = true;
@@ -46,16 +77,15 @@ namespace Anaquin
 
             inline void create(const std::string &) override
             {
-                throw std::runtime_error("Not implemented");
+                throw std::runtime_error("Not supported in WriterSAM");
             }
 
-            // Should the outputs written to the standard output?
-            bool toTerminal = false;
-        
         private:
 
+            bool _term;
+
             // Whether the header has been written
-            bool _header;
+            bool _header = false;
 
             // File pointer
             samFile *_fp;

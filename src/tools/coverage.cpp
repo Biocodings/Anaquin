@@ -11,8 +11,13 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
     
     ParserSAM::parse(file, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
+        if (info.p.i && !(info.p.i % 1000000))
+        {
+            std::cout << std::to_string(info.p.i) << std::endl; // FUCK
+        }
+        
         stats.update(x);
-
+        
         if (x.mapped && inters.count(x.cID))
         {
             const auto m = inters[x.cID].contains(x.l);
