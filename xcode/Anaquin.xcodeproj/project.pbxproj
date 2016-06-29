@@ -301,6 +301,7 @@
 		EFA1A6B11AFC4FAB0066DD9F /* parser_fa.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = parser_fa.hpp; path = ../src/parsers/parser_fa.hpp; sourceTree = "<group>"; };
 		EFA4FB541C904013007094E8 /* parser_sleuth.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = parser_sleuth.hpp; path = ../src/parsers/parser_sleuth.hpp; sourceTree = "<group>"; };
 		EFA672F61D0691D2005C3DA6 /* v_align.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = v_align.cpp; path = ../tests/VarQuin/v_align.cpp; sourceTree = "<group>"; };
+		EFA8AD331D236C53001E0E46 /* writer_sam.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = writer_sam.hpp; path = ../src/writers/writer_sam.hpp; sourceTree = "<group>"; };
 		EFA9DE711BCB7D6100780182 /* coverage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = coverage.cpp; path = ../src/tools/coverage.cpp; sourceTree = "<group>"; };
 		EFA9DE721BCB7D6100780182 /* coverage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = coverage.hpp; path = ../src/tools/coverage.hpp; sourceTree = "<group>"; };
 		EFAA9B501D0EA95300AA210E /* r_DESeq2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = r_DESeq2.cpp; path = ../src/RnaQuin/r_DESeq2.cpp; sourceTree = "<group>"; };
@@ -823,6 +824,7 @@
 				EFD6292A1C4CAE2400FDF262 /* r_writer.cpp */,
 				EF5180E41AE09A56007010F3 /* r_writer.hpp */,
 				EF09431A1B365FF6000BBF67 /* terminal_writer.hpp */,
+				EFA8AD331D236C53001E0E46 /* writer_sam.hpp */,
 				EFE9A01E1AD3B11F00557829 /* writer.hpp */,
 			);
 			name = Writers;

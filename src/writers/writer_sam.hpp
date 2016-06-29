@@ -49,11 +49,6 @@ namespace Anaquin
                 
                 if (_term)
                 {
-                    if (!_fp)
-                    {
-                        throw std::runtime_error("Failed to initialize the file pointer");
-                    }
-                    
                     if (!_header)
                     {
                         sam_hdr_print(_fp, h);
@@ -63,6 +58,11 @@ namespace Anaquin
                 }
                 else
                 {
+                    if (!_fp)
+                    {
+                        throw std::runtime_error("Failed to initialize the file pointer");
+                    }
+
                     if (!_header)
                     {
                         sam_hdr_write(_fp, h);
