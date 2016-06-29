@@ -45,8 +45,7 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
 {
     auto &x = stats.data.at(align.cID);
 
-    Base lGaps = 0, rGaps = 0;
-    
+    Base lGaps = 0, rGaps = 0;    
     bool isContained = false;
     
     auto f = [&](MergedInterval *m)
@@ -155,30 +154,31 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         {
             o.warn("Skipped alignment: " + align.name);
         }
-
+        
         if (!align.mapped)
         {
             return;
         }
-        
+
         stats.update(align);
 
-        /*
-         * TODO: Implement clipping first
-         */
-
-        if (info.skip || info.del || info.ins || info.clip)
+        if (info.skip)
         {
             return;
         }
         
         if (Standard::isSynthetic(align.cID))
         {
+            //std::cout << k++ << std::endl;
             classifyAlign(stats, align);
         }
         else if (Standard::isGenomic(align.cID))
         {
             classifyAlign(stats, align);
+        }
+        else
+        {
+            o.warn(align.cID);
         }
     });
     
