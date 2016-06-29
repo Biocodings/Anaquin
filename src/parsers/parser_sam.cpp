@@ -12,40 +12,91 @@ bool ParserSAM::Data::nextCigar(Locus &l, bool &spliced)
 
     const auto cig = bam_get_cigar(t);
 
+    spliced = false;
+    
     for (; _i < t->core.n_cigar;)
     {
         const auto op = bam_cigar_op(cig[_i]);
         const auto ol = bam_cigar_oplen(cig[_i]);
         
-        // 1-based leftmost coordinate is assumed
-        l.start = _n+1;
-        
-        // 1-based leftmost coordinate is assumed
-        l.end = _n+ol;
-        
-        // We'll need it for the next operation
-        _n += ol;
-        
         // Important to increment before returning
         _i++;
 
-        if (op == BAM_CINS || op == BAM_CDEL)
+        switch (op)
         {
-            continue;
-        }
-        else if (op == BAM_CMATCH)
-        {
-            spliced = false;
-        }
-        else if (op == BAM_CREF_SKIP)
-        {
-            spliced = true;
-        }
-        else
-        {
-            spliced = false;
-        }
+            case BAM_CINS:
+            {
+                continue;
+            }
+                
+            case BAM_CDEL:
+            {
+                // We'll need it for the next operation
+                _n += ol;
+                
+                continue;
+            }
+                
+            case BAM_CMATCH:
+            {
+                l.start = _n+1;  // 1-based position
+                l.end   = _n+ol; // 1-based position
 
+                // We'll need it for the next operation
+                _n += ol;
+                
+                break;
+            }
+
+            case BAM_CREF_SKIP:
+            {
+                spliced = true;
+                l.start = _n+1;  // 1-based position
+                l.end   = _n+ol; // 1-based position
+                
+                // We'll need it for the next operation
+                _n += ol;
+
+                break;
+            }
+
+            case BAM_CSOFT_CLIP:
+            {
+                /*
+                 *  Eg: 4106431	60	80S35M
+                 *
+                 *  We should simply ignore the clipping and move to the next cigar
+                 */
+
+                continue;
+            }
+                
+            case BAM_CHARD_CLIP:
+            {
+                continue;
+            }
+                
+            case BAM_CEQUAL:
+            {
+                continue;
+            }
+                
+            case BAM_CDIFF:
+            {
+                continue;
+            }
+                
+            case BAM_CBACK:
+            {
+                continue;
+            }
+                
+            case BAM_CPAD:
+            {
+                continue;
+            }
+        }
+        
         return true;
     }
 
@@ -127,17 +178,23 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
                 }
             }
 
-            align._i = 0;
-            align._n = t->core.pos;
+            #define RESET_CIGAR { align._i = 0; align._n = t->core.pos; }
+            
+            RESET_CIGAR
 
+            bool spliced;
+            align.nextCigar(align.l, spliced);
+            
+            RESET_CIGAR
+            
             const auto cig = bam_get_cigar(t);
             const auto ol  = bam_cigar_oplen(cig[0]);
             
             // 1-based leftmost coordinate is assumed
-            align.l.start = t->core.pos+1;
+            //align.l.start = t->core.pos+1;
             
             // 1-based leftmost coordinate is assumed
-            align.l.end = t->core.pos+ol;
+            //align.l.end = t->core.pos+ol;
             
             x(align, info);
         }
