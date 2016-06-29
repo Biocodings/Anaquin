@@ -363,19 +363,19 @@ namespace Anaquin
 
             o.generate("VarSubsample_summary.stats");
             o.writer->open("VarSubsample_summary.stats");
-            o.writer->write((boost::format(summary) % BedRef()
-                                                    % file
-                                                    % before.syn.countInters()
-                                                    % before.gen.countInters()
-                                                    % meth2Str()
-                                                    % before.n_syn // 6
-                                                    % before.n_gen // 7
-                                                    % samp.reads   // 8
-                                                    % before.n_gen // 9
-                                                    % before.synC  // 10
-                                                    % before.genC  // 11
-                                                    % samp.cov     // 12
-                                                    % before.genC  // 13
+            o.writer->write((boost::format(summary) % BedRef()                 // 1
+                                                    % file                     // 2
+                                                    % before.syn.countInters() // 3
+                                                    % before.gen.countInters() // 4
+                                                    % meth2Str()               // 5
+                                                    % before.n_syn             // 6
+                                                    % before.n_gen             // 7
+                                                    % samp.reads               // 8
+                                                    % before.n_gen             // 9
+                                                    % before.synC              // 10
+                                                    % before.genC              // 11
+                                                    % samp.cov                 // 12
+                                                    % before.genC              // 13
                              ).str());
             o.writer->close();
         }
