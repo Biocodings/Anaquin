@@ -43,6 +43,7 @@ namespace Anaquin
     typedef std::string SequinID;
     typedef std::string ContigID;
     typedef std::string IntronID;
+    typedef std::string RegionID;
     typedef std::string IsoformID;
     typedef std::string GenericID;
     typedef std::string FeatureID;

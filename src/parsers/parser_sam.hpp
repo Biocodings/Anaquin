@@ -25,6 +25,9 @@ namespace Anaquin
             // Whether there is skipped region
             bool skip;
             
+            // Whether there is clipping
+            bool clip;
+            
             // Size of the chromosome of the alignment
             Base length;
             

@@ -14,6 +14,20 @@ namespace Anaquin
         {
             struct Data
             {
+                struct BaseLevel
+                {
+                    // Used for FP aligning outside the reference region
+                    std::shared_ptr<MergedInterval> fp;
+                };
+                
+                typedef Confusion AlignLevel;
+
+                // Base level for a chromosome
+                BaseLevel bLvl;
+                
+                // Alignment level for a chromosome
+                AlignLevel aLvl;
+                
                 // Overall TP and FP (for each chromosome)
                 Counts tp, fp;
 
@@ -32,11 +46,24 @@ namespace Anaquin
             
             std::map<ChrID, MergedIntervals<>> inters;
             
-            // Sensitivty and precision for the synthetic
-            Proportion ssn, spc;
+            /*
+             * Aggregated statistics
+             */
             
-            // Sensitivity and precision for the genome
-            Proportion gsn, gpc;
+            /*
+             * Alignment level for synthetic and genome
+             */
+            
+            typedef Confusion AlignLevel;
+            
+            AlignLevel sa, ga;
+            
+            /*
+             * Base level statistics for synthetic and genome
+             */
+
+            Confusion sb;
+            Confusion gb;
             
             // Sequins to covered (synthetic)
             std::map<SequinID, Base> s2c;

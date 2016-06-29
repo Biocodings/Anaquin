@@ -24,11 +24,27 @@ static VAlign::Stats init()
     assert(!stats.hist.empty());
     assert(!stats.inters.empty());
 
+    for (const auto &i : stats.hist)
+    {
+        const auto &cID = i.first;
+        
+        /*
+         * We'd like to know the length of the chromosome but we don't have the information.
+         * It doesn't matter because we can simply initalize it to the the maximum possible.
+         * The data structure in MergedInterval will be efficient not to waste memory.
+         */
+        
+        MergedInterval *mi = new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max()));
+        stats.data[cID].bLvl.fp = std::shared_ptr<MergedInterval>(mi);
+    }
+
     return stats;
 }
 
 static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
 {
+    auto &x = stats.data.at(align.cID);
+
     Base lGaps = 0, rGaps = 0;
     
     bool isContained = false;
@@ -58,17 +74,24 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
 
     if (m)
     {
+        // At the alignment level, only a perfect match is a TP
+        x.aLvl.tp()++;
+        
         isContained = true;
         
         f(m);
         assert(lGaps == 0 && rGaps == 0);
 
         stats.data[align.cID].tp++;
-        //stats.data[align.cID].gtp[m->name()]++;
         //stats.hist.at(align.cID).at(m->name())++;
     }
     else
     {
+        // At the alignment level, anything but a perfect match is a FP
+        x.aLvl.fp()++;
+
+        x.afp.push_back(align.name);
+        
         // Can we at least match by overlapping?
         const auto m = stats.inters[align.cID].overlap(align.l);
 
@@ -77,11 +100,27 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
             f(m);
             assert(lGaps != 0 || rGaps != 0);
 
-            stats.data[align.cID].fp++;
-            //stats.data[align.cID].gfp[m->name()]++;
-            stats.data[align.cID].afp.push_back(align.name);
+            // Gap to the left?
+            if (align.l.start < m->l().start)
+            {
+                const auto gap = Locus(align.l.start, m->l().start-1);
+                
+                x.bLvl.fp->map(gap);
+                writeBase(align.cID, gap, "FP");
+            }
             
-            writeBase(align.cID, align.l, "TP");
+            // Gap to the right?
+            if (align.l.end > m->l().end)
+            {
+                const auto gap = Locus(m->l().end+1, align.l.end);
+                
+                x.bLvl.fp->map(gap);
+                writeBase(align.cID, gap, "FP");
+            }
+            
+            stats.data[align.cID].fp++;
+            
+            writeBase(align.cID, align.l, "FP");
         }
         else if (Standard::isSynthetic(align.cID))
         {
@@ -92,7 +131,7 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
              * a TP or FP.
              */
             
-            writeBase(align.cID, align.l, "TP");
+            writeBase(align.cID, align.l, "FP");
         }
     }
 }
@@ -117,13 +156,19 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             o.warn("Skipped alignment: " + align.name);
         }
 
-        stats.update(align);
-        
         if (!align.mapped)
         {
             return;
         }
-        else if (Standard::isSynthetic(align.cID))
+        
+        stats.update(align);
+
+        if (info.skip || info.clip || info.del || info.ins)
+        {
+            return;
+        }
+        
+        if (Standard::isSynthetic(align.cID))
         {
             classifyAlign(stats, align);
         }
@@ -132,7 +177,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             classifyAlign(stats, align);
         }
     });
-
+    
     __bWriter__.close();
 
     o.info("Alignments analyzed. Generating statistics.");
@@ -151,10 +196,13 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     // For each chromosome...
     for (const auto &i : stats.hist)
     {
+        const auto &cID = i.first;
+        
+        auto &x = stats.data.at(cID);
+
         // For each region... (whole chromosome for the whole genome sequencing)
         for (const auto &j : i.second)
         {
-            const auto &cID = i.first;
             const auto &gID = j.first;
 
             // Reads aligned to the region
@@ -229,6 +277,47 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
             assert(stp >= 0);
             assert(sfp >= 0);
         }
+
+        /*
+         * Aggregating alignment statistics for the whole chromosome
+         */
+        
+        const auto atp = x.aLvl.tp();
+        const auto afp = x.aLvl.fp();
+        
+        if (Standard::isSynthetic(cID))
+        {
+            stats.sa.tp() += atp;
+            stats.sa.fp() += afp;
+        }
+        else
+        {
+            stats.ga.tp() += atp;
+            stats.ga.fp() += afp;
+        }
+        
+        /*
+         * Aggregating base statistics for the whole chromosome
+         */
+        
+        // Statistics for the reference region (TP)
+        const auto ts = stats.inters.at(cID).stats();
+        
+        // Statistics for the non-reference region (FP)
+        const auto fs = x.bLvl.fp->stats();
+        
+        if (Standard::isSynthetic(cID))
+        {
+            stats.sb.tp() += ts.nonZeros;
+            stats.sb.fp() += fs.nonZeros;
+            stats.sb.fn() += ts.length - ts.nonZeros;
+        }
+        else
+        {
+            stats.gb.tp() += ts.nonZeros;
+            stats.gb.fp() += fs.nonZeros;
+            stats.gb.fn() += ts.length - ts.nonZeros;
+        }
     }
 
     assert(!stats.g2r.empty());
@@ -239,17 +328,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     assert(stats.s2l.size() == stats.s2c.size());
     assert(stats.g2r.size() == stats.g2s.size());
 
-    stats.spc = static_cast<Proportion>(stp) / (stp + sfp);
-    stats.ssn = static_cast<Proportion>(sum(stats.s2c)) / sum(stats.s2l);
+    assert(stats.sb.pc() >= 0.0 && stats.sb.pc() <= 1.0);
+    assert(isnan(stats.gb.pc()) || (stats.gb.pc() >= 0.0 && stats.gb.pc() <= 1.0));
 
-    stats.gpc = static_cast<Proportion>(gtp) / (gtp + gfp);
-    stats.gsn = static_cast<Proportion>(sum(stats.g2c)) / sum(stats.g2l);
-
-    assert(stats.spc >= 0.0 && stats.spc <= 1.0);
-    assert(isnan(stats.gpc) || (stats.gpc >= 0.0 && stats.gpc <= 1.0));
-
-    assert(stats.ssn >= 0.0 && stats.ssn <= 1.0);
-    assert(isnan(stats.gsn) || (stats.gsn >= 0.0 && stats.gsn <= 1.0));
+    assert(stats.sb.sn() >= 0.0 && stats.sb.sn() <= 1.0);
+    assert(isnan(stats.gb.sn()) || (stats.gb.sn() >= 0.0 && stats.gb.sn() <= 1.0));
     
     return stats;
 }
@@ -282,17 +365,23 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       Genome: %10% regions\n"
                          "       Genome: %11% bases\n\n"
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
+                         "       *Alignment level\n"
+                         "       Correct:     %12%\n"
+                         "       Incorrect:   %13%\n"
+                         "       Precison:    %14$.4f\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %12$.2f\n"
-                         "       Uncovered:   %13$.2f\n"
-                         "       Total:       %14$.2f\n\n"
-                         "       Sensitivity: %15$.4f\n\n"
+                         "       Covered:     %15%\n"
+                         "       Uncovered:   %16%\n"
+                         "       Erroneous:   %17%\n"
+                         "       Total:       %18%\n\n"
+                         "       Sensitivity: %19$.4f\n"
+                         "       Precision:   %20$.4f\n\n"
                          "-------Comparison of alignments to annotation (Genome)\n\n"
                          "       *Nucleotide level\n"
-                         "       Covered:     %16$.2f\n"
-                         "       Uncovered:   %17$.2f\n"
-                         "       Total:       %18$.2f\n\n"
-                         "       Sensitivity: %19$.4f\n";
+                         "       Covered:     %21%\n"
+                         "       Uncovered:   %22%\n"
+                         "       Total:       %23%\n\n"
+                         "       Sensitivity: %24$.4f\n";
 
     o.generate(file);
     o.writer->open(file);
@@ -307,14 +396,19 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % r.countBaseSyn()        // 9
                                             % r.countGeneGen()        // 10
                                             % r.countBaseGen()        // 11
-                                            % sums2c                  // 12
-                                            % (sums2l - sums2c)       // 13
-                                            % sums2l                  // 14
-                                            % stats.ssn               // 15
-                                            % sumg2c                  // 16
-                                            % (sumg2l - sumg2c)       // 17
-                                            % sumg2l                  // 18
-                                            % stats.gsn               // 19
+                                            % stats.sa.tp()           // 12
+                                            % stats.sa.fp()           // 13
+                                            % stats.sa.pc()           // 14
+                                            % stats.sb.tp()                   // 15
+                                            % stats.sb.fn()                   // 16
+                                            % stats.sb.fp()                   // 17
+                                            % (stats.sb.tp() + stats.sb.fp() + stats.sb.fn()) // 18
+                                            % stats.sb.sn()                   // 19
+                                            % stats.sb.pc()                   // 20
+                                            % stats.gb.tp()                   // 21
+                                            % stats.gb.fn()                   // 22
+                                            % (stats.gb.tp() + stats.gb.fn()) // 23
+                                            % stats.gb.sn()                   // 24
                      ).str());
     o.writer->close();
 }

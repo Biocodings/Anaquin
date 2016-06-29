@@ -71,9 +71,6 @@ namespace Anaquin
                     
                     std::map<GeneID, Counts> g2r;
                     std::map<GeneID, Confusion> g2i;
-                    
-                    // Alignments that have no mapping
-                    //std::vector<UnknownAlignment> unknowns;
                 };
 
                 std::map<ChrID, Data> data;

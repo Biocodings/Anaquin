@@ -46,7 +46,7 @@ static RAlign::Stats init()
         /*
          * We'd like to know the length of the chromosome but we don't have the information.
          * It doesn't matter because we can simply initalize it to the the maximum possible.
-         * The data structure in MergedInterval will be efficient enough not to waste memory.
+         * The data structure in MergedInterval will be efficient not to waste memory.
          */
 
         MergedInterval *mi = new MergedInterval(cID, Locus(1, std::numeric_limits<Base>::max()));
@@ -190,7 +190,7 @@ static void match(RAlign::Stats &stats, const ParserSAM::Info &info, ParserSAM::
         x.aLvl.normal++;
     }
 
-    if (info.ins || info.del)
+    if (info.clip || info.ins || info.del)
     {
         return;
     }

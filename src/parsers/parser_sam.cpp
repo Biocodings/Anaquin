@@ -72,6 +72,7 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
         info.length = h->target_len[t->core.tid];
 
         align.mapped = false;
+        align.name   = bam_get_qname(t);
         
         info.b = t;
         info.h = h;
@@ -88,7 +89,6 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
 
         if (details)
         {
-            align.name  = bam_get_qname(t);
             align.flag  = t->core.flag;
             align.mapq  = t->core.qual;
             align.seq   = bam2seq(t);
@@ -110,15 +110,19 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
             
             info.ins  = false;
             info.del  = false;
+            info.clip = false;
             info.skip = false;
             
             for (auto i = 0; i < t->core.n_cigar; i++)
             {
                 switch (bam_cigar_op(cigar[i]))
                 {
-                    case BAM_CINS:      { info.ins  = true; break; }
-                    case BAM_CDEL:      { info.del  = true; break; }
-                    case BAM_CREF_SKIP: { info.skip = true; break; }
+                    case BAM_CINS:       { info.ins  = true; break; }
+                    case BAM_CDEL:       { info.del  = true; break; }
+                    case BAM_CREF_SKIP:  { info.skip = true; break; }
+                    case BAM_CSOFT_CLIP: { info.clip = true; break; }
+                    case BAM_CHARD_CLIP: { info.clip = true; break; }
+                    case BAM_CPAD:       { info.del  = true; break; }
                     default: { break; }
                 }
             }
