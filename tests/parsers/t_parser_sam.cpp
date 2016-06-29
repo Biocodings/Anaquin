@@ -1,8 +1,40 @@
-//#include <catch.hpp>
-//#include "parsers/parser_sam.hpp"
-//
-//using namespace Anaquin;
-//
+#include <catch.hpp>
+#include "parsers/parser_sam.hpp"
+
+using namespace Anaquin;
+
+TEST_CASE("Test_SoftClip")
+{
+    std::vector<ParserSAM::Data> r1;
+    std::vector<ParserSAM::Info> r2;
+    
+    ParserSAM::parse("tests/data/test.sam", [&](const ParserSAM::Data &x, const ParserSAM::Info &i)
+    {
+        r1.push_back(x);
+        r2.push_back(i);
+    });
+    
+    REQUIRE(r1.size() == 2);
+    REQUIRE(r2.size() == 2);
+
+    REQUIRE(r2[0].clip);
+    REQUIRE(r2[1].clip);
+    
+    /*
+     * 4106432	60	34M76S	=
+     */
+
+    REQUIRE(r1[0].l.start == 4106432);
+    REQUIRE(r1[0].l.end   == 4106465);
+    
+    /*
+     * 4106431	60	80S35M	=
+     */
+    
+    REQUIRE(r1[1].l.start == 4106431);
+    REQUIRE(r1[1].l.end   == 4106465);
+}
+
 //TEST_CASE("Test_Junction")
 //{
 //    std::vector<Alignment> aligns;

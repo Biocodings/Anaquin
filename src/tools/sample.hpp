@@ -372,10 +372,11 @@ namespace Anaquin
                                                     % before.n_gen
                                                     % samp.reads
                                                     % before.n_gen
-                                                    % before.genC
-                                                    % before.synC
-                                                    % before.genC
-                                                    % samp.cov).str());
+                                                    % before.synC  // 10
+                                                    % before.genC  // 11
+                                                    % samp.cov     // 12
+                                                    % before.genC  // 13
+                             ).str());
             o.writer->close();
         }
     };
