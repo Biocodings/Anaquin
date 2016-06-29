@@ -163,7 +163,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         
         stats.update(align);
 
-        if (info.skip || info.clip || info.del || info.ins)
+        /*
+         * TODO: Implement clipping first
+         */
+
+        if (info.skip || info.del || info.ins || info.clip)
         {
             return;
         }
