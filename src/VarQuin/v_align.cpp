@@ -41,97 +41,111 @@ static VAlign::Stats init()
     return stats;
 }
 
-static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
+static void classifyAlign(VAlign::Stats &stats, ParserSAM::Data &align)
 {
     auto &x = stats.data.at(align.cID);
 
-    Base lGaps = 0, rGaps = 0;    
-    bool isContained = false;
+    Locus l;
+    bool spliced;
+
+    bool isTP = true;
     
-    auto f = [&](MergedInterval *m)
+    while (align.nextCigar(l, spliced))
     {
-        m->map(align.l, &lGaps, &rGaps);
-
-        if (isContained)
+        Base lGaps = 0, rGaps = 0;
+        bool isContained = false;
+        
+        auto f = [&](MergedInterval *m)
         {
-            lGaps = rGaps = 0;
+            m->map(l, &lGaps, &rGaps);
+            
+            if (isContained)
+            {
+                lGaps = rGaps = 0;
+            }
+            
+            const auto covered = (l.length() - lGaps - rGaps);
+            
+            stats.data[align.cID].lGaps[m->name()] += lGaps;
+            stats.data[align.cID].lGaps[m->name()] += rGaps;
+            stats.data[align.cID].align[m->name()] += covered;
+            
+            assert(covered >= 0);
+            assert(l.length() > lGaps);
+            assert(l.length() > rGaps);
+        };
+        
+        // Does the read aligned within a gene (or a region)?
+        const auto m = stats.inters.at(align.cID).contains(l);
+        
+        if (m)
+        {
+            isContained = true;
+            
+            f(m);
+            assert(lGaps == 0 && rGaps == 0);
+            
+            stats.data[align.cID].tp++;
+            //stats.hist.at(align.cID).at(m->name())++;
         }
-        
-        const auto covered = (align.l.length() - lGaps - rGaps);
-        
-        stats.data[align.cID].lGaps[m->name()] += lGaps;
-        stats.data[align.cID].lGaps[m->name()] += rGaps;
-        stats.data[align.cID].align[m->name()] += covered;
-        
-        assert(covered >= 0);
-        assert(align.l.length() > lGaps);
-        assert(align.l.length() > rGaps);
-    };
-
-    // Does the read aligned within a gene (or a region)?
-    const auto m = stats.inters.at(align.cID).contains(align.l);
-
-    if (m)
+        else
+        {
+            // At the alignment level, anything but a perfect match is a FP
+            isTP = false;
+            
+            x.afp.push_back(align.name);
+            
+            // Can we at least match by overlapping?
+            const auto m = stats.inters[align.cID].overlap(l);
+            
+            if (m)
+            {
+                f(m);
+                assert(lGaps != 0 || rGaps != 0);
+                
+                // Gap to the left?
+                if (l.start < m->l().start)
+                {
+                    const auto gap = Locus(l.start, m->l().start-1);
+                    
+                    x.bLvl.fp->map(gap);
+                    writeBase(align.cID, gap, "FP");
+                }
+                
+                // Gap to the right?
+                if (l.end > m->l().end)
+                {
+                    const auto gap = Locus(m->l().end+1, l.end);
+                    
+                    x.bLvl.fp->map(gap);
+                    writeBase(align.cID, gap, "FP");
+                }
+                
+                stats.data[align.cID].fp++;
+                
+                writeBase(align.cID, l, "FP");
+            }
+            else if (Standard::isSynthetic(align.cID))
+            {
+                stats.data[align.cID].fp++;
+                
+                /*
+                 * The read is not aligned within the reference regions. We don't know whether this is
+                 * a TP or FP.
+                 */
+                
+                writeBase(align.cID, l, "FP");
+            }
+        }
+    }
+    
+    if (isTP)
     {
-        // At the alignment level, only a perfect match is a TP
         x.aLvl.tp()++;
-        
-        isContained = true;
-        
-        f(m);
-        assert(lGaps == 0 && rGaps == 0);
-
-        stats.data[align.cID].tp++;
-        //stats.hist.at(align.cID).at(m->name())++;
     }
     else
     {
-        // At the alignment level, anything but a perfect match is a FP
         x.aLvl.fp()++;
-
-        x.afp.push_back(align.name);
-        
-        // Can we at least match by overlapping?
-        const auto m = stats.inters[align.cID].overlap(align.l);
-
-        if (m)
-        {
-            f(m);
-            assert(lGaps != 0 || rGaps != 0);
-
-            // Gap to the left?
-            if (align.l.start < m->l().start)
-            {
-                const auto gap = Locus(align.l.start, m->l().start-1);
-                
-                x.bLvl.fp->map(gap);
-                writeBase(align.cID, gap, "FP");
-            }
-            
-            // Gap to the right?
-            if (align.l.end > m->l().end)
-            {
-                const auto gap = Locus(m->l().end+1, align.l.end);
-                
-                x.bLvl.fp->map(gap);
-                writeBase(align.cID, gap, "FP");
-            }
-            
-            stats.data[align.cID].fp++;
-            
-            writeBase(align.cID, align.l, "FP");
-        }
-        else if (Standard::isSynthetic(align.cID))
-        {
-            stats.data[align.cID].fp++;
-
-            /*
-             * The read is not aligned within the reference regions. We don't know whether this is
-             * a TP or FP.
-             */
-            
-            writeBase(align.cID, align.l, "FP");
-        }
     }
 }
 
@@ -142,7 +156,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
     __bWriter__.open(o.work + "/VarAlign_qbase.stats");
 
-    ParserSAM::parse(file, [&](const ParserSAM::Data &align, const ParserSAM::Info &info)
+    ParserSAM::parse(file, [&](ParserSAM::Data &align, const ParserSAM::Info &info)
     {
         if (info.p.i && !(info.p.i % 1000000))
         {
