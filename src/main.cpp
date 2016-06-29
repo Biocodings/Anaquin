@@ -163,6 +163,8 @@ using namespace Anaquin;
 // Shared with other modules
 bool __hack__ = false;
 
+bool __showInfo__ = true;
+
 // Shared with other modules
 std::string __full_command__;
 
@@ -687,7 +689,11 @@ template <typename Mixture> void addMix(Mixture mix)
 
 template <typename Reference> void addRef(const ChrID &cID, Reference ref, const FileName &file)
 {
-    std::cout << "[INFO]: Reference: " << file << std::endl;
+    if (__showInfo__)
+    {
+        std::cout << "[INFO]: Reference: " << file << std::endl;
+    }
+    
     ref(Reader(file));
 }
 
@@ -753,7 +759,10 @@ static void saveRef()
 // Apply a reference source given where it comes from
 template <typename Reference> void applyRef(Reference ref, Option opt)
 {
-    std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
+    if (__showInfo__)
+    {
+        std::cout << "[INFO]: Reference: " << _p.opts[opt] << std::endl;
+    }
     
     if (!_p.opts[opt].empty())
     {
@@ -1058,6 +1067,11 @@ void parse(int argc, char ** argv)
         _p.tool = _tools[argv[1]];
     }
     
+    if (_p.tool == TOOL_V_SUBSAMPLE)
+    {
+        __showInfo__ = false;
+    }
+    
     if (argc >= 3 && !strcmp(argv[2], "-h"))
     {
         if (argc != 3)
@@ -1220,7 +1234,7 @@ void parse(int argc, char ** argv)
         }
     }
 
-    if (_p.tool != TOOL_VERSION)
+    if (_p.tool != TOOL_VERSION && _p.tool != TOOL_V_SUBSAMPLE)
     {
         std::cout << "-----------------------------------------" << std::endl;
         std::cout << "------------- Sequin Analysis -----------" << std::endl;
@@ -1539,7 +1553,10 @@ void parse(int argc, char ** argv)
                 return parseEnum("soft", str, m);
             };
             
-            std::cout << "[INFO]: Variant Analysis" << std::endl;
+            if (__showInfo__)
+            {
+                std::cout << "[INFO]: Variant Analysis" << std::endl;
+            }
 
             if (_p.tool != TOOL_V_IGV      &&
                 _p.tool != TOOL_V_FLIP     &&

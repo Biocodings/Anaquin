@@ -111,9 +111,9 @@ namespace Anaquin
                 throw std::runtime_error("Failed to find alignments for the genome");
             }
             
-            o.info(toString(stats.n_syn) + " alignments to synthetic");
-            o.info(toString(stats.n_gen) + " alignments to genome");
-            o.info(toString(stats.n_syn + stats.n_gen) + " alignments in total");
+            o.logInfo(toString(stats.n_syn) + " alignments to synthetic");
+            o.logInfo(toString(stats.n_gen) + " alignments to genome");
+            o.logInfo(toString(stats.n_syn + stats.n_gen) + " alignments in total");
 
             /*
              * Calculate statistics for both synthetic and genome
@@ -240,7 +240,7 @@ namespace Anaquin
             {
                 if (info.p.i && !(info.p.i % 1000000))
                 {
-                    o.wait(std::to_string(info.p.i));
+                    o.logInfo(std::to_string(info.p.i));
                 }
                 
                 const auto isGen = !Standard::isSynthetic(x.cID);

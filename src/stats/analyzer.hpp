@@ -13,6 +13,9 @@
 #include "writers/mock_writer.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
+// Defined in main.cpp
+extern bool __showInfo__;
+
 namespace Anaquin
 {
     template <typename T> std::string toString(const T &x, unsigned n = 2)
@@ -189,7 +192,11 @@ namespace Anaquin
         inline void info(const std::string &s) const
         {
             logInfo(s);
-            output->write("[INFO]: " + s);
+            
+            if (__showInfo__)
+            {
+                output->write("[INFO]: " + s);
+            }
         }
         
         inline void logInfo(const std::string &s) const
