@@ -3,12 +3,77 @@
 
 using namespace Anaquin;
 
+TEST_CASE("Test_Insert")
+{
+    std::map<std::size_t, std::vector<Locus>> r;
+    
+    ParserSAM::parse("tests/data/insert.sam", [&](ParserSAM::Data &x, const ParserSAM::Info &)
+    {
+        Locus l;
+        bool spliced;
+        auto i = r.size();
+        
+        while (x.nextCigar(l, spliced))
+        {
+            r[i].push_back(l);
+        }
+    });
+    
+    /*
+     * 8288747	60	23M2I58M42S
+     */
+    
+    REQUIRE(r.size() == 1);
+    REQUIRE(r[0].size() == 2);
+    
+    REQUIRE(r[0][0].start == 8288747);
+    REQUIRE(r[0][0].end   == 8288769);
+    REQUIRE(r[0][1].start == 8288770);
+    REQUIRE(r[0][1].end   == 8288827);
+}
+
+TEST_CASE("Test_Deletion")
+{
+    std::vector<ParserSAM::Data> r1;
+    std::vector<ParserSAM::Info> r2;
+    std::map<std::size_t, std::vector<Locus>> r3;
+
+    ParserSAM::parse("tests/data/deletion.sam", [&](ParserSAM::Data &x, const ParserSAM::Info &i)
+    {
+        Locus l;
+        bool spliced;
+        
+        while (x.nextCigar(l, spliced))
+        {
+            r3[r1.size()].push_back(l);
+        }
+        
+        r1.push_back(x);
+        r2.push_back(i);
+    });
+    
+    REQUIRE(r1.size() == 2);
+    REQUIRE(r2.size() == 2);
+    
+    /*
+     * 7058781	60	58M9D67M
+     */
+    
+    REQUIRE(r3[1].size() == 2);
+
+    REQUIRE(r3[1][0].start == 7058781);
+    REQUIRE(r3[1][0].end == 7058838);
+
+    REQUIRE(r3[1][1].start == 7058848);
+    REQUIRE(r3[1][1].end == 7058914);
+}
+
 TEST_CASE("Test_SoftClip")
 {
     std::vector<ParserSAM::Data> r1;
     std::vector<ParserSAM::Info> r2;
     
-    ParserSAM::parse("tests/data/test.sam", [&](const ParserSAM::Data &x, const ParserSAM::Info &i)
+    ParserSAM::parse("tests/data/clip.sam", [&](const ParserSAM::Data &x, const ParserSAM::Info &i)
     {
         r1.push_back(x);
         r2.push_back(i);
