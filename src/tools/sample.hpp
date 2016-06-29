@@ -368,10 +368,10 @@ namespace Anaquin
                                                     % before.syn.countInters()
                                                     % before.gen.countInters()
                                                     % meth2Str()
-                                                    % before.n_syn
-                                                    % before.n_gen
-                                                    % samp.reads
-                                                    % before.n_gen
+                                                    % before.n_syn // 6
+                                                    % before.n_gen // 7
+                                                    % samp.reads   // 8
+                                                    % before.n_gen // 9
                                                     % before.synC  // 10
                                                     % before.genC  // 11
                                                     % samp.cov     // 12
