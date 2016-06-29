@@ -1,6 +1,9 @@
 #include "tools/coverage.hpp"
 #include "writers/file_writer.hpp"
 
+// Defined in main.cpp
+extern bool __showInfo__;
+
 using namespace Anaquin;
 
 CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, Intervals<>> &inters)
@@ -11,9 +14,9 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
     
     ParserSAM::parse(file, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
     {
-        if (info.p.i && !(info.p.i % 1000000))
+        if (__showInfo__ && info.p.i && !(info.p.i % 1000000))
         {
-            std::cout << std::to_string(info.p.i) << std::endl; // FUCK
+            std::cout << std::to_string(info.p.i) << std::endl;
         }
         
         stats.update(x);
