@@ -15,6 +15,127 @@ extern Scripts PlotGermlineROC();
 // Defined in standard.cpp
 extern bool IsFlatMix();
 
+struct VDiscoverImpl : public VCFDataUser
+{
+    VDiscover::Stats *stats;
+    
+    void variantProcessed(const ParserVCF::Data &x, const ParserProgress &p) override
+    {
+        const auto &r = Standard::instance().r_var;
+        
+        VariantMatch m;
+
+        auto match = [&](const CalledVariant &query)
+        {
+            m.query = query;
+            m.match = nullptr;
+            
+            const auto isSyn = Standard::isSynthetic(query.cID);
+            
+            if (isSyn || Standard::isGenomic(query.cID))
+            {
+                // Can we match by position?
+                m.match = r.findVar(query.cID, query.l);
+                
+                if (m.match)
+                {
+                    m.ref = m.match->ref == query.ref;
+                    m.alt = m.match->alt == query.alt;
+                }
+                
+                if (isSyn && m.match && !mixture().empty())
+                {
+                    m.eFold    = r.findAFold(baseID(m.match->id));
+                    m.eAllFreq = r.findAFreq(baseID(m.match->id));
+                }
+            }
+            
+            return m.match;
+        };
+     
+        match(x);
+        
+//        if (match(x))
+        {
+            if (m.query.l.start == 632130)
+            {
+                std::cout << m.query.l.start << std::endl;
+            }
+            
+            const auto &cID = m.query.cID;
+            
+            auto f = [&]()
+            {
+                /*
+                 * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
+                 * remains unchanged.
+                 */
+                
+                //const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
+                
+                // Only matching if the position and alleles agree
+                const auto matched = m.match && m.ref && m.alt;
+                
+                /*
+                 * Matched by position? reference allele? alternative allele?
+                 */
+                
+                if (matched)
+                {
+                    const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
+                    stats->hist.at(cID).at(key)++;
+                    
+                    // if (p <= o.sign)
+                    {
+                        stats->data[cID].tps.push_back(m);
+                        stats->data[cID].tps_[key] = stats->data[cID].tps.back();
+                    }
+                    //                else
+                    //                {
+                    //                    throw "Not Implemented";
+                    //                    //stats.data[cID].fns.push_back(m);
+                    //                    //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
+                    //                }
+                }
+                else
+                {
+                    /*
+                     * Variant not found in the reference. This is a FP unless it can be filtered by
+                     * the p-value.
+                     */
+                    
+                    //if (p <= o.sign)
+                    {
+                        //stats.data[cID].fps_.insert(key);
+                        stats->data[cID].fps.push_back(m);
+                    }
+                    //                else
+                    //                {
+                    //                    throw "?????";
+                    //                    //stats.data[cID].tns_.insert(key);
+                    //                    //stats.data[cID].tns.push_back(m);
+                    //                }
+                }
+            };
+            
+            if (Standard::isSynthetic(cID))
+            {
+                stats->n_syn++;
+                f();
+            }
+            else
+            {
+                stats->n_gen++;
+                
+                if (Standard::isGenomic(cID))
+                {
+                    f();
+                }
+            }
+        }
+    }
+};
+
 VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
 {
     const auto &r = Standard::instance().r_var;
@@ -28,82 +149,12 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     }
 
     o.info("Reading VCF inputs");
-    stats.vData = vcfData(file, o.input);
 
-    o.info("Parsing VCF inputs");
-    parseVariants(file, o.input, [&](const VariantMatch &m)
-    {
-        const auto &cID = m.query.cID;
+    VDiscoverImpl impl;
+    impl.stats = &stats;
 
-        auto f = [&]()
-        {
-            /*
-             * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
-             * remains unchanged.
-             */
-            
-            //const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
-            
-            // Only matching if the position and alleles agree
-            const auto matched = m.match && m.ref && m.alt;
-            
-            /*
-             * Matched by position? reference allele? alternative allele?
-             */
-            
-            if (matched)
-            {
-                const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
-                stats.hist.at(cID).at(key)++;
-                
-               // if (p <= o.sign)
-                {
-                    stats.data[cID].tps.push_back(m);
-                    stats.data[cID].tps_[key] = stats.data[cID].tps.back();
-                }
-//                else
-//                {
-//                    throw "Not Implemented";
-//                    //stats.data[cID].fns.push_back(m);
-//                    //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
-//                }
-            }
-            else
-            {
-                /*
-                 * Variant not found in the reference. This is a FP unless it can be filtered by
-                 * the p-value.
-                 */
-                
-                //if (p <= o.sign)
-                {
-                    //stats.data[cID].fps_.insert(key);
-                    stats.data[cID].fps.push_back(m);
-                }
-//                else
-//                {
-//                    throw "?????";
-//                    //stats.data[cID].tns_.insert(key);
-//                    //stats.data[cID].tns.push_back(m);
-//                }
-            }
-        };
-
-        if (Standard::isSynthetic(cID))
-        {
-            stats.n_syn++;
-            f();
-        }
-        else
-        {
-            stats.n_gen++;
-            
-            if (Standard::isGenomic(cID))
-            {
-                f();
-            }
-        }
-    });
+    // Read the input variant file and process them
+    stats.vData = vcfData(file, o.input, &impl);
 
     o.info("Collecting statistics");
     

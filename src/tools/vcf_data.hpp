@@ -164,8 +164,13 @@ namespace Anaquin
         VCFInput,
         TxtInput,
     };
+
+    struct VCFDataUser
+    {
+        virtual void variantProcessed(const ParserVCF::Data &, const ParserProgress &) = 0;
+    };
     
-    inline VCFData vcfData(const Reader &r, VarInput input = VarInput::VCFInput)
+    inline VCFData vcfData(const Reader &r, VarInput input = VarInput::VCFInput, VCFDataUser *user = nullptr)
     {
         VCFData c2d;
         
@@ -173,7 +178,7 @@ namespace Anaquin
         {
             case VarInput::VCFInput:
             {
-                ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &)
+                ParserVCF::parse(r, [&](const ParserVCF::Data &x, const ParserProgress &p)
                 {
                     switch (x.type())
                     {
@@ -190,6 +195,11 @@ namespace Anaquin
                             break;
                         }
                     }
+                    
+                    if (user)
+                    {
+                        user->variantProcessed(x, p);
+                    }
                 });
 
                 break;
@@ -197,7 +207,7 @@ namespace Anaquin
 
             case VarInput::TxtInput:
             {
-                ParserVariant::parse(r, [&](const ParserVariant::Data &x, const ParserProgress &)
+                ParserVariant::parse(r, [&](const ParserVariant::Data &x, const ParserProgress &p)
                 {
                     switch (x.type())
                     {
@@ -213,6 +223,11 @@ namespace Anaquin
                             c2d[x.cID].i2d[x.l.start] = x;
                             break;
                         }
+                    }
+                    
+                    if (user)
+                    {
+                        user->variantProcessed(x, p);
                     }
                 });
                 
