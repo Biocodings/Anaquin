@@ -1,7 +1,7 @@
 #ifndef PARSER_KALLISTO_HPP
 #define PARSER_KALLISTO_HPP
 
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "parsers/parser.hpp"

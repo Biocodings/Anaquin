@@ -48,7 +48,7 @@ MAbund::Stats MAbund::analyze(const FileName &file, const MAbund::Options &o)
         }
     }
 
-    stats.limit = r.detectLimit(stats.hist);
+//    stats.limit = r.detectLimit(stats.hist);
 
     return stats;
 }

@@ -2,7 +2,7 @@
 #define BED_DATA_HPP
 
 #include "data/hist.hpp"
-#include "data/merged.hpp"
+#include "data/minters.hpp"
 #include "data/standard.hpp"
 #include "data/intervals.hpp"
 #include "stats/analyzer.hpp"

@@ -37,6 +37,31 @@ namespace Anaquin
         Locus l;
     };
     
+    struct TransData
+    {
+        // Eg: chr1
+        ChrID cID;
+        
+        // Eg: ENSG00000223972.5
+        GeneID gID;
+        
+        // Eg: ENST00000456328.2
+        TransID tID;
+        
+        Locus l;
+    };
+    
+    struct GeneData
+    {
+        // Eg: chr1
+        ChrID cID;
+        
+        // Eg: ENSG00000223972.5
+        GeneID gID;
+        
+        Locus l;
+    };
+
     typedef ExonData IntronData;
     
     struct ChrData

@@ -9,21 +9,21 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
  
     stats.src = file;
     
-//    ParserSAM::parse(file, [&](const Alignment &x, const ParserSAM::Info &info)
-//    {
-//        stats.update(x);
-//
-//        if (x.mapped && inters.count(x.cID))
-//        {
-//            const auto m = inters[x.cID].contains(x.l);
-//            
-//            if (m)
-//            {
-//                m->map(x.l);
-//                stats.hist[x.cID]++;
-//            }
-//        }
-//    });
+    ParserSAM::parse(file, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    {
+        stats.update(x);
+
+        if (x.mapped && inters.count(x.cID))
+        {
+            const auto m = inters[x.cID].contains(x.l);
+            
+            if (m)
+            {
+                m->map(x.l);
+                stats.hist[x.cID]++;
+            }
+        }
+    });
 
     return stats;
 }

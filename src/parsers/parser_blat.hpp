@@ -2,7 +2,7 @@
 #define PARSER_BLAT_HPP
 
 #include <functional>
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "data/reader.hpp"
 #include "data/tokens.hpp"
 #include "parsers/parser.hpp"

@@ -105,10 +105,11 @@ LadderRef::LadderRef() : _impl(new LadderRefImpl()) {}
 
 Limit LadderRef::limitJoin(const JoinHist &h) const
 {
-    return Reference<SequinData, DefaultStats>::detectLimit(h, [&](const JoinID &id)
-    {
-        return &(_impl->joined.at(id));
-    });
+    throw "Not Implemented";
+//    return Reference<SequinData, DefaultStats>::detectLimit(h, [&](const JoinID &id)
+//    {
+//        return &(_impl->joined.at(id));
+//    });
 }
 
 LadderRef::JoinIDs LadderRef::joinIDs() const
@@ -597,31 +598,6 @@ const GeneData * TransRef::findGene(const ChrID &cID, const GeneID &gID) const
     return _impl->gData.at(cID).g2d.count(gID) ? &(_impl->gData.at(cID).g2d[gID]) : nullptr;
 }
 
-template <typename Iter> const typename Iter::value_type *findList(const Iter &x, const Locus &l, MatchRule m)
-{
-    for (const auto &i : x)
-    {
-        if ((m == Exact && i.l == l) || (m == Contains && i.l.contains(l)))
-        {
-            return &i;
-        }
-    }
-    
-    return nullptr;
-}
-
-const Interval * TransRef::findGene(const ChrID &cID, const Locus &l, MatchRule m) const
-{
-    assert(!_impl->gInters.empty());
-
-    switch (m)
-    {
-        case MatchRule::Exact:    { return _impl->gInters.at(cID).exact(l);    }
-        case MatchRule::Overlap:  { return _impl->gInters.at(cID).overlap(l);  }
-        case MatchRule::Contains: { return _impl->gInters.at(cID).contains(l); }
-    }
-}
-
 MergedIntervals<> TransRef::mergedExons(const ChrID &cID) const
 {
     return _impl->gData.mergedExons(cID);
@@ -675,14 +651,14 @@ void TransRef::merge(const std::set<SequinID> &mIDs, const std::set<SequinID> &a
     
     std::for_each(inters.begin(), inters.end(), [&](const SequinID &id)
     {
-        auto data = TransData_();
+        auto data = SequinData();
         
-        data.id  = id;
+        data.id = id;
 
         // Add a new entry for the validated sequin
         _data[id] = data;
-        
-        //assert(!d.id.empty() && !d.gID.empty());
+
+        assert(!id.empty());
     });
     
     /*
@@ -791,8 +767,6 @@ struct VarRef::VarRefImpl
 
     VCFData vData;
     BedData bData;
-    
-    //std::map<ChrID, Intervals<>> gInters;
 };
 
 VarRef::VarRef() : _impl(new VarRefImpl()) {}
@@ -824,11 +798,11 @@ std::map<ChrID, Hist> VarRef::hist() const
     return _impl->bData.hist();
 }
 
-C2Intervals VarRef::inters() const  { return _impl->bData.inters();    }
-C2Intervals VarRef::sInters() const { return _impl->bData.intersSyn(); }
-C2Intervals VarRef::gInters() const { return _impl->bData.intersGen(); }
+C2Intervals VarRef::dInters() const   { return _impl->bData.inters();     }
+C2Intervals VarRef::sInters() const   { return _impl->bData.intersSyn();  }
+C2Intervals VarRef::gInters() const   { return _impl->bData.intersGen();  }
 
-MC2Intervals VarRef::minters() const  { return _impl->bData.minters();    }
+MC2Intervals VarRef::mInters()  const { return _impl->bData.minters();    }
 MC2Intervals VarRef::msInters() const { return _impl->bData.mintersSyn(); }
 MC2Intervals VarRef::mgInters() const { return _impl->bData.mintersGen(); }
 

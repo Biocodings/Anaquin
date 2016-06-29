@@ -2,7 +2,7 @@
 #define PARSER_EXPRESS_HPP
 
 #include <fstream>
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "data/tokens.hpp"
 
 namespace Anaquin

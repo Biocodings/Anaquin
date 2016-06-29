@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "data/biology.hpp"
 
 using namespace Anaquin;

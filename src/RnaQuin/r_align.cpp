@@ -7,8 +7,8 @@ using namespace Anaquin;
 // Defined in resources.cpp
 extern FileName GTFRef();
 
-std::ofstream __iWriter__;
-std::ofstream __bWriter__;
+static std::ofstream __iWriter__;
+static std::ofstream __bWriter__;
 
 static void writeIntron(const ChrID &cID, const Locus &l, const GeneID &gID, const Label &label)
 {
@@ -572,25 +572,25 @@ void RAlign::report(const FileName &file, const Options &o)
     generateSummary("RnaAlign_summary.stats", file, stats, o);
 
     /*
-     * Generating RnaAlign_sequins.csv
+     * Generating RnaAlign_sequins.stats
      */
     
-    o.analyze("RnaAlign_sequins.csv");
-    writeQuins("RnaAlign_sequins.csv", file, stats, o);
+    o.analyze("RnaAlign_sequins.stats");
+    writeQuins("RnaAlign_sequins.stats", file, stats, o);
 
     /*
-     * Generating RnaAlign_rintrs.csv
+     * Generating RnaAlign_rintrs.stats
      */
     
-    o.analyze("RnaAlign_rintrs.csv");
-    writeIQuins("RnaAlign_rintrs.csv", file, stats, o);
+    o.analyze("RnaAlign_rintrs.stats");
+    writeIQuins("RnaAlign_rintrs.stats", file, stats, o);
 
     /*
-     * Generating RnaAlign_rbase.csv
+     * Generating RnaAlign_rbase.stats
      */
     
-    o.analyze("RnaAlign_rbase.csv");
-    writeBQuins("RnaAlign_rbase.csv", file, stats, o);
+    o.analyze("RnaAlign_rbase.stats");
+    writeBQuins("RnaAlign_rbase.stats", file, stats, o);
     
     /*
      * Generating RnaAlign_report.pdf

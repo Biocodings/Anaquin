@@ -1,3 +1,4 @@
+#include "VarQuin/v_freq.hpp"
 #include "VarQuin/v_discover.hpp"
 
 using namespace Anaquin;
@@ -41,7 +42,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
              * remains unchanged.
              */
             
-            const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
+            //const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
             
             // Only matching if the position and alleles agree
             const auto matched = m.match && m.ref && m.alt;
@@ -55,17 +56,17 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                 const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
                 stats.hist.at(cID).at(key)++;
                 
-                if (p <= o.sign)
+               // if (p <= o.sign)
                 {
                     stats.data[cID].tps.push_back(m);
                     stats.data[cID].tps_[key] = stats.data[cID].tps.back();
                 }
-                else
-                {
-                    throw "Not Implemented";
-                    //stats.data[cID].fns.push_back(m);
-                    //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
-                }
+//                else
+//                {
+//                    throw "Not Implemented";
+//                    //stats.data[cID].fns.push_back(m);
+//                    //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
+//                }
             }
             else
             {
@@ -74,17 +75,17 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
                  * the p-value.
                  */
                 
-                if (p <= o.sign)
+                //if (p <= o.sign)
                 {
                     //stats.data[cID].fps_.insert(key);
                     stats.data[cID].fps.push_back(m);
                 }
-                else
-                {
-                    throw "?????";
-                    //stats.data[cID].tns_.insert(key);
-                    //stats.data[cID].tns.push_back(m);
-                }
+//                else
+//                {
+//                    throw "?????";
+//                    //stats.data[cID].tns_.insert(key);
+//                    //stats.data[cID].tns.push_back(m);
+//                }
             }
         };
 
@@ -399,8 +400,9 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
 
 void VDiscover::report(const FileName &file, const Options &o)
 {
+    // Statistics for the variants
     const auto stats = analyze(file, o);
-
+    
     o.info("TP: " + std::to_string(stats.countVar_TP_Syn()));
     o.info("FP: " + std::to_string(stats.countVar_FP_Syn()));
     o.info("FN: " + std::to_string(stats.countVar_FN_Syn()));

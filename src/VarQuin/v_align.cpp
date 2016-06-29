@@ -3,6 +3,13 @@
 
 using namespace Anaquin;
 
+static std::ofstream __bWriter__;
+
+static void writeBase(const ChrID &cID, const Locus &l, const Label &label)
+{
+    __bWriter__ << cID << "\t" << l.start << "\t" << l.end << "\t" << label << "\n";
+}
+
 static VAlign::Stats init()
 {
     const auto &r = Standard::instance().r_var;
@@ -10,7 +17,7 @@ static VAlign::Stats init()
     VAlign::Stats stats;
     
     stats.hist   = r.hist();
-    stats.inters = r.minters();
+    stats.inters = r.mInters();
 
     std::cout << "[INFO]: " << stats.inters.size() << " chromosomes in the reference" << std::endl;
     
@@ -73,6 +80,8 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
             stats.data[align.cID].fp++;
             //stats.data[align.cID].gfp[m->name()]++;
             stats.data[align.cID].afp.push_back(align.name);
+            
+            writeBase(align.cID, align.l, "TP");
         }
         else if (Standard::isSynthetic(align.cID))
         {
@@ -82,6 +91,8 @@ static void classifyAlign(VAlign::Stats &stats, const ParserSAM::Data &align)
              * The read is not aligned within the reference regions. We don't know whether this is
              * a TP or FP.
              */
+            
+            writeBase(align.cID, align.l, "TP");
         }
     }
 }
@@ -90,6 +101,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 {
     auto stats = init();
     o.analyze(file);
+
+    __bWriter__.open(o.work + "/VarAlign_qbase.stats");
 
     ParserSAM::parse(file, [&](const ParserSAM::Data &align, const ParserSAM::Info &info)
     {
@@ -120,6 +133,8 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
         }
     });
 
+    __bWriter__.close();
+
     o.info("Alignments analyzed. Generating statistics.");
     
     /*
@@ -136,16 +151,11 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
     // For each chromosome...
     for (const auto &i : stats.hist)
     {
-        //auto k = 0;
-        //const auto n = i.second.size();
-        
         // For each region... (whole chromosome for the whole genome sequencing)
         for (const auto &j : i.second)
         {
             const auto &cID = i.first;
             const auto &gID = j.first;
-
-            //o.info("Analyzing: " + gID + " for " + cID + ". " + toString(k++) + "/" + toString(n));
 
             // Reads aligned to the region
             stats.g2r[gID] = j.second;
@@ -157,17 +167,6 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
 
             // Statistics for the gene (created by the interval)
             const auto ms = m->stats();
-
-//            m->bedGraph([&](const ChrID &id, Base i, Base j, Base depth)
-//            {
-//                const auto m = r.inters().at(cID).find(gID);
-//                assert(m);
-//                
-//                if (!depth)
-//                {
-//                    stats.data.at(cID).gaps.insert(Locus(m->l().start+i-1, m->l().start+i+j-1));
-//                }
-//            });
 
             assert(ms.length);
             
@@ -286,13 +285,13 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       *Nucleotide level\n"
                          "       Covered:     %12$.2f\n"
                          "       Uncovered:   %13$.2f\n"
-                         "       Total:       %14$.2f\n"
+                         "       Total:       %14$.2f\n\n"
                          "       Sensitivity: %15$.4f\n\n"
                          "-------Comparison of alignments to annotation (Genome)\n\n"
                          "       *Nucleotide level\n"
                          "       Covered:     %16$.2f\n"
                          "       Uncovered:   %17$.2f\n"
-                         "       Total:       %18$.2f\n"
+                         "       Total:       %18$.2f\n\n"
                          "       Sensitivity: %19$.4f\n";
 
     o.generate(file);
@@ -317,6 +316,49 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                                             % sumg2l                  // 18
                                             % stats.gsn               // 19
                      ).str());
+    o.writer->close();
+}
+
+static void writeBQuins(const FileName &file,
+                        const VAlign::Stats &stats,
+                        const VAlign::Options &o)
+{
+    const auto format = "%1%\t%2%\t%3%";
+    
+    o.writer->open(file);
+    o.writer->write((boost::format(format) % "ChrID" % "Position" % "Label").str());
+    
+    for (const auto &i : stats.data)
+    {
+        const auto &cID = i.first;
+        
+        //if (Standard::isSynthetic(cID))
+        {
+            for (const auto &j : stats.inters.at(cID).data())
+            {
+                for (const auto &k : j.second._data)
+                {
+                    const auto pos = (toString(k.second.start) + "-" + toString(k.second.end));
+                    
+                    o.writer->write((boost::format(format) % cID
+                                                           % pos
+                                                           % "TP").str());
+                }
+                
+                const auto zeros = j.second.zeros();
+                
+                for (const auto &k : zeros)
+                {
+                    const auto pos = (toString(k.start) + "-" + toString(k.end));
+                    
+                    o.writer->write((boost::format(format) % cID
+                                                           % pos
+                                                           % "FN").str());
+                }
+            }
+        }
+    }
+    
     o.writer->close();
 }
 
@@ -360,31 +402,17 @@ static void writeQueries(const FileName &file, const VAlign::Stats &stats, const
     const auto format = "%1%\t%2%";
     o.writer->write((boost::format(format) % "Reads" % "Label").str());
 
-    for (const auto &j : stats.data.at(ChrT).afp)
-    {
-        o.writer->write((boost::format(format) % j % "FP").str());
-    }
-
-    o.writer->close();
-}
-
-static void writeGaps(const FileName &file, const VAlign::Stats &stats, const VAlign::Options &o)
-{
-    o.writer->open(file);
-    
-    const auto format = "%1%\t%2%\t%3%\t%4%";
-    
     for (const auto &i : stats.data)
     {
-        for (const auto &j : i.second.gaps)
+        if (Standard::isSynthetic(i.first))
         {
-            o.writer->write((boost::format(format) % i.first
-                                                   % j.start
-                                                   % j.end
-                                                   % "-").str());
+            for (const auto &j : i.second.afp)
+            {
+                o.writer->write((boost::format(format) % j % "FP").str());
+            }
         }
     }
-
+    
     o.writer->close();
 }
 
@@ -413,10 +441,10 @@ void VAlign::report(const FileName &file, const Options &o)
     writeQueries("VarAlign_queries.stats", stats, o);
 
     /*
-     * Generating VarAlign_gaps.bed
+     * Generating VarAlign_rbase.stats
      */
     
-    writeGaps("VarAlign_gaps.bed", stats, o);
+    writeBQuins("VarAlign_rbase.stats", stats, o);
     
     /*
      * Generating VarAlign_report.pdf

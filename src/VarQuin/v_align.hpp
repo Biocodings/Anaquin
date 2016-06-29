@@ -1,7 +1,7 @@
 #ifndef V_ALIGN_HPP
 #define V_ALIGN_HPP
 
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
@@ -23,9 +23,6 @@ namespace Anaquin
                 std::map<GeneID, Base> lGaps;
                 std::map<GeneID, Base> rGaps;
                 std::map<GeneID, Base> align;
-
-                // Positions that have no alignment
-                std::set<Locus> gaps;
             };
 
             std::map<ChrID, Data> data;

@@ -1,5 +1,4 @@
-#include <set>
-#include <data/merged.hpp>
+#include <data/minters.hpp>
 
 using namespace Anaquin;
 
@@ -59,6 +58,25 @@ void MergedInterval::sanityCheck(const Locus &l)
 //        //                    assert(!v[0]->overlap(*v[1]));
 //        //                }
 //    }
+}
+
+std::set<Locus> MergedInterval::zeros() const
+{
+    std::set<Locus> r;
+    
+    Base i = 1;
+    
+    for (auto &j : _data)
+    {
+        if (i < j.second.start)
+        {
+            r.insert(Locus(i, j.second.start-1));
+        }
+        
+        i = j.second.end + 1;
+    }
+
+    return r;
 }
 
 Base MergedInterval::map(const Locus &l, Base *lp, Base *rp)
@@ -212,4 +230,3 @@ Base MergedInterval::map(const Locus &l, Base *lp, Base *rp)
     sanityCheck(l);
     return left + right;
 }
-

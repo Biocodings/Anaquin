@@ -24,17 +24,24 @@ namespace Anaquin
 
             inline void write(const bam_hdr_t *header, const bam1_t *read)
             {
-                if (!_header)
+                if (!toTerminal)
                 {
-                    sam_hdr_write(_fp, header);
+                    if (!_header)
+                    {
+                        sam_hdr_write(_fp, header);
+                    }
+                    
+                    if (sam_write1(_fp, header, read) == -1)
+                    {
+                        throw std::runtime_error("Failed to write");
+                    }
                 }
-                
+                else
+                {
+                    
+                }
+
                 _header = true;
-                
-                if (sam_write1(_fp, header, read) == -1)
-                {
-                    throw std::runtime_error("Failed to write");
-                }
             }
 
             inline void create(const std::string &) override
@@ -42,6 +49,9 @@ namespace Anaquin
                 throw std::runtime_error("Not implemented");
             }
 
+            // Should the outputs written to the standard output?
+            bool toTerminal = false;
+        
         private:
 
             // Whether the header has been written

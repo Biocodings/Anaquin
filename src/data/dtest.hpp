@@ -2,7 +2,7 @@
 #define DIFF_TEST_HPP
 
 #include <cmath>
-#include "data/types.hpp"
+#include "data/data.hpp"
 
 namespace Anaquin
 {

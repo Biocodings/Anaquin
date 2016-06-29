@@ -4,7 +4,7 @@
 #include <vector>
 #include <iomanip>
 #include <sstream>
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include <boost/format.hpp>
 #include <ss/maths/stats.hpp>
 #include <boost/algorithm/string/join.hpp>

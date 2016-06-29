@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include "data/data.hpp"
+#include "data/locus.hpp"
 #include <boost/format.hpp>
 
 namespace Anaquin

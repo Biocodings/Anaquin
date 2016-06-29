@@ -82,12 +82,13 @@ namespace Anaquin
             
             Stats stats;
             
-            // Intervals for synthetic and genome
-            auto inters = r.inters();
+            // Reference regions for synthetic and genome
+            auto inters = r.dInters();
             
+            // There must be at least synthetic and genome
             assert(inters.size() >= 2);
             
-            // Statistics for all reads mapped to the selected regions
+            // Statistics for alignments mapped to the selected regions
             const auto rr = CoverageTool::stats(file, inters);
 
             for (const auto &i : rr.hist)
@@ -104,11 +105,11 @@ namespace Anaquin
             
             if (!stats.n_syn)
             {
-                throw std::runtime_error("Failed to find any alignment for synthetic");
+                throw std::runtime_error("Failed to find alignments for synthetic");
             }
             else if (!stats.n_gen)
             {
-                throw std::runtime_error("Failed to find any alignment for the genome");
+                throw std::runtime_error("Failed to find alignments for the genome");
             }
             
             o.info(toString(stats.n_syn) + " alignments to synthetic");
@@ -136,8 +137,8 @@ namespace Anaquin
             assert(!stats.syn.empty());
             assert(!stats.gen.empty());
             
-            o.info(toString(stats.syn.size()) + " synthetic regions");
-            o.info(toString(stats.gen.size()) + " genomic regions");
+            o.info(toString(stats.syn.size()) + " reference synthetic regions");
+            o.info(toString(stats.gen.size()) + " reference genomic regions");
             
             const auto ss = stats.syn.stats();
             const auto gs = stats.gen.stats();
@@ -148,7 +149,7 @@ namespace Anaquin
             
             /*
              * Now we have the data, we'll need to compare the coverage and determine the fraction that
-             * the synthetic genome needs to be sampled.
+             * the synthetic alignments needs to be sampled.
              */
             
             switch (o.method)
@@ -191,7 +192,7 @@ namespace Anaquin
         }
 
         /*
-         * Perform subsampling to a proportion of input synthetic reads
+         * Perform subsampling to a proportion of synthetic alignments
          */
 
         template <typename Options> static void sample(const FileName &src,

@@ -193,7 +193,7 @@ MKAbund::Stats MKAbund::analyze(const std::vector<FileName> &files, const MKAbun
         }
     }
 
-    stats.limit = r.detectLimit(stats.hist);
+//    stats.limit = r.detectLimit(stats.hist);
 
     return stats;
 }

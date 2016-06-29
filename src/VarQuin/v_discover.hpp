@@ -17,9 +17,6 @@ namespace Anaquin
             Options() {}
 
             Input input;
-            
-            // Significance level
-            Probability sign = 0.1;
         };
 
         struct Stats : public MappingStats, public VariantStats

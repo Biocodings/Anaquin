@@ -2,13 +2,12 @@
 #define REFERENCE_HPP
 
 #include <set>
-#include "data/reader.hpp"
-#include "data/merged.hpp"
-
 #include "data/data.hpp"
 #include "data/hist.hpp"
+#include "data/reader.hpp"
 #include "stats/limit.hpp"
 #include "data/variant.hpp"
+#include "data/minters.hpp"
 #include "data/intervals.hpp"
 
 namespace Anaquin
@@ -136,58 +135,9 @@ namespace Anaquin
                 }
             }
 
-            inline Limit detectLimit(const SequinHist &hist) const
-            {
-                return detectLimit(hist, [&](const SequinID &id)
-                {
-                    return this->match(id);
-                });
-            }
-
         protected:
 
             virtual void validate() = 0;
-
-            template <typename F> Limit detectLimit(const SequinHist &h, F f, Mixture mix = Mix_1) const
-            {
-                throw "Not Implemented";
-                
-//                Limit s;
-//                s.counts = std::numeric_limits<unsigned>::max();
-//            
-//                for (auto i = h.begin(); i != h.end(); i++)
-//                {
-//                    const auto counts = i->second;
-//                
-//                    /*
-//                     * Is this sequin detected? If it's detected, what about its expected abundance?
-//                     * Detection limit is defined as the least abundance while still being detected.
-//                     */
-//                
-//                    if (counts)
-//                    {
-//                        const auto &id = i->first;
-//                        const auto seq = f(id);
-//                    
-//                        // Hard to believe a sequin in the histogram is undefined
-//                        assert(seq);
-//
-//                        if (counts < s.counts || (counts == s.counts && seq->concent(mix) < s.abund))
-//                        {
-//                            s.id     = id;
-//                            s.counts = counts;
-//                            s.abund  = seq->concent(mix);
-//                        }
-//                    }
-//                }
-//            
-//                if (s.counts == std::numeric_limits<unsigned>::max())
-//                {
-//                    s.counts = 0;
-//                }
-//            
-//                return s;
-            }
 
             struct MixtureData
             {
@@ -521,11 +471,11 @@ namespace Anaquin
             // Histogram for all reference chromosomes
             std::map<ChrID, Hist> hist() const;
 
-            C2Intervals inters() const;
+            C2Intervals dInters() const;
             C2Intervals sInters() const;
             C2Intervals gInters() const;
 
-            MC2Intervals minters() const;
+            MC2Intervals mInters() const;
             MC2Intervals msInters() const;
             MC2Intervals mgInters() const;
         
@@ -558,12 +508,9 @@ namespace Anaquin
      * -------------------- Transcriptome Analysis --------------------
      */
     
-    struct TransData_ : public SequinData
-    {
-        GeneID gID;
-    };
-
-    class TransRef : public Reference<TransData_, DefaultStats>
+    struct GeneData;
+    
+    class TransRef : public Reference<SequinData, DefaultStats>
     {
         public:
 
@@ -602,9 +549,8 @@ namespace Anaquin
         
             // Concentration at the gene level
             Concent concent(const GeneID &, Mixture m = Mix_1) const;
-        
-            const GeneData *findGene(const ChrID &, const GeneID &)           const;
-            const Interval *findGene(const ChrID &, const Locus &, MatchRule) const;
+
+            const GeneData *findGene(const ChrID &, const GeneID &) const;
 
         protected:
         

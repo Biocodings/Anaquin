@@ -2,7 +2,7 @@
 #define LIMIT_HPP
 
 #include <math.h>
-#include "data/types.hpp"
+#include "data/data.hpp"
 
 namespace Anaquin
 {

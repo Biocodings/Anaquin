@@ -1,7 +1,7 @@
 #ifndef PARSER_QUAST_HPP
 #define PARSER_QUAST_HPP
 
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "parsers/parser.hpp"

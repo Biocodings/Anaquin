@@ -7,7 +7,7 @@
 #ifndef PARSER_DIFF_HPP
 #define PARSER_DIFF_HPP
 
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "data/tokens.hpp"
 #include "stats/analyzer.hpp"
 

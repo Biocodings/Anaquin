@@ -1,6 +1,7 @@
 #ifndef MERGED_HPP
 #define MERGED_HPP
 
+#include <set>
 #include <map>
 #include <cmath>
 #include <numeric>
@@ -33,6 +34,8 @@ namespace Anaquin
 
         void sanityCheck(const Locus &l);
 
+        std::set<Locus> zeros() const;
+        
         Base map(const Locus &l, Base *lp = nullptr, Base *rp = nullptr);
         
             template <typename F> Stats stats(F f) const

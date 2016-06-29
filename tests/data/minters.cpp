@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "data/merged.hpp"
+#include "data/minters.hpp"
 
 using namespace Anaquin;
 

@@ -3,7 +3,7 @@
 
 #include <cstring>
 #include <unistd.h>
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "data/script.hpp"
 #include "stats/stats.hpp"
 

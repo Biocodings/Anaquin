@@ -1,7 +1,7 @@
 #ifndef R_RNAQUIN_HPP
 #define R_RNAQUIN_HPP
 
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin

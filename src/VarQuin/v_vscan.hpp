@@ -1,7 +1,7 @@
 #ifndef V_VSCAN_HPP
 #define V_VSCAN_HPP
 
-#include "data/types.hpp"
+#include "data/data.hpp"
 #include "stats/analyzer.hpp"
 
 namespace Anaquin
