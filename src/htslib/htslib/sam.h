@@ -322,14 +322,11 @@ typedef struct {
     typedef htsFile samFile;
     bam_hdr_t *sam_hdr_parse(int l_text, const char *text);
     bam_hdr_t *sam_hdr_read(samFile *fp);
-
-    int sam_hdr_print(samFile *fp, const bam_hdr_t *h);
     int sam_hdr_write(samFile *fp, const bam_hdr_t *h);
 
     int sam_parse1(kstring_t *s, bam_hdr_t *h, bam1_t *b);
     int sam_format1(const bam_hdr_t *h, const bam1_t *b, kstring_t *str);
     int sam_read1(samFile *fp, bam_hdr_t *h, bam1_t *b);
-
     int sam_write1(samFile *fp, const bam_hdr_t *h, const bam1_t *b);
 
     /*************************************

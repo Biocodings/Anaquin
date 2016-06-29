@@ -5,6 +5,8 @@
 #include "tools/samtools.hpp"
 #include "writers/writer.hpp"
 
+extern "C" int sam_hdr_print(htsFile *fp, const bam_hdr_t *h);
+
 namespace Anaquin
 {
     class WriterSAM : public Writer
