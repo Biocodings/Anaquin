@@ -55,82 +55,75 @@ struct VDiscoverImpl : public VCFDataUser
      
         match(x);
         
-//        if (match(x))
+        //        if (match(x))
+        const auto &cID = m.query.cID;
+        
+        auto f = [&]()
         {
-            if (m.query.l.start == 632130)
-            {
-                std::cout << m.query.l.start << std::endl;
-            }
+            /*
+             * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
+             * remains unchanged.
+             */
             
-            const auto &cID = m.query.cID;
+            //const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
             
-            auto f = [&]()
+            // Only matching if the position and alleles agree
+            const auto matched = m.match && m.ref && m.alt;
+            
+            /*
+             * Matched by position? reference allele? alternative allele?
+             */
+            
+            if (matched)
             {
-                /*
-                 * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
-                 * remains unchanged.
-                 */
+                const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
+                stats->hist.at(cID).at(key)++;
                 
-                //const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
-                
-                // Only matching if the position and alleles agree
-                const auto matched = m.match && m.ref && m.alt;
-                
-                /*
-                 * Matched by position? reference allele? alternative allele?
-                 */
-                
-                if (matched)
+                // if (p <= o.sign)
                 {
-                    const auto key = var2hash(m.match->id, m.match->type(), m.match->l);
-                    stats->hist.at(cID).at(key)++;
-                    
-                    // if (p <= o.sign)
-                    {
-                        stats->data[cID].tps.push_back(m);
-                        stats->data[cID].tps_[key] = stats->data[cID].tps.back();
-                    }
-                    //                else
-                    //                {
-                    //                    throw "Not Implemented";
-                    //                    //stats.data[cID].fns.push_back(m);
-                    //                    //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
-                    //                }
+                    stats->data[cID].tps.push_back(m);
+                    stats->data[cID].tps_[key] = stats->data[cID].tps.back();
                 }
-                else
-                {
-                    /*
-                     * Variant not found in the reference. This is a FP unless it can be filtered by
-                     * the p-value.
-                     */
-                    
-                    //if (p <= o.sign)
-                    {
-                        //stats.data[cID].fps_.insert(key);
-                        stats->data[cID].fps.push_back(m);
-                    }
-                    //                else
-                    //                {
-                    //                    throw "?????";
-                    //                    //stats.data[cID].tns_.insert(key);
-                    //                    //stats.data[cID].tns.push_back(m);
-                    //                }
-                }
-            };
-            
-            if (Standard::isSynthetic(cID))
-            {
-                stats->n_syn++;
-                f();
+                //                else
+                //                {
+                //                    throw "Not Implemented";
+                //                    //stats.data[cID].fns.push_back(m);
+                //                    //stats.data[cID].fns_[key] = &stats.data[cID].fns.back();
+                //                }
             }
             else
             {
-                stats->n_gen++;
+                /*
+                 * Variant not found in the reference. This is a FP unless it can be filtered by
+                 * the p-value.
+                 */
                 
-                if (Standard::isGenomic(cID))
+                //if (p <= o.sign)
                 {
-                    f();
+                    //stats.data[cID].fps_.insert(key);
+                    stats->data[cID].fps.push_back(m);
                 }
+                //                else
+                //                {
+                //                    throw "?????";
+                //                    //stats.data[cID].tns_.insert(key);
+                //                    //stats.data[cID].tns.push_back(m);
+                //                }
+            }
+        };
+        
+        if (Standard::isSynthetic(cID))
+        {
+            stats->n_syn++;
+            f();
+        }
+        else
+        {
+            stats->n_gen++;
+            
+            if (Standard::isGenomic(cID))
+            {
+                f();
             }
         }
     }
@@ -156,7 +149,7 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     // Read the input variant file and process them
     stats.vData = vcfData(file, o.input, &impl);
 
-    o.info("Collecting statistics");
+    o.info("Aggregating statistics");
     
     for (const auto &i : stats.data)
     {
