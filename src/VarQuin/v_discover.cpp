@@ -15,14 +15,18 @@ extern Scripts PlotGermlineROC();
 static Counts __countD__ = 0;
 static Counts __countP__ = 0;
 
-std::ofstream out("fuck.txt");
-
 struct VDiscoverImpl : public VCFDataUser
 {
     VDiscover::Stats *stats;
-    
+    const VDiscover::Options *o;
+
     void variantProcessed(const ParserVCF::Data &x, const ParserProgress &p) override
     {
+        if (p.i && !(p.i % 1000000))
+        {
+            o->wait(std::to_string(p.i));
+        }
+        
         const auto &r = Standard::instance().r_var;
         
         VariantMatch m;
@@ -101,9 +105,6 @@ struct VDiscoverImpl : public VCFDataUser
                     const auto exp = r.findAFreq(baseID(m.match->id));
                     const auto obs = m.query.alleleFreq();
 
-                    out << m.match->l.start << "\t" << exp << "\t" << obs << std::endl;
-                    
-                    
                     // Eg: 2821292107
                     const auto id = toString(key);
                     
@@ -172,13 +173,14 @@ VDiscover::Stats VDiscover::analyze(const FileName &file, const Options &o)
     o.info("Reading VCF inputs");
 
     VDiscoverImpl impl;
+    impl.o = &o;
     impl.stats = &stats;
 
     // Read the input variant file and process them
     stats.vData = vcfData(file, o.input, &impl);
 
     o.info("Aggregating statistics");
-    out.close();
+
     for (const auto &i : stats.data)
     {
         auto &x = stats.data[i.first];
@@ -414,8 +416,6 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     extern FileName BedRef();
     extern FileName MixRef();
 
-    std::cout << stats.vars.size() << std::endl;
-    
     const auto lm = stats.vars.linear(true);
     
     // Calcluate the quantification point with logarithm
