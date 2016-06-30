@@ -43,7 +43,6 @@ plotROC <- function(data,
     print('ROC Diagnostics: AUC')
 
     uniqs <- unique(ratios)
-    uniqs <- uniqs[!(uniqs %in% refRats)]
 
     #
     # The reference ratios need to have the same length as the query ratios. We can do some sanity
@@ -66,11 +65,11 @@ plotROC <- function(data,
         
         if (is.null(refRat))
         {
-            t <- data[!is.na(data$ratio) & data$ratio== ratio,]
+            t <- data[!is.na(data$ratio) & data$ratio==ratio,]
         }
         else
         {
-            t <- data[!is.na(data$ratio) & (data$ratio == ratio | data$ratio == refRat),]                
+            t <- data[!is.na(data$ratio) & (data$ratio==ratio | data$ratio==refRat),]                
         }
         
         # No FP or TP?
