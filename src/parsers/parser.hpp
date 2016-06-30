@@ -10,6 +10,9 @@ namespace Anaquin
     
     struct ParserProgress
     {
+        // Whether parsing should be stopped immediately
+        bool stopped = false;
+        
         long long i = 0;
     };
 

@@ -27,7 +27,7 @@ namespace Anaquin
             FormatData
         };
 
-        static void parse(const Reader &r, std::function<void (const Data &, const ParserProgress &)> f)
+        template <typename F> static void parse(const Reader &r, F f)
         {
             std::string line;
             
@@ -43,7 +43,11 @@ namespace Anaquin
             {
                 p.i++;
                 
-                if (line[0] == '#')
+                if (p.stopped)
+                {
+                    break;
+                }                
+                else if (line[0] == '#')
                 {
                     continue;
                 }

@@ -1601,9 +1601,12 @@ void parse(int argc, char ** argv)
                 
                 try
                 {
-                    ParserVCF::parse(Reader(x), [&](const ParserVCF::Data &, const ParserProgress &)
+                    ParserVCF::parse(Reader(x), [&](const ParserVCF::Data &, ParserProgress &p)
                     {
-                        n++;
+                        if (n++ >= 30)
+                        {
+                            p.stopped = true;
+                        }
                     });
                 }
                 catch (...)
@@ -1651,6 +1654,7 @@ void parse(int argc, char ** argv)
                 case TOOL_V_DISCOVER:
                 {
                     VDiscover::Options o;
+                    
                     o.input = checkVCF(_p.opts.at(OPT_U_FILES)) ? VDiscover::Input::VCFInput : VDiscover::Input::TxtInput;
 
                     analyze_1<VDiscover>(OPT_U_FILES, o);
