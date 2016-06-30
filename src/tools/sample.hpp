@@ -218,7 +218,7 @@ namespace Anaquin
                                                               ID2Intervals &inters,
                                                               const Options &o)
         {
-            assert(prop >= 0 && prop <= 1.0);
+            assert(prop > 0 && prop <= 1.0);
             assert(!src.empty() && !dst.empty());
          
             o.info("Subsampling: " + toString(prop));
