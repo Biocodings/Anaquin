@@ -91,7 +91,7 @@
 #include "resources/AVA009.v032.vcf"
 #include "resources/MVA011.v013.csv"
 #include "resources/MVA012.v013.csv"
-#include "resources/AVA017.v032.bed"
+#include "resources/AVA017.v001.bed"
 
 typedef std::string Scripts;
 
@@ -368,5 +368,5 @@ Scripts VarDataVCF()
 
 Scripts VarDataBed()
 {
-    return ToString(data_VarQuin_AVA017_v032_bed);
+    return ToString(data_VarQuin_AVA017_v001_bed);
 }

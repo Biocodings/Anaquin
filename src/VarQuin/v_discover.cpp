@@ -330,7 +330,7 @@ static void writeQuins(const FileName &file,
 static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
     const auto &r = Standard::instance().r_var;
-    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
+    const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%\t%11%";
     
     o.generate(file);
     o.writer->open(file);
@@ -343,6 +343,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                            % "EFold"
                                            % "EAllele"
                                            % "Pval"
+                                           % "Qual"
                                            % "Type").str());
 
     for (const auto &i : stats.data)
@@ -396,6 +397,7 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                                            % eFold
                                                            % eAllF
                                                            % pval
+                                                           % i.query.qual
                                                            % type2str(i.query.type())).str());
                 }
             };

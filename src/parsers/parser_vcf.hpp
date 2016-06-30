@@ -135,10 +135,7 @@ namespace Anaquin
                     continue;
                 }
                 
-                /*
-                 * Parsing QUAL probability (TODO: Fix this...)
-                 */
-                
+                d.qual = stod(fields[Field::Qual]);
                 //d.p = 1.0 - (exp(stold(fields[Field::QUAL]) / -10.0));
                 
                 f(d, p);

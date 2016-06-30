@@ -66,6 +66,9 @@ namespace Anaquin
         // The reference position, with the 1st base having position 1
         Locus l;
         
+        // Quality score (eg: QUAL in VCF)
+        double qual;
+        
         Sequence ref, alt;
         
         // Allelle frequency
