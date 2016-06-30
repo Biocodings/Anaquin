@@ -40,7 +40,7 @@ namespace Anaquin
         std::string rnext;
         
         // Position of the primary alignment of the NEXT read in the template
-        Base pnext;
+        std::string pnext;
 
         // Mapping quality
         int mapq;

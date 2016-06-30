@@ -12,23 +12,48 @@ CoverageTool::Stats CoverageTool::stats(const FileName &file, std::map<ChrID, In
  
     stats.src = file;
     
-    ParserSAM::parse(file, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+    ParserSAM::parse(file, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
     {
         if (__showInfo__ && info.p.i && !(info.p.i % 1000000))
         {
             std::cout << std::to_string(info.p.i) << std::endl;
         }
         
-        stats.update(x);
+        if (x.mapped)
+        {
+            stats.update(x);
+        }
         
         if (x.mapped && inters.count(x.cID))
         {
-            const auto m = inters[x.cID].contains(x.l);
-            
-            if (m)
+            if (info.skip)
             {
-                m->map(x.l);
-                stats.hist[x.cID]++;
+                return;
+            }
+            
+            Locus l;
+            bool spliced;
+            int i = 0;
+            
+            while (x.nextCigar(l, spliced))
+            {
+                const auto m = inters[x.cID].contains(l);
+                
+                if (m)
+                {
+                    m->map(l);
+                    
+                    if (i == 0)
+                    {
+                        stats.hist[x.cID]++;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+                
+                i++;
             }
         }
     });

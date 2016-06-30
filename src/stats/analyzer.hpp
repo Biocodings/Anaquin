@@ -90,7 +90,7 @@ namespace Anaquin
     
     struct SequinStats
     {
-        // Distribution of counts across sequins
+        // Distribution of counts within sampling regions
         Hist hist;
     };
 

@@ -43,7 +43,7 @@ namespace Anaquin
                                                 % x.pnext
                                                 % x.tlen
                                                 % x.seq
-                                                % x.qual).str();        
+                                                % x.qual).str();
         std::cout << str << std::endl;
     }
     

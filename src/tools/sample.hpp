@@ -90,27 +90,37 @@ namespace Anaquin
             // Statistics for alignments mapped to the selected regions
             const auto rr = CoverageTool::stats(file, inters);
 
+            // Number of alignments within the sampling regions for synthetic
+            auto s_syn = 0;
+            
+            // Number of alignments within the sampling regions for genome
+            auto s_gen = 0;
+            
+            // For each chromsome within the sampling regions...
             for (const auto &i : rr.hist)
             {
                 if (Standard::isSynthetic(i.first))
                 {
-                    stats.n_syn += i.second;
+                    s_syn += i.second;
                 }
-                else if (Standard::isGenomic(i.first))
+                else
                 {
-                    stats.n_gen += i.second;
+                    s_gen += i.second;
                 }
             }
             
-            if (!stats.n_syn)
-            {
-                throw std::runtime_error("Failed to find alignments for synthetic");
-            }
-            else if (!stats.n_gen)
-            {
-                throw std::runtime_error("Failed to find alignments for the genome");
-            }
+            // Number of alignments for synthetic before subsampling (not just sampling regions)
+            stats.n_syn = rr.n_syn;
             
+            // Number of alignments for genome before subsampling (not just sampling regions)
+            stats.n_gen = rr.n_gen;
+            
+            assert(s_syn <= stats.n_syn);
+            assert(s_gen <= stats.n_gen);
+            
+            if (!s_syn) { throw std::runtime_error("No alignments for synthetic");  }
+            if (!s_gen) { throw std::runtime_error("No alignments within the sampling regions for the genome"); }
+
             o.logInfo(toString(stats.n_syn) + " alignments to synthetic");
             o.logInfo(toString(stats.n_gen) + " alignments to genome");
             o.logInfo(toString(stats.n_syn + stats.n_gen) + " alignments in total");
@@ -236,7 +246,7 @@ namespace Anaquin
             
             SampleStats r;
             
-            ParserSAM::parse(src, [&](const ParserSAM::Data &x, const ParserSAM::Info &info)
+            ParserSAM::parse(src, [&](ParserSAM::Data &x, const ParserSAM::Info &info)
             {
                 if (info.p.i && !(info.p.i % 1000000))
                 {
@@ -336,6 +346,11 @@ namespace Anaquin
             
             CoverageTool::bedGraph(inters, pre);
 
+            /*
+             * Reproduce %6%: samtools view sampled.bam | cut -f3,6 | grep chrT | grep -v '*' | wc
+             * Reprodcue %7%: samtools view sampled.bam | cut -f3,6 | grep -v chrT | grep -v '*' | wc
+             */
+            
             /*
              * Generating VarSubsample_summary.stats
              */

@@ -128,29 +128,35 @@ void ParserSAM::parse(const FileName &file, Functor x, bool details)
         info.b = t;
         info.h = h;
 
-        if (t->core.tid < 0)
-        {
-            x(align, info);
-            continue;
-        }
-
         align._b  = t;
         align._h  = h;
-        align.cID = std::string(h->target_name[t->core.tid]);
-
+        
+        const auto hasCID = t->core.tid >= 0;
+        
         if (details)
         {
             align.flag  = t->core.flag;
             align.mapq  = t->core.qual;
             align.seq   = bam2seq(t);
             align.qual  = bam2qual(t);
-            align.rnext = bam2rnext(h, t);
-            align.pnext = t->core.mpos;
-            align.cigar = bam2cigar(t);
-            align.tlen  = t->core.isize;
+            align.cigar = hasCID ? bam2cigar(t) : "*";
+            align.tlen  = hasCID ? t->core.isize : 0;
+            align.rnext = hasCID ? bam2rnext(h, t) : "*";
+            align.pnext = hasCID ? std::to_string(t->core.mpos) : "0";
         }
         
-        align.mapped = !(t->core.flag & BAM_FUNMAP);
+        if (hasCID)
+        {
+            align.cID = std::string(h->target_name[t->core.tid]);
+        }
+        else
+        {
+            align.cID = "*";
+            align.l.start = 0;
+            align.l.end = 0;
+        }
+
+        align.mapped = hasCID && !(t->core.flag & BAM_FUNMAP);
 
         if (align.mapped)
         {
