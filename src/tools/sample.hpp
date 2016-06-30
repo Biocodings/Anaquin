@@ -324,6 +324,8 @@ namespace Anaquin
             o.info("Coverage (after): " + toString(samp.cov));
             o.info("Coverage (after): " + toString(g_after));
 
+#ifdef NEED_BEDGRAPH
+
             /*
              * Generating bedgraph before subsampling (only synthetic)
              */
@@ -345,6 +347,7 @@ namespace Anaquin
             post.file   = "VarSubsample_after.bedgraph";
             
             CoverageTool::bedGraph(inters, pre);
+#endif
 
             /*
              * Reproduce %6%: samtools view sampled.bam | cut -f3,6 | grep chrT | grep -v '*' | wc

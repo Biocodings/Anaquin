@@ -273,7 +273,7 @@ VAlign::Stats VAlign::analyze(const FileName &file, const Options &o)
                 assert(!isnan(btp) && btp >= 0);
                 assert(!isnan(bfp) && bfp >= 0);
                 
-                // Precison at the base level
+                // Precision at the base level
                 const auto bpc = static_cast<Proportion>(btp) / (btp + bfp);
                 
                 assert(isnan(bpc) || (bpc >= 0.0 && bpc <= 1.0));
@@ -386,7 +386,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "       *Alignment level\n"
                          "       Correct:     %12%\n"
                          "       Incorrect:   %13%\n\n"
-                         "       Precison:    %14$.4f\n\n"
+                         "       Precision:   %14$.4f\n\n"
                          "       *Nucleotide level\n"
                          "       Covered:     %15%\n"
                          "       Uncovered:   %16%\n"
