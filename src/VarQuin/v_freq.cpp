@@ -89,7 +89,7 @@ VFreq::Stats VFreq::analyze(const FileName &file, const Options &o)
         auto f = [&]()
         {
             // Only matching if the position and alleles agree
-            const auto matched = m.match && m.ref && m.alt;
+            const auto matched = m.match && m.ref && m.alt_;
             
             if (matched)
             {

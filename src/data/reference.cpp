@@ -806,6 +806,11 @@ MC2Intervals VarRef::mInters()  const { return _impl->bData.minters();    }
 MC2Intervals VarRef::msInters() const { return _impl->bData.mintersSyn(); }
 MC2Intervals VarRef::mgInters() const { return _impl->bData.mintersGen(); }
 
+MergedIntervals<> VarRef::mInters(const ChrID &cID) const
+{
+    return _impl->bData.minters(cID);
+}
+
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
     const auto &p = _impl->data.at(Mix_1).at(baseID(id));

@@ -7,13 +7,13 @@ using namespace Anaquin;
 extern Scripts PlotVLOD();
 
 // Defined in resources.cpp
-extern Scripts PlotSomaticROC();
+extern Scripts PlotVROC();
 
 // Defined in resources.cpp
 extern Scripts PlotGermlineROC();
 
-// Defined in standard.cpp
-extern bool IsFlatMix();
+static Counts __countD__ = 0;
+static Counts __countP__ = 0;
 
 struct VDiscoverImpl : public VCFDataUser
 {
@@ -40,7 +40,7 @@ struct VDiscoverImpl : public VCFDataUser
                 if (m.match)
                 {
                     m.ref = m.match->ref == query.ref;
-                    m.alt = m.match->alt == query.alt;
+                    m.alt_ = m.match->alt == query.alt;
                 }
                 
                 if (isSyn && m.match && !mixture().empty())
@@ -60,6 +60,9 @@ struct VDiscoverImpl : public VCFDataUser
         
         auto f = [&]()
         {
+            if (!isnan(m.query.p))     { __countP__++; }
+            if (!isnan(m.query.depth)) { __countD__++; }
+
             /*
              * If no p-value is given (eg: GATK), we'd set it to zero so that the algorithm itself
              * remains unchanged.
@@ -68,7 +71,7 @@ struct VDiscoverImpl : public VCFDataUser
             //const auto p = 0; //isnan(m.query.p) ? 0.0 : m.query.p;
             
             // Only matching if the position and alleles agree
-            const auto matched = m.match && m.ref && m.alt;
+            const auto matched = m.match && m.ref && m.alt_;
             
             /*
              * Matched by position? reference allele? alternative allele?
@@ -299,8 +302,10 @@ static void writeQuins(const FileName &file,
 
 static void writeQueries(const FileName &file, const VDiscover::Stats &stats, const VDiscover::Options &o)
 {
+    const auto &r = Standard::instance().r_var;
     const auto format = "%1%\t%2%\t%3%\t%4%\t%5%\t%6%\t%7%\t%8%\t%9%\t%10%";
     
+    o.generate(file);
     o.writer->open(file);
     o.writer->write((boost::format(format) % "ID"
                                            % "Pos"
@@ -313,30 +318,54 @@ static void writeQueries(const FileName &file, const VDiscover::Stats &stats, co
                                            % "Pval"
                                            % "Type").str());
 
-    auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
-    {
-        for (const auto &i : x)
-        {
-            const auto eFold = (label == "FP" ? NAN : i.eFold);
-            const auto eAlFq = (label == "FP" ? NAN : i.eAllFreq);
-            
-            o.writer->write((boost::format(format) % (i.match ? i.match->id : "-")
-                                                   % i.query.l.start
-                                                   % label
-                                                   % i.query.readR
-                                                   % i.query.readV
-                                                   % i.query.depth
-                                                   % eFold
-                                                   % eAlFq
-                                                   % (isnan(i.query.p) ? "-" : p2str(i.query.p))
-                                                   % type2str(i.query.type())).str());
-        }
-    };
-
     for (const auto &i : stats.data)
     {
         if (Standard::isSynthetic(i.first))
         {
+            const auto &cID = i.first;
+            
+            // We'll need it to search for the sequin where the FPs are
+            const auto inters = r.mInters(cID);
+            
+            assert(inters.size());
+
+            auto f = [&](const std::vector<VariantMatch> &x, const std::string &label)
+            {
+                for (const auto &i : x)
+                {
+                    auto sID = (i.match ? i.match->id : "-");
+                    
+                    if (label == "FP")
+                    {
+                        const auto m = inters.contains(i.query.l);
+                        
+                        // Can we find the corresponding region for the FP?
+                        if (m)
+                        {
+                            sID = m->id();
+
+                            // It has to be sequin name (eg: D_3_12)
+                            assert(!sID.empty());
+                        }
+                    }
+                    
+                    const auto eFold = (label == "FP" ? NAN : i.eFold);
+                    const auto eAlFq = (label == "FP" ? NAN : i.eAllFreq);
+                    const auto pval  = (isnan(i.query.p) ? "-" : p2str(i.query.p));
+                    
+                    o.writer->write((boost::format(format) % sID
+                                                           % i.query.l.start
+                                                           % label
+                                                           % i.query.readR
+                                                           % i.query.readV
+                                                           % i.query.depth
+                                                           % eFold
+                                                           % eAlFq
+                                                           % pval
+                                                           % type2str(i.query.type())).str());
+                }
+            };
+            
             f(i.second.tps, "TP");
             f(i.second.fps, "FP");
         }
@@ -466,10 +495,10 @@ void VDiscover::report(const FileName &file, const Options &o)
     writeSummary("VarDiscover_summary.stats", file, stats, o);
     
     /*
-     * Generating VarDiscover_queries.stats
+     * Generating VarDiscover_queries.csv
      */
     
-    writeQueries("VarDiscover_queries.stats", stats, o);
+    writeQueries("VarDiscover_queries.csv", stats, o);
     
     /*
      * Generating VarDiscover_ROC.R
@@ -478,13 +507,15 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.generate("VarDiscover_ROC.R");
     o.writer->open("VarDiscover_ROC.R");
     
-    if (IsFlatMix())
+    if (__countP__ >= __countD__)
     {
-        o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotGermlineROC()));
+        o.info("P-value for scoring");
+        o.writer->write(RWriter::createVROC("VarDiscover_queries.csv", "1-data$Pval"));
     }
     else
     {
-        o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotSomaticROC()));
+        o.info("Depth for scoring");
+        o.writer->write(RWriter::createVROC("VarDiscover_queries.csv", "data$Depth"));
     }
     
     o.writer->close();
@@ -495,7 +526,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.generate("VarDiscover_LOD.R");
     o.writer->open("VarDiscover_LOD.R");
-    o.writer->write(RWriter::createScript("VarDiscover_queries.stats", PlotVLOD()));
+    o.writer->write(RWriter::createScript("VarDiscover_queries.csv", PlotVLOD()));
     o.writer->close();
     
     /*
@@ -506,7 +537,7 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.report->addTitle("VarDiscover");
     o.report->addFile("VarDiscover_summary.stats");
     o.report->addFile("VarDiscover_sequins.csv");
-    o.report->addFile("VarDiscover_queries.stats");
+    o.report->addFile("VarDiscover_queries.csv");
     o.report->addFile("VarDiscover_ROC.R");
     o.report->addFile("VarDiscover_LOD.R");
 }

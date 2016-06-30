@@ -20,33 +20,26 @@ namespace Anaquin
         Counts n_ind;
     };
     
-    /*
-     * This class represents variant matching to the synthetic chromosome
-     */
-    
     struct VariantMatch
     {
+        // The called variant
         CalledVariant query;
 
         // Matched by position?
         const Variant *match = nullptr;
         
+        // Matched by variant allele? Only if position is matched.
+        bool alt_;
+        
+        // Matched by reference allele? Only if position is matched.
+        bool ref;
+        
         /*
-         * Defined only if seq is defined.
+         * Defined only if there is a match
          */
         
         Proportion eFold;
         Proportion eAllFreq;
-        
-        /*
-         * Defined only if there's a match
-         */
-
-        // Matched by variant allele?
-        bool alt;
-        
-        // Matched by reference allele?
-        bool ref;
     };
 
     inline std::string type2str(Mutation type)
@@ -100,60 +93,62 @@ namespace Anaquin
 
     template <typename F, typename Input> void parseVariants(const FileName &file, Input input, F f)
     {
-        const auto &r = Standard::instance().r_var;
-
-        VariantMatch m;
-
-        auto match = [&](const CalledVariant &query)
-        {
-            m.query = query;
-            m.match = nullptr;
-
-            const auto isSyn = Standard::isSynthetic(query.cID);
-
-            if (isSyn || Standard::isGenomic(query.cID))
-            {
-                // Can we match by position?
-                m.match = r.findVar(query.cID, query.l);
-
-                if (m.match)
-                {
-                    m.ref = m.match->ref == query.ref;
-                    m.alt = m.match->alt == query.alt;
-                }
-                
-                if (isSyn && m.match && !mixture().empty())
-                {
-                    m.eFold    = r.findAFold(baseID(m.match->id));
-                    m.eAllFreq = r.findAFreq(baseID(m.match->id));
-                }
-            }
-
-            return m;
-        };
-
-        switch (input)
-        {
-            case Input::VCFInput:
-            {
-                ParserVCF::parse(file, [&](const ParserVCF::Data &d, const ParserProgress &)
-                {
-                    f(match(d));
-                });
-
-                break;
-            }
-
-            case Input::TxtInput:
-            {
-                ParserVariant::parse(file, [&](const ParserVariant::Data &d, const ParserProgress &)
-                {
-                    f(match(d));
-                });
-
-                break;
-            }
-        }
+        throw "Not Implemented";
+        
+//        const auto &r = Standard::instance().r_var;
+//
+//        VariantMatch m;
+//
+//        auto match = [&](const CalledVariant &query)
+//        {
+//            m.query = query;
+//            m.match = nullptr;
+//
+//            const auto isSyn = Standard::isSynthetic(query.cID);
+//
+//            if (isSyn || Standard::isGenomic(query.cID))
+//            {
+//                // Can we match by position?
+//                m.match = r.findVar(query.cID, query.l);
+//
+//                if (m.match)
+//                {
+//                    m.ref = m.match->ref == query.ref;
+//                    m.alt = m.match->alt == query.alt;
+//                }
+//                
+//                if (isSyn && m.match && !mixture().empty())
+//                {
+//                    m.eFold    = r.findAFold(baseID(m.match->id));
+//                    m.eAllFreq = r.findAFreq(baseID(m.match->id));
+//                }
+//            }
+//
+//            return m;
+//        };
+//
+//        switch (input)
+//        {
+//            case Input::VCFInput:
+//            {
+//                ParserVCF::parse(file, [&](const ParserVCF::Data &d, const ParserProgress &)
+//                {
+//                    f(match(d));
+//                });
+//
+//                break;
+//            }
+//
+//            case Input::TxtInput:
+//            {
+//                ParserVariant::parse(file, [&](const ParserVariant::Data &d, const ParserProgress &)
+//                {
+//                    f(match(d));
+//                });
+//
+//                break;
+//            }
+//        }
     }
 }
 

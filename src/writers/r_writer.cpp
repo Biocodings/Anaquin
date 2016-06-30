@@ -18,6 +18,18 @@ extern Scripts PlotSensitivity();
 // Defined in main.cpp
 extern FileName mixture();
 
+// Defined in resources.cpp
+extern Scripts PlotVROC();
+
+Scripts RWriter::createVROC(const FileName &file, const std::string &score)
+{
+    return (boost::format(PlotVROC()) % date()
+                                      % __full_command__
+                                      % __output__
+                                      % file
+                                      % score).str();
+}
+
 Scripts RWriter::createSensitivity(const FileName    &file,
                                    const std::string &title,
                                    const std::string &xlab,

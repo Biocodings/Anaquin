@@ -385,7 +385,7 @@ static void writeSummary(const FileName &file, const FileName &src, const VAlign
                          "-------Comparison of alignments to annotation (Synthetic)\n\n"
                          "       *Alignment level\n"
                          "       Correct:     %12%\n"
-                         "       Incorrect:   %13%\n"
+                         "       Incorrect:   %13%\n\n"
                          "       Precison:    %14$.4f\n\n"
                          "       *Nucleotide level\n"
                          "       Covered:     %15%\n"

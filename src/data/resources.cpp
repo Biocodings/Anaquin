@@ -336,7 +336,7 @@ Scripts PlotVLOD()
     return ToString(src_r_plotVLOD_R);
 }
 
-Scripts PlotSomaticROC()
+Scripts PlotVROC()
 {
     return ToString(src_r_plotVROC1_R);
 }
