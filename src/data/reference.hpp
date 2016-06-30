@@ -492,6 +492,9 @@ namespace Anaquin
             // Returns the expected allele frequency
             Proportion findAFreq(const SequinID &) const;
 
+            // Is this germline? Homozygous?
+            bool isGermline() const;
+        
         protected:
 
             void validate() override;

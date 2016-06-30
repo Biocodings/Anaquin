@@ -811,6 +811,18 @@ MergedIntervals<> VarRef::mInters(const ChrID &cID) const
     return _impl->bData.minters(cID);
 }
 
+bool VarRef::isGermline() const
+{
+    std::set<Proportion> freqs;
+    
+    for (const auto &i : _impl->data.at(Mix_1))
+    {
+        freqs.insert(findAFreq(i.first));
+    }
+    
+    return freqs.size() == 1;
+}
+
 Proportion VarRef::findAFreq(const SequinID &id) const
 {
     const auto &p = _impl->data.at(Mix_1).at(baseID(id));

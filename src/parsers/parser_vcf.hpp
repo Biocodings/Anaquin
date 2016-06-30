@@ -1,7 +1,6 @@
 #ifndef PARSER_VCF_HPP
 #define PARSER_VCF_HPP
 
-#include <map>
 #include "data/tokens.hpp"
 #include "data/reader.hpp"
 #include "data/variant.hpp"
