@@ -721,12 +721,12 @@ void VDiscover::report(const FileName &file, const Options &o)
         
         o.info("Generating VarDiscover_allele.R");
         o.writer->open("VarDiscover_allele.R");
-        o.writer->write(RWriter::createScatterNeedLog("VarDiscover_queries.csv",
+        o.writer->write(RWriter::createScatterNeedLog("VarDiscover_sequins.csv",
                                                       "Allele Frequency",
                                                       "Expected allele frequency (log2)",
                                                       "Measured allele frequency (log2)",
-                                                      "Expected",
-                                                      "Observed", true));
+                                                      "EFreq",
+                                                      "MFreq", true));
         o.writer->close();
     }
     
