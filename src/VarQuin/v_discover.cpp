@@ -449,10 +449,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     {
         const auto summary = "-------VarDiscover Output Results\n\n"
                              "-------VarDiscover Output\n\n"
-                             "       Reference variant annotations:   %1%\n"
-                             "       Referene coordinate annotations: %2%\n"
-                             "       Sequin mixture file:             %3%\n"
-                             "       User identified variants:        %4%\n\n"
+                             "       Reference variant annotations:    %1%\n"
+                             "       Reference coordinate annotations: %2%\n"
+                             "       Sequin mixture file:              %3%\n"
+                             "       User identified variants:         %4%\n\n"
                              "-------Reference variant annotations\n\n"
                              "       Synthetic: %5% SNPs\n"
                              "       Synthetic: %6% indels\n"
@@ -521,10 +521,10 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
     {
         const auto summary = "-------VarDiscover Output Results\n\n"
                              "-------VarDiscover Output\n\n"
-                             "       Reference variant annotations:   %1%\n"
-                             "       Referene coordinate annotations: %2%\n"
-                             "       Sequin mixture file:             %3%\n"
-                             "       User identified variants:        %4%\n\n"
+                             "       Reference variant annotations:    %1%\n"
+                             "       Reference coordinate annotations: %2%\n"
+                             "       Sequin mixture file:              %3%\n"
+                             "       User identified variants:         %4%\n\n"
                              "-------Reference variant annotations\n\n"
                              "       Synthetic: %5% SNPs\n"
                              "       Synthetic: %6% indels\n"
@@ -662,6 +662,8 @@ static void writeSummary(const FileName &file, const FileName &src, const VDisco
 
 void VDiscover::report(const FileName &file, const Options &o)
 {
+    const auto &r = Standard::instance().r_var;
+
     // Statistics for the variants
     const auto stats = analyze(file, o);
     
@@ -709,19 +711,22 @@ void VDiscover::report(const FileName &file, const Options &o)
     
     o.writer->close();
     
-    /*
-     * Generating VarDiscover_allele.R
-     */
-    
-    o.info("Generating VarDiscover_allele.R");
-    o.writer->open("VarDiscover_allele.R");
-    o.writer->write(RWriter::createScatterNeedLog("VarDiscover_queries.csv",
-                                                  "Allele Frequency",
-                                                  "Expected allele frequency (log2)",
-                                                  "Measured allele frequency (log2)",
-                                                  "Expected",
-                                                  "Observed", true));
-    o.writer->close();
+    if (!r.isGermline())
+    {
+        /*
+         * Generating VarDiscover_allele.R
+         */
+        
+        o.info("Generating VarDiscover_allele.R");
+        o.writer->open("VarDiscover_allele.R");
+        o.writer->write(RWriter::createScatterNeedLog("VarDiscover_queries.csv",
+                                                      "Allele Frequency",
+                                                      "Expected allele frequency (log2)",
+                                                      "Measured allele frequency (log2)",
+                                                      "Expected",
+                                                      "Observed", true));
+        o.writer->close();
+    }
     
     /*
      * Generating VarDiscover_LOD.R
@@ -743,4 +748,9 @@ void VDiscover::report(const FileName &file, const Options &o)
     o.report->addFile("VarDiscover_queries.csv");
     o.report->addFile("VarDiscover_ROC.R");
     o.report->addFile("VarDiscover_LOD.R");
+    
+    if (!r.isGermline())
+    {
+        o.report->addFile("VarDiscover_allele.R");
+    }
 }

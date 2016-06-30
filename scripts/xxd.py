@@ -88,7 +88,7 @@ data  = [ 'data/manual.txt',
           'src/r/plotVROC2.R',          
           'src/r/plotVDensity.R',
 
-          'data/VarQuin/AVA017.v032.bed',
+          'data/VarQuin/AVA017.v001.bed',
           'data/VarQuin/AVA009.v032.vcf',
           'data/VarQuin/MVA011.v013.csv',
           'data/VarQuin/MVA012.v013.csv',

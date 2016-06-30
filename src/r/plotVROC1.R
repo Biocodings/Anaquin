@@ -18,7 +18,7 @@ data <- data[data$ID != '-',]
 sign <- 0.10
 
 # It's only really FP if it's p-value is smaller than our threshold
-data <- data[data$Label!='FP' | is.nan(data$Pval) | data$Pval<=sign,]
+data <- data[data$Label!='FP' || data$Pval == '-' || data$Pval<=sign,]
 
 # Change to 'Indel' or delete the line for all variants
 data <- data[data$Type=='SNP',]
