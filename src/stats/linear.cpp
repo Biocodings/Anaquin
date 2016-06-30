@@ -1,6 +1,6 @@
 #include "stats/linear.hpp"
 #include <ss/regression/segmented.hpp>
-
+#include <iostream>
 using namespace Anaquin;
 
 LinearStats::Data LinearStats::data(bool shouldLog) const

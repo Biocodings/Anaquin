@@ -23,6 +23,9 @@ namespace Anaquin
         {
             struct Data
             {
+                // Measured minor allele frequency
+                Proportion af;
+                
                 inline Counts count(const std::vector<VariantMatch> &data, Mutation type) const
                 {
                     return std::count_if(data.begin(), data.end(), [&](const VariantMatch &d)
@@ -82,14 +85,6 @@ namespace Anaquin
                 });
             }
 
-            inline Counts countSNP_TP_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countSNP_TP(cID) : 0;
-                });
-            }
-            
             inline Counts countInd_TP_Syn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
@@ -98,27 +93,11 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countInd_TP_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countInd_TP(cID) : 0;
-                });
-            }
-
             inline Counts countVar_TP_Syn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
                     return Standard::isSynthetic(cID) ? countVar_TP(cID) : 0;
-                });
-            }
-            
-            inline Counts countVar_TP_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countVar_TP(cID) : 0;
                 });
             }
             
@@ -130,27 +109,11 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countSNP_FP_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countSNP_FP(cID) : 0;
-                });
-            }
-            
             inline Counts countInd_FP_Syn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
                     return Standard::isSynthetic(cID) ? countInd_FP(cID) : 0;
-                });
-            }
-            
-            inline Counts countInd_FP_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countInd_FP(cID) : 0;
                 });
             }
             
@@ -162,27 +125,11 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countVar_FP_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countVar_FP(cID) : 0;
-                });
-            }
-            
             inline Counts countSNP_FN_Syn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
                 {
                     return Standard::isSynthetic(cID) ? countSNP_FN(cID) : 0;
-                });
-            }
-            
-            inline Counts countSNP_FN_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countSNP_FN(cID) : 0;
                 });
             }
             
@@ -194,14 +141,6 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countInd_FN_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countInd_FN(cID) : 0;
-                });
-            }
-            
             inline Counts countVar_FN_Syn() const
             {
                 return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
@@ -210,32 +149,14 @@ namespace Anaquin
                 });
             }
             
-            inline Counts countVar_FN_Gen() const
-            {
-                return ::Anaquin::count(data, [&](const ChrID &cID, const Data &x)
-                {
-                    return !Standard::isSynthetic(cID) ? countVar_FN(cID) : 0;
-                });
-            }
-
             inline Proportion countVarSN_Syn() const
             {
                 return (Proportion)countVar_TP_Syn() / (countVar_TP_Syn() + countVar_FN_Syn());
             }
             
-            inline Proportion countVarSN_Gen() const
-            {
-                return (Proportion)countVar_TP_Gen() / (countVar_TP_Gen() + countVar_FN_Gen());
-            }
-
             inline Proportion countSNPSN_Syn() const
             {
                 return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FN_Syn());
-            }
-            
-            inline Proportion countSNPSN_Gen() const
-            {
-                return (Proportion)countSNP_TP_Gen() / (countSNP_TP_Gen() + countSNP_FN_Gen());
             }
             
             inline Proportion countIndSN_Syn() const
@@ -243,29 +164,14 @@ namespace Anaquin
                 return (Proportion)countInd_TP_Syn() / (countInd_TP_Syn() + countInd_FN_Syn());
             }
             
-            inline Proportion countIndSN_Gen() const
-            {
-                return (Proportion)countInd_TP_Gen() / (countInd_TP_Gen() + countInd_FN_Gen());
-            }
-            
             inline Proportion countVarPC_Syn() const
             {
                 return (Proportion)countVar_TP_Syn() / (countVar_TP_Syn() + countVar_FP_Syn());
             }
             
-            inline Proportion countVarPC_Gen() const
-            {
-                return (Proportion)countVar_TP_Gen() / (countVar_TP_Gen() + countVar_FP_Gen());
-            }
-
             inline Proportion countSNPPC_Syn() const
             {
                 return (Proportion)countSNP_TP_Syn() / (countSNP_TP_Syn() + countSNP_FP_Syn());
-            }
-            
-            inline Proportion countSNPPC_Gen() const
-            {
-                return (Proportion)countSNP_TP_Gen() / (countSNP_TP_Gen() + countSNP_FP_Gen());
             }
             
             inline Proportion countIndPC_Syn() const
@@ -273,17 +179,29 @@ namespace Anaquin
                 return (Proportion)countInd_TP_Syn() / (countInd_TP_Syn() + countInd_FP_Syn());
             }
             
-            inline Proportion countIndPC_Gen() const
-            {
-                return (Proportion)countInd_TP_Gen() / (countInd_TP_Gen() + countInd_FP_Gen());
-            }
-
             VCFData vData;
             
             // Distribution for the variants
             std::map<ChrID, HashHist> hist;
 
             std::map<ChrID, Data> data;
+            
+            /*
+             * Statistics for allele frequency
+             */
+            
+            // Statistics for all variants
+            LinearStats vars;
+            
+            // Statistics for SNPs
+            LinearStats snp;
+            
+            // Statistics for indels
+            LinearStats ind;
+            
+            std::map<long, Counts> readR;
+            std::map<long, Counts> readV;
+            std::map<long, Counts> depth;
         };
 
         static Stats analyze(const FileName &, const Options &o = Options());
