@@ -253,28 +253,31 @@ namespace Anaquin
                     o.logInfo(std::to_string(info.p.i));
                 }
                 
-                const auto isGen = !Standard::isSynthetic(x.cID);
+                const auto shouldWrite = !x.mapped || !Standard::isSynthetic(x.cID);
                 
                 // This is the key, randomly write the reads with certain probability
-                if (isGen || sampler.select(x.name))
+                if (shouldWrite || sampler.select(x.name))
                 {
-                    if (x.mapped && !isGen)
+                    const auto isSyn = Standard::isSynthetic(x.cID);
+                    
+                    if (x.mapped && isSyn)
                     {
+                        assert(Standard::isSynthetic(x.cID));
                         const auto m = inters.at(x.cID).contains(x.l);
-                        
+
                         if (m)
                         {
                             m->map(x.l);
                         }
                     }
 
-                    if (!isGen)
+                    if (isSyn)
                     {
                         r.reads++;
                     }
                     
                     // Print the SAM line
-                    writ.write(x);
+                    //writ.write(x);
                 }
             }, true);
 
