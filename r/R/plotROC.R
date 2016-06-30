@@ -7,9 +7,8 @@
 plotROC <- function(data,
                     legTitle='LFC',
                     title=NULL,
-                    refRatio=NULL,
+                    refRats=NULL,
                     showGuide=TRUE,
-                    color='black',
                     ...)
 {
     require(ROCR)
@@ -33,104 +32,98 @@ plotROC <- function(data,
         data$ratio <- abs(round(data$expected))
     }
 
-    #data <- data[!is.na(data$pval),]
     data <- data[data$label=='TP' | data$label=='FP',]
     data <- data[, order(names(data))]
-    data <- data.frame(label=data$label,
-                       score=data$score,
-                       ratio=data$ratio)
-
-    #shouldPseuoLog <- TRUE
-    
-    # Compute logarithm transformation to avoid overflowing (also avoid pvalue of 0)
-    #if (shouldPseuoLog)
-    #{
-        #data$pval <- log2(data$pval + 0.00001)
-    #}
-    #else
-    #{
-        #data$pval <- log2(data$pval)
-    #}
-
-    # Turn the probabilities into ranking classifer
-    #data$score <- 1-data$pval
+    data <- data.frame(label=data$label, score=data$score, ratio=data$ratio)
 
     rocDat <- NULL
     aucDat <- NULL
     ratios <- sort(data$ratio)
-    
-    # How many groups we have got?
-    countGroups <- length(unique(ratios))
-    
+
     print('ROC Diagnostics: AUC')
+
+    uniqs <- unique(ratios)
+    uniqs <- uniqs[!(uniqs %in% refRats)]
+
+    #
+    # The reference ratios need to have the same length as the query ratios. We can do some sanity
+    # checks to match the size.
+    #
     
-    for (ratio in unique(ratios))
+    if (length(refRats) == 1 && length(refRats) != length(uniqs))
     {
-        if (!is.na(ratio) && (is.null(refRatio) || ratio != refRatio))
-        {
-            if (is.null(refRatio))
-            {
-                t <- data[!is.na(data$ratio) & data$ratio == ratio,]
-            }
-            else
-            {
-                t <- data[!is.na(data$ratio) & (data$ratio == ratio | data$ratio == refRatio),]                
-            }
-            
-            #print(paste(c('Detected for ', ratio, ': ', nrow(t)), collapse = ''))
-            
-            # No false-positive or true-positive?
-            if (length(unique(t$label)) == 1)
-            {
-                # No TP... Add a TP...
-                if (unique(t$label) == 'FP')
-                {
-                    x <- data.frame(label='TP', score=0, ratio=ratio)
-                }
-            
-                # No FP... Add a FP...
-                else
-                {
-                    x <- data.frame(label='FP', score=0, ratio=ratio)                    
-                }
-                
-                t  <- rbind(t, x)
-            }
-            
-            t <- t[with(t, order(score)),]
-            #t[t$label=='FP',]$score <- -1000
-            
-            #print(paste(c('Number of TP for ratio ', ratio, ':', nrow(t[t$label=='TP',])), collapse=' '))
-            #print(paste(c('Number of FP for ratio ', ratio, ':', nrow(t[t$label=='FP',])), collapse=' '))
-
-            label <- ifelse(t$label == 'TP', 2, 1)
-
-            preds <- prediction(t$score, label, label.ordering=c(1,2))
-            perf  <- performance(preds, 'tpr', 'fpr')
-            auc   <- performance(preds, 'auc')
-
-            AUC <- round(unlist(auc@y.values), 4)
-            
-            if (countGroups == 1)
-            {
-                print(paste(c('AUC: ', AUC), collapse=''))
-            }
-            else
-            {
-                print(paste(c(ratio, ': ', AUC), collapse=''))
-            }
-
-            aucDatNew <- data.frame(Ratio=ratio, AUC=round(AUC, digits=3))
-            aucDat <- rbind(aucDat, aucDatNew)
-            
-            FPR <- c(unlist(perf@x.values)) 
-            TPR <- c(unlist(perf@y.values))
-            
-            rocDatNew <- data.frame(FPR=FPR, TPR=TPR, ratio=ratio)
-            rocDat    <- rbind(rocDat, rocDatNew)
-        }
+        refRats <- rep(refRats, length(uniqs))
     }
     
+    # For each ratio...
+    for (i in c(1:length(uniqs)))
+    {
+        # Query ratio
+        ratio <- uniqs[[i]]
+        
+        # Reference ratio
+        refRat <- ifelse(is.null(refRats), NULL, refRats[[i]]);
+        
+        if (is.null(refRat))
+        {
+            t <- data[!is.na(data$ratio) & data$ratio== ratio,]
+        }
+        else
+        {
+            t <- data[!is.na(data$ratio) & (data$ratio == ratio | data$ratio == refRat),]                
+        }
+        
+        # No FP or TP?
+        if (length(unique(t$label)) == 1)
+        {
+            # No TP... Add a TP...
+            if (unique(t$label) == 'FP')
+            {
+                x <- data.frame(label='TP', score=0, ratio=ratio)
+            }
+            
+            # No FP... Add a FP...
+            else
+            {
+                x <- data.frame(label='FP', score=0, ratio=ratio)                    
+            }
+            
+            t  <- rbind(t, x)
+        }
+        
+        t <- t[with(t, order(score)),]
+        #t[t$label=='FP',]$score <- -1000
+        
+        #print(paste(c('Number of TP for ratio ', ratio, ':', nrow(t[t$label=='TP',])), collapse=' '))
+        #print(paste(c('Number of FP for ratio ', ratio, ':', nrow(t[t$label=='FP',])), collapse=' '))
+        
+        label <- ifelse(t$label == 'TP', 2, 1)
+        
+        preds <- prediction(t$score, label, label.ordering=c(1,2))
+        perf  <- performance(preds, 'tpr', 'fpr')
+        auc   <- performance(preds, 'auc')
+        
+        AUC <- round(unlist(auc@y.values), 4)
+        
+        if (length(uniqs) == 1)
+        {
+            print(paste(c('AUC: ', AUC), collapse=''))
+        }
+        else
+        {
+            print(paste(c(ratio, ': ', AUC), collapse=''))
+        }
+        
+        aucDatNew <- data.frame(Ratio=ratio, AUC=round(AUC, digits=3))
+        aucDat <- rbind(aucDat, aucDatNew)
+        
+        FPR <- c(unlist(perf@x.values)) 
+        TPR <- c(unlist(perf@y.values))
+        
+        rocDatNew <- data.frame(FPR=FPR, TPR=TPR, ratio=ratio)
+        rocDat    <- rbind(rocDat, rocDatNew)
+    }
+
     rocDat$ratio = as.factor(rocDat$ratio)
     
     p <- ggplot(data=rocDat, aes(x=FPR, y=TPR))           + 
@@ -138,7 +131,6 @@ plotROC <- function(data,
             labs(colour=legTitle)                         +
             theme_bw()
 
-    #p <- p + geom_point(size=1, aes(colour=ratio), alpha=0.7)
     p <- p + geom_path(size=1, aes(colour=ratio), alpha=0.5)
     
     if (!is.null(title))
@@ -154,8 +146,8 @@ plotROC <- function(data,
         g <- tableGrob(aucDat)
         p <- grid.arrange(p, g, ncol=1, heights=c(1.0,0.5))
     }
-    
-    if (!showGuide | countGroups == 1)
+
+    if (!showGuide | length(uniqs) == 1)
     {
         p <- p + guides(colour=FALSE)
     }
@@ -169,11 +161,11 @@ plotROC <- function(data,
 #    if (is.null(title)) { title <- 'FusQuin Detection' }
 #    
 #    data$seqs$pval <- (max(data$seqs$measured) + 1) - data$seqs$measured
-#    .plotROC(data, title=title, color=color, refRatio=0, showGuide=FALSE)
+#    .plotROC(data, title=title, color=color, refRats=0, showGuide=FALSE)
 #}
 
 #plotROC.TransQuin <- function(data, title, color, type)
 #{
 #    data$seqs <- TransDiff_(data)
-#    .plotROC(data, title=title, color=color, refRatio=0)
+#    .plotROC(data, title=title, color=color, refRats=0)
 #}
